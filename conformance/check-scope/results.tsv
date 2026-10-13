@@ -1,0 +1,23 @@
+nightly	platform	app_good	app_bad	pkg	verdict
+nightly-2026-09-15-fe09c42	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-16-a49a16f	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-17-9221bca	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-18-1d982dc	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-19-d025939	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-22-e494788	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-23-c7852fd	-	-	-	-	no platform
+nightly-2026-09-24-f45bfbe	-	-	-	-	no platform
+nightly-2026-09-25-1ab6804	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-26-d6267b4	basic-cli@0.24.0	pass	fail	fail	yes
+nightly-2026-09-27-a3ce7f1	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-28-9927ba8	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-29-7f11a82	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-09-30-4c37850	basic-cli@0.22.2	pass	fail	fail	yes
+nightly-2026-10-01-a932c65	basic-cli@0.24.0	pass	fail	fail	yes
+nightly-2026-10-02-bba1acc	basic-cli@0.24.0	pass	fail	fail	yes
+nightly-2026-10-03-c507926	basic-cli@0.24.0	pass	fail	fail	yes
+nightly-2026-10-04-130536d	basic-cli@0.24.0	pass	fail	fail	yes
+nightly-2026-10-06-c34079d	basic-cli@0.24.0	pass	fail	fail	yes
+nightly-2026-10-09-258ab27	basic-cli@0.25.0	pass	fail	fail	yes
+nightly-2026-10-11-7d256b9	basic-cli@0.25.0	pass	fail	fail	yes
+nightly-2026-10-12-2664a27	basic-cli@0.25.0	pass	fail	fail	yes
