@@ -19,7 +19,7 @@ Resolution picks one value for each free variable. The nightly is a variable lik
 
 | Variable | Domain |
 | --- | --- |
-| `roc` | Nightly tags (and later, releases) |
+| `roc` | Nightly tags and releases of the compiler, as the `nightly` switch allows (below) |
 | `pf` | Platform releases |
 | each direct dep | Releases in range |
 
@@ -32,6 +32,29 @@ Any variable can be an anchor: a hard pin (`=`) in `talon.toml`, or a `tln add p
 | "Keep the platform. Move the rest." | `pf = "=0.25.0"` |
 
 When many tuples work, `priority` breaks ties: the solver maximizes the version of the first name, then the second, and so on. The default is: direct deps in header order, then `pf`, then `roc`. `priority` orders only the free variables. A command can hold other variables for one run (section 9).
+
+### The `nightly` switch
+
+roc accepts two forms of compiler version in a header: nightly tags, and releases such as `0.1.0` or `1.0.0-rc1` (`roc:src/base/roc_version.zig:14-19`). `roc fmt` never rewrites a release pin (`roc_version.zig:101-108`). The Zig-based compiler has no release yet. Its only tags are the alpha tags of the old Rust compiler, which Talon does not support (N3). The switch states if nightlies are candidates.
+
+| Priority | Source | Example |
+| --- | --- | --- |
+| 1 | Environment | `TALON_NIGHTLY=0` or `1` |
+| 2 | `talon.toml` | `[toolchain] nightly = false` |
+| 3 | `config.toml` (CLI 6.1) | `nightly = false` |
+| 4 | Default | `true` |
+
+| # | Rule |
+| --- | --- |
+| NS1 | On (the default), the domain of `roc` is all nightlies and all releases. Talon orders them by date: the tag date of a nightly, the GitHub `published_at` of a release. On the same date, the release is newer. |
+| NS2 | Off, the domain is the releases only. Today that domain is empty. Then a command that must select a compiler stops with exit code 10 (`no_tuple`), and the error names the switch and its source. |
+| NS3 | The switch applies where Talon selects a compiler by itself: the resolver, `tln upgrade` and `tln init` (section 10, CLI 5), `tln roc update` (RU1), the selector `@latest` and the relative selectors `@+N` and `@-N` in the `tln roc` scope (CLI 2), selection rank 4 (section 13), option 2 of NI8 (CLI 6.4), and probe searches (section 4). |
+| NS4 | The switch does not apply to a compiler that the user names: a command argument, `roc +<id>`, `ROC_TOOLCHAIN`, `tln roc install <id>` and `tln roc default <id>`. A global default that is a nightly (rank 6) stays in use. |
+| NS5 | A nightly `roc:` pin with the switch off is like a pin outside the `[toolchain] roc` range (RP2). The proxy runs it, because the header is the lock (rank 3). `tln install` reports it, and `--frozen` fails with exit code 14. `tln roc use <nightly>` stops (U5). `tln upgrade roc` moves the pin to a release. |
+| NS6 | `git-*`, `link-*` and `copy-*` builds (CLI 6.6) are not nightlies and not releases. The switch never removes them, because Talon selects them only by name (R5). |
+| NS7 | The `[toolchain] roc` range and the switch both apply. A semver range (`0.1.*`, `^1`) matches releases only. `*` matches both forms. An anchor `=nightly-<tag>` with the switch off is a contradiction: Talon stops with exit code 2 and names both keys. |
+
+Evidence and probes (sections 3 and 4) work the same for a release: a fact is `works(hash, compiler release)`. In the other rules, "the nightly" is the value of `roc`.
 
 ## 2. Constraints
 
@@ -350,12 +373,12 @@ A hold that cannot stay follows the consent rows above. `tln install --frozen` (
 
 | # | Rule |
 | --- | --- |
-| UP1 | The domain is every release that C6 and C7 allow (not yanked, older than `min-release-age`, inside the snapshot). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A `[toolchain] roc` range still applies: it states which compilers the team can use. |
+| UP1 | The domain is every release that C6 and C7 allow (not yanked, older than `min-release-age`, inside the snapshot). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A `[toolchain] roc` range and the `nightly` switch (NS3) still apply: they state which compilers the team can use. |
 | UP2 | The goal is the same as for `update`: the newest version of each free variable, in `priority` order (section 1). So a new major of the first variable wins over newer versions of the later ones. Talon prints each variable that did not get its newest release, and why, for example `json 3.0.0 needs pf >= 0.27.0, which checks on no nightly that roc-parser 2.0.0 checks on`. |
 | UP3 | A new major is a new group (Design 2). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old major, both majors stay in the closure, and Talon prints warning C8. |
 | UP4 | Moves of held variables follow section 9 (prompt NI3). |
 | UP5 | A range that does not contain the new version gets the same form at the new version: `^2.1` becomes `^3.0`, `0.25.*` becomes `0.26.*`, `2` becomes `3`. A named anchor becomes `=<new version>`. A range that contains the new version does not change. Talon adds no key and does not create the file. |
-| UP6 | When the nightly is free, the newest nightly is a download that the command names: prompt NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (NI4). |
+| UP6 | When the nightly is free, the newest compiler release that the `nightly` switch allows (NS1, NS2) is a download that the command names: prompt NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (NI4). |
 | UP7 | Many free variables in all majors give a large search. The budget P5 applies, and probes run in parallel (PP1). When the budget is spent, Talon writes nothing and stops with exit code 12 (`budget`). The error names `probe.max`. |
 | UP8 | `--strategy lowest` is an error (exit code 2): `upgrade` only moves up. |
 
@@ -420,7 +443,7 @@ Use `--no-check` only when one of these is true:
 | 1 | Command argument | `roc +nightly-2026-10-06-c34079d check` | The user typed it for this one run. |
 | 2 | Environment | `ROC_TOOLCHAIN=nightly-2026-10-06-c34079d` | Set for a shell or a CI job. |
 | 3 | `roc:` entry of the target file header | `roc: "nightly-2026-10-09-258ab27"` | The header is the lock (G1). It is exact and it travels with the file. |
-| 4 | `talon.toml` `[toolchain] roc` | newest installed in range | Intent. It is a range, so it only chooses when the header has no pin. |
+| 4 | `talon.toml` `[toolchain] roc` | newest installed in range, as the `nightly` switch allows (NS3) | Intent. It is a range, so it only chooses when the header has no pin. |
 | 5 | `.roc-version` in the nearest parent directory | package repos | Other people's convention. Used only when no `talon.toml` is in a parent directory of the file. |
 | 6 | Global default | `tln roc default <tag>`, stored in `config.toml` (CLI 6.1) | Last resort. |
 
@@ -429,7 +452,7 @@ The proxy finds the target file (rank 3) in the `roc` arguments: the first argum
 | Case | Talon does |
 | --- | --- |
 | A rank selects a nightly that is not installed | A required download (DL2, prompt NI5) |
-| Rank 4 has a range, and no installed nightly is in it | The newest nightly in the range is a required download (NI5) |
+| Rank 4 has a range, and no installed compiler is in it | The newest compiler release in the range that the `nightly` switch allows is a required download (NI5) |
 | No rank selects a compiler | Error with exit code 2 that names `tln roc install @latest` and `tln roc default`. Talon does not guess. |
 
 The first compiler that Talon installs becomes the global default when none is set, as in rustup. So "no rank selects a compiler" happens only before the first install.

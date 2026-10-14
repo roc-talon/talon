@@ -4,12 +4,12 @@ Talon is a package manager and compiler manager for Roc. The CLI is `tln`.
 
 | Item | Value |
 | --- | --- |
-| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. |
+| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). |
 | Target compiler | Zig-based Roc, `nightly-2026-10-09-258ab27`. Source facts from roc-lang/roc at `2664a27`. |
 | Scope | CLI, resolver, compatibility prober, toolchain manager, registry on Cloudflare |
 | Language | Roc for the CLI and the registry Worker (section 6) |
 
-In these files, `roc:src/...` is a path in the roc-lang/roc repository at `2664a27`.
+In these files, `roc:src/...` is a path in the roc-lang/roc repository at `2664a27`. "The nightly" as a resolve variable is the compiler release that Talon selects. Today that is always a nightly. When the compiler has releases, it can be a release (the `nightly` switch, Resolution 1).
 
 | File | Content | Sections |
 | --- | --- | --- |
@@ -99,6 +99,7 @@ Note: the packages root ignores `$ROC_CACHE_DIR`. The build caches honor it. Tal
 | Zig | URL + hash in the manifest. `zig fetch --save`. | Closest model to Roc. `tln add` does the same, plus ranges. |
 | JSR | Names tied to a scope. Publish with GitHub OIDC. Provenance. | Publish with OIDC. |
 | rustup | Proxy binaries, `+toolchain` argument, toolchain file. | Adopt the proxy model for `roc`. |
+| rocup | Version manager for the Roc compiler: `curl \| sh` and `irm \| iex` installers, `+N` and `-N` steps through the nightlies, `prune`, local builds, `freeze` of a local build, `gh` for GitHub API calls | Adopt the installer structure (CLI 6.5), the relative selectors `@+N` and `@-N` (CLI 2), `tln roc link --copy` (CLI 6.6, LK1 to LK3), the default after a removal (RR1), and GitHub tokens (CLI 1). `tln cache gc` replaces `prune` (CLI 6.3). |
 | PubGrub (uv, Dart pub) | Conflict-driven search that learns incompatibilities and explains failures. | Use PubGrub, fed by a lazy compatibility oracle (Resolution 5). |
 | C2SP tlog-tiles, Sunlight | An append-only Merkle log served as static tiles from object storage. | Log leaves in D1, tiles in R2 (Registry 3). |
 
@@ -163,7 +164,8 @@ Keys are header aliases. The header already gives the URL group, so most entries
 
 ```toml
 [toolchain]
-roc = "*"                      # any nightly. Or a range, or "=nightly-2026-10-09-258ab27"
+roc = "*"                      # any compiler. Or a range, or "=nightly-2026-10-09-258ab27"
+nightly = true                 # nightlies are candidates (the default). See Resolution 1.
 
 [dependencies]
 pf = "0.25.*"                  # the platform
@@ -239,20 +241,21 @@ Rule ids, and where each group is:
 | --- | --- | --- |
 | G1 to G9, N1 to N3 | Goals, non-goals | 1 |
 | H1 to H6 | The header as lockfile | 4.2 |
+| NS1 to NS7 | The `nightly` switch | Resolution 1 |
 | C1 to C8 | Constraints | Resolution 2 |
 | P1 to P8 | Probe rules | Resolution 4 |
 | PP1 to PP5 | Parallel probes | Resolution 4 |
 | RP1 to RP4 | The `roc:` pin | Resolution 9 |
 | UP1 to UP8 | Upgrade and new majors | Resolution 10 |
 | E1 to E4, J1 to J6 | Exit codes, `--json` | CLI 3 |
-| NI1 to NI14, NR1 to NR6 | Prompts | CLI 4 |
+| NI1 to NI15, NR1 to NR6 | Prompts | CLI 4 |
 | DL1 to DL6 | Download consent | CLI 6.2 |
 | T1 to T8, X1 to X5, B1 to B8 | Global tools, `tln x`, build reuse | CLI 6.4 |
-| S1 to S5, RM1 to RM6 | Talon as a tool, remove Talon | CLI 6.5 |
-| R1 to R6, U1 to U6, RU1 to RU4, D1 to D3 | Compilers from source, `tln roc use`, `tln roc update`, Zig | CLI 6.6 |
+| S1 to S5, IS1 to IS8, RM1 to RM6 | Talon as a tool, install scripts, remove Talon | CLI 6.5 |
+| R1 to R6, LK1 to LK3, U1 to U6, RU1 to RU4, RR1 to RR3, D1 to D3 | Compilers from source, links and copies, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
 | ST1 to ST6 | Setup | CLI 6.7 |
 | P0 to P4 | Phases | 7 |
-| Q1 to Q18 | Questions | 9 |
+| Q1 to Q19 | Questions | 9 |
 
 The phases P0 to P4 and the probe rules P1 to P8 use the same letter. The text near each id tells which one it is.
 
@@ -308,6 +311,7 @@ talon/
   cli/           tln app (Roc)
   worker/        registry app (Roc) + wrangler config
   cloudflare-workers/  submodule: the generic platform (Zig host, JS shim, bench/)
+  install/       install.sh, install.ps1 and their test (CLI 6.5)
   sql/           D1 schema and migrations
   conformance/   fixtures run against each new nightly: group key, MVS, cache contract, header edits
   docs/
@@ -322,7 +326,7 @@ The conformance suite checks that Talon and `roc` agree on group keys, version s
 | Phase | Scope | Exit criteria |
 | --- | --- | --- |
 | P0 | Pure packages (url, semver, base58, toml, header). basic-cli PRs (or the fork). CLI with no registry: GitHub API as index, header edits, `add/remove/update/ls/why`. | `tln add` on a real app matches a hand edit. Conformance passes. |
-| P1 | Toolchain manager, `roc` proxy, `tln cache gc`, local probes and the PubGrub oracle, `tln tool` (CLI 6.4), `install.sh` and prebuilt Talon binaries (CLI 6.5) | Talon finds a working tuple for parser 2.0.0 + basic-cli without help. GC frees the legacy dirs. |
+| P1 | Toolchain manager, `roc` proxy, `tln cache gc`, local probes and the PubGrub oracle, `tln tool` (CLI 6.4), `install.sh`, `install.ps1` and prebuilt Talon binaries (CLI 6.5) | Talon finds a working tuple for parser 2.0.0 + basic-cli without help. GC frees the legacy dirs. |
 | P2 | `cloudflare-workers` platform (JSPI, separate repo). Registry v1: D1, API, publish with OIDC, webhook, ingest. Compat bot. | All releases in the roc-awesome list are indexed with a nightly range. `POST /v1/closure` under 50 ms p50. |
 | P3 | Log tiles in R2, signed checkpoints, hash-keyed mirror on R2, scanner hook, advisories | Client checks inclusion proofs. Mirror serves a deleted GitHub asset. |
 | P4 | Upstream: print the compat id, maybe `roc` reads `talon.toml` | |
@@ -342,7 +346,7 @@ The conformance suite checks that Talon and `roc` agree on group keys, version s
 | Malicious tarball (path traversal, size bomb) | Extract with path checks and the Roc size limits. |
 | Forged provenance | Some releases already ship `<hash>.tar.zst.intoto.jsonl` (in-toto attestation) and `.spdx.json` (SBOM), for example roc-parser 2.0.0. The registry checks the attestation at publish and stores the result in `releases.provenance`. |
 | Compiler download tampered | sha256 list from the registry. Later, compiler hashes go in the log too. |
-| Talon download tampered (`install.sh`, `tln tool update talon`) | sha256 and attestation of the GitHub Release (CLI 6.5, S1) |
+| Talon download tampered (`install.sh`, `install.ps1`, `tln tool update talon`) | sha256 and attestation of the GitHub Release (CLI 6.5, S1, IS3) |
 
 ## 9. Questions
 
@@ -366,6 +370,7 @@ Settled:
 | Q15 | Does `roc check` on an app check only the imported modules on every nightly? | Yes on all 20 nightlies that have a working basic-cli (`conformance/check-scope/`). The app that imports `Good` passes, the app that imports `Bad` fails, the package `main.roc` fails. Found on the way: when `XDG_CACHE_HOME` contains `..`, `roc check` prints "No errors found" for any app. Talon passes only canonical cache paths to roc (CLI 6.2). |
 | Q16 | Do platform hosts link statically? | Yes for musl. 6 platforms, all Linux targets (`conformance/host-link/`): each musl binary has no `NEEDED` and no interpreter. The only dynamic Linux binary is roc-ray, which has only a glibc target: `libc.so.6`, `libm.so.6`, `libX11.so.6`, with no symbol versions. No platform links OpenSSL. macOS binaries link only system libraries. Windows targets list only Windows system libraries. A tool records its libraries (T8). |
 | Q17 | Can Talon build roc from a GitHub archive with no `.git`? | Yes. Tested on `2664a27` (nightly 10-12) with Zig 0.17.0: `zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-2664a278` passes. `roc version` prints `git-2664a278`, and `roc check` works. Without the flag, the code (`getCompilerVersionGit`) gives `release-fast-no-git` (not tested). So git is not a build dependency (CLI 6.6, R3). |
+| Q19 | Split a tool-neutral `deps.toml` out of `talon.toml`, so that package authors who do not use Talon can adopt it? | No. (1) The tool-neutral manifest already exists: the header. roc reads it, and any tool can read it. (2) Talon reads no `talon.toml` of a dependency. Its ranges are the intent of one project (4.3), and roc MVS ignores ranges (section 2). So a neutral file gives other projects and other tools nothing to use. (3) A package author already has nothing to adopt: `talon.toml` is optional (G2), and a package with only a header works with Talon. (4) A second file adds a merge rule (which file wins for a key) and one more name to learn. (5) A neutral name with no agreement from the Roc project is a Talon file with another name. If the Roc project defines a manifest later, Talon reads it. The `[dependencies]` and `[toolchain]` tables have no Talon-only syntax except `catalog:` (4.4), so that move is mechanical. |
 | Q18 | Can 3 `roc build` runs share one compiler cache at the same time? | Yes. 100 iterations of 3 different apps, 50 on an empty cache and 50 on a warm cache, 2 runs: 600 of 600 builds pass, with the same output and the same bytes as a build that ran alone (`conformance/build-share/`). The build weight of 4 slots stays (Resolution 4). Found on the way: a warm build gives other bytes than a cold build, with the same output (T4). |
 
 Open:
@@ -379,6 +384,7 @@ Open:
 - Roc compiler source, roc-lang/roc at `2664a27` (paths in sections 2 and 6, and in CLI 6 and 7).
 - Roc reference via the `roc-syntax` MCP server: topics `packages`, `app_header`, `compiler`, `version_mismatch`.
 - [roc-awesome](https://github.com/lukewilliamboswell/roc-awesome), [basic-cli](https://github.com/roc-lang/basic-cli), [Joy](https://github.com/niclas-ahden/joy), [roc-parser](https://github.com/lukewilliamboswell/roc-parser), [roc-platform-template-zig](https://github.com/lukewilliamboswell/roc-platform-template-zig)
+- [rocup](https://github.com/imclerran/rocup) at `132c186`: installers and compiler version manager for Roc
 - [Bun package manager docs](https://bun.com/docs/pm)
 - [Cloudflare D1 read replication](https://developers.cloudflare.com/d1/best-practices/read-replication/), [D1 limits](https://developers.cloudflare.com/d1/platform/limits/), [Durable Objects limits](https://developers.cloudflare.com/durable-objects/platform/limits/)
 - [C2SP tlog-tiles](https://github.com/C2SP/C2SP/blob/main/tlog-tiles.md), [Sunlight CT log](https://sunlight.dev/)

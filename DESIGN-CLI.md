@@ -22,7 +22,7 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | `tln x owner/app [-- args]` | Build a Roc app and run it once. The binary stays in the cache. Rules: 6.4, X1 to X5. | `bunx` |
 | `tln publish` | Register a release (Registry 7) | `bun publish` |
 | `tln audit` | Yanked, advisories, scanner hook | `bun audit` |
-| `tln roc install/link/use/list/remove/default/update` | Compiler management. A nightly, a release, or a git ref built from source (6.6). `use` writes the header `roc:` pin, `default` writes the global default, `update` installs the newest nightly and moves the global default (6.6). | (uv `python`, rustup `toolchain link`) |
+| `tln roc install/link/use/list/remove/default/update` | Compiler management. A nightly, a release, or a git ref built from source (6.6). `link --copy` copies a local build (LK2). `use` writes the header `roc:` pin, `default` writes the global default, `update` installs the newest compiler release that the `nightly` switch allows and moves the global default (6.6). | (uv `python`, rustup `toolchain link`) |
 | `tln tool install/list/update/rebuild/remove` | Global tools: build a Roc app (a release or a git ref) and put it on `PATH` (6.4). Talon is one of them (6.5). | `bun add -g` (uv `tool`) |
 | `tln cache gc/clean/list/dir` | Cache management: `gc` keeps what projects use, `clean [--all]` removes on request (6.3) | `bun pm cache` |
 | `tln setup` | Install the `roc` proxy, the `PATH` line and shell completions (6.7) | |
@@ -83,6 +83,8 @@ Registry precedence, from high to low:
 | 3 | `registry` in `config.toml` (6.1) |
 | 4 | The default registry URL |
 
+With `direct`, and for the list of nightlies, Talon calls the GitHub API. With no token, GitHub allows 60 requests an hour for one IP address. So Talon uses a token when it finds one, in this order: `GITHUB_TOKEN`, `GH_TOKEN`, then the output of `gh auth token` when `gh` is installed and logged in. Talon sends the token only to `api.github.com`, never to a registry or a mirror. With no token, a rate limit error (exit code 15) names these three sources.
+
 ```text
 $ tln add parser@2.0.0
 resolved 4 packages in 41ms (log:184467)
@@ -102,7 +104,7 @@ One grammar names packages, platforms, tools and compiler releases:
 ```text
 ref      = name [ "@" selector ] | "@" selector | nightly-tag
 name     = alias | owner/repo | host/path | short
-selector = version | range | major | "latest" | nightly-tag | git-ref
+selector = version | range | major | "latest" | nightly-tag | git-ref | ("+" | "-") count
 ```
 
 The two short forms are valid only in the `tln roc` scope. There the default name is `roc-lang/roc`:
@@ -118,13 +120,14 @@ The two short forms are valid only in the `tln roc` scope. There the default nam
 | Range or major | `roc-lang/http@^2`, `roc-lang/http@2` | The newest match. For an installed entity, it selects among the installed ones. |
 | Latest | `owner/app@latest` | The newest release that is not yanked, found online. In `tln tool install` and `tln x`, it turns off the reuse of an older build (6.4, B2). In `tln add`, it is the same as no selector. In `tln update X@latest`, it is the newest release, also in a new major (Resolution 10). |
 | Nightly tag | `@nightly-2026-10-09-258ab27` | That nightly (compiler only) |
+| Relative step | `@-1`, `@+2` | Compiler only. The compiler release N steps older (`-`) or newer (`+`) than the compiler that Resolution 13 selects in the current directory, in the domain of the `nightly` switch (Resolution 1, NS3). Talon uses the online list of releases. With `--offline`, or with no network, it uses the installed releases and prints a note. Talon stores the full id. Use: `tln roc use @-1` when the newest nightly breaks a project. |
 | Git ref | `owner/app@dd03c09e`, `--git owner/app@main` | A source build. A branch or tag is fixed to a commit at install time. |
 
 Talon reads a selector with these rules, in order:
 
 | # | Selector | Result |
 | --- | --- | --- |
-| 1 | Matches a release, a range, a nightly, or the word `latest` | Used. No marker is needed. A branch named `latest` needs `--git` (rule 3). |
+| 1 | Matches a release, a range, a nightly, a relative step, or the word `latest` | Used. No marker is needed. A branch named `latest` needs `--git` (rule 3). |
 | 2 | Looks like a commit sha (hex only, at least 7 characters), and no release matches | Taken as a git ref, with no `--git`. |
 | 3 | A branch or tag name | Taken as a git ref only with `--git`. |
 | 4 | None of the above, and no `--git` | Error. Talon lists the close release versions and says `use --git for a branch or tag`. |
@@ -365,6 +368,7 @@ Each prompt in the design files has an id `NIn`. Search for the id to find the p
 | NI12 | `upgrade` with the nightly free, `init` | Download the newest nightly | Yes | Default | Downloads | `--yes` | Resolution 10, UP6, section 5 |
 | NI13 | `setup` | Replace a `roc` in the bin dir that Talon did not write | No | Default | Keeps the old `roc`. Does not install the launcher. | `--replace-roc`, `--yes` | 6.7, ST2 |
 | NI14 | `setup` | Add the bin dir to `PATH` in the shell profile | Yes | Default | Adds the line | `--no-modify-path`, `--yes` | 6.7, ST4 |
+| NI15 | `install.sh`, `install.ps1` | Confirm the install | Yes | Default | Installs | `--yes`, `-Yes`, `TALON_YES=1` | 6.5, IS4 |
 
 Not prompts: an invalid alias, an ambiguous name, a short name in `tln x` or `tln tool install` with no local match, and a binary name clash stop the command in both modes with exit code 2 and name the flag to use (`--as`, a full name).
 
@@ -403,7 +407,7 @@ $XDG_CACHE_HOME/roc/          (else ~/.cache/roc/)
   packages/<hash>.deps.json     roc      sidecar, rebuilt by roc if missing
   compat-<id>/                  roc      build cache per compiler build ($ROC_CACHE_DIR if set)
   nightly-<tag>/, debug-<sha>/  roc      build caches of older compilers (seen up to nightly 10-09)
-  toolchains/<id>/roc           talon    installed compilers (<id>: nightly tag, git-<sha8>, link-<name>)
+  toolchains/<id>/roc           talon    installed compilers (<id>: nightly tag, release, git-<sha8>, link-<name>, copy-<name>)
   toolchains/<id>/.talon.json   talon    source URL, sha256 or commit, ref typed, compat id, install time, last use
   toolchains/zig-<version>/     talon    Zig for source builds (6.6)
   talon/index/                  talon    cached registry responses (ETag)
@@ -424,6 +428,7 @@ $XDG_DATA_HOME/talon/tools.json                                     tool manifes
 # config.toml
 default-roc = "nightly-2026-10-09-258ab27"   # tln roc default writes it. A full id only (section 2).
 registry = "direct"                          # or a URL (section 1, registry precedence)
+nightly = true                               # the nightly switch (Resolution 1, NS1). talon.toml has priority.
 
 [probe]                                      # same keys as [resolution] probe in talon.toml
 slots = 12
@@ -431,6 +436,16 @@ max-toolchains = 10
 ```
 
 A value in a project `talon.toml` has priority over `config.toml`. A flag or an environment variable has priority over both.
+
+The paths above are for Linux and macOS. On Windows:
+
+| Item | Linux, macOS | Windows |
+| --- | --- | --- |
+| Cache root (packages, build caches, `toolchains/`, `talon/`) | `$XDG_CACHE_HOME/roc`, else `~/.cache/roc` | `%LOCALAPPDATA%\roc`, as roc (`roc:src/compile/compile_build.zig:1602-1608`). roc reads `XDG_CACHE_HOME` first on Windows too, and so does Talon. |
+| Config | `$XDG_CONFIG_HOME/talon`, else `~/.config/talon` | `%APPDATA%\talon` |
+| Data (tool binaries, `tools.json`) | `$XDG_DATA_HOME/talon`, else `~/.local/share/talon` | `%LOCALAPPDATA%\talon` |
+| Bin dir (6.7, ST1) | `~/.local/bin` | `%USERPROFILE%\.local\bin`, as uv |
+| `PATH` (6.7, ST4) | One line in the shell profile | The user `Path` value of the environment |
 
 ### 6.2 The `roc` proxy
 
@@ -642,13 +657,17 @@ offline install ─────── match? prompt, "not checked online" (B7). 
 Talon manages itself as one more entry in `tools.json`. Only a few rules are different, because a broken `tln` cannot repair itself, and it also breaks the `roc` proxy (6.2).
 
 ```text
-first install:  curl -fsSL <host>/install.sh | sh
+first install:  curl -fsSL <releases>/latest/download/install.sh | sh             (Linux, macOS)
+                irm <releases>/latest/download/install.ps1 | iex                    (Windows)
                   -> download the prebuilt tln for this target, verify it
-                  -> put it in the bin dir (T3), write its tools.json entry (source: install.sh)
-                  -> run tln setup
+                  -> put it in the bin dir (T3)
+                  -> run tln setup: it writes the tools.json entry of tln (source: install script)
 later:          tln tool update talon
-repair:         curl -fsSL <host>/install.sh | sh -s -- --version 0.3.1
+repair:         curl -fsSL <releases>/latest/download/install.sh | sh -s -- --version 0.3.1
+                & ([scriptblock]::Create((irm <releases>/latest/download/install.ps1))) -Version 0.3.1
 ```
+
+`<releases>` is `https://github.com/<owner>/talon/releases`. The scripts are in `install/` (Design 6.3), and `install/test.sh` tests them against a fake release. Their structure follows the rocup installers (Design 3).
 
 | # | Rule | Reason |
 | --- | --- | --- |
@@ -657,6 +676,19 @@ repair:         curl -fsSL <host>/install.sh | sh -s -- --version 0.3.1
 | S3 | An update writes the new binary to a temp file, runs `tln --version` on it, then does a `rename` over the old one. On Windows, it renames the running `.exe` first. | A binary that does not start never replaces the working one. A running `.exe` cannot be overwritten. |
 | S4 | No rollback command, and no copy of the old binary. The repair path is `install.sh --version <v>`. | A broken binary cannot run a rollback command. `install.sh` does not need a working `tln`. |
 | S5 | `tln tool rm talon` asks what to remove (prompt NI10, section 4), then removes it. See "Remove Talon" below. | One namespace for all tools. Removing Talon also removes the proxy, so the user must confirm. |
+
+The install scripts follow these rules:
+
+| # | Rule |
+| --- | --- |
+| IS1 | Two scripts: `install.sh` for Linux and macOS (POSIX `sh`: tested with dash, bash and busybox), and `install.ps1` for Windows (PowerShell 5.1 and later). Each Talon release has both as assets, so `latest/download/install.sh` is the script of the newest release. |
+| IS2 | A release has one binary for each Roc target: `tln-x64musl`, `tln-arm64musl`, `tln-x64mac`, `tln-arm64mac`, `tln-x64win.exe`, `tln-arm64win.exe`, and `sha256sums.txt`. The Linux binaries are static musl, so one binary works on each distribution (Design Q16). On macOS, a shell under Rosetta gets the arm64 binary. Other systems stop with an error that lists the targets. |
+| IS3 | The script checks the sha256 from `sha256sums.txt` (exit code 16), and the attestation when `gh` is installed and logged in (S1). It uses `latest/download/` URLs, so it needs no GitHub API call and no token. |
+| IS4 | The script asks `Proceed? [Y/n]` (prompt NI15, kind Default). It uses the non-interactive rules of section 4, with one difference: with `curl \| sh`, stdin is the script, so `install.sh` reads the answer from `/dev/tty`. In non-interactive mode, the install goes on with no prompt, because the command names it. `--yes` (`-Yes`, or `TALON_YES=1` for `irm \| iex`) skips the prompt. |
+| IS5 | The download goes to a temp file in the bin dir. The script runs `--version` on it, then renames it over the old binary (S3). On Windows it first renames the old `tln.exe`. A failed check keeps the old binary and leaves no temp file. |
+| IS6 | Then the script runs `tln setup`, with `--yes` and `--no-modify-path` when the user gave them. `tln setup` writes the `talon` entry of `tools.json` when it is missing, then applies ST1 to ST6. With a terminal, `install.sh` connects `/dev/tty` to `tln setup`, so its prompts (NI13, NI14) work under `curl \| sh`. |
+| IS7 | Exit codes as in section 3: 2 for a bad argument, 15 for a download error, 16 for a checksum or attestation error, 1 for the rest. `install.ps1` under `irm \| iex` runs in the shell of the user, so it throws an error and does not exit: an exit would close that shell. |
+| IS8 | There is no uninstall script. `tln tool rm talon` removes Talon (S5). If `tln` does not start, `install.sh --version <v>` repairs it first (S4). |
 
 #### Remove Talon
 
@@ -704,6 +736,7 @@ The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
 | `tln roc install --git Karakatiza666/roc@my-branch` | `git-<sha8>`. A fork works the same way. |
 | `tln roc install @dd03c09e` | `git-dd03c09e`. A sha needs no `--git`. |
 | `tln roc link dev ../roc/zig-out/bin/roc` | `link-dev`. No build, no copy, as `rustup toolchain link`. |
+| `tln roc link --copy fix-1 ../roc/zig-out/bin/roc` | `copy-fix-1`. A copy of the binary, as `rocup freeze`. |
 
 | # | Rule | Reason |
 | --- | --- | --- |
@@ -713,6 +746,14 @@ The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
 | R4 | Talon never writes `git-*` or `link-*` into a `roc:` pin. H6 keeps the old pin. Probe results for these ids stay local. | roc does not accept a local build as a pin, by design (`roc_version.zig:21-23`). Other users cannot reproduce such a result. |
 | R5 | Selection uses the same rules as a nightly (Resolution 13): `roc +git-dd03c09e check`, `ROC_TOOLCHAIN=git-dd03c09e`, or `tln roc default --git Karakatiza666/roc@my-branch`. The last command picks the newest installed build of that branch, and stores its full id. Prefixes follow the rules in section 2. | A stored value must not change meaning after a later install |
 | R6 | When the user installs a branch again, Talon builds the new head as a new id. The old id stays until GC. | An id never changes meaning |
+
+Links and copies of a local build:
+
+| # | Rule | Reason |
+| --- | --- | --- |
+| LK1 | A `link-<name>` follows its target, so a rebuild changes the compiler under the same id. Talon keys the local probe results of a link by the sha256 of the binary, not by the id. | Old evidence must not apply to a new build |
+| LK2 | `tln roc link --copy <name> <path>` copies the binary (it follows symlinks) into `toolchains/copy-<name>/`. A later rebuild of the source tree does not change it. A name that exists is an error. `--force` replaces it. | A fixed local build to compare against, or to keep while the tree changes |
+| LK3 | `copy-*` follows R4 and R5, as `git-*` does: it is never a `roc:` pin, and its probe results stay local | roc does not accept a local build as a pin |
 
 The commands that select a compiler differ in where they store the choice:
 
@@ -726,21 +767,29 @@ The commands that select a compiler differ in where they store the choice:
 
 | # | Rule |
 | --- | --- |
-| U1 | The ref must be a nightly. `git-*` and `link-*` ids are an error (R4). Talon says to use `tln roc default` or `ROC_TOOLCHAIN`. |
+| U1 | The ref must be a nightly or a release. `git-*`, `link-*` and `copy-*` ids are an error (R4, LK3). Talon says to use `tln roc default` or `ROC_TOOLCHAIN`. |
 | U2 | A missing nightly follows the consent rules DL1 to DL6 (6.2). It is a required download (DL2). |
 | U3 | Talon runs the baseline check and the final ladder (Resolution 4) on the current header with that nightly. It writes `roc:` only if there are no new errors (H6). It uses a span-based edit (H1). |
 | U4 | `--no-check` is an error for this command: H6 allows no pin move without the check. |
-| U5 | If `talon.toml` has `[toolchain] roc` and the nightly is out of range, Talon stops and names the range. It does not edit `talon.toml`. |
+| U5 | If `talon.toml` has `[toolchain] roc` and the nightly is out of range, or the `nightly` switch is off and the ref is a nightly (Resolution 1, NS5), Talon stops and names the range or the switch. It does not edit `talon.toml`. |
 | U6 | A command argument or `ROC_TOOLCHAIN` still has higher priority than the new pin (Resolution 13). Talon prints a note when one of them is set. |
 
-`tln roc update` (alias `tln roc up`) gets the newest nightly, also when a project does not work with it yet:
+`tln roc update` (alias `tln roc up`) gets the newest compiler release, also when a project does not work with it yet:
 
 | # | Rule |
 | --- | --- |
-| RU1 | Talon finds the newest nightly online and installs it. The command names the download (NI6). If the newest nightly is already installed, Talon prints `nightly-2026-10-13-91fa0c2 is the newest` and does nothing. |
-| RU2 | Talon moves the global default (Resolution 13, priority 6) to the new nightly when the default is a nightly or is not set. A `git-*` or `link-*` default does not change. Talon prints a note. |
+| RU1 | Talon finds the newest compiler release online that the `nightly` switch allows (Resolution 1, NS3), and installs it. With the switch on (the default), that is the newest nightly. The command names the download (NI6). If the newest nightly is already installed, Talon prints `nightly-2026-10-13-91fa0c2 is the newest` and does nothing. |
+| RU2 | Talon moves the global default (Resolution 13, priority 6) to the new release when the default is a nightly, a release, or is not set. A `git-*`, `link-*` or `copy-*` default does not change. Talon prints a note. |
 | RU3 | Talon runs no check and writes no project file. A project with a `roc:` pin keeps it. A project with no pin selects with priority 4 to 6 (Resolution 13), so it uses the new nightly at once. That can break it. To move a project pin with a check, use `tln upgrade roc` or `tln roc use` (RP1). |
 | RU4 | Older nightlies stay until GC (6.3). |
+
+`tln roc remove <id>` (alias `tln roc rm`) removes one compiler:
+
+| # | Rule |
+| --- | --- |
+| RR1 | If the compiler is the global default, Talon moves the default to the newest installed nightly or release that the `nightly` switch allows, and prints a note. With none, the default is not set (Resolution 13). |
+| RR2 | If a known project (`talon/projects.json`) pins the compiler, Talon prints the projects and removes it. The command names the removal, so there is no prompt. The proxy downloads it again when a project needs it (DL1 to DL6). |
+| RR3 | For `link-*`, Talon removes the link and never the target (RM2). |
 
 Build dependencies. The commit names its Zig version: `minimum_zig_version` in `build.zig.zon` (`roc:build.zig.zon:4`). Zig changes its API between minor versions, so Talon needs the same `major.minor`.
 
@@ -772,7 +821,7 @@ This prompt (NI6, section 4) follows the consent rules DL1 to DL6 (6.2). The Zig
 | ST1 | Talon writes into the bin dir `~/.local/bin/`: a link to `tln`, the `roc` launcher (6.2) and the links of tools (T3). |
 | ST2 | If a `roc` that Talon did not write is in the bin dir, Talon asks to replace it (prompt NI13, default no). Yes: Talon moves it to `~/.local/bin/roc.old` and links it as the compiler `link-system` (6.6), so `roc +link-system` still runs it. No: Talon does not install the launcher, and prints `tln setup --replace-roc`. |
 | ST3 | If a `roc` comes before the bin dir on `PATH` (for example `/usr/local/bin/roc`), Talon prints a warning with its path. It changes nothing there. |
-| ST4 | If the bin dir is not on `PATH`, Talon asks to add one line to the profile of the current shell (prompt NI14, default yes): `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/conf.d/talon.fish`. The line has a marker comment, so `tln tool rm talon` can find it (6.5). `--no-modify-path` skips it and prints the line. |
+| ST4 | If the bin dir is not on `PATH`, Talon asks to add one line to the profile of the current shell (prompt NI14, default yes): `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/conf.d/talon.fish`. The line has a marker comment, so `tln tool rm talon` can find it (6.5). On Windows, Talon adds the bin dir to the user `Path` value of the environment once (6.1), and `tln tool rm talon` removes exactly that entry. `--no-modify-path` skips it and prints the line or the entry. |
 | ST5 | Shell completions go in the user completion dir of the shell, with no prompt. |
 | ST6 | Talon never deletes or overwrites a file that it did not write, except with the ST2 consent. |
 
