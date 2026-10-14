@@ -98,3 +98,7 @@ Audit of Draft 3 (2026-10-14). Line numbers point to Draft 3 before the round 2 
 | 22 | Low | DL6 wording | Fixed: DL6 wording |
 
 Added in round 2 at the request of the user: parallel probes (5.4, PP1 to PP5: a pool of 12 slots, a check takes 1 slot and a build takes 4), `tln roc update` (6.7, RU1 to RU4), prompt NI12, open question Q18.
+
+Measured on 2026-10-14: Q16 (`conformance/host-link/`, new rule T8) and Q18 (`conformance/build-share/`) are settled. Q13 is settled by a short edge test (`cloudflare-workers/bench/edge.mjs`). Q14 stays open: it needs the registry app (P2).
+
+Changed on 2026-10-15: the `--roc` flag of `update` (fix of point 5) is removed. Only `tln upgrade` (no names, or the name `roc`) and `tln roc use` change the `roc:` pin (RP1 to RP4 in 5.9).

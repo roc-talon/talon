@@ -1,0 +1,34 @@
+platform	target	build	format	interpreter	imports
+basic-cli-0.29.0	arm64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+basic-cli-0.29.0	arm64musl	ok	elf	-	none
+basic-cli-0.29.0	x64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+basic-cli-0.29.0	x64musl	ok	elf	-	none
+basic-cli-0.29.0	x64win	fail	-	-	lld-link: error: <root>: undefined symbol: mainCRTStartup
+basic-cli-0.25.0	arm64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+basic-cli-0.25.0	arm64musl	ok	elf	-	none
+basic-cli-0.25.0	x64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+basic-cli-0.25.0	x64musl	ok	elf	-	none
+basic-cli-0.25.0	x64win	fail	-	-	lld-link: error: <root>: undefined symbol: mainCRTStartup
+template-zig-1.0.0	arm64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+template-zig-1.0.0	arm64musl	ok	elf	-	none
+template-zig-1.0.0	arm64win	fail	-	-	lld-link: error: <root>: undefined symbol: mainCRTStartup
+template-zig-1.0.0	x64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+template-zig-1.0.0	x64musl	ok	elf	-	none
+template-zig-1.0.0	x64win	fail	-	-	lld-link: error: <root>: undefined symbol: mainCRTStartup
+template-ABFg	arm64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+template-ABFg	arm64musl	ok	elf	-	none
+template-ABFg	arm64v1musl	ok	elf	-	none
+template-ABFg	arm64win	fail	-	-	lld-link: error: <root>: undefined symbol: mainCRTStartup
+template-ABFg	x64mac	fail	-	-	ld64.lld: error: library not found for -lSystem
+template-ABFg	x64musl	ok	elf	-	none
+template-ABFg	x64v1musl	ok	elf	-	none
+template-ABFg	x64win	fail	-	-	lld-link: error: <root>: undefined symbol: mainCRTStartup
+basic-webserver-0.17.0	arm64mac	ok	macho	-	/usr/lib/libSystem.B.dylib
+basic-webserver-0.17.0	arm64musl	ok	elf	-	none
+basic-webserver-0.17.0	x64mac	ok	macho	-	/usr/lib/libSystem.B.dylib
+basic-webserver-0.17.0	x64musl	ok	elf	-	none
+basic-webserver-0.17.0	x64win	fail	-	-	Error: WindowsSDKNotFound
+roc-ray-0.10.0	arm64mac	ok	macho	-	/System/Library/Frameworks/IOKit.framework/IOKit,/System/Library/Frameworks/AppKit.framework/AppKit,/System/Library/Frameworks/Foundation.framework/Foundation,/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics,/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation,/System/Library/Frameworks/Carbon.framework/Carbon,/usr/lib/libSystem.dylib,/usr/lib/libobjc.A.dylib
+roc-ray-0.10.0	x64mac	ok	macho	-	/System/Library/Frameworks/IOKit.framework/IOKit,/System/Library/Frameworks/AppKit.framework/AppKit,/System/Library/Frameworks/Foundation.framework/Foundation,/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics,/System/Library/Frameworks/CoreFoundation.framework/CoreFoundation,/System/Library/Frameworks/Carbon.framework/Carbon,/usr/lib/libSystem.dylib,/usr/lib/libobjc.A.dylib
+roc-ray-0.10.0	x64v1glibc	ok	elf	/lib64/ld-linux-x86-64.so.2	libm.so.6,libX11.so.6,libc.so.6
+roc-ray-0.10.0	x64win	fail	-	-	Error: WindowsSDKNotFound

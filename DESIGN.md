@@ -386,7 +386,7 @@ An exact version is a hard pin by default. This keeps 5.1 consistent: `tln add p
 
 ### 5.1 Variables and anchors
 
-Resolution picks one value for each free variable. The nightly is a variable like any package.
+Resolution picks one value for each free variable. The nightly is a variable like any package, but only `tln upgrade` frees it (RP1, 5.9).
 
 | Variable | Domain |
 | --- | --- |
@@ -519,7 +519,7 @@ Talon runs more than one probe at the same time. A probe takes slots from a pool
 
 So Talon runs up to 12 checks, or up to 3 builds, or a mix (for example 1 build and 8 checks). `probe.slots` in `talon.toml` (or `config.toml`, 6.2) and `--slots <n>` change the pool size. The weights do not change.
 
-Why these numbers: a check takes 0.4 s to 1.9 s and little memory. The Q11 sweep ran 12 checks at the same time on one shared cache, with no error (`conformance/compat-sweep/run.sh:15`). A build also compiles and links the host, so it costs more.
+Why these numbers: a check takes 0.4 s to 1.9 s and little memory. The Q11 sweep ran 12 checks at the same time on one shared cache, with no error (`conformance/compat-sweep/run.sh:15`). A build also links the host and uses about 250 MB. 3 builds at the same time on one cache passed 300 of 300 times, with the same bytes as a build that ran alone (Q18, `conformance/build-share/`). 3 builds take 1.03 s, 1 build takes 0.74 s.
 
 | # | Rule |
 | --- | --- |
@@ -666,23 +666,31 @@ A command can hold a variable: it fixes the variable at its current header value
 | --- | --- | --- |
 | `tln update` | All, inside their ranges | None |
 | `tln update X [Y...]` | Only the named ones | All others |
-| `tln update --roc` | Only the nightly | All packages |
-| `tln update X --roc` | X and the nightly | All other packages |
 | `tln update -i` | The ones the user picks in the picker (prompt NI2, 8.2) | All others |
 | `tln update X@sel` | X, in the releases that match `sel`, also in a new major (5.10) | All others |
 | `tln upgrade` | All, with no package range (5.10) | Anchors (`=`) |
 | `tln upgrade X [Y...]` | Only the named ones, with no range. A named anchor is free too. | All others |
-| `tln upgrade X --roc` | X and the nightly | All other packages |
+| `tln upgrade roc` | Only the nightly | All packages |
+| `tln upgrade X roc` | X and the nightly | All other packages |
 
 | Case | `priority` (5.1) |
 | --- | --- |
 | `tln update` | As set. The default is direct deps, then `pf`, then `roc`. |
 | `tln update X Y` | Only X and Y are ordered, in the order of `priority`. A held variable has no rank. So `tln update json` cannot move `pf` or `roc`. |
-| `tln update --roc` | The nightly is the only free variable. It moves to the newest nightly that all held hashes pass on (5.3). |
-| `tln update X --roc` | The order of `priority` for X and `roc`. By default, X is first. |
-| `tln update -i` | The picker lists the free variables in `priority` order. The names that the user picks follow the `tln update X` row. The nightly is in the list only with `--roc`. |
+| `tln upgrade roc` | The nightly is the only free variable. It moves to the newest nightly that all held hashes pass on (5.3). |
+| `tln upgrade X roc` | The order of `priority` for X and `roc`. By default, X is first. |
+| `tln update -i` | The picker lists the free variables in `priority` order. The names that the user picks follow the `tln update X` row. The nightly is not in the list (RP1). |
 
-A held variable moves only when no tuple exists without moving it. Then Talon does not move it by itself:
+#### The `roc:` pin
+
+| # | Rule | Why |
+| --- | --- | --- |
+| RP1 | Only two commands change a `roc:` entry that exists: `tln upgrade` when the nightly is free (no names, or the name `roc`), and `tln roc use` (U1 to U4). | The nightly has no semver ranges, so each move goes to a newer release and can break code. That is the job of `upgrade`. `tln update` stays the small, safe move. |
+| RP2 | `install`, `add`, `update` and `remove` always hold the nightly, also with NI3, `--allow-moves` or `--yes`. When no tuple works on the held nightly, Talon writes nothing and stops with exit code 10 (`no_tuple`). The error names the oldest nightly that works, when a probe or the matrix knows it, and the commands `tln upgrade roc` and `tln roc use <id>`. A `roc:` pin outside the `[toolchain] roc` range gives the same error in `install`. | One command moves the nightly, so the user always sees it move. |
+| RP3 | A header with no `roc:` entry: the command writes the nightly that it held (the selected compiler, 6.1) after the check passes (H6). | This records the lock. It does not move it. |
+| RP4 | In `tln upgrade`, a move of a held variable (NI3) can include the nightly. | `upgrade` is allowed to move it. |
+
+A held variable moves only when no tuple exists without moving it (RP2 excludes the nightly). Then Talon does not move it by itself:
 
 | Case | Talon does |
 | --- | --- |
@@ -706,10 +714,10 @@ A hold that cannot stay follows the consent rows above. `tln install --frozen` (
 
 | Command | Domain of a free package | `talon.toml` | Nightly |
 | --- | --- | --- | --- |
-| `tln update [X...]` | Its range | Not changed | Free with no names, else only with `--roc` |
-| `tln update X@sel` | The releases that match `sel`, in any major | As `tln add X@sel` (4.6). `@latest` follows UP5. | Only with `--roc` |
+| `tln update [X...]` | Its range | Not changed | Held (RP1) |
+| `tln update X@sel` | The releases that match `sel`, in any major | As `tln add X@sel` (4.6). `@latest` follows UP5. | Held (RP1) |
 | `tln upgrade` | All releases, in any major | UP5 | Free |
-| `tln upgrade X [Y...]` | All releases, in any major | UP5 | Only with `--roc` |
+| `tln upgrade X [Y...]` | All releases, in any major | UP5 | Free only when `roc` is one of the names |
 
 | # | Rule |
 | --- | --- |
@@ -934,10 +942,11 @@ Option 2, inside Talon:
 | T1 | Build from the app header as it is (hashes and `roc:` pin). Do not resolve again. `--resolve` allows a new resolution. | The header is the lock (G1). A new resolution can select packages that the author did not test. |
 | T2 | Only an app whose platform makes a native executable can be installed. | A `package` has no entry point. A wasm platform, such as `cloudflare-workers`, makes no CLI. |
 | T3 | Binaries go in `$XDG_DATA_HOME/talon/bin/` (else `~/.local/share/talon/bin/`), not in the cache. `tln setup` links them into `~/.local/bin/`. | The cache has a 30-day expiry and GC (6.4). A cleanup must not delete a tool. |
-| T4 | `$XDG_DATA_HOME/talon/tools.json` records, for each tool: source, build id (hashes, nightly, target), binary sha256, install time. | `tln tool ls`, `update` and `rebuild` read it. |
+| T4 | `$XDG_DATA_HOME/talon/tools.json` records, for each tool: source, build id (hashes, nightly, target), binary sha256, run-time libraries (T8), install time. The sha256 identifies the installed file only. Talon does not compare it with the sha256 of another build. | `tln tool ls`, `update` and `rebuild` read it. A build of the same build id can give other bytes: a build on a warm cache differs from a build on an empty cache (Q18). |
 | T5 | A tool does not keep its nightly. GC (6.4) can remove the nightly after the build. | The binary does not need it. A rebuild installs it again. |
 | T6 | A download follows the consent rules DL1 to DL6 (6.3). `--roc pinned` also counts as consent for the pinned download. An installed release is used without a prompt only when evidence supports it. | No surprise download of 228 MB, and no silent build with a release that nobody tested. |
-| T7 | `tln tool rebuild` builds again from the manifest, with the same build id. | Repair after an OS upgrade breaks a dynamic link (Q16). |
+| T7 | `tln tool rebuild` builds again from the manifest, with the same build id. | Repair after an OS upgrade breaks a dynamic link (T8). |
+| T8 | Talon builds a tool with no `--target`. roc then uses the musl target of the platform, else its glibc target. For a glibc build, `tools.json` records the libraries in the ELF `NEEDED` list, and `tln tool ls` shows them. | A musl build is static and has no run-time dependency. A glibc build needs system libraries: roc-ray needs `libX11.so.6` (Q16). |
 
 Prebuilt binaries: a release can attach a binary for each target, as `cargo-binstall` expects. Then an install needs no compiler release, and the source build is the fallback. P1 builds this path for Talon itself (6.6). In P2 the registry lists prebuilt binaries for other tools too.
 
@@ -1108,7 +1117,7 @@ The commands that select a compiler differ in where they store the choice:
 | --- | --- |
 | RU1 | Talon finds the newest nightly online and installs it. The command names the download (NI6). If the newest nightly is already installed, Talon prints `nightly-2026-10-13-91fa0c2 is the newest` and does nothing. |
 | RU2 | Talon moves the global default (6.1, priority 6) to the new nightly when the default is a nightly or is not set. A `git-*` or `link-*` default does not change. Talon prints a note. |
-| RU3 | Talon runs no check and writes no project file. A project with a `roc:` pin keeps it. A project with no pin selects with priority 4 to 6 (6.1), so it uses the new nightly at once. That can break it. To move a project pin with a check, use `tln update --roc` or `tln roc use`. |
+| RU3 | Talon runs no check and writes no project file. A project with a `roc:` pin keeps it. A project with no pin selects with priority 4 to 6 (6.1), so it uses the new nightly at once. That can break it. To move a project pin with a check, use `tln upgrade roc` or `tln roc use` (RP1). |
 | RU4 | Older nightlies stay until GC (6.4). |
 
 Build dependencies. The commit names its Zig version: `minimum_zig_version` in `build.zig.zon` (`roc:build.zig.zon:4`). Zig changes its API between minor versions, so Talon needs the same `major.minor`.
@@ -1191,8 +1200,8 @@ Use `--no-check` only when one of these is true:
 | `tln init [app\|package] [--platform <name>] [--ci github\|none]` | New app or package, with the nightly as the `roc:` entry of the header (not `.roc-version`, 6.1) and a CI file. Rules: 8.3. | `bun init`, `bun create` |
 | `tln install [name[@sel]...] [--platform] [--as <alias>] [--no-pin] [--no-check]` | With no names: keep the header, change only entries that break `talon.toml`, fetch the closure (5.9). With names: add each one, resolve, write the header. Lookup, alias and `talon.toml` rules: 4.6. `add` and `i` are the same command. | `bun install`, `bun add` |
 | `tln remove json [--force]` | Remove the entry, its range, its override and its patch entry. Rules: 4.6. | `bun remove` |
-| `tln update [pkg[@sel]...] [-i] [--roc] [--no-check]` | Move within ranges. Names limit the scope. `pkg@sel` moves to the selector, also to a new major (5.10). `--roc` also frees the nightly. `-i` is an interactive picker. Scope rules: 5.9. | `bun update -i` |
-| `tln upgrade [pkg...] [--roc] [--no-check]` | Move to the newest releases, also to new majors, and to the newest nightly. Change the `talon.toml` ranges to match. Names limit the scope. Rules: 5.10. | `bun update --latest` |
+| `tln update [pkg[@sel]...] [-i] [--no-check]` | Move within ranges. Names limit the scope. `pkg@sel` moves to the selector, also to a new major (5.10). The nightly does not move (RP1). `-i` is an interactive picker. Scope rules: 5.9. | `bun update -i` |
+| `tln upgrade [pkg...] [roc] [--no-check]` | Move to the newest releases, also to new majors, and to the newest nightly. Change the `talon.toml` ranges to match. Names limit the scope. The name `roc` frees the nightly. Rules: 5.10, RP1. | `bun update --latest` |
 | `tln outdated` | Table: current, wanted, latest, nightly range | `bun outdated` |
 | `tln why parser` | Paths from the app to a package, and why this version (evidence) | `bun why` |
 | `tln probe [pkg] [--range] [--share]` | Find the nightly range of a release. Optionally share the result | |
@@ -1707,22 +1716,22 @@ Settled:
 | Q5 | File name | `talon.toml` for now. |
 | Q6 | Own header parser or the compiler's? | Own parser in Roc (10.3). |
 | Q7 | Does one nightly range per release hold? | Islands exist (4 of 46 hashes), but in the sample all gaps come from compiler hangs and crashes. The model is per-nightly facts plus epochs (5.4). |
-| Q8 | Can Workers use JSPI? | Yes, with no flag. Tested on workerd `2026-10-12`. Reported on the edge (10.2). |
+| Q8 | Can Workers use JSPI? | Yes, with no flag. Tested on workerd `2026-10-12` and on the edge (Q13). |
 | Q9 | Build after check? | Yes. Ladder step 3, on the final tuple only (5.4). |
 | Q10 | A nightly range syntax in headers | Dropped. A header entry holds one value, and that is correct for a lock. The range data belongs in the registry matrix. |
 | Q11 | How many epochs, and changes inside an epoch? | 22 nightlies form 6 code epochs and 2 fault windows. 0 changes inside an epoch (5.4). Run the sweep again on the bot data in P2. |
 | Q12 | Instance per request or stack copy? | Stack copy in a recycled pool. The copy costs under 2 µs per wait up to 64 KB. A new instance costs 30 to 640 µs, depending on module size (10.2). |
+| Q13 | Do the Q12 numbers hold on the Cloudflare edge? | The choice holds, the absolute numbers do not. Short test on 2026-10-14, free plan (10 ms CPU limit), colo TBS (`cloudflare-workers/bench/deploy.sh`, `edge.mjs`). JSPI works on the edge. B (stack copy): 0 errors and 0 bad bodies at concurrency 1, 16 and 64. A (instance per request): about 6 ms CPU per request at concurrency 1 (0.3 ms local), and at concurrency 16 and 64 most requests fail with `exceededCpu` (179 and 199 of 200). A new instance costs about 0.7 ms CPU (0.03 ms local). Not a full load test: that waits for the registry app (Q14). |
 | Q15 | Does `roc check` on an app check only the imported modules on every nightly? | Yes on all 20 nightlies that have a working basic-cli (`conformance/check-scope/`). The app that imports `Good` passes, the app that imports `Bad` fails, the package `main.roc` fails. Found on the way: when `XDG_CACHE_HOME` contains `..`, `roc check` prints "No errors found" for any app. Talon passes only canonical cache paths to roc (6.3). |
+| Q16 | Do platform hosts link statically? | Yes for musl. 6 platforms, all Linux targets (`conformance/host-link/`): each musl binary has no `NEEDED` and no interpreter. The only dynamic Linux binary is roc-ray, which has only a glibc target: `libc.so.6`, `libm.so.6`, `libX11.so.6`, with no symbol versions. No platform links OpenSSL. macOS binaries link only system libraries. Windows targets list only Windows system libraries. A tool records its libraries (T8). |
 | Q17 | Can Talon build roc from a GitHub archive with no `.git`? | Yes. Tested on `2664a27` (nightly 10-12) with Zig 0.17.0: `zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-2664a278` passes. `roc version` prints `git-2664a278`, and `roc check` works. Without the flag, the code (`getCompilerVersionGit`) gives `release-fast-no-git` (not tested). So git is not a build dependency (6.7, R3). |
+| Q18 | Can 3 `roc build` runs share one compiler cache at the same time? | Yes. 100 iterations of 3 different apps, 50 on an empty cache and 50 on a warm cache, 2 runs: 600 of 600 builds pass, with the same output and the same bytes as a build that ran alone (`conformance/build-share/`). The build weight of 4 slots stays (5.4). Found on the way: a warm build gives other bytes than a cold build, with the same output (T4). |
 
 Open:
 
 | # | Question | How to settle |
 | --- | --- | --- |
-| Q13 | Do the Q12 numbers hold on the Cloudflare edge (CPU limits, isolate memory, JSPI)? All runs so far were local workerd. | Deploy `cloudflare-workers/bench` to a test account in P2. |
 | Q14 | Pool values (16 requests per instance, 32 MB) for the real registry app | Load test the registry app in P2. |
-| Q16 | Do platform hosts (basic-cli and others) link statically? A dynamic link to glibc or OpenSSL is the only run-time dependency of a global tool (6.5). | `ldd` on a binary from each native platform, for each target. |
-| Q18 | Can 3 `roc build` runs share one compiler cache (`compat-<id>/`) at the same time with no error? The Q11 sweep shows this for 12 checks, but not for builds. | Test: build 3 different apps at the same time with one nightly and one cache. Do this 100 times. Each build must pass, and each binary must give the same output as a binary from a build that ran alone. If the test fails, a build takes 12 slots (one build at a time). |
 
 ## Sources
 
