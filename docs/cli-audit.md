@@ -4,6 +4,25 @@ Audit of the `tln` CLI in `DESIGN.md` (Draft 2, 2026-10-13). Line numbers point 
 
 Each group is one work item. A group changes `DESIGN.md` only. Status: all 24 points are fixed in Draft 3 (2026-10-14).
 
+Section numbers in this file point to `DESIGN.md` before the split of 2026-10-15. The split moved the sections into 4 files and changed their numbers:
+
+| Old | New |
+| --- | --- |
+| 1 to 3, 2.1, 2.2, 4, 4.1 to 4.3 | `DESIGN.md`, same numbers |
+| 4.4 Determinism | `DESIGN-RESOLUTION.md` 11 |
+| 4.5 Workspaces | `DESIGN.md` 4.4 |
+| 4.6 References in the CLI | `DESIGN-CLI.md` 2 |
+| 5.1 to 5.10 | `DESIGN-RESOLUTION.md` 1 to 10 |
+| 6.1 Selection order | `DESIGN-RESOLUTION.md` 13 |
+| 6.2 to 6.8 | `DESIGN-CLI.md` 6.1 to 6.7 |
+| 7.1, 7.2 | `DESIGN-CLI.md` 7.1, 7.2 |
+| 7.3 Lock and frozen modes | `DESIGN-RESOLUTION.md` 12 |
+| 8, 8.1, 8.2, 8.3 | `DESIGN-CLI.md` 1, 3, 4, 5 |
+| 9.1 to 9.7 | `DESIGN-REGISTRY.md` 1 to 7 |
+| 10.1, 10.3, 10.4 | `DESIGN.md` 6.1, 6.2, 6.3 |
+| 10.2 Worker host: JSPI | `DESIGN-REGISTRY.md` 8 |
+| 11, 12, 13 | `DESIGN.md` 7, 8, 9 |
+
 | Group | Points | Subject |
 | --- | --- | --- |
 | A | 1, 14 | Consent for downloads, prompts with no TTY, `--yes` |

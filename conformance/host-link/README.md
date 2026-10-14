@@ -1,6 +1,6 @@
 # host-link (Q16)
 
-Question: do platform hosts link statically? A dynamic link is the only run-time dependency of a global tool (`DESIGN.md` 6.5).
+Question: do platform hosts link statically? A dynamic link is the only run-time dependency of a global tool (`DESIGN-CLI.md` 6.4).
 
 | File | Content |
 | --- | --- |
