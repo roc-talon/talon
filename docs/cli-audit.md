@@ -67,3 +67,34 @@ The default alias comes from the release name. Talon may shorten a name only to 
 | `someone/roc-json` | `json` | Same exception |
 
 No other shortening is allowed. Talon does not drop other prefixes or suffixes, does not abbreviate, and does not guess. The `roc-` prefix is the only exception. The same rule gives the short name in name lookup (4.6, form 3).
+
+## Round 2
+
+Audit of Draft 3 (2026-10-14). Line numbers point to Draft 3 before the round 2 fixes.
+
+| # | Sev | Finding | Status |
+| --- | --- | --- | --- |
+| 1 | High | `--yes` gives "the interactive default", but NI3, NI4 and NI9 (default No) say that `--yes` accepts | Fixed: `--yes` is "yes" or the default option (8.2). NI11 is now a note (R2). |
+| 2 | High | `TALON_AUTO_INSTALL=yes` has "the same effect" as `--yes` for every command. The CI file of `tln init` sets it. | Fixed: required compiler and Zig downloads only (DL5) |
+| 3 | High | No command moves a dependency to a new major | Fixed: `tln update X@sel` and `tln upgrade` (5.10) |
+| 4 | Medium | `--yes` answers all prompts or none | Fixed: an answer flag for each Required prompt (NR6, flag table in section 8) |
+| 5 | Medium | Workspaces: which member header `add`, `update` and `roc use` write | Fixed: member table and `--member` (4.5) |
+| 6 | Medium | The proxy: how it finds the target file, and what it does when nothing is selected | Fixed: target file rule, no-selection error, first install is the default (6.1) |
+| 7 | Medium | `--json` with `tln x`: the app also writes to stdout | Fixed: `tln x --json` is exit 2 (section 8) |
+| 8 | Medium | `tln x` with a short name runs code with no confirmation | Fixed: short names in `x` and `tool install` match local entries only (4.6) |
+| 9 | Medium | `tln setup` is not defined (PATH, shell files, an existing `roc`) | Fixed: 6.8 Setup, ST1 to ST6, NI13, NI14 |
+| 10 | Medium | `tln remove`: the platform, imported aliases, overrides, patches | Fixed: `tln remove` table (4.6) |
+| 11 | Medium | `--platform` of `add` is not defined | Fixed: `tln add --platform` table (4.6) |
+| 12 | Medium | Where the global default and user settings are stored | Fixed: `config.toml` (6.2), registry precedence |
+| 13 | Medium | `--dry-run` writes probe results and can download | Fixed: `--dry-run` row (7.3) |
+| 14 | Low | The proxy and `tln x` exit codes look the same as the child exit codes | Fixed: E4, last stderr line `tln: error[<kind>]` |
+| 15 | Low | `--quiet` and the answer lines of 8.2 | Fixed: `--quiet` keeps answer lines |
+| 16 | Low | No way to force interactive mode when `CI` is set | Fixed: `TALON_INTERACTIVE` (8.2) |
+| 17 | Low | `tln install json` is not defined | Fixed: `install`, `i` and `add` are one command (section 8) |
+| 18 | Low | `tln tool update` with no name, and a second `tool install` | Fixed: rows in the 6.5 tool table |
+| 19 | Low | NI10 option 1 removes every `roc`, and the prompt does not say so | Fixed: prompt line and RM6 |
+| 20 | Low | `tln init`: which nightly, consent, which CI system | Fixed: 8.3 `tln init` |
+| 21 | Low | `--frozen` has a meaning only for `install` | Fixed: only `tln install` with no names accepts it |
+| 22 | Low | DL6 wording | Fixed: DL6 wording |
+
+Added in round 2 at the request of the user: parallel probes (5.4, PP1 to PP5: a pool of 12 slots, a check takes 1 slot and a build takes 4), `tln roc update` (6.7, RU1 to RU4), prompt NI12, open question Q18.
