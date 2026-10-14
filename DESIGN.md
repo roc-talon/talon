@@ -385,5 +385,4 @@ Open:
 - [Go checksum database design (25530)](https://go.googlesource.com/proposal/+/refs/heads/master/design/25530-sumdb.md)
 - [PubGrub](https://nex3.medium.com/pubgrub-2fb6470504f), [Rust crater](https://github.com/rust-lang/crater)
 - [npm trusted publishers](https://docs.npmjs.com/trusted-publishers)
-- roc-shpadoinkle at `12460db` (local): JSPI tasks in a Roc wasm32 platform with a Zig host
 - [V8 JSPI](https://v8.dev/blog/jspi), [workers-zig (JSPI on Workers)](https://github.com/nilslice/workers-zig), [Almide JSPI on workerd and the edge](https://github.com/almide/almide/issues/3353)

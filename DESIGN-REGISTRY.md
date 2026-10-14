@@ -121,23 +121,22 @@ Evidence:
 
 | Evidence | Result |
 | --- | --- |
-| roc-shpadoinkle (`../roc-shpadoinkle`, `12460db`) | A Roc wasm32 app with a Zig host does direct-style waits with JSPI in Chromium. 40 tasks wait at the same time with correct frames (`docs/ROC_SHPADOINKLE_WITH_SIGNALS.md:344-420`, `shpadoinkle/host/host.zig:959-1060`). |
 | Local test (`scratchpad/jspi/`, workerd `2026-10-12`, no compatibility flag) | An import wrapped in `WebAssembly.Suspending` waits on a timer and a subrequest. 3 parallel calls through `WebAssembly.promising` return correct values. |
 | Community | workers-zig and Almide report JSPI on the Cloudflare edge (see Sources). |
 
-Patterns taken from roc-shpadoinkle:
+Patterns of the Worker host:
 
-| Pattern | roc-shpadoinkle | Talon Worker |
-| --- | --- | --- |
-| One wait primitive | One hosted fn `wait!(kind, num, a, b, c)` and one import `js_wait` (`shpadoinkle/platform/Host.roc:55`). Each effect is a Roc function on it. | Same. Kinds: fetch, D1 query, D1 batch, R2 get, R2 put, cache match, cache put. |
-| Arguments | JS reads them before its first `await`, because they can be on the stack (`shpadoinkle/www/runtime.js:800`) | Same |
-| Results | JS writes the body with `js_alloc` into a heap record, not the stack (`host.zig:1046-1060`) | Same |
-| Capability record | `Await` is a record of functions. `Await.scripted` runs a task in tests with no host (`package/Await.roc:20-33`). | Each handler gets a `Worker` capability record (`fetch!`, `d1!`, `r2!`, `cache!`). Unit tests use a scripted record. |
-| Shadow stack | JSPI keeps the wasm stack, not the shadow stack (`__stack_pointer`) in linear memory. roc-shpadoinkle copies the used stack to the heap at a wait and back at resume, so many tasks share one instance (`host.zig:1007-1035`). | Same copy, in a pool of instances. After a trap, the host frees the heap of the dead task (owner tags, see below). |
+| Pattern | Talon Worker |
+| --- | --- |
+| One wait primitive | One hosted fn `wait!(kind, num, a, b, c)` and one import `js_wait` (`cloudflare-workers/platform/Wait.roc`). Each effect is a Roc function on it. Kinds: fetch, D1 query, D1 batch, R2 get, R2 put, cache match, cache put. |
+| Arguments | JS reads them before its first `await`, because they can be on the stack. |
+| Results | JS writes the body with `js_alloc` into a heap record, not the stack. |
+| Capability record | Each handler gets a `Worker` capability record (`fetch!`, `d1!`, `r2!`, `cache!`). Unit tests use a scripted record, which runs a task with no host. |
+| Shadow stack | JSPI keeps the wasm stack, not the shadow stack (`__stack_pointer`) in linear memory. The host copies the used stack to the heap at a wait and back at resume, so many tasks share one instance (`cloudflare-workers/host/host.zig`). The copy runs in a pool of instances. After a trap, the host frees the heap of the dead task (owner tags, see below). |
 
 ### Measurement: stack copy vs instance per request (Q12)
 
-Code, reproduce commands and all tables: `cloudflare-workers/bench/README.md`. Setup: Roc wasm32 app on a Zig host from roc-shpadoinkle, nightly 2026-10-09, local workerd 2026-10-12. Each request builds about 45 KB of JSON, recurses N levels, and waits twice on a service binding (5 ms). 0 wrong bodies in about 445,000 requests.
+Code, reproduce commands and all tables: `cloudflare-workers/bench/README.md`. Setup: Roc wasm32 app on the Zig host in `cloudflare-workers/host/`, nightly 2026-10-09, local workerd 2026-10-12. Each request builds about 45 KB of JSON, recurses N levels, and waits twice on a service binding (5 ms). 0 wrong bodies in about 445,000 requests.
 
 | Item | B: shared instance, stack copy | A: instance per request |
 | --- | --- | --- |
