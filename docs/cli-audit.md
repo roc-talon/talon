@@ -152,3 +152,29 @@ Also in round 4: the generic packages move to their own repositories (Design 6.1
 Changed after round 4 (2026-10-15), at the request of the user: no fork of basic-cli. Child processes give the effects that basic-cli does not have (Design 6.2, HF1 to HF10): the download adapter for `curl` and `wget` (CLI 7.5, DA1 to DA7), `roc unbundle` for packages (`research/roc-unbundle/`), `tar` for compilers, and lock directories with a heartbeat (CLI 7.4, CC3). Many processes that need one missing compiler still download it once (CC4). New exit code 18 (`environment`). The TTY test is an upstream PR. `min-release-age` defaults to 2 days.
 Then: locks have one interface in `Fx` (CC3: `lock!`, `unlock!`, `with_lock!`, a 4-point contract). The lock directory with a heartbeat is its only implementation (CC12), inside the real `Fx`.
 Then: the process replacement (`Cmd.exec_replace!`, `execve` on Unix) joins the TTY test in one upstream PR to basic-cli (HF6). Until it is in, the proxy runs roc as a child.
+
+## Round 5: consistency audit (2026-10-15)
+
+Question: do the 5 files agree, and can each rule be built on basic-cli as it is? All points below are fixed.
+
+| # | Level | Gap | Fix |
+| --- | --- | --- | --- |
+| 1 | Serious | The GC age "N days" has no value | CLI 6.1 `gc-age` (default `30d`), CLI 6.3 |
+| 2 | Serious | `TALON_NOW` against file modification times | CC9 writes the time into `.last-use`. Lock beats and temp ages use the real clock (CLI 1, CC2, CC12, 6.3) |
+| 3 | Serious | A blocking step can make a held lock stale | CC12: each step that is not a wait ends in under 25 s: children with `spawn!`, `Http.send!` timeout 20 s |
+| 4 | Serious | Later phases change P0 test results (`compat.db`, default registry, examples) | Design 7, TESTING 3.1 and 3.2 (`TALON_REGISTRY=direct`, `given/env`, `facts.tsv`), TW16, phase notes at the examples |
+| 5 | Medium | P0 writes files but CC and HF3 were in P1 | TESTING 7.4, HF3 phase P0 |
+| 6 | Medium | GC removes the build cache of the `roc` on `PATH` | CLI 6.3: by age, or with the removed compiler |
+| 7 | Medium | Source archives have no hash | CLI 6.6 R7, HF5, DA4, Design 8 |
+| 8 | Medium | Ranks 4 and 5 against PD6 and WS5 | Resolution 13 |
+| 9 | Medium | Patch diff format, patch of a platform | Resolution 7, PA7, PA8 |
+| 10 | Low | CC7 for `talon.toml` | CC7 |
+| 11 | Low | Compiler in use on Windows gave exit 1 | Exit 17 (CC10, CLI 3) |
+| 12 | Low | NR1 against the HF1 Windows fallback, color needs stderr only | NR1, HF1 |
+| 13 | Low | No process id or host name in basic-cli | CC12: random token |
+| 14 | Low | `tln probe` rejected `--slots` | CLI 1 |
+| 15 | Low | No source for the mirror list | CLI 7.1 |
+| 16 | Low | `install.ps1` left `.tln.old.*.exe` files | `install.ps1` uses the ST10 name `tln.<16hex>.del`, IS5 |
+| 17 | Low | Windows user `Path` edit | Design 6.2 HF11 |
+| 18 | Low | `tty` test cases with `CI=true` | TESTING 3.2 |
+| 19 | Low | Held variables of `upgrade`, old rule count | Resolution 9, TESTING 8 |

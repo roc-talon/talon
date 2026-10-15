@@ -4,7 +4,7 @@ Talon is a package manager and compiler manager for Roc. The CLI is `tln`.
 
 | Item | Value |
 | --- | --- |
-| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). Round 4 (2026-10-15): readiness audit, 18 gaps fixed (`docs/cli-audit.md`, round 4). |
+| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). Round 4 (2026-10-15): readiness audit, 18 gaps fixed (`docs/cli-audit.md`, round 4). Round 5 (2026-10-15): consistency audit, 19 fixes (`docs/cli-audit.md`, round 5). |
 | Target compiler | Zig-based Roc, `nightly-2026-10-09-258ab27`. Source facts from roc-lang/roc at `2664a27`. |
 | Scope | CLI, resolver, compatibility prober, toolchain manager, registry on Cloudflare |
 | Language | Roc for the CLI and the registry Worker (section 6) |
@@ -282,16 +282,16 @@ Rule ids, and where each group is:
 | DL1 to DL6 | Download consent | CLI 6.2 |
 | T1 to T8, X1 to X5, B1 to B8 | Global tools, `tln x`, build reuse | CLI 6.4 |
 | S1 to S5, IS1 to IS8, RM1 to RM6 | Talon as a tool, install scripts, remove Talon | CLI 6.5 |
-| R1 to R6, LK1 to LK4, U1 to U6, RU1 to RU4, RR1 to RR3, D1 to D3 | Compilers from source, links and copies, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
+| R1 to R7, LK1 to LK4, U1 to U6, RU1 to RU4, RR1 to RR3, D1 to D3 | Compilers from source, links and copies, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
 | ST1 to ST11 | Setup, bin dir entries and launchers | CLI 6.7 |
-| HF1 to HF10 | Effects that basic-cli does not have | 6.2 |
+| HF1 to HF11 | Effects that basic-cli does not have | 6.2 |
 | DA1 to DA7 | Download adapter (`curl`, `wget`) | CLI 7.5 |
 | CC1 to CC12 | Concurrent Talon processes | CLI 7.4 |
 | CV1 to CV6 | Compiler list and sha256 | CLI 6.2 |
 | DI1 to DI13 | Index with no registry (`direct`) | CLI 7.3 |
 | WS1 to WS8 | Workspaces | 4.4 |
 | EP1 to EP9 | Epochs and inferred facts | Resolution 4 |
-| PA1 to PA6 | Patches | Resolution 7 |
+| PA1 to PA8 | Patches | Resolution 7 |
 | PD1 to PD13 | Project discovery, known projects | CLI 1 |
 | OUT1 to OUT5 | Who decides the output | CLI 3 |
 | GP1 to GP6 | Generic packages | 6.1 |
@@ -369,16 +369,17 @@ Effects that basic-cli does not have, and how Talon gets each one. Checked in th
 
 | # | Need | basic-cli today | Plan | Phase | Used by |
 | --- | --- | --- | --- | --- | --- |
-| HF1 | TTY test | `Tty` has raw mode only. No `isatty`. | Upstream PR: `Tty.is_terminal!(Stdin \| Stdout \| Stderr)`, with `isatty` on Unix and `GetConsoleMode` on Windows. Until a basic-cli release has it: on Unix, Talon runs `sh -c 'test -t 0 && test -t 2'` as a child with inherited stdio, once for each command and only when a prompt or color output needs the answer. On Windows, Talon takes stdin and stderr as a TTY, and a prompt that reads the end of input takes the non-interactive answer (CLI 4). Color on Windows stays off until the PR. | P0 | NR1 and the terminal row of CLI 4, color and progress output |
+| HF1 | TTY test | `Tty` has raw mode only. No `isatty`. | Upstream PR: `Tty.is_terminal!(Stdin \| Stdout \| Stderr)`, with `isatty` on Unix and `GetConsoleMode` on Windows. Until a basic-cli release has it: on Unix, Talon runs `sh -c 'test -t 0; i=$?; test -t 2; echo $i $?'` as a child with inherited stdio, once for each command and only when a prompt or color output needs the answer. The output gives stdin and stderr apart: a prompt needs both (NR1), color needs stderr only (CLI 4). On Windows, Talon takes stdin and stderr as a TTY, and a prompt that reads the end of input takes the non-interactive answer (CLI 4). Color on Windows stays off until the PR. This is the one exception to NR1 (CLI 4). | P0 | NR1 and the terminal row of CLI 4, color and progress output |
 | HF2 | Set the executable bit | No `chmod` | On Unix, a child `chmod 0755 <file>`. On Windows, nothing. `tar` keeps the mode bits of the files in a compiler archive. | P1 | A downloaded `tln` (CLI 6.5, S3), prebuilt tool binaries (CLI 6.4), the copy fallback of ST7 |
-| HF3 | Lock between processes | No file lock | The lock interface of CLI 7.4 (CC3), implemented as a lock directory with a heartbeat (CC12). `Path.create_dir!` makes it, and that is atomic on all systems. | P1 | CLI 7.4 (CC4, CC6, CC10) |
+| HF3 | Lock between processes | No file lock | The lock interface of CLI 7.4 (CC3), implemented as a lock directory with a heartbeat (CC12). `Path.create_dir!` makes it, and that is atomic on all systems. | P0 | CLI 7.4 (CC4, CC6, CC10) |
 | HF4 | Parallel and streaming download | `Http.send!` blocks and keeps the whole body in memory | The download adapter (CLI 7.5): one `curl` or `wget` child for each file, which writes to a temp file. Talon polls the children with `try_wait!` in the same loop as the probes (PP1). Small API answers (DI2, CV1, the registry) use `Http.send!`. | P0 (packages), P1 (compilers, Zig, binaries) | G5, CLI 7.1 "No waterfall", CV4, D2, S1 |
-| HF5 | Archive extract | No Roc library | Packages (`.tar.zst`): `roc unbundle` (CLI 7.1). It checks the hash, the paths and the size limits (`research/roc-unbundle/`). Compilers (`.tar.gz`, `.zip` on Windows) and Zig (`.tar.xz`, `.zip`): `tar`, after the sha256 check (CV4, D2). Linux, macOS and Windows 10 (1803 or later) have `tar`, and the Windows `tar` reads `.zip`. `tar` refuses an absolute member path and a path with `..`. A `.tar.xz` also needs `xz` on Linux. | P0 (`roc unbundle`), P1 (`tar`) | CLI 7.1, CLI 6.2, CLI 6.6 D2 |
+| HF5 | Archive extract | No Roc library | Packages (`.tar.zst`): `roc unbundle` (CLI 7.1). It checks the hash, the paths and the size limits (`research/roc-unbundle/`). Compilers (`.tar.gz`, `.zip` on Windows) and Zig (`.tar.xz`, `.zip`): `tar`, after the sha256 check (CV4, D2). The source archive of a git ref (CLI 6.6, R3): `tar`, with no published hash (R7). Linux, macOS and Windows 10 (1803 or later) have `tar`, and the Windows `tar` reads `.zip`. `tar` refuses an absolute member path and a path with `..`. A `.tar.xz` also needs `xz` on Linux. | P0 (`roc unbundle`), P1 (`tar`) | CLI 7.1, CLI 6.2, CLI 6.6 D2 |
 | HF6 | Run a program in place of `tln` | `Cmd.exec!` starts a child and waits. No `execve`. | Upstream PR, together with HF1: `Cmd.exec_replace!(cmd)`. On Unix, `execve`: roc takes over the process id, so every signal, stdio and the exit code pass through, and no `tln` process stays alive. On Windows, which has no `execve`, the function runs the child with inherited stdio, waits, and exits with its exit code. On success it does not return. Until a basic-cli release has it, Talon uses the Windows form on all systems: a child with inherited stdio, then exit with the exit code of the child, or 128 + the signal number. Ctrl-C reaches the child (same process group or console). A signal that goes only to the `tln` process (`kill <pid>`, a CI timeout) does not reach the child until the PR is in. rustup and Go do the same split: `exec` on Unix, a child on Windows. | P1 | The `roc` proxy (CLI 6.2), `tln x` (X4), E1 |
 | HF7 | Symlink create | None | Not needed. A bin dir entry is a hard link or a copy (ST7). A `link-<name>` compiler records the target path (LK4). `Path.hard_link!` exists. | | |
 | HF8 | Signal handler | None | Not needed. Talon is safe after a crash, a kill or Ctrl-C: each write is a temp and a `rename`, and later runs remove stale temps (CLI 7.4, CC1, CC2). Ctrl-C in a terminal also stops the child processes, because they share the process group (Unix) or the console (Windows). The proxy uses HF6. | | |
 | HF9 | Program name | `Env.program_name!` exists | Nothing to build. `tln` reads it to run as the `roc` proxy (ST8). | P1 | CLI 6.2 |
 | HF10 | Target `arm64win` | Targets: `arm64mac`, `arm64musl`, `x64mac`, `x64musl`, `x64win` | Talon ships these 5 targets only. On Windows on ARM64, `install.ps1` installs `tln-x64win.exe`, and Windows 11 runs it by emulation (IS2). Talon adds `arm64win` when basic-cli has it. | P1 | CLI 6.5, IS2 |
+| HF11 | Edit the user `Path` on Windows | No registry access | A child `powershell -NoProfile -NonInteractive -Command`. It reads the `Path` value of `HKCU\Environment` with no expansion of `%VAR%` references (`GetValue('Path', '', 'DoNotExpandEnvironmentNames')`), adds or removes the bin dir, writes the value back as `REG_EXPAND_SZ`, and sends `WM_SETTINGCHANGE`, as rustup does. Talon passes the bin dir in an environment variable of the child, so the command needs no quoting. Never `setx`: it cuts the value at 1024 characters. Windows PowerShell 5.1 is part of Windows 10 and 11. | P1 | CLI 6.7 ST4, CLI 6.5 (remove Talon) |
 
 ### 6.3 Repository layout
 
@@ -411,7 +412,7 @@ The conformance suite checks that Talon and `roc` agree on group keys, version s
 | P3 | Log tiles in R2, signed checkpoints, hash-keyed mirror on R2, scanner hook, advisories | Client checks inclusion proofs. Mirror serves a deleted GitHub asset. |
 | P4 | Upstream: print the compat id, a roc lock on `packages/` so that GC cannot remove a package while roc runs (CLI 7.4, CC10 accepts that risk until then), maybe `roc` reads `talon.toml` | |
 
-Each phase only adds commands and steps. A rule that a phase implements does not change in a later phase. So a test of an earlier phase stays valid.
+Each phase only adds commands and steps. A rule that a phase implements does not change in a later phase. So a test of an earlier phase stays valid. A default that a later phase changes (the registry, CLI 1) does not break this, because each test sets it (`TESTING.md` 3.2). A design example that needs a later phase than its command states that phase (`TESTING.md` TW16).
 
 | Phase | Commands |
 | --- | --- |
@@ -451,6 +452,7 @@ A P0 test of a failed ladder uses a case where no other tuple exists (for exampl
 | Malicious tarball (path traversal, size bomb) | Packages: `roc unbundle` checks the paths and the Roc size limits (CLI 7.1). Compilers and Zig: Talon checks the sha256 before `tar` runs (CV4, D2), and `tar` refuses absolute paths and `..` (6.2, HF5). |
 | Forged provenance | Some releases already ship `<hash>.tar.zst.intoto.jsonl` (in-toto attestation) and `.spdx.json` (SBOM), for example roc-parser 2.0.0. The registry checks the attestation at publish and stores the result in `releases.provenance`. |
 | Compiler download tampered | sha256 check before extract (CLI 6.2, CV3, CV4). With `direct` (P1 and later), the sha256 is the GitHub asset `digest`. With a registry (P2 and later), it is the sha256 that the registry recorded the first time it saw the nightly, so a later swap of the asset fails. In both modes, `compat.db` keeps the first sha256 seen for each tag and target, and a different later value fails (CV6). From P2, each compiler asset is a log leaf (Registry 3), so `--snapshot log:N` fixes the set of compilers. P3 adds inclusion proofs for these leaves. |
+| Source archive of a git ref tampered (`tln roc install --git`, `tln tool install --git`) | GitHub publishes no hash for it. The commit sha in the URL names the source, and the trust is TLS to `github.com`, the same as a `git clone`. Talon records the sha256 that it computed (CLI 6.6, R7). |
 | Talon download tampered (`install.sh`, `install.ps1`, `tln tool update talon`) | sha256 and attestation of the GitHub Release (CLI 6.5, S1, IS3) |
 
 ## 9. Questions

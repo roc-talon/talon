@@ -17,7 +17,7 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | `tln why parser` | Paths from the app to a package, and why this version (evidence) | `bun why` |
 | `tln probe [pkg] [--range] [--share]` | Find the nightly range of a release. Optionally share the result | |
 | `tln list [--tree]` | Closure with marks: shared, resolved, foreign, patched | `bun pm ls` |
-| `tln patch json [--diff]` | Edit a copy of a dependency. The copy is the patch, and it goes in VCS. `--diff` prints it against the original (Resolution 7, PA1 to PA6). | `bun patch` |
+| `tln patch json [--diff]` | Edit a copy of a dependency. The copy is the patch, and it goes in VCS. `--diff` prints it against the original (Resolution 7, PA1 to PA8). | `bun patch` |
 | `tln verify [--strategy highest\|lowest]` | Resolve in memory, run the probe ladder (Resolution 4) on the tuple with `--replace-dep`, and print the result. It writes no header and no `talon.toml`. Probes add evidence to `compat.db` as usual. It does not replace `roc check` (N2). Use: Resolution 8. | |
 | `tln x owner/app [-- args]` | Build a Roc app and run it once. The binary stays in the cache. Rules: 6.4, X1 to X5. | `bunx` |
 | `tln publish` | Register a release (Registry 7) | `bun publish` |
@@ -49,7 +49,7 @@ Global flags work for every command:
 | `--registry <url\|direct>` | Registry base URL. `direct` uses the GitHub API with no registry (Registry 1). |
 | `--file <path>` | The project file (see "The project" below, PD1). Only for a command that uses a project. Other commands reject it with exit code 2. |
 
-Resolve flags work only for commands that resolve: `install` (and `add`), `remove`, `update`, `upgrade`, and `verify` (Resolution 8). Other commands (`roc`, `tool`, `cache`, `x`, `list`, `why`, and the rest) reject them with an error.
+Resolve flags work only for commands that resolve: `install` (and `add`), `remove`, `update`, `upgrade`, and `verify` (Resolution 8). Other commands (`roc`, `tool`, `cache`, `x`, `list`, `why`, and the rest) reject them with an error. One exception: `--slots` also works for `probe`, `tool install` and `x`, because they run probes (Resolution 4, PP2).
 
 | Flag | Meaning |
 | --- | --- |
@@ -86,6 +86,8 @@ Registry precedence, from high to low:
 The built-in default is one constant in the Talon binary, not a file. It stays `direct` until the registry runs (Design 7, P2). Then a Talon release changes the constant to the registry URL. A user who set no registry moves to the registry with `tln tool update talon` (6.5). A user who wants `direct` after that sets it in `config.toml`.
 
 With `direct`, and for the list of nightlies, Talon calls the GitHub API (7.3, CV1). With no token, GitHub allows 60 requests an hour for one IP address. So Talon uses a token when it finds one, in this order: `GITHUB_TOKEN`, `GH_TOKEN`, then the output of `gh auth token` when `gh` is installed and logged in. Talon sends the token only to `api.github.com`, never to a registry or a mirror. With no token, a rate limit error (exit code 15) names these three sources.
+
+Example. It needs phase P2 (Design 7): the short name, the `log:` snapshot and the unit-probe note need the registry and unit probes.
 
 ```text
 $ tln add parser@2.0.0
@@ -157,7 +159,7 @@ Test hooks. With them, a test (`TESTING.md` 3) needs no network and no real cloc
 | Variable | Rule |
 | --- | --- |
 | `TALON_GITHUB_API` | The base URL of the GitHub REST API, in place of `https://api.github.com` (7.3, DI2, and the list of compiler releases). When it is set, Talon reads no token source and sends no token. It changes no header URL and no group (H5). Asset URLs come from the API answers, so a fake API can give loopback asset URLs. |
-| `TALON_NOW` | The time for each decision of Talon that uses the clock: GC ages (6.3), last-use times (PD9, CC9), `min-release-age` (C7), and the time that a resolve prints (Resolution 11). It does not change the clock of roc: roc expires its build-cache files by itself (Design 2.2). |
+| `TALON_NOW` | The time for each decision of Talon about the age of data: GC ages (6.3), the last-use times that Talon records (PD9, CC9), `min-release-age` (C7), and the time that a resolve prints (Resolution 11). It does not change the age of a lock heartbeat or of a temp (CC2, CC12): these tell if a process is alive, so they use file modification times and the real clock. It does not change the clock of roc: roc expires its build-cache files by itself (Design 2.2). |
 
 Packages in tests. Talon has no fetch map from a header URL to another host: that is a second kind of mirror (7.1, H5). A test gets a package in one of two ways:
 
@@ -325,7 +327,7 @@ Exit codes and the `--json` schema are part of the public interface. A change ne
 | --- | --- | --- | --- |
 | 0 | `ok` | The command did its work | |
 | 1 | `internal` | A Talon fault, or a compiler fault with no result | P7 (Resolution 4) |
-| 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no selected compiler (Resolution 13), no project file or no single current member (PD4, PD5, PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, a key in the wrong `talon.toml`, an alias that names two groups), or `tln remove` of the platform | Sections 1, 2 and 4, Design 4.4, Resolution 11 and 13 |
+| 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no selected compiler (Resolution 13), no project file or no single current member (PD4, PD5, PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, a key in the wrong `talon.toml`, an alias that names two groups), `tln remove` of the platform, or `tln patch` of the platform (Resolution 7, PA8) | Sections 1, 2 and 4, Design 4.4, Resolution 11 and 13 |
 | 10 | `no_tuple` | No tuple works. Talon prints the explanation. | Resolution 5 |
 | 11 | `app_error` | A new error in an app file, or `tln remove` of an alias that the app imports. Talon stops and reports. | Resolution 4 ladder step 2, section 2 |
 | 12 | `budget` | A probe budget is spent before a tuple was found | Resolution 4, P5 |
@@ -333,8 +335,8 @@ Exit codes and the `--json` schema are part of the public interface. A change ne
 | 14 | `frozen` | The header or a patch does not match `talon.toml`: `--frozen` found a mismatch or a needed resolve, or the proxy found a stale patch | Resolution 12, PA6 |
 | 15 | `network` | A registry, GitHub or download error | 7.1, 7.3 |
 | 16 | `integrity` | A hash or checksum does not match | 7.1, 6.2 CV4 and CV6, Design 8 |
-| 17 | `conflict` | A project file (the header, `talon.toml`) changed while the command ran. Talon wrote nothing. Run the command again. | 7.4, CC7 |
-| 18 | `environment` | A program that Talon needs is not on `PATH`: `curl` or `wget`, `tar`, `xz` for a Zig archive, or `sh` on Unix. The message names the program. | Design 6.2, 7.5 |
+| 17 | `conflict` | Another process changed or uses what the command must change: a project file (the header, `talon.toml`) changed while the command ran (CC7), or a compiler to remove runs on Windows (CC10). Talon wrote nothing. Run the command again. | 7.4, CC7, CC10 |
+| 18 | `environment` | A program that Talon needs is not on `PATH`: `curl` or `wget`, `tar`, `xz` for a Zig archive, `sh` on Unix, or `powershell` on Windows (Design 6.2, HF11). The message names the program. | Design 6.2, 7.5 |
 
 | Rule | Text |
 | --- | --- |
@@ -354,7 +356,7 @@ The `--json` contract:
 | J5 | `error` is `null` when `ok` is true. Otherwise it has `kind` (a name from the table above), `code` (its exit code) and `message`. It may have `details`. |
 | J6 | A new field in `data` does not change `schema`. A removed field, a renamed field or a changed meaning gives a new `schema` number. |
 
-Example, for `tln add parser@2.0.0` (data fields are shortened):
+Example, for `tln add parser@2.0.0` (data fields are shortened). Phase P2, as the example in section 1:
 
 ```json
 {
@@ -371,7 +373,7 @@ Example, for `tln add parser@2.0.0` (data fields are shortened):
 }
 ```
 
-Example of a failure, for `tln add parser --json` (non-interactive) with a required compiler download:
+Example of a failure, for `tln add parser --json` (non-interactive) with a required compiler download. Phase P2: a short name needs the registry:
 
 ```json
 {
@@ -467,7 +469,7 @@ Rules for a new prompt:
 
 | # | Rule |
 | --- | --- |
-| NR1 | A prompt writes to stderr and reads from stdin. It never prompts when stdin or stderr is not a TTY, even if no variable is set. |
+| NR1 | A prompt writes to stderr and reads from stdin. It never prompts when stdin or stderr is not a TTY, even if no variable is set. Exception: on Windows, until basic-cli has the TTY test (Design 6.2, HF1), Talon cannot see the TTY state. It prompts, and the end of input gives the non-interactive answer. |
 | NR2 | A prompt shows its default and what the default costs (size, count). |
 | NR3 | A destructive prompt (removal, overwrite) is "Default" only if the command names what it removes. Otherwise it is "Required". NI10 counts as "Default": besides Talon, it removes only the compilers and Talon data, which nothing uses without Talon (RM3). |
 | NR4 | Each picker has a command form that names the choice. |
@@ -500,7 +502,7 @@ $XDG_CACHE_HOME/roc/          (else ~/.cache/roc/)
   nightly-<tag>/, debug-<sha>/  roc      build caches of older compilers (seen up to nightly 10-09)
   toolchains/<id>/roc           talon    installed compilers (<id>: nightly tag, release, git-<sha8>, link-<name>, copy-<name>)
   toolchains/<id>/.talon.json   talon    source URL, sha256 or commit, ref typed, compat id, install time. Written last (CC4).
-  toolchains/<id>/.last-use     talon    empty file. Its modification time is the last use (CC9).
+  toolchains/<id>/.last-use     talon    the time of the last use (CC9)
   toolchains/<id>.lock          talon    install lock of <id> (7.4, CC3, CC4)
   toolchains/zig-<version>/     talon    Zig for source builds (6.6), with the lock zig-<version>.lock
   talon/index/                  talon    cached registry and GitHub index responses (ETag, 7.3)
@@ -528,6 +530,7 @@ default-roc = "nightly-2026-10-09-258ab27"   # tln roc default writes it. A full
 registry = "direct"                          # or a URL (section 1, registry precedence)
 nightly = true                               # the nightly switch (Resolution 1, NS1). talon.toml has priority.
 min-release-age = "2d"                       # the default (Resolution 2, C7). talon.toml [resolution] has priority.
+gc-age = "30d"                               # the default GC age (6.3)
 
 [probe]                                      # same keys as [resolution] probe in talon.toml
 slots = 12
@@ -606,12 +609,14 @@ The proxy runs inside build scripts, and `roc` flags go to the compiler. So the 
 | Item | roc today | `tln cache gc` |
 | --- | --- | --- |
 | Files inside build caches | Expires after 30 days, in the background | Leaves to roc |
-| `nightly-<tag>/`, `debug-<sha>/` dirs | Never removed | Removes them. No current compiler writes them. (3.1 GB here.) |
-| `compat-<id>/` dirs | Never removed | Removes a dir whose id belongs to no installed toolchain |
-| `packages/<hash>/` | Never removed | Removes it if no known project used it in N days |
-| Toolchains | n/a | Keeps the default and toolchains pinned by a known project in N days. Never removes a toolchain that an install holds or that a run used in the last day (CC10). |
+| `nightly-<tag>/`, `debug-<sha>/` dirs | Never removed | Removes a dir when no file in it changed in the GC age. Compilers from 2026-10-05 do not write them. (3.1 GB here.) |
+| `compat-<id>/` dirs | Never removed | Removes the dir of each compiler that GC or `tln roc rm` removes. Removes another dir only when no file in it changed in the GC age. So the dir of a compiler that Talon did not install (the `roc` on `PATH`, Resolution 13 rank 7) stays while that compiler is in use. |
+| `packages/<hash>/` | Never removed | Removes it if no known project used it in the GC age |
+| Toolchains | n/a | Keeps the default, and the toolchains that a known project pins and used in the GC age. Never removes a toolchain that an install holds or that a run used in the last day (CC10). |
 | Temps and `.trash` dirs that a crash left (CC2) | n/a | Removes them when they are older than 1 day |
-| `talon/x/<build digest>/` (binaries of `tln x`, 6.4) | n/a | Removes an entry that no `tln x` run used in N days |
+| `talon/x/<build digest>/` (binaries of `tln x`, 6.4) | n/a | Removes an entry that no `tln x` run used in the GC age |
+
+The GC age is `gc-age` in `config.toml` (6.1). The default is `30d`, the same as the expiry of roc build-cache files (Design 2.2). Last uses are the times that Talon records (PD9, CC9, X2), compared with the clock of Talon (`TALON_NOW`, section 1). The age of a file in a build-cache dir is its modification time, compared with the real clock.
 
 The compat id is a build-time hash that `roc` does not print. Talon learns it at install: it runs one `roc check` on an empty file and records which `compat-<id>/` dir the run touched. Upstream request: print the id in `roc version --verbose`.
 
@@ -712,7 +717,7 @@ Tools from a git ref (section 2):
 
 | Command | Effect |
 | --- | --- |
-| `tln tool install --git owner/app@main` | Get the commit, read `main.roc`, then build as above. `--path apps/cli` selects an app in a subdirectory. `tools.json` records the commit and the ref that the user typed. |
+| `tln tool install --git owner/app@main` | Get the commit as a source archive (6.6, R3, R7), read `main.roc`, then build as above. `--path apps/cli` selects an app in a subdirectory. `tools.json` records the commit and the ref that the user typed. |
 | `tln tool update app` | Installed from a branch: build the new head. From a commit: no change, and Talon prints `pinned to commit dd03c09e`. From a release: the newest release, as `tln tool install app@latest` (B2). |
 | `tln tool update` with no name | Updates each tool with the rule of its source (row above). One prompt covers the downloads of all tools (DL1). |
 | `tln tool install foo` when foo is installed | With no selector, or with a selector that the installed version satisfies (B1, B2): no build. Talon prints `foo 1.2.0 is installed`. Else it builds and replaces the tool. |
@@ -806,7 +811,7 @@ The install scripts follow these rules:
 | IS2 | A release has one binary for each Roc target: `tln-x64musl`, `tln-arm64musl`, `tln-x64mac`, `tln-arm64mac`, `tln-x64win.exe`, and `sha256sums.txt`. These are the targets of basic-cli (Design 6.2, HF10). The Linux binaries are static musl, so one binary works on each distribution (Design Q16). On macOS, a shell under Rosetta gets the arm64 binary. basic-cli has no `arm64win` target, so on Windows on ARM64, `install.ps1` installs `tln-x64win.exe`. Windows 11 on ARM64 runs it by emulation, and Talon then selects `windows_x86_64` compilers (CV2), which also run by emulation. Other systems stop with an error that lists the targets. |
 | IS3 | The script checks the sha256 from `sha256sums.txt` (exit code 16), and the attestation when `gh` is installed and logged in (S1). It uses `latest/download/` URLs, so it needs no GitHub API call and no token. |
 | IS4 | The script asks `Proceed? [Y/n]` (prompt NI15, kind Default). It uses the non-interactive rules of section 4, with one difference: with `curl \| sh`, stdin is the script, so `install.sh` reads the answer from `/dev/tty`. In non-interactive mode, the install goes on with no prompt, because the command names it. `--yes` (`-Yes`, or `TALON_YES=1` for `irm \| iex`) skips the prompt. |
-| IS5 | The download goes to a temp file in the bin dir. The script runs `--version` on it, then renames it over the old binary (S3). On Windows it first renames the old `tln.exe`. A failed check keeps the old binary and leaves no temp file. |
+| IS5 | The download goes to a temp file in the bin dir. The script runs `--version` on it, then renames it over the old binary (S3). On Windows it first renames the old `tln.exe` to `tln.<16hex>.del` (ST10). A failed check keeps the old binary and leaves no temp file. |
 | IS6 | Then the script runs `tln setup`, with `--yes` and `--no-modify-path` when the user gave them. `tln setup` writes the `talon` entry of `tools.json` when it is missing, then applies ST1 to ST6. With a terminal, `install.sh` connects `/dev/tty` to `tln setup`, so its prompts (NI13, NI14) work under `curl \| sh`. |
 | IS7 | Exit codes as in section 3: 2 for a bad argument, 15 for a download error, 16 for a checksum or attestation error, 1 for the rest. `install.ps1` under `irm \| iex` runs in the shell of the user, so it throws an error and does not exit: an exit would close that shell. |
 | IS8 | There is no uninstall script. `tln tool rm talon` removes Talon (S5). If `tln` does not start, `install.sh --version <v>` repairs it first (S4). |
@@ -867,6 +872,7 @@ The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
 | R4 | Talon never writes `git-*` or `link-*` into a `roc:` pin. H6 keeps the old pin. Probe results for these ids stay local. | roc does not accept a local build as a pin, by design (`roc_version.zig:21-23`). Other users cannot reproduce such a result. |
 | R5 | Selection uses the same rules as a nightly (Resolution 13): `roc +git-dd03c09e check`, `ROC_TOOLCHAIN=git-dd03c09e`, or `tln roc default --git Karakatiza666/roc@my-branch`. The last command picks the newest installed build of that branch, and stores its full id. Prefixes follow the rules in section 2. | A stored value must not change meaning after a later install |
 | R6 | When the user installs a branch again, Talon builds the new head as a new id. The old id stays until GC. | An id never changes meaning |
+| R7 | GitHub publishes no hash for a source archive. Talon downloads it over `https://` only (7.5), computes its sha256, and records it in `.talon.json` (R1), or for a tool in `tools.json` (T4). `tar` extracts it into a temp dir (Design 6.2, HF5). | The commit sha in the URL names the source. GitHub makes the archive again on request, so its bytes are not fixed, and Talon does not compare the sha256 with an earlier one. The trust is TLS to `github.com`, the same as a `git clone` (Design 8). |
 
 Links and copies of a local build:
 
@@ -943,7 +949,7 @@ This prompt (NI6, section 4) follows the consent rules DL1 to DL6 (6.2). The Zig
 | ST1 | Talon writes into the bin dir `~/.local/bin/` one entry (ST7) for each of: `tln`, the `roc` launcher (6.2, ST8) and each tool (T3). On Windows each name has `.exe`. |
 | ST2 | If a `roc` that Talon did not write is in the bin dir, Talon asks to replace it (prompt NI13, default no). Yes: Talon moves it to `~/.local/bin/roc.old` (`roc.old.exe` on Windows) and links it as the compiler `link-system` (6.6), so `roc +link-system` still runs it. No: Talon does not install the launcher, and prints `tln setup --replace-roc`. |
 | ST3 | If a `roc` comes before the bin dir on `PATH` (for example `/usr/local/bin/roc`), Talon prints a warning with its path. It changes nothing there. |
-| ST4 | If the bin dir is not on `PATH`, Talon asks to add one line to the profile of the current shell (prompt NI14, default yes): `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/conf.d/talon.fish`. The line has a marker comment, so `tln tool rm talon` can find it (6.5). On Windows, Talon adds the bin dir to the user `Path` value of the environment once (6.1), and `tln tool rm talon` removes exactly that entry. `--no-modify-path` skips it and prints the line or the entry. |
+| ST4 | If the bin dir is not on `PATH`, Talon asks to add one line to the profile of the current shell (prompt NI14, default yes): `~/.bashrc`, `~/.zshrc`, or `~/.config/fish/conf.d/talon.fish`. The line has a marker comment, so `tln tool rm talon` can find it (6.5). On Windows, Talon adds the bin dir to the user `Path` value of the environment once (6.1, Design 6.2 HF11), and `tln tool rm talon` removes exactly that entry. `--no-modify-path` skips it and prints the line or the entry. |
 | ST5 | Shell completions go in the user completion dir of the shell, with no prompt. |
 | ST6 | Talon never deletes or overwrites a file that it did not write, except with the ST2 consent. |
 
@@ -974,7 +980,7 @@ Bin dir entries and launchers. One form on Linux, macOS and Windows, so one code
 | Atomic | Same protocol as roc: the temp dir is `packages/<hash>.<16hex>.tmp/`, and Talon renames its `<hash>/` dir to `packages/<hash>/` (`package_resolution.zig:2188-2306`). If the rename loses to roc or to another `tln`, Talon drops its copy. No lock is needed (7.4, CC11). |
 | Compiler for `roc unbundle` | The format of a package archive does not depend on the nightly. So Talon uses the selected compiler (Resolution 13) when it is installed, else the newest installed compiler, else the `roc` on `PATH` (rank 7). With none, the selected compiler is a required download (DL2). |
 | Sidecar | Talon does not write `<hash>.deps.json`. roc rebuilds it from `main.roc` on first use. |
-| Mirrors | On a 404, Talon tries mirrors. The hash proves the bytes. The header URL does not change (H5). |
+| Mirrors | On a 404, Talon tries mirrors. The hash proves the bytes. The header URL does not change (H5). The registry gives the mirror list, from P3 (Design 7). Before P3, and with `direct`, the list is empty, and a 404 gives exit code 15. There is no user setting for mirrors. |
 | Offline | `--offline` uses the cache only. |
 | URL schemes | Talon accepts the package URLs that roc accepts: `https://` to any host, and `http://` to loopback only (`127.0.0.1`, `::1`, `localhost`). Measured: `research/roc-http-fetch/`. |
 
@@ -1048,17 +1054,17 @@ Many `tln` processes can run at the same time: 3 `roc` builds through the proxy,
 | # | Rule | Reason |
 | --- | --- | --- |
 | CC1 | Each write of a file or a dir goes to a temp `<target>.<16hex>.tmp` in the same dir, then a `rename` to the target. Talon writes no file in place. | A reader sees the old or the new item, never a part of one. The same dir gives the same file system, so the `rename` is atomic. |
-| CC2 | Talon has no signal handler (Design 6.2, HF8). A crash, a kill or Ctrl-C can leave a temp, or a `.trash` dir (CC10). No command reads a temp. The lock holder of an item deletes the temps of that item (CC4). `tln cache gc` deletes the other temps, the `.trash` dirs and `talon/tmp/<16hex>/` (probe copies of an app) when they are older than 1 day (6.3). A command deletes its own `talon/tmp/` dir when it ends. | One rule covers Ctrl-C, a kill and a power loss. A signal handler covers only Ctrl-C. A temp younger than 1 day can belong to a running process. |
+| CC2 | Talon has no signal handler (Design 6.2, HF8). A crash, a kill or Ctrl-C can leave a temp, or a `.trash` dir (CC10). No command reads a temp. The lock holder of an item deletes the temps of that item (CC4). `tln cache gc` deletes the other temps, the `.trash` dirs and `talon/tmp/<16hex>/` (probe copies of an app) when they are older than 1 day (6.3). This age is the file modification time, compared with the real clock (section 1, `TALON_NOW`). A command deletes its own `talon/tmp/` dir when it ends. | One rule covers Ctrl-C, a kill and a power loss. A signal handler covers only Ctrl-C. A temp younger than 1 day can belong to a running process. |
 | CC3 | Locks have one interface, in the `Fx` record (`TESTING.md` 2.3): `lock!(item, Wait \| NoWait)` gives `Held(lock)` or `Busy`, and `unlock!(lock)`. Command code takes a lock only with `with_lock!(fx, item, mode, body!)`, which calls `unlock!` also when `body!` returns an error. The contract: (1) an item has one holder at a time, across all processes on the machine; (2) a lock ends when the holder releases it, or at most 30 s after the holder process ends (a crash or a kill); (3) a lock stays held during all other `Fx` calls of the holder, also a long download or probe round; (4) the lock of the item `X` is at the path `X.lock` (6.1). No other rule and no command says how a lock is made. CC12 is the implementation, and only the real `Fx` contains it. | A change of the lock mechanism (for example an OS file lock, when basic-cli has one, Design 6.2, HF3) changes CC12 and the real `Fx` only. The rules that take locks, the command code and the L2 tests stay the same. |
 | CC4 | A toolchain install (a compiler or Zig) follows the steps in the table below. | Only one process downloads a missing compiler. The others wait for it. |
 | CC5 | A process that waits for a lock prints `waiting for another tln: <item>` once to stderr. It waits until the lock ends (CC3, point 2). Ctrl-C stops the wait. | A wait needs no other timeout: a live holder releases the lock, and the lock of a dead holder ends. |
 | CC6 | `tools.json`, `projects.json` and `config.toml` change only under the lock of the file (the item `tools.json`, and so on, CC3). Talon takes the lock, reads the file, changes it, writes it (CC1), and releases the lock. It holds the lock for this step only, not during a build or a download. A command that builds first (`tln tool install`) takes the lock for its final step, and checks again for a binary name clash under the lock (6.4). | Last writer wins loses data: a lost `tools.json` entry leaves a binary that no command manages (T4), a lost `projects.json` entry lets GC remove a compiler that a project pins (6.3), and a lost `config.toml` change undoes `tln roc default`. The lock is held for milliseconds, so a wait is short. |
-| CC7 | Project files (the app header, member files, `talon.toml`) get no lock: people and editors write them, and they do not take Talon locks. Talon keeps the bytes that it read. Just before the `rename` (CC1), it reads the file again. Same bytes: Talon writes. Other bytes, but the same header text: Talon applies its span edit (H1) to the new bytes, then writes. Else Talon writes no project file, names the file, and stops with exit code 17 (`conflict`, section 3). For more than one file, Talon checks all of them first, then writes each. | A probe run can take minutes. Talon must not overwrite an edit that a person made in that time. The second of two `tln` commands in one project gets exit code 17 and runs again. |
+| CC7 | Project files (the app header, member files, `talon.toml`) get no lock: people and editors write them, and they do not take Talon locks. Talon keeps the bytes that it read. Just before the `rename` (CC1), it reads the file again. Same bytes: Talon writes. Other bytes, but each span that Talon edits has the same text (in a `.roc` file the header, in `talon.toml` each table that Talon changes): Talon applies its span edit (H1, `roc-toml`) to the new bytes, then writes. Else Talon writes no project file, names the file, and stops with exit code 17 (`conflict`, section 3). For more than one file, Talon checks all of them first, then writes each. | A probe run can take minutes. Talon must not overwrite an edit that a person made in that time. The second of two `tln` commands in one project gets exit code 17 and runs again. |
 | CC8 | `compat.db` uses the SQLite WAL journal (`PRAGMA journal_mode=WAL`) and `PRAGMA busy_timeout=5000`. Each write round of probe facts (PP4) is one transaction. If the database stays busy past the timeout, Talon keeps the facts in memory for this command, prints a warning, and goes on. When the file system does not support WAL, SQLite keeps its default journal, and the busy timeout still applies. | Readers do not block the writer in WAL mode. A fact is evidence: a lost write costs a probe later, not a wrong result. |
-| CC9 | The last use of a toolchain is the modification time of `toolchains/<id>/.last-use`. The proxy and each probe write this empty file before the compiler starts. | A write with no read needs no lock, so parallel builds do not wait for each other. `.talon.json` stays unchanged after the install. |
-| CC10 | `tln cache gc` takes the lock of the item `talon/gc` with `NoWait`. When another GC holds it, GC prints `another tln cache gc runs` and exits with code 0. For each toolchain to remove, GC takes its lock with no wait, and skips it when an install holds the lock. It also skips a toolchain with a last use (CC9) in the last day: a running build wrote it when it started. Then GC renames `toolchains/<id>/` to `toolchains/<id>.<16hex>.trash` and deletes that dir. `tln roc rm` (6.6) does the same with no age rule, because the user named the compiler. On Linux and macOS, a running compiler keeps its open file. On Windows, the `rename` fails while the compiler runs: Talon reports the compiler as in use, removes nothing, and exits with code 1. GC removes `packages/<hash>/` with the age rule of 6.3 only. | GC never removes a compiler while an install writes it, or a compiler that a build uses. A build of a project that is not known can lose a package while it runs. That build fails once, and the next `roc` run fetches the package again. |
+| CC9 | The last use of a toolchain is the time in `toolchains/<id>/.last-use`. The proxy and each probe write the time of Talon (`TALON_NOW`, section 1) to this file (CC1) before the compiler starts. | A write with no read needs no lock, so parallel builds do not wait for each other. `.talon.json` stays unchanged after the install. |
+| CC10 | `tln cache gc` takes the lock of the item `talon/gc` with `NoWait`. When another GC holds it, GC prints `another tln cache gc runs` and exits with code 0. For each toolchain to remove, GC takes its lock with no wait, and skips it when an install holds the lock. It also skips a toolchain with a last use (CC9) in the last day: a running build wrote it when it started. Then GC renames `toolchains/<id>/` to `toolchains/<id>.<16hex>.trash` and deletes that dir. `tln roc rm` (6.6) does the same with no age rule, because the user named the compiler. On Linux and macOS, a running compiler keeps its open file. On Windows, the `rename` fails while the compiler runs: Talon reports the compiler as in use, removes nothing, and exits with code 17 (`conflict`, section 3). GC removes `packages/<hash>/` with the age rule of 6.3 only. | GC never removes a compiler while an install writes it, or a compiler that a build uses. A build of a project that is not known can lose a package while it runs. That build fails once, and the next `roc` run fetches the package again. |
 | CC11 | `packages/<hash>/`, `talon/x/<build digest>/` and the pages in `talon/index/` get no lock. Two processes can write the same item. Each writes a temp (CC1). The first `rename` wins. The second drops its copy (a dir), or replaces the file with equal content (an index page). | The content of each item is fixed by its name (a hash, a digest) or is a full answer. Any copy is correct. roc takes no lock for `packages/`, so a Talon lock cannot exclude roc. |
-| CC12 | The implementation of CC3. The lock is the directory `<item>.lock/`. `lock!` takes it with `Path.create_dir!`, which fails when the directory exists. The holder writes its process id and host name to `owner` in that directory. The real `Fx` writes the file `beat` again every 2 s for each lock that it holds. It does this inside its own waits (the poll loop of 7.5 and PP1, and the wait of `lock!`), so command code does nothing for it. `unlock!` deletes the directory. A lock whose `beat` is older than 30 s is stale: `lock!` renames it to `<item>.lock.<16hex>.stale`, deletes that, and tries again. With `Wait`, `lock!` checks every 200 ms. | basic-cli has no OS file lock (Design 6.2, HF3). A lock in a child process does not work: a child that lives on after a crash of `tln` keeps the lock, and the `flock` command exists on Linux only. Cargo, Go and uv use an OS lock. npm tools (`proper-lockfile`) use this directory form. `mkdir` is atomic also on NFS. Limit: two processes that find the same stale lock in the same moment can both take it. This needs a crash first, and the temp and `rename` of CC1 keep each file whole. An OS lock has no such limit. |
+| CC12 | The implementation of CC3. The lock is the directory `<item>.lock/`. `lock!` takes it with `Path.create_dir!`, which fails when the directory exists. The holder writes a random token (16 hex digits from `Random`) and its start time to `owner` in that directory: basic-cli gives no process id and no host name. `unlock!` deletes the directory only when `owner` holds its own token. The real `Fx` writes the file `beat` again every 2 s for each lock that it holds. It does this inside its own waits (the poll loop of 7.5 and PP1, and the wait of `lock!`), so command code does nothing for it. `unlock!` deletes the directory. A lock whose `beat` is older than 30 s is stale: `lock!` renames it to `<item>.lock.<16hex>.stale`, deletes that, and tries again. With `Wait`, `lock!` checks every 200 ms. The age of `beat` is its modification time, compared with the real clock, not `TALON_NOW` (section 1). Each step of the real `Fx` that is not a wait ends in under 25 s, so a beat is never 30 s late: the real `Fx` starts each child process (`tar`, `roc unbundle`, `curl`, `wget`, probes) with `spawn!` and polls it, gives each `Http.send!` a timeout of 20 s, and a hash of an archive (at most 512 MB, Design 2) takes a few seconds. | basic-cli has no OS file lock (Design 6.2, HF3). A lock in a child process does not work: a child that lives on after a crash of `tln` keeps the lock, and the `flock` command exists on Linux only. Cargo, Go and uv use an OS lock. npm tools (`proper-lockfile`) use this directory form. `mkdir` is atomic also on NFS. Limit: two processes that find the same stale lock in the same moment can both take it. This needs a crash first, and the temp and `rename` of CC1 keep each file whole. An OS lock has no such limit. |
 
 Steps of a toolchain install (CC4). The same steps apply to `toolchains/zig-<version>/`:
 
@@ -1089,7 +1095,7 @@ basic-cli `Http.send!` blocks and keeps the whole body in memory (Design 6.2, HF
 | DA1 | The adapter downloads package archives (7.1), compiler and Zig archives (6.2, 6.6), prebuilt binaries (6.4, 6.5) and nothing else. Small API answers (DI2, DI8, CV1, the registry API) use `Http.send!`. |
 | DA2 | Talon uses `curl` when it is on `PATH`, else `wget`. `TALON_DOWNLOADER=curl` or `wget` selects one (section 1, environment variables). With none of them, the command stops with exit code 18 (`environment`). |
 | DA3 | Command lines. `curl`: `curl --fail --location --silent --show-error --proto =https,http --retry 2 --connect-timeout 30 --output <temp> <url>`. `wget`: `wget --quiet --tries=3 --timeout=30 --output-document=<temp> <url>`. Talon checks the URL scheme first (7.1, URL schemes). Talon passes no token and no header, so a download carries no credentials (section 1, DI9). Both programs read the proxy variables (`HTTPS_PROXY`, `NO_PROXY`) and the CA store of the system, so Talon reaches the network as other tools on that machine do. |
-| DA4 | The output goes to a temp file in the target dir (7.4, CC1). Talon checks the hash before any other use: BLAKE3 for a package (`roc unbundle`, 7.1), sha256 for a compiler (CV4), for Zig (D2) and for `tln` (S1). Then it renames or extracts the file. |
+| DA4 | The output goes to a temp file in the target dir (7.4, CC1). Talon checks the hash before any other use: BLAKE3 for a package (`roc unbundle`, 7.1), sha256 for a compiler (CV4), for Zig (D2) and for `tln` (S1). A source archive has no published hash (6.6, R7). Then it renames or extracts the file. |
 | DA5 | Talon runs up to 8 downloads at the same time. It polls them with `try_wait!` in the same loop as the probes. A download takes no probe slot (Resolution 4, PP1). The same item is downloaded once, also by many processes (7.4, CC4 for toolchains, CC11 for packages). |
 | DA6 | Progress is the size of the temp file, read in the poll loop. The total comes from the asset size in the release list (DI2, CV1), when it is known. |
 | DA7 | A child that exits with an error gives exit code 15 (`network`). The message names the URL and the last stderr line of the program. An HTTP error answer (`curl` exit 22, `wget` exit 8) makes Talon try the mirrors first (7.1). Ctrl-C also stops the children, because they share the process group (Unix) or the console (Windows). A temp file that stays is removed as in CC2. |

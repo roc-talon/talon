@@ -294,7 +294,7 @@ flowchart TD
 | 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. In P0, steps 4 and 5 do not run (Design 7, P0 limits). |
 | 7 | Write the header and `roc:`. Print the tuple, the probe count and the evidence for each choice. |
 
-Example failure output, with measured ranges, for an app that imports `parser.Yaml`:
+Example failure output, with measured ranges, for an app that imports `parser.Yaml`. It needs phase P1 (unit probes):
 
 ```text
 error: no tuple works
@@ -343,6 +343,8 @@ The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-dep <heade
 | PA4 | A patched entry is an anchor in `update` and `upgrade` (section 1). Talon prints `json: patched, held`. A command that names the entry frees it. |
 | PA5 | When a command moves a patched entry to a new release, Talon takes the diff of the copy against `packages/<base>/` and applies it to the new release in a temp copy. The probes of that release use the temp copy. A release on which the diff does not apply is not a candidate for that entry. When Talon writes the header, it replaces the copy and sets `base` to the new hash. When no candidate is left, Talon writes nothing and stops with exit code 10 (`no_tuple`). The explanation lists the files that do not apply, and names two fixes: edit the copy, or remove the `[patch]` entry. |
 | PA6 | A `base` that is not the hash of the header entry (for example after a hand edit of the header) is a stale patch. The proxy does not run the compiler: it stops with exit code 14 and names `tln install`. `tln install` applies the patch to the header release as in PA5, and does not change the header. `tln install --frozen` fails with exit code 14. |
+| PA7 | The diff of PA3 and PA5 is a unified diff with 3 lines of context, file by file. A pure function of Talon makes and applies it (`TESTING.md` 2.2, part A). A hunk applies when its context lines and old lines match the new release exactly, at one place in the file. That place can move by any number of lines. There is no fuzz: one changed context line makes the hunk fail. A file that the copy adds or deletes is added or deleted. A file that is not UTF-8 text is replaced whole. It applies only when the new release has the same bytes for it as `base`. |
+| PA8 | `tln patch` of the platform entry stops with exit code 2. A platform archive holds host binaries (21 MB for basic-cli), which do not belong in VCS. To change a platform, use a fork and its release, or a path entry. |
 
 ## 8. Libraries
 
@@ -362,7 +364,7 @@ A command can hold a variable: it fixes the variable at its current header value
 | `tln update X [Y...]` | Only the named ones | All others |
 | `tln update -i` | The ones the user picks in the picker (prompt NI2, CLI 4) | All others |
 | `tln update X@sel` | X, in the releases that match `sel`, also in a new series (section 10) | All others |
-| `tln upgrade` | All, with no package range (section 10) | Anchors (`=`) |
+| `tln upgrade` | All, with no package range (section 10) | Anchors (`=`), patched entries (PA4), fixed anchors (DI11) |
 | `tln upgrade X [Y...]` | Only the named ones, with no range. A named anchor is free too, except a fixed anchor (DI11). | All others |
 | `tln upgrade roc` | Only the nightly | All packages |
 | `tln upgrade X roc` | X and the nightly | All other packages |
@@ -423,6 +425,8 @@ A hold that cannot stay follows the consent rows above. `tln install --frozen` (
 | UP6 | When the nightly is free, the newest compiler release that the `nightly` switch (NS1, NS2) and `min-release-age` (C7) allow is a download that the command names: prompt NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (NI4). |
 | UP7 | Many free variables in all series give a large search. The budget P5 applies, and probes run in parallel (PP1). When the budget is spent, Talon writes nothing and stops with exit code 12 (`budget`). The error names `probe.max`. |
 | UP8 | `--strategy lowest` is an error (exit code 2): `upgrade` only moves up. |
+
+Example. It needs phase P2: the `log:` snapshot needs the registry.
 
 ```text
 $ tln upgrade
@@ -485,8 +489,8 @@ Use `--no-check` only when one of these is true:
 | 1 | Command argument | `roc +nightly-2026-10-06-c34079d check` | The user typed it for this one run. |
 | 2 | Environment | `ROC_TOOLCHAIN=nightly-2026-10-06-c34079d` | Set for a shell or a CI job. |
 | 3 | `roc:` entry of the target file header | `roc: "nightly-2026-10-09-258ab27"` | The header is the lock (G1). It is exact and it travels with the file. |
-| 4 | `talon.toml` `[toolchain] roc` | newest installed in range (`*`, a semver range, or `>=nightly-2026-10-09-258ab27`, NS7), as the `nightly` switch allows (NS3) | Intent. It is a range, so it only chooses when the header has no pin. |
-| 5 | `.roc-version` in the nearest parent directory | package repos | Other people's convention. Used only when no `talon.toml` is in a parent directory of the file. |
+| 4 | `[toolchain] roc` in the `talon.toml` of the project (CLI 1, PD6). In a workspace, the root file (Design 4.4, WS5). | newest installed in range (`*`, a semver range, or `>=nightly-2026-10-09-258ab27`, NS7), as the `nightly` switch allows (NS3) | Intent. It is a range, so it only chooses when the header has no pin. |
+| 5 | `.roc-version` in the nearest directory on the walk up from the target file (CLI 1, PD2) | package repos | Other people's convention. Used only when the project has no `talon.toml` (CLI 1, PD6). |
 | 6 | Global default | `tln roc default <tag>`, stored in `config.toml` (CLI 6.1) | Last resort of the toolchain manager. |
 | 7 | `roc` on `PATH` | `/usr/local/bin/roc`, a `roc` that the user installed by hand | Talon works with no installed compiler (Design 7, phase P0), as uv finds a Python on `PATH`. |
 

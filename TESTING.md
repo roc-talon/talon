@@ -133,11 +133,13 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
   given/home/        start state of HOME (config, toolchains, roc cache)
   given/project/     start state of the project (main.roc, talon.toml)
   given/http/        routes for the fake HTTP server (GitHub API JSON, release assets)
+  given/env          optional: more environment variables, one NAME=value for each line
   given/roc.tsv      answers of the fake roc: argv pattern, exit code, stdout file, stderr file
   expect/stdout      expected output, with paths written as $HOME and $PROJECT
   expect/stderr
   expect/exit        expected exit code
-  expect/tree.diff   expected change to given/ (a diff of the file trees, temp files left out)
+  expect/tree.diff   expected change to given/ (a diff of the file trees, temp files and talon/compat.db left out)
+  expect/facts.tsv   expected rows of talon/compat.db (optional, from P1)
   expect/roc.log     expected roc calls, in order (optional)
   tags               optional: real-roc, slow, tty, windows, exdev
 ```
@@ -147,13 +149,13 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
 | Item | How |
 | --- | --- |
 | Work dir | `$TMPDIR/talon-test/<case>/`. Copy `given/` there. On Linux, `/tmp` is often tmpfs. In the container it is a `--tmpfs` mount. |
-| Environment | `env -i`, then only `HOME`, `PATH`, `XDG_*`, `ROC_CACHE_DIR`, `TALON_*` set to the work dir, `TZ=UTC`, `LANG=C.UTF-8`, `CI=true` |
+| Environment | `env -i`, then only `HOME`, `PATH`, `XDG_*`, `ROC_CACHE_DIR`, `TALON_*` set to the work dir, `TZ=UTC`, `LANG=C.UTF-8`, `CI=true`, `TALON_REGISTRY=direct`, then the lines of `given/env`. So the change of the default registry in P2 (CLI 1) changes no case of P0 or P1 (Design 7). |
 | Paths | Absolute, with no `..`. With `..` in `XDG_CACHE_HOME`, `roc check` reports "No errors found" on an app with a type error, and `roc build` stops with `PathOutsideWorkspace` (`conformance/check-scope/README.md`). |
 | Network | Off (`--network none` in the container, or `bwrap --unshare-net`). A case that reaches the real network fails. |
 | Fake `roc` | `tests/fakes/roc` is first on `PATH`. It writes its argv to `roc.log` and answers from `given/roc.tsv`. With the tag `real-roc` (L4), the runner puts the pinned `roc` there instead. |
 | Fake HTTP | One local server for the run, on `127.0.0.1`. It serves `given/http/` and can answer 404, 403 rate limit, a slow body and a bad hash. Talon reaches its API routes through `TALON_GITHUB_API` (CLI 1, test hooks). A package with a `github.com` URL is pre-filled in `given/home/` (`packages/<hash>/`). A fetch test uses a loopback package URL. |
 | Clock | `TALON_NOW` fixes the clock of Talon (CLI 1, test hooks) |
-| TTY | A case with the tag `tty` runs under a pseudo terminal and reads its answers from `given/answers`. Else stdin and stderr are not a TTY (NR1). |
+| TTY | A case with the tag `tty` runs under a pseudo terminal and reads its answers from `given/answers`. The runner sets `TALON_INTERACTIVE=1` for it, because `CI=true` turns on non-interactive mode (CLI 4). Else stdin and stderr are not a TTY (NR1). |
 | Compare | stdout, stderr, exit code, tree diff and `roc.log`. A difference fails the case and prints a diff. |
 | Update | `UPDATE=1 tests/run.sh <case>` writes the actual output to `expect/`. Only for a change that the slice intends (TW11). |
 | Parallel | Cases run in parallel. Each has its own dirs. |
@@ -243,7 +245,7 @@ tmpfs is not the file system of all users. These cases need their own setup:
 | TW13 | A test names the rule ids that it checks, in a comment (`# H3: ...`) or in its case directory (`h3-...`). `scripts/rules.sh` counts this. `MISSING=1 scripts/rules.sh H NI` lists the rules with no test. Rule coverage is a lower limit: many design statements have no id. |
 | TW14 | Real-world inputs are fixtures: the headers of the cached packages, the releases in the roc-awesome list, and the `talon.toml` examples of the design. Their expected outputs are files in the repo. |
 | TW15 | A flaky test is a bug. There are no retries. A test that depends on time, order or the network gets the value from `Fx` (TW2) or a fake. |
-| TW16 | A design example (a command and its output in the design files) is an L3 case. If the design changes the example, the case changes in the same commit. |
+| TW16 | A design example (a command and its output in the design files) is an L3 case of the first phase that can run it: the phase of its command (Design 7), or the later phase that the design states next to the example. If the design changes the example, the case changes in the same commit. |
 
 ## 7. Agent workflow
 
@@ -312,15 +314,15 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 | Phase | Rule groups | Notes |
 | --- | --- | --- |
 | P0, generic packages | Their own rules, in their repositories (GP5) | First: `roc-header` (group key and MVS: Design 2 has the facts and tests), then `roc-semver`, `roc-base58`, `roc-toml`. Each is released before Talon uses it (GP3). |
-| P0, Talon | H, I, C, RP, E, J, OUT, NR, PD, DI, WS, the P0 prompts of NI (NI1 to NI3), rank 7 of Resolution 13, HF1, HF4, HF5, DA | The P0 commands and the P0 limits of Design 7: `install` (and `add`, `--frozen`), `remove`, `update`, `list`, `why`, `verify`, with `direct` as the index. A P0 test needs no compiler download and no unit probe, so P1 does not change its result. |
-| P1 | NS, P, PP, EP, PA, UP, DL, CV, T, X, B, S, IS, RM, R, LK, U, RU, RR, D, ST, CC, NI4 to NI15, HF2, HF3, HF6 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. IS is tested today by `install/test.sh`. |
+| P0, Talon | H, I, C, RP, E, J, OUT, NR, PD, DI, WS, the P0 prompts of NI (NI1 to NI3), rank 7 of Resolution 13, HF1, HF3, HF4, HF5, DA, CC1 to CC3, CC5 to CC7, CC11, CC12 | P0 writes project files, `packages/` and `projects.json` (PD9), so it needs the atomic writes and the locks. The P0 commands and the P0 limits of Design 7: `install` (and `add`, `--frozen`), `remove`, `update`, `list`, `why`, `verify`, with `direct` as the index. A P0 test needs no compiler download and no unit probe, so P1 does not change its result. |
+| P1 | NS, P, PP, EP, PA, UP, DL, CV, T, X, B, S, IS, RM, R, LK, U, RU, RR, D, ST, CC4, CC8 to CC10, NI4 to NI15, HF2, HF6, HF11 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. IS is tested today by `install/test.sh`. |
 | P2 and later | Registry. `publish`, `probe --share` (P2), `audit` (P3). | Needs the `cloudflare-workers` platform. Not in this file. |
 
 ## 8. Order of work
 
 | # | Task | Result |
 | --- | --- | --- |
-| 1 | `scripts/rules.sh` | Done (2026-10-15). 155 rule ids, 0 with a test. Revert check: a test file that names H3 makes the count 1; without it, 0. |
+| 1 | `scripts/rules.sh` | Done (2026-10-15). 155 rule ids at that time (`scripts/rules.sh` gives the current count), 0 with a test. Revert check: a test file that names H3 makes the count 1; without it, 0. |
 | 2 | Build one roc-fuzz example on the pinned nightly | Done (2026-10-15, `research/roc-fuzz-check/`). L1 is possible. TW7 stays as the fallback for a later nightly. |
 | 3 | `tests/commands/`: the fake `Fx`, the case runner, one example command | The L2 harness, with a test of each check (a wrong result, a wrong file tree, a missing call). Measure its build time. |
 | 4 | `tests/run.sh`, `tests/fakes/roc`, the fake HTTP server, one example case | The L3 runner, with a test of each compare (a wrong exit code, a wrong tree diff, an unexpected `roc` call) |

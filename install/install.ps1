@@ -123,8 +123,9 @@ try {
     if ($LASTEXITCODE -ne 0) { Fail 'the downloaded tln does not start on this machine' }
     $Exe = Join-Path $Bin 'tln.exe'
     if (Test-Path -LiteralPath $Exe) {
-        # A running tln.exe cannot be overwritten, but it can be renamed (S3)
-        $Old = Join-Path $Bin (".tln.old.{0}.exe" -f [Guid]::NewGuid().ToString('N'))
+        # A running tln.exe cannot be overwritten, but it can be renamed (S3). The ST10 name
+        # tln.<16hex>.del lets the next tln start delete it when the delete below fails.
+        $Old = Join-Path $Bin ("tln.{0}.del" -f [Guid]::NewGuid().ToString('N').Substring(0, 16))
         Move-Item -LiteralPath $Exe -Destination $Old
         Remove-Item -LiteralPath $Old -Force -ErrorAction SilentlyContinue
     }
