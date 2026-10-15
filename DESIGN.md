@@ -97,7 +97,7 @@ The app installs of `roc install` (section 2) are outside the cache root, one fo
 
 | Tool | Idea | Talon decision |
 | --- | --- | --- |
-| Bun | One fast binary. `add`, `remove`, `update -i`, `outdated`, `why`, `x`, `patch`. Catalogs. `minimumReleaseAge`. Security scanner API. | Adopt the CLI shape, catalogs, release age, scanner hook. |
+| Bun | One fast binary. `add`, `remove`, `update -i`, `outdated`, `why`, `x`, `patch`. Catalogs. `minimumReleaseAge`. Security scanner API. | Adopt the CLI shape, release age, scanner hook. No catalogs: a workspace has one version of each group (4.4, R-WS7). |
 | uv | Manages the toolchain. Global cache. `--resolution lowest-direct`. `exclude-newer`. | Adopt toolchain install, lowest resolution for libraries, time-based snapshots. |
 | Go modules | MVS needs no lockfile. `GOPROXY` is optional. Checksum database is a transparency log. `toolchain` directive downloads the compiler. | Adopt all four. Roc already uses MVS. |
 | Cargo | Sparse HTTP index. MSRV-aware resolver. Yank, not delete. Trusted publishing. | Adopt yank. Make the resolver nightly-aware (the Roc form of MSRV-aware). |
@@ -168,7 +168,7 @@ R-H8: A package header is also a lock, with one difference: consumers treat its 
 
 ### 4.3 talon.toml: intent only
 
-R-I2: Keys are header aliases. The header already gives the URL group, so most entries need only a range.
+R-I2: Keys are header aliases. A value is a range (`"^2.1"`), or a name and a range in the CLI ref form (`"roc-lang/http@^1"`, CLI 2, R-SL1). Talon reads `key = "<range>"` as the ref `key@<range>`, and `key = "<name>@<range>"` as `<name>@<range> --as key`. For a key that the header has, the header gives the URL group, so a range is enough. As with npm `package.json`, a user can add a dependency to `talon.toml` by hand, and `tln install` resolves it and writes the header entry (R-I5, R-I8).
 
 ```toml
 [toolchain]
@@ -179,11 +179,8 @@ nightly = true                 # nightlies are candidates (the default). See Res
 pf = "0.25.*"                  # the platform
 parser = "=2.0.0"              # anchor: hard pin
 json = "^2.1"
+http = "roc-lang/http@^1"      # not in the header yet: tln install adds it (R-I5)
 # util and others are absent: they follow the header with the default policy
-
-[dependencies.http]            # a new dependency, not yet in the header
-package = "roc-lang/http"
-version = "^1"
 
 [resolution]
 priority = ["parser", "pf", "roc"]  # what to keep newest first, see Resolution 1
@@ -197,12 +194,12 @@ probe = { max = 100, max-toolchains = 10, slots = 12 }
 | --- | --- | --- | --- |
 | R-I3 | yes | yes | The range in `talon.toml` |
 | R-I4 | yes | no | Implied: `^<header version>`. That is the same series as the header version (4.1), never lower than it. For `0.25.0`: `>=0.25.0, <0.26.0`. For `2.1.0`: `>=2.1.0, <3.0.0`. |
-| R-I5 | no | yes | `tln install` adds it to the header, after the group check below |
+| R-I5 | no | yes | `tln install` adds it to the header, as `tln add` adds the same ref (R-I8). Until then the key has no effect. |
 | R-I6 | no | no | Transitive. Set by package headers plus MVS. |
 
 R-I7: A caret range `^v` matches v and each newer version in the series of v. So `^2.1` is `>=2.1.0, <3.0.0`, and `^0.25.1` is `>=0.25.1, <0.26.0`. This is the npm and Cargo rule, and it follows the Roc group rule (section 2).
 
-R-I8: A user can rename an alias in the header. Then the key in `talon.toml` is "in talon.toml, not in header". So before `tln install` adds a header entry, it matches by group, not by alias:
+R-I8: `tln install` finds the package of each key that the header does not have, with the lookup of `tln add` (CLI 2, R-AD1 to R-AD6). A full name needs no search. A short name (the key, or the name in the value) is a registry search. Talon looks up all such keys first. If it cannot identify one or more of them (no match, more than one match, or the registry is off), it writes nothing. It lists each of these keys with its matches as full names, and stops with exit code 2. A user can rename an alias in the header, so the key of a package that is in the header can be "in talon.toml, not in header". So before `tln install` adds a header entry, it matches by group, not by alias:
 
 | Case | Talon does |
 | --- | --- |
@@ -221,10 +218,6 @@ R-I9: Talon never adds a second entry for a group that the header already has. T
 ```toml
 [workspace]
 members = ["apps/*/main.roc", "examples/*.roc"]
-
-[catalog]
-"someone/roc-json" = "^2.1"
-"roc-lang/basic-cli" = "^0.25"
 ```
 
 R-WS9: A member can be an app or a package. One resolution covers all members. Its variables:
@@ -244,9 +237,9 @@ R-WS10: Two series of one package are two groups (section 2), so they are two va
 | R-WS2 | A group variable has all constraints of each member entry for that group: the range in `talon.toml` or the implied range of that entry (4.3), and R-C1 to R-C9 (Resolution 2) in the closure of each member. |
 | R-WS3 | Two members with different versions of one group do not satisfy R-WS2 together. `tln install` resolves that group as an entry out of range (Resolution 9). The implied ranges are never lower than a header version, so the result is at least the highest member version. `--frozen` fails with exit code 14. |
 | R-WS4 | Two members with different `roc:` values have no nightly to hold (R-RP2). `install`, `add`, `update` and `remove` stop with exit code 2. The error lists the members and their pins, and names `tln roc use <id>` and `tln upgrade roc`. A member with no `roc:` entry gets the workspace value (R-RP3). |
-| R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[catalog]`, `[toolchain]` and `[resolution]`. It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, and R-WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
+| R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[toolchain]` and `[resolution]`. It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, and R-WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
 | R-WS6 | A `[dependencies]` key is an alias. It applies to each member under the directory of that `talon.toml` whose header has that alias. For a key that no such header has (row "no, yes" in 4.3), `tln install` adds the entry only when exactly one member is under that directory. Else it stops with exit code 2 and names `tln add --file <member file>` (CLI 1, R-PD5). |
-| R-WS7 | A `[catalog]` key is a full name (CLI 2, form 2), because members can use different aliases. A member uses it with `<alias> = "catalog:"`: the catalog entry of the package of that alias. A catalog entry that no member uses has no effect. |
+| R-WS7 | A range in any `talon.toml` of the workspace constrains the group variable of all members (R-WS2). So one range is enough for a group that many members use. Talon has no catalog (Bun, pnpm): a catalog keeps the members on one version, and R-WS2 already does that. |
 | R-WS8 | An alias that names different groups in different members is a tie (CLI 2). A command that takes names stops with exit code 2 and lists the full names. |
 
 | # | Command | Members that it writes |
@@ -518,7 +511,7 @@ Settled:
 | Q15 | Does `roc check` on an app check only the imported modules on every nightly? | Yes on all 20 nightlies that have a working basic-cli (`conformance/check-scope/`). The app that imports `Good` passes, the app that imports `Bad` fails, the package `main.roc` fails. Found on the way: when `XDG_CACHE_HOME` contains `..`, `roc check` prints "No errors found" for any app. Talon passes only canonical cache paths to roc (CLI 6.2). |
 | Q16 | Do platform hosts link statically? | Yes for musl. 6 platforms, all Linux targets (`conformance/host-link/`): each musl binary has no `NEEDED` and no interpreter. The only dynamic Linux binary is roc-ray, which has only a glibc target: `libc.so.6`, `libm.so.6`, `libX11.so.6`, with no symbol versions. No platform links OpenSSL. macOS binaries link only system libraries. Windows targets list only Windows system libraries. A tool records its libraries (R-T8). |
 | Q17 | Can Talon build roc from a GitHub archive with no `.git`? | Yes. Tested on `2664a27` (nightly 10-12) with Zig 0.17.0: `zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-2664a278` passes. `roc version` prints `git-2664a278`, and `roc check` works. Without the flag, the code (`getCompilerVersionGit`) gives `release-fast-no-git` (not tested). So git is not a build dependency (CLI 6.6, R-R3). |
-| Q19 | Split a tool-neutral `deps.toml` out of `talon.toml`, so that package authors who do not use Talon can adopt it? | No. (1) The tool-neutral manifest already exists: the header. roc reads it, and any tool can read it. (2) Talon reads no `talon.toml` of a dependency (R-I1). Its ranges are the intent of one project (4.3), and roc MVS ignores ranges (section 2). So a neutral file gives other projects and other tools nothing to use. (3) A package author already has nothing to adopt: `talon.toml` is optional (G2), and a package with only a header works with Talon. (4) A second file adds a merge rule (which file wins for a key) and one more name to learn. (5) A neutral name with no agreement from the Roc project is a Talon file with another name. If the Roc project defines a manifest later, Talon reads it. The `[dependencies]` and `[toolchain]` tables have no Talon-only syntax except `catalog:` (4.4), so that move is mechanical. |
+| Q19 | Split a tool-neutral `deps.toml` out of `talon.toml`, so that package authors who do not use Talon can adopt it? | No. (1) The tool-neutral manifest already exists: the header. roc reads it, and any tool can read it. (2) Talon reads no `talon.toml` of a dependency (R-I1). Its ranges are the intent of one project (4.3), and roc MVS ignores ranges (section 2). So a neutral file gives other projects and other tools nothing to use. (3) A package author already has nothing to adopt: `talon.toml` is optional (G2), and a package with only a header works with Talon. (4) A second file adds a merge rule (which file wins for a key) and one more name to learn. (5) A neutral name with no agreement from the Roc project is a Talon file with another name. If the Roc project defines a manifest later, Talon reads it. The `[dependencies]` and `[toolchain]` tables have no Talon-only syntax, so that move is mechanical. |
 | Q18 | Can 3 `roc build` runs share one compiler cache at the same time? | Yes. 100 iterations of 3 different apps, 50 on an empty cache and 50 on a warm cache, 2 runs: 600 of 600 builds pass, with the same output and the same bytes as a build that ran alone (`conformance/build-share/`). The build weight of 4 slots stays (Resolution 4). Found on the way: a warm build gives other bytes than a cold build, with the same output (R-T4). |
 | Q20 | Before the registry exists, where does the sha256 of a compiler download come from, and how does Talon read a GitHub release as a package candidate? | The GitHub REST API. Checked on 2026-10-15 with `gh api repos/roc-lang/nightlies/releases`: each asset of the nightlies has a `digest` field (`sha256:<hex>`), and the asset names follow `roc_nightly-<target>-<date>-<sha7>` (CLI 6.2, R-CV1 to R-CV5). Package releases (`roc-lang/basic-cli`, `lukewilliamboswell/roc-parser`) have one `<hash>.tar.zst` asset next to other assets, and basic-cli marks its `0.26.0-rc1` and `0.26.0-rc2` tags as `prerelease`. roc reads the version as the one `X.Y.Z` run anywhere in the URL, and the text around it is part of the group (`roc:src/base/url.zig:152-203`). So R-DI3 to R-DI5 (CLI 7.3) select the asset, skip prereleases, and get the group from the tag. |
 | Q22 | How does Talon find the project file, and how does a user name another one? | The walk of CLI 1, "The project" (R-PD1 to R-PD8): the nearest `main.roc` or workspace member, up to the repository root (`.git`), the home directory or `/`. The global flag `--file <path>` names another file. It replaces `--member`. The proxy keeps the target file of roc (R-PD7). `talon/projects.json` records each project that a command or the proxy uses (R-PD9 to R-PD13). |

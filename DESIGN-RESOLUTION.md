@@ -329,7 +329,7 @@ R-OV1: To raise a transitive dependency (for example, a security fix), the app n
 
 ```toml
 [overrides]
-parser = { package = "lukewilliamboswell/roc-parser", version = "^2.0.3" }
+parser = "lukewilliamboswell/roc-parser@^2.0.3"   # the value form of Design 4.3, R-I2
 ```
 
 R-OV2: The raise can break a package that was not written for the new version (the `http 1.9.0` test in Design 2). So the solver treats an override as a free variable, and the whole-app probe (section 5 step 6) covers it.
@@ -486,7 +486,7 @@ These are resolve flags (CLI 1). They apply to commands that resolve.
 
 | # | Flag | Meaning |
 | --- | --- | --- |
-| R-LF1 | `--frozen` | Do not resolve. Fetch the closure, check each hash, and fail if the header does not satisfy `talon.toml`. Write nothing. For CI. Same idea as Bun `--frozen-lockfile`. It does not imply `--offline` (Cargo `--frozen` does). |
+| R-LF1 | `--frozen` | Do not resolve. Fetch the closure, check each hash, and fail if the header does not satisfy `talon.toml`, or `talon.toml` has a key that the header does not have (Design 4.3, R-I5). Write nothing. For CI. Same idea as Bun `--frozen-lockfile`. It does not imply `--offline` (Cargo `--frozen` does). |
 | R-LF2 | `--no-probe` | Run no new unit probes (ladder step 1). Use known evidence only. The final ladder (steps 2 and 3 of section 4) still runs. |
 | R-LF3 | `--no-check` | Skip the baseline check and the final ladder: the whole-app check and the build (section 4, and section 5 step 6). Talon still writes the header, with no local proof for the tuple. R-H6 keeps the old `roc:` pin. |
 | R-LF4 | `--dry-run` | Print the header diff and the `talon.toml` diff. Write no project file. Probe results still go in `compat.db`, because they are facts (section 3). Talon answers No to optional downloads (R-NI4). A required download follows the consent rules (R-DL1 to R-DL6). |
