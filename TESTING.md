@@ -315,7 +315,7 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 | --- | --- | --- |
 | P0, generic packages | Their own rules, in their repositories (GP5) | First: `roc-header` (group key and MVS: Design 2 has the facts and tests), then `roc-semver`, `roc-base58`, `roc-toml`. Each is released before Talon uses it (GP3). |
 | P0, Talon | H, I, C, RP, E, J, OUT, NR, PD, DI, WS, TF, the P0 prompts of NI (NI1 to NI3), rank 7 of Resolution 13, HF1, HF3, HF4, HF5, DA, CC1 to CC3, CC5 to CC7, CC11, CC12 | P0 writes project files, `packages/` and `projects.json` (PD9), so it needs the atomic writes and the locks. The P0 commands and the P0 limits of Design 7: `install` (and `add`, `--frozen`), `remove`, `update`, `list`, `why`, `verify`, with `direct` as the index. A P0 test needs no compiler download and no unit probe, so P1 does not change its result. |
-| P1 | NS, P, PP, EP, PA, UP, DL, CV, T, X, B, S, IS, RM, R, LK, U, RU, RR, D, ST, CC4, CC8 to CC10, NI4 to NI15, HF2, HF6, HF11 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. IS is tested today by `install/test.sh`. |
+| P1 | NS, P, PP, PB, EP, PA, UP, DL, CV, T, X, B, S, IS, RM, R, LK, U, RU, RR, D, ST, CC4, CC8 to CC10, NI4 to NI15, HF2, HF6, HF11 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. IS is tested today by `install/test.sh`. |
 | P2 and later | Registry. `publish`, `probe --share` (P2), `audit` (P3). | Needs the `cloudflare-workers` platform. Not in this file. |
 
 ## 8. Order of work

@@ -85,7 +85,7 @@ The matrix makes probes rare. A user who adds a common package gets a known answ
 | Producer | Runs | Trust |
 | --- | --- | --- |
 | Talon compat bot | A scheduled GitHub Actions workflow. For each new nightly, it runs unit probes on every indexed hash. For each new release, it searches the nightly range (Resolution 4). Posts results with an OIDC token. | Full |
-| Release workflow | `tln probe --range` before `tln publish` | Full, tied to the publisher |
+| Release workflow | `tln probe --range <bundle file>`, then `tln publish` sends the facts (Resolution 4, PB5) | Full, tied to the publisher |
 | Users | `tln probe --share` | Hint only (rank 6) |
 
 When the bot has a result for each indexed hash on a release, it marks that release as swept. The matrix rows that the client gets carry the swept marks. The resolver finds epochs only between swept releases (Resolution 4, EP2).
@@ -118,6 +118,8 @@ sequenceDiagram
 | GitHub App webhook | `release.published` | App installation on the repo |
 | `POST /v1/ingest` | Anyone, with a public URL | None. The bytes and the tag are public, and the hash checks them. |
 
+`tln publish` also sends the real facts of the released hash (Resolution 4, PB5). The Worker writes them as `compat` rows with the source `author`, with the release.
+
 For a GitHub release, each path selects the package asset and reads the version and the group with the rules of `direct` mode (CLI 7.3, DI3 to DI5). So the registry does not index a draft, a prerelease, or a release with 0 or 2 package assets, and `tln` sees the same candidates in both modes. A URL on another host gets the version and group from the roc rule (Design 2), as in DI5.
 
 Compiler releases, from P2:
@@ -144,7 +146,7 @@ Patterns of the Worker host:
 
 | Pattern | Talon Worker |
 | --- | --- |
-| App API | `cloudflare-workers/API.md`. One entry `event! : Event => Outcome` for all Workers handler kinds. Typed modules (`Http`, `D1`, `R2`, `Cache`, `Crypto`, ...) build programs of JS ops, and one JSPI wait runs one program (`await!`). Sync JS APIs use `call!` with no wait. Zig code with no Workers API (zstd) uses `native!`. API.md 1 is the audit of what the registry needs (RN1 to RN15). |
+| App API | `cloudflare-workers/API.md`. One entry `event! : Event => Outcome` for all Workers handler kinds. Typed modules (`Http`, `D1`, `R2`, `Cache`, `WebCrypto`, ..., signatures in `cloudflare-workers/MODULES.md`) build programs of JS ops, and one JSPI wait runs one program (`await!`). Sync JS APIs use `call!` with no wait. Zig code with no Workers API (zstd) uses `native!`. API.md 1 is the audit of what the registry needs (RN1 to RN15). |
 | Arguments | JS reads them before its first `await`, because they can be on the stack. |
 | Results | JS writes the body with `js_alloc` into a heap record, not the stack. |
 | Tests | Pure logic: `roc test`. Handlers: in Miniflare with local D1 and R2 and a fake GitHub service (API.md 11). Not a scripted record in `roc test`: an `expect` cannot run an effect (`research/core-shape/`). |

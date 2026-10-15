@@ -207,3 +207,26 @@ Checked against the 331 releases of `roc-lang/nightlies` and `roc:src/base/roc_v
 | 20 | Low | `probe` scope, `list` marks | CLI 1, CLI 2 |
 | 21 | Low | Hand edits of `config.toml` | CC6 |
 | 22 | Low | No source of compiler releases | CV1, NS2 |
+
+## Round 7: audit (2026-10-15)
+
+Checked against `roc help` of the pinned nightly and `roc:src/cli/install.zig`. All points below are fixed.
+
+| # | Level | Gap | Fix |
+| --- | --- | --- | --- |
+| 1 | Serious | `roc install` and `roc run <bundle URL>`: per-compiler installs, and the source of a tool release | Design 2 (new row), 2.2, CLI 6.2 (proxy row), 6.3, 6.4 T10, RU3, RM1, Resolution 13 |
+| 2 | Serious | `tln add <alias>`: `add` is only a spelling of `install`, and form 1 applies | CLI 1, CLI 2 (scope, lookup, "An entry that is in the header") |
+| 3 | Serious | `strategy = "lowest"` against "newest release in range" | CLI 2, CLI 7.3 DI9, Resolution 1, Resolution 8 |
+| 4 | Medium | `tln update` showed the nightly as free | Resolution 9 |
+| 5 | Medium | The ladder for a package or platform project file | Resolution 4 |
+| 6 | Medium | `tln probe` had no rules | Resolution 4, PB1 to PB6, CLI 1, Registry 6, 7 |
+| 7 | Medium | Write order of `talon.toml` and the header | CLI 7.4, CC7 |
+| 8 | Medium | The baseline download of `tln roc use` | CLI 6.6 U3, NI5, download consent |
+| 9 | Medium | A lock directory with no `beat` never went stale | CLI 7.4, CC12 |
+| 10 | Low | `tln upgrade roc --no-check` | Resolution 10, UP9, CLI 3 |
+| 11 | Low | The P0 error named flags that P0 does not read | Design 7, P0 limits |
+| 12 | Low | `--as` with many names, `--no-pin` on `update`, missing command flags | CLI 1, CLI 2 |
+| 13 | Low | Exit code of a table in the wrong workspace `talon.toml` | Design 4.4 WS5, CLI 3 (19) |
+| 14 | Low | GC could remove a package that a resolve reads | CLI 6.3 |
+| 15 | Low | `roc deps` and `roc bump` | Design 2 (new row), 6.3, Q31 |
+| 16 | Low | The CI file of `tln init` installed the newest Talon | CLI 5, Design 8 |

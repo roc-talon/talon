@@ -31,7 +31,7 @@ Any variable can be an anchor: a hard pin (`=`) in `talon.toml`, or a `tln add p
 | "My team uses nightly 10-09. Find packages that work with it." | `roc = "=nightly-2026-10-09-258ab27"` |
 | "Keep the platform. Move the rest." | `pf = "=0.25.0"` |
 
-When many tuples work, `priority` breaks ties: the solver maximizes the version of the first name, then the second, and so on. The default is: direct deps in header order, then `pf`, then `roc`. `priority` orders only the free variables. A command can hold other variables for one run (section 9).
+When many tuples work, `priority` breaks ties: the solver maximizes (with `strategy = "lowest"`, minimizes) the version of the first name, then the second, and so on. The default is: direct deps in header order, then `pf`, then `roc`. `priority` orders only the free variables. A command can hold other variables for one run (section 9).
 
 ### The `nightly` switch
 
@@ -97,6 +97,8 @@ A probe runs one compiler on one target and classifies the result. Probes form a
 | 3 | Build | `roc build main.roc --output=<tmp>` for the host target | Link or target-file errors blame the platform for that target. Other errors as in step 2. Talon can skip this step (see "Build skip"). |
 
 Step 3 catches what `check` cannot see: a missing host file for the target, link errors, and code generation bugs. It runs once, on the final tuple. (Measured: 309 ms for a basic-cli app.)
+
+A project file that is a package or a platform (CLI 1, PD8) has no app. Then step 2 runs `roc check` on that file, which works with no app (Design 2). Its own files count as app files. Step 3 does not run, because roc builds only an app, so there is no build skip. The lexical scan (below) starts at every module of the project file, not at the `import` lines of an app. `tln init package` follows this rule (CLI 5).
 
 ### Baseline check
 
@@ -266,6 +268,19 @@ epochs : List(Release), Facts -> { epochs : List(Interval), inferred : Facts }
 
 With no bot data (registry off), each hash starts with the release date and `roc:` pin as hints (section 3). EP4 then gives one epoch per release, and only the "between" case of EP6 infers facts.
 
+### `tln probe`
+
+`tln probe` runs probes and prints the facts. It writes no project file. Its facts go in `compat.db` (P4), as the facts of a resolve do.
+
+| # | Rule |
+| --- | --- |
+| PB1 | The target is one of three. A header alias: the hash of that entry. A path to a `<hash>.tar.zst` file: Talon checks its hash and extracts it as a package (CLI 7.1), and probes that hash. No argument: the project file (CLI 1, PD1 to PD8). The project file has no hash, so its results go in no `compat.db` row: Talon keeps them in memory and prints them. |
+| PB2 | With no `--range`, Talon runs the ladder on the compiler that section 13 selects: step 1 for a hash, steps 2 and 3 for the project file (with the rule for a package or platform above). There is no baseline: each error counts. |
+| PB3 | `--range` finds the range of the target in the domain D (EP rules): the maximal interval of D that contains the newest release with a real pass, in which each release has a pass, real or inferred (EP6). Talon probes only the candidates that the `nightly` switch and `min-release-age` allow (NS3, C7). It starts at the newest installed candidate. Each round probes 3 releases (PP2). An end of the range is a release with a real pass next to a release with a real fail, or an end of D. |
+| PB4 | Compiler downloads are optional probe downloads (NI4, DL4, DL6), with the cap `probe.max-toolchains` and the budget `probe.max` (P5). When the budget is spent, or no download is allowed, Talon prints the range that it found, marks each end that is not a real fact as `unknown`, and exits with code 12 (`budget`). |
+| PB5 | `tln publish` (Registry 7) sends the real facts of the released hash from `compat.db`. The release workflow runs `roc bundle`, `tln probe --range <bundle file>`, the upload of the asset, then `tln publish`. The registry stores these rows with the source `author` (Registry 5, 6). |
+| PB6 | `--share` sends the real facts of the target hash to `POST /v1/compat` as user hints (rank 6, section 3). It needs a registry: with `direct`, Talon stops with exit code 2. The project file has no hash, so `--share` with no argument stops with exit code 2. |
+
 ## 5. Algorithm
 
 PubGrub with a lazy oracle. A failed probe becomes a learned incompatibility, the same way a failed version constraint does.
@@ -353,7 +368,9 @@ The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-dep <heade
 | --- | --- |
 | Record the lowest working versions in the package header | `tln update --strategy lowest` |
 | Test with the newest versions without editing the header | `tln verify --strategy highest` (uses `--replace-dep`, CLI 1) |
-| Record the nightly range that the package checks on | `tln probe --range` (publishes evidence with the release) |
+| Record the compiler range that the package checks on | `roc bundle`, then `tln probe --range <bundle file>`. `tln publish` sends these facts with the release (section 4, PB5). |
+
+`lowest` moves a version down only inside its range. The implied range (Design 4.3) starts at the header version, so with no `talon.toml` key, `tln update --strategy lowest` changes nothing. To lower `json`, set a range first, for example `json = "^2.0"`.
 
 ## 9. Scope of `update`, `upgrade` and `install`
 
@@ -361,7 +378,7 @@ A command can hold a variable: it fixes the variable at its current header value
 
 | Command | Free variables | Held variables |
 | --- | --- | --- |
-| `tln update` | All, inside their ranges | None |
+| `tln update` | All packages, inside their ranges | The nightly (RP2) |
 | `tln update X [Y...]` | Only the named ones | All others |
 | `tln update -i` | The ones the user picks in the picker (prompt NI2, CLI 4) | All others |
 | `tln update X@sel` | X, in the releases that match `sel`, also in a new series (section 10) | All others |
@@ -372,7 +389,7 @@ A command can hold a variable: it fixes the variable at its current header value
 
 | Case | `priority` (section 1) |
 | --- | --- |
-| `tln update` | As set. The default is direct deps, then `pf`, then `roc`. |
+| `tln update` | As set, without `roc`: the nightly is held (RP2). The default order is direct deps, then `pf`. |
 | `tln update X Y` | Only X and Y are ordered, in the order of `priority`. A held variable has no rank. So `tln update json` cannot move `pf` or `roc`. |
 | `tln upgrade roc` | The nightly is the only free variable. It moves to the newest nightly that all held hashes pass on (section 3). |
 | `tln upgrade X roc` | The order of `priority` for X and `roc`. By default, X is first. |
@@ -426,6 +443,7 @@ A hold that cannot stay follows the consent rows above. `tln install --frozen` (
 | UP6 | When the nightly is free, the newest compiler release that the `nightly` switch (NS1, NS2) and `min-release-age` (C7) allow is a download that the command names: prompt NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (NI4). |
 | UP7 | Many free variables in all series give a large search. The budget P5 applies, and probes run in parallel (PP1). When the budget is spent, Talon writes nothing and stops with exit code 12 (`budget`). The error names `probe.max`. |
 | UP8 | `--strategy lowest` is an error (exit code 2): `upgrade` only moves up. |
+| UP9 | `--no-check` with a free nightly (no names, or the name `roc`) is an error (exit code 2): H6 lets no pin move without the check, as U4 (CLI 6.6). `tln upgrade X --no-check` holds the nightly and works. |
 
 Example. It needs phase P2: the `log:` snapshot needs the registry.
 
@@ -495,7 +513,7 @@ Use `--no-check` only when one of these is true:
 | 6 | Global default | `tln roc default <tag>`, stored in `config.toml` (CLI 6.1) | Last resort of the toolchain manager. |
 | 7 | `roc` on `PATH` | `/usr/local/bin/roc`, a `roc` that the user installed by hand | Talon works with no installed compiler (Design 7, phase P0), as uv finds a Python on `PATH`. |
 
-The proxy finds the target file (rank 3) in the `roc` arguments: the first argument that names a `.roc` file. With no such argument, it uses `main.roc` in the current directory, as roc does. A command with no file (`roc version`, `roc help`) has no target file, so rank 3 does not apply. A `tln` command uses its project file (CLI 1, PD1 to PD8) as the target file. The proxy rule is PD7.
+The proxy finds the target file (rank 3) in the `roc` arguments: the first argument that names a `.roc` file. With no such argument, it uses `main.roc` in the current directory, as roc does. A command with no file (`roc version`, `roc help`, `roc install`, `roc run` with a bundle URL or an install name) has no target file, so rank 3 does not apply. A `tln` command uses its project file (CLI 1, PD1 to PD8) as the target file. The proxy rule is PD7.
 
 Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6.2). A file is the launcher when it has the same size and sha256 as the running `tln`. Talon keeps this result in `talon/path-roc.json` with the id, so it hashes each file once. An old copy of a launcher (another Talon version) is not equal, so the proxy also sets `TALON_IN_PROXY=1` for the compiler that it runs: a proxy that sees it does not use rank 7, and cannot run itself again and again. Talon runs `roc version` on it once for each binary, and keeps the id in `talon/path-roc.json` (CLI 6.1). The output `Roc compiler version <id>` gives its id:
 

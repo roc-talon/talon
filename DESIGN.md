@@ -4,7 +4,7 @@ Talon is a package manager and compiler manager for Roc. The CLI is `tln`.
 
 | Item | Value |
 | --- | --- |
-| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). Round 4 (2026-10-15): readiness audit, 18 gaps fixed (`docs/cli-audit.md`, round 4). Round 5 (2026-10-15): consistency audit, 19 fixes (`docs/cli-audit.md`, round 5). Round 6 (2026-10-15): audit, 22 fixes (`docs/cli-audit.md`, round 6). |
+| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). Round 4 (2026-10-15): readiness audit, 18 gaps fixed (`docs/cli-audit.md`, round 4). Round 5 (2026-10-15): consistency audit, 19 fixes (`docs/cli-audit.md`, round 5). Round 6 (2026-10-15): audit, 22 fixes (`docs/cli-audit.md`, round 6). Round 7 (2026-10-15): audit, 16 fixes (`docs/cli-audit.md`, round 7). |
 | Target compiler | Zig-based Roc, `nightly-2026-10-09-258ab27`. Source facts from roc-lang/roc at `2664a27`. |
 | Scope | CLI, resolver, compatibility prober, toolchain manager, registry on Cloudflare |
 | Language | Roc for the CLI and the registry Worker (section 6) |
@@ -61,6 +61,8 @@ Each fact was checked in the compiler source or with a test on `nightly-2026-10-
 | `roc check` works on a package or platform `main.roc` with no app. It takes 0.4 s to 1.9 s on this machine. On an app, it checks only the modules that the app imports. | Tests, Resolution 4 | A compatibility probe is cheap. A unit fail is per module. |
 | Only 3 of 46 cached packages pin `roc:` in their header. `lukewilliamboswell/roc-parser` (`7CLzCK6q...`) fails on the 10-09 nightly with "redundant expose". | Cache scan and test | Compatibility evidence is sparse. Talon must find it by itself. |
 | `--replace-dep OLD NEW` swaps one source for one command. It edits no file. | `roc:src/cli/cli_args.zig:118-176` | Patches need no header edit. |
+| roc installs apps by itself. `roc install <name> <bundle URL>` builds an app bundle with `--opt=speed`. `roc run <name>` runs the binary, and `roc run <bundle URL>` builds and runs a bundle. An app release is a `<hash>.tar.zst` bundle, as a package release is. The installs are not in the cache: `$ROC_INSTALL_DIR`, else `$XDG_DATA_HOME/roc`, else `~/.local/share/roc` (`~/Library/Application Support/roc` on macOS, `%APPDATA%\Roc` on Windows), with one folder for each compiler version. | `roc:src/cli/install.zig:155-202`, `roc:src/cli/cli_args.zig:745-790`. In `roc help` of `nightly-2026-10-09-258ab27`. | An install of roc works only with the compiler that made it. After a change of the selected compiler, `roc run <name>` does not find it. This is roc behavior. The proxy passes `roc install` and `roc run` to roc with no change, and Talon never reads or removes these folders (CLI 6.2, 6.3, RM1). `tln tool install` keeps its own store (CLI 6.4, T3, T5). The source of a tool release is its app bundle (CLI 6.4, T10). |
+| `roc deps <file>` prints the declared dependency tree of an app, package or platform, with full URLs. It downloads missing packages and compiles nothing. `roc bump` compares the public API of a package with an earlier version and reports the semver bump that it needs. | `roc help` of `nightly-2026-10-09-258ab27`. Test: `roc deps conformance/host-link/apps/basic-cli-0.25.0.roc` printed the platform and its `http 1.0.0` entry. | The conformance suite compares the closure that Talon reads with `roc deps` (6.3). `roc bump` is a possible check for `tln publish` (Q31). |
 | Limits: 10 MB per package, 100 MB per closure (512 MB for a platform). | `roc-syntax` reference | Small enough to hash and inspect inside a Worker. |
 
 ### 2.1 What the hash fixes
@@ -88,6 +90,8 @@ So the identity of a build is the tuple (set of resolved hashes, nightly, target
 `roc` has no `clean` command. It starts a background cleanup on each run (`roc:src/compile/cache_cleanup.zig:89`). That cleanup deletes old files inside the build caches. It never deletes a cache dir, a package or a sidecar. Talon fills that gap (CLI 6.3).
 
 Note: the packages root ignores `$ROC_CACHE_DIR`. The build caches honor it. Talon uses the same two rules.
+
+The app installs of `roc install` (section 2) are outside the cache root, one folder for each compiler version. They are not a cache. roc owns them, and Talon does not clean them (CLI 6.3, RM1).
 
 ## 3. Prior art
 
@@ -240,7 +244,7 @@ Two series of one package are two groups (section 2), so they are two variables.
 | WS2 | A group variable has all constraints of each member entry for that group: the range in `talon.toml` or the implied range of that entry (4.3), and C1 to C9 (Resolution 2) in the closure of each member. |
 | WS3 | Two members with different versions of one group do not satisfy WS2 together. `tln install` resolves that group as an entry out of range (Resolution 9). The implied ranges are never lower than a header version, so the result is at least the highest member version. `--frozen` fails with exit code 14. |
 | WS4 | Two members with different `roc:` values have no nightly to hold (RP2). `install`, `add`, `update` and `remove` stop with exit code 2. The error lists the members and their pins, and names `tln roc use <id>` and `tln upgrade roc`. A member with no `roc:` entry gets the workspace value (RP3). |
-| WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[catalog]`, `[toolchain]` and `[resolution]`. It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, PD6, and WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 2. So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
+| WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[catalog]`, `[toolchain]` and `[resolution]`. It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, PD6, and WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
 | WS6 | A `[dependencies]` key is an alias. It applies to each member under the directory of that `talon.toml` whose header has that alias. For a key that no such header has (row "no, yes" in 4.3), `tln install` adds the entry only when exactly one member is under that directory. Else it stops with exit code 2 and names `tln add --file <member file>` (CLI 1, PD5). |
 | WS7 | A `[catalog]` key is a full name (CLI 2, form 2), because members can use different aliases. A member uses it with `<alias> = "catalog:"`: the catalog entry of the package of that alias. A catalog entry that no member uses has no effect. |
 | WS8 | An alias that names different groups in different members is a tie (CLI 2). A command that takes names stops with exit code 2 and lists the full names. |
@@ -277,12 +281,13 @@ Rule ids, and where each group is:
 | C1 to C9 | Constraints | Resolution 2 |
 | P1 to P8 | Probe rules | Resolution 4 |
 | PP1 to PP5 | Parallel probes | Resolution 4 |
+| PB1 to PB6 | `tln probe` | Resolution 4 |
 | RP1 to RP4 | The `roc:` pin | Resolution 9 |
-| UP1 to UP8 | Upgrade and new series | Resolution 10 |
+| UP1 to UP9 | Upgrade and new series | Resolution 10 |
 | E1 to E4, J1 to J6 | Exit codes, `--json` | CLI 3 |
 | NI1 to NI15, NR1 to NR6 | Prompts | CLI 4 |
 | DL1 to DL6 | Download consent | CLI 6.2 |
-| T1 to T9, X1 to X5, B1 to B8 | Global tools, `tln x`, build reuse | CLI 6.4 |
+| T1 to T10, X1 to X5, B1 to B8 | Global tools, `tln x`, build reuse | CLI 6.4 |
 | S1 to S5, IS1 to IS8, RM1 to RM6 | Talon as a tool, install scripts, remove Talon | CLI 6.5 |
 | R1 to R7, LK1 to LK4, U1 to U6, RU1 to RU4, RR1 to RR3, D1 to D3 | Compilers from source, links and copies, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
 | ST1 to ST11 | Setup, bin dir entries and launchers | CLI 6.7 |
@@ -299,7 +304,7 @@ Rule ids, and where each group is:
 | OUT1 to OUT5 | Who decides the output | CLI 3 |
 | GP1 to GP6 | Generic packages | 6.1 |
 | P0 to P4 | Phases | 7 |
-| Q1 to Q24 | Questions | 9 |
+| Q1 to Q31 | Questions | 9 |
 
 The phases P0 to P4 and the probe rules P1 to P8 use the same letter. The text near each id tells which one it is.
 
@@ -394,7 +399,7 @@ talon/
   cloudflare-workers/  submodule: the generic platform (Zig host, JS shim, bench/)
   install/       install.sh, install.ps1 and their test (CLI 6.5)
   sql/           D1 schema and migrations
-  conformance/   fixtures run against each new nightly: group key, MVS, cache contract, header edits
+  conformance/   fixtures run against each new nightly: group key, MVS, cache contract, header edits, the closure against `roc deps`
   tests/         CLI scenario tests, fakes, the runner (TESTING.md 3)
   scripts/       rules.sh (rule coverage), revert-check.sh
   research/      measurements that are not conformance, for example test-fs/
@@ -403,7 +408,7 @@ talon/
 
 The `cloudflare-workers` platform lives in its own repository and is released like any Roc platform. It is a git submodule of Talon at `cloudflare-workers/`, so platform and registry changes can be developed together. Its `bench/` holds the JSPI measurements (Q12).
 
-The conformance suite checks that Talon and `roc` agree on group keys, version selection and the cache layout, for every new nightly. The tests from section 2 are its first fixtures.
+The conformance suite checks that Talon and `roc` agree on group keys, version selection, the cache layout and the declared closure (`roc deps`, section 2), for every new nightly. The tests from section 2 are its first fixtures.
 
 ## 7. Phases
 
@@ -431,7 +436,7 @@ P0 limits. P0 runs the rules of the design as written, with less to work with. P
 | Item | P0 | P1 adds |
 | --- | --- | --- |
 | Compiler | The only installed compiler is the `roc` on `PATH` (Resolution 13, rank 7). Ranks 1 to 4 can select it when they name its id. There is no `toolchains/` and no global default. | Installed compilers, ranks 1 to 6 with downloads |
-| Compiler downloads | None. A rank that selects another compiler is a required download (DL2). P0 refuses it as `TALON_AUTO_INSTALL=no` does: exit code 13 (DL5). Prompts NI4, NI5, NI6 and NI12 never show. | The consent rules DL1 to DL6 |
+| Compiler downloads | None. A rank that selects another compiler is a required download (DL2). P0 refuses it as `TALON_AUTO_INSTALL=no` does: exit code 13 (DL5). The error names the compiler id, and says that P0 runs only the `roc` on `PATH`. It does not name `--allow-downloads` or `TALON_AUTO_INSTALL`: P0 does not read them. Prompts NI4, NI5, NI6 and NI12 never show. | The consent rules DL1 to DL6 |
 | Nightly | Always held (RP2). With no `roc:` entry, Talon writes the id of the `roc` on `PATH` (RP3), if it is a nightly or a release. | `upgrade roc`, `roc use` |
 | Probes | The baseline check, the whole-app check and the build (ladder steps 2 and 3, Resolution 4) on one tuple. No unit probes (step 1). No `compat.db`, so the build skip never applies. | Unit probes, `compat.db`, the build skip |
 | Search | One tuple: the best one by `priority` under C1 to C4, C6, C7 and C9 (Resolution 5 step 3). If the ladder fails on it, Talon stops with exit code 10 and the blame of the ladder. | The PubGrub oracle loop (Resolution 5 steps 4 and 5), which tries other tuples |
@@ -446,7 +451,7 @@ A P0 test of a failed ladder uses a case where no other tuple exists (for exampl
 | --- | --- |
 | Tampered package bytes | Hash in the URL. Roc and Talon both check it. |
 | Registry maps a label to a bad hash for some users | Append-only log with signed checkpoints and inclusion proofs (P3). The header keeps the hash, and later builds do not ask the registry. |
-| Compromised maintainer pushes a release | `min-release-age` (default 2 days, C7 in Resolution 2). It also applies to the compilers that Talon selects by itself, and to the releases that `tln tool install`, `tln x` and `tln tool update` select, Talon included (CLI 6.4, T9). Provenance shown in `tln add`. Scanner hook. |
+| Compromised maintainer pushes a release | `min-release-age` (default 2 days, C7 in Resolution 2). It also applies to the compilers that Talon selects by itself, and to the releases that `tln tool install`, `tln x` and `tln tool update` select, Talon included (CLI 6.4, T9). Provenance shown in `tln add`. Scanner hook. The CI file of `tln init` installs a fixed Talon version (CLI 5). |
 | Probes run untrusted code | Probes run `roc check` and `roc build` only (P1 in Resolution 4). Talon never runs the output. A build links the platform host files, but does not run them. Compile-time evaluation of constants stays a risk, the same as a normal `roc check`. |
 | Poisoned shared matrix | Only bot and publisher rows are trusted. User rows only order the search. The final whole-app probe is always local, unless the user passes `--no-check` (Resolution 4). Then Talon keeps the old `roc:` pin (H6). |
 | Release asset deleted | Mirror by hash (P3). The cache keeps old copies. |
@@ -498,6 +503,7 @@ Open:
 | Q28 | What is the largest archive that the registry indexes, and does it need the paid plan? A platform archive is 21 MB packed and 70 MB unpacked (basic-cli). The isolate has 128 MB, and the free plan gives 10 ms of CPU (API.md RF5, RF6). Above a limit, the Worker needs a streaming hash and zstd decode (API.md 8). | Measure a publish of basic-cli on the platform (BLAKE3 and zstd time, peak memory). Then set the limit in Registry 7. |
 | Q29 | Should large reads (`POST /v1/closure`) be JSON that SQLite makes (`json_group_array`), passed to the client as a body with no decode in Roc? 200 rows cost about 84 µs to bring into typed Roc rows (API.md RF7, 5.1). | Measure the closure query both ways in P2 |
 | Q30 | How is `POST /v1/ingest` kept from abuse? It has no auth, and each call can download and unpack an archive (API.md RF8). Options: a rate limit for each IP address, `github.com` release URLs only, one ingest for each URL, a queue. | Choose before P2 ingest. Registry 7 then changes. |
+| Q31 | Should `tln publish` or the registry run `roc bump` (section 2), and warn when the version label does not match the change of the public API? | Choose before the P2 publish code. Registry 7 then changes. |
 
 ## Sources
 
