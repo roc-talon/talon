@@ -46,8 +46,8 @@ roc accepts two forms of compiler version in a header: nightly tags, and release
 
 | # | Rule |
 | --- | --- |
-| NS1 | On (the default), the domain of `roc` is all nightlies and all releases. Talon orders them by date: the tag date of a nightly, the GitHub `published_at` of a release. On the same date, the release is newer. |
-| NS2 | Off, the domain is the releases only. Today that domain is empty. Then a command that must select a compiler stops with exit code 10 (`no_tuple`), and the error names the switch and its source. |
+| NS1 | On (the default), the domain of `roc` is all nightlies and all releases. Talon orders them by date: the tag date of a nightly, the GitHub `published_at` of a release. On the same date, the release is newer. Two nightlies of one date (for example `nightly-2026-09-01-24e3995` and `nightly-2026-09-01-db83307`) are in the order of their GitHub `published_at`, then of the tag text. roc gives them the same rank (Design 2), so this order is Talon's own. It is total, so `@-1`, adjacent releases (EP1) and "newest" each have one answer (G3). |
+| NS2 | Off, the domain is the releases only. Today that domain is empty: Talon knows no source of compiler releases yet (CLI 6.2, CV1). Then a command that must select a compiler stops with exit code 10 (`no_tuple`), and the error names the switch and its source. |
 | NS3 | The switch applies where Talon selects a compiler by itself: the resolver, `tln upgrade` and `tln init` (section 10, CLI 5), `tln roc update` (RU1), the selector `@latest` and the relative selectors `@+N` and `@-N` in the `tln roc` scope (CLI 2), selection rank 4 (section 13), option 2 of NI8 (CLI 6.4), and probe searches (section 4). |
 | NS4 | The switch does not apply to a compiler that the user names: a command argument, `roc +<id>`, `ROC_TOOLCHAIN`, `tln roc install <id>` and `tln roc default <id>`. A global default that is a nightly (rank 6) stays in use. |
 | NS5 | A nightly `roc:` pin with the switch off is like a pin outside the `[toolchain] roc` range (RP2). The proxy runs it, because the header is the lock (rank 3). `tln install` reports it, and `--frozen` fails with exit code 14. `tln roc use <nightly>` stops (U5). `tln upgrade roc` moves the pin to a release. |
@@ -68,6 +68,7 @@ Evidence and probes (sections 3 and 4) work the same for a release: a fact is `w
 | C6 | Yanked releases are not chosen for a new resolution. Yank and advisory data come from the registry (Registry 5, advisories in Design 7, P3). With `direct`, GitHub has no yank: a deleted release, a draft and a prerelease are not candidates (CLI 7.3, DI3), and there is no advisory data. Then each command that checks yanks or advisories (`tln audit`, B3 in CLI 6.4) prints one note: `no yank and advisory data without a registry`. | Hard |
 | C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, DI10). Both also apply where Talon selects a compiler by itself (NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` does not hide a version or a compiler that the user names (NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
 | C8 | Two series of one package (two groups, Design 4.1) in the closure | Warning (type identity) |
+| C9 | C6, C7 and a snapshot never hide the value that a header entry or the `roc:` pin has now. That value stays in the domain of its variable, so a hold, the implied range (Design 4.3) and `tln update` still work, for example after `tln add X@1.2.3` of a release that is 1 day old. They hide only the other candidates. `tln audit` reports a yanked value (C6). | Hard |
 
 ## 3. Compatibility evidence
 
@@ -288,7 +289,7 @@ flowchart TD
 | --- | --- |
 | 1 | Collect variables, ranges and anchors (section 1). For a command that runs step 6, run the baseline check on the current header (section 4). |
 | 2 | Fetch metadata for the full closure in one request (Registry 4). It includes the shared matrix for these hashes. |
-| 3 | PubGrub picks the best tuple by `priority`, under C1 to C4 and C6 to C7. |
+| 3 | PubGrub picks the best tuple by `priority`, under C1 to C4, C6, C7 and C9. |
 | 4 | For each pair (hash, roc) with no fact, run a unit probe. Order: installed nightly first, then the strongest hint. Up to 12 checks run at the same time (section 4, "Parallel probes"). |
 | 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for the hash and an interval of compiler releases (EP7). Go back to step 3. Inferred facts (EP6) order and prune the search, but the step needs real facts to finish (EP8). |
 | 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. In P0, steps 4 and 5 do not run (Design 7, P0 limits). |
@@ -417,7 +418,7 @@ A hold that cannot stay follows the consent rows above. `tln install --frozen` (
 
 | # | Rule |
 | --- | --- |
-| UP1 | The domain is every release that C6 and C7 allow (not yanked, older than `min-release-age`, inside the snapshot). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A fixed anchor (DI11, section 1) stays held also when the user names it. A `[toolchain] roc` range and the `nightly` switch (NS3) still apply: they state which compilers the team can use. |
+| UP1 | The domain is every release that C6 and C7 allow (not yanked, older than `min-release-age`, inside the snapshot), and the header value (C9). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A fixed anchor (DI11, section 1) stays held also when the user names it. A `[toolchain] roc` range and the `nightly` switch (NS3) still apply: they state which compilers the team can use. |
 | UP2 | The goal is the same as for `update`: the newest version of each free variable, in `priority` order (section 1). So a new series of the first variable wins over newer versions of the later ones. Talon prints each variable that did not get its newest release, and why, for example `json 3.0.0 needs pf >= 0.27.0, which checks on no nightly that roc-parser 2.0.0 checks on`. |
 | UP3 | A new series is a new group (Design 2, 4.1). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old series, both series stay in the closure, and Talon prints warning C8. |
 | UP4 | Moves of held variables follow section 9 (prompt NI3). |
@@ -496,7 +497,7 @@ Use `--no-check` only when one of these is true:
 
 The proxy finds the target file (rank 3) in the `roc` arguments: the first argument that names a `.roc` file. With no such argument, it uses `main.roc` in the current directory, as roc does. A command with no file (`roc version`, `roc help`) has no target file, so rank 3 does not apply. A `tln` command uses its project file (CLI 1, PD1 to PD8) as the target file. The proxy rule is PD7.
 
-Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6.2). Talon runs `roc version` on it once for each binary, and keeps the id in `talon/path-roc.json` (CLI 6.1). The output `Roc compiler version <id>` gives its id:
+Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6.2). A file is the launcher when it has the same size and sha256 as the running `tln`. Talon keeps this result in `talon/path-roc.json` with the id, so it hashes each file once. An old copy of a launcher (another Talon version) is not equal, so the proxy also sets `TALON_IN_PROXY=1` for the compiler that it runs: a proxy that sees it does not use rank 7, and cannot run itself again and again. Talon runs `roc version` on it once for each binary, and keeps the id in `talon/path-roc.json` (CLI 6.1). The output `Roc compiler version <id>` gives its id:
 
 | Id | Talon does |
 | --- | --- |

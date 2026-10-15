@@ -178,3 +178,32 @@ Question: do the 5 files agree, and can each rule be built on basic-cli as it is
 | 17 | Low | Windows user `Path` edit | Design 6.2 HF11 |
 | 18 | Low | `tty` test cases with `CI=true` | TESTING 3.2 |
 | 19 | Low | Held variables of `upgrade`, old rule count | Resolution 9, TESTING 8 |
+
+## Round 6: audit (2026-10-15)
+
+Checked against the 331 releases of `roc-lang/nightlies` and `roc:src/base/roc_version.zig`. All points below are fixed.
+
+| # | Level | Gap | Fix |
+| --- | --- | --- | --- |
+| 1 | Serious | Nightly tags with the month as a name, and asset names with another sha | Design 2 (new row), CLI 6.2 CV1, CV2 |
+| 2 | Serious | Two nightlies of one date have no order | Resolution 1, NS1: `published_at`, then the tag text |
+| 3 | Serious | A consent prompt under a toolchain lock lets the lock go stale | CLI 7.4: CC3 point 5, CC4 steps 2 to 4, TESTING 2.3 |
+| 4 | Serious | C6 and C7 hide the version that the header has | Resolution 2, C9, UP1 |
+| 5 | Medium | `tln add` of a group that the header has under the same alias | CLI 2, new table |
+| 6 | Medium | No exit code for a file that is not valid | Exit code 19 `input`, CLI 6.1 TF4 to TF6 |
+| 7 | Medium | No format version for Talon files, repair to an older Talon | CLI 6.1 TF1 to TF3 |
+| 8 | Medium | Root `talon.toml` tables in a workspace | Design 4.4, WS5 |
+| 9 | Medium | Path entries in the closure | Design 4.2, H7 |
+| 10 | Medium | A redirect to `http://` for a source archive | CLI 7.5 DA3, CLI 6.6 R7, Design 8 |
+| 11 | Medium | No test hook for `raw.githubusercontent.com`, `ziglang.org` and the source archive | CLI 1: `TALON_GITHUB_RAW`, `TALON_ZIG_INDEX`; R3 uses the API tarball call |
+| 12 | Medium | The `tln init` CI file did not install Talon | CLI 5, CLI 6.7 ST4 (`GITHUB_PATH`) |
+| 13 | Medium | `min-release-age` for tools and for Talon | CLI 6.4, T9, Design 8 |
+| 14 | Medium | `tln remove` when its check fails | CLI 2, `tln remove` table |
+| 15 | Low | The selector `@1.2` | CLI 2: a version with fewer than 3 parts is a caret range |
+| 16 | Low | NI5 had no answer flag (NR6) | `--allow-downloads`, CLI 1, CLI 4, DL4, DL5 |
+| 17 | Low | GC and `link-*`, `copy-*`, `git-*` compilers | CLI 6.3 |
+| 18 | Low | Rank 7 can select the launcher | Resolution 13, `TALON_IN_PROXY` |
+| 19 | Low | `zig build` missing from the CC12 children | CC12 |
+| 20 | Low | `probe` scope, `list` marks | CLI 1, CLI 2 |
+| 21 | Low | Hand edits of `config.toml` | CC6 |
+| 22 | Low | No source of compiler releases | CV1, NS2 |
