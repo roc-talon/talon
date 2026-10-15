@@ -10,7 +10,7 @@ want=${*:-}
 printf "id\tfile\tsection\ttests\n"
 for f in DESIGN*.md; do
   awk -v f="$f" '/^## /{sec=$2; sub(/\.$/,"",sec)} /^### [0-9]/{sec=$2}
-    match($0, /^\| [A-Z]{1,2}[0-9]+ \|/) { id=substr($0, 3, RLENGTH-4); print id "\t" f "\t" sec }' "$f"
+    match($0, /^\| [A-Z]{1,3}[0-9]+ \|/) { id=substr($0, 3, RLENGTH-4); print id "\t" f "\t" sec }' "$f"
 done | awk -F'\t' '$1 !~ /^(G|N|Q)[0-9]/ && !($2=="DESIGN.md" && $1 ~ /^P[0-9]/)' | sort -u -k1,1V -k2,2 |
 while IFS=$'\t' read -r id file sec; do
   g=${id%%[0-9]*}

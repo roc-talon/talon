@@ -80,7 +80,7 @@ if [ -n "${PWSH:-}" ]; then
         mkdir -p "$home/local"
         ( for _ in $(seq 1 1500); do chmod +x "$home"/local/talon/bin/.tln.*.exe 2>/dev/null; sleep 0.01; done ) &
         local poll=$!
-        env -i PATH="/usr/bin:/bin" HOME="$home" CI=true LOCALAPPDATA="$home/local" PROCESSOR_ARCHITECTURE=AMD64 \
+        env -i PATH="/usr/bin:/bin" HOME="$home" CI=true LOCALAPPDATA="$home/local" PROCESSOR_ARCHITECTURE="${PROC_ARCH:-AMD64}" \
             TALON_DOWNLOAD_BASE="$PBASE" "$PWSH" -NoProfile -File "$HERE/install.ps1" "$@" > "$home/out" 2>&1
         local rc=$?
         kill $poll 2>/dev/null; wait $poll 2>/dev/null
@@ -116,6 +116,13 @@ if [ -n "${PWSH:-}" ]; then
     h="$W/p-404"
     prun "$h" -Version 9.9.9; rc=$?
     if [ $rc = 15 ]; then ok "pwsh: missing release, exit 15"; else bad "pwsh: missing release (rc $rc)"; cat "$h/out"; fi
+
+    # IS2: Windows on ARM64 gets the x64 build
+    h="$W/p-arm64"
+    if PROC_ARCH=ARM64 prun "$h" && grep -q 'installs the newest Talon release (tln-x64win.exe)' "$h/out" &&
+        grep -q 'runs by emulation' "$h/out" && grep -q 'installed tln 0.4.0' "$h/out"; then
+        ok "pwsh: ARM64 installs the x64 build"
+    else bad "pwsh: ARM64 fallback"; cat "$h/out"; fi
 
     h="$W/p-arch"; mkdir -p "$h"
     env -i PATH="/usr/bin:/bin" HOME="$h" CI=true LOCALAPPDATA="$h" PROCESSOR_ARCHITECTURE=x86 \

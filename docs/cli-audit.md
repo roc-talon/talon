@@ -121,3 +121,34 @@ Added in round 2 at the request of the user: parallel probes (5.4, PP1 to PP5: a
 Measured on 2026-10-14: Q16 (`conformance/host-link/`, new rule T8) and Q18 (`conformance/build-share/`) are settled. Q13 is settled by a short edge test (`cloudflare-workers/bench/edge.mjs`). Q14 stays open: it needs the registry app (P2).
 
 Changed on 2026-10-15: the `--roc` flag of `update` (fix of point 5) is removed. Only `tln upgrade` (no names, or the name `roc`) and `tln roc use` change the `roc:` pin (RP1 to RP4 in 5.9).
+
+## Round 4: readiness audit (2026-10-15)
+
+Question: is the design ready to implement? Answer before this round: the generic packages yes, the command layer no. All points below are fixed.
+
+| # | Level | Gap | Fix |
+| --- | --- | --- | --- |
+| 1 | Blocker | No rules for the `direct` index | CLI 7.3, DI1 to DI13 |
+| 2 | Blocker | P0 needs P1 parts, and some commands have no phase | Design 7 (P0 limits, command phases), Resolution 13 rank 7 |
+| 3 | Blocker | No rule to find the project, and no writer of `projects.json` | CLI 1, PD1 to PD13, `--file` replaces `--member` |
+| 4 | Blocker | basic-cli gaps not listed, no `arm64win` target | Design 6.2, HF1 to HF10, IS2 |
+| 5 | Blocker | Output text and `data` fields have no owner, TQ1 to TQ4 open | CLI 3, OUT1 to OUT5, CLI 1 environment variables, Q24 |
+| 6 | Serious | "Epoch" has no definition for code | Resolution 4, EP1 to EP9 |
+| 7 | Serious | No compiler sha256 before P2 | CLI 6.2, CV1 to CV6 |
+| 8 | Serious | Implied range wrong for `0.x` | Design 4.1 "series", Design 4.3 |
+| 9 | Serious | Workspace "shared variable" not defined | Design 4.4, WS1 to WS8 |
+| 10 | Serious | Two Talon processes at the same time | CLI 7.4, CC1 to CC11, exit code 17 |
+| 11 | Serious | Yanks and advisories with no registry | C6, B3, `tln audit` row |
+| 12 | Serious | Default registry URL points to nothing before P2 | CLI 1: default `direct` |
+| 13 | Minor | `min-release-age` default only in Design 8 | C7 |
+| 14 | Minor | `install` with no `talon.toml` against RP3 | RP3 |
+| 15 | Minor | Baseline compiler not installed | Resolution 4, DL2 |
+| 16 | Minor | `tln patch --commit` diff has no reader | Resolution 7, PA1 to PA6 |
+| 17 | Minor | Windows bin dir links | ST1, ST7 to ST11: hard links, no `.cmd` |
+| 18 | Minor | No lower bound for nightlies | NS7: `>=<compiler id>` |
+
+Also in round 4: the generic packages move to their own repositories (Design 6.1, GP1 to GP6, Q23), and the registry log records compiler releases from P2 (Registry 3, 7).
+
+Changed after round 4 (2026-10-15), at the request of the user: no fork of basic-cli. Child processes give the effects that basic-cli does not have (Design 6.2, HF1 to HF10): the download adapter for `curl` and `wget` (CLI 7.5, DA1 to DA7), `roc unbundle` for packages (`research/roc-unbundle/`), `tar` for compilers, and lock directories with a heartbeat (CLI 7.4, CC3). Many processes that need one missing compiler still download it once (CC4). New exit code 18 (`environment`). The TTY test is an upstream PR. `min-release-age` defaults to 2 days.
+Then: locks have one interface in `Fx` (CC3: `lock!`, `unlock!`, `with_lock!`, a 4-point contract). The lock directory with a heartbeat is its only implementation (CC12), inside the real `Fx`.
+Then: the process replacement (`Cmd.exec_replace!`, `execve` on Unix) joins the TTY test in one upstream PR to basic-cli (HF6). Until it is in, the proxy runs roc as a child.

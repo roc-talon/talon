@@ -5,9 +5,9 @@ How Talon is tested, and how an agent goes from the design to a tested feature.
 | Item | Value |
 | --- | --- |
 | Status | Draft 2, 2026-10-15. Draft 2 drops "commands as data" (`Program`): commands are direct-style code over an effect record (section 2). No Talon code exists yet. |
-| Scope | The `tln` CLI and the pure Roc packages (Design 6.1). Not the `cloudflare-workers` platform: it has its own `PLAN.md`. |
+| Scope | The `tln` CLI and the Talon packages (Design 6.1). The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-header`) use the layers L0 and L1 and this workflow in their own repositories (GP5). Not the `cloudflare-workers` platform: it has its own `PLAN.md`. |
 | Spec | The 4 design files. A test checks a design rule. A test never invents behavior that the design does not state. |
-| Evidence | `research/test-fs/` (tmpfs against ext4, container start times), `research/core-shape/` (code shapes and fakes), `research/roc-fuzz-check/` (roc-fuzz on the pinned nightly), `scripts/rules.sh` (rule coverage) |
+| Evidence | `research/test-fs/` (tmpfs against ext4, container start times), `research/core-shape/` (code shapes and fakes), `research/roc-fuzz-check/` (roc-fuzz on the pinned nightly), `research/roc-http-fetch/` (roc fetch from `http://`, TQ4), `scripts/rules.sh` (rule coverage) |
 
 Rule ids in this file start with TW (workflow) and TQ (open questions). They are not used in the design files.
 
@@ -28,7 +28,7 @@ flowchart TB
 
 | Layer | What it tests | Tool | Isolation | Time target | When it runs |
 | --- | --- | --- | --- | --- | --- |
-| L0 | url and group key, semver, base58, toml, header parser and span edit, pubgrub, records. The pure decisions and the solver step of each command (section 2). | `roc test` with `expect` | None needed (pure) | Under 10 s for all | Each edit |
+| L0 | The Talon packages: `resolve` (pubgrub), `records`. The generic packages run their own L0 in their repositories (GP5). The pure decisions and the solver step of each command (section 2). | `roc test` with `expect` | None needed (pure) | Under 10 s for all | Each edit |
 | L1 | Round trips, "never crashes", agreement with a simple oracle. Also whole commands with a fake `Fx`, on their result. (Section 4.) | roc-fuzz, a fixed `--runs` count | Its own process | Under 60 s in the fast set | Before each hand-off. Long runs each night. |
 | L2 | The flow of each command: which `Fx` calls in which order, what it writes, prompts and answers, budget, errors of each effect | `tests/commands/` (section 2.4): one compiled basic-cli app, fake `Fx` | A new directory on tmpfs per case | Under 30 s for all, with the build | Before each hand-off |
 | L3 | `tln` end to end with the real `Fx`: arguments, exit codes (E1 to E4), `--json` (J1 to J6), the TTY (NR1), the jobs of the real `Fx` (2.3), design examples | `tests/run.sh` (section 3) | A new directory on tmpfs per case, fixed environment, no network | Under 60 s for the fast set | Before each hand-off |
@@ -84,6 +84,7 @@ The calls of `upgrade` (Resolution 4, 5, 10) show which effects are needed:
 | 10 | Build, or skip | `probes!([build])` | The skip is part A |
 | 11 | New facts (PP4) | `db_write!(facts)` after each round | |
 | 12 | Write the header and `talon.toml`, print | `write_atomic!(list)`, `print!` | |
+| (any) | A lock (CLI 7.4, CC3) | `lock!(item, mode)`, `unlock!`, through `with_lock!` | The fake `Fx` writes each call to `calls.log` and answers `Held` or `Busy` from its table. The real `Fx` contains the implementation (CC12) and its heartbeat. |
 
 The loop of steps 7 to 11 calls the solver step until it is done, or the budget (P5, UP7) is spent.
 
@@ -93,9 +94,10 @@ The real `Fx` keeps the jobs that are about time, processes and the system. L3 t
 | --- | --- |
 | Slots and parallel runs (PP1, PP5) | 13 fake probes: at most 12 at the same time |
 | Timeouts, kill of a hung probe | A fake `roc` that sleeps |
-| Download progress, streaming to a file, the hash check | Fake HTTP: a slow body, a bad hash |
+| Download progress, streaming to a file, the hash check (CLI 7.5) | Fake HTTP: a slow body, a bad hash. Each case runs with `TALON_DOWNLOADER=curl` and with `wget` (DA2). No `curl` and no `wget` on `PATH`: exit code 18. |
 | Exec with the terminal (`x`, the `roc` proxy, `patch` with an editor) | Exit code passes through |
-| Remove temp dirs on Ctrl-C | Not known yet: does basic-cli give a signal handler? |
+| Safe stop on Ctrl-C or a kill. No signal handler (Design 6.2, HF8). | Kill `tln` with SIGINT and with SIGKILL during an install and during a probe round. Then the store has no partial item, and the next install and `tln cache gc` remove the stale temps (CLI 7.4, CC1, CC2) |
+| Locks between processes (CLI 7.4) | 3 proxy runs at once that need one missing fake nightly: 1 download, 3 builds (CC4). 2 `tool install` runs at once: `tools.json` has both entries (CC6). An edit of the header during `upgrade`: exit code 17 (CC7). GC during a fake build: the compiler stays (CC10). A lock dir with an old `beat` (set with `touch -d`): the next process takes it (CC12). The lock contract (CC3, points 1 to 4) is one L3 suite, so a new implementation runs the same cases. |
 | Rename of a running `.exe` (S3, RM5) | CI on Windows |
 
 ### 2.4 Command tests (L2)
@@ -149,7 +151,8 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
 | Paths | Absolute, with no `..`. With `..` in `XDG_CACHE_HOME`, `roc check` reports "No errors found" on an app with a type error, and `roc build` stops with `PathOutsideWorkspace` (`conformance/check-scope/README.md`). |
 | Network | Off (`--network none` in the container, or `bwrap --unshare-net`). A case that reaches the real network fails. |
 | Fake `roc` | `tests/fakes/roc` is first on `PATH`. It writes its argv to `roc.log` and answers from `given/roc.tsv`. With the tag `real-roc` (L4), the runner puts the pinned `roc` there instead. |
-| Fake HTTP | One local server for the run. It serves `given/http/` and can answer 404, 403 rate limit, a slow body and a bad hash. |
+| Fake HTTP | One local server for the run, on `127.0.0.1`. It serves `given/http/` and can answer 404, 403 rate limit, a slow body and a bad hash. Talon reaches its API routes through `TALON_GITHUB_API` (CLI 1, test hooks). A package with a `github.com` URL is pre-filled in `given/home/` (`packages/<hash>/`). A fetch test uses a loopback package URL. |
+| Clock | `TALON_NOW` fixes the clock of Talon (CLI 1, test hooks) |
 | TTY | A case with the tag `tty` runs under a pseudo terminal and reads its answers from `given/answers`. Else stdin and stderr are not a TTY (NR1). |
 | Compare | stdout, stderr, exit code, tree diff and `roc.log`. A difference fails the case and prints a diff. |
 | Update | `UPDATE=1 tests/run.sh <case>` writes the actual output to `expect/`. Only for a change that the slice intends (TW11). |
@@ -157,12 +160,14 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
 
 ### 3.3 Changes the design needs for these tests
 
-| # | Need | Why | Proposal |
+All settled on 2026-10-15. The design has the test hooks in CLI 1 ("Environment variables", "Test hooks", "Packages in tests").
+
+| # | Need | Why | Settled |
 | --- | --- | --- | --- |
-| TQ1 | The GitHub API base URL | Talon sends a token only to `api.github.com` (CLI 1). A test must reach the fake server instead, and must never send a real token. | `TALON_GITHUB_API`. When it is set, Talon sends no token. |
-| TQ2 | Fetch from the fake server, with the header URL unchanged | The host is part of the package identity (Design 2, H5). So a fixture URL must keep `github.com`. | A fetch-only URL map, for example `TALON_FETCH_MAP=https://github.com=http://127.0.0.1:PORT`. Identity and the header use the old URL. Or pre-fill `packages/<hash>/`, which roc accepts with no sidecar (Q2). |
-| TQ3 | The clock in L3 | GC uses ages (CLI 6.3), and the compiler cache files expire after 30 days | The clock comes from `Fx` (TW2). The real `Fx` reads `TALON_NOW` when it is set. |
-| TQ4 | Does `roc` fetch from `http://` URLs? | L4 cases with a fake server | Test it on the pinned nightly. If not, L4 pre-fills the cache (TQ2). |
+| TQ1 | The GitHub API base URL | Talon sends a token only to `api.github.com` (CLI 1). A test must reach the fake server instead, and must never send a real token. | `TALON_GITHUB_API`, a base URL. When it is set, Talon reads no token source and sends no token. |
+| TQ2 | Fetch from the fake server, with the header URL unchanged | The host is part of the package identity (Design 2, H5). So a fixture URL must keep `github.com`. | No fetch map: it would be a second kind of mirror. A case with a `github.com` URL pre-fills `packages/<hash>/` (Design 9 Q2). A test of the fetch path uses a loopback URL, which Talon and roc both fetch. |
+| TQ3 | The clock in L3 | GC uses ages (CLI 6.3), and the compiler cache files expire after 30 days | `TALON_NOW`, a UTC time (RFC 3339). The real `Fx` reads it (TW2). It does not change the clock of roc. |
+| TQ4 | Does `roc` fetch from `http://` URLs? | L4 cases with a fake server | Only from `127.0.0.1`, `::1` and `localhost` (Design 9 Q24, `research/roc-http-fetch/`). L4 follows TQ2. |
 
 ## 4. Property tests and roc-fuzz
 
@@ -179,15 +184,15 @@ It is useful for Talon, with these limits:
 
 Targets, in the order of risk:
 
-| Package | Property | Oracle |
-| --- | --- | --- |
-| header parser and span edit | Parse never crashes. An edit changes only its span: all other bytes stay the same. Parse after print gives the same value. | Seeds: the headers of the packages in the roc cache (46 on this machine). A script runs `roc fmt` on them, so the expected values are found outside the target (Design 6.2). |
-| pubgrub | On small random graphs, the result equals a brute-force search of all version tuples. A failure explanation names only real conflicts. | Brute force (only small graphs) |
-| MVS and group key | Same result as the rule of `package_resolution.zig:816-838`, for random graphs | A small direct copy of the rule in the target |
-| semver | Order is total and agrees with a tuple compare. `parse(to_str(v)) == v`. | Round trip |
-| toml | `parse(print(doc)) == doc`. Parse never crashes. | Round trip |
-| base58 | `decode(encode(b)) == b`. A leading zero byte is kept. | Round trip |
-| `upgrade`, `update`, `install` with a fake `Fx` | Random probe results and prompt answers. The command never reports more probes than `probe.max` (P5). A refused required prompt gives exit 13 and no header change. A pass is reported only when the fake said pass for each probe of the tuple. | The fake tables |
+| Package | Property | Oracle | Repository |
+| --- | --- | --- | --- |
+| header parser and span edit | Parse never crashes. An edit changes only its span: all other bytes stay the same. Parse after print gives the same value. | Seeds: the headers of the packages in the roc cache (46 on this machine). A script runs `roc fmt` on them, so the expected values are found outside the target (Design 6.2). | `roc-header` (GP5) |
+| pubgrub | On small random graphs, the result equals a brute-force search of all version tuples. A failure explanation names only real conflicts. | Brute force (only small graphs) | Talon (`packages/resolve`) |
+| MVS and group key | Same result as the rule of `package_resolution.zig:816-838`, for random graphs | A small direct copy of the rule in the target | `roc-header` (GP5) |
+| semver | Order is total and agrees with a tuple compare. `parse(to_str(v)) == v`. | Round trip | `roc-semver` (GP5) |
+| toml | `parse(print(doc)) == doc`. Parse never crashes. | Round trip | `roc-toml` (GP5) |
+| base58 | `decode(encode(b)) == b`. A leading zero byte is kept. | Round trip | `roc-base58` (GP5) |
+| `upgrade`, `update`, `install` with a fake `Fx` | Random probe results and prompt answers. The command never reports more probes than `probe.max` (P5). A refused required prompt gives exit 13 and no header change. A pass is reported only when the fake said pass for each probe of the tuple. | The fake tables | Talon |
 
 | Rule | Text |
 | --- | --- |
@@ -257,12 +262,12 @@ flowchart LR
 
 | Step | Who | Reads | Writes | Must not | Done when |
 | --- | --- | --- | --- | --- | --- |
-| 1. Scope | Scope agent | Design 7 (phases), `scripts/rules.sh` output, `docs/slices/`, git log | `docs/slices/NNN-<name>.md` (7.2) | Write code or tests. Invent behavior. | The slice lists its rule ids, design refs and test list. Open points are questions (TW17). |
+| 1. Scope | Scope agent | Design 7 (phases), `scripts/rules.sh` output, `docs/slices/`, git log | `docs/slices/NNN-<name>.md` (7.2) | Write code or tests. Invent behavior. | The slice lists its rule ids, design refs and test list. Open points are questions (TW17). Output that the design does not give is a proposal (TW24). |
 | 2. Tests | Test agent | The slice file, the design sections it names, public signatures | Tests, fixtures, stubs that `crash "todo"` | Read or write the code bodies | The new tests compile and fail for the right reason ("todo" or a wrong value), and all old tests pass |
-| Review | Human | The slice file and the tests | Accept, or notes | | The tests say what the design means. This is the cheapest place to find a wrong reading of the design. |
+| Review | Human | The slice file and the tests | Accept, or notes | | The tests say what the design means. This is the cheapest place to find a wrong reading of the design. The human accepts or changes the proposed output (TW24). |
 | 3. Code | Code agent | The slice file, the tests, the code | Code | Edit a test or a fixture (TW18) | All tests pass |
 | 4. Verify | Verify agent or script | All | Results in the slice file | | L0, L1 fast, L2 and L3 fast pass. `scripts/revert-check.sh` passes. `scripts/rules.sh` shows the slice ids covered. |
-| 5. Close | Human | The diff | Commit (only when asked) | | Design changed in the same commit if a question was settled |
+| 5. Close | Human | The diff | Commit (only when asked) | | Design changed in the same commit if a question was settled. The output catalog (CLI 3) has the accepted `data` fields (OUT3). |
 
 ### 7.2 Slice file
 
@@ -276,10 +281,11 @@ H3, H5, C2 (Design 4.2, Resolution 2)
 
 ## Tests
 | Layer | Case | Checks |
-| L0 | `packages/header/Header.roc`: pin replaces only the URL span | H3 |
+| L0 | `packages/resolve/Pin.roc`: the pin decision gives the exact release URL | H3 |
 | L2 | `tests/commands/add/h3-pin-exact-url`: the header write and the probe calls | H3 |
 | L3 | `tests/scenarios/add/h3-pin-exact-url` | H3, E1 |
 
+## Output (proposed, OUT2: human text and `data` fields)
 ## Out of scope
 ## Questions (stop until answered)
 ## Disputes (from the code agent)
@@ -297,6 +303,7 @@ H3, H5, C2 (Design 4.2, Resolution 2)
 | TW21 | `UPDATE=1` is allowed only for outputs that the slice changes. The agent reads each changed expected file before the hand-off. |
 | TW22 | Prototype and research code goes in the repo (`research/`), never only in a temp dir. |
 | TW23 | No commit or push unless the user asks. |
+| TW24 | Output that the design does not give (human text, `data` fields) is not a TW17 question. The scope agent proposes it in the slice file, the test agent writes it in the expected files, and the human accepts it at the review (CLI 3, OUT1 to OUT5). A fact that the design does not give (what the command decides) is still a TW17 question. |
 
 ### 7.4 First scope, by phase (draft)
 
@@ -304,9 +311,10 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 
 | Phase | Rule groups | Notes |
 | --- | --- | --- |
-| P0 | H, I, C, RP, E, J, NR, the P0 commands of NI (NI1 to NI3) | Pure packages first: url and group key (Design 2 has the facts and tests), semver, base58, toml, header. Then `add`, `remove`, `update`, `ls`, `why` with the GitHub API as the index. |
-| P1 | NS, P, PP, UP, DL, T, X, B, S, IS, RM, R, LK, U, RU, RR, D, ST, NI4 to NI15 | Toolchain manager, proxy, GC, probes, `tln tool`. IS is tested today by `install/test.sh`. |
-| P2 and later | Registry | Needs the `cloudflare-workers` platform. Not in this file. |
+| P0, generic packages | Their own rules, in their repositories (GP5) | First: `roc-header` (group key and MVS: Design 2 has the facts and tests), then `roc-semver`, `roc-base58`, `roc-toml`. Each is released before Talon uses it (GP3). |
+| P0, Talon | H, I, C, RP, E, J, OUT, NR, PD, DI, WS, the P0 prompts of NI (NI1 to NI3), rank 7 of Resolution 13, HF1, HF4, HF5, DA | The P0 commands and the P0 limits of Design 7: `install` (and `add`, `--frozen`), `remove`, `update`, `list`, `why`, `verify`, with `direct` as the index. A P0 test needs no compiler download and no unit probe, so P1 does not change its result. |
+| P1 | NS, P, PP, EP, PA, UP, DL, CV, T, X, B, S, IS, RM, R, LK, U, RU, RR, D, ST, CC, NI4 to NI15, HF2, HF3, HF6 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. IS is tested today by `install/test.sh`. |
+| P2 and later | Registry. `publish`, `probe --share` (P2), `audit` (P3). | Needs the `cloudflare-workers` platform. Not in this file. |
 
 ## 8. Order of work
 
@@ -318,6 +326,6 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 | 4 | `tests/run.sh`, `tests/fakes/roc`, the fake HTTP server, one example case | The L3 runner, with a test of each compare (a wrong exit code, a wrong tree diff, an unexpected `roc` call) |
 | 5 | `scripts/revert-check.sh` | TW12 runs as a script |
 | 6 | The container image (TW9) | `docker run ... tests/run.sh` passes |
-| 7 | Settle TQ1 to TQ4 in the design | The design has the test hooks |
+| 7 | Settle TQ1 to TQ4 in the design | Done (2026-10-15). CLI 1 has the test hooks (section 3.3). |
 | 8 | Subagent definitions in `.claude/agents/` for the scope, test and code agents, and a hook that stops the code agent from editing `tests/` | TW18 is enforced, not only written |
-| 9 | First slice: url and group key | L0 cases from the facts of Design 2, an L5 check against `roc` |
+| 9 | First slice: group key and MVS, in the `roc-header` repository (Design 6.1, GP2) | L0 cases from the facts of Design 2. The L5 check against `roc` stays in Talon `conformance/` (GP5). |

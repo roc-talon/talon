@@ -23,7 +23,7 @@ Resolution picks one value for each free variable. The nightly is a variable lik
 | `pf` | Platform releases |
 | each direct dep | Releases in range |
 
-Any variable can be an anchor: a hard pin (`=`) in `talon.toml`, or a `tln add parser@2.0.0` (writes, CLI 2). The rest are free. Examples:
+Any variable can be an anchor: a hard pin (`=`) in `talon.toml`, or a `tln add parser@2.0.0` (writes, CLI 2). The rest are free. A named anchor is free in `tln upgrade` (UP1). One exception: an entry with no index (DI11, CLI 7.3) is a fixed anchor. Its domain is its header value, and no command frees it, also when the user names it. Examples:
 
 | Intent | talon.toml |
 | --- | --- |
@@ -52,7 +52,7 @@ roc accepts two forms of compiler version in a header: nightly tags, and release
 | NS4 | The switch does not apply to a compiler that the user names: a command argument, `roc +<id>`, `ROC_TOOLCHAIN`, `tln roc install <id>` and `tln roc default <id>`. A global default that is a nightly (rank 6) stays in use. |
 | NS5 | A nightly `roc:` pin with the switch off is like a pin outside the `[toolchain] roc` range (RP2). The proxy runs it, because the header is the lock (rank 3). `tln install` reports it, and `--frozen` fails with exit code 14. `tln roc use <nightly>` stops (U5). `tln upgrade roc` moves the pin to a release. |
 | NS6 | `git-*`, `link-*` and `copy-*` builds (CLI 6.6) are not nightlies and not releases. The switch never removes them, because Talon selects them only by name (R5). |
-| NS7 | The `[toolchain] roc` range and the switch both apply. A semver range (`0.1.*`, `^1`) matches releases only. `*` matches both forms. An anchor `=nightly-<tag>` with the switch off is a contradiction: Talon stops with exit code 2 and names both keys. |
+| NS7 | The `[toolchain] roc` range and the switch both apply. A semver range (`0.1.*`, `^1`) matches releases only. `*` matches both forms. A lower bound `>=<compiler id>` (a full nightly tag or a release version, CLI 2 prefix rules) matches each nightly and release that NS1 orders at or after that id. Use: a team states the oldest compiler that its code needs. It limits rank 4 of section 13, and `install` reports a `roc:` pin below it (RP2). There is no upper bound form: the `roc:` pin already holds the nightly, and only `tln upgrade` moves it (RP1). An anchor `=nightly-<tag>` with the switch off is a contradiction: Talon stops with exit code 2 and names both keys. |
 
 Evidence and probes (sections 3 and 4) work the same for a release: a fact is `works(hash, compiler release)`. In the other rules, "the nightly" is the value of `roc`.
 
@@ -63,11 +63,11 @@ Evidence and probes (sections 3 and 4) work the same for a release: a fact is `w
 | C1 | Range from `talon.toml`, or the implied range (Design 4.3) | Hard |
 | C2 | Roc MVS: a direct pin is at least the highest version of that group in the closure | Hard |
 | C3 | One platform: every package that names a platform names the app platform, byte for byte | Hard |
-| C4 | Alias kind: a `platform` entry resolves to a platform release | Hard |
+| C4 | Alias kind: a `platform` entry resolves only to a `platform` release, and a package entry resolves only to a `package` release. An `app` release is never a candidate. The kind is the first keyword of the release header (CLI 7.3, DI7). | Hard |
 | C5 | Compatibility: every hash in the closure checks on the chosen nightly (sections 3 to 5) | Hard |
-| C6 | Yanked releases are not chosen for a new resolution | Hard |
-| C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases | Hard |
-| C8 | Two majors of one group in the closure | Warning (type identity) |
+| C6 | Yanked releases are not chosen for a new resolution. Yank and advisory data come from the registry (Registry 5, advisories in Design 7, P3). With `direct`, GitHub has no yank: a deleted release, a draft and a prerelease are not candidates (CLI 7.3, DI3), and there is no advisory data. Then each command that checks yanks or advisories (`tln audit`, B3 in CLI 6.4) prints one note: `no yank and advisory data without a registry`. | Hard |
+| C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, DI10). Both also apply where Talon selects a compiler by itself (NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` does not hide a version or a compiler that the user names (NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
+| C8 | Two series of one package (two groups, Design 4.1) in the closure | Warning (type identity) |
 
 ## 3. Compatibility evidence
 
@@ -105,6 +105,8 @@ An app can already have compile errors when the user runs `tln add` or `tln upda
 | --- | --- | --- |
 | Baseline | The current header, unchanged | The nightly in the current `roc:` pin, or the selected compiler (section 13) if there is no pin |
 | Candidate | The candidate header in a temp copy | The candidate nightly |
+
+The baseline compiler is a required download (DL2, prompt NI5) when it is not installed. Talon never skips the baseline by itself: with no baseline, each error of the app is new, and P6 blames the wrong hash. In `install`, `add`, `update` and `remove`, the baseline compiler is the held nightly (RP2), and the candidate needs it too, so it adds no download. Only `tln upgrade` with a free nightly can need an extra download for the baseline. `--no-check` skips the baseline and its download.
 
 Two errors are the same error when all of these are equal:
 
@@ -224,19 +226,44 @@ joy 0.33, joy-html 0.16  pass on 09-15 .. 10-01, fail from 10-02
 | Hashes with more than one island | 4 of 46. All 4 gaps are hangs or crashes. |
 | Hashes with more than one island, if faults do not split a range | 0 |
 
-Conclusions for the search:
+Conclusions for the search. The rules EP1 to EP9 below state them as a function.
 
-| Rule | Reason |
+| Measured | Rule |
 | --- | --- |
-| Probe one nightly per epoch | No result changed inside an epoch. 22 nightlies are 6 epochs. |
-| A fault (hang, crash) marks that nightly as bad for that hash. It does not split the pass range. | Every island in the sample comes from a compiler fault, not from a code change. |
-| A boundary is a nightly where at least 2 hashes change | All 8 transitions in the sample had at least 2. A change in only one hash is still binary-searched and reported to the bot. |
-| Islands from code changes stay possible | The sample is small (46 hashes, 4 weeks). The model keeps a map from nightly to result, so a real code island costs probes but never gives a wrong answer. |
-| Probe timeout 30 s | Normal checks take under 2 s. The hangs ran for 600 s with no result. |
+| No result changed inside an epoch. 22 nightlies are 6 epochs. | Probe one release per epoch. A fact infers the other releases of its epoch (EP6). |
+| Every island in the sample comes from a compiler fault, not from a code change. | A fault marks one release bad for one hash. It does not split a range (EP5). |
+| All 5 code boundaries in the sample moved at least 2 hashes. | A boundary needs at least 2 hashes that change (EP3). A change in only one hash is not a boundary. That hash keeps its own facts, and Talon reports it to the bot. |
+| The sample is small (46 hashes, 4 weeks). Islands from code changes stay possible. | An inferred fact never decides a result (EP8). A real code island costs probes, but never gives a wrong header. |
+| Normal checks take under 2 s. The hangs ran for 600 s with no result. | Probe timeout 30 s (P5) |
 
-If the solver finds no tuple with inferred facts, it runs a second pass. That pass probes the inferred facts that blocked the best tuples, within the remaining budget. Talon never writes a wrong header because of an inferred fact: the final ladder (steps 2 and 3) always runs on real probes.
+### Epochs and inferred facts
 
-With no bot data (registry off), each hash starts with the release date and `roc:` pin as hints, and the epochs come from the local `compat.db` only.
+The solver needs facts for pairs (hash, compiler release) that no probe has run on. It infers them from epochs. The epoch function is pure: the same inputs give the same epochs (G3).
+
+```text
+epochs : List(Release), Facts -> { epochs : List(Interval), inferred : Facts }
+```
+
+| Input or output | Value |
+| --- | --- |
+| `List(Release)` | The domain D: every compiler release in the compiler list (CLI 6.2), in NS1 order. The `nightly` switch and the `[toolchain] roc` range select candidates in D. They do not remove releases from D, so they do not change the epochs. |
+| `Facts` | Real facts only: rank 1 (local `compat.db`) and rank 2 (registry matrix) of section 3. When both have a fact for one pair, rank 1 wins. Hints (ranks 3 to 6) are not inputs. They only order the search. |
+| `epochs` | A partition of D into intervals of adjacent releases |
+| `inferred` | Facts for pairs with no real fact. Each one is marked `inferred` and names the real fact it comes from. |
+
+| # | Rule |
+| --- | --- |
+| EP1 | A code result is `pass` or `fail`. A fault (`hang`, `crash`) is not a code result. Two releases are adjacent when no release of D is between them. |
+| EP2 | A release is swept when the registry matrix has a rank 2 fact for each hash that the registry indexed at that time. The compat bot sweeps each new nightly (Registry 6). A transition is the pair of a release and the release adjacent before it. A transition is covered when both releases are swept. |
+| EP3 | A covered transition is a boundary when at least 2 hashes have a code result on both releases, and the two results are different. Any other covered transition is flat. |
+| EP4 | An epoch is a maximal interval of D in which each transition is flat. A boundary or a transition that is not covered ends an epoch. So with no matrix (registry off, or a release that the bot did not sweep), each release is an epoch of its own. |
+| EP5 | A fault fact marks one release bad for one hash. It is never part of a boundary, it never ends an epoch, and it never gives an inferred fact. |
+| EP6 | A pair (h, r) with no real fact gets an inferred result X in one of two cases. (a) Same epoch: h has a real code result X on a release in the epoch of r. (b) Between: the nearest real code result of h before r and the nearest after r are both X. If one case gives `pass` and a case gives `fail`, the pair stays unknown. An unknown pair between a `pass` and a `fail` of one hash stays unknown: it is the place to probe. An inferred `fail` copies the set of failing modules of its source. |
+| EP7 | A learned incompatibility is a hash and an interval of D: `not (h and roc in [a, b])`. [a, b] is the maximal interval around the failing release r in which each release of D has a `fail` for h (real or inferred) that touches a module the app uses. A fault gives the interval [r, r]. |
+| EP8 | An inferred fact never decides, except as EP9 states. The solver step (TESTING.md 2.2) returns `Done` only when each pair (hash, nightly) of the tuple has a real fact. It returns `Fail` only when the explanation uses real facts only. Else it returns `Need` with probes for the inferred facts that the tuple or the explanation uses. This is the second pass: it probes the inferred facts that blocked the best tuples, inside the budget (P5). |
+| EP9 | With `--no-probe` (no new unit probes), the step can return `Done` or `Fail` on inferred facts. When the budget is spent, the explanation can use inferred facts. Talon marks each one as `inferred` in the output and in `--json`. A spent budget gives exit code 12 (UP7). The final ladder (steps 2 and 3) still runs on real probes, so Talon never writes a header on an inferred fact alone, unless `--no-check` also skips that ladder. |
+
+With no bot data (registry off), each hash starts with the release date and `roc:` pin as hints (section 3). EP4 then gives one epoch per release, and only the "between" case of EP6 infers facts.
 
 ## 5. Algorithm
 
@@ -245,10 +272,10 @@ PubGrub with a lazy oracle. A failed probe becomes a learned incompatibility, th
 ```mermaid
 flowchart TD
     A["candidates from index<br/>ordered by priority"] --> B["PubGrub picks a tuple"]
-    B --> C{"all works(hash, roc)<br/>known?"}
-    C -- unknown --> D["unit probe, cheapest first"]
+    B --> C{"all works(hash, roc)<br/>real facts?"}
+    C -- "unknown or inferred" --> D["unit probe, cheapest first"]
     D --> E["store fact"] --> C
-    C -- "a fail in a used module,<br/>or a fault" --> F["learn: not (hash and roc in that epoch)"] --> B
+    C -- "a fail in a used module,<br/>or a fault" --> F["learn: not (hash and roc in [a, b])<br/>(EP7)"] --> B
     C -- all pass --> G["whole-app check<br/>(new errors only)"]
     G -- pass --> G2["build for host target<br/>(skip if recorded pass)"]
     G2 -- pass --> H["write header + roc pin"]
@@ -259,12 +286,12 @@ flowchart TD
 
 | Step | Action |
 | --- | --- |
-| 1 | Collect variables, ranges and anchors (section 1). For `add` and `update`, run the baseline check on the current header (section 4). |
+| 1 | Collect variables, ranges and anchors (section 1). For a command that runs step 6, run the baseline check on the current header (section 4). |
 | 2 | Fetch metadata for the full closure in one request (Registry 4). It includes the shared matrix for these hashes. |
 | 3 | PubGrub picks the best tuple by `priority`, under C1 to C4 and C6 to C7. |
 | 4 | For each pair (hash, roc) with no fact, run a unit probe. Order: installed nightly first, then the strongest hint. Up to 12 checks run at the same time (section 4, "Parallel probes"). |
-| 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for (hash, that epoch). Go back to step 3. |
-| 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. |
+| 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for the hash and an interval of compiler releases (EP7). Go back to step 3. Inferred facts (EP6) order and prune the search, but the step needs real facts to finish (EP8). |
+| 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. In P0, steps 4 and 5 do not run (Design 7, P0 limits). |
 | 7 | Write the header and `roc:`. Print the tuple, the probe count and the evidence for each choice. |
 
 Example failure output, with measured ranges, for an app that imports `parser.Yaml`:
@@ -282,7 +309,7 @@ error: no tuple works
 
 ## 6. Overrides of transitive versions
 
-To raise a transitive dependency (for example, a security fix), the app needs an alias for it in the same major. Roc then uses that version for the whole graph. Section 2 of `DESIGN.md` confirms both parts: an unused alias is legal, and it raises the version for every package.
+To raise a transitive dependency (for example, a security fix), the app needs an alias for it in the same series (Design 4.1). Roc then uses that version for the whole graph. Section 2 of `DESIGN.md` confirms both parts: an unused alias is legal, and it raises the version for every package.
 
 ```toml
 [overrides]
@@ -293,14 +320,29 @@ The raise can break a package that was not written for the new version (the `htt
 
 ## 7. Patches
 
-`tln patch json` copies the cached package to `.talon/patches/json/` for editing. `talon.toml` records it:
+`tln patch json` copies the cached package of the header entry `json` to `.talon/patches/json/` for editing. `talon.toml` records the copy and the hash it came from:
 
 ```toml
 [patch]
-json = "./.talon/patches/json/main.roc"
+json = { path = "./.talon/patches/json/main.roc", base = "4W8SHzvwet9h..." }
 ```
 
-The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-dep <header URL> <patch path>` to each command. `tln patch --commit` writes a diff file.
+The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-dep <header URL> <path>` to each command. Probes and the whole-app check use the same flag.
+
+| Item | Where | In VCS |
+| --- | --- | --- |
+| The patch: the edited copy | `.talon/patches/<alias>/` | Yes |
+| The `[patch]` entry: path and base hash | `talon.toml` | Yes |
+| The original package | `packages/<base>/` in the roc cache | No. Talon fetches it by hash when it needs a diff (PA3, PA5). |
+
+| # | Rule |
+| --- | --- |
+| PA1 | `tln patch <alias>` fetches the package of the header entry if it is not in the cache, copies it to `.talon/patches/<alias>/`, and writes the `[patch]` entry with `base` = the hash of the entry. It creates `talon.toml` if it is missing. If the directory exists, Talon stops with exit code 2 and names it. |
+| PA2 | The copy is the patch. Talon writes no diff file, and `tln patch` has no `--commit`. The user commits the directory and `talon.toml`. A fresh clone needs no step: the proxy reads `[patch]` and passes the path. |
+| PA3 | `tln patch <alias> --diff` prints the diff of the copy against `packages/<base>/`. It writes nothing. Use it to review a patch. |
+| PA4 | A patched entry is an anchor in `update` and `upgrade` (section 1). Talon prints `json: patched, held`. A command that names the entry frees it. |
+| PA5 | When a command moves a patched entry to a new release, Talon takes the diff of the copy against `packages/<base>/` and applies it to the new release in a temp copy. The probes of that release use the temp copy. A release on which the diff does not apply is not a candidate for that entry. When Talon writes the header, it replaces the copy and sets `base` to the new hash. When no candidate is left, Talon writes nothing and stops with exit code 10 (`no_tuple`). The explanation lists the files that do not apply, and names two fixes: edit the copy, or remove the `[patch]` entry. |
+| PA6 | A `base` that is not the hash of the header entry (for example after a hand edit of the header) is a stale patch. The proxy does not run the compiler: it stops with exit code 14 and names `tln install`. `tln install` applies the patch to the header release as in PA5, and does not change the header. `tln install --frozen` fails with exit code 14. |
 
 ## 8. Libraries
 
@@ -319,9 +361,9 @@ A command can hold a variable: it fixes the variable at its current header value
 | `tln update` | All, inside their ranges | None |
 | `tln update X [Y...]` | Only the named ones | All others |
 | `tln update -i` | The ones the user picks in the picker (prompt NI2, CLI 4) | All others |
-| `tln update X@sel` | X, in the releases that match `sel`, also in a new major (section 10) | All others |
+| `tln update X@sel` | X, in the releases that match `sel`, also in a new series (section 10) | All others |
 | `tln upgrade` | All, with no package range (section 10) | Anchors (`=`) |
-| `tln upgrade X [Y...]` | Only the named ones, with no range. A named anchor is free too. | All others |
+| `tln upgrade X [Y...]` | Only the named ones, with no range. A named anchor is free too, except a fixed anchor (DI11). | All others |
 | `tln upgrade roc` | Only the nightly | All packages |
 | `tln upgrade X roc` | X and the nightly | All other packages |
 
@@ -339,7 +381,7 @@ A command can hold a variable: it fixes the variable at its current header value
 | --- | --- | --- |
 | RP1 | Only two commands change a `roc:` entry that exists: `tln upgrade` when the nightly is free (no names, or the name `roc`), and `tln roc use` (U1 to U4). | The nightly has no semver ranges, so each move goes to a newer release and can break code. That is the job of `upgrade`. `tln update` stays the small, safe move. |
 | RP2 | `install`, `add`, `update` and `remove` always hold the nightly, also with NI3, `--allow-moves` or `--yes`. When no tuple works on the held nightly, Talon writes nothing and stops with exit code 10 (`no_tuple`). The error names the oldest nightly that works, when a probe or the matrix knows it, and the commands `tln upgrade roc` and `tln roc use <id>`. A `roc:` pin outside the `[toolchain] roc` range gives the same error in `install`. | One command moves the nightly, so the user always sees it move. |
-| RP3 | A header with no `roc:` entry: the command writes the nightly that it held (the selected compiler, section 13) after the check passes (H6). | This records the lock. It does not move it. |
+| RP3 | A header with no `roc:` entry: a command that writes the header for another change writes the nightly that it held (the selected compiler, section 13) after the check passes (H6). A missing `roc:` entry alone is not a change: `tln install` with no names writes no `roc:` entry when it resolves nothing. | This records the lock. It does not move it. |
 | RP4 | In `tln upgrade`, a move of a held variable (NI3) can include the nightly. | `upgrade` is allowed to move it. |
 
 A held variable moves only when no tuple exists without moving it (RP2 excludes the nightly). Then Talon does not move it by itself:
@@ -356,30 +398,30 @@ A held variable moves only when no tuple exists without moving it (RP2 excludes 
 | --- | --- |
 | Satisfies its range in `talon.toml`, or its implied range (Design 4.3) | Keeps it. The entry does not change. Install holds it, as in `tln update X`. |
 | Is missing from the header, or is out of range | Resolves it. This entry is the only free variable. |
-| `talon.toml` does not exist | Resolves nothing. Install only fetches the closure of the header. |
+| `talon.toml` does not exist | Resolves nothing: each entry satisfies its implied range. Install only fetches the closure of the header, and writes nothing (RP3). |
 
 A hold that cannot stay follows the consent rows above. `tln install --frozen` (section 12) runs the same check and resolves nothing: where plain `install` would resolve an entry, `--frozen` fails.
 
-## 10. Upgrade and new majors
+## 10. Upgrade and new series
 
-`tln update` moves inside the ranges of `talon.toml`. `tln upgrade` moves to the newest releases, also to a new major, and changes the ranges to match. It is the Bun `update --latest` and the Cargo `cargo upgrade --incompatible`.
+`tln update` moves inside the ranges of `talon.toml`. `tln upgrade` moves to the newest releases, also to a new series, and changes the ranges to match. It is the Bun `update --latest` and the Cargo `cargo upgrade --incompatible`.
 
 | Command | Domain of a free package | `talon.toml` | Nightly |
 | --- | --- | --- | --- |
 | `tln update [X...]` | Its range | Not changed | Held (RP1) |
-| `tln update X@sel` | The releases that match `sel`, in any major | As `tln add X@sel` (CLI 2). `@latest` follows UP5. | Held (RP1) |
-| `tln upgrade` | All releases, in any major | UP5 | Free |
-| `tln upgrade X [Y...]` | All releases, in any major | UP5 | Free only when `roc` is one of the names |
+| `tln update X@sel` | The releases that match `sel`, in any series | As `tln add X@sel` (CLI 2). `@latest` follows UP5. | Held (RP1) |
+| `tln upgrade` | All releases, in any series | UP5 | Free |
+| `tln upgrade X [Y...]` | All releases, in any series | UP5 | Free only when `roc` is one of the names |
 
 | # | Rule |
 | --- | --- |
-| UP1 | The domain is every release that C6 and C7 allow (not yanked, older than `min-release-age`, inside the snapshot). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A `[toolchain] roc` range and the `nightly` switch (NS3) still apply: they state which compilers the team can use. |
-| UP2 | The goal is the same as for `update`: the newest version of each free variable, in `priority` order (section 1). So a new major of the first variable wins over newer versions of the later ones. Talon prints each variable that did not get its newest release, and why, for example `json 3.0.0 needs pf >= 0.27.0, which checks on no nightly that roc-parser 2.0.0 checks on`. |
-| UP3 | A new major is a new group (Design 2). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old major, both majors stay in the closure, and Talon prints warning C8. |
+| UP1 | The domain is every release that C6 and C7 allow (not yanked, older than `min-release-age`, inside the snapshot). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A fixed anchor (DI11, section 1) stays held also when the user names it. A `[toolchain] roc` range and the `nightly` switch (NS3) still apply: they state which compilers the team can use. |
+| UP2 | The goal is the same as for `update`: the newest version of each free variable, in `priority` order (section 1). So a new series of the first variable wins over newer versions of the later ones. Talon prints each variable that did not get its newest release, and why, for example `json 3.0.0 needs pf >= 0.27.0, which checks on no nightly that roc-parser 2.0.0 checks on`. |
+| UP3 | A new series is a new group (Design 2, 4.1). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old series, both series stay in the closure, and Talon prints warning C8. |
 | UP4 | Moves of held variables follow section 9 (prompt NI3). |
-| UP5 | A range that does not contain the new version gets the same form at the new version: `^2.1` becomes `^3.0`, `0.25.*` becomes `0.26.*`, `2` becomes `3`. A named anchor becomes `=<new version>`. A range that contains the new version does not change. Talon adds no key and does not create the file. |
-| UP6 | When the nightly is free, the newest compiler release that the `nightly` switch allows (NS1, NS2) is a download that the command names: prompt NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (NI4). |
-| UP7 | Many free variables in all majors give a large search. The budget P5 applies, and probes run in parallel (PP1). When the budget is spent, Talon writes nothing and stops with exit code 12 (`budget`). The error names `probe.max`. |
+| UP5 | A range that does not contain the new version gets the same form at the new version: `^2.1` becomes `^3.0`, `^0.25` becomes `^0.26`, `0.25.*` becomes `0.26.*`, `2` becomes `3`. A named anchor becomes `=<new version>`. A range that contains the new version does not change. Talon adds no key and does not create the file. |
+| UP6 | When the nightly is free, the newest compiler release that the `nightly` switch (NS1, NS2) and `min-release-age` (C7) allow is a download that the command names: prompt NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (NI4). |
+| UP7 | Many free variables in all series give a large search. The budget P5 applies, and probes run in parallel (PP1). When the budget is spent, Talon writes nothing and stops with exit code 12 (`budget`). The error names `probe.max`. |
 | UP8 | `--strategy lowest` is an error (exit code 2): `upgrade` only moves up. |
 
 ```text
@@ -389,7 +431,7 @@ probed 14 times on 3 nightlies (1 download, 70 MB), up to 12 at the same time
 
   main.roc
   ~ pf:     roc-lang/basic-cli  0.25.0 -> 0.27.1
-  ~ json:   someone/roc-json    2.1.0  -> 3.0.2   new major
+  ~ json:   someone/roc-json    2.1.0  -> 3.0.2   new series
   ~ parser: lukewilliamboswell/roc-parser 2.0.0 (anchor, held)
   ~ roc:    nightly-2026-10-09-258ab27 -> nightly-2026-10-13-91fa0c2
   talon.toml: json = "^3.0" (was "^2.1"), pf = "0.27.*" (was "0.25.*")
@@ -406,8 +448,8 @@ A snapshot fixes which releases exist. It has two forms:
 
 | Form | Example | Hides | Works with | Strength |
 | --- | --- | --- | --- | --- |
-| Log | `log:184467` | Every release that the registry log (Registry 3) added after that size | The registry only. With `TALON_REGISTRY=direct` there is no log, so Talon stops with an error. | Strong. The log is append-only, so the set of releases is fixed. |
-| Time | `2026-10-12T00:00:00Z` (UTC, RFC 3339) | Every release published after that time. The time is the GitHub release `published_at`. | The registry and `direct` | Weaker. See below. |
+| Log | `log:184467` | Every release that the registry log (Registry 3) added after that size. From P2 the log also holds each compiler release, so the set of compilers is fixed too. | The registry only. With `TALON_REGISTRY=direct` there is no log, so Talon stops with an error. | Strong. The log is append-only, so the set of releases is fixed. |
+| Time | `2026-10-12T00:00:00Z` (UTC, RFC 3339) | Every release published after that time, compiler releases included. The time is the GitHub release `published_at`. | The registry and `direct` | Weaker. See below. |
 
 The time form is the same idea as uv `exclude-newer`. It is weaker because GitHub can change a release after the fact: a maintainer can delete and publish a release again, or move a label to other assets. So a time snapshot can give another set of releases on a later day. The hash in the header still protects the build bytes.
 
@@ -443,11 +485,19 @@ Use `--no-check` only when one of these is true:
 | 1 | Command argument | `roc +nightly-2026-10-06-c34079d check` | The user typed it for this one run. |
 | 2 | Environment | `ROC_TOOLCHAIN=nightly-2026-10-06-c34079d` | Set for a shell or a CI job. |
 | 3 | `roc:` entry of the target file header | `roc: "nightly-2026-10-09-258ab27"` | The header is the lock (G1). It is exact and it travels with the file. |
-| 4 | `talon.toml` `[toolchain] roc` | newest installed in range, as the `nightly` switch allows (NS3) | Intent. It is a range, so it only chooses when the header has no pin. |
+| 4 | `talon.toml` `[toolchain] roc` | newest installed in range (`*`, a semver range, or `>=nightly-2026-10-09-258ab27`, NS7), as the `nightly` switch allows (NS3) | Intent. It is a range, so it only chooses when the header has no pin. |
 | 5 | `.roc-version` in the nearest parent directory | package repos | Other people's convention. Used only when no `talon.toml` is in a parent directory of the file. |
-| 6 | Global default | `tln roc default <tag>`, stored in `config.toml` (CLI 6.1) | Last resort. |
+| 6 | Global default | `tln roc default <tag>`, stored in `config.toml` (CLI 6.1) | Last resort of the toolchain manager. |
+| 7 | `roc` on `PATH` | `/usr/local/bin/roc`, a `roc` that the user installed by hand | Talon works with no installed compiler (Design 7, phase P0), as uv finds a Python on `PATH`. |
 
-The proxy finds the target file (rank 3) in the `roc` arguments: the first argument that names a `.roc` file. With no such argument, it uses `main.roc` in the current directory, as roc does. A command with no file (`roc version`, `roc help`) has no target file, so rank 3 does not apply.
+The proxy finds the target file (rank 3) in the `roc` arguments: the first argument that names a `.roc` file. With no such argument, it uses `main.roc` in the current directory, as roc does. A command with no file (`roc version`, `roc help`) has no target file, so rank 3 does not apply. A `tln` command uses its project file (CLI 1, PD1 to PD8) as the target file. The proxy rule is PD7.
+
+Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6.2). Talon runs `roc version` on it once for each binary, and keeps the id in `talon/path-roc.json` (CLI 6.1). The output `Roc compiler version <id>` gives its id:
+
+| Id | Talon does |
+| --- | --- |
+| A nightly tag or a release | The binary counts as an installed compiler with that id, also for ranks 1 to 4. So a pin that names it needs no download. |
+| Another id (for example `debug-<sha>`) | It is a local build: Talon never writes it as a `roc:` pin (CLI 6.6, R4), and H6 keeps the old pin. |
 
 | Case | Talon does |
 | --- | --- |
@@ -455,7 +505,7 @@ The proxy finds the target file (rank 3) in the `roc` arguments: the first argum
 | Rank 4 has a range, and no installed compiler is in it | The newest compiler release in the range that the `nightly` switch allows is a required download (NI5) |
 | No rank selects a compiler | Error with exit code 2 that names `tln roc install @latest` and `tln roc default`. Talon does not guess. |
 
-The first compiler that Talon installs becomes the global default when none is set, as in rustup. So "no rank selects a compiler" happens only before the first install.
+The first compiler that Talon installs becomes the global default when none is set, as in rustup. So "no rank selects a compiler" happens only before the first install, when no `roc` is on `PATH`.
 
 Talon reads `.roc-version` but never writes it (G1: no second lock). `tln init` writes the nightly as the `roc:` entry of the header (CLI 1).
 

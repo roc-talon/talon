@@ -39,8 +39,12 @@ function Get-Target {
     if (-not $arch) { $arch = $env:PROCESSOR_ARCHITECTURE }
     switch ($arch) {
         'AMD64' { return 'x64win' }
-        'ARM64' { return 'arm64win' }
-        default { Fail "no prebuilt tln for Windows on $arch. Prebuilt targets: x64win, arm64win." }
+        'ARM64' {
+            # basic-cli has no arm64win target. Windows 11 on ARM64 runs x64 binaries by emulation.
+            Write-Host 'note: no native Windows ARM64 build of tln. Installing the x64 build, which runs by emulation.'
+            return 'x64win'
+        }
+        default { Fail "no prebuilt tln for Windows on $arch. Prebuilt target: x64win." }
     }
 }
 
