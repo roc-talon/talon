@@ -44,7 +44,7 @@ Merkle log:
 | Part | Where | Why |
 | --- | --- | --- |
 | Leaves `(index, group, version, hash, time)` | D1 table, written in the publish transaction | The log and the index cannot disagree |
-| Compiler leaves, from P2 | Same table and form. One leaf for each asset of a compiler release: group `roc-lang/nightlies:<target>` (CLI 6.2, CV2), version the tag, hash `sha256:<hex>`. Written in the same transaction as the `toolchains` row (section 5). | `--snapshot log:N` then fixes the set of compilers too (Resolution 11) |
+| Compiler leaves, from P2 | Same table and form. One leaf for each asset of a compiler release: group `roc-lang/nightlies:<target>` (CLI 6.2, R-CV2), version the tag, hash `sha256:<hex>`. Written in the same transaction as the `toolchains` row (section 5). | `--snapshot log:N` then fixes the set of compilers too (Resolution 11) |
 | Tiles and signed checkpoint | R2, write-once objects (C2SP tlog-tiles layout) | Tiles are immutable, so object storage plus the edge cache fits. This is how Sunlight serves CT logs. |
 | Sequencing | The D1 transaction (`index = max + 1`) | No separate sequencer at this write rate |
 
@@ -56,7 +56,7 @@ KV is not used: eventual consistency (about 60 s) is wrong for the version list.
 | --- | --- | --- |
 | `GET /v1/pkg/{owner}/{repo}` | All labels, one JSON line each | ETag, 60 s, purge on publish |
 | `GET /v1/hash/{hash}` | Artifact record and all its labels | Immutable, except new labels |
-| `POST /v1/closure` | Body: direct groups + ranges. Returns records for all candidates and their closure, plus matrix rows for those hashes and the swept marks of the compiler releases (Registry 6, Resolution 4 EP2) | Not cached. One round trip per resolve. |
+| `POST /v1/closure` | Body: direct groups + ranges. Returns records for all candidates and their closure, plus matrix rows for those hashes and the swept marks of the compiler releases (Registry 6, Resolution 4 R-EP2) | Not cached. One round trip per resolve. |
 | `GET /v1/compat/{hash}` | Matrix rows for one hash | 5 min |
 | `GET /v1/toolchains` | Nightly tags, assets, sha256, published_at, log_index | 5 min |
 | `POST /v1/toolchains` | Add a new compiler release (compat bot with OIDC, section 7) | |
@@ -85,10 +85,10 @@ The matrix makes probes rare. A user who adds a common package gets a known answ
 | Producer | Runs | Trust |
 | --- | --- | --- |
 | Talon compat bot | A scheduled GitHub Actions workflow. For each new nightly, it runs unit probes on every indexed hash. For each new release, it searches the nightly range (Resolution 4). Posts results with an OIDC token. | Full |
-| Release workflow | `tln probe --range <bundle file>`, then `tln publish` sends the facts (Resolution 4, PB5) | Full, tied to the publisher |
+| Release workflow | `tln probe --range <bundle file>`, then `tln publish` sends the facts (Resolution 4, R-PB5) | Full, tied to the publisher |
 | Users | `tln probe --share` | Hint only (rank 6) |
 
-When the bot has a result for each indexed hash on a release, it marks that release as swept. The matrix rows that the client gets carry the swept marks. The resolver finds epochs only between swept releases (Resolution 4, EP2).
+When the bot has a result for each indexed hash on a release, it marks that release as swept. The matrix rows that the client gets carry the swept marks. The resolver finds epochs only between swept releases (Resolution 4, R-EP2).
 
 Cost: about 50 packages times 1 new nightly a day, at under 2 s each, is under 2 minutes of CI a day.
 
@@ -118,18 +118,18 @@ sequenceDiagram
 | GitHub App webhook | `release.published` | App installation on the repo |
 | `POST /v1/ingest` | Anyone, with a public URL | None. The bytes and the tag are public, and the hash checks them. |
 
-`tln publish` also sends the real facts of the released hash (Resolution 4, PB5). The Worker writes them as `compat` rows with the source `author`, with the release.
+`tln publish` also sends the real facts of the released hash (Resolution 4, R-PB5). The Worker writes them as `compat` rows with the source `author`, with the release.
 
-For a GitHub release, each path selects the package asset and reads the version and the group with the rules of `direct` mode (CLI 7.3, DI3 to DI5). So the registry does not index a draft, a prerelease, or a release with 0 or 2 package assets, and `tln` sees the same candidates in both modes. A URL on another host gets the version and group from the roc rule (Design 2), as in DI5.
+For a GitHub release, each path selects the package asset and reads the version and the group with the rules of `direct` mode (CLI 7.3, R-DI3 to R-DI5). So the registry does not index a draft, a prerelease, or a release with 0 or 2 package assets, and `tln` sees the same candidates in both modes. A URL on another host gets the version and group from the roc rule (Design 2), as in R-DI5.
 
 Compiler releases, from P2:
 
 | Step | What happens |
 | --- | --- |
 | 1 | The compat bot (section 6) finds a new compiler release and calls `POST /v1/toolchains` with an OIDC token and the tag. |
-| 2 | The Worker reads the release from the GitHub API itself. It does not trust the body of the bot for the sha256. It selects the assets with CV1 and CV2 (CLI 6.2) and takes each sha256 from the `digest` field. |
+| 2 | The Worker reads the release from the GitHub API itself. It does not trust the body of the bot for the sha256. It selects the assets with R-CV1 and R-CV2 (CLI 6.2) and takes each sha256 from the `digest` field. |
 | 3 | One D1 transaction writes a `toolchains` row and a compiler log leaf (section 3) for each asset. A tag that already has rows is not written again. |
-| 4 | If GitHub later shows another `digest` for a recorded asset, the Worker keeps the recorded row and returns it. `tln` then stops at CV4 with exit code 16. |
+| 4 | If GitHub later shows another `digest` for a recorded asset, the Worker keeps the recorded row and returns it. `tln` then stops at R-CV4 with exit code 16. |
 
 ## 8. Worker host: JSPI
 

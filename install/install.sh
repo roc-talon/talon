@@ -1,8 +1,8 @@
 #!/bin/sh
-# Talon installer for Linux and macOS. Rules: DESIGN-CLI.md 6.5 (S1, IS1 to IS8).
+# Talon installer for Linux and macOS. Rules: DESIGN-CLI.md 6.5 (R-S1, R-IS1 to R-IS8).
 #
 #   curl -fsSL https://github.com/Karakatiza666/talon/releases/latest/download/install.sh | sh
-#   curl -fsSL .../install.sh | sh -s -- --version 0.3.1      (repair, S4)
+#   curl -fsSL .../install.sh | sh -s -- --version 0.3.1      (repair, R-S4)
 #
 # Downloads the prebuilt tln for this machine, checks its sha256 (and the attestation when
 # `gh` is available), puts it in the tool bin dir, then runs `tln setup`.
@@ -46,7 +46,7 @@ while [ $# -gt 0 ]; do
     esac
 done
 
-# Roc target name of this machine (IS2). Linux binaries are static musl, so they run on any distro.
+# Roc target name of this machine (R-IS2). Linux binaries are static musl, so they run on any distro.
 detect_target() {
     os=$(uname -s)
     arch=$(uname -m)
@@ -64,7 +64,7 @@ detect_target() {
 }
 
 # Same rules as tln (DESIGN-CLI.md 4), except the terminal test: with `curl | sh`, stdin is
-# the script, so the installer reads the answer from /dev/tty (IS4).
+# the script, so the installer reads the answer from /dev/tty (R-IS4).
 interactive() {
     case "${TALON_INTERACTIVE:-}" in
         0) return 1 ;;
@@ -126,7 +126,7 @@ if [ -z "$YES" ]; then
 fi
 
 mkdir -p "$BIN"
-# Download next to the final path, so the last step is a rename on one filesystem (IS5).
+# Download next to the final path, so the last step is a rename on one filesystem (R-IS5).
 TMP=$(mktemp "$BIN/.tln.XXXXXX")
 SUMS=$(mktemp "$BIN/.sums.XXXXXX")
 trap 'rm -f "$TMP" "$SUMS"' EXIT INT TERM
@@ -141,7 +141,7 @@ got=$(sha256_of "$TMP")
 [ "$got" = "$want" ] || die "sha256 mismatch for $ASSET: expected $want, got $got" 16
 say "sha256 ok ($got)"
 
-# Attestation (S1): only when gh is installed and logged in. A failed check stops the install.
+# Attestation (R-S1): only when gh is installed and logged in. A failed check stops the install.
 if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
     gh attestation verify "$TMP" --repo "$REPO" >/dev/null || die "attestation check failed for $ASSET" 16
     say "attestation ok"
@@ -150,14 +150,14 @@ else
 fi
 
 chmod +x "$TMP"
-# A binary that does not start never replaces a working one (S3).
+# A binary that does not start never replaces a working one (R-S3).
 ver=$("$TMP" --version 2>/dev/null) || die "the downloaded tln does not start on this machine"
 mv -f "$TMP" "$BIN/tln"
 trap 'rm -f "$SUMS"' EXIT INT TERM
 say "installed $ver at $BIN/tln"
 
-# tln setup writes the talon entry of tools.json and connects the shell (IS6).
-# With a terminal, its prompts (NI13, NI14) read from /dev/tty, as the prompt above.
+# tln setup writes the talon entry of tools.json and connects the shell (R-IS6).
+# With a terminal, its prompts (R-NI13, R-NI14) read from /dev/tty, as the prompt above.
 # shellcheck disable=SC2086 # SETUP_ARGS is a list of flags
 if interactive; then
     "$BIN/tln" setup $SETUP_ARGS </dev/tty

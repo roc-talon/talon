@@ -2,7 +2,7 @@
 
 Audit of the `tln` CLI in `DESIGN.md` (Draft 2, 2026-10-13). Line numbers point to Draft 2 before the fixes.
 
-Each group is one work item. A group changes `DESIGN.md` only. Status: all 24 points are fixed in Draft 3 (2026-10-14).
+Rule ids in this file have the old form with no `R-` prefix: NI5 here is R-NI5 in the design (2026-10-15). Each group is one work item. A group changes `DESIGN.md` only. Status: all 24 points are fixed in Draft 3 (2026-10-14).
 
 Section numbers in this file point to `DESIGN.md` before the split of 2026-10-15. The split moved the sections into 4 files and changed their numbers:
 

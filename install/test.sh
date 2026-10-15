@@ -46,7 +46,7 @@ for sh in "${SHELLS[@]}"; do
         ok "$sh: --version v0.3.1 --yes"
     else bad "$sh: --version"; cat "$h/out"; fi
 
-    # A bad checksum stops with exit 16 and keeps the old binary (S3)
+    # A bad checksum stops with exit 16 and keeps the old binary (R-S3)
     h="$W/h-$n-sum"; mkdir -p "$h/.local/share/talon/bin"; echo old > "$h/.local/share/talon/bin/tln"
     cp -r "$W/rel" "$W/rel-bad-$n"; echo tampered >> "$W/rel-bad-$n/latest/download/tln-x64musl"
     BASE="file://$W/rel-bad-$n" run "$sh" "$h"; rc=$?
@@ -117,7 +117,7 @@ if [ -n "${PWSH:-}" ]; then
     prun "$h" -Version 9.9.9; rc=$?
     if [ $rc = 15 ]; then ok "pwsh: missing release, exit 15"; else bad "pwsh: missing release (rc $rc)"; cat "$h/out"; fi
 
-    # IS2: Windows on ARM64 gets the x64 build
+    # R-IS2: Windows on ARM64 gets the x64 build
     h="$W/p-arm64"
     if PROC_ARCH=ARM64 prun "$h" && grep -q 'installs the newest Talon release (tln-x64win.exe)' "$h/out" &&
         grep -q 'runs by emulation' "$h/out" && grep -q 'installed tln 0.4.0' "$h/out"; then

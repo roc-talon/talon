@@ -1,9 +1,9 @@
 #requires -version 5.1
 <#
-Talon installer for Windows. Rules: DESIGN-CLI.md 6.5 (S1, IS1 to IS8).
+Talon installer for Windows. Rules: DESIGN-CLI.md 6.5 (R-S1, R-IS1 to R-IS8).
 
     irm https://github.com/Karakatiza666/talon/releases/latest/download/install.ps1 | iex
-    & ([scriptblock]::Create((irm .../install.ps1))) -Version 0.3.1     (repair, S4)
+    & ([scriptblock]::Create((irm .../install.ps1))) -Version 0.3.1     (repair, R-S4)
 
 Downloads the prebuilt tln.exe for this machine, checks its sha256, puts it in the tool
 bin dir, then runs `tln setup`. With `irm | iex` there are no arguments, so each parameter
@@ -33,7 +33,7 @@ function Fail([string] $Message, [int] $Code = 1) {
     throw "install.ps1: error: $Message"
 }
 
-# Roc target name of this machine (IS2)
+# Roc target name of this machine (R-IS2)
 function Get-Target {
     $arch = $env:PROCESSOR_ARCHITEW6432 # set when a 32-bit shell runs on a 64-bit system
     if (-not $arch) { $arch = $env:PROCESSOR_ARCHITECTURE }
@@ -83,7 +83,7 @@ if (-not $Yes) {
 }
 
 New-Item -ItemType Directory -Path $Bin -Force | Out-Null
-# Download next to the final path, so the last step is a rename on one volume (IS5)
+# Download next to the final path, so the last step is a rename on one volume (R-IS5)
 $Tmp = Join-Path $Bin (".tln.{0}.exe" -f [Guid]::NewGuid().ToString('N'))
 $Sums = Join-Path $Bin (".sums.{0}" -f [Guid]::NewGuid().ToString('N'))
 $oldProgress = $ProgressPreference
@@ -107,7 +107,7 @@ try {
     if ($got -ne $want) { Fail "sha256 mismatch for ${Asset}: expected $want, got $got" 16 }
     Write-Host "sha256 ok ($got)"
 
-    # Attestation (S1): only when gh is installed and logged in
+    # Attestation (R-S1): only when gh is installed and logged in
     $gh = Get-Command gh -ErrorAction SilentlyContinue
     $ghOk = $false
     if ($gh) { & gh auth status *> $null; $ghOk = ($LASTEXITCODE -eq 0) }
@@ -118,12 +118,12 @@ try {
     }
     else { Write-Host 'note: attestation not checked (needs gh, logged in)' }
 
-    # A binary that does not start never replaces a working one (S3)
+    # A binary that does not start never replaces a working one (R-S3)
     $ver = & $Tmp --version 2>$null
     if ($LASTEXITCODE -ne 0) { Fail 'the downloaded tln does not start on this machine' }
     $Exe = Join-Path $Bin 'tln.exe'
     if (Test-Path -LiteralPath $Exe) {
-        # A running tln.exe cannot be overwritten, but it can be renamed (S3). The ST10 name
+        # A running tln.exe cannot be overwritten, but it can be renamed (R-S3). The R-ST10 name
         # tln.<16hex>.del lets the next tln start delete it when the delete below fails.
         $Old = Join-Path $Bin ("tln.{0}.del" -f [Guid]::NewGuid().ToString('N').Substring(0, 16))
         Move-Item -LiteralPath $Exe -Destination $Old
@@ -137,7 +137,7 @@ finally {
     Remove-Item -LiteralPath $Tmp, $Sums -Force -ErrorAction SilentlyContinue
 }
 
-# tln setup writes the talon entry of tools.json and connects the shell (IS6)
+# tln setup writes the talon entry of tools.json and connects the shell (R-IS6)
 $SetupArgs = @('setup')
 if ($Yes) { $SetupArgs += '--yes' }
 if ($NoModifyPath) { $SetupArgs += '--no-modify-path' }
