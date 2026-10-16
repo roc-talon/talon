@@ -15,7 +15,7 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | R-CM5 | `tln upgrade [pkg...] [roc] [--no-check]` | Move to the newest releases, also to new series, and to the newest nightly. Change the `talon.toml` ranges to match. Names limit the scope. The name `roc` frees the nightly. Rules: Resolution 10, R-RP1. | `bun update --latest` |
 | R-CM6 | `tln outdated` | Table: current, wanted, latest, nightly range | `bun outdated` |
 | R-CM7 | `tln why parser` | Paths from the app to a package, and why this version (evidence) | `bun why` |
-| R-CM8 | `tln probe [alias\|<bundle file>] [--range] [--share]` | Probe a header entry, a bundle file or the project file on the selected compiler. `--range` finds its compiler range. `--share` sends the facts to the registry. Rules: Resolution 4, R-PB1 to R-PB6. | |
+| R-CM8 | `tln probe [alias\|<bundle file>] [--range] [--share]` | Probe a header entry, a bundle file or the project file on the selected compiler. `--range` finds its compiler range. `--share` sends the facts of a header entry to the registry once, also when sharing is off. Rules: Resolution 4, R-PB1 to R-PB6. | |
 | R-CM9 | `tln list [--tree]` | Closure with marks: `direct` (a header entry), `raised` (Roc MVS selects a higher version than a package header names, Design 2), `foreign` (R-H4), `patched` (Resolution 7) | `bun pm ls` |
 | R-CM10 | `tln patch json [--diff]` | Edit a copy of a dependency. The copy is the patch, and it goes in VCS. `--diff` prints it against the original (Resolution 7, R-PA1 to R-PA8). | `bun patch` |
 | R-CM11 | `tln verify [--strategy highest\|lowest]` | Resolve in memory, run the probe ladder (Resolution 4) on the tuple with `--replace-dep`, and print the result. It writes no header and no `talon.toml`. Probes add evidence to `compat.db` as usual. It does not replace `roc check` (N2). Use: Resolution 8. | |
@@ -28,6 +28,7 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | R-CM18 | `tln setup` | Install the `roc` proxy, the `PATH` line and shell completions (6.7) | |
 | R-CM21 | `tln yank <tag> [--reason <text>] [--undo]` | Yank a release of the current GitHub repository, or remove the yank with `--undo`. It runs only in a GitHub Actions `workflow_dispatch` job, and it gets the repository from `$GITHUB_REPOSITORY`. A tag with no indexed release gives exit code 2. Rules: Registry 7.2, R-YK1 to R-YK7. Phase P3. | (`cargo yank`, `npm deprecate`) |
 | R-CM22 | `tln move <old-name> [--to <new-name>] [--undo]` | Set, offer or remove the successor of a package name (Registry 7.3, R-TP14, R-AP31). It runs only in a GitHub Actions `workflow_dispatch` job. It changes no header: a user follows a successor with `tln update <alias>` (Registry R-PU28). Rules: R-MV1 to R-MV5. Phase P3. | (Packagist "abandoned, use X", `npm deprecate`) |
+| R-CM23 | `tln share [on\|off\|login\|logout\|forget]` | Show or change the sharing of probe results with the registry, and the tracker of contributions. Rules: R-SH1 to R-SH10. Phase P2. | (`go telemetry on\|off`) |
 
 R-CM19: Verb aliases. A long form and its other forms are the same command at every level: top level, `tool`, `roc` and `cache`. Help and error text print the long form.
 
@@ -101,9 +102,9 @@ R-RG1: Registry precedence, from high to low:
 
 R-RG2: The built-in default is one constant in the Talon binary, not a file. It stays `direct` until the registry runs (Design 7, P2). Then a Talon release changes the constant to the registry URL. A user who set no registry moves to the registry with `tln tool update talon` (6.5). A user who wants `direct` after that sets it in `config.toml`.
 
-R-RG3: With `direct`, and for the list of nightlies, Talon calls the GitHub API (7.3, R-CV1). With no token, GitHub allows 60 requests an hour for one IP address. So Talon uses a token when it finds one, in this order: `GITHUB_TOKEN`, `GH_TOKEN`, then the output of `gh auth token` when `gh` is installed and logged in. Talon sends the token only to `api.github.com`, never to a registry or a mirror. With no token, a rate limit error (exit code 15) names these three sources.
+R-RG3: With `direct`, and for the list of nightlies, Talon calls the GitHub API (7.3, R-CV1). With no token, GitHub allows 60 requests an hour for one IP address. So Talon uses a token when it finds one, in this order: `GITHUB_TOKEN`, `GH_TOKEN`, then the output of `gh auth token` when `gh` is installed and logged in. Talon sends the token only to `api.github.com`, never to a registry or a mirror. The one token that goes to the registry is not one of these: `tln share login` gets it from the OAuth App `Talon` for that use, and sends it once (R-SH7). With no token, a rate limit error (exit code 15) names these three sources.
 
-R-RG4: Privacy guard. Talon sends a `github.com` repository to a registry only after GitHub says that it is public. Before the first request that carries its name, its group, a URL of it or a hash of its releases, Talon reads `GET /repos/{owner}/{repo}` with the token rules of R-RG3. These requests are the release list (Registry 4, R-AP1, R-AP13), the closure query (R-AP16: its groups and its hashes), an ingest (R-AP9, from R-AD35 or Registry R-AP28), and `tln probe --share` of a header entry (Resolution 4, R-PB6). `?short=` (R-AD34) carries only the short name that the user typed, so it needs no check.
+R-RG4: Privacy guard. Talon sends a `github.com` repository to a registry only after GitHub says that it is public. Before the first request that carries its name, its group, a URL of it or a hash of its releases, Talon reads `GET /repos/{owner}/{repo}` with the token rules of R-RG3. These requests are the release list (Registry 4, R-AP1, R-AP13), the closure query (R-AP16: its groups and its hashes), an ingest (R-AP9, from R-AD35 or Registry R-AP28), and `tln probe --share` of a header entry (Resolution 4, R-PB6). The share queue (R-SH4) holds only hashes that came in an answer of the registry (R-SH3 filter 4), so the guard already ran for each of them. `?short=` (R-AD34) carries only the short name that the user typed, so it needs no check.
 
 | # | GitHub answer | Talon does |
 | --- | --- | --- |
@@ -125,6 +126,71 @@ probed 3 times on 1 nightly (0 downloads)
     talon.toml: parser = "=2.0.0"
     note: module Yaml fails on nightly-2026-10-09-258ab27 (redundant expose). Your app does not import it.
 ```
+
+### Sharing probe results
+
+Phase P2. With sharing on, `tln` sends its probe results of public packages to the registry by itself (Registry 6.1). Reads of compatibility data do not depend on sharing: each user gets all of the matrix (Registry 4, R-AP4, R-AP17).
+
+R-SH1: Sharing is the setting `share` in `config.toml` (6.1): `true` or `false`. When it is not set, sharing is off. `tln share on` and `tln share off` write it (R-CM23). The prompt R-NI16 writes it once, on the first run (R-SH11).
+
+R-SH2: Talon shares by itself only when all of these are true. Talon checks them when a fact goes into the queue, and again before it sends.
+
+| # | Condition | Reason |
+| --- | --- | --- |
+| 1 | `share = true` | Consent |
+| 2 | The registry is a URL, not `direct` (R-RG1) | |
+| 3 | No `--offline` | |
+| 4 | `DO_NOT_TRACK` is not set, is empty, or is `0` (R-EV26) | `DO_NOT_TRACK=1` is the proposed common opt-out of console tools (consoledonottrack.com). It is not a standard, but to obey it costs nothing. |
+| 5 | `CI` does not turn on non-interactive mode (section 4, R-NM1, the row `CI`). `TALON_INTERACTIVE` does not change this. | A CI job never shares by itself. The person who set `share = true` on a runner is often not the owner of the jobs that run on it. |
+
+`tln probe --share` is the one exception: the command names the send (Resolution 4, R-PB6).
+
+R-SH3: A fact goes into the queue only when it passes each filter:
+
+| # | Filter | It stops |
+| --- | --- | --- |
+| 1 | It is the result of a probe that this command ran while R-SH2 was true | Old facts of `compat.db`, facts that came from the registry, inferred facts (Resolution 4, R-EP14) |
+| 2 | The probe is a unit check of a package or a platform (Resolution 4, R-LD2, R-LD3), a smoke build of a platform (Resolution 4, R-SM1 to R-SM5), or the build of a tool app (the table below) | The baseline check, the whole-app check, an app build, the project file and a bundle file. These hold the code of the user, or a hash before its release. |
+| 3 | The compiler is an official nightly, with the recorded sha256 (6.2, R-CV6) | Source builds, links and copies (6.6) |
+| 4 | The hash came in an answer of the registry in this command (Registry 4, R-AP1, R-AP2, R-AP13, R-AP17) | A patched package (Resolution 7), and a hash on another host that the registry does not index. So the request tells the registry no new name and no new hash, and the privacy guard (R-RG4) already ran for it. |
+| 5 | No answer of this command had a `bot` row for the pair | A fact that a rank 2 row already gives (Resolution 3, R-EF3) |
+| 6 | The result is `pass`, `fail` or `crash` (Resolution 4, R-RC1, R-RC2, R-RC4), and a `fail` is not a machine error (Resolution 4, R-SM7) | A hang (R-RC3), which a slow or busy machine can cause, a download error, which is no fact (R-P3), and an error that comes from the machine, not the platform |
+
+The build of a tool app (6.4, R-T21) passes filter 2 only when all of these are true:
+
+| # | Condition |
+| --- | --- |
+| 1 | The app is a `github.com` release bundle that the registry indexes with the kind `app` (Registry 5, R-RE1) |
+| 2 | The build uses the header of the bundle with no change: no `--resolve` (R-T1) and no override |
+| 3 | It is not a build from a git ref (`--git`, section 2) |
+
+Then each input of the build is public, and the app hash fixes all of them. The fact has the key (app hash, nightly, target), with the real target of the build. A smoke build has the key (platform hash, nightly, target).
+
+R-SH4: The queue. Facts wait in the table `share_queue` of `compat.db` (6.1). A command that sent a request to the registry sends the queue at its end, after its output: one request (Registry 4, R-AP10) for each 500 rows, with a timeout of 5 s (first guesses). A row leaves the queue after a 200 or 201 answer, or after a 4xx answer other than 429: the registry will not take that row. After a 429 answer, a 5xx answer or no answer, the rows stay, and a later command sends them again. A row that the registry got twice counts once while it is pending (Registry 6.1, R-CT4). The send never changes the exit code, the output or the `--json` of the command. At most 10,000 rows wait (first guess). Beyond that, Talon drops the oldest rows. `tln share off` empties the queue.
+
+R-SH5: The contributor id is 16 random bytes in lowercase hex. Talon makes it the first time that sharing turns on, and keeps it in `share.json` in the data dir (6.1, R-LY2). It stays when sharing turns off and on again. Only `tln share forget` (R-SH9) makes a new one, and `tln tool rm talon` removes it with the Talon data (6.5, R-RM10). It is not in `config.toml`: people often publish their config files, and the id is a bearer value (Design 8, R-SE15). On Unix, `share.json` has the mode `0600`. Talon prints only the first 8 characters of the id. Talon sends the id only to the registry, in the header `Talon-Contributor`, with user hints (R-AP10), `POST /v1/tokens` (R-AP37) and `DELETE /v1/contributors/me` (R-AP36).
+
+R-SH6: The tracker on the machine. `share.json` also holds the totals of this machine: `sent` (the rows sent), `counted` (the sum of `written` of the answers), `first` (the sum of `first` of the answers), and the times of the first and the last send. Talon changes them under the lock of the file (7.4, R-CC6). They stay when sharing turns off. A user who has not logged in has only these totals: the registry keeps totals for each id (Registry 6.1, R-CT4), but it shows them only to an account (R-CT10).
+
+R-SH7: `tln share login` uses the GitHub device flow with the OAuth App `Talon` (Registry 6.1, R-CT8). Before the code, Talon says that a login links the id, and its totals from before, to the GitHub account. Then Talon prints `https://github.com/login/device` and the code, and waits for the person. Talon sends the GitHub token once, to `POST /v1/tokens` (R-AP37) with the id, and keeps the JWT of the answer in `share.json`. It never writes the GitHub token to a file. A login does not turn sharing on. The person declines, or the code expires: exit code 13 (`consent`). GitHub or the registry does not answer: exit code 15.
+
+R-SH8: `tln share` with no word prints: on or off, and the condition of R-SH2 that turns it off; the first 8 characters of the id; the totals of R-SH6; the count of queued rows; and, with a JWT, the GitHub login and the totals of the account (`GET /v1/contributors/me`, R-AP35). A 401 answer means that the JWT expired or stopped: Talon removes it and prints `run tln share login`. The text and the `--json` fields are a proposal (CLI 3, R-OUT2).
+
+R-SH9: `tln share logout` sends `DELETE /v1/tokens` (R-AP38), so each token of the account stops, and removes the JWT from `share.json`. `tln share forget` sends `DELETE /v1/contributors/me` (R-AP36), with the JWT when Talon has one: then the registry removes the account and the data of each linked id, from each machine. Then Talon removes the JWT, makes a new id, and sets the totals of R-SH6 to 0. The counts that went into `compat_hints` stay, because they hold no id (Registry 6.1, R-CT7). The message says so. `forget` does not change `share`.
+
+R-SH10: `tln share login`, `logout` and `forget` need a registry: with `direct`, Talon stops with exit code 2. `tln share on` with `direct` writes the setting and prints that Talon shares nothing while the registry is `direct`.
+
+R-SH11: The first-run prompt. When `share` is not set, the first command that runs in interactive mode (section 4, R-NM1) asks R-NI16 before it does its work. Talon writes the answer, `true` or `false`, so it asks once. Talon does not ask in these cases:
+
+| Case | Reason |
+| --- | --- |
+| `tln share` and its words | The command sets or shows the value |
+| `tln setup` | The install scripts run it (6.5, R-IS6). The installers do not manage consent. |
+| The `roc` proxy (6.2) | It runs `roc` for the user, and it has no prompts of its own |
+| `--help`, `--version` | |
+| The conditions 2, 4 or 5 of R-SH2 turn sharing off | The answer would change nothing now. Talon asks on a later run, when the condition is gone. |
+
+With no answer (end of input), Talon writes nothing, and the command goes on with sharing off.
 
 ### The project
 
@@ -181,6 +247,7 @@ R-EV1: A flag has priority over a variable (6.1).
 | R-EV16 | `TALON_ZIG_INDEX` | A URL | Test hook (below) | Below |
 | R-EV17 | `TALON_IN_PROXY` | `1` | Set by the proxy for the compiler that it runs. A proxy that sees it does not use rank 7. | Resolution 13 |
 | R-EV18 | `TALON_NOW` | A UTC time, RFC 3339 | Test hook (below) | Below |
+| R-EV26 | `DO_NOT_TRACK` | Set, not empty and not `0` | Talon shares nothing by itself. `tln probe --share` still sends. | 1, R-SH2 |
 
 Test hooks. With them, a test (`TESTING.md` 3) needs no network and no real clock. A user does not need them.
 
@@ -439,11 +506,11 @@ R-E5: Exit codes and the `--json` schema are part of the public interface. A cha
 | --- | --- | --- | --- | --- |
 | R-EC0 | 0 | `ok` | The command did its work | |
 | R-EC1 | 1 | `internal` | A Talon fault, or a compiler fault with no result | R-P7 (Resolution 4) |
-| R-EC2 | 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no selected compiler (Resolution 13), no project file or no single current member (R-PD4, R-PD5, R-PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, an alias that names two groups), `tln remove` of the platform, `tln patch` of the platform (Resolution 7, R-PA8), `--as` with 2 or more names (section 2), `--no-check` with a free nightly (Resolution 10, R-UP9) or in `tln roc use` (R-U4), `tln probe --share` with no registry or with no hash (Resolution 4, R-PB6), `tln publish` or `tln yank` with no registry or with no GitHub Actions OIDC token (Registry 4, R-AP27, Registry 7.2, R-YK3), `tln yank` of a tag with no indexed release (R-CM21), a check of `tln move` before it sends (R-MV2), a `github.com` repository that GitHub does not know or that is private, before a registry request (R-RG6), or `tln add`, `tln tool install` and `tln x` of a repo with no release that is a candidate (6.4, R-T10, R-AD35) | Sections 1, 2 and 4, Design 4.4, Resolution 4, 10, 11 and 13, 6.6 |
+| R-EC2 | 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no selected compiler (Resolution 13), no project file or no single current member (R-PD4, R-PD5, R-PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, an alias that names two groups), `tln remove` of the platform, `tln patch` of the platform (Resolution 7, R-PA8), `--as` with 2 or more names (section 2), `--no-check` with a free nightly (Resolution 10, R-UP9) or in `tln roc use` (R-U4), `tln probe --share` with no registry, with no hash or with a bundle file (Resolution 4, R-PB6), `tln share login`, `logout` or `forget` with no registry (R-SH10), `tln publish` or `tln yank` with no registry or with no GitHub Actions OIDC token (Registry 4, R-AP27, Registry 7.2, R-YK3), `tln yank` of a tag with no indexed release (R-CM21), a check of `tln move` before it sends (R-MV2), a `github.com` repository that GitHub does not know or that is private, before a registry request (R-RG6), or `tln add`, `tln tool install` and `tln x` of a repo with no release that is a candidate (6.4, R-T10, R-AD35) | Sections 1, 2 and 4, Design 4.4, Resolution 4, 10, 11 and 13, 6.6 |
 | R-EC10 | 10 | `no_tuple` | No tuple works. Talon prints the explanation. | Resolution 5 |
 | R-EC11 | 11 | `app_error` | A new error in an app file, or `tln remove` of an alias that the app imports. Talon stops and reports. | Resolution 4 ladder step 2, section 2 |
 | R-EC12 | 12 | `budget` | A probe budget is spent before a tuple was found | Resolution 4, R-P5 |
-| R-EC13 | 13 | `consent` | A required prompt (section 4) has no answer: Talon is in non-interactive mode, and there is no `--yes` and no flag that gives the answer | section 4 |
+| R-EC13 | 13 | `consent` | A required prompt (section 4) has no answer: Talon is in non-interactive mode, and there is no `--yes` and no flag that gives the answer. Also: the person declined the GitHub login of `tln share login`, or its code expired (R-SH7). | section 4, section 1 |
 | R-EC14 | 14 | `frozen` | The header or a patch does not match `talon.toml`: `--frozen` found a mismatch or a needed resolve, or the proxy found a stale patch | Resolution 12, R-PA6 |
 | R-EC15 | 15 | `network` | A registry, GitHub or download error that a later run can fix (R-E6 for the registry) | 7.1, 7.3, R-E6 |
 | R-EC16 | 16 | `integrity` | A hash or checksum does not match | 7.1, 6.2 R-CV4 and R-CV6, Design 8 |
@@ -580,12 +647,13 @@ R-NM2: `TALON_INTERACTIVE` overrides the three variables above. `1` turns on int
 
 R-NM3: Non-interactive mode changes one thing: a prompt does not show, and Talon uses a fixed answer instead. All other behavior is the same in both modes: what the command does, what it writes, its output and its exit codes. Color and progress output follow the TTY of stderr and `NO_COLOR`, not this mode.
 
-Each prompt is one of two kinds:
+Each prompt is one of three kinds:
 
 | # | Kind | When it applies | Non-interactive answer |
 | --- | --- | --- | --- |
 | R-NM4 | Default | The default is safe with no person to read it: it confirms what the command names, or it declines extra work | The interactive default |
 | R-NM5 | Required | The prompt chooses something that the user did not name: a compiler, a move of a held variable, a file edit that the command does not name, or a build that was not checked online | None. Talon stops with exit code 13 (`consent`, section 3). The error names `--yes` and each flag that gives an answer. It writes nothing. |
+| R-NM12 | Consent | The prompt asks to send data that the command does not need (R-NI16) | No, and Talon writes no answer. `--yes` does not answer it. Only the person answers it. A setting can make the prompt not needed: `tln share on` and `tln share off` (section 1, R-SH11). |
 
 So a non-interactive run does what an interactive run does when the user presses Enter at each "Default" prompt. It never takes an answer that the interactive default does not give.
 
@@ -597,10 +665,10 @@ R-NM7: A picker (`tln update -i`) is not a prompt: it is the whole command. In n
 
 | # | Prompt | `--yes` gives |
 | --- | --- | --- |
-| R-NM8 | Yes/no | Yes. For a prompt with the default No (R-NI3, R-NI4, R-NI9), this is not the answer of Enter. |
+| R-NM8 | Yes/no | Yes. For a prompt with the default No (R-NI3, R-NI4, R-NI9), this is not the answer of Enter. A Consent prompt (R-NM12) is not answered: its answer stays No. |
 | R-NM9 | Options | The default option (R-NI8 option 1, R-NI10 option 1) |
 
-R-NM10: So `--yes` answers every prompt of the command at once. Each Required prompt also has its own answer flag, which answers only that prompt. A script should use these flags, not `--yes`. An answer flag has priority over `--yes`.
+R-NM10: So `--yes` answers every prompt of the command at once, except a Consent prompt (R-NM12). Reason: `curl | sh -s -- --yes` must not give consent that nobody read. Each Required prompt also has its own answer flag, which answers only that prompt. A script should use these flags, not `--yes`. An answer flag has priority over `--yes`.
 
 Each prompt in the design files has an id `R-NIn`. Search for the id to find the place. Each new prompt must get an id and a row in this table.
 
@@ -621,6 +689,7 @@ Each prompt in the design files has an id `R-NIn`. Search for the id to find the
 | R-NI13 | `setup` | Replace a `roc` in the bin dir that Talon did not write | No | Default | Keeps the old `roc`. Does not install the launcher. | `--replace-roc`, `--yes` | 6.7, R-ST2 |
 | R-NI14 | `setup` | Add the bin dir to `PATH` in the shell profile | Yes | Default | Adds the line | `--no-modify-path`, `--yes` | 6.7, R-ST4 |
 | R-NI15 | `install.sh`, `install.ps1` | Confirm the install | Yes | Default | Installs | `--yes`, `-Yes`, `TALON_YES=1` | 6.5, R-IS4 |
+| R-NI16 | The first interactive run (R-SH11) | Share the probe results of public packages with the registry (R-SH1). The prompt names what Talon sends (R-SH3), says that reads do not need it, and names `tln share off`. | No | Consent | No prompt, and `share` stays not set (off). The next interactive run asks. | None: `tln share on` or `tln share off` sets `share` first | 1, R-SH11 |
 
 R-NM11: Not prompts: an invalid alias, an ambiguous name, a short name in `tln x` or `tln tool install` with no local match, and a binary name clash stop the command in both modes with exit code 2 and name the flag to use (`--as`, a full name).
 
@@ -667,7 +736,7 @@ $XDG_CACHE_HOME/roc/          (else ~/.cache/roc/)
   toolchains/<id>.lock          talon    install lock of <id> (7.4, R-CC3, R-CC4)
   toolchains/zig-<version>/     talon    Zig for source builds (6.6), with the lock zig-<version>.lock
   talon/index/                  talon    cached registry and GitHub index responses (ETag, 7.3)
-  talon/compat.db               talon    probe results, first-seen compiler sha256 (R-CV6)
+  talon/compat.db               talon    probe results, first-seen compiler sha256 (R-CV6), the share queue (R-SH4)
   talon/projects.json           talon    known projects, for GC (R-PD9 to R-PD13). Lock: projects.json.lock (R-CC6).
   talon/path-roc.json           talon    id of the roc on PATH, keyed by path, size and modification time (Resolution 13, rank 7)
   talon/tmp/<16hex>/            talon    temp copies of an app for probes (R-CC2)
@@ -681,9 +750,10 @@ R-LY2: User settings and tools are not in the cache, so a cache cleanup cannot r
 $XDG_CONFIG_HOME/talon/config.toml   (else ~/.config/talon/)        user settings, see below
 $XDG_DATA_HOME/talon/bin/            (else ~/.local/share/talon/)   tool binaries (6.4, R-T3)
 $XDG_DATA_HOME/talon/tools.json                                     tool manifests (6.4, R-T4)
+$XDG_DATA_HOME/talon/share.json                                     contributor id, totals, JWT (1, R-SH5 to R-SH7)
 ```
 
-R-LY3: `config.toml` and `tools.json` also have a lock file next to them: `config.toml.lock`, `tools.json.lock` (R-CC6).
+R-LY3: `config.toml`, `tools.json` and `share.json` also have a lock file next to them: `config.toml.lock`, `tools.json.lock`, `share.json.lock` (R-CC6).
 
 ```toml
 # config.toml
@@ -692,6 +762,7 @@ registry = "direct"                          # or a URL (section 1, registry pre
 nightly = true                               # the nightly switch (Resolution 1, R-NS1). talon.toml has priority.
 min-release-age = "2d"                       # the default (Resolution 2, R-C7). talon.toml [resolution] has priority.
 gc-age = "30d"                               # the default GC age (6.3)
+share = true                                 # share probe results (section 1, R-SH1). Not set: off.
 
 [probe]                                      # same keys as [resolution] probe in talon.toml
 slots = 12
@@ -706,7 +777,7 @@ The paths above are for Linux and macOS. On Windows:
 | --- | --- | --- | --- |
 | R-LY5 | Cache root (packages, build caches, `toolchains/`, `talon/`) | `$XDG_CACHE_HOME/roc`, else `~/.cache/roc` | `%LOCALAPPDATA%\roc`, as roc (`roc:src/compile/compile_build.zig:1602-1608`). roc reads `XDG_CACHE_HOME` first on Windows too, and so does Talon. |
 | R-LY6 | Config | `$XDG_CONFIG_HOME/talon`, else `~/.config/talon` | `%APPDATA%\talon` |
-| R-LY7 | Data (tool binaries, `tools.json`) | `$XDG_DATA_HOME/talon`, else `~/.local/share/talon` | `%LOCALAPPDATA%\talon` |
+| R-LY7 | Data (tool binaries, `tools.json`, `share.json`) | `$XDG_DATA_HOME/talon`, else `~/.local/share/talon` | `%LOCALAPPDATA%\talon` |
 | R-LY8 | Bin dir (6.7, R-ST1) | `~/.local/bin` | `%USERPROFILE%\.local\bin`, as uv |
 | R-LY9 | `PATH` (6.7, R-ST4) | One line in the shell profile | The user `Path` value of the environment |
 
@@ -714,7 +785,7 @@ The paths above are for Linux and macOS. On Windows:
 
 | # | Rule |
 | --- | --- |
-| R-TF1 | Each JSON file that Talon writes has a top-level integer `format`: `tools.json`, `projects.json`, `path-roc.json`, `.talon.json`, and the manifests in `talon/x/`. `compat.db` keeps it in `PRAGMA user_version`. The pages in `talon/index/` are API answers and have no format of their own. |
+| R-TF1 | Each JSON file that Talon writes has a top-level integer `format`: `tools.json`, `projects.json`, `share.json`, `path-roc.json`, `.talon.json`, and the manifests in `talon/x/`. `compat.db` keeps it in `PRAGMA user_version`. The pages in `talon/index/` are API answers and have no format of their own. |
 | R-TF2 | A new field does not change `format`. Talon ignores a field that it does not know, and keeps it when it writes the file. A removed field, a renamed field or a changed meaning gives a new `format` number, as R-J6 does for `--json`. |
 | R-TF3 | Talon migrates a file with an older `format` when it writes it next (R-CC1). Talon never writes a file with a newer `format`. A file that Talon can make again (`path-roc.json`, a manifest in `talon/x/`) it then ignores: it works with no cache. For each other file, it stops with exit code 19 (`input`) and names the file and `tln tool update talon`. So a repair to an older Talon (6.5, R-S4) works when no format changed between the two releases. The release notes of Talon name each format change. |
 | R-TF4 | A `talon.toml` or `config.toml` that is not valid TOML, or a known key with a value of the wrong type or form (a range that does not parse, an unknown `strategy`), stops the command with exit code 19. The message names the file, the line and the key. An unknown key or table gives a warning that names it, and the command goes on, as in Cargo: a newer Talon can know the key. |
@@ -1020,7 +1091,7 @@ The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
 | R-RM7 | Talon | The `tln` binary, the `roc` launcher, the `talon` entry of `tools.json` | Removed | Removed | Removed |
 | R-RM8 | Tools | Each other tool binary, its link in `~/.local/bin/`, `tools.json`, the `PATH` line of `tln setup` (6.7, R-ST4) | Kept | Removed | Kept |
 | R-RM9 | Compilers | `toolchains/<id>/`, `toolchains/zig-<version>/`, and the `compat-<id>/` dir of each removed compiler | Removed | Removed | Kept |
-| R-RM10 | Talon data | `talon/` in the cache (index, `x`, `compat.db`, `projects.json`), and `config.toml` (6.1) | Removed | Removed | Kept |
+| R-RM10 | Talon data | `talon/` in the cache (index, `x`, `compat.db`, `projects.json`), `config.toml` and `share.json` (6.1) | Removed | Removed | Kept |
 
 | # | Rule |
 | --- | --- |
@@ -1238,7 +1309,7 @@ Many `tln` processes can run at the same time: 3 `roc` builds through the proxy,
 | R-CC3 | Locks have one interface, in the `Fx` record (`TESTING.md` 2.3): `lock!(item, Wait \| NoWait)` gives `Held(lock)` or `Busy`, and `unlock!(lock)`. Command code takes a lock only with `with_lock!(fx, item, mode, body!)`, which calls `unlock!` also when `body!` returns an error. The contract: (1) an item has one holder at a time, across all processes on the machine; (2) a lock ends when the holder releases it, or at most 30 s after the holder process ends (a crash or a kill); (3) a lock stays held during all other `Fx` calls of the holder, also a long download or probe round; (4) the lock of the item `X` is at the path `X.lock` (6.1); (5) no `ask!` call (a prompt, section 4) runs while the command holds a lock, because a blocking read of stdin cannot keep a lock alive (R-CC12). A command asks before it takes a lock (R-CC4, step 2). No other rule and no command says how a lock is made. R-CC12 is the implementation, and only the real `Fx` contains it. | A change of the lock mechanism (for example an OS file lock, when basic-cli has one, Design 6.2, R-HF3) changes R-CC12 and the real `Fx` only. The rules that take locks, the command code and the L2 tests stay the same. |
 | R-CC4 | A toolchain install (a compiler or Zig) follows the steps in the table below. | Only one process downloads a missing compiler. The others wait for it. |
 | R-CC5 | A process that waits for a lock prints `waiting for another tln: <item>` once to stderr. It waits until the lock ends (R-CC3, point 2). Ctrl-C stops the wait. | A wait needs no other timeout: a live holder releases the lock, and the lock of a dead holder ends. |
-| R-CC6 | `tools.json`, `projects.json` and `config.toml` change only under the lock of the file (the item `tools.json`, and so on, R-CC3). Talon takes the lock, reads the file, changes it, writes it (R-CC1), and releases the lock. A person can edit `config.toml` too, so Talon changes it with the span edit of `roc-toml` (comments and order stay, as R-H1) and the byte compare of R-CC7 before the `rename`. It holds the lock for this step only, not during a build or a download. A command that builds first (`tln tool install`) takes the lock for its final step, and checks again for a binary name clash under the lock (6.4). | Last writer wins loses data: a lost `tools.json` entry leaves a binary that no command manages (R-T4), a lost `projects.json` entry lets GC remove a compiler that a project pins (6.3), and a lost `config.toml` change undoes `tln roc default`. The lock is held for milliseconds, so a wait is short. |
+| R-CC6 | `tools.json`, `projects.json`, `share.json` and `config.toml` change only under the lock of the file (the item `tools.json`, and so on, R-CC3). Talon takes the lock, reads the file, changes it, writes it (R-CC1), and releases the lock. A person can edit `config.toml` too, so Talon changes it with the span edit of `roc-toml` (comments and order stay, as R-H1) and the byte compare of R-CC7 before the `rename`. It holds the lock for this step only, not during a build or a download. A command that builds first (`tln tool install`) takes the lock for its final step, and checks again for a binary name clash under the lock (6.4). | Last writer wins loses data: a lost `tools.json` entry leaves a binary that no command manages (R-T4), a lost `projects.json` entry lets GC remove a compiler that a project pins (6.3), and a lost `config.toml` change undoes `tln roc default`. The lock is held for milliseconds, so a wait is short. |
 | R-CC7 | Project files (the app header, member files, `talon.toml`) get no lock: people and editors write them, and they do not take Talon locks. Talon keeps the bytes that it read. Just before the `rename` (R-CC1), it reads the file again. Same bytes: Talon writes. Other bytes, but each span that Talon edits has the same text (in a `.roc` file the header, in `talon.toml` each table that Talon changes): Talon applies its span edit (R-H1, `roc-toml`) to the new bytes, then writes. Else Talon writes no project file, names the file, and stops with exit code 17 (`conflict`, section 3). For more than one file, Talon checks all of them first, then writes each: each `talon.toml` first, the `.roc` files last. | A probe run can take minutes. Talon must not overwrite an edit that a person made in that time. The second of two `tln` commands in one project gets exit code 17 and runs again. A crash between two writes leaves new ranges and an old header, and the next `tln install` finishes the move (Resolution 9). The other order would leave a new header out of the old range, and `tln install` would move it back. |
 | R-CC8 | `compat.db` uses the SQLite WAL journal (`PRAGMA journal_mode=WAL`) and `PRAGMA busy_timeout=5000`. Each write round of probe facts (R-PP4) is one transaction. If the database stays busy past the timeout, Talon keeps the facts in memory for this command, prints a warning, and goes on. When the file system does not support WAL, SQLite keeps its default journal, and the busy timeout still applies. | Readers do not block the writer in WAL mode. A fact is evidence: a lost write costs a probe later, not a wrong result. |
 | R-CC9 | The last use of a toolchain is the time in `toolchains/<id>/.last-use`. The proxy and each probe write the time of Talon (`TALON_NOW`, section 1) to this file (R-CC1) before the compiler starts. | A write with no read needs no lock, so parallel builds do not wait for each other. `.talon.json` stays unchanged after the install. |

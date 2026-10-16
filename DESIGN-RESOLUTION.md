@@ -77,15 +77,15 @@ R-EF1: Evidence is a set of facts `works(hash, nightly) = pass | fail(error dige
 | Rank | Source | Trust |
 | --- | --- | --- |
 | 1 | Local probe result (`talon/compat.db`) | Full |
-| 2 | Registry matrix: `bot` rows from the Talon CI bot, and `author` rows from `tln publish` (Registry 5, R-RE3, Registry 6) | Full, signed |
+| 2 | Registry matrix: `bot` rows from the Talon CI bot (unit checks, and smoke builds of platforms, R-SM6), and `author` rows from `tln publish` (Registry 5, R-RE3, Registry 6) | Full, signed |
 | 3 | `roc:` pin in the release header | Hint: author says it passed |
 | 4 | `.roc-version` at the release tag | Hint |
 | 5 | Release date (nightlies of the 2 weeks before it) | Search order only |
-| 6 | Reports from other users (`tln probe --share`): the counts of `compat_hints` (Registry 5, R-RE12) | Search order only |
+| 6 | Probe results that other users share (CLI 1, R-SH1, and `tln probe --share`): the counts of `compat_hints` (Registry 5, R-RE12), added up over all Talon versions | Search order only |
 
 R-EF2: Hints only order the search. Talon never writes a header on hints alone: the final tuple always gets a local whole-app check (section 5 step 6), unless the user passes `--no-check`. That check costs under 2 s. `--no-probe` does not turn it off. Only `--no-check` does (section 12).
 
-R-EF3: When two sources have a fact for one pair (hash, nightly, target), Talon uses the fact of the source with the lowest rank number. In rank 2, a `bot` row wins over an `author` row. Reason: the bot runs each hash in one environment, and its rows also make the sweeps (Registry 6, R-MX4). Talon prints a note when a `bot` row and an `author` row of one pair have different results, and `--json` gives both. A rank 6 row is a `pass` hint when `pass_count` is larger than `fail_count`, a `fail` hint when `fail_count` is larger, and no hint when they are equal.
+R-EF3: When two sources have a fact for one pair (hash, nightly, target), Talon uses the fact of the source with the lowest rank number. In rank 2, a `bot` row wins over an `author` row. Reason: the bot runs each hash in one environment, and its rows also make the sweeps (Registry 6, R-MX4). Talon prints a note when a `bot` row and an `author` row of one pair have different results, and `--json` gives both. A rank 6 row is a `pass` hint when `pass_count` is larger than `fail_count` plus `crash_count`, a `fail` hint when `fail_count` plus `crash_count` is larger, and no hint when they are equal.
 
 ## 4. Probes
 
@@ -144,6 +144,45 @@ R-BS1: Step 3 costs time on each `tln add` and `tln update` (goal G5). Talon ski
 | 3 | Step 2 passed for the candidate with no new errors. |
 
 R-BS2: The used-closure digest is a hash of the sorted list of hashes that the app uses (the packages with a used module, found by the lexical scan below, with their patches and overrides). A package that the app does not import is not in the digest. So `tln add` of a package that the app does not use yet keeps the digest, and Talon skips the build. A change to the platform hash, the nightly, the target or a used package changes the key or the digest, and Talon runs the build. A recorded fail never allows a skip. Talon prints `build: skipped (recorded pass)` in the summary. A skip also does not claim that the current app source builds: step 2 covers the app source.
+
+### Smoke build
+
+R-SM1: A smoke build is `roc build` of a small app that Talon makes from the platform header alone (R-SM2), for one target. It tells whether (platform hash, nightly, target) builds: the host files of the target, the link, and the platform code that the host calls. It holds no code of the user, so its result can be shared (CLI 1, R-SH3). It does not find a code generation bug in a function that only an app calls: ladder step 3 still builds the real app. Measured (`research/smoke-app/`): on 34 targets of 6 platforms, the same result and the same first error line as a real app, in 0.11 to 0.40 s and 150 to 220 MB.
+
+R-SM2: The app gives the platform each value of its `requires` clause (Design 2):
+
+| In `requires` | In the app |
+| --- | --- |
+| A function type | A lambda with one `_` for each argument, and no argument for `()`. The body is `crash "talon smoke test"`. |
+| A record type | A record with a value for each field, by this table |
+| `[Alias : var] for name : ...` | `Alias : {}` for each alias, and the app exposes each alias and `name` |
+| Any other type | No smoke build: a top-level constant runs when roc compiles it, so a constant that crashes stops the build |
+
+The app is a function of the platform header only. So the key (platform hash, nightly, target) fixes the result, and the Talon version (Registry 6.1, R-CT12) names the generator. Talon writes the app in a temp dir (CLI 7.4, R-CC2), with the URL of the platform from the header of the project.
+
+R-SM3: When Talon runs a smoke build: only when sharing is on (CLI 1, R-SH2), after the command did its work and before it sends the queue (CLI 1, R-SH4). One build for each key (platform hash, nightly, target) that the command built (ladder step 3, also when it used the build skip of R-BS1, and the build of a tool, CLI 6.4) when all of these are true:
+
+| # | Condition |
+| --- | --- |
+| 1 | The target is the target of that build |
+| 2 | The nightly is installed. A smoke build never downloads. |
+| 3 | `compat.db` has no smoke result for the key |
+| 4 | No answer of the registry in this command had a `bot` row for the key, or a `compat_hints` row with a total count of 3 or more (first guess) |
+| 5 | The platform passes the filters 3 and 4 of CLI 1, R-SH3 |
+
+R-SM4: A smoke build does not change the command. It uses no probe budget (R-P5, R-PP4) and runs after the result is fixed. Its result is not evidence for the solver or the build skip (R-BS1). It changes no output, no exit code and no `--json`. The timeout is `probe.timeout` (R-P5). Talon keeps the result in the table `smoke` of `compat.db`, only so that it does not build the key again (R-SM3 row 3), and puts it in the share queue (CLI 1, R-SH3). Reason: the setting `share` must not change the result of a command (Design G3). The smoke result of each machine reaches the solver only through the registry, as a rank 6 hint (section 3).
+
+R-SM5: With sharing off, Talon runs no smoke build on the machine of the user: its only use is the shared matrix. The bot runs smoke builds for each target (Registry 6, R-MX10), and each user gets their rows.
+
+R-SM6: A `bot` smoke row is a real fact of rank 2 (section 3) for (platform hash, nightly, target):
+
+| Row | Use |
+| --- | --- |
+| `fail` on the target of the build | A fail of ladder step 3 for each app on that platform, blamed on the platform for that target (R-LD5). The solver learns `not (platform and roc in [a, b])` for that target (R-EP7) with no build. Reason: a smoke build fails only for host files, the link or the platform code that the host calls, and a real app needs each of them. |
+| `pass` | Not a pass of step 3. Step 3 still builds the app, or uses the build skip of R-BS1, because a pass of the smoke app says nothing about the code of the app. |
+| A row for another target | Not used by the resolve. `tln outdated` and `tln add --platform` can show it (the text is a proposal, CLI 3, R-OUT2). |
+
+R-SM7: Machine errors. A few errors come from the build machine, not from the platform: roc looks outside the platform for them. The first one is `WindowsSDKNotFound` (nightly 10-06, `research/smoke-app/`). The bot posts no row for a result with such an error, and `tln` shares none (CLI 1, R-SH3 filter 6). Their list is a constant in Talon and in the bot. A new machine error found later goes into the list, and the operator deletes the `bot` rows that it made.
 
 Result classes, all seen in the measurement below:
 
@@ -281,7 +320,7 @@ R-PB7: `tln probe` runs probes and prints the facts. It writes no project file. 
 | R-PB3 | `--range` finds the range of the target in the domain D (EP rules): the maximal interval of D that contains the newest release with a real pass, in which each release has a pass, real or inferred (R-EP6). Talon probes only the candidates that the `nightly` switch and `min-release-age` allow (R-NS3, R-C7). It starts at the newest installed candidate. Each round probes 3 releases (R-PP2). An end of the range is a release with a real pass next to a release with a real fail, or an end of D. |
 | R-PB4 | Compiler downloads are optional probe downloads (R-NI4, R-DL4, R-DL6), with the cap `probe.max-toolchains` and the budget `probe.max` (R-P5). When the budget is spent, or no download is allowed, Talon prints the range that it found, marks each end that is not a real fact as `unknown`, and exits with code 12 (`budget`). |
 | R-PB5 | `tln publish` (Registry 7) sends the real facts of the released hash from `compat.db`. The release workflow runs `roc bundle`, `tln probe --range <bundle file>`, the upload of the asset, then `tln publish`. The registry stores these rows with the source `author` (Registry 5, 6). |
-| R-PB6 | `--share` sends the real facts of the target hash to `POST /v1/compat` as user hints (rank 6, section 3). It needs a registry: with `direct`, Talon stops with exit code 2. For a header entry on `github.com`, the privacy guard runs first (CLI 1, R-RG4). The project file has no hash, so `--share` with no argument stops with exit code 2. |
+| R-PB6 | `--share` sends the real facts of the target hash to `POST /v1/compat` as user hints (rank 6, section 3), once, also when sharing is off (CLI 1, R-SH1). The flag is the consent for this command, so `CI` and `DO_NOT_TRACK` do not stop it (CLI 1, R-SH2). It sends the facts of `compat.db` for that hash on each nightly that pass the filters of CLI 1, R-SH3, except filter 1 (a probe of this command). It needs a registry: with `direct`, Talon stops with exit code 2. For a header entry on `github.com`, the privacy guard runs first (CLI 1, R-RG4). The project file has no hash, and a bundle file can be a hash before its release (R-SH3 filter 2), so `--share` with no argument or with a bundle file stops with exit code 2. |
 
 ## 5. Algorithm
 

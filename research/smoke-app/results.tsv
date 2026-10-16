@@ -1,0 +1,34 @@
+platform	target	smoke	host-link
+basic-cli-0.29.0	arm64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+basic-cli-0.29.0	arm64musl	ok	ok
+basic-cli-0.29.0	x64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+basic-cli-0.29.0	x64musl	ok	ok
+basic-cli-0.29.0	x64win	fail: lld-link: error: <root>: undefined symbol: mainCRTStartup	fail
+basic-cli-0.25.0	arm64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+basic-cli-0.25.0	arm64musl	ok	ok
+basic-cli-0.25.0	x64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+basic-cli-0.25.0	x64musl	ok	ok
+basic-cli-0.25.0	x64win	fail: lld-link: error: <root>: undefined symbol: mainCRTStartup	fail
+template-zig-1.0.0	arm64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+template-zig-1.0.0	arm64musl	ok	ok
+template-zig-1.0.0	arm64win	fail: lld-link: error: <root>: undefined symbol: mainCRTStartup	fail
+template-zig-1.0.0	x64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+template-zig-1.0.0	x64musl	ok	ok
+template-zig-1.0.0	x64win	fail: lld-link: error: <root>: undefined symbol: mainCRTStartup	fail
+template-ABFg	arm64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+template-ABFg	arm64musl	ok	ok
+template-ABFg	arm64v1musl	ok	ok
+template-ABFg	arm64win	fail: lld-link: error: <root>: undefined symbol: mainCRTStartup	fail
+template-ABFg	x64mac	fail: ld64.lld: error: library not found for -lSystem	fail
+template-ABFg	x64musl	ok	ok
+template-ABFg	x64v1musl	ok	ok
+template-ABFg	x64win	fail: lld-link: error: <root>: undefined symbol: mainCRTStartup	fail
+basic-webserver-0.17.0	arm64mac	ok	ok
+basic-webserver-0.17.0	arm64musl	ok	ok
+basic-webserver-0.17.0	x64mac	ok	ok
+basic-webserver-0.17.0	x64musl	ok	ok
+basic-webserver-0.17.0	x64win	fail: Error: WindowsSDKNotFound	fail
+roc-ray-0.10.0	arm64mac	ok	ok
+roc-ray-0.10.0	x64mac	ok	ok
+roc-ray-0.10.0	x64v1glibc	ok	ok
+roc-ray-0.10.0	x64win	fail: Error: WindowsSDKNotFound	fail

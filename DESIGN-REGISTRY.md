@@ -52,7 +52,7 @@ R-SG6: KV is not used: eventual consistency (about 60 s) is wrong for the versio
 
 ## 4. HTTP API
 
-The API is plain HTTP with JSON, not full REST. Each resource name is a plural noun, and it is the name of its D1 table (section 5): `artifacts`, `releases`, `compat`, `toolchains`. `packages` is a GitHub name (Design 4.1, R-ID3). Paths have no verbs. `POST /v1/closure` is a query with a body, and it changes no state. The log routes are outside `/v1`, because C2SP tlog-tiles sets their layout.
+The API is plain HTTP with JSON, not full REST. Each resource name is a plural noun, and it is the name of its D1 table (section 5): `artifacts`, `releases`, `compat`, `toolchains`, `contributors`. `packages` is a GitHub name (Design 4.1, R-ID3). `tokens` has no table, because the Worker stores no token (6.1, R-CT9). `me` names the contributor or the account of the request. Paths have no verbs. `POST /v1/closure` is a query with a body, and it changes no state. The log routes are outside `/v1`, because C2SP tlog-tiles sets their layout.
 
 | # | Method and path | Request | Response | Success | Errors (section 4.2) | Caching |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -65,11 +65,15 @@ The API is plain HTTP with JSON, not full REST. Each resource name is a plural n
 | R-AP7 | `GET /v1/packages?q=<text>`, or `GET /v1/packages?short=<name>` (section 4.3) | | With `q`: `{packages}`, ranked packages for display only (R-SN5). With `short`: `{matches}`, the exact match set of a short name (R-SN1 to R-SN4). | 200, 304 | 400 `bad-request` | `q`: `max-age=300`, ETag. `short`: `max-age=60`, ETag. |
 | R-AP8 | `POST /v1/releases` with `Authorization: Bearer <GitHub OIDC token>`: a publish (R-PU2) | `{url, compat}`: the asset URL, and the real facts of the released hash (R-PU5, optional) | The release record (R-RE2) and its log index | 201 with `Location: /v1/artifacts/{hash}`: new release. 200: the label exists with the same hash. | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden` (the token check of R-PU1 fails), 409 `label-conflict`, 422 `not-a-candidate` (R-PU6), 502 `upstream` | `no-store` |
 | R-AP9 | `POST /v1/releases` with no `Authorization`: an ingest (R-PU4) | `{url}` | As R-AP8 | As R-AP8. 202 only if Q30 selects a queue. | As R-AP8, and 401 `unauthenticated` (R-AP26), 429 `rate-limited` | `no-store` |
-| R-AP10 | `POST /v1/compat` | `{rows, sweep}`. `rows`: a list of `{hash, nightly, target, result, error_digest}`. `sweep`: `{nightly, target, upto_log_index}`, optional, bot only (R-MX4). The OIDC token of the compat bot, or no token for user hints (R-MX5). | `{written}`: the count of new `compat` rows, or of counted hints (R-RE13) | 201: at least one row is new. 200: each row was there (R-RE13 row 1). | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (a hash that is not indexed), 422 `sweep-incomplete` (R-MX4, R-MX9), 429 `rate-limited` | `no-store` |
+| R-AP10 | `POST /v1/compat` | `{rows, sweep}`. `rows`: a list of `{hash, nightly, target, result, error_digest}`. `sweep`: `{nightly, target, upto_log_index}`, optional, bot only (R-MX4). The OIDC token of the compat bot, or no token for user hints (R-MX5). A user hint request also has the header `Talon-Contributor` and the body field `talon_version` (6.1, R-CT1, R-CT2). | `{written}`: the count of new `compat` rows, or of counted hints (R-RE13). For user hints also `first` (R-CT4). | 201: at least one row is new. 200: each row was there (R-RE13 row 1), or each row is pending already for this contributor (R-CT4). | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (a hash that is not indexed), 422 `sweep-incomplete` (R-MX4, R-MX9), 429 `rate-limited` (R-CT11) | `no-store` |
 | R-AP11 | `GET /log/checkpoint`, `GET /log/tile/...` (hash tiles, entry tiles and partial tiles, in the C2SP tlog-tiles layout) | | From R2 | 200 | 404 `not-found` | Checkpoint: `max-age=5` (first guess, tune in P2). Tiles, also partial tiles: `max-age=31536000, immutable`. |
 | R-AP12 | `POST /v1/webhooks/github` | A GitHub App event, signed with HMAC-SHA256 (`X-Hub-Signature-256`). Rules: R-PU3, R-PU11 to R-PU18. | No body | 202 | 401 `unauthenticated`: the signature is bad | `no-store` |
 | R-AP13 | `GET /v1/releases?group=<URL form>`, optional `&series=<series>` | | `{releases, checked}`: the releases (R-RE2) of that group. With no `series`, all series of the URL form (CLI 7.3, R-DI6). The group can be on any host, also not `github.com` (CLI 7.3, R-DI11). `checked`: R-AP29, `null` for another host. | 200, 304 | 400 `bad-request` | `max-age=60`, ETag. The purge on publish waits for Q25. |
 | R-AP14 | `GET /v1/releases?after=<log_index>` | | `{releases}`: the releases with a larger log index, in log index order, at most 1000 (first guess, tune in P2). For the next page, the client asks again with the last log index of the page. `after` and `group` can go together. With no `group` and no `after`, the answer is 400. | 200, 304 | 400 `bad-request` | `max-age=60`, ETag |
+| R-AP35 | `GET /v1/contributors/me` | `Authorization: Bearer <JWT>` (6.1, R-CT9) | The tracker of the account (R-CT10) | 200 | 401 `unauthenticated`: no JWT, or a JWT that fails R-CT9 | `no-store` |
+| R-AP36 | `DELETE /v1/contributors/me` | The JWT (the account), or `Talon-Contributor` with no JWT (one contributor) (R-CT7) | No body | 204, also when nothing was stored | 400 `bad-request`, 401 `unauthenticated`, 429 `rate-limited` | `no-store` |
+| R-AP37 | `POST /v1/tokens` | `{github_token}`: a token of the OAuth App `Talon` (R-CT8). `Talon-Contributor`, optional. | `{token, expires_at, account: {id, login}}`. `token` is the JWT of R-CT9. | 201 | 400 `bad-request`, 401 `unauthenticated` (GitHub refuses the token), 429 `rate-limited`, 502 `upstream` | `no-store` |
+| R-AP38 | `DELETE /v1/tokens` | The JWT | No body. Each token of the account stops (R-CT9). | 204 | 401 `unauthenticated` | `no-store` |
 
 R-AP15: A group goes on the wire as two fields. `group` is its URL form: the group with no series (CLI 7.3, R-DI6), with `{v}` in place of the version and with no scheme and no hash, as in Design 4.1, R-ID2 (`github.com/roc-lang/unicode/releases/download/{v}/`). `series` is the series of Design 4.1, R-ID1 (`4`, `0.25`).
 
@@ -137,13 +141,13 @@ R-AP23: Media types: request bodies and answers are `application/json` in UTF-8.
 
 R-AP24: Each 200 answer of a `GET` in `/v1` has an `ETag`. A request with an `If-None-Match` that is equal to the current ETag gets 304 with no body. `tln` keeps each answer and its ETag in `talon/index/` (CLI 6.1). It uses an answer that is younger than its `max-age` with no request, and sends `If-None-Match` for an older one, as for GitHub (CLI 7.3, R-DI2).
 
-R-AP25: Any route can answer 429 `rate-limited` with a `Retry-After` header in seconds. Q30 sets the limits of ingests (R-AP9) and of user hints (R-MX6). `tln` stops with exit code 15, and the message gives the time when it can try again, as for GitHub (CLI 7.3, R-DI13).
+R-AP25: Any route can answer 429 `rate-limited` with a `Retry-After` header in seconds. Q30 sets the limits of ingests (R-AP9), and R-CT11 sets the limits of user hints. `tln` stops with exit code 15, and the message gives the time when it can try again, as for GitHub (CLI 7.3, R-DI13). The share queue is the exception: a 429 answer keeps its rows and changes no exit code (CLI 1, R-SH4).
 
 R-AP26: A publish and an ingest use one route, `POST /v1/releases`. The `Authorization` header selects the path: a token is a publish (R-AP8), no header is an ingest (R-AP9). A token that fails the check gets 401 or 403, never an ingest. A body with `compat` and no token gets 401 `unauthenticated`, because author facts need the token (R-PU5).
 
 R-AP27: `tln publish` sends no request when it has no OIDC token. In GitHub Actions, the token needs `permissions: id-token: write`. Talon stops, and the message names that permission. So a missing permission never gives an ingest with no provenance and no author facts. The exit code is 2 (CLI 3, R-EC2).
 
-R-AP34: `tln publish`, `tln yank` and `tln move` send their request again after a 429 answer, a 5xx answer or no answer: at most 3 more times (first guess). Each wait is the `Retry-After` of the answer when it has one (at most 60 s), else 2 s, 8 s and then 30 s. After a 401 answer, they get a new OIDC token (7.1, R-TP2) and send the request once more, because a token lives a few minutes. These writes are idempotent (R-PU14, R-YK1, R-AP31), so a request that is sent again writes nothing twice. After the last try, R-AP22 applies. Other commands do not send a request again: an ingest (R-AP9) stops at once (CLI 2, R-AD35), and a user hint (`tln probe --share`, R-AP10) is not idempotent, because the hint counts add up (R-RE13).
+R-AP34: `tln publish`, `tln yank` and `tln move` send their request again after a 429 answer, a 5xx answer or no answer: at most 3 more times (first guess). Each wait is the `Retry-After` of the answer when it has one (at most 60 s), else 2 s, 8 s and then 30 s. After a 401 answer, they get a new OIDC token (7.1, R-TP2) and send the request once more, because a token lives a few minutes. These writes are idempotent (R-PU14, R-YK1, R-AP31), so a request that is sent again writes nothing twice. After the last try, R-AP22 applies. Other commands do not send a request again: an ingest (R-AP9) stops at once (CLI 2, R-AD35). A user hint (R-AP10) is idempotent, because a contributor counts once for a pair while its row is pending (6.1, R-CT4). But the command does not wait for it: the rows that were not sent stay in the queue, and a later command sends them (CLI 1, R-SH4).
 
 R-AP29: `checked` tells how old the index of a GitHub repository is. `checked_at` is the last time that the Worker read the release list of that repository (R-PU21), or `null` when it has not read it since the first ingest. `stale` is true when `checked_at` is `null` or is older than 2 intervals of R-PU22 for that repository. The Worker computes `stale`, because only the Worker knows the interval of each repository.
 
@@ -187,9 +191,12 @@ R-SN5: The ranked results of `?q=` are at most 20 packages (first guess), ranked
 | R-RE11 | `repos` | name (`owner/repo`, lower case) | repository_id, repository_owner_id, state (`active`, `missing`, `moved`), successor, offer (P3), state_at, time (R-TP5, R-TP11, R-TP14) |
 | R-RE15 | `repo_events` | (name, seq) | action (`bind`, `transfer`, `rename`, `recreate`, `missing`, `found`, `successor-set`, `successor-removed`, `offer`, `operator`), the ids before and after, the successor, the recorded claims (R-TP6) for a token, time (R-TP13) |
 | R-RE14 | `repo_checks` | name (`owner/repo`, lower case) | etag, checked_at, next_check_at, app_installed. The state of the reconcile (R-PU21). Apart from `repos`, so that the binding of R-TP5 and the reconcile do not write the same row. |
-| R-RE12 | `compat_hints` | (hash, nightly, target) | pass_count, fail_count, first_time, last_time. The user hints of R-MX3 (R-RE13). |
+| R-RE12 | `compat_hints` | (hash, nightly, target, talon_version) | pass_count, fail_count, crash_count, first_time, last_time. The user hints of R-MX3 (R-RE13). `talon_version` is the version of the `tln` that sent the hint (R-CT12). It holds no contributor. |
+| R-RE16 | `contributions` | (contributor, hash, nightly, target) | result, talon_version, time. A pending user hint, until the fold (R-CT5). `contributor` is the HMAC of the id (R-CT3). |
+| R-RE17 | `contributors` | contributor | counted, first, agreed, disagreed, unconfirmed, first_time, last_time, account (a GitHub user id, or null) (R-CT4, R-CT5, R-CT8) |
+| R-RE18 | `accounts` | GitHub user id | login, tokens_after, first_time, last_time (R-CT8, R-CT9) |
 
-R-RE6: Artifact rows never change. Release rows change only in `yanked` (R-YK4) and `withdrawn` (R-PU17, R-PU19). Toolchain rows never change. A `compat` row is written once and never changes (R-RE13). A `compat_hints` row changes only in its counts and `last_time`. A `sweeps` row changes only to a larger `upto_log_index`. Rows of `provenance` (R-PU15) and `yanks` (R-YK4) are only added, never changed. A `repo_checks` row (R-RE14) changes at each reconcile of its repository (R-PU21). It is state, not evidence: no rule reads it as a fact. A `repos` row (R-TP5) is never deleted. It changes only by the rules of R-TP9 to R-TP15, and each change adds a `repo_events` row (R-RE15). `repo_events` rows are only added.
+R-RE6: Artifact rows never change. Release rows change only in `yanked` (R-YK4) and `withdrawn` (R-PU17, R-PU19). Toolchain rows never change. A `compat` row is written once and never changes (R-RE13). A `compat_hints` row changes only in its counts and `last_time`, and only the operator deletes it (R-CT7). A `contributions` row is written once and deleted at the fold (R-CT5). A `contributors` row changes in its totals, `last_time` and `account`. An `accounts` row changes in `login`, `tokens_after` and `last_time`. Rows of `contributions`, `contributors` and `accounts` are deleted by the retention rules of R-CT6 and by R-CT7. A `sweeps` row changes only to a larger `upto_log_index`. Rows of `provenance` (R-PU15) and `yanks` (R-YK4) are only added, never changed. A `repo_checks` row (R-RE14) changes at each reconcile of its repository (R-PU21). It is state, not evidence: no rule reads it as a fact. A `repos` row (R-TP5) is never deleted. It changes only by the rules of R-TP9 to R-TP15, and each change adds a `repo_events` row (R-RE15). `repo_events` rows are only added.
 
 R-RE8: The log index of a hash is the smallest `log_index` of its releases. A `sweeps` row says: the matrix has a `bot` row (R-RE3) on (nightly, target) for each hash whose log index is at most `upto_log_index`.
 
@@ -199,7 +206,7 @@ R-RE13: Matrix rows of one pair (hash, nightly, target):
 | --- | --- |
 | 1 | One pair has at most one `bot` row and one `author` row. The first write of a key wins. A later write of the same key changes nothing, and it is not an error: the bot can post a run again after a failure. Reason: a probe result for a pair does not change (Resolution 4, R-P4). |
 | 2 | Two releases in two repositories can have one hash. Then the first publish writes the `author` row. The row keeps the log index of that release, so a reader can find the publisher. |
-| 3 | A user hint never goes into `compat`. It adds 1 to `pass_count` or to `fail_count` of the `compat_hints` row of its pair. A user hint has no token (R-MX5), so a count is not a count of persons. The Q30 limits apply. |
+| 3 | A user hint never goes into `compat`. It adds 1 to `pass_count`, `fail_count` or `crash_count` of the `compat_hints` row of its pair and its Talon version, once for each contributor while its pending row exists (R-CT4). A contributor id costs nothing to make (R-CT1), so a count is not a count of persons. The limits of R-CT11 apply. |
 | 4 | The Worker sends all `compat` rows of a pair, and the `compat_hints` row (R-AP4, R-AP17). The client applies the precedence of Resolution 3, R-EF3. The registry does not merge rows. |
 
 ## 6. Compatibility matrix
@@ -208,11 +215,11 @@ The matrix makes probes rare. A user who adds a common package gets a known answ
 
 | # | Producer | Runs | Trust |
 | --- | --- | --- | --- |
-| R-MX1 | Talon compat bot | A scheduled GitHub Actions workflow. For each new nightly, it runs unit probes on every indexed hash. For each new release, it searches the nightly range (Resolution 4). Posts results with an OIDC token. | Full |
+| R-MX1 | Talon compat bot | A scheduled GitHub Actions workflow. For each new nightly, it runs unit probes on every indexed hash. For each new release, it searches the nightly range (Resolution 4). It also runs the smoke builds of each platform for each of its targets (R-MX10). Posts results with an OIDC token. | Full |
 | R-MX2 | Release workflow | `tln probe --range <bundle file>`, then `tln publish` sends the facts (Resolution 4, R-PB5) | Full, tied to the publisher |
-| R-MX3 | Users | `tln probe --share` | Hint only (rank 6) |
+| R-MX3 | Users | `tln` with sharing on, and `tln probe --share` (6.1, CLI 1, R-SH1) | Hint only (rank 6) |
 
-R-MX4: The bot sends a sweep with its matrix rows (R-AP10): `(nightly, target, upto_log_index)`. `upto_log_index` is a log size that the bot read before its run. The Worker writes the `sweeps` row (R-RE7, R-RE8), or raises it, only when the matrix then has a `bot` row on (nightly, target) for each hash whose log index is at most `upto_log_index`. An `author` row does not count. Reason: a sweep is a claim of the bot about its own runs, in one environment. Epochs (Resolution 4, R-EP4) spread the facts of a covered transition to other releases, so a wrong `author` row must not make a transition covered. Else the Worker writes nothing from the request and answers 422 `sweep-incomplete` (R-MX8, R-MX9). `upto_log_index` must be at most the log size, else the answer is 400 `bad-request`. A sweep never makes a row smaller: a sweep with a bound that is not larger than the row is complete by R-RE8 and changes nothing, with no error. The closure answer carries all `sweeps` rows (R-AP17). The resolver finds epochs only between swept releases (Resolution 4, R-EP2).
+R-MX4: The bot sends a sweep with its matrix rows (R-AP10): `(nightly, target, upto_log_index)`. `upto_log_index` is a log size that the bot read before its run. The Worker writes the `sweeps` row (R-RE7, R-RE8), or raises it, only when the matrix then has a `bot` row on (nightly, target) for each hash whose log index is at most `upto_log_index`. An `author` row does not count. Reason: a sweep is a claim of the bot about its own runs, in one environment. Epochs (Resolution 4, R-EP4) spread the facts of a covered transition to other releases, so a wrong `author` row must not make a transition covered. Else the Worker writes nothing from the request and answers 422 `sweep-incomplete` (R-MX8, R-MX9). `upto_log_index` must be at most the log size, else the answer is 400 `bad-request`. The `target` of a sweep must be `any`, else 400 `bad-request`: smoke rows (R-MX10) have no sweep, and epochs use unit checks only (Resolution 4, R-EP2). A sweep never makes a row smaller: a sweep with a bound that is not larger than the row is complete by R-RE8 and changes nothing, with no error. The closure answer carries all `sweeps` rows (R-AP17). The resolver finds epochs only between swept releases (Resolution 4, R-EP2).
 
 R-MX5: The Worker sets the `source` of each matrix row from the auth of the request, not from the body. A body that has a `source` field gets 400.
 
@@ -220,10 +227,10 @@ R-MX5: The Worker sets the `source` of each matrix row from the auth of the requ
 | --- | --- | --- |
 | `POST /v1/compat` (R-AP10) | The OIDC token of the compat bot (R-MX1) | `bot` |
 | `POST /v1/releases` (R-AP8, R-PU5) | The publish token | `author` |
-| `POST /v1/compat` (R-AP10) | No token | None: a user hint goes to `compat_hints` (R-RE12, R-RE13) |
+| `POST /v1/compat` (R-AP10) | No token, and the header `Talon-Contributor` (R-CT1) | None: a user hint goes to `compat_hints` (R-RE12, R-RE13) |
 | `POST /v1/compat` (R-AP10) | Another token | None: 403 `forbidden` |
 
-R-MX6: User hints (`POST /v1/compat` with no token) have the same abuse limits as an ingest (Q30). A user hint is never a `compat` row, so it never goes into a sweep (R-MX4).
+R-MX6: User hints (`POST /v1/compat` with no token) have the rate limit of R-CT11. A user hint is never a `compat` row, so it never goes into a sweep (R-MX4).
 
 R-MX7: The bot finds new releases and new hashes with `GET /v1/releases?after=<log_index>` (R-AP14). It starts from the largest log index of its last run. The log entry tiles (R-AP11) give the same leaves, so the bot can also read them.
 
@@ -239,7 +246,136 @@ The Worker sends one D1 batch for each request: first the matrix rows (`INSERT O
 
 R-MX9: The Worker maps a batch error to an answer by the `RAISE` text, as a substring of the D1 error message: `sweep-incomplete` gives 422 `sweep-incomplete`, and `sweep-bound` gives 400 `bad-request`. Then the Worker reads the hashes that have no `bot` row under the bound, and the `detail` of the 422 answer lists up to 100 of them, so the bot knows what to probe. A batch error with no known `RAISE` text gives 500 `internal`. A user hint request (R-MX6) has no sweep, so it never gets these errors.
 
-Cost: about 50 packages times 1 new nightly a day, at under 2 s each, is under 2 minutes of CI a day.
+R-MX10: Smoke builds of the bot (Resolution 4, R-SM1). The bot runs the smoke build of a platform hash for each target in the `targets` of its artifact record (R-RE1), on one Linux runner: roc links with the files of the platform only, so one machine builds each target (`research/smoke-app/`, 34 of 34 targets as a real app). It builds a pair (platform hash, nightly) only when the unit check of that pair passed, because a build after a failed check fails too.
+
+| Event | Smoke builds |
+| --- | --- |
+| A new nightly | Each indexed platform, each of its targets, on that nightly |
+| A new platform release | Each target, on each nightly where the range search of R-MX1 found a passing unit check |
+
+The rows have the key (platform hash, nightly, target) and the source `bot`. The Worker accepts a real target only for an artifact of kind `platform` whose `targets` has that target, else 400 `bad-request`. A result whose error depends on the build machine, not on the platform (Resolution 4, R-SM7), gives no row.
+
+Cost: about 50 packages times 1 new nightly a day, at under 2 s each, is under 2 minutes of CI a day. Smoke builds add about 10 platforms times 6 targets at under 0.5 s: under 1 minute.
+
+### 6.1 Shared probe results
+
+A user who turns sharing on (CLI 1, R-SH1) sends to `POST /v1/compat` the unit checks of public hashes, the smoke builds of public platforms (Resolution 4, R-SM1) and the builds of public tool apps (CLI 1, R-SH3). They are user hints: rank 6, search order only (Resolution 3). Reads do not need sharing: each client gets all of the matrix (R-AP4, R-AP17). This section holds what the Worker keeps, for how long, and who can delete it.
+
+```mermaid
+flowchart LR
+    T["tln<br/>(sharing on)"] -->|"POST /v1/compat<br/>Talon-Contributor"| W["Worker"]
+    W --> H["compat_hints<br/>counts, no contributor"]
+    W --> P["contributions<br/>pending, linked"]
+    P -->|"daily fold"| C["contributors<br/>totals, linked"]
+    L["tln share login"] -->|"POST /v1/tokens<br/>GitHub token"| W
+    W -->|"JWT"| L
+    C --- A["accounts<br/>GitHub user id"]
+```
+
+R-CT1: A user hint request has no `Authorization` header, and it has the header `Talon-Contributor: <id>`. The id is 32 lowercase hex characters (16 random bytes, CLI 1, R-SH5). A request with no token and with no valid id gets 400 `bad-request`. A request with a token has no id: the token selects `bot` (R-MX5).
+
+R-CT2: The Worker checks the body and each user hint row. When one row fails a rule, the whole request gets the error of that rule, and the Worker writes nothing. The error is 404 `not-found` for an unknown hash, else 400 `bad-request`.
+
+| Field | Rule |
+| --- | --- |
+| `hash` | Indexed (R-RE1). Else 404 `not-found`. |
+| `nightly` | A tag in `toolchains` (R-RE4) |
+| `target` | `any` for a unit check (Resolution 4, R-P4). A real target only when the artifact kind is `app` (the build of a tool app, CLI 1, R-SH3) or `platform` (a smoke build, Resolution 4, R-SM1). |
+| `result` | `pass`, `fail` or `crash`. A hang is not a hint (CLI 1, R-SH3). |
+| `error_digest` | Only with `fail`. At most 128 characters. |
+| `talon_version` | The version of `tln` (R-CT12) |
+| `rows` | At most 500 (first guess) |
+
+R-CT3: The Worker never stores the id. It stores `contributor`: HMAC-SHA256 of the id with the Worker secret `CONTRIBUTOR_KEY`. A new key unlinks each stored row from its id, so the stable id of CLI 1, R-SH5 stops working for the totals. The operator changes the key only after a leak of the key.
+
+R-CT4: The Worker writes one user hint request as one D1 batch, in this order. The batch is one transaction (`cloudflare-workers/API.md` RF4).
+
+| Step | Statement |
+| --- | --- |
+| 1 | `SELECT` the count of the distinct pairs (hash, nightly, target) of the request that have no `compat` row and no `compat_hints` row. This is `first`. |
+| 2 | Upsert the `contributors` row (R-RE17): `first` plus the count of step 1, and `last_time`. |
+| 3 | `INSERT ... ON CONFLICT (contributor, hash, nightly, target) DO NOTHING RETURNING hash` into `contributions` (R-RE16). An `AFTER INSERT` trigger adds 1 to the count of the result in the `compat_hints` row of (hash, nightly, target, talon_version), and 1 to `counted` of the contributor. A skipped row fires no trigger, so a contributor counts once for a pair while its pending row exists, and a request that `tln` sends again counts nothing twice (CLI 1, R-SH4). `written` is the count of returned rows. |
+
+The answer is 201 when `written` is larger than 0, else 200. Two details that the test found (`research/d1-contrib/`, local D1 and SQLite, 15 cases):
+
+| Detail | Reason |
+| --- | --- |
+| `ON CONFLICT DO NOTHING`, not `INSERT OR IGNORE` | `OR IGNORE` also skips a row that fails a `CHECK`, with no error. Then a bad row is lost and the rest of the request is written. With `DO NOTHING`, a `CHECK` failure stops the whole batch. |
+| `written` from `RETURNING`, not from `meta.changes` | On D1, `meta.changes` also counts the rows that the trigger writes (9 in place of 3 for 3 new rows). Plain SQLite does not. |
+
+R-CT5: The fold. A daily cron step reads the `contributions` rows, changes the `contributors` row of each, and deletes them:
+
+| Case | Change | Row |
+| --- | --- | --- |
+| The pair has a `bot` row with the same result class (R-RC1 to R-RC4 of Resolution 4) | `agreed` plus 1 | Deleted |
+| The pair has a `bot` row with another result class | `disagreed` plus 1 | Deleted |
+| No `bot` row, and the row is older than 30 days | `unconfirmed` plus 1 | Deleted |
+| No `bot` row, and the row is younger | None | Kept |
+
+The bot builds no tool app, so these builds are always `unconfirmed`. A smoke build of a user compares with the smoke row of the bot (R-MX10). Reason for the fold: after the `bot` row comes, the hint has no use (Resolution 3, R-EF3), and the link between a contributor and a pair can go.
+
+R-CT6: Retention:
+
+| Data | Holds | Kept for |
+| --- | --- | --- |
+| `compat_hints` | Counts, with no contributor | Always. The operator can delete the rows of one `talon_version` (R-CT7). |
+| `contributions` | A contributor and a pair | Until the fold: at most 30 days (R-CT5) |
+| `contributors` | A contributor and its totals, with no pair | Until R-CT7 deletes it, or 13 months after `last_time` |
+| `accounts` | A GitHub user id and login | Until R-CT7 deletes it, or 13 months after the last login and the last contribution of its contributors |
+| The IP address | The key of the rate limit only (R-CT11) | Not written to D1 or to a log |
+| D1 Time Travel (section 3) | Copies of each table | 30 days. So a deletion is complete 30 days after the request. |
+
+R-CT7: Deletion. `DELETE /v1/contributors/me` (R-AP36) removes the linked data:
+
+| Proof in the request | The Worker deletes |
+| --- | --- |
+| `Talon-Contributor`, with no JWT | The `contributions` and `contributors` rows of that contributor |
+| `Authorization: Bearer <JWT>` (R-CT9) | The `accounts` row, and the `contributions` and `contributors` rows of each contributor that is linked to it |
+
+The Worker never changes `compat_hints` for a user. A count holds no contributor, so nothing ties a count to a person, and the Worker cannot find the counts of one contributor. This is the meaning of "a shared result cannot be retracted". The operator deletes the `compat_hints` rows of one `talon_version` when that version of `tln` sent wrong results.
+
+R-CT8: Login (`POST /v1/tokens`, R-AP37). The account is a GitHub account:
+
+```mermaid
+sequenceDiagram
+    participant T as tln share login
+    participant G as GitHub
+    participant W as Worker
+    T->>G: POST /login/device/code (client id of the OAuth App "Talon")
+    G-->>T: user_code, device_code
+    Note over T: prints the URL and the code
+    T->>G: poll POST /login/oauth/access_token
+    G-->>T: GitHub token, no scope
+    T->>W: POST /v1/tokens {github_token}, Talon-Contributor
+    W->>G: GET /user
+    G-->>W: id, login
+    W-->>T: 201 {token: JWT, expires_at, account}
+```
+
+| # | Rule |
+| --- | --- |
+| 1 | The OAuth App `Talon` belongs to the org `roc-talon`, with the client id `Ov23li2sxWgMaAvjaUbQ`. The client id is public: it is a constant in the `tln` binary. The app has the device flow on and asks for no scope, so the token can read only public data. It is not the GitHub App `Talon Indexer` (R-PU25). Test: `research/oauth-device-flow/check.sh`. |
+| 2 | The Worker reads `GET /user` with the token, and keeps no GitHub token. It does not revoke the token: the token has no scope, so it can read only public data, and `tln` does not write it to a file (CLI 1, R-SH7). The device flow needs no client secret, so the Worker has none. The Worker does not check which app made the token: any token of the account proves the account. |
+| 3 | The Worker upserts the `accounts` row, and links the contributor of the header to the account. One account can have many contributors: one for each machine. Before a login, nothing ties a contributor to a person. A login also links the totals that the contributor has from before. |
+| 4 | GitHub refuses the token: 401 `unauthenticated`. GitHub does not answer: 502 `upstream`. |
+
+R-CT9: The JWT. The Worker signs it and the Worker checks it. No other party reads it.
+
+| Part | Value |
+| --- | --- |
+| `alg` | `EdDSA` (Ed25519, WebCrypto) |
+| `kid` | The id of the signing key |
+| `iss`, `aud` | The origin of the registry |
+| `sub` | The GitHub user id, as a string. Not the login: a login can change (R-TP10). |
+| `iat`, `exp` | `exp` is `iat` plus 30 days |
+
+The check: the signature with the public key of `kid`, `iss` and `aud` equal to the origin, `exp` after now, and `iat` not before `tokens_after` of the account (R-RE18). The private key is the Worker secret `TOKEN_KEY`. After a key change, the Worker keeps the old public key until the last token that it signed expires. `DELETE /v1/tokens` (R-AP38) sets `tokens_after` to now, so each token of the account stops. Reason for a JWT and not a session table: the check is one signature and the `accounts` read that the route does anyway.
+
+R-CT10: The tracker. `GET /v1/contributors/me` (R-AP35) answers `{account: {id, login}, contributors, counted, first, agreed, disagreed, unconfirmed, first_time, last_time}`. Each total is the sum over the contributors that are linked to the account. `contributors` is their count. A request with no JWT gets 401: a user who has not logged in has only the tracker on the machine (CLI 1, R-SH6).
+
+R-CT11: The rate limit of user hints is per IP address. The key is the IPv4 address, or the IPv6 /64 prefix. At most 30 requests a minute (first guess), with the rate limiting binding (`cloudflare-workers/API.md` RN10). `POST /v1/tokens` and `DELETE /v1/contributors/me` have at most 10 requests a minute for one key (first guess). Over the limit: 429 with `Retry-After` (R-AP25). The IP address is only the key of the binding: the Worker writes it to no table and no log.
+
+R-CT12: `talon_version` is the version of `tln`, for example `0.4.1`. A value that is not a version is stored as `unknown`. Reason: the operator can delete the counts of one version after a fault of that version (R-CT7).
 
 ## 7. Publish flow
 
@@ -343,6 +479,17 @@ R-PU32: A repository is public when the read gives `visibility` = `public`. The 
 | Webhook, reconcile | No answer to a client. The Worker writes nothing for a new name, and applies R-PU33 for a known name. |
 
 R-PU33: An indexed repository that becomes private gets the state `missing` (R-TP11), and each of its releases gets `withdrawn` = `repo-missing` (R-PU24). The `repos` row stays, so the name stays bound (R-TP9 row 4). Rows that the registry wrote while the repository was public stay, because they were public data and the log is append-only (Design 8, R-SE2). The Worker finds the change in two ways: the App event `repository` with the action `privatized` (R-PU11), and the visibility read of each reconcile (R-PU31). The action `publicized` sets `next_check_at` of the row to now, so the next reconcile clears `repo-missing` (R-PU24). While a repository is not public, the Worker ignores its `release` events.
+
+R-PU34: Ingest limits (Q30). An ingest (R-AP9) needs no login. These limits apply:
+
+| # | Limit |
+| --- | --- |
+| 1 | For each IP address (the IPv4 address, or the IPv6 /64 prefix): at most 60 ingests a minute (first guess), with the rate limiting binding (`cloudflare-workers/API.md` RN10). `tln add` of a new repository sends one ingest for each candidate (CLI 2, R-AD35), so the limit must allow the releases of one repository. |
+| 2 | For each owner: at most 20 new names a day from ingests (first guess). The Worker counts the `repos` rows of the owner whose `time` is after 00:00 UTC. Over the limit: 429 `rate-limited`, with `Retry-After` until 00:00 UTC. |
+| 3 | The archive size limit of Q28 |
+| 4 | The rules that exist: `github.com` release asset URLs only, public repositories only (R-PU31, R-PU32), one release for each label (R-PU14), the candidate rules (R-PU6) |
+
+Reasons for no login: ordinary commands send an ingest (CLI 2, R-AD35, 4.1 R-AP28), also in CI, where nobody can log in. The webhook, the reconcile and `tln publish` index most releases, so an ingest is only the first sight of a repository. A login moves the abuse to free GitHub accounts, and the attacker still needs repositories with releases. A later option: a JWT of 6.1, R-CT9 gives a larger limit in row 1.
 
 Cost, for 1,000 repositories with no App (first estimate):
 

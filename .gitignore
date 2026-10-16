@@ -1,1 +1,4 @@
 .wrangler/cache
+.roc-fuzz
+.work
+llvm-build/

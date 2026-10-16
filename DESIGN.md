@@ -281,7 +281,7 @@ Ids, and where each group is:
 | R-NS1 to R-NS12 | The `nightly` switch | Resolution 1 |
 | R-C1 to R-C9 | Constraints | Resolution 2 |
 | R-EF1 to R-EF3 | Compatibility evidence | Resolution 3 |
-| R-LD1 to R-LD7, R-BL1 to R-BL6, R-BS1, R-BS2, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, result classes, used modules | Resolution 4 |
+| R-LD1 to R-LD7, R-BL1 to R-BL6, R-BS1, R-BS2, R-SM1 to R-SM7, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, smoke build, result classes, used modules | Resolution 4 |
 | R-P1 to R-P8 | Probe rules | Resolution 4 |
 | R-PP1 to R-PP7 | Parallel probes | Resolution 4 |
 | R-PB1 to R-PB7 | `tln probe` | Resolution 4 |
@@ -294,14 +294,15 @@ Ids, and where each group is:
 | R-DT1 to R-DT6 | Determinism, snapshots | Resolution 11 |
 | R-LF1 to R-LF5 | Lock and frozen modes | Resolution 12 |
 | R-SO1 to R-SO18 | Compiler selection order | Resolution 13 |
-| R-CM1 to R-CM22, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
+| R-CM1 to R-CM23, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
+| R-SH1 to R-SH11 | Sharing probe results, `tln share`, the first-run prompt | CLI 1 |
 | R-AU1 to R-AU15 | `tln audit` | CLI 1 |
 | R-MV1 to R-MV5 | `tln move` | CLI 1 |
-| R-EV1 to R-EV25 | Environment variables, test hooks | CLI 1 |
+| R-EV1 to R-EV26 | Environment variables, test hooks | CLI 1 |
 | R-SL1 to R-SL15, R-SC1 to R-SC15 | Selectors, scopes and name forms | CLI 2 |
 | R-AD1 to R-AD37, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
 | R-E1 to R-E6, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
-| R-NM1 to R-NM11, R-NI1 to R-NI15, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
+| R-NM1 to R-NM12, R-NI1 to R-NI16, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
 | R-IN1 to R-IN7 | `tln init` | CLI 5 |
 | R-LY1 to R-LY9 | Directory layout | CLI 6.1 |
 | R-PX1 to R-PX7 | The `roc` proxy | CLI 6.2 |
@@ -328,14 +329,15 @@ Ids, and where each group is:
 | R-GA1 to R-GA7 | Gaps to build | 6.2 |
 | R-CF1 | Conformance suite | 6.3 |
 | R-PH1 to R-PH13 | Phase rules, P0 limits | 7 |
-| R-SE1 to R-SE14 | Security | 8 |
+| R-SE1 to R-SE15 | Security | 8 |
 | R-RL1 to R-RL4 | Registry role | Registry 1 |
 | R-SG1 to R-SG6 | Registry storage, Merkle log | Registry 3 |
-| R-AP1 to R-AP34 | Registry HTTP API | Registry 4 |
+| R-AP1 to R-AP38 | Registry HTTP API | Registry 4 |
 | R-SN1 to R-SN5 | Short-name matches | Registry 4.3 |
-| R-RE1 to R-RE15 | Registry records | Registry 5 |
-| R-MX1 to R-MX9 | Compatibility matrix | Registry 6 |
-| R-PU1 to R-PU33 | Publish flow, webhook, provenance, reconcile, public repositories only, moves | Registry 7 |
+| R-RE1 to R-RE18 | Registry records | Registry 5 |
+| R-MX1 to R-MX10 | Compatibility matrix, smoke builds of the bot | Registry 6 |
+| R-CT1 to R-CT12 | Shared probe results: contributors, retention, deletion, login, JWT | Registry 6.1 |
+| R-PU1 to R-PU34 | Publish flow, webhook, provenance, reconcile, public repositories only, moves | Registry 7 |
 | R-TP1 to R-TP15 | Trusted publishing, repository identity and moves | Registry 7.1, 7.3 |
 | R-YK1 to R-YK7 | Yank | Registry 7.2 |
 | R-WH1 to R-WH11, R-OT1 to R-OT6 | Worker host, owner tags | Registry 8 |
@@ -474,7 +476,7 @@ R-PH1: Each phase only adds commands and steps. A rule that a phase implements d
 | --- | --- | --- |
 | R-PH2 | P0 | `install` (and `add`, `i`, `install --frozen`), `remove`, `update` (and `update -i`), `list`, `why`, `verify` |
 | R-PH3 | P1 | `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool ...`, `roc ...`, `cache ...`, `setup`, the `roc` proxy |
-| R-PH4 | P2 | `publish`, `probe --share` |
+| R-PH4 | P2 | `publish`, `probe --share`, `share`, and the share queue (CLI 1, R-SH4) |
 | R-PH5 | P3 | `audit`, `yank`, `move` |
 
 `init` and `upgrade` free the nightly and download it (R-NI12). `outdated` shows nightly ranges, which need evidence. `patch` needs the proxy (Resolution 7). `audit` needs yanks and advisories from the registry. `yank` needs the yank routes (Registry 7.2). `move` needs the move route (Registry 7.3, R-AP31).
@@ -501,7 +503,7 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | R-SE2 | Registry maps a label to a bad hash for some users | Append-only log with signed checkpoints and inclusion proofs (P3). The header keeps the hash, and later builds do not ask the registry. |
 | R-SE3 | Compromised maintainer pushes a release | `min-release-age` (default 2 days, R-C7 in Resolution 2). It also applies to the compilers that Talon selects by itself, and to the releases that `tln tool install`, `tln x` and `tln tool update` select, Talon included (CLI 6.4, R-T9). Provenance shown in `tln add`. Scanner hook. The CI file of `tln init` installs a fixed Talon version (CLI 5). |
 | R-SE4 | Probes run untrusted code | Probes run `roc check` and `roc build` only (R-P1 in Resolution 4). Talon never runs the output. A build links the platform host files, but does not run them. Compile-time evaluation of constants stays a risk, the same as a normal `roc check`. |
-| R-SE5 | Poisoned shared matrix | Only bot and publisher rows are trusted. User rows only order the search. The final whole-app probe is always local, unless the user passes `--no-check` (Resolution 4). Then Talon keeps the old `roc:` pin (R-H6). |
+| R-SE5 | Poisoned shared matrix | Only bot and publisher rows are trusted. User rows only order the search, also when `tln` shares by itself (Registry 6.1). A contributor id costs nothing, so many ids can push one result. This costs other users probes, not a wrong header. The rate limit is R-CT11. The final whole-app probe is always local, unless the user passes `--no-check` (Resolution 4). Then Talon keeps the old `roc:` pin (R-H6). |
 | R-SE6 | Release asset deleted | Mirror by hash (P3). The cache keeps old copies. |
 | R-SE7 | Platform ships native host binaries | `tln add` and `tln update` print a notice when a platform release changes. |
 | R-SE8 | A global tool links a host that nobody compiled on this machine, and the user runs the result | The install prints the platform URL and hash before the build (CLI 6.4). The app header hashes fix all of the source. Provenance is shown as in `tln add`. |
@@ -511,6 +513,7 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | R-SE12 | Source archive of a git ref tampered (`tln roc install --git`, `tln tool install --git`) | GitHub publishes no hash for it. The commit sha in the URL names the source, and the trust is TLS to `github.com`, the same as a `git clone`. A redirect never goes to `http://` (CLI 7.5, R-DA3). Talon records the sha256 that it computed (CLI 6.6, R-R7). |
 | R-SE13 | Talon download tampered (`install.sh`, `install.ps1`, `tln tool update talon`) | sha256 and attestation of the GitHub Release (CLI 6.5, R-S1, R-IS3) |
 | R-SE14 | The account of a package owner is taken over later, and the attacker uses a rebind (Registry 7.3, R-TP9 rows 2 and 3) or a move (R-AP31) to send users to bad code | Accepted for now. The attacker gets little more than R-SE3 gives: with the account, they can already publish a new release in the repository. A rebind or a move changes no header URL and no label (Registry 7.3, R-PU19). A person must name the alias to follow a move (R-PU28), and Talon shows a transfer or a new repository first (R-PU30). `min-release-age` and the whole-app check apply. `repo_events` (R-TP13) and the log keep a record. A stranger who takes a deleted name gets 403 (R-TP9 row 4). |
+| R-SE15 | The contributor id of a user leaks (CLI 1, R-SH5) | Who has the id can add to its totals and delete them (Registry 6.1, R-CT7). Accepted: the totals are for display only, and no rule reads them as evidence. The id is not in `config.toml`, Talon prints only 8 characters of it, and `tln share forget` makes a new one. The id cannot read anything: the tracker of the registry needs the JWT of a GitHub login (R-CT10). |
 
 ## 9. Questions
 
@@ -549,6 +552,10 @@ Settled:
 | Q38 | Does the registry list prebuilt binaries of other tools in P2? | No. P3 (CLI 6.4, R-T22). The package hash fixes the source, not a binary, and two builds of one build id can give other bytes (Q18). So a prebuilt binary needs a check that ties it to the release: a GitHub artifact attestation. Attestation checks are P3 (`cloudflare-workers/API.md` RN12). |
 | Q39 | How does a yank work? | P3. `PUT` and `DELETE /v1/releases/{log_index}/yank` (R-YK1). The log index names a release on any host. Auth: a `workflow_dispatch` OIDC token of the repository, or the operator key, and the operator only for other hosts (R-YK2, R-TP8). `tln yank <tag>` (R-YK3). An add-only `yanks` history, and no log leaf (R-YK4). The current yank state applies also at a snapshot (R-YK5), as in Cargo. |
 | Q40 | What happens to the binding of a name when its repository is renamed, transferred, deleted or made again, and how does an owner move a package to another repository? | Registry 7.3. The registry trusts the owner of the recorded repository: a write is accepted when the repository id or the owner id is equal to the binding, and refused (403, with the issues page of the Talon repository `roc-talon/talon`, the Worker setting `ISSUES_URL`) only when both are different (R-TP9, R-TP12). A rename gives a successor link at once (R-TP10). A deleted or private repository makes the name `missing`: no release is a candidate, the binding and the short name stay, so another account cannot take the name (R-TP11). In P3, an owner sets a successor with `PUT /v1/packages/{owner}/{repo}/successor` from a `workflow_dispatch` job of the new repository, or with an offer from the old one (R-AP31, R-TP15). The Worker checks the index, the kind and the module names (`exposes`), and the client checks the rest with the whole-app check (R-PU28). A move changes no URL: a person names the alias to follow it. A later takeover of the owner account is an accepted risk (Design 8, R-SE14). Rejected: the operator for each rebind (it treats the owner as an attacker), a symbol check in the Worker (it needs the compiler), and an automatic follow of a move (a takeover could then change headers). |
+| Q30 | How is an ingest (`POST /v1/releases` with no token, Registry 4, R-AP9) kept from abuse? | No login: ordinary commands send an ingest, also in CI. A rate limit for each IP address, a limit of new names for each owner and day, the archive size limit of Q28, and the rules that exist (`github.com` only, public only, one release for each label). Registry 7, R-PU34. User hints have their own rate limit (Registry 6.1, R-CT11). |
+| Q41 | Can `tln` share probe results by itself, and what does the registry keep? | Yes, when the user turns sharing on: opt-in at the first interactive run (prompt R-NI16, CLI 1, R-SH11), a Consent prompt that `--yes` does not answer (CLI 4, R-NM12), or with `tln share on`. The installers do not ask. Reads stay open for each user. `tln` shares unit checks (pass, fail, crash) and the builds of public tool apps, through the filters of CLI 1, R-SH3. It never shares the baseline check, the whole-app check, app builds, the project file or bundle files. A CI job and `DO_NOT_TRACK` stop it (R-SH2). The id is stable across off and on (R-SH5). The registry keeps only an HMAC of the id (R-CT3), and its pending rows at most 30 days (R-CT5, R-CT6). The write is one D1 batch with a trigger, tested on local D1 (R-CT4, `research/d1-contrib/`). A GitHub login (device flow, no scope, no revoke) gives a JWT and the tracker of the account (R-CT8 to R-CT10). With no login, the tracker is on the machine only (R-SH6). A user can delete the linked data, but not the counts, which hold no id (R-CT7). Rate limit per IP address (R-CT11). |
+| Q42 | Should `tln` build a fixed smoke-test app for each (platform hash, nightly, target) and share the result? | Yes, from the start of sharing (Resolution 4, R-SM1 to R-SM5). Talon makes the app from the platform header (R-SM2), and builds it once for each key on each machine, only with sharing on, after the command did its work (R-SM3, R-SM4). It holds no code of the user. Measured: the same result as a real app on 34 of 34 targets, under 0.5 s (`research/smoke-app/`). The bot also runs them for each target (Q43). |
+| Q43 | Does the compat bot run the smoke build (Resolution 4, R-SM1) of each platform for each target? | Yes, for each target in the `targets` of the platform, on one Linux runner: roc links with the files of the platform only (`research/smoke-app/`). On each new nightly, and on the nightlies where the unit check of a new platform release passed (Registry 6, R-MX10). A `bot` smoke fail on the target of a build is a real fail of ladder step 3, so the solver needs no build to learn it. A pass does not replace the build of the app (Resolution 4, R-SM6). An error that comes from the build machine (`WindowsSDKNotFound`) gives no row (R-SM7). Smoke rows have no sweep. |
 
 Open:
 
@@ -560,7 +567,6 @@ Open:
 | Q27 | How does the publish batch insert the leaf only when it inserts the release, and stop when the label has another hash? D1 has no interactive transaction, and a batch cannot branch (API.md RF4). Proposal: a `UNIQUE` index on (group, version), and a trigger on `releases` that writes the log leaf with `index = max + 1`. Then the log and the index cannot disagree by construction. Same label and same hash: a read before the batch returns the existing record. Evidence (2026-10-16, `research/d1-sweep/`, local D1 and SQLite): the same trigger mechanism as R-MX8 does the 3 cases. A `BEFORE INSERT` trigger on `releases` calls `RAISE(ABORT, 'label-conflict')` when the label has another hash, and the abort rolls back the whole batch (also an artifact and another label in it). `INSERT OR IGNORE` makes the same label with the same hash a no-op. The new `log_index` is `max + 1` in the insert, and an `AFTER INSERT` trigger writes the leaf, so only an inserted release gets a leaf. With no conflict trigger, `INSERT OR IGNORE` hides the conflict with no error. Not tested on remote D1. | Write it in Registry 5 and `sql/`, with a test of the 3 cases |
 | Q28 | What is the largest archive that the registry indexes, and does it need the paid plan? A platform archive is 21 MB packed and 70 MB unpacked (basic-cli). The isolate has 128 MB, and the free plan gives 10 ms of CPU (API.md RF5, RF6). Above a limit, the Worker needs a streaming hash and zstd decode (API.md 8). | Measure a publish of basic-cli on the platform (BLAKE3 and zstd time, peak memory). Then set the limit in Registry 7. |
 | Q29 | Should large reads (`POST /v1/closure`) be JSON that SQLite makes (`json_group_array`), passed to the client as a body with no decode in Roc? 200 rows cost about 84 µs to bring into typed Roc rows (API.md RF7, 5.1). | Measure the closure query both ways in P2 |
-| Q30 | How is an ingest (`POST /v1/releases` with no token, Registry 4, R-AP9) kept from abuse? It has no auth, and each call can download and unpack an archive (API.md RF8). User hints (`POST /v1/compat` with no token, Registry 6, R-MX6) have no auth too, and get the same limits. Options: a rate limit for each IP address, `github.com` release URLs only, one ingest for each URL, a queue. | Choose before P2 ingest. Registry 7 then changes. |
 | Q31 | Should `tln publish` or the registry run `roc bump` (section 2), and warn when the version label does not match the change of the public API? | Choose before the P2 publish code. Registry 7 then changes. |
 
 ## Sources
