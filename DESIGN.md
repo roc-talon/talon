@@ -41,6 +41,7 @@ A reference to a section of the same file is a number, for example 4.2 or sectio
 | N1 | Host package bytes on Cloudflare (planned as an optional mirror later, see section 7). |
 | N2 | Replace `roc` commands (`check`, `build`, `test`). Talon calls `roc`. |
 | N3 | Support the old Rust compiler and `.tar.br` bundles. |
+| N4 | Support private packages. A private GitHub release asset answers 404 to its download URL with no token, and roc and Talon send no token with a download (CLI 7.3, R-DI9). So a private package fails in both modes, at the download (exit code 15, CLI 7.1, R-FE6). With a registry, Talon also stops before it sends the name of a private `github.com` repository to the registry (CLI 1, R-RG4). Talon cannot check the visibility of a URL on another host, so the name of such a group goes to the registry in the closure query (Registry 4.1, R-AP16). |
 
 ## 2. Facts about Roc that shape the design
 
@@ -189,6 +190,9 @@ strategy = "highest"           # or "lowest" for libraries
 min-release-age = "3d"         # the default is "2d" (Resolution 2, R-C7)
 snapshot = "log:184467"        # registry log size. Or a time: "2026-10-12T00:00:00Z" (see Resolution 11)
 probe = { max = 100, max-toolchains = 10, slots = 12 }
+
+[audit]
+ignore = ["someone/roc-old@1.0.0:yanked"]   # accept one finding of tln audit (CLI 1, R-AU9)
 ```
 
 | # | In header | In talon.toml | Constraint |
@@ -238,7 +242,7 @@ R-WS10: Two series of one package are two groups (section 2), so they are two va
 | R-WS2 | A group variable has all constraints of each member entry for that group: the range in `talon.toml` or the implied range of that entry (4.3), and R-C1 to R-C9 (Resolution 2) in the closure of each member. |
 | R-WS3 | Two members with different versions of one group do not satisfy R-WS2 together. `tln install` resolves that group as an entry out of range (Resolution 9). The implied ranges are never lower than a header version, so the result is at least the highest member version. `--frozen` fails with exit code 14. |
 | R-WS4 | Two members with different `roc:` values have no nightly to hold (R-RP2). `install`, `add`, `update` and `remove` stop with exit code 2. The error lists the members and their pins, and names `tln roc use <id>` and `tln upgrade roc`. A member with no `roc:` entry gets the workspace value (R-RP3). |
-| R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[toolchain]` and `[resolution]`. It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, and R-WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
+| R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[toolchain]`, `[resolution]` and `[audit]` (CLI 1, R-AU15). It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, and R-WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
 | R-WS6 | A `[dependencies]` key is an alias. It applies to each member under the directory of that `talon.toml` whose header has that alias. For a key that no such header has (row "no, yes" in 4.3), `tln install` adds the entry only when exactly one member is under that directory. Else it stops with exit code 2 and names `tln add --file <member file>` (CLI 1, R-PD5). |
 | R-WS7 | A range in any `talon.toml` of the workspace constrains the group variable of all members (R-WS2). So one range is enough for a group that many members use. Talon has no catalog (Bun, pnpm): a catalog keeps the members on one version, and R-WS2 already does that. |
 | R-WS8 | An alias that names different groups in different members is a tie (CLI 2). A command that takes names stops with exit code 2 and lists the full names. |
@@ -262,7 +266,7 @@ R-WS14: `talon.toml` writes of `tln add` (CLI 2) go to the nearest `talon.toml` 
 | Store and fetch | Fetches and verifies packages into the roc cache | G4, G5 | CLI 7 |
 | Registry | Index of releases, shared compatibility matrix, publish log, on Cloudflare | G6, G7 | Registry 1 to 8 |
 | Talon packages | Pure Roc logic of the CLI and the registry that has Talon concepts: records, the solver (`packages/` in this repository) | G9 | 6.1 |
-| Generic packages | Pure Roc packages with no Talon concept: `roc-semver`, `roc-base58`, `roc-toml`, `roc-header`. Each in its own repository, released as a normal Roc package. | G9 | 6.1, R-GP1 to R-GP6 |
+| Generic packages | Pure Roc packages with no Talon concept: `roc-semver`, `roc-base58`, `roc-toml`, `roc-app-header`. Each in its own repository, released as a normal Roc package. | G9 | 6.1, R-GP1 to R-GP7 |
 
 Ids, and where each group is:
 
@@ -276,7 +280,7 @@ Ids, and where each group is:
 | R-VA1 to R-VA6 | Variables, anchors, `priority` | Resolution 1 |
 | R-NS1 to R-NS12 | The `nightly` switch | Resolution 1 |
 | R-C1 to R-C9 | Constraints | Resolution 2 |
-| R-EF1, R-EF2 | Compatibility evidence | Resolution 3 |
+| R-EF1 to R-EF3 | Compatibility evidence | Resolution 3 |
 | R-LD1 to R-LD7, R-BL1 to R-BL6, R-BS1, R-BS2, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, result classes, used modules | Resolution 4 |
 | R-P1 to R-P8 | Probe rules | Resolution 4 |
 | R-PP1 to R-PP7 | Parallel probes | Resolution 4 |
@@ -290,11 +294,13 @@ Ids, and where each group is:
 | R-DT1 to R-DT6 | Determinism, snapshots | Resolution 11 |
 | R-LF1 to R-LF5 | Lock and frozen modes | Resolution 12 |
 | R-SO1 to R-SO18 | Compiler selection order | Resolution 13 |
-| R-CM1 to R-CM20, R-FL1 to R-FL14, R-RG1 to R-RG3 | Commands, flags, registry precedence | CLI 1 |
+| R-CM1 to R-CM22, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
+| R-AU1 to R-AU15 | `tln audit` | CLI 1 |
+| R-MV1 to R-MV5 | `tln move` | CLI 1 |
 | R-EV1 to R-EV25 | Environment variables, test hooks | CLI 1 |
 | R-SL1 to R-SL15, R-SC1 to R-SC15 | Selectors, scopes and name forms | CLI 2 |
-| R-AD1 to R-AD33, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
-| R-E1 to R-E5, R-EC0 to R-EC2 and R-EC10 to R-EC19 (the number is the exit code), R-J1 to R-J6 | Exit codes, `--json` | CLI 3 |
+| R-AD1 to R-AD37, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
+| R-E1 to R-E6, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
 | R-NM1 to R-NM11, R-NI1 to R-NI15, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
 | R-IN1 to R-IN7 | `tln init` | CLI 5 |
 | R-LY1 to R-LY9 | Directory layout | CLI 6.1 |
@@ -305,33 +311,36 @@ Ids, and where each group is:
 | R-S1 to R-S5, R-IS1 to R-IS8, R-RM1 to R-RM10 | Talon as a tool, install scripts, remove Talon | CLI 6.5 |
 | R-R1 to R-R13, R-LK1 to R-LK4, R-CS1 to R-CS3, R-U1 to R-U6, R-RU1 to R-RU4, R-RR1 to R-RR3, R-D1 to R-D4 | Compilers from source, links and copies, compiler commands, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
 | R-ST1 to R-ST15 | Setup, bin dir entries and launchers | CLI 6.7 |
-| R-FE1 to R-FE9 | Fetch pipeline, cache contract | CLI 7.1, 7.2 |
+| R-FE1 to R-FE10 | Fetch pipeline, cache contract | CLI 7.1, 7.2 |
 | R-TF1 to R-TF6 | Talon files: formats and errors | CLI 6.1 |
 | R-HF1 to R-HF12 | Effects that basic-cli does not have | 6.2 |
 | R-DA1 to R-DA7 | Download adapter (`curl`, `wget`) | CLI 7.5 |
 | R-CC1 to R-CC12 | Concurrent Talon processes | CLI 7.4 |
 | R-CV1 to R-CV8 | Compiler list and sha256 | CLI 6.2 |
-| R-DI1 to R-DI14 | Index with no registry (`direct`) | CLI 7.3 |
+| R-DI1 to R-DI15 | Index with no registry (`direct`) | CLI 7.3 |
 | R-WS1 to R-WS14 | Workspaces | 4.4 |
 | R-EP1 to R-EP14 | Epochs and inferred facts | Resolution 4 |
 | R-PA1 to R-PA13 | Patches | Resolution 7 |
 | R-PD1 to R-PD17 | Project discovery, known projects | CLI 1 |
 | R-OUT1 to R-OUT5 | Who decides the output | CLI 3 |
-| R-GP1 to R-GP6 | Generic packages | 6.1 |
+| R-GP1 to R-GP7 | Generic packages | 6.1 |
 | R-PK1 to R-PK7, R-PL1, R-PL2 | Packages, platforms | 6.1 |
 | R-GA1 to R-GA7 | Gaps to build | 6.2 |
 | R-CF1 | Conformance suite | 6.3 |
 | R-PH1 to R-PH13 | Phase rules, P0 limits | 7 |
-| R-SE1 to R-SE13 | Security | 8 |
+| R-SE1 to R-SE14 | Security | 8 |
 | R-RL1 to R-RL4 | Registry role | Registry 1 |
 | R-SG1 to R-SG6 | Registry storage, Merkle log | Registry 3 |
-| R-AP1 to R-AP11 | Registry HTTP API | Registry 4 |
-| R-RE1 to R-RE6 | Registry records | Registry 5 |
-| R-MX1 to R-MX4 | Compatibility matrix | Registry 6 |
-| R-PU1 to R-PU10 | Publish flow | Registry 7 |
+| R-AP1 to R-AP34 | Registry HTTP API | Registry 4 |
+| R-SN1 to R-SN5 | Short-name matches | Registry 4.3 |
+| R-RE1 to R-RE15 | Registry records | Registry 5 |
+| R-MX1 to R-MX9 | Compatibility matrix | Registry 6 |
+| R-PU1 to R-PU33 | Publish flow, webhook, provenance, reconcile, public repositories only, moves | Registry 7 |
+| R-TP1 to R-TP15 | Trusted publishing, repository identity and moves | Registry 7.1, 7.3 |
+| R-YK1 to R-YK7 | Yank | Registry 7.2 |
 | R-WH1 to R-WH11, R-OT1 to R-OT6 | Worker host, owner tags | Registry 8 |
 | P0 to P4 | Phases | 7 |
-| Q1 to Q31 | Questions | 9 |
+| Q1 to Q40 | Questions | 9 |
 
 The phases P0 to P4 and the probe rules R-P1 to R-P8 are different: a rule id always has the `R-` prefix.
 
@@ -348,7 +357,7 @@ flowchart TB
         S["roc-semver"]
         B["roc-base58"]
         TM["roc-toml"]
-        HP["roc-header<br/>header parser, span edit,<br/>package URL, group key, MVS"]
+        HP["roc-app-header<br/>header parser, span edit,<br/>package URL, group key, MVS"]
     end
     subgraph core["Talon packages: packages/ in this repository"]
         PG["resolve<br/>pubgrub, oracle, solver step"]
@@ -366,23 +375,34 @@ flowchart TB
 | R-PK2 | `roc-semver` | Generic | Version parse, print and order. The range forms of 4.3 and CLI 2 (`^`, `=`, `*`, `x`, a major). | semver 2.0.0 | CLI, Worker |
 | R-PK3 | `roc-base58` | Generic | Encode and decode, Bitcoin alphabet | The hash form of roc (section 2) | CLI, Worker |
 | R-PK4 | `roc-toml` | Generic | TOML parse and print, and a span edit that keeps comments, order and formatting (as R-H1 for the header) | TOML 1.0.0 | CLI |
-| R-PK5 | `roc-header` | Generic | Parser for the header of an app, package or platform and for `import` lines (the lexical scan of Resolution 4). Span edit (R-H1). Package URL parse, group key and MVS (section 2). | roc source at the pinned commit, `roc fmt` output | CLI, Worker |
+| R-PK5 | `roc-app-header` | Generic | Parser for the header of an app, package or platform and for `import` lines (the lexical scan of Resolution 4). Span edit (R-H1). Package URL parse, group key and MVS (section 2). | roc source at the pinned commit, `roc fmt` output | CLI, Worker |
 | R-PK6 | `resolve` | Talon | PubGrub, the oracle interface and the solver step (`TESTING.md` 2.2, part B) | Resolution 5 | CLI |
 | R-PK7 | `records` | Talon | API types of the registry, `compat.db` rows, records (Registry 4, 5) | Registry | CLI, Worker |
 
 | # | Rule |
 | --- | --- |
 | R-GP1 | A package is generic when its public API names no Talon concept (no `talon.toml` key, no registry record, no probe, no evidence), and its spec is outside the Talon design. The generic packages are the 4 in the table above. |
-| R-GP2 | Each generic package has its own repository, and is released as a normal Roc package: a GitHub Release with a `<hash>.tar.zst` asset and an `X.Y.Z` tag. One repository holds one package. Reasons: the name of a package is `owner/repo` (4.1), and the default alias, the short name (CLI 2) and the `direct` index (CLI 7.3, R-DI6) all take one package for each repository. roc would accept two packages in one repository only with a tag prefix (`semver-1.2.0`, R-DI5, `research/roc-http-fetch/`), and the same tag for both would give one group (section 2). |
+| R-GP2 | Each generic package has its own repository, and is released as a normal Roc package: a GitHub Release with a `<hash>.tar.zst` asset and an `X.Y.Z` tag. One repository holds one package. The generic package repositories are on the GitHub account `Karakatiza666` (for example `github.com/Karakatiza666/roc-semver`), not on the organization `roc-talon`. `roc-talon` holds the Talon repository `roc-talon/talon` and the GitHub App `Talon Indexer` (Registry 7, R-PU25). Reasons for one package per repository: the name of a package is `owner/repo` (4.1), and the default alias, the short name (CLI 2) and the `direct` index (CLI 7.3, R-DI6) all take one package for each repository. roc would accept two packages in one repository only with a tag prefix (`semver-1.2.0`, R-DI5, `research/roc-http-fetch/`), and the same tag for both would give one group (section 2). |
 | R-GP3 | The Talon headers (`cli/`, `worker/`, `packages/*/`) name each generic package by a release URL with its hash (R-H3). The Talon repository never commits a path entry to a generic package. From P0, Talon manages these entries with `tln` itself. |
 | R-GP4 | To change a generic package and Talon together, the developer runs `roc` with `--replace-dep <release URL> <local checkout>/main.roc` (section 2), or uses a `[patch]` entry (Resolution 7) from P1. The Talon change merges only after the package release, with the header moved to that release. |
 | R-GP5 | Each generic package repository has its own tests: L0 (`roc test`) and L1 (roc-fuzz) (`TESTING.md` 1, 4), and its own CI on the nightly that Talon pins. Talon does not test a generic package again. Talon tests its own use of it: its decisions (L0 to L3), and the agreement with roc (L5, `conformance/`). |
 | R-GP6 | A Talon package moves to its own repository only when R-GP1 holds for it. `resolve` stays: its API is the solver step with the probe oracle of Resolution 5. |
+| R-GP7 | Each generic package repository has a `LICENSE` file at its root with the UPL-1.0 license. The first line is the copyright line of that repository (table LIC). The lines after it are the full UPL-1.0 text of the `roc-lang/roc` `LICENSE`, with no change and no cut: GitHub then shows `UPL-1.0`, and a cut text shows `NOASSERTION` (`research/license-survey/` 2, `roc-pdf`). A port keeps the copyright notice of its source as one more line, because UPL-1.0 needs that notice in all copies and substantial portions (R-GA6). That line also starts with `Copyright ©` and names the ported part at its end, `(portions: ...)`. Reason: the GitHub license detector removes only the top lines that start with a copyright word, so a line that starts with `Portions` stops the match (`roc-cloudflare-workers` `LICENSE` uses the same form). Reason: roc, basic-cli, roc-parser (the dependency of `roc-toml`) and most Roc packages and platforms are UPL-1.0 (`research/license-survey/` 1, 4). With the same license, code can move between a generic package, Talon, roc and its packages with no relicense. |
+
+Table LIC: the `LICENSE` of each repository (R-GP7). Below these lines, each file has the UPL-1.0 text of `roc-lang/roc` `LICENSE`. The form of the copyright line is the form of roc and basic-cli (`research/license-survey/` 5).
+
+| Repository | Copyright lines | Code from other projects |
+| --- | --- | --- |
+| `roc-talon/talon` | `Copyright © 2026 Heorhii Bulakh and subsequent Talon authors <github.com/roc-talon/talon/graphs/contributors>` | None (`research/license-survey/` 6). The submodule `cloudflare-workers/` has its own `LICENSE`. |
+| `Karakatiza666/roc-semver` | `Copyright © 2026 Heorhii Bulakh and subsequent roc-semver authors <github.com/Karakatiza666/roc-semver/graphs/contributors>`, then `Copyright © 2024 Sam Mohr and subsequent roc-semver authors <github.com/smores56/roc-semver/graphs/contributors> (portions: the code ported from smores56/roc-semver)` | Port of `smores56/roc-semver` (R-GA6) |
+| `Karakatiza666/roc-base58` | `Copyright © 2026 Heorhii Bulakh and subsequent roc-base58 authors <github.com/Karakatiza666/roc-base58/graphs/contributors>` | None: new code (R-GA4) |
+| `Karakatiza666/roc-toml` | `Copyright © 2026 Heorhii Bulakh and subsequent roc-toml authors <github.com/Karakatiza666/roc-toml/graphs/contributors>` | None: new code (R-GA5) |
+| `Karakatiza666/roc-app-header` | `Copyright © 2026 Heorhii Bulakh and subsequent roc-app-header authors <github.com/Karakatiza666/roc-app-header/graphs/contributors>` | None: a clean-room rewrite (R-GA7). It has no roc copyright line. |
 
 | # | Part | Platform | Notes |
 | --- | --- | --- | --- |
 | R-PL1 | CLI | basic-cli | basic-cli has blocking HTTP, files, `rename`, hard links, `Cmd` with `spawn!`, `try_wait!`, `kill!`, a working directory, inherited stdio and captured output, env, args, the program name, SQLite, sleep and the clock. Talon uses a basic-cli release as it is. There is no fork. For an effect that basic-cli does not have, Talon runs a child process: `curl` or `wget` for downloads (CLI 7.5), `roc unbundle` and `tar` for archives, `chmod`. The table HF in 6.2 has each effect. The upstream requests are a TTY test (R-HF1) and a process replacement (R-HF6). Talon does not wait for them. Talon ships the targets of basic-cli only: `x64musl`, `arm64musl`, `x64mac`, `arm64mac`, `x64win` (R-HF10, CLI 6.5 R-IS2). |
-| R-PL2 | Worker | `cloudflare-workers`: a new generic platform, wasm32 reactor (`output: Shared`), Zig host, small JS shim | Hosted functions in direct style through JSPI (Registry 8). It exposes the whole Workers runtime (all handler kinds, outbound fetch, D1, R2, KV, Cache API, Queues, Durable Objects, WebCrypto, env, secrets and the other bindings), not registry logic. The app API is `cloudflare-workers/API.md`. Any Roc app can use it. The registry is its first user. Its own repo and releases. |
+| R-PL2 | Worker | `cloudflare-workers`: a new generic platform, wasm32 reactor (`output: Shared`), Zig host, small JS shim | Hosted functions in direct style through JSPI (Registry 8). It exposes the whole Workers runtime (all handler kinds, outbound fetch, D1, R2, KV, Cache API, Queues, Durable Objects, WebCrypto, env, secrets and the other bindings), not registry logic. The app API is `cloudflare-workers/API.md`. Any Roc app can use it. The registry is its first user. Its own repo (`Karakatiza666/roc-cloudflare-workers`) and releases. |
 
 The compiler supports this: `wasm32` freestanding target, linked with `wasm-ld` (`roc:src/target/mod.zig:468`, `roc:src/cli/linker.zig:691`, `roc:docs/langref/modules.md:536-556`).
 
@@ -394,11 +414,11 @@ The compiler supports this: `wasm32` freestanding target, linked with `wasm-ld` 
 | R-GA2 | zstd + tar decode in the Worker | No Roc library. roc-zip and roc-deflate exist in pure Roc. | Hosted fn in the `cloudflare-workers` host, from Zig `std.compress`, to read `main.roc`. The CLI uses `roc unbundle` (R-HF5). |
 | R-GA3 | BLAKE3, SHA-256, JSON | Builtins | None |
 | R-GA4 | base58 | Missing | Generic package `roc-base58` (6.1, R-GP2) |
-| R-GA5 | TOML | roc-toml is for the old compiler | Generic package `roc-toml` on roc-parser 2.0.0 (6.1, R-GP2) |
-| R-GA6 | Semver | roc-semver is for the old compiler | Port to the generic package `roc-semver` (6.1, R-GP2) |
-| R-GA7 | Header parser | The compiler parser is Zig | Generic package `roc-header` (6.1, R-GP2): own parser for the header subset in Roc. Fuzz it against `roc fmt` output. |
+| R-GA5 | TOML | No Roc TOML library. The one `roc-toml` repository found, `HajagosNorbert/roc-toml`, is empty (`gh api repos/HajagosNorbert/roc-toml`, 2026-10-16). | New code: the generic package `roc-toml` on roc-parser 2.0.0 (6.1, R-GP2). There is no source to port, so its `LICENSE` has its own copyright line only (R-GP7, table LIC). |
+| R-GA6 | Semver | `smores56/roc-semver` is for the old compiler. It has no `LICENSE` file. Talon takes it as UPL-1.0, the license of roc. | Port `smores56/roc-semver` to the generic package `roc-semver` (6.1, R-GP2). UPL-1.0 needs the copyright notice of the source in all copies and substantial portions, so the `LICENSE` of `roc-semver` keeps the second copyright line `Copyright © 2024 Sam Mohr and subsequent roc-semver authors <github.com/smores56/roc-semver/graphs/contributors> (portions: the code ported from smores56/roc-semver)` (R-GP7, table LIC). Source of the year and the name: `gh api repos/smores56/roc-semver/commits`. The first commit is 2024-06-09 by Sam Mohr (`smores56`). The other author is Ian McLerran (`imclerran`, 2025). |
+| R-GA7 | Header parser | The compiler parser is Zig | Generic package `roc-app-header` (6.1, R-GP2): own parser for the header subset in Roc. Fuzz it against `roc fmt` output. It is a clean-room rewrite: the group key and MVS are written from the rules of `roc:src/compile/package_resolution.zig` as Design 2 states them, and no roc code is copied or translated. So its `LICENSE` has its own copyright line only (R-GP7, table LIC). |
 
-The generic packages are useful to the whole Roc ecosystem. Their rules are R-GP1 to R-GP6 (6.1).
+The generic packages are useful to the whole Roc ecosystem. Their rules are R-GP1 to R-GP7 (6.1).
 
 R-HF12: Effects that basic-cli does not have, and how Talon gets each one. Checked in the source of a recent basic-cli (`Host.roc`, `Cmd.roc`). Talon does not fork basic-cli. A child process gives each effect, or a function that basic-cli has. When a program that Talon needs is not on `PATH`, the command stops with exit code 18 (`environment`, CLI 3) and names the program.
 
@@ -431,9 +451,10 @@ talon/
   scripts/       rules.sh (rule coverage), revert-check.sh
   research/      measurements that are not conformance, for example test-fs/
   docs/          docs/slices/: one file per work slice (TESTING.md 7)
+  LICENSE        UPL-1.0, the roc text with the Talon copyright line (6.1, R-GP7, table LIC)
 ```
 
-The `cloudflare-workers` platform lives in its own repository and is released like any Roc platform. It is a git submodule of Talon at `cloudflare-workers/`, so platform and registry changes can be developed together. Its `bench/` holds the JSPI measurements (Q12).
+The `cloudflare-workers` platform lives in its own repository, `github.com/Karakatiza666/roc-cloudflare-workers` (not on `roc-talon`), and is released like any Roc platform. It is a git submodule of Talon at `cloudflare-workers/`, so platform and registry changes can be developed together. Its `bench/` holds the JSPI measurements (Q12).
 
 R-CF1: The conformance suite checks that Talon and `roc` agree on group keys, version selection, the cache layout and the declared closure (`roc deps`, section 2), for every new nightly. The tests from section 2 are its first fixtures.
 
@@ -441,10 +462,10 @@ R-CF1: The conformance suite checks that Talon and `roc` agree on group keys, ve
 
 | Phase | Scope | Exit criteria |
 | --- | --- | --- |
-| P0 | First the generic packages, each in its own repository and released (6.1, R-GP1 to R-GP5): `roc-header` (group key and MVS first), `roc-semver`, `roc-base58`, `roc-toml`. Then one upstream PR to basic-cli for the TTY test and the process replacement (6.2, R-HF1, R-HF6). Talon does not wait for it. CLI with no registry: the GitHub API as index (CLI 7.3), header edits, the P0 commands below, with the P0 limits below. | `tln add` on a real app matches a hand edit. Conformance passes. |
+| P0 | First the generic packages, each in its own repository and released (6.1, R-GP1 to R-GP5, R-GP7): `roc-app-header` (group key and MVS first), `roc-semver`, `roc-base58`, `roc-toml`. Then one upstream PR to basic-cli for the TTY test and the process replacement (6.2, R-HF1, R-HF6). Talon does not wait for it. CLI with no registry: the GitHub API as index (CLI 7.3), header edits, the P0 commands below, with the P0 limits below. | `tln add` on a real app matches a hand edit. Conformance passes. |
 | P1 | Toolchain manager, `roc` proxy, `tln cache gc`, local probes and the PubGrub oracle, `tln tool` (CLI 6.4), `install.sh`, `install.ps1` and prebuilt Talon binaries (CLI 6.5). | Talon finds a working tuple for parser 2.0.0 + basic-cli without help. GC frees the legacy dirs. |
-| P2 | `cloudflare-workers` platform (JSPI, separate repo). Registry v1: D1, API, publish with OIDC, webhook, ingest. Compat bot. | All releases in the roc-awesome list are indexed with a nightly range. `POST /v1/closure` under 50 ms p50. |
-| P3 | Log tiles in R2, signed checkpoints, hash-keyed mirror on R2, scanner hook, advisories | Client checks inclusion proofs. Mirror serves a deleted GitHub asset. |
+| P2 | `cloudflare-workers` platform (JSPI, separate repo). Registry v1: D1, API, publish with OIDC (Registry 7.1), webhook, ingest. Compat bot. | All releases in the roc-awesome list are indexed with a nightly range. `POST /v1/closure` under 50 ms p50. |
+| P3 | Log tiles in R2, signed checkpoints, hash-keyed mirror on R2, scanner hook, advisories, yank (Registry 7.2), repository moves (Registry 7.3, R-AP31), prebuilt binaries of other tools (CLI 6.4, R-T22) | Client checks inclusion proofs. Mirror serves a deleted GitHub asset. |
 | P4 | Upstream: print the compat id, a roc lock on `packages/` so that GC cannot remove a package while roc runs (CLI 7.4, R-CC10 accepts that risk until then), maybe `roc` reads `talon.toml` | |
 
 R-PH1: Each phase only adds commands and steps. A rule that a phase implements does not change in a later phase. So a test of an earlier phase stays valid. A default that a later phase changes (the registry, CLI 1) does not break this, because each test sets it (`TESTING.md` 3.2). A design example that needs a later phase than its command states that phase (`TESTING.md` TW16).
@@ -454,9 +475,9 @@ R-PH1: Each phase only adds commands and steps. A rule that a phase implements d
 | R-PH2 | P0 | `install` (and `add`, `i`, `install --frozen`), `remove`, `update` (and `update -i`), `list`, `why`, `verify` |
 | R-PH3 | P1 | `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool ...`, `roc ...`, `cache ...`, `setup`, the `roc` proxy |
 | R-PH4 | P2 | `publish`, `probe --share` |
-| R-PH5 | P3 | `audit` |
+| R-PH5 | P3 | `audit`, `yank`, `move` |
 
-`init` and `upgrade` free the nightly and download it (R-NI12). `outdated` shows nightly ranges, which need evidence. `patch` needs the proxy (Resolution 7). `audit` needs yanks and advisories from the registry.
+`init` and `upgrade` free the nightly and download it (R-NI12). `outdated` shows nightly ranges, which need evidence. `patch` needs the proxy (Resolution 7). `audit` needs yanks and advisories from the registry. `yank` needs the yank routes (Registry 7.2). `move` needs the move route (Registry 7.3, R-AP31).
 
 P0 limits. P0 runs the rules of the design as written, with less to work with. P1 adds the parts in the right column:
 
@@ -485,10 +506,11 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | R-SE7 | Platform ships native host binaries | `tln add` and `tln update` print a notice when a platform release changes. |
 | R-SE8 | A global tool links a host that nobody compiled on this machine, and the user runs the result | The install prints the platform URL and hash before the build (CLI 6.4). The app header hashes fix all of the source. Provenance is shown as in `tln add`. |
 | R-SE9 | Malicious tarball (path traversal, size bomb) | Packages: `roc unbundle` checks the paths and the Roc size limits (CLI 7.1). Compilers and Zig: Talon checks the sha256 before `tar` runs (R-CV4, R-D2), and `tar` refuses absolute paths and `..` (6.2, R-HF5). |
-| R-SE10 | Forged provenance | Some releases already ship `<hash>.tar.zst.intoto.jsonl` (in-toto attestation) and `.spdx.json` (SBOM), for example roc-parser 2.0.0. The registry checks the attestation at publish and stores the result in `releases.provenance`. |
+| R-SE10 | Forged provenance | Some releases already ship `<hash>.tar.zst.intoto.jsonl` (in-toto attestation) and `.spdx.json` (SBOM), for example roc-parser 2.0.0. The registry checks the attestation at publish and stores the result in the `provenance` table (Registry 7, R-PU15). |
 | R-SE11 | Compiler download tampered | sha256 check before extract (CLI 6.2, R-CV3, R-CV4). With `direct` (P1 and later), the sha256 is the GitHub asset `digest`. With a registry (P2 and later), it is the sha256 that the registry recorded the first time it saw the nightly, so a later swap of the asset fails. In both modes, `compat.db` keeps the first sha256 seen for each tag and target, and a different later value fails (R-CV6). From P2, each compiler asset is a log leaf (Registry 3), so `--snapshot log:N` fixes the set of compilers. P3 adds inclusion proofs for these leaves. |
 | R-SE12 | Source archive of a git ref tampered (`tln roc install --git`, `tln tool install --git`) | GitHub publishes no hash for it. The commit sha in the URL names the source, and the trust is TLS to `github.com`, the same as a `git clone`. A redirect never goes to `http://` (CLI 7.5, R-DA3). Talon records the sha256 that it computed (CLI 6.6, R-R7). |
 | R-SE13 | Talon download tampered (`install.sh`, `install.ps1`, `tln tool update talon`) | sha256 and attestation of the GitHub Release (CLI 6.5, R-S1, R-IS3) |
+| R-SE14 | The account of a package owner is taken over later, and the attacker uses a rebind (Registry 7.3, R-TP9 rows 2 and 3) or a move (R-AP31) to send users to bad code | Accepted for now. The attacker gets little more than R-SE3 gives: with the account, they can already publish a new release in the repository. A rebind or a move changes no header URL and no label (Registry 7.3, R-PU19). A person must name the alias to follow a move (R-PU28), and Talon shows a transfer or a new repository first (R-PU30). `min-release-age` and the whole-app check apply. `repo_events` (R-TP13) and the log keep a record. A stranger who takes a deleted name gets 403 (R-TP9 row 4). |
 
 ## 9. Questions
 
@@ -518,6 +540,15 @@ Settled:
 | Q22 | How does Talon find the project file, and how does a user name another one? | The walk of CLI 1, "The project" (R-PD1 to R-PD8): the nearest `main.roc` or workspace member, up to the repository root (`.git`), the home directory or `/`. The global flag `--file <path>` names another file. It replaces `--member`. The proxy keeps the target file of roc (R-PD7). `talon/projects.json` records each project that a command or the proxy uses (R-PD9 to R-PD13). |
 | Q23 | One repository for all generic packages, or one for each? | One for each (R-GP2). The name `owner/repo` (4.1), the default alias, the short name and the `direct` index take one package for each repository. roc alone would accept a tag prefix (`research/roc-http-fetch/`). |
 | Q24 | Does roc fetch a package from an `http://` URL? (`TESTING.md` TQ4) | Only from a loopback host: `127.0.0.1`, `::1`, `localhost`. Any other `http://` URL is the error "insecure package url", with no connection. Tested on `nightly-2026-10-09-258ab27` (`research/roc-http-fetch/`), and in `roc:src/unbundle/download.zig`. So a test with a `github.com` URL pre-fills `packages/<hash>/` (CLI 1, "Packages in tests"). |
+| Q32 | Which exit code does `tln publish` give when it has no OIDC token (Registry 4, R-AP27)? | 2 (`usage`, CLI 3, R-EC2). The command runs where it cannot work, as `tln probe --share` with no registry (Resolution 4, R-PB6). The fix is in the workflow file (`permissions: id-token: write`), and the message names it. `tln yank` outside a GitHub Actions job (Registry 7.2, R-YK3), and `tln publish` and `tln yank` with no registry, also give 2. Not 18 (`environment`): it covers a program that is not on `PATH`, and a new meaning would change its kind (R-J6). Not a new code: this is a usage failure, not a new kind (R-E5). |
+| Q33 | What does `tln` do with a header hash that the closure answer lists in `unknown` (Registry 4, R-AP17)? | Registry 4.1, R-AP28. When the answer has the label with another hash, Talon warns (the case of R-PU19). Else a `github.com` release URL gets one ingest (R-AP9), and Talon asks again once, as for a full name (Q34, CLI 2, R-AD35). Any other URL, a failed ingest, or `--snapshot log:N` (R-AD36): Talon reads the facts from the archive, as in `direct` mode (CLI 7.3, R-DI7), and the entry is an anchor when the registry has no release of its group (as R-DI11). The header value always stays in its domain (Resolution 2, R-C9). Not stop: a hand edit (Design 4.1, R-ID7) must still work. A URL on a private host is never sent. |
+| Q34 | What does `tln add owner/repo` (a full name) do when `GET /v1/packages/{owner}/{repo}/releases` answers 404 (Registry 4, R-AP1), and the repository has releases on GitHub that the registry did not index? | Talon reads the releases from GitHub, sends an ingest (R-AP9) for each candidate, and asks the registry again (CLI 2, R-AD35). `tln tool install` and `tln x` with a full name do the same. A private repository, a name that GitHub does not know, or no candidate gives exit code 2. With `--snapshot log:N`, Talon sends no ingest and stops with exit code 2 (R-AD36). Reason: one command uses one index (CLI 7.3, R-DI14), so the log snapshot, the matrix and the compat bot cover the new releases. Go modules have the same model: the module proxy fetches a module on its first request. Rejected: a GitHub read for that group only, as `direct` (a second index in one resolve, with no log index for `--snapshot log:N`); stop and name an ingest (Talon has no ingest command, and the user would need the asset URLs). |
+| Q35 | One release comes in by the webhook and by `tln publish`. What happens when the asset comes after the release is published, and when the webhook indexes first? | GitHub sends no event for an asset upload (the `release` actions only, checked on 2026-10-16). So the webhook reads the release again after 1, 5, 15 and 60 minutes (R-PU13). Each path is idempotent for a label (R-PU14). Provenance moves to an add-only `provenance` table with one row for each path (R-PU15), so a later publish adds its `oidc` row and its author facts with no change to the release row (R-PU16, R-RE6). A release that stops being a candidate on GitHub is withdrawn (R-PU17), so both modes see the same candidates (CLI 7.3, R-DI14). |
+| Q36 | Who sets the workflows that can publish, and which OIDC claims does the Worker check? | No per-repository config in P2. A fixed rule: a token of a public repository, for the tag of the asset URL, from a `release`, `push` or `workflow_dispatch` run, with the registry as `aud` (R-TP1, R-TP3). The tag ref stops `pull_request_target` and `workflow_run`, and a fork pull request gets no token (R-TP4). The `repos` table binds a name to the GitHub repository id and owner id against repo-jacking (R-TP5), as PyPI does. |
+| Q37 | Which packages does a short name match? | The rule of CLI 2, R-SC8, as an exact set from `GET /v1/packages?short=` (R-SN1): repo name, or repo name minus a leading `roc-`, ASCII case-insensitive, `github.com` only (R-SN3), yanked and withdrawn releases included (R-SN2). The ranked `?q=` results are for messages only (R-SN5, CLI 2, R-AD34). |
+| Q38 | Does the registry list prebuilt binaries of other tools in P2? | No. P3 (CLI 6.4, R-T22). The package hash fixes the source, not a binary, and two builds of one build id can give other bytes (Q18). So a prebuilt binary needs a check that ties it to the release: a GitHub artifact attestation. Attestation checks are P3 (`cloudflare-workers/API.md` RN12). |
+| Q39 | How does a yank work? | P3. `PUT` and `DELETE /v1/releases/{log_index}/yank` (R-YK1). The log index names a release on any host. Auth: a `workflow_dispatch` OIDC token of the repository, or the operator key, and the operator only for other hosts (R-YK2, R-TP8). `tln yank <tag>` (R-YK3). An add-only `yanks` history, and no log leaf (R-YK4). The current yank state applies also at a snapshot (R-YK5), as in Cargo. |
+| Q40 | What happens to the binding of a name when its repository is renamed, transferred, deleted or made again, and how does an owner move a package to another repository? | Registry 7.3. The registry trusts the owner of the recorded repository: a write is accepted when the repository id or the owner id is equal to the binding, and refused (403, with the issues page of the Talon repository `roc-talon/talon`, the Worker setting `ISSUES_URL`) only when both are different (R-TP9, R-TP12). A rename gives a successor link at once (R-TP10). A deleted or private repository makes the name `missing`: no release is a candidate, the binding and the short name stay, so another account cannot take the name (R-TP11). In P3, an owner sets a successor with `PUT /v1/packages/{owner}/{repo}/successor` from a `workflow_dispatch` job of the new repository, or with an offer from the old one (R-AP31, R-TP15). The Worker checks the index, the kind and the module names (`exposes`), and the client checks the rest with the whole-app check (R-PU28). A move changes no URL: a person names the alias to follow it. A later takeover of the owner account is an accepted risk (Design 8, R-SE14). Rejected: the operator for each rebind (it treats the owner as an attacker), a symbol check in the Worker (it needs the compiler), and an automatic follow of a move (a takeover could then change headers). |
 
 Open:
 
@@ -526,10 +557,10 @@ Open:
 | Q14 | Pool values (16 requests per instance, 32 MB) for the real registry app | Load test the registry app in P2. Note: `cloudflare-workers/PLAN.md` problem 12 replaced the pool with one instance per isolate. Its order of work row 12 updates this row, Q12 and Registry 8. |
 | Q25 | How does a publish make the edge caches drop the old version list? `cache.delete` purges one data center only (`cloudflare-workers/API.md` RF1). Options: purge by Cache-Tag with the zone purge API (needs a custom domain and an API token); no edge cache for the version list; or a short TTL with no purge (the 2-day `min-release-age` of R-C7 hides new releases anyway). | Choose before the P2 cache code. Registry 4 and 7 then change. |
 | Q26 | Who writes the tiles and the checkpoint, when two publishes run in two isolates at once, or an R2 write fails after the D1 commit (API.md RF2, RF3)? Proposal: one idempotent step "build the tiles and sign up to the largest leaf index in D1". It runs after each publish (`Ctx.respond!`, then the step) and from a cron trigger. It writes the checkpoint with an R2 compare and swap on the etag, and only to a larger size. | Write it in Registry 3 and 7, with a test of 2 publishes at once |
-| Q27 | How does the publish batch insert the leaf only when it inserts the release, and stop when the label has another hash? D1 has no interactive transaction, and a batch cannot branch (API.md RF4). Proposal: a `UNIQUE` index on (group, version), and a trigger on `releases` that writes the log leaf with `index = max + 1`. Then the log and the index cannot disagree by construction. Same label and same hash: a read before the batch returns the existing record. | Write it in Registry 5 and `sql/`, with a test of the 3 cases |
+| Q27 | How does the publish batch insert the leaf only when it inserts the release, and stop when the label has another hash? D1 has no interactive transaction, and a batch cannot branch (API.md RF4). Proposal: a `UNIQUE` index on (group, version), and a trigger on `releases` that writes the log leaf with `index = max + 1`. Then the log and the index cannot disagree by construction. Same label and same hash: a read before the batch returns the existing record. Evidence (2026-10-16, `research/d1-sweep/`, local D1 and SQLite): the same trigger mechanism as R-MX8 does the 3 cases. A `BEFORE INSERT` trigger on `releases` calls `RAISE(ABORT, 'label-conflict')` when the label has another hash, and the abort rolls back the whole batch (also an artifact and another label in it). `INSERT OR IGNORE` makes the same label with the same hash a no-op. The new `log_index` is `max + 1` in the insert, and an `AFTER INSERT` trigger writes the leaf, so only an inserted release gets a leaf. With no conflict trigger, `INSERT OR IGNORE` hides the conflict with no error. Not tested on remote D1. | Write it in Registry 5 and `sql/`, with a test of the 3 cases |
 | Q28 | What is the largest archive that the registry indexes, and does it need the paid plan? A platform archive is 21 MB packed and 70 MB unpacked (basic-cli). The isolate has 128 MB, and the free plan gives 10 ms of CPU (API.md RF5, RF6). Above a limit, the Worker needs a streaming hash and zstd decode (API.md 8). | Measure a publish of basic-cli on the platform (BLAKE3 and zstd time, peak memory). Then set the limit in Registry 7. |
 | Q29 | Should large reads (`POST /v1/closure`) be JSON that SQLite makes (`json_group_array`), passed to the client as a body with no decode in Roc? 200 rows cost about 84 µs to bring into typed Roc rows (API.md RF7, 5.1). | Measure the closure query both ways in P2 |
-| Q30 | How is `POST /v1/ingest` kept from abuse? It has no auth, and each call can download and unpack an archive (API.md RF8). Options: a rate limit for each IP address, `github.com` release URLs only, one ingest for each URL, a queue. | Choose before P2 ingest. Registry 7 then changes. |
+| Q30 | How is an ingest (`POST /v1/releases` with no token, Registry 4, R-AP9) kept from abuse? It has no auth, and each call can download and unpack an archive (API.md RF8). User hints (`POST /v1/compat` with no token, Registry 6, R-MX6) have no auth too, and get the same limits. Options: a rate limit for each IP address, `github.com` release URLs only, one ingest for each URL, a queue. | Choose before P2 ingest. Registry 7 then changes. |
 | Q31 | Should `tln publish` or the registry run `roc bump` (section 2), and warn when the version label does not match the change of the public API? | Choose before the P2 publish code. Registry 7 then changes. |
 
 ## Sources

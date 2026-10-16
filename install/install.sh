@@ -1,7 +1,7 @@
 #!/bin/sh
 # Talon installer for Linux and macOS. Rules: DESIGN-CLI.md 6.5 (R-S1, R-IS1 to R-IS8).
 #
-#   curl -fsSL https://github.com/Karakatiza666/talon/releases/latest/download/install.sh | sh
+#   curl -fsSL https://github.com/roc-talon/talon/releases/latest/download/install.sh | sh
 #   curl -fsSL .../install.sh | sh -s -- --version 0.3.1      (repair, R-S4)
 #
 # Downloads the prebuilt tln for this machine, checks its sha256 (and the attestation when
@@ -10,7 +10,7 @@
 
 set -eu
 
-REPO="${TALON_REPO:-Karakatiza666/talon}"
+REPO="${TALON_REPO:-roc-talon/talon}"
 # Base URL of the release assets. Tests and mirrors set TALON_DOWNLOAD_BASE.
 BASE="${TALON_DOWNLOAD_BASE:-https://github.com/$REPO/releases}"
 VERSION=""

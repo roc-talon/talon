@@ -2,7 +2,7 @@
 <#
 Talon installer for Windows. Rules: DESIGN-CLI.md 6.5 (R-S1, R-IS1 to R-IS8).
 
-    irm https://github.com/Karakatiza666/talon/releases/latest/download/install.ps1 | iex
+    irm https://github.com/roc-talon/talon/releases/latest/download/install.ps1 | iex
     & ([scriptblock]::Create((irm .../install.ps1))) -Version 0.3.1     (repair, R-S4)
 
 Downloads the prebuilt tln.exe for this machine, checks its sha256, puts it in the tool
@@ -19,7 +19,7 @@ param(
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version 2.0
 
-$Repo = if ($env:TALON_REPO) { $env:TALON_REPO } else { 'Karakatiza666/talon' }
+$Repo = if ($env:TALON_REPO) { $env:TALON_REPO } else { 'roc-talon/talon' }
 # Base URL of the release assets. Tests and mirrors set TALON_DOWNLOAD_BASE.
 $Base = if ($env:TALON_DOWNLOAD_BASE) { $env:TALON_DOWNLOAD_BASE } else { "https://github.com/$Repo/releases" }
 

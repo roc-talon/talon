@@ -65,7 +65,7 @@ R-NS12: Evidence and probes (sections 3 and 4) work the same for a release: a fa
 | R-C3 | One platform: every package that names a platform names the app platform, byte for byte | Hard |
 | R-C4 | Alias kind: a `platform` entry resolves only to a `platform` release, and a package entry resolves only to a `package` release. An `app` release is never a candidate. The kind is the first keyword of the release header (CLI 7.3, R-DI7). | Hard |
 | R-C5 | Compatibility: every hash in the closure checks on the chosen nightly (sections 3 to 5) | Hard |
-| R-C6 | Yanked releases are not chosen for a new resolution. Yank and advisory data come from the registry (Registry 5, advisories in Design 7, P3). With `direct`, GitHub has no yank: a deleted release, a draft and a prerelease are not candidates (CLI 7.3, R-DI3), and there is no advisory data. Then each command that checks yanks or advisories (`tln audit`, R-B3 in CLI 6.4) prints one note: `no yank and advisory data without a registry`. | Hard |
+| R-C6 | Yanked releases are not chosen for a new resolution. Yank and advisory data come from the registry (Registry 5, Registry 7.2, advisories in Design 7, P3). A withdrawn release (Registry 7, R-PU17) is not a candidate. With `direct`, GitHub has no yank: a deleted release, a draft and a prerelease are not candidates (CLI 7.3, R-DI3), and there is no advisory data. Then each command that checks yanks or advisories (`tln audit`, R-B3 in CLI 6.4) prints one note: `no yank and advisory data without a registry`. | Hard |
 | R-C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, R-DI10). Both also apply where Talon selects a compiler by itself (R-NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` does not hide a version or a compiler that the user names (R-NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
 | R-C8 | Two series of one package (two groups, Design 4.1) in the closure | Warning (type identity) |
 | R-C9 | R-C6, R-C7 and a snapshot never hide the value that a header entry or the `roc:` pin has now. That value stays in the domain of its variable, so a hold, the implied range (Design 4.3) and `tln update` still work, for example after `tln add X@1.2.3` of a release that is 1 day old. They hide only the other candidates. `tln audit` reports a yanked value (R-C6). | Hard |
@@ -77,13 +77,15 @@ R-EF1: Evidence is a set of facts `works(hash, nightly) = pass | fail(error dige
 | Rank | Source | Trust |
 | --- | --- | --- |
 | 1 | Local probe result (`talon/compat.db`) | Full |
-| 2 | Registry matrix, produced by the Talon CI bot (Registry 6) | Full, signed |
+| 2 | Registry matrix: `bot` rows from the Talon CI bot, and `author` rows from `tln publish` (Registry 5, R-RE3, Registry 6) | Full, signed |
 | 3 | `roc:` pin in the release header | Hint: author says it passed |
 | 4 | `.roc-version` at the release tag | Hint |
 | 5 | Release date (nightlies of the 2 weeks before it) | Search order only |
-| 6 | Reports from other users (`tln probe --share`) | Search order only |
+| 6 | Reports from other users (`tln probe --share`): the counts of `compat_hints` (Registry 5, R-RE12) | Search order only |
 
 R-EF2: Hints only order the search. Talon never writes a header on hints alone: the final tuple always gets a local whole-app check (section 5 step 6), unless the user passes `--no-check`. That check costs under 2 s. `--no-probe` does not turn it off. Only `--no-check` does (section 12).
+
+R-EF3: When two sources have a fact for one pair (hash, nightly, target), Talon uses the fact of the source with the lowest rank number. In rank 2, a `bot` row wins over an `author` row. Reason: the bot runs each hash in one environment, and its rows also make the sweeps (Registry 6, R-MX4). Talon prints a note when a `bot` row and an `author` row of one pair have different results, and `--json` gives both. A rank 6 row is a `pass` hint when `pass_count` is larger than `fail_count`, a `fail` hint when `fail_count` is larger, and no hint when they are equal.
 
 ## 4. Probes
 
@@ -250,14 +252,14 @@ epochs : List(Release), Facts -> { epochs : List(Interval), inferred : Facts }
 | # | Input or output | Value |
 | --- | --- | --- |
 | R-EP11 | `List(Release)` | The domain D: every compiler release in the compiler list (CLI 6.2), in R-NS1 order. The `nightly` switch and the `[toolchain] roc` range select candidates in D. They do not remove releases from D, so they do not change the epochs. |
-| R-EP12 | `Facts` | Real facts only: rank 1 (local `compat.db`) and rank 2 (registry matrix) of section 3. When both have a fact for one pair, rank 1 wins. Hints (ranks 3 to 6) are not inputs. They only order the search. |
+| R-EP12 | `Facts` | Real facts only: rank 1 (local `compat.db`) and rank 2 (registry matrix, `bot` and `author` rows) of section 3. When two sources have a fact for one pair, the precedence of R-EF3 selects one. Hints (ranks 3 to 6) are not inputs. They only order the search. |
 | R-EP13 | `epochs` | A partition of D into intervals of adjacent releases |
 | R-EP14 | `inferred` | Facts for pairs with no real fact. Each one is marked `inferred` and names the real fact it comes from. |
 
 | # | Rule |
 | --- | --- |
 | R-EP1 | A code result is `pass` or `fail`. A fault (`hang`, `crash`) is not a code result. Two releases are adjacent when no release of D is between them. |
-| R-EP2 | A release is swept when the registry matrix has a rank 2 fact for each hash that the registry indexed at that time. The compat bot sweeps each new nightly (Registry 6). A transition is the pair of a release and the release adjacent before it. A transition is covered when both releases are swept. |
+| R-EP2 | A release is swept when it has a row in the registry `sweeps` table (Registry 5, R-RE7 and R-RE8): the registry matrix has a `bot` row on it for each hash whose log index is at most the `upto_log_index` of that row. The closure answer gives the rows (Registry 4, R-AP17). The compat bot sweeps each new nightly (Registry 6, R-MX4). A transition is the pair of a release and the release adjacent before it. A transition is covered when both releases are swept. |
 | R-EP3 | A covered transition is a boundary when at least 2 hashes have a code result on both releases, and the two results are different. Any other covered transition is flat. |
 | R-EP4 | An epoch is a maximal interval of D in which each transition is flat. A boundary or a transition that is not covered ends an epoch. So with no matrix (registry off, or a release that the bot did not sweep), each release is an epoch of its own. |
 | R-EP5 | A fault fact marks one release bad for one hash. It is never part of a boundary, it never ends an epoch, and it never gives an inferred fact. |
@@ -279,7 +281,7 @@ R-PB7: `tln probe` runs probes and prints the facts. It writes no project file. 
 | R-PB3 | `--range` finds the range of the target in the domain D (EP rules): the maximal interval of D that contains the newest release with a real pass, in which each release has a pass, real or inferred (R-EP6). Talon probes only the candidates that the `nightly` switch and `min-release-age` allow (R-NS3, R-C7). It starts at the newest installed candidate. Each round probes 3 releases (R-PP2). An end of the range is a release with a real pass next to a release with a real fail, or an end of D. |
 | R-PB4 | Compiler downloads are optional probe downloads (R-NI4, R-DL4, R-DL6), with the cap `probe.max-toolchains` and the budget `probe.max` (R-P5). When the budget is spent, or no download is allowed, Talon prints the range that it found, marks each end that is not a real fact as `unknown`, and exits with code 12 (`budget`). |
 | R-PB5 | `tln publish` (Registry 7) sends the real facts of the released hash from `compat.db`. The release workflow runs `roc bundle`, `tln probe --range <bundle file>`, the upload of the asset, then `tln publish`. The registry stores these rows with the source `author` (Registry 5, 6). |
-| R-PB6 | `--share` sends the real facts of the target hash to `POST /v1/compat` as user hints (rank 6, section 3). It needs a registry: with `direct`, Talon stops with exit code 2. The project file has no hash, so `--share` with no argument stops with exit code 2. |
+| R-PB6 | `--share` sends the real facts of the target hash to `POST /v1/compat` as user hints (rank 6, section 3). It needs a registry: with `direct`, Talon stops with exit code 2. For a header entry on `github.com`, the privacy guard runs first (CLI 1, R-RG4). The project file has no hash, so `--share` with no argument stops with exit code 2. |
 
 ## 5. Algorithm
 
@@ -437,7 +439,7 @@ R-SP22: A hold that cannot stay follows the consent rows above. `tln install --f
 | --- | --- |
 | R-UP1 | The domain is every release that R-C6 and R-C7 allow (not yanked, older than `min-release-age`, inside the snapshot), and the header value (R-C9). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A fixed anchor (R-DI11, section 1) stays held also when the user names it. A `[toolchain] roc` range and the `nightly` switch (R-NS3) still apply: they state which compilers the team can use. |
 | R-UP2 | The goal is the same as for `update`: the newest version of each free variable, in `priority` order (section 1). So a new series of the first variable wins over newer versions of the later ones. Talon prints each variable that did not get its newest release, and why, for example `json 3.0.0 needs pf >= 0.27.0, which checks on no nightly that roc-parser 2.0.0 checks on`. |
-| R-UP3 | A new series is a new group (Design 2, 4.1). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old series, both series stay in the closure, and Talon prints warning R-C8. |
+| R-UP3 | A new series is a new group (Design 2, 4.1). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old series, both series stay in the closure, and Talon prints warning R-C8. A move to a successor repository (Registry 7.3, R-PU28) uses the same replace. |
 | R-UP4 | Moves of held variables follow section 9 (prompt R-NI3). |
 | R-UP5 | A range that does not contain the new version gets the same form at the new version: `^2.1` becomes `^3.0`, `^0.25` becomes `^0.26`, `0.25.*` becomes `0.26.*`, `2` becomes `3`. A named anchor becomes `=<new version>`. A range that contains the new version does not change. Talon adds no key and does not create the file. |
 | R-UP6 | When the nightly is free, the newest compiler release that the `nightly` switch (R-NS1, R-NS2) and `min-release-age` (R-C7) allow is a download that the command names: prompt R-NI12 (CLI 4), default yes. All other compiler downloads are optional probe downloads (R-NI4). |
@@ -476,7 +478,7 @@ A snapshot fixes which releases exist. It has two forms:
 
 The time form is the same idea as uv `exclude-newer`. It is weaker because GitHub can change a release after the fact: a maintainer can delete and publish a release again, or move a label to other assets. So a time snapshot can give another set of releases on a later day. The hash in the header still protects the build bytes.
 
-R-DT5: `tln update` prints `resolved at log:184467, 4 probes`. With no registry, it prints `resolved at 2026-10-14T09:30:00Z, 4 probes`. A human can repeat the resolve with `--snapshot log:184467` (or the time). The result is the same only if the evidence is the same. Local probe facts (rank 1 in section 3) are not shared, so a second machine can get a different tuple.
+R-DT5: `tln update` prints `resolved at log:184467, 4 probes`. The log size is the `log_size` of the closure answer, or N of `--snapshot log:N` (Registry 4, R-AP17, R-AP19). With no registry, it prints `resolved at 2026-10-14T09:30:00Z, 4 probes`. A human can repeat the resolve with `--snapshot log:184467` (or the time). The result is the same only if the evidence is the same. Local probe facts (rank 1 in section 3) are not shared, so a second machine can get a different tuple.
 
 R-DT6: CI must not resolve again. CI runs `tln install --frozen` (section 12). It verifies the header that is in the repository: it fetches the closure, checks each hash, and fails if the header does not satisfy `talon.toml`. It needs no snapshot and no evidence.
 

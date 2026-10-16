@@ -51,7 +51,7 @@ flowchart LR
 | Compat bot | GitHub Actions | Probe packages on each new nightly and fill the matrix | Run inside the registry | Registry 6 |
 | `cloudflare-workers` | Cloudflare Worker | A generic Roc platform for Workers. The registry runs on it. | Hold registry logic | Registry 8 |
 | Talon packages | Library: `tln` and the Worker | Pure Roc logic with Talon concepts: the solver, records | Do I/O | Design 6.1 |
-| Generic packages | Library: `tln` and the Worker | `roc-semver`, `roc-base58`, `roc-toml`, `roc-header`, each in its own repo | Know anything about Talon | Design 6.1 |
+| Generic packages | Library: `tln` and the Worker | `roc-semver`, `roc-base58`, `roc-toml`, `roc-app-header`, each in its own repo | Know anything about Talon | Design 6.1 |
 
 ## Left to others
 

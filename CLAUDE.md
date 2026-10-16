@@ -9,5 +9,5 @@ Talon is a package manager and compiler manager for Roc (`tln`). The spec is `DE
 - The test agent and the code agent are different agents. The code agent does not edit tests (TW18).
 - Write in ASD-STE100 Simplified Technical English. Prefer tables and diagrams.
 - `cloudflare-workers/` is a submodule with its own `PLAN.md`. TESTING.md does not cover it.
-- The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-header`) are in their own repositories, not in `packages/` (Design 6.1, R-GP1 to R-GP6). Talon uses them by release URL. Never commit a path entry to them.
+- The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-app-header`) are in their own repositories, not in `packages/` (Design 6.1, R-GP1 to R-GP7). Talon uses them by release URL. Never commit a path entry to them.
 - Prototype code goes in the repo (`research/`), never only in a temp dir. No commit or push unless the user asks.

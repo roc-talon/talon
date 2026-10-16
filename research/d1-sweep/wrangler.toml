@@ -1,0 +1,8 @@
+# Only for test.mjs: a local D1 binding through wrangler getPlatformProxy. Nothing is deployed.
+name = "d1-sweep-test"
+compatibility_date = "2026-10-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "d1-sweep-test"
+database_id = "00000000-0000-0000-0000-000000000000"

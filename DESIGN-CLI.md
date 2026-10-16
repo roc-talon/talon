@@ -21,11 +21,13 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | R-CM11 | `tln verify [--strategy highest\|lowest]` | Resolve in memory, run the probe ladder (Resolution 4) on the tuple with `--replace-dep`, and print the result. It writes no header and no `talon.toml`. Probes add evidence to `compat.db` as usual. It does not replace `roc check` (N2). Use: Resolution 8. | |
 | R-CM12 | `tln x owner/app [-- args]` | Build a Roc app and run it once. The binary stays in the cache. Rules: 6.4, R-X1 to R-X5. | `bunx` |
 | R-CM13 | `tln publish` | Register a release (Registry 7) | `bun publish` |
-| R-CM14 | `tln audit` | Yanked, advisories, scanner hook. With `direct`: header entries whose GitHub release is deleted, and the scanner hook, with a note that there is no yank and advisory data (Resolution 2, R-C6). | `bun audit` |
+| R-CM14 | `tln audit [--ignore <item>]... [--json]` | Report the closure hashes whose release is yanked, withdrawn on GitHub, or has a replaced asset, then the advisories and the scanner hook. With `direct`, or before P3, there is no yank and advisory data, and Talon prints a note (Resolution 2, R-C6). Rules: R-AU1 to R-AU12. Phase P3. | `bun audit`, `cargo audit` |
 | R-CM15 | `tln roc install/link/use/list/remove/default/update` | Compiler management. A nightly, a release, or a git ref built from source (6.6). `link --copy` copies a local build (R-LK2). `use` writes the header `roc:` pin, `default` writes the global default, `update` installs the newest compiler release that the `nightly` switch allows and moves the global default (6.6). | (uv `python`, rustup `toolchain link`) |
 | R-CM16 | `tln tool install/list/update/rebuild/remove` | Global tools: build a Roc app (a release or a git ref) and put it on `PATH` (6.4). Talon is one of them (6.5). | `bun add -g` (uv `tool`) |
 | R-CM17 | `tln cache gc/clean/list/dir` | Cache management: `gc` keeps what projects use, `clean [--all]` removes on request (6.3) | `bun pm cache` |
 | R-CM18 | `tln setup` | Install the `roc` proxy, the `PATH` line and shell completions (6.7) | |
+| R-CM21 | `tln yank <tag> [--reason <text>] [--undo]` | Yank a release of the current GitHub repository, or remove the yank with `--undo`. It runs only in a GitHub Actions `workflow_dispatch` job, and it gets the repository from `$GITHUB_REPOSITORY`. A tag with no indexed release gives exit code 2. Rules: Registry 7.2, R-YK1 to R-YK7. Phase P3. | (`cargo yank`, `npm deprecate`) |
+| R-CM22 | `tln move <old-name> [--to <new-name>] [--undo]` | Set, offer or remove the successor of a package name (Registry 7.3, R-TP14, R-AP31). It runs only in a GitHub Actions `workflow_dispatch` job. It changes no header: a user follows a successor with `tln update <alias>` (Registry R-PU28). Rules: R-MV1 to R-MV5. Phase P3. | (Packagist "abandoned, use X", `npm deprecate`) |
 
 R-CM19: Verb aliases. A long form and its other forms are the same command at every level: top level, `tool`, `roc` and `cache`. Help and error text print the long form.
 
@@ -101,6 +103,15 @@ R-RG2: The built-in default is one constant in the Talon binary, not a file. It 
 
 R-RG3: With `direct`, and for the list of nightlies, Talon calls the GitHub API (7.3, R-CV1). With no token, GitHub allows 60 requests an hour for one IP address. So Talon uses a token when it finds one, in this order: `GITHUB_TOKEN`, `GH_TOKEN`, then the output of `gh auth token` when `gh` is installed and logged in. Talon sends the token only to `api.github.com`, never to a registry or a mirror. With no token, a rate limit error (exit code 15) names these three sources.
 
+R-RG4: Privacy guard. Talon sends a `github.com` repository to a registry only after GitHub says that it is public. Before the first request that carries its name, its group, a URL of it or a hash of its releases, Talon reads `GET /repos/{owner}/{repo}` with the token rules of R-RG3. These requests are the release list (Registry 4, R-AP1, R-AP13), the closure query (R-AP16: its groups and its hashes), an ingest (R-AP9, from R-AD35 or Registry R-AP28), and `tln probe --share` of a header entry (Resolution 4, R-PB6). `?short=` (R-AD34) carries only the short name that the user typed, so it needs no check.
+
+| # | GitHub answer | Talon does |
+| --- | --- | --- |
+| R-RG5 | `private` is false | Talon keeps the answer in `talon/index/github/<owner>/<repo>/` with no end, and it does not read it again for that repository. Reason: a name that was public once is not a secret. |
+| R-RG6 | `private` is true, or 404 | Talon sends nothing to the registry, and stops with exit code 2. The message says that private packages are not supported (Design N4), and names the full name. With no token, GitHub answers 404 for a private repository, as for a repository that does not exist. So with no token, the message says "not found, or private", and names the three token sources of R-RG3. Talon never keeps this answer. Reason: the owner can make the repository public later, and the next command then reads GitHub again and goes on. |
+
+R-RG4 costs one GitHub API call for each new repository on each machine, only in a command that sends a request to a registry. A rate limit error is R-DI13 (7.3). With `--offline`, Talon sends no request, so R-RG4 does not apply. `tln install --frozen` makes no index call (R-DI1), so it does not run R-RG4.
+
 Example. It needs phase P2 (Design 7): the short name, the `log:` snapshot and the unit-probe note need the registry and unit probes.
 
 ```text
@@ -123,7 +134,7 @@ A command that uses a project works on one project file: a `.roc` file with an `
 | --- | --- | --- |
 | R-PD14 | `install` (and `add`), `remove`, `update`, `upgrade`, `outdated`, `why`, `list`, `patch`, `probe`, `verify`, `audit`, `publish`, `roc use` | Yes. Talon finds it with R-PD1 to R-PD6. |
 | R-PD15 | `init` | It creates `main.roc` in the current directory (section 5). It does not search. |
-| R-PD16 | The other `roc` subcommands, `tool`, `x`, `cache`, `setup` | No. They reject `--file`. A relative selector `@+N` or `@-N` (section 2) uses the target file of the proxy (R-PD7). |
+| R-PD16 | The other `roc` subcommands, `tool`, `x`, `cache`, `setup`, `yank`, `move` | No. They reject `--file`. A relative selector `@+N` or `@-N` (section 2) uses the target file of the proxy (R-PD7). |
 | R-PD17 | The `roc` proxy | Its target file (R-PD7). It has no Talon flags. |
 
 | # | Rule |
@@ -186,6 +197,62 @@ R-EV23: Packages in tests. Talon has no fetch map from a header URL to another h
 | --- | --- | --- |
 | R-EV24 | The header URL must keep `github.com`: group keys, lookup, R-H5 | The case pre-fills `packages/<hash>/` in its cache. Talon and roc accept it with no sidecar (Design 9 Q2, 7.2), and fetch nothing. |
 | R-EV25 | A test of the fetch path: download, hash check, a slow body, a 404 | The fixture uses a loopback URL, for example `http://127.0.0.1:<port>/x/1.0.0/<hash>.tar.zst`. Talon accepts the package URLs that roc accepts: `https://` to any host, and `http://` only to `127.0.0.1`, `::1` and `localhost` (`roc:src/unbundle/download.zig`, test in `research/roc-http-fetch/`, Design 9 Q24). A loopback URL is its own group (Design 2), so these cases do not test the identity of a `github.com` package. |
+
+### `tln audit`
+
+`tln audit` is P3 (Design 7, R-PH5). R-AU7 gives the warnings of the phases before it.
+
+R-AU1: `tln audit` checks each hash in the closure of the project file: the header entries (Design 4.2) and the deps of each package header, to the end (7.3, R-DI7). It reads the release state of each hash from the index of the command: with a registry, the closure answer (Registry 4.1, R-AP17); with `direct`, the release list of R-DI2 for each group of the closure. So in `direct` mode, `audit` also lists transitive groups, which R-DI1 does not do for a resolve. It uses the state of now, with no snapshot (Registry 7.2, R-YK5).
+
+R-AU2: A finding has one `reason`. Both modes use these values. A new `withdrawn` value of the registry (Registry 7, for example R-PU24) gets its own row in this table:
+
+| `reason` | Registry source | `direct` source | Fails (R-AU3) |
+| --- | --- | --- | --- |
+| `yanked` | `releases.yanked` (Registry 7.2, R-YK4, P3) | None (R-AU4) | Yes |
+| `release-missing` | `withdrawn` = `deleted` or `unpublished` (Registry 7, R-PU17) | The tag is not in the release list. `direct` cannot tell a deleted release from a draft. | No |
+| `prerelease` | `withdrawn` = `prereleased` or `edited` (R-PU17) | `prerelease` is true | No |
+| `asset-replaced` | `withdrawn` = `asset-replaced` (Registry 7, R-PU20) | The tag has another package asset (7.3, R-DI15) | Yes |
+| `repo-missing` | `withdrawn` = `repo-missing`, and the `repos` state `missing` (Registry R-PU24, R-TP11) | The release list call (R-DI2) answers 404: the repository is deleted, or it is private (Design N4) | Yes |
+| `moved` | The `repos` state `moved`, with the successor of R-AP32 (Registry R-TP14) | The release list answer comes from another name, because GitHub redirects a renamed repository. A move to a new repository (R-AP31) has no `direct` source. | No |
+
+| # | Rule |
+| --- | --- |
+| R-AU3 | Exit code 21 (`findings`, section 3) when a finding that is not ignored (R-AU9) has "Yes" in the column "Fails" of R-AU2. Else exit code 0, and the other findings print as warnings. Reasons: a yank is the decision of the maintainer. A replaced asset breaks a build on a new machine (7.1, R-FE6). A missing repository also breaks it: the asset of a deleted repository is gone, and the asset of a private repository needs a token (Design N4). A missing release still downloads until GitHub removes the asset, a prerelease is a label, not a defect, and a moved name still has the same bytes at its old URL. |
+| R-AU4 | With `direct`, or with a registry before P3, Talon also prints the note of Resolution 2, R-C6. The note is not a finding. |
+| R-AU5 | With `--json`, a run with exit code 21 has `ok` false, `error.kind` `findings`, and the report in `error.details`, in the same form as `data` of a run with exit code 0 (R-J4, R-J5). |
+| R-AU6 | `tln install --frozen` (Resolution 12, R-LF1) makes no index call (R-DI1), so it does not see findings. A CI job runs `tln audit` as its own step (section 5, R-IN6). A download 404 of a URL in the closure (7.1, R-FE6) gives a message that names `tln audit`. |
+| R-AU7 | Before P3, a command that resolves prints one warning for each closure hash whose release state it already has and that has a reason of R-AU2: with a registry from the closure answer (R-AP17), with `direct` from the release lists that it read (R-DI1). It sends no extra request, and the warning does not change the exit code. The warning gives the reason and the fix of R-AU8. |
+| R-AU8 | The fix text. For a header entry: `tln update <alias>`. For a transitive entry: update the package that needs it (`tln why <name>`), or use `[overrides]` (Resolution 6). For `asset-replaced`, Talon also asks the author to release a new version. For `moved`, and for each other reason when the name has a successor: `tln update <alias>`, which follows the successor (Registry R-PU28). For `repo-missing` with no successor: replace the package (`tln remove <alias>`, then `tln add` of another package), or accept the finding with an ignore item (R-AU9). |
+
+R-AU9: Ignore a finding. Two sources, joined: the key `ignore` of the table `[audit]` in `talon.toml` (a list, shared by the team, Design 4.3), and the flag `--ignore <item>`, which can occur more than once (one run). An item is `<full name>@<version>:<reason>`, for example `roc-lang/json@2.1.0:yanked`. The full name is the form of R-SC7 (section 2). The reason is required, so an ignore covers one finding, and a new finding of the same release with another reason still counts. This is the model of `bun audit --ignore` and of `cargo audit --ignore`.
+
+| # | Rule |
+| --- | --- |
+| R-AU10 | An ignored finding prints as a note (`ignored: <item>`), and does not count for R-AU3. In `--json`, the finding has `ignored` true. |
+| R-AU11 | An item that matches no finding prints a note `unused ignore: <item>`, so that a team sees a stale item. It does not change the exit code. |
+| R-AU12 | An item that does not parse: exit code 19 in `talon.toml` (`input`, section 3), exit code 2 for the flag. In a workspace, `[audit]` is a table of the root `talon.toml` only (Design 4.4, R-WS5). An advisory (P3) gets its own item form when the design adds advisories. |
+| R-AU13 | One hash gives at most one finding. When more than one reason of R-AU2 applies, the finding has the first reason in this order: `yanked`, `asset-replaced`, `repo-missing`, `release-missing`, `prerelease`, `moved`. So a reason that fails comes before a reason that does not fail. The finding also has the successor when its name has one, so that the fix of R-AU8 can name it. |
+| R-AU14 | For the reason `moved`, the R-AU7 warning of a resolve is the note of Registry R-PU28 (`json: moved to acme/roc-json. Run: tln update json`). Talon prints one line for each entry, not a second warning. `repo-missing` is P2 (Registry R-PU24), so its R-AU7 warning starts in P2. `moved` starts in P2 for a rename (R-TP10), and in P3 for a move (R-AP31). |
+| R-AU15 | In a workspace (Design 4.4), `tln audit` works on the workspace (1, R-PD5): it checks the closure of each member. One hash that two members use gives one finding, with the members in `via`. The `[audit]` table is in the root `talon.toml` only (R-AU12, Design 4.4 R-WS5), and R-AU11 counts an item as unused only when it matches no finding of any member. Reason: an ignore item names a release, not a member, so it is one decision for the workspace, as `[resolution]` is. |
+
+### `tln move`
+
+`tln move` is P3 (Design 7, R-PH5). It is the client of the move route (Registry 7.3, R-AP31, R-TP15). It runs in a `workflow_dispatch` job, because a move is a manual act, as a yank is (R-CM21).
+
+R-MV1: `<old-name>` and `<new-name>` are full names of `github.com` (section 2, R-SC7). The repository of the job (`$GITHUB_REPOSITORY`) selects the request:
+
+| Job repository | Flags | Request | Result (Registry R-TP15) |
+| --- | --- | --- | --- |
+| Not `<old-name>` | No `--to`, or `--to` equal to `$GITHUB_REPOSITORY` | `PUT /v1/packages/<old-name>/successor` with `{"name": "$GITHUB_REPOSITORY"}` | The move is done when the owner id of the job repository is the owner id of the old name, or when the old name has an offer that names the job repository. Else 403. |
+| `<old-name>` | `--to <new-name>` (required) | `PUT /v1/packages/<old-name>/successor` with `{"name": "<new-name>"}` | An offer (202). The owner of `<new-name>` accepts it with `tln move <old-name>` in a job of `<new-name>`. |
+| `<old-name>` or the successor | `--undo` | `DELETE /v1/packages/<old-name>/successor` | The successor is removed |
+
+| # | Rule |
+| --- | --- |
+| R-MV2 | Talon checks these before it sends a request. Each failed check stops with exit code 2 (section 3, R-EC2), and the message names the check: no GitHub Actions OIDC variables (Registry R-TP2); `GITHUB_EVENT_NAME` is not `workflow_dispatch` (the registry refuses other events, R-TP15); `GITHUB_SERVER_URL` is not `https://github.com`; the registry is `direct` (section 1); a name is not a full `github.com` name; `--to` with `--undo`; no `--to` in a job of `<old-name>`; `<old-name>` is equal to the successor; the job repository is neither `<old-name>` nor the successor. |
+| R-MV3 | The privacy guard (R-RG6) checks the successor only. It does not check `<old-name>`: that name is already in the index, and its repository is often deleted (state `missing`, Registry R-TP11), so the guard would stop the main case of a move. The registry answers 404 for an old name that it does not index. |
+| R-MV4 | The token is the token of R-TP2 (Registry 7.1), for the job repository. A refused request gives exit code 20 (`rejected`, R-E6). The message gives the problem `detail`: for 422 `successor-mismatch`, the check that failed (Registry R-AP31: index, kind, `exposes`, chain). After a 429, a 5xx or no answer, Talon sends the request again as in Registry R-AP34, because R-AP31 is idempotent. |
+| R-MV5 | `tln move` uses no project (R-PD16) and writes no file. It changes no header. A user sees the successor in `tln outdated`, and follows it with `tln update <alias>` (Registry R-PU28). The output is in the catalog (section 3, a proposal, R-OUT2). |
 
 ## 2. References in the CLI
 
@@ -281,6 +348,23 @@ R-AD1: `tln install X`, `tln i X` and `tln add X` are one command (section 1). T
 
 R-AD7: `tln tool install` and `tln x` do not search the registry for a short name. A short name must match an installed tool or an `x` cache entry. For a new app, the user types the full name. Reason: `tln x` runs the app at once, with no prompt (R-X4). A short-name match in the registry could run a different app with a similar name (typosquat). With no local match, Talon stops with exit code 2 and lists the registry matches as full names.
 
+R-AD34: With a registry, the match set of a short name in R-AD3 to R-AD5, R-AD7 and Design 4.3 R-I8 is the `matches` list of `GET /v1/packages?short=<name>` (Registry 4.3, R-SN1 to R-SN4). One request holds all short names of one command. Talon never selects a package from the ranked results of `?q=` (R-SN5). With `--snapshot log:N`, Talon hides each match above N (R-SN4).
+
+R-AD35: With a registry, a full name `owner/repo` that `GET /v1/packages/{owner}/{repo}/releases` (Registry 4, R-AP1) answers with 404 is a repository that the registry did not index yet. Talon runs the privacy guard of section 1 (R-RG4) before it sends that first request. `tln add` (R-AD2), `tln tool install` and `tln x` (R-SC3, R-SC4) then ask the registry to index its releases, and ask again:
+
+| Step | Name | Talon does |
+| --- | --- | --- |
+| 1 | Read GitHub | The release list of R-DI2, with the token rules of section 1 (R-RG3). The guard (R-RG4) already read `GET /repos/{owner}/{repo}`. Talon selects the candidates with R-DI3 to R-DI5, and with the selector of the command (section 2) when it has one. |
+| 2 | Stop cases | A 404 or a private repository: the guard stopped the command before this step (R-RG6, exit code 2, private packages are not supported, Design N4). No release is a candidate: exit code 2, as R-T10 (6.4). |
+| 3 | Ingest | For each candidate, newest first by `published_at`, `POST /v1/releases` with no token and the body `{url}` (Registry 4, R-AP9). Up to 4 requests run at the same time (first guess). A 200 or 201 answer indexed the release. A 409 or 422 answer: Talon skips that release and prints a warning that names it and the error `type`. A 429 answer: Talon stops with exit code 15, as R-AP25. The releases that the registry indexed stay indexed. |
+| 4 | Ask again | `GET /v1/packages/{owner}/{repo}/releases` again, with no local copy. Then the command goes on as for a repository that the registry knows. When the answer is still 404 (each ingest answered 202, a queue of Q30), Talon stops with exit code 15, and the message says that the registry indexes the repository and to run the command again. |
+
+R-AD36: With `--snapshot log:N`, Talon sends no ingest: a new release has a log index greater than N, so the snapshot hides it (R-AP19). The command stops with exit code 2, and the message says that the name has no release in the log at size N.
+
+R-AD37: With `--offline`, Talon sends no request, and R-DI12 applies (7.3).
+
+Reason for the ingest: one command uses one index (R-DI14), so `--snapshot log:N` (Resolution 11, R-DT3), the matrix and the compat bot (Registry 6, R-MX7) cover the new releases. The next user of the name gets the index with no GitHub calls. Go modules have the same model: the module proxy fetches a module that it does not have on the first request.
+
 ### Aliases in `tln add`
 
 R-AD8: The default alias comes from the release name. Talon may shorten the name only to its complete unqualified name: the repo name, without the owner. The only exception: Talon drops a leading `roc-`. Talon does not drop other prefixes or suffixes, does not abbreviate and does not guess.
@@ -355,17 +439,19 @@ R-E5: Exit codes and the `--json` schema are part of the public interface. A cha
 | --- | --- | --- | --- | --- |
 | R-EC0 | 0 | `ok` | The command did its work | |
 | R-EC1 | 1 | `internal` | A Talon fault, or a compiler fault with no result | R-P7 (Resolution 4) |
-| R-EC2 | 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no selected compiler (Resolution 13), no project file or no single current member (R-PD4, R-PD5, R-PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, an alias that names two groups), `tln remove` of the platform, `tln patch` of the platform (Resolution 7, R-PA8), `--as` with 2 or more names (section 2), `--no-check` with a free nightly (Resolution 10, R-UP9) or in `tln roc use` (R-U4), `tln probe --share` with no registry or with no hash (Resolution 4, R-PB6), or `tln tool install` and `tln x` of a repo with no release that is a candidate (6.4, R-T10) | Sections 1, 2 and 4, Design 4.4, Resolution 4, 10, 11 and 13, 6.6 |
+| R-EC2 | 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no selected compiler (Resolution 13), no project file or no single current member (R-PD4, R-PD5, R-PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, an alias that names two groups), `tln remove` of the platform, `tln patch` of the platform (Resolution 7, R-PA8), `--as` with 2 or more names (section 2), `--no-check` with a free nightly (Resolution 10, R-UP9) or in `tln roc use` (R-U4), `tln probe --share` with no registry or with no hash (Resolution 4, R-PB6), `tln publish` or `tln yank` with no registry or with no GitHub Actions OIDC token (Registry 4, R-AP27, Registry 7.2, R-YK3), `tln yank` of a tag with no indexed release (R-CM21), a check of `tln move` before it sends (R-MV2), a `github.com` repository that GitHub does not know or that is private, before a registry request (R-RG6), or `tln add`, `tln tool install` and `tln x` of a repo with no release that is a candidate (6.4, R-T10, R-AD35) | Sections 1, 2 and 4, Design 4.4, Resolution 4, 10, 11 and 13, 6.6 |
 | R-EC10 | 10 | `no_tuple` | No tuple works. Talon prints the explanation. | Resolution 5 |
 | R-EC11 | 11 | `app_error` | A new error in an app file, or `tln remove` of an alias that the app imports. Talon stops and reports. | Resolution 4 ladder step 2, section 2 |
 | R-EC12 | 12 | `budget` | A probe budget is spent before a tuple was found | Resolution 4, R-P5 |
 | R-EC13 | 13 | `consent` | A required prompt (section 4) has no answer: Talon is in non-interactive mode, and there is no `--yes` and no flag that gives the answer | section 4 |
 | R-EC14 | 14 | `frozen` | The header or a patch does not match `talon.toml`: `--frozen` found a mismatch or a needed resolve, or the proxy found a stale patch | Resolution 12, R-PA6 |
-| R-EC15 | 15 | `network` | A registry, GitHub or download error | 7.1, 7.3 |
+| R-EC15 | 15 | `network` | A registry, GitHub or download error that a later run can fix (R-E6 for the registry) | 7.1, 7.3, R-E6 |
 | R-EC16 | 16 | `integrity` | A hash or checksum does not match | 7.1, 6.2 R-CV4 and R-CV6, Design 8 |
 | R-EC17 | 17 | `conflict` | Another process changed or uses what the command must change: a project file (the header, `talon.toml`) changed while the command ran (R-CC7), or a compiler to remove runs on Windows (R-CC10). Talon wrote nothing. Run the command again. | 7.4, R-CC7, R-CC10 |
 | R-EC18 | 18 | `environment` | A program that Talon needs is not on `PATH`: `curl` or `wget`, `tar`, `xz` for a Zig archive, `sh` on Unix, or `powershell` on Windows (Design 6.2, R-HF11). The message names the program. | Design 6.2, 7.5 |
 | R-EC19 | 19 | `input` | A file that Talon reads is not valid: a TOML syntax error, or a known key with a value of the wrong type or form, in `talon.toml` or `config.toml` (for example a range that does not parse); a project header that does not parse; a table in a workspace `talon.toml` that Design 4.4 R-WS5 does not allow; a Talon file with a newer format or with bad content. The message names the file, and the line when there is one. | 6.1, R-TF1 to R-TF6, Design 4.4 |
+| R-EC20 | 20 | `rejected` | The registry refused a write, and the same request gets the same answer: a token claim, a repository binding, a label with another hash, a release that is not a candidate, or a hash that the registry does not index. Fix the release or the workflow, then run the command again. The message gives the problem `type` and `detail`. | R-E6, Registry 4.2, R-AP21 |
+| R-EC21 | 21 | `findings` | `tln audit` found a finding that fails (R-AU3): a yanked release, or a release whose asset was replaced | R-AU3 |
 
 | Rule | Text |
 | --- | --- |
@@ -373,6 +459,15 @@ R-E5: Exit codes and the `--json` schema are part of the public interface. A cha
 | R-E2 | A command that fails for two reasons exits with the lower code in the table above, except `ok`. |
 | R-E3 | `--quiet` and `--json` do not change an exit code. |
 | R-E4 | The exit code alone cannot tell a Talon failure in R-E1 from a child failure with the same code (for example 13). So when Talon fails before or after the child runs, its last line on stderr is `tln: error[<kind>]: <message>`. A script that must tell them apart reads that line. |
+| R-E6 | Talon maps an answer of the registry (Registry 4.2, R-AP21) to an exit code with the table below, when no other rule handles that case (for example R-AD35 for ingests, Registry R-AP28). Reason: a CI release job must tell "fix the release" (20) from "try again later" (15). |
+
+R-E6 mapping:
+
+| Answer | Exit code |
+| --- | --- |
+| 400 `bad-request`, 415 `unsupported-media-type` | 1 (`internal`): a Talon fault or a version skew. The message names the registry URL and the Talon version. |
+| 401, 403, 404, 409 or 422 to a write (`POST`, `PUT`, `DELETE`) | 20 (`rejected`) |
+| 429, a 5xx answer, no answer, or an answer that is not problem details (for example a URL that is not a registry), and each other case | 15 (`network`) |
 
 The `--json` contract:
 
@@ -384,6 +479,7 @@ The `--json` contract:
 | R-J4 | `data` is a command object when `ok` is true, and `null` when `ok` is false. |
 | R-J5 | `error` is `null` when `ok` is true. Otherwise it has `kind` (a name from the table above), `code` (its exit code) and `message`. It may have `details`. |
 | R-J6 | A new field in `data` does not change `schema`. A removed field, a renamed field or a changed meaning gives a new `schema` number. |
+| R-J7 | For an error answer of the registry (R-E6), `error.details` has `status` (the HTTP status) and `type` (the problem type of Registry R-AP21, for example `/errors/label-conflict`). A program reads `details.type`, not the message. |
 
 Example, for `tln add parser@2.0.0` (data fields are shortened). Phase P2, as the example in section 1:
 
@@ -433,6 +529,40 @@ Output catalog. One row for each command, or each case with its own `data`. A sl
 | `install` with names (and `add`) | `snapshot`, `probes`, `downloads`, `added[]` (`alias`, `name`, `version`). The example above shortens the list. | Example in section 1 | Partial: the first slice of `add` completes it |
 | `upgrade` | Not yet | Example in Resolution 10 | Partial |
 | A resolve with no tuple (exit 10) | `error.details`: not yet | Example in Resolution 5 | Partial |
+| `audit` (R-CM14) | `index` (`registry` or `direct`), `checked` (the count of hashes), `notes[]` (for example `no-yank-data`, `unused-ignore`), `findings[]`: `name`, `group`, `version`, `hash`, `alias` (`null` for a transitive entry), `via` (the header aliases that need it, `[]` for a header entry), `reason` (R-AU2), `fails` (R-AU3), `ignored` (R-AU10), `since` (a time, or `null`), `yank` (`{reason, by}`, or `null`), `new_hash` (the new asset hash, or `null` when the index does not know it), `successor` (a full name, or `null`, R-AU13), `fix` (R-AU8). With exit code 21, the same object is in `error.details` (R-AU5). | Below the table | Proposal (R-OUT2), P3 |
+| A registry write that the registry refused (exit 20) | `error.details`: `status`, `type` (R-J7) | `tln: error[rejected]: <detail> (<type>). <what to fix>` | Proposal (R-OUT2) |
+| `move` (R-CM22) | `name` (the old name), `result` (`moved`, `offered`, `removed` or `unchanged`), `successor` (a full name, or `null`), `offer` (a full name, or `null`), `state` (the `repos` state, Registry R-TP11) | `moved: <old-name> to <successor>. Users see it in tln outdated, and follow it with tln update <alias>.` For an offer: `offered: <old-name> to <new-name>. To accept, run tln move <old-name> in a workflow_dispatch job of <new-name>.` For `--undo`: `removed: the successor of <old-name>` | Proposal (R-OUT2), P3 |
+| `yank` (R-CM21) | `name`, `tag`, `version`, `log_index`, `yanked` (true or false), `reason` (or `null`), `changed` (false when the release was already in that state, Registry R-YK1) | `yanked owner/repo 1.2.0 (tag 1.2.0): <reason>`, or `unyanked owner/repo 1.2.0 (tag 1.2.0)` | Proposal (R-OUT2), P3 |
+
+Human text of `tln audit` (a proposal, R-OUT2, P3):
+
+```text
+audit: 14 packages checked (registry)
+yanked          json 2.1.0     roc-lang/json                   "parse bug, use 2.1.1"                         header: json
+asset replaced  parser 1.0.2   lukewilliamboswell/roc-parser   GitHub has 9fK3..., the header has FrnJ4R...   via json
+repo missing    csv 1.1.0      someone/roc-csv                 the repository is deleted or private           header: csv
+warning: release missing  util 0.3.0  someone/roc-util  header: util
+warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml
+ignored: someone/roc-old@1.0.0:yanked
+3 findings, 2 warnings, 1 ignored.
+fix: tln update json. parser: update json (tln why parser), or use [overrides]. csv: replace the package, or ignore it. xml: tln update xml.
+```
+
+With `direct`, the last line is `note: no yank and advisory data without a registry` (R-AU4).
+
+Warning of a resolve before P3 (R-AU7), and of the R-DI15 case (a proposal, R-OUT2):
+
+```text
+warning: roc-lang/json 2.1.0 (tag 2.1.0) has a new asset 9fK3... on GitHub. The header has FrnJ4R.... Talon does not use the new asset. Ask the author to release a new version.
+```
+
+Error of a refused registry write (exit code 20, R-E6, a proposal, R-OUT2):
+
+```text
+tln: error[rejected]: the registry has roc-lang/json 2.1.0 with another hash (/errors/label-conflict). The tag was released again. Release a new version.
+tln: error[rejected]: token claim ref is refs/heads/main, the asset URL has the tag 2.1.0 (/errors/forbidden). Run tln publish in a job for the tag.
+tln: error[network]: the registry answered 502 (/errors/upstream) 4 times. Try again later.
+```
 
 ## 4. Prompts and non-interactive mode
 
@@ -514,7 +644,7 @@ Rules for a new prompt:
 | R-IN3 | Downloads | The consent rules R-DL1 to R-DL6. The newest nightly is a download that the command names (prompt R-NI12). |
 | R-IN4 | Pin | The nightly goes in the `roc:` entry of the header. Talon writes no `.roc-version` (Resolution 13). |
 | R-IN5 | `talon.toml` | Not created (G2) |
-| R-IN6 | CI file | `.github/workflows/ci.yml` for GitHub Actions, on `ubuntu-latest`. Steps: (1) install Talon with `curl -fsSL <releases>/download/v<version>/install.sh \| sh -s -- --yes --version <version>` (6.5), where `<version>` is the version of the `tln` that ran `init`. So a CI job does not take a new Talon release before a person changes this line: R-T9 does not apply to the install scripts. `tln setup` finds `GITHUB_PATH` and adds the bin dir there (R-ST4), so the later steps find `tln` and the `roc` launcher. (2) `tln install --frozen`. (3) `roc check`, then `roc test`. The job sets `TALON_AUTO_INSTALL=yes` (required downloads only, R-DL5). `--ci none` writes no CI file. |
+| R-IN6 | CI file | `.github/workflows/ci.yml` for GitHub Actions, on `ubuntu-latest`. Steps: (1) install Talon with `curl -fsSL <releases>/download/v<version>/install.sh \| sh -s -- --yes --version <version>` (6.5), where `<version>` is the version of the `tln` that ran `init`. So a CI job does not take a new Talon release before a person changes this line: R-T9 does not apply to the install scripts. `tln setup` finds `GITHUB_PATH` and adds the bin dir there (R-ST4), so the later steps find `tln` and the `roc` launcher. (2) `tln install --frozen`. (3) `roc check`, then `roc test`. From P3, (4) `tln audit` (section 1, R-AU1). A finding that fails (R-AU3, exit code 21) fails the job, and `[audit] ignore` (R-AU9) is the way to accept one. Reason: `--frozen` sees no yank (R-AU6), and the job is the place where a team sees a yank of a dependency. The job sets `TALON_AUTO_INSTALL=yes` (required downloads only, R-DL5). `--ci none` writes no CI file. |
 | R-IN7 | Existing files | Talon never overwrites a file. If `main.roc` exists, it stops with exit code 2. |
 
 ## 6. Toolchain manager
@@ -759,7 +889,7 @@ Option 2, inside Talon:
 | R-T9 | `min-release-age` (Resolution 2, R-C7) applies to the release that `tln tool install`, `tln x` and `tln tool update` select: with no selector, `@latest`, a range or a series. `tln tool update talon` is one of them (6.5, R-S2). An exact version is a release that the user names: Talon installs it and prints its age. The install scripts make no API call, so they do not know the release time and do not apply it: `install.sh` with no `--version` installs the newest release. | A compromised maintainer account can push a release. The age gives others time to find it (Design 8). |
 | R-T10 | The source of a release is its app bundle: the one `<hash>.tar.zst` asset (7.3, R-DI4) whose header has the kind `app` (R-DI7). Talon checks the hash and extracts it as a package (7.1). A release with no app bundle is not a candidate. When no release of the repo is a candidate (the repo has no release, or no release has an app bundle), `tln tool install` and `tln x` stop with exit code 2. The error names `--git owner/app@<tag>` with the newest release tag, or `--git owner/app@<default branch>` when the repo has no release. Talon does not start a source build by itself (section 2, selector rule 3). A git ref uses the source archive (6.6, R-R3). | The same form as `roc install <name> <bundle URL>` and `roc run <bundle URL>` (Design 2). The hash fixes the source, as for a package. |
 
-R-T22: Prebuilt binaries: a release can attach a binary for each target, as `cargo-binstall` expects. Then an install needs no compiler release, and the source build is the fallback. P1 builds this path for Talon itself (6.5). In P2 the registry lists prebuilt binaries for other tools too.
+R-T22: Prebuilt binaries: a release can attach a binary for each target, as `cargo-binstall` expects. Then an install needs no compiler release, and the source build is the fallback. P1 builds this path for Talon itself (6.5). Prebuilt binaries of other tools are P3 (Design 7, Q38): Talon uses one only when it has a GitHub artifact attestation from a workflow of the same repository at the release tag. Before P3, `tln tool install` builds other tools from source.
 
 Tools from a git ref (section 2):
 
@@ -841,7 +971,7 @@ repair:         curl -fsSL <releases>/latest/download/install.sh | sh -s -- --ve
                 & ([scriptblock]::Create((irm <releases>/latest/download/install.ps1))) -Version 0.3.1
 ```
 
-`<releases>` is `https://github.com/<owner>/talon/releases`. The scripts are in `install/` (Design 6.3), and `install/test.sh` tests them against a fake release. Their structure follows the rocup installers (Design 3).
+`<releases>` is `https://github.com/roc-talon/talon/releases`. The scripts are in `install/` (Design 6.3), and `install/test.sh` tests them against a fake release. Their structure follows the rocup installers (Design 3).
 
 | # | Rule | Reason |
 | --- | --- | --- |
@@ -1028,7 +1158,8 @@ Bin dir entries and launchers. One form on Linux, macOS and Windows, so one code
 | R-FE3 | Atomic | Same protocol as roc: the temp dir is `packages/<hash>.<16hex>.tmp/`, and Talon renames its `<hash>/` dir to `packages/<hash>/` (`package_resolution.zig:2188-2306`). If the rename loses to roc or to another `tln`, Talon drops its copy. No lock is needed (7.4, R-CC11). |
 | R-FE4 | Compiler for `roc unbundle` | The format of a package archive does not depend on the nightly. So Talon uses the selected compiler (Resolution 13) when it is installed, else the newest installed compiler, else the `roc` on `PATH` (rank 7). With none, the selected compiler is a required download (R-DL2). |
 | R-FE5 | Sidecar | Talon does not write `<hash>.deps.json`. roc rebuilds it from `main.roc` on first use. |
-| R-FE6 | Mirrors | On a 404, Talon tries mirrors. The hash proves the bytes. The header URL does not change (R-H5). The registry gives the mirror list, from P3 (Design 7). Before P3, and with `direct`, the list is empty, and a 404 gives exit code 15. There is no user setting for mirrors. |
+| R-FE6 | Mirrors | On a 404, Talon tries mirrors. The hash proves the bytes. The header URL does not change (R-H5). The registry gives the mirror list, from P3 (Design 7). Before P3, and with `direct`, the list is empty, and a 404 gives exit code 15. There is no user setting for mirrors. The message: R-FE10. |
+| R-FE10 | 404 message | When a closure URL gives 404 and no mirror has it (R-FE6), the message names the package, the version and the URL. When the command already has the release state of that hash (the closure answer, Registry R-AP17, or the release lists of 7.3), and that state has a reason of R-AU2 (`asset-replaced`, `repo-missing`, `release-missing`), the message gives the reason and its fix (R-AU8). Else it names `tln audit` (R-AU6). `tln install --frozen` makes no index call (R-DI1), so its message always names `tln audit`. Talon sends no extra request for the message. The exit code stays 15. Text (a proposal, R-OUT2): `tln: error[network]: download of roc-lang/json 2.1.0 failed: 404 (<url>). The registry says: the asset was replaced. Ask the author to release a new version, then run tln update json.` With no state: `tln: error[network]: download of roc-lang/json 2.1.0 failed: 404 (<url>). Run tln audit to see why.` |
 | R-FE7 | Offline | `--offline` uses the cache only. |
 | R-FE8 | URL schemes | Talon accepts the package URLs that roc accepts: `https://` to any host, and `http://` to loopback only (`127.0.0.1`, `::1`, `localhost`). Measured: `research/roc-http-fetch/`. |
 
@@ -1038,7 +1169,7 @@ R-FE9: Option B from draft 1 is now confirmed in the source: when `packages/<has
 
 ### 7.3 Index with no registry (`direct`)
 
-R-DI14: With `direct` (section 1, registry precedence), GitHub Releases are the index. Talon makes the same candidate facts as a registry record (Registry 5): version, group, hash, URL, kind, deps, `roc:` pin, `published_at`. The registry uses R-DI3 to R-DI5 when it indexes a release (Registry 7), so both modes see the same candidates.
+R-DI14: With `direct` (section 1, registry precedence), GitHub Releases are the index. Talon makes the same candidate facts as a registry record (Registry 5): version, group, hash, URL, kind, deps, `roc:` pin, `published_at`. The registry uses R-DI3 to R-DI5 when it indexes a release (Registry 7), so both modes see the same candidates. There is one exception: a tag that is released again with a new asset hash (R-DI15).
 
 ```text
 group to resolve ──▶ list releases (R-DI2, cached with ETag)
@@ -1058,7 +1189,7 @@ group to resolve ──▶ list releases (R-DI2, cached with ETag)
 | # | Rule |
 | --- | --- |
 | R-DI1 | Talon lists releases only for a group that it must resolve or show: a free direct dep, the platform, an `[overrides]` group (Resolution 6), the group of `tln add`, and the rows of `tln outdated`. A transitive group needs no list, because package headers set its version (MVS, Design 2). A command that resolves nothing (`tln install --frozen`, the `roc` proxy) makes no index call. |
-| R-DI2 | The list call is `GET https://api.github.com/repos/<owner>/<repo>/releases?per_page=100`. `TALON_GITHUB_API` replaces the base `https://api.github.com` when it is set (section 1). Talon follows the `Link: rel="next"` header to the last page. It keeps each page and its `ETag` in `talon/index/github/<owner>/<repo>/` (6.1). A page younger than 60 s is used with no request, as `GET /v1/pkg` (Registry 4). For an older page, Talon sends `If-None-Match`. A `304` answer keeps the page. GitHub does not count a `304` answer against the rate limit when the request has a token. |
+| R-DI2 | The list call is `GET https://api.github.com/repos/<owner>/<repo>/releases?per_page=100`. `TALON_GITHUB_API` replaces the base `https://api.github.com` when it is set (section 1). Talon follows the `Link: rel="next"` header to the last page. It keeps each page and its `ETag` in `talon/index/github/<owner>/<repo>/` (6.1). A page younger than 60 s is used with no request, as `GET /v1/packages/{owner}/{repo}/releases` (Registry 4, R-AP1, R-AP24). For an older page, Talon sends `If-None-Match`. A `304` answer keeps the page. GitHub does not count a `304` answer against the rate limit when the request has a token. |
 | R-DI3 | Only a published release is a candidate. Talon skips a draft and a release that GitHub marks `prerelease`. A deleted release is not in the list, so it is not a candidate (R-C6). |
 | R-DI4 | The package asset is the one asset with the name `<hash>.tar.zst`, where `<hash>` is the base58 form of 32 bytes (Design 2). Other assets are not packages, for example `docs.tar.gz` and `<hash>.tar.zst.intoto.jsonl`. A release with no such asset is not a candidate. A release with 2 or more is not a candidate, because roc rejects one label with two hashes (Design 2, "Conflicting Package Contents"). Talon prints a warning that names the release. |
 | R-DI5 | The candidate URL is `https://github.com/<owner>/<repo>/releases/download/<tag>/<hash>.tar.zst`. Talon gets the version and the group from this URL with the roc rule (Design 2): the one `X.Y.Z` run in the URL. A URL with no such run, with two runs, or with `0.0.0` is not a candidate (R-H3). The tag text around the run is part of the group. So the tags `v1.2.0` and `1.2.0` give two groups, and the tag `0.26.0-rc1` is not in the group of `0.26.0`. |
@@ -1067,9 +1198,10 @@ group to resolve ──▶ list releases (R-DI2, cached with ETag)
 | R-DI8 | The `.roc-version` hint (Resolution 3, rank 4) comes from `https://raw.githubusercontent.com/<owner>/<repo>/<tag>/.roc-version`, only when the solver needs a hint for that candidate. A `404` answer means no hint. |
 | R-DI9 | The solver asks for candidates in the order of the strategy: newest first for `highest`, oldest first for `lowest`. So a resolve usually downloads one or two archives for each free variable. Archive and `.roc-version` downloads do not go to `api.github.com`, so they do not use the API rate limit, and Talon sends no token with them (section 1). |
 | R-DI10 | The release time is the GitHub `published_at` of the release. `min-release-age` and `--snapshot <time>` use it (R-C7, Resolution 11). |
-| R-DI11 | A URL whose host is not `github.com` has no index in `direct` mode. The entry acts as an anchor at its header value: its domain is that one value, and no command frees it. Talon still fetches it, reads its deps (R-DI7) and probes it. `tln update`, `tln upgrade` and `tln outdated` print `fixed: <host> has no index without a registry`. `tln add` of a name on such a host stops with exit code 2 and names `--registry`. With a registry, the registry index gives the candidates (Registry 7, `POST /v1/ingest`). |
+| R-DI11 | A URL whose host is not `github.com` has no index in `direct` mode. The entry acts as an anchor at its header value: its domain is that one value, and no command frees it. Talon still fetches it, reads its deps (R-DI7) and probes it. `tln update`, `tln upgrade` and `tln outdated` print `fixed: <host> has no index without a registry`. `tln add` of a name on such a host stops with exit code 2 and names `--registry`. With a registry, the registry index gives the candidates (Registry 4, R-AP13). An ingest adds a release of such a host to the index (Registry 4, R-AP9, Registry 7). |
 | R-DI12 | With `--offline`, Talon sends no request. It uses the cached pages and prints `index: cached at <time>` once. A candidate whose archive is not in `packages/` is skipped. A group with no cached page acts as in R-DI11. A new group with no cached page (`tln add`) fails with exit code 15. Without `--offline`, a network error stops the command with exit code 15, and the message names `--offline`. |
 | R-DI13 | When GitHub answers with a rate limit error, Talon stops with exit code 15 and writes nothing. The message gives the reset time and the three token sources (section 1). |
+| R-DI15 | A tag that is released again with a new asset hash. When a candidate has the label (group and version) of a URL that Talon already knows with another hash, the candidate is not a candidate. Talon knows a URL from a header entry (Design 4.2), and from the deps of each package header in the closure that it has read (R-DI7). Talon prints a warning that names the release and both hashes, as for R-DI4. The header value keeps its old hash (Resolution 2, R-C9). Its download fails with a 404 when the old asset is not in `packages/` (7.1, R-FE6). With no such URL, the new hash is a candidate, and here `direct` mode and the registry differ (R-DI14, Registry 7, R-PU19 and R-PU20). Reason: `direct` mode has no log, and Talon keeps no second copy of index facts (R-DI7). |
 
 Cost of one command in `direct` mode:
 

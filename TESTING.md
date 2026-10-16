@@ -5,7 +5,7 @@ How Talon is tested, and how an agent goes from the design to a tested feature.
 | Item | Value |
 | --- | --- |
 | Status | Draft 2, 2026-10-15. Draft 2 drops "commands as data" (`Program`): commands are direct-style code over an effect record (section 2). No Talon code exists yet. |
-| Scope | The `tln` CLI and the Talon packages (Design 6.1). The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-header`) use the layers L0 and L1 and this workflow in their own repositories (R-GP5). Not the `cloudflare-workers` platform: it has its own `PLAN.md`. |
+| Scope | The `tln` CLI and the Talon packages (Design 6.1). The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-app-header`) use the layers L0 and L1 and this workflow in their own repositories (R-GP5). Not the `cloudflare-workers` platform: it has its own `PLAN.md`. |
 | Spec | The 4 design files. A test checks a design rule. A test never invents behavior that the design does not state. |
 | Evidence | `research/test-fs/` (tmpfs against ext4, container start times), `research/core-shape/` (code shapes and fakes), `research/roc-fuzz-check/` (roc-fuzz on the pinned nightly), `research/roc-http-fetch/` (roc fetch from `http://`, TQ4), `scripts/rules.sh` (rule coverage) |
 
@@ -188,9 +188,9 @@ Targets, in the order of risk:
 
 | Package | Property | Oracle | Repository |
 | --- | --- | --- | --- |
-| header parser and span edit | Parse never crashes. An edit changes only its span: all other bytes stay the same. Parse after print gives the same value. | Seeds: the headers of the packages in the roc cache (46 on this machine). A script runs `roc fmt` on them, so the expected values are found outside the target (Design 6.2). | `roc-header` (R-GP5) |
+| header parser and span edit | Parse never crashes. An edit changes only its span: all other bytes stay the same. Parse after print gives the same value. | Seeds: the headers of the packages in the roc cache (46 on this machine). A script runs `roc fmt` on them, so the expected values are found outside the target (Design 6.2). | `roc-app-header` (R-GP5) |
 | pubgrub | On small random graphs, the result equals a brute-force search of all version tuples. A failure explanation names only real conflicts. | Brute force (only small graphs) | Talon (`packages/resolve`) |
-| MVS and group key | Same result as the rule of `package_resolution.zig:816-838`, for random graphs | A small direct copy of the rule in the target | `roc-header` (R-GP5) |
+| MVS and group key | Same result as the rule of `package_resolution.zig:816-838`, for random graphs | A second, independent Roc implementation of the rule in the test code, written from the rule text of Design 2 (clean room, no code taken from roc, R-GA7) | `roc-app-header` (R-GP5) |
 | semver | Order is total and agrees with a tuple compare. `parse(to_str(v)) == v`. | Round trip | `roc-semver` (R-GP5) |
 | toml | `parse(print(doc)) == doc`. Parse never crashes. | Round trip | `roc-toml` (R-GP5) |
 | base58 | `decode(encode(b)) == b`. A leading zero byte is kept. | Round trip | `roc-base58` (R-GP5) |
@@ -313,7 +313,7 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 
 | Phase | Rule groups | Notes |
 | --- | --- | --- |
-| P0, generic packages | Their own rules, in their repositories (R-GP5) | First: `roc-header` (group key and MVS: Design 2 has the facts and tests), then `roc-semver`, `roc-base58`, `roc-toml`. Each is released before Talon uses it (R-GP3). |
+| P0, generic packages | Their own rules, in their repositories (R-GP5) | First: `roc-app-header` (group key and MVS: Design 2 has the facts and tests), then `roc-semver`, `roc-base58`, `roc-toml`. Each is released before Talon uses it (R-GP3). |
 | P0, Talon | R-H, R-I, R-C, R-RP, R-E, R-EC, R-J, R-OUT, R-NR, R-NM, R-PD, R-DI, R-WS, R-TF, R-VA, R-SP, R-LF, R-DT, R-AL, R-OV, R-LD, R-BL, R-BS, R-RC, R-SL, R-SC, R-AD, R-RV, R-RG, R-LY, R-FE, the P0 parts of R-CM, R-FL and R-EV, the P0 prompts of R-NI (R-NI1 to R-NI3), R-SO7 (rank 7 of Resolution 13), R-HF1, R-HF3, R-HF4, R-HF5, R-HF12, R-DA, R-CR, R-ID, R-PK, R-PL1, R-GA (except R-GA2), R-CF, R-PH, R-SE (each row: the phase of the rules that it names), R-CC1 to R-CC3, R-CC5 to R-CC7, R-CC11, R-CC12 | P0 writes project files, `packages/` and `projects.json` (R-PD9), so it needs the atomic writes and the locks. The P0 commands and the P0 limits of Design 7: `install` (and `add`, `--frozen`), `remove`, `update`, `list`, `why`, `verify`, with `direct` as the index. A P0 test needs no compiler download and no unit probe, so P1 does not change its result. |
 | P1 | R-NS, R-P, R-PP, R-PB, R-EP, R-UM, R-EF, R-PA, R-LB, R-UP, R-IN, R-PX, R-GC, R-CS, R-SO1 to R-SO6 and R-SO8 to R-SO18, the other parts of R-CM, R-FL and R-EV, R-DL, R-CV, R-T, R-X, R-B, R-S, R-IS, R-RM, R-R, R-LK, R-U, R-RU, R-RR, R-D, R-ST, R-CC4, R-CC8 to R-CC10, R-NI4 to R-NI15, R-HF2, R-HF6, R-HF11 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. R-IS is tested today by `install/test.sh`. |
 | P2 and later | Registry: R-RL, R-SG, R-AP, R-RE, R-MX, R-PU, R-WH, R-OT, R-PL2, R-GA2. `publish`, `probe --share` (P2), `audit` (P3). | Needs the `cloudflare-workers` platform. Not in this file. The tests of R-WH and R-OT are in `cloudflare-workers/` (`bench/node-test.mjs`). |
@@ -330,4 +330,4 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 | 6 | The container image (TW9) | `docker run ... tests/run.sh` passes |
 | 7 | Settle TQ1 to TQ4 in the design | Done (2026-10-15). CLI 1 has the test hooks (section 3.3). |
 | 8 | Subagent definitions in `.claude/agents/` for the scope, test and code agents, and a hook that stops the code agent from editing `tests/` | TW18 is enforced, not only written |
-| 9 | First slice: group key and MVS, in the `roc-header` repository (Design 6.1, R-GP2) | L0 cases from the facts of Design 2. The L5 check against `roc` stays in Talon `conformance/` (R-GP5). |
+| 9 | First slice: group key and MVS, in the `roc-app-header` repository (Design 6.1, R-GP2) | L0 cases from the facts of Design 2. The L5 check against `roc` stays in Talon `conformance/` (R-GP5). |
