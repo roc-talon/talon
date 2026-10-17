@@ -2,6 +2,8 @@
 
 Question: a D1 batch is atomic, but it cannot branch (`cloudflare-workers/API.md` RF4). How does the Worker write the matrix rows and the `sweeps` row of one request only when the sweep is complete, and else write nothing?
 
+Changed 2026-10-17: a sweep now covers the bot set (Registry R-MX11), not each hash up to the bound. The mechanism below stays. `research/bot-set/` tests the new member condition with the same triggers.
+
 Answer: a `BEFORE INSERT` and a `BEFORE UPDATE` trigger on `sweeps` run the completeness check of R-RE8. When the check fails, they call `RAISE(ABORT, 'sweep-incomplete')`. The Worker sends the rows and the sweep upsert in one batch. On local D1, the error rolls back the whole batch: no row of the request is written. The same mechanism does the 3 publish cases of Q27.
 
 ## Run
@@ -67,7 +69,7 @@ The index has about 50 packages now (Registry 6). The check reads each release a
 | Item | Status |
 | --- | --- |
 | Remote D1 rolls back the whole batch on a `RAISE` | Not tested. Local D1 runs the same SQLite in workerd. The D1 docs say that a batch is one transaction, and that a failed statement rolls back the whole sequence. |
-| The remote error text | Not tested. The Worker matches the `RAISE` text as a substring, not the full message. |
+| The remote error text | Not tested. Changed 2026-10-17: the D1 module of `cloudflare-workers` gives a `RAISE` as `Constraint({ kind: Trigger, message })` with the `RAISE` text alone, and the Worker compares the whole text (Registry R-MX9). |
 | Triggers on remote D1 | Not tested. The D1 docs list `CREATE TRIGGER` as supported. |
 | Read replicas | A batch that writes goes to the primary. The guard reads in that transaction, so a replica lag cannot affect it. |
 | Two Worker isolates at once on remote D1 | Not tested. D1 has one primary, which runs one write transaction at a time. Locally, S9 sent 2 batches at the same time. |

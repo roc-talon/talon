@@ -191,7 +191,7 @@ Result classes, all seen in the measurement below:
 | R-RC1 | pass | `No errors found`, or `0 errors and N warnings` | Works |
 | R-RC2 | fail | `N errors` with N > 0. Each error header names a file. | A code incompatibility, per module |
 | R-RC3 | hang | No result in 30 s. A normal check takes under 2 s. | Compiler fault |
-| R-RC4 | crash | Signal exit (139 seen) | Compiler fault |
+| R-RC4 | crash | A fault signal: SIGSEGV (exit 139 seen), SIGBUS, SIGILL, SIGFPE or SIGABRT. On Windows, a fault exception code, such as `0xC0000005` (access violation) or `0xC00000FD` (stack overflow). | Compiler fault |
 
 Rules:
 
@@ -199,7 +199,7 @@ Rules:
 | --- | --- |
 | R-P1 | `check` and `build` only. Talon never runs the output, so no host code runs. |
 | R-P2 | Warnings do not fail a probe. |
-| R-P3 | A download error gives no fact. A hang or crash is a fact of its own class (compiler fault). |
+| R-P3 | A download error gives no fact. A signal from outside the compiler gives no fact too: SIGKILL (also the OOM killer), SIGTERM, SIGINT and SIGHUP, and on Windows `0xC000013A` (Ctrl-C). Reason: up to 12 probes run at once (R-AL4), and a build takes 150 to 220 MB (R-SM1), so a small machine can kill one, and a fact never expires (R-P4). A hang or crash is a fact of its own class (compiler fault). |
 | R-P4 | Results are stored per (hash, nightly, target) and never expire. `check` results use the target `any`. A fail stores the set of failing modules. A `build` pass also stores the used-closure digest (see "Build skip"). |
 | R-P5 | Budget: `probe.max` (default 100) checks, `probe.timeout` (default 30 s), and `probe.max-toolchains` (default 10) new compiler downloads. One nightly is about 70 MB packed and 228 MB unpacked. Installed nightlies are tried first, because they cost nothing to fetch. A new download needs consent (R-DL1 to R-DL6, CLI 6.2). The cap limits the downloads after consent. |
 | R-P6 | Talon blames only new errors (see "Baseline check"). A candidate with no new errors passes step 2, also when the app has errors. |
@@ -276,7 +276,7 @@ Conclusions for the search. The rules R-EP1 to R-EP9 below state them as a funct
 | --- | --- |
 | No result changed inside an epoch. 22 nightlies are 6 epochs. | Probe one release per epoch. A fact infers the other releases of its epoch (R-EP6). |
 | Every island in the sample comes from a compiler fault, not from a code change. | A fault marks one release bad for one hash. It does not split a range (R-EP5). |
-| All 5 code boundaries in the sample moved at least 2 hashes. | A boundary needs at least 2 hashes that change (R-EP3). A change in only one hash is not a boundary. That hash keeps its own facts, and Talon reports it to the bot. |
+| All 5 code boundaries in the sample moved at least 2 hashes. | In the facts of the client, a boundary needs at least 2 hashes that change (R-EP3). A change in only one hash is not a boundary. The registry counts over the bot set, a sample of the index, so there 1 changed hash makes a boundary (Registry 6, R-MX12). That hash keeps its own facts, and Talon reports it to the bot. |
 | The sample is small (46 hashes, 4 weeks). Islands from code changes stay possible. | An inferred fact never decides a result (R-EP8). A real code island costs probes, but never gives a wrong header. |
 | Normal checks take under 2 s. The hangs ran for 600 s with no result. | Probe timeout 30 s (R-P5) |
 
@@ -298,8 +298,8 @@ epochs : List(Release), Facts -> { epochs : List(Interval), inferred : Facts }
 | # | Rule |
 | --- | --- |
 | R-EP1 | A code result is `pass` or `fail`. A fault (`hang`, `crash`) is not a code result. Two releases are adjacent when no release of D is between them. |
-| R-EP2 | A release is swept when it has a row in the registry `sweeps` table (Registry 5, R-RE7 and R-RE8): the registry matrix has a `bot` row on it for each hash whose log index is at most the `upto_log_index` of that row. The closure answer gives the rows (Registry 4, R-AP17). The compat bot sweeps each new nightly (Registry 6, R-MX4). A transition is the pair of a release and the release adjacent before it. A transition is covered when both releases are swept. |
-| R-EP3 | A covered transition is a boundary when at least 2 hashes have a code result on both releases, and the two results are different. Any other covered transition is flat. |
+| R-EP2 | A release is swept when it has a row in the registry `sweeps` table (Registry 5, R-RE7 and R-RE8): the registry matrix has a `bot` row on it for each member of the bot set (Registry 6, R-MX11) at the `upto_log_index` of that row. The closure answer gives the rows (Registry 4, R-AP17). The compat bot sweeps each new nightly (Registry 6, R-MX4). A transition is the pair of a release and the release adjacent before it. A transition is covered when both releases are swept. |
+| R-EP3 | A covered transition is a boundary in either case: (a) its `transitions` row (Registry 6, R-MX12) has `changed` of 1 or more, or (b) at least 2 hashes have a code result on both releases in the facts of the client, and the two results are different. Any other covered transition is flat. Reason for (a): the registry counts over the bot set, and with 1 changed hash it finds the boundaries of all hashes in the measured sample (Registry 6, R-MX12). A client sees only the rows of its closure. |
 | R-EP4 | An epoch is a maximal interval of D in which each transition is flat. A boundary or a transition that is not covered ends an epoch. So with no matrix (registry off, or a release that the bot did not sweep), each release is an epoch of its own. |
 | R-EP5 | A fault fact marks one release bad for one hash. It is never part of a boundary, it never ends an epoch, and it never gives an inferred fact. |
 | R-EP6 | A pair (h, r) with no real fact gets an inferred result X in one of two cases. (a) Same epoch: h has a real code result X on a release in the epoch of r. (b) Between: the nearest real code result of h before r and the nearest after r are both X. If one case gives `pass` and a case gives `fail`, the pair stays unknown. An unknown pair between a `pass` and a `fail` of one hash stays unknown: it is the place to probe. An inferred `fail` copies the set of failing modules of its source. |
