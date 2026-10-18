@@ -287,3 +287,141 @@ Observation (not a gap of the tests): the error column is at the start of the li
 | M80 | Q5 rename: new key always quoted | `Internal/Edit.roc:34` | entries.roc: 5 failed REN1 REN2 REN3 REN4 |
 | M81 | Q5 rename changes the first key of a dotted key | `Internal/Edit.roc:33` | entries.roc: 1 failed REN2 |
 | M82 | Q10 remove of the first line drops the BOM | `Internal/Edit.roc:113` | not caught (gap: no test removes the first entry of a file with a BOM) |
+
+## Slice 6 (0.2.0)
+
+Status: tests (red). P6-1, P6-2 and Q16 to Q19: settled by slice proposal, human to confirm. 0.1.0 is released (tag `0.1.0`). Compiler: `nightly-2026-10-14-38a3029`. Code estimate: 150 to 250 lines (a value check, and error offsets in the parser).
+
+### Scope
+
+| # | Change | Rule |
+| --- | --- | --- |
+| C1 | `InvalidValue` for `replace` and `insert` | A value is invalid when it has a date or time that `Toml.parse` rejects as TOML text: year 0 to 9999, month 1 to 12, a day that the month has (leap years: divisible by 4 and not by 100, or by 400), hour 0 to 23, minute 0 to 59, second 0 to 60 (Q9), offset -1439 to 1439 minutes (RFC 3339 `time-numoffset` hour 00 to 23, minute 00 to 59, as `Toml.parse` accepts). The check looks into arrays and inline tables. On `InvalidValue` the document does not change. Today `replace` and `insert` crash on a field with too many digits, and give `Ok` for `2023-02-30` or hour 99. |
+| C2 | Error columns | Syntax error: the first byte at which the text can no longer be the start of any valid TOML document; at the end of the text, one past the last byte. Rule error (a key or a table defined two times, an integer out of the i64 range, a date that does not exist): the first byte of the key or the value that breaks the rule. 1-based, in bytes, on line 1 with the BOM bytes. Today `a = ?` gives column 1 (the line start). |
+
+### Signatures (changed: the error unions only, `package/Toml.roc`, bodies not changed)
+
+| Function | Signature |
+| --- | --- |
+| `Toml.replace` | `Toml, List(Str), Value -> Try(Toml, [NoEntry, InvalidValue])` |
+| `Toml.insert` | `Toml, List(Str), Value -> Try(Toml, [KeyExists, NotATable, InvalidValue])` |
+
+The doc comments of `Toml`, `Toml.parse`, `Toml.replace` and `Toml.insert` have the C1 and C2 rules. A new tag in the error union breaks an exhaustive `match` of a caller (the helpers of `tests/edit.roc` and `tests/entries.roc` got an `InvalidValue` arm), so the release is `0.2.0`, a new series below 1.0 (Design 4.1).
+
+### Proposals (TW24): settled by slice proposal, human to confirm
+
+| # | Proposal | Rejected options |
+| --- | --- | --- |
+| P6-1 | Payload: bare `InvalidValue`. The rule needs only "valid or not"; the caller has the value. | `InvalidValue(List(Str))` (the path inside the value): a nested value is rare, and the caller can find it. `InvalidValue(Str)` (a message): output text with no user now, it can be added in a later series. A tag for each field (`BadMonth`, ...): a large union. |
+| P6-2 | Order of checks: `NoEntry`, `KeyExists` and `NotATable` come first, then `InvalidValue`. So the error for a wrong path does not depend on the value. | `InvalidValue` first: the caller then fixes the value and gets a path error next. |
+
+### Tests
+
+| Layer | File | Ids | Cases | On 0.1.0 code |
+| --- | --- | --- | --- | --- |
+| L0 | `tests/edit.roc` | E-INV1 (year), E-INV2 (month, day, leap year), E-INV3 (hour, minute, second), E-INV4 (offset), E-INV5 (nested in an array and an inline table) | 18 | All fail: a crash (year 10000) or `Ok` where `InvalidValue` is expected |
+| L0 | `tests/edit.roc` | E-INV6 (the limits are valid: 9999-12-31, 2024-02-29, second 60, offset +23:59 and -23:59), E-INV7 (`NoEntry` first) | 6 | Pass (guards) |
+| L0 | `tests/entries.roc` | I-INV1 (insert in a section, in a new table, nested) | 3 | All fail: `Ok` or a crash |
+| L0 | `tests/entries.roc` | I-INV2 (`KeyExists`, `NotATable` first), I-INV3 (second 60 is inserted) | 3 | Pass (guards) |
+| L0 | `tests/structure.roc` | S-ERR4 (changed: 3 cases), S-ERR5 (1 changed, 2 new: the BOM) | 6 | All fail: a wrong column |
+| L0 | `tests/structure.roc` | S-COL1 (a bad byte in a value, 7), S-COL2 (a value that can still grow, 1), S-COL3 (key, 2), S-COL4 (table header, 3), S-COL5 (an unclosed string or array at the end, 5), S-COL6 (a missing newline, a bare CR, 2), S-COL7 (comment, 1), S-COL8 (redefinition, 3), S-COL9 (i64, 2), S-COL10 (a date that does not exist, also in an array, 3) | 29 | 21 fail with a wrong column. 8 pass, because 0.1.0 already gives the new column: `[a]x`, `a = 1 b = 2`, `# a<U+0001>b`, the 2 key redefinitions, the 3 dates. |
+| L0 | `tests/edit.roc` | E-INV8 (Q17: nanosecond 1000000000 and 4294967295 are `InvalidValue`; 999999999 is valid) | 3 | 2 fail with `Ok`; the valid case passes (guard) |
+| L0 | `tests/entries.roc` | I-INV4 (Q17: insert of nanosecond 1000000000) | 1 | Fails with `Ok` |
+| L0 | `tests/structure.roc` | S-COL11 (Q18: a dotted key defined two times, also `[a.b]` and in an inline table: the part that is defined again) | 4 | All fail with a wrong column |
+| L0 | `tests/structure.roc` | S-COL12 (Q19: hour 24, minute 60, second 61, offset +24:00, also in an array: the start of the value) | 5 | Pass: 0.1.0 already gives the start of the value (guards) |
+| L1 | `fuzz/replace-date.roc` (new) | F-DATE: replace and insert of a random date or time (year from a list with 10000 and 65535, month 0 to 13, day 0 to 32, hour 0 to 25, minute 0 to 61, second 0 to 62, nanosecond from a list with 999999999, 1000000000 and 4294967295 (Q17), offset -1500 to 1499), alone, in an array, in an inline table, on 3 base texts (LF, CRLF, dotted keys). Valid (an oracle in the target, from the C1 rule): `Ok`, the new table, the text parses to it. Invalid: `InvalidValue`. Never a crash. | 1 target | Exit 77, "replace gave Ok for an invalid value". A copy that checks only the valid values passes 50000 runs on 0.1.0, so the oracle and the old rules agree. |
+
+Each expected column was checked by hand against the C2 rule. Examples: `v = 01` can still be the start of `v = 01:02:03`, so (1, 7); `v = 012` can still be the start of `v = 0123-01-01`, so (1, 8); `a = 1\rb = 2`: a CR can still be the start of CRLF, so the `b`, (1, 7); `a = [1,\n` ends after the newline, so (2, 1); `a = { x = 1,\n y = 2 }`: the newline, (1, 13).
+
+Counts now: `structure.roc` 109, `edit.roc` 68, `entries.roc` 62, total L0 1270. L1: 6 targets. All other files and the old tests pass on 0.1.0.
+
+### Settled by slice proposal (human to confirm)
+
+| # | Question | Blocks | Answer (the proposal) |
+| --- | --- | --- | --- |
+| Q16 | `Value.print` and `Toml.print` return `Str`, so they cannot fail. Today they write each field with its digits, and `Toml.parse` rejects the text: `10000-01-01`, `2023-02-30`, `2023-00-00`, `99:00:00`, `100:00:00`, offset 1440 as `+24:00`, 6000 as `+100:00`, -32768 as `-546:08` (probe `probes/roc-toml/print-invalid/p.roc`). Keep this (the doc says "parses back to an equal table when each date in it exists"), add `Toml.print_try : Dict(Str, Value) -> Try(Str, [InvalidValue])`, or change `print`? | The print contract of 0.2.0 | No change to `print`. The doc comments of `Value.print` and `Toml.print` say: a date or time that `Toml.parse` would reject is printed with its digits, and the output does not parse. No test. |
+| Q17 | A nanosecond value over 999999999: `Value.print` writes `01:02:03.1` for 1000000000, and `parse` reads it as 100000000. `parse` does not reject the text, so C1 does not make it `InvalidValue`, but the value changes. | C1 for nanoseconds | `InvalidValue` for a nanosecond over 999999999 (doc of `Toml`). E-INV8, I-INV4, F-DATE. |
+| Q18 | C2 for a dotted key that is defined two times (`a.b = 1\na.b = 2`): the first byte of the whole key (column 1) or of the part that is defined again (`b`, column 3)? The same for `[a.b]` two times. No test. | C2 for dotted keys | The part that is defined again (doc of `Toml.parse`). S-COL11. |
+| Q19 | C2 for hour 24, minute 60, second 61, an offset of 24 hours: a syntax error (the byte where it can no longer be valid) or a rule error (the first byte of the value)? The TOML ABNF writes them as `2DIGIT` with the range in a comment. 0.1.0 gives the start of the value. No test. | C2 for times | A rule error, the first byte of the value (doc of `Toml.parse`). S-COL12. |
+
+### Verify results (slice 6)
+
+Verify agent, 2026-10-16, `nightly-2026-10-14-38a3029`. Script: `research/generic-packages/tools/mutate-roc-toml.py`, extended with M83 to M119 (one mutation at a time; Check.roc mutations run `edit.roc`, `entries.roc`, `values.roc` and `replace-date`; Edit.roc and Toml.roc mutations run `edit.roc`, `entries.roc` and `replace-date`; C2 mutations run `structure.roc` and `parse-total`; fuzz 20000 runs with the dictionary). A mutation that these do not catch was run again on all 8 L0 files (`ALL=1`). The 0.1.0 gaps M30, M31 and M33 (error column) were run again.
+
+| Step | Result |
+| --- | --- |
+| 1 `scripts/test.sh` (clean `.work`) | Exit 0, ALL PASS. `edit` 68, `entries` 62, `print` 48, `structure` 109, `toml_test_invalid` 463, `toml_test_roundtrip` 205, `toml_test_valid` 205, `values` 110 (1270 pass). Fuzz 100000 runs each: `parse-total`, `print-roundtrip`, `remove-entry`, `replace-date`, `replace-span`, `text-kept` pass. |
+| 1a Time of the fast set (TW20: 3 min) | Run 1 (clean `.work`): 2 min 39 s. Run 2 (same `.work`, compile cache): 2 min 30 s. Both in the limit; the margin is 21 s. The 6 fuzz runs are 91 s (run 1) and 92 s (run 2) of it. |
+| 1b Leak on a cached rebuild | Run 1 and run 2: no fuzz log has "[roc-fuzz leak]". The 6 binaries of run 2 are byte-equal to run 1 (md5). A replay of the empty input on each run 2 binary: "Executed", no leak. |
+| 1c Probe `llvm-build/twice.sh` | `SRC=<roc-toml>/.work/xdg/roc/packages`: `leak-named-thunk: build1=Executed build2=Executed` (no leak). Control `leak-lazy-cycle: build1=Executed build2=leak] 9` (the known leak, so the probe still sees it). Note: the root `.gitignore` line `llvm-build/` ignores the directory; `leak-named-thunk/` is not tracked (only `twice.sh`, `leak-lazy-cycle/` and `leak-step-function/` are), so it needs `git add -f`. |
+| 2 `roc check package/main.roc` | 0 errors, 0 warnings |
+| 3 `roc bundle` | `5QxzeJzCj8sTttPKVD3GCqfKZvYbVm3RV5StTRrNE8Lu.tar.zst` (22105 bytes). Files: `main.roc`, `Internal/Check.roc`, `Internal/Doc.roc`, `Internal/Edit.roc`, `Internal/Grammar.roc`, `Internal/Print.roc`, `Internal/Text.roc`, `Internal/Tree.roc`, `Toml.roc`, `Value.roc`. Package files only. |
+| 4 Revert check | 37 slice 6 mutations: 36 caught (M87 only by `replace-date`), 1 not caught (M119, a gap). The 0.1.0 gaps M30, M31, M33 are now caught by S-ERR4, S-ERR5 and S-COL1 to S-COL12. |
+| 5 R-GP1 grep | 1 match, in a comment, not in the API: `package/Internal/Grammar.roc:22` "probes/roc-toml/llvm-build in the" and `:23` "Talon repository". The check "no match" fails on these lines (as in 0.1.0, the line moved). |
+| README | Not changed (it describes 0.1.0): `cmp` with the copy of step 0 is equal. |
+| Restore | `diff -r package/ <copy from step 0>`: no difference. `tests/`, `fuzz/`: no difference. `.roc-fuzz/` put back from the copy of step 0 (`diff -r`: no difference). `dist/` has the 0.1.0 bundle `3icmt...` (built again from HEAD, the same hash) and the new `5Qxze...`. |
+
+#### Tests added for the slice 6 gaps (test agent)
+
+| Ids | File | Checks | Mutation caught |
+| --- | --- | --- | --- |
+| S-COL13 (3 cases) | `structure.roc` | A bad hex digit in `\u` (1, 10), in `\U` (1, 14), on line 2 (2, 10) | M119 (3 failed) |
+| S-COL14 (2 cases) | `structure.roc` | Code agent proposal, human to confirm: a surrogate `\uD800` and `\U00110000` give the first hex digit (1, 8) | (none planted) |
+| S-COL15 | `structure.roc` | `d = 2023-11-31` is a rule error at (1, 5) | M87 |
+| E-INV2 (1 more case) | `edit.roc` | `replace` with 2023-11-31 gives `InvalidValue` | M87 |
+
+All pass on the slice 6 code. `diff -r` of `package/` after the mutations: no difference. Counts: `structure.roc` 115, `edit.roc` 69, total L0 1277.
+
+#### Gaps (slice 6)
+
+| Mutation | Rule | Behavior that no test checks | Probe |
+| --- | --- | --- | --- |
+| M119 | C2 (syntax): the first byte that no valid document can have | The column of a bad hex digit in a `\u` or `\U` escape (`a = "\u12G4"`: the code gives column 10, the `G`; the mutation gives 8, the first digit) | `probes/roc-toml/verify-gaps-s6/probe.roc`: passes on the code, 2 fail on M119 |
+| M87 (L1 only) | C1 and the parse: a day that the month has | No L0 test has November 31 (or another 30-day month other than April). Only F-DATE (`replace-date`) catches it. The parse side (`d = 2023-11-31`) has no test in any L0 file. | same probe, 2 fail on M87 |
+
+#### Mutations (slice 6)
+
+| # | Mutation | File and line | Test that failed |
+| --- | --- | --- | --- |
+| M30 (again) | error column on line 1 is 0-based | `Internal/Doc.roc:63` | structure.roc: 32 failed S-COL1 to S-COL12, S-ERR4, S-ERR5 |
+| M31 (again) | error column after newline off by one | `Internal/Doc.roc:62` | structure.roc: 12 failed S-COL1 S-COL5 S-COL8 S-COL11 S-ERR4 S-ERR5 |
+| M33 (again) | error offset ignores the BOM | `Internal/Doc.roc:74` | structure.roc: 3 failed S-ERR5 |
+| M83 | C1 year 10000 valid | `Internal/Check.roc:11` | edit.roc: 1 failed E-INV1; entries.roc: 1 failed I-INV1; replace-date: the edited text does not parse |
+| M84 | C1 month 13 valid | `Internal/Check.roc:13` | edit.roc: 1 failed E-INV2; values.roc: 1 failed V-DT8; replace-date: Ok for an invalid value |
+| M85 | C1 month 0 valid | `Internal/Check.roc:13` | edit.roc: 1 failed E-INV2; values.roc: 1 failed V-DT8; replace-date: Ok for an invalid value |
+| M86 | C1 day 0 valid | `Internal/Check.roc:15` | edit.roc: 1 failed E-INV2; replace-date: Ok for an invalid value |
+| M87 | C1 November has 31 days | `Internal/Check.roc:59` | replace-date: Ok for an invalid value. Not caught by the 8 L0 files (`ALL=1`) |
+| M88 | C1 leap year: every 4th year (2100-02-29 valid) | `Internal/Check.roc:58` | edit.roc: 1 failed E-INV2; values.roc: 1 failed V-DT8 |
+| M89 | C1 leap year: no 400 rule (2000-02-29 invalid) | `Internal/Check.roc:58` | values.roc: 1 failed V-DT8; replace-date: InvalidValue for a valid value |
+| M90 | C1 hour 24 valid | `Internal/Check.roc:24` | edit.roc: 2 failed E-INV3 E-INV5; entries.roc: 1 failed I-INV1; values.roc: 1 failed V-DT9; replace-date |
+| M91 | C1 minute 60 valid | `Internal/Check.roc:26` | edit.roc: 1 failed E-INV3; values.roc: 1 failed V-DT9; replace-date |
+| M92 | C1 (Q9) second 60 invalid | `Internal/Check.roc:28` | edit.roc: 1 failed E-INV6; entries.roc: 1 failed I-INV3; values.roc: 3 failed V-DT12; replace-date |
+| M93 | C1 second 61 valid | `Internal/Check.roc:28` | edit.roc: 1 failed E-INV3; values.roc: 1 failed V-DT12; replace-date |
+| M94 | C1 (Q17) nanosecond 1000000000 valid | `Internal/Check.roc:30` | edit.roc: 1 failed E-INV8; entries.roc: 1 failed I-INV4; replace-date |
+| M95 | C1 (Q17) nanosecond 999999999 invalid | `Internal/Check.roc:30` | edit.roc: 1 failed E-INV8; replace-date: InvalidValue for a valid value |
+| M96 | C1 offset +24:00 valid | `Internal/Check.roc:38` | edit.roc: 1 failed E-INV4; replace-date: the edited text does not parse |
+| M97 | C1 offset -24:00 valid | `Internal/Check.roc:38` | edit.roc: 1 failed E-INV4 |
+| M98 | C1 offset +23:59 invalid | `Internal/Check.roc:38` | edit.roc: 1 failed E-INV6 |
+| M99 | C1 offset date-time: time not checked | `Internal/Check.roc:45` | edit.roc: 1 failed E-INV8; replace-date |
+| M100 | C1 local date-time: date not checked | `Internal/Check.roc:46` | edit.roc: 1 failed E-INV1; replace-date: the edited text does not parse |
+| M101 | C1 nested: array not checked | `Internal/Check.roc:49` | edit.roc: 2 failed E-INV5; entries.roc: 1 failed I-INV1; replace-date |
+| M102 | C1 nested: inline table not checked | `Internal/Check.roc:50` | edit.roc: 1 failed E-INV5; entries.roc: 1 failed I-INV1; replace-date |
+| M103 | C1 replace writes an invalid value (no check) | `Internal/Edit.roc:14` | edit.roc: 20 failed E-INV1 to E-INV5, E-INV8; replace-date: the edited text does not parse |
+| M104 | C1 insert writes an invalid value (no check) | `Internal/Edit.roc:57` | entries.roc: 4 failed I-INV1 I-INV4; replace-date: the edited text does not parse |
+| M105 | P6-2 replace: InvalidValue before NoEntry | `Internal/Edit.roc:14` | edit.roc: 1 failed E-INV7 |
+| M106 | P6-2 insert: InvalidValue before KeyExists and NotATable | `Internal/Edit.roc:56` | entries.roc: 2 failed I-INV2 |
+| M107 | C1 replace on InvalidValue gives Ok with the document unchanged | `Toml.roc:92` | edit.roc: 20 failed E-INV1 to E-INV5, E-INV8; replace-date: Ok for an invalid value |
+| M108 | C2 no furthest failure in a line (the 0.1.0 seal `Parser.custom` with `Parser.run` on `line`) | `Internal/Grammar.roc:65` | structure.roc: 23 failed S-COL1 to S-COL5, S-ERR4, S-ERR5 |
+| M109 | C2 at the end of the text: the column of the last byte | `Internal/Doc.roc:46` | structure.roc: 8 failed S-COL2 S-COL5 S-ERR4 S-ERR5 |
+| M110 | C2 line 1 column without the BOM bytes | `Internal/Doc.roc:63` | structure.roc: 2 failed S-ERR5 |
+| M111 | C2 (Q18) dotted key: column of the first part | `Internal/Tree.roc:131` | structure.roc: 3 failed S-COL11 |
+| M112 | C2 (Q18) `[a.b]` again: column of the first part | `Internal/Tree.roc:67` | structure.roc: 1 failed S-COL11 |
+| M113 | C2 (Q18) inline table: column of the first key | `Internal/Doc.roc:147` | structure.roc: 1 failed S-COL11 |
+| M114 | C2 table defined again: column of `[` | `Internal/Doc.roc:84` | structure.roc: 2 failed S-COL8 S-COL11 |
+| M115 | C2 i64 overflow: a syntax error (`flatten`), not a rule error | `Internal/Grammar.roc:173` | structure.roc: 2 failed S-COL9 |
+| M116 | C2 a value that breaks a rule: column of the value end | `Internal/Doc.roc:137` | structure.roc: 10 failed S-COL9 S-COL10 S-COL12 |
+| M117 | C2 `word` matcher: failure at the start of the word | `Internal/Grammar.roc:769` | structure.roc: 2 failed S-COL1 S-COL6 |
+| M118 | C2 bare CR: `Utf8.string("\r\n")`, not `word` | `Internal/Grammar.roc:802` | structure.roc: 1 failed S-COL6 |
+| M119 | C2 bad `\u` escape: column of the first digit | `Internal/Grammar.roc:364` | not caught (gap: no test reads the column of a bad escape; also not caught by the 8 L0 files) |
+
+Observation (C1 "the document does not change"): the error union has no document, so a caller keeps its old `Toml`. The closest mutation (M107: `Ok` with the old document) is caught.

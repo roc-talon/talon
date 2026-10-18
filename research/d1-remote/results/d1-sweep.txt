@@ -1,0 +1,20 @@
+⎔ Establishing remote connection...
+
+## d1-remote
+
+| case | what | got | want | pass |
+| --- | --- | --- | --- | --- |
+| P1 | 3 new labels: 3 releases, leaves 1 to 3 | [3,[1,2,3]] | [3,[1,2,3]] | yes |
+| P2 | same label, same hash: no error, no new leaf | ["ok",3] | ["ok",3] | yes |
+| P3 | same label, other hash: error, and the batch writes nothing (no HZ, no HX) | ["label-conflict",3,3] | ["label-conflict",3,3] | yes |
+| P3m | error message that the Worker sees | "D1_ERROR: label-conflict: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)" |  | yes |
+| S2 | incomplete (no HC row): error, and no row of the request is written | ["sweep-incomplete",0,null] | ["sweep-incomplete",0,null] | yes |
+| S2m | error message that the Worker sees | "D1_ERROR: sweep-incomplete: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)" |  | yes |
+| S4 | an author row does not count | ["sweep-incomplete",null] | ["sweep-incomplete",null] | yes |
+| S5 | bound larger than the log size: error | ["sweep-bound",null] | ["sweep-bound",null] | yes |
+| S3 | rows of an earlier request count: complete at bound 3 | ["ok",3] | ["ok",3] | yes |
+| S7 | the new hash HD (log index 4) is above the bound, so it does not block | [4] | [4] | yes |
+| S8 | bound 5: HD has no row, so incomplete. HA is not asked twice. | ["sweep-incomplete",3] | ["sweep-incomplete",3] | yes |
+| S6 | a smaller bound is a no-op, not an error | ["ok",3] | ["ok",3] | yes |
+| S9 | two sweeps at once: both ok, the larger bound stays | [["ok","ok"],5] | [["ok","ok"],5] | yes |
+| S10 | a direct UPDATE to a smaller bound: error | ["sweep-smaller",5] | ["sweep-smaller",5] | yes |

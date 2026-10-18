@@ -18,6 +18,7 @@ import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { DatabaseSync } from "node:sqlite";
+import { REMOTE, configPath, wipe } from "../d1-remote/remote.mjs"; // `node test.mjs remote`: real D1
 
 const MUTATE = process.env.MUTATE ?? "";
 const CAP = 50; // the daily limit of R-CT13 in this test (200,000 in the design)
@@ -52,11 +53,12 @@ async function d1Backend() {
   const dir = process.env.WRANGLER ?? `${execSync("npm root -g").toString().trim()}/wrangler`;
   const { getPlatformProxy } = createRequire(import.meta.url)(dir);
   const persist = mkdtempSync(join(tmpdir(), "d1-contrib-"));
-  const proxy = await getPlatformProxy({ configPath: new URL("wrangler.toml", import.meta.url).pathname, persist: { path: persist } });
+  const proxy = await getPlatformProxy({ configPath: configPath(new URL("wrangler.toml", import.meta.url).pathname), persist: { path: persist } });
   const db = proxy.env.DB;
+  await wipe(db);
   for (const s of schema) await db.prepare(s).run();
   return {
-    name: "d1",
+    name: REMOTE ? "d1-remote" : "d1",
     async batch(stmts) {
       const res = await db.batch(stmts.map(([sql, p]) => db.prepare(sql).bind(...p)));
       return res.map((r) => ({ rows: r.results ?? [], changes: r.meta?.changes ?? 0 }));
@@ -269,7 +271,7 @@ async function run(b) {
   return out;
 }
 
-const backends = process.argv[2] === "sqlite" ? [sqliteBackend] : [d1Backend, sqliteBackend];
+const backends = process.argv[2] === "sqlite" ? [sqliteBackend] : REMOTE ? [d1Backend] : [d1Backend, sqliteBackend];
 let failed = 0;
 for (const make of backends) {
   const b = await make();

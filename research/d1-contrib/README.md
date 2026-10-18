@@ -12,6 +12,7 @@ Changed 2026-10-17: the first version of this test had a daily fold that compare
 | --- | --- |
 | `node test.mjs` | The 22 cases below on local D1 (wrangler `getPlatformProxy`, workerd) and on plain SQLite (`node:sqlite`). Exit code 1 if a case fails. |
 | `node test.mjs sqlite` | Plain SQLite only |
+| `node test.mjs remote` | Remote D1 only. Run `research/d1-remote/run.sh create` first and `delete` after. |
 | `MUTATE=notrigger node test.mjs sqlite` | Count every row with a plain statement in place of the trigger. W2 to W6, Q1 and Q2 fail. |
 | `MUTATE=orignore node test.mjs sqlite` | `INSERT OR IGNORE` in place of `ON CONFLICT DO NOTHING`. W7 fails. |
 | `MUTATE=changes node test.mjs` | `written` from `meta.changes` in place of `RETURNING`. W1, W3 to W6, W8, Q2 and X2 fail on D1. |
@@ -77,7 +78,7 @@ Findings, now in R-CT4 and R-CT8:
 
 | Item | Status |
 | --- | --- |
-| Remote D1 | Not tested, as for `research/d1-sweep/` |
+| Remote D1 | Tested (2026-10-18, `research/d1-remote/`): 22 of 22 cases pass. `meta.changes` also counts the trigger rows on remote D1. `MUTATE=changes`, `notrigger` and `orignore` fail the same cases as on local D1. |
 | Cost with many rows | Not measured: the tracker query over the rows of one account with 10,000 rows, the move of a login, and the trim of a compiler with many rows |
 | Old totals and a login | Accepted, not a gap. Two machines of one person have two anonymous ids (R-CT3), so before a login nothing ties them together. A pair that both sent, and that the trim removed before the login, counts twice in the totals of the account: the rows are gone, so the move cannot find the copy. Nothing can find it, and the totals are for display only. |
 | The rate limit (R-CT11), the JWT (R-CT9) and the HMAC (R-CT3) | Not part of this test. The test uses small negative ids for machines. |

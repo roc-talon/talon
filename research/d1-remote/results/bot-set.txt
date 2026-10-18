@@ -1,0 +1,19 @@
+⎔ Establishing remote connection...
+
+## d1-remote
+
+| case | what | got | want | pass |
+| --- | --- | --- | --- | --- |
+| B1 | SQL members = reference over 300 random indexes (651 members) | null | null | yes |
+| B0 | members at bound 7: newest of each series in the window, and the newest series of each group | [2,3,5,6] | [2,3,5,6] | yes |
+| B2 | no row for A6 (a member): incomplete, and nothing of the batch is written | ["sweep-incomplete",0] | ["sweep-incomplete",0] | yes |
+| B3 | rows for the 4 members only: complete. A1 (an older patch) and A4 (an old series) need no row. | "ok" | "ok" | yes |
+| B4 | A4 (series 1 of group 2, day 100) is outside the window; A6 (day 10) is the newest series of group 3 | [[]] | [[]] | yes |
+| B5 | after the yank of 0.1.1, 0.1.0 (A1) is a member: incomplete, and the route lists A1 | ["sweep-incomplete",[1]] | ["sweep-incomplete",[1]] | yes |
+| B6 | A8 above the bound: sweep at 7 complete; the route at the log size lists A8 | ["ok",[8]] | ["ok",[8]] | yes |
+| B7 | an author row for A8 does not count | "sweep-incomplete" | "sweep-incomplete" | yes |
+| T0 | transition (1, 2): 4 code results on both, none changed | {"previous":1,"compared":4,"changed":0} | {"previous":1,"compared":4,"changed":0} | yes |
+| T1 | transition (2, 3): the crash of A5 is not compared; A2 and A3 changed | {"previous":2,"compared":3,"changed":2} | {"previous":2,"compared":3,"changed":2} | yes |
+| T2 | transition (3, 4): the crash of A5 on 3 is not compared | {"previous":3,"compared":4,"changed":0} | {"previous":3,"compared":4,"changed":0} | yes |
+| T3 | nightly 5 is not swept: no transition (5, 6), and none from 4 to 6 | null | null | yes |
+| T4 | a later sweep of 5 writes (4, 5) and (5, 6) | [{"previous":4,"compared":5,"changed":0},{"previous":5,"compared":5,"changed":2}] | [{"previous":4,"compared":5,"changed":0},{"previous":5,"compared":5,"changed":2}] | yes |

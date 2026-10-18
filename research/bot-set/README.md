@@ -9,6 +9,7 @@ Answer: yes. The set is the newest release of each series of each group, for the
 | Command | What it does |
 | --- | --- |
 | `node test.mjs [sqlite] [states]` | The 13 cases below on local D1 (wrangler `getPlatformProxy`) and plain SQLite. `states` is the count of random indexes for B1 (default 300). Exit code 1 if a case fails. |
+| `node test.mjs remote [states]` | Remote D1 only. Run `research/d1-remote/run.sh create` first and `delete` after. |
 | `MUTATE=allhash node test.mjs sqlite` | The old rule: every hash up to the bound. B0, B1 and B3 to B6 fail, and the T cases after them. |
 | `MUTATE=noseries node test.mjs sqlite` | Only the newest release of each group. B0, B1 and B5 fail. |
 | `MUTATE=nowindow node test.mjs sqlite` | No age window. B0, B1 and B3 to B6 fail, and the T cases after them. |
@@ -60,7 +61,7 @@ The first run of B1 used a linear congruential generator in floating point (`see
 
 | Item | Status |
 | --- | --- |
-| Remote D1 | Not tested, as for `research/d1-sweep/` |
+| Remote D1 | Tested (2026-10-18, `research/d1-remote/`): 13 of 13 cases pass. `MUTATE=faults` and `MUTATE=allhash` fail the same cases as on local D1. |
 | D1 time of the guard at 100,000 releases | Measured on plain SQLite only. `research/d1-sweep/` found D1 `meta.duration` close to the SQLite time. |
 | Saturated version keys (a part of 65535 or more, R-IK5) | Not in the domain of B1. The series of such a key can be wrong. A release with such a part is rare, and the Worker can read `version_text` for it. |
 | That the set finds the same boundaries as all hashes on more data | Measured on 22 nightlies only (above). The compat bot can measure it again in P2: it has the rows of the set, and the old rows of the hashes that left it. |

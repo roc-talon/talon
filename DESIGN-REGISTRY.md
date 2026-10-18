@@ -50,16 +50,28 @@ Merkle log:
 
 R-SG6: KV is not used: eventual consistency (about 60 s) is wrong for the version list. Package bytes on R2 stay a phase 3 option (hash-keyed mirror).
 
+R-SG7: Tile writer (Q26). One idempotent step writes the tiles and the checkpoint: "build the tiles and sign up to the largest leaf index in D1". It runs after each publish (after `Ctx.respond!`, R-PU1) and from the cron job "Tile catch-up" (R-PU35). So 2 publishes in 2 isolates, or an R2 write that fails after the D1 commit, need no other path.
+
+| # | Rule |
+| --- | --- |
+| 1 | The step reads the size S of the checkpoint in R2 (with its etag) and the leaves above S from D1, in one D1 call |
+| 2 | It writes the tiles first, then the checkpoint. So a checkpoint never names a tree whose tiles are not in R2. |
+| 3 | A tile is a function of the leaves, which never change (R-RE6). So 2 runs that write one tile write the same bytes, and a second write is harmless. A full tile and each partial tile width have their own path (C2SP tlog-tiles), so no write changes the bytes of a path that a reader can have. |
+| 4 | The checkpoint write is an R2 conditional `put` with `onlyIf: { etagMatches }` of the etag from row 1, and only to a larger size. When the etag changed, another run wrote a checkpoint: the step reads it again, and stops if its size is at least the size that the step wanted to write. |
+| 5 | A step that fails leaves the work due: the largest leaf index in D1 stays larger than the checkpoint size, so the next catch-up run does it (R-PU35) |
+
+Tests: 2 publishes at the same time in Miniflare give one checkpoint with both leaves and no lost tile. A step that stops after the tiles and before the checkpoint is repaired by the next catch-up run. A checkpoint `put` with an old etag does not write. Revert that must fail: a plain `put` of the checkpoint lets the smaller size win.
+
 ## 4. HTTP API
 
 The API is plain HTTP with JSON, not full REST. Each resource name is a plural noun, and it is the name of its D1 table (section 5): `artifacts`, `releases`, `compat`, `compat_hints`, `sweeps`, `toolchains`, `contributors`. `packages` is a GitHub name (Design 4.1, R-ID3). `tokens` has no table, because the Worker stores no token (6.1, R-CT9). `me` names the contributor or the account of the request. Paths have no verbs. `POST /v1/closure` is a query with a body, and it changes no state. The log routes are outside `/v1`, because C2SP tlog-tiles sets their layout.
 
 | # | Method and path | Request | Response | Success | Errors (section 4.2) | Caching |
 | --- | --- | --- | --- | --- | --- | --- |
-| R-AP1 | `GET /v1/packages/{owner}/{repo}/releases` | | `{releases, checked}`: each release (R-RE2) of each group of the repository, in all series and URL forms (CLI 7.3, R-DI6). `checked`: R-AP29. | 200, 304 | 404 `not-found`: the repository has no indexed release | `max-age=60`, ETag. The purge on publish waits for Q25. |
+| R-AP1 | `GET /v1/packages/{owner}/{repo}/releases` | | `{releases, checked}`: each release (R-RE2) of each group of the repository, in all series and URL forms (CLI 7.3, R-DI6). `checked`: R-AP29. | 200, 304 | 404 `not-found`: the repository has no indexed release | `max-age=60`, ETag. No purge (R-AP43). |
 | R-AP2 | `GET /v1/artifacts/{hash}` | | The artifact record (R-RE1) and all its releases (R-RE2) | 200, 304 | 404 `not-found` | `max-age=60`, ETag. Not immutable: a new label or a yank changes the answer. |
 | R-AP3 | `POST /v1/closure` | Body of R-AP16 | Answer of R-AP17 | 200 | 400 `bad-request` | `no-store`. One round trip per resolve. |
-| R-AP4 | `GET /v1/artifacts/{hash}/compat` | | `{compat, hints}`: the matrix rows (R-RE3) of the hash, each with its `source`, and the `compat_hints` rows (R-RE12) of the hash | 200, 304 | 404 `not-found` | `max-age=300`, ETag |
+| R-AP4 | `GET /v1/artifacts/{hash}/compat` | | `{runs, hints}`: the matrix rows (R-RE3) of the hash on all compilers as runs (R-AP17), and the `compat_hints` rows (R-RE12) of the hash, added up over the Talon versions | 200, 304 | 404 `not-found` | `max-age=300`, ETag |
 | R-AP5 | `GET /v1/toolchains`, optional `?target=<target>` | | `{toolchains}`: the rows of R-RE4. With `target`, only the rows of that target. | 200, 304 | 400 `bad-request` | `max-age=300`, ETag |
 | R-AP6 | `PUT /v1/toolchains/{tag}` | No body. The OIDC token of the compat bot (R-PU7). | `{toolchains}`: the rows of the tag | 201: new rows. 200: the tag has rows (R-PU9, R-PU10). | 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (GitHub has no such release), 422 `not-a-candidate` (no asset passes R-CV1 and R-CV2), 502 `upstream` | `no-store` |
 | R-AP7 | `GET /v1/packages?q=<text>`, or `GET /v1/packages?short=<name>` (section 4.3) | | With `q`: `{packages}`, ranked packages for display only (R-SN5). With `short`: `{matches}`, the exact match set of a short name (R-SN1 to R-SN4). | 200, 304 | 400 `bad-request` | `q`: `max-age=300`, ETag. `short`: `max-age=60`, ETag. |
@@ -68,7 +80,7 @@ The API is plain HTTP with JSON, not full REST. Each resource name is a plural n
 | R-AP10 | `POST /v1/compat` | `{rows, sweep}`. `rows`: a list of `{hash, nightly, target, result, error_digest}`. A user hint row has no `error_digest` (R-CT2). `sweep`: `{nightly, target, upto_log_index}`, optional, bot only (R-MX4). The OIDC token of the compat bot, or no token for user hints (R-MX5). A user hint request also has the header `Talon-Contributor` and the body field `talon_version` (6.1, R-CT1, R-CT2). | `{written}`: the count of new `compat` rows, or of counted hints (R-RE13). For user hints also `first` (R-CT4) and `skipped` (R-CT14). | 201: at least one row is new. 200: each row was there (R-RE13 row 1), or each row was there already for this contributor (R-CT4). | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (a bot row with a hash that is not indexed), 422 `sweep-incomplete` (R-MX4, R-MX9), 429 `rate-limited` (R-CT11, R-CT13) | `no-store` |
 | R-AP11 | `GET /log/checkpoint`, `GET /log/tile/...` (hash tiles, entry tiles and partial tiles, in the C2SP tlog-tiles layout) | | From R2 | 200 | 404 `not-found` | Checkpoint: `max-age=5` (first guess, tune in P2). Tiles, also partial tiles: `max-age=31536000, immutable`. |
 | R-AP12 | `POST /v1/webhooks/github` | A GitHub App event, signed with HMAC-SHA256 (`X-Hub-Signature-256`). Rules: R-PU3, R-PU11 to R-PU18. | No body | 202 | 401 `unauthenticated`: the signature is bad | `no-store` |
-| R-AP13 | `GET /v1/releases?group=<URL form>`, optional `&series=<series>` | | `{releases, checked}`: the releases (R-RE2) of that group. With no `series`, all series of the URL form (CLI 7.3, R-DI6). The group can be on any host, also not `github.com` (CLI 7.3, R-DI11). `checked`: R-AP29, `null` for another host. | 200, 304 | 400 `bad-request` | `max-age=60`, ETag. The purge on publish waits for Q25. |
+| R-AP13 | `GET /v1/releases?group=<URL form>`, optional `&series=<series>` | | `{releases, checked}`: the releases (R-RE2) of that group. With no `series`, all series of the URL form (CLI 7.3, R-DI6). The group can be on any host, also not `github.com` (CLI 7.3, R-DI11). `checked`: R-AP29, `null` for another host. | 200, 304 | 400 `bad-request` | `max-age=60`, ETag. No purge (R-AP43). |
 | R-AP14 | `GET /v1/releases?after=<log_index>` | | `{releases}`: the releases with a larger log index, in log index order, at most 1000 (first guess, tune in P2). For the next page, the client asks again with the last log index of the page. `after` and `group` can go together. With no `group` and no `after`, the answer is 400. | 200, 304 | 400 `bad-request` | `max-age=60`, ETag |
 | R-AP35 | `GET /v1/contributors/me` | `Authorization: Bearer <JWT>` (6.1, R-CT9) | The tracker of the account (R-CT10) | 200 | 401 `unauthenticated`: no JWT, or a JWT that fails R-CT9 | `no-store` |
 | R-AP36 | `DELETE /v1/contributors/me` | The JWT (the account), or `Talon-Contributor` with no JWT (one machine) (R-CT7) | No body | 204, also when nothing was stored | 400 `bad-request`, 401 `unauthenticated`, 429 `rate-limited` | `no-store` |
@@ -87,6 +99,7 @@ R-AP16: The body of `POST /v1/closure`:
 | --- | --- |
 | `groups` | A list of `{group, series, range}`. `series` and `range` are optional. It holds each group that the resolve must choose a version for (CLI 7.3, R-DI1): each free direct dep, the platform, each `[overrides]` group (Resolution 6), the group of `tln add`, and the rows of `tln outdated`. With no `series`, all series of the URL form. `range` is a range in the form of `talon.toml` (Design 4.3). With a range, the answer has only the candidates in it. With no range, the answer has every release of the group, for example where R-UP1 (Resolution 10) says that the range does not apply. |
 | `hashes` | The hashes whose records the client needs and that no group gives: the value of each header entry (Design 4.2), for example a hash of a hand edit (Design 4.1, R-ID7) |
+| `compilers` | `{from, to}`: the window W of compilers that the command can choose, as tags of the compiler list (CLI 6.2), in the order of Resolution 1, R-NS1. Optional, and each end is optional: a missing end is the end of the domain. A held nightly (Resolution 9, R-RP2) gives `from` = `to` = the held compiler. A free nightly gives the oldest and the newest compiler that the `nightly` switch, the `[toolchain] roc` range, `min-release-age` and the snapshot allow (R-NS3, R-NS7, R-C7). `tln probe --range` sends no window. |
 
 R-AP17: The answer of `POST /v1/closure`:
 
@@ -94,17 +107,19 @@ R-AP17: The answer of `POST /v1/closure`:
 | --- | --- |
 | `artifacts` | The record (R-RE1) of each candidate, of each hash in `hashes`, and of each hash in their closure (the deps, to the end) |
 | `releases` | The releases (R-RE2) of these hashes |
-| `compat` | The matrix rows (R-RE3) of these hashes, each with its `source` |
-| `hints` | The `compat_hints` rows (R-RE12) of these hashes |
-| `sweeps` | Each row of the `sweeps` table (R-RE7) |
-| `transitions` | Each row of the `transitions` table (R-RE23, R-MX12) |
+| `epochs` | For each target of the matrix rows of these hashes: the epochs of the registry that touch W, as `{target, from, to}`, with 2 or more compilers each. An epoch of the registry is a maximal interval of compilers in which each transition has a `transitions` row (R-RE23) with `changed` = 0: it is covered and it is not a boundary of case (a) of Resolution 4, R-EP3. A compiler that no listed epoch holds is an epoch of its own. E, for each target, is W made larger to the ends of these epochs. |
+| `runs` | The matrix rows (R-RE3) of these hashes on the compilers of E, as runs `{hash, target, source, result, error_digest, from, to}`. A run is a maximal interval of adjacent compilers (R-EP1) on which one (hash, target, source) has a row with the same result and error digest. A compiler with no row ends a run. |
+| `nearest` | For each (hash, target): the nearest matrix row before E and the nearest after E with a code result (`pass` or `fail`, R-EP1), `{hash, target, source, result, error_digest, nightly, side}`. The precedence of Resolution 3, R-EF3 chooses the row of a pair before the result is tested: a `bot` row wins over an `author` row. Case (b) of Resolution 4, R-EP6 uses them. |
+| `hints` | The `compat_hints` rows (R-RE12) of these hashes on the compilers of W, added up over the Talon versions: `{hash, nightly, target, pass_count, fail_count, crash_count}` |
 | `log_size` | The size of the log in the database state that the answer comes from |
 | `unknown` | Each hash of `hashes` that the registry does not index (Q33) |
 | `checked` | For each `github.com` repository of a group in `groups`: `{name, checked_at, stale}` (R-AP29) |
 
 R-AP18: All rows of one answer and `log_size` come from one state of the database. So each release in the answer has `log_index` at most `log_size`. For example, the Worker runs the reads in one D1 session (Sessions API) and reads `log_size` last, or runs them in one D1 batch.
 
-R-AP19: The client applies `--snapshot log:N` to the answer. It hides each release with `log_index` greater than N, and each toolchain row of R-AP5 with `log_index` greater than N (Resolution 11, R-DT3). It does not hide `compat` and `sweeps` rows: they are evidence, not releases (R-DT5). With no `--snapshot`, `log_size` is the log size that R-DT5 prints (`resolved at log:<log_size>`).
+R-AP19: The client applies `--snapshot log:N` to the answer. It hides each release with `log_index` greater than N, and each toolchain row of R-AP5 with `log_index` greater than N (Resolution 11, R-DT3). It does not hide `epochs`, `runs`, `nearest` and `hints`: they are evidence, not releases (R-DT5). A run or an epoch that goes past a hidden compiler holds only for the compilers that the client knows.
+
+R-AP42: Size. The facts of the closure are runs in a window, not one row for each compiler, so the answer grows with the changes of results, not with the count of nightlies. Measured on a synthetic matrix of 3 years (`research/closure-runs/`, 900 compilers, 26 closure hashes, 11,934 rows): all rows are 1.8 MB of JSON, the answer for a held nightly is 9 KB, and the answer for all compilers is 49 KB. The client gets the same facts in W (real, inferred or unknown, Resolution 4, R-EP2 to R-EP6) as from all rows: 400 random cases on local D1 and SQLite. Reason for E: case (a) of R-EP6 reads each fact of the epoch of a compiler, and the epoch can go past W. With no `--snapshot`, `log_size` is the log size that R-DT5 prints (`resolved at log:<log_size>`).
 
 R-AP20: The closure query changes no state. The client can send it again after a network error.
 
@@ -113,7 +128,7 @@ R-AP28: A hash in `unknown` (R-AP17) is a header value that the registry does no
 | # | Case | What Talon does |
 | --- | --- | --- |
 | 1 | The answer has the label (group and version) of the URL with another hash | The R-PU19 case. Talon prints a warning that names the release and both hashes. It sends no ingest. |
-| 2 | The URL is a `github.com` release asset URL (CLI 7.3, R-DI5) of a repository that the guard found public (CLI 1, R-RG5), and the command has no `--snapshot log:N` | Talon sends one ingest (R-AP9) for each such URL, at the same time, then sends the closure query again, once. This is the rule of CLI 2, R-AD35 for a header value. |
+| 2 | The URL is a `github.com` release asset URL (CLI 7.3, R-DI5) of a repository that the guard found public (CLI 1, R-RG5), and the command has no `--snapshot log:N` | Talon sends one ingest (R-AP9) for each such URL, at the same time, then sends the closure query again, once, with the largest `Talon-Bookmark` of the ingest answers (R-AP41 row 5), so the second read sees the ingests. This is the rule of CLI 2, R-AD35 for a header value. |
 | 3 | Any other URL (another host, a loopback host, an ingest that gave 4xx), or `--snapshot log:N` | Talon sends no ingest. It reads the facts from the archive, as `direct` mode does (CLI 7.3, R-DI7). |
 
 In all cases, the header value stays in the domain of its variable (Resolution 2, R-C9). In case 3, the other candidates of its group come from the registry when the answer has releases of that group. When it has none, the entry acts as an anchor at its header value, as in CLI 7.3, R-DI11, and `tln update`, `tln upgrade` and `tln outdated` print `fixed: not in the registry index`. Reasons: one command uses one index (Q34, CLI 7.3, R-DI14). Talon sends to the registry only a URL on `github.com`. The ingest downloads the asset with no token, so it can index only a public asset, and a URL on a private host never leaves the machine. An ingest adds releases to the log, so a log snapshot must not send one (CLI 2, R-AD36).
@@ -145,6 +160,15 @@ R-AP23: Media types: request bodies and answers are `application/json` in UTF-8.
 
 R-AP24: Each 200 answer of a `GET` in `/v1` has an `ETag`. A request with an `If-None-Match` that is equal to the current ETag gets 304 with no body. `tln` keeps each answer and its ETag in `talon/index/` (CLI 6.1). It uses an answer that is younger than its `max-age` with no request, and sends `If-None-Match` for an older one, as for GitHub (CLI 7.3, R-DI2).
 
+R-AP43: Freshness. The Worker keeps the answers of the `GET` routes in the Cache API of its colo for their `max-age`, and there is no purge across colos (Q25). A request that must see the newest state sends `Cache-Control: no-cache`, the standard request directive (RFC 9111, 5.2.1.4). The Worker then does not read the Cache API: it reads D1 and puts the new answer in the Cache API. `Pragma: no-cache` (RFC 9111, 5.4) has the same effect, for old HTTP/1.0 proxies. `Expires` is a header of a response, not of a request, so the registry ignores it in a request. `tln` sends `Cache-Control: no-cache` and no local copy in these cases:
+
+| # | Case |
+| --- | --- |
+| 1 | The read after an ingest (CLI 2, R-AD35 step 4, R-AP28 case 2) |
+| 2 | Each read with a `Talon-Bookmark` (R-AP41 row 5): a bookmark always comes with `no-cache` |
+
+A 404 answer is not put in the Cache API, so a repository that the registry indexes now is seen at the next request. A publish and a yank drop the entries of the group in the colo of the request (`cache.delete`, `cloudflare-workers/API.md` RF1). Other colos see the change after at most `max-age` (60 s). This is enough, because the default `min-release-age` of 2 days (Resolution 2, R-C7) hides a new release longer than that. The Cache-Tag purge needs a zone and an API token in the Worker, and it gives nothing that the case table above does not give. Rate limits apply to a `no-cache` request as to any other request (R-AP25).
+
 R-AP25: Any route can answer 429 `rate-limited` with a `Retry-After` header in seconds. Q30 sets the limits of ingests (R-AP9), and R-CT11 sets the limits of user hints. `tln` stops with exit code 15, and the message gives the time when it can try again, as for GitHub (CLI 7.3, R-DI13). The share queue is the exception: a 429 answer keeps its rows and changes no exit code (CLI 1, R-SH4).
 
 R-AP26: A publish and an ingest use one route, `POST /v1/releases`. The `Authorization` header selects the path: a token is a publish (R-AP8), no header is an ingest (R-AP9). A token that fails the check gets 401 or 403, never an ingest. A body with `compat` and no token gets 401 `unauthenticated`, because author facts need the token (R-PU5).
@@ -174,8 +198,8 @@ R-AP41: D1 round trips. Each D1 call is one network round trip from the Worker t
 | 2 | A list in a request (the groups and hashes of R-AP16, the names of R-SN1, the rows of R-CT4) goes as one JSON parameter, read with `json_each(?)`. Reason: one D1 statement has at most 100 bound parameters and 100 KB (Cloudflare D1 limits). |
 | 3 | A write that must stop on a condition uses a trigger with `RAISE` (R-MX8, Q27) or a `WHERE` clause on the write. A read before the batch is only for a check that can end the request early, or that needs a value from outside D1. The write batch makes that check again, because another request can write between the 2 calls. |
 | 4 | A filter that SQL cannot do (`VersionReq.matches`, R-IK5) reads a superset in SQL and filters in Roc. It does not add a call. |
-| 5 | A read route runs its batch in one session, `with_session!(Any)`, so a read replica can answer. A batch is one transaction, so R-AP18 holds. Writes go to the primary. A read after a write of the same client: Q46. |
-| 6 | A batch reads at most 1 MiB of rows (`cloudflare-workers/MODULES.md` MC11). Q29 decides how the closure answer gets past this limit. |
+| 5 | A read route runs its batch in one session, `with_session!(Any)`, so a read replica can answer. A batch is one transaction, so R-AP18 holds. Writes go to the primary. A read after a write of the same client (Q46): each write answer (R-AP8, R-AP9) has the header `Talon-Bookmark` with the D1 bookmark of its batch. `tln` sends the largest bookmark it got with its next read request, in the same header, and the Worker reads with `with_session!(After(bookmark))`. A request with no header reads with `Any`. The header name is a proposal (CLI 3, R-OUT2). |
+| 6 | A batch reads at most 1 MiB of rows (`cloudflare-workers/MODULES.md` MC11). The closure answer is runs (R-AP42): 49 KB for 3 years of all compilers, so the limit stays far. The Worker decodes the rows into typed Roc rows (Q29). |
 
 Tests:
 
@@ -245,7 +269,7 @@ R-RE13: Matrix rows of one pair (hash, nightly, target):
 | 1 | One pair has at most one `bot` row and one `author` row. The first write of a key wins. A later write of the same key changes nothing, and it is not an error: the bot can post a run again after a failure. Reason: a probe result for a pair does not change (Resolution 4, R-P4). |
 | 2 | Two releases in two repositories can have one hash. Then the first publish writes the `author` row. The row keeps the log index of that release, so a reader can find the publisher. |
 | 3 | A user hint never goes into `compat`. It adds 1 to `pass_count`, `fail_count` or `crash_count` of the `compat_hints` row of its pair and its Talon version, once for each contributor (R-CT4). A contributor id costs nothing to make (R-CT1), so a count is not a count of persons. The limits of R-CT11 apply. |
-| 4 | The Worker sends all `compat` rows of a pair, and the `compat_hints` row (R-AP4, R-AP17). The client applies the precedence of Resolution 3, R-EF3. The registry does not merge rows. |
+| 4 | The Worker sends the `compat` rows of each source as runs, and the `compat_hints` counts (R-AP4, R-AP17). The client applies the precedence of Resolution 3, R-EF3. The registry merges the sources only for `nearest` (R-AP17). |
 
 ### 5.1 Integer keys
 
@@ -446,7 +470,7 @@ R-MX12: Transitions. When the Worker writes a `sweeps` row of nightly N (R-MX4),
 | `compared` | The count of hashes with a `bot` code result (`pass` or `fail`, Resolution 4, R-EP1) on both. A hang or a crash is not compared (R-EP5). |
 | `changed` | The count of these hashes with different results on the two nightlies |
 
-The counts include each `bot` row, also of hashes outside the set. A row changes only when a sweep of one of its 2 nightlies is written again, so later rows from a range search or from the audit do not change it. The client uses the rows for the boundaries of R-EP3. Reason: the closure answer has the matrix rows of the closure only (R-AP17), so a client with few hashes saw few changes. Measured on `conformance/compat-sweep/` (`research/bot-set/boundaries.mjs`): with 1 changed hash or more as the threshold, the set of 30 finds the same 5 boundaries as all 46 hashes. With 2 or more, it misses the boundary of 2026-09-24, where roc-parser 2.0.0 is the one member that changed. Test: `research/bot-set/` (T0 to T4).
+The counts include each `bot` row, also of hashes outside the set. A row changes only when a sweep of one of its 2 nightlies is written again, so later rows from a range search or from the audit do not change it. The closure answer gives the client the epochs that these rows make (R-AP17 `epochs`), for the boundaries of R-EP3 case (a). Reason: the closure answer has the matrix rows of the closure only, so a client with few hashes saw few changes. Measured on `conformance/compat-sweep/` (`research/bot-set/boundaries.mjs`): with 1 changed hash or more as the threshold, the set of 30 finds the same 5 boundaries as all 46 hashes. With 2 or more, it misses the boundary of 2026-09-24, where roc-parser 2.0.0 is the one member that changed. Test: `research/bot-set/` (T0 to T4).
 
 R-MX13: The hint audit. Each run, the bot also checks at most 200 pairs (first guess) that have user hints and no `bot` row, from `GET /v1/compat_hints?audit=200` (R-AP40): unit checks and smoke builds of platforms. The pairs with the largest total count come first. Reasons: user hints come mostly from hashes outside the set (R-MX14), so their counts show which old hashes people still use, with no log of who asked. A `bot` row then replaces the hints (Resolution 3, R-EF3), and the tracker can compare the hints with it (R-CT10). The bot builds no tool app, so it audits no app build. A false hint can make the bot check a pair that nobody uses. This costs at most 200 checks a run.
 
@@ -636,7 +660,7 @@ sequenceDiagram
     W->>D: one transaction: artifact, release, log leaf
     D-->>W: ok, or reject if label exists with other hash
     W->>R: write new tiles, sign checkpoint
-    W->>W: purge cache for the group
+    W->>W: drop the cache entries of the group in this colo (R-AP43)
     W-->>CI: 201 or 200: log index, record. 409 if the label has another hash.
 ```
 
@@ -649,6 +673,17 @@ sequenceDiagram
 R-PU5: `tln publish` also sends the real facts of the released hash (Resolution 4, R-PB5). The Worker writes them as `compat` rows with the source `author`, with the release.
 
 R-PU6: For a GitHub release, each path selects the package asset and reads the version and the group with the rules of `direct` mode (CLI 7.3, R-DI3 to R-DI5). So the registry does not index a draft, a prerelease, or a release with 0 or 2 package assets, and `tln` sees the same candidates in both modes. A URL on another host gets the version and group from the roc rule (Design 2), as in R-DI5.
+
+R-PU38: Archive read (Q28). Each path (R-PU2 to R-PU4) downloads the package asset, computes its BLAKE3 (the roc hash, Design 2), and reads its header. The registry runs on Workers Paid (30 s of CPU for a request by default, up to 5 min with `limits.cpu_ms`), so CPU does not limit the size: BLAKE3 and zstd decode of a 21 MB platform archive (basic-cli, 70 MB unpacked) take much less than 1 s (first estimate, the P2 load test measures it). WebCrypto has no BLAKE3, so the hash runs in wasm (Design R-GA3), and its CPU time counts. Memory is the limit that matters: the isolate has 128 MB (section 8, R-WH9). So:
+
+| # | Rule |
+| --- | --- |
+| 1 | The Worker reads the asset as a stream. Each chunk goes to BLAKE3 and to the zstd decoder, then to a tar reader. The Worker keeps only the header file, the list of paths (the targets of a platform, R-RE20) and the sizes. It never holds the whole archive or the unpacked tree. |
+| 2 | The packed size is at most 100 MB (first guess, 5 times basic-cli). The Worker checks `Content-Length` before it reads, and counts the bytes while it reads. Over the limit: 422 `not-a-candidate`, with the size in the `detail`. Reason: an ingest needs no login (R-PU34), and GitHub allows assets up to 2 GiB. |
+| 3 | A zstd frame whose window is larger than 32 MB (first guess) is refused in the same way, because the window sets the memory of the decoder |
+| 4 | The hash of the whole stream must be equal to the hash in the URL before any write. The header read can end early, but the hash reads to the end. |
+
+R-PU39: API check (Q31). `tln publish` runs `roc bump --old <URL> --expect <version>` (Design 2) before it sends the request. `<URL>` is the newest indexed release of the same group with a smaller version that is not yanked (R-AP13). `<version>` is the version of the label. roc runs with the compiler of the `roc:` pin of the release header. When roc says that the label bumps less than the API change needs, Talon prints a warning that names both versions and the bump that roc wants, then sends the publish. It does not stop. Reason: the asset is already public on GitHub, and the webhook, the reconcile and an ingest index it anyway (R-PU3, R-PU4), so a stop would lose only the author facts and the provenance of R-PU2. A workflow that wants to stop the release runs `roc bump --expect` itself before the upload. A first release (no earlier version), or a `roc bump` that fails for another reason (the old version does not compile with this compiler), gives a note and no warning. The exit code does not change. The registry does not run `roc bump`: it runs no Roc compiler (R-RL3). The texts are a proposal (CLI 3, R-OUT2).
 
 Compiler releases, from P2:
 
@@ -691,7 +726,7 @@ R-PU21: The Worker reads each indexed GitHub repository again on a schedule (a r
 | # | Rule |
 | --- | --- |
 | R-PU22 | Interval: 1 h for a repository with no App installation, 24 h for a repository with the App (`repo_checks.app_installed`, R-RE14). First guesses, tune in P2. The default `min-release-age` of 2 days (Resolution 2, R-C7) hides a new release for longer than each interval, so most users do not see the lag. |
-| R-PU23 | Steps. A cron trigger (every 5 min, first guess) selects the `repo_checks` rows with `next_check_at` at or before now, oldest first, at most 500 rows (first guess). For each row, the Worker reads the release list of CLI 7.3, R-DI2 with `If-None-Match` and the stored `etag`. A 304 answer changes only `checked_at` and `next_check_at`. For a 200 answer, the Worker stores the new `etag`. Each new candidate goes to the index job of R-PU13 (`cloudflare-workers/API.md` RN16). Each indexed release that is not in the list gets `withdrawn` = `deleted`, and each one that is now a prerelease gets `withdrawn` = `prereleased` (R-PU17). The token of R-PU25 does not show drafts, so a release that is a draft again is also `deleted`. Then the Worker sets `checked_at` to now and `next_check_at` to now plus the interval. The cron only reads lists. It does not hash or unpack an archive, so it stays in the CPU limit of a cron (RN17). |
+| R-PU23 | Steps. A cron trigger (every 5 min, first guess) selects the `repo_checks` rows with `next_check_at` at or before now, oldest first, at most 500 rows (first guess). A run of R rows uses 1 + R D1 calls (the claim of R-PU37, then 1 batch for each row) and about R `fetch()` subrequests, so R is at most 1,000 minus the other D1 calls of the run, and at most the subrequest limit minus the other fetches (Q47). For each row, the Worker reads the release list of CLI 7.3, R-DI2 with `If-None-Match` and the stored `etag`. A 304 answer changes only `checked_at` and `next_check_at`. For a 200 answer, the Worker stores the new `etag`. Each new candidate goes to the index job of R-PU13 (`cloudflare-workers/API.md` RN16). Each indexed release that is not in the list gets `withdrawn` = `deleted`, and each one that is now a prerelease gets `withdrawn` = `prereleased` (R-PU17). The token of R-PU25 does not show drafts, so a release that is a draft again is also `deleted`. Then the Worker sets `checked_at` to now and `next_check_at` to now plus the interval. The cron only reads lists. It does not hash or unpack an archive, so it stays in the CPU limit of a cron (RN17). |
 | R-PU24 | When GitHub answers 404 for the repository (it is deleted, or it is private and the App is not installed on it), or the visibility read of R-PU31 shows that it is not public (R-PU33), the Worker sets `withdrawn` = `repo-missing` on each release of that repository that is not withdrawn yet. The reconcile does not change the binding ids of the `repos` row (R-TP5). It sets the state `missing` (section 7.3, R-TP11). When a later reconcile reads the list again (200) and the binding of section 7.1 allows it, R-PU17 clears `repo-missing` for each release that is a candidate again with the same asset hash. |
 | R-PU25 | Token: an installation token of the GitHub App `Talon Indexer`, which the organization `roc-talon` owns and on which it is installed (RN18). The Worker never uses the token of a user (CLI 1, R-RG3). A token lives 1 h (GitHub docs, "Generating an installation access token"), and the Worker keeps it until 5 min before its end. The installation can send 5,000 requests per hour (GitHub docs, "Rate limits for the REST API"). A 304 answer to a request with a token does not count (CLI 7.3, R-DI2). When `x-ratelimit-remaining` is under 10 % of the limit, the Worker moves `next_check_at` of the rest of the batch to the reset time (`x-ratelimit-reset`). |
 | R-PU26 | The `repo_checks` row of a name is added with the first indexed release of that name, in the same write as the binding of R-TP5, with `next_check_at` = now plus the interval. The App events `installation` and `installation_repositories` (added, removed) set `app_installed` (R-PU11). |
@@ -727,7 +762,7 @@ R-PU34: Ingest limits (Q30). An ingest (R-AP9) needs no login. These limits appl
 | --- | --- |
 | 1 | For each IP address (the IPv4 address, or the IPv6 /64 prefix): at most 60 ingests a minute (first guess), with the rate limiting binding (`cloudflare-workers/API.md` RN10). `tln add` of a new repository sends one ingest for each candidate (CLI 2, R-AD35), so the limit must allow the releases of one repository. |
 | 2 | For each owner: at most 20 new names a day from ingests (first guess). The Worker counts the `repos` rows of the owner whose `time` is after 00:00 UTC. Over the limit: 429 `rate-limited`, with `Retry-After` until 00:00 UTC. |
-| 3 | The archive size limit of Q28 |
+| 3 | The archive size limit of R-PU38 |
 | 4 | The rules that exist: `github.com` release asset URLs only, public repositories only (R-PU31, R-PU32), one release for each label (R-PU14), the candidate rules (R-PU6) |
 
 Reasons for no login: ordinary commands send an ingest (CLI 2, R-AD35, 4.1 R-AP28), also in CI, where nobody can log in. The webhook, the reconcile and `tln publish` index most releases, so an ingest is only the first sight of a repository. A login moves the abuse to free GitHub accounts, and the attacker still needs repositories with releases. A later option: a JWT of 6.1, R-CT9 gives a larger limit in row 1.
@@ -747,7 +782,7 @@ R-PU35: Each scheduled job selects its work from the state of D1 or R2, not from
 | Job | Cron | Due when | Unit | When one unit fails |
 | --- | --- | --- | --- | --- |
 | Reconcile (R-PU23) | 5 min | `next_check_at` is at or before now | One repository | R-PU37 |
-| Index retries (R-PU13), when RN16 uses D1 rows (Q48) | 5 min | The pending row has `next_try_at` at or before now | One release | The attempt counts when it starts. After the last attempt (60 min), the Worker deletes the row and writes a log line. |
+| Index retries (R-PU13), a Queue (Q48, `cloudflare-workers/API.md` RN16) | none: the queue | The message comes back after its delay (1, 5, 15, 60 min) | One release | The queue retries the message. After the last attempt the message goes to the dead-letter queue, and its consumer writes a log line. |
 | Tile catch-up (Q26, `cloudflare-workers/API.md` RN11) | 5 min | The largest leaf index in D1 is larger than the size of the checkpoint | The tiles and the checkpoint | The next run tries again |
 | Hint cleanup (R-CT5), `hint_days` (R-RE6) | daily | A `compat_hints` row whose pair has a `bot` row. A `hint_days` row older than 2 days. | One DELETE | The next run |
 | Trim (R-CT15) | daily | A compiler older than 12 months that has `contributions` or `compat_hints` rows | One compiler, one batch | Write a log line, then go on with the next compiler |
@@ -756,7 +791,8 @@ R-PU36: Each job is safe when 2 runs overlap, and when 1 planned time runs 2 tim
 
 | Job | How |
 | --- | --- |
-| Reconcile, index retries | The claim of R-PU37 row 1 |
+| Reconcile | The claim of R-PU37 row 1 |
+| Index retries | A message that comes 2 times indexes the release 2 times, and the second time is a no-op (R-PU14) |
 | Tile catch-up | R2 compare and swap on the etag, only to a larger size (Q26) |
 | Hint cleanup, trim | Each statement or batch selects by state in one transaction. A second run finds no rows. |
 
@@ -779,7 +815,7 @@ Tests (Miniflare handler tests, R-WH4, except the first):
 | R-PU37 row 5 | A list with a new candidate, and the pending-row write (or the queue send) fails. The etag is not stored, the row stays due, and the next run indexes the candidate | Store the etag first: the candidate is never indexed |
 | R-PU36, R-PU37 row 1 | Two `GET /cdn-cgi/local/scheduled` calls at once, and 2 calls with the same `time`. Fake GitHub counts 1 read for each repo, and the D1 state is the same as after 1 run | Select with no claim: 2 reads |
 | R-PU35 trim | A `RAISE` for one compiler: the other compilers are still trimmed. 2 runs give the same `contributor_totals` | Stop at the first failure |
-| R-PU35 index retries (D1 variant) | A job that traps counts 1 attempt. After the last attempt, the row is gone and there is a log line | Count the attempt after the work |
+| R-PU35 index retries | Miniflare queue. A release with no asset: the message comes back after each delay, and the asset that comes later is indexed. A job that always fails goes to the dead-letter queue after the last attempt, with a log line. | No `delay_ms` on the retry: the message comes back at once |
 
 ### 7.1 Trusted publishing
 
@@ -828,7 +864,7 @@ A yank stops new resolutions from choosing a release. It deletes nothing (Design
 | R-YK4 | A yank sets `releases.yanked`, and adds a row to the `yanks` table: (group, version, seq), with the action (`yank` or `unyank`), `by` (`author` or `operator`), the claims of R-TP6 for `author`, the reason, and the time. Rows are only added. A yank adds no log leaf: the log proves which hash a label has (Design 8, R-SE2), and a yank does not change that. |
 | R-YK5 | The current yank state applies to each resolve, also with `--snapshot log:N` (Resolution 2, R-C6). So a yank can change the result of a resolve at a snapshot. That is the purpose of a yank. A yank never hides the value that a header has now (Resolution 2, R-C9). `tln audit` reports it with its reason. |
 | R-YK6 | `reason` is at most 500 bytes of UTF-8 with no control characters. Else the answer is 400. A yank with no reason is valid. |
-| R-YK7 | A yank changes the answers of R-AP1, R-AP2, R-AP13, R-AP14 and R-AP17. It drops the same cache entries as a publish of the group (Q25). Until Q25 is closed, a client sees the yank after at most the `max-age` of these routes (60 s) plus its local copy (R-AP24). |
+| R-YK7 | A yank changes the answers of R-AP1, R-AP2, R-AP13, R-AP14 and R-AP17. It drops the same cache entries as a publish of the group (R-AP43). Other colos see the yank after at most the `max-age` of these routes (60 s), plus the age of the local copy of the client (R-AP24). |
 
 ### 7.3 Repository identity and moves
 
@@ -1039,3 +1075,53 @@ Open for the registry app:
 | The example app deployed by the CI of the platform (11c) | Not done | `cloudflare-workers/PLAN.md:38` (row 11) |
 
 R-WH11: If JSPI is ever removed, Talon returns effects as data, as Joy does. The Roc API (the modules of `cloudflare-workers/API.md`) does not change. Only the platform changes.
+
+### D1 call limit and placement (edge, 2026-10-17)
+
+Measured on the edge from 5 colos, with a D1 primary in `EEUR` (colo `PRG`). Scripts and raw data: `research/edge-q47-q49/`. These facts settle Q47 and Q49.
+
+D1 calls in one invocation (Q47):
+
+| Case (one invocation) | Result |
+| --- | --- |
+| Single `run()` calls, one after the other (fetch handler and cron handler) | 1,000 pass. Call 1,001 fails: `Too many API requests by single Worker invocation.` |
+| 1,100 `run()` calls at the same time | 1,000 pass, 100 fail with the same error |
+| One `batch()` of 60, 200, 1,000 or 5,000 `SELECT` statements | 1 call each. All pass: 74, 106, 281 and 666 ms. |
+| One `batch()` of 200 `INSERT` and 1 `DELETE` | 1 call, passes |
+| Batches of 20 statements, one after the other | 1,000 batches pass (20,000 statements). Batch 1,001 fails. |
+| One `exec()` of 60 statements | 1 call, passes |
+| 30 D1 calls, then `fetch()` calls | The `fetch()` subrequest count is separate from the D1 count: `fetch()` fails only at the subrequest limit (`Too many subrequests by single Worker invocation.`) |
+
+D1 time for each call, measured inside the Worker (Q49):
+
+| Worker colo | D1 instance | ms for each call |
+| --- | --- | --- |
+| `FRA` | primary `PRG` | 24 |
+| `LHR` | primary `PRG` | 30 |
+| `TBS` | primary `PRG` | 70 |
+| `DFW` | primary `PRG` | 152 |
+| `KIX` | primary `PRG` | 245 |
+| `DFW` | replica in `DFW` | 12 to 14 |
+| `KIX` | replica in `ICN` | 49 |
+
+Client time in ms, median, by route and placement (Q49). Clients: Durable Objects with the location hints `wnam` (ran in `DFW`), `weur` (`LHR`), `apac` (`KIX`), and one machine in `TBS`. 4 to 18 samples for each cell.
+
+| Route | Placement | DFW | LHR | KIX | TBS |
+| --- | --- | --- | --- | --- | --- |
+| Closure, 1 batch of 200 rows | default | 161 | 38 | 250 | 89 |
+| Closure | Smart Placement (stayed local) | 164 | 41 | 252 | 89 |
+| Closure | `placement.region` near `FRA` | 184 | 59 | 271 | 117 |
+| Closure | default, read session | 22 | 38 | 54 | 87 |
+| Closure | `FRA`, read session | 186 | 68 | 275 | 125 |
+| 3 dependent calls | default | 465 | 104 | 741 | 229 |
+| 3 dependent calls | `FRA` | 241 | 109 | 334 | 176 |
+| 3 dependent calls | default, read session | 48 | 104 | 157 | 228 |
+| Publish-like, 1 read then 1 write batch | default | 334 | 96 | 514 | 184 |
+| Publish-like | `FRA` | 235 | 104 | 322 | 161 |
+
+| Placement fact | Result |
+| --- | --- |
+| Smart Placement | It did not move the Worker in 1 hour with about 1,800 requests from 4 colos: the status stayed `INSUFFICIENT_INVOCATIONS`, and each answer had `cf-placement: local-<client colo>`. |
+| `placement.region` | Applied from the first request (`cf-placement: remote-FRA`). It adds one hop from the client to the Worker: 35 ms (`LHR`) to 246 ms (`KIX`), about one D1 round trip. |
+| Read replication | Turned on by the API (`read_replication.mode = auto`). A replica answered after about 1 min. Replicas seen: `WNAM` (`DFW`) and `APAC` (`ICN`). Sessions from `LHR`, `TBS` and `FRA` went to the primary. |
+| Effect | A remote placement makes a 1-call route 21 to 28 ms slower, makes a route with 2 or more calls in a row faster from far colos, and removes the replica gain. |

@@ -1,0 +1,19 @@
+⎔ Establishing remote connection...
+
+## d1-remote (MUTATE=allhash)
+
+| case | what | got | want | pass |
+| --- | --- | --- | --- | --- |
+| B1 | SQL members = reference over 20 random indexes (5 members) | {"state":["1:2/0.1.2=6","2:2/1.2.2=8","3:4/2.0.2=6","4:2/2.0.0=11","5:3/0.1.1=8","6:3/0.1.0=11","7:4/2.3.2=7","8:2/2.0.2=7","9:1/1.2.0=8"],"L":6,"got":[6,8,11],"want":[6,11]} | null | NO |
+| B0 | members at bound 7: newest of each series in the window, and the newest series of each group | [1,2,3,4,5,6,7] | [2,3,5,6] | NO |
+| B2 | no row for A6 (a member): incomplete, and nothing of the batch is written | ["sweep-incomplete",0] | ["sweep-incomplete",0] | yes |
+| B3 | rows for the 4 members only: complete. A1 (an older patch) and A4 (an old series) need no row. | "sweep-incomplete" | "ok" | NO |
+| B4 | A4 (series 1 of group 2, day 100) is outside the window; A6 (day 10) is the newest series of group 3 | [[1,2,3,4,5,6,7]] | [[]] | NO |
+| B5 | after the yank of 0.1.1, 0.1.0 (A1) is a member: incomplete, and the route lists A1 | ["sweep-incomplete",[1,4,7]] | ["sweep-incomplete",[1]] | NO |
+| B6 | A8 above the bound: sweep at 7 complete; the route at the log size lists A8 | ["sweep-incomplete",[1,4,7,8]] | ["ok",[8]] | NO |
+| B7 | an author row for A8 does not count | "sweep-incomplete" | "sweep-incomplete" | yes |
+| T0 | transition (1, 2): 4 code results on both, none changed | null | {"previous":1,"compared":4,"changed":0} | NO |
+| T1 | transition (2, 3): the crash of A5 is not compared; A2 and A3 changed | null | {"previous":2,"compared":3,"changed":2} | NO |
+| T2 | transition (3, 4): the crash of A5 on 3 is not compared | null | {"previous":3,"compared":4,"changed":0} | NO |
+| T3 | nightly 5 is not swept: no transition (5, 6), and none from 4 to 6 | null | null | yes |
+| T4 | a later sweep of 5 writes (4, 5) and (5, 6) | [null,null] | [{"previous":4,"compared":5,"changed":0},{"previous":5,"compared":5,"changed":2}] | NO |

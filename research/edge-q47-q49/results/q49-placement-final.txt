@@ -1,0 +1,3 @@
+rocplat-test-q49-hint {"mode":"targeted","target":[{"id":39,"region":"aws:eu-central-1","type":"region"}]}
+rocplat-test-q49-smart {"mode":"smart","status":"INSUFFICIENT_INVOCATIONS","last_analyzed_at":"2026-10-17T19:38:31.973571Z"}
+20:37:48

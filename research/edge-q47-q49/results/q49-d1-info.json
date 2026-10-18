@@ -1,0 +1,16 @@
+{
+  "uuid": "ff3f556c-5f09-4ca2-b59c-8bb7110fe16a",
+  "name": "rocplat-test-q49-d1",
+  "created_at": "2026-10-17T19:37:49.995Z",
+  "num_tables": 3,
+  "running_in_region": "EEUR",
+  "read_replication": {
+    "mode": "auto"
+  },
+  "jurisdiction": null,
+  "database_size": 94208,
+  "read_queries_24h": 6236,
+  "write_queries_24h": 388,
+  "rows_read_24h": 599699,
+  "rows_written_24h": 4444
+}

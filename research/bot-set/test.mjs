@@ -12,6 +12,7 @@ import { join } from "node:path";
 import { execSync } from "node:child_process";
 import { createRequire } from "node:module";
 import { DatabaseSync } from "node:sqlite";
+import { REMOTE, configPath, wipe } from "../d1-remote/remote.mjs"; // `node test.mjs remote`: real D1
 import { schema, membersSql, missingSql, WINDOW_DAYS } from "./schema.mjs";
 
 const DAY = 86400;
@@ -37,11 +38,12 @@ async function d1Backend() {
   const dir = process.env.WRANGLER ?? `${execSync("npm root -g").toString().trim()}/wrangler`;
   const { getPlatformProxy } = createRequire(import.meta.url)(dir);
   const persist = mkdtempSync(join(tmpdir(), "bot-set-"));
-  const proxy = await getPlatformProxy({ configPath: new URL("wrangler.toml", import.meta.url).pathname, persist: { path: persist } });
+  const proxy = await getPlatformProxy({ configPath: configPath(new URL("wrangler.toml", import.meta.url).pathname), persist: { path: persist } });
   const db = proxy.env.DB;
+  await wipe(db);
   for (const s of schema) await db.prepare(s).run();
   return {
-    name: "d1",
+    name: REMOTE ? "d1-remote" : "d1",
     async batch(stmts) { await db.batch(stmts.map(([sql, p]) => db.prepare(sql).bind(...p))); },
     async all(sql, p = []) { return (await db.prepare(sql).bind(...p).all()).results; },
     async close() { await proxy.dispose(); rmSync(persist, { recursive: true, force: true }); },
@@ -169,7 +171,7 @@ async function run(b) {
 }
 
 const only = process.argv[2];
-const backends = only === "sqlite" ? [sqliteBackend] : [d1Backend, sqliteBackend];
+const backends = only === "sqlite" ? [sqliteBackend] : REMOTE ? [d1Backend] : [d1Backend, sqliteBackend];
 let failed = 0;
 for (const make of backends) {
   const b = await make();

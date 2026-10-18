@@ -1,0 +1,14 @@
+{"case":"singles","colo":"TBS","out":{"calls_ok":1000,"statements_ok":1000,"error_at_call":1001,"error":"Too many API requests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits","ms":73055}}
+{"case":"batch60","colo":"TBS","out":{"ok":true,"statements":60,"results":60,"ms":74}}
+{"case":"batch200","colo":"TBS","out":{"ok":true,"statements":200,"results":200,"ms":106}}
+{"case":"batch1000","colo":"TBS","out":{"ok":true,"statements":1000,"results":1000,"ms":281}}
+{"case":"batch5000","colo":"TBS","out":{"ok":true,"statements":5000,"results":5000,"ms":666}}
+{"case":"write200","colo":"TBS","out":{"ok":true,"statements":201,"results":201,"ms":128}}
+{"case":"batches20","colo":"TBS","out":{"calls_ok":1000,"statements_ok":20000,"error_at_call":1001,"error":"Too many API requests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits","ms":76412}}
+{"case":"mixed","colo":"TBS","out":{"singles":{"calls_ok":40,"statements_ok":40,"error":null,"ms":2786},"batch":{"ok":true,"statements":20,"results":20,"ms":72}}}
+{"case":"exec60","colo":"TBS","out":{"ok":true,"statements":60,"results":60,"ms":80}}
+{"case":"fetches","colo":"TBS","out":{"calls_ok":50,"statements_ok":50,"error_at_call":51,"error":"Too many subrequests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits","ms":35}}
+{"case":"d1ThenFetch","colo":"TBS","out":{"d1":{"calls_ok":30,"statements_ok":30,"error":null,"ms":2105},"fetch":{"calls_ok":50,"statements_ok":50,"error_at_call":51,"error":"Too many subrequests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits","ms":40}}}
+{"case":"singlesPar","colo":"TBS","out":{"calls":1100,"calls_ok":1000,"errors":["Too many API requests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits"],"ms":2084}}
+{"case":"batchesPar","colo":"TBS","out":{"calls":1100,"calls_ok":1000,"errors":["Too many API requests by single Worker invocation. To configure this limit, refer to https://developers.cloudflare.com/workers/wrangler/configuration/#limits"],"ms":3208}}
+{"case":"deploy with [limits] subrequests = 20","result":"refused by the Free plan: CPU limits are not supported for the Free plan [code: 100328]. The old version stayed."}

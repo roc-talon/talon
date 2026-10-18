@@ -12,6 +12,7 @@ Answer: a `BEFORE INSERT` and a `BEFORE UPDATE` trigger on `sweeps` run the comp
 | --- | --- |
 | `node test.mjs` | The 12 cases below on local D1 (wrangler `getPlatformProxy`, workerd) and on plain SQLite (`node:sqlite`). Exit code 1 if a case fails. |
 | `node test.mjs sqlite` | Plain SQLite only |
+| `node test.mjs remote` | Remote D1 only. Run `research/d1-remote/run.sh create` first and `delete` after. |
 | `MUTATE=noguard node test.mjs` | The same cases with no guard triggers. The guard cases must fail (exit code 1). |
 | `node bench.mjs [N ...]` | The time of one sweep write on local D1 with N indexed hashes |
 
@@ -68,8 +69,8 @@ The index has about 50 packages now (Registry 6). The check reads each release a
 
 | Item | Status |
 | --- | --- |
-| Remote D1 rolls back the whole batch on a `RAISE` | Not tested. Local D1 runs the same SQLite in workerd. The D1 docs say that a batch is one transaction, and that a failed statement rolls back the whole sequence. |
-| The remote error text | Not tested. Changed 2026-10-17: the D1 module of `cloudflare-workers` gives a `RAISE` as `Constraint({ kind: Trigger, message })` with the `RAISE` text alone, and the Worker compares the whole text (Registry R-MX9). |
-| Triggers on remote D1 | Not tested. The D1 docs list `CREATE TRIGGER` as supported. |
+| Remote D1 rolls back the whole batch on a `RAISE` | Tested on remote D1 (2026-10-18, `research/d1-remote/`): 12 of 12 cases pass, P3 and S2 write nothing. `MUTATE=noguard` fails the same 10 cases as on local D1. |
+| The remote error text | Tested on remote D1 (`research/d1-remote/`): the same text as on local D1, for example `D1_ERROR: label-conflict: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)`. Changed 2026-10-17: the D1 module of `cloudflare-workers` gives a `RAISE` as `Constraint({ kind: Trigger, message })` with the `RAISE` text alone, and the Worker compares the whole text (Registry R-MX9). |
+| Triggers on remote D1 | Tested on remote D1 (`research/d1-remote/`): the `BEFORE INSERT`, `BEFORE UPDATE` and `AFTER INSERT` triggers work as on local D1. |
 | Read replicas | A batch that writes goes to the primary. The guard reads in that transaction, so a replica lag cannot affect it. |
-| Two Worker isolates at once on remote D1 | Not tested. D1 has one primary, which runs one write transaction at a time. Locally, S9 sent 2 batches at the same time. |
+| Two Worker isolates at once on remote D1 | Not tested. D1 has one primary, which runs one write transaction at a time. S9 sent 2 batches at the same time through one proxy session, on local D1 and on remote D1 (`research/d1-remote/`). |

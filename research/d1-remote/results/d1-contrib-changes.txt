@@ -1,0 +1,28 @@
+⎔ Establishing remote connection...
+
+## d1-remote
+
+| case | what | got | want | pass |
+| --- | --- | --- | --- | --- |
+| W1 | A sends 3 new pairs: all written and first. changes() does not count the trigger rows. | [{"written":9,"first":3,"skipped":[]},{"HA":[1,0,0,1],"HB":[0,1,0,1],"HC":[0,0,1,1]},{"counted":3,"first":3,"agreed":0,"disagreed":0,"unconfirmed":3}] | [{"written":3,"first":3,"skipped":[]},{"HA":[1,0,0,1],"HB":[0,1,0,1],"HC":[0,0,1,1]},{"counted":3,"first":3,"agreed":0,"disagreed":0,"unconfirmed":3}] | NO |
+| W2 | A sends the same rows again (no answer the first time): nothing counts twice | [{"written":0,"first":0,"skipped":[]},{"HA":[1,0,0,1],"HB":[0,1,0,1],"HC":[0,0,1,1]},{"counted":3,"first":3,"agreed":0,"disagreed":0,"unconfirmed":3}] | [{"written":0,"first":0,"skipped":[]},{"HA":[1,0,0,1],"HB":[0,1,0,1],"HC":[0,0,1,1]},{"counted":3,"first":3,"agreed":0,"disagreed":0,"unconfirmed":3}] | yes |
+| W3 | B sends 2 known pairs: counted for B, not first | [{"written":6,"first":0,"skipped":[]},[1,1,0,1],{"counted":2,"first":0,"agreed":0,"disagreed":0,"unconfirmed":2}] | [{"written":2,"first":0,"skipped":[]},[1,1,0,1],{"counted":2,"first":0,"agreed":0,"disagreed":0,"unconfirmed":2}] | NO |
+| W4 | one request names a pair 3 times: one row, first once | [{"written":3,"first":1,"skipped":[]},[1,0,0,1]] | [{"written":1,"first":1,"skipped":[]},[1,0,0,1]] | NO |
+| W5 | another Talon version is another bucket. The reader adds them up. | [{"written":3,"first":0,"skipped":[]},[3,0,0,2]] | [{"written":1,"first":0,"skipped":[]},[3,0,0,2]] | NO |
+| W6 | a pair with a bot row is skipped (R-CT14): not written, not counted, listed as row 0 | [{"written":3,"first":1,"skipped":[0]},null] | [{"written":1,"first":1,"skipped":[0]},null] | NO |
+| W7 | one bad row (result 'hang'): error, and the batch writes nothing | [{"error":"check"},{"counted":4,"first":4,"agreed":0,"disagreed":0,"unconfirmed":4},null] | [{"error":"check"},{"counted":4,"first":4,"agreed":0,"disagreed":0,"unconfirmed":4},null] | yes |
+| W8 | two requests at once on one new pair: both count; the tracker gives first to one of them | [[3,3],[2,0,0,1],1] | [[1,1],[2,0,0,1],1] | NO |
+| L1 | the rows of A move to the account 42; the counts do not change | [["42:HA","42:HB"],{"counted":2,"first":2,"agreed":0,"disagreed":0,"unconfirmed":2},[1,0,0,1]] | [["42:HA","42:HB"],{"counted":2,"first":2,"agreed":0,"disagreed":0,"unconfirmed":2},[1,0,0,1]] | yes |
+| L2 | after the login, a hint with the header of A counts for 42 | [["42:HA","42:HB","42:HC"]] | [["42:HA","42:HB","42:HC"]] | yes |
+| L3 | a second machine of 42: its new pair moves, its copy of HA goes | [["42:HA","42:HB","42:HC","42:HD"],4] | [["42:HA","42:HB","42:HC","42:HD"],4] | yes |
+| L4 | A logs in as 43: its new rows go to 43, its old rows stay with 42 | [["42:HA","42:HB","42:HC","42:HD","43:HE"]] | [["42:HA","42:HB","42:HC","42:HD","43:HE"]] | yes |
+| T1 | 42: agreed HA, disagreed HB and HC, unconfirmed HD; first for HA to HD (B's HA at 220 was after A's at 100) | [{"counted":4,"first":4,"agreed":1,"disagreed":2,"unconfirmed":1},5] | [{"counted":4,"first":4,"agreed":1,"disagreed":2,"unconfirmed":1},5] | yes |
+| Q1 | 51 new rows in one day: hint-quota, nothing written | [{"error":"hint-quota"},[]] | [{"error":"hint-quota"},[]] | yes |
+| Q2 | 50 rows: written. One more on the same day: hint-quota. The next day: written. | [150,"hint-quota",3] | [50,"hint-quota",1] | NO |
+| X1 | the trim of N1: the tracker of A and B does not change; only the N2 row and its hint stay | [{"counted":4,"first":4,"agreed":1,"disagreed":1,"unconfirmed":2},{"counted":2,"first":1,"agreed":1,"disagreed":0,"unconfirmed":1},["-101:HA"],["HA"]] | [{"counted":4,"first":4,"agreed":1,"disagreed":1,"unconfirmed":2},{"counted":2,"first":1,"agreed":1,"disagreed":0,"unconfirmed":1},["-101:HA"],["HA"]] | yes |
+| X2 | a new hint for the old N1 is skipped (cutoff 200): not written, not counted | [{"written":3,"first":1,"skipped":[0]},["-103:HE","-101:HA"]] | [{"written":1,"first":1,"skipped":[0]},["-103:HE","-101:HA"]] | NO |
+| X3 | a login after the trim: the old totals of A move to 42 with its rows | [{"counted":4,"first":4,"agreed":1,"disagreed":1,"unconfirmed":2},{"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0}] | [{"counted":4,"first":4,"agreed":1,"disagreed":1,"unconfirmed":2},{"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0}] | yes |
+| X4 | forget the account: its old totals go too | [{"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0}] | [{"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0}] | yes |
+| D1 | forget C (header only): its rows go, the counts stay | [["42:H101","42:H102"],3] | [["42:H101","42:H102"],3] | yes |
+| D2 | forget the account: its rows, its links and its row go, the counts stay | [[],0,0,3] | [[],0,0,3] | yes |
+| D3 | a second delete is no error | ["ok"] | ["ok"] | yes |

@@ -1,0 +1,61 @@
+{
+ "backend": "d1-local",
+ "meta": [
+  {
+   "results": [
+    {
+     "k": 1
+    }
+   ],
+   "changes": 3,
+   "rows_written": 3,
+   "last_row_id": 1,
+   "served_by_region": null,
+   "served_by_colo": null,
+   "served_by_primary": true
+  },
+  {
+   "results": [
+    {
+     "k": 2
+    }
+   ],
+   "changes": 3,
+   "rows_written": 3,
+   "last_row_id": 2,
+   "served_by_region": null,
+   "served_by_colo": null,
+   "served_by_primary": true
+  },
+  {
+   "results": [],
+   "changes": 0,
+   "rows_written": 0,
+   "last_row_id": 2,
+   "served_by_region": null,
+   "served_by_colo": null,
+   "served_by_primary": true
+  }
+ ],
+ "raise": {
+  "message": "D1_ERROR: hint-quota: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)",
+  "cause": "hint-quota: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)"
+ },
+ "check": {
+  "message": "D1_ERROR: CHECK constraint failed: r IN ('pass', 'fail'): SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_CHECK)",
+  "cause": "CHECK constraint failed: r IN ('pass', 'fail'): SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_CHECK)"
+ },
+ "afterFailed": {
+  "t": 2,
+  "side": 4
+ },
+ "raiseInRun": {
+  "message": "D1_ERROR: hint-quota: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)",
+  "cause": "hint-quota: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)"
+ },
+ "batchMs": {
+  "min": 5,
+  "median": 5,
+  "max": 6
+ }
+}

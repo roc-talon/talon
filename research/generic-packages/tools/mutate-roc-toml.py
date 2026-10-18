@@ -21,6 +21,11 @@ V, X, G, D, T, P, E, K = (
     "Value.roc", "Internal/Text.roc", "Internal/Grammar.roc", "Internal/Doc.roc",
     "Internal/Tree.roc", "Internal/Print.roc", "Internal/Edit.roc", "Toml.roc",
 )
+C = "Internal/Check.roc"
+# Slice 6 (0.2.0)
+S6C = (["edit.roc", "entries.roc", "values.roc"], ["replace-date"])
+S6E = (["edit.roc", "entries.roc"], ["replace-date"])
+S6S = (["structure.roc"], ["parse-total"])
 S1 = (["values.roc"], [])
 S2 = (["structure.roc"], [])
 S2I = (["structure.roc", "toml_test_invalid.roc"], [])
@@ -126,6 +131,50 @@ M = [
     ("M80 Q5 rename: new key always quoted", E, "Ok(splice(text.to_utf8(), span.start, span.end, Text.key(new_key)))", "Ok(splice(text.to_utf8(), span.start, span.end, Text.basic(new_key)))", S5),
     ("M81 Q5 rename changes the first key of a dotted key", E, "span = e.keys.last() ?? e.value", "span = e.keys.first() ?? e.value", S5),
     ("M82 Q10 remove of the first line drops the BOM", E, "while $i > floor and bytes.get($i - 1) != Ok('\\n') {", "while $i > floor * 0 and bytes.get($i - 1) != Ok('\\n') {", S5),
+    # Slice 6 (0.2.0), C1: InvalidValue. Check.roc is also used by parse, so values.roc runs too.
+    ("M83 C1 year 10000 valid", C, "if year > 9999 {", "if year > 10000 {", S6C),
+    ("M84 C1 month 13 valid", C, "month < 1 or month > 12", "month < 1 or month > 13", S6C),
+    ("M85 C1 month 0 valid", C, "month < 1 or month > 12", "month > 12", S6C),
+    ("M86 C1 day 0 valid", C, "day < 1 or day > days_in_month(year, month)", "day > days_in_month(year, month)", S6C),
+    ("M87 C1 November has 31 days", C, "4 | 6 | 9 | 11 => 30", "4 | 6 | 9 => 30", S6C),
+    ("M88 C1 leap year: every 4th year (2100-02-29 valid)", C, "2 => if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0 29 else 28", "2 => if year % 4 == 0 29 else 28", S6C),
+    ("M89 C1 leap year: no 400 rule (2000-02-29 invalid)", C, "2 => if (year % 4 == 0 and year % 100 != 0) or year % 400 == 0 29 else 28", "2 => if year % 4 == 0 and year % 100 != 0 29 else 28", S6C),
+    ("M90 C1 hour 24 valid", C, "if hour > 23 {", "if hour > 24 {", S6C),
+    ("M91 C1 minute 60 valid", C, "} else if minute > 59 {", "} else if minute > 60 {", S6C),
+    ("M92 C1 (Q9) second 60 invalid", C, "} else if second > 60 {", "} else if second > 59 {", S6C),
+    ("M93 C1 second 61 valid", C, "} else if second > 60 {", "} else if second > 61 {", S6C),
+    ("M94 C1 (Q17) nanosecond 1000000000 valid", C, "nanosecond > 999_999_999", "nanosecond > 1_000_000_000", S6C),
+    ("M95 C1 (Q17) nanosecond 999999999 invalid", C, "nanosecond > 999_999_999", "nanosecond >= 999_999_999", S6C),
+    ("M96 C1 offset +24:00 valid", C, "minutes >= -1439 and minutes <= 1439", "minutes >= -1439 and minutes <= 1440", S6C),
+    ("M97 C1 offset -24:00 valid", C, "minutes >= -1439 and minutes <= 1439", "minutes >= -1440 and minutes <= 1439", S6C),
+    ("M98 C1 offset +23:59 invalid", C, "minutes >= -1439 and minutes <= 1439", "minutes >= -1439 and minutes < 1439", S6C),
+    ("M99 C1 offset date-time: time not checked", C, "Value.OffsetDateTime({ date, time, offset_minutes }) => date_problem(date).is_empty() and time_problem(time).is_empty() and",
+     "Value.OffsetDateTime({ date, time, offset_minutes }) => date_problem(date).is_empty() and time.hour < 255 and", S6C),
+    ("M100 C1 local date-time: date not checked", C, "Value.LocalDateTime({ date, time }) => date_problem(date).is_empty() and time_problem(time).is_empty()",
+     "Value.LocalDateTime({ date, time }) => date.year <= 65535 and time_problem(time).is_empty()", S6C),
+    ("M101 C1 nested: array not checked", C, "Value.Array(items) => items.all(Check.value_ok)", "Value.Array(items) => items.len() >= 0", S6C),
+    ("M102 C1 nested: inline table not checked", C, "Value.Table(t) => t.to_list().all(|(_, v)| Check.value_ok(v))", "Value.Table(t) => t.len() >= 0", S6C),
+    ("M103 C1 replace writes an invalid value (no check)", E, "\t\te = find(index, path)?\n\t\tvalid(new)?\n", "\t\te = find(index, path)?\n", S6E),
+    ("M104 C1 insert writes an invalid value (no check)", E, "\t\t\t\tvalid(value)?\n", "", S6E),
+    ("M105 P6-2 replace: InvalidValue before NoEntry", E, "\t\te = find(index, path)?\n\t\tvalid(new)?\n", "\t\tvalid(new)?\n\t\te = find(index, path)?\n", S6E),
+    ("M106 P6-2 insert: InvalidValue before KeyExists and NotATable", E, "\t\t\t\tcheck_insert(table, path.drop_last(1), path.last() ?? \"\")?\n\t\t\t\tvalid(value)?\n",
+     "\t\t\t\tvalid(value)?\n\t\t\t\tcheck_insert(table, path.drop_last(1), path.last() ?? \"\")?\n", S6E),
+    ("M107 C1 replace on InvalidValue gives Ok with the document unchanged", K, "replace = |doc, path, new| Edit.replace(doc.text, doc.index, path, new).map_ok(reread)",
+     "replace = |doc, path, new| Edit.replace(doc.text, doc.index, path, new).map_ok(reread).on_err(|e| match e { InvalidValue => Ok(doc), NoEntry => Err(NoEntry) })", S6E),
+    # Slice 6, C2: error columns
+    ("M108 C2 syntax column: no furthest failure in a line (0.1.0 seal)", G, "line = Parser.lazy(|_| line_rule)", "line = Parser.custom(|input| Parser.run(line_rule, input))", S6S),
+    ("M109 C2 end of the text: the column of the last byte", D, "column: column_of(bytes, offset), message })", "column: column_of(bytes, if offset > 0 and offset >= bytes.len() offset - 1 else offset), message })", S6S),
+    ("M110 C2 line 1 column without the BOM bytes", D, "Err(_) => offset + 1", "Err(_) => offset + 1 - bom_size(bytes)", S6S),
+    ("M111 C2 (Q18) dotted key: column of the first part", T, "changed = put(kid, rest, value, sid, at + 1)?", "changed = put(kid, rest, value, sid, at)?", S6S),
+    ("M112 C2 (Q18) [a.b] again: column of the first part", T, "changed = open(kid, rest, array, at + 1)?", "changed = open(kid, rest, array, at)?", S6S),
+    ("M113 C2 (Q18) inline table: column of the first key", D, "$tree = Tree.entry($tree, [], names(p.keys), v, 0) ? |e| { offset: part_start(p.keys, e.at, key_start(p, total), total), message: e.message }",
+     "$tree = Tree.entry($tree, [], names(p.keys), v, 0) ? |e| { offset: key_start(p, total), message: e.message }", S6S),
+    ("M114 C2 table defined again: column of '['", D, "offset: part_start(h.keys, e.at, total - h.start, total), message: e.message }", "offset: total - h.start, message: e.message }", S6S),
+    ("M115 C2 i64 overflow: a syntax error, not a rule error", G, ".alt(integer.map(|r| rule_checked(r, |n| Value.Integer(n))))", ".alt(integer.flatten().map(|n| Scalar(Value.Integer(n))))", S6S),
+    ("M116 C2 date that does not exist: column of the value end", D, "Odd(_, m) => Err({ offset: total - node.start, message: m })", "Odd(_, m) => Err({ offset: total - node.end, message: m })", S6S),
+    ("M117 C2 word matcher: failure at the start of the word", G, "Err(ParseError({ message, offset: common_prefix(input, expected) }))", "Err(ParseError({ message, offset: 0 }))", S6S),
+    ("M118 C2 bare CR: Utf8.string, not word", G, ".alt(word(\"\\r\\n\").map(|_| ['\\r', '\\n']))", ".alt(Utf8.string(\"\\r\\n\").map(|_| ['\\r', '\\n']))", S6S),
+    ("M119 C2 bad \\u escape: column of the backslash", G, "offset: 1 + count_while(digits, is_hex) }))", "offset: 1 }))", S6S),
 ]
 
 

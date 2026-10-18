@@ -417,14 +417,14 @@ R-AD7: `tln tool install` and `tln x` do not search the registry for a short nam
 
 R-AD34: With a registry, the match set of a short name in R-AD3 to R-AD5, R-AD7 and Design 4.3 R-I8 is the `matches` list of `GET /v1/packages?short=<name>` (Registry 4.3, R-SN1 to R-SN4). One request holds all short names of one command. Talon never selects a package from the ranked results of `?q=` (R-SN5). With `--snapshot log:N`, Talon hides each match above N (R-SN4).
 
-R-AD35: With a registry, a full name `owner/repo` that `GET /v1/packages/{owner}/{repo}/releases` (Registry 4, R-AP1) answers with 404 is a repository that the registry did not index yet. Talon runs the privacy guard of section 1 (R-RG4) before it sends that first request. `tln add` (R-AD2), `tln tool install` and `tln x` (R-SC3, R-SC4) then ask the registry to index its releases, and ask again:
+R-AD35: With a registry, a full name `owner/repo` that `GET /v1/packages/{owner}/{repo}/releases` (Registry 4, R-AP1) answers with 404 is a repository that the registry did not index yet. Talon runs the privacy guard of section 1 (R-RG4) before it sends that first request. `tln add` (R-AD2), `tln tool install` and `tln x` (R-SC3, R-SC4) then ask the registry to index its releases, and ask again with the largest `Talon-Bookmark` of the ingest answers (Registry 4, R-AP41 row 5):
 
 | Step | Name | Talon does |
 | --- | --- | --- |
 | 1 | Read GitHub | The release list of R-DI2, with the token rules of section 1 (R-RG3). The guard (R-RG4) already read `GET /repos/{owner}/{repo}`. Talon selects the candidates with R-DI3 to R-DI5, and with the selector of the command (section 2) when it has one. |
 | 2 | Stop cases | A 404 or a private repository: the guard stopped the command before this step (R-RG6, exit code 2, private packages are not supported, Design N4). No release is a candidate: exit code 2, as R-T10 (6.4). |
 | 3 | Ingest | For each candidate, newest first by `published_at`, `POST /v1/releases` with no token and the body `{url}` (Registry 4, R-AP9). Up to 4 requests run at the same time (first guess). A 200 or 201 answer indexed the release. A 409 or 422 answer: Talon skips that release and prints a warning that names it and the error `type`. A 429 answer: Talon stops with exit code 15, as R-AP25. The releases that the registry indexed stay indexed. |
-| 4 | Ask again | `GET /v1/packages/{owner}/{repo}/releases` again, with no local copy. Then the command goes on as for a repository that the registry knows. When the answer is still 404 (each ingest answered 202, a queue of Q30), Talon stops with exit code 15, and the message says that the registry indexes the repository and to run the command again. |
+| 4 | Ask again | `GET /v1/packages/{owner}/{repo}/releases` again, with no local copy and with `Cache-Control: no-cache` (Registry 4, R-AP43). Then the command goes on as for a repository that the registry knows. When the answer is still 404 (each ingest answered 202, a queue of Q30), Talon stops with exit code 15, and the message says that the registry indexes the repository and to run the command again. |
 
 R-AD36: With `--snapshot log:N`, Talon sends no ingest: a new release has a log index greater than N, so the snapshot hides it (R-AP19). The command stops with exit code 2, and the message says that the name has no release in the log at size N.
 
