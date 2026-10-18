@@ -332,7 +332,7 @@ Ids, and where each group is:
 | R-SE1 to R-SE15 | Security | 8 |
 | R-RL1 to R-RL4 | Registry role | Registry 1 |
 | R-SG1 to R-SG7 | Registry storage, Merkle log | Registry 3 |
-| R-AP1 to R-AP43 | Registry HTTP API | Registry 4 |
+| R-AP1 to R-AP47 | Registry HTTP API | Registry 4 |
 | R-SN1 to R-SN5 | Short-name matches | Registry 4.3 |
 | R-RE1 to R-RE25 | Registry records | Registry 5 |
 | R-IK1 to R-IK8 | Integer keys in D1 | Registry 5.1 |
@@ -343,7 +343,7 @@ Ids, and where each group is:
 | R-YK1 to R-YK7 | Yank | Registry 7.2 |
 | R-WH1 to R-WH11, R-OT1 to R-OT6 | Worker host, owner tags | Registry 8 |
 | P0 to P4 | Phases | 7 |
-| Q1 to Q50 | Questions | 9 |
+| Q1 to Q53 | Questions | 9 |
 
 The phases P0 to P4 and the probe rules R-P1 to R-P8 are different: a rule id always has the `R-` prefix.
 
@@ -598,6 +598,9 @@ Settled:
 | Q29 | Should large reads (`POST /v1/closure`) be JSON that SQLite makes? | No. The closure answer is runs in a window of compilers (Q50): 9 KB for a held nightly and 49 KB for all compilers of 3 years, so typed Roc rows are cheap (decided 2026-10-18, Registry R-AP41 row 6, R-AP42). |
 | Q31 | Should `tln publish` or the registry run `roc bump`? | `tln publish` runs `roc bump --old <previous release> --expect <version>` and warns on a mismatch. It does not stop, because the asset is already public and other paths index it. The registry runs no compiler (decided 2026-10-18, Registry R-PU39). |
 | Q50 | The closure answer sent every matrix row of each hash on all compilers: 1.8 MB for 3 years of a closure of 26 hashes, on each resolve. What does the client need? | The facts of the window W of compilers that the command can choose (a held nightly: one compiler), made larger to the ends of the registry epochs that W touches, as runs, plus the nearest code result on each side, and the epochs of the registry in place of the `sweeps` and `transitions` rows. The client gets the same facts in W as from all rows: 400 random cases on local D1 and SQLite, and 4 mutations fail (decided 2026-10-18, Registry R-AP16, R-AP17, R-AP42, `research/closure-runs/`). |
+| Q51 | How can the registry API change, and how does the registry tell an old `tln` that it is too old? | A change that an older client can ignore stays in `/v1`: a new route, field or problem type, and a new optional request field when an answer that ignores it holds the same facts or more. A removed or renamed field, a changed meaning, a new required field or a new value in a closed set (`result`, `state`) needs `/v2`, and one Worker serves both for at least 12 months. `tln` ignores unknown answer fields and maps an unknown problem type by its status. `tln` sends `User-Agent: tln/<version>`, and 2 Worker settings refuse old versions on the write routes or on all routes with 400 `unsupported-client` (decided 2026-10-18, Registry R-AP44, R-AP45). |
+| Q52 | `GET /v1/toolchains` grows by about 365 KB a year and is read again on each new nightly. How does the client keep it? | Incremental: `?after=<log_index>`, pages of at most 1000 rows with `more`. Each row has its own log index and never changes, so `tln` keeps the rows in `talon/index/` and asks only for new ones (decided 2026-10-18, Registry R-AP5, R-AP47). |
+| Q53 | What are the size limits of a request? | A body of 256 KB, 300 `groups` and 1000 `hashes` in a closure, 50 `short` values, 500 hint rows (first guesses), so each JSON parameter stays under the 100 KB of one D1 statement. Over a limit: 413 `too-large` with `field` and `limit`, before any D1 read. `tln` gives exit code 1 (decided 2026-10-18, Registry R-AP46). |
 
 Open: none.
 

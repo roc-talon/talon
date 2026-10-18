@@ -70,14 +70,14 @@ The API is plain HTTP with JSON, not full REST. Each resource name is a plural n
 | --- | --- | --- | --- | --- | --- | --- |
 | R-AP1 | `GET /v1/packages/{owner}/{repo}/releases` | | `{releases, checked}`: each release (R-RE2) of each group of the repository, in all series and URL forms (CLI 7.3, R-DI6). `checked`: R-AP29. | 200, 304 | 404 `not-found`: the repository has no indexed release | `max-age=60`, ETag. No purge (R-AP43). |
 | R-AP2 | `GET /v1/artifacts/{hash}` | | The artifact record (R-RE1) and all its releases (R-RE2) | 200, 304 | 404 `not-found` | `max-age=60`, ETag. Not immutable: a new label or a yank changes the answer. |
-| R-AP3 | `POST /v1/closure` | Body of R-AP16 | Answer of R-AP17 | 200 | 400 `bad-request` | `no-store`. One round trip per resolve. |
+| R-AP3 | `POST /v1/closure` | Body of R-AP16 | Answer of R-AP17 | 200 | 400 `bad-request`, 413 `too-large` (R-AP46) | `no-store`. One round trip per resolve. |
 | R-AP4 | `GET /v1/artifacts/{hash}/compat` | | `{runs, hints}`: the matrix rows (R-RE3) of the hash on all compilers as runs (R-AP17), and the `compat_hints` rows (R-RE12) of the hash, added up over the Talon versions | 200, 304 | 404 `not-found` | `max-age=300`, ETag |
-| R-AP5 | `GET /v1/toolchains`, optional `?target=<target>` | | `{toolchains}`: the rows of R-RE4. With `target`, only the rows of that target. | 200, 304 | 400 `bad-request` | `max-age=300`, ETag |
+| R-AP5 | `GET /v1/toolchains?after=<log_index>`, optional `&target=<target>` (R-AP47) | | `{toolchains, more}`: the rows of R-RE4 with a larger log index, in log index order, at most 1000 (first guess). With `target`, only the rows of that target. `more` is true when there are more rows after the page. With no `after`, the first page (`after=0`). | 200, 304 | 400 `bad-request` | `max-age=300`, ETag |
 | R-AP6 | `PUT /v1/toolchains/{tag}` | No body. The OIDC token of the compat bot (R-PU7). | `{toolchains}`: the rows of the tag | 201: new rows. 200: the tag has rows (R-PU9, R-PU10). | 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (GitHub has no such release), 422 `not-a-candidate` (no asset passes R-CV1 and R-CV2), 502 `upstream` | `no-store` |
-| R-AP7 | `GET /v1/packages?q=<text>`, or `GET /v1/packages?short=<name>` (section 4.3) | | With `q`: `{packages}`, ranked packages for display only (R-SN5). With `short`: `{matches}`, the exact match set of a short name (R-SN1 to R-SN4). | 200, 304 | 400 `bad-request` | `q`: `max-age=300`, ETag. `short`: `max-age=60`, ETag. |
+| R-AP7 | `GET /v1/packages?q=<text>`, or `GET /v1/packages?short=<name>` (section 4.3) | | With `q`: `{packages}`, ranked packages for display only (R-SN5). With `short`: `{matches}`, the exact match set of a short name (R-SN1 to R-SN4). | 200, 304 | 400 `bad-request`, 413 `too-large` (R-AP46) | `q`: `max-age=300`, ETag. `short`: `max-age=60`, ETag. |
 | R-AP8 | `POST /v1/releases` with `Authorization: Bearer <GitHub OIDC token>`: a publish (R-PU2) | `{url, compat}`: the asset URL, and the real facts of the released hash (R-PU5, optional) | The release record (R-RE2) and its log index | 201 with `Location: /v1/artifacts/{hash}`: new release. 200: the label exists with the same hash. | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden` (the token check of R-PU1 fails), 409 `label-conflict`, 409 `id-collision` (R-IK3), 422 `not-a-candidate` (R-PU6), 502 `upstream` | `no-store` |
 | R-AP9 | `POST /v1/releases` with no `Authorization`: an ingest (R-PU4) | `{url}` | As R-AP8 | As R-AP8. 202 only if Q30 selects a queue. | As R-AP8, and 401 `unauthenticated` (R-AP26), 429 `rate-limited` | `no-store` |
-| R-AP10 | `POST /v1/compat` | `{rows, sweep}`. `rows`: a list of `{hash, nightly, target, result, error_digest}`. A user hint row has no `error_digest` (R-CT2). `sweep`: `{nightly, target, upto_log_index}`, optional, bot only (R-MX4). The OIDC token of the compat bot, or no token for user hints (R-MX5). A user hint request also has the header `Talon-Contributor` and the body field `talon_version` (6.1, R-CT1, R-CT2). | `{written}`: the count of new `compat` rows, or of counted hints (R-RE13). For user hints also `first` (R-CT4) and `skipped` (R-CT14). | 201: at least one row is new. 200: each row was there (R-RE13 row 1), or each row was there already for this contributor (R-CT4). | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (a bot row with a hash that is not indexed), 422 `sweep-incomplete` (R-MX4, R-MX9), 429 `rate-limited` (R-CT11, R-CT13) | `no-store` |
+| R-AP10 | `POST /v1/compat` | `{rows, sweep}`. `rows`: a list of `{hash, nightly, target, result, error_digest}`. A user hint row has no `error_digest` (R-CT2). `sweep`: `{nightly, target, upto_log_index}`, optional, bot only (R-MX4). The OIDC token of the compat bot, or no token for user hints (R-MX5). A user hint request also has the header `Talon-Contributor` and the body field `talon_version` (6.1, R-CT1, R-CT2). | `{written}`: the count of new `compat` rows, or of counted hints (R-RE13). For user hints also `first` (R-CT4) and `skipped` (R-CT14). | 201: at least one row is new. 200: each row was there (R-RE13 row 1), or each row was there already for this contributor (R-CT4). | 400 `bad-request`, 401 `unauthenticated`, 403 `forbidden`, 404 `not-found` (a bot row with a hash that is not indexed), 413 `too-large` (R-AP46), 422 `sweep-incomplete` (R-MX4, R-MX9), 429 `rate-limited` (R-CT11, R-CT13) | `no-store` |
 | R-AP11 | `GET /log/checkpoint`, `GET /log/tile/...` (hash tiles, entry tiles and partial tiles, in the C2SP tlog-tiles layout) | | From R2 | 200 | 404 `not-found` | Checkpoint: `max-age=5` (first guess, tune in P2). Tiles, also partial tiles: `max-age=31536000, immutable`. |
 | R-AP12 | `POST /v1/webhooks/github` | A GitHub App event, signed with HMAC-SHA256 (`X-Hub-Signature-256`). Rules: R-PU3, R-PU11 to R-PU18. | No body | 202 | 401 `unauthenticated`: the signature is bad | `no-store` |
 | R-AP13 | `GET /v1/releases?group=<URL form>`, optional `&series=<series>` | | `{releases, checked}`: the releases (R-RE2) of that group. With no `series`, all series of the URL form (CLI 7.3, R-DI6). The group can be on any host, also not `github.com` (CLI 7.3, R-DI11). `checked`: R-AP29, `null` for another host. | 200, 304 | 400 `bad-request` | `max-age=60`, ETag. No purge (R-AP43). |
@@ -146,6 +146,8 @@ R-AP21: An error answer is RFC 9457 problem details: `Content-Type: application/
 | `/errors/not-found` | 404 | The resource does not exist |
 | `/errors/label-conflict` | 409 | The label (group, version) exists with another hash (R-PU1) |
 | `/errors/id-collision` | 409 | A new hash or name has the id of another name (5.1, R-IK3). The `detail` names the other name. |
+| `/errors/unsupported-client` | 400 | The `User-Agent` names a version of `tln` that the registry does not serve (R-AP45). The answer has the member `minimum`. |
+| `/errors/too-large` | 413 | The body or a list in the request is larger than its limit (R-AP46). The answer has the members `field` and `limit`. |
 | `/errors/unsupported-media-type` | 415 | The request body is not `application/json` |
 | `/errors/not-a-candidate` | 422 | The release fails the candidate rules (R-PU6), an ingest names a repository that is not found or not public (R-PU32), or a compiler release has no asset that R-CV1 and R-CV2 select |
 | `/errors/successor-mismatch` | 422 | A successor that fails a check of R-AP31. The `detail` names the check, and lists the missing modules for the `exposes` check. |
@@ -168,6 +170,44 @@ R-AP43: Freshness. The Worker keeps the answers of the `GET` routes in the Cache
 | 2 | Each read with a `Talon-Bookmark` (R-AP41 row 5): a bookmark always comes with `no-cache` |
 
 A 404 answer is not put in the Cache API, so a repository that the registry indexes now is seen at the next request. A publish and a yank drop the entries of the group in the colo of the request (`cache.delete`, `cloudflare-workers/API.md` RF1). Other colos see the change after at most `max-age` (60 s). This is enough, because the default `min-release-age` of 2 days (Resolution 2, R-C7) hides a new release longer than that. The Cache-Tag purge needs a zone and an API token in the Worker, and it gives nothing that the case table above does not give. Rate limits apply to a `no-cache` request as to any other request (R-AP25).
+
+R-AP44: Changes to the API. A change that an older client can ignore stays in `/v1`. Any other change needs `/v2`:
+
+| Change | Where |
+| --- | --- |
+| A new route, a new answer field, a new problem type | `/v1` |
+| A new optional request field or query parameter, when an answer that ignores it holds the same facts or more (as `compilers` of R-AP16) | `/v1` |
+| A removed or renamed field, a changed type or meaning, a new required request field | `/v2` |
+| A new value in a closed set: `result`, `source`, `side`, `state` (R-AP32), `kind` | `/v2`. Reason: an older client cannot know what a new `result` value means for a resolve. |
+
+| Side | Rule |
+| --- | --- |
+| `tln` | It ignores an answer field that it does not know, as for its own files (CLI 6.1, R-TF2). It maps a problem type that it does not know by the HTTP status (CLI 3, R-E6). |
+| Worker | It ignores a request field and a query parameter that it does not know. So a newer `tln` works with a registry that runs an older Worker (`TALON_REGISTRY`, CLI 1). |
+| Both versions | One Worker serves `/v1` and `/v2` for at least 12 months (first guess) after the first Talon release that uses `/v2`. After that, R-AP45 refuses the old clients. |
+
+R-AP45: The client version. `tln` sends `User-Agent: tln/<version>` (RFC 9110, 10.1.5) with each request. The Worker has 2 settings, both empty by default:
+
+| Setting | Routes | Use |
+| --- | --- | --- |
+| `MIN_TLN_WRITE` | The write routes of R-AP41 | A Talon release with a bug that writes bad data: hint rows, ingests |
+| `MIN_TLN` | All routes | The end of `/v1` (R-AP44) |
+
+A request whose `User-Agent` is `tln/<v>`, with `v` lower than the setting of its route, gets 400 `unsupported-client` with the member `minimum`. A request with another `User-Agent` (a browser, `curl`, the compat bot) is not checked. The Cache API keeps only 200 answers, so a refused request puts nothing in the cache. The hint body keeps `talon_version` (R-CT12), because the Worker keeps it only for a Talon release, and the hint rows count by it. The setting names are a proposal.
+
+R-AP46: Size limits (first guesses). Each list goes to D1 as one JSON parameter (R-AP41 row 2), and one D1 statement has at most 100 KB. 300 groups of about 110 bytes and 1000 hashes of about 50 bytes are about 85 KB in one statement. Without the check, D1 fails and the answer is 500 `internal`.
+
+| Item | Limit |
+| --- | --- |
+| The request body of each route | 256 KB |
+| `groups` of R-AP16 | 300 |
+| `hashes` of R-AP16 | 1000 |
+| `short` values of R-SN1 | 50 |
+| `rows` of R-AP10 | 500 (R-CT2) |
+
+A request over a limit gets 413 `too-large`, with the members `field` and `limit`. The Worker checks the limits before it reads D1. `tln` keeps to them: the share queue sends at most 500 rows (CLI 1, R-SH4). A project with more groups or hashes than the limit is past what Talon supports now, and R-E6 gives exit code 1 with the limit in the message.
+
+R-AP47: The compiler list grows with each nightly: about 5 rows of about 200 bytes, about 365 KB of JSON a year, and the trim (R-CT15) does not remove them. Each new nightly changes the ETag. So `tln` does not read the whole list again. Each row has its own log leaf (R-PU9), so its own log index, and a row never changes (R-PU10). `tln` keeps the rows in `talon/index/` (CLI 6.1), and asks only with `after=<largest log index it has>`, page by page while `more` is true. With `--snapshot log:N`, it hides the rows with a log index greater than N (R-AP19). After `tln cache clean`, it reads the list again from `after=0`. The page limit also keeps each batch far below 1 MiB (R-AP41 row 6).
 
 R-AP25: Any route can answer 429 `rate-limited` with a `Retry-After` header in seconds. Q30 sets the limits of ingests (R-AP9), and R-CT11 sets the limits of user hints. `tln` stops with exit code 15, and the message gives the time when it can try again, as for GitHub (CLI 7.3, R-DI13). The share queue is the exception: a 429 answer keeps its rows and changes no exit code (CLI 1, R-SH4).
 
@@ -208,6 +248,9 @@ Tests:
 | R-AP41 budget | Miniflare. A counting proxy on the D1 binding (or the shim op log) counts the `prepare`, `run` and `batch` calls of each route. Each count is at most the budget. | Split the closure batch into 2 calls: count 2 |
 | R-AP41 row 2 | A closure with 60 groups (more than 100 parameters if each value were bound) gives 200 | Bind one parameter for each value: `D1Err` |
 | R-AP41 row 3 | A publish with the label written by another request between the pre-read and the batch gives 409, and no second leaf | Remove the trigger |
+| R-AP46 | A closure with 300 groups and 1000 hashes of the longest form gives 200. With 301 groups, or 1001 hashes, 413 `too-large` and no D1 call. | Remove the check: 500 `internal` on remote D1, or 200 with no limit |
+| R-AP47 | 2,500 toolchain rows: the pages from `after=0` while `more` is true hold each row once, in log index order. A page from the largest log index has no rows and `more` false. | Page by nightly, not by log index: a row is lost or seen twice at a page end |
+| R-AP45 | `MIN_TLN_WRITE=0.5.0`: `POST /v1/compat` with `User-Agent: tln/0.4.1` gives 400 `unsupported-client` with `minimum`. `GET /v1/toolchains` with the same agent gives 200. `curl/8` is not checked. | Compare the versions as text: `tln/0.10.0` is refused |
 | R-AP41 row 5, R-AP18 | A closure that runs at the same time as a publish: each `log_index` is at most `log_size` | Run the reads as separate calls with `log_size` first |
 
 ### 4.3 Short-name matches
@@ -512,7 +555,7 @@ R-CT2: The Worker checks the body and each user hint row. A row that is not vali
 | `result` | `pass`, `fail` or `crash`. A hang is not a hint (CLI 1, R-SH3). |
 | `error_digest` | Not allowed: 400. No table keeps the error of a user hint (R-RE12, R-RE16), and the first error line of a build can name a local path. |
 | `talon_version` | The version of `tln` (R-CT12) |
-| `rows` | At most 500 (first guess) |
+| `rows` | At most 500 (first guess). More: 413 `too-large` (R-AP46). |
 
 R-CT3: A contributor is one signed 64-bit integer (5.1, R-IK2). Its sign tells the kind, so the two kinds never have the same id:
 
