@@ -1,8 +1,9 @@
 # Verify probe (roc-toml slice 6, 0.2.0 not released): the behavior that the
 # not-caught mutation M119 changes, and the L0 gap of M87 (only F-DATE
-# catches it). Run with `roc test` from this directory. PKG is the local
-# roc-toml package; change the path in the header for another checkout.
-app [main!] { pkg: "../../../../../../roc-toml/package/main.roc" }
+# catches it). Run with `roc test` from this directory. It uses the planned
+# roc-toml 0.2.0 release (CHANGELOG.md of roc-toml), so it runs after that
+# release. Before it, use `roc test --replace-dep` with a local checkout.
+app [main!] { pkg: "https://github.com/Karakatiza666/roc-toml/releases/download/0.2.0/H3F7MuifYcAb8FLdZ1ccrEikjYKr6BSpwtsvFz2kWztq.tar.zst" }
 
 import pkg.Toml
 import pkg.Value

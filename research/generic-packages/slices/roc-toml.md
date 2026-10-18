@@ -1,6 +1,6 @@
 # roc-toml: TOML 1.0.0 parse, print and span edit
 
-Phase: P0 (generic packages, Design 7). Status: tests (red), last test round done (2026-10-16). Review 1: Q1 to Q10 settled with the proposals, the output proposals and D8 (vendored toml-test) accepted. After review 1: Q14 answered (one nightly, 10-14), Q11 to Q13 settled by the slice proposals, human to confirm. Next: the code agent, slice 1.
+Phase: P0 (generic packages, Design 7). Status: done, 0.1.0 released (2026-10-16). Review 1: Q1 to Q10 settled with the proposals, the output proposals and D8 (vendored toml-test) accepted. After review 1: Q14 answered (one nightly, 10-14), Q11 to Q13 settled by the slice proposals, human to confirm. Next: the code agent, slice 1.
 
 | Item | Value |
 | --- | --- |
@@ -290,7 +290,7 @@ Observation (not a gap of the tests): the error column is at the start of the li
 
 ## Slice 6 (0.2.0)
 
-Status: tests (red). P6-1, P6-2 and Q16 to Q19: settled by slice proposal, human to confirm. 0.1.0 is released (tag `0.1.0`). Compiler: `nightly-2026-10-14-38a3029`. Code estimate: 150 to 250 lines (a value check, and error offsets in the parser).
+Status: done, 0.2.0 committed in roc-toml (`cad23df`), not released. P6-1, P6-2, Q16 to Q19, C1, C2 and S-COL14: confirmed by the human (2026-10-18). 0.1.0 is released (tag `0.1.0`). Compiler: `nightly-2026-10-14-38a3029`. Code estimate: 150 to 250 lines (a value check, and error offsets in the parser).
 
 ### Scope
 
@@ -308,7 +308,7 @@ Status: tests (red). P6-1, P6-2 and Q16 to Q19: settled by slice proposal, human
 
 The doc comments of `Toml`, `Toml.parse`, `Toml.replace` and `Toml.insert` have the C1 and C2 rules. A new tag in the error union breaks an exhaustive `match` of a caller (the helpers of `tests/edit.roc` and `tests/entries.roc` got an `InvalidValue` arm), so the release is `0.2.0`, a new series below 1.0 (Design 4.1).
 
-### Proposals (TW24): settled by slice proposal, human to confirm
+### Proposals (TW24): settled by slice proposal, confirmed by the human (2026-10-18)
 
 | # | Proposal | Rejected options |
 | --- | --- | --- |
@@ -335,7 +335,7 @@ Each expected column was checked by hand against the C2 rule. Examples: `v = 01`
 
 Counts now: `structure.roc` 109, `edit.roc` 68, `entries.roc` 62, total L0 1270. L1: 6 targets. All other files and the old tests pass on 0.1.0.
 
-### Settled by slice proposal (human to confirm)
+### Settled by slice proposal (confirmed by the human, 2026-10-18)
 
 | # | Question | Blocks | Answer (the proposal) |
 | --- | --- | --- | --- |
@@ -366,7 +366,7 @@ Verify agent, 2026-10-16, `nightly-2026-10-14-38a3029`. Script: `research/generi
 | Ids | File | Checks | Mutation caught |
 | --- | --- | --- | --- |
 | S-COL13 (3 cases) | `structure.roc` | A bad hex digit in `\u` (1, 10), in `\U` (1, 14), on line 2 (2, 10) | M119 (3 failed) |
-| S-COL14 (2 cases) | `structure.roc` | Code agent proposal, human to confirm: a surrogate `\uD800` and `\U00110000` give the first hex digit (1, 8) | (none planted) |
+| S-COL14 (2 cases) | `structure.roc` | Code agent proposal, confirmed by the human (2026-10-18): a surrogate `\uD800` and `\U00110000` give the first hex digit (1, 8) | (none planted) |
 | S-COL15 | `structure.roc` | `d = 2023-11-31` is a rule error at (1, 5) | M87 |
 | E-INV2 (1 more case) | `edit.roc` | `replace` with 2023-11-31 gives `InvalidValue` | M87 |
 

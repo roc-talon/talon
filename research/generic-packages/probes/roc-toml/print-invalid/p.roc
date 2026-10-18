@@ -1,6 +1,6 @@
 # What Value.print and Toml.print give for values that TOML cannot write
 # (roc-toml 0.1.0, slice 6 question). Run: roc test p.roc (prints with dbg).
-app [main!] { pkg: "/home/george/dev/Karakatiza666/roc-toml/package/main.roc" }
+app [main!] { pkg: "https://github.com/Karakatiza666/roc-toml/releases/download/0.1.0/3icmtKz6XQUyHqu5JftcoJJT6a9YTND1B8z1UAmtqJpN.tar.zst" }
 
 import pkg.Toml
 import pkg.Value
