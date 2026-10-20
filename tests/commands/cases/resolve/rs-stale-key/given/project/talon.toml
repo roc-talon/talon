@@ -1,0 +1,2 @@
+[dependencies]
+js = "acme/json@^2"

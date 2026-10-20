@@ -1,0 +1,14 @@
+# TW4: one line for each call of the real Fx (cli/fxprobe.roc has no Talon logic).
+# R-HF1 R-NR1: with no terminal, stdin and stderr are both not a TTY.
+# R-EV18 R-EV22: the real Fx gives the real clock, and TALON_NOW is in the variables that it gives.
+# The choice between them is the pure function Clock.now (tests/unit/clock.roc).
+fxprobe args a "b c"
+fxprobe cwd
+fxprobe env | grep -E '^(HOME|CI|TZ|LANG|TALON_REGISTRY|TALON_NOW|TALON_TEST_DIR)=' | sort
+fxprobe read "$PWD/main.roc" "$PWD/missing.roc"
+fxprobe write "$PWD/new.txt" "hello"
+fxprobe out "to stdout"; echo
+fxprobe err "to stderr"; echo >&2
+test $(( $(date +%s) - $(fxprobe clock) )) -lt 5 && echo "clock ok"
+fxprobe tty
+fxprobe ask "Go? "; echo >&2

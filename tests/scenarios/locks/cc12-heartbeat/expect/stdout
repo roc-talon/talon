@@ -1,0 +1,8 @@
+A.lock has owner
+beat of A was written again while H waits for B
+held $PROJECT/A
+held $PROJECT/B
+unlocked $PROJECT/B
+unlocked $PROJECT/A
+A.lock is kept: its owner is not H
+B.lock is gone

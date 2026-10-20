@@ -1,0 +1,2 @@
+[workspace]
+members = ["apps/*/main.roc", "examples/*.roc"]

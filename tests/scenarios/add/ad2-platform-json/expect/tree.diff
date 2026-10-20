@@ -1,0 +1,21 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1792065600}]}
+--- project/main.roc
++++ project/main.roc
+@@ -1,6 +1,8 @@
+ app [main!] {
+-	shell: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
++	shell: platform "https://github.com/acme/pf/releases/download/0.2.0/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst",
+ 	pf: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",   # a package with the alias pf
++	roc: "nightly-2026-10-14-38a3029",
++	lexer: "https://github.com/acme/lex/releases/download/1.2.0/7r2t7xhwfM9esnfmYrQCSFZAmkzvfsyTeo1J5276kjmc.tar.zst",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/talon.toml
++++ project/talon.toml
+@@ -0,0 +1,2 @@
++[dependencies]
++shell = "=0.2.0"

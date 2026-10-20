@@ -1,0 +1,55 @@
+# R-HF4 R-DA1 R-DA5 R-DA7 R-CC12 R-CC3 R-FE3 R-HF12 TW4: the jobs of the real Fx of slice 003, one line for each, with `fxprobe` (no Talon logic in them).
+# http_get!, programs!, spawn_all!, rename!, make_dirs!, random!. The fake HTTP server answers. All times and ports are made stable by the runner.
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+U=$TALON_HTTP/x
+# The server adds headers that change between runs.
+unstable() { grep -v -i '^header \(content-length\|date\|server\|content-type\|connection\)'; }
+
+echo "== http_get!: the status, a header, the body. A status of 400 or more is an answer, not an error."
+fxprobe http "$U/hello" "Accept: text/plain" | unstable
+fxprobe http "$U/missing" | unstable
+echo "== a header of the request is sent: If-None-Match gives 304"
+fxprobe http "$U/tagged" 'If-None-Match: "v1"' | unstable
+echo "== no answer: the error text of the platform"
+fxprobe http http://127.0.0.1:1/x
+
+echo "== programs!"
+fxprobe programs sh curl wget no-such-program-xyz
+echo "== make_dirs!: parents, and a dir that exists is not an error"
+fxprobe mkdirs "$PWD/a/b/c" "$PWD/a/b"
+test -d a/b/c && echo "made"
+echo "== rename!: a file, a missing source, a directory onto a directory that is not empty (R-FE3: the loser)"
+echo data > f1.txt
+fxprobe rename "$PWD/f1.txt" "$PWD/f2.txt"
+fxprobe rename "$PWD/f1.txt" "$PWD/f3.txt"
+mkdir -p new/sub winner/sub
+echo x > winner/sub/x
+fxprobe rename "$PWD/new" "$PWD/winner"
+test -d new && echo "the source stays"
+fxprobe rename "$PWD/new" "$PWD/fresh"
+echo "== random!"
+fxprobe random
+
+echo "== spawn_all!: the exit code, the stdout, the last line of the stderr, a signal, a program that does not exist, the working directory"
+fxprobe spawn 2 - sh -c 'echo out; echo err1 >&2; echo err2 >&2; echo >&2; exit 3' -- sh -c 'kill -9 $$' -- /no/such/program --flag -- sh -c 'echo quiet'
+fxprobe spawn 1 "$PWD/a/b" pwd
+
+echo "== spawn_all! with limit 8 and 10 jobs on a slow body: the server sees 8 requests at the same time at most (R-DA5)"
+set -- curl --silent --output /dev/null "$U/slow"
+i=1
+while [ $i -lt 10 ]; do set -- "$@" -- curl --silent --output /dev/null "$U/slow"; i=$((i + 1)); done
+fxprobe spawn 8 - "$@" | sort | uniq -c
+cat "$TALON_TEST_DIR/http.maxconn"
+
+echo "== a lock stays held while a child runs, and its beat is written again by the poll loop (R-CC12, R-CC3 point 3)"
+p=$PWD
+fxprobe lockspawn "$p/L" - sleep 5 > lockspawn.out.tmp &
+pid=$!
+n=0; while [ ! -f L.lock/beat ] && [ $n -lt 100 ]; do sleep 0.1; n=$((n + 1)); done
+touch -d '2000-01-01 00:00:00' L.lock/beat
+touch -d '2000-01-02 00:00:00' ref.tmp
+sleep 3
+test L.lock/beat -nt ref.tmp && echo "beat of L was written again while the child runs"
+wait $pid
+cat lockspawn.out.tmp
+test ! -e L.lock && echo "L.lock is gone"

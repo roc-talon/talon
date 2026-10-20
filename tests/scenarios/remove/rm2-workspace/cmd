@@ -1,0 +1,9 @@
+# R-WS12 R-WS14 R-CM3 R-RV1 R-PD4 R-PD5 R-PD9 R-FL6 R-EC2 Q3 (slice 008): `tln remove` in a workspace with the members a and b. Both have json, and the root talon.toml has the key `json`.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# R-WS12: at the root there is no current member. Exit 2, the members are listed, nothing is written.
+st tln remove json
+# One member only (--file). The member b still has json, so the key stays (Q3): the group is still in use. Only the header of a changes, and only a is checked. A workspace command records each member (R-PD9).
+st tln remove json --file apps/a/main.roc
+# Now no other member has json: the header entry and the key go.
+st tln remove json --file apps/b/main.roc

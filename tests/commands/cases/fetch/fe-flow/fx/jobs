@@ -1,0 +1,11 @@
+unbundle 9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst	0	-	-	dir:{cwd}/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17;file:{cwd}/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/main.roc
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	1	-	Error: Hash mismatch	-
+unbundle 4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst	0	-	-	dir:{cwd}/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w;file:{cwd}/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w/main.roc
+unbundle 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst	0	-	-	dir:{cwd}/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS;file:{cwd}/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS/main.roc
+unbundle 2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst	notstarted:no such file	-	-	-
+J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst	22	-	curl: (22) The requested URL returned error: 404	-
+9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.0123456789abcdef.tmp/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.0123456789abcdef.tmp/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst
+6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.0123456789abcdef.tmp/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst
+2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.0123456789abcdef.tmp/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst

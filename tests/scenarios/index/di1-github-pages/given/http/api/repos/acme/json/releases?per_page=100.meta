@@ -1,0 +1,2 @@
+header ETag: "page1"
+header Link: <http://127.0.0.1:$PORT/api/repos/acme/json/releases?per_page=100&page=2>; rel="next", <http://127.0.0.1:$PORT/api/repos/acme/json/releases?per_page=100&page=2>; rel="last"

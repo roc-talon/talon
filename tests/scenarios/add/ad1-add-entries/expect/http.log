@@ -1,0 +1,7 @@
+GET /api/repos/acme/util/releases?per_page=100 200
+GET /api/repos/acme/json/releases?per_page=100 200
+GET /api/repos/acme/xml/releases?per_page=100 200
+GET /api/repos/acme/lex/releases?per_page=100 200
+GET /api/repos/acme/pre/releases?per_page=100 200
+GET /api/repos/acme/parser/releases?per_page=100 200
+GET /api/repos/acme/9lives/releases?per_page=100 200

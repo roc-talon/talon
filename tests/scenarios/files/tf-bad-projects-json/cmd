@@ -1,0 +1,21 @@
+# R-TF6 R-TF3 R-EC19 R-E4 R-CC3 R-CC6: projects.json cannot be made again. Content that does not parse, and a newer format, stop
+# the command with exit code 19 (input). The error line names the file. The file stays as it is. The lock is released,
+# also after the failure (R-CC3: unlock! runs when the body fails).
+D="$XDG_CACHE_HOME/roc/talon"
+mkdir -p "$D"
+x=0
+echo 'garbage{' > "$D/projects.json"
+flowprobe record "$PWD/app/main.roc" || x=$?
+echo "exit $x"; cat "$D/projects.json"
+test ! -e "$D/projects.json.lock" && echo "lock released"
+
+echo '{"format":2,"projects":[]}' > "$D/projects.json"
+x=0
+flowprobe record "$PWD/app/main.roc" || x=$?
+echo "exit $x"; cat "$D/projects.json"
+
+echo '{"format":1,"projects":[{"path":1}]}' > "$D/projects.json"
+x=0
+flowprobe record "$PWD/app/main.roc" || x=$?
+echo "exit $x"; cat "$D/projects.json"
+rm "$D/projects.json"

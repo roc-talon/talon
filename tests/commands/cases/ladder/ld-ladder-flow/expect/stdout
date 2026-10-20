@@ -1,0 +1,27 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+note: unchanged error: acme/parser 1.0.0 Parser.roc: type mismatch
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== update json file=p3/main.roc compiler=nightly-2026-10-14-38a3029
+exit 11
+== update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+exit 1
+== update json file=p5/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== update json file=p6/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== update json file=p7/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+note: unchanged error: main.roc: type mismatch
+note: unchanged error: main.roc: type mismatch
+note: unchanged error: Util.roc: type mismatch
+note: unchanged error: $PROJECT/lib-local/Local.roc: type mismatch
+build: passed
+$PROJECT/p7/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

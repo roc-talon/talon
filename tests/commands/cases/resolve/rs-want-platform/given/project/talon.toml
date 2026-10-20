@@ -1,0 +1,2 @@
+[dependencies]
+shell = "acme/pf@^0.1"

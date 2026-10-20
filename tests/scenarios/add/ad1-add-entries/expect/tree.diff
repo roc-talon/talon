@@ -1,0 +1,27 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1792065600}]}
+--- project/main.roc
++++ project/main.roc
+@@ -1,6 +1,12 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",   # the platform
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst",
++	util: "https://github.com/acme/util/releases/download/1.1.0/FaSACze7PmHRTFb729jy9fkoZS2rNK2RretLTUpxLB51.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++	xml: "https://github.com/acme/xml/releases/download/1.2.0/9fHyyLkm3B3QDU4j2d8Cc4VTkZMXS5vxZ2rccg3oRQ5f.tar.zst",
++	lex: "https://github.com/acme/lex/releases/download/1.1.0/FtWiVtJnftsbk6KF8DD9WvUXigwx38tUd4tEk3WDBrV6.tar.zst",
++	pre: "https://github.com/acme/pre/releases/download/1.0.0/2mqqUnkkBHzQ7GDATS87FUvamVFRS3p3HBpXZ1LDiTGT.tar.zst",
++	nine: "https://github.com/acme/9lives/releases/download/1.0.0/B8BEmGfcd49XAMfMC8a9ttLPzXq5xf87GUtkiqwTawt4.tar.zst",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/talon.toml
++++ project/talon.toml
+@@ -0,0 +1,4 @@
++[dependencies]
++json = "^2.1"
++xml = "^1"
++lex = "=1.1.0"

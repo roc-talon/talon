@@ -1,0 +1,3 @@
+R-NM1 R-NM2 R-NM3 R-NM8 R-NM10 R-NM12 R-NR1 R-NR2 R-NR6 R-HF1 R-EV8: TALON_INTERACTIVE=1 overrides CI=true. The terminal test runs once (R-HF1: one tty call for the whole command).
+Each prompt that is asked shows its default (R-NR2). --yes does not answer a Consent prompt: it is asked. --yes and an answer flag give no ask.
+An empty line is the default, `NO` is no.

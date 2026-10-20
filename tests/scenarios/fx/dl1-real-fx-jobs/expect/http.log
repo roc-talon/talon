@@ -1,0 +1,13 @@
+GET /x/hello 200
+GET /x/missing 404
+GET /x/tagged 304 if-none-match="v1"
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200
+GET /x/slow 200

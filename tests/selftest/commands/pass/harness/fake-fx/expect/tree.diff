@@ -1,0 +1,22 @@
+--- project/gone.txt
++++ project/gone.txt
+@@ -1 +0,0 @@
+-to delete
+--- project/in.txt
++++ project/in.txt
+@@ -1 +0,0 @@
+-in file
+--- project/made-by-job.txt
++++ project/made-by-job.txt
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- project/out.txt
++++ project/out.txt
+@@ -0,0 +1 @@
++written
+\ No newline at end of file
+--- project/renamed.txt
++++ project/renamed.txt
+@@ -0,0 +1 @@
++in file

@@ -1,0 +1,2 @@
+R-NR1 R-NM2 R-NM3 R-NM5 R-HF1 R-EV8: TALON_INTERACTIVE=1 does not override the terminal row. With stdin not a TTY, stderr a TTY: non-interactive. The prompt never asks.
+The tty call runs once for the command, at the first prompt that needs it (a --yes prompt before it needs none).

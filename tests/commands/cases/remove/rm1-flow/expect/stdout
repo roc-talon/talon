@@ -1,0 +1,22 @@
+== remove json --file r1/main.roc
+check: passed
+note: unchanged error: acme/parser 1.0.0 Parser.roc: type mismatch
+build: passed
+$PROJECT/r1/main.roc
+  - json: acme/json 2.0.0
+$PROJECT/r1/talon.toml: - [dependencies] json
+$PROJECT/r1/talon.toml: - [overrides] json
+exit 0
+== remove parser --file r2/main.roc
+exit 10
+== rm parser --file r3/main.roc
+exit 11
+== remove json --file r4/main.roc
+check: passed
+build: passed
+exit 17
+== remove json --file r5/lib/main.roc
+exit 11
+== remove parser --file r5/lib/main.roc --json
+{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":null,"removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[],"patches":[],"pinned":null,"notes":[],"written":["$PROJECT/r5/lib/main.roc"]},"error":null}
+exit 0

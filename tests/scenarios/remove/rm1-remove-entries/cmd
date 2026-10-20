@@ -1,0 +1,30 @@
+# R-CM3 R-CM19 R-RV1 R-RV2 R-RV3 R-RV4 R-RV5 R-LF3 R-LF4 R-RP3 R-FL4 R-FL12 R-FL13 R-EC2 R-EC11 R-J1 R-J3 R-J4 R-J5 R-OUT4 R-PD9 R-OV1 R-SC1 R-SC6 R-SC7 R-H1 R-H2 R-CC1 Q2 Q4 Q8 (slice 008):
+# `tln remove` on the real binary and the fake roc (the answer of every check is "pass": the checks that find a new error are in the L2 case `remove/rm1-flow`). The app has a platform, json (imported by main.roc),
+# parser (a key in 3 tables of talon.toml, and a patch), xml, lex (imported by the module Helpers, so the scan goes 2 levels deep), a path entry, a foreign URL, and no roc pin.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# R-LF4: --dry-run runs the probes and writes no file. The plan: the entry, the pin of R-RP3 (the header has none), the 3 keys of talon.toml, and the patch files that stay (R-RV4). No R-DT5 line: a remove resolves nothing (Q8).
+st tln remove parser --dry-run
+grep -c '^	parser:' main.roc
+
+# R-RV2: json is imported by main.roc. Exit 11 (R-EC11), the import lines, nothing is written. The lines are in the message, so the envelope has them (R-J5, R-OUT4).
+st tln remove json --json
+# The lexical scan follows the local modules (Q5): lex is imported by Helpers.roc, which main.roc imports.
+st tln remove lex
+# --no-check skips the check, not the scan.
+st tln remove json --no-check
+# R-RV3: the platform. A name that is not an entry. A line with no name (Q2). R-FL13: --frozen is for install.
+st tln remove pf
+st tln remove nosuch
+st tln remove
+st tln remove json --frozen
+
+# R-RV1, R-RV4: the real run. The header entry, the 3 keys of talon.toml (the comment of the line goes) and the pin go in one write. The patch files stay, and their dir is printed. The envelope has the same facts (R-OUT4).
+st tln remove parser --json
+test -e .talon/patches/parser/main.roc && echo "the patch files stay"
+# `rm` is `remove`, and the envelope has the word as typed (R-CM19, R-J3). A full name is a lookup form (R-SC7). --no-check: no probe, and the pin stays as it is. --quiet hides the human lines, also with --json (R-FL4).
+st tln rm acme/xml --no-check --json --quiet
+# R-RV5: a path entry and a foreign URL are removed, and 3 names (one is typed twice) are one run, and the envelope has the kind of each entry. --force on entries that no module imports does not skip the check (Q4).
+st tln remove util odd util --force --json
+# R-RV2: --force removes an entry that a module imports, and skips the check. The note says that the app cannot check.
+st tln remove json --force

@@ -1,0 +1,12 @@
+── ● unused variable ────────────────────────────────────────────── main.roc:8:2
+
+Variable unused is defined here and then never used.
+
+unused = 5
+^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _unused to
+suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────────────── main.roc
+

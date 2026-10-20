@@ -1,0 +1,5 @@
+stdin=True stderr=True
+stdin=False stderr=True
+stdin=True stderr=False
+Go? got yes
+

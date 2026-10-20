@@ -1,0 +1,5 @@
+R-CC1 R-CC2 R-CC3 R-CC5 R-CC6 R-PD9 R-PD11 R-PD12 R-TF1 R-HF3: with_lock! and Known.record! with the fake Fx, in a fixed script (tests/commands/main.roc, entry locks).
+Runs 1 to 4: the body runs inside the lock and unlock! also follows a failed body; NoWait on a busy item gives Busy with no body and no unlock; Wait on a busy item tries NoWait first, prints
+"waiting for another tln: <item>" once to stderr, then takes the lock with Wait.
+Runs 5 to 7: the project file is recorded under the lock of projects.json (nowait first). The lock holder deletes the stale temp of the item (R-CC2). A temp copy is never recorded (R-PD11).
+No files: no Fx call. Only a skipped file: the lock and the read, and no write. No ask! call runs under a lock (the fake would log a VIOLATION line).

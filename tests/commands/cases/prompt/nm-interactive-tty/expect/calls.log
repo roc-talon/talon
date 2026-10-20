@@ -1,0 +1,10 @@
+env_all
+tty
+ask "Install it? [Y/n] "
+ask "Remove it? [y/N] "
+ask "Pick one [1-3, default 2] "
+ask "Move it? [y/N] "
+ask "Share data? [y/N] "
+ask "Last one [1-2, default 1] "
+cwd
+write_atomic $PROJECT/result.txt

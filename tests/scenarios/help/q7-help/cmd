@@ -1,0 +1,3 @@
+# Q7 R-FL12 R-CM19: `tln --help` prints the usage on stdout, exit 0. `tln help` prints the same text.
+tln --help
+[ "$(tln help)" = "$(tln --help)" ] && echo "same text"

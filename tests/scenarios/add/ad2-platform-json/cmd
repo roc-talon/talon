@@ -1,0 +1,21 @@
+# R-AD29 R-AD30 R-AD31 R-AD32 R-AD33 R-AD25 R-SE7 R-C3 R-C4 R-J1 R-J2 R-J3 R-J4 R-J5 R-OUT4 R-OUT5 R-LF4 R-DT5 R-FL4 R-AD13 R-CM20 R-EC2 R-PD9:
+# `tln add --platform` and `--json` on the real binary. The platform of the app has the alias `shell`. The alias `pf` is a package (json), so a search by the alias `pf` finds the wrong entry (R-AD31).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# A platform with no --platform is a failure (R-AD33). A package with --platform is a failure (R-AD32, R-C4). Nothing is written.
+st tln add acme/pf
+st tln add --platform acme/json
+# A platform that the header does not have, with no --platform: the same failure, with the envelope of a failure on stdout (R-J5). The kind of the release decides before the pick.
+st tln add acme/pf2 --json
+# --json: stdout has the envelope only, stderr has the human text (R-J1, R-J2). --dry-run: the platform entry `shell` is replaced, the plan names the change (R-AD31, R-SE7).
+st tln add --platform acme/pf --dry-run --json
+# The real run, with an exact version: the entry `shell` gets the new URL, the key of the old platform entry goes to a new talon.toml (R-AD25, R-AD31).
+st tln add --platform acme/pf@0.2.0
+# The same platform again: the URL is the same (R-AD31: no note, no change).
+st tln add --platform acme/pf@0.2.0
+# --quiet hides each stdout line (R-FL4) and --json keeps the envelope: a new entry with its alias (`i` is `add`).
+st tln i acme/lex --as lexer --json --quiet
+echo "== the files"
+cat main.roc talon.toml
+# The index pages are the fixtures of slice 003: the tree diff shows the project files and projects.json only.
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

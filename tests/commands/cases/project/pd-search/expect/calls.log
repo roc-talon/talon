@@ -1,0 +1,67 @@
+list_dirs $PROJECT/solo/sub
+list_dirs $PROJECT/solo
+read_files $PROJECT/solo/talon.toml
+read_files $PROJECT/solo/main.roc
+list_dirs $PROJECT/r/apps/a
+list_dirs $PROJECT/r/apps
+list_dirs $PROJECT/r
+read_files $PROJECT/r/apps/a/talon.toml $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps/b $PROJECT/r/examples
+read_files $PROJECT/r/apps/a/main.roc
+list_dirs $PROJECT/r/apps/b/src
+list_dirs $PROJECT/r/apps/b
+list_dirs $PROJECT/r/apps
+list_dirs $PROJECT/r
+read_files $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps/a $PROJECT/r/examples
+read_files $PROJECT/r/apps/b/main.roc
+list_dirs $PROJECT/r/docs
+list_dirs $PROJECT/r
+read_files $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps $PROJECT/r/examples
+list_dirs $PROJECT/r/apps/a $PROJECT/r/apps/b
+list_dirs $PROJECT/r/tools
+list_dirs $PROJECT/r
+read_files $PROJECT/r/tools/talon.toml $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps $PROJECT/r/examples
+list_dirs $PROJECT/r/apps/a $PROJECT/r/apps/b
+read_files $PROJECT/r/tools/main.roc
+list_dirs $PROJECT/r/examples
+list_dirs $PROJECT/r
+read_files $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps
+list_dirs $PROJECT/r/apps/a $PROJECT/r/apps/b
+canonical $PROJECT/r/examples/hello.roc
+list_dirs $PROJECT/r/examples
+list_dirs $PROJECT/r
+read_files $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps
+list_dirs $PROJECT/r/apps/a $PROJECT/r/apps/b
+read_files $PROJECT/r/examples/hello.roc
+canonical $PROJECT/r/apps/b/src/x.roc
+list_dirs $PROJECT/r/apps/b/src
+list_dirs $PROJECT/r/apps/b
+list_dirs $PROJECT/r/apps
+list_dirs $PROJECT/r
+read_files $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps/a $PROJECT/r/examples
+read_files $PROJECT/r/apps/b/src/x.roc
+canonical $PROJECT/r/main.roc
+list_dirs $PROJECT/r
+read_files $PROJECT/r/talon.toml
+list_dirs $PROJECT/r/apps $PROJECT/r/examples
+list_dirs $PROJECT/r/apps/a $PROJECT/r/apps/b
+read_files $PROJECT/r/main.roc
+list_dirs $PROJECT/empty/deep/er
+list_dirs $PROJECT/empty/deep
+list_dirs $PROJECT/empty
+list_dirs $PROJECT/nohdr
+read_files $PROJECT/nohdr/main.roc
+list_dirs $PROJECT/badhdr
+read_files $PROJECT/badhdr/main.roc
+list_dirs $PROJECT/badtoml
+read_files $PROJECT/badtoml/talon.toml
+list_dirs $PROJECT/h/work/app
+list_dirs $PROJECT/h/work
+list_dirs $PROJECT/h
+read_files $PROJECT/h/main.roc

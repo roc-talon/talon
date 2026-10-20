@@ -1,0 +1,2 @@
+R-NI1 R-NM4 R-NM6 R-NM9 R-I8 R-I9 (slice 007): the prompt of a stale key in interactive mode (stdin and stderr are a terminal). The header has json 2.0.0, and talon.toml has the key js = "acme/json@^2" (the group is in the header as json).
+Run 1: the person answers n: the key stays, the answer line is `kept 1 stale key in talon.toml`, nothing is written, exit 0. Run 2: the person presses Enter: the default is yes, the key is renamed. The prompt is asked once in each run.

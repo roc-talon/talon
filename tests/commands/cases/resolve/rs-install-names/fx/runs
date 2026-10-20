@@ -1,0 +1,3 @@
+install json compiler=nightly-2026-10-14-38a3029
+install nosuch compiler=nightly-2026-10-14-38a3029
+install compiler=nightly-2026-10-14-38a3029

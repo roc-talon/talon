@@ -1,0 +1,41 @@
+# R-FE2 R-EV23 R-EV24 R-FE3 R-FE5 R-FE8 R-FE10 R-DA2 R-DA3 R-DA4 R-DA7 R-HF4 R-HF5 R-HF12 R-EV12 R-EV25 R-CC11 R-FE4: the store and the fetch with the real download
+# programs, the real roc unbundle (the fake roc passes `unbundle` to the pinned roc, given/roc.tsv) and the fake HTTP server on a loopback URL.
+H1=9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 # the fixture package `greet` (tests/fixtures/pkgs)
+H2=J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr  # the fixture package `shout`
+P=$XDG_CACHE_HOME/roc/packages
+GREET=$TALON_HTTP/pkg/greet-1.0.0/$H1.tar.zst
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# curl is the default (it is on PATH). The item `<hash>/` has the files of the archive, no sidecar (R-FE5), and no temp dir stays.
+st flowprobe fetch "$GREET"
+ls -A "$P" | tr '\n' ' '; echo
+ls "$P/$H1" | tr '\n' ' '; echo
+
+# The item is there: no request, no roc call.
+st flowprobe fetch "$GREET"
+
+# wget by TALON_DOWNLOADER (R-EV12, R-DA2). Same result.
+rm -r "${P:?}/$H1"
+TALON_DOWNLOADER=wget st flowprobe fetch "$GREET"
+ls -A "$P" | tr '\n' ' '; echo
+
+# A bad hash: the archive has the bytes of another package. roc unbundle stops: exit 16, no item and no temp dir (R-FE2, R-DA7).
+BAD=$TALON_HTTP/pkg/bad-1.0.0/$H2.tar.zst
+st flowprobe fetch "$BAD"
+ls -A "$P" | tr '\n' ' '; echo
+
+# A 404: exit 15 with the text of R-FE10. curl names the status. wget --quiet gives none (Q3).
+MISSING=$TALON_HTTP/pkg/missing-1.0.0/$H2.tar.zst
+st flowprobe fetch "$MISSING"
+TALON_DOWNLOADER=wget st flowprobe fetch "$MISSING"
+ls -A "$P" | tr '\n' ' '; echo
+
+# A URL that roc refuses: exit 2, no request (R-FE8). Offline: the package is not there, exit 15, no request (R-FE7).
+st flowprobe fetch "http://10.0.0.1/pkg/missing-1.0.0/$H2.tar.zst"
+st flowprobe fetch --offline "$MISSING"
+
+# Both URLs together: the first is there, the second is a 404. The exit code is the code of the failure.
+st flowprobe fetch "$GREET" "$MISSING"
+
+# No curl and no wget on PATH: exit 18 (R-DA2, R-HF12). The fake roc is the only program on this PATH.
+PATH=$TALON_TEST_DIR/bin st "$(command -v flowprobe)" fetch "$MISSING"

@@ -1,0 +1,41 @@
+# R-CC3 R-CC12 R-HF3 R-LY3: the lock contract of the real Fx (the lock dir <item>.lock/ with a heartbeat), as one suite so that a
+# new implementation runs the same cases. `fxprobe lock <mode> <item>` takes the lock, then releases it.
+# A lock dir that another process holds is made here by the shell: `owner` and `beat`. `touch -d` sets the age of `beat`.
+p=$PWD
+old='2000-01-01 00:00:00'
+
+echo "# 1 a free item: held, and the lock dir is gone after unlock (point 1, 4)"
+fxprobe lock nowait "$p/free"
+test ! -e "$p/free.lock" && echo "free.lock is gone"
+
+echo "# 2 a live lock of another process: NoWait gives busy and leaves the dir (point 1)"
+mkdir live.lock; echo other > live.lock/owner; touch live.lock/beat
+fxprobe lock nowait "$p/live"
+test -f live.lock/owner && echo "live.lock is kept"
+
+echo "# 3 a stale beat (more than 30 s): the next process takes it, with NoWait and with Wait (point 2)"
+mkdir old.lock; echo other > old.lock/owner; touch -d "$old" old.lock/beat
+fxprobe lock nowait "$p/old"
+mkdir oldw.lock; echo other > oldw.lock/owner; touch -d "$old" oldw.lock/beat
+fxprobe lock wait "$p/oldw"
+
+echo "# 4 no beat file: the age of the directory counts"
+mkdir nb_old.lock; touch -d "$old" nb_old.lock
+fxprobe lock nowait "$p/nb_old"
+mkdir nb_new.lock
+fxprobe lock nowait "$p/nb_new"
+test -d nb_new.lock && echo "nb_new.lock is kept"
+
+echo "# 5 the first run: the directory of the item does not exist yet"
+fxprobe lock nowait "$p/deep/er/item"
+test -d deep/er && test ! -e deep/er/item.lock && echo "parent dirs made, item.lock is gone"
+
+echo "# 6 two locks in one process: the second is busy, and the first is released (the reverse order)"
+mkdir live2.lock; echo other > live2.lock/owner; touch live2.lock/beat
+fxprobe lockseq nowait "$p/x" "$p/live2" "$p/y"
+test ! -e x.lock && echo "x.lock is gone, y was never tried"
+
+echo "# 7 no stale dir is left (<item>.lock.<16hex>.stale)"
+ls -A | grep -c stale || true
+
+rm -r live.lock nb_new.lock live2.lock deep

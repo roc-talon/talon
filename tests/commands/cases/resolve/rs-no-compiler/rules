@@ -1,0 +1,1 @@
+R-HF12 R-PH8 R-RP3 R-LF1 R-EC18 R-AL1: Q3 of slice 005 (answered by the manager). The header has no roc pin and there is no roc on PATH (no compiler= word). Run 1: install resolves the nightly, so it stops with exit 18 and the message names roc. Run 2: install --frozen resolves nothing, so it needs no compiler: the header satisfies talon.toml, exit 0.

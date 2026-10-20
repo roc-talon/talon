@@ -1,0 +1,3 @@
+R-NM1 R-NM3 R-NM4 R-NM5 R-NM6 R-NM8 R-NM9 R-NM10 R-NR5 R-NR6 R-FL2 R-FL4 R-EC13 R-E4: CI=true gives non-interactive mode, so the command never asks (calls.log has no tty and no ask).
+Default prompts get the interactive default, --yes gives yes (also for a default no) or the default option,
+the answer flag wins over --yes, --quiet keeps the answer line, and a Required prompt with no answer stops with exit 13, no file.

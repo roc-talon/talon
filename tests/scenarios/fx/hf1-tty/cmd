@@ -1,0 +1,6 @@
+# R-HF1 R-NR1 R-NM2: under a pseudo terminal. The runner sets TALON_INTERACTIVE=1 (CI=true stays set).
+# The test of stdin and the test of stderr are apart. A prompt writes to stderr and reads stdin.
+fxprobe tty
+fxprobe tty < /dev/null
+fxprobe tty 2> /dev/null
+fxprobe ask "Go? "; echo

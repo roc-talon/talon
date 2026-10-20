@@ -1,0 +1,2 @@
+# Q7 R-EC2: `tln` with no command prints the usage on stderr, exit 2, nothing on stdout.
+tln || echo "exit=$?"

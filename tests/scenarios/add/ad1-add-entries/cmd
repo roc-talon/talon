@@ -1,0 +1,39 @@
+# R-CM2 R-CM19 R-CM20 R-FL8 R-AD1 R-AD2 R-AD6 R-AD8 R-AD14 R-AD16 R-AD17 R-AD18 R-AD19 R-AD20 R-AD21 R-AD22 R-AD24 R-AD25 R-AD26 R-AD27 R-AD28 R-SL3 R-SL4 R-SL5 R-SL10 R-SL12 R-SL14 R-H1 R-H3 R-I5 R-LF4 R-DT5 R-RP3 R-WS14 R-CC7 R-EC2 R-OUT4:
+# `tln add` on the real binary, the fake GitHub (given/http) and the fake roc. The app has a platform and json 2.0.0, and no roc pin and no talon.toml.
+# Each run is `exit <n>` after its output. The plans and the failures of the table of slice 007, P1 to P5 and P7 of slice 004.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# P1: a new entry with the default alias. --dry-run runs the probes (3: baseline, check, build) and writes no file (R-LF4). The line `resolved at ...` is R-DT5.
+st tln add acme/util --dry-run
+test ! -e talon.toml && echo "no talon.toml"
+# The real run writes the header (the entry and the roc pin of R-RP3), and no talon.toml: no selector (R-AD24, R-H3).
+st tln add acme/util
+test ! -e talon.toml && echo "no talon.toml"
+# A second run: the entry is in the header. Keep: exit 0, a note, no change, no probe (R-AD21).
+st tln add acme/util
+
+# P3: a header alias. `json` keeps (R-AD20, R-AD21). `json@latest` is the same (R-SL5). `json@^2.1` moves inside the selector and creates talon.toml with the range (R-AD22, R-AD26).
+st tln add json
+st tln add json@latest
+st tln add json@^2.1
+
+# P2: 2 names. `@^1` takes the highest 1.x and writes the range. `@1.1.0` is an exact version (the key `=1.1.0` is added to the file that is there: R-AD25, R-AD28).
+st tln add acme/xml@^1 acme/lex@1.1.0
+# `i` is `add` (R-CM20). --no-pin: an exact version writes no key (R-AD27).
+st tln i acme/pre@1.0.0 --no-pin
+# No release has this version: exit 2, the 3 nearest versions, newest first (R-SL12). The prerelease 1.3.0 and the draft 1.4.0 are no candidates.
+st tln add acme/parser@9.9.9
+
+# P5: a short name has no index (R-AD6). The default alias of 9lives is no name (R-AD16). --as: taken by the platform entry (R-AD18), a reserved word (R-AD17), then a good alias.
+st tln add parser
+st tln add acme/9lives
+st tln add acme/9lives --as pf
+st tln add acme/9lives --as app
+st tln add acme/util acme/9lives --as nine
+st tln add acme/9lives --as nine
+# P7: a git ref is for tool, x and roc (question Q3 of slice 004).
+st tln add acme/util@dd03c09e
+echo "== the files"
+cat main.roc talon.toml
+# The index pages are the fixtures of slice 003: the tree diff shows the project files and projects.json only.
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

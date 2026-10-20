@@ -1,0 +1,40 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/r1/main.roc","last_use":1792065600},{"path":"$PROJECT/r2/main.roc","last_use":1792065600},{"path":"$PROJECT/r3/main.roc","last_use":1792065600},{"path":"$PROJECT/r4/main.roc","last_use":1792065600},{"path":"$PROJECT/r5/lib/main.roc","last_use":1792065600}]}
+--- project/r1/main.roc
++++ project/r1/main.roc
+@@ -1,6 +1,5 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+ 	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+ 	util: "https://github.com/acme/util/releases/download/1.0.0/GuxBH2KepzGXfnFhX9xrJoR3QiLpt2bsMoXQUBtS4fbX.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+--- project/r1/talon.toml
++++ project/r1/talon.toml
+@@ -1,6 +1,4 @@
+ [dependencies]
+-json = "^2"   # the 2 series
+ parser = "^1"
+ 
+ [overrides]
+-json = "acme/json@^2.0.5"
+--- project/r4/main.roc
++++ project/r4/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.0.5/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+ 	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }
+--- project/r5/lib/main.roc
++++ project/r5/lib/main.roc
+@@ -1,5 +1,4 @@
+ package [Lib] {
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }

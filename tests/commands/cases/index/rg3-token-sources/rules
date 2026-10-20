@@ -1,0 +1,3 @@
+R-RG3 R-EV3 R-EV14 R-EV19 R-DI9: the token sources of the GitHub API, with gh on PATH in the fake (fx/programs) and logged in (fx/jobs).
+acme/gh: no variable: programs gh, then gh auth token, then the request has Authorization with the token of gh. acme/gh2: GH_TOKEN is set: no programs call, no gh, the request has the token of the variable.
+acme/test: TALON_GITHUB_API is set (the test hook): no token source is read, also with 2 tokens in the environment and gh on PATH, and the request has no Authorization.

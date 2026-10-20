@@ -1,0 +1,169 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/r1/main.roc
+list_dirs $PROJECT/r1
+list_dirs $PROJECT
+read_files $PROJECT/r1/talon.toml
+read_files $PROJECT/r1/main.roc
+canonical $PROJECT/r1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/r1/main.roc $PROJECT/r1/talon.toml
+read_files $PROJECT/r1/Helpers.roc $PROJECT/r1/Gone.roc
+read_files $PROJECT/r1/Inner/Deep.roc $PROJECT/r1/Inner/Mid.roc
+read_files $PROJECT/r1/Inner/Leaf.roc
+random
+copy_tree $PROJECT/r1 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/Inner
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/Helpers.roc $HOME/.cache/roc/talon/tmp/0123456789abcdef/Inner/Deep.roc $HOME/.cache/roc/talon/tmp/0123456789abcdef/Inner/Leaf.roc $HOME/.cache/roc/talon/tmp/0123456789abcdef/Inner/Mid.roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r1 nightly-2026-10-14-38a3029 check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 check main.roc timeout=30
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/r1/talon.toml $PROJECT/r1/main.roc
+write_atomic $PROJECT/r1/talon.toml $PROJECT/r1/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/r2/main.roc
+list_dirs $PROJECT/r2
+list_dirs $PROJECT
+read_files $PROJECT/r2/talon.toml
+read_files $PROJECT/r2/main.roc
+canonical $PROJECT/r2/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/r2/main.roc $PROJECT/r2/talon.toml
+random
+copy_tree $PROJECT/r2 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r2 nightly-2026-10-14-38a3029 check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 check main.roc timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+canonical $PROJECT/r3/main.roc
+list_dirs $PROJECT/r3
+list_dirs $PROJECT
+read_files $PROJECT/r3/main.roc
+canonical $PROJECT/r3/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/r3/main.roc $PROJECT/r3/talon.toml
+random
+copy_tree $PROJECT/r3 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r3 nightly-2026-10-14-38a3029 check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 check main.roc timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+canonical $PROJECT/r4/main.roc
+list_dirs $PROJECT/r4
+list_dirs $PROJECT
+read_files $PROJECT/r4/main.roc
+canonical $PROJECT/r4/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/r4/main.roc $PROJECT/r4/talon.toml
+random
+copy_tree $PROJECT/r4 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r4 nightly-2026-10-14-38a3029 check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 check main.roc timeout=30
+hook project/r4/main.roc
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/r4/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/r5/lib/main.roc
+list_dirs $PROJECT/r5/lib
+list_dirs $PROJECT/r5
+list_dirs $PROJECT
+read_files $PROJECT/r5/lib/main.roc
+canonical $PROJECT/r5/lib/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml
+read_files $PROJECT/r5/lib/Lib.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/r5/lib/main.roc
+list_dirs $PROJECT/r5/lib
+list_dirs $PROJECT/r5
+list_dirs $PROJECT
+read_files $PROJECT/r5/lib/main.roc
+canonical $PROJECT/r5/lib/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml
+read_files $PROJECT/r5/lib/Lib.roc
+random
+copy_tree $PROJECT/r5/lib $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/Lib.roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r5/lib nightly-2026-10-14-38a3029 check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 check main.roc timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/r5/lib/main.roc
+write_atomic $PROJECT/r5/lib/main.roc

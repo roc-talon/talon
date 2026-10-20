@@ -1,0 +1,22 @@
+# R-CC12 R-CC3 R-HF3: the real Fx writes `beat` again every 2 s for each lock that it holds, inside its own waits.
+# Process H takes A, then waits for B. Another process holds B (made by the shell, with a beat that is fresh).
+# While H waits, the beat of A must be written again (point 3: a lock stays held during all other Fx calls).
+# Then the owner of A is changed by the shell, as if another process had taken A: `unlock!` must not delete it,
+# because the file `owner` has no longer the token of H.
+p=$PWD
+mkdir B.lock; echo other > B.lock/owner; touch B.lock/beat
+fxprobe lockseq wait "$p/A" "$p/B" > seq.out.tmp &
+pid=$!
+n=0; while [ ! -f A.lock/beat ] && [ $n -lt 100 ]; do sleep 0.1; n=$((n + 1)); done
+test -f A.lock/owner && echo "A.lock has owner"
+touch -d '2000-01-01 00:00:00' A.lock/beat
+touch -d '2000-01-02 00:00:00' ref.tmp
+sleep 5
+test A.lock/beat -nt ref.tmp && echo "beat of A was written again while H waits for B"
+echo stolen > A.lock/owner
+rm -r B.lock
+wait $pid
+cat seq.out.tmp
+test -d A.lock && echo "A.lock is kept: its owner is not H"
+test ! -e B.lock && echo "B.lock is gone"
+rm -r A.lock

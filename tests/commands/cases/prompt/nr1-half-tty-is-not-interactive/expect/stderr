@@ -1,0 +1,4 @@
+answer p0: yes
+answer p1: yes
+answer p2: no
+tln: error[consent]: a move needs consent. Pass --allow-moves or --yes.

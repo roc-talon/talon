@@ -1,0 +1,11 @@
+# R-SL12 R-SL13 R-SL2 R-SL6 R-SL7 R-SL1 R-AD28 R-EC2 R-E4: a bad reference stops with exit 2, before any network call and
+# before the project file is read. Each line fails, and the next line runs (the `|| echo` keeps `sh -e` going).
+# A typo is an error, never a source build. `@sel` has no name outside `tln roc`. A compiler selector is for `tln roc`.
+# `--as` names one entry.
+tln add owner/app@mian || echo "exit=$?"
+tln add @1.2.0 || echo "exit=$?"
+tln add owner/app@nightly-2026-10-09-258ab27 || echo "exit=$?"
+tln update json@-1 || echo "exit=$?"
+tln add owner/app@ || echo "exit=$?"
+tln add a/b/c || echo "exit=$?"
+tln add owner/one owner/two --as x || echo "exit=$?"

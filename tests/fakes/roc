@@ -1,0 +1,38 @@
+#!/bin/sh
+# The fake `roc` of the L3 runner (TESTING.md 3.2). It does no work.
+#   1. It appends its arguments (joined by one space) as one line to $TALON_TEST_DIR/roc.log.
+#   2. It answers from $TALON_TEST_DIR/roc.tsv: one rule for each line, with 4 fields split by a TAB:
+#        pattern   exit code   stdout file   stderr file
+#      The pattern is a shell glob that is matched against the arguments joined by one space.
+#      The first rule that matches answers. The two files are paths relative to $TALON_TEST_DIR
+#      (use `-` for no output). A line that starts with # is a comment.
+#      Slice 003: the exit code field `real` runs the pinned roc ($TALON_TEST_REAL_ROC) with the same arguments, in the same
+#      directory, and gives its output and its exit code. The two files of the rule are not used. It is for `roc unbundle`, which
+#      has no fake: roc checks the hash and the paths (R-FE2). All other calls stay fake (TW10).
+#      Slice 006: the exit code field can also be `sleep:<s>` (the fake prints its files, then runs `sleep <s>` in place of itself: a hang, so a timeout
+#      kills it), `pwd` (the fake prints the working directory, for a test of the `dir` of a probe) and `signal:<n>` (the fake prints its files, then ends itself with signal n: a crash, for example `signal:11`).
+#   3. A call that no rule matches prints "fake roc: no answer for: <arguments>" to stderr and exits 99.
+dir=${TALON_TEST_DIR:?fake roc: TALON_TEST_DIR is not set}
+argv="$*"
+printf '%s\n' "$argv" >> "$dir/roc.log"
+[ -f "$dir/roc.tsv" ] || { echo "fake roc: no answer for: $argv" >&2; exit 99; }
+tab=$(printf '\t')
+while IFS="$tab" read -r pattern code out err; do
+    case $pattern in '' | '#'*) continue ;; esac
+    # shellcheck disable=SC2254
+    case $argv in
+    $pattern)
+        if [ "$code" = real ]; then exec "${TALON_TEST_REAL_ROC:?fake roc: TALON_TEST_REAL_ROC is not set}" "$@"; fi
+        [ -n "$out" ] && [ "$out" != - ] && cat "$dir/$out"
+        [ -n "$err" ] && [ "$err" != - ] && cat "$dir/$err" >&2
+        case $code in
+        pwd) pwd; exit 0 ;;
+        sleep:*) exec sleep "${code#sleep:}" ;;
+        signal:*) kill "-${code#signal:}" $$ ;;
+        esac
+        exit "$code"
+        ;;
+    esac
+done < "$dir/roc.tsv"
+echo "fake roc: no answer for: $argv" >&2
+exit 99

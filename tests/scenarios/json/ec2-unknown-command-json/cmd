@@ -1,0 +1,3 @@
+# R-EC2 R-E3 R-J1 R-J2 R-J3 R-J4 R-J5 R-E4 R-FL1 R-OUT1 R-OUT4: an unknown command with --json.
+# Exit 2. stdout has one envelope with ok false and data null. stderr has the human error line.
+tln --json frobnicate

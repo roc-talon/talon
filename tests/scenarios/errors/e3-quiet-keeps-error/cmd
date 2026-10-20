@@ -1,0 +1,2 @@
+# R-E3 R-FL4 R-E4 R-EC2: --quiet changes no exit code and still prints the error. No JSON, so stdout is empty.
+tln --quiet frobnicate

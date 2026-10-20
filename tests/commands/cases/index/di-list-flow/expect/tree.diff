@@ -1,0 +1,19 @@
+--- home/.cache/roc/talon/index/github/acme/two/1.json
++++ home/.cache/roc/talon/index/github/acme/two/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"2.0.0"}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/two/1.meta
++++ home/.cache/roc/talon/index/github/acme/two/1.meta
+@@ -0,0 +1,2 @@
++etag "p1"
++next https://api.github.com/repos/acme/two/releases?per_page=100&page=2
+--- home/.cache/roc/talon/index/github/acme/two/2.json
++++ home/.cache/roc/talon/index/github/acme/two/2.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0"}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/two/2.meta
++++ home/.cache/roc/talon/index/github/acme/two/2.meta
+@@ -0,0 +1 @@
++etag "p2"

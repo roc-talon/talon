@@ -1,0 +1,36 @@
+# R-CC1 R-CC11: a write never goes to the target in place (a file that is replaced by a rename, also when it exists). A hard link to the target keeps the old content: the new content is a
+# new file that is renamed over the target. No temp file stays.
+echo old > target.txt
+ln target.txt link.txt
+fxprobe write "$PWD/target.txt" new
+cat target.txt; echo; cat link.txt
+ls -A . | sort | tr '\n' ' '; echo
+# The missing parent dirs of the target are made by the write (a decision of slice 002).
+fxprobe write "$PWD/made/by/write/f.txt" hello
+test -f made/by/write/f.txt && echo "parent dirs made by the write"
+
+# R-PD9 R-CC6 R-CC1 R-LY5 R-EV13 R-CR1 R-PD12 R-TF1 R-EV22: the first run of a command that read 2 project files. The cache dir does not
+# exist yet. `projects.json` goes to $XDG_CACHE_HOME/roc/talon, also when ROC_CACHE_DIR is set (the packages root ignores it).
+# The paths and the times are the file content (the tree diff shows it). The lock is released.
+D="$XDG_CACHE_HOME/roc/talon"
+export ROC_CACHE_DIR="$TALON_TEST_DIR/elsewhere"
+flowprobe record "$PWD/lib/main.roc" "$PWD/app/main.roc"
+test ! -e "$D/projects.json.lock" && echo "lock released"
+test ! -e "$ROC_CACHE_DIR" && echo "ROC_CACHE_DIR has no Talon file"
+
+# R-TF2: an unknown field stays. R-CC2: the lock holder deletes each temp of the item: an old one, a new one, and the
+# temp of another item stays. R-EV22: TALON_NOW sets the last use. A known file gets the new time.
+sed -i 's/}$/,"extra":5}/' "$D/projects.json"
+echo junk > "$D/projects.json.0123456789abcdef.tmp"
+touch -d '2000-01-01 00:00:00' "$D/projects.json.0123456789abcdef.tmp"
+echo junk > "$D/projects.json.fedcba9876543210.tmp"
+echo keep > "$D/tools.json.0123456789abcdef.tmp"
+TALON_NOW=2026-10-16T12:00:00Z flowprobe record "$PWD/lib/main.roc"
+ls -A "$D" | sort | tr '\n' ' '; echo
+
+# R-PD11: a temp copy of an app and a package file are never recorded. The file stays as it is.
+cp "$D/projects.json" before.tmp
+mkdir -p "$D/tmp/0123456789abcdef" "$XDG_CACHE_HOME/roc/packages/h1"
+flowprobe record "$D/tmp/0123456789abcdef/main.roc" "$XDG_CACHE_HOME/roc/packages/h1/main.roc"
+cmp before.tmp "$D/projects.json" && echo "projects.json is the same"
+rm -r "$D/tmp" "$XDG_CACHE_HOME/roc/packages" "$D/tools.json.0123456789abcdef.tmp"

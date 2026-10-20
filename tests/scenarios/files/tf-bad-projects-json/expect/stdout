@@ -1,0 +1,7 @@
+exit 19
+garbage{
+lock released
+exit 19
+{"format":2,"projects":[]}
+exit 19
+{"format":1,"projects":[{"path":1}]}

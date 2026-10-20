@@ -1,0 +1,10 @@
+id=p1 kind=default shape=yesno default=no question=Download_compilers_for_probes? subject=compiler_downloads
+--yes | id=p2 kind=default shape=yesno default=no question=Download_again? subject=compiler_downloads
+id=p3 kind=default shape=options:2 default=1 question=What_to_remove? subject=a_removal
+--yes | id=p4 kind=default shape=options:2 default=2 question=What_to_remove_now? subject=a_removal
+--quiet | id=p5 kind=default shape=yesno default=yes question=Remove_the_cache? subject=a_removal
+--answer=yes | id=p6 kind=required:--allow-moves shape=yesno default=no question=Move_a_held_variable? subject=a_move
+--yes --answer=no | id=p7 kind=required:--allow-moves shape=yesno default=yes question=Move_it_now? subject=a_move
+--yes | id=p8 kind=required:--rename-keys shape=yesno default=yes question=Rename_a_key? subject=a_rename
+id=p9 kind=required:--rename-keys,--alt shape=yesno default=yes question=Rename_stale_keys? subject=1_stale_key_in_talon.toml
+id=p10 kind=default shape=yesno default=yes question=Never_reached? subject=nothing

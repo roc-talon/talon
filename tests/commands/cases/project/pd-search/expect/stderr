@@ -1,0 +1,5 @@
+tln: error[usage]: $PROJECT/r/examples has 2 member files: $PROJECT/r/examples/hello.roc, $PROJECT/r/examples/other.roc. Pass --file <path>.
+tln: error[usage]: no project file found. Checked: $PROJECT/empty/deep/er, $PROJECT/empty/deep, $PROJECT/empty. Pass --file <path>.
+tln: error[usage]: $PROJECT/nohdr/main.roc has no app, package or platform header
+tln: error[input]: $PROJECT/badhdr/main.roc:2: the header is not valid
+tln: error[input]: $PROJECT/badtoml/talon.toml:1: not valid TOML

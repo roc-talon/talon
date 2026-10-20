@@ -1,0 +1,14 @@
+start=solo/sub
+start=r/apps/a
+start=r/apps/b/src
+start=r/docs
+start=r/tools
+start=r/examples
+start=. file=r/examples/hello.roc
+start=r file=apps/b/src/x.roc
+start=r file=main.roc
+start=empty/deep/er
+start=nohdr
+start=badhdr
+start=badtoml
+start=h/work/app home=h

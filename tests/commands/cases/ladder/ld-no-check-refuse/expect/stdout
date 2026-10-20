@@ -1,0 +1,15 @@
+== update json file=q1/main.roc compiler=nightly-2026-10-14-38a3029
+exit 13
+== update json file=q2/main.roc no-check compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/q2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=q3/main.roc no-check compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/q3/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=q4/main.roc compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0

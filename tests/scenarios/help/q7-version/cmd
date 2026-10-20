@@ -1,0 +1,2 @@
+# Q7: `tln --version` prints `tln <version>` on stdout, exit 0.
+tln --version

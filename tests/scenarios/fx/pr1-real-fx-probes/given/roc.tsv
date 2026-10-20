@@ -1,0 +1,7 @@
+where am i	pwd	-	-
+check main.roc	0	pass.stdout	-
+check slow.roc	sleep:1	pass.stdout	-
+check errors.roc	1	-	pkg-base.stderr
+check boom.roc	signal:11	-	-
+check warn.roc	2	-	warn.stderr
+check hang.roc	sleep:30	-	-

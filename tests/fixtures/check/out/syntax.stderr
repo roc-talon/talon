@@ -1,0 +1,82 @@
+── ✗ expected list separator ────────────────────────────────────── main.roc:9:2
+
+I was parsing a list expression, and I expected `,` or `]`.
+
+Stdout.line!("a")
+^^^^^^
+
+Separate list elements with commas and close the list with ].
+
+For example:
+    [1, 2, 3]
+
+I found Stdout here.
+Names that start with uppercase letters are used for tags, type names, and
+module names in Roc.
+
+── ✗ expected list separator ───────────────────────────────────── main.roc:10:1
+
+I was parsing a list expression, and I expected `,` or `]`.
+
+}
+^
+
+Separate list elements with commas and close the list with ].
+
+For example:
+    [1, 2, 3]
+
+I found } here.
+This closes the current construct, so the parser was looking for the missing
+item before it.
+
+── ✗ unexpected expression syntax ──────────────────────────────── main.roc:10:1
+
+I was parsing an expression, and this token cannot start an expression here.
+
+}
+^
+
+Expressions can be names, literals, tags, records, lists, tuples, lambdas,
+blocks, conditionals, matches, or function calls.
+
+For example:
+    add(1, 2)
+
+I found } here.
+This closes the current construct, so the parser was looking for the missing
+item before it.
+
+── ✗ expected list separator ───────────────────────────────────── main.roc:11:1
+
+I was parsing a list expression, and I expected `,` or `]`.
+
+
+^
+
+Separate list elements with commas and close the list with ].
+
+For example:
+    [1, 2, 3]
+
+I reached the end of the file before this construct was complete.
+
+── ✗ expected closing brace ────────────────────────────────────── main.roc:11:1
+
+I was parsing a block expression, and I expected `}` before the file ended.
+
+
+^
+
+Close the block after its final statement or expression.
+
+For example:
+    {
+        answer = 42
+        answer
+    }
+
+I reached the end of the file before this construct was complete.
+
+── 5 errors and 0 warnings ──────────────────────────────────────────── main.roc
+

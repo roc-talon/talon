@@ -1,0 +1,1 @@
+R-I5 R-I8 R-AD33 R-C4 R-EC2 R-AL1: Q2 of slice 005 (answered by the manager). The key shell of talon.toml is not in the header and its value names acme/pf, a repository whose release is a platform. It is not added as a platform entry: exit 2, and the message names tln add --platform. The header and talon.toml stay as they are.

@@ -1,0 +1,15 @@
+== tln remove json
+exit 2
+== tln remove json --file apps/a/main.roc
+check: passed
+build: passed
+$PROJECT/apps/a/main.roc
+  - json: acme/json 2.0.0
+exit 0
+== tln remove json --file apps/b/main.roc
+check: passed
+build: passed
+$PROJECT/apps/b/main.roc
+  - json: acme/json 2.0.0
+$PROJECT/talon.toml: - [dependencies] json
+exit 0

@@ -6,7 +6,8 @@
 # A test names a rule in a comment (`# R-H3: ...`) or in its case directory name (`r-h3-...`).
 set -u
 cd "$(dirname "$0")/.."
-TEST_DIRS=$(ls -d tests packages cli worker 2>/dev/null)
+# `cli/` and `worker/` hold code, not tests. A rule id in a code comment is no test (slice 001).
+TEST_DIRS=$(ls -d tests packages 2>/dev/null)
 want=${*:-}
 printf "id\tfile\tsection\ttests\n"
 for f in DESIGN*.md; do

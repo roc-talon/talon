@@ -1,0 +1,32 @@
+── ✗ type mismatch ─ ../../../packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc:3:15
+
+This expression is used in an unexpected way.
+
+encode = |s| s.count_utf8_bytes()
+             ^^^^^^^^^^^^^^^^^^^^
+
+It has the type:
+
+    U64
+
+But the annotation says it should be:
+
+    Str
+
+── ✗ type mismatch ─ ../../../packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc:5:12
+
+This expression is used in an unexpected way.
+
+bad = |n| n
+          ^
+
+It has the type:
+
+    U64
+
+But the annotation says it should be:
+
+    Str
+
+── 2 errors and 0 warnings ──────────────────────────────────────────── main.roc
+

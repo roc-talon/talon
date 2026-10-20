@@ -1,0 +1,8 @@
+--- project/f2.txt
++++ project/f2.txt
+@@ -0,0 +1 @@
++data
+--- project/winner/sub/x
++++ project/winner/sub/x
+@@ -0,0 +1 @@
++x

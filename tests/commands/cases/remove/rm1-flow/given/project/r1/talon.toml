@@ -1,0 +1,6 @@
+[dependencies]
+json = "^2"   # the 2 series
+parser = "^1"
+
+[overrides]
+json = "acme/json@^2.0.5"

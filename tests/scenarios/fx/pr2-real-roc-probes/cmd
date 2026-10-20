@@ -1,0 +1,12 @@
+# R-LD1 R-LD5 R-RC1 R-RC2 R-P1 TW10: the real `fxprobe probes` runs the real pinned roc (L4, tag real-roc, `REAL_ROC=1`).
+# The apps have no header, so the case needs no download. The times of roc change: sed makes them stable.
+t() { sed -e 's/in [0-9]*ms/in <n>ms/g'; }
+echo "== check, no error"
+fxprobe probes 30 "$PWD" check main.roc | t
+echo "== check, an error"
+fxprobe probes 30 "$PWD" check bad.roc | t
+echo "== build, no error: the output is in the out dir, the program is not run"
+fxprobe probes 30 "$PWD" build main.roc --output="$PWD/../out/probe.out" | t
+test -x ../out/probe.out && echo "output made"
+echo "== a round of 2: the order of the list"
+fxprobe probes 30 "$PWD" check bad.roc -- 30 "$PWD" check main.roc | t

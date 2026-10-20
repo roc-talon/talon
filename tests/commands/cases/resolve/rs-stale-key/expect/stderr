@@ -1,0 +1,4 @@
+talon.toml: key "js" is "acme/json", which the header names "json"
+tln: error[consent]: 1 stale key in talon.toml needs consent. Pass --rename-keys or --yes.
+talon.toml: key "js" is "acme/json", which the header names "json"
+renamed 1 stale key in talon.toml

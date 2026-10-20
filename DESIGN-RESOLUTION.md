@@ -567,7 +567,7 @@ R-SO9: Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6
 | --- | --- | --- |
 | R-SO12 | A rank selects a nightly that is not installed | A required download (R-DL2, prompt R-NI5) |
 | R-SO13 | Rank 4 has a range, and no installed compiler is in it | The newest compiler release in the range that the `nightly` switch allows is a required download (R-NI5) |
-| R-SO14 | No rank selects a compiler | Error with exit code 2 that names `tln roc install @latest` and `tln roc default`. Talon does not guess. |
+| R-SO14 | No rank selects a compiler | Error with exit code 18 (`environment`, CLI 3, R-EC18): the fix is on the machine, not in the command. The message names `tln roc install @latest` and `tln roc default`. In P0 (Design 7, R-PH6) it says that no `roc` is on `PATH`. Talon does not guess. A command that needs no compiler (`install --frozen`, CLI 2, R-LF1) does not stop. |
 
 R-SO15: The first compiler that Talon installs becomes the global default when none is set, as in rustup. So "no rank selects a compiler" happens only before the first install, when no `roc` is on `PATH`.
 

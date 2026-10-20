@@ -1,0 +1,2 @@
+header ETag: "l1"
+header Link: <https://api.github.com/repos/acme/limited2/releases?per_page=100&page=2>; rel="next"

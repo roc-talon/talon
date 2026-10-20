@@ -1,0 +1,11 @@
+tln: error[usage]: 'acme/pf' is a platform. Use tln add --platform acme/pf.
+tln: error[usage]: 'acme/json' is not a platform
+tln: error[usage]: 'acme/pf2' is a platform. Use tln add --platform acme/pf2.
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.2.0
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ shell: acme/pf 0.1.0 -> 0.2.0
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-15T12:00:00Z, 3 probes
+dry run: nothing was written

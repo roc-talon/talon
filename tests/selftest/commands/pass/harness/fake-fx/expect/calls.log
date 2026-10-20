@@ -1,0 +1,27 @@
+cwd
+tty
+env_all
+clock
+args
+read_files $PROJECT/in.txt $PROJECT/missing.txt
+write_atomic $PROJECT/out.txt
+list_dirs $PROJECT $PROJECT/missing
+canonical $PROJECT/in.txt $PROJECT/missing.txt
+delete $PROJECT/gone.txt $PROJECT/missing.txt
+lock $PROJECT/item nowait: held
+VIOLATION ask while a lock is held
+ask "Under lock? "
+unlock $PROJECT/item
+lock $PROJECT/other wait: held
+unlock $PROJECT/other
+ask "Name? "
+http_get https://api.example.com/x?page=2
+  A: 1
+programs curl wget
+spawn_all limit=8
+  job - tool a
+  job $PROJECT other
+rename $PROJECT/in.txt $PROJECT/renamed.txt
+rename $PROJECT/renamed.txt $PROJECT/refused
+make_dirs $PROJECT/new/deep
+random

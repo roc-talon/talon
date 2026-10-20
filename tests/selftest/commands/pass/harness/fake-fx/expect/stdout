@@ -1,0 +1,20 @@
+env variables: 3
+tty: stdin=True stderr=False
+clock: 1800000000
+args: ["a1", "a2"]
+read: Ok("in file
+")
+read: Err(NotFound)
+write: ok
+list_dirs: [Ok(["in.txt False", "out.txt False", "gone.txt False"]), Err(NotFound)]
+canonical: [Ok("$PROJECT/in.txt"), Err(NotFound)]
+delete: [Ok({}), Ok({})]
+lock: held
+ask: end of input
+http_get: Ok({ body: "page two", headers: [("X-A", "1")], status: 200 })
+programs: [True, False]
+spawn_all: [{ ended: Exited(0), stderr_last: "last err", stdout: "tool says hi" }, { ended: Exited(99), stderr_last: "fake spawn_all: no rule for: other", stdout: "" }]
+rename: Ok({})
+rename refused: Err(Exists)
+make_dirs: Ok({})
+random: 81985529216486895
