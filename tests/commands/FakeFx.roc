@@ -34,6 +34,7 @@ import lib.Probe
 ## `needle` is in the arguments of the job (joined by one space) answers. `code` is `<n>` (exit), `signal:<n>`, or `notstarted:<text>`. `stdout` and
 ## `stderr_last` are texts (`-` for none). `creates` is a list split by `;`: `file:<path>` (a file with the text `fake`) or `dir:<path>` (a
 ## directory). In a path, `{cwd}` is the working directory of the job and `{w}` is the case work dir. Lines that start with `#` are comments.
+## Slice 010: `copy:<dest>=<source>` is a file with the text of the file `<source>` (a package whose `main.roc` has a real header, for the closure walk).
 ## The log has `spawn_all limit=<n>` and then one line `  job <cwd> <arguments>` for each job (`-` is `Inherit`).
 ##
 ## `probes` (slice 006): one row for each probe, in the order in which the probes are called (the n-th probe of the case gets the n-th row), with 3 fields split by a TAB: `code`,
@@ -524,13 +525,20 @@ ended_of = |code| if code.starts_with("signal:") {
 	Exited(I32.from_str(code) ?? 99)
 }
 
-## `file:<path>` or `dir:<path>`
+## `file:<path>`, `dir:<path>` or `copy:<dest>=<source>`
 create_item! : Str => {}
 create_item! = |item| {
 	if item.starts_with("dir:") {
 		_ = Path.create_all!(Path.utf8(item.drop_prefix("dir:")))
 	} else if item.starts_with("file:") {
 		_ = write_with_parents!(item.drop_prefix("file:"), "fake")
+	} else if item.starts_with("copy:") {
+		match item.drop_prefix("copy:").split_on("=") {
+			[dest, source] => {
+				_ = write_with_parents!(dest, read_or_empty!(source))
+			}
+			_ => {}
+		}
 	}
 }
 

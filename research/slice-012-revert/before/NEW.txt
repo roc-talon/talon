@@ -1,0 +1,7 @@
+tests/commands/cases/prompt/nm11-alias-stops/
+tests/commands/cases/ladder/ld-ladder-flow/given/project/p8/
+tests/commands/cases/ladder/ld-ladder-flow/given/project/p9/
+docs/slices/012-p0-rule-gaps.md
+research/slice-012-revert/mutate.py
+research/slice-012-revert/results.md
+research/slice-012-revert/code-before.sha256

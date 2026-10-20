@@ -1,1 +1,3 @@
 tln: error[environment]: cannot select a compiler: there is no roc on PATH that Talon can identify, and the header has no roc pin
+tln: error[consent]: the roc on PATH, nightly-2026-10-14-38a3029, is outside [toolchain] roc (>=nightly-2026-10-20-aaaaaaa). This version of tln runs only the roc on PATH, so it cannot select another compiler.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-14-38a3029, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.

@@ -1,0 +1,6 @@
+cli/lib/Why.roc
+tests/unit/why.roc
+tests/unit/closuregaps.roc
+tests/unit/pickclosure.roc
+tests/scenarios/why/
+tests/commands/cases/closure/cl2-chain/

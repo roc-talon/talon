@@ -1,0 +1,2 @@
+tln: error[frozen]: the header does not satisfy talon.toml: $PROJECT/bad/main.roc: json 2.0.0 is outside ^2.1; talon.toml: key "parser" is not in the header
+tln: error[frozen]: the header does not satisfy talon.toml: the roc pin nightly-2026-10-14-38a3029 is a nightly, and nightly is false

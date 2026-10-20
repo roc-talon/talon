@@ -56,11 +56,20 @@ Pick :: [].{
 	## | Conflict | Rule |
 	## | --- | --- |
 	## | A package release names a platform (`Release.pf`) that is not the URL of the chosen platform slot, when there is exactly one platform slot (question Q8) | R-C3 |
-	## | The dependency URLs of a chosen release (`Release.deps`) have a version of the group of another slot that is higher than the chosen version of that slot (one level: the closure walk is slice 007, question Q7) | R-C2 |
+	## | A followed edge of the tuple names a version of the group of a slot that is higher than the chosen version of that slot (R-C2 over the full closure, slice 011, below) | R-C2 |
 	##
-	## A candidate with no fact is taken as fit (optimistic). `step` finds the first tuple that way. When that tuple has a candidate with no fact, the result is
-	## `Need(urls)`: the URLs of these candidates, in the order of the slots, with no repeat. When all its facts are known and it has no conflict, it is `Done`. A fact can
-	## show a conflict, and the next `step` gives another tuple. So the commands loop until `Done` or `Fail`.
+	## R-C2 over the full closure (slice 011; question Q14 of slice 009; it replaces the check of one level, question Q7 of slice 005). The closure of a tuple is what `roc` builds (Design 2, `Closure.step`, `Mvs`):
+	##
+	## | # | Rule |
+	## | --- | --- |
+	## | 1 | The roots are the chosen URLs of the slots. A group is the URL form and the series (R-ID2), so `core 1.1.0` and `core 2.0.0` are 2 groups (R-C8: no conflict, a warning later). |
+	## | 2 | The followed edges are the `Release.deps` of the chosen slot URLs and of the winner of each group that is no slot, as far as their facts are known. A value that `Ident.of_url` does not read (a foreign URL, a path value) is no edge (R-H4, R-H7). |
+	## | 3 | The winner of a group that is no slot is the highest version that a followed edge names. A lower version is not followed (its `deps` have no effect, and its fact is not asked for). The winners are the fixed point of rules 2 and 3 (a cycle between packages ends). |
+	## | 4 | Conflict: a followed edge names a version of the group of a slot that is higher than the chosen version of that slot. An equal or a lower version is no conflict. |
+	##
+	## A candidate with no fact is taken as fit (optimistic). `step` finds the first tuple that way. When that tuple has a package with no fact, the result is `Need(urls)`: first the chosen slot URLs that have no fact, in the order of the slots, then the winners of
+	## rule 3 that have no fact, in the order in which the followed edges name them, with no repeat. So a package 2 levels or more below the app is asked for before the tuple is `Done`. When all its facts are known and it has no conflict, it is `Done`. A fact can
+	## show a conflict, and the next `step` gives another tuple. So the commands loop until `Done` or `Fail`: `pick_loop!` already fetches each URL of a `Need` and reads its header, so only `step` changes (`tests/unit/pickclosure.roc`, L2 `closure/cl2-chain`).
 	##
 	## `Fail` (kind `NoTuple`, exit 10, R-PH10): no tuple. The messages (a proposal, TW24):
 	##
@@ -88,7 +97,8 @@ Pick :: [].{
 			Err(NoFailure) => match search(domains.map(|d| { is_platform: d.is_platform, cands: d.ordered }), [], ctx) {
 				Err(NoFit) => Fail(Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(facts.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)"))
 				Ok(picked) => {
-					missing = picked.map(|p| p.c.url).keep_if(|url| !ctx.known.contains(url)).fold([], |urls, url| if urls.contains(url) urls else urls.append(url))
+					below = closure_of(ctx, picked).below.map(|w| w.url)
+					missing = picked.map(|p| p.c.url).concat(below).keep_if(|url| !ctx.known.contains(url)).fold([], |urls, url| if urls.contains(url) urls else urls.append(url))
 					if missing.is_empty() {
 						Done(facts.slots.map2(picked, |slot, p| chosen_of(slot, p.c, facts)))
 					} else {
@@ -180,7 +190,7 @@ Ctx : { known : Dict(Str, Release), single_platform : Bool }
 # The first tuple in the lexicographic order of the domains that has no conflict between 2 slots (R-VA6, R-SP11).
 search : List({ is_platform : Bool, cands : List(Cand) }), List(Choice), Ctx -> Try(List(Choice), [NoFit])
 search = |domains, picked, ctx| match domains {
-	[] => Ok(picked)
+	[] => if closure_of(ctx, picked).conflict Err(NoFit) else Ok(picked)
 	[d, .. as rest] => pick_from(d.cands, d.is_platform, rest, picked, ctx)
 }
 
@@ -213,7 +223,7 @@ conflict_from = |ctx, x, y| match ctx.known.get(x.c.url) {
 	}
 }
 
-# R-C2 (one level): a dependency URL in the group of `y` with a version above the one that `y` has.
+# R-C2, one level: a dependency URL in the group of `y` with a version above the one that `y` has. It is an early cut of the search. The check of the whole tuple is `closure_of`, which finds it too.
 needs_newer : Str, Cand -> Bool
 needs_newer = |dep, y| match Ident.of_url(dep) {
 	Ok(ident) => ident.group == y.ident.group and is_newer(ident.version, y.ident.version)
@@ -224,6 +234,47 @@ is_newer : Str, Str -> Bool
 is_newer = |a, b| match (Semver.parse(a), Semver.parse(b)) {
 	(Ok(x), Ok(y)) => x.order_relative_to(y) == After
 	_ => Bool.False
+}
+
+# A release in the closure of a tuple: its group (R-ID2), the URL and the version.
+Win : { group : { form : Str, series : Str }, url : Str, version : Str }
+
+# R-C2 over the full closure (rules 1 to 4 of `Pick.step`): `below` are the winners of the groups that are no slot, `conflict` is true when a followed edge names a slot group at a higher version.
+closure_of : Ctx, List(Choice) -> { conflict : Bool, below : List(Win) }
+closure_of = |ctx, picked| {
+	roots = picked.map(|p| { group: p.c.ident.group, url: p.c.url, version: p.c.ident.version })
+	below = settle_below(ctx, roots, [], 20)
+	conflict = edges_of(ctx, roots.concat(below)).any(|e| roots.any(|r| r.group == e.group and is_newer(e.version, r.version)))
+	{ conflict, below }
+}
+
+# The followed edges of some releases, in order. A dependency value that is no release URL is no edge (R-H4, R-H7). A release with no fact has none yet.
+edges_of : Ctx, List(Win) -> List(Win)
+edges_of = |ctx, releases| releases.join_map(
+	|w| match ctx.known.get(w.url) {
+		Ok(release) => release.deps.keep_oks(|dep| Ident.of_url(dep).map_ok(|ident| { group: ident.group, url: dep, version: ident.version }))
+		Err(_) => []
+	},
+)
+
+# Rules 2 and 3: the winner of each group that is no slot is the highest version that a followed edge names. A lower winner is not followed, so the winners are found again until they stay the same.
+settle_below : Ctx, List(Win), List(Win), U64 -> List(Win)
+settle_below = |ctx, roots, below, left| {
+	next = edges_of(ctx, roots.concat(below)).fold([], |acc, e| add_below(roots, acc, e))
+	if left == 0 or next == below below else settle_below(ctx, roots, next, left - 1)
+}
+
+add_below : List(Win), List(Win), Win -> List(Win)
+add_below = |roots, acc, e| if roots.any(|r| r.group == e.group) {
+	acc
+} else {
+	match acc.find_first_index(|w| w.group == e.group) {
+		Err(_) => acc.append(e)
+		Ok(i) => match acc.get(i) {
+			Ok(w) if is_newer(e.version, w.version) => acc.set(i, e) ?? acc
+			_ => acc
+		}
+	}
 }
 
 chosen_of : Pick.Slot, Cand, Step -> Pick.Chosen

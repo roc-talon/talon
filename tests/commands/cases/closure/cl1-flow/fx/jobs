@@ -1,0 +1,10 @@
+# The fake downloads of the closure walk (slice 010). An unbundle makes the dir of the hash with the main.roc of the fixture package (fx/pkgs). A download makes the archive in the temp dir.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle 8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst	0	-	-	dir:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r;copy:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc={w}/fx/pkgs/acme_core_1.0.0.roc
+unbundle 4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN.tar.zst	0	-	-	dir:{cwd}/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN;copy:{cwd}/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN/main.roc={w}/fx/pkgs/acme_text_1.0.0.roc
+unbundle HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst	0	-	-	dir:{cwd}/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm;copy:{cwd}/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc={w}/fx/pkgs/acme_text_1.1.0.roc
+unbundle ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst	0	-	-	dir:{cwd}/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L;copy:{cwd}/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc={w}/fx/pkgs/acme_lex_1.0.0.roc
+8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.0123456789abcdef.tmp/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst
+4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN.0123456789abcdef.tmp/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN.tar.zst
+HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst
+ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.0123456789abcdef.tmp/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst

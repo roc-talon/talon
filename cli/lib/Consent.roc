@@ -74,8 +74,12 @@ Consent :: [].{
 	picker = |mode| match mode {
 		Interactive => Run
 		NeedsTty => NeedTty
-		NonInteractive => Stop(Fail.new(Usage, "update -i needs a person to pick. Name the packages: tln update X Y."))
+		NonInteractive => Stop(Consent.no_person)
 	}
+
+	## The failure of a picker that has no person (R-NI2, R-NM7): the mode is `NonInteractive`, or the end of input came.
+	no_person : Fail
+	no_person = Fail.new(Usage, "update -i needs a person to pick. Name the packages: tln update X Y.")
 }
 
 plural : U64, Str, Str -> Str

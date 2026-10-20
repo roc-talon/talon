@@ -1,4 +1,4 @@
-# R-FE2 R-EV23 R-EV24 R-FE3 R-FE5 R-FE8 R-FE10 R-DA2 R-DA3 R-DA4 R-DA7 R-HF4 R-HF5 R-HF12 R-EV12 R-EV25 R-CC11 R-FE4: the store and the fetch with the real download
+# R-FE2 R-EV23 R-EV24 R-FE3 R-FE5 R-FE8 R-FE10 R-DA2 R-DA3 R-DA4 R-DA7 R-HF4 R-HF5 R-HF12 R-EV12 R-EV25 R-CC11 R-FE4 R-SE1 R-SE9 (slice 012: the bad hash below is R-SE1, the real `roc unbundle` is the only unpacker, R-SE9): the store and the fetch with the real download
 # programs, the real roc unbundle (the fake roc passes `unbundle` to the pinned roc, given/roc.tsv) and the fake HTTP server on a loopback URL.
 H1=9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 # the fixture package `greet` (tests/fixtures/pkgs)
 H2=J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr  # the fixture package `shout`

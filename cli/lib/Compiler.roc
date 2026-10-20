@@ -41,6 +41,30 @@ Compiler :: [].{
 		}
 	}
 
+	## R-SO2, R-EV5, R-SC12: `ROC_TOOLCHAIN` (rank 2) from the environment. An empty value is the same as no value. A text that is not a full compiler id
+	## (`Compiler.kind` is `Local`: a prefix such as `nightly-2026-10`) is a failure of kind `Usage` (exit 2, as a bad `TALON_NOW`): `ROC_TOOLCHAIN is not a full compiler id: <text>`.
+	toolchain_of : List((Str, Str)) -> Try(Try(Str, [Unset]), Fail)
+	toolchain_of = |env| match env.find_first(|(name, _)| name == "ROC_TOOLCHAIN") {
+		Ok((_, text)) if !text.is_empty() => if Compiler.kind(text) == Local {
+			Err(Fail.new(Usage, "ROC_TOOLCHAIN is not a full compiler id: ${text}"))
+		} else {
+			Ok(Ok(text))
+		}
+		_ => Ok(Err(Unset))
+	}
+
+	## R-PH6, R-PH7, R-SO2: the compiler of a run. The `roc` on `PATH` is the only one that P0 can run (`path_roc`, from `on_path`). `ROC_TOOLCHAIN` names an id:
+	## the id of the `roc` on `PATH` changes nothing, another id is a required download that P0 refuses (`Compiler.require`, exit 13). `frozen` runs need no compiler, so they
+	## accept each id. With no `ROC_TOOLCHAIN` the result is `path_roc`.
+	select : { toolchain : Try(Str, [Unset]), path_roc : Try(Str, [NoCompiler]), frozen : Bool } -> Try(Try(Str, [NoCompiler]), Fail)
+	select = |facts| match facts.toolchain {
+		Ok(id) if !facts.frozen => {
+			Compiler.require({ id, path_roc: facts.path_roc })?
+			Ok(facts.path_roc)
+		}
+		_ => Ok(facts.path_roc)
+	}
+
 	## R-PH7, R-PH6, R-BL3: a probe needs the compiler `id` (the held `roc:` pin, or the selected compiler). The only installed compiler is the one on `PATH`
 	## (`path_roc`). When `id` is that compiler: `Ok({})`. Else the compiler is a required download (R-DL2), and P0 refuses it as `TALON_AUTO_INSTALL=no` does
 	## (R-DL5): a failure of kind `Consent` (exit 13, R-EC13). The message (a proposal, TW24) names the id and says that this version of `tln` runs only

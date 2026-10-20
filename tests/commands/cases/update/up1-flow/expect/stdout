@@ -1,0 +1,24 @@
+== update -i --file u1/main.roc --json
+{"schema":1,"command":"update","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"update -i needs a person to pick. Name the packages: tln update X Y."}}
+exit 2
+== update -i --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== update -i --file u1/main.roc
+nothing picked
+exit 0
+== update --file u1/main.roc
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== update -i --file u1/main.roc
+exit 2

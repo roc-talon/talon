@@ -12,6 +12,10 @@ You are the scope agent and the test agent for one slice of the `tln` CLI (`TEST
 | Propose output text and `--json` `data` fields that the design does not give (TW24), in the slice file "Output" section and in the expected files | Commit or push. Touch `cloudflare-workers/`. |
 | Name the rule ids in each test (`# R-H3: ...`, TW13) | Write a path entry to a generic package (R-GP3) |
 
+## Slice boundary
+
+The manager commits finished slices only when the user asks, so earlier slices can be uncommitted. Before you change a file that exists, put a copy of it under `research/slice-NNN-revert/before/<same path>`. List each file that you add in `research/slice-NNN-revert/before/NEW.txt`. Then the manager can commit the earlier slices without your work. Do not commit.
+
 ## Test budget (the manager's rule)
 
 Few tests, each with a large reach (`docs/slices/PLAN.md`, "Test budget"):

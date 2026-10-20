@@ -34,9 +34,10 @@ Few tests, each with a large reach. Every rule id of a slice is named by at leas
 | 006b (done) | Probe follow-ups | The answers of the user to slice 006 Q1 (exit 134 is no result) and Q4 (the path rewrite util). Slice 007 review: C2 (newest candidate) and M1 (`--no-check` with `--json`). | 006, 007 |
 | 007 (done) | `install` and `add` | `install` (and `add`, `i`, `--frozen`) wiring in `Run.run!`, add of a name, `--dry-run`, `--json`, R-DT5, the rename prompt R-NI1, and the items that slices 004 to 006 moved here. The design examples of these commands (TW16). | 003, 005, 006 |
 | 008 (done) | `remove` | R-CM3, R-RV1 to R-RV5, the `remove` part of R-WS12, the import scan, the removal of `talon.toml` keys | 007 |
-| 009 | `update`, `update -i`, `verify` | R-CM4, R-CM11, R-SP4, R-SP14, R-NI2, R-SE7 and R-DT5 for `update`, R-FL14, R-LB1, R-LB2, R-LB4, R-SL12 for `update` | 007, 008 |
-| 010 | Closure walk and `list` | The closure walk, R-C8, `list`, the fetch of the closure in `install` (R-CM2). R-CM9, R-H4, R-H7 (also the R-H7 scan of `remove`), R-SP21, R-AL2 | 007, 008 |
-| 011 | `why` | `why`, R-C2 over the full closure. R-CM7, R-PH12, R-C2, the R-SC14 tie list, P6 of slice 004 | 010 |
+| 009 (done) | `update`, `update -i`, `verify` (file `009-update-verify.md`) | R-CM4, R-CM11, R-SP4, R-SP14, R-NI2, R-SE7 and R-DT5 for `update`, R-FL14, R-LB1, R-LB2, R-LB4, R-SL12 for `update` | 007, 008 |
+| 010 (done) | Closure walk and `list` | The closure walk, R-C8, `list`, the fetch of the closure in `install` (R-CM2). R-CM9, R-H4, R-H7 (also the R-H7 scan of `remove`), R-SP21, R-AL2 | 007, 008 |
+| 011 (done) | `why` | `why`, R-C2 over the full closure. R-CM7, R-PH12, R-C2, the R-SC14 tie list, P6 of slice 004 | 010 |
+| 012 (done) | P0 rule gaps | The P0 gaps of the slice 011 audit: R-EV4, R-EV5, R-SO2, R-SC12, R-SO5, R-SO16, R-SO18, R-LF5, R-OV2, and the rule ids with tested behavior and no named test (R-SO3, R-SO4, R-SO14, R-SE1, R-SE3, R-SE9, R-AD37, R-NM11) | 011 |
 
 The manager can split a slice that is too large for one review (TW19), or join two small ones. A change to this table is recorded here.
 
@@ -48,3 +49,4 @@ The manager can split a slice that is too large for one review (TW19), or join t
 | 2026-10-20 | Slice 007 is split again: 007 (`install`, `add`), 008 (`remove`), 009 (`update`, `list`, `why`, `verify`, the closure walk) | The 007 test agent found about 1200 lines of new code, and `Run.run!` has no wiring yet |
 | 2026-10-20 | New slice 006b | The answers of the user to slice 006 Q1 and Q4 |
 | 2026-10-20 | Slice 009 is split: 009 (`update`, `verify`), 010 (closure walk, `list`), 011 (`why`) | The 009 test agent found about 920 lines of new code |
+| 2026-10-20 | New slice 012 | The P0 audit of slice 011 found P0 rules with no test |

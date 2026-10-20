@@ -74,6 +74,43 @@ Intent := {
 		}
 	}
 
+	## The settings of P0 that `config.toml` has (CLI 6.1, R-LY4): `nightly` (R-NS10) and `min-release-age` in seconds (R-C7). The other keys are known and not read in P0.
+	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]) }
+
+	## Reads the text of a `config.toml` (R-TF4). A key with a value of the wrong form is a failure of kind `Input` (exit 19): `<path>:<line>: <key>: <why>`.
+	## An unknown top-level key is a warning: `<path>:<line>: unknown key <key>`.
+	read_config : { path : Str, text : Str } -> Try({ config : Config, warnings : List(Str) }, Fail)
+	read_config = |facts| match Toml.parse(facts.text) {
+		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
+		Ok(doc) => {
+			nightly = config_field(
+				doc,
+				"nightly",
+				|v| match v {
+					Value.Boolean(b) => Ok(b)
+					_ => Err("must be true or false")
+				},
+			)
+			age = config_field(
+				doc,
+				"min-release-age",
+				|v| match v {
+					Value.String(text) => days_of(text).map_err(|NotDays| "must be a number of days, for example \"2d\"")
+					_ => Err("must be a number of days, for example \"2d\"")
+				},
+			)
+			issues = nightly.issues.concat(age.issues)
+			match issues.sort_with(|a, b| compare_lines(a.line, b.line)) {
+				[first, ..] => Err(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}"))
+				[] => {
+					unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: key_line(doc, [key]), message: "unknown key ${key}" })
+					warnings = unknown.sort_with(|a, b| compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}")
+					Ok({ config: { nightly: nightly.value, min_release_age: age.value }, warnings })
+				}
+			}
+		}
+	}
+
 	## The edit of `talon.toml` for the keys that Talon writes (R-AD23 to R-AD28, R-UP11, R-WS14): each `{ key, value }` sets `[dependencies] <key> = "<value>"`.
 	## A key that is there gets a new string value (`Toml.replace`), so the comment on its line stays. A key that is not there is added after the last
 	## entry of the table (`Toml.insert`), and the table is made when it is not there. The empty text gives a new file with the table. A key whose
@@ -261,6 +298,20 @@ field = |doc, table, key, parse| match Toml.get(doc, [table, key]) {
 	Ok(found) => match parse(found) {
 		Ok(parsed) => { value: Ok(parsed), issues: [] }
 		Err(why) => { value: Err(Unset), issues: [{ line: key_line(doc, [table, key]), message: "${table}.${key}: ${why}" }] }
+	}
+}
+
+# The keys of `config.toml` (CLI 6.1). `probe` is a table.
+config_keys : List(Str)
+config_keys = ["default-roc", "registry", "nightly", "min-release-age", "gc-age", "share", "probe"]
+
+# A top-level key of `config.toml`, or the reason that it is wrong.
+config_field : Toml, Str, (Value -> Try(a, Str)) -> { value : Try(a, [Unset]), issues : List(Note) }
+config_field = |doc, key, parse| match Toml.get(doc, [key]) {
+	Err(NotFound) => { value: Err(Unset), issues: [] }
+	Ok(found) => match parse(found) {
+		Ok(parsed) => { value: Ok(parsed), issues: [] }
+		Err(why) => { value: Err(Unset), issues: [{ line: key_line(doc, [key]), message: "${key}: ${why}" }] }
 	}
 }
 

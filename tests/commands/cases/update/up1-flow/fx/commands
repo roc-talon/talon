@@ -1,0 +1,5 @@
+update -i --file u1/main.roc --json
+update -i --file u1/main.roc
+update -i --file u1/main.roc
+update --file u1/main.roc
+update -i --file u1/main.roc

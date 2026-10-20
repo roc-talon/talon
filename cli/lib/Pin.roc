@@ -42,6 +42,10 @@ Pin :: [].{
 		}
 	}
 
+	## R-SC12: is the text a full compiler id, a nightly tag or a release version? A prefix (`nightly-2026-10`) is not.
+	is_id : Str -> Bool
+	is_id = |text| is_compiler_id(text)
+
 	## Is the id a nightly tag (`nightly-` and 3 parts, the form of Design 2)? A release is not.
 	is_nightly : Str -> Bool
 	is_nightly = |id| Selector.parse(id, Bool.False) == Ok(Nightly(id))
@@ -83,11 +87,16 @@ Pin :: [].{
 	## | A member that has a pin | No write, never (R-RP1, R-RP2: P0 holds the nightly) |
 	##
 	## `writes` has the order of `members`.
+	## `pinned` is true when a member has a pin (`held` is the pin), false when `held` is the selected compiler (`gate` checks that one).
 	Decision : {
 		held : Try(Str, [NoCompiler]),
 		writes : List({ file : Str, id : Str }),
 		outside : Try(Str, [None]),
+		pinned : Bool,
 	}
+
+	## Where the value of the `nightly` switch comes from (R-NS8 to R-NS10): the environment, `[toolchain] nightly` of `talon.toml`, `nightly` of `config.toml`, or the default (on).
+	Source : [Env, Toml, Config, Default]
 
 	decide : {
 		members : List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }),
@@ -111,25 +120,56 @@ Pin :: [].{
 				Ok(id) if can_write => facts.members.keep_if(|m| m.pin == Err(NoPin) and m.changes).map(|m| { file: m.file, id })
 				_ => []
 			}
-			Ok({ held, writes, outside: outside_pin(texts, { req: facts.req, nightly: facts.nightly }) })
+			Ok({ held, writes, outside: outside_pin(texts, { req: facts.req, nightly: facts.nightly }), pinned: !texts.is_empty() })
 		}
 	}
 
 	## R-RP2 (a nightly that the header holds is outside `[toolchain] roc`): the failure of `install`, `add`, `update` and `remove`. Kind `NoTuple`
 	## (exit 10): `the roc pin <pin> is outside [toolchain] roc (<req text>). Run tln upgrade roc or tln roc use <id>.` With the switch off, the
-	## text names the switch: `the roc pin <pin> is a nightly, and nightly is false (TALON_NIGHTLY or [toolchain] nightly). Run tln upgrade roc or tln roc use <id>.`
+	## text names the switch and its source (R-NS2): `the roc pin <pin> is a nightly, and nightly is false (set by <source text>). Run tln upgrade roc or tln roc use <id>.`
 	## `req_text` is the text of `[toolchain] roc` (`Err(Unset)`: none). Texts are a proposal (TW24).
-	outside_failure : { pin : Str, req_text : Try(Str, [Unset]), nightly : Bool } -> Fail
+	outside_failure : { pin : Str, req_text : Try(Str, [Unset]), nightly : Bool, source : Source } -> Fail
 	outside_failure = |facts| {
 		follow = "Run tln upgrade roc or tln roc use <id>."
 		if !facts.nightly and Pin.is_nightly(facts.pin) {
-			Fail.new(NoTuple, "the roc pin ${facts.pin} is a nightly, and nightly is false (TALON_NIGHTLY or [toolchain] nightly). ${follow}")
+			Fail.new(NoTuple, "the roc pin ${facts.pin} is a nightly, and nightly is false (set by ${Pin.source_text(facts.source)}). ${follow}")
 		} else {
 			range = match facts.req_text {
 				Ok(text) => " (${text})"
 				Err(Unset) => ""
 			}
 			Fail.new(NoTuple, "the roc pin ${facts.pin} is outside [toolchain] roc${range}. ${follow}")
+		}
+	}
+
+	## The name of a source of the switch, for the messages.
+	source_text : Source -> Str
+	source_text = |source| match source {
+		Env => "TALON_NIGHTLY"
+		Toml => "[toolchain] nightly in talon.toml"
+		Config => "nightly in config.toml"
+		Default => "the default"
+	}
+
+	## R-SO13, R-NS2, R-NS3, R-PH7: the check of the selected compiler (the `roc` on `PATH`) when no member has a pin (`Decision.pinned` is false).
+	## P0 cannot select another compiler. The switch is checked first (R-NS2: with the switch off the domain of nightlies is empty).
+	##
+	## | Case | Result |
+	## | --- | --- |
+	## | `compiler` is a nightly, and `nightly` is false | Failure, kind `NoTuple` (exit 10): `the roc on PATH, <id>, is a nightly, and nightly is false (set by <source text>). No roc release is known, so no compiler can be selected.` |
+	## | `req` does not admit `compiler` | Failure, kind `Consent` (exit 13, R-PH7): `the roc on PATH, <id>, is outside [toolchain] roc (<req text>). This version of tln runs only the roc on PATH, so it cannot select another compiler.` |
+	## | Else | `Ok({})` |
+	gate : { compiler : Str, req : Try(Req, [Unset]), req_text : Try(Str, [Unset]), nightly : Bool, source : Source } -> Try({}, Fail)
+	gate = |facts| {
+		if Pin.is_nightly(facts.compiler) and !facts.nightly {
+			Err(Fail.new(NoTuple, "the roc on PATH, ${facts.compiler}, is a nightly, and nightly is false (set by ${Pin.source_text(facts.source)}). No roc release is known, so no compiler can be selected."))
+		} else {
+			match (facts.req, facts.req_text) {
+				(Ok(req), Ok(text)) if !Pin.admits({ req, id: facts.compiler }) => Err(
+					Fail.new(Consent, "the roc on PATH, ${facts.compiler}, is outside [toolchain] roc (${text}). This version of tln runs only the roc on PATH, so it cannot select another compiler."),
+				)
+				_ => Ok({})
+			}
 		}
 	}
 }

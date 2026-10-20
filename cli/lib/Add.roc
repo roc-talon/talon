@@ -127,6 +127,20 @@ Add := {
 		}
 	}
 
+	## R-SE7 (slice 009): the notice for a platform release that changes, in `tln add --platform` (`Replace`) and in `tln update` or `tln install X@sel` (a move of the platform entry). Text (proposal, TW24):
+	## `platform changes: <old name> <old version> -> <new name> <new version>`. `Add.decide` gives the same text for `Replace`. The command prints it as `note: <text>` before the ladder lines and puts it in `data.notes`.
+	platform_note : { from : { name : Str, version : Str }, to : { name : Str, version : Str } } -> Str
+	platform_note = |facts| "platform changes: ${facts.from.name} ${facts.from.version} -> ${facts.to.name} ${facts.to.version}"
+
+	## R-SL12 for `tln update X@sel` (slice 009, question Q5): the close versions that the failure `no tuple works: <id> has no release that satisfies <range> (...)` gets. The text is
+	## ` Close versions: <v>, <v>, <v>.` (a space first, a full stop at the end) for the versions of `close_versions` (the table of `no_release`: 3 nearest to an exact version, else the 3 newest). It is the empty
+	## text when no version parses. `versions` are the versions of all candidates of the repository, in any order. The exit code stays 10 (the answer of the manager to Q2 of slice 007).
+	close_note : { selector : Try(Selector, [None]), versions : List(Str) } -> Str
+	close_note = |facts| match close_versions(facts.selector, facts.versions) {
+		[] => ""
+		close => " Close versions: ${Str.join_with(close, ", ")}."
+	}
+
 	## Q9 of slice 007 (R-WS12, Resolution 9): a new entry for a group that another member holds. `held` are the members that have the group, with the version of their entry.
 	## `range` is the range of the selector of the new entry (`=2.1.0` for `@2.1.0`, `*` for no selector). When the range admits each held version, `Ok({})`: the new entry
 	## gets the held version. When it excludes one, a failure of kind `NoTuple` (exit 10): moving a held version needs the prompt R-NI3, which P0 cannot ask (R-SP16, R-SP17: design gap).

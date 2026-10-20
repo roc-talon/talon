@@ -154,6 +154,10 @@ Github :: [].{
 		Fail.new(Network, "cannot reach ${facts.url}: ${why}. Use --offline to work with the cached index.")
 	}
 
+	## The failure for a new group with no cached page and `--offline` (R-DI12, R-AD37): kind `Network` (exit 15).
+	no_page_failure : Str -> Fail
+	no_page_failure = |name| Fail.new(Network, "the index of ${name} has no cached page and --offline is set. Run the command without --offline.")
+
 	## The failure for an answer that is not 200, 304 or a rate limit (question Q2): kind `Network` (exit 15), `GitHub answered <status> for <url>`.
 	status_failure : { url : Str, status : U16 } -> Fail
 	status_failure = |facts| Fail.new(Network, "GitHub answered ${facts.status.to_str()} for ${facts.url}")

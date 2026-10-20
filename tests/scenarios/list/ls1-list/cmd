@@ -1,0 +1,21 @@
+# R-CM9 R-CM19 R-H4 R-H7 R-C8 R-FE7 R-OV1 R-FL3 R-FL6 R-J1 R-J2 R-J3 R-J4 R-OUT4 R-EC2 R-EC10 R-EC15 R-EC18 R-PD9 (slice 010, Q9, Q10, Q11, Q16, Q21): `tln list` on the real binary. The packages are in the cache (the header URLs keep github.com, nothing is fetched).
+# The header has a platform, `web` (names core 1.0.0 and text 1.0.0), `core` 1.1.0 (so core is raised), `mid` (names text 1.1.0, so text 1.1.0 wins and text 1.0.0 is not in the cache), a path entry `util` (its entries are
+# core 1.0.0, text 2.0.0 and a path entry `./inner/main.roc`, relative to `util/`), and a foreign URL. 2 series of acme/text are in the closure (R-C8).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# The flat list. The warning of R-C8 is on stderr.
+st tln list
+# `ls` is `list` (R-CM19). --tree shows the followed edges. Nothing else changes.
+st tln ls --tree
+# --json: stdout is the envelope only (the same facts as the text and the links of the tree). The warning stays on stderr.
+st tln list --json
+# R-CM9 has no operand.
+st tln list web
+# --file names the project file (R-FL6). --offline and a package that is not in the cache (text 1.0.0, named by web and selected for it): exit 15 and no list (question Q10).
+st tln list --file off/main.roc --offline
+# The header of `conflict` pins core 1.0.0, and mid needs text 1.1.0, which needs core 1.1.0: no tuple, exit 10 (question Q16).
+st tln list --file conflict/main.roc
+# A path entry whose file is missing: exit 18, no list (question Q21).
+st tln list --file dangle/main.roc
+echo "== the files are not changed"
+cat main.roc

@@ -1,6 +1,8 @@
 acme/pf 0.1.0 895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw
 acme/pf 0.2.0 GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG
 acme/pf2 1.0.0 41RUFyf5NiYVuMZi7DXZDtBNoXdWJXq81om3xhfbbrF2
+acme/pfx 0.1.0 6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL
+acme/pfx 0.1.1 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK
 acme/json 2.0.0 7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21
 acme/json 2.0.5 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f
 acme/json 2.1.0 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
@@ -21,3 +23,13 @@ acme/lex 1.1.0 FtWiVtJnftsbk6KF8DD9WvUXigwx38tUd4tEk3WDBrV6
 acme/lex 1.2.0 7r2t7xhwfM9esnfmYrQCSFZAmkzvfsyTeo1J5276kjmc
 acme/pre 1.0.0 2mqqUnkkBHzQ7GDATS87FUvamVFRS3p3HBpXZ1LDiTGT
 acme/9lives 1.0.0 B8BEmGfcd49XAMfMC8a9ttLPzXq5xf87GUtkiqwTawt4
+acme/web 1.0.0 8LoFFAesdE1jgr4tRFe77ihKB88VgTwyacjUvpMJm6S7
+acme/mid 1.0.0 5oo1arXY7EXbrxT5DxfxyZ4WYxzoRmneT2gsChjwSgGi
+acme/core 1.0.0 8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r
+acme/core 1.1.0 GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a
+acme/text 1.0.0 4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN
+acme/text 1.1.0 HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm
+acme/text 2.0.0 HTcv5NZyJxUEiyN6SFBCRUymkYR5eg3SmtyFzwoNkH6N
+roc-lang/basic-webserver 0.1.0 BktUQpe8XQjziPL2BHt84GSYWhhgc66oS27aJYf3YDd1
+someone/basic-webserver 1.0.0 FBaRPTuBCEvC4nu73eSnAyPkyuH7YzWCUnaNyh6ck47s
+acme/web-utils 1.0.0 4UKY3YSbvWQHBf2dXGY1jwxgXrmwT6zPJxTeptcgmduP

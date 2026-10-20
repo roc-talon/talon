@@ -11,7 +11,7 @@ n2 = "nightly-2026-10-13-91fa0c2"
 
 n3 = "nightly-2026-10-14-38a3029"
 
-# R-NS7 R-NS5: the compiler range of `[toolchain] roc`. `*` is any compiler. A lower bound `>=<id>` and an exact `=<id>` name a compiler id. A semver range
+# R-NS7 R-NS5 R-SC12: the compiler range of `[toolchain] roc`. R-SC12: a bound that is a prefix of a nightly id (`>=nightly-2026-10-09`, no hash part) is `BadReq`: only a full id is allowed. `*` is any compiler. A lower bound `>=<id>` and an exact `=<id>` name a compiler id. A semver range
 # (`0.1.*`, `^1`) is for releases only, so it never admits a nightly. The order of two nightlies is the date, then the text of the tag (R-NS1).
 # A release has no date in P0, so a lower bound that is a nightly admits no release, and a lower bound that is a release admits no nightly (question Q9).
 # Q9: a pre-release id (`0.1.0-rc1`) is not a release. `>=0.1.0-rc1` is read as a semver range (it admits `0.1.0`). A bound or an id with a pre-release part gives no order in `AtLeast`, so it admits nothing.
@@ -66,7 +66,8 @@ expect {
 	bad_parsed == [] and bad_admits == [] and bad_kinds == []
 }
 
-# R-WS4 R-RP1 R-RP2 R-RP3 R-H6 R-PH8 R-SP1 R-NS5 R-SO11: the `roc:` pin of the members. P0 holds the nightly: the held value is the pin, or the selected compiler (the `roc`
+# R-WS4 R-RP1 R-RP2 R-RP3 R-H6 R-PH8 R-SP1 R-NS5 R-SO11 R-SO3 R-SO4: the `roc:` pin of the members. R-SO3: the header pin (rank 3) is the held value, also when the `roc` on `PATH` is another id.
+# R-SO4: `[toolchain] roc` (rank 4) is read as a range, and a pin that it does not admit is `outside` (P0 reports it, R-RP2). P0 holds the nightly: the held value is the pin, or the selected compiler (the `roc`
 # on `PATH`) when no member has a pin. A member with no pin gets the held value when its header is written for another change, after the check (R-RP3).
 # A pin is never written over a pin (R-RP1). `--no-check` writes none (R-H6). A pin that `[toolchain] roc` does not admit, or a nightly pin with the switch off, is `outside`.
 expect {
@@ -98,11 +99,11 @@ expect {
 	bad = rows.keep_if(|(_, got, want)| shown(got) != want).map(|(label, got, want)| (label, want, shown(got)))
 	dbg bad
 
-	failure = |pin, req_text, nightly| Pin.outside_failure({ pin, req_text, nightly })
-	range_text = failure(n1, Ok(">=${n2}"), Bool.True)
-	switch_text = failure(n1, Err(Unset), Bool.False)
-	both = failure(n1, Ok("*"), Bool.False)
+	failure = |pin, req_text, nightly, source| Pin.outside_failure({ pin, req_text, nightly, source })
+	range_text = failure(n1, Ok(">=${n2}"), Bool.True, Env)
+	switch_text = failure(n1, Err(Unset), Bool.False, Config)
+	both = failure(n1, Ok("*"), Bool.False, Toml)
 	dbg [range_text.line(), switch_text.line(), both.line()]
-	texts_ok = range_text.line() == "tln: error[no_tuple]: the roc pin ${n1} is outside [toolchain] roc (>=${n2}). Run tln upgrade roc or tln roc use <id>." and switch_text.line() == "tln: error[no_tuple]: the roc pin ${n1} is a nightly, and nightly is false (TALON_NIGHTLY or [toolchain] nightly). Run tln upgrade roc or tln roc use <id>." and both.kind.code() == 10
+	texts_ok = range_text.line() == "tln: error[no_tuple]: the roc pin ${n1} is outside [toolchain] roc (>=${n2}). Run tln upgrade roc or tln roc use <id>." and switch_text.line() == "tln: error[no_tuple]: the roc pin ${n1} is a nightly, and nightly is false (set by nightly in config.toml). Run tln upgrade roc or tln roc use <id>." and both.kind.code() == 10
 	bad == [] and texts_ok
 }

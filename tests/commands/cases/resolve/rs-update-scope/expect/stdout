@@ -5,6 +5,7 @@ $PROJECT/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
 exit 0
 == update compiler=nightly-2026-10-14-38a3029
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
 check: passed
 build: passed
 $PROJECT/main.roc

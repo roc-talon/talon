@@ -1,0 +1,7 @@
+tests/commands/cases/resolve/rs-failures/expect/stderr, rs-new-toml/expect/stderr, rs-update-scope/expect/stdout:
+  rebuilt by removing the 009 text from the current file (the ` Close versions: ...` suffix, the `note: platform changes: ...` line).
+  The old text of rs-failures stderr and rs-update-scope stdout was seen in the agent log before the change and matches. rs-new-toml stderr follows the same rule.
+tests/commands/cases/resolve/rs-failures, rs-new-toml, rs-update-scope: expect/exit, expect/stdout (rs-failures, rs-new-toml), expect/tree.diff, expect/calls.log:
+  copied from the current files. UPDATE=1 rewrote them, and no change was seen in them (not proven by a diff against the old files, which were not saved).
+Fixture files that make.py writes for the old cases (ad1, ad2, in1-workspace-frozen-rename, in1-flow): not copied. They are the same as the output of the old make.py (checked with a diff in a temp dir).
+Not changed by slice 009 (not copied): docs/slices/PLAN.md (the manager), the test harness (tests/run.sh, tests/commands/*.roc), scripts/.

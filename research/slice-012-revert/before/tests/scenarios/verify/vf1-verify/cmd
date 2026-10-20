@@ -1,0 +1,21 @@
+# R-CM11 R-LB2 R-LB1 R-LB4 R-FL14 R-FL7 R-FL13 R-LF3 R-BL6 R-LD4 R-LD7 R-SP2 R-RP2 R-I5 R-J1 R-J2 R-J3 R-J4 R-J5 R-OUT4 R-EC2 R-E4 R-PD9 R-SO7 (slice 009, Q4, Q6, Q7):
+# `tln verify` on the real binary. The header has a platform (acme/pfx 0.1.0, 0.1.1 is in the series), json 2.0.0 and parser 1.0.0. talon.toml has the key `lex` that the header lacks: it has no effect, and the fixture has no page for acme/lex.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# R-FL14: `verify` writes nothing, so it rejects --dry-run and --frozen. A name is no operand (Q6).
+st tln verify --dry-run
+st tln verify --frozen
+st tln verify json
+# The tuple that `update` with no name picks: json 2.1.0 (2.2.0 is 1 day old), parser 1.2.0, the platform 0.1.1. The check uses `--replace-dep`: no copy of the app, no write (see the roc calls below and the tree diff).
+st tln verify
+# `lowest` inside the implied ranges: the tuple is the header (R-LB4). The ladder still runs (Q4): 3 probes. --json has the same data as `install`, with `written` empty.
+st tln verify --strategy lowest --json
+# --no-check skips the ladder (R-LF3): `check` and `build` are skipped, no probe.
+st tln verify --no-check --json
+echo "== the files are not changed"
+cat main.roc talon.toml
+# The 2 probes of a round start together, and each build has a random temp dir: the random part is replaced, then the roc calls are sorted.
+echo "== the roc calls"
+sed 's#/talon/tmp/[0-9a-f]\{16\}/#/talon/tmp/HEX/#' "$TALON_TEST_DIR/roc.log" | sort
+rm "$TALON_TEST_DIR/roc.log"
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

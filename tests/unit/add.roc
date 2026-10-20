@@ -269,3 +269,34 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-SE7 R-AD31 (slice 009): the text of the notice for a platform release that changes. A new name, and a new version of the same name. `Add.decide` gives the same text for `Replace`.
+expect {
+	note = |from, to| Add.platform_note({ from, to })
+	rows = [
+		(note({ name: "roc-lang/basic-cli", version: "0.25.0" }, { name: "roc-lang/basic-webserver", version: "0.13.0" }), "platform changes: roc-lang/basic-cli 0.25.0 -> roc-lang/basic-webserver 0.13.0"),
+		(note({ name: "acme/pf", version: "0.1.0" }, { name: "acme/pf", version: "0.1.1" }), "platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1"),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
+# R-SL12 R-SL3 R-SL4 R-EC10 (slice 009, question Q5): the text that `tln update X@sel` adds to the failure `no tuple works: ... has no release that satisfies ...` (exit 10, the answer of the manager to Q2 of slice 007). It is a space, then `Close versions: ` and at most 3 versions, newest first, and a full stop.
+# The versions are chosen as `no_release` chooses them: the 3 nearest to an exact version, else the 3 newest. No version that parses gives no text.
+expect {
+	close = |selector, versions| Add.close_note({ selector, versions })
+	all = ["2.0.0", "2.2.0", "2.0.5", "2.1.0", "1.9.0"]
+	rows = [
+		(close(Ok(Selector.Range("^3")), all), " Close versions: 2.2.0, 2.1.0, 2.0.5."),
+		(close(Ok(Selector.Exact("2.0.4")), all), " Close versions: 2.0.5, 2.0.0, 1.9.0."),
+		(close(Ok(Selector.Range("^3")), ["1.0.0", "1.1.0"]), " Close versions: 1.1.0, 1.0.0."),
+		(close(Ok(Selector.Latest), all), " Close versions: 2.2.0, 2.1.0, 2.0.5."),
+		(close(Ok(Selector.Range("^3")), []), ""),
+		(close(Ok(Selector.Range("^3")), ["x", "1.2"]), ""),
+		(close(Err(None), ["1.0.0"]), " Close versions: 1.0.0."),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}

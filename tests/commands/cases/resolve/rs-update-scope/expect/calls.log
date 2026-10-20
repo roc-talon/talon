@@ -2,7 +2,7 @@ env_all
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
@@ -26,7 +26,7 @@ write_atomic $PROJECT/main.roc
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
@@ -57,7 +57,7 @@ write_atomic $PROJECT/main.roc
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 random
@@ -78,7 +78,7 @@ write_atomic $PROJECT/talon.toml $PROJECT/main.roc
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
 read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.meta $HOME/.cache/roc/talon/index/github/acme/parser/1.json
 random
@@ -99,7 +99,7 @@ write_atomic $PROJECT/talon.toml $PROJECT/main.roc
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
 read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.meta $HOME/.cache/roc/talon/index/github/acme/parser/1.json
 random

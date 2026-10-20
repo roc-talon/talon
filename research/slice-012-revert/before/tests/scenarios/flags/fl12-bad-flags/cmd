@@ -1,0 +1,7 @@
+# R-FL12 R-FL6 R-FL7 R-EC2 R-E2 R-E4: a flag that the command does not take stops with exit 2.
+# Each line fails with exit 2, and the next line runs (the `|| echo` keeps `sh -e` going).
+tln list --frobnicate || echo "exit=$?"
+tln cache gc --file main.roc || echo "exit=$?"
+tln list --strategy lowest || echo "exit=$?"
+tln rm json --tree || echo "exit=$?"
+tln --registry || echo "exit=$?"

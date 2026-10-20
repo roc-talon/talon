@@ -54,7 +54,7 @@ flow! = |fx, args, opts| {
 	start = Install.begin!(fx, args)?
 	Install.check_member(Bool.True, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-	compiler = Install.on_path!(fx)
+	compiler = Install.compiler!(fx, start.env, Bool.False)?
 	Resolve.remove!(
 		fx,
 		{

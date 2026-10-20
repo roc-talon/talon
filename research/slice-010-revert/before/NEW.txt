@@ -1,0 +1,10 @@
+cli/lib/Closure.roc
+cli/lib/Listing.roc
+cli/lib/Walk.roc
+cli/lib/Ls.roc
+tests/unit/closure.roc
+tests/unit/listing.roc
+tests/scenarios/list/
+tests/commands/cases/closure/
+tests/commands/cases/resolve/rs-install-add-key/given/project/lib/main.roc
+tests/commands/cases/gaps/

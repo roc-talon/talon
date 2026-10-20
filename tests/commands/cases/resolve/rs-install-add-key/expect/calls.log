@@ -4,7 +4,7 @@ list_dirs $PROJECT/app
 list_dirs $PROJECT
 read_files $PROJECT/app/talon.toml
 read_files $PROJECT/app/main.roc
-read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml
+read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
 programs gh
 http_get https://api.github.com/repos/acme/parser/releases?per_page=100
@@ -13,6 +13,7 @@ write_atomic $HOME/.cache/roc/talon/index/github/acme/parser/1.json $HOME/.cache
 random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc
+read_files $PROJECT/lib/main.roc
 random
 copy_tree $PROJECT/app $HOME/.cache/roc/talon/tmp/0123456789abcdef
 list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
@@ -30,7 +31,8 @@ list_dirs $PROJECT/app
 list_dirs $PROJECT
 read_files $PROJECT/app/talon.toml
 read_files $PROJECT/app/main.roc
-read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml
+read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+read_files $PROJECT/lib/main.roc

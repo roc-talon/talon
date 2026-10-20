@@ -1,0 +1,2 @@
+[overrides]
+json = "acme/json@=2.1.0"

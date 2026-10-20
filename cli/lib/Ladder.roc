@@ -52,6 +52,24 @@ Ladder :: [].{
 		{ first: [spec(facts.dir, check_args), spec(facts.copy, check_args)], build }
 	}
 
+	## One replacement of `--replace-dep` (R-CM11, R-LB2): `old` is the URL that the header has, `new` is the URL of the tuple. `tln verify` checks the tuple with these, so it needs no copy of the app.
+	Replace : { old : Str, new : Str }
+
+	## The probes of one member for `tln verify` (R-CM11, R-LB2): the same steps as `plan`, with no copy. The baseline and the candidate check run in the project dir `dir` (one round, in this order). The candidate and the build have
+	## the arguments of `Probe.replace_args` (`--replace-dep <old> <new>` for each replacement, after the file). `tmp` is a temp dir (`Roots.item(roots, TalonTmp(<16hex>))`) that holds only the output file of the build
+	## (`<tmp>/tln-probe.out`). A package or a platform has no build (R-LD7). `replace` can be empty: the candidate check then has no replacement (the tuple is the header, question Q4).
+	plan_replace : { compiler : Str, kind : [App, Package, Platform], dir : Str, file : Str, tmp : Str, replace : List(Replace), timeout : U64 } -> Plan
+	plan_replace = |facts| {
+		spec = |args| { compiler: facts.compiler, args, dir: facts.dir, timeout: facts.timeout }
+		flagged = |command| Probe.replace_args({ command, file: facts.file, replace: facts.replace })
+		output = Text.join(facts.tmp, "tln-probe.out")
+		build = match facts.kind {
+			App => Ok(spec(flagged(Build({ output: output }))))
+			Package | Platform => Err(None)
+		}
+		{ first: [spec(Probe.args({ command: Check, file: facts.file })), spec(flagged(Check))], build }
+	}
+
 	## The lines that the command prints for a step that passed (R-BL5: an error that both runs have is "unchanged", an error that only the baseline has
 	## is "removed", both are notes and are never blamed). Texts are a proposal (TW24). `<where>` is the path for an app file, `<name> <version> <module>`
 	## for a package file of a known owner, `<hash> <module>` for another package file, and `no file` for an error that has no file.
@@ -143,6 +161,31 @@ Ladder :: [].{
 	## One member of `run!`: a project file whose header changes. `ops` are the edits of its header (`Locked.edit` gives the candidate text).
 	Member : { file : Str, kind : [App, Package, Platform], text : Str, ops : List(Locked.Op) }
 
+	## A member of `verify!`: a project file and its kind. The header is not read or edited (the candidate is the replacement).
+	Checked : { file : Str, kind : [App, Package, Platform] }
+
+	## Command code (part C) of `tln verify` (R-CM11, R-LB2). It is `run!` with no copy and no edit of a header. The calls for one member, in order (the L2 case `verify/vf1-flow` fixes them):
+	##
+	## | Step | Call |
+	## | --- | --- |
+	## | 0 | Once, before any call: `Compiler.require({ id: held, path_roc })`. A failure is returned (exit 13, R-PH7). |
+	## | 1 | `fx.random!()`, then `Temp.hex`: `tmp` is `Roots.item(roots, TalonTmp(hex))`. `fx.make_dirs!([tmp])` (the build writes its output there). |
+	## | 2 | `fx.probes!(plan.first)` (`plan_replace`: one round, the baseline and the candidate check, both in the dir of the member file) |
+	## | 3 | `Ladder.baseline`, then `Ladder.check` with `dir` the dir of the member file for both. A failure goes to step 5. |
+	## | 4 | When the plan has a build: `fx.probes!([build])`, then `Ladder.build` (`dir` is the dir of the member file). A failure goes to step 5. |
+	## | 5 | `fx.delete!([tmp])`, also for a failure (R-CC2) |
+	##
+	## The lines are printed and the notes are given as `run!` does it. The failures are the ones of `Ladder.check` and `Ladder.build`: exit 10 for a new error in a hash, exit 11 for a new error in an app file. A member is probed after the member before it passed.
+	verify! : Fx, { roots : Roots, path_roc : Try(Str, [NoCompiler]), held : Str, members : List(Checked), replace : List(Replace), owners : List(Owner), moved : List(Owner) } => Try(List(Str), Fail)
+	verify! = |fx, request| {
+		Compiler.require({ id: request.held, path_roc: request.path_roc })?
+		var $done = no_done
+		for member in request.members {
+			$done = $done.append({ file: member.file, lines: verify_member!(fx, request, member)? })
+		}
+		Ok(print_lines!(fx, $done))
+	}
+
 	## Command code (part C). Called by `Resolve.finish!` after the choice and before the write, only when a header changes and `--no-check` is false. The calls
 	## for one member, in order (the L2 cases `ladder/ld-*` fix them):
 	##
@@ -163,23 +206,32 @@ Ladder :: [].{
 	run! : Fx, { roots : Roots, path_roc : Try(Str, [NoCompiler]), held : Str, members : List(Member), owners : List(Owner), moved : List(Owner) } => Try(List(Str), Fail)
 	run! = |fx, request| {
 		Compiler.require({ id: request.held, path_roc: request.path_roc })?
-		var $lines = no_lines
-		var $notes = no_lines
+		var $done = no_done
 		for member in request.members {
-			for line in probe_member!(fx, request, member)? {
-				prefix = if request.members.len() >= 2 "${member.file}: " else ""
-				$lines = $lines.append("${prefix}${line}")
-				if line.starts_with("note: ") {
-					$notes = $notes.append("${prefix}${line.drop_prefix("note: ")}")
-				}
-			}
+			$done = $done.append({ file: member.file, lines: probe_member!(fx, request, member)? })
 		}
-		for line in $lines {
-			fx.out!("${line}\n")
-		}
-		Ok($notes)
+		Ok(print_lines!(fx, $done))
 	}
 }
+
+# The lines of each member, one `fx.out!` call for each line. With 2 or more members each line has the file of its member. It gives the text of each `note:` line.
+print_lines! : Fx, List({ file : Str, lines : List(Str) }) => List(Str)
+print_lines! = |fx, done| {
+	var $notes = no_lines
+	for member in done {
+		for line in member.lines {
+			prefix = if done.len() >= 2 "${member.file}: " else ""
+			fx.out!("${prefix}${line}\n")
+			if line.starts_with("note: ") {
+				$notes = $notes.append("${prefix}${line.drop_prefix("note: ")}")
+			}
+		}
+	}
+	$notes
+}
+
+no_done : List({ file : Str, lines : List(Str) })
+no_done = []
 
 # C6: a failed probe whose errors Talon cannot read is no fact. An empty set would blame the wrong hash (R-BL3).
 unreadable : Str, U64 -> Fail
@@ -233,6 +285,45 @@ probe_in_copy! = |fx, request, member, copy| {
 		Ok(spec) => match fx.probes!([spec]) {
 			[output] => {
 				built = Ladder.build({ output, dir: copy, pkgs, baseline, owners: request.owners, compiler, timeout })?
+				Ok(checked.lines.concat(built.lines))
+			}
+			_ => Err(no_answer("the build"))
+		}
+	}
+}
+
+VerifyRequest : { roots : Roots, path_roc : Try(Str, [NoCompiler]), held : Str, members : List(Ladder.Checked), replace : List(Ladder.Replace), owners : List(Ladder.Owner), moved : List(Ladder.Owner) }
+
+# The steps 1 to 5 of `verify!` for one member. The temp dir is deleted also after a failure (R-CC2).
+verify_member! : Fx, VerifyRequest, Ladder.Checked => Try(List(Str), Fail)
+verify_member! = |fx, request, member| {
+	tmp = Roots.item(request.roots, Item.TalonTmp(Temp.hex(fx.random!())))
+	result = probe_in_place!(fx, request, member, tmp)
+	_ = fx.delete!([tmp])
+	result
+}
+
+probe_in_place! : Fx, VerifyRequest, Ladder.Checked, Str => Try(List(Str), Fail)
+probe_in_place! = |fx, request, member, tmp| {
+	match fx.make_dirs!([tmp]) {
+		Ok(_) => {}
+		Err(_) => return Err(Fail.new(Environment, "cannot make ${tmp}"))
+	}
+	dir = Text.dir_of(member.file)
+	compiler = request.held
+	pkgs = request.roots.pkgs
+	plan = Ladder.plan_replace({ compiler, kind: member.kind, dir, file: Text.last_segment(member.file), tmp, replace: request.replace, timeout })
+	first = match fx.probes!(plan.first) {
+		[base, candidate] => (base, candidate)
+		_ => return Err(no_answer("the probes"))
+	}
+	baseline = Ladder.baseline({ output: first.0, dir, pkgs, compiler, timeout })?
+	checked = Ladder.check({ output: first.1, dir, pkgs, baseline, owners: request.owners, moved: request.moved, compiler, timeout })?
+	match plan.build {
+		Err(None) => Ok(checked.lines)
+		Ok(spec) => match fx.probes!([spec]) {
+			[output] => {
+				built = Ladder.build({ output, dir, pkgs, baseline, owners: request.owners, compiler, timeout })?
 				Ok(checked.lines.concat(built.lines))
 			}
 			_ => Err(no_answer("the build"))

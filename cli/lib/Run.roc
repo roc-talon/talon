@@ -6,10 +6,14 @@ import Fx
 import Help
 import Install
 import Kind
+import Ls
 import Out
 import Ref
 import Remove
 import Scope
+import Update
+import Verify
+import Why
 
 ## The command code of `tln` (direct style, TESTING.md 2.2 part C).
 Run :: [].{
@@ -45,6 +49,14 @@ Run :: [].{
 							Install.run!(fx, args)
 						} else if args.command == ["remove"] {
 							Remove.run!(fx, args)
+						} else if args.command == ["update"] {
+							Update.run!(fx, args)
+						} else if args.command == ["verify"] {
+							Verify.run!(fx, args)
+						} else if args.command == ["list"] {
+							Ls.run!(fx, args)
+						} else if args.command == ["why"] {
+							Why.run!(fx, args)
 						} else {
 							fail!(fx, { command: args.typed, json: args.json, fail: Fail.new(Internal, "command '${args.typed}' is not built yet") })
 						}

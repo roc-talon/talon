@@ -42,6 +42,14 @@ Probe :: [].{
 		Build({ output }) => ["build", facts.file, "--output=${output}"]
 	}
 
+	## The arguments of `roc` for `tln verify` (R-CM11, R-LB2): `args` and then `--replace-dep <old> <new>` for each replacement, in order, after the file (the pinned roc reads the flag after the file). `roc check` and `roc build` both have the flag.
+	## No replacement gives the same list as `args`.
+	replace_args : { command : Command, file : Str, replace : List({ old : Str, new : Str }) } -> List(Str)
+	replace_args = |facts| {
+		flags = facts.replace.join_map(|r| ["--replace-dep", r.old, r.new])
+		Probe.args({ command: facts.command, file: facts.file }).concat(flags)
+	}
+
 	## The class of a result (R-RC1 to R-RC4, R-P2, R-P3). `Fail(n)` has the number of errors. `Crash(text)` and `NoFact(text)` have a short text for the
 	## message (`signal 11`, `exit 139`, `signal 9`, `not started: <text>`, `no result (exit <n>)`). The rules, first match wins:
 	##

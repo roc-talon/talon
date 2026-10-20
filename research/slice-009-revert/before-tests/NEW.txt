@@ -1,0 +1,14 @@
+cli/lib/Picker.roc
+cli/lib/Update.roc
+cli/lib/Verify.roc
+tests/unit/update.roc
+tests/unit/picker.roc
+tests/unit/verify.roc
+tests/scenarios/update/
+tests/scenarios/verify/
+tests/commands/cases/update/
+tests/commands/cases/verify/
+docs/slices/009-update-verify.md
+docs/slices/010-closure-list.md
+docs/slices/011-why.md
+research/slice-009-revert/

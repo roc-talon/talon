@@ -1,5 +1,6 @@
 import Fail
 import Ident
+import Pin
 import Project
 import header.Header
 
@@ -37,7 +38,7 @@ Locked := {
 
 	## Reads the header of the text. `path` is for the message. Failures are the ones of `Project.check_header` (R-PD8, R-TF5): no header is kind
 	## `Usage`, `<path> has no app, package or platform header`. A header that does not parse is kind `Input`,
-	## `<path>:<line>: the header is not valid`. A platform header gives its `packages` record. A package header is read as an app header is (R-H8): its
+	## `<path>:<line>: the header is not valid`. A `roc:` pin that is not a full compiler id (R-SC12) is kind `Input` (exit 19, R-EC19): `<path>:<line>: the roc pin <text> is not a full compiler id`. A platform header gives its `packages` record. A package header is read as an app header is (R-H8): its
 	## versions are minimums for the apps that use it, and Talon reads and writes them in the same way.
 	read : { path : Str, text : Str } -> Try(Locked, Fail)
 	read = |facts| {
@@ -46,7 +47,11 @@ Locked := {
 			Ok(header) => {
 				entries = header.entries()
 				roc = match entries.find_first(|e| e.name == "roc") {
-					Ok(e) => Ok(e.value)
+					Ok(e) => {
+						# R-SC12, R-EC19: a pin is a full compiler id, not a prefix.
+						if !Pin.is_id(e.value) return Err(Fail.new(Input, "${facts.path}:${line_of(facts.text, e.span.start).to_str()}: the roc pin ${e.value} is not a full compiler id"))
+						Ok(e.value)
+					}
 					Err(_) => Err(NoPin)
 				}
 				Ok({ kind, rows: entries.keep_if(|e| e.name != "roc").map(row_of), roc })
@@ -161,3 +166,7 @@ apply_op = |path, text, op| {
 		}
 	}
 }
+
+# The 1-based line of the byte offset.
+line_of : Str, U64 -> U64
+line_of = |text, offset| text.to_utf8().take_first(offset).fold(1, |n, b| if b == '\n' n + 1 else n)

@@ -1,0 +1,19 @@
+== update --no-check --strategy lowest --file p1/main.roc
+check: skipped
+$PROJECT/p1/main.roc
+  ~ core: acme/core 1.0.0 -> 1.1.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0
+== update --no-check --file p2/main.roc
+exit 10
+== why core --file p1/main.roc
+$PROJECT/p1/main.roc
+  acme/core 1.1.0 (direct)
+    mid -> text -> core
+    core
+exit 0
+== why text --file p1/main.roc
+$PROJECT/p1/main.roc
+  acme/text 1.1.0
+    mid -> text
+exit 0

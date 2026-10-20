@@ -1,0 +1,3 @@
+# run 3 (pk, a package): the baseline and the candidate check pass, no build (R-LD7)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr

@@ -22,3 +22,10 @@ signal:11	-	-
 1	../fixtures/check/out/app-errors.stdout	../fixtures/check/out/app-errors.stderr
 1	../fixtures/check/out/app-errors-shifted.stdout	../fixtures/check/out/app-errors-shifted.stderr
 1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr
+# run 8 (slice 012, R-OV2): the raise comes from the key of [overrides]. Baseline, check and build pass.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 9 (slice 012, R-OV2): the raise to json 2.1.0 breaks a package: the check of the candidate has a new error in acme/json 2.1.0 (as run 2)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr

@@ -1,0 +1,3 @@
+add acme/9lives --file app/main.roc
+add acme/9lives --as app --file app/main.roc
+add acme/9lives --as pf --file app/main.roc

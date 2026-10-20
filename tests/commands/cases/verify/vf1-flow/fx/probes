@@ -1,0 +1,17 @@
+# run 1 (v1): the baseline, the candidate check and the build pass
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2 (v2, a package): the baseline and the candidate check pass, no build
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+# run 3 (v3): the candidate has a new error in the files of acme/json 2.1.0: exit 10. The file `probe-pkg-new.stderr` is `pkg-new.stderr` with the package paths of a check that runs in the project dir (`../../home/.cache/roc/packages/`): `verify` has no temp copy, so the depth of the cwd is the one of the baseline.
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	probe-pkg-new.stderr
+# run 4 (v4): a new error in an app file: exit 11
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr
+# run 5 (v5): the header is the tuple: the ladder runs, all pass
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

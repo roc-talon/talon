@@ -98,7 +98,7 @@ expect {
 	view == want and empty_view == empty_want and member_view == Ok(([("json", "^2.3", 3)], [])) and logs_view == Ok((Ok(Log(184467)), Ok(0)))
 }
 
-# R-TF4 R-WS5 R-EC19 R-I2: a `talon.toml` that is not valid TOML, or a known key with a value of the wrong type or form (a range that does not parse, an unknown `strategy`), stops the command
+# R-TF4 R-WS5 R-EC19 R-I2 R-SC12: a `talon.toml` that is not valid TOML, or a known key with a value of the wrong type or form (a range that does not parse, an unknown `strategy`), stops the command
 # with exit 19 and names the file, the line and the key. A known table that a workspace member file may not have (R-WS5) is the same failure, with the line of the table. An unknown key or table
 # is a warning and the command goes on (a newer Talon can know it). The text of `roc-toml` is not shown.
 expect {
@@ -116,6 +116,9 @@ expect {
 		("an override with a bad range", "[overrides]\nx = \"^\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: overrides.x: '^' is not a version range"),
 		("a dependency that is not a string", "[dependencies]\njson = 5\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: must be a string"),
 		("a compiler range", "[toolchain]\nroc = \"latest\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: 'latest' is not a compiler range"),
+		# R-SC12 (slice 012): the full id only. A prefix of a nightly id, with or without a bound, is an error.
+		("a prefix of a compiler id, with a bound", "[toolchain]\nroc = \">=nightly-2026-10-09\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: '>=nightly-2026-10-09' is not a compiler range"),
+		("a prefix of a compiler id, exact", "[toolchain]\nroc = \"=nightly-2026-10\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: '=nightly-2026-10' is not a compiler range"),
 		("nightly is not a boolean", "[toolchain]\nnightly = \"yes\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.nightly: must be true or false"),
 		("an unknown strategy", "[resolution]\nstrategy = \"middle\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.strategy: must be \"highest\" or \"lowest\""),
 		("min-release-age in hours", "[resolution]\nmin-release-age = \"48h\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.min-release-age: must be a number of days, for example \"2d\""),

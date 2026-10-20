@@ -1,9 +1,21 @@
 env_all
 list_dirs $PROJECT
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $PROJECT
 read_files $PROJECT/main.roc
-read_files $PROJECT/main.roc $PROJECT/talon.toml
+read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+canonical $PROJECT/range/main.roc
+list_dirs $PROJECT/range
+list_dirs $PROJECT
+read_files $PROJECT/range/talon.toml
+read_files $PROJECT/range/main.roc
+read_files $PROJECT/range/main.roc $PROJECT/range/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/off/main.roc
+list_dirs $PROJECT/off
+list_dirs $PROJECT
+read_files $PROJECT/off/main.roc
+read_files $PROJECT/off/main.roc $PROJECT/off/talon.toml $HOME/.config/talon/config.toml

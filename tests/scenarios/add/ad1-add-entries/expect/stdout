@@ -1,3 +1,5 @@
+== tln add acme/util --offline
+exit 15
 == tln add acme/util --dry-run
 check: passed
 build: passed

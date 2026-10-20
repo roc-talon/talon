@@ -1,0 +1,7 @@
+== install frozen file=bad/main.roc compiler=nightly-2026-10-14-38a3029
+exit 14
+== install frozen file=good/main.roc compiler=nightly-2026-10-14-38a3029
+the header satisfies talon.toml
+exit 0
+== install frozen file=pinned/main.roc compiler=nightly-2026-10-14-38a3029 nightly=false
+exit 14

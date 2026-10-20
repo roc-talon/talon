@@ -16,7 +16,7 @@ unlock $HOME/.cache/roc/talon/projects.json
 programs roc
 spawn_all limit=1
   job - roc version
-read_files $PROJECT/r1/main.roc $PROJECT/r1/talon.toml
+read_files $PROJECT/r1/main.roc $PROJECT/r1/talon.toml $HOME/.config/talon/config.toml
 read_files $PROJECT/r1/Helpers.roc $PROJECT/r1/Gone.roc
 read_files $PROJECT/r1/Inner/Deep.roc $PROJECT/r1/Inner/Mid.roc
 read_files $PROJECT/r1/Inner/Leaf.roc
@@ -52,7 +52,7 @@ unlock $HOME/.cache/roc/talon/projects.json
 programs roc
 spawn_all limit=1
   job - roc version
-read_files $PROJECT/r2/main.roc $PROJECT/r2/talon.toml
+read_files $PROJECT/r2/main.roc $PROJECT/r2/talon.toml $HOME/.config/talon/config.toml
 random
 copy_tree $PROJECT/r2 $HOME/.cache/roc/talon/tmp/0123456789abcdef
 list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
@@ -78,7 +78,7 @@ unlock $HOME/.cache/roc/talon/projects.json
 programs roc
 spawn_all limit=1
   job - roc version
-read_files $PROJECT/r3/main.roc $PROJECT/r3/talon.toml
+read_files $PROJECT/r3/main.roc $PROJECT/r3/talon.toml $HOME/.config/talon/config.toml
 random
 copy_tree $PROJECT/r3 $HOME/.cache/roc/talon/tmp/0123456789abcdef
 list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
@@ -104,7 +104,7 @@ unlock $HOME/.cache/roc/talon/projects.json
 programs roc
 spawn_all limit=1
   job - roc version
-read_files $PROJECT/r4/main.roc $PROJECT/r4/talon.toml
+read_files $PROJECT/r4/main.roc $PROJECT/r4/talon.toml $HOME/.config/talon/config.toml
 random
 copy_tree $PROJECT/r4 $HOME/.cache/roc/talon/tmp/0123456789abcdef
 list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
@@ -135,7 +135,7 @@ unlock $HOME/.cache/roc/talon/projects.json
 programs roc
 spawn_all limit=1
   job - roc version
-read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml
+read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml $HOME/.config/talon/config.toml
 read_files $PROJECT/r5/lib/Lib.roc
 args
 env_all
@@ -154,7 +154,7 @@ unlock $HOME/.cache/roc/talon/projects.json
 programs roc
 spawn_all limit=1
   job - roc version
-read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml
+read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml $HOME/.config/talon/config.toml
 read_files $PROJECT/r5/lib/Lib.roc
 random
 copy_tree $PROJECT/r5/lib $HOME/.cache/roc/talon/tmp/0123456789abcdef

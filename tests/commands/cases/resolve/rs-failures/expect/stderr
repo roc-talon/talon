@@ -1,7 +1,7 @@
 tln: error[usage]: 'nosuch' is not in the project
 tln: error[no_tuple]: no tuple works: json has no release that satisfies ^4 (4 releases, 4 outside the ranges, 0 too new)
-tln: error[no_tuple]: no tuple works: json has no release that satisfies ^2.3 (5 releases, 5 outside the ranges, 0 too new)
-tln: error[no_tuple]: no tuple works: json has no release that satisfies =2.2.0 (5 releases, 4 outside the ranges, 1 too new)
+tln: error[no_tuple]: no tuple works: json has no release that satisfies ^2.3 (5 releases, 5 outside the ranges, 0 too new) Close versions: 3.0.0, 2.2.0, 2.1.0.
+tln: error[no_tuple]: no tuple works: json has no release that satisfies =2.2.0 (5 releases, 4 outside the ranges, 1 too new) Close versions: 3.0.0, 2.2.0, 2.1.0.
 tln: error[usage]: $PROJECT/short/talon.toml:2: 'yaml' is a short name, and GitHub has no index of short names. Use the full name (owner/repo).
 tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolchain] roc (0.1.0). Run tln upgrade roc or tln roc use <id>.
 tln: error[usage]: snapshot log:5 needs a registry: direct has no log. Use a UTC time, for example 2026-10-12T00:00:00Z.

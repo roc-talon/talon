@@ -43,9 +43,9 @@ view = |r| match r {
 
 facts_of = |slots| slots.join_map(|s| s.candidates.map(|c| c.url).concat(s.current.map_ok(|u| [u]) ?? []).map(package_fact))
 
-# R-PH10 R-C1 R-C6 R-C7 R-C9 R-VA6 R-DI9 R-DT2 R-C4 R-SP1 R-NS4: the choice for one slot, with the facts known (no `Need`). The range limits the versions (R-C1). `min-release-age` hides a release that is newer
+# R-PH10 R-C1 R-C6 R-C7 R-C9 R-VA6 R-DI9 R-DT2 R-C4 R-SP1 R-NS4 R-SE3: the choice for one slot, with the facts known (no `Need`). The range limits the versions (R-C1). `min-release-age` hides a release that is newer
 # than the age, and a snapshot time hides a release published after it (R-C7); both never hide the header value (R-C9), also when the index no longer lists it, and never hide a version that the user named
-# (R-NS4: then a note names its age). The strategy gives the newest (`Highest`) or the oldest (`Lowest`) version in the range (R-DI9, R-VA6). A held slot has the value of the header only (R-SP1). The result does
+# (R-NS4: then a note names its age). R-SE3: `min-release-age` is the defence against a new release of a maintainer that is taken over. The strategy gives the newest (`Highest`) or the oldest (`Lowest`) version in the range (R-DI9, R-VA6). A held slot has the value of the header only (R-SP1). The result does
 # not depend on the order of the candidates or of the facts (R-DT2). A fact that shows the wrong kind drops the candidate (R-C4).
 expect {
 	json = |version| json_url(version)
