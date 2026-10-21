@@ -1,5 +1,6 @@
 import Add
 import Clock
+import Consent
 import Fail
 import Frozen
 import Fx
@@ -11,6 +12,7 @@ import Locked
 import Pick
 import PickFlow
 import Pin
+import Prompt
 import Report
 import ResolveBase
 import Text
@@ -104,7 +106,7 @@ resolve! = |fx, request, loaded, built, decision| {
 	}
 	snapshot = ResolveBase.snapshot_of(request, loaded.intent)?
 	picked = PickFlow.pick!(fx, request, loaded, built, settings, snapshot)?
-	outcome = finish!(fx, request, loaded, picked.facts, picked.chosen)?
+	outcome = finish!(fx, request, loaded, picked.facts, picked.chosen, picked.moves)?
 	# R-SO20: the note of the pin is the first of `data.notes`.
 	Ok({ ..outcome, notes: pin_notes.concat(outcome.notes) })
 }
@@ -207,15 +209,15 @@ version_of = |url| match Ident.of_url(url) {
 no_ran : Ran
 no_ran = { probes: 0, check: NotRun, build: NotRun, notes: [] }
 
-finish! : Fx, ResolveBase.Request, Loaded, Finish, List(Pick.Chosen) => Try(Report.Outcome, Fail)
-finish! = |fx, request, loaded, facts, chosen| {
+finish! : Fx, ResolveBase.Request, Loaded, Finish, List(Pick.Chosen), List(Consent.Move) => Try(Report.Outcome, Fail)
+finish! = |fx, request, loaded, facts, chosen, moves| {
 	scoped = facts.scoped
 	wants = facts.wants
 	count = scoped.len()
 	var_chosen = chosen.take_first(count)
 	want_chosen = chosen.drop_first(count).take_first(wants.len())
 	fresh_chosen = chosen.drop_first(count + wants.len())
-	pick_notes = chosen.keep_oks(|c| c.note)
+	pick_notes = chosen.keep_oks(|c| c.note).fold(no_names, |found, note| if found.contains(note) found else found.append(note))
 	for note in pick_notes {
 		fx.out!("note: ${note}\n")
 	}
@@ -254,6 +256,7 @@ finish! = |fx, request, loaded, facts, chosen| {
 	ResolveBase.closure_notes!(fx, request, closures)
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))
 	ran = if changes.is_empty() no_ran else ladder!(fx, request, loaded, { scoped, news, chosen, changes, decision })?
+	confirm_moves!(fx, request, moves)?
 	touched = write!(fx, request, loaded, edits, pairs, facts.renames)?
 	if touched.is_empty() and kept.is_empty() {
 		fx.out!("nothing to change\n")
@@ -276,6 +279,20 @@ finish! = |fx, request, loaded, facts, chosen| {
 			},
 		),
 	)
+}
+
+# R-SP16, R-SP17, R-SP26, R-NI3: the report of the moves on stderr, then the prompt. It is the last step before the write. `--dry-run` asks nothing. No: exit 13.
+confirm_moves! : Fx, ResolveBase.Request, List(Consent.Move) => Try({}, Fail)
+confirm_moves! = |fx, request, moves| {
+	if moves.is_empty() return Ok({})
+	consent = Consent.move_held(moves)
+	fx.err!(consent.report)
+	if request.dry_run return Ok({})
+	done = match Prompt.ask!(fx, consent.prompt, { mode: request.prompt.mode, yes: request.prompt.yes, quiet: request.prompt.quiet, flag: request.prompt.allow_moves }) {
+		Ok(d) => d
+		Err(fail) => return Err({ ..fail, details: Ok(consent.details) })
+	}
+	if done.answer == Yes Ok({}) else Err(Consent.declined(moves))
 }
 
 outcome_of : ResolveBase.Request, Done -> Report.Outcome

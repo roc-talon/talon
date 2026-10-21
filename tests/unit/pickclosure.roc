@@ -18,7 +18,7 @@ cand = |url, days| match Ident.of_url(url) {
 	Err(_) => crash "bad test URL"
 }
 
-slot = |id, ranges, current, free, candidates| { id, is_platform: Bool.False, ranges, current: Ok(current), free, named: Err(None), candidates }
+slot = |id, ranges, current, free, candidates| { id, is_platform: Bool.False, ranges, current: Ok(current), hold: if free Free else Held, named: Err(None), candidates, files: [] }
 
 fact = |url, deps| { url, release: { kind: Package, pf: Err(None), deps } }
 
@@ -28,10 +28,10 @@ view = |r| match r {
 	Fail(fail) => Err(Err(fail.line()))
 }
 
-step = |slots, facts, strategy| view(Pick.step({ slots, strategy, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [] }))
+step = |slots, facts, strategy| view(Pick.step({ slots, strategy, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }))
 
 # Slice 016: the same with the path entries of the members (`unmanaged`, the header entries that no slot owns) and the path files that are read (`paths`).
-step_paths = |facts| view(Pick.step({ slots: facts.slots, strategy: facts.strategy, now, min_age: 2 * day, snapshot: Err(None), facts: facts.facts, unmanaged: facts.unmanaged, paths: facts.paths }))
+step_paths = |facts| view(Pick.step({ slots: facts.slots, strategy: facts.strategy, now, min_age: 2 * day, snapshot: Err(None), facts: facts.facts, unmanaged: facts.unmanaged, paths: facts.paths, second: Bool.False }))
 
 dep = |alias, value| { alias, value, is_platform: Bool.False }
 
@@ -54,7 +54,7 @@ expect {
 	core11 = fact(u("core", "1.1.0"), [])
 	text_f = fact(u("text", "1.1.0"), [u("core", "1.1.0")])
 	moved = Ok([("mid", "1.0.0", Keep, Err(None)), ("core", "1.1.0", Move("1.0.0"), Err(None))])
-	held = { ..core_slot, free: Bool.False }
+	held = { ..core_slot, hold: Held }
 	exact = { ..core_slot, ranges: ["=1.0.0"] }
 	rounds = [
 		("lowest, round 1: the first tuple", step([mid_slot, core_slot], [], Lowest), Err(Ok([u("mid", "1.0.0"), u("core", "1.0.0")]))),
@@ -122,7 +122,7 @@ expect {
 expect {
 	file = "/p/app/main.roc"
 	json_slot = slot("json", [], u("json", "2.1.0"), Bool.True, [cand(u("json", "2.1.0"), 30), cand(u("json", "2.2.0"), 30)])
-	held = { ..json_slot, free: Bool.False }
+	held = { ..json_slot, hold: Held }
 	unmanaged = [{ file, entries: [dep("util", "../util/main.roc"), dep("ext", "https://example.org/x.tar.zst")] }]
 	json21 = fact(u("json", "2.1.0"), [])
 	json22 = fact(u("json", "2.2.0"), [])
@@ -158,7 +158,7 @@ expect {
 expect {
 	other_hash = "https://github.com/acme/core/releases/download/1.0.0/otherhash.tar.zst"
 	web_slot = slot("web", [], u("web", "1.0.0"), Bool.True, [cand(u("web", "2.0.0"), 30), cand(u("web", "1.0.0"), 30)])
-	held = { ..web_slot, current: Ok(u("web", "2.0.0")), free: Bool.False }
+	held = { ..web_slot, current: Ok(u("web", "2.0.0")), hold: Held }
 	mid_f = fact(u("mid", "1.0.0"), [other_hash])
 	web2 = fact(u("web", "2.0.0"), [u("core", "1.0.0")])
 	web1 = fact(u("web", "1.0.0"), [])
@@ -171,6 +171,36 @@ expect {
 		("the order of the facts does not matter", step([mid_slot, web_slot], facts.rev(), Highest), kept),
 		("Lowest: web 1.0.0 is the first tuple, and it has no conflict", step([mid_slot, web_slot], facts, Lowest), kept),
 		("a held web 2.0.0: nothing is free, no tuple", step([mid_slot, held], facts, Highest), no_fit("mid, web")),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-AL9 R-C2 R-AL8 R-WS1 R-WS2 R-DT2 (slice 017, Q1 of slice 016): the closure of a tuple is per member. roc builds each member alone, but the pick has one value for each group (one variable for all members, R-WS1). So the closure of a member has only the slots
+# that name it (`Slot.files` has its file), and its own entries that no slot owns. The members are `a` (uses `core`, held at 1.0.0) and `b`. `b` has the path entry `./lib/main.roc`, and that file names `core 1.1.0`. When `b` does not use `core`, the file is no
+# conflict for the value of `core` in `a`: the old step gave every slot to every member, and so it found a conflict that roc does not see. When `b` uses `core` too, the same file is a conflict of the tuple (the second member is checked, not only the first).
+# The `Need` list has no repeat when 2 members need the same node (P5). A slot with no `files` (an L0 row of one member) is in every member.
+expect {
+	a = "/w/a/main.roc"
+	b = "/w/b/main.roc"
+	core_cands = [cand(u("core", "1.1.0"), 30), cand(u("core", "1.0.0"), 30)]
+	core_a = { ..slot("core", ["^1"], u("core", "1.0.0"), Bool.False, core_cands), files: [a] }
+	core_ab = { ..core_a, files: [a, b] }
+	core_free = { ..slot("core", ["^1"], u("core", "1.0.0"), Bool.True, core_cands), files: [a, b] }
+	unmanaged = [{ file: a, entries: [] }, { file: b, entries: [dep("lib", "./lib/main.roc")] }]
+	n_lib = node("/w/b/lib/main.roc", [dep("c", u("core", "1.1.0"))])
+	core10 = fact(u("core", "1.0.0"), [])
+	core11 = fact(u("core", "1.1.0"), [])
+	run = |slots, strategy, facts, paths| step_paths({ slots, strategy, facts, unmanaged, paths })
+	kept = Ok([("core", "1.0.0", Keep, Err(None))])
+	rows = [
+		("b does not use core: its path file names core 1.1.0, and that is no conflict for core 1.0.0 of a (Q1)", run([core_a], Lowest, [core10, core11], [n_lib]), kept),
+		("the same with the facts in the other order, and with Highest and a held core", run([core_a], Highest, [core11, core10], [n_lib]), kept),
+		("b uses core too: the path file of b is a conflict, and a held core has no other tuple (P11)", run([core_ab], Lowest, [core10, core11], [n_lib]), no_fit("core")),
+		("b uses core and core is free: the next tuple is core 1.1.0", run([core_free], Lowest, [core10, core11], [n_lib]), Ok([("core", "1.1.0", Move("1.0.0"), Err(None))])),
+		("2 members need the same release: it is asked for once, then the path file of b (P5)", run([core_free], Highest, [], []), Err(Ok([u("core", "1.1.0"), "/w/b/lib/main.roc"]))),
+		("a slot with no files is in every member: the old rows hold", run([{ ..core_ab, files: [] }], Lowest, [core10, core11], [n_lib]), no_fit("core")),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad

@@ -1,6 +1,7 @@
 app [main!] { lib: "../../cli/lib/main.roc" }
 
 import lib.Consent
+import lib.Fail
 import lib.Mode
 import lib.Prompt
 
@@ -64,12 +65,13 @@ expect {
 }
 
 moves = [
-	{ id: "pf", why: "json 2.2.0 needs pf >= 0.26.0" },
-	{ id: "json", why: "parser 1.3.0 needs json >= 2.2.0" },
+	{ alias: "pf", name: "roc-lang/basic-cli", from: "0.25.0", to: "0.26.0", why: "json 2.2.0 needs pf >= 0.26.0", members: ["/w/apps/a/main.roc", "/w/apps/b/main.roc"] },
+	{ alias: "json", name: "someone/roc-json", from: "2.1.0", to: "2.2.0", why: "json 2.1.0 is outside =2.2.0", members: ["/w/apps/a/main.roc"] },
 ]
 
-# R-NI3 R-SP16 R-SP17 R-NM8 R-NR2: the prompt "move a held variable". Required, the answer flag is `--allow-moves`, and the interactive default is No: so `--yes` is not
-# the answer of Enter (R-NM8). Non-interactive with no `--yes`: exit code 13 and nothing is written, with the report of R-SP16 (the variables and why).
+# R-NI3 R-SP16 R-SP17 R-SP25 R-SP26 R-NM8 R-NR2 R-J5 R-EC13 (slice 017): the prompt "move a held variable". Required, the answer flag is `--allow-moves`, and the interactive default is No: so `--yes` is not
+# the answer of Enter (R-NM8). Non-interactive with no `--yes`: exit code 13 and nothing is written. The report (stderr, before the question, also with no person and with `--dry-run`) has 2 lines for each move: the variable with
+# its names, its old and new version and the reason (R-SP16), and the member files that the move writes (R-SP25). `details` is `error.details` of the failure with exit 13. The answer No is the failure `declined` (exit 13).
 expect {
 	two = Consent.move_held(moves)
 	one = Consent.move_held(moves.take_first(1))
@@ -90,7 +92,17 @@ expect {
 		((two.prompt.answer_line)(Yes), "moved the held variables pf, json"),
 		((two.prompt.answer_line)(No), "kept the held variables pf, json"),
 		(two.prompt.id, "allow-moves"),
-		(two.report, "json 2.2.0 needs pf >= 0.26.0\nparser 1.3.0 needs json >= 2.2.0\n"),
+		(
+			two.report,
+			"~ pf: roc-lang/basic-cli 0.25.0 -> 0.26.0 (held): json 2.2.0 needs pf >= 0.26.0\n  writes /w/apps/a/main.roc, /w/apps/b/main.roc\n~ json: someone/roc-json 2.1.0 -> 2.2.0 (held): json 2.1.0 is outside =2.2.0\n  writes /w/apps/a/main.roc\n",
+		),
+		(
+			two.details.render(),
+			"{\"moves\":[{\"alias\":\"pf\",\"name\":\"roc-lang/basic-cli\",\"from\":\"0.25.0\",\"to\":\"0.26.0\",\"why\":\"json 2.2.0 needs pf >= 0.26.0\",\"members\":[\"/w/apps/a/main.roc\",\"/w/apps/b/main.roc\"]},{\"alias\":\"json\",\"name\":\"someone/roc-json\",\"from\":\"2.1.0\",\"to\":\"2.2.0\",\"why\":\"json 2.1.0 is outside =2.2.0\",\"members\":[\"/w/apps/a/main.roc\"]}]}",
+		),
+		(Fail.line(Consent.declined(moves)), "tln: error[consent]: the held variables pf, json stay. Nothing was written."),
+		(Fail.line(Consent.declined(moves.take_first(1))), "tln: error[consent]: the held variable pf stays. Nothing was written."),
+		(Consent.declined(moves.take_first(1)).details.map_ok(|d| d.render()) ?? "no details", one.details.render()),
 	]
 	bad_texts = texts.keep_if(|(got, want)| got != want).map(|(got, want)| (got, want))
 	dbg bad_texts

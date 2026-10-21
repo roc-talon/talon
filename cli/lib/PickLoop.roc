@@ -20,33 +20,46 @@ PickLoop :: [].{
 		min_age : U64,
 		snapshot : Try(U64, [None]),
 		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
+		second : Bool,
 		want_slots : List({ key : Str, name : Str, urls : List(Str) }),
 	}
 
 	Looped : { chosen : List(Pick.Chosen), facts : List(ResolveBase.Fact), paths : List(Closure.Node) }
 
-	run! : Fx, ResolveBase.Request, Input, List(ResolveBase.Fact), List(Closure.Node) => Try(Looped, Fail)
-	run! = |fx, request, input, facts, paths| match Pick.step({ slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, snapshot: input.snapshot, facts, unmanaged: input.unmanaged, paths }) {
+	## A search that ended with no tuple. `facts` and `paths` are what the loop read, so the second search of a held move starts with them (slice 017, R-AL8: no file is read twice).
+	Stuck : { fail : Fail, facts : List(ResolveBase.Fact), paths : List(Closure.Node) }
+
+	run! : Fx, ResolveBase.Request, Input, List(ResolveBase.Fact), List(Closure.Node) => Try(Looped, Stuck)
+	run! = |fx, request, input, facts, paths| match Pick.step({ slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, snapshot: input.snapshot, facts, unmanaged: input.unmanaged, paths, second: input.second }) {
 		Done(chosen) => Ok({ chosen, facts, paths })
-		Fail(fail) => Err(fail)
-		Need(ids) => {
-			got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, ids)?
-			var $facts = facts
-			var $paths = paths
-			for g in got {
-				match Ident.of_url(g.id) {
-					Ok(_) => {
-						$facts = $facts.append({ url: g.id, release: Release.read({ path: g.path, text: g.text })? })
-					}
-					Err(Foreign) => {
-						$paths = $paths.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
-					}
-				}
+		Fail(fail) => Err({ fail, facts, paths })
+		Need(ids) => match read_all!(fx, request, ids, facts, paths) {
+			Err(fail) => Err({ fail, facts, paths })
+			Ok(read) => match platform_wants(input.want_slots, read.facts) {
+				Err(fail) => Err({ fail, facts: read.facts, paths: read.paths })
+				Ok(_) => run!(fx, request, input, read.facts, read.paths)
 			}
-			platform_wants(input.want_slots, $facts)?
-			run!(fx, request, input, $facts, $paths)
 		}
 	}
+}
+
+# One `Gather.get!` for the ids of a `Need`: a release URL gives a fact, a path file gives a node of the closure.
+read_all! : Fx, ResolveBase.Request, List(Str), List(ResolveBase.Fact), List(Closure.Node) => Try({ facts : List(ResolveBase.Fact), paths : List(Closure.Node) }, Fail)
+read_all! = |fx, request, ids, facts, paths| {
+	got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, ids)?
+	var $facts = facts
+	var $paths = paths
+	for g in got {
+		match Ident.of_url(g.id) {
+			Ok(_) => {
+				$facts = $facts.append({ url: g.id, release: Release.read({ path: g.path, text: g.text })? })
+			}
+			Err(Foreign) => {
+				$paths = $paths.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
+			}
+		}
+	}
+	Ok({ facts: $facts, paths: $paths })
 }
 
 # Q2, R-AD33: a key of `talon.toml` whose release is a platform is not added as a package.

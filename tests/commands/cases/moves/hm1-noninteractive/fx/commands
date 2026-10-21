@@ -1,0 +1,6 @@
+add acme/json@2.2.0 --file ws/apps/b/main.roc
+add acme/json@2.2.0 --json --file ws/apps/b/main.roc
+add acme/json@2.2.0 --dry-run --file ws/apps/b/main.roc
+add acme/lex@1.1.0 --file ws/apps/b/main.roc
+add acme/json@2.2.0 --allow-moves --file ws/apps/b/main.roc
+update yaml@1.1.0 --yes --file ws/apps/a/main.roc

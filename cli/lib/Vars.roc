@@ -53,21 +53,35 @@ Vars :: [].{
 	## `priority` names (aliases, `Intent.resolution.priority`) go to the front in their order. A name that matches no variable is ignored. `roc` is ignored
 	## (the nightly is held in P0). R-VA6.
 	##
-	## Failure (kind `Usage`, exit 2, R-WS6): a want that no header has, with 2 or more members: `<from>: the key '<key>' is in no header, and <n> members are under
-	## <dir of the file>: <file>, <file>. Run tln add --file <member file> <name> for one of them.` unless `stale` is `Ok` (then it is no failure).
-	## `<name>` is the full name or the key. Text: a proposal (TW24).
+	## No failure for R-WS6 (slice 017, slice 009 G2): `build` gives the wants of 2 or more members as it gives the others. Only `tln install` stops for them: `check_keys` (a pure check of the wants), called by the install path.
+	## `update`, `upgrade` and `verify` ignore the key (R-I5).
 	build : { members : List(Member), priority : Try(List(Str), [Unset]) } -> Try({ vars : List(Var), wants : List(Want) }, Fail)
 	build = |facts| {
 		uses = uses_of(facts.members)
 		groups = ordered_groups(uses)
 		vars = groups.map(|group| variable_of(facts.members, uses.keep_if(|u| u.group == group), group))
-		wants = wants_of(facts.members)?
-		Ok({ vars: with_priority(vars, facts.priority), wants })
+		Ok({ vars: with_priority(vars, facts.priority), wants: wants_of(facts.members) })
 	}
 
-	## A variable with its state for one command. `free`: the command may choose its value (R-SP1). `any_series`: the domain is the releases of the URL form in any
+	## R-WS6 (slice 017): the failure (kind `Usage`, exit 2) of the first want that no header has, with 2 or more members under its `talon.toml`, unless `stale` is `Ok` (then it is no failure): `<from>: the key '<key>' is in no header, and <n> members are under
+	## <dir of the file>: <file>, <file>. Run tln add --file <member file> <name> for one of them.` `<dir of the file>` is the dir of the path in `from` (the text before the last `:`). `<name>` is the full name or the key. Text: the text of the old `build` failure (no change).
+	## `Ok({})` for no such want. The command `install` (also `add`, question Q1 of slice 017) calls it with the `wants` of `build`; `update` and `verify` do not.
+	check_keys : List(Want) -> Try({}, Fail)
+	check_keys = |wants| match wants.find_first(|w| w.members.len() >= 2 and w.stale == Err(None)) {
+		Ok(want) => {
+			dir = match want.from.split_last(":") {
+				Ok({ before, .. }) => Text.dir_of(before)
+				Err(_) => ""
+			}
+			Err(Fail.new(Usage, "${want.from}: the key '${want.key}' is in no header, and ${want.members.len().to_str()} members are under ${dir}: ${Str.join_with(want.members, ", ")}. Run tln add --file <member file> ${want.name ?? want.key} for one of them."))
+		}
+		Err(_) => Ok({})
+	}
+
+	## A variable with its state for one command. `free`: the command may choose its value (R-SP1). `movable`: slice 017, R-SP23: the variable is held only because the user did not name it, so the second search of a held move may move it.
+	## It is false for a free variable, for a variable that has a range with `=` (an anchor, R-VA5, also a range of `talon.toml` that the key gives), and for a `Fixed` host (R-DI11). It is true for each other held variable. `any_series`: the domain is the releases of the URL form in any
 	## series (`update X@sel`, R-SP5). `note` is a line for the command to print.
-	Scoped : { variable : Var, free : Bool, any_series : Bool, note : Try(Str, [None]) }
+	Scoped : { variable : Var, free : Bool, movable : Bool, any_series : Bool, note : Try(Str, [None]) }
 
 	## The free and held variables of a command (R-SP1 to R-SP3, R-SP5, R-SP10, R-SP11, R-SP19 to R-SP21, R-WS8, R-DI11). `names` are the aliases that the user named (the
 	## command resolved them with `Lookup.find` first). `selectors` are the ranges of `X@sel` (`Selector.Range` text, `Exact` as `=<v>`, `Latest` as `*`).
@@ -177,19 +191,15 @@ with_priority = |vars, priority| match priority {
 	}
 }
 
-# R-I5, R-I8, R-WS6: the keys of each `talon.toml` that no member under it has as an alias.
-wants_of : List(Vars.Member) -> Try(List(Vars.Want), Fail)
+# R-I5, R-I8: the keys of each `talon.toml` that no member under it has as an alias. R-WS6 is `Vars.check_keys`.
+wants_of : List(Vars.Member) -> List(Vars.Want)
 wants_of = |members| {
 	paths = members.keep_oks(|m| m.toml.map_ok(|t| t.path)).fold([], |found, path| if found.contains(path) found else found.append(path))
-	found = paths.join_map(|path| wants_in(members, path))
-	match found.find_first(|f| f.want.members.len() >= 2 and f.want.stale == Err(None)) {
-		Ok({ want, dir }) => Err(Fail.new(Usage, "${want.from}: the key '${want.key}' is in no header, and ${want.members.len().to_str()} members are under ${dir}: ${Str.join_with(want.members, ", ")}. Run tln add --file <member file> ${want.name ?? want.key} for one of them."))
-		Err(_) => Ok(found.map(|f| f.want))
-	}
+	paths.join_map(|path| wants_in(members, path))
 }
 
 # The wants of one `talon.toml`: the keys of `[dependencies]`, then of `[overrides]`.
-wants_in : List(Vars.Member), Str -> List({ want : Vars.Want, dir : Str })
+wants_in : List(Vars.Member), Str -> List(Vars.Want)
 wants_in = |members, path| {
 	under = members.keep_if(|m| m.toml.map_ok(|t| t.path) == Ok(path))
 	files = under.map(|m| m.file)
@@ -204,7 +214,7 @@ wants_in = |members, path| {
 	}
 	keys
 		.keep_if(|(_, d)| !rows.any(|r| r.alias == d.key))
-		.map(|(table, d)| { want: want_of(table, d, path, files, rows), dir: Text.dir_of(path) })
+		.map(|(table, d)| want_of(table, d, path, files, rows))
 }
 
 want_of : [Dependencies, Overrides], Intent.Dep, Str, List(Str), List(Locked.Row) -> Vars.Want
@@ -255,17 +265,24 @@ scoped_one = |command, all, is_named, selector, variable| {
 		Indexed => Err(None)
 	}
 	match command {
-		Install => { variable, free: outside_range(variable), any_series: Bool.False, note: Err(None) }
+		Install => {
+			free = outside_range(variable)
+			{ variable, free, movable: movable_of(variable, free), any_series: Bool.False, note: Err(None) }
+		}
 		Update => {
 			free = indexed and (all or is_named)
 			note = if all or is_named fixed_note else Err(None)
 			match selector {
-				Ok((_, range)) if free => { variable: { ..variable, ranges: [{ range, from: "selector" }] }, free, any_series: Bool.True, note }
-				_ => { variable, free, any_series: Bool.False, note }
+				Ok((_, range)) if free => { variable: { ..variable, ranges: [{ range, from: "selector" }] }, free, movable: Bool.False, any_series: Bool.True, note }
+				_ => { variable, free, movable: movable_of(variable, free), any_series: Bool.False, note }
 			}
 		}
 	}
 }
+
+# R-SP23, R-VA5, R-DI11: a held variable moves, unless it is an anchor (a range with `=`) or has a fixed host.
+movable_of : Vars.Var, Bool -> Bool
+movable_of = |variable, free| !free and variable.host == Indexed and !variable.ranges.any(|r| r.range.starts_with("="))
 
 # R-SP20, R-WS3: a use that is outside the intersection of the ranges of its variable.
 outside_range : Vars.Var -> Bool

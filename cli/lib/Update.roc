@@ -125,7 +125,7 @@ request_of = |args, opts, start, names, selected| {
 	snapshot: opts.snapshot,
 	dry_run: opts.dry_run,
 	add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: opts.no_pin },
-	prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag) },
+	prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: opts.allow_moves },
 }
 
 # Step 7, R-NI2, R-NM7: a picker needs a person. The tty is asked only when the mode needs it (R-HF1). Then the free packages (one `read_files!` call).

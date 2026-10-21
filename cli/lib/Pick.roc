@@ -22,17 +22,19 @@ Pick :: [].{
 	## | `is_platform` | The kind that a release must have (R-C4): `Platform` for true, `Package` for false |
 	## | `ranges` | The constraints of R-C1: each range must admit the version |
 	## | `current` | The URL that the header has now (R-C9). `Err(None)` for a want. |
-	## | `free` | The command may choose. A held slot (`free` false) has the one value `current` (R-SP1). |
+	## | `hold` | `Free`: the command may choose. `Held`: the one value `current` (R-SP1), in both searches. `Movable`: the one value `current` in the first search, and a free value in the second search (slice 017: R-SP23, R-SP24). |
 	## | `named` | The exact version that the user named (`X@1.2.3`): `min-release-age` and the snapshot do not hide it (R-C7) |
-	## | `candidates` | The candidates of the group (or of the URL form, `any_series`), from the index, in any order. `Index.Candidate`. |
+	## | `candidates` | The candidates of the group (or of the URL form, `any_series`), from the index, in any order. `Index.Candidate`. A `Movable` slot has none until the second search needs them. |
+	## | `files` | The member files that have an entry of the group (the new entry of `add`: the current member; a key of `talon.toml`: its member). The closure of a member has only the slots that name it (slice 017, Q1 of slice 016). The empty list means every member. |
 	Slot : {
 		id : Str,
 		is_platform : Bool,
 		ranges : List(Str),
 		current : Try(Str, [None]),
-		free : Bool,
+		hold : [Free, Held, Movable],
 		named : Try(Str, [None]),
 		candidates : List(Index.Candidate),
+		files : List(Str),
 	}
 
 	## One chosen value. `change` is `Keep` when the URL is `current`, else `Move(<old version>)` (`<old version>` is `""` for a want). `note` is set when
@@ -80,6 +82,20 @@ Pick :: [].{
 	## | Each slot has candidates, and no tuple has no conflict (also a problem of the closure: slice 016, D3) | `no tuple works: the releases of <id>, <id> do not fit together (R-C2, R-C3)` with all the ids of the slots, in order |
 	##
 	## `unmanaged` and `paths` are new (slice 016): see rules 1 and 2 of the closure. `paths` are `Closure.Node`s: `id` is the absolute file, `entries` are `Release.entries_of` of its text.
+	##
+	## Slice 017 (held moves, R-SP15 to R-SP17, R-SP23 to R-SP26, R-WS12). The search above is the first search: a `Held` and a `Movable` slot have the one value `current`. With `second: true` the step is the second search (R-SP24, R-PH10):
+	##
+	## | # | Rule |
+	## | --- | --- |
+	## | 1 | The order of the search: the `Movable` slots first, in the order of the slots (`priority`), then the other slots in the order of the slots. The result and the `Need` list stay in the order of the slots. |
+	## | 2 | The domain of a `Movable` slot is the domain of a `Free` slot (rules 1 to 4 of the table above: the candidates and `current`, R-C1 ranges, R-C7, R-C9, R-C4 kind) |
+	## | 3 | The order of the values of a `Movable` slot: `current` first, then the nearest values. `Highest`: the higher versions from low to high, then the lower versions from high to low. `Lowest`: the lower versions from high to low, then the higher versions from low to high. The strategy does not change the order of a `Free` slot (R-DI9) |
+	## | 4 | The search is lexicographic in that order (R-VA6), so a `Movable` slot keeps `current` when a tuple exists with it and the earlier `Movable` slots, else it takes the first value that has a tuple (the smallest step) |
+	## | 5 | `Fail` for a slot with no value (the messages of the table above) and for no tuple: the same texts. The caller (`PickFlow`) runs the second search only after a first search that gave `Fail` of kind `NoTuple`, and only when a slot is `Movable` |
+	##
+	## Two slots of one group (the new entry of `add` in a group that other members hold, R-WS2, R-WS3) have one value: a choice whose group (`Ident.group` of its URL) equals the group of another choice and whose URL differs is a conflict, as the conflicts of the table above. So a new entry with no selector gets the held version, and `=2.2.0` with a held 2.0.0 has no first tuple.
+	##
+	## The closure of a member (Q1 of slice 016, roc builds each member alone): the entries of a member are the chosen URLs of the slots that name it (`Slot.files` has its file, or is empty), then its own entries that no slot owns (`unmanaged`). A path file of a member that does not use a group names no conflict for that group in another member. With no `unmanaged` row the step has one member that has all slots.
 	step : {
 		slots : List(Slot),
 		strategy : [Highest, Lowest],
@@ -89,6 +105,7 @@ Pick :: [].{
 		facts : List({ url : Str, release : Release }),
 		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
 		paths : List(Closure.Node),
+		second : Bool,
 	} -> [Need(List(Str)), Done(List(Chosen)), Fail(Fail)]
 	step = |facts| {
 		ctx = {
@@ -100,7 +117,7 @@ Pick :: [].{
 		domains = facts.slots.map(|slot| domain_of(slot, facts, ctx.known))
 		match first_failure(facts.slots, domains) {
 			Ok(fail) => Fail(fail)
-			Err(NoFailure) => match search(domains.map(|d| { is_platform: d.is_platform, cands: d.ordered }), [], ctx) {
+			Err(NoFailure) => match search(search_order(facts, domains), [], ctx) {
 				Err(NoFit) => Fail(Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(facts.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)"))
 				Ok(found) => if found.need.is_empty() {
 					Done(facts.slots.map2(found.picked, |slot, p| chosen_of(slot, p.c, facts)))
@@ -109,6 +126,22 @@ Pick :: [].{
 				}
 			}
 		}
+	}
+
+	## Slice 017 (R-SP16): the held variables that the second search moved. One row for each `Movable` slot whose chosen URL is not `current`, in the order of the slots. `from` and `to` are versions. `chosen` is the result of `step` (the order of `slots`),
+	## `facts` are the headers that the step knew. `why` is the first conflict that the current value has in the final tuple (a proposal, TW24):
+	##
+	## | # | Conflict | `why` |
+	## | --- | --- | --- |
+	## | 1 | R-C1: a range of the slot, or of a slot of the same group (the new entry of `add`, R-WS2), excludes the current version. The first range in the order of the slots. | `<id> <current version> is outside <range>` |
+	## | 2 | R-C2: the release of a chosen slot (in the order of the slots) has a dep in the group of the slot with a higher version than the current | `<id of that slot> <its version> needs <id> >= <dep version>` |
+	## | 3 | R-C3: the release of a chosen package slot names a platform URL that is not the current value of a platform slot | `<id of that slot> <its version> needs <id> <platform version>` |
+	## | 4 | None of these (a problem of the closure, R-AL9) | `<id> <current version> does not fit the closure of the new tuple` |
+	moves : { slots : List(Slot), chosen : List(Chosen), facts : List({ url : Str, release : Release }) } -> List({ id : Str, from : Str, to : Str, why : Str })
+	moves = |facts| {
+		rows = facts.slots.map2(facts.chosen, |slot, c| (slot, c))
+		known = Dict.from_list(facts.facts.map(|f| (f.url, f.release)))
+		rows.keep_oks(|(slot, c)| moved_row(slot, c, rows, known))
 	}
 
 	## A release fact as a node of the closure (the platform entry first, then the dependencies). The aliases are empty: the pick keeps none.
@@ -136,6 +169,7 @@ Step : {
 	facts : List({ url : Str, release : Release }),
 	unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
 	paths : List(Closure.Node),
+	second : Bool,
 }
 
 # R-DT2: the candidates are in the byte order of their URLs first, so the result does not depend on the order of the index.
@@ -149,7 +183,8 @@ domain_of = |slot, facts, known| {
 		}
 		Err(None) => Err(None)
 	}
-	all = if slot.free {
+	open = slot.hold == Free or (slot.hold == Movable and facts.second)
+	all = if open {
 		match current {
 			Ok(c) if !listed.any(|x| x.url == c.url) => listed.append(c)
 			_ => listed
@@ -160,13 +195,42 @@ domain_of = |slot, facts, known| {
 			Err(None) => []
 		}
 	}
-	in_range = if slot.free all.keep_if(|c| Ranges.admits({ ranges: slot.ranges, version: c.ident.version })) else all
-	visible = if slot.free in_range.keep_if(|c| !is_hidden(slot, facts, c)) else in_range
+	in_range = if open all.keep_if(|c| Ranges.admits({ ranges: slot.ranges, version: c.ident.version })) else all
+	visible = if open in_range.keep_if(|c| !is_hidden(slot, facts, c)) else in_range
 	right_kind = |c| match known.get(c.url) {
 		Ok(release) => if slot.is_platform release.kind == Platform else release.kind == Package
 		Err(_) => Bool.True
 	}
-	{ is_platform: slot.is_platform, all, in_range, visible, ordered: Index.order(visible.keep_if(right_kind), facts.strategy) }
+	fits = visible.keep_if(right_kind)
+	ordered = if slot.hold == Movable and facts.second nearest(fits, slot, facts.strategy) else Index.order(fits, facts.strategy)
+	{ is_platform: slot.is_platform, all, in_range, visible, ordered }
+}
+
+# R-SP24: the order of the values of a movable slot in the second search. `current` first, then the nearest values: `Highest` the higher versions from low to high and then the lower ones
+# from high to low, `Lowest` the lower ones from high to low and then the higher ones from low to high.
+nearest : List(Cand), Pick.Slot, [Highest, Lowest] -> List(Cand)
+nearest = |cands, slot, strategy| {
+	current = slot.current ?? ""
+	old = Ident.of_url(current).map_ok(|ident| ident.version) ?? ""
+	own = cands.keep_if(|c| c.url == current)
+	rest = Index.order(cands.keep_if(|c| c.url != current), Lowest)
+	higher = rest.keep_if(|c| is_newer(c.ident.version, old))
+	lower = rest.keep_if(|c| !is_newer(c.ident.version, old)).rev()
+	match strategy {
+		Highest => own.concat(higher).concat(lower)
+		Lowest => own.concat(lower).concat(higher)
+	}
+}
+
+SearchRow : { slot : U64, files : List(Str), is_platform : Bool, cands : List(Cand) }
+
+# R-SP24: the movable slots come first in the second search, then the others. Each in the order of the slots.
+search_order : Step, List(Domain) -> List(SearchRow)
+search_order = |facts, domains| {
+	rows = facts.slots.map2(domains, |slot, d| (slot, d)).map_with_index(|(slot, d), i| { slot: i, files: slot.files, is_platform: d.is_platform, cands: d.ordered, first: slot.hold == Movable })
+	front = if facts.second rows.keep_if(|r| r.first) else []
+	back = if facts.second rows.keep_if(|r| !r.first) else rows
+	front.concat(back).map(|r| { slot: r.slot, files: r.files, is_platform: r.is_platform, cands: r.cands })
 }
 
 # R-C7, R-C9: hidden by the age or by the snapshot. The header value and the version that the user named are never hidden.
@@ -204,40 +268,45 @@ first_failure = |slots, domains| {
 	}
 }
 
-Choice : { is_platform : Bool, c : Cand }
+Choice : { slot : U64, files : List(Str), is_platform : Bool, c : Cand }
 
 Ctx : { known : Dict(Str, Release), single_platform : Bool, nodes : List(Closure.Node), members : List({ file : Str, entries : List(Closure.Entry) }) }
 
 Found : { picked : List(Choice), need : List(Str) }
 
 # The first tuple in the lexicographic order of the domains that has no conflict between 2 slots (R-VA6, R-SP11), and no problem of the closure (R-AL9).
-search : List({ is_platform : Bool, cands : List(Cand) }), List(Choice), Ctx -> Try(Found, [NoFit])
+# The domains are in the order of the search. The tuple is in the order of the slots.
+search : List(SearchRow), List(Choice), Ctx -> Try(Found, [NoFit])
 search = |domains, picked, ctx| match domains {
-	[] => match closure_of(ctx, picked) {
-		Problem => Err(NoFit)
-		Fine(need) => Ok({ picked, need })
+	[] => {
+		in_order = picked.sort_with(|a, b| if a.slot < b.slot Before else if a.slot > b.slot After else Same)
+		match closure_of(ctx, in_order) {
+			Problem => Err(NoFit)
+			Fine(need) => Ok({ picked: in_order, need })
+		}
 	}
-	[d, .. as rest] => pick_from(d.cands, d.is_platform, rest, picked, ctx)
+	[d, .. as rest] => pick_from(d.cands, d, rest, picked, ctx)
 }
 
-pick_from : List(Cand), Bool, List({ is_platform : Bool, cands : List(Cand) }), List(Choice), Ctx -> Try(Found, [NoFit])
-pick_from = |cands, is_platform, rest, picked, ctx| match cands {
+pick_from : List(Cand), SearchRow, List(SearchRow), List(Choice), Ctx -> Try(Found, [NoFit])
+pick_from = |cands, row, rest, picked, ctx| match cands {
 	[] => Err(NoFit)
 	[c, .. as more] => {
-		choice = { is_platform, c }
+		choice = { slot: row.slot, files: row.files, is_platform: row.is_platform, c }
 		if picked.all(|other| !conflicts(ctx, other, choice)) {
 			match search(rest, picked.append(choice), ctx) {
 				Ok(done) => Ok(done)
-				Err(NoFit) => pick_from(more, is_platform, rest, picked, ctx)
+				Err(NoFit) => pick_from(more, row, rest, picked, ctx)
 			}
 		} else {
-			pick_from(more, is_platform, rest, picked, ctx)
+			pick_from(more, row, rest, picked, ctx)
 		}
 	}
 }
 
+# R-WS2, R-WS3: 2 slots of one group have one value.
 conflicts : Ctx, Choice, Choice -> Bool
-conflicts = |ctx, a, b| conflict_from(ctx, a, b) or conflict_from(ctx, b, a)
+conflicts = |ctx, a, b| (a.c.ident.group == b.c.ident.group and a.c.url != b.c.url) or conflict_from(ctx, a, b) or conflict_from(ctx, b, a)
 
 # R-C3, R-C2: what the release of `x` says about the choice `y`. A release with no fact has no conflict yet.
 conflict_from : Ctx, Choice, Choice -> Bool
@@ -262,12 +331,12 @@ is_newer = |a, b| match (Semver.parse(a), Semver.parse(b)) {
 	_ => Bool.False
 }
 
-# R-AL9: the closure of a tuple, with the rule of `Closure.step` (one call for each member file). The roots are the chosen slot URLs, then the entries of the member that no slot owns.
+# R-AL9, Q1 of slice 016: the closure of a tuple, with the rule of `Closure.step` (one call for each member file). The roots are the chosen URLs of the slots that name the member (`files`), then the entries of the member that no slot owns.
 # A `Fail` of any member is a problem of the tuple. Else `need` has the nodes that no fact is known for (the first member that asks, no repeat). An unknown node is taken as fit.
 closure_of : Ctx, List(Choice) -> [Problem, Fine(List(Str))]
 closure_of = |ctx, picked| {
-	slot_entries = picked.map(|p| { alias: "", value: p.c.url, is_platform: p.is_platform })
-	results = ctx.members.map(|m| Closure.step({ file: m.file, entries: slot_entries.concat(m.entries), nodes: ctx.nodes }))
+	slot_entries = |m| picked.keep_if(|p| p.files.is_empty() or m.file == "" or p.files.contains(m.file)).map(|p| { alias: "", value: p.c.url, is_platform: p.is_platform })
+	results = ctx.members.map(|m| Closure.step({ file: m.file, entries: slot_entries(m).concat(m.entries), nodes: ctx.nodes }))
 	if results.any(
 		|r| match r {
 			Fail(_) => Bool.True
@@ -300,5 +369,42 @@ chosen_of = |slot, c, facts| {
 		version: c.ident.version,
 		change: if slot.current == Ok(c.url) Keep else Move(old),
 		note: if hidden_by_age Ok("${slot.id} ${c.ident.version} is ${days(if facts.now > c.published_at facts.now - c.published_at else 0)}d old (min-release-age ${days(facts.min_age)}d)") else Err(None),
+	}
+}
+
+# R-SP16: the row of a movable slot whose value moved, with the first conflict that its old value has in the final tuple.
+moved_row : Pick.Slot, Pick.Chosen, List((Pick.Slot, Pick.Chosen)), Dict(Str, Release) -> Try({ id : Str, from : Str, to : Str, why : Str }, [Stays])
+moved_row = |slot, c, rows, known| match slot.current {
+	Ok(current) if slot.hold == Movable and current != c.url => match Ident.of_url(current) {
+		Ok(old) => Ok({ id: slot.id, from: old.version, to: c.version, why: why_of(slot, old.version, c, rows, known) })
+		Err(_) => Err(Stays)
+	}
+	_ => Err(Stays)
+}
+
+# The order: R-C1 (a range of the slot or of its group), R-C2, R-C3, else a problem of the closure (R-AL9).
+why_of : Pick.Slot, Str, Pick.Chosen, List((Pick.Slot, Pick.Chosen)), Dict(Str, Release) -> Str
+why_of = |slot, old, c, rows, known| {
+	group = Ident.of_url(c.url).map_ok(|ident| ident.group)
+	outside = rows.keep_if(|(_, x)| Ident.of_url(x.url).map_ok(|ident| ident.group) == group).join_map(|(s, _)| s.ranges).find_first(|r| !Ranges.admits({ ranges: [r], version: old }))
+	older_dep = |release| release.deps.keep_oks(
+		|dep| match Ident.of_url(dep) {
+			Ok(ident) if Ok(ident.group) == group and is_newer(ident.version, old) => Ok(ident.version)
+			_ => Err(NoDep)
+		},
+	)
+	by_dep = rows.keep_oks(
+		|(s, x)| match known.get(x.url) {
+			Ok(release) => older_dep(release).first().map_ok(|v| "${s.id} ${x.version} needs ${slot.id} >= ${v}")
+			Err(_) => Err(NoFact)
+		},
+	)
+	by_platform = rows.keep_if(|(s, x)| slot.is_platform and !s.is_platform and known.get(x.url).map_ok(|release| release.pf) == Ok(Ok(c.url))).map(|(s, x)| "${s.id} ${x.version} needs ${slot.id} ${c.version}")
+	match outside {
+		Ok(range) => "${slot.id} ${old} is outside ${range}"
+		Err(_) => match by_dep.concat(by_platform).first() {
+			Ok(text) => text
+			Err(_) => "${slot.id} ${old} does not fit the closure of the new tuple"
+		}
 	}
 }

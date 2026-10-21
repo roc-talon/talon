@@ -53,7 +53,10 @@ def url(repo, ver):
 def body(repo, ver):
     deps = DEPS.get((repo, ver), [])
     entries = "".join(f'\t{alias}: "{url(r, v)}",\n' for alias, r, v in deps)
-    record = "{" + ("\n" + entries if deps else "") + "}"
+    if (repo, ver) in PFDEPS:
+        alias, r, v = PFDEPS[(repo, ver)]
+        entries = f'\t{alias}: platform "{url(r, v)}",\n' + entries
+    record = "{" + ("\n" + entries if entries else "") + "}"
     if repo in PLATFORMS:
         return f'platform "acme"\n\trequires {{}} {{ main! : () => {{}} }}\n\texposes [Std]\n\tpackages {record}\n\tprovides [main_for_host!]\n'
     return f"package [Lib] {record}\n"
@@ -79,6 +82,8 @@ REPOS = {
     "roc-lang/basic-webserver": [("0.1.0", "2026-08-01", 0, 0)],
     "someone/basic-webserver": [("1.0.0", "2026-08-02", 0, 0)],
     "acme/web-utils": [("1.0.0", "2026-08-03", 0, 0)],
+    # slice 017: held moves. acme/yaml 1.1.0 names the platform acme/pfx 0.1.1 (R-C3).
+    "acme/yaml": [("1.0.0", "2026-08-01", 0, 0), ("1.1.0", "2026-09-01", 0, 0)],
 }
 
 # (repo, version) -> the entries of its dependency record: (alias, repo, version)
@@ -88,6 +93,11 @@ DEPS = {
     ("acme/text", "1.0.0"): [("lex", "acme/lex", "1.0.0")],
     ("acme/text", "1.1.0"): [("core", "acme/core", "1.1.0")],
     ("acme/web-utils", "1.0.0"): [("ws", "someone/basic-webserver", "1.0.0")],
+}
+
+# (repo, version) -> the platform entry of the header of a package: (alias, repo, version). Slice 017: a package that names a platform.
+PFDEPS = {
+    ("acme/yaml", "1.1.0"): ("pf", "acme/pfx", "0.1.1"),
 }
 
 CASES = {
@@ -108,6 +118,10 @@ CASES = {
     # slice 011: `tln why` (the closure of ls1-list, and a project with the tie of the design example). text 1.0.0 is named by a package and never selected.
     "tests/scenarios/why/wy1-why": ("l3", ["acme/pfx", "acme/web", "acme/mid", "acme/core", "acme/text", "roc-lang/basic-webserver", "someone/basic-webserver", "acme/web-utils"], {"skip": [("acme/text", "1.0.0")], "pages": False}),
     # slice 011: R-C2 over the full closure and `why`. Only text 1.1.0 (the second level of the chain mid, text, core) is made by the fake download of the case.
+    # slice 017: held moves (the repos of the cases are the cache and the release pages)
+    "tests/commands/cases/moves/hm1-noninteractive": ("l2", ["acme/pfx", "acme/json", "acme/lex", "acme/yaml"]),
+    "tests/commands/cases/moves/hm2-interactive": ("l2", ["acme/pfx", "acme/json", "acme/yaml"]),
+    "tests/commands/cases/workspace/ws1-closure-keys": ("l2", ["acme/pfx", "acme/json", "acme/core", "acme/util"]),
     "tests/commands/cases/closure/cl2-chain": ("l2", ["acme/pfx", "acme/mid", "acme/core", "acme/text"], {"fetched": [("acme/text", "1.1.0")], "skip": [("acme/text", "1.0.0"), ("acme/text", "2.0.0")], "pages": ["acme/pfx", "acme/mid", "acme/core"]}),
 }
 

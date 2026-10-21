@@ -188,7 +188,7 @@ flow! = |fx, args, opts| {
 			snapshot: opts.snapshot,
 			dry_run: opts.dry_run,
 			add: { as_platform: opts.as_platform, as_alias: opts.as_alias, no_pin: opts.no_pin },
-			prompt: { mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: opts.rename_keys },
+			prompt: { mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: opts.rename_keys, allow_moves: opts.allow_moves },
 		},
 	)
 }

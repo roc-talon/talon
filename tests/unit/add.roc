@@ -236,40 +236,6 @@ expect {
 	bad == []
 }
 
-# R-WS12 Q9 R-SP16 R-SP17 R-EC10 (slice 007): a new entry for a group that other members hold. When the range of the selector admits each held version, the entry gets the held version.
-# When it excludes one, the move needs R-NI3, which P0 cannot ask: exit 10 (no_tuple), nothing is written. The failure names the first excluded version and the members that hold it.
-expect {
-	check = |range, held| match Add.check_held({ name: "acme/json", range, held }) {
-		Ok(_) => Ok({})
-		Err(f) => Err(Fail.line(f))
-	}
-	a = { file: "/w/apps/a/main.roc", version: "2.0.0" }
-	b = { file: "/w/apps/b/main.roc", version: "2.1.0" }
-	c = { file: "/w/apps/c/main.roc", version: "2.0.0" }
-	tail = "Moving a held version needs consent (R-NI3), which this version of tln cannot ask. Nothing was written."
-	rows = [
-		(check("*", [a]), Ok({})),
-		(check("=2.0.0", [a, c]), Ok({})),
-		(check("^2", [a, b]), Ok({})),
-		(check("*", []), Ok({})),
-		(
-			check("=2.1.0", [a]),
-			Err("tln: error[no_tuple]: no tuple works: '=2.1.0' for acme/json excludes the version 2.0.0 held by /w/apps/a/main.roc. ${tail}"),
-		),
-		(
-			check("=2.1.0", [a, b, c]),
-			Err("tln: error[no_tuple]: no tuple works: '=2.1.0' for acme/json excludes the version 2.0.0 held by /w/apps/a/main.roc, /w/apps/c/main.roc. ${tail}"),
-		),
-		(
-			check("^3", [b, a]),
-			Err("tln: error[no_tuple]: no tuple works: '^3' for acme/json excludes the version 2.1.0 held by /w/apps/b/main.roc. ${tail}"),
-		),
-	]
-	bad = rows.keep_if(|(got, want)| got != want)
-	dbg bad
-	bad == []
-}
-
 # R-SE7 R-AD31 (slice 009): the text of the notice for a platform release that changes. A new name, and a new version of the same name. `Add.decide` gives the same text for `Replace`.
 expect {
 	note = |from, to| Add.platform_note({ from, to })

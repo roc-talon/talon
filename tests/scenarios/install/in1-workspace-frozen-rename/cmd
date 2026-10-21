@@ -1,4 +1,4 @@
-# R-NI1 R-NM8 R-NM10 R-NR6 R-I8 R-I9 R-LF1 R-FL13 R-FL8 R-WS12 R-WS14 R-SP18 R-PD4 R-PD5 R-PD9 R-CC7 R-EC10 R-EC13 R-EC14 R-EC2 R-SP16 R-SP17 R-NI3 R-J1 W2 R-SO22:
+# R-NI1 R-NM8 R-NM10 R-NR6 R-I8 R-I9 R-LF1 R-FL13 R-FL8 R-WS12 R-WS14 R-SP18 R-PD4 R-PD5 R-PD9 R-CC7 R-EC10 R-EC13 R-EC14 R-EC2 R-SP16 R-SP17 R-SP23 R-SP24 R-NI3 R-J1 W2 R-SO22:
 # `tln install` and `tln add` in a workspace (the root has members a and b and a talon.toml). The key `js` of the root talon.toml names acme/json, which the member a has under the alias `json`: a stale key.
 st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 
@@ -15,7 +15,7 @@ st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln install --frozen
 st tln install --frozen acme/json
 # R-WS12: a name at the workspace root names no member. The failure lists them, nothing is written.
 st tln add acme/util
-# Q9: the member b has no json, and the member a holds 2.0.0. A selector that excludes the held version needs consent to move it (R-NI3), which this version cannot ask: exit 10, nothing is written.
+# Slice 017 (R-WS12, R-SP16, R-SP17, R-SP23, R-SP24, R-NI3, R-EC13): the member b has no json, and the member a holds 2.0.0. The selector excludes the held version, so the json of a is a movable variable: the second search moves it to 2.2.0, the check runs, and then the report and the stop. The mode is not interactive (CI=true) and there is no answer flag: exit 13, nothing is written. (Slice 007 stopped here with exit 10.)
 st tln add --file apps/b/main.roc acme/json@2.2.0
 # With no selector the new entry gets the held version.
 st tln add --file apps/b/main.roc acme/json

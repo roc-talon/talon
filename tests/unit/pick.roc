@@ -29,11 +29,11 @@ cand = |url, days| match Ident.of_url(url) {
 	Err(_) => crash "bad test URL"
 }
 
-slot = |id, is_platform, ranges, current, free, candidates| { id, is_platform, ranges, current, free, named: Err(None), candidates }
+slot = |id, is_platform, ranges, current, free, candidates| { id, is_platform, ranges, current, hold: if free Free else Held, named: Err(None), candidates, files: [] }
 
 package_fact = |url| { url, release: { kind: Package, pf: Err(None), deps: [] } }
 
-step = |slots, facts, strategy, min_age, snapshot| Pick.step({ slots, strategy, now, min_age, snapshot, facts, unmanaged: [], paths: [] })
+step = |slots, facts, strategy, min_age, snapshot| Pick.step({ slots, strategy, now, min_age, snapshot, facts, unmanaged: [], paths: [], second: Bool.False })
 
 view = |r| match r {
 	Need(urls) => Err(Ok(urls))
@@ -74,7 +74,7 @@ expect {
 		("highest in the range, 2.4.0 is too new, 3.0.0 is outside (R-C1, R-C7)", run(base, Highest, 2 * day, no_snap), moved("2.3.0")),
 		("min-release-age 0d turns the age off (R-C7)", run(base, Highest, 0, no_snap), moved("2.4.0")),
 		("lowest: the header value is the lowest in the range", run(base, Lowest, 2 * day, no_snap), kept("2.1.0")),
-		("a held slot has its header value only (R-SP1)", run({ ..base, free: Bool.False }, Highest, 2 * day, no_snap), kept("2.1.0")),
+		("a held slot has its header value only (R-SP1)", run({ ..base, hold: Held }, Highest, 2 * day, no_snap), kept("2.1.0")),
 		("a snapshot time hides the releases after it (R-DT4)", run(base, Highest, 0, Ok(now - 5 * day)), moved("2.2.0")),
 		("the header value is not hidden by the age (R-C9)", run(just_old, Highest, 2 * day, no_snap), Ok([("json", "2.5.0", Keep, Err(None))])),
 		("a new release that is not the header value is hidden", run(other, Highest, 2 * day, no_snap), Ok([("json", "2.4.0", Keep, Err(None))])),

@@ -1,0 +1,10 @@
+tests/unit/pickmoves.roc
+tests/commands/cases/moves/hm1-noninteractive
+tests/commands/cases/moves/hm2-interactive
+tests/commands/cases/workspace/ws1-closure-keys
+research/slice-017-revert/cli-pre.sha256
+research/slice-017-revert/cli-stub.sha256
+research/slice-017-revert/mutate.py
+research/slice-017-revert/results.md
+research/slice-017-revert/red.md
+docs/slices/017-held-moves.md

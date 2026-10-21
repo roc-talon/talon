@@ -2,6 +2,7 @@ import Add
 import Answer
 import Clock
 import Closure
+import Consent
 import Fail
 import Fx
 import Gather
@@ -47,7 +48,7 @@ ResolveBase :: [].{
 		snapshot : Try(Str, [Unset]),
 		dry_run : Bool,
 		add : { as_platform : Bool, as_alias : Try(Str, [Unset]), no_pin : Bool },
-		prompt : { mode : Mode, yes : Bool, quiet : Bool, rename_keys : Try(Answer, [NoFlag]) },
+		prompt : { mode : Mode, yes : Bool, quiet : Bool, rename_keys : Try(Answer, [NoFlag]), allow_moves : Try(Answer, [NoFlag]) },
 	}
 
 	Fact : { url : Str, release : Release }
@@ -97,7 +98,7 @@ ResolveBase :: [].{
 	Finish : { scoped : List(Vars.Scoped), wants : List(Vars.Want), asked : Asked, prepared : Prepared, renames : List(Rename), snapshot : Try(U64, [None]), known : List(Fact), paths : List(Closure.Node) }
 
 	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need.
-	Picked : { facts : Finish, chosen : List(Pick.Chosen) }
+	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move) }
 
 	# Step A of the flow: the member files and the `talon.toml` candidates in one `read_files!` call (R-PD6).
 	load! : Fx, ResolveBase.Request => Try(Loaded, Fail)
@@ -271,6 +272,10 @@ ResolveBase :: [].{
 	prepared! = |fx, request, role| {
 		loaded = ResolveBase.load!(fx, request)?
 		built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
+		# R-WS6: only `install` and `add` stop for a key that no header has. `update` and `verify` ignore it (R-I5).
+		if role == Lock and request.command == Install {
+			Vars.check_keys(built.wants)?
+		}
 		settings = ResolveBase.settings_of(request, loaded)
 		decision = Pin.decide({
 			members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: Bool.False }),

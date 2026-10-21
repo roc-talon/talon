@@ -121,7 +121,7 @@ expect {
 # R-WS1 R-WS2 R-WS5 R-WS6 R-WS7 R-WS9 R-WS10 R-H8: a workspace. Entries are matched by group, not by alias: `json` in a, `js` in b and `json` in the package member c are one variable with the uses of all members.
 # Its ranges are the range of each use: the key of the alias in the nearest `talon.toml` of that member (the root file for a, the own file of b and c), or the implied range. A range in one file limits
 # the variable of all members (R-WS7). Two series of one package are 2 variables (R-WS10). A platform group is a variable, and the apps on 2 platforms have 2 (R-WS9). A key of the root file that
-# no member under it has is a want, and it needs exactly one such member (R-WS6): with 2, the build fails with exit 2 and names `tln add --file`.
+# no member under it has is a want, and it needs exactly one such member (R-WS6): with 2, `Vars.check_keys` (the stop of `install`) fails with exit 2 and names `tln add --file`. `build` itself does not fail (slice 017).
 expect {
 	a_header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "http: \"${http1}\""])
 	b_header = app_header(["pf: platform \"${web}\"", "js: \"${json2}\"", "http2: \"${http2}\""])
@@ -133,9 +133,13 @@ expect {
 	b = member("/w/apps/b/main.roc", b_header, Ok({ path: "/w/apps/b/talon.toml", text: "[dependencies]\njs = \"^2.3\"\n", role: Member }))
 	c = member("/w/libs/c/main.roc", c_header, Ok({ path: "/w/libs/c/talon.toml", text: "# c has its own intent\n[dependencies]\njson = \"^2.0\"\n", role: Member }))
 	d = member("/w/apps/d/main.roc", d_header, root_toml)
+	# Slice 017 (slice 009 G2): `build` gives the wants of 2 members and does not fail. The stop of R-WS6 is `Vars.check_keys`, which only `install` calls.
 	two_wants = match Vars.build({ members: [a, b, c, d], priority: Err(Unset) }) {
-		Ok(_) => "no failure"
-		Err(e) => e.line()
+		Ok(built) => match Vars.check_keys(built.wants) {
+			Ok(_) => "no failure"
+			Err(e) => e.line()
+		}
+		Err(e) => "build: ${e.line()}"
 	}
 	want_two = "tln: error[usage]: /w/talon.toml:6: the key 'newdep' is in no header, and 2 members are under /w: /w/apps/a/main.roc, /w/apps/d/main.roc. Run tln add --file <member file> acme/newdep for one of them."
 	built = Vars.build({ members: [a, b, c], priority: Err(Unset) })
@@ -250,4 +254,93 @@ expect {
 	want = Ok(([(["json"], [("^2.1", "/p/talon.toml:4")]), (["pf"], [(">=0.25.0, <0.26.0", "implied by /p/main.roc")])], []))
 	dbg view
 	view == want
+}
+
+# R-SP23 R-SP3 R-SP4 R-SP7 R-SP19 R-WS12 R-VA5 R-DI11 R-SP2 R-SP5 (slice 017): which held variable the second search of a held move may move (`Scoped.movable`). A variable is movable when the command holds it only because the user
+# did not name it: `install` with no names holds each variable in range (R-SP19), `update X` and `update X@sel` hold all others (R-SP3, R-SP5), and a group that other members have is held (R-WS12). A free variable is not movable
+# (it is free), and these are never movable: an anchor (a range with `=`, R-VA5) and a fixed host (R-DI11, also when it is named). `update` with no names frees each indexed variable, so nothing is held and nothing is movable (R-SP2).
+expect {
+	one = member("/p/main.roc", app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""]), Err(NoToml))
+	anchor = member("/p/main.roc", app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""]), Ok({ path: "/p/talon.toml", text: "[dependencies]\nparser = \"=2.0.0\"\n", role: Standalone }))
+	a = member("/w/apps/a/main.roc", app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "http: \"${http1}\""]), Ok({ path: "/w/talon.toml", text: "[workspace]\nmembers = []\n\n[dependencies]\njson = \"^2.2\"\n", role: Root }))
+	b = member("/w/apps/b/main.roc", app_header(["pf: platform \"${web}\"", "js: \"${json2}\"", "http2: \"${http2}\""]), Ok({ path: "/w/apps/b/talon.toml", text: "[dependencies]\njs = \"^2.3\"\n", role: Member }))
+	vars_of = |members| match Vars.build({ members, priority: Err(Unset) }) {
+		Ok(built) => built.vars
+		Err(e) => crash e.line()
+	}
+	view = |r| match r {
+		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable)))
+		Err(e) => Err(e.line())
+	}
+	scope = |command, names, selectors, vs| Vars.scope({ command, names, selectors, vars: vs })
+	rows = [
+		(
+			"install, no names: each held variable is movable, the fixed host is not (R-SP19, R-DI11)",
+			view(scope(Install, [], [], vars_of([one]))),
+			Ok([(["json"], Bool.False, Bool.True), (["parser"], Bool.False, Bool.True), (["fixed"], Bool.False, Bool.False), (["pf"], Bool.False, Bool.True)]),
+		),
+		(
+			"update, no names: nothing is held, so nothing is movable (R-SP2)",
+			view(scope(Update, [], [], vars_of([one]))),
+			Ok([(["json"], Bool.True, Bool.False), (["parser"], Bool.True, Bool.False), (["fixed"], Bool.False, Bool.False), (["pf"], Bool.True, Bool.False)]),
+		),
+		(
+			"update parser json: the others are held by the user's choice, pf is movable (R-SP3)",
+			view(scope(Update, ["parser", "json"], [], vars_of([one]))),
+			Ok([(["json"], Bool.True, Bool.False), (["parser"], Bool.True, Bool.False), (["fixed"], Bool.False, Bool.False), (["pf"], Bool.False, Bool.True)]),
+		),
+		(
+			"update fixed: a fixed host is never movable, also when named (R-DI11)",
+			view(scope(Update, ["fixed"], [], vars_of([one]))),
+			Ok([(["json"], Bool.False, Bool.True), (["parser"], Bool.False, Bool.True), (["fixed"], Bool.False, Bool.False), (["pf"], Bool.False, Bool.True)]),
+		),
+		(
+			"update json@^3 (R-SP5, R-SP4: the picker gives the same names): the others are movable",
+			view(scope(Update, ["json"], [{ alias: "json", range: "^3" }], vars_of([one]))),
+			Ok([(["json"], Bool.True, Bool.False), (["parser"], Bool.False, Bool.True), (["fixed"], Bool.False, Bool.False), (["pf"], Bool.False, Bool.True)]),
+		),
+		(
+			"update json: an anchor (parser = \"=2.0.0\") is held and never movable (R-VA5, R-SP23)",
+			view(scope(Update, ["json"], [], vars_of([anchor]))),
+			Ok([(["json"], Bool.True, Bool.False), (["parser"], Bool.False, Bool.False), (["fixed"], Bool.False, Bool.False), (["pf"], Bool.False, Bool.True)]),
+		),
+		(
+			"install in a workspace: json is free (3 versions are out of range), the groups that the members hold are movable (R-WS12, R-SP19)",
+			view(scope(Install, [], [], vars_of([a, b]))),
+			Ok([(["json", "js"], Bool.True, Bool.False), (["http"], Bool.False, Bool.True), (["http2"], Bool.False, Bool.True), (["pf"], Bool.False, Bool.True), (["pf"], Bool.False, Bool.True)]),
+		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-WS6 R-I5 R-WS5 R-PD5 (slice 017, slice 009 G2): `Vars.check_keys` is the stop of `install` for a key of the root `talon.toml` that no header has, when 2 or more members are under the file. A stale key (the group is in a header under
+# another alias, R-I8) is no failure. A key of a file with one member is no failure (`install` adds the entry to that member). A short name has no repository: the line names the key. No want, no failure.
+expect {
+	root_text = "[workspace]\nmembers = [\"apps/*/main.roc\"]\n\n[dependencies]\njs = \"someone/roc-json@^2\"\nyaml = \"yaml@2\"\nnewdep = \"acme/newdep@^1\"\n"
+	root_toml = Ok({ path: "/w/talon.toml", text: root_text, role: Root })
+	a = member("/w/apps/a/main.roc", app_header(["pf: platform \"${cli}\"", "json: \"${json1}\""]), root_toml)
+	d = member("/w/apps/d/main.roc", app_header(["pf: platform \"${cli}\""]), root_toml)
+	wants_of = |members| match Vars.build({ members, priority: Err(Unset) }) {
+		Ok(built) => built.wants
+		Err(e) => crash e.line()
+	}
+	check = |wants, keys| match Vars.check_keys(wants.keep_if(|w| keys.contains(w.key))) {
+		Ok(_) => "ok"
+		Err(e) => e.line()
+	}
+	two = wants_of([a, d])
+	one = wants_of([a])
+	rows = [
+		("a stale key is no failure (R-I8)", check(two, ["js"]), "ok"),
+		("a short name with 2 members names the key", check(two, ["yaml"]), "tln: error[usage]: /w/talon.toml:6: the key 'yaml' is in no header, and 2 members are under /w: /w/apps/a/main.roc, /w/apps/d/main.roc. Run tln add --file <member file> yaml for one of them."),
+		("a full name with 2 members: the first key that fails is the failure", check(two, ["js", "yaml", "newdep"]), "tln: error[usage]: /w/talon.toml:6: the key 'yaml' is in no header, and 2 members are under /w: /w/apps/a/main.roc, /w/apps/d/main.roc. Run tln add --file <member file> yaml for one of them."),
+		("a full name with 2 members", check(two, ["newdep"]), "tln: error[usage]: /w/talon.toml:7: the key 'newdep' is in no header, and 2 members are under /w: /w/apps/a/main.roc, /w/apps/d/main.roc. Run tln add --file <member file> acme/newdep for one of them."),
+		("one member under the file: no failure (install adds the entry)", check(one, ["js", "yaml", "newdep"]), "ok"),
+		("no want", check([], []), "ok"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
 }

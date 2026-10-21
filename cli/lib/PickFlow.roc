@@ -10,6 +10,7 @@ import Index
 import Lookup
 import Pick
 import PickLoop
+import PickMoves
 import Prompt
 import Ranges
 import Ref
@@ -71,14 +72,32 @@ PickFlow :: [].{
 		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(no_names, |found, name| if found.contains(name) found else found.append(name))
 		found = index!(fx, request, repos, known)?
 		prepared = prepare!(fx, request, loaded, asked.fresh, found)?
-		input = slots_of(scoped, stale.live, found, asked, prepared.rows, settings, snapshot, unmanaged_of(loaded, asked, request.project.file ?? ""))
-		looped = match PickLoop.run!(fx, request, input, prepared.facts, []) {
-			Ok(c) => c
-			Err(fail) => return Err(with_close_versions(fail, { scoped, asked, found }))
+		input = slots_of(scoped, stale.live, found, asked, prepared.rows, settings, snapshot, unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
+		failed = |fail| with_close_versions(fail, { scoped, asked, found })
+		searched = match PickLoop.run!(fx, request, input, prepared.facts, []) {
+			Ok(c) => { looped: c, moves: [] }
+			Err(stuck) => {
+				if !PickMoves.second_wanted(stuck.fail, scoped) return Err(failed(stuck.fail))
+				# R-SP16, R-DI1: the second search of a held move. The index of the movable groups is read once, in the order of the slots. The facts of the first search stay (R-AL8).
+				more = index!(fx, request, movable_names(scoped, found), known)?
+				again = { ..slots_of(scoped, stale.live, found.concat(more), asked, prepared.rows, settings, snapshot, unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? ""), second: Bool.True }
+				match PickLoop.run!(fx, request, again, stuck.facts, stuck.paths) {
+					Ok(c) => { looped: c, moves: PickMoves.moves_of({ scoped, slots: again.slots, chosen: c.chosen, facts: c.facts }) }
+					Err(second) => if second.fail.kind == NoTuple return Err(failed(stuck.fail)) else return Err(second.fail)
+				}
+			}
 		}
-		Ok({ facts: { scoped, wants: stale.live, asked, prepared, renames: stale.renames, snapshot, known: looped.facts, paths: looped.paths }, chosen: looped.chosen })
+		looped = searched.looped
+		Ok({ facts: { scoped, wants: stale.live, asked, prepared, renames: stale.renames, snapshot, known: looped.facts, paths: looped.paths }, chosen: looped.chosen, moves: searched.moves })
 	}
 }
+
+# The names of the movable variables that have no page yet (D6), no repeat.
+movable_names : List(Vars.Scoped), List(Candidates) -> List(Str)
+movable_names = |scoped, found| scoped
+	.keep_if(|s| s.movable)
+	.keep_oks(|s| s.variable.name.map_err(|_| None))
+	.fold(no_names, |names, name| if names.contains(name) or found.any(|c| c.name == name) names else names.append(name))
 
 PickInput : PickLoop.Input
 
@@ -162,7 +181,7 @@ asked! = |fx, request, loaded, vars| {
 				}
 			}
 			Err(New) => {
-				$fresh = $fresh.append(fresh_of(request, vars, loaded, current, ref, text)?)
+				$fresh = $fresh.append(fresh_of(request, loaded, current, ref, text)?)
 			}
 		}
 	}
@@ -210,9 +229,9 @@ kept_of = |vars, current, alias, plan| match in_file(vars, current).find_first(|
 	Err(_) => { alias, name: plan.url, version: "", note: plan.note ?? "" }
 }
 
-# A new name of `add`. Q9: a group that another member holds (one variable, no entry in the current member) must admit the held versions, and then the entry gets the highest of them.
-fresh_of : ResolveBase.Request, List(Vars.Var), Loaded, Str, Ref, Str -> Try(Fresh, Fail)
-fresh_of = |request, vars, loaded, current, ref, text| {
+# A new name of `add`. R-WS12: a group that another member holds is held. The new entry is a free slot of that group with its own range: the pick gives it the held version (R-WS2, R-WS3), or the second search moves the group.
+fresh_of : ResolveBase.Request, Loaded, Str, Ref, Str -> Try(Fresh, Fail)
+fresh_of = |request, loaded, current, ref, text| {
 	name = ref.name
 	key = match request.add.as_alias {
 		Ok(alias) => alias
@@ -222,14 +241,6 @@ fresh_of = |request, vars, loaded, current, ref, text| {
 		Ok(Latest) | Err(None) => replaced_key_range(loaded, current, key) ?? "*"
 		Ok(selector) => range_of_selector(selector) ?? "*"
 	}
-	range = match vars.keep_if(|v| v.name == Ok(name)) {
-		[one] if !one.uses.any(|u| u.file == current) => {
-			held = one.uses.map(|u| { file: u.file, version: u.version })
-			Add.check_held({ name, range: typed, held })?
-			"=${highest_version(held.map(|h| h.version))}"
-		}
-		_ => typed
-	}
 	Ok({
 		name,
 		selector: ref.selector,
@@ -237,7 +248,7 @@ fresh_of = |request, vars, loaded, current, ref, text| {
 			Ok({ after, .. }) => after
 			Err(_) => "latest"
 		},
-		range,
+		range: typed,
 		key,
 		is_platform: request.add.as_platform,
 	})
@@ -273,19 +284,6 @@ replaced_key_range = |loaded, file, alias| match loaded.members.find_first(|m| m
 		}
 	}
 	_ => Err(NoKey)
-}
-
-# The highest of some versions (the first one when none parses).
-highest_version : List(Str) -> Str
-highest_version = |versions| match versions {
-	[first, .. as rest] => rest.fold(
-		first,
-		|best, v| match (Semver.parse(v), Semver.parse(best)) {
-			(Ok(a), Ok(b)) => if a.order_relative_to(b) == After v else best
-			_ => best
-		},
-	)
-	[] => ""
 }
 
 no_names : List(Str)
@@ -442,8 +440,8 @@ no_candidates : List(Candidates)
 no_candidates = []
 
 # The slots of `Pick.step`: the variables in order, then the wants (R-VA6), then the new names of `add`.
-slots_of : List(Vars.Scoped), List(Vars.Want), List(Candidates), Asked, List(FreshRow), Settings, Try(U64, [None]), List({ file : Str, entries : List(Closure.Entry) }) -> PickInput
-slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged| {
+slots_of : List(Vars.Scoped), List(Vars.Want), List(Candidates), Asked, List(FreshRow), Settings, Try(U64, [None]), List({ file : Str, entries : List(Closure.Entry) }), Str -> PickInput
+slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged, current_file| {
 	candidates_of = |name| match found.find_first(|c| c.name == name) {
 		Ok(c) => c
 		Err(_) => { name, list: [], missing: Bool.True }
@@ -468,12 +466,13 @@ slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged| {
 				is_platform: v.is_platform,
 				ranges: v.ranges.map(|r| r.range),
 				current: highest_use(v.uses),
-				free: s.free and !cands.missing,
+				hold: if s.free and !cands.missing Free else if s.movable Movable else Held,
 				named: match named.selector {
 					Exact(version) if s.any_series => Ok(version)
-					_ => Err(None)
+					_ => named_by_entry(v, fresh)
 				},
 				candidates: cands.list,
+				files: v.uses.map(|u| u.file).fold([], |found_files, file| if found_files.contains(file) found_files else found_files.append(file)),
 			}
 		},
 	)
@@ -484,7 +483,7 @@ slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged| {
 				Ok(entry) => entry.list
 				Err(NoCandidate) => []
 			}
-			{ id: w.key, is_platform: Bool.False, ranges: [w.range], current: Err(None), free: Bool.True, named: Err(None), candidates: list }
+			{ id: w.key, is_platform: Bool.False, ranges: [w.range], current: Err(None), hold: Free, named: Err(None), candidates: list, files: w.members }
 		},
 	)
 	fresh_slots = fresh.map(
@@ -493,12 +492,13 @@ slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged| {
 			is_platform: row.fresh.is_platform,
 			ranges: [row.fresh.range],
 			current: Err(None),
-			free: Bool.True,
+			hold: Free,
 			named: match row.fresh.selector {
 				Ok(Exact(version)) => Ok(version)
 				_ => Err(None)
 			},
 			candidates: row.list,
+			files: [current_file],
 		},
 	)
 	{
@@ -507,8 +507,16 @@ slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged| {
 		min_age: settings.min_age,
 		snapshot,
 		unmanaged,
+		second: Bool.False,
 		want_slots: wants.map2(want_slots, |w, slot| { key: w.key, name: w.name ?? w.key, urls: slot.candidates.map(|c| c.url) }),
 	}
+}
+
+# D7, R-C7: a version that `add X@1.2.3` names for a new entry is named for the variable of that group too: it may move to it, and `min-release-age` does not hide it.
+named_by_entry : Vars.Var, List(FreshRow) -> Try(Str, [None])
+named_by_entry = |v, rows| match rows.find_first(|row| v.name == Ok(row.fresh.name) and v.is_platform == row.fresh.is_platform) {
+	Ok({ fresh: { selector: Ok(Exact(version)), .. }, .. }) => Ok(version)
+	_ => Err(None)
 }
 
 # The use with the highest version: its URL is the value that the header holds now (R-C9).

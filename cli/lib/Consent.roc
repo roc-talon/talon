@@ -1,4 +1,5 @@
 import Fail
+import JsonDoc
 import Mode
 import Prompt
 
@@ -39,21 +40,27 @@ Consent :: [].{
 		}
 	}
 
-	## R-NI3 (`add`, `update`, `upgrade`, `install`; Resolution 9 R-SP16, R-SP17): move a held variable. Kind `Required(["--allow-moves"])`, yes/no, the interactive
-	## default is `No` (so `--yes` is not the answer of Enter, R-NM8). `moves` are the held variables that must move: `id` is the alias or the name,
-	## `why` is the reason (`json 2.2.0 needs pf >= 0.26.0`).
+	## One held variable that the second search moves (slice 017, R-SP16, R-SP25): `alias` is the alias of its first use, `name` the full name (`Var.name`, else the URL form), `from` and `to` are versions,
+	## `why` is the text of `Pick.moves`, `members` are the member files that the move writes: the files that have an entry of the group (R-SP25).
+	Move : { alias : Str, name : Str, from : Str, to : Str, why : Str, members : List(Str) }
+
+	## R-NI3 (`add`, `update`, `upgrade`, `install`; Resolution 9 R-SP16, R-SP17, R-SP26): move a held variable. Kind `Required(["--allow-moves"])`, yes/no, the interactive
+	## default is `No` (so `--yes` is not the answer of Enter, R-NM8). The command asks once, after the ladder and before the write (R-SP16).
 	##
 	## | Field | Text (a proposal, TW24) |
 	## | --- | --- |
 	## | `id` | `allow-moves` |
-	## | `question` | `Move the held variable(s) <id>, <id>?` |
-	## | `subject` | `moving the held variable(s) <id>, <id>` (`variable` for 1, `variables` for more) |
-	## | `answer_line` | `Yes`: `moved the held variable(s) <id>, <id>`. `No`: `kept the held variable(s) <id>, <id>`. |
+	## | `question` | `Move the held variable(s) <alias>, <alias>?` (`variable` for 1, `variables` for more) |
+	## | `subject` | `moving the held variable(s) <alias>, <alias>` |
+	## | `answer_line` | `Yes`: `moved the held variable(s) <alias>, <alias>`. `No`: `kept the held variable(s) <alias>, <alias>`. |
 	##
-	## `report` is one line for each move, in order: `<why>`, each with a line end (R-SP16: "names the variables that must move and why").
-	move_held : List({ id : Str, why : Str }) -> { prompt : Prompt, report : Str }
+	## `report` is printed on stderr before the question, and also with no person and with `--dry-run` (R-SP17, R-SP26): 2 lines for each move, in order, each with a line end:
+	## `~ <alias>: <name> <from> -> <to> (held): <why>` and `  writes <file>, <file>`.
+	##
+	## `details` is the `error.details` of the failure with exit code 13 (R-J5): `{ "moves": [{ "alias", "name", "from", "to", "why", "members": [<file>, ...] }] }`, the keys in this order.
+	move_held : List(Consent.Move) -> { prompt : Prompt, report : Str, details : JsonDoc }
 	move_held = |moves| {
-		what = "the held ${plural(moves.len(), "variable", "variables")} ${Str.join_with(moves.map(|m| m.id), ", ")}"
+		what = held_text(moves)
 		{
 			prompt: Prompt.{
 				id: "allow-moves",
@@ -64,8 +71,18 @@ Consent :: [].{
 				subject: "moving ${what}",
 				answer_line: |answer| if answer == Yes "moved ${what}" else "kept ${what}",
 			},
-			report: Str.join_with(moves.map(|m| "${m.why}\n"), ""),
+			report: Str.join_with(moves.map(|m| "~ ${m.alias}: ${m.name} ${m.from} -> ${m.to} (held): ${m.why}\n  writes ${Str.join_with(m.members, ", ")}\n"), ""),
+			details: details_of(moves),
 		}
+	}
+
+	## R-SP16, R-EC13: the failure when the person answers No (kind `Consent`, exit code 13). Text (a proposal, TW24):
+	## `the held variable(s) <alias>, <alias> stay. Nothing was written.` (`variable` and `stays` for 1: `the held variable pf stays. Nothing was written.`).
+	## It has the `details` of `move_held`.
+	declined : List(Consent.Move) -> Fail
+	declined = |moves| {
+		stay = if moves.len() == 1 "stays" else "stay"
+		{ ..Fail.new(Consent, "${held_text(moves)} ${stay}. Nothing was written."), details: Ok(details_of(moves)) }
 	}
 
 	## R-NI2 (`update -i`): a picker (R-NM7), not a prompt. In non-interactive mode it stops with a usage failure (exit 2): `update -i needs a person to pick. Name the packages: tln update X Y.`
@@ -81,6 +98,29 @@ Consent :: [].{
 	no_person : Fail
 	no_person = Fail.new(Usage, "update -i needs a person to pick. Name the packages: tln update X Y.")
 }
+
+held_text : List(Consent.Move) -> Str
+held_text = |moves| "the held ${plural(moves.len(), "variable", "variables")} ${Str.join_with(moves.map(|m| m.alias), ", ")}"
+
+# R-J5: `error.details` of a move that needs consent.
+details_of : List(Consent.Move) -> JsonDoc
+details_of = |moves| JsonDoc.Obj([
+	(
+		"moves",
+		JsonDoc.Arr(
+			moves.map(
+				|m| JsonDoc.Obj([
+					("alias", JsonDoc.Text(m.alias)),
+					("name", JsonDoc.Text(m.name)),
+					("from", JsonDoc.Text(m.from)),
+					("to", JsonDoc.Text(m.to)),
+					("why", JsonDoc.Text(m.why)),
+					("members", JsonDoc.Arr(m.members.map(|f| JsonDoc.Text(f)))),
+				]),
+			),
+		),
+	),
+])
 
 plural : U64, Str, Str -> Str
 plural = |count, one, many| if count == 1 one else many

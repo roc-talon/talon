@@ -1,7 +1,6 @@
 import Alias
 import Fail
 import Ident
-import Ranges
 import Selector
 import semver.Semver
 
@@ -155,25 +154,6 @@ Add := {
 	close_note = |facts| match close_versions(facts.selector, facts.versions) {
 		[] => ""
 		close => " Close versions: ${Str.join_with(close, ", ")}."
-	}
-
-	## Q9 of slice 007 (R-WS12, Resolution 9): a new entry for a group that another member holds. `held` are the members that have the group, with the version of their entry.
-	## `range` is the range of the selector of the new entry (`=2.1.0` for `@2.1.0`, `*` for no selector). When the range admits each held version, `Ok({})`: the new entry
-	## gets the held version. When it excludes one, a failure of kind `NoTuple` (exit 10): moving a held version needs the prompt R-NI3, which P0 cannot ask (R-SP16, R-SP17: design gap).
-	## Message (proposal, TW24): `no tuple works: '<range>' for <name> excludes the version <v> held by <file>, <file>. Moving a held version needs consent (R-NI3), which this version of tln cannot ask. Nothing was written.`
-	## `<v>` and the files are those of the first held version that the range excludes (the files in the order of `held` that have that version).
-	check_held : { name : Str, range : Str, held : List({ file : Str, version : Str }) } -> Try({}, Fail)
-	check_held = |facts| match facts.held.find_first(|h| !Ranges.admits({ ranges: [facts.range], version: h.version })) {
-		Err(_) => Ok({})
-		Ok(first) => {
-			files = facts.held.keep_if(|h| h.version == first.version).map(|h| h.file)
-			Err(
-				Fail.new(
-					NoTuple,
-					"no tuple works: '${facts.range}' for ${facts.name} excludes the version ${first.version} held by ${Str.join_with(files, ", ")}. Moving a held version needs consent (R-NI3), which this version of tln cannot ask. Nothing was written.",
-				),
-			)
-		}
 	}
 }
 

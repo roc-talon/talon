@@ -1,0 +1,5 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[dependencies]
+js = "acme/json@^2"   # an old name

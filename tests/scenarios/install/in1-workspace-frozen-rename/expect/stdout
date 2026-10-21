@@ -17,7 +17,12 @@ exit 2
 == tln add acme/util
 exit 2
 == tln add --file apps/b/main.roc acme/json@2.2.0
-exit 10
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+exit 13
 == tln add --file apps/b/main.roc acme/json
 check: passed
 build: passed

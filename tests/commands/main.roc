@@ -31,7 +31,7 @@ import lib.Run
 ## | `locks` | `Fx.with_lock!` and `Known.record!` in a fixed script (slice 002): 4 `with_lock!` runs (a body that works, a body that fails, `NoWait` on a busy item, `Wait` on a busy item), then 3 `Known.record!` runs. It prints `<n> <result>` for each run. Exit code 0. |
 ## | `index` | `Github.releases!` and `Github.hint!` for each line of `fx/runs` (slice 003). The line is `releases <owner>/<repo> [offline] [now=<seconds>] [env:<NAME>=<value>]...` or `hint <owner>/<repo> <tag> [env:<NAME>=<value>]...`. `now` is the real clock (default 1792065600). The environment is `fx/env` and the `env:` words (one `env_all!` call at the start). It prints `== <line>`, then for `releases`: `source: <live, cached <seconds>, missing>` and `pages: <byte count of each page>`, for `hint`: `hint: <text>` or `no hint`; or `exit <code>` and the failure line on stderr. A page that was found offline prints `offline_line` once, as a command does. Exit code 0. |
 ## | `fetch` | `Fetch.packages!` for each line of `fx/runs` (slice 003). The line is `fetch [offline] [env:<NAME>=<value>]... <url>...` (one `env_all!` call at the start, the `env:` words are added to the environment, as for `index`). The roots are in the case dir (`home/.cache/roc`), the `roc` program is `roc`. It prints `== <line>`, then one line for each URL: `<url>: present`, `<url>: fetched`, or `<url>: exit <code>` with the failure line on stderr. Exit code 0. |
-## | `resolve` | `Project.find!` and `Resolve.run!` for each line of `fx/runs` (slice 005). The line is `<install or update> [<name>...] [frozen] [no-check] [offline] [lowest] [dry-run] [platform] [no-pin] [yes] [quiet] [rename-keys] [as=<alias>] [snapshot=<text>] [nightly=<true or false>] [compiler=<id>] [toolchain=<id>] [file=<path>] [now=<seconds>]`. The start dir is `project/`, the roots are in the case dir as for `fetch`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). It prints `== <line>`, the output of the run on stdout, `exit <code>` on stdout and the failure line on stderr. Exit code 0. |
+## | `resolve` | `Project.find!` and `Resolve.run!` for each line of `fx/runs` (slice 005). The line is `<install or update> [<name>...] [frozen] [no-check] [offline] [lowest] [dry-run] [platform] [no-pin] [yes] [quiet] [rename-keys] [allow-moves] [as=<alias>] [snapshot=<text>] [nightly=<true or false>] [compiler=<id>] [toolchain=<id>] [file=<path>] [now=<seconds>]`. The start dir is `project/`, the roots are in the case dir as for `fetch`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). It prints `== <line>`, the output of the run on stdout, `exit <code>` on stdout and the failure line on stderr. Exit code 0. |
 ## | `commands` | `Run.run!` (the whole command code) for each line of `fx/commands` (slice 007). The line is the words after `tln`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). For each line it writes the words to `fx/args`, prints `== <line>`, runs, and prints `exit <code>` (stdout). Use `{w}` in `fx/env` for the paths of the case (`HOME={w}/home`). |
 ## | `harness` | Calls each `Fx` function once. It tests the fake and the runner, not Talon. Exit code 3. |
 main! = |args| {
@@ -407,7 +407,7 @@ resolve_entry! = |fx, w| {
 		value = |name| given.find_first(|word| word.starts_with("${name}=")).map_ok(|word| word.drop_prefix("${name}="))
 		fx.out!("== ${line}\n")
 		command = if given.first() == Ok("update") Update else Install
-		names = given.drop_first(1).keep_if(|word| !["compiler=", "toolchain=", "nightly=", "file=", "now=", "snapshot=", "as="].any(|key| word.starts_with(key)) and !["frozen", "no-check", "offline", "lowest", "dry-run", "platform", "no-pin", "yes", "quiet", "rename-keys"].contains(word))
+		names = given.drop_first(1).keep_if(|word| !["compiler=", "toolchain=", "nightly=", "file=", "now=", "snapshot=", "as="].any(|key| word.starts_with(key)) and !["frozen", "no-check", "offline", "lowest", "dry-run", "platform", "no-pin", "yes", "quiet", "rename-keys", "allow-moves"].contains(word))
 		file = match value("file") {
 			Ok(f) => Ok(f)
 			Err(_) => Err(Unset)
@@ -454,7 +454,7 @@ resolve_entry! = |fx, w| {
 						},
 						no_pin: given.contains("no-pin"),
 					},
-					prompt: { mode, yes: given.contains("yes"), quiet: given.contains("quiet"), rename_keys: if given.contains("rename-keys") Ok(Yes) else Err(NoFlag) },
+					prompt: { mode, yes: given.contains("yes"), quiet: given.contains("quiet"), rename_keys: if given.contains("rename-keys") Ok(Yes) else Err(NoFlag), allow_moves: if given.contains("allow-moves") Ok(Yes) else Err(NoFlag) },
 				},
 			)
 		}

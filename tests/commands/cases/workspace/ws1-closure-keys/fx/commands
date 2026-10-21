@@ -1,0 +1,6 @@
+update pf --no-check --file w3/apps/a/main.roc
+install --no-check --file w3/apps/a/main.roc
+verify --no-check --file w3/apps/a/main.roc
+update --no-check --file w4/apps/a/main.roc
+add acme/util --as local --no-check --file w5/apps/a/main.roc
+install --file solo/main.roc

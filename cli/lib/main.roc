@@ -43,6 +43,7 @@ package
 		Pick,
 		PickFlow,
 		PickLoop,
+		PickMoves,
 		Picker,
 		Pin,
 		Probe,
