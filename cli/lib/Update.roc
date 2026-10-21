@@ -1,4 +1,5 @@
 import Args
+import Compiler
 import Consent
 import Fail
 import Fx
@@ -88,9 +89,9 @@ flow! = |fx, args, opts, pick| {
 	Install.check_member(Bool.False, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 	mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
-	request = |names, compiler| request_of(args, opts, start, names, compiler)
+	request = |names, compiler, toolchain| request_of(args, opts, start, names, { compiler, toolchain })
 	picked = if pick {
-		items = picker_items!(fx, mode, request(opts.names, Err(NoCompiler)))?
+		items = picker_items!(fx, mode, request(opts.names, Err(NoCompiler), Err(Unset)))?
 		if items.is_empty() Ok([]) else ask_names!(fx, items)
 	} else {
 		Ok(opts.names)
@@ -99,14 +100,15 @@ flow! = |fx, args, opts, pick| {
 	if pick and names.is_empty() {
 		Ok(NothingPicked)
 	} else {
-		compiler = Install.compiler!(fx, start.env, Bool.False)?
-		Ok(Moved(Resolve.install!(fx, request(names, compiler))?))
+		toolchain = Compiler.toolchain_of(start.env)?
+		compiler = Install.compiler!(fx, Bool.False)
+		Ok(Moved(Resolve.install!(fx, request(names, compiler, toolchain))?))
 	}
 }
 
 # Step 9: the `Resolve.Request` (R-CM4, R-SP2, R-SP3, R-SP5).
-request_of : Args, Opts, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, List(Str), Try(Str, [NoCompiler]) -> Resolve.Request
-request_of = |args, opts, start, names, compiler| {
+request_of : Args, Opts, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, List(Str), { compiler : Try(Str, [NoCompiler]), toolchain : Try(Str, [Unset]) } -> Resolve.Request
+request_of = |args, opts, start, names, selected| {
 	command: Update,
 	names,
 	frozen: Bool.False,
@@ -118,7 +120,8 @@ request_of = |args, opts, start, names, compiler| {
 	offline: args.offline,
 	strategy: opts.strategy,
 	nightly: Install.nightly_of(start.env),
-	compiler,
+	compiler: selected.compiler,
+	toolchain: selected.toolchain,
 	snapshot: opts.snapshot,
 	dry_run: opts.dry_run,
 	add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: opts.no_pin },

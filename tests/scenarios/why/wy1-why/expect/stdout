@@ -22,6 +22,22 @@ $PROJECT/main.roc
   acme/text 2.0.0
     util (path) -> txt
 exit 0
+== tln why text@2
+$PROJECT/main.roc
+  acme/text 2.0.0
+    util (path) -> txt
+exit 0
+== tln why acme/text@2.0.0
+$PROJECT/main.roc
+  acme/text 2.0.0
+    util (path) -> txt
+exit 0
+== tln why acme/text@2.5.0
+exit 2
+== tln why core@2
+exit 2
+== tln why util@1
+exit 2
 == tln why basic-webserver --file tie/main.roc
 exit 2
 == tln why someone/basic-webserver --file tie/main.roc

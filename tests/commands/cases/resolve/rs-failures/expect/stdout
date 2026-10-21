@@ -16,3 +16,15 @@ exit 2
 exit 2
 == install file=pins/apps/a/main.roc compiler=nightly-2026-10-14-38a3029
 exit 2
+== update json file=pin/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== update pf file=walias/apps/a/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== update roc-lang/http@3 file=names/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install roc-lang/http@3 file=names/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install roc-lang/http file=names/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install roc-lang/http@3 as=http3 file=names/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2

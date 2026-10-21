@@ -16,6 +16,9 @@ exit 0
 == tln up --dry-run --json
 {"schema":1,"command":"up","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":3,"downloads":0,"dry_run":true,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
 exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln up --dry-run --json
+{"schema":1,"command":"up","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":3,"downloads":0,"dry_run":true,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.","platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+exit 0
 == tln update json@2.2.0 --no-pin
 note: json 2.2.0 is 1d old (min-release-age 2d)
 check: passed
@@ -24,7 +27,8 @@ $PROJECT/main.roc
   ~ json: acme/json 2.0.0 -> 2.2.0
 resolved at 2026-10-15T12:00:00Z, 3 probes
 exit 0
-== tln update
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln update
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 check: passed
 build: passed
@@ -37,6 +41,15 @@ exit 0
 nothing to change
 exit 0
 == tln install --dry-run
+check: passed
+build: passed
+$PROJECT/main.roc
+  + lex: acme/lex 1.2.0
+resolved at 2026-10-15T12:00:00Z, 3 probes
+dry run: nothing was written
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln install --dry-run
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
 check: passed
 build: passed
 $PROJECT/main.roc

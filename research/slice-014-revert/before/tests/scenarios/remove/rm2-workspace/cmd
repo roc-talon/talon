@@ -1,0 +1,19 @@
+# R-WS12 R-WS14 R-CM3 R-RV1 R-PD4 R-PD5 R-PD9 R-FL6 R-EC2 R-RP2 R-SO19 R-SO20 R-SP1 Q3 (slice 008, slice 013 for the pin gate): `tln remove` in a workspace with the members a and b. Both have json, and the root talon.toml has the key `json`.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# R-WS12: at the root there is no current member. Exit 2, the members are listed, nothing is written.
+st tln remove json
+# R-RP2 R-SO19 (slice 013): `remove` stops for a pin that [toolchain] roc does not admit, as `install` does: exit 10, before any write. The key is added to the root talon.toml for this run only.
+cp talon.toml talon.toml.keep
+printf '\n[toolchain]\nroc = "0.1.0"\n' >> talon.toml
+st tln remove json --file apps/a/main.roc
+# Q37: --no-check skips the probes, not the pin check (R-RP2 has no exception): the same exit 10. The header of a is put back, as a run that wrote it would change the runs below.
+cp apps/a/main.roc apps/a/main.roc.keep
+st tln remove json --file apps/a/main.roc --no-check
+mv apps/a/main.roc.keep apps/a/main.roc
+mv talon.toml.keep talon.toml
+# One member only (--file). The member b still has json, so the key stays (Q3): the group is still in use. Only the header of a changes, and only a is checked. A workspace command records each member (R-PD9).
+st tln remove json --file apps/a/main.roc
+# Now no other member has json: the header entry and the key go.
+# I1 (slice 013, R-SO20): ROC_TOOLCHAIN names another compiler than the pin of the members. `remove` holds the pin: the check and the build run on it (it is the roc on PATH), and the first line is the note.
+st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln remove json --file apps/b/main.roc

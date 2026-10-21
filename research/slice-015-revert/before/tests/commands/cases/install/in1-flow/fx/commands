@@ -1,0 +1,5 @@
+add acme/util --file app/main.roc
+add acme/lex --file app/main.roc
+add acme/json@^2.1 --file app/main.roc
+add acme/util --file lib/main.roc
+add acme/lex --no-check --json --file lib/main.roc

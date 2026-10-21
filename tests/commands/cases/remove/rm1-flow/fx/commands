@@ -4,3 +4,6 @@ rm parser --file r3/main.roc
 remove json --file r4/main.roc
 remove json --file r5/lib/main.roc
 remove parser --file r5/lib/main.roc --json
+remove roc-lang/http --file r6/main.roc
+remove json@3 --file r6/main.roc
+remove roc-lang/http@2 --file r6/main.roc

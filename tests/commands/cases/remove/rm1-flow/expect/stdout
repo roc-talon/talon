@@ -20,3 +20,13 @@ exit 11
 == remove parser --file r5/lib/main.roc --json
 {"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":null,"removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[],"patches":[],"pinned":null,"notes":[],"written":["$PROJECT/r5/lib/main.roc"]},"error":null}
 exit 0
+== remove roc-lang/http --file r6/main.roc
+exit 2
+== remove json@3 --file r6/main.roc
+exit 2
+== remove roc-lang/http@2 --file r6/main.roc
+check: passed
+build: passed
+$PROJECT/r6/main.roc
+  - http2: roc-lang/http 2.0.0
+exit 0

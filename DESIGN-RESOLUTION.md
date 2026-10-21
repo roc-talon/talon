@@ -49,8 +49,8 @@ roc accepts two forms of compiler version in a header: nightly tags, and release
 | R-NS1 | On (the default), the domain of `roc` is all nightlies and all releases. Talon orders them by date: the tag date of a nightly, the GitHub `published_at` of a release. On the same date, the release is newer. Two nightlies of one date (for example `nightly-2026-09-01-24e3995` and `nightly-2026-09-01-db83307`) are in the order of their GitHub `published_at`, then of the tag text. roc gives them the same rank (Design 2), so this order is Talon's own. It is total, so `@-1`, adjacent releases (R-EP1) and "newest" each have one answer (G3). |
 | R-NS2 | Off, the domain is the releases only. Today that domain is empty: Talon knows no source of compiler releases yet (CLI 6.2, R-CV1). Then a command that must select a compiler stops with exit code 10 (`no_tuple`), and the error names the switch and its source. |
 | R-NS3 | The switch applies where Talon selects a compiler by itself: the resolver, `tln upgrade` and `tln init` (section 10, CLI 5), `tln roc update` (R-RU1), the selector `@latest` and the relative selectors `@+N` and `@-N` in the `tln roc` scope (CLI 2), selection rank 4 (section 13), option 2 of R-NI8 (CLI 6.4), and probe searches (section 4). |
-| R-NS4 | The switch does not apply to a compiler that the user names: a command argument, `roc +<id>`, `ROC_TOOLCHAIN`, `tln roc install <id>` and `tln roc default <id>`. A global default that is a nightly (rank 6) stays in use. |
-| R-NS5 | A nightly `roc:` pin with the switch off is like a pin outside the `[toolchain] roc` range (R-RP2). The proxy runs it, because the header is the lock (rank 3). `tln install` reports it, and `--frozen` fails with exit code 14. `tln roc use <nightly>` stops (R-U5). `tln upgrade roc` moves the pin to a release. |
+| R-NS4 | The switch does not apply to a compiler that the user names: a command argument, `roc +<id>`, `ROC_TOOLCHAIN`, `tln roc install <id>` and `tln roc default <id>`. A global default that is a nightly (rank 6) stays in use. This is for runs only: a compiler that Talon holds as the nightly or writes as the `roc:` pin is checked against the switch and the range (R-SO19, R-U5). |
+| R-NS5 | A nightly `roc:` pin with the switch off is like a pin outside the `[toolchain] roc` range (R-RP2). The proxy runs it, because the header is the lock (rank 3). The commands of R-RP2 stop with exit code 10, and `--frozen` fails with exit code 14. `tln roc use <nightly>` stops (R-U5). `tln upgrade roc` moves the pin to a release. |
 | R-NS6 | `git-*`, `link-*` and `copy-*` builds (CLI 6.6) are not nightlies and not releases. The switch never removes them, because Talon selects them only by name (R-R5). |
 | R-NS7 | The `[toolchain] roc` range and the switch both apply. A semver range (`0.1.*`, `^1`) matches releases only. `*` matches both forms. A lower bound `>=<compiler id>` (a full nightly tag or a release version, CLI 2 prefix rules) matches each nightly and release that R-NS1 orders at or after that id. Use: a team states the oldest compiler that its code needs. It limits rank 4 of section 13, and `install` reports a `roc:` pin below it (R-RP2). There is no upper bound form: the `roc:` pin already holds the nightly, and only `tln upgrade` moves it (R-RP1). An anchor `=nightly-<tag>` with the switch off is a contradiction: Talon stops with exit code 2 and names both keys. |
 
@@ -344,12 +344,25 @@ flowchart TD
 | # | Step | Action |
 | --- | --- | --- |
 | R-AL1 | 1 | Collect variables, ranges and anchors (section 1). For a command that runs step 6, run the baseline check on the current header (section 4). |
-| R-AL2 | 2 | Fetch metadata for the full closure in one request (Registry 4). It includes the shared matrix for these hashes. |
+| R-AL2 | 2 | With a registry, send one closure query (Registry 4.1). Its answer gives the header facts (R-AL8) of each candidate and of their closures, and the shared matrix for these hashes. With direct, this step sends nothing: steps 3 to 6 get each fact when they need it (R-AL8, source 4). |
 | R-AL3 | 3 | PubGrub picks the best tuple by `priority`, under R-C1 to R-C4, R-C6, R-C7 and R-C9. |
 | R-AL4 | 4 | For each pair (hash, roc) with no fact, run a unit probe. Order: installed nightly first, then the strongest hint. Up to 12 checks run at the same time (section 4, "Parallel probes"). |
 | R-AL5 | 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for the hash and an interval of compiler releases (R-EP7). Go back to step 3. Inferred facts (R-EP6) order and prune the search, but the step needs real facts to finish (R-EP8). |
 | R-AL6 | 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. In P0, steps 4 and 5 do not run (Design 7, P0 limits). |
 | R-AL7 | 7 | Write the header and `roc:`. Print the tuple, the probe count and the evidence for each choice. |
+
+R-AL8: Header facts. The header facts of a node are its kind, its deps (the URL entries and the path entries), its platform and its `roc:` pin. A node is a release (by hash) or a path file (R-H7). The hash fixes the facts of a release (Design 2.1), so each source gives the same value, and a fact never expires. The solver (steps 3 to 5) and the closure walk (CLI R-CM2, R-CM9, R-CM7) ask for facts in one form: the list of the nodes whose facts they lack. Talon gets the facts of all nodes of one list at the same time (CLI 7.5, R-DA5). For each node, the first source that has the facts is used:
+
+| Source | Node | Cost |
+| --- | --- | --- |
+| 1 | The facts that this command has already | none |
+| 2 | The closure answer of step 2, when the command sent one | none (one request in step 2) |
+| 3 | `packages/<hash>/main.roc` when it exists, or the path file | one file read |
+| 4 | A download of the archive (CLI 7.1, R-DI7), then source 3 | one archive, at most 10 MB |
+
+A closure of depth d takes at most d lists. The registry makes it 1 request (step 2), unless the answer lacks a hash (Registry R-AP28 case 3).
+
+R-AL9: The closure of a tuple is the closure that roc builds (Design 2): the header entries, the path entries and their entries (R-H7), and the deps of the winner of each group, to the end. The winner of a group is the highest version that an edge names. Talon never asks for the facts of a version that does not win, also when the registry answer has them. Each user of a closure applies this one rule: the solver for R-C2 and R-C3, `tln list`, `tln why`, and the walk before the ladder. A problem of the rule (a cycle, one label with two hashes, a header pin lower than a dep needs, two platforms) is a conflict of the tuple in steps 3 to 5: the solver tries the next tuple (P0: R-PH10). When no variable is free (`install --frozen`, `list`, `why`), it stops with exit code 10 (`no_tuple`) and names the problem.
 
 Example failure output, with measured ranges, for an app that imports `parser.Yaml`. It needs phase P1 (unit probes):
 
@@ -402,6 +415,7 @@ R-PA10: The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-de
 | R-PA6 | A `base` that is not the hash of the header entry (for example after a hand edit of the header) is a stale patch. The proxy does not run the compiler: it stops with exit code 14 and names `tln install`. `tln install` applies the patch to the header release as in R-PA5, and does not change the header. `tln install --frozen` fails with exit code 14. |
 | R-PA7 | The diff of R-PA3 and R-PA5 is a unified diff with 3 lines of context, file by file. A pure function of Talon makes and applies it (`TESTING.md` 2.2, part A). A hunk applies when its context lines and old lines match the new release exactly, at one place in the file. That place can move by any number of lines. There is no fuzz: one changed context line makes the hunk fail. A file that the copy adds or deletes is added or deleted. A file that is not UTF-8 text is replaced whole. It applies only when the new release has the same bytes for it as `base`. |
 | R-PA8 | `tln patch` of the platform entry stops with exit code 2. A platform archive holds host binaries (21 MB for basic-cli), which do not belong in VCS. To change a platform, use a fork and its release, or a path entry. |
+| R-PA14 | `tln patch` of an unmanaged entry (Design 4.2, R-H4) stops with exit code 2. A path entry is local code: the user edits its file. A foreign URL has no release, so R-PA4 and R-PA5 cannot hold or move it. |
 
 ## 8. Libraries
 
@@ -415,7 +429,7 @@ R-LB4: `lowest` moves a version down only inside its range. The implied range (D
 
 ## 9. Scope of `update`, `upgrade` and `install`
 
-R-SP1: A command can hold a variable: it fixes the variable at its current header value for one run. A hold is a temporary anchor. It is not written to `talon.toml`. The nightly is held at the `roc:` pin, or at the selected compiler (section 13) if there is no pin.
+R-SP1: A command can hold a variable: it fixes the variable at its current header value for one run. A hold is a temporary anchor. It is not written to `talon.toml`. The nightly is held at the `roc:` pin, or at the selected compiler (section 13) if there is no pin. Section 13, R-SO19 to R-SO22, tells how ranks 1 and 2 and the intent apply to the held nightly.
 
 | # | Command | Free variables | Held variables |
 | --- | --- | --- | --- |
@@ -441,7 +455,7 @@ R-SP1: A command can hold a variable: it fixes the variable at its current heade
 | # | Rule | Why |
 | --- | --- | --- |
 | R-RP1 | Only two commands change a `roc:` entry that exists: `tln upgrade` when the nightly is free (no names, or the name `roc`), and `tln roc use` (R-U1 to R-U4). | The nightly has no semver ranges, so each move goes to a newer release and can break code. That is the job of `upgrade`. `tln update` stays the small, safe move. |
-| R-RP2 | `install`, `add`, `update` and `remove` always hold the nightly, also with R-NI3, `--allow-moves` or `--yes`. When no tuple works on the held nightly, Talon writes nothing and stops with exit code 10 (`no_tuple`). The error names the oldest nightly that works, when a probe or the matrix knows it, and the commands `tln upgrade roc` and `tln roc use <id>`. A `roc:` pin outside the `[toolchain] roc` range gives the same error in `install`. | One command moves the nightly, so the user always sees it move. |
+| R-RP2 | `install`, `add`, `update` and `remove` always hold the nightly, also with R-NI3, `--allow-moves` or `--yes`. When no tuple works on the held nightly, Talon writes nothing and stops with exit code 10 (`no_tuple`). The error names the oldest nightly that works, when a probe or the matrix knows it, and the commands `tln upgrade roc` and `tln roc use <id>`. A `roc:` pin that the `[toolchain] roc` range or the `nightly` switch does not admit (R-NS5) gives the same error, before the index and before any write, in each command that holds the nightly: `install`, `add`, `update`, `remove`, `verify`, and `upgrade` when the nightly is not free. The error names the range, or the switch and its source. `tln roc use` and `tln upgrade roc` do not stop for it: they are the fix. | One command moves the nightly, so the user always sees it move. |
 | R-RP3 | A header with no `roc:` entry: a command that writes the header for another change writes the nightly that it held (the selected compiler, section 13) after the check passes (R-H6). A missing `roc:` entry alone is not a change: `tln install` with no names writes no `roc:` entry when it resolves nothing. | This records the lock. It does not move it. |
 | R-RP4 | In `tln upgrade`, a move of a held variable (R-NI3) can include the nightly. | `upgrade` is allowed to move it. |
 
@@ -450,8 +464,8 @@ A held variable moves only when no tuple exists without moving it (R-RP2 exclude
 | # | Case | Talon does |
 | --- | --- | --- |
 | R-SP15 | A tuple exists with all held variables fixed | Uses it. No held variable moves. |
-| R-SP16 | No such tuple | Names the variables that must move and why, for example `json 2.2.0 needs pf >= 0.26.0`. Asks for consent to move them. Prompt R-NI3 (CLI 4), default no. |
-| R-SP17 | Non-interactive mode (CLI 4) and no `--yes` | Stops with the same report and exit code 13. Writes nothing. With `--allow-moves` or `--yes`, moves the named variables. |
+| R-SP16 | No such tuple | Runs the second search (R-SP24), then the ladder on its tuple (section 4). Then it names each held variable that moves, its old and new value, why (for example `json 2.2.0 needs pf >= 0.26.0`), and the member files that the move writes (R-SP25). Asks for consent to move them: prompt R-NI3 (CLI 4), default no. The prompt is the last step before the write. No: Talon writes nothing and stops with exit code 13 (`consent`). With no tuple in the second search, or a ladder that fails, Talon stops with exit code 10 as before, and asks nothing. |
+| R-SP17 | Non-interactive mode (CLI 4) and no `--yes` | Stops with the same report and exit code 13, after the same search and ladder. Writes nothing. With `--allow-moves` or `--yes`, moves the named variables, in both modes. `--allow-moves` only answers R-NI3: it does not change the search, the scope (R-SP2 to R-SP9) or the movable variables (R-SP23). |
 
 R-SP18: `tln install` with no names keeps the lock (G1). With names, it is `tln add` (CLI 1).
 
@@ -462,6 +476,14 @@ R-SP18: `tln install` with no names keeps the lock (G1). With names, it is `tln 
 | R-SP21 | `talon.toml` does not exist | Resolves nothing: each entry satisfies its implied range. Install only fetches the closure of the header, and writes nothing (R-RP3). |
 
 R-SP22: A hold that cannot stay follows the consent rows above. `tln install --frozen` (section 12) runs the same check and resolves nothing: where plain `install` would resolve an entry, `--frozen` fails.
+
+R-SP23: A movable variable is a variable that the command holds only because the user did not name it: R-SP3, R-SP4, R-SP7, R-SP9, R-SP19, and a group of other members (Design 4.4, R-WS12). These are never movable: the nightly outside `tln upgrade` (R-RP2, R-RP4), an anchor (`=`, R-VA5), a patched entry (R-PA4), a fixed anchor (R-DI11). The user frees them by name. An unmanaged entry (Design 4.2, R-H4) is no variable, so it is never movable. A moved variable keeps the constraints of a free variable of the command: R-C1 (its ranges; none in `upgrade`, R-UP1), R-C6, R-C7 and R-C9.
+
+R-SP24: The second search is the search of section 5 with two changes. The order of the variables: the movable variables first, in `priority` order (section 1), then the free variables in `priority` order. The order of the values of a movable variable: its current value first, then the nearest values. With `strategy = "highest"`: the higher versions from low to high, then the lower versions from high to low. With `"lowest"`: the lower versions from high to low, then the higher versions from low to high. So a movable variable keeps its value when a tuple exists with it and the earlier movable variables, and else moves the smallest step. The moved variables are those whose value differs from the header.
+
+R-SP25: A move writes each member that has an entry for the group of the moved variable (Design 4.4, R-WS1), with the same value. In `install`, `add` and `update` the new value is inside the ranges, so `talon.toml` does not change. In `upgrade`, R-UP5 applies to each moved variable.
+
+R-SP26: `--dry-run` (R-LF4) does not ask R-NI3. It prints the report of R-SP16 and the header diff with the moves, writes nothing, and exits with code 0.
 
 ## 10. Upgrade and new series
 
@@ -575,6 +597,15 @@ R-SO16: Talon reads `.roc-version` but never writes it (G1: no second lock). `tl
 
 | # | Case | Talon does |
 | --- | --- | --- |
-| R-SO17 | The header `roc:` and `talon.toml` `[toolchain] roc` disagree | The proxy uses the header. `tln install` and `tln install --frozen` report that the header does not satisfy `talon.toml`. `--frozen` fails (section 12). |
+| R-SO17 | The header `roc:` and `talon.toml` `[toolchain] roc` disagree | The proxy uses the header. The commands of R-RP2 stop with exit code 10. `tln install --frozen` fails with exit code 14 (section 12). |
 | R-SO18 | `.roc-version` and the header `roc:` disagree | Talon prints one warning in `tln install` and in `tln ls`, for example `.roc-version names nightly-2026-10-06-c34079d, the header names nightly-2026-10-09-258ab27`. The proxy uses the header. Talon does not edit `.roc-version`. |
+
+Sections 9 and 13 answer two questions. The held nightly (R-SP1) is what a command checks, probes and writes as the `roc:` pin. The run compiler is what runs a `roc` call. The ranks above give the run compiler. These rules give the held nightly.
+
+| # | Case | Talon does |
+| --- | --- | --- |
+| R-SO19 | A command holds the nightly (R-RP2) | The held nightly is the `roc:` pin (rank 3). With no pin, it is the compiler that ranks 2, 4, 5, 6 and 7 select (a `tln` command has no rank 1). Before the index and before any write, Talon checks it against the `[toolchain] roc` range and the `nightly` switch (R-NS7). A pin that fails: R-RP2. No pin, and rank 4 finds no installed compiler in the range: R-SO13. No pin, and another rank selects a compiler that the switch or the range does not admit: exit code 10 (`no_tuple`, R-NS2). The error names the compiler, the rank that selected it (`ROC_TOOLCHAIN`, `.roc-version`, the global default or the `roc` on `PATH`), and the range or the switch and its source. A local build (R-SO11, R-NS6) is not checked: Talon never writes it. |
+| R-SO20 | A command holds the nightly, the header has a pin, and `ROC_TOOLCHAIN` names another compiler | The held nightly stays the pin, and the probes run on it (R-BL1). Talon prints one note that names both ids and `tln roc use <id>`. `ROC_TOOLCHAIN` still selects the compiler of the proxy (R-U6). |
+| R-SO21 | `tln verify` | It writes nothing, so its probes run on the run compiler: rank 2, then the held nightly of R-SO19. R-RP2 still checks the pin, because the pin is part of the header. Use: `ROC_TOOLCHAIN=<id> tln verify` tests the header on another compiler. |
+| R-SO22 | The held nightly or the run compiler is not installed | It is a required download (R-DL2) at the first probe, not before. `--no-check` and `--frozen` run no probe, so they need no compiler, and `ROC_TOOLCHAIN` does not stop them. |
 

@@ -180,7 +180,7 @@ expect {
 	bad_rounds == [] and done_ok
 }
 
-# R-C2 R-EC10 (Design 2: an app pin that is lower than a dependency needs fails): the failures of `Mvs.select` come back as a problem, only when the nodes of all followed packages are read. The lists are in byte order (Mvs gives no order).
+# R-C2 R-EC10 R-AL9 (Design 2: an app pin that is lower than a dependency needs fails): the failures of `Mvs.select` come back as a problem, only when the nodes of all followed packages are read. The lists are in byte order (Mvs gives no order).
 # A `Cycle` is not tested: its start is not fixed.
 expect {
 	step = |entries, nodes| Closure.step({ file, entries, nodes })
@@ -204,7 +204,7 @@ expect {
 	bad == []
 }
 
-# R-EC10 R-E4 (question Q16, TW24): the failure of a problem: kind `no_tuple` (exit 10) and the texts, with the label `<name> <version>`.
+# R-EC10 R-E4 R-AL9 (question Q16, now R-AL9; TW24): the failure of a problem: kind `no_tuple` (exit 10) and the texts, with the label `<name> <version>`.
 expect {
 	view = |problem| Fail.line(Closure.failure(problem))
 	prefix = "tln: error[no_tuple]: "

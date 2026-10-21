@@ -66,3 +66,47 @@ read_files $PROJECT/pins/talon.toml $PROJECT/talon.toml
 list_dirs $PROJECT/pins/apps/b
 read_files $PROJECT/pins/apps/a/main.roc
 read_files $PROJECT/pins/apps/a/main.roc $PROJECT/pins/apps/b/main.roc $PROJECT/pins/apps/a/talon.toml $PROJECT/pins/apps/talon.toml $PROJECT/pins/talon.toml $PROJECT/pins/apps/b/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/pin/main.roc
+list_dirs $PROJECT/pin
+list_dirs $PROJECT
+read_files $PROJECT/pin/talon.toml $PROJECT/talon.toml
+read_files $PROJECT/pin/main.roc
+read_files $PROJECT/pin/main.roc $PROJECT/pin/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/walias/apps/a/main.roc
+list_dirs $PROJECT/walias/apps/a
+list_dirs $PROJECT/walias/apps
+list_dirs $PROJECT/walias
+list_dirs $PROJECT
+read_files $PROJECT/walias/talon.toml $PROJECT/talon.toml
+list_dirs $PROJECT/walias/apps/b
+read_files $PROJECT/walias/apps/a/main.roc
+read_files $PROJECT/walias/apps/a/main.roc $PROJECT/walias/apps/b/main.roc $PROJECT/walias/apps/a/talon.toml $PROJECT/walias/apps/talon.toml $PROJECT/walias/talon.toml $PROJECT/walias/apps/b/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/names/main.roc
+list_dirs $PROJECT/names
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+read_files $PROJECT/names/main.roc
+read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/names/main.roc
+list_dirs $PROJECT/names
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+read_files $PROJECT/names/main.roc
+read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/names/main.roc
+list_dirs $PROJECT/names
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+read_files $PROJECT/names/main.roc
+read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+canonical $PROJECT/names/main.roc
+list_dirs $PROJECT/names
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+read_files $PROJECT/names/main.roc
+read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/http
+programs gh
+http_get https://api.github.com/repos/roc-lang/http/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/http/1.json $HOME/.cache/roc/talon/index/github/roc-lang/http/1.meta

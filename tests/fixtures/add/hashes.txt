@@ -33,3 +33,5 @@ acme/text 2.0.0 HTcv5NZyJxUEiyN6SFBCRUymkYR5eg3SmtyFzwoNkH6N
 roc-lang/basic-webserver 0.1.0 BktUQpe8XQjziPL2BHt84GSYWhhgc66oS27aJYf3YDd1
 someone/basic-webserver 1.0.0 FBaRPTuBCEvC4nu73eSnAyPkyuH7YzWCUnaNyh6ck47s
 acme/web-utils 1.0.0 4UKY3YSbvWQHBf2dXGY1jwxgXrmwT6zPJxTeptcgmduP
+acme/yaml 1.0.0 2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh
+acme/yaml 1.1.0 4G1RyBFYE1Y7HJ7xqLJs8ox3os8U3Fp5RdLFvxzyJ3i8

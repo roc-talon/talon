@@ -64,6 +64,7 @@ Ls :: [].{
 			strategy: Err(Unset),
 			nightly: Install.nightly_of(start.env),
 			compiler: Err(NoCompiler),
+			toolchain: Err(Unset),
 			snapshot: Err(Unset),
 			dry_run: Bool.False,
 			add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },

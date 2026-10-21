@@ -1,0 +1,29 @@
+# R-CM4 R-CM19 R-SP2 R-SP3 R-SP4 R-NI2 R-NM7 R-FL12 R-FL13 R-SL12 R-SC1 R-DT5 R-SE7 R-LB1 R-LB4 R-AD28 R-C7 R-I5 R-H4 R-LF4 R-J1 R-J2 R-J3 R-J4 R-J5 R-OUT4 R-EC2 R-EC10 R-E4 R-PD9 (slice 009, Q1, Q3, Q5, Q8):
+# `tln update` on the real binary. The header has a platform (acme/pfx 0.1.0, 0.1.1 is in the series), json 2.0.0, parser 1.0.0 and a path entry `mylib`. talon.toml has the key `lex` that the header lacks.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# A name that is in no header (P6 of slice 004) and a name of a path entry (R-H4, Q8): exit 2, no change.
+st tln update zzz
+st tln update mylib
+# R-FL13: `update` changes the header, so it rejects --frozen.
+st tln update --frozen
+# R-NM7 R-NI2: `-i` is a picker. CI=true is non-interactive mode: exit 2. `-i` with a name is no picker (Q1).
+st tln update -i
+st tln update -i json
+# R-SL12 (Q5): a range that no release matches is exit 10, and the failure lists the close versions.
+st tln update json@^9
+# R-LB4: `lowest` moves a version down only inside its range. The implied ranges start at the header versions: nothing changes.
+st tln update --strategy lowest
+# `up` is `update` (R-CM19). --dry-run --json: the plan is in `data` and in no file. Q3: the key `lex` is no want of `update`: the plan has no `lex` entry and no request for acme/lex is made (see http.log). R-SE7: the platform moves, so `data.notes` has the notice.
+st tln up --dry-run --json
+# An exact version with --no-pin (R-AD28, R-FL12): the header gets 2.2.0, talon.toml gets no key. The version is 1 day old: the user named it, so it is a note (R-C7).
+st tln update json@2.2.0 --no-pin
+# No name: parser and the platform move. The notice R-SE7 and the line R-DT5 (the `direct` form with the time).
+st tln update
+# Nothing is left to move.
+st tln update
+# `install` adds the key that `update` left (R-I5, Q3). --dry-run: the plan only.
+st tln install --dry-run
+echo "== the files"
+cat main.roc talon.toml
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

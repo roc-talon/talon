@@ -133,13 +133,10 @@ Install :: [].{
 		Compiler.on_path(version)
 	}
 
-	# Step 7, R-SO2: the compiler of the run. `ROC_TOOLCHAIN` is checked first (no `Fx` call), then `on_path!` (not for `--frozen`).
-	compiler! : Fx, List((Str, Str)), Bool => Try(Try(Str, [NoCompiler]), Fail)
-	compiler! = |fx, env, frozen| {
-		toolchain = Compiler.toolchain_of(env)?
-		path_roc = if frozen Err(NoCompiler) else Install.on_path!(fx)
-		Compiler.select({ toolchain, path_roc, frozen })
-	}
+	# Step 7, R-SO22: the `roc` on `PATH` (not for `--frozen`). `ROC_TOOLCHAIN` is read apart (`Compiler.toolchain_of`, no `Fx` call) and needs no installed compiler here:
+	# the first probe checks it (`Compiler.require`).
+	compiler! : Fx, Bool => Try(Str, [NoCompiler])
+	compiler! = |fx, frozen| if frozen Err(NoCompiler) else Install.on_path!(fx)
 
 	# R-EV4: `TALON_NIGHTLY` is `0` or `false`, `1` or `true`.
 	nightly_of : List((Str, Str)) -> Try(Bool, [Unset])
@@ -170,7 +167,8 @@ flow! = |fx, args, opts| {
 	project = start.project
 	Install.check_member(!opts.names.is_empty(), project)?
 	Known.record!(fx, { roots, files: Install.canonical_files!(fx, project), now })?
-	compiler = Install.compiler!(fx, env, opts.frozen)?
+	toolchain = Compiler.toolchain_of(env)?
+	compiler = Install.compiler!(fx, opts.frozen)
 	Resolve.install!(
 		fx,
 		{
@@ -186,6 +184,7 @@ flow! = |fx, args, opts| {
 			strategy: opts.strategy,
 			nightly: Install.nightly_of(env),
 			compiler,
+			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: opts.dry_run,
 			add: { as_platform: opts.as_platform, as_alias: opts.as_alias, no_pin: opts.no_pin },

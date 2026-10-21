@@ -38,6 +38,11 @@ Few tests, each with a large reach. Every rule id of a slice is named by at leas
 | 010 (done) | Closure walk and `list` | The closure walk, R-C8, `list`, the fetch of the closure in `install` (R-CM2). R-CM9, R-H4, R-H7 (also the R-H7 scan of `remove`), R-SP21, R-AL2 | 007, 008 |
 | 011 (done) | `why` | `why`, R-C2 over the full closure. R-CM7, R-PH12, R-C2, the R-SC14 tie list, P6 of slice 004 | 010 |
 | 012 (done) | P0 rule gaps | The P0 gaps of the slice 011 audit: R-EV4, R-EV5, R-SO2, R-SC12, R-SO5, R-SO16, R-SO18, R-LF5, R-OV2, and the rule ids with tested behavior and no named test (R-SO3, R-SO4, R-SO14, R-SE1, R-SE3, R-SE9, R-AD37, R-NM11) | 011 |
+| 013 (done) | Pin gate | `docs/design-gaps/G-pin-gate.md`: R-SO19 to R-SO22, R-SP1, R-RP2, R-NS4, R-NS5, R-SO17, R-PH7. Also the 4 open cases of slice 012 (N3, G5, F1, I1). | 012 |
+| 014 (done) | One name model | `docs/design-gaps/G-tie-names.md`: R-SC1, R-SC6, R-SC14 to R-SC16, R-WS8, R-AU8. One shared entity builder for `why`, the pick and `remove`. | 013 |
+| 015 (done) | Unmanaged entries | `docs/design-gaps/G-never-change.md`: R-H4, R-H7, R-H9, R-AD18, R-AD19, R-AD21, R-AD22, R-AD31, R-AD38, R-RV5. The `Locked.edit` replace op. | 014 |
+| 016 (done) | One closure model | `docs/design-gaps/G-closure-fetch.md`: R-AL2, R-AL8, R-AL9, R-FE1, R-DI1, R-DI7. One loop for the pick and the walk, path entries in `Pick.step`. | 015 |
+| 017 | Held moves | `docs/design-gaps/G-held-moves.md`: R-SP16, R-SP17, R-SP23 to R-SP26, R-WS6, R-WS12, R-PH10, R-EC13, R-NI3. Also the per-member closure check (slice 016 Q1). | 016 |
 
 The manager can split a slice that is too large for one review (TW19), or join two small ones. A change to this table is recorded here.
 
@@ -50,3 +55,4 @@ The manager can split a slice that is too large for one review (TW19), or join t
 | 2026-10-20 | New slice 006b | The answers of the user to slice 006 Q1 and Q4 |
 | 2026-10-20 | Slice 009 is split: 009 (`update`, `verify`), 010 (closure walk, `list`), 011 (`why`) | The 009 test agent found about 920 lines of new code |
 | 2026-10-20 | New slice 012 | The P0 audit of slice 011 found P0 rules with no test |
+| 2026-10-21 | New slices 013 to 017 | The 5 design gap decisions (`docs/design-gaps/APPLIED.md`). The order and the shared files are in APPLIED.md section 5. |

@@ -81,9 +81,47 @@ expect {
 	bad == []
 }
 
-# R-SC1 R-SC6 R-SC7 R-SC8 R-SC14 R-SC15 (Q7 of slice 004, Q12 of slice 004): the lookup of a name over the closure. The entities have one row for each package: the alias only for a direct row (R-SC6: an alias of a package
-# header is no alias), the name with `@<series>` when 2 series of one repo are in the closure (R-SC15), and the note of the tie list: `platform (<alias>)`, `direct (<alias>)`, `via <alias>`. A short name is the repo name or the
-# repo name without `roc-` (R-SC8). The design example of R-SC14: 2 packages with the repo name basic-webserver, the platform and a package under `web_utils`. The tie is a failure line with the list before it (the block).
+# R-SC1 R-SC6 R-SC15 (slice 014): `Why.row_facts` gives one fact for each row of the closure, in the order of the rows: the alias only for a direct row (R-SC6: an alias of a package header is no alias), a path entry
+# or a foreign URL is unmanaged (no name, series or version), the role is `Platform`, `Direct` or `Via(<alias>)`.
+expect {
+	r = |id, alias, name, version, series, facts| rel(id, alias, name, version, series, facts)
+	tie_rows = [
+		r("pfurl", "pf", "roc-lang/basic-webserver", "0.1.0", "0.1", { via: Err(None), raised: Err(None), is_pf: Bool.True }),
+		r("utilsurl", "web_utils", "acme/web-utils", "1.0.0", "1", plain(Err(None))),
+		r("wsurl", "ws", "someone/basic-webserver", "1.0.0", "1", plain(Ok("web_utils"))),
+		r("parurl", "parser", "lukewilliamboswell/roc-parser", "0.9.0", "0.9", plain(Err(None))),
+		other(Path, "/p/util/main.roc", "util", "../util/main.roc", Err(None)),
+		other(Foreign, ext, "ext", ext, Ok("util")),
+	]
+	series_rows = [
+		r("t1", "text", "acme/text", "1.1.0", "1", plain(Ok("web"))),
+		r("t2", "txt", "acme/text", "2.0.0", "2", plain(Ok("util"))),
+		r(json, "json", "acme/json", "2.1.0", "2", plain(Err(None))),
+	]
+	rel_fact = |name, series, version| Release({ name, series, version })
+	want_tie_facts = [
+		{ alias: "pf", what: rel_fact("roc-lang/basic-webserver", "0.1", "0.1.0"), role: Platform },
+		{ alias: "web_utils", what: rel_fact("acme/web-utils", "1", "1.0.0"), role: Direct },
+		{ alias: "", what: rel_fact("someone/basic-webserver", "1", "1.0.0"), role: Via("web_utils") },
+		{ alias: "parser", what: rel_fact("lukewilliamboswell/roc-parser", "0.9", "0.9.0"), role: Direct },
+		{ alias: "util", what: Unmanaged, role: Direct },
+		{ alias: "", what: Unmanaged, role: Via("util") },
+	]
+	want_series_facts = [
+		{ alias: "", what: rel_fact("acme/text", "1", "1.1.0"), role: Via("web") },
+		{ alias: "", what: rel_fact("acme/text", "2", "2.0.0"), role: Via("util") },
+		{ alias: "json", what: rel_fact("acme/json", "2", "2.1.0"), role: Direct },
+	]
+	bad = Why.row_facts(tie_rows) != want_tie_facts or Why.row_facts(series_rows) != want_series_facts or Why.row_facts([]) != []
+	dbg Why.row_facts(tie_rows)
+	!bad
+}
+
+# R-SC1 R-SC6 R-SC7 R-SC8 R-SC14 R-SC15 R-SC16 (Q7 of slice 004, slice 014): the lookup of a name over the closure. `Why.row_facts` gives one fact for each row (the alias only for a direct row, R-SC6: an alias of a package
+# header is no alias; a path entry or a foreign URL is unmanaged; the role is `Platform`, `Direct` or `Via(<alias>)`). `Lookup.build` makes the entities, with the full name and the series in their own fields (R-SC15: the printed name
+# has `@<series>` only in the tie list). The note of the tie list: `platform (<alias>)`, `direct (<alias>)`, `via <alias>`. A short name is the repo name or the repo name without `roc-` (R-SC8). The design example of
+# R-SC14: 2 packages with the repo name basic-webserver, the platform and a package under `web_utils`. The tie is a failure line with the list before it (the block). A selector keeps the rows whose version is in it (R-SC16):
+# `acme/text@2.0.0` is the series-2 row, `acme/text@2.5.0` is in no row, a path entry never matches a selector.
 expect {
 	r = |id, alias, name, version, series, facts| rel(id, alias, name, version, series, facts)
 	pf_url = "https://github.com/roc-lang/basic-webserver/releases/download/0.1.0/pfhash.tar.zst"
@@ -104,46 +142,39 @@ expect {
 		r(text2, "txt", "acme/text", "2.0.0", "2", plain(Ok("util"))),
 		r(json, "json", "acme/json", "2.1.0", "2", plain(Err(None))),
 	]
-	ents = Why.entities(tie_rows)
-	want_ents = [
-		{ alias: "pf", name: "roc-lang/basic-webserver", note: "platform (pf)" },
-		{ alias: "web_utils", name: "acme/web-utils", note: "direct (web_utils)" },
-		{ alias: "", name: "someone/basic-webserver", note: "via web_utils" },
-		{ alias: "parser", name: "lukewilliamboswell/roc-parser", note: "direct (parser)" },
-		{ alias: "util", name: "../util/main.roc", note: "direct (util)" },
-	]
-	want_series = [
-		{ alias: "", name: "acme/text@1", note: "via web" },
-		{ alias: "", name: "acme/text@2", note: "via util" },
-		{ alias: "json", name: "acme/json", note: "direct (json)" },
-	]
 	found = |text, rows| match Why.find({ text, rows }) {
 		Ok(row) => Ok(row.id)
 		Err({ fail, block }) => Err((fail.line(), block))
 	}
 	tie_block = "\"basic-webserver\" matches 2 packages:\n  roc-lang/basic-webserver      platform (pf)\n  someone/basic-webserver       via web_utils\n"
+	text_block = "\"acme/text\" matches 2 packages:\n  acme/text@1      via web\n  acme/text@2      via util\n"
+	short_block = "\"text\" matches 2 packages:\n  acme/text@1      via web\n  acme/text@2      via util\n"
 	not_in = |x| Err(("tln: error[usage]: '${x}' is not in the project", ""))
 	rows = [
 		("alias of a direct row", found("pf", tie_rows), Ok(pf_url)),
 		("alias of a path entry", found("util", tie_rows), Ok("/p/util/main.roc")),
+		("a path entry has no version (R-SC16)", found("util@1", tie_rows), not_in("util@1")),
 		("full name", found("someone/basic-webserver", tie_rows), Ok(ws_url)),
 		("short name, one match", found("web-utils", tie_rows), Ok(utils_url)),
 		("short name, the repo name without roc-", found("parser", tie_rows), Ok(parser_url)),
-		("the design example of R-SC14", found("basic-webserver", tie_rows), Err(("tln: error[usage]: \"basic-webserver\" matches 2 packages. Use the full name.", tie_block))),
+		("the design example of R-SC14", found("basic-webserver", tie_rows), Err(("tln: error[usage]: \"basic-webserver\" matches 2 packages. Use a name from the list.", tie_block))),
 		("the alias of a package header is no alias (R-SC6)", found("ws", tie_rows), not_in("ws")),
 		("no match", found("zzz", tie_rows), not_in("zzz")),
 		("a full name that is not in the closure", found("acme/zzz", tie_rows), not_in("acme/zzz")),
-		("2 series: the name alone is a tie (R-SC15)", found("acme/text", series_rows), Err(("tln: error[usage]: \"acme/text\" matches 2 packages. Use the full name.", "\"acme/text\" matches 2 packages:\n  acme/text@1      via web\n  acme/text@2      via util\n"))),
+		("2 series: the name alone is a tie (R-SC15)", found("acme/text", series_rows), Err(("tln: error[usage]: \"acme/text\" matches 2 packages. Use a name from the list.", text_block))),
 		("2 series: the series of the selector picks the row (Q12)", found("acme/text@2", series_rows), Ok(text2)),
-		("2 series: a range picks by its series", found("acme/text@^1.0", series_rows), Ok(text1)),
-		("2 series: the short name is a tie too", found("text", series_rows), Err(("tln: error[usage]: \"text\" matches 2 packages. Use the full name.", "\"text\" matches 2 packages:\n  acme/text@1      via web\n  acme/text@2      via util\n"))),
+		("2 series: a range picks by its version", found("acme/text@^1.0", series_rows), Ok(text1)),
+		("2 series: an exact version picks the row (R-SC16)", found("acme/text@2.0.0", series_rows), Ok(text2)),
+		("2 series: a version that no row has (R-SC16)", found("acme/text@2.5.0", series_rows), not_in("acme/text@2.5.0")),
+		("2 series: the short name is a tie too", found("text", series_rows), Err(("tln: error[usage]: \"text\" matches 2 packages. Use a name from the list.", short_block))),
+		("2 series: the short name with a series picks the row (R-SC16)", found("text@1", series_rows), Ok(text1)),
+		("1 row, the version is not in the selector (R-SC16)", found("json@3", series_rows), not_in("json@3")),
+		("1 row, the version is in the selector", found("json@2", series_rows), Ok(json)),
 		("a bad ref is a usage failure from Ref.parse", found("a/b/c", tie_rows), Err(("tln: error[usage]: 'a/b/c' is not a package name: use a short name, owner/repo or host/path", ""))),
 	]
 	bad_rows = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad_rows
-	dbg ents
-	dbg Why.entities(series_rows)
-	ents == want_ents and Why.entities(series_rows) == want_series and Why.entities([]) == [] and bad_rows == []
+	bad_rows == []
 }
 
 # R-CM7 R-PH12 R-H4 R-H7 (Q13, Q15): the paths from the header to a row. All paths are listed, depth first in the order of the links. A row that 2 routes reach has 2 paths, and 2 links with 2 aliases from one package to one

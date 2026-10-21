@@ -13,8 +13,8 @@ import semver.Semver
 ## | Field | Holds |
 ## | --- | --- |
 ## | `alias` | The alias of the entry |
-## | `header` | `Insert`: a new entry. `Replace`: the platform entry gets a new URL (R-AD31). `Keep`: no change (R-AD21). `Update`: the entry moves inside the selector, as `tln update` does (R-AD22). |
-## | `url` | For `Insert` and `Replace`: the URL to write. For `Keep` and `Update`: the URL that the header has now. |
+## | `header` | `Insert`: a new entry. `Replace`: the entry of the alias gets a new URL: the platform entry (R-AD31), or an unmanaged entry that `--as` names (R-AD38). `Keep`: no change (R-AD21). `Update`: the entry moves inside the selector, as `tln update` does (R-AD22). |
+## | `url` | For `Insert` and `Replace`: the URL to write. For `Keep` and `Update`: the URL that the header has now (for an unmanaged entry, its value as written). |
 ## | `toml` | `Ok({ key, value })`: write this key (the alias) and range to `talon.toml`. The file is created when it is missing (R-AD25, R-AD26). `Err(Nothing)`: write nothing, and do not create the file (R-AD24, G2). |
 ## | `note` | A text for the command to print, or `Err(None)` |
 ##
@@ -37,21 +37,24 @@ import semver.Semver
 ## | --- | --- |
 ## | `kind` is `Package`, no `--platform`, group not in the header | `Insert` with the alias of `Alias.choose` and the `talon.toml` value of the table (R-AD23 to R-AD27) |
 ## | The group is in the header (`Alias.choose` gives `Existing`) | As `decide_alias` for that alias (R-AD20) |
+## | `--as <alias>` names an unmanaged entry (`Alias.choose` gives `Unmanaged`) | `Replace` under that alias, with the URL of the candidate, and the `talon.toml` value of the table (R-AD38, R-H9). The note is `entry changes: <old value> -> <name> <version>`. If the entry is the platform and the release is a package: failure `'<name>' is not a platform` (R-AD38, R-C4, R-AD32). If the entry is a package and the release is a platform: the failure of R-AD33. |
+## | The default alias is an unmanaged entry | Failure of `Alias.choose` (`Taken`, R-AD18) with the text that names `--as <alias>` |
 ## | `--platform`, `kind` is `Package` | Failure: `'<name>' is not a platform` (R-AD32, R-C4) |
 ## | no `--platform`, `kind` is `Platform` | Failure: `'<name>' is a platform. Use tln add --platform <name>.` (R-AD33) |
 ## | `--platform`, the header has a platform | `Replace` under the alias of that platform, whatever the repo (R-AD31). `talon.toml`: the key of the old platform gets the value of the table. |
 ## | `--platform`, no platform in the header | `Insert` with the alias `pf`, or `--as` (R-AD30). |
 ##
 ## The note for `Replace` (R-SE7, proposal): `platform changes: <old name> <old version> -> <new name> <new version>`,
-## when the two URLs differ. With a name that has no `name` (`Ident.name` is `Err(NoName)`) the note names the URL.
+## when the two URLs differ. With a name that has no `name` (`Ident.name` is `Err(NoName)`), or no release (an unmanaged entry), the note names the old value as written: `platform changes: ../pf/main.roc -> acme/pf 0.1.0`.
+## For a package that replaces an unmanaged entry (R-AD38) the note is `entry changes: <old value> -> <name> <version>`.
 ##
 ## `decide_alias`: the ref is a header alias (form 1), or its group is in the header:
 ##
 ## | Selector | Result |
 ## | --- | --- |
-## | none | `Keep`, `toml` `Nothing`, note `<alias>: <name> <version> is in the header` and a second line `Run tln update <alias> to move it.` (R-AD21). Exit code 0. |
-## | `Latest` | Question Q9. The tests do not cover it. |
-## | other | `Update`, `toml` by the table (R-AD22) |
+## | none | `Keep`, `toml` `Nothing`, note `<alias>: <name> <version> is in the header` and a second line `Run tln update <alias> to move it.` (R-AD21). Exit code 0. For an unmanaged entry (R-H9): `url` is its value as written, the note is `<alias>: <value> is in the header` with no second line (it names no command). |
+## | `Latest` | The same as no selector (R-SL5, Q9 of slice 004) |
+## | other | `Update`, `toml` by the table (R-AD22). For an unmanaged entry: the failure `never_changes` (exit 2, R-H9). |
 ##
 ## Failures have the kind `Usage` (R-EC2). Texts are a proposal (slice 004, "Output").
 Add := {
@@ -92,13 +95,26 @@ Add := {
 	} -> Try(Add, Fail)
 	decide_alias = |req| match req.header.find_first(|row| row.alias == req.alias) {
 		Err(NotFound) => Err(usage("'${req.alias}' is not in the header"))
-		Ok(row) => if no_move(req.selector) {
+		Ok(row) => if is_unmanaged(row.url) {
+			# R-H9, R-AD21, R-AD22: Talon never moves an unmanaged entry. No selector keeps it and names no command.
+			if no_move(req.selector) {
+				Ok({ alias: req.alias, header: Keep, url: row.url, toml: Err(Nothing), note: Ok("${req.alias}: ${row.url} is in the header") })
+			} else {
+				Err(Add.never_changes({ alias: req.alias, value: row.url }))
+			}
+		} else if no_move(req.selector) {
 			note = "${req.alias}: ${describe(row.url)} is in the header\nRun tln update ${req.alias} to move it."
 			Ok({ alias: req.alias, header: Keep, url: row.url, toml: Err(Nothing), note: Ok(note) })
 		} else {
 			Ok({ alias: req.alias, header: Update, url: row.url, toml: toml_of(req.alias, req.selector, req.no_pin), note: Err(None) })
 		}
 	}
+
+	## The usage failure for a command that would move an unmanaged entry: `tln update X`, `tln add X@sel` (R-H9, R-AD22; exit 2, R-EC2). `value` is the entry as written.
+	## `PickFlow.asked!` uses it for `update` too. Text (proposal, TW24): `<alias> is a path entry: Talon never changes it. To replace it, run tln add <name> --as <alias>.`
+	## A value with `://` is `a foreign URL` in place of `a path entry`. The message names the one command that can change the entry (R-H9, R-AD38).
+	never_changes : { alias : Str, value : Str } -> Fail
+	never_changes = |facts| usage("${facts.alias} is ${entry_kind(facts.value)}: Talon never changes it. To replace it, run tln add <name> --as ${facts.alias}.")
 
 	## `tln add a b --as x`: `--as` names one entry, so 2 or more names are a failure (R-AD28, R-FL12).
 	## `names` is the number of names (operands). Text: `flag '--as' names one entry: got <n> names`.
@@ -201,11 +217,39 @@ decide_package = |req| {
 			Err(NoEntry) => match chosen {
 				Ok(Alias.New(alias)) => Ok(insert(alias, req.chosen.url, req.selector, req.no_pin))
 				Ok(Alias.Existing(alias)) => move(alias)
+				Ok(Alias.Unmanaged(alias)) => replace_unmanaged(alias, req)
 				Err(fail) => Err(fail)
 			}
 		}
 	}
 }
+
+# R-AD38: `--as <alias>` replaces the whole unmanaged entry. The kind of the entry stays (R-AD32, R-C4): a package cannot replace the platform.
+replace_unmanaged : Str, { selector : Try(Selector, [None]), chosen : { name : Str, url : Str, kind : [Package, Platform] }, platform_flag : Bool, no_pin : Bool, as_alias : Try(Str, [Unset]), header : List(HeaderRow) } -> Try(Add, Fail)
+replace_unmanaged = |alias, req| match req.header.find_first(|row| row.alias == alias) {
+	Err(NotFound) => Err(usage("'${alias}' is not in the header"))
+	Ok(old) => if old.is_platform {
+		Err(usage("'${req.chosen.name}' is not a platform"))
+	} else {
+		Ok({
+			alias,
+			header: Replace,
+			url: req.chosen.url,
+			toml: toml_of(alias, req.selector, req.no_pin),
+			note: Ok("entry changes: ${old.url} -> ${req.chosen.name} ${version_of(req.chosen.url)}"),
+		})
+	}
+}
+
+# R-H4: a header value that Talon cannot read as a release.
+is_unmanaged : Str -> Bool
+is_unmanaged = |value| match Ident.of_url(value) {
+	Ok(_) => Bool.False
+	Err(Foreign) => Bool.True
+}
+
+entry_kind : Str -> Str
+entry_kind = |value| if value.contains("://") "a foreign URL" else "a path entry"
 
 # Q11: with no `--as`, a name that is in the header with one entry names that entry, also in another series.
 only_entry_of_repo : Str, Try(Str, [Unset]), List(HeaderRow) -> Try(Str, [NoEntry])
@@ -245,6 +289,8 @@ decide_platform = |req| match req.header.find_first(|row| row.is_platform) {
 	Err(NotFound) => match Alias.choose({ name: req.chosen.name, url: req.chosen.url, is_platform: Bool.True, as_alias: req.as_alias, header: req.header }) {
 		Ok(Alias.New(alias)) => Ok(insert(alias, req.chosen.url, req.selector, req.no_pin))
 		Ok(Alias.Existing(alias)) => Add.decide_alias({ alias, selector: req.selector, no_pin: req.no_pin, header: req.header })
+		# Q2: the header has no platform, so an unmanaged entry here is a package entry. A replace never changes the kind (R-AD32): usage failure.
+		Ok(Alias.Unmanaged(alias)) => Err(usage("${alias} is not a platform entry: --platform cannot replace it."))
 		Err(fail) => Err(fail)
 	}
 }

@@ -1,0 +1,25 @@
+tln: error[usage]: 'zzz' is not in the project
+tln: error[usage]: 'mylib' is a path entry: Talon never changes it
+tln: error[usage]: flag '--frozen' works only for tln install with no names
+tln: error[usage]: update -i needs a person to pick. Name the packages: tln update X Y.
+tln: error[usage]: update -i picks the packages: do not name packages
+tln: error[no_tuple]: no tuple works: json has no release that satisfies ^9 (4 releases, 4 outside the ranges, 0 too new) Close versions: 2.2.0, 2.1.0, 2.0.5.
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 3 probes
+dry run: nothing was written
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 3 probes
+dry run: nothing was written

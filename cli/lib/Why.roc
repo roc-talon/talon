@@ -14,7 +14,7 @@ import Scope
 
 ## The command `tln why <name>` (R-CM7, R-PH12, R-SC1, R-SC6 to R-SC8, R-SC14, R-SC15, R-H4, R-H7, R-C8; slice 011).
 ## It shows the paths from the app to one package of the closure. P0 has no evidence (R-PH12), so it does not say why a version was chosen, except the mark `raised from <version>` (R-C2).
-## Part A is pure (`read`, `entities`, `find`, `paths`, `text`, `data`). `run!` is the command code (TESTING.md 2.2 part C): the same steps as `Ls.run!`, then these.
+## Part A is pure (`read`, `row_facts`, `find`, `paths`, `text`, `data`). `run!` is the command code (TESTING.md 2.2 part C): the same steps as `Ls.run!`, then these.
 ## The texts and the `data` fields are a proposal (R-OUT2, TW24): the human accepts or changes them at the review.
 ##
 ## The paths are made of the followed edges only (question Q13 of slice 009): `Closure.Walked.links`. A version that a package names and Roc does not build is not in the closure, so it has no path.
@@ -54,38 +54,45 @@ Why :: [].{
 		}
 	}
 
-	## The entities of the lookup (R-SC1: the header entries and the closure): one for each row, in the order of the rows.
+	## The facts of the rows for `Lookup.build` (slice 014, R-SC1, R-SC6, R-SC15): one fact for each row, in the order of the rows.
 	##
-	## | Field | Holds |
+	## | Row | Fact |
 	## | --- | --- |
-	## | `alias` | The alias of a direct row (`Row.direct`), else `""` (R-SC6: only a header alias names a package by its alias) |
-	## | `name` | `Row.name`. When 2 `Release` rows have the same `Row.name` (2 series, R-SC15), the name has `@<series>` after it: `acme/text@1`. |
-	## | `note` | The text of the tie list (R-SC14). `platform (<alias>)` for a platform row (`Row.is_platform`, the alias of the row). Else `direct (<alias>)` for a direct row. Else `via <alias>` (`Row.via`). |
-	entities : List(Closure.Row) -> List({ alias : Str, name : Str, note : Str })
-	entities = |rows| rows.map(
+	## | `Release` | `what: Release({ name: Row.name, series: Row.series, version: Row.version })` |
+	## | `Path` or `Foreign` | `what: Unmanaged` |
+	## | `alias` | `Row.alias` when `Row.direct`, else `""` (R-SC6: an alias of a package header is no alias) |
+	## | `role` | `Platform` when `Row.is_platform`, else `Direct` when `Row.direct`, else `Via(Row.via)` |
+	row_facts : List(Closure.Row) -> List(Lookup.Fact)
+	row_facts = |rows| rows.map(
 		|r| {
-			series_clash = r.kind == Release and rows.any(|o| o.kind == Release and o.name == r.name and o.series != r.series)
-			{
-				alias: if r.direct r.alias else "",
-				name: if series_clash "${r.name}@${r.series}" else r.name,
-				note: note_of(r),
+			what = match r.kind {
+				Release => Release({ name: r.name, series: r.series, version: r.version })
+				_ => Unmanaged
 			}
+			role = if r.is_platform {
+				Platform
+			} else if r.direct {
+				Direct
+			} else {
+				Via(r.via ?? "")
+			}
+			{ alias: if r.direct r.alias else "", what, role }
 		},
 	)
 
-	## `Ref.parse` (scope `Project`) and `Lookup.find` of the text over `entities(rows)`. The result is the row. An entity that is not in the rows is the failure of kind `Usage`: `'<name>' is not in the project` (question Q7 of slice 004).
+	## `Ref.parse` (scope `Project`) and `Lookup.find` of the text over `Lookup.build(row_facts(rows))`. The row is the one with the same alias, name and series as the entity (D10). The result is the row. An entity that is not in the rows is the failure of kind `Usage`: `'<name>' is not in the project` (question Q7 of slice 004).
 	## A failure of `Ref.parse` or `Lookup.find` is returned as it is, with its `block` (the tie list of R-SC14, or `""`).
 	find : { text : Str, rows : List(Closure.Row) } -> Try(Closure.Row, { fail : Fail, block : Str })
 	find = |facts| {
 		ref = Ref.parse(facts.text, Scope.Project, Bool.False).map_err(|fail| { fail, block: "" })?
-		ents = entities(facts.rows)
-		# `Lookup.find` with the scope `Project` never gives `New` (W8), so `New` only needs a key that no entity has.
-		(alias, name) = match Lookup.find(Scope.Project, ref, ents)? {
-			Existing(e) => (e.alias, e.name)
-			New(n) => ("", n)
+		ents = Lookup.build(row_facts(facts.rows))
+		# `Lookup.find` with the scope `Project` never gives `New` (W8), so `New` only needs a key that no row has.
+		(alias, name, series) = match Lookup.find(Scope.Project, ref, ents)? {
+			Existing(e) => (e.alias, e.name, e.series)
+			New(n) => ("", n, "")
 		}
-		at = ents.find_first_index(|x| x.alias == alias and x.name == name).map_err(|_| not_in(facts.text))?
-		facts.rows.get(at).map_err(|_| not_in(facts.text))
+		key = |r| (if r.direct r.alias else "", if r.kind == Release r.name else "", if r.kind == Release r.series else "")
+		facts.rows.find_first(|r| key(r) == (alias, name, series)).map_err(|_| not_in(facts.text))
 	}
 
 	## The paths from the header to the row `target` (`Row.id`), as lists of steps. Each path starts with a link of `from = Err(Header)` and ends with a step that has `id == target`. A path is a chain of links, each link leaves the row that
@@ -153,16 +160,6 @@ Why :: [].{
 
 not_in : Str -> { fail : Fail, block : Str }
 not_in = |name| { fail: Fail.new(Usage, "'${name}' is not in the project"), block: "" }
-
-# The note of the tie list (R-SC14).
-note_of : Closure.Row -> Str
-note_of = |row| if row.is_platform {
-	"platform (${row.alias})"
-} else if row.direct {
-	"direct (${row.alias})"
-} else {
-	"via ${row.via ?? ""}"
-}
 
 # `<name> <version>` for a release, else the value as written.
 label_of : Closure.Row -> Str

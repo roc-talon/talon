@@ -1,0 +1,10 @@
+# run 1: the baseline has 1 error (acme/parser), the candidate has the same one: a note, and the build passes
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-same.stdout	../fixtures/check/out/pkg-same.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2: the candidate has a new error in acme/json 2.1.0: exit 10
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr
+# run 3: a new error in an app file: exit 11
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr

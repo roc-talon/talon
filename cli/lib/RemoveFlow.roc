@@ -45,11 +45,17 @@ RemoveFlow :: [].{
 		decision = Pin.decide({
 			members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: m.file == current }),
 			compiler: request.compiler,
+			toolchain: request.toolchain,
+			role: Lock,
 			req: loaded.intent.toolchain.roc,
 			nightly: settings.nightly,
 			no_check: skip_check,
 		})?
-		if !skip_check ResolveBase.check_pin(loaded, settings, decision)?
+		ResolveBase.check_pin(loaded, settings, decision, Lock)?
+		pin_notes = ResolveBase.pin_notes(decision)
+		for note in pin_notes {
+			fx.out!("note: ${note}\n")
+		}
 		force_notes = imported.map(|h| still_imported(h))
 		for note in force_notes {
 			fx.out!("note: ${note}\n")
@@ -98,7 +104,8 @@ RemoveFlow :: [].{
 				[w, ..] => Ok(w.id)
 				[] => Err(None)
 			},
-			notes: force_notes.concat(ran.notes),
+			# R-SO20: the note of the pin is the first of `data.notes`.
+			notes: pin_notes.concat(force_notes).concat(ran.notes),
 			written,
 		})
 	}
@@ -113,16 +120,7 @@ Imported : { alias : Str, hits : List(Scan.Hit) }
 # Steps 2 and 3: the names are looked up in the header of the member (R-SC1, R-SC6 to R-SC8) and planned. One entry counts once.
 removal_plans! : Fx, Loaded, Vars.Member, List(Str) => Try(List(RemovePlan), Fail)
 removal_plans! = |fx, loaded, member, names| {
-	entities = member.locked.rows.map(
-		|r| {
-			alias: r.alias,
-			name: match r.what {
-				Release(ident) => ident.name ?? r.value
-				_ => r.value
-			},
-			note: if r.is_platform "platform (${r.alias})" else "",
-		},
-	)
+	entities = Lookup.build(member.locked.rows.map(row_fact))
 	var $aliases = no_names
 	for text in names {
 		ref = Ref.parse(text, Scope.Project, Bool.False)?
@@ -145,6 +143,16 @@ removal_plans! = |fx, loaded, member, names| {
 	$aliases.map_try(
 		|alias| Removal.plan({ alias, rows: member.locked.rows, toml, shared: shared_alias(loaded, member, toml, alias) }).map_ok(|plan| { alias, plan }),
 	)
+}
+
+# The fact of one header entry for `Lookup.build`: a release, or an unmanaged entry (a path entry or a foreign URL).
+row_fact : Locked.Row -> Lookup.Fact
+row_fact = |r| {
+	what = match r.what {
+		Release(ident) => Release({ name: ident.name ?? ident.group.form, series: ident.series, version: ident.version })
+		_ => Unmanaged
+	}
+	{ alias: r.alias, what, role: if r.is_platform Platform else Direct }
 }
 
 # R-WS14: the nearest `talon.toml` of the member, with its text.

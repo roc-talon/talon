@@ -1,4 +1,4 @@
-# R-CM7 R-PH12 R-SC1 R-SC6 R-SC7 R-SC8 R-SC14 R-SC15 R-H4 R-H7 R-C2 R-FL6 R-FL7 R-J1 R-J3 R-J4 R-OUT4 R-EC2 R-EC10 R-E4 R-PD9 (slice 011, Q12 to Q15, Q24, Q25): `tln why` on the real binary. The packages are in the cache (the header URLs keep github.com, nothing is fetched).
+# R-CM7 R-PH12 R-SC1 R-SC6 R-SC7 R-SC8 R-SC14 R-SC15 R-SC16 R-H4 R-H7 R-C2 R-FL6 R-FL7 R-J1 R-J3 R-J4 R-OUT4 R-EC2 R-EC10 R-E4 R-PD9 (slice 011, Q12 to Q15, Q24, Q25): `tln why` on the real binary. The packages are in the cache (the header URLs keep github.com, nothing is fetched).
 # The project is the one of `list/ls1-list`: a platform, `web` (names core 1.0.0 and text 1.0.0), `core` 1.1.0 (raised), `mid` (names text 1.1.0, which wins and names core 1.1.0), a path entry `util` (names core 1.0.0, text 2.0.0 and a path
 # entry), and a foreign URL. 2 series of acme/text are in the closure. `tie/` has the design example of R-SC14: the platform roc-lang/basic-webserver as `pf`, and `acme/web-utils`, which names someone/basic-webserver (the alias of the
 # design example is `web-utils`, but a header alias has no `-`, so it is `web_utils` here).
@@ -13,6 +13,13 @@ st tln why util
 # 2 series of one repo: the short name and the full name are a tie (R-SC14, R-SC15), the series in the name picks one (Q12 of slice 004).
 st tln why acme/text
 st tln why acme/text@2
+# R-SC16 (slice 014): a selector keeps the packages whose version is in it. A short name with a series names one (the P0 bug: `text@2` was always a tie), and so does an exact version. A version that no package has, a selector
+# that excludes the one match (`core` is 1.1.0), and a selector on a path entry (it has no version) are 'not in the project'.
+st tln why text@2
+st tln why acme/text@2.0.0
+st tln why acme/text@2.5.0
+st tln why core@2
+st tln why util@1
 # The design example of R-SC14: 2 packages with the repo name basic-webserver. The full name of the second one is found, and its path is `web_utils -> ws`.
 st tln why basic-webserver --file tie/main.roc
 st tln why someone/basic-webserver --file tie/main.roc

@@ -19,9 +19,9 @@ VerifyFlow :: [].{
 	## The flow of `Resolve.verify!`. The differences from `install!` are in the doc of `Resolve.verify!`.
 	verify! : Fx, Request => Try(Report.Outcome, Fail)
 	verify! = |fx, request| {
-		start = ResolveBase.prepared!(fx, request)?
+		start = ResolveBase.prepared!(fx, request, Verify)?
 		settings = ResolveBase.settings_of(request, start.loaded)
-		ResolveBase.check_pin(start.loaded, settings, start.decision)?
+		ResolveBase.check_pin(start.loaded, settings, start.decision, Verify)?
 		snapshot = ResolveBase.snapshot_of(request, start.loaded.intent)?
 		picked = PickFlow.pick!(fx, request, start.loaded, start.built, settings, snapshot)?
 		verified!(fx, request, start.loaded, picked, start.decision)
@@ -53,7 +53,7 @@ verified! = |fx, request, loaded, picked, decision| {
 		request,
 		{
 			members: loaded.members.keep_if(|m| files.contains(m.file)).map(|m| { file: m.file, entries: ResolveBase.entries_after(m, edits) }),
-			known: ResolveBase.known_nodes(facts.known),
+			known: ResolveBase.known_nodes(facts.known).concat(facts.paths),
 		},
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)

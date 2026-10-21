@@ -1,0 +1,6 @@
+remove json --file r1/main.roc
+remove parser --file r2/main.roc
+rm parser --file r3/main.roc
+remove json --file r4/main.roc
+remove json --file r5/lib/main.roc
+remove parser --file r5/lib/main.roc --json

@@ -1,0 +1,10 @@
+== install file=app/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/app/main.roc
+  + parser: acme/parser 1.2.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=app/main.roc compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0

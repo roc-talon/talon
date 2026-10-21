@@ -1,4 +1,4 @@
-# R-NI1 R-NM8 R-NM10 R-NR6 R-I8 R-I9 R-LF1 R-FL13 R-FL8 R-WS12 R-WS14 R-SP18 R-PD4 R-PD5 R-PD9 R-CC7 R-EC10 R-EC13 R-EC14 R-EC2 R-SP16 R-SP17 R-NI3 R-J1 W2:
+# R-NI1 R-NM8 R-NM10 R-NR6 R-I8 R-I9 R-LF1 R-FL13 R-FL8 R-WS12 R-WS14 R-SP18 R-PD4 R-PD5 R-PD9 R-CC7 R-EC10 R-EC13 R-EC14 R-EC2 R-SP16 R-SP17 R-NI3 R-J1 W2 R-SO22:
 # `tln install` and `tln add` in a workspace (the root has members a and b and a talon.toml). The key `js` of the root talon.toml names acme/json, which the member a has under the alias `json`: a stale key.
 st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 
@@ -10,6 +10,8 @@ st tln install --frozen
 st tln install --yes
 # Now the check passes. --frozen takes no names (R-FL13).
 st tln install --frozen
+# F1 (slice 013, R-SO22, R-LF1): --frozen runs no probe, so ROC_TOOLCHAIN does not stop it, also when it names a compiler that is not installed: exit 0, no note, no call of roc.
+st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln install --frozen
 st tln install --frozen acme/json
 # R-WS12: a name at the workspace root names no member. The failure lists them, nothing is written.
 st tln add acme/util

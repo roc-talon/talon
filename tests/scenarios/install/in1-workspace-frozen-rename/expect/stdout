@@ -9,6 +9,9 @@ exit 0
 == tln install --frozen
 the header satisfies talon.toml
 exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln install --frozen
+the header satisfies talon.toml
+exit 0
 == tln install --frozen acme/json
 exit 2
 == tln add acme/util

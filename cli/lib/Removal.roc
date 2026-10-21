@@ -51,7 +51,7 @@ Removal :: [].{
 	## | The entry is the platform (`is_platform`) | Failure, kind `Usage` (exit 2): `<alias> is the platform of the app. An app needs a platform. Use tln add --platform <name> to change it.` | R-RV3, R-EC2 |
 	## | `alias` is not in `rows` | Failure, kind `Internal`: `<alias> is not in the header` (the lookup must not ask for it) | |
 	## | A release row | `what` is `Release({ name, version })` (`Ident.of_url`: `name` is the full name, or the URL when it has none) | R-CM3 |
-	## | A path row or a foreign row | `what` is `Path(<value>)` or `Foreign(<value>)`. It is removed like a release (R-H4 gives way, the answer of the manager to Q1 of slice 007). | R-RV5 |
+	## | A path row or a foreign row | `what` is `Path(<value>)` or `Foreign(<value>)`. It is removed like a release: the user names the alias, and an unmanaged entry changes only as a whole (R-H4, R-H9). Its keys in `talon.toml` go too (the next row). The file that a path entry names is never edited. | R-RV5, R-H4, R-H9 |
 	## | `toml` has the key `alias` in `[dependencies]`, `[overrides]` or `[patch]`, and `shared` is false | `keys` has one `{ table, key }` for each table that has it, in the order `Dependencies`, `Overrides`, `Patch` | R-CM3, R-RV1, R-RV4 |
 	## | `shared` is true, or `toml` is `Err(NoToml)` | `keys` is `[]` | question Q3 |
 	## | `keys` has a `Patch` row | `patch_dir` is `Ok("<dir of the talon.toml>/.talon/patches/<alias>/")`, with the `/` at the end (the files stay) | R-RV4, R-PA11 |

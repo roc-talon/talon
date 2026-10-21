@@ -3,6 +3,7 @@ tln: error[app_error]: the app imports lex: $PROJECT/Helpers.roc:3: import lex.L
 tln: error[app_error]: the app imports json: $PROJECT/main.roc:12: import json.Json. Change these imports first, or pass --force to remove it anyway.
 tln: error[usage]: pf is the platform of the app. An app needs a platform. Use tln add --platform <name> to change it.
 tln: error[usage]: 'nosuch' is not in the project
+tln: error[usage]: 'util@1' is not in the project
 tln: error[usage]: tln remove needs one name or more
 tln: error[usage]: flag '--frozen' works only for tln install with no names
 check: passed

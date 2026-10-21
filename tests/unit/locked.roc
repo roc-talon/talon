@@ -88,9 +88,9 @@ expect {
 	app_view == app_want and pkg_view == pkg_want and plat_view == plat_want and none_view == "tln: error[usage]: /p/x.roc has no app, package or platform header" and bad_view == "tln: error[input]: /p/y.roc:3: the header is not valid"
 }
 
-# R-H1 R-H2 R-H3 R-H4 R-H6 R-H8 R-RP3 R-CC7 R-RV5: the span edits. Each edit changes only its own bytes: comments, order, tabs, spaces inside an entry, the keyword `platform`, the line ends and the file
+# R-H1 R-H2 R-H3 R-H4 R-H6 R-H8 R-H9 R-RP3 R-CC7 R-RV5: the span edits. Each edit changes only its own bytes: comments, order, tabs, spaces inside an entry, the keyword `platform`, the line ends and the file
 # after the header stay byte for byte (the expected text is the old text with one replaced piece). `roc:` is set when it is there, else it is added as the last entry. The URL that Talon
-# writes must be a release URL (R-H3). A path or foreign row is never set (R-H4): the failure is a Talon fault (kind `internal`). `Remove` works for them (R-RV5, slice 008). P0 has no mirror, so the URL of an op is the URL of an index
+# writes must be a release URL (R-H3). A path or foreign row is never set (R-H4): the failure is a Talon fault (kind `internal`). `Remove` works for them (R-H4, R-H9, R-RV5: the user names the alias in `tln remove`). `Replace` is the other whole-entry op (the next expect). P0 has no mirror, so the URL of an op is the URL of an index
 # candidate (R-H5). `spans` gives the text that each op changes (R-CC7).
 expect {
 	edit = |text, ops| Locked.edit({ path: "/p/main.roc", text, ops })
@@ -133,8 +133,8 @@ expect {
 		("set a platform URL: the keyword stays", set_pf, want_set_pf),
 		("add an entry after the last one", add_http, want_add_http),
 		("remove a whole line", remove_json, want_remove_json),
-		("remove a path entry (R-RV5 gives way over R-H4)", remove_path, want_remove_path),
-		("remove a foreign URL (R-RV5)", remove_foreign, want_remove_foreign),
+		("remove a path entry (R-H9, R-RV5)", remove_path, want_remove_path),
+		("remove a foreign URL (R-H9, R-RV5)", remove_foreign, want_remove_foreign),
 		("set the roc pin", pin_set, want_pin_set),
 		("add the roc pin as the last entry", pin_add, want_pin_add),
 		("CRLF line ends stay", set_crlf, want_set_crlf),
@@ -164,4 +164,43 @@ expect {
 	dbg spans
 	spans_ok = spans == [json1, "", n1, "../util/main.roc", ""] and Locked.spans({ text: no_roc, ops: [Pin(n2)] }) == [""]
 	bad_edits == [] and bad_refusals == [] and spans_ok
+}
+
+# R-H4 R-H9 R-H1 R-H3 R-AD31 R-AD38 R-CC7 (slice 015): `Replace`, the whole-entry replace of an unmanaged entry. `Set` refuses a path or a foreign row (the expect above), so a command that moves one stays a Talon fault.
+# `Replace` takes any row: a path entry, a foreign URL, the platform entry (the keyword `platform` and the comment of the line stay), and a release row. Only the text between the quotes changes. The URL must be a release URL (R-H3).
+# An alias that is not in the header is a Talon fault, as for `Set`. The ops run in order, and `spans` gives the old value of the entry (R-CC7).
+expect {
+	edit = |text, ops| Locked.edit({ path: "/p/main.roc", text, ops })
+	shown = |r| match r {
+		Ok(text) => Ok(text)
+		Err(e) => Err(e.line())
+	}
+	path_pf = "../platform/main.roc"
+	odd = "https://example.com/pkg/latest.tar.gz"
+	text = "# my app\napp [main!] {\n\tpf: platform \"${path_pf}\", # my platform\n\tutil: \"../util/main.roc\",\n\todd: \"${odd}\",\n\tjson:   \"${json1}\",\n\troc: \"${n1}\",\n}\n\nmain! = |_| Ok({})\n"
+	cli2 = "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/${h_json2}.tar.zst"
+	replace = |alias, url| Replace({ alias, url })
+	edits = [
+		("a path entry", edit(text, [replace("util", json2)]), Ok(text.replace_each("\"../util/main.roc\"", "\"${json2}\""))),
+		("a foreign URL", edit(text, [replace("odd", json2)]), Ok(text.replace_each("\"${odd}\"", "\"${json2}\""))),
+		("a path platform: the keyword and the comment stay", edit(text, [replace("pf", cli_url)]), Ok(text.replace_each("\"${path_pf}\"", "\"${cli_url}\""))),
+		("a release row, with its spaces", edit(text, [replace("json", json2)]), Ok(text.replace_each(json1, json2))),
+		("2 ops in order", edit(text, [replace("util", json2), replace("pf", cli2), Remove("odd")]), Ok(text.replace_each("\"../util/main.roc\"", "\"${json2}\"").replace_each("\"${path_pf}\"", "\"${cli2}\"").replace_each("\todd: \"${odd}\",\n", ""))),
+		("the same bytes as Set for a release row", edit(text, [replace("json", json2)]), edit(text, [Set({ alias: "json", url: json2 })])),
+	]
+	bad_edits = edits.keep_if(|(_, got, want)| shown(got) != shown(want)).map(|(label, got, want)| (label, shown(want), shown(got)))
+	dbg bad_edits
+
+	refusals = [
+		("a foreign URL as the new value (R-H3)", [replace("util", "https://example.com/other.tar.gz")], "tln: error[internal]: https://example.com/other.tar.gz is not a release URL with a version and a hash (R-H3)"),
+		("a path as the new value (R-H3)", [replace("util", "../x/main.roc")], "tln: error[internal]: ../x/main.roc is not a release URL with a version and a hash (R-H3)"),
+		("an alias that is not there", [replace("nope", json2)], "tln: error[internal]: nope is not in the header"),
+		("Set still refuses a path entry", [Set({ alias: "util", url: json2 })], "tln: error[internal]: util is a path entry or a foreign URL: tln never changes it (R-H4)"),
+	]
+	bad_refusals = refusals.keep_if(|(_, ops, want)| shown(edit(text, ops)) != Err(want)).map(|(label, ops, want)| (label, want, shown(edit(text, ops))))
+	dbg bad_refusals
+
+	spans = Locked.spans({ text, ops: [replace("util", json2), replace("pf", cli_url), replace("odd", json2), replace("gone", json2)] })
+	dbg spans
+	bad_edits == [] and bad_refusals == [] and spans == ["../util/main.roc", path_pf, odd, ""]
 }

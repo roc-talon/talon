@@ -105,7 +105,7 @@ R-AP17: The answer of `POST /v1/closure`:
 
 | Field | Value |
 | --- | --- |
-| `artifacts` | The record (R-RE1) of each candidate, of each hash in `hashes`, and of each hash in their closure (the deps, to the end) |
+| `artifacts` | The record (R-RE1) of each candidate, of each hash in `hashes`, and of each hash in their closure (the deps, to the end, of each version that an edge names, not only the winners). The client applies the winner rule of Resolution 5, R-AL9. |
 | `releases` | The releases (R-RE2) of these hashes |
 | `epochs` | For each target of the matrix rows of these hashes: the epochs of the registry that touch W, as `{target, from, to}`, with 2 or more compilers each. An epoch of the registry is a maximal interval of compilers in which each transition has a `transitions` row (R-RE23) with `changed` = 0: it is covered and it is not a boundary of case (a) of Resolution 4, R-EP3. A compiler that no listed epoch holds is an epoch of its own. E, for each target, is W made larger to the ends of these epochs. |
 | `runs` | The matrix rows (R-RE3) of these hashes on the compilers of E, as runs `{hash, target, source, result, error_digest, from, to}`. A run is a maximal interval of adjacent compilers (R-EP1) on which one (hash, target, source) has a row with the same result and error digest. A compiler with no row ends a run. |

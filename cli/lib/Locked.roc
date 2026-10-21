@@ -16,7 +16,7 @@ import header.Header
 ## | `alias` | The name before the `:` | |
 ## | `value` | The text between the quotes, as in the source | |
 ## | `is_platform` | The entry is `pf: platform "..."` | R-C4 |
-## | `what` | `Release(ident)`: `Ident.of_url` is `Ok`. `Path`: the value has no `://` (a relative or absolute path to a `.roc` file). `Foreign`: a URL that `Ident.of_url` cannot identify (no hash, no version, 2 versions, `0.0.0`). Talon never changes a `Path` or a `Foreign` row (R-H4). | R-H4, R-H7 |
+## | `what` | `Release(ident)`: `Ident.of_url` is `Ok`. `Path`: the value has no `://` (a relative or absolute path to a `.roc` file). `Foreign`: a URL that `Ident.of_url` cannot identify (no hash, no version, 2 versions, `0.0.0`). `Path` and `Foreign` rows are the unmanaged entries: Talon never writes their value (`Set` refuses them) and changes one only as a whole, with `Remove` or `Replace` (R-H4, R-H9). | R-H4, R-H7, R-H9 |
 Locked := {
 	kind : [App, Package, Platform],
 	rows : List(Row),
@@ -30,11 +30,12 @@ Locked := {
 	##
 	## | Op | Does | Rule |
 	## | --- | --- | --- |
-	## | `Set({ alias, url })` | Replaces the text between the quotes of the entry `alias`. Nothing else changes: `pf: platform` keeps its keyword. | R-H1, R-AD31 |
+	## | `Set({ alias, url })` | Replaces the text between the quotes of the entry `alias`. Nothing else changes: `pf: platform` keeps its keyword. Only for a `Release` row: a `Path` or `Foreign` row is refused (R-H4), so a command that moves an unmanaged entry is a Talon fault, not a silent change. | R-H1, R-H4, R-AD31 |
+	## | `Replace({ alias, url })` | The whole-entry replace of an unmanaged entry (R-H4, R-H9, R-AD31, R-AD38): the text between the quotes of the entry `alias` becomes `url`, and the keyword stays (`pf: platform` stays). It works for any row, also a `Release` row, but a command uses it for a `Path` or `Foreign` row only. `url` must pass R-H3. Same bytes as `Set` would write. | R-H1, R-H3, R-H4, R-H9, R-AD31, R-AD38 |
 	## | `Add({ alias, url, is_platform })` | A whole new entry after the last entry (the form is the one of `Header.add_entry`) | R-H1 |
-	## | `Remove(alias)` | Removes the whole entry (`Header.remove_entry`). It works for a release row, a `Path` row and a `Foreign` row: R-RV5 gives way over R-H4 for `tln remove` (answer of the manager to Q1 of slice 007, slice 008) | R-H1, R-RV5 |
+	## | `Remove(alias)` | Removes the whole entry (`Header.remove_entry`). It works for a release row, a `Path` row and a `Foreign` row: `tln remove` of an unmanaged entry is a whole-entry change that the user asked for (R-H4, R-H9, R-RV5) | R-H1, R-H4, R-H9, R-RV5 |
 	## | `Pin(id)` | Sets the text of the `roc:` entry when there is one. Else adds the entry `roc: "<id>"` as the last entry. | R-H6, R-RP3 |
-	Op : [Set({ alias : Str, url : Str }), Add({ alias : Str, url : Str, is_platform : Bool }), Remove(Str), Pin(Str)]
+	Op : [Set({ alias : Str, url : Str }), Replace({ alias : Str, url : Str }), Add({ alias : Str, url : Str, is_platform : Bool }), Remove(Str), Pin(Str)]
 
 	## Reads the header of the text. `path` is for the message. Failures are the ones of `Project.check_header` (R-PD8, R-TF5): no header is kind
 	## `Usage`, `<path> has no app, package or platform header`. A header that does not parse is kind `Input`,
@@ -70,16 +71,16 @@ Locked := {
 	##
 	## | Case | Message |
 	## | --- | --- |
-	## | `Set` of a `Path` or `Foreign` row (`Remove` is allowed: R-RV5) | `<alias> is a path entry or a foreign URL: tln never changes it (R-H4)` |
-	## | `Set`, `Add` with a URL that `Ident.of_url` does not accept | `<url> is not a release URL with a version and a hash (R-H3)` |
-	## | `Set` or `Remove` of an alias that is not in the header | `<alias> is not in the header` |
+	## | `Set` of a `Path` or `Foreign` row (`Remove` and `Replace` are allowed: R-H9) | `<alias> is a path entry or a foreign URL: tln never changes it (R-H4)` |
+	## | `Set`, `Replace`, `Add` with a URL that `Ident.of_url` does not accept | `<url> is not a release URL with a version and a hash (R-H3)` |
+	## | `Set`, `Replace` or `Remove` of an alias that is not in the header | `<alias> is not in the header` |
 	## | `Add` of an alias that is in the header (or `roc`) | `<alias> is already in the header` |
 	## | A value that the span edit cannot write (`"`, `\`, `$`, a line break) | `<url> cannot be written to a header` |
 	## | A header that does not parse | The failure of `read` |
 	edit : { path : Str, text : Str, ops : List(Op) } -> Try(Str, Fail)
 	edit = |facts| facts.ops.fold_try(facts.text, |text, op| apply_op(facts.path, text, op))
 
-	## R-CC7: the text of each span that the ops change, cut from `text`, in the order of the ops: the value of the entry for `Set` and `Remove`
+	## R-CC7: the text of each span that the ops change, cut from `text`, in the order of the ops: the value of the entry for `Set`, `Replace` and `Remove`
 	## (`""` when the entry is not there), `""` for `Add` of a new alias, the value of the `roc:` entry for `Pin` (`""` when there is none). The command
 	## gives these lists to `Guard.check_all`, once for the text that it read and once for the text that it reads again just before the write.
 	spans : { text : Str, ops : List(Op) } -> List(Str)
@@ -105,6 +106,7 @@ internal = |message| Fail.new(Internal, message)
 alias_of : Locked.Op -> Str
 alias_of = |op| match op {
 	Set({ alias, .. }) => alias
+	Replace({ alias, .. }) => alias
 	Add({ alias, .. }) => alias
 	Remove(alias) => alias
 	Pin(_) => "roc"
@@ -154,6 +156,12 @@ apply_op = |path, text, op| {
 			if present(alias) return Err(internal("${alias} is already in the header"))
 			check_url(url)?
 			written(url, Header.add_entry(text, { name: alias, value: url, is_platform }))
+		}
+		Replace({ alias, url }) => {
+			# R-H9: the whole-entry replace takes any row, so `check_row` is not used.
+			if !locked.rows.any(|r| r.alias == alias) return Err(internal("${alias} is not in the header"))
+			check_url(url)?
+			written(url, Header.set_value(text, alias, url))
 		}
 		Remove(alias) => {
 			# R-RV5: a path row and a foreign row go too (`check_row` refuses them for `Set` only).

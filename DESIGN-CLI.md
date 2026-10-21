@@ -289,7 +289,7 @@ R-AU2: A finding has one `reason`. Both modes use these values. A new `withdrawn
 | R-AU5 | With `--json`, a run with exit code 21 has `ok` false, `error.kind` `findings`, and the report in `error.details`, in the same form as `data` of a run with exit code 0 (R-J4, R-J5). |
 | R-AU6 | `tln install --frozen` (Resolution 12, R-LF1) makes no index call (R-DI1), so it does not see findings. A CI job runs `tln audit` as its own step (section 5, R-IN6). A download 404 of a URL in the closure (7.1, R-FE6) gives a message that names `tln audit`. |
 | R-AU7 | Before P3, a command that resolves prints one warning for each closure hash whose release state it already has and that has a reason of R-AU2: with a registry from the closure answer (R-AP17), with `direct` from the release lists that it read (R-DI1). It sends no extra request, and the warning does not change the exit code. The warning gives the reason and the fix of R-AU8. |
-| R-AU8 | The fix text. For a header entry: `tln update <alias>`. For a transitive entry: update the package that needs it (`tln why <name>`), or use `[overrides]` (Resolution 6). For `asset-replaced`, Talon also asks the author to release a new version. For `moved`, and for each other reason when the name has a successor: `tln update <alias>`, which follows the successor (Registry R-PU28). For `repo-missing` with no successor: replace the package (`tln remove <alias>`, then `tln add` of another package), or accept the finding with an ignore item (R-AU9). |
+| R-AU8 | The fix text. For a header entry: `tln update <alias>`. For a transitive entry: update the package that needs it (`tln why <name>`, with the name of R-SC15), or use `[overrides]` (Resolution 6). For `asset-replaced`, Talon also asks the author to release a new version. For `moved`, and for each other reason when the name has a successor: `tln update <alias>`, which follows the successor (Registry R-PU28). For `repo-missing` with no successor: replace the package (`tln remove <alias>`, then `tln add` of another package), or accept the finding with an ignore item (R-AU9). |
 
 R-AU9: Ignore a finding. Two sources, joined: the key `ignore` of the table `[audit]` in `talon.toml` (a list, shared by the team, Design 4.3), and the flag `--ignore <item>`, which can occur more than once (one run). An item is `<full name>@<version>:<reason>`, for example `roc-lang/json@2.1.0:yanked`. The full name is the form of R-SC7 (section 2). The reason is required, so an ignore covers one finding, and a new finding of the same release with another reason still counts. This is the model of `bun audit --ignore` and of `cargo audit --ignore`.
 
@@ -366,7 +366,7 @@ Each command works in one scope, so names of different kinds never collide:
 
 | # | Command | Scope |
 | --- | --- | --- |
-| R-SC1 | `tln update`, `upgrade`, `remove`, `why`, `patch`, `probe` | Project: header entries and the closure. In `tln update X@sel`, Talon finds X in the project and the releases that match `sel` in the registry. `tln probe` with no name probes the project file itself, and a path to a bundle file probes that bundle (Resolution 4, R-PB1). |
+| R-SC1 | `tln update`, `upgrade`, `remove`, `why`, `patch`, `probe` | Project. `tln why`: the packages of the closure. The other commands: the header entries of the members (Design 4.4, R-WS8). A transitive package is not a name there. In `tln update X@sel`, Talon finds X in the project and the releases that match `sel` in the registry. `tln probe` with no name probes the project file itself, and a path to a bundle file probes that bundle (Resolution 4, R-PB1). `tln list` takes no name (R-CM9). |
 | R-SC2 | `tln install` with names (and `add`) | First the project: a header alias (form 1) names that entry ("An entry that is in the header" below). Else the registry index, and with no registry (`TALON_REGISTRY=direct`), GitHub. |
 | R-SC3 | `tln tool ...` | `tools.json` (6.4). `tln tool install` with a full name: the registry index. |
 | R-SC4 | `tln x` | Installed tools and `x` cache entries (6.4). With a full name: the registry index. |
@@ -376,7 +376,7 @@ In a scope, Talon tries these forms in order and uses the first match:
 
 | Id | # | Form | Example | Rule |
 | --- | --- | --- | --- | --- |
-| R-SC6 | 1 | Header alias | `pf` | Exact. An alias is unique in a header. |
+| R-SC6 | 1 | Header alias | `pf` | Exact. An alias is unique in a header. A path entry and a foreign URL (Design 4.2, R-H4) have no full name: the alias is their only name. A path entry or foreign URL of a package header has no name; `tln why` of the package that needs it shows it. |
 | R-SC7 | 2 | Full name | `roc-lang/basic-webserver` | Exact. Non-GitHub hosts use `host/path` (Design 4.1). |
 | R-SC8 | 3 | Short name | `basic-webserver`, `parser` | The repo name, or the repo name minus a leading `roc-` (the alias rule below, without `-` to `_`). So `parser` and `roc-parser` both match `lukewilliamboswell/roc-parser`. It must match one entity only. |
 | R-SC9 | 4 | Unique id prefix | `git-dd03`, `nightly-2026-10-09` | Compiler releases only, as a git short sha. Interactive use only (see the prefix rules below). |
@@ -390,16 +390,27 @@ Prefix rules. A prefix that is unique today can become ambiguous after a later i
 | R-SC12 | `ROC_TOOLCHAIN`, `roc:` pin, `.roc-version`, `talon.toml` | No | The full id only. A prefix is an error. |
 | R-SC13 | `tln roc default` | Stores the full id | Talon expands the prefix first, then stores the full id. |
 
-R-SC14: On a tie, Talon stops and lists the full names:
+R-SC14: On a tie, Talon stops with exit code 2 (R-EC2). It lists each match by its name in the scope (R-SC15), with a note: `platform (<alias>)`, `direct (<alias>)`, or `via <alias>` (the header alias of the entry that needs the package). Each name in the list names one package, so the user types one of them, or the alias of a direct match. The same list reports an alias that names 2 groups in a workspace (Design 4.4, R-WS8). In a command that moves an entry (R-SC16), when no match has the series of the selector, the last line asks for the alias of the entry to move. The texts are a proposal (R-OUT2).
 
 ```text
-error: "basic-webserver" matches 2 packages:
+"basic-webserver" matches 2 packages:
   roc-lang/basic-webserver      platform (pf)
-  someone/basic-webserver       via web-utils
-Use the full name.
+  someone/basic-webserver       via web_utils
+tln: error[usage]: "basic-webserver" matches 2 packages. Use a name from the list.
 ```
 
-R-SC15: The group includes the series (Design 2, 4.1), so one closure can hold `roc-lang/http` 1.x and 2.x. Then the series is part of the name: `roc-lang/http@2`, `roc-lang/basic-cli@0.25`.
+The output of `tln update roc-lang/http@3`:
+
+```text
+"roc-lang/http" matches 2 packages:
+  roc-lang/http@1      direct (http1)
+  roc-lang/http@2      direct (http2)
+tln: error[usage]: "roc-lang/http" matches 2 packages. Use the alias of the entry to move: tln update http1@3
+```
+
+R-SC15: The group includes the series (Design 2, 4.1), so one closure can hold `roc-lang/http` 1.x and 2.x. The name of a package in a scope (R-SC1 to R-SC5) is its full name (R-SC7). When the scope has 2 or more series of one full name, the name of each of them adds its series in the ref form (R-SL1): `roc-lang/http@1`, `roc-lang/http@2`, `roc-lang/basic-cli@0.25`. This is the Go rule of the major in the module path (`/v2`). Talon prints this name wherever it tells the user what to type: the tie list (R-SC14), and the fix texts (R-AU8). The `--json` field `name` stays the full name, next to `version`.
+
+R-SC16: A selector after a name (`X@sel`) narrows the matches of each form (R-SC6 to R-SC8), as a cargo package id spec does. A command that does not move an entry (`why`, `remove`, `patch`, `probe`) keeps the matches whose version is in `sel` (R-SL4: `@2` is `^2`). No match left is `'<x>' is not in the project`. An unmanaged entry (a path entry or a foreign URL, Design 4.2, R-H4) has no version, so it never matches a name with a selector. A command that moves an entry (`update X@sel`, and `add X@sel` of a header entry, R-AD22) reads `sel` as the target (Resolution 9, R-SP5). With one match it uses that match, also for a new series. With 2 or more matches, it keeps the matches in the series of `sel`. A selector with no single series (`latest`, `0.x`, `*`) keeps all matches. So `text@1`, `acme/text@1` and `acme/text@^1.2` all name series 1, and `tln update http1@3` moves one of 2 entries to series 3. When the one match is an unmanaged entry, Design 4.2, R-H9 applies (exit code 2).
 
 ### Lookup in `tln add`
 
@@ -451,9 +462,9 @@ R-AD14: An alias is a Roc identifier. Roc names use only ASCII letters, digits a
 | R-AD15 | 1 | Change each `-` and `.` to `_`. |
 | R-AD16 | 2 | If the result does not start with a lowercase letter, or has another character that is not a letter, digit or `_`, Talon stops. It asks for `--as <alias>`. |
 | R-AD17 | 3 | If the result is a reserved word, Talon stops. It asks for `--as <alias>`. |
-| R-AD18 | 4 | If the alias exists in the header for a different group, Talon stops. It asks for `--as <alias>`. It never adds a suffix. |
+| R-AD18 | 4 | If the alias exists in the header for a different group or for an unmanaged entry (Design 4.2, R-H4), Talon stops. It asks for `--as <alias>`. It never adds a suffix. For an unmanaged entry, the message also says that `--as <that alias>` replaces it (R-AD38). |
 
-R-AD19: `--as <alias>` sets the alias and skips the default rule. Talon still checks that the alias is a valid identifier and is free. If the group is already in the header under another alias, `tln add` adds no entry. It reports that alias (see the group check in Design 4.3).
+R-AD19: `--as <alias>` sets the alias and skips the default rule. Talon still checks that the alias is a valid identifier, and that it is free or names an unmanaged entry (R-AD38). If the group is already in the header under another alias, `tln add` adds no entry. It reports that alias (see the group check in Design 4.3).
 
 ### An entry that is in the header
 
@@ -461,8 +472,10 @@ R-AD20: `tln add X` adds no entry when X is a header alias (form 1), or names a 
 
 | # | Case | Talon does |
 | --- | --- | --- |
-| R-AD21 | No selector (`tln add json`) | Changes nothing. Prints `json: someone/roc-json 2.1.0 is in the header` and names `tln update json`. Exit code 0. |
-| R-AD22 | A selector (`tln add json@^3`) | The same as `tln update json@^3` (Resolution 9, 10): the entry moves inside the selector, also to a new series. Talon writes `talon.toml` as the table below gives for that selector. |
+| R-AD21 | No selector (`tln add json`) | Changes nothing. Prints `json: someone/roc-json 2.1.0 is in the header` and names `tln update json`. Exit code 0. For an unmanaged entry (Design 4.2, R-H4), it prints the value as written and names no command. |
+| R-AD22 | A selector (`tln add json@^3`) | The same as `tln update json@^3` (Resolution 9, 10): the entry moves inside the selector, also to a new series. Talon writes `talon.toml` as the table below gives for that selector. For an unmanaged entry, exit code 2, as `tln update` (Design 4.2, R-H9). |
+
+R-AD38: `tln add <name>[@sel] --as <alias>`, where `<alias>` is an unmanaged entry (Design 4.2, R-H4), replaces that whole entry under the same alias with the release that `<name>[@sel]` selects (R-H3). The resolve, the check and the build run as for a new entry. The keyword `platform` of the entry stays, and R-C4 and R-AD32 apply to it. `talon.toml` gets what the table "What `tln add` writes to `talon.toml`" gives. A key that the alias already has stays and is the range of the new entry (R-I3). The output names the old value, as the platform note of R-AD31 does.
 
 ### What `tln add` writes to `talon.toml`
 
@@ -484,7 +497,7 @@ R-AD29: `tln add --platform owner/repo[@sel]` sets the platform. A header has on
 | # | Case | Talon does |
 | --- | --- | --- |
 | R-AD30 | No platform in the header | Adds it with the alias `pf`, or the `--as` alias |
-| R-AD31 | A platform is in the header | Replaces it under the same alias, also when the new platform is another repo. The platform is free inside the selector. Other variables are held (Resolution 9). A package that names a platform must name the new one (R-C3), so it can need a move (prompt R-NI3). The `talon.toml` key of the old platform gets the new range (table in "What `tln add` writes to `talon.toml`"). |
+| R-AD31 | A platform is in the header | Replaces it under the same alias, also when the new platform is another repo, and also when the old entry is unmanaged (Design 4.2, R-H4). The platform is free inside the selector. Other variables are held (Resolution 9). A package that names a platform must name the new one (R-C3), so it can need a move (prompt R-NI3). The `talon.toml` key of the old platform gets the new range (table in "What `tln add` writes to `talon.toml`"). |
 | R-AD32 | The release is not a platform | Error with exit code 2 (R-C4) |
 | R-AD33 | `tln add X` with no `--platform`, and X is a platform | Error with exit code 2 that names `--platform` |
 
@@ -496,7 +509,7 @@ R-AD29: `tln add --platform owner/repo[@sel]` sets the platform. A header has on
 | R-RV2 | An entry that an app module imports (the lexical scan of Resolution 4) | Stops with exit code 11 (`app_error`) and lists the `import` lines. `--force` removes it anyway and skips the check, because the app cannot check until the user changes the imports. |
 | R-RV3 | The platform entry | Error with exit code 2. An app needs a platform. `tln add --platform` changes it. |
 | R-RV4 | An entry with a `[patch]` entry (Resolution 7) | Also removes the `[patch]` entry. Keeps the files in `.talon/patches/<alias>/` and prints their path. |
-| R-RV5 | A path entry or a foreign URL (R-H4) | Removes the entry. It has no `talon.toml` key. |
+| R-RV5 | An unmanaged entry: a path entry or a foreign URL (Design 4.2, R-H4) | Removes the whole entry as R-RV1 and R-RV2 give (the import scan and the check apply). Removes a `talon.toml` key and an `[overrides]` key of the alias when there is one. Never edits the file that a path entry names. |
 
 ## 3. Exit codes and JSON output
 
@@ -510,7 +523,7 @@ R-E5: Exit codes and the `--json` schema are part of the public interface. A cha
 | R-EC10 | 10 | `no_tuple` | No tuple works. Talon prints the explanation. | Resolution 5 |
 | R-EC11 | 11 | `app_error` | A new error in an app file, or `tln remove` of an alias that the app imports. Talon stops and reports. | Resolution 4 ladder step 2, section 2 |
 | R-EC12 | 12 | `budget` | A probe budget is spent before a tuple was found | Resolution 4, R-P5 |
-| R-EC13 | 13 | `consent` | A required prompt (section 4) has no answer: Talon is in non-interactive mode, and there is no `--yes` and no flag that gives the answer. Also: the person declined the GitHub login of `tln share login`, or its code expired (R-SH7). | section 4, section 1 |
+| R-EC13 | 13 | `consent` | A required prompt (section 4) has no answer: Talon is in non-interactive mode, and there is no `--yes` and no flag that gives the answer. Also: the person declined the GitHub login of `tln share login`, or its code expired (R-SH7), or the person answered No to a move of a held variable (R-NI3, Resolution 9, R-SP16). | section 4, section 1 |
 | R-EC14 | 14 | `frozen` | The header or a patch does not match `talon.toml`: `--frozen` found a mismatch or a needed resolve, or the proxy found a stale patch | Resolution 12, R-PA6 |
 | R-EC15 | 15 | `network` | A registry, GitHub or download error that a later run can fix (R-E6 for the registry) | 7.1, 7.3, R-E6 |
 | R-EC16 | 16 | `integrity` | A hash or checksum does not match | 7.1, 6.2 R-CV4 and R-CV6, Design 8 |
@@ -1226,7 +1239,7 @@ Bin dir entries and launchers. One form on Linux, macOS and Windows, so one code
 
 | # | Property | How |
 | --- | --- | --- |
-| R-FE1 | No waterfall | The registry returns the full closure up front. All fetches start at once (7.5). With `direct`, the solver fetches lazily (7.3, R-DI7), so the fetch of a level waits for the level before it. |
+| R-FE1 | No waterfall | The registry returns the header facts of the full closure up front (Resolution 5, R-AL2). All fetches of the chosen closure start at once (7.5). With `direct`, the facts of a node come from its archive (Resolution 5, R-AL8, source 4), so the fetch of a level waits for the level before it: a closure of depth d takes at most d rounds, and the nodes of one round download at the same time. |
 | R-FE2 | Verify | Talon downloads the archive as `<hash>.tar.zst` into a temp dir (7.5), and runs `roc unbundle <hash>.tar.zst` there (Design 6.2, R-HF5). roc computes the BLAKE3 of the file, compares its base58 form to the name (`roc:src/unbundle/unbundle.zig:557-680`), and checks the paths and the size limits. A failure gives exit code 16. Measured: `research/roc-unbundle/`. |
 | R-FE3 | Atomic | Same protocol as roc: the temp dir is `packages/<hash>.<16hex>.tmp/`, and Talon renames its `<hash>/` dir to `packages/<hash>/` (`package_resolution.zig:2188-2306`). If the rename loses to roc or to another `tln`, Talon drops its copy. No lock is needed (7.4, R-CC11). |
 | R-FE4 | Compiler for `roc unbundle` | The format of a package archive does not depend on the nightly. So Talon uses the selected compiler (Resolution 13) when it is installed, else the newest installed compiler, else the `roc` on `PATH` (rank 7). With none, the selected compiler is a required download (R-DL2). |
@@ -1261,13 +1274,13 @@ group to resolve ──▶ list releases (R-DI2, cached with ETag)
 
 | # | Rule |
 | --- | --- |
-| R-DI1 | Talon lists releases only for a group that it must resolve or show: a free direct dep, the platform, an `[overrides]` group (Resolution 6), the group of `tln add`, and the rows of `tln outdated`. A transitive group needs no list, because package headers set its version (MVS, Design 2). A command that resolves nothing (`tln install --frozen`, the `roc` proxy) makes no index call. |
+| R-DI1 | Talon lists releases only for a group that it must resolve or show: a free direct dep, the platform, an `[overrides]` group (Resolution 6), the group of `tln add`, the group of a movable variable in the second search of a held move (Resolution 9, R-SP24), and the rows of `tln outdated`. A transitive group needs no list, because package headers set its version (MVS, Design 2). A command that resolves nothing (`tln install --frozen`, `tln list`, the `roc` proxy) makes no index call, also with a registry. It reads the closure from `packages/` and the archives (Resolution 5, R-AL8, sources 3 and 4). |
 | R-DI2 | The list call is `GET https://api.github.com/repos/<owner>/<repo>/releases?per_page=100`. `TALON_GITHUB_API` replaces the base `https://api.github.com` when it is set (section 1). Talon follows the `Link: rel="next"` header to the last page. It keeps each page and its `ETag` in `talon/index/github/<owner>/<repo>/` (6.1). A page younger than 60 s is used with no request, as `GET /v1/packages/{owner}/{repo}/releases` (Registry 4, R-AP1, R-AP24). For an older page, Talon sends `If-None-Match`. A `304` answer keeps the page. GitHub does not count a `304` answer against the rate limit when the request has a token. |
 | R-DI3 | Only a published release is a candidate. Talon skips a draft and a release that GitHub marks `prerelease`. A deleted release is not in the list, so it is not a candidate (R-C6). |
 | R-DI4 | The package asset is the one asset with the name `<hash>.tar.zst`, where `<hash>` is the base58 form of 32 bytes (Design 2). Other assets are not packages, for example `docs.tar.gz` and `<hash>.tar.zst.intoto.jsonl`. A release with no such asset is not a candidate. A release with 2 or more is not a candidate, because roc rejects one label with two hashes (Design 2, "Conflicting Package Contents"). Talon prints a warning that names the release. |
 | R-DI5 | The candidate URL is `https://github.com/<owner>/<repo>/releases/download/<tag>/<hash>.tar.zst`. Talon gets the version and the group from this URL with the roc rule (Design 2): the one `X.Y.Z` run in the URL. A URL with no such run, with two runs, or with `0.0.0` is not a candidate (R-H3). The tag text around the run is part of the group. So the tags `v1.2.0` and `1.2.0` give two groups, and the tag `0.26.0-rc1` is not in the group of `0.26.0`. |
 | R-DI6 | A candidate is in the group of a header entry only when its group key is equal. For a new entry (`tln add`), Talon uses the URL form (the group without the series, Design 4.1) of the newest candidate by `published_at`. All series in that URL form are candidates. When the repo has candidates in another URL form, Talon prints a note. |
-| R-DI7 | Kind, deps and the `roc:` pin come from the archive, only when the solver asks for them (the lazy oracle, Resolution 5). Talon downloads the asset, checks the hash, and extracts it into `packages/<hash>/` (7.1, 7.2). Then it reads the header of `packages/<hash>/main.roc`: the first keyword gives the kind (`app`, `package` or `platform`), the URL entries give the deps, and the `roc:` entry gives the pin (Resolution 3, rank 3). Talon keeps no second copy of these facts. After GC removes the package, Talon downloads it again. |
+| R-DI7 | Kind, deps and the `roc:` pin come from the archive, only when the solver or the closure walk asks for them (Resolution 5, R-AL8, sources 3 and 4). A registry answer that lacks a hash uses the same rule (Registry 4.1, R-AP28, case 3). Talon downloads the asset, checks the hash, and extracts it into `packages/<hash>/` (7.1, 7.2). Then it reads the header of `packages/<hash>/main.roc`: the first keyword gives the kind (`app`, `package` or `platform`), the URL entries give the deps, and the `roc:` entry gives the pin (Resolution 3, rank 3). Talon keeps no second copy of these facts. After GC removes the package, Talon downloads it again. |
 | R-DI8 | The `.roc-version` hint (Resolution 3, rank 4) comes from `https://raw.githubusercontent.com/<owner>/<repo>/<tag>/.roc-version`, only when the solver needs a hint for that candidate. A `404` answer means no hint. |
 | R-DI9 | The solver asks for candidates in the order of the strategy: newest first for `highest`, oldest first for `lowest`. So a resolve usually downloads one or two archives for each free variable. Archive and `.roc-version` downloads do not go to `api.github.com`, so they do not use the API rate limit, and Talon sends no token with them (section 1). |
 | R-DI10 | The release time is the GitHub `published_at` of the release. `min-release-age` and `--snapshot <time>` use it (R-C7, Resolution 11). |
@@ -1283,6 +1296,7 @@ Cost of one command in `direct` mode:
 | List one repo (R-DI2) | 1 for each 100 releases. Most repos need 1 (basic-cli has 46 releases). | 0 |
 | List one repo again after 60 s | 1 for each page. A `304` answer is free with a token. | 0 |
 | Kind, deps and pin of one candidate (R-DI7) | 0 | 1 archive, at most 10 MB |
+| The closure of one tuple (Resolution 5, R-AL8, R-AL9) | 0 | 1 archive for each winner that is not in `packages/`, in at most d rounds (d: the depth of the closure) |
 | `.roc-version` hint (R-DI8) | 0 | 1 small file |
 | List the compiler releases (R-CV1, 6.2) | 1 for each 100 nightlies | 0 |
 | `tln add` in an app with 3 direct deps and a platform | About 5 | About 4 to 8 archives |

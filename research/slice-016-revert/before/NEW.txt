@@ -1,0 +1,8 @@
+docs/slices/016-one-closure-model.md
+research/slice-016-revert/
+tests/commands/cases/closure/cl2-chain/given/project/p4/
+tests/commands/cases/closure/cl2-chain/given/project/p5/
+tests/commands/cases/resolve/rs-unmanaged/given/project/plat2/
+tests/commands/cases/resolve/rs-unmanaged/given/project/ovr/
+tests/commands/cases/resolve/rs-unmanaged/given/project/lat/
+tests/commands/cases/install/in1-flow/given/project/app2/

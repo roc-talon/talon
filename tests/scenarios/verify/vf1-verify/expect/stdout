@@ -67,6 +67,16 @@ $PROJECT/main.roc
 verified: the tuple passes. Nothing was written.
 exit 0
 == env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify --no-check
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. Nothing was written.
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 exit 13
 == env ROC_TOOLCHAIN=nightly-2026-10 tln verify --no-check
 exit 2
@@ -83,3 +93,36 @@ $PROJECT/main.roc
   ~ pf: acme/pfx 0.1.0 -> 0.1.1
 verified: the tuple passes. Nothing was written.
 exit 0
+== tln verify --no-check
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. Nothing was written.
+exit 0
+== tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 13
+== env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. Nothing was written.
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify --no-check
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. Nothing was written.
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln install --no-check
+exit 10

@@ -24,7 +24,7 @@
 --- home/.cache/roc/talon/projects.json
 +++ home/.cache/roc/talon/projects.json
 @@ -0,0 +1 @@
-+{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600}]}
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p4/main.roc","last_use":1792065600},{"path":"$PROJECT/p5/main.roc","last_use":1792065600}]}
 --- project/p1/main.roc
 +++ project/p1/main.roc
 @@ -1,7 +1,7 @@
@@ -36,3 +36,13 @@
  	roc: "nightly-2026-10-14-38a3029",
  }
  
+--- project/p4/main.roc
++++ project/p4/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst",
+-	core: "https://github.com/acme/core/releases/download/1.0.0/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst",
++	core: "https://github.com/acme/core/releases/download/1.1.0/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a.tar.zst",
+ 	util: "./util/main.roc",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }

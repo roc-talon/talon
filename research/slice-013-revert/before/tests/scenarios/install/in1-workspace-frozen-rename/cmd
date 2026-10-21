@@ -1,0 +1,23 @@
+# R-NI1 R-NM8 R-NM10 R-NR6 R-I8 R-I9 R-LF1 R-FL13 R-FL8 R-WS12 R-WS14 R-SP18 R-PD4 R-PD5 R-PD9 R-CC7 R-EC10 R-EC13 R-EC14 R-EC2 R-SP16 R-SP17 R-NI3 R-J1 W2:
+# `tln install` and `tln add` in a workspace (the root has members a and b and a talon.toml). The key `js` of the root talon.toml names acme/json, which the member a has under the alias `json`: a stale key.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# R-NI1: the mode is not interactive (CI=true): with no answer the command stops, exit 13, and writes nothing. The report lists the stale key (R-I8).
+st tln install
+# --frozen asks no question and writes nothing: the stale key is a finding, exit 14 (R-LF1).
+st tln install --frozen
+# --yes is the answer of the prompt (R-NM8): the key is renamed, the value and the comment stay. No header changes, so no probe.
+st tln install --yes
+# Now the check passes. --frozen takes no names (R-FL13).
+st tln install --frozen
+st tln install --frozen acme/json
+# R-WS12: a name at the workspace root names no member. The failure lists them, nothing is written.
+st tln add acme/util
+# Q9: the member b has no json, and the member a holds 2.0.0. A selector that excludes the held version needs consent to move it (R-NI3), which this version cannot ask: exit 10, nothing is written.
+st tln add --file apps/b/main.roc acme/json@2.2.0
+# With no selector the new entry gets the held version.
+st tln add --file apps/b/main.roc acme/json
+# W2: `probe` takes a path (R-SC1), so no ref check stops it. The command is not built yet (slice 001).
+st tln probe ./apps/b
+# The index pages are the fixtures of slice 003: the tree diff shows the project files and projects.json only.
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

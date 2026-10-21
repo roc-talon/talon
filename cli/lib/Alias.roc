@@ -5,6 +5,8 @@ import Ident
 ## The value is the result of `choose`: `New(alias)` is the alias of an entry to add.
 ## `Existing(alias)` says that the header already has the group under this alias: `tln add` adds no entry
 ## and reports the alias (R-AD19, R-AD20, Design 4.3 R-I9).
+## `Unmanaged(alias)` says that `--as <alias>` names an unmanaged entry (a path entry or a foreign URL, Design 4.2, R-H4): `tln add` replaces that whole entry
+## with the release, under the same alias (R-AD38, R-H9). Only `--as` gives it: the default alias never replaces an entry (R-AD18).
 ##
 ## The default alias (`default`):
 ##
@@ -20,7 +22,7 @@ import Ident
 ## | --- | --- | --- |
 ## | 1 | Starts with a lowercase ASCII letter, and has only ASCII letters, digits and `_` (R-AD16) | `NotName` |
 ## | 2 | Is not a reserved word (R-AD17). The design names `app`, `package`, `module`, `import`, `if`, `match`, `for`. The full list is question Q5. | `Reserved` |
-## | 3 | No header entry has this alias for another group or for a path or foreign URL (R-AD18). Never a suffix. | `Taken` |
+## | 3 | No header entry has this alias for another group (R-AD18). An alias of an unmanaged entry is free for `--as` (the result is `Unmanaged`, R-AD19, R-AD38), and taken for the default alias (R-AD18). Never a suffix. | `Taken` |
 ##
 ## Texts of the failures (proposal, slice 004, "Output"). `<a>` is the alias, `<name>` the full name:
 ##
@@ -29,7 +31,8 @@ import Ident
 ## | `NotName` | `the default alias '<a>' for '<name>' is not a valid name. Use --as <alias>.` | `'<a>' is not a valid alias. Use letters, digits and _, and start with a lowercase letter.` |
 ## | `Reserved` | `the default alias '<a>' for '<name>' is a reserved word. Use --as <alias>.` | `'<a>' is a reserved word, not a valid alias.` |
 ## | `Taken` | `the default alias '<a>' for '<name>' is used by another package in the header. Use --as <alias>.` | `alias '<a>' is used by another package in the header.` |
-Alias := [New(Str), Existing(Str)].{
+## | `Taken`, the entry is a path entry or a foreign URL (default alias only, R-AD18, R-AD38) | `the default alias '<a>' for '<name>' is used by a path entry in the header. Use --as <alias>, or --as <a> to replace that entry.` (`a foreign URL` for a foreign entry) | (no failure: `Unmanaged`) |
+Alias := [New(Str), Existing(Str), Unmanaged(Str)].{
 	is_eq : _
 
 	## The default alias text of a full name, after steps 0 to 2. It is not checked.
@@ -146,8 +149,22 @@ new_alias = |req| {
 	match Alias.check(alias) {
 		Err(NotName) => refuse(NotName)
 		Err(Reserved) => refuse(Reserved)
-		Ok({}) => if req.header.any(|row| row.alias == alias) refuse(Taken) else Ok(New(alias))
+		Ok({}) => match req.header.find_first(|row| row.alias == alias) {
+			Err(_) => Ok(New(alias))
+			Ok(row) => match unmanaged_kind(row.url) {
+				# R-AD38: only `--as` replaces an unmanaged entry. The default alias stops (R-AD18).
+				Ok(kind) => if req.as_alias.is_ok() Ok(Unmanaged(alias)) else Err(Fail.new(Usage, "the default alias '${alias}' for '${req.name}' is used by ${kind} in the header. Use --as <alias>, or --as ${alias} to replace that entry."))
+				Err(Release) => refuse(Taken)
+			}
+		}
 	}
+}
+
+# R-H4: how the text names an unmanaged entry. A release URL is no unmanaged entry.
+unmanaged_kind : Str -> Try(Str, [Release])
+unmanaged_kind = |value| match Ident.of_url(value) {
+	Ok(_) => Err(Release)
+	Err(Foreign) => if value.contains("://") Ok("a foreign URL") else Ok("a path entry")
 }
 
 # The texts of the failures (proposal, slice 004, "Output"). `given` is true for `--as`.

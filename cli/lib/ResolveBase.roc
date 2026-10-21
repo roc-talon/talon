@@ -3,12 +3,11 @@ import Answer
 import Clock
 import Closure
 import Fail
-import Fetch
 import Fx
+import Gather
 import Ident
 import Index
 import Intent
-import Item
 import Ladder
 import Locked
 import Mode
@@ -30,6 +29,7 @@ ResolveBase :: [].{
 
 	## One run. `names` are the operands of `update` as typed (`json`, `json@^3`, `roc-lang/json`): `Ref.parse` and `Lookup.find` read them (slice 004).
 	## `strategy` is `--strategy`. `nightly` is `TALON_NIGHTLY` (R-NS8). `compiler` is the id of the `roc` on `PATH` (R-PH8). `now` is `Clock.now`.
+	## `toolchain` is `ROC_TOOLCHAIN` (rank 2, R-SO2), a full compiler id (`Compiler.toolchain_of`), `Err(Unset)` when it is not set (slice 013: R-SO19 to R-SO22). It goes to `Pin.decide`.
 	Request : {
 		command : [Install, Update],
 		names : List(Str),
@@ -43,6 +43,7 @@ ResolveBase :: [].{
 		strategy : Try([Highest, Lowest], [Unset]),
 		nightly : Try(Bool, [Unset]),
 		compiler : Try(Str, [NoCompiler]),
+		toolchain : Try(Str, [Unset]),
 		snapshot : Try(Str, [Unset]),
 		dry_run : Bool,
 		add : { as_platform : Bool, as_alias : Try(Str, [Unset]), no_pin : Bool },
@@ -93,7 +94,7 @@ ResolveBase :: [].{
 	Ran : { probes : U64, check : [Passed, Skipped, NotRun], build : [Passed, Skipped, NotRun], notes : List(Str) }
 
 	# Steps H to J: the plan, the second read, the check of R-CC7, one `write_atomic!` call and the output.
-	Finish : { scoped : List(Vars.Scoped), wants : List(Vars.Want), asked : Asked, prepared : Prepared, renames : List(Rename), snapshot : Try(U64, [None]), known : List(Fact) }
+	Finish : { scoped : List(Vars.Scoped), wants : List(Vars.Want), asked : Asked, prepared : Prepared, renames : List(Rename), snapshot : Try(U64, [None]), known : List(Fact), paths : List(Closure.Node) }
 
 	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need.
 	Picked : { facts : Finish, chosen : List(Pick.Chosen) }
@@ -200,18 +201,30 @@ ResolveBase :: [].{
 		}
 	}
 
-	# R-RP2, R-NS2, R-NS5, R-SO13, Q3: a pin that stops the command, the selected compiler that P0 cannot use, and the missing compiler.
-	check_pin : Loaded, Settings, Pin.Decision -> Try({}, Fail)
-	check_pin = |loaded, settings, decision| match decision.outside {
+	# R-RP2, R-NS2, R-NS4, R-NS5, R-SO13, R-SO19, G5: a pin that stops the command, then the gate of a held compiler that no pin gave.
+	# A pin has no gate (the pin compiler is checked at the first probe). `Verify` runs the `ROC_TOOLCHAIN` compiler without a gate (R-NS4).
+	check_pin : Loaded, Settings, Pin.Decision, [Lock, Verify] -> Try({}, Fail)
+	check_pin = |loaded, settings, decision, role| match decision.outside {
 		Ok(pin) => Err(Pin.outside_failure({ pin, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from }))
 		Err(None) => match decision.held {
 			Err(NoCompiler) => Err(Fail.new(Environment, "cannot select a compiler: there is no roc on PATH that Talon can identify, and the header has no roc pin"))
-			Ok(id) => if decision.pinned {
-				Ok({})
-			} else {
-				Pin.gate({ compiler: id, req: loaded.intent.toolchain.roc, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from })
+			Ok(id) => {
+				gate = |held_from| Pin.gate({ compiler: id, held_from, req: loaded.intent.toolchain.roc, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from })
+				match (decision.held_from, role) {
+					(Pin, _) => Ok({})
+					(Env, Verify) => Ok({})
+					(Env, Lock) => gate(Env)
+					(Path, _) => gate(Path)
+				}
 			}
 		}
+	}
+
+	# R-SO20: the note of `Pin.decide` as a list of 0 or 1 lines.
+	pin_notes : Pin.Decision -> List(Str)
+	pin_notes = |decision| match decision.note {
+		Ok(text) => [text]
+		Err(None) => []
 	}
 
 	# R-EV1, R-DT3, R-DT4: `--snapshot` wins over `[resolution] snapshot` of `talon.toml`. A `log:<n>` needs a registry: direct has none.
@@ -241,49 +254,29 @@ ResolveBase :: [].{
 		}
 	}
 
-	main_of : Roots, Str -> Str
-	main_of = |roots, url| match Ident.of_url(url) {
-		Ok(ident) => "${Roots.item(roots, Item.Package(ident.hash))}/main.roc"
-		Err(Foreign) => url
-	}
-
-	# Fetches the packages of the URLs (R-FE1, the hash check) and, with `read`, reads the header of each `main.roc` (R-DI7).
-	read_releases! : Fx, ResolveBase.Request, List(Str), Bool => Try(List(Fact), Fail)
-	read_releases! = |fx, request, urls, read| {
-		results = Fetch.packages!(fx, { roots: request.roots, urls, offline: request.offline, roc: "roc", downloader: request.net.downloader })
-		for result in results {
-			match result {
-				Ok(_) => {}
-				Err(fail) => return Err(fail)
-			}
+	# The header facts of release URLs (R-AL8, R-DI7): `Gather.get!`, then `Release.read` of each text.
+	read_releases! : Fx, ResolveBase.Request, List(Str) => Try(List(Fact), Fail)
+	read_releases! = |fx, request, urls| {
+		got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, urls)?
+		var $facts = no_facts
+		for g in got {
+			release = Release.read({ path: g.path, text: g.text })?
+			$facts = $facts.append({ url: g.id, release })
 		}
-		if !read {
-			Ok([])
-		} else {
-			paths = urls.map(|url| ResolveBase.main_of(request.roots, url))
-			texts = fx.read_files!(paths)
-			var $facts = no_facts
-			for (url, path, text) in urls.map2(paths.map2(texts, |p, t| (p, t)), |u, (p, t)| (u, p, t)) {
-				body = match text {
-					Ok(t) => t
-					Err(_) => return Err(Fail.new(Environment, "cannot read ${path}"))
-				}
-				release = Release.read({ path, text: body })?
-				$facts = $facts.append({ url, release })
-			}
-			Ok($facts)
-		}
+		Ok($facts)
 	}
 
 	# The first steps of `install!` and `verify!`: the files, the variables, and the pin of the compiler.
-	prepared! : Fx, ResolveBase.Request => Try({ loaded : Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision }, Fail)
-	prepared! = |fx, request| {
+	prepared! : Fx, ResolveBase.Request, [Lock, Verify] => Try({ loaded : Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision }, Fail)
+	prepared! = |fx, request, role| {
 		loaded = ResolveBase.load!(fx, request)?
 		built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
 		settings = ResolveBase.settings_of(request, loaded)
 		decision = Pin.decide({
 			members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: Bool.False }),
 			compiler: request.compiler,
+			toolchain: request.toolchain,
+			role,
 			req: loaded.intent.toolchain.roc,
 			nightly: settings.nightly,
 			no_check: request.no_check,
@@ -337,7 +330,7 @@ ResolveBase :: [].{
 		)
 		.fold(no_names, |found, text| if found.contains(text) found else found.append(text))
 
-	## Slice 010 (R-AL2): the entries of a member after the planned edits. A `Set` changes the value of an entry, an `Add` appends one. The pin write is no entry.
+	## Slice 010 (R-AL2): the entries of a member after the planned edits. A `Set` or `Replace` changes the value of an entry, an `Add` appends one. The pin write is no entry.
 	entries_after : Vars.Member, List(Edit) -> List(Closure.Entry)
 	entries_after = |member, edits| {
 		ops = edits.keep_if(|e| e.file == member.file).map(|e| e.op)
@@ -346,6 +339,7 @@ ResolveBase :: [].{
 			start,
 			|rows, op| match op {
 				Set({ alias, url }) => rows.map(|r| if r.alias == alias { ..r, value: url } else r)
+				Replace({ alias, url }) => rows.map(|r| if r.alias == alias { ..r, value: url } else r)
 				Add({ alias, url, is_platform }) => rows.append({ alias, value: url, is_platform })
 				Remove(alias) => rows.keep_if(|r| r.alias != alias)
 				Pin(_) => rows
@@ -355,15 +349,7 @@ ResolveBase :: [].{
 
 	## Slice 010: the headers that the pick read, as the nodes of the closure walk (D3). The pick keeps no alias, so the aliases of these nodes are empty. A platform entry is the first entry.
 	known_nodes : List(Fact) -> List(Closure.Node)
-	known_nodes = |facts| facts.map(
-		|f| {
-			pf = match f.release.pf {
-				Ok(value) => [{ alias: "", value, is_platform: Bool.True }]
-				Err(None) => []
-			}
-			{ id: f.url, entries: pf.concat(f.release.deps.map(|value| { alias: "", value, is_platform: Bool.False })) }
-		},
-	)
+	known_nodes = |facts| facts.map(|f| Pick.node_of(f))
 
 	## Slice 010 (R-CM2, R-H7, R-AL2): the closure walk of the members, in the order of the list. A node that one walk read is not read again by the next. A failure of one walk is the failure.
 	closure! : Fx, Request, { members : List({ file : Str, entries : List(Closure.Entry) }), known : List(Closure.Node) } => Try(List({ file : Str, walked : Closure.Walked }), Fail)

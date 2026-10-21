@@ -1,12 +1,15 @@
 import Add
 import Alias
+import Closure
 import Consent
 import Fail
 import Fx
 import Github
+import Ident
 import Index
 import Lookup
 import Pick
+import PickLoop
 import Prompt
 import Ranges
 import Ref
@@ -68,22 +71,16 @@ PickFlow :: [].{
 		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(no_names, |found, name| if found.contains(name) found else found.append(name))
 		found = index!(fx, request, repos, known)?
 		prepared = prepare!(fx, request, loaded, asked.fresh, found)?
-		input = slots_of(scoped, stale.live, found, asked, prepared.rows, settings, snapshot)
-		looped = match pick_loop!(fx, request, input, prepared.facts) {
+		input = slots_of(scoped, stale.live, found, asked, prepared.rows, settings, snapshot, unmanaged_of(loaded, asked, request.project.file ?? ""))
+		looped = match PickLoop.run!(fx, request, input, prepared.facts, []) {
 			Ok(c) => c
 			Err(fail) => return Err(with_close_versions(fail, { scoped, asked, found }))
 		}
-		Ok({ facts: { scoped, wants: stale.live, asked, prepared, renames: stale.renames, snapshot, known: looped.facts }, chosen: looped.chosen })
+		Ok({ facts: { scoped, wants: stale.live, asked, prepared, renames: stale.renames, snapshot, known: looped.facts, paths: looped.paths }, chosen: looped.chosen })
 	}
 }
 
-PickInput : {
-	slots : List(Pick.Slot),
-	strategy : [Highest, Lowest],
-	min_age : U64,
-	snapshot : Try(U64, [None]),
-	want_slots : List({ key : Str, name : Str, urls : List(Str) }),
-}
+PickInput : PickLoop.Input
 
 # R-SL12, U3 of slice 009: the failure "has no release that satisfies" of a variable with a selector (`update X@sel`) names the close versions of its repository.
 with_close_versions : Fail, { scoped : List(Vars.Scoped), asked : Asked, found : List(Candidates) } -> Fail
@@ -113,24 +110,24 @@ asked! = |fx, request, loaded, vars| {
 	current = request.project.file ?? ""
 	scope = if request.command == Update Scope.Project else Scope.Install
 	rows = ResolveBase.current_rows(loaded.members, current)
-	entities = if request.command == Update entities_of(vars) else entities_of(in_file(vars, current))
+	entities = if request.command == Update entities_of(vars, loaded.members) else entities_of(in_file(vars, current), loaded.members.keep_if(|m| m.file == current))
 	var $names = no_names
 	var $picks = no_picks
 	var $kept = no_kept
 	var $fresh = no_fresh
 	for text in request.names {
 		ref = Ref.parse(text, scope, Bool.False)?
-		found = match Lookup.find(scope, ref, entities) {
+		looked = if request.command == Update Lookup.find_move(scope, ref, entities) else add_lookup(request, ref, entities)
+		found = match looked {
 			Ok(f) => f
 			Err({ fail, block }) => {
-				if request.command == Update and loaded.members.any(|m| m.locked.rows.any(|r| r.alias == ref.name and r.what == Path)) {
-					return Err(Fail.new(Usage, "'${ref.name}' is a path entry: Talon never changes it"))
-				}
 				if !block.is_empty() fx.err!(block)
 				return Err(fail)
 			}
 		}
 		target = match found {
+			# R-H9: an unmanaged entry has no name. `update X` never moves it.
+			Lookup.Existing({ alias: a, name: "", .. }) if request.command == Update => return Err(Add.never_changes({ alias: a, value: unmanaged_value(loaded.members, a) }))
 			Lookup.Existing({ alias: a, .. }) => Ok(a)
 			Lookup.New(name) => if request.command == Update {
 				return Err(Fail.new(Usage, "'${name}' is not in the project"))
@@ -151,7 +148,7 @@ asked! = |fx, request, loaded, vars| {
 				plan = Add.decide_alias({ alias, selector: ref.selector, no_pin: request.add.no_pin, header: rows })?
 				match plan.header {
 					Keep => {
-						$kept = $kept.append(kept_of(vars, current, alias, plan.note ?? ""))
+						$kept = $kept.append(kept_of(vars, current, alias, plan))
 					}
 					_ => {
 						$names = $names.append(alias)
@@ -165,7 +162,7 @@ asked! = |fx, request, loaded, vars| {
 				}
 			}
 			Err(New) => {
-				$fresh = $fresh.append(fresh_of(request, vars, current, ref, text)?)
+				$fresh = $fresh.append(fresh_of(request, vars, loaded, current, ref, text)?)
 			}
 		}
 	}
@@ -193,26 +190,37 @@ entry_of_repo = |request, vars, current, name| {
 	}
 }
 
-# The `Kept` row of a header alias: its name and version are those of its entry in the current member.
-kept_of : List(Vars.Var), Str, Str, Str -> Kept
-kept_of = |vars, current, alias, note| match in_file(vars, current).find_first(|v| v.uses.any(|u| u.alias == alias)) {
+# The value of the entry of an alias, as written (the first member that has it).
+unmanaged_value : List(Vars.Member), Str -> Str
+unmanaged_value = |members, alias| match members.join_map(|m| m.locked.rows).find_first(|r| r.alias == alias) {
+	Ok(row) => row.value
+	Err(_) => alias
+}
+
+# The `Kept` row of a header alias: its name and version are those of its entry in the current member. An unmanaged entry has no name: its value as written is the name (R-AD21).
+kept_of : List(Vars.Var), Str, Str, Add -> Kept
+kept_of = |vars, current, alias, plan| match in_file(vars, current).find_first(|v| v.uses.any(|u| u.alias == alias)) {
 	Ok(v) => {
 		version = match v.uses.find_first(|u| u.alias == alias) {
 			Ok(u) => u.version
 			Err(_) => ""
 		}
-		{ alias, name: v.name ?? v.group.form, version, note }
+		{ alias, name: v.name ?? v.group.form, version, note: plan.note ?? "" }
 	}
-	Err(_) => { alias, name: alias, version: "", note }
+	Err(_) => { alias, name: plan.url, version: "", note: plan.note ?? "" }
 }
 
 # A new name of `add`. Q9: a group that another member holds (one variable, no entry in the current member) must admit the held versions, and then the entry gets the highest of them.
-fresh_of : ResolveBase.Request, List(Vars.Var), Str, Ref, Str -> Try(Fresh, Fail)
-fresh_of = |request, vars, current, ref, text| {
+fresh_of : ResolveBase.Request, List(Vars.Var), Loaded, Str, Ref, Str -> Try(Fresh, Fail)
+fresh_of = |request, vars, loaded, current, ref, text| {
 	name = ref.name
+	key = match request.add.as_alias {
+		Ok(alias) => alias
+		Err(Unset) => if request.add.as_platform platform_alias(loaded, current) else Alias.default(name)
+	}
 	typed = match ref.selector {
+		Ok(Latest) | Err(None) => replaced_key_range(loaded, current, key) ?? "*"
 		Ok(selector) => range_of_selector(selector) ?? "*"
-		Err(None) => "*"
 	}
 	range = match vars.keep_if(|v| v.name == Ok(name)) {
 		[one] if !one.uses.any(|u| u.file == current) => {
@@ -230,12 +238,41 @@ fresh_of = |request, vars, current, ref, text| {
 			Err(_) => "latest"
 		},
 		range,
-		key: match request.add.as_alias {
-			Ok(alias) => alias
-			Err(Unset) => if request.add.as_platform "pf" else Alias.default(name)
-		},
+		key,
 		is_platform: request.add.as_platform,
 	})
+}
+
+# C3, R-AD31, R-AD38: `--platform` with no `--as` replaces the platform entry of the current member, so the new entry has its alias (else `pf`).
+platform_alias : Loaded, Str -> Str
+platform_alias = |loaded, current| ResolveBase.current_rows(loaded.members, current).find_first(|r| r.is_platform).map_ok(|r| r.alias) ?? "pf"
+
+# R-AL9, D6: for each member, the header entries that no slot owns (a path value or a foreign URL). The entry that the run replaces (`--as`, `--platform`) is no root: the new entry is a slot.
+unmanaged_of : Loaded, Asked, Str -> List({ file : Str, entries : List(Closure.Entry) })
+unmanaged_of = |loaded, asked, current| {
+	replaced = asked.fresh.map(|f| f.key)
+	loaded.members.map(
+		|m| {
+			file: m.file,
+			entries: m.locked.rows
+				.keep_if(|r| Ident.of_url(r.value).is_err() and !(m.file == current and replaced.contains(r.alias)))
+				.map(|r| { alias: r.alias, value: r.value, is_platform: r.is_platform }),
+		},
+	)
+}
+
+# Q1, R-AD38, R-I3: `--as <alias>` over an unmanaged entry with no selector. The key of that alias in the `talon.toml` of the member stays, so it is the range of the new entry.
+# It is no constraint before the replace (R-H9), so `Vars` does not give it.
+replaced_key_range : Loaded, Str, Str -> Try(Str, [NoKey])
+replaced_key_range = |loaded, file, alias| match loaded.members.find_first(|m| m.file == file) {
+	Ok({ locked, toml: Ok(t), .. }) => match locked.rows.find_first(|r| r.alias == alias) {
+		Ok({ what: Release(_), .. }) | Err(_) => Err(NoKey)
+		Ok(_) => match t.intent.deps.concat(t.intent.overrides).find_first(|d| d.key == alias) {
+			Ok(d) => Ok(d.range)
+			Err(_) => Err(NoKey)
+		}
+	}
+	_ => Err(NoKey)
 }
 
 # The highest of some versions (the first one when none parses).
@@ -263,19 +300,35 @@ no_kept = []
 no_fresh : List(Fresh)
 no_fresh = []
 
-# The entities of the lookup: one for each header alias, the name with its series when 2 variables share a repo (R-SC15).
-entities_of : List(Vars.Var) -> List({ alias : Str, name : Str, note : Str })
-entities_of = |vars| {
-	base = |v| v.name ?? v.group.form
+# The entities of the lookup: one for each header alias (`Lookup.build`: one entity builder). A path entry and a foreign URL are entities with no name (R-SC6, R-H4).
+entities_of : List(Vars.Var), List(Vars.Member) -> List(Lookup.Entity)
+entities_of = |vars, members| Lookup.build(
 	vars.join_map(
-		|v| {
-			shared = vars.keep_if(|o| base(o) == base(v)).len() >= 2
-			name = if shared "${base(v)}@${v.group.series}" else base(v)
-			v.uses
-				.map(|u| { alias: u.alias, name, note: if v.is_platform "platform (${u.alias})" else "" })
-				.fold([], |found, e| if found.any(|f| f.alias == e.alias) found else found.append(e))
-		},
-	)
+		|v| v.uses.map(
+			|u| {
+				alias: u.alias,
+				what: Release({ name: v.name ?? v.group.form, series: v.group.series, version: u.version }),
+				role: if v.is_platform Platform else Direct,
+			},
+		),
+	).concat(
+		members.join_map(
+			|m| m.locked.rows.keep_oks(
+				|r| match r.what {
+					Release(_) => Err(NotUnmanaged)
+					_ => Ok({ alias: r.alias, what: Unmanaged, role: if r.is_platform Platform else Direct })
+				},
+			),
+		),
+	),
+)
+
+# `add` of a header alias or a new name is `Lookup.find`. A full name that 2 or more entries of the member have moves one of them (slice 014 Q1, R-SC16),
+# unless `--as` or `--platform` makes a new entry. One entry is `entry_of_repo`.
+add_lookup : ResolveBase.Request, Ref, List(Lookup.Entity) -> Try(Lookup, { fail : Fail, block : Str })
+add_lookup = |request, ref, entities| match Lookup.find(Scope.Install, ref, entities) {
+	Ok(New(name)) if !request.add.as_platform and request.add.as_alias == Err(Unset) and entities.keep_if(|e| e.name == name).len() >= 2 => Lookup.find_move(Scope.Install, ref, entities)
+	other => other
 }
 
 # R-SL5, R-AD22: the range that a selector gives to its variable. `Latest` is any version.
@@ -389,8 +442,8 @@ no_candidates : List(Candidates)
 no_candidates = []
 
 # The slots of `Pick.step`: the variables in order, then the wants (R-VA6), then the new names of `add`.
-slots_of : List(Vars.Scoped), List(Vars.Want), List(Candidates), Asked, List(FreshRow), Settings, Try(U64, [None]) -> PickInput
-slots_of = |scoped, wants, found, asked, fresh, settings, snapshot| {
+slots_of : List(Vars.Scoped), List(Vars.Want), List(Candidates), Asked, List(FreshRow), Settings, Try(U64, [None]), List({ file : Str, entries : List(Closure.Entry) }) -> PickInput
+slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged| {
 	candidates_of = |name| match found.find_first(|c| c.name == name) {
 		Ok(c) => c
 		Err(_) => { name, list: [], missing: Bool.True }
@@ -453,6 +506,7 @@ slots_of = |scoped, wants, found, asked, fresh, settings, snapshot| {
 		strategy: settings.strategy,
 		min_age: settings.min_age,
 		snapshot,
+		unmanaged,
 		want_slots: wants.map2(want_slots, |w, slot| { key: w.key, name: w.name ?? w.key, urls: slot.candidates.map(|c| c.url) }),
 	}
 }
@@ -470,32 +524,6 @@ highest_use = |uses| match uses {
 			},
 		).url,
 	)
-}
-
-# Step G of the flow: `Pick.step` until `Done` or `Fail`. A `Need` fetches the packages and reads their headers (`Release.read`).
-pick_loop! : Fx, ResolveBase.Request, PickInput, List(Fact) => Try({ chosen : List(Pick.Chosen), facts : List(Fact) }, Fail)
-pick_loop! = |fx, request, input, facts| match Pick.step({ slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, snapshot: input.snapshot, facts }) {
-	Done(chosen) => Ok({ chosen, facts })
-	Fail(fail) => Err(fail)
-	Need(urls) => {
-		more = ResolveBase.read_releases!(fx, request, urls, Bool.True)?
-		all = facts.concat(more)
-		platform_wants(input.want_slots, all)?
-		pick_loop!(fx, request, input, all)
-	}
-}
-
-# Q2, R-AD33: a key of `talon.toml` whose release is a platform is not added as a package.
-platform_wants : List({ key : Str, name : Str, urls : List(Str) }), List(Fact) -> Try({}, Fail)
-platform_wants = |wants, facts| {
-	found = wants.join_map(|w| facts.keep_if(|f| f.release.kind == Platform and w.urls.contains(f.url)).map(|f| (w, f.url)))
-	match found {
-		[] => Ok({})
-		[(w, url), ..] => match Add.decide({ selector: Err(None), chosen: { name: w.name, url, kind: Platform }, platform_flag: Bool.False, no_pin: Bool.False, as_alias: Ok(w.key), header: [] }) {
-			Err(fail) => Err(fail)
-			Ok(_) => Ok({})
-		}
-	}
 }
 
 # The new names of `add`: the candidates of each (R-SL12: one must admit the selector), then the kind of the newest candidate of its URL form (the highest
@@ -523,7 +551,7 @@ prepare! = |fx, request, loaded, fresh, found| {
 			Ok(c) if list.any(|x| Ranges.admits({ ranges: [f.range], version: x.ident.version })) => c
 			_ => return Err(Add.no_release({ name: f.name, selector: f.selector, text: f.text, versions: cands.map(|c| c.ident.version) }))
 		}
-		read = ResolveBase.read_releases!(fx, request, [first.url], Bool.True)?
+		read = ResolveBase.read_releases!(fx, request, [first.url])?
 		kind = match read {
 			[fact] => if fact.release.kind == Platform Platform else Package
 			_ => Package

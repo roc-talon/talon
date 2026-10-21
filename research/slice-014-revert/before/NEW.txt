@@ -1,0 +1,7 @@
+docs/slices/014-one-name-model.md
+research/slice-014-revert/
+tests/commands/cases/remove/rm1-flow/given/project/r6/main.roc
+tests/commands/cases/resolve/rs-failures/given/project/names/main.roc
+tests/commands/cases/resolve/rs-failures/given/project/walias/talon.toml
+tests/commands/cases/resolve/rs-failures/given/project/walias/apps/a/main.roc
+tests/commands/cases/resolve/rs-failures/given/project/walias/apps/b/main.roc

@@ -1,4 +1,5 @@
 import Args
+import Compiler
 import Fail
 import Fx
 import Install
@@ -54,7 +55,8 @@ flow! = |fx, args, opts| {
 	start = Install.begin!(fx, args)?
 	Install.check_member(Bool.True, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-	compiler = Install.compiler!(fx, start.env, Bool.False)?
+	toolchain = Compiler.toolchain_of(start.env)?
+	compiler = Install.compiler!(fx, Bool.False)
 	Resolve.remove!(
 		fx,
 		{
@@ -70,6 +72,7 @@ flow! = |fx, args, opts| {
 			strategy: Err(Unset),
 			nightly: Install.nightly_of(start.env),
 			compiler,
+			toolchain,
 			snapshot: Err(Unset),
 			dry_run: opts.dry_run,
 			add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },

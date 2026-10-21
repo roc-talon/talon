@@ -72,17 +72,22 @@ plan = |text, alias, toml, shared| match Locked.read({ path: "/p/main.roc", text
 	}
 }
 
-# R-CM3 R-RV1 R-RV3 R-RV4 R-RV5 R-WS14 R-OV1 R-PA11 R-PA12 (slice 008): what `remove` does for one entry. A release, a path entry and a foreign URL are removed in the same way (R-RV5: it gives way over R-H4).
+# R-CM3 R-RV1 R-RV3 R-RV4 R-RV5 R-H4 R-H9 R-WS14 R-OV1 R-PA11 R-PA12 (slice 008, slice 015): what `remove` does for one entry. A release, a path entry and a foreign URL are removed in the same way (R-RV5, R-H9: the user names the alias, and an unmanaged entry goes as a whole).
 # The keys are the ones that the nearest `talon.toml` has for the alias, in the order `[dependencies]`, `[overrides]`, `[patch]`. A `[patch]` key keeps its files: `patch_dir` is the dir of `.talon/patches/<alias>/`
 # next to that `talon.toml`. The platform is a usage failure (R-RV3). When another member under that `talon.toml` has the alias, no key goes (question Q3 of the slice).
 expect {
 	toml = Ok({ path: "/p/talon.toml", text: toml_text })
+	unmanaged_toml = Ok({ path: "/p/talon.toml", text: "[dependencies]\nutil = \"^1\"\nodd = \"^2\"\n\n[overrides]\nutil = \"acme/util@^1.2\"\nodd = \"acme/odd@^2\"\n" })
 	json_what = Release({ name: "someone/roc-json", version: "2.1.0" })
 	rows = [
 		("a release with the 3 keys and a patch", plan(app_text, "json", toml, Bool.False), Ok((json_what, [(Dependencies, "json"), (Overrides, "json"), (Patch, "json")], Ok("/p/.talon/patches/json/")))),
 		("a release with a key in [dependencies] only", plan(app_text, "http", toml, Bool.False), Ok((Release({ name: "roc-lang/http", version: "1.9.0" }), [(Dependencies, "http")], Err(None)))),
 		("a path entry has no key", plan(app_text, "util", toml, Bool.False), Ok((Path("../util/main.roc"), [], Err(None)))),
 		("a foreign URL has no key", plan(app_text, "odd", toml, Bool.False), Ok((Foreign(odd), [], Err(None)))),
+		# R-RV5 (slice 015): the key of the alias in `[dependencies]` and `[overrides]` goes with a path entry and with a foreign URL. The file that the path names is not touched (no `Plan` field for it).
+		("a path entry with keys in 2 tables", plan(app_text, "util", unmanaged_toml, Bool.False), Ok((Path("../util/main.roc"), [(Dependencies, "util"), (Overrides, "util")], Err(None)))),
+		("a foreign URL with keys in 2 tables", plan(app_text, "odd", unmanaged_toml, Bool.False), Ok((Foreign(odd), [(Dependencies, "odd"), (Overrides, "odd")], Err(None)))),
+		("a path entry with keys, another member has the alias: no key", plan(app_text, "util", unmanaged_toml, Bool.True), Ok((Path("../util/main.roc"), [], Err(None)))),
 		("a release in a package header", plan(pkg_text, "json", toml, Bool.False), Ok((json_what, [(Dependencies, "json"), (Overrides, "json"), (Patch, "json")], Ok("/p/.talon/patches/json/")))),
 		("a talon.toml in another dir: the patch dir is next to it", plan(app_text, "json", Ok({ path: "/p/apps/a/talon.toml", text: toml_text }), Bool.False), Ok((json_what, [(Dependencies, "json"), (Overrides, "json"), (Patch, "json")], Ok("/p/apps/a/.talon/patches/json/")))),
 		("another member has the alias: no key, no patch dir", plan(app_text, "json", toml, Bool.True), Ok((json_what, [], Err(None)))),

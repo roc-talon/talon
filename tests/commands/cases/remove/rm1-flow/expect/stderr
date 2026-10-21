@@ -5,3 +5,8 @@ tln: error[app_error]: the app imports json: $PROJECT/r5/lib/Lib.roc:3: import j
 check: passed
 $PROJECT/r5/lib/main.roc
   - parser: acme/parser 1.0.0
+"roc-lang/http" matches 2 packages:
+  roc-lang/http@1      direct (http1)
+  roc-lang/http@2      direct (http2)
+tln: error[usage]: "roc-lang/http" matches 2 packages. Use a name from the list.
+tln: error[usage]: 'json@3' is not in the project

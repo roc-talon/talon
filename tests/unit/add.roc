@@ -300,3 +300,84 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-AD38 R-AD31 R-H9 R-H4 R-AD18 R-AD32 R-AD33 R-C4 R-AD25 R-AD26 R-AD27 R-SL5 R-SE7 (slice 015): `--as <alias>` where the alias is an unmanaged entry (a path entry or a foreign URL) replaces the whole entry under the same
+# alias (`Replace`). `talon.toml` follows the table of `tln add` (no selector and `latest`: nothing, an exact version: an anchor, a range: the range, `--no-pin` drops the anchor). The note names the old value as written.
+# The platform entry that is a path entry is replaced by `--platform` under its alias (R-AD31), and `--as` over it needs a platform release (R-AD32, R-C4). A platform release over a package entry is the failure of R-AD33.
+# The default alias never replaces: it is the failure of R-AD18, with the text that names `--as`.
+expect {
+	odd_url = "https://example.com/pkg/latest.tar.gz"
+	odd_row = { alias: "odd", url: odd_url, is_platform: Bool.False }
+	pf_path = { alias: "pf", url: "../platform/main.roc", is_platform: Bool.True }
+	with_path_pf = [pf_path, json_old, util_path, odd_row]
+	with_pf = [pf_old, json_old, util_path, odd_row]
+	as_ = |name, ver, sel, no_pin, alias, kind, h| view(
+		Add.decide({
+			selector: sel,
+			chosen: { name, url: url(name, ver), kind },
+			platform_flag: Bool.False,
+			no_pin,
+			as_alias: Ok(alias),
+			header: h,
+		}),
+	)
+	util_url = url("acme/util", "1.1.0")
+	note_util = Ok("entry changes: ../util/main.roc -> acme/util 1.1.0")
+	set = |key, value| Ok({ key, value })
+	rows = [
+		("a path entry, no selector", as_("acme/util", "1.1.0", none, Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+		("a path entry, latest is no selector", as_("acme/util", "1.1.0", Ok(Selector.Latest), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+		("a path entry, an exact version", as_("acme/util", "1.1.0", Ok(Selector.Exact("1.1.0")), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, set("util", "=1.1.0"), note_util))),
+		("a path entry, an exact version, --no-pin", as_("acme/util", "1.1.0", Ok(Selector.Exact("1.1.0")), Bool.True, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+		("a path entry, a range", as_("acme/util", "1.1.0", Ok(Selector.Range("^1")), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, set("util", "^1"), note_util))),
+		(
+			"a foreign URL",
+			as_("acme/odd", "1.0.0", none, Bool.False, "odd", Package, with_pf),
+			Ok(("odd", Replace, url("acme/odd", "1.0.0"), nothing, Ok("entry changes: ${odd_url} -> acme/odd 1.0.0"))),
+		),
+		("the platform entry is a path entry: a package is no platform (R-AD32)", as_("acme/util", "1.1.0", none, Bool.False, "pf", Package, with_path_pf), Err("tln: error[usage]: 'acme/util' is not a platform")),
+		("a package entry: a platform release needs --platform (R-AD33)", as_("acme/pf", "0.1.0", none, Bool.False, "util", Platform, with_pf), Err("tln: error[usage]: 'acme/pf' is a platform. Use tln add --platform acme/pf.")),
+		(
+			"the default alias is the path entry: it stops and names --as",
+			new("owner/util", "1.0.0", none, Bool.False, no_as),
+			Err("tln: error[usage]: the default alias 'util' for 'owner/util' is used by a path entry in the header. Use --as <alias>, or --as util to replace that entry."),
+		),
+		("--platform replaces a path platform under its alias", plat("acme/pf", "0.1.0", Platform, none, no_as, with_path_pf), Ok(("pf", Replace, url("acme/pf", "0.1.0"), nothing, Ok("platform changes: ../platform/main.roc -> acme/pf 0.1.0")))),
+		(
+			"--platform replaces a path platform, an exact version",
+			plat("acme/pf", "0.1.0", Platform, Ok(Selector.Exact("0.1.0")), no_as, with_path_pf),
+			Ok(("pf", Replace, url("acme/pf", "0.1.0"), set("pf", "=0.1.0"), Ok("platform changes: ../platform/main.roc -> acme/pf 0.1.0"))),
+		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-AD21 R-AD22 R-AD20 R-H9 R-H4 R-SL5 R-EC2 (slice 015): `tln add X` where X is the alias of an unmanaged entry. No selector (and `latest`, R-SL5) changes nothing: exit 0, and the note prints the value as written and names
+# no command (the entry has no version, and `tln update` refuses it). A selector is the failure `never_changes`: exit 2, as `tln update X` (R-H9). The text names `tln add <name> --as X`, the one way to change the entry (R-AD38).
+# A path entry is "a path entry" and a URL is "a foreign URL" (a value with `://`).
+expect {
+	odd_url = "https://example.com/pkg/latest.tar.gz"
+	h = [pf_old, json_old, util_path, { alias: "odd", url: odd_url, is_platform: Bool.False }]
+	alias = |name, sel| view(Add.decide_alias({ alias: name, selector: sel, no_pin: Bool.False, header: h }))
+	path_text = "tln: error[usage]: util is a path entry: Talon never changes it. To replace it, run tln add <name> --as util."
+	odd_text = "tln: error[usage]: odd is a foreign URL: Talon never changes it. To replace it, run tln add <name> --as odd."
+	rows = [
+		("a path entry, no selector", alias("util", none), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
+		("a foreign URL, no selector", alias("odd", none), Ok(("odd", Keep, odd_url, nothing, Ok("odd: ${odd_url} is in the header")))),
+		("a path entry, latest", alias("util", Ok(Selector.Latest)), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
+		("a path entry, a range", alias("util", Ok(Selector.Range("^3"))), Err(path_text)),
+		("a path entry, an exact version", alias("util", Ok(Selector.Exact("1.0.0"))), Err(path_text)),
+		("a foreign URL, a range", alias("odd", Ok(Selector.Range("^1"))), Err(odd_text)),
+		("a release stays as before", alias("json", Ok(Selector.Range("^3"))), Ok(("json", Update, url("someone/roc-json", "2.1.0"), Ok({ key: "json", value: "^3" }), none))),
+	]
+	failures = [
+		("never_changes, a path entry", Fail.line(Add.never_changes({ alias: "util", value: "../util/main.roc" })), path_text),
+		("never_changes, a foreign URL", Fail.line(Add.never_changes({ alias: "odd", value: odd_url })), odd_text),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	bad_failures = failures.keep_if(|(_, got, want)| got != want)
+	dbg (bad, bad_failures)
+	bad == [] and bad_failures == []
+}

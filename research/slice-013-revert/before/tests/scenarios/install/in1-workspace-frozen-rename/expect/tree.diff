@@ -1,0 +1,21 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/apps/a/main.roc","last_use":1792065600},{"path":"$PROJECT/apps/b/main.roc","last_use":1792065600}]}
+--- project/apps/b/main.roc
++++ project/apps/b/main.roc
+@@ -1,5 +1,6 @@
+ app [main!] {
+ 	roc: "nightly-2026-10-14-38a3029",
++	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/talon.toml
++++ project/talon.toml
+@@ -2,4 +2,4 @@
+ members = ["apps/*/main.roc"]
+ 
+ [dependencies]
+-js = "acme/json@^2"   # an old name
++json = "acme/json@^2"   # an old name

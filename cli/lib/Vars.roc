@@ -83,8 +83,8 @@ Vars :: [].{
 	## The order of the result is the order of `vars`.
 	##
 	## Failures (kind `Usage`, exit 2): a name that is no alias of a variable: `'<x>' is not in the project` (slice 004, Q7). A name that is the alias of 2 or more
-	## variables (R-WS8: members use one alias for 2 groups): `alias '<x>' names <n> packages in the project: <full name>@<series>, <full name>@<series>. Use the full name.` The
-	## full name is `Var.name`, or the URL form when the variable has no name; the list is in the order of `vars`.
+	## variables (R-WS8: members use one alias for 2 groups): `"<x>" matches <n> packages. Use a name from the list.` (the line of the tie of R-SC14: `Lookup.find` prints the list before it, so
+	## this line is a backstop).
 	scope : {
 		command : [Install, Update],
 		names : List(Str),
@@ -241,13 +241,10 @@ named_indexes = |vars, names| names.fold_try(
 		match matches {
 			[] => Err(Fail.new(Usage, "'${name}' is not in the project"))
 			[(i, _)] => Ok(found.append(i))
-			_ => Err(Fail.new(Usage, "alias '${name}' names ${matches.len().to_str()} packages in the project: ${Str.join_with(matches.map(|(_, v)| full_name(v)), ", ")}. Use the full name."))
+			_ => Err(Fail.new(Usage, "\"${name}\" matches ${matches.len().to_str()} packages. Use a name from the list."))
 		}
 	},
 )
-
-full_name : Vars.Var -> Str
-full_name = |v| "${v.name ?? v.group.form}@${v.group.series}"
 
 # R-SP1 to R-SP5, R-SP20, R-DI11: the state of one variable for the command.
 scoped_one : [Install, Update], Bool, Bool, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped

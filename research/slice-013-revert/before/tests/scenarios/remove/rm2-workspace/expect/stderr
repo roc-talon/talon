@@ -1,0 +1,1 @@
+tln: error[usage]: no current member in the workspace at $PROJECT. Members: $PROJECT/apps/a/main.roc, $PROJECT/apps/b/main.roc. Pass --file <member file>.

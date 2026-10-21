@@ -16,7 +16,7 @@
 --- home/.cache/roc/talon/projects.json
 +++ home/.cache/roc/talon/projects.json
 @@ -0,0 +1 @@
-+{"format":1,"projects":[{"path":"$PROJECT/app/main.roc","last_use":1792065600},{"path":"$PROJECT/lib/main.roc","last_use":1792065600}]}
++{"format":1,"projects":[{"path":"$PROJECT/app/main.roc","last_use":1792065600},{"path":"$PROJECT/app2/main.roc","last_use":1792065600},{"path":"$PROJECT/lib/main.roc","last_use":1792065600}]}
 --- project/app/main.roc
 +++ project/app/main.roc
 @@ -1,9 +1,11 @@
@@ -33,6 +33,16 @@
  }
  
  main! = |_args| Ok({})
+--- project/app2/main.roc
++++ project/app2/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+-	local: "../lib/main.roc",
++	local: "https://github.com/acme/util/releases/download/1.1.0/FaSACze7PmHRTFb729jy9fkoZS2rNK2RretLTUpxLB51.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
 --- project/lib/main.roc
 +++ project/lib/main.roc
 @@ -1 +1 @@

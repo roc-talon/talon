@@ -44,7 +44,7 @@ InstallFlow :: [].{
 	## The flow of `Resolve.install!`. The steps are in the doc of `Resolve.install!`.
 	install! : Fx, Request => Try(Report.Outcome, Fail)
 	install! = |fx, request| {
-		start = ResolveBase.prepared!(fx, request)?
+		start = ResolveBase.prepared!(fx, request, Lock)?
 		loaded = start.loaded
 		built = start.built
 		decision = start.decision
@@ -97,10 +97,16 @@ frozen! = |fx, request, loaded, built, decision| {
 resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, Pin.Decision => Try(Report.Outcome, Fail)
 resolve! = |fx, request, loaded, built, decision| {
 	settings = ResolveBase.settings_of(request, loaded)
-	ResolveBase.check_pin(loaded, settings, decision)?
+	ResolveBase.check_pin(loaded, settings, decision, Lock)?
+	pin_notes = ResolveBase.pin_notes(decision)
+	for note in pin_notes {
+		fx.out!("note: ${note}\n")
+	}
 	snapshot = ResolveBase.snapshot_of(request, loaded.intent)?
 	picked = PickFlow.pick!(fx, request, loaded, built, settings, snapshot)?
-	finish!(fx, request, loaded, picked.facts, picked.chosen)
+	outcome = finish!(fx, request, loaded, picked.facts, picked.chosen)?
+	# R-SO20: the note of the pin is the first of `data.notes`.
+	Ok({ ..outcome, notes: pin_notes.concat(outcome.notes) })
 }
 
 no_edits : List(Edit)
@@ -146,18 +152,11 @@ fresh_step = |request, loaded, file, acc, row, c| {
 			edit = { file, op: Add({ alias: plan.alias, url: c.url, is_platform: f.is_platform }), line: "+ ${plan.alias}: ${f.name} ${c.version}", did: Added({ alias: plan.alias, name: f.name, version: c.version }) }
 			Ok({ ..state, header: acc.header.append({ alias: plan.alias, url: c.url, is_platform: f.is_platform }), edits: acc.edits.append(edit) })
 		}
-		Replace => match acc.header.find_first(|r| r.is_platform) {
+		Replace => match acc.header.find_first(|r| r.alias == plan.alias) {
 			Ok(old) => if old.url == c.url {
 				Ok(state)
 			} else {
-				from = { name: name_of(old.url), version: version_of(old.url) }
-				edit = {
-					file,
-					op: Set({ alias: plan.alias, url: c.url }),
-					line: "~ ${plan.alias}: ${from.name} ${from.version} -> ${c.version}",
-					did: Moved({ alias: plan.alias, from, to: { name: f.name, version: c.version } }),
-				}
-				Ok({ ..state, edits: acc.edits.append(edit) })
+				Ok({ ..state, edits: acc.edits.append(replace_edit(file, plan.alias, old.url, { name: f.name, version: c.version, url: c.url })) })
 			}
 			Err(_) => Ok(state)
 		}
@@ -169,6 +168,26 @@ fresh_step = |request, loaded, file, acc, row, c| {
 			}
 			Ok({ ..state, kept: acc.kept.append({ alias: plan.alias, name, version: version_of(plan.url), note }) })
 		}
+	}
+}
+
+# R-AD31, R-AD38: the edit that replaces the value of an entry. An unmanaged old value (R-H4) needs `Replace`: `Set` refuses it. A release is moved with `Set`.
+replace_edit : Str, Str, Str, { name : Str, version : Str, url : Str } -> Edit
+replace_edit = |file, alias, old, new| match Ident.of_url(old) {
+	Ok(ident) => {
+		from = { name: ident.name ?? old, version: ident.version }
+		{
+			file,
+			op: Set({ alias, url: new.url }),
+			line: "~ ${alias}: ${from.name} ${from.version} -> ${new.version}",
+			did: Moved({ alias, from, to: { name: new.name, version: new.version } }),
+		}
+	}
+	Err(Foreign) => {
+		file,
+		op: Replace({ alias, url: new.url }),
+		line: "~ ${alias}: ${old} -> ${new.name} ${new.version}",
+		did: Moved({ alias, from: { name: old, version: "" }, to: { name: new.name, version: new.version } }),
 	}
 }
 
@@ -211,6 +230,8 @@ finish! = |fx, request, loaded, facts, chosen| {
 	decision = Pin.decide({
 		members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: changes.any(|e| e.file == m.file) }),
 		compiler: request.compiler,
+		toolchain: request.toolchain,
+		role: Lock,
 		req: loaded.intent.toolchain.roc,
 		nightly: ResolveBase.settings_of(request, loaded).nightly,
 		no_check: request.no_check,
@@ -228,7 +249,7 @@ finish! = |fx, request, loaded, facts, chosen| {
 	closures = ResolveBase.closure!(
 		fx,
 		request,
-		{ members: loaded.members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, changes) }), known: ResolveBase.known_nodes(facts.known) },
+		{ members: loaded.members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, changes) }), known: ResolveBase.known_nodes(facts.known).concat(facts.paths) },
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))

@@ -1,0 +1,11 @@
+install file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+update file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+update other file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+install json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+install other file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+install json@^2 file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+install acme/json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+install acme/json@^2 as=json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+install acme/pf platform file=plat/main.roc compiler=nightly-2026-10-14-38a3029
+install acme/json as=json file=key/main.roc compiler=nightly-2026-10-14-38a3029

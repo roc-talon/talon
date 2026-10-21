@@ -26,3 +26,9 @@ exit 0
 == add acme/lex --no-check --json --file lib/main.roc
 {"schema":1,"command":"add","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":"skipped","build":"skipped","added":[{"alias":"lex","name":"acme/lex","version":"1.2.0"}],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":["$PROJECT/lib/main.roc"]},"error":null}
 exit 0
+== add local --json --file app/main.roc
+{"schema":1,"command":"add","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":null,"build":null,"added":[],"moved":[],"kept":[{"alias":"local","name":"../lib/main.roc","version":""}],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+exit 0
+== add acme/util --as local --no-check --json --file app2/main.roc
+{"schema":1,"command":"add","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":"skipped","build":"skipped","added":[],"moved":[{"alias":"local","from":{"name":"../lib/main.roc","version":""},"to":{"name":"acme/util","version":"1.1.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["entry changes: ../lib/main.roc -> acme/util 1.1.0"],"written":["$PROJECT/app2/main.roc"]},"error":null}
+exit 0

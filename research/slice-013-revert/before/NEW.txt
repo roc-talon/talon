@@ -1,0 +1,8 @@
+tests/commands/cases/ladder/ld-no-check-refuse/given/project/q5/
+tests/commands/cases/ladder/ld-no-check-refuse/given/project/q6/
+tests/commands/cases/ladder/ld-no-check-refuse/given/project/q7/
+tests/commands/cases/ladder/ld-no-check-refuse/given/project/q8/
+docs/slices/013-pin-gate.md
+research/slice-013-revert/mutate.py
+research/slice-013-revert/results.md
+research/slice-013-revert/cli-stub.sha256

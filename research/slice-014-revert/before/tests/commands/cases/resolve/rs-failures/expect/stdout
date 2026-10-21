@@ -1,0 +1,20 @@
+== update nosuch compiler=nightly-2026-10-14-38a3029
+exit 2
+== install file=hi/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== update json@^2.3 file=ok/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== update json@=2.2.0 file=ok/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== install file=short/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install file=pin/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10
+== install file=snap/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install file=ws/apps/a/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install file=pins/apps/a/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== update json file=pin/main.roc compiler=nightly-2026-10-14-38a3029
+exit 10

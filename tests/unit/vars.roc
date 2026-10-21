@@ -160,7 +160,7 @@ expect {
 # R-SP1 R-SP2 R-SP3 R-SP5 R-SP10 R-SP11 R-SP14 R-SP19 R-SP20 R-SP21 R-WS3 R-WS8 R-VA5 R-DI11: the free and held variables of a command. `install` with no names frees a variable that has a use outside the
 # intersection of its ranges (R-SP20, R-WS3: the members hold 2.1.0, 2.3.0 and 2.0.0, and the ranges are `^2.2`, `^2.3`, `^2.0`), and holds the others (R-SP19). With no `talon.toml` and one member nothing
 # is free (R-SP21). `update` with no names frees each variable that has an index (R-SP2), and holds a fixed host with a note (R-DI11). `update X Y` frees only the named (R-SP3, R-SP11). `update X@sel`
-# replaces the ranges of X with the selector and opens the series (R-SP5). A name is an alias of some member: `pf` is 2 groups in the workspace (R-WS8): exit 2 and the full names. The picker of `update -i`
+# replaces the ranges of X with the selector and opens the series (R-SP5). A name is an alias of some member: `pf` is 2 groups in the workspace (R-WS8): exit 2 and the line of the tie of R-SC14 (`Lookup.find` prints the list before it, slice 014). The picker of `update -i`
 # lists the free variables of `update` in order (R-SP14).
 expect {
 	a = member("/w/apps/a/main.roc", app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "http: \"${http1}\""]), Ok({ path: "/w/talon.toml", text: "[workspace]\nmembers = []\n\n[dependencies]\njson = \"^2.2\"\n", role: Root }))
@@ -218,7 +218,7 @@ expect {
 			Ok([(["json"], Bool.True, Bool.True, Err(None)), (["parser"], Bool.False, Bool.False, Err(None)), (["fixed"], Bool.False, Bool.False, Err(None)), (["pf"], Bool.False, Bool.False, Err(None))]),
 		),
 		("update nope", view(scope(Update, ["nope"], [], vars)), Err("tln: error[usage]: 'nope' is not in the project")),
-		("update pf: 2 groups (R-WS8)", view(scope(Update, ["pf"], [], vars)), Err("tln: error[usage]: alias 'pf' names 2 packages in the project: roc-lang/basic-cli@0.25, roc-lang/basic-webserver@0.12. Use the full name.")),
+		("update pf: 2 groups (R-WS8)", view(scope(Update, ["pf"], [], vars)), Err("tln: error[usage]: \"pf\" matches 2 packages. Use a name from the list.")),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
@@ -234,4 +234,20 @@ expect {
 	picks = [Vars.picker(one_vars), Vars.picker([])]
 	dbg [selector_ranges.len() == 1, picks.len() == 2]
 	bad == [] and selector_ranges == [("^3", "selector")] and picks == [["json", "parser", "pf"], []]
+}
+
+# R-H9 R-H4 R-I3 R-I5 R-OV1 (slice 015): a key of `talon.toml` whose alias is an unmanaged entry (a path entry or a foreign URL) is no constraint and adds no entry. The entry is no variable (R-H7), so the key has no variable to
+# limit, and the header has the alias, so the key is no want (R-I5): not for `[dependencies]`, not for `[overrides]`, and not when the value names a repo (`roc-lang/http@^2`). The key of a release in the same file still
+# gives its range (R-I3). So `install`, `update` and `verify` with no names keep the unmanaged entries byte for byte, and the key applies again when the entry is a release.
+expect {
+	header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "util: \"../util/main.roc\"", "odd: \"https://example.com/pkg/latest.tar.gz\""])
+	toml_text = "[dependencies]\nutil = \"^1\"\nodd = \"roc-lang/http@^2\"\njson = \"^2.1\"\n\n[overrides]\nutil = \"=1.0.0\"\nodd = \"roc-lang/http@=2.0.0\"\n"
+	one = member("/p/main.roc", header, Ok({ path: "/p/talon.toml", text: toml_text, role: Standalone }))
+	view = match Vars.build({ members: [one], priority: Err(Unset) }) {
+		Ok(b) => Ok((b.vars.map(|v| (v.uses.map(|u| u.alias), v.ranges.map(|r| (r.range, r.from)))), b.wants.map(view_want)))
+		Err(e) => Err(e.line())
+	}
+	want = Ok(([(["json"], [("^2.1", "/p/talon.toml:4")]), (["pf"], [(">=0.25.0, <0.26.0", "implied by /p/main.roc")])], []))
+	dbg view
+	view == want
 }

@@ -1,0 +1,6 @@
+tln: error[conflict]: $PROJECT/app/main.roc changed while tln ran. Nothing was written. Run the command again.
+check: skipped
+$PROJECT/lib/main.roc
+  + lex: acme/lex 1.2.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+local: ../lib/main.roc is in the header

@@ -22,6 +22,8 @@ exit 11
 exit 2
 == tln remove nosuch
 exit 2
+== tln remove util@1
+exit 2
 == tln remove
 exit 2
 == tln remove json --frozen

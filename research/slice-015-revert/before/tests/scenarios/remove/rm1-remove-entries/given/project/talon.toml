@@ -1,0 +1,11 @@
+[dependencies]
+json = "^2"
+parser = "^1"   # the parser range
+xml = "^1"
+lex = "^1"
+
+[overrides]
+parser = "acme/parser@^1.0.3"
+
+[patch]
+parser = { path = "./.talon/patches/parser/main.roc", base = "EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc" }

@@ -7,3 +7,21 @@ tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolcha
 tln: error[usage]: snapshot log:5 needs a registry: direct has no log. Use a UTC time, for example 2026-10-12T00:00:00Z.
 tln: error[usage]: $PROJECT/ws/talon.toml:5: the key 'parser' is in no header, and 2 members are under $PROJECT/ws: $PROJECT/ws/apps/a/main.roc, $PROJECT/ws/apps/b/main.roc. Run tln add --file <member file> acme/parser for one of them.
 tln: error[usage]: members have different roc pins: $PROJECT/pins/apps/a/main.roc nightly-2026-10-14-38a3029, $PROJECT/pins/apps/b/main.roc nightly-2026-10-09-258ab27. Run tln roc use <id> or tln upgrade roc.
+tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolchain] roc (0.1.0). Run tln upgrade roc or tln roc use <id>.
+"pf" matches 2 packages:
+  acme/pf       platform (pf)
+  acme/pfx      platform (pf)
+tln: error[usage]: "pf" matches 2 packages. Use a name from the list.
+"roc-lang/http" matches 2 packages:
+  roc-lang/http@1      direct (http1)
+  roc-lang/http@2      direct (http2)
+tln: error[usage]: "roc-lang/http" matches 2 packages. Use the alias of the entry to move: tln update http1@3
+"roc-lang/http" matches 2 packages:
+  roc-lang/http@1      direct (http1)
+  roc-lang/http@2      direct (http2)
+tln: error[usage]: "roc-lang/http" matches 2 packages. Use the alias of the entry to move: tln update http1@3
+"roc-lang/http" matches 2 packages:
+  roc-lang/http@1      direct (http1)
+  roc-lang/http@2      direct (http2)
+tln: error[usage]: "roc-lang/http" matches 2 packages. Use a name from the list.
+tln: error[usage]: no release of roc-lang/http matches '3'. Close versions: 2.0.0, 1.9.0.

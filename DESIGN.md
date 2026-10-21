@@ -161,12 +161,24 @@ app [main!] {
 | R-H1 | Talon edits only string literals and whole entries. It keeps comments, order and formatting. It uses a span-based edit, not a reprint. |
 | R-H2 | Talon never runs `roc fmt` on the header. (`roc fmt` moves the `roc:` pin.) |
 | R-H3 | Every URL that Talon writes is a release URL with a version and a hash. |
-| R-H4 | Talon never changes a path entry or a URL it cannot identify. It lists them as "foreign" in `tln ls`. |
+| R-H4 | An unmanaged entry is a path entry, or a foreign URL: a URL that is not a release URL of 4.1 (no version, no hash, 2 versions, `0.0.0`, for example the source archive of a git ref). Talon never writes the value of an unmanaged entry, never writes a new one (R-H3), and never edits the file that a path entry names. It changes an unmanaged entry only as a whole, and only when the user names its alias in a command that removes or replaces that entry (R-H9). A temp copy for a probe is not the project: there Talon rewrites path prefixes (Resolution 4, R-LD4). `tln ls` marks an unmanaged entry "foreign" (CLI 1, R-CM9). |
 | R-H5 | Talon never writes a mirror URL. The host is part of the group, so a mirror URL is a different package to Roc. Mirrors feed the cache only. |
 | R-H6 | Talon writes `roc:` whenever it resolves the nightly. The pin records the nightly that the last probe passed with. With `--no-check` (Resolution 4), no whole-app probe ran, so Talon does not move the pin. It keeps the old `roc:` entry as it is, writes none if there was none, and resolves on that nightly only. The header then carries no verified pin claim for the new tuple. |
-| R-H7 | A path entry is part of the closure, as in roc. Talon reads the header of the file that it names (relative to the project file). Its URL entries join the closure and MVS (section 2), its `import` lines join the lexical scan (Resolution 4), and GC counts its closure (CLI 1, R-PD12). A path entry is not a variable: it has no index and no version, and Talon never changes it (R-H4). A path entry in that header follows the same rule. |
+| R-H7 | A path entry is part of the closure, as in roc. Talon reads the header of the file that it names (relative to the project file). Its URL entries join the closure and MVS (section 2), its `import` lines join the lexical scan (Resolution 4), and GC counts its closure (CLI 1, R-PD12). A path entry is not a variable: it has no index and no version, so Talon never moves it (R-H4). A path entry in that header follows the same rule, and no command removes or replaces it: it is not an entry of the project header. |
 
 R-H8: A package header is also a lock, with one difference: consumers treat its versions as minimums (MVS). So a library records the lowest version it supports (Resolution 8).
+
+R-H9: What each command does with an unmanaged entry (R-H4):
+
+| Command | Talon does |
+| --- | --- |
+| `install`, `update`, `upgrade`, `verify` with no names | Keeps it byte for byte. It is no variable. The URL entries of a path file still join the closure and MVS (R-H7). A `talon.toml` or `[overrides]` key of its alias is no constraint (R-I3: the key is in the header) and adds no entry (R-I5). The key applies again when the entry is a release. |
+| `update X`, `upgrade X`, `add X@sel` (form 1), where X is its alias | Exit code 2 (CLI 3, R-EC2). The message says that Talon never changes it, and names `tln add <name> --as X`. |
+| `add X` (form 1, no selector) | Changes nothing (CLI 2, R-AD21). Exit code 0. |
+| `add <name>`, and the default alias is its alias | Stops (CLI 2, R-AD18). |
+| `add <name> --as X`, `add --platform <name>` | Replaces the whole entry with a release URL (CLI 2, R-AD38, R-AD31). |
+| `remove X` | Removes the whole entry (CLI 2, R-RV5). Not the platform (R-RV3). |
+| `patch X` | Exit code 2 (Resolution 7, R-PA14). |
 
 ### 4.3 talon.toml: intent only
 
@@ -243,14 +255,14 @@ R-WS10: Two series of one package are two groups (section 2), so they are two va
 | R-WS3 | Two members with different versions of one group do not satisfy R-WS2 together. `tln install` resolves that group as an entry out of range (Resolution 9). The implied ranges are never lower than a header version, so the result is at least the highest member version. `--frozen` fails with exit code 14. |
 | R-WS4 | Two members with different `roc:` values have no nightly to hold (R-RP2). `install`, `add`, `update` and `remove` stop with exit code 2. The error lists the members and their pins, and names `tln roc use <id>` and `tln upgrade roc`. A member with no `roc:` entry gets the workspace value (R-RP3). |
 | R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[toolchain]`, `[resolution]` and `[audit]` (CLI 1, R-AU15). It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, and R-WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
-| R-WS6 | A `[dependencies]` key is an alias. It applies to each member under the directory of that `talon.toml` whose header has that alias. For a key that no such header has (row "no, yes" in 4.3), `tln install` adds the entry only when exactly one member is under that directory. Else it stops with exit code 2 and names `tln add --file <member file>` (CLI 1, R-PD5). |
+| R-WS6 | A `[dependencies]` key is an alias. It applies to each member under the directory of that `talon.toml` whose header has that alias. For a key that no such header has (row "no, yes" in 4.3), `tln install` adds the entry only when exactly one member is under that directory. Else it stops with exit code 2 and names `tln add --file <member file>` (CLI 1, R-PD5). Only `tln install` runs this check. `update`, `upgrade` and `verify` ignore the key (R-I5). |
 | R-WS7 | A range in any `talon.toml` of the workspace constrains the group variable of all members (R-WS2). So one range is enough for a group that many members use. Talon has no catalog (Bun, pnpm): a catalog keeps the members on one version, and R-WS2 already does that. |
-| R-WS8 | An alias that names different groups in different members is a tie (CLI 2). A command that takes names stops with exit code 2 and lists the full names. |
+| R-WS8 | An alias that names different groups in different members is a tie (CLI 2). A command that takes names stops with exit code 2 and lists the groups as in the tie of CLI 2, R-SC14. |
 
 | # | Command | Members that it writes |
 | --- | --- | --- |
 | R-WS11 | `tln install` with no names, `update`, `upgrade` | Each member that has an entry for a group that moves (R-WS1). |
-| R-WS12 | `tln add`, `tln remove` | One member: the current member (CLI 1, R-PD4, R-PD5). `--file <member file>` names it. With no current member, Talon stops with exit code 2 and lists the members. A group that other members have is held at their version (Resolution 9). If that version must move, prompt R-NI3 asks, and the move writes those members too. |
+| R-WS12 | `tln add`, `tln remove` | One member: the current member (CLI 1, R-PD4, R-PD5). `--file <member file>` names it. With no current member, Talon stops with exit code 2 and lists the members. A group that other members have is held at their version (Resolution 9). The range of the new entry joins the ranges of that group (R-WS2). If that version must move, prompt R-NI3 asks, and the move writes those members too (Resolution 9, R-SP23 to R-SP25). |
 | R-WS13 | `tln roc use` | The `roc:` entry of each member, because the workspace has one nightly |
 
 R-WS14: `talon.toml` writes of `tln add` (CLI 2) go to the nearest `talon.toml` on the path from the member file up to the workspace root.
@@ -275,7 +287,7 @@ Ids, and where each group is:
 | G1 to G9, N1 to N3 | Goals, non-goals | 1 |
 | R-CR1 | Cache roots | 2.2 |
 | R-ID1 to R-ID7 | Identity | 4.1 |
-| R-H1 to R-H8 | The header as lockfile | 4.2 |
+| R-H1 to R-H9 | The header as lockfile, unmanaged entries | 4.2 |
 | R-I1 to R-I9 | `talon.toml`: intent, implied ranges, the group check, `talon.toml` of a dependency | 4.3 |
 | R-VA1 to R-VA6 | Variables, anchors, `priority` | Resolution 1 |
 | R-NS1 to R-NS12 | The `nightly` switch | Resolution 1 |
@@ -285,22 +297,22 @@ Ids, and where each group is:
 | R-P1 to R-P8 | Probe rules | Resolution 4 |
 | R-PP1 to R-PP7 | Parallel probes | Resolution 4 |
 | R-PB1 to R-PB7 | `tln probe` | Resolution 4 |
-| R-AL1 to R-AL7 | Algorithm steps | Resolution 5 |
+| R-AL1 to R-AL9 | Algorithm steps, header facts, the closure rule | Resolution 5 |
 | R-OV1, R-OV2 | Overrides | Resolution 6 |
 | R-LB1 to R-LB4 | Libraries | Resolution 8 |
-| R-SP1 to R-SP22 | Scope of `update`, `upgrade`, `install` | Resolution 9 |
+| R-SP1 to R-SP26 | Scope of `update`, `upgrade`, `install`, held moves | Resolution 9 |
 | R-RP1 to R-RP4 | The `roc:` pin | Resolution 9 |
 | R-UP1 to R-UP13 | Upgrade and new series | Resolution 10 |
 | R-DT1 to R-DT6 | Determinism, snapshots | Resolution 11 |
 | R-LF1 to R-LF5 | Lock and frozen modes | Resolution 12 |
-| R-SO1 to R-SO18 | Compiler selection order | Resolution 13 |
+| R-SO1 to R-SO22 | Compiler selection order, the held nightly | Resolution 13 |
 | R-CM1 to R-CM23, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
 | R-SH1 to R-SH11 | Sharing probe results, `tln share`, the first-run prompt | CLI 1 |
 | R-AU1 to R-AU15 | `tln audit` | CLI 1 |
 | R-MV1 to R-MV5 | `tln move` | CLI 1 |
 | R-EV1 to R-EV26 | Environment variables, test hooks | CLI 1 |
-| R-SL1 to R-SL15, R-SC1 to R-SC15 | Selectors, scopes and name forms | CLI 2 |
-| R-AD1 to R-AD37, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
+| R-SL1 to R-SL15, R-SC1 to R-SC16 | Selectors, scopes and name forms | CLI 2 |
+| R-AD1 to R-AD38, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
 | R-E1 to R-E6, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
 | R-NM1 to R-NM12, R-NI1 to R-NI16, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
 | R-IN1 to R-IN7 | `tln init` | CLI 5 |
@@ -321,7 +333,7 @@ Ids, and where each group is:
 | R-DI1 to R-DI15 | Index with no registry (`direct`) | CLI 7.3 |
 | R-WS1 to R-WS14 | Workspaces | 4.4 |
 | R-EP1 to R-EP14 | Epochs and inferred facts | Resolution 4 |
-| R-PA1 to R-PA13 | Patches | Resolution 7 |
+| R-PA1 to R-PA14 | Patches | Resolution 7 |
 | R-PD1 to R-PD17 | Project discovery, known projects | CLI 1 |
 | R-OUT1 to R-OUT5 | Who decides the output | CLI 3 |
 | R-GP1 to R-GP7 | Generic packages | 6.1 |
@@ -513,10 +525,10 @@ P0 limits. P0 runs the rules of the design as written, with less to work with. P
 | # | Item | P0 | P1 adds |
 | --- | --- | --- | --- |
 | R-PH6 | Compiler | The only installed compiler is the `roc` on `PATH` (Resolution 13, rank 7). Ranks 1 to 4 can select it when they name its id. There is no `toolchains/` and no global default. | Installed compilers, ranks 1 to 6 with downloads |
-| R-PH7 | Compiler downloads | None. A rank that selects another compiler is a required download (R-DL2). P0 refuses it as `TALON_AUTO_INSTALL=no` does: exit code 13 (R-DL5). The error names the compiler id, and says that P0 runs only the `roc` on `PATH`. It does not name `--allow-downloads` or `TALON_AUTO_INSTALL`: P0 does not read them. Prompts R-NI4, R-NI5, R-NI6 and R-NI12 never show. | The consent rules R-DL1 to R-DL6 |
+| R-PH7 | Compiler downloads | None. A held `roc:` pin, or a rank that selects another compiler, is a required download (R-DL2) when a probe needs it (Resolution 13, R-SO22). P0 refuses it as `TALON_AUTO_INSTALL=no` does: exit code 13 (R-DL5). The error names the compiler id, and says that P0 runs only the `roc` on `PATH`. It does not name `--allow-downloads` or `TALON_AUTO_INSTALL`: P0 does not read them. Prompts R-NI4, R-NI5, R-NI6 and R-NI12 never show. | The consent rules R-DL1 to R-DL6 |
 | R-PH8 | Nightly | Always held (R-RP2). With no `roc:` entry, Talon writes the id of the `roc` on `PATH` (R-RP3), if it is a nightly or a release. | `upgrade roc`, `roc use` |
 | R-PH9 | Probes | The baseline check, the whole-app check and the build (ladder steps 2 and 3, Resolution 4) on one tuple. No unit probes (step 1). No `compat.db`, so the build skip never applies. | Unit probes, `compat.db`, the build skip |
-| R-PH10 | Search | One tuple: the best one by `priority` under R-C1 to R-C4, R-C6, R-C7 and R-C9 (Resolution 5 step 3). If the ladder fails on it, Talon stops with exit code 10 and the blame of the ladder. | The PubGrub oracle loop (Resolution 5 steps 4 and 5), which tries other tuples |
+| R-PH10 | Search | One tuple: the best one by `priority` under R-C1 to R-C4, R-C6, R-C7 and R-C9 (Resolution 5 step 3). With no tuple, the second search of a held move (Resolution 9, R-SP24) gives the one tuple. If the ladder fails on it, Talon stops with exit code 10 and the blame of the ladder. | The PubGrub oracle loop (Resolution 5 steps 4 and 5), which tries other tuples |
 | R-PH11 | Index | `direct` (CLI 7.3). The built-in default is `direct` until P2 (CLI 1). R-DI7 extracts a candidate with `roc unbundle` of the `roc` on `PATH` (CLI 7.1), and reads its `main.roc`. | P2: the registry |
 | R-PH12 | Output of `why` | The paths from the app to a package | The evidence for each version |
 

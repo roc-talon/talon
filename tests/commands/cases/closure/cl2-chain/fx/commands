@@ -2,3 +2,6 @@ update --no-check --strategy lowest --file p1/main.roc
 update --no-check --file p2/main.roc
 why core --file p1/main.roc
 why text --file p1/main.roc
+update --no-check --strategy lowest --file p4/main.roc
+update --no-check --file p5/main.roc
+verify --no-check --file p4/main.roc

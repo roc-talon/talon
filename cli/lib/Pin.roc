@@ -69,6 +69,8 @@ Pin :: [].{
 	## | --- | --- |
 	## | `members` | One row for each member file, in order: its `roc:` entry text (`Err(NoPin)` when it has none), and `changes`: the command writes the header of this member for another change |
 	## | `compiler` | The id of the selected compiler: in P0 the `roc` on `PATH` (R-PH8), when its id is a nightly or a release. `Err(NoCompiler)` for no compiler, or a local build id (`debug-<sha>`: R-SO11, never written). |
+	## | `toolchain` | `ROC_TOOLCHAIN` (rank 2, R-SO2), a full compiler id that `Compiler.toolchain_of` checked. `Err(Unset)` when it is not set (slice 013) |
+	## | `role` | `Lock`: the command holds and writes the nightly (`install`, `add`, `update`, `remove`). `Verify`: `tln verify`, it writes nothing (R-SO21). (slice 013) |
 	## | `req` | `[toolchain] roc` of the workspace root or the project `talon.toml` |
 	## | `nightly` | The `nightly` switch (R-NS8 to R-NS11), after the priority of its sources |
 	## | `no_check` | `--no-check` (R-LF3, R-H6) |
@@ -86,13 +88,26 @@ Pin :: [].{
 	## | A member that has no pin, `changes` false | No write: a missing pin alone is not a change (R-RP3) |
 	## | A member that has a pin | No write, never (R-RP1, R-RP2: P0 holds the nightly) |
 	##
+	## Slice 013 (R-SO19 to R-SO21, G-pin-gate section 3): `held` and `held_from` for each case, and the `note`:
+	##
+	## | Pin of the members | `toolchain` | `role` | `held` | `held_from` | `note` |
+	## | --- | --- | --- | --- | --- | --- |
+	## | `P` | not set, or `P` | `Lock` or `Verify` | `P` | `Pin` | `Err(None)` |
+	## | `P` | `T`, not `P` | `Lock` | `P` (R-SO20: the pin stays, the probes run on it) | `Pin` | `Ok(<text>)`, see `toolchain_note` |
+	## | `P` | `T`, not `P` | `Verify` | `T` (R-SO21: `verify` writes nothing, so it probes on rank 2) | `Env` | `Err(None)` |
+	## | none | `T` | `Lock` or `Verify` | `T` (R-SO19: rank 2 selects the held nightly. R-SO22: no `roc` on `PATH` is needed) | `Env` | `Err(None)` |
+	## | none | not set | `Lock` or `Verify` | `compiler` | `Path` | `Err(None)` |
+	##
+	## `outside` is the same in all rows: R-SO21 says that the pin of the header is checked also in `Verify` (R-RP2). `writes` is made from `held` (R-RP3).
+	##
 	## `writes` has the order of `members`.
-	## `pinned` is true when a member has a pin (`held` is the pin), false when `held` is the selected compiler (`gate` checks that one).
+	## `held_from` says which rank gave `held`: `Pin` needs no `gate` (G5), `Env` and `Path` do (`ResolveBase.check_pin`).
 	Decision : {
 		held : Try(Str, [NoCompiler]),
+		held_from : [Pin, Env, Path],
+		note : Try(Str, [None]),
 		writes : List({ file : Str, id : Str }),
 		outside : Try(Str, [None]),
-		pinned : Bool,
 	}
 
 	## Where the value of the `nightly` switch comes from (R-NS8 to R-NS10): the environment, `[toolchain] nightly` of `talon.toml`, `nightly` of `config.toml`, or the default (on).
@@ -101,6 +116,8 @@ Pin :: [].{
 	decide : {
 		members : List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }),
 		compiler : Try(Str, [NoCompiler]),
+		toolchain : Try(Str, [Unset]),
+		role : [Lock, Verify],
 		req : Try(Req, [Unset]),
 		nightly : Bool,
 		no_check : Bool,
@@ -111,16 +128,17 @@ Pin :: [].{
 		if texts.len() >= 2 {
 			Err(Fail.new(Usage, "members have different roc pins: ${Str.join_with(pins.map(|p| "${p.file} ${p.text}"), ", ")}. Run tln roc use <id> or tln upgrade roc."))
 		} else {
-			held = match texts {
+			pin = match texts {
 				[one] => Ok(one)
-				_ => facts.compiler
+				_ => Err(NoPin)
 			}
+			choice = held_choice(pin, { compiler: facts.compiler, toolchain: facts.toolchain, role: facts.role })
 			can_write = !facts.no_check
-			writes = match held {
+			writes = match choice.held {
 				Ok(id) if can_write => facts.members.keep_if(|m| m.pin == Err(NoPin) and m.changes).map(|m| { file: m.file, id })
 				_ => []
 			}
-			Ok({ held, writes, outside: outside_pin(texts, { req: facts.req, nightly: facts.nightly }), pinned: !texts.is_empty() })
+			Ok({ held: choice.held, held_from: choice.held_from, note: choice.note, writes, outside: outside_pin(texts, { req: facts.req, nightly: facts.nightly }) })
 		}
 	}
 
@@ -142,6 +160,11 @@ Pin :: [].{
 		}
 	}
 
+	## R-SO20: the one note of a `Lock` command that holds the header pin `pin` while `ROC_TOOLCHAIN` names `toolchain`. It names both ids and `tln roc use <id>`.
+	## The text is a proposal (TW24): `ROC_TOOLCHAIN is <toolchain>, but the header pin is <pin>. This command keeps the pin. To change the pin, run tln roc use <toolchain>.`
+	toolchain_note : { pin : Str, toolchain : Str } -> Str
+	toolchain_note = |facts| "ROC_TOOLCHAIN is ${facts.toolchain}, but the header pin is ${facts.pin}. This command keeps the pin. To change the pin, run tln roc use ${facts.toolchain}."
+
 	## The name of a source of the switch, for the messages.
 	source_text : Source -> Str
 	source_text = |source| match source {
@@ -151,7 +174,7 @@ Pin :: [].{
 		Default => "the default"
 	}
 
-	## R-SO13, R-NS2, R-NS3, R-PH7: the check of the selected compiler (the `roc` on `PATH`) when no member has a pin (`Decision.pinned` is false).
+	## R-SO13, R-NS2, R-NS3, R-PH7: the check of the selected compiler (the `roc` on `PATH`) when no member has a pin (`Decision.held_from` is `Path`).
 	## P0 cannot select another compiler. The switch is checked first (R-NS2: with the switch off the domain of nightlies is empty).
 	##
 	## | Case | Result |
@@ -159,19 +182,42 @@ Pin :: [].{
 	## | `compiler` is a nightly, and `nightly` is false | Failure, kind `NoTuple` (exit 10): `the roc on PATH, <id>, is a nightly, and nightly is false (set by <source text>). No roc release is known, so no compiler can be selected.` |
 	## | `req` does not admit `compiler` | Failure, kind `Consent` (exit 13, R-PH7): `the roc on PATH, <id>, is outside [toolchain] roc (<req text>). This version of tln runs only the roc on PATH, so it cannot select another compiler.` |
 	## | Else | `Ok({})` |
-	gate : { compiler : Str, req : Try(Req, [Unset]), req_text : Try(Str, [Unset]), nightly : Bool, source : Source } -> Try({}, Fail)
+	##
+	## Slice 013 (R-SO19, R-SO13, G-pin-gate W4): `held_from` is the rank that selected `compiler`. `Path` gives the rows above. `Env` (no pin, `ROC_TOOLCHAIN` selected it) is exit 10 (kind `NoTuple`) for both a range that does not
+	## admit it and a nightly with the switch off. The switch is checked first, as for `Path`. The texts name the rank (a proposal, TW24):
+	##
+	## | Case with `Env` | Text |
+	## | --- | --- |
+	## | The switch is off and `compiler` is a nightly | `the compiler <id> from ROC_TOOLCHAIN is a nightly, and nightly is false (set by <source text>). Change ROC_TOOLCHAIN or the nightly switch.` |
+	## | `req` does not admit `compiler` | `the compiler <id> from ROC_TOOLCHAIN is outside [toolchain] roc (<req text>). Change ROC_TOOLCHAIN or [toolchain] roc.` |
+	##
+	## The caller does not call `gate` when a header has a pin (G5: R-RP2 checks the pin, and `Compiler.require` checks the pin compiler at the first probe), and not for `Verify` with `Env` (R-NS4).
+	gate : { compiler : Str, held_from : [Env, Path], req : Try(Req, [Unset]), req_text : Try(Str, [Unset]), nightly : Bool, source : Source } -> Try({}, Fail)
 	gate = |facts| {
-		if Pin.is_nightly(facts.compiler) and !facts.nightly {
-			Err(Fail.new(NoTuple, "the roc on PATH, ${facts.compiler}, is a nightly, and nightly is false (set by ${Pin.source_text(facts.source)}). No roc release is known, so no compiler can be selected."))
-		} else {
-			match (facts.req, facts.req_text) {
-				(Ok(req), Ok(text)) if !Pin.admits({ req, id: facts.compiler }) => Err(
-					Fail.new(Consent, "the roc on PATH, ${facts.compiler}, is outside [toolchain] roc (${text}). This version of tln runs only the roc on PATH, so it cannot select another compiler."),
-				)
-				_ => Ok({})
-			}
+		switch_off = Pin.is_nightly(facts.compiler) and !facts.nightly
+		source = Pin.source_text(facts.source)
+		match (facts.held_from, facts.req, facts.req_text) {
+			(Env, _, _) if switch_off => Err(Fail.new(NoTuple, "the compiler ${facts.compiler} from ROC_TOOLCHAIN is a nightly, and nightly is false (set by ${source}). Change ROC_TOOLCHAIN or the nightly switch."))
+			(Path, _, _) if switch_off => Err(Fail.new(NoTuple, "the roc on PATH, ${facts.compiler}, is a nightly, and nightly is false (set by ${source}). No roc release is known, so no compiler can be selected."))
+			(Env, Ok(req), Ok(text)) if !Pin.admits({ req, id: facts.compiler }) => Err(Fail.new(NoTuple, "the compiler ${facts.compiler} from ROC_TOOLCHAIN is outside [toolchain] roc (${text}). Change ROC_TOOLCHAIN or [toolchain] roc."))
+			(Path, Ok(req), Ok(text)) if !Pin.admits({ req, id: facts.compiler }) => Err(
+				Fail.new(Consent, "the roc on PATH, ${facts.compiler}, is outside [toolchain] roc (${text}). This version of tln runs only the roc on PATH, so it cannot select another compiler."),
+			)
+			_ => Ok({})
 		}
 	}
+}
+
+# R-SO19 to R-SO21: the held value, the rank that gave it, and the note (the table of `Pin.decide`).
+held_choice : Try(Str, [NoPin]), { compiler : Try(Str, [NoCompiler]), toolchain : Try(Str, [Unset]), role : [Lock, Verify] } -> { held : Try(Str, [NoCompiler]), held_from : [Pin, Env, Path], note : Try(Str, [None]) }
+held_choice = |pin, facts| match (pin, facts.toolchain) {
+	(Ok(p), Ok(t)) if t != p => match facts.role {
+		Lock => { held: Ok(p), held_from: Pin, note: Ok(Pin.toolchain_note({ pin: p, toolchain: t })) }
+		Verify => { held: Ok(t), held_from: Env, note: Err(None) }
+	}
+	(Ok(p), _) => { held: Ok(p), held_from: Pin, note: Err(None) }
+	(Err(NoPin), Ok(t)) => { held: Ok(t), held_from: Env, note: Err(None) }
+	(Err(NoPin), Err(Unset)) => { held: facts.compiler, held_from: Path, note: Err(None) }
 }
 
 # A nightly tag, or a release version `X.Y.Z`.
