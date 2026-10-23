@@ -426,6 +426,8 @@ The user answered the questions of the first version of this study.
 | Q-S8 | One `[build] target` or a list | One (R-TG1) | 7 |
 | Q-S9 | `tln run --dry-run` | No. `tln run` with no name prints the scripts, and `tln run --each` with no name prints the order (R-RUN11, R-EA8) | 3 |
 | Q-S10 | `in` steps and `--each` | Both (R-RUN8, R-RUN13) | 3 |
+| Q-S11 | The lock of `[tools]` | (a) Change G1 and G2: `talon.toml` holds intent, and the lock (`url`) of each project tool. No lock file | 6.2, 13 |
+| Q-S12 to Q-S15 | See 12.1 | The lean of the study (12.1), unless the user objects | 12.1 |
 
 ### 12.1 New open questions (TW17)
 
