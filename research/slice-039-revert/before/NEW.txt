@@ -1,0 +1,14 @@
+cli/lib/NightlyFlow.roc
+cli/lib/NightlyPlan.roc
+docs/slices/039-upgrade-roc.md
+research/slice-039-revert/gen-ur.py
+research/slice-039-revert/mutate.py
+research/slice-039-revert/old-routes.py
+tests/commands/cases/upgrade/ug1-flow/fx/http/api.github.com/repos/roc-lang/nightlies
+tests/commands/cases/upgrade/ug2-lag/fx/http/api.github.com/repos/roc-lang/nightlies
+tests/commands/cases/upgrade/ur1-roc
+tests/commands/cases/upgrade/ur2-consent
+tests/commands/cases/upgrade/ur3-list
+tests/unit/nightlyplan.roc
+tests/unit/oraclefree.roc
+tests/commands/cases/upgrade/ur4-candidate

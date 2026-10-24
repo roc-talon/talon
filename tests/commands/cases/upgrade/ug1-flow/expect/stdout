@@ -1,0 +1,108 @@
+== upgrade --file p1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+  ~ parser: acme/parser 1.0.0 -> 2.0.0 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.1 new series
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0
+== upgrade --file p2/main.roc
+parser: anchor, held
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.1 new series
+$PROJECT/p2/talon.toml: json = "^3.0" (was "^2.1")
+$PROJECT/p2/talon.toml: pf = "0.2.*" (was "0.1.*")
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== upgrade parser --file p3/main.roc
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ parser: acme/parser 1.0.0 -> 2.0.0 new series
+$PROJECT/p3/talon.toml: parser = "=2.0.0" (was "=1.0.0")
+resolved at 2026-10-15T12:00:00Z, 4 probes
+exit 0
+== upgrade json --file p4/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+$PROJECT/p4/talon.toml: json = "acme/json@^3.0" (was "acme/json@^2.1")
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== upgrade --strategy lowest --file p1/main.roc
+exit 2
+== upgrade --file ws/apps/a/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/a/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.1 new series
+$PROJECT/ws/apps/b/main.roc
+  ~ j2: acme/json 2.1.0 -> 3.0.2 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.1 new series
+$PROJECT/ws/talon.toml: json = "^3.0" (was "^2.1")
+resolved at 2026-10-15T12:00:00Z, 4 probes
+exit 0
+== update --file p7/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/p7/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== update json@latest --file p5/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p5/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2
+$PROJECT/p5/talon.toml: json = "^3.0" (was "^2.1")
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== update json@latest --file p6/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p6/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== upgrade --dry-run --json --file p8/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":true,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.1.0"},"to":{"name":"acme/json","version":"3.0.2"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.2.1"}}],"kept":[],"pinned":null,"toml":[{"path":"$PROJECT/p8/talon.toml","key":"json","value":"^3.0"},{"path":"$PROJECT/p8/talon.toml","key":"pf","value":"0.2.*"}],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1"],"written":[]},"error":null}
+exit 0
+== upgrade json --file p9/main.roc
+note: talon.toml: json: the range does not admit 3.0.2, change it by hand
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p9/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== upgrade json --file p10/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p10/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+$PROJECT/p10/talon.toml: json = "^3.0" (was "^2.1")
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== update json@^2.1 parser@^1 --file p11/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p11/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+$PROJECT/p11/talon.toml: json = "^2.1"
+$PROJECT/p11/talon.toml: parser = "^1" (was "=1.0.0")
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0

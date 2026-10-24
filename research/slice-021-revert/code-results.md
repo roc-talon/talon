@@ -1,0 +1,59 @@
+# Revert check of the code, slice 021 (45 mutations, see code-mutate.py)
+
+Rule: a mutation is CAUGHT when a listed test fails. Only the tests that should catch it were run (no full sweep). The mutation script put all files back from `code-final/` before each mutation and compared them at the end: SAME as code-final (3 runs).
+First run: T2 (2 matches, rewritten), T5 and T10 (no compile, rewritten), T17b added. All 4 were run again (run2.log, run3.log).
+
+Result: caught 43 of 45. Not caught: T17, X1.
+
+| Not caught | Why |
+| --- | --- |
+| T17 (`size_text`: KB is cut, not rounded) | The rows of the test have no KB value that differs between cut and round (1000, 1500, 999949). T17b (the MB form) is caught. A test gap: a row such as `1550` (`1.6 KB`) would catch it. The test agent decides (TW18). |
+| X1 (`platform!`: `AARCH64` is `X64`) | The machine is x86_64, so `fxprobe platform` cannot show an arm64 CPU. L3 `ri-real-fx-jobs` checks against `uname`, so only the CPU of the host is tested. |
+
+| Id | Result |
+| --- | --- |
+| T1 | CAUGHT by l0:toolchain (R-CV8: macOS arm64 is the x64 asset) |
+| T2 | CAUGHT by l0:toolchain (R-CM15: the count of operands is wrong) |
+| T3 | CAUGHT by l0:toolchain (R-C7: auto has no age limit) |
+| T4 | CAUGHT by l0:toolchain (R-NS4: a name is limited by the age) |
+| T5 | CAUGHT by l0:toolchain (R-SC10: the text never names the host) |
+| T6 | CAUGHT by l0:toolchain (R-HF2: windows arm64 has no roc.exe) |
+| T7 | CAUGHT by l0:toolchain (R-HF5: tar keeps the top dir) |
+| T8 | CAUGHT by l0:toolchain (R-HF2: chmod on windows arm64) |
+| T9 | CAUGHT by l0:toolchain (R-CV4: a missing digest has the kind network) |
+| T10 | CAUGHT by l0:toolchain (R-SE11: a wrong hash is ok) |
+| T11 | CAUGHT by l0:toolchain (R-DA7: a 404 has the kind integrity) |
+| T12 | CAUGHT by l0:toolchain (R-SE9: tar refusal has the kind network) |
+| T13 | CAUGHT by l0:toolchain (R-GC10: a dir with a later time is not touched) |
+| T14 | CAUGHT by l0:toolchain (R-GC10: several ids are not sorted) |
+| T15 | CAUGHT by l0:toolchain (R-CV5: an unknown compat is an empty text) |
+| T16 | CAUGHT by l0:toolchain (R-SO15: a set default is written again) |
+| T17 | NOT CAUGHT by - (R-NI6: the size is cut, not rounded) |
+| T17b | CAUGHT by l0:toolchain (R-NI6: the MB size is cut, not rounded) |
+| T18 | CAUGHT by l0:toolchain (R-GC10: a present compiler has the compat warning) |
+| T19 | CAUGHT by l0:toolchain (R-J3: installed is always true) |
+| C1 | CAUGHT by l0:toolchain (R-DL3: the default answer is No) |
+| C2 | CAUGHT by l0:toolchain (R-NM4: the prompt is a Consent prompt) |
+| R1 | CAUGHT by l2:roc/ri1 (R-CC4 step 1: no early exit for an installed id) |
+| R2 | CAUGHT by l2:roc/ri1 (R-CC4 step 4: no check under the lock) |
+| R3 | CAUGHT by l2:roc/ri1 (R-CC5: no wait for a busy lock) |
+| R4 | CAUGHT by l2:roc/ri1 (R-CC4 step 5: stale temps stay) |
+| R5 | CAUGHT by l2:roc/ri1 (R-HF2: a wrong mode) |
+| R6 | CAUGHT by l2:roc/ri1 (R-HF2: chmod before the extract) |
+| R7 | CAUGHT by l2:roc/ri1 (D11: the default is set for a present compiler) |
+| R8 | CAUGHT by l2:roc/ri1 (R-CV4: the hash is not checked) |
+| R9 | CAUGHT by l2:roc/ri1 (R-SO15: the default is never set) |
+| R10 | CAUGHT by l2:roc/ri1 (R-NI6: a No is ignored) |
+| R11 | CAUGHT by l2:roc/ri1 (R-CC2: the temp dir stays after a failure) |
+| R12 | CAUGHT by l2:roc/ri1 (R-GC10: no compat check) |
+| R13 | CAUGHT by l2:roc/ri1 (R-DI12: --offline downloads) |
+| R14 | CAUGHT by l2:roc/ri1 (R-J1: the envelope is always printed) |
+| R15 | CAUGHT by l2:roc/ri1 (R-CC2: the probe dir stays) |
+| R16 | CAUGHT by l2:roc/ri1 (R-DA4: the archive stays) |
+| R17 | CAUGHT by l3:compilers/ri1 compilers/ri2 (R-C7: min-release-age is fixed) |
+| R18 | CAUGHT by l2:roc/ri1 (R-CC7: no second read before the write) |
+| R19 | CAUGHT by l2:roc/ri1 (R-NI6: no prompt) |
+| X1 | NOT CAUGHT by - (R-CV8: arm64 is x64) |
+| X2 | CAUGHT by l3:fx/ri-real (R-CV8: linux is macos) |
+| X3 | CAUGHT by l3:fx/ri-real (R-CV4: the hash of other bytes) |
+| S1 | CAUGHT by sh:scripts/test.sh selftest (TW26: WARN lines for OPT=speed) |

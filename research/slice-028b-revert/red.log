@@ -1,0 +1,191 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] { details: Err(NoDetails), kind: Usage, message: "nightly-2026-10-08-0badc0d has no asset for linux_x86_64" }
+[dbg] { details: Err(NoDetails), kind: Usage, message: "no compiler matches nightly-2026-10-08" }
+[dbg] { archive: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz", id: "nightly-2026-10-09-258ab27", item: "/c/roc/toolchains/nightly-2026-10-09-258ab27", meta: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/.talon.json", probe_dir: "/c/roc/talon/tmp/0123456789abcdef", probe_file: "/c/roc/talon/tmp/0123456789abcdef/empty.roc", roc: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc", temp: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp" }
+[dbg] { archive: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/roc_nightly-windows_arm64-2026-10-09-258ab27.zip", id: "nightly-2026-10-09-258ab27", item: "/c/roc/toolchains/nightly-2026-10-09-258ab27", meta: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/.talon.json", probe_dir: "/c/roc/talon/tmp/00000000000000ff", probe_file: "/c/roc/talon/tmp/00000000000000ff/empty.roc", roc: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/roc.exe", temp: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp" }
+[dbg] [Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Err(NotNeeded), Err(NotNeeded)]
+[dbg] []
+[dbg] [16, 16, 15, 18, 16, 15]
+[dbg] []
+[dbg] "{\"format\":1,\"id\":\"nightly-2026-10-09-258ab27\",\"url\":\"http://127.0.0.1:1/dl/a.tar.gz\",\"sha256\":\"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\",\"sha256_source\":\"github-digest\",\"typed\":\"@latest\",\"compat\":\"c0ffee\",\"installed_at\":\"2026-10-22T12:00:00Z\",\"published_at\":\"2026-10-09T15:01:06Z\"}
+"
+[dbg] "{\"format\":1,\"id\":\"nightly-2026-10-09-258ab27\",\"url\":\"http://127.0.0.1:1/dl/a.tar.gz\",\"sha256\":\"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\",\"sha256_source\":\"github-digest\",\"typed\":\"@latest\",\"compat\":null,\"installed_at\":\"2026-10-22T12:00:00Z\",\"published_at\":\"2026-10-09T15:01:06Z\"}
+"
+[dbg] []
+[dbg] [(999950000, "1.0 GB", "1000.0 MB"), (1000000000, "1.0 GB", "1000.0 MB"), (3100000000, "3.1 GB", "3100.0 MB"), (3149999999, "3.1 GB", "3150.0 MB"), (3150000000, "3.2 GB", "3150.0 MB")]
+[dbg] "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27?"
+
+── ✗ fail ─────────────────────────────────────── tests/unit/toolchain.roc:290:1
+
+expect {
+    sizes = [(0, "0 B"), (999, "999 B"), (1000, "1.0 KB"), (1500, "1.5 KB"), (1549, "1.5 KB"), (1550, "1.6 KB"), (1951, "2.0 KB"), (999_949, "999.9 KB"), (1_500_000, "1.5 MB"), (73_861_067, "73.9 MB"), (60_149_999, "60.1 MB"), (999_949_999, "999.9 MB"), (999_950_000, "1.0 GB"), (1_000_000_000, "1.0 GB"), (3_100_000_000, "3.1 GB"), (3_149_999_999, "3.1 GB"), (3_150_000_000, "3.2 GB")]
+    bad_sizes = sizes.keep_if(|(n, want)| Toolchain.size_text(n) != want).map(|(n, want)| (n, want, Toolchain.size_text(n)))
+    dbg bad_sizes
+    p = Consent.roc_install({ id: "nightly-2026-10-09-258ab27", size: 73_861_067 })
+    decide = |mode, yes| Prompt.decide(p, { mode, yes, flag: Err(NoFlag) })
+    declined = Consent.roc_install_declined("nightly-2026-10-09-258ab27")
+    dbg p.question
+    bad_sizes == []
+        and p.id == "roc-install"
+            and p.kind == Default
+                and p.shape == YesNo
+                    and p.default == Yes
+                        and p.question == "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27?"
+                            and p.subject == "the download of nightly-2026-10-09-258ab27"
+                                and (p.answer_line)(Yes) == "downloading nightly-2026-10-09-258ab27 (73.9 MB)"
+                                    and (p.answer_line)(No) == "no download of nightly-2026-10-09-258ab27"
+                                        and Prompt.text(p) == "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27? [Y/n] "
+                                            and Prompt.reply(p, "") == Ok(Yes)
+                                                and Prompt.reply(p, "n") == Ok(No)
+                                                    and decide(NonInteractive, Bool.False) == Use(Yes)
+                                                        and decide(NonInteractive, Bool.True) == Use(Yes)
+                                                            and decide(Interactive, Bool.False) == Ask
+                                                                and decide(NeedsTty, Bool.False) == NeedTty
+                                                                    and declined == Fail.new(Consent, "nightly-2026-10-09-258ab27 is not installed. Nothing was downloaded.")
+                                                                        and declined.kind.code() == 13
+}
+
+[dbg] { stderr: ["warning: the compat id of nightly-2026-10-09-258ab27 is not known: roc check touched 2 compat dirs (a, b)
+"], stdout: ["installed nightly-2026-10-09-258ab27
+", "nightly-2026-10-09-258ab27 is now the default compiler
+"] }
+[dbg] []
+[dbg] []
+Ran 15 tests in 1835.6 ms.:
+    14 passed
+    1 failed
+    0 compiler errors
+tests/unit/update.roc: All (2) tests passed in 1861.6 ms.
+tests/unit/vars.roc: All (6) tests passed in 1669.0 ms.
+tests/unit/verify.roc: All (2) tests passed in 1224.9 ms.
+tests/unit/why.roc: All (6) tests passed in 1908.3 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       read_files $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -tree_info $HOME/h2/.cache/roc/compat-five $HOME/h2/.cache/roc/compat-ten
+      -delete $HOME/h2/.cache/roc/compat-ten
+       unlock $HOME/h2/.cache/roc/talon/gc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,23 +1,3 @@
+      ---- home/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+      -+++ home/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+      -@@ -1 +0,0 @@
+      --package [Lib] {}
+      ---- home/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+      -+++ home/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+      -@@ -1 +0,0 @@
+      --package [Lib] {}
+      ---- home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/deep/x.roc
+      -+++ home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/deep/x.roc
+      -@@ -1 +0,0 @@
+      --module []
+      ---- home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -+++ home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -@@ -1 +0,0 @@
+      --package [Lib] {}
+      ---- home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.deps.json
+      -+++ home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.deps.json
+      -@@ -1 +0,0 @@
+      --{}
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -1 +1 @@
+      @@ -39,27 +19,3 @@
+       +++ home/.cache/roc-builds/compat-aaaaaaa/cache.bin
+       @@ -1 +0,0 @@
+       -build cache of a removed compiler
+      ---- home/.cache/roc-builds/compat-bbbbbbb/cache.bin
+      -+++ home/.cache/roc-builds/compat-bbbbbbb/cache.bin
+      -@@ -1 +0,0 @@
+      --old build cache of a kept compiler
+      ---- home/.cache/roc-builds/compat-over/x.bin
+      -+++ home/.cache/roc-builds/compat-over/x.bin
+      -@@ -1 +0,0 @@
+      --one second more than the age
+      ---- home/.cache/roc-builds/debug-9999999/e.bin
+      -+++ home/.cache/roc-builds/debug-9999999/e.bin
+      -@@ -1 +0,0 @@
+      --an old debug build cache
+      ---- home/.cache/roc-builds/nightly-2025-01-01-abc1234/c.bin
+      -+++ home/.cache/roc-builds/nightly-2025-01-01-abc1234/c.bin
+      -@@ -1 +0,0 @@
+      --an old nightly build cache
+      ---- home/.cache/roc-builds/nightly-2025-01-01-abc1234/deep/d.bin
+      -+++ home/.cache/roc-builds/nightly-2025-01-01-abc1234/deep/d.bin
+      -@@ -1 +0,0 @@
+      --second file of it
+      ---- home/h2/.cache/roc/compat-ten/x.bin
+      -+++ home/h2/.cache/roc/compat-ten/x.bin
+      -@@ -1 +0,0 @@
+      --ten days old
+commands: 64 passed, 3 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      ++++ project/out/link-to-t/deep/er/three
+      +@@ -0,0 +1 @@
+      ++c
+      +\ No newline at end of file
+      +--- project/out/link-to-t/deep/two
+      ++++ project/out/link-to-t/deep/two
+      +@@ -0,0 +1 @@
+      ++bbbbbbbbbb
+      +\ No newline at end of file
+      +--- project/out/link-to-t/link-to-deep/er/three
+      ++++ project/out/link-to-t/link-to-deep/er/three
+      +@@ -0,0 +1 @@
+      ++c
+      +\ No newline at end of file
+      +--- project/out/link-to-t/link-to-deep/two
+      ++++ project/out/link-to-t/link-to-deep/two
+      +@@ -0,0 +1 @@
+      ++bbbbbbbbbb
+      +\ No newline at end of file
+      +--- project/out/link-to-t/link-to-one
+      ++++ project/out/link-to-t/link-to-one
+      +@@ -0,0 +1 @@
+      ++aaaa
+      +\ No newline at end of file
+      +--- project/out/link-to-t/one
+      ++++ project/out/link-to-t/one
+      +@@ -0,0 +1 @@
+      ++aaaa
+      +\ No newline at end of file
+      +--- project/t/deep/er/three
+      ++++ project/t/deep/er/three
+      +@@ -0,0 +1 @@
+      ++c
+      +\ No newline at end of file
+      +--- project/t/deep/two
+      ++++ project/t/deep/two
+      +@@ -0,0 +1 @@
+      ++bbbbbbbbbb
+      +\ No newline at end of file
+      +--- project/t/link-to-deep/er/three
+      ++++ project/t/link-to-deep/er/three
+      +@@ -0,0 +1 @@
+      ++c
+      +\ No newline at end of file
+      +--- project/t/link-to-deep/two
+      ++++ project/t/link-to-deep/two
+      +@@ -0,0 +1 @@
+      ++bbbbbbbbbb
+      +\ No newline at end of file
+      +--- project/t/link-to-one
+      ++++ project/t/link-to-one
+      +@@ -0,0 +1 @@
+      ++aaaa
+      +\ No newline at end of file
+      +--- project/t/one
+      ++++ project/t/one
+      +@@ -0,0 +1 @@
+      ++aaaa
+      +\ No newline at end of file
+scenarios: 49 passed, 2 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   0.9      10
+fmt        pass   0.1      5
+l0         FAIL   5.0      10
+l2         FAIL   1.4      30
+l3         FAIL   9.4      60
+selftest   pass   7.0      20

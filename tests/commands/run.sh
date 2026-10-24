@@ -1,10 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # L2 runner: command code with the fake Fx, in a compiled basic-cli test app (TESTING.md 2.4).
 # Usage: tests/commands/run.sh [filter ...]
 #   UPDATE=1       write the actual output to expect/ (TW21)
 #   CASES=<dir>    another case tree (the self-test of the runner uses it)
 #   L2BIN=<file>   use this test app, do not build one
 #   JOBS=<n>       cases at the same time
+#   OPT=dev|speed  build mode of the test app (default dev, TW25). Another value: exit 2
 # A case is a dir `<area>/<id>-<name>/` that has a file `entry`. The work dir is $TMPDIR/talon-l2/<case>/.
 #   entry           the entry of tests/commands/main.roc: run | prompt | harness (one word)
 #   fx/             the answers of the fake Fx (the table is in tests/commands/FakeFx.roc)
@@ -27,6 +28,8 @@ run_case() {
     ln -s "$SELF/../fixtures" "$W/fixtures" # the real roc outputs of tests/fixtures/check/out, for the answers of the fake probes! (slice 006)
     [ -d "$dir/given" ] && cp -a "$dir/given/." "$W/"
     [ -d "$dir/fx" ] && cp -a "$dir/fx/." "$W/fx/"
+    # Slice 024: in a `.json` file of the given home and project (`projects.json`, a `.talon.json` with a path), `{w}` is the case dir, as in `fx/env`. The path of a project must be a real path.
+    find "$W/home" "$W/project" -name '*.json' -type f -exec sed -i "s#{w}#$W#g" {} + 2> /dev/null
     mkdir -p "$W/orig" && cp -a "$W/home" "$W/orig/home" && cp -a "$W/project" "$W/orig/project"
     entry=$(cat "$dir/entry")
     "$bin" "$W" "$entry" > "$W/out/app.log" 2>&1
@@ -63,9 +66,10 @@ if [ "${1:-}" = --case ]; then
     exit $?
 fi
 
+check_opt
 BIN=${L2BIN:-$WORK/bin/l2}
 if [ -z "${L2BIN:-}" ]; then
-    "$ROC" build "$SELF/main.roc" --output="$BIN" > "$WORK/build-l2.log" 2>&1 ||
+    "$ROC" build "$SELF/main.roc" --no-cache --opt="$OPT" --output="$BIN" > "$WORK/build-l2.log" 2>&1 ||
         { echo "build of the L2 app failed:"; cat "$WORK/build-l2.log"; exit 1; }
 fi
 

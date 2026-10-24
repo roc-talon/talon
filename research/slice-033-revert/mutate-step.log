@@ -1,0 +1,17 @@
+t1 the fuzz build follows OPT: caught (2 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t2 no --fuzz in the build: caught (5 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t3 --time in place of --runs: caught (2 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t4 no seed: caught (2 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t5 the target runs in the repo dir: caught (5 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t6 an old run dir stays: caught (1 rows)  SELFTEST FAIL: l1: the dir $WORK/l1/<name> is new for each run (a stale file must be gone)
+t7 no skip on another system: caught (1 rows)  SELFTEST FAIL: l1: Windows and Linux-aarch64 are skipped (exit 0, the text 'l1: skipped, roc-fuzz has no platform for <system>', no build), Darwin-arm
+t8 a failing run does not fail the step: caught (1 rows)  SELFTEST FAIL: l1: a target that exits 77 fails the step: exit 1, 'l1 FAIL', 'FAILED (exit 77, seed 1, 20000 runs)', the crash line, no libFuzzer nois
+t9 no replay line: caught (1 rows)  SELFTEST FAIL: l1: a target that exits 77 fails the step: exit 1, 'l1 FAIL', 'FAILED (exit 77, seed 1, 20000 runs)', the crash line, no libFuzzer nois
+t10 a failing build does not fail the step: caught (1 rows)  SELFTEST FAIL: l1: a failing build fails the step (exit 1, 'FAILED, the build', the build log) and runs nothing
+t11 l1 is not a default step: caught (1 rows)  SELFTEST FAIL: l1: the default steps of scripts/test.sh are 'check fmt l0 l1 l2 l3 selftest'
+t12 the libFuzzer noise stays in the report: caught (1 rows)  SELFTEST FAIL: l1: a target that exits 77 fails the step: exit 1, 'l1 FAIL', 'FAILED (exit 77, seed 1, 20000 runs)', the crash line, no libFuzzer nois
+t13 Darwin-arm64 is not supported: caught (1 rows)  SELFTEST FAIL: l1: Windows and Linux-aarch64 are skipped (exit 0, the text 'l1: skipped, roc-fuzz has no platform for <system>', no build), Darwin-arm
+t14 the budget of l1 is 90: caught (1 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t15 the default runs are 5: caught (2 rows)  SELFTEST FAIL: l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in $WORK/l1/<name> with --runs=20000 --se
+t16 the skip is a failure: caught (1 rows)  SELFTEST FAIL: l1: Windows and Linux-aarch64 are skipped (exit 0, the text 'l1: skipped, roc-fuzz has no platform for <system>', no build), Darwin-arm
+restored: True

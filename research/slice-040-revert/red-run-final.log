@@ -1,0 +1,82 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+
+── ✗ fail ──────────────────────────────────────── tests/unit/outdated.roc:126:1
+
+expect {
+    known = Known(Range({ from: { id: "n3", real: Bool.True }, to: { id: "n4", real: Bool.False } }))
+    rows = [
+        row("json", "2.1.0", "2.2.0", "3.0.2", Bool.True, known),
+        row("parser", "1.0.0", "1.0.0", "2.0.0", Bool.True, Unread),
+        row("pf", "0.1.0", "0.1.0", "0.1.0", Bool.False, Known(NoPass)),
+        row("util", "1.0.0", "1.1.0", "1.1.0", Bool.False, Unread),
+    ]
+    behind = rows.map(|r| Outdated.behind(r))
+    table = Outdated.text({ file: "/p/main.roc", rows: rows.keep_if(|r| Outdated.behind(r)), fixed: ["example.org", "x.test"] })
+    clean = Outdated.text({ file: "/p/main.roc", rows: [], fixed: ["example.org"] })
+    empty = Outdated.text({ file: "/q/main.roc", rows: [], fixed: [] })
+    json = Outdated.data([{ file: "/p/main.roc", rows: [row("json", "2.1.0", "2.2.0", "3.0.2", Bool.True, known), row("util", "1.0.0", "1.1.0", "1.1.0", Bool.False, Unread), row("pf", "0.1.0", "0.1.1", "0.1.1", Bool.False, Known(NoPass))], fixed: ["example.org"] }, { file: "/q/main.roc", rows: [], fixed: [] }]).render()
+    table_want = "/p/main.roc\n  package  current  wanted  latest              nightly range\n  json     2.1.0    2.2.0   3.0.2 (new series)  n3 .. n4?\n  parser   1.0.0    1.0.0   2.0.0 (new series)  -\n  util     1.0.0    1.1.0   1.1.0               -\n  fixed: example.org has no index without a registry\n  fixed: x.test has no index without a registry\n"
+    json_want = "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"json\",\"name\":\"acme/json\",\"current\":\"2.1.0\",\"wanted\":\"2.2.0\",\"latest\":\"3.0.2\",\"new_series\":true,\"nightly_range\":{\"state\":\"range\",\"from\":{\"id\":\"n3\",\"real\":true},\"to\":{\"id\":\"n4\",\"real\":false}}},{\"alias\":\"util\",\"name\":\"acme/util\",\"current\":\"1.0.0\",\"wanted\":\"1.1.0\",\"latest\":\"1.1.0\",\"new_series\":false,\"nightly_range\":{\"state\":\"unread\"}},{\"alias\":\"pf\",\"name\":\"acme/pf\",\"current\":\"0.1.0\",\"wanted\":\"0.1.1\",\"latest\":\"0.1.1\",\"new_series\":false,\"nightly_range\":{\"state\":\"no-pass\"}}],\"fixed\":[\"example.org\"]},{\"file\":\"/q/main.roc\",\"packages\":[],\"fixed\":[]}]}"
+    dbg [table == table_want, json == json_want]
+    behind == [Bool.True, Bool.True, Bool.False, Bool.True] and table == table_want and clean == "/p/main.roc\n  all packages are up to date\n  fixed: example.org has no index without a registry\n" and empty == "/q/main.roc\n  all packages are up to date\n" and json == json_want
+}
+
+Ran 4 tests in 537.0 ms.:
+    0 passed
+    4 failed
+    0 compiler errors
+tests/unit/out.roc: All (4) tests passed in 70.6 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 538.7 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2237.4 ms.
+tests/unit/picker.roc: All (2) tests passed in 47.2 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 2729.3 ms.
+tests/unit/pick.roc: All (3) tests passed in 2819.3 ms.
+tests/unit/pin.roc: All (9) tests passed in 496.5 ms.
+tests/unit/pins.roc: All (6) tests passed in 1576.1 ms.
+tests/unit/probecmd.roc: All (7) tests passed in 1737.7 ms.
+tests/unit/proberange.roc: All (3) tests passed in 883.4 ms.
+tests/unit/probe.roc: All (5) tests passed in 309.3 ms.
+tests/unit/project.roc: All (7) tests passed in 1722.8 ms.
+tests/unit/projects.roc: All (3) tests passed in 270.7 ms.
+tests/unit/prompt.roc: All (5) tests passed in 146.2 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2974.5 ms.
+tests/unit/ranges.roc: All (2) tests passed in 207.2 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1027.0 ms.
+tests/unit/ref.roc: All (4) tests passed in 244.2 ms.
+tests/unit/removal.roc: All (4) tests passed in 1745.1 ms.
+tests/unit/report.roc: All (3) tests passed in 130.2 ms.
+tests/unit/roots.roc: All (3) tests passed in 90.9 ms.
+tests/unit/scan.roc: All (2) tests passed in 143.8 ms.
+tests/unit/selector.roc: All (2) tests passed in 150.7 ms.
+tests/unit/setup.roc: All (10) tests passed in 511.9 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 231.8 ms.
+tests/unit/temp.roc: All (4) tests passed in 67.4 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1661.0 ms.
+tests/unit/units.roc: All (6) tests passed in 416.7 ms.
+tests/unit/update.roc: All (2) tests passed in 2283.0 ms.
+tests/unit/upgrade.roc: All (6) tests passed in 3684.9 ms.
+tests/unit/uses.roc: All (2) tests passed in 249.1 ms.
+tests/unit/vars.roc: All (8) tests passed in 2598.7 ms.
+tests/unit/verify.roc: All (2) tests passed in 1362.6 ms.
+tests/unit/why.roc: All (6) tests passed in 3658.0 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL outdated/od1-table
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+FAIL outdated/od2-edges
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+commands: 99 passed, 2 failed
+
+step       result seconds  budget
+check      pass   1.4      10
+fmt        pass   0.2      5
+l0         FAIL   8.0      10
+l2         FAIL   5.1      30
+l3         pass   9.7      60
+selftest   pass   11.2     20
+l1         pass   29.2     60
+
+real	1m5.160s
+user	3m36.247s
+sys	1m1.079s

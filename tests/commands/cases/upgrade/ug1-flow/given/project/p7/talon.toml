@@ -1,0 +1,6 @@
+# the team intent
+[dependencies]
+json = "^2.1"   # stay on 2 for now
+pf = "0.1.*"
+parser = "=1.0.0"
+lex = "acme/lex@^1"

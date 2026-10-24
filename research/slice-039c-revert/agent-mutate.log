@@ -1,0 +1,13 @@
+B1: CAUGHT by l0f:packages/resolve/tests/moves.roc (R-SP24: the lower compilers of a movable compiler are in the order of D, not the nearest first)
+B2: NOT CAUGHT by - (R-SP23: a compiler slot with no current is movable)
+B3: DID NOT COMPILE (D2: a compiler older than H is a value of the movable nightly) 
+B4: CAUGHT by l0:upgrade (R-EP14: an inferred fail wins over a real row of a later release)
+B5: CAUGHT by l0:upgrade (R-UP2: the lag reason is blamed on the chosen compiler, not on N)
+B6: CAUGHT by l2:upgrade/ur6-moves (R-RP4: the pin of a held nightly move is not written)
+B7: CAUGHT by l2:upgrade/ur6-moves (Q3, D3: `wide!` reads the compiler list again)
+B8: CAUGHT by l2:upgrade/ug3-move (D3: the installed compilers are read when the list is empty)
+B9: CAUGHT by l2:upgrade/ur6-moves (R-UP13: a free nightly (`upgrade X roc`) is a held move)
+B10: CAUGHT by l2:upgrade/ur6-moves (the compiler list D is not read before the second search: the movable nightly has only H)
+final compare: SAME
+B3: CAUGHT by l0:nightlyplan (D2: a compiler older than H is a value of the movable nightly)
+final compare: SAME

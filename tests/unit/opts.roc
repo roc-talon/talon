@@ -58,3 +58,53 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-NI4 R-NI5 R-FL12 R-DL5 (slice 025): the answer flags of the download prompts. `--allow-downloads` answers the required download of the first probe (R-NI5) and `--probe-downloads` answers the optional downloads (R-NI4). Each is `Ok(Yes)` when set,
+# for each command that resolves (`Opts.read` is the one reader of `install`, `add`, `update` and `verify`). A flag on a command that does not name it is the failure of `Args.parse` (R-FL12, tested in `tests/unit/args.roc`).
+expect {
+	flags = |words| match Args.parse(words) {
+		Err(stop) => Err(Fail.line(stop.fail))
+		Ok(args) => match Opts.read(args) {
+			Ok(o) => Ok([o.allow_downloads, o.probe_downloads])
+			Err(f) => Err(Fail.line(f))
+		}
+	}
+	rows = [
+		(["install"], Ok([Err(NoFlag), Err(NoFlag)])),
+		(["install", "--allow-downloads"], Ok([Ok(Yes), Err(NoFlag)])),
+		(["install", "--probe-downloads"], Ok([Err(NoFlag), Ok(Yes)])),
+		(["add", "json", "--allow-downloads", "--probe-downloads"], Ok([Ok(Yes), Ok(Yes)])),
+		(["update", "json", "--allow-downloads"], Ok([Ok(Yes), Err(NoFlag)])),
+		(["verify", "--probe-downloads", "--allow-downloads"], Ok([Ok(Yes), Ok(Yes)])),
+		(["install", "--yes"], Ok([Err(NoFlag), Err(NoFlag)])),
+	]
+	bad = rows.keep_if(|(words, want)| flags(words) != want).map(|(words, _)| (words, flags(words)))
+	dbg bad
+	bad == []
+}
+
+# R-FL11 R-PP7 R-FL7 R-EC2 (slice 031): `--slots <n>` (or `--slots=<n>`) is the flag layer of the pool size, for each command that resolves (`Opts.read` reads `install`, `add`, `update` and `verify`). Not given: `Unset`. A value that is not a whole
+# number of 1 or more is a usage failure (exit 2). A flag with no value is the failure of `Args.parse` (tested in `args.roc`).
+expect {
+	slots = |words| match Args.parse(words) {
+		Err(stop) => Err(Fail.line(stop.fail))
+		Ok(args) => match Opts.read(args) {
+			Ok(o) => Ok(o.slots)
+			Err(f) => Err(Fail.line(f))
+		}
+	}
+	bad = |text| Err("tln: error[usage]: --slots must be a whole number of 1 or more, not '${text}'")
+	rows = [
+		(["install"], Ok(Err(Unset))),
+		(["install", "--slots", "4"], Ok(Ok(4))),
+		(["update", "json", "--slots=3"], Ok(Ok(3))),
+		(["verify", "--slots", "1", "--no-probe"], Ok(Ok(1))),
+		(["add", "acme/json", "--slots", "12"], Ok(Ok(12))),
+		(["install", "--slots", "0"], bad("0")),
+		(["install", "--slots", "many"], bad("many")),
+		(["update", "--slots", "2.5"], bad("2.5")),
+	]
+	wrong = rows.keep_if(|(words, want)| slots(words) != want).map(|(words, want)| (words, want, slots(words)))
+	dbg wrong
+	wrong == []
+}

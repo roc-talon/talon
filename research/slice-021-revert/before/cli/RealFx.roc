@@ -1,0 +1,742 @@
+import pf.Cmd
+import pf.Http
+import pf.Env
+import pf.IOErr
+import pf.OsStr
+import pf.Path
+import pf.Random
+import pf.Sleep
+import pf.Stderr
+import pf.Stdin
+import pf.Stdout
+import pf.Utc
+import http.Request
+import http.Response
+import lib.Fx
+import lib.Item
+import lib.Lock
+import lib.Probe
+import lib.Roots
+import lib.Temp
+import lib.Text
+
+## The real `Fx` on basic-cli (TESTING.md 2.3). It has no Talon logic (TW4): each call is
+## one platform effect, or one small child process. L3 tests it with `cli/fxprobe.roc`.
+RealFx :: [].{
+
+	## The real `Fx`. `args` are the arguments that `main!` got, as text.
+	## It is effectful (slice 002): the real `Fx` can draw a token of the process (`Random.seed_u64!`) for the locks (R-CC12).
+	make! : List(Str) => Fx
+	make! = |args| {
+		token = Temp.hex(draw!())
+		real_fx(args, token)
+	}
+}
+
+real_fx : List(Str), Str => Fx
+real_fx = |args, token| Fx.{
+	args!: || args,
+	env_all!: env_all!,
+	cwd!: cwd!,
+	tty!: tty!,
+	clock!: clock!,
+	read_files!: read_files!,
+	write_atomic!: write_atomic!,
+	out!: |text| {
+		_ = Stdout.write!(text)
+	},
+	err!: |text| {
+		_ = Stderr.write!(text)
+	},
+	ask!: ask!,
+	list_dirs!: list_dirs!,
+	delete!: delete!,
+	canonical!: canonical!,
+	lock!: |item, mode| take_lock!(token, item, mode),
+	unlock!: release_lock!,
+	http_get!: http_get!,
+	programs!: programs!,
+	spawn_all!: |batch| run_jobs!(token, batch),
+	rename!: rename!,
+	make_dirs!: make_dirs!,
+	random!: draw!,
+	probes!: |specs| probes!(token, specs),
+	copy_tree!: copy_tree!,
+}
+
+env_all! : () => List((Str, Str))
+env_all! = || Env.dict!().map(|(name, value)| (name.display(), value.display()))
+
+cwd! : () => Str
+cwd! = || match Env.cwd!() {
+	Ok(path) => path.display()
+	Err(_) => ""
+}
+
+## R-HF1. Until basic-cli has `isatty`: one child with inherited stdin and stderr. `test -t` gives
+## 0 for a terminal. The child writes `<stdin> <stderr>` to the captured stdout, as two exit codes.
+## On Windows Talon takes both as a terminal (R-HF1, CLI 4, R-NR1).
+tty! : () => { stdin : Bool, stderr : Bool }
+tty! = || {
+	match Env.platform!().os {
+		WINDOWS => { stdin: Bool.True, stderr: Bool.True }
+		_ => {
+			cmd = Cmd.new_str("sh")
+				.args_str(["-c", "test -t 0; i=$?; test -t 2; echo $i $?"])
+				.stdin(Inherit)
+				.stderr(Inherit)
+				.stdout(Capture)
+			match cmd.run!() {
+				Ok(out) => {
+					text = Str.from_utf8_lossy(out.stdout_bytes).trim()
+					{ stdin: text.starts_with("0 "), stderr: text.ends_with(" 0") }
+				}
+				Err(_) => { stdin: Bool.False, stderr: Bool.False }
+			}
+		}
+	}
+}
+
+clock! : () => U64
+clock! = || (Utc.now!() // 1_000_000_000).to_u64_wrap()
+
+file_err : IOErr -> [NotFound, Denied, Other(Str)]
+file_err = |err| match err {
+	NotFound => NotFound
+	PermissionDenied => Denied
+	other => Other(Str.inspect(other))
+}
+
+read_files! : List(Str) => List(Try(Str, [NotFound, Denied, Other(Str)]))
+read_files! = |paths| {
+	var $results = []
+	for p in paths {
+		one = match Path.read_utf8!(Path.utf8(p)) {
+			Ok(text) => Ok(text)
+			Err(PathErr(err, _)) => Err(file_err(err))
+		}
+		$results = $results.append(one)
+	}
+	$results
+}
+
+## R-CC1: a temp file `<target>.<16hex>.tmp` in the directory of the target, then `rename` over the target. The
+## missing parent directories of the target are made first. It stops at the first error.
+WriteFailure : [None, Some({ path : Str, err : [NotFound, Denied, Other(Str)] })]
+
+no_failure : WriteFailure
+no_failure = None
+
+write_atomic! : List({ path : Str, content : Str }) => Try({}, { path : Str, err : [NotFound, Denied, Other(Str)] })
+write_atomic! = |files| {
+	var $failure = no_failure
+	for file in files {
+		if $failure == None {
+			$failure = match write_one!(file) {
+				Ok(_) => None
+				Err(PathErr(err, _)) => Some({ path: file.path, err: file_err(err) })
+			}
+		}
+	}
+	match $failure {
+		None => Ok({})
+		Some(failure) => Err(failure)
+	}
+}
+
+write_one! : { path : Str, content : Str } => Try({}, [PathErr(IOErr, Path)])
+write_one! = |file| {
+	parent = Text.dir_of(file.path)
+	if !parent.is_empty() {
+		_ = Path.create_all!(Path.utf8(parent))
+	}
+	tmp = Path.utf8(Temp.name({ target: file.path, hex: Temp.hex(draw!()) }))
+	match Path.write_utf8!(tmp, file.content) {
+		Err(e) => Err(e)
+		Ok(_) => match Path.rename!(tmp, Path.utf8(file.path)) {
+			Ok(_) => Ok({})
+			Err(e) => {
+				_ = Path.delete!(tmp)
+				Err(e)
+			}
+		}
+	}
+}
+
+# A random number for a temp name or a token (TW2). When the system has no random source, the clock is used.
+draw! : () => U64
+draw! = || match Random.seed_u64!() {
+	Ok(n) => n
+	Err(_) => (Utc.now!() // 1000).to_u64_wrap()
+}
+
+ask! : Str => Try(Str, [EndOfInput])
+ask! = |prompt| {
+	_ = Stderr.write!(prompt)
+	match Stdin.line!() {
+		Ok(line) => Ok(line)
+		Err(_) => Err(EndOfInput)
+	}
+}
+
+## One directory: the name, the kind and the modification time (seconds) of each entry. The order is the order of the
+## file system. No Talon logic: `Project` and `Temp` sort and choose.
+list_dirs! : List(Str) => List(Try(List({ name : Str, is_dir : Bool, mtime : U64 }), [NotFound, Denied, Other(Str)]))
+list_dirs! = |dirs| {
+	var $results = []
+	for dir in dirs {
+		$results = $results.append(list_one!(dir))
+	}
+	$results
+}
+
+list_one! : Str => Try(List({ name : Str, is_dir : Bool, mtime : U64 }), [NotFound, Denied, Other(Str)])
+list_one! = |dir| match Path.list!(Path.utf8(dir)) {
+	Err(PathErr(err, _)) => Err(file_err(err))
+	Ok(paths) => {
+		var $entries = []
+		for p in paths {
+			name = match Path.filename(p) {
+				Ok(f) => f.display()
+				Err(_) => p.display()
+			}
+			is_dir = match Path.is_dir!(p) {
+				Ok(b) => b
+				Err(_) => Bool.False
+			}
+			mtime = match Path.time_modified!(p) {
+				Ok(ns) => (ns // 1_000_000_000).to_u64_wrap()
+				Err(_) => 0
+			}
+			$entries = $entries.append({ name, is_dir, mtime })
+		}
+		Ok($entries)
+	}
+}
+
+## A file or a directory with its content. A path that does not exist is not an error.
+delete! : List(Str) => List(Try({}, [NotFound, Denied, Other(Str)]))
+delete! = |paths| {
+	var $results = []
+	for p in paths {
+		path = Path.utf8(p)
+		one = match Path.type!(path) {
+			Err(PathErr(NotFound, _)) => Ok({})
+			Err(PathErr(err, _)) => Err(file_err(err))
+			Ok(IsDir) => match Path.delete_all!(path) {
+				Ok(_) => Ok({})
+				Err(PathErr(err, _)) => Err(file_err(err))
+			}
+			Ok(_) => match Path.delete!(path) {
+				Ok(_) => Ok({})
+				Err(PathErr(err, _)) => Err(file_err(err))
+			}
+		}
+		$results = $results.append(one)
+	}
+	$results
+}
+
+canonical! : List(Str) => List(Try(Str, [NotFound, Denied, Other(Str)]))
+canonical! = |paths| {
+	var $results = []
+	for p in paths {
+		one = match Path.canonicalize!(Path.utf8(p)) {
+			Ok(path) => Ok(path.display())
+			Err(PathErr(err, _)) => Err(file_err(err))
+		}
+		$results = $results.append(one)
+	}
+	$results
+}
+
+## R-CC3 and R-CC12: the lock is the directory `<item>.lock/` with the files `owner` and `beat`. The decisions are in `Lock`
+## (`state`, `owner_text`, `owns`, `stale_name`). This file only makes the calls. A held lock has one line in the
+## registry `<cache>/talon/tmp/<token>.locks` (Q8), so that a later `lock!` call of the same process can write `beat`
+## again for it while it waits. The registry and its directory are deleted when the last lock of the process is released.
+Outcome : [Held(Lock), Busy, Again, Waiting]
+
+take_lock! : Str, Str, [Wait, NoWait] => [Held(Lock), Busy]
+take_lock! = |token, item, mode| {
+	parent = Text.dir_of(item)
+	if !parent.is_empty() {
+		_ = Path.create_all!(Path.utf8(parent))
+	}
+	var $polls = 0
+	var $outcome = attempt!(token, item, mode)
+	while is_open($outcome) {
+		if $outcome == Waiting {
+			# 10 polls of 200 ms: the heartbeat of 2 s
+			if $polls % 10 == 0 {
+				heartbeat!(token)
+			}
+			Sleep.millis!(200)
+			$polls = $polls + 1
+		}
+		$outcome = attempt!(token, item, mode)
+	}
+	match $outcome {
+		Held(lock) => Held(lock)
+		_ => Busy
+	}
+}
+
+is_open : Outcome -> Bool
+is_open = |outcome| match outcome {
+	Again | Waiting => Bool.True
+	_ => Bool.False
+}
+
+# One try. `Again`: the state changed, try now. `Waiting`: a live lock, and the mode is `Wait`.
+attempt! : Str, Str, [Wait, NoWait] => Outcome
+attempt! = |token, item, mode| {
+	dir = Lock.dir(item)
+	match Path.create_dir!(Path.utf8(dir)) {
+		Ok(_) => {
+			started = clock!()
+			_ = Path.write_utf8!(Path.utf8("${dir}/owner"), Lock.owner_text({ token, started }))
+			_ = Path.write_utf8!(Path.utf8("${dir}/beat"), "${started.to_str()}\n")
+			register!(token, item)
+			Held(Lock.{ item, token })
+		}
+		Err(PathErr(AlreadyExists, _)) => contended!(item, mode)
+		Err(PathErr(err, _)) => match mode {
+			NoWait => Busy
+			Wait => crash "cannot make the lock directory ${dir}: ${IOErr.to_str(err)}"
+		}
+	}
+}
+
+# The lock directory is there. A stale one is taken: rename it, delete it, try again (R-CC12).
+contended! : Str, [Wait, NoWait] => Outcome
+contended! = |item, mode| {
+	dir = Lock.dir(item)
+	beat = match modified_seconds!("${dir}/beat") {
+		Ok(seconds) => Ok(seconds)
+		Err(_) => Err(NoBeat)
+	}
+	live = match mode {
+		NoWait => Busy
+		Wait => Waiting
+	}
+	match modified_seconds!(dir) {
+		Err(NotFound) => Again
+		Err(_) => live
+		Ok(made) => match Lock.state({ now: clock!(), beat, dir: made }) {
+			Live => live
+			Stale => {
+				gone = Path.utf8(Lock.stale_name({ item, hex: Temp.hex(draw!()) }))
+				match Path.rename!(Path.utf8(dir), gone) {
+					Ok(_) => {
+						_ = Path.delete_all!(gone)
+						Again
+					}
+					Err(_) => live
+				}
+			}
+		}
+	}
+}
+
+modified_seconds! : Str => Try(U64, [NotFound, Denied, Other(Str)])
+modified_seconds! = |path| match Path.time_modified!(Path.utf8(path)) {
+	Ok(ns) => Ok((ns // 1_000_000_000).to_u64_wrap())
+	Err(PathErr(err, _)) => Err(file_err(err))
+}
+
+# R-CC12: the directory is deleted only when `owner` has the token of this process.
+release_lock! : Lock => {}
+release_lock! = |lock| {
+	dir = Lock.dir(lock.item)
+	owner = match Path.read_utf8!(Path.utf8("${dir}/owner")) {
+		Ok(text) => text
+		Err(_) => ""
+	}
+	if Lock.owns({ owner, token: lock.token }) {
+		_ = Path.delete_all!(Path.utf8(dir))
+	}
+	unregister!(lock.token, lock.item)
+}
+
+# R-CC12 point 3: `beat` is written again for each lock that this process holds and still owns.
+heartbeat! : Str => {}
+heartbeat! = |token| for item in held!(token) {
+	dir = Lock.dir(item)
+	owner = match Path.read_utf8!(Path.utf8("${dir}/owner")) {
+		Ok(text) => text
+		Err(_) => ""
+	}
+	if Lock.owns({ owner, token }) {
+		_ = Path.write_utf8!(Path.utf8("${dir}/beat"), "${clock!().to_str()}\n")
+	}
+}
+
+# The registry file of this process (Q8). It is not there when HOME is not set: then no heartbeat.
+registry_path! : Str => Try(Str, [NoRegistry])
+registry_path! = |token| match Roots.from_env(env_all!()) {
+	Ok(roots) => Ok("${Roots.item(roots, Item.TalonTmp(token))}.locks")
+	Err(_) => Err(NoRegistry)
+}
+
+held! : Str => List(Str)
+held! = |token| match registry_path!(token) {
+	Ok(path) => match Path.read_utf8!(Path.utf8(path)) {
+		Ok(text) => text.split_on("\n").keep_if(|line| !line.is_empty())
+		Err(_) => []
+	}
+	Err(NoRegistry) => []
+}
+
+register! : Str, Str => {}
+register! = |token, item| match registry_path!(token) {
+	Err(NoRegistry) => {}
+	Ok(path) => {
+		text = Str.join_with(held!(token).append(item), "\n")
+		parent = Path.utf8(Text.dir_of(path))
+		# Another process can delete the empty directory between the two calls: make it, and write again.
+		match Path.write_utf8!(Path.utf8(path), "${text}\n") {
+			Ok(_) => {}
+			Err(_) => {
+				_ = Path.create_all!(parent)
+				_ = Path.write_utf8!(Path.utf8(path), "${text}\n")
+			}
+		}
+	}
+}
+
+unregister! : Str, Str => {}
+unregister! = |token, item| match registry_path!(token) {
+	Err(NoRegistry) => {}
+	Ok(path) => {
+		rest = held!(token).keep_if(|line| line != item)
+		if rest.is_empty() {
+			_ = Path.delete!(Path.utf8(path))
+			_ = Path.delete_empty!(Path.utf8(Text.dir_of(path)))
+		} else {
+			_ = Path.write_utf8!(Path.utf8(path), "${Str.join_with(rest, "\n")}\n")
+		}
+	}
+}
+
+## Slice 003. One GET with a timeout of 20 s (R-CC12). The headers are the pairs of the request. No Talon logic: the pure code of
+## `Github` and `Net` decides what the answer means.
+http_get! : { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
+http_get! = |req| {
+	base = Request.from_method(GET).with_uri(req.url).with_timeout(TimeoutMilliseconds(20000))
+	request = req.headers.fold(base, |r, (name, value)| r.add_header(name, value))
+	match Http.send!(request) {
+		Ok(response) => match Str.from_utf8(Response.body(response)) {
+			Ok(body) => Ok({
+				status: Response.status(response),
+				headers: Response.headers(response).map(|h| (h.name, h.value)),
+				body,
+			})
+			Err(_) => Err(Failed("bad body"))
+		}
+		Err(InvalidUrl(_)) => Err(Failed("invalid URL"))
+		Err(HttpErr(Timeout)) => Err(Timeout)
+		Err(HttpErr(NetworkError)) => Err(Failed("network error"))
+		Err(HttpErr(BadBody)) => Err(Failed("bad body"))
+		Err(HttpErr(Other(bytes))) => Err(Failed(Str.from_utf8_lossy(bytes)))
+	}
+}
+
+## Whether each program is on `PATH` (basic-cli `Cmd.check_available!`).
+programs! : List(Str) => List(Bool)
+programs! = |names| {
+	var $found = []
+	for name in names {
+		$found = $found.append(Cmd.check_available!(name))
+	}
+	$found
+}
+
+## `rename`. `Exists` is `AlreadyExists`, and also "directory not empty" (the system gives it for a directory that is the target).
+rename! : { from : Str, to : Str } => Try({}, [NotFound, Exists, Denied, Other(Str)])
+rename! = |move| match Path.rename!(Path.utf8(move.from), Path.utf8(move.to)) {
+	Ok(_) => Ok({})
+	Err(PathErr(AlreadyExists, _)) => Err(Exists)
+	Err(PathErr(NotFound, _)) => Err(NotFound)
+	Err(PathErr(PermissionDenied, _)) => Err(Denied)
+	Err(PathErr(Other(text), _)) => if text.contains("not empty") or text.contains("exists") Err(Exists) else Err(Other(text))
+	Err(PathErr(other, _)) => Err(Other(Str.inspect(other)))
+}
+
+make_dirs! : List(Str) => Try({}, [Denied, Other(Str)])
+make_dirs! = |dirs| {
+	var $failure = Ok({})
+	for dir in dirs {
+		if $failure == Ok({}) {
+			$failure = match Path.create_all!(Path.utf8(dir)) {
+				Ok(_) => Ok({})
+				Err(PathErr(PermissionDenied, _)) => Err(Denied)
+				Err(PathErr(err, _)) => Err(Other(Str.inspect(err)))
+			}
+		}
+	}
+	$failure
+}
+
+## Slice 003, R-DA5, R-HF4, R-CC12: runs the children of the jobs, at most `limit` at the same time, and polls them with `try_wait!`.
+## The poll loop writes the heartbeat of the locks that the process holds, as `lock!` does (R-CC12 point 3).
+JobResult : { ended : [Exited(I32), Signaled(I32), NotStarted(Str)], stdout : Str, stderr_last : Str }
+
+Job : { argv : List(Str), cwd : Try(Str, [Inherit]) }
+
+Running : { index : U64, child : Cmd.Child }
+
+run_jobs! : Str, { jobs : List(Job), limit : U64 } => List(JobResult)
+run_jobs! = |token, batch| {
+	total = batch.jobs.len()
+	limit = if batch.limit == 0 1 else batch.limit
+	var $next = 0
+	var $running = no_running
+	var $done = no_results
+	var $polls = 0
+	while $next < total or !$running.is_empty() {
+		while $next < total and $running.len() < limit {
+			match batch.jobs.get($next) {
+				Ok(job) => match start_job!(job) {
+					Ok(child) => {
+						$running = $running.append({ index: $next, child })
+					}
+					Err(text) => {
+						$done = $done.append(($next, not_started(text)))
+					}
+				}
+				Err(_) => {}
+			}
+			$next = $next + 1
+		}
+		var $still = no_running
+		for entry in $running {
+			match entry.child.try_wait!() {
+				Ok([out]) => {
+					entry.child.close!() |> ignore
+					$done = $done.append((entry.index, job_result(out)))
+				}
+				Ok(_) => {
+					$still = $still.append(entry)
+				}
+				Err(err) => {
+					entry.child.close!() |> ignore
+					$done = $done.append((entry.index, not_started(Str.inspect(err))))
+				}
+			}
+		}
+		$running = $still
+		if !$running.is_empty() {
+			# 100 polls of 20 ms: the heartbeat of 2 s
+			if $polls % 100 == 0 {
+				heartbeat!(token)
+			}
+			Sleep.millis!(20)
+			$polls = $polls + 1
+		}
+	}
+	finished = $done
+	batch.jobs.map_with_index(
+		|_, i| match finished.find_first(|(index, _)| index == i) {
+			Ok((_, result)) => result
+			Err(_) => not_started("not run")
+		},
+	)
+}
+
+no_running : List(Running)
+no_running = []
+
+no_results : List((U64, JobResult))
+no_results = []
+
+ignore : Try(a, b) -> {}
+ignore = |_| {}
+
+not_started : Str -> JobResult
+not_started = |text| { ended: NotStarted(text), stdout: "", stderr_last: "" }
+
+# One child: no stdin, its stdout and stderr are captured.
+start_job! : Job => Try(Cmd.Child, Str)
+start_job! = |job| match job.argv {
+	[] => Err("empty command")
+	[program, .. as rest] => {
+		base = Cmd.new_str(program).args_str(rest).stdin(Null).stdout(Capture).stderr(Capture)
+		cmd = match job.cwd {
+			Ok(dir) => base.cwd(Path.utf8(dir))
+			Err(Inherit) => base
+		}
+		match cmd.spawn!() {
+			Ok(child) => Ok(child)
+			Err(err) => Err(Str.inspect(err))
+		}
+	}
+}
+
+job_result : Cmd.RunOutput -> JobResult
+job_result = |out| {
+	lines = Str.from_utf8_lossy(out.stderr_bytes).split_on("\n").map(|line| line.trim()).keep_if(|line| !line.is_empty())
+	{
+		ended: match out.status {
+			Exited(code) => Exited(code)
+			Signaled(code) => Signaled(code)
+		},
+		stdout: Str.from_utf8_lossy(out.stdout_bytes),
+		stderr_last: lines.last() ?? "",
+	}
+}
+
+## Slice 006. One child process for each probe, all started together (P0), the stdin closed, the stdout and the stderr kept as text, a timeout
+## that kills the child (`TimedOut`). The heartbeat of the held locks goes on while the probes run (R-CC12), as in `run_jobs!`. The L3 case `fx/pr1-real-fx-probes` checks it.
+probes! : Str, List(Probe.Spec) => List(Probe.Output)
+probes! = |token, specs| {
+	var $running = no_probing
+	var $done = no_outputs
+	for (index, spec) in specs.map_with_index(|spec, i| (i, spec)) {
+		match start_probe!(spec) {
+			Ok(child) => {
+				$running = $running.append({ index, child, deadline: Utc.now!() + spec.timeout.to_u128() * 1_000_000_000 })
+			}
+			Err(text) => {
+				$done = $done.append((index, { ended: NotStarted(text), stdout: "", stderr: "" }))
+			}
+		}
+	}
+	var $polls = 0
+	while !$running.is_empty() {
+		var $still = no_probing
+		now = Utc.now!()
+		for entry in $running {
+			match entry.child.try_wait!() {
+				Ok([out]) => {
+					entry.child.close!() |> ignore
+					$done = $done.append((entry.index, probe_output(out)))
+				}
+				Ok(_) => if now >= entry.deadline {
+					entry.child.kill!() |> ignore
+					entry.child.close!() |> ignore
+					$done = $done.append((entry.index, { ended: TimedOut, stdout: "", stderr: "" }))
+				} else {
+					$still = $still.append(entry)
+				}
+				Err(err) => {
+					entry.child.close!() |> ignore
+					$done = $done.append((entry.index, { ended: NotStarted(Str.inspect(err)), stdout: "", stderr: "" }))
+				}
+			}
+		}
+		$running = $still
+		if !$running.is_empty() {
+			# 100 polls of 20 ms: the heartbeat of 2 s
+			if $polls % 100 == 0 {
+				heartbeat!(token)
+			}
+			Sleep.millis!(20)
+			$polls = $polls + 1
+		}
+	}
+	finished = $done
+	specs.map_with_index(
+		|_, i| match finished.find_first(|(index, _)| index == i) {
+			Ok((_, output)) => output
+			Err(_) => { ended: NotStarted("not run"), stdout: "", stderr: "" }
+		},
+	)
+}
+
+Probing : { index : U64, child : Cmd.Child, deadline : U128 }
+
+no_probing : List(Probing)
+no_probing = []
+
+no_outputs : List((U64, Probe.Output))
+no_outputs = []
+
+# `roc` on PATH (R-PH6) in the dir of the probe. `manage_tree`: a kill also ends the children of roc (the linker).
+start_probe! : Probe.Spec => Try(Cmd.Child, Str)
+start_probe! = |spec| {
+	cmd = Cmd.new_str("roc")
+		.args_str(spec.args)
+		.cwd(Path.utf8(spec.dir))
+		.stdin(Null)
+		.stdout(Capture)
+		.stderr(Capture)
+		.manage_tree(Bool.True)
+	match cmd.spawn!() {
+		Ok(child) => Ok(child)
+		Err(err) => Err(Str.inspect(err))
+	}
+}
+
+probe_output : Cmd.RunOutput -> Probe.Output
+probe_output = |out| {
+	ended: match out.status {
+		Exited(code) => Exited(code)
+		Signaled(code) => Signaled(code)
+	},
+	stdout: Str.from_utf8_lossy(out.stdout_bytes),
+	stderr: Str.from_utf8_lossy(out.stderr_bytes),
+}
+
+## Slice 006 (`Fx.copy_tree!`): a file or a directory whose name is in `skip` is not copied. `NotFound` and `Exists` are found before anything is made.
+## The L3 case `fx/pr1-real-fx-probes` checks it.
+copy_tree! : { from : Str, to : Str, skip : List(Str) } => Try({}, [NotFound, Exists, Denied, Other(Str)])
+copy_tree! = |move| {
+	from = Path.utf8(move.from)
+	to = Path.utf8(move.to)
+	if !exists!(from) {
+		Err(NotFound)
+	} else if exists!(to) {
+		Err(Exists)
+	} else {
+		_ = Path.create_all!(Path.utf8(Text.dir_of(move.to)))
+		copy_dir!(from, to, move.skip)
+	}
+}
+
+exists! : Path => Bool
+exists! = |path| match Path.exists!(path) {
+	Ok(found) => found
+	Err(_) => Bool.False
+}
+
+copy_dir! : Path, Path, List(Str) => Try({}, [NotFound, Exists, Denied, Other(Str)])
+copy_dir! = |from, to, skip| {
+	match Path.create_all!(to) {
+		Ok(_) => {}
+		Err(PathErr(err, _)) => return Err(copy_err(err))
+	}
+	entries = match Path.list!(from) {
+		Ok(list) => list
+		Err(PathErr(err, _)) => return Err(copy_err(err))
+	}
+	for entry in entries {
+		name = match Path.filename(entry) {
+			Ok(f) => f.display()
+			Err(_) => entry.display()
+		}
+		if !skip.contains(name) {
+			target = Path.join(to, name)
+			# A link is copied as the file or the directory that it points to.
+			result = match Path.is_dir!(entry) {
+				Ok(Bool.True) => copy_dir!(entry, target, skip)
+				_ => match Path.copy!(entry, target) {
+					Ok(_) => Ok({})
+					Err(CopyErr({ error, .. })) => Err(copy_err(error))
+				}
+			}
+			match result {
+				Ok(_) => {}
+				Err(failure) => return Err(failure)
+			}
+		}
+	}
+	Ok({})
+}
+
+copy_err : IOErr -> [NotFound, Exists, Denied, Other(Str)]
+copy_err = |err| match err {
+	NotFound => NotFound
+	AlreadyExists => Exists
+	PermissionDenied => Denied
+	other => Other(Str.inspect(other))
+}

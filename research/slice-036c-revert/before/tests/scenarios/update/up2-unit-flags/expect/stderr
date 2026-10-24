@@ -1,0 +1,8 @@
+tln: error[usage]: --slots must be a whole number of 1 or more, not '0'
+tln: error[usage]: --slots must be a whole number of 1 or more, not 'many'
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written

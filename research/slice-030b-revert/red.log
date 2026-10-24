@@ -1,0 +1,191 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    named == want and text == want_text
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────────── tests/unit/pins.roc:164:1
+
+expect {
+    r10 = rel(t10, Ok(asset_of(t10, Ok(sha_a))))
+    r12 = rel(t12, Ok(asset_of(t12, Ok(sha_a))))
+    r13 = rel(t13, Ok(asset_of(t13, Ok(sha_a))))
+    r14 = rel(t14, Ok(asset_of(t14, Ok(sha_b))))
+    kept = [r10, r14]
+    auto = [t10, t14]
+    back = |dropped, base| Nightlies.auto_with_base({ releases: kept, dropped, auto, base })
+    step = |text, base| Nightlies.pick({ text, named: auto, auto: back([r12, r13], base), base })
+    rows = [
+        (back([r13], Ok(t13)) == [t10, t13, t14], "the base is put back at its place"),
+        (back([r13, r12], Ok(t13)) == [t10, t13, t14], "no other changed tag comes back"),
+        (back([r12, r13], Ok("nightly-2026-October-13-91fa0c2")) == [t10, t13, t14], "the base in the other tag form"),
+        (back([r13], Err(None)) == auto, "no base"),
+        (back([r13], Ok(t10)) == auto, "a base that is a candidate"),
+        (back([r13], Ok(t12)) == auto, "a base that is not dropped"),
+        (back([], Ok(t13)) == auto, "nothing dropped"),
+        (step("@-1", Ok(t13)) == Ok(t10), "a step back from the base does not land on the changed tag 2026-10-12"),
+        (step("@+1", Ok(t13)) == Ok(t14), "a step forward from the base"),
+    ]
+    bad = rows.keep_if(|(holds, _)| !holds).map(|(_, label)| label)
+    dbg bad
+    bad == []
+}
+
+Ran 6 tests in 1620.1 ms.:
+    0 passed
+    6 failed
+    0 compiler errors
+tests/unit/probe.roc: All (3) tests passed in 403.5 ms.
+tests/unit/project.roc: All (7) tests passed in 1750.8 ms.
+tests/unit/projects.roc: All (3) tests passed in 438.5 ms.
+tests/unit/prompt.roc: All (5) tests passed in 361.8 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2240.2 ms.
+tests/unit/ranges.roc: All (1) tests passed in 255.4 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1513.6 ms.
+tests/unit/ref.roc: All (4) tests passed in 435.0 ms.
+tests/unit/removal.roc: All (3) tests passed in 1814.0 ms.
+tests/unit/report.roc: All (3) tests passed in 201.3 ms.
+tests/unit/roots.roc: All (3) tests passed in 224.0 ms.
+tests/unit/scan.roc: All (2) tests passed in 280.4 ms.
+tests/unit/selector.roc: All (2) tests passed in 282.9 ms.
+tests/unit/setup.roc: All (10) tests passed in 1454.7 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 327.0 ms.
+tests/unit/temp.roc: All (4) tests passed in 173.1 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1746.3 ms.
+tests/unit/update.roc: All (2) tests passed in 1938.3 ms.
+tests/unit/vars.roc: All (6) tests passed in 1639.8 ms.
+tests/unit/verify.roc: All (2) tests passed in 1255.5 ms.
+tests/unit/why.roc: All (6) tests passed in 1875.6 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+         User-Agent: tln/0.0.0
+       write_atomic $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+      -db_query $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+      -db_write $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+       clock
+       platform
+       read_files $HOME11/.config/talon/config.toml
+       list_dirs $HOME11/.cache/roc/toolchains
+       list_dirs $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies
+       read_files $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+      -db_query $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+       tty
+       ask "Download 2 compilers, 147.3 MB: nightly-2026-10-14-38a3029, nightly-2026-10-09-258ab27? [Y/n] "
+       lock $HOME11/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+      @@ -1022,8 +1001,6 @@
+       http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+         User-Agent: tln/0.0.0
+       write_atomic $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+      -db_query $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+      -db_write $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+       read_files $HOME13/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME13/.cache/roc/toolchains/nightly-2026-10-14-ffffff0/.talon.json
+       tty
+       ask "Download 1 compiler, 73.4 MB: nightly-2026-10-14-38a3029? [Y/n] "
+FAIL roc/us3-step
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -27,8 +27,6 @@
+       http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+         User-Agent: tln/0.0.0
+       write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+       list_dirs $HOME/.cache/roc/toolchains
+       canonical $HOME/.cache $HOME/.cache/roc
+       list_dirs $HOME/.cache/roc/toolchains
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,19 +1,3 @@
+      ---- home/.cache/roc/talon/compat.tsv
+      -+++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,13 @@
+      -+format	1
+      -+pinned	nightly-2026-10-07-3f4e5d6	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-08-0a1b2c3	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-09-258ab27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-10-abcdef0	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-11-1a2b3c4	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-12-2664a27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-13-91fa0c2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-14-38a3029	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-15-38e6c42	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-16-1df370f	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+      -+pinned	nightly-2026-10-17-601b54c	linux_x86_64	2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881	github-digest
+      -+pinned	nightly-2026-10-18-5349569	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+       --- home/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+       +++ home/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+       @@ -0,0 +1,14 @@
+commands: 58 passed, 13 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      +tln: error[integrity]: sha256 of nightly-2026-10-14-38a3029 differs: expected 1111111111111111111111111111111111111111111111111111111111111111, got 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d. Talon deleted the download.
+      +downloading nightly-2026-10-14-38a3029 (454 B)
+      +tln: error[integrity]: sha256 of nightly-2026-10-14-38a3029 differs: expected 1111111111111111111111111111111111111111111111111111111111111111, got 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d. Talon deleted the download.
+      +downloading nightly-2026-10-14-38a3029 (454 B)
+      +tln: error[integrity]: sha256 of nightly-2026-10-14-38a3029 differs: expected 1111111111111111111111111111111111111111111111111111111111111111, got 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d. Talon deleted the download.
+      +downloading nightly-2026-10-14-38a3029 (454 B)
+      +tln: error[integrity]: sha256 of nightly-2026-10-14-38a3029 differs: expected 1111111111111111111111111111111111111111111111111111111111111111, got 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d. Talon deleted the download.
+       downloading nightly-2026-10-12-2664a27 (454 B)
+      -tln: error[integrity]: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d (github-digest), now 1111111111111111111111111111111111111111111111111111111111111111 (github-digest). Talon does not use this compiler. Select another compiler.
+      -tln: error[integrity]: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d (github-digest), now 1111111111111111111111111111111111111111111111111111111111111111 (github-digest). Talon does not use this compiler. Select another compiler.
+      -tln: error[integrity]: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d (github-digest), now 1111111111111111111111111111111111111111111111111111111111111111 (github-digest). Talon does not use this compiler. Select another compiler.
+      -tln: error[integrity]: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d (github-digest), now 1111111111111111111111111111111111111111111111111111111111111111 (github-digest). Talon does not use this compiler. Select another compiler.
+      -warning: the sha256 of nightly-2026-10-09-258ab27 for linux_x86_64 changed: first seen ff21969c0cd5a03c63e0ad890bc09f0926a4981ec6e01681bcca87b03e99f813 (github-digest), now 2222222222222222222222222222222222222222222222222222222222222222 (github-digest). Talon does not offer this compiler.
+      -warning: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d (github-digest), now 1111111111111111111111111111111111111111111111111111111111111111 (github-digest). Talon does not offer this compiler.
+       downloading nightly-2026-10-21-5349569 (456 B)
+      -warning: cannot use $WORK/c2/roc/talon/compat.db (NotADatabase: File opened that is not a database file: file is not a database): Talon goes on with no saved facts. Removing the file resets the stored facts and the first-seen sha256 of compilers.
+       downloading nightly-2026-July-31-123c5d7 (463 B)
+      -tln: error[input]: $WORK/c3/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon
+      +downloading nightly-2026-10-12-2664a27 (454 B)
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -55,7 +55,7 @@
+       --- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
+       +++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"id":"nightly-2026-10-12-2664a27","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"86ccb647d855f031aa3a746171aa5f49c66cbacd18d1344ef4d3ce12b7341039","sha256_source":"github-digest","typed":"@latest","compat":"fc5fa5a2d050ea058f960436a9514119f70d405a8eb17adf3dac6855b127b4e4","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
+      ++{"format":1,"id":"nightly-2026-10-12-2664a27","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"86ccb647d855f031aa3a746171aa5f49c66cbacd18d1344ef4d3ce12b7341039","sha256_source":"github-digest","typed":"nightly-2026-10-12-2664a27","compat":"fc5fa5a2d050ea058f960436a9514119f70d405a8eb17adf3dac6855b127b4e4","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
+       --- home/.cache/roc/toolchains/nightly-2026-10-21-5349569/legal_details
+       +++ home/.cache/roc/toolchains/nightly-2026-10-21-5349569/legal_details
+       @@ -0,0 +1 @@
+    compat.db rows differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +0,0 @@
+      -format	1
+      -pinned	nightly-2026-10-09-258ab27	linux_x86_64	ff21969c0cd5a03c63e0ad890bc09f0926a4981ec6e01681bcca87b03e99f813	github-digest
+      -pinned	nightly-2026-10-12-2664a27	linux_x86_64	86ccb647d855f031aa3a746171aa5f49c66cbacd18d1344ef4d3ce12b7341039	github-digest
+      -pinned	nightly-2026-10-14-38a3029	linux_x86_64	3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d	github-digest
+      -pinned	nightly-2026-10-21-5349569	linux_x86_64	d056361f91e5b8835051e7653e621e6a8f474ffb00202cb96b785c7f381a876c	github-digest
+      -pinned	nightly-2026-July-31-123c5d7	linux_x86_64	51bed08e35bdca51773989e159b108f79acadcef22666e44e3ac1f950f88f89c	github-digest
+    http requests differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,8 +1,14 @@
+       GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+       GET /dl/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz 200
+       GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+      +GET /dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 200
+      +GET /dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 200
+      +GET /dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 200
+      +GET /dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 200
+      +GET /dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 200
+       GET /dl/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz 200
+       GET /dl/nightly-2026-10-21-5349569/roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz 200
+       GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+       GET /dl/nightly-2026-July-31-123c5d7/roc_nightly-linux_x86_64-2026-07-31-123c5d7.tar.gz 200
+       GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+      +GET /dl/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz 200
+scenarios: 56 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   2.0      10
+fmt        pass   0.1      5
+l0         FAIL   5.7      10
+l2         FAIL   2.1      30
+l3         FAIL   9.7      60
+selftest   pass   7.7      20

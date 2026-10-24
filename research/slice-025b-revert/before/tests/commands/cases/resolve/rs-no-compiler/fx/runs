@@ -1,0 +1,4 @@
+install
+install frozen
+install file=range/main.roc compiler=nightly-2026-10-14-38a3029
+install file=off/main.roc compiler=nightly-2026-10-14-38a3029 nightly=false

@@ -31,7 +31,8 @@ st env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify --no-check
 # R-SO22 (slice 013, G-pin-gate): another full id is a required download only when a probe needs it. --no-check runs no probe, so ROC_TOOLCHAIN does not stop it: exit 0 (it was exit 13 in slice 012).
 st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify --no-check
 # R-PH7 R-SO22: with the probes, the compiler is refused at the first probe: P0 refuses the download, exit 13, and the text names the id.
-st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify
+# Slice 025: the runner has CI=true, so with no answer the run would stop at the list of compilers. TALON_AUTO_INSTALL=no keeps the refusal of these two runs (R-DL5, R-DL10).
+st env TALON_AUTO_INSTALL=no ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify
 # R-SC12: a prefix is an error, as a bad TALON_NOW: exit 2.
 st env ROC_TOOLCHAIN=nightly-2026-10 tln verify --no-check
 # R-SC12 R-EC19: a prefix in the roc: pin of the header is a value of the wrong form: exit 19, the text names the file and the line.
@@ -58,7 +59,7 @@ rm -r "$XDG_CONFIG_HOME/talon"
 # R-SO21 R-SO22 (slice 013): the header pin is nightly-2026-10-09-258ab27, and the roc on PATH is nightly-2026-10-14-38a3029. The probes of `verify` run on the pin, which is not installed: exit 13 at the first probe.
 cp main.roc main.roc.keep
 sed 's/nightly-2026-10-14-38a3029/nightly-2026-10-09-258ab27/' main.roc.keep > main.roc
-st tln verify
+st env TALON_AUTO_INSTALL=no tln verify
 # R-SO21: `verify` writes nothing, so its probes run on ROC_TOOLCHAIN, here the roc on PATH: the check, the build and exit 0. The header pin is another compiler and is not checked by a probe.
 st env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify
 mv main.roc.keep main.roc

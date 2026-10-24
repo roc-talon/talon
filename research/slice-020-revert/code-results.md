@@ -1,0 +1,41 @@
+# Revert check of the code, slice 020 (33 mutations, see code-mutate.py)
+
+Rule: a mutation is CAUGHT when a listed test fails. Only the tests that should catch it were run (no full sweep). A3 did not compile at the first run (an unused parameter) and was written again. The code was the same as `code-final/` after the run.
+
+T1: CAUGHT by l0:nightlies (R-CV8: the target of macOS arm)
+T2: CAUGHT by l0:nightlies (R-CV1: a month name gives its index from 0)
+R1: CAUGHT by l0:nightlies (R-CV1: a tag that is no nightly stays)
+R2: CAUGHT by l0:nightlies (R-DI3: a draft stays)
+R3: CAUGHT by l0:nightlies (R-DI3: a prerelease stays)
+R4: CAUGHT by l0:nightlies (R-CV1: the number of the bad page)
+A1: CAUGHT by l0:nightlies (R-CV2: the prefix has no `-` after the target)
+A2: CAUGHT by l0:nightlies (R-CV7: Windows arm64 has .tar.gz)
+A3: CAUGHT by l0:nightlies (R-CV7: each extension is accepted)
+A4: CAUGHT by l0:nightlies (R-CV2: 2 assets give the first)
+A5: CAUGHT by l0:nightlies (R-CV3: a sha256 of more than 64 digits)
+A6: CAUGHT by l0:nightlies (R-CV3: a digest with no `sha256:`)
+A7: CAUGHT by l0:nightlies (R-CV2: the size is 0)
+A8: CAUGHT by l0:nightlies (R-CV2: the URL is the name)
+O1: CAUGHT by l0:nightlies (R-NS1: no `published_at` in the order)
+O2: CAUGHT by l0:nightlies (R-NS1: no tag text in the order)
+V1: CAUGHT by l0:nightlies (R-RU1: exactly the age is hidden)
+V2: CAUGHT by l0:nightlies (R-DT4: a release at the snapshot time is hidden)
+V3: CAUGHT by l0:nightlies (R-C9: a kept id is hidden)
+C1: CAUGHT by l0:nightlies (R-CV2: each nightly is a candidate)
+P1: CAUGHT by l0:nightlies (R-SL5: @latest is the oldest)
+P2: CAUGHT by l0:nightlies (R-SL7: the sign of a step)
+P3: CAUGHT by l0:nightlies (R-CV1: the base in the other tag form is not found)
+P4: CAUGHT by l0:nightlies (Q3: a base that is not listed)
+P5: CAUGHT by l0:nightlies (R-SL7: the step in OutOfRange)
+P6: CAUGHT by l0:nightlies (R-CV1: the other tag form with another sha)
+P7: CAUGHT by l0:nightlies (R-SC10: an ambiguous prefix gives the first id)
+P8: CAUGHT by l0:nightlies (D8: the `@` is not dropped)
+F1: CAUGHT by l0:nightlies (R-NS2: the kind of Empty)
+F2: CAUGHT by l0:nightlies (the words older and newer are swapped)
+L1: CAUGHT by l3:compilers/cl1 (R-DI2: the repository)
+L2: CAUGHT by l3:compilers/cl2 (R-DI2: the kind of a bad page)
+G1: CAUGHT by l3:compilers/cl2 (G3: a page that is no array is cached)
+
+Caught 33 of 33.
+
+Not a mutation (equal behavior): `named.contains(text)` in `by_name` (the exact id) can be removed with no change for a nightly id, because the other-tag-form step finds the same id. It matters only for an id that is no nightly (for example a `git-` id that is the prefix of another). No test names such a pair.

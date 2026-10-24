@@ -1,0 +1,14 @@
+tln: error[consent]: 1 compiler download (573 B) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: 1 compiler download (573 B) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-13-5349569 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-13-5349569, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+downloading nightly-2026-10-13-5349569 (573 B)
+downloading nightly-2026-10-12-0a1b2c3 (572 B)
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+downloading nightly-2026-10-11-1b2c3d4 (572 B)
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.

@@ -6,14 +6,17 @@ $PROJECT/p1/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
 exit 0
 == update json file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+note: tuple dropped: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)
 exit 10
 == update json file=p3/main.roc compiler=nightly-2026-10-14-38a3029
 exit 11
 == update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
 exit 1
 == update json file=p5/main.roc compiler=nightly-2026-10-14-38a3029
+note: tuple dropped: the whole-app check crashes on nightly-2026-10-14-38a3029 (signal 11) with acme/json 2.1.0
 exit 10
 == update json file=p6/main.roc compiler=nightly-2026-10-14-38a3029
+note: tuple dropped: the build for the host target failed on the platform acme/pf 0.1.0: unsupported target
 exit 10
 == update json file=p7/main.roc compiler=nightly-2026-10-14-38a3029
 check: passed
@@ -32,4 +35,5 @@ $PROJECT/p8/main.roc
   ~ json: acme/json 2.0.0 -> 2.0.5
 exit 0
 == update json file=p9/main.roc compiler=nightly-2026-10-14-38a3029
+note: tuple dropped: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)
 exit 10

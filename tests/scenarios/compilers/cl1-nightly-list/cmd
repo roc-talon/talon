@@ -1,0 +1,70 @@
+# R-CV1 R-CV2 R-CV3 R-CV7 R-CV8 R-DI2 R-DI3 R-NS1 R-NS3 R-NS4 R-SC10 R-SC11 R-SC13 R-SL5 R-SL6 R-SL7 R-C7: the list of compilers from the release list of roc-lang/nightlies
+# with the real Http.send! against the fake API. The fixture (given/http, made by tests/fixtures/nightlies/trim.py) is 12 real releases on 2 pages (the Link header names page 2).
+# The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW, R-EV22). The cache pages are in `talon/index/github/roc-lang/nightlies/` (the same cache as any repository, R-DI2).
+export TALON_NOW=2026-10-22T12:00:00Z
+D=$XDG_CACHE_HOME/roc/talon/index/github/roc-lang/nightlies
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# The id and the name of the asset (the last part of the URL), or `asset` for a release with no asset.
+view() { flowprobe "$@" | awk '{ n = split($NF, a, "/"); print $2, a[n] }'; }
+names() { flowprobe "$@" | awk '{ print $2 }'; }
+
+# The first run: 2 requests. The list is in the order of R-NS1, the oldest first, for Linux x86_64 (R-CV8). The 2 forms of the tag are one order: `2025-October-25` before `2025-November-03`,
+# and `2026-July-31` before `2026-08-06`. The nightly of 2025-11-03 has no asset: it stays, with `no asset`. The 2 nightlies of 2026-07-23 are in the order of `published_at`
+# (fdd77c3 at 06:04, 306abd6 at 11:30), not of the tag text. The release of 2026-02-10 has the asset `...-ea7058b.tar.gz`: another sha than its tag (R-CV2). Each asset has its size,
+# its sha256 from `digest` (R-CV3) and the URL of the answer (a loopback URL).
+st flowprobe nightlies
+
+# The list is cached for 60 s (R-DI2): no new request. Windows x86_64: the asset is a `.zip` (R-CV7, R-CV2), and the `windows_arm64` asset of 2026-02-10 is not it. The last field is the URL.
+view nightlies --host windows_x86_64
+view nightlies --host macos_apple_silicon
+
+# min-release-age 2 days (R-C7, R-NS3): the nightlies of 10-21 (21 hours) and 10-20 (1 day 21 hours) are hidden, 10-19 (2 days 19 hours) is not.
+names nightlies --min-age 172800
+
+# A time snapshot (R-C7, R-DT4): a nightly published after it is hidden, one published at that time is not (24e3995 is at 12:41:53).
+names nightlies --snapshot 2026-09-01T12:41:53Z
+
+# `@latest` is the newest nightly. With min-release-age 2 days it is the newest visible one (R-NS3, R-C7).
+st flowprobe compiler @latest
+st flowprobe compiler --min-age 172800 @latest
+
+# A named compiler is never hidden (R-NS4, R-C7): the full id of the newest nightly with min-release-age 2 days. A prefix gives the full id (R-SC10, R-SC11, R-SC13: `tln roc ...`,
+# `roc +<id>` and `tln roc default` use the same expansion).
+st flowprobe compiler --min-age 172800 nightly-2026-10-21-5349569
+st flowprobe compiler nightly-2026-10-21
+st flowprobe compiler nightly-2025-Oct
+
+# A pin in the other tag form names the same nightly, and the answer is the tag text of the list (R-CV1, R-SL6): the numeric form of `nightly-2026-July-31-f5556d8`.
+st flowprobe compiler nightly-2026-07-31-f5556d8
+st flowprobe compiler @nightly-2026-07-31-f5556d8
+
+# Relative steps (R-SL7): `@-1` from `db83307` is `24e3995` (the 2 nightlies of 2026-09-01 are 2 steps, R-NS1). `@+1` from `24e3995` is `db83307`. The base can be in the other form.
+st flowprobe compiler --base nightly-2026-09-01-db83307 @-1
+st flowprobe compiler --base nightly-2026-09-01-24e3995 @+1
+st flowprobe compiler --base nightly-2026-09-01-24e3995 @-1
+st flowprobe compiler --base nightly-2026-07-23-306abd6 @-1
+
+# Only the candidates on the host count for names, `@latest` and steps (R-CV2, R-CV8). The nightly of 2025-11-03 has no asset: `@-1` from 2026-02-10 and `@+1` from 2025-10-25 step over it,
+# and its id and a prefix of it name nothing. On Windows arm64 only the 2 nightlies of 2026-02-10 and 2025-10-25 have the asset: the newest is 2026-02-10, and a newer nightly is no name.
+st flowprobe compiler --base nightly-2026-02-10-c95f04d @-1
+st flowprobe compiler --base nightly-2025-October-25-c3487d2 @+1
+st flowprobe compiler nightly-2025-November-03-4215483
+st flowprobe compiler nightly-2025-Nov
+view nightlies --host windows_arm64
+st flowprobe compiler --host windows_arm64 @latest
+st flowprobe compiler --host windows_arm64 nightly-2026-10-21
+
+# The failures. An ambiguous prefix lists the full ids (R-SC10, exit 2). No match: exit 2. A step with no base: exit 18 (R-SO14). A step past the newest nightly: exit 2.
+st flowprobe compiler nightly-2026-09-01
+st flowprobe compiler nightly-2026-11
+st flowprobe compiler @-1
+st flowprobe compiler --base nightly-2026-10-21-5349569 @+1
+
+# The cache holds both pages: the 3 `ETag`s (the pages are the real answer). All of this made 2 requests.
+find "$D" -type f | sort | sed "s|$D/||"
+
+# Offline (R-DI12): no request, the cached pages. The line `index: cached at <time>` has the time of the oldest page.
+touch -d '2026-10-01 12:00:00 UTC' "$D/1.meta" "$D/2.meta"
+flowprobe nightlies --offline | head -n 3 | awk '{ print $2 }'
+rm -r "$D"
+st flowprobe nightlies --offline

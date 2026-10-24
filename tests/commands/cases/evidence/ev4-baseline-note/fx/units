@@ -1,0 +1,2 @@
+# <hash>[:<compiler>] <code> <stdout> <stderr>: the answer of a unit probe (check main.roc in the package dir). No row: it passes.
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-08-0a1b2c3	1	-	../fixtures/check/out/unit-fail-two.stderr

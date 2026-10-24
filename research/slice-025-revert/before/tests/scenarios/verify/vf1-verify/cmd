@@ -1,0 +1,78 @@
+# R-CM11 R-LB2 R-LB1 R-LB4 R-FL14 R-FL7 R-FL13 R-LF3 R-BL6 R-LD4 R-LD7 R-SP2 R-RP2 R-I5 R-J1 R-J2 R-J3 R-J4 R-J5 R-OUT4 R-EC2 R-E4 R-PD9 R-SO7 R-EV4 R-NS5 R-NS8 R-NS9 R-EV5 R-SO2 R-PH6 R-PH7 R-SC12 R-EC19 R-NS10 R-C7 R-LY4 R-EC13 R-SO19 R-SO20 R-SO21 R-SO22 R-NS4 R-SP1 (slice 009, Q4, Q6, Q7; slice 012 for R-EV4, R-EV5 and the answers Q28, Q29, Q33; slice 013 for the pin gate):
+# `tln verify` on the real binary. The header has a platform (acme/pfx 0.1.0, 0.1.1 is in the series), json 2.0.0 and parser 1.0.0. talon.toml has the key `lex` that the header lacks: it has no effect, and the fixture has no page for acme/lex.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# R-FL14: `verify` writes nothing, so it rejects --dry-run and --frozen. A name is no operand (Q6).
+st tln verify --dry-run
+st tln verify --frozen
+st tln verify json
+# The tuple that `update` with no name picks: json 2.1.0 (2.2.0 is 1 day old), parser 1.2.0, the platform 0.1.1. The check uses `--replace-dep`: no copy of the app, no write (see the roc calls below and the tree diff).
+st tln verify
+# `lowest` inside the implied ranges: the tuple is the header (R-LB4). The ladder still runs (Q4): 3 probes. --json has the same data as `install`, with `written` empty.
+st tln verify --strategy lowest --json
+# --no-check skips the ladder (R-LF3): `check` and `build` are skipped, no probe.
+st tln verify --no-check --json
+# R-EV4, R-NS5 (slice 012): TALON_NIGHTLY=0 is the switch off. The header pin is a nightly, so the command stops with exit 10 and the message names the switch. Nothing is probed.
+st env TALON_NIGHTLY=0 tln verify --no-check
+# R-NS9: `[toolchain] nightly = false` in talon.toml is the same switch. R-NS8: TALON_NIGHTLY=1 (the environment, rank 1) wins over it, so the command runs.
+cp talon.toml talon.toml.keep
+printf '\n[toolchain]\nnightly = false\n' >> talon.toml
+st tln verify --no-check
+st env TALON_NIGHTLY=1 tln verify --no-check
+mv talon.toml.keep talon.toml
+echo "== the files are not changed"
+cat main.roc talon.toml
+# The 2 probes of a round start together, and each build has a random temp dir: the random part is replaced, then the roc calls are sorted.
+echo "== the roc calls"
+sed 's#/talon/tmp/[0-9a-f]\{16\}/#/talon/tmp/HEX/#' "$TALON_TEST_DIR/roc.log" | sort
+# Slice 012, answers of the manager review (Q28, Q29, Q33). The roc calls are shown above: the runs below use --no-check, so they call only `roc version`.
+# R-SO2 R-EV5 R-PH6: ROC_TOOLCHAIN (rank 2) with the id of the roc on PATH changes nothing.
+st env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify --no-check
+# R-SO22 (slice 013, G-pin-gate): another full id is a required download only when a probe needs it. --no-check runs no probe, so ROC_TOOLCHAIN does not stop it: exit 0 (it was exit 13 in slice 012).
+st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify --no-check
+# R-PH7 R-SO22: with the probes, the compiler is refused at the first probe: P0 refuses the download, exit 13, and the text names the id.
+st env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln verify
+# R-SC12: a prefix is an error, as a bad TALON_NOW: exit 2.
+st env ROC_TOOLCHAIN=nightly-2026-10 tln verify --no-check
+# R-SC12 R-EC19: a prefix in the roc: pin of the header is a value of the wrong form: exit 19, the text names the file and the line.
+cp main.roc main.roc.keep
+sed 's/nightly-2026-10-14-38a3029/nightly-2026-10-14/' main.roc.keep > main.roc
+st tln verify --no-check
+mv main.roc.keep main.roc
+# R-NS10: `nightly = false` in config.toml is the switch off (rank 3): exit 10, as the same key in talon.toml.
+mkdir -p "$XDG_CONFIG_HOME/talon"
+printf 'nightly = false\n' > "$XDG_CONFIG_HOME/talon/config.toml"
+st tln verify --no-check
+# R-C7 R-LY4: `min-release-age = "0d"` in config.toml turns the age filter off (the default is 2d), so json 2.2.0 (1 day old) is the newest.
+printf 'min-release-age = "0d"\n' > "$XDG_CONFIG_HOME/talon/config.toml"
+st tln verify --no-check
+rm -r "$XDG_CONFIG_HOME/talon"
+# N3 (slice 013): R-NS9 over R-NS10. `[toolchain] nightly = true` in talon.toml wins over `nightly = false` in config.toml: the pin is a nightly, and the command runs.
+mkdir -p "$XDG_CONFIG_HOME/talon"
+printf 'nightly = false\n' > "$XDG_CONFIG_HOME/talon/config.toml"
+cp talon.toml talon.toml.keep
+printf '\n[toolchain]\nnightly = true\n' >> talon.toml
+st tln verify --no-check
+mv talon.toml.keep talon.toml
+rm -r "$XDG_CONFIG_HOME/talon"
+# R-SO21 R-SO22 (slice 013): the header pin is nightly-2026-10-09-258ab27, and the roc on PATH is nightly-2026-10-14-38a3029. The probes of `verify` run on the pin, which is not installed: exit 13 at the first probe.
+cp main.roc main.roc.keep
+sed 's/nightly-2026-10-14-38a3029/nightly-2026-10-09-258ab27/' main.roc.keep > main.roc
+st tln verify
+# R-SO21: `verify` writes nothing, so its probes run on ROC_TOOLCHAIN, here the roc on PATH: the check, the build and exit 0. The header pin is another compiler and is not checked by a probe.
+st env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify
+mv main.roc.keep main.roc
+# R-NS4 R-SO19 (slice 013): the header has no pin, talon.toml has a range that does not admit the roc on PATH, and ROC_TOOLCHAIN names that roc. `verify` only runs it (R-NS4): exit 0. A command that holds the
+# nightly checks the compiler that rank 2 selected against the range before the index (R-SO19): `install` stops with exit 10, and the text names ROC_TOOLCHAIN and the range.
+grep -v 'roc:' main.roc > main.roc.nopin
+cp main.roc main.roc.keep
+cp main.roc.nopin main.roc
+cp talon.toml talon.toml.keep
+printf '\n[toolchain]\nroc = ">=nightly-2026-10-20-aaaaaaa"\n' >> talon.toml
+st env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify --no-check
+st env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln install --no-check
+mv main.roc.keep main.roc
+rm main.roc.nopin
+mv talon.toml.keep talon.toml
+rm "$TALON_TEST_DIR/roc.log"
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

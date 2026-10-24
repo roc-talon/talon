@@ -1,0 +1,82 @@
+consent/dl1-resolve changed: calls.log OK
+consent/dl2-verify-workspace changed: calls.log OK
+consent/dl3-rank4 changed: calls.log OK
+evidence/ev3-summary changed: calls.log OK
+evidence/ev4-baseline-note changed: calls.log OK
+gaps/g1-slice009 changed: calls.log OK
+install/in1-flow changed: calls.log,stderr,stdout,tree.diff CHECK
+    calls.log +write_atomic $PROJECT/app/talon.toml $PROJECT/app/main.roc
+    calls.log +read_files $PROJECT/app/talon.toml
+    stderr ? changed
+    stdout ? changed
+    tree.diff ? changed
+ladder/bs1-build-skip changed: calls.log OK
+ladder/bs2-build-skip-verify changed: calls.log OK
+ladder/bs3-build-record changed: calls.log OK
+ladder/ld-ladder-flow changed: calls.log OK
+ladder/ld-no-check-refuse changed: calls.log OK
+moves/hm1-noninteractive changed: calls.log OK
+moves/hm2-interactive changed: calls.log OK
+probe/pb1-ladder changed: calls.log OK
+probe/pb2-verify changed: calls.log,stdout CHECK
+    stdout ? changed
+probe/un1-units changed: calls.log,stderr,stdout,tree.diff CHECK
+    calls.log +platform
+    calls.log +read_files $PROJECT/p7/main.roc
+    calls.log +read_files $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/Yaml.roc
+    calls.log +write_atomic $PROJECT/p7/main.roc
+    calls.log -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    stderr ? changed
+    stdout ? changed
+    tree.diff ? changed
+probe/un3-verify-units changed: calls.log OK
+resolve/rs-install-add-key changed: calls.log OK
+resolve/rs-new-toml changed: calls.log OK
+resolve/rs-unmanaged changed: calls.log OK
+resolve/rs-update-scope changed: calls.log OK
+resolve/rs-want-platform changed: calls.log,tree.diff CHECK
+    tree.diff ? changed
+resolve/rs-workspace-shared-group changed: calls.log OK
+roc/cv1-pins changed: calls.log,stderr,stdout CHECK
+    calls.log +read_files $HOME4/.config/talon/config.toml
+    calls.log +db_write $HOME4/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+    calls.log +lock $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569 nowait: held
+    calls.log +make_dirs $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp
+    calls.log +  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.012345678
+    calls.log +sha256_file $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz
+    calls.log +  job - tar -xf $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz -C $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349
+    calls.log +delete $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz
+    calls.log +  job - chmod 0755 $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc
+    calls.log +list_dirs $HOME4/.cache/roc
+    calls.log +  job $HOME4/.cache/roc/talon/tmp/0123456789abcdef $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc check $HOME4/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+    calls.log +delete $HOME4/.cache/roc/talon/tmp/0123456789abcdef
+    calls.log +write_atomic $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/.talon.json
+    calls.log +rename $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569
+    calls.log +unlock $HOME4/.cache/roc/toolchains/nightly-2026-10-18-5349569
+    calls.log +lock $HOME4/.config/talon/config.toml nowait: held
+    calls.log +write_atomic $HOME4/.config/talon/config.toml
+    calls.log +unlock $HOME4/.config/talon/config.toml
+    calls.log -read_files $HOME3/.config/talon/config.toml
+    calls.log -db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=9
+    calls.log -lock $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27 nowait: held
+    calls.log -make_dirs $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp
+    calls.log -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.012345678
+    calls.log -sha256_file $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz
+    calls.log -  job - tar -xf $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz -C $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258a
+    calls.log -delete $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz
+    calls.log -  job - chmod 0755 $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc
+    calls.log -list_dirs $HOME3/.cache/roc
+    calls.log -  job $HOME3/.cache/roc/talon/tmp/0123456789abcdef $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check $HOME3/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+    calls.log -delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
+    calls.log -write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/.talon.json
+    calls.log -rename $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27
+    calls.log -unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27
+    calls.log -lock $HOME3/.config/talon/config.toml nowait: held
+    calls.log -write_atomic $HOME3/.config/talon/config.toml
+    calls.log -unlock $HOME3/.config/talon/config.toml
+    stderr ? changed
+    stdout ? changed
+roc/so1-ranks changed: calls.log OK
+update/up1-flow changed: calls.log OK
+verify/vf1-flow changed: calls.log OK
+workspace/ws2-verify-members changed: calls.log OK

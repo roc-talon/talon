@@ -1,0 +1,7 @@
+m04 infer: a build row counts as a unit fact (target not read): L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m11 case (a) left out: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m12 case (b) left out: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m18 a release that no interval holds belongs to all of D: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m22 epochs: crash facts dropped before infer (a crash pair becomes a gap): L0=caught L1=caught  [roc crashed] R-EP10: epochs is not infer with the partition
+m23 infer reads only the first 8 facts: L0=caught L1=MISSED
+reference restored: True

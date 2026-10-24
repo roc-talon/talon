@@ -1,0 +1,16 @@
+── ✗ unsupported target ────────────────────────────────────────────────────────
+
+The platform at
+/tmp/talon-check-fixtures/home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAa
+RL8bBwMLvB2xkbA/main.roc does not support the x64freebsd target.
+
+Supported targets:
+  - x64mac
+  - arm64mac
+  - x64win
+  - x64musl
+  - arm64musl
+
+To add support, update the targets section in the platform header.
+
+

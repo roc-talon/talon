@@ -37,7 +37,7 @@ expect {
 	usage = Out.json_fail({ command: "frobnicate", fail: Fail.new(Usage, "unknown command 'frobnicate'") })
 	net = Out.json_fail({
 		command: "update",
-		fail: Fail.{ kind: Network, message: "registry answered 502", details: Ok(Obj([("status", Num(502))])) },
+		fail: Fail.{ kind: Network, message: "registry answered 502", details: Ok(Obj([("status", Num(502))])), again: Err(None) },
 	})
 	Out.schema == 1
 		and ok == "{\"schema\":1,\"command\":\"list\",\"ok\":true,\"data\":{\"count\":2},\"error\":null}\n"

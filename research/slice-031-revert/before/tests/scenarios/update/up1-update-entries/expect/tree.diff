@@ -1,0 +1,17 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1792065600}]}
+--- project/main.roc
++++ project/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+-	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
++	pf: platform "https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst",
++	parser: "https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst",
+ 	mylib: "./lib/main.roc",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }

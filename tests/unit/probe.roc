@@ -212,3 +212,35 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-PP6 R-PP7 (slice 031): the slots that a probe takes from the pool. A check takes 1, a build takes 4: a pool of 12 slots runs 12 checks, or 3 builds, or a mix.
+expect {
+	rows = [
+		(Probe.weight(Check), 1),
+		(Probe.weight(Build({ output: "/tmp/talon/tln-probe.out" })), 4),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
+no_keys = { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }
+
+# R-P5 R-PP7 R-LY4 R-FL11 (slice 031): the probe settings. The default is `probe.max` 100, `probe.timeout` 30, `probe.slots` 12, `probe.max-toolchains` 10. A layer sets a key by itself: the flag `--slots`, then the `talon.toml` of
+# the project, then `config.toml` (`Setting.pick`). A key that a layer does not set comes from the layer below. A value of 0 is a value (`max-toolchains = 0` is the setting that turns the optional downloads off, R-DL6).
+expect {
+	settings = |flag_slots, from_toml, user| Probe.settings({ flag_slots, project: from_toml, user })
+	user_all = { max: Ok(50), timeout: Ok(10), slots: Ok(6), max_toolchains: Ok(0) }
+	rows = [
+		("the defaults", settings(Err(Unset), no_keys, no_keys), { max: 100, timeout: 30, slots: 12, max_toolchains: 10 }),
+		("config.toml sets each key, also 0", settings(Err(Unset), no_keys, user_all), { max: 50, timeout: 10, slots: 6, max_toolchains: 0 }),
+		("talon.toml over config.toml, key by key", settings(Err(Unset), { ..no_keys, slots: Ok(3) }, { ..user_all, slots: Ok(8) }), { max: 50, timeout: 10, slots: 3, max_toolchains: 0 }),
+		("talon.toml over config.toml for max, timeout and max-toolchains", settings(Err(Unset), { ..no_keys, max: Ok(7), timeout: Ok(2), max_toolchains: Ok(4) }, user_all), { max: 7, timeout: 2, slots: 6, max_toolchains: 4 }),
+		("the flag over talon.toml and config.toml", settings(Ok(2), { ..no_keys, slots: Ok(3) }, user_all), { max: 50, timeout: 10, slots: 2, max_toolchains: 0 }),
+		("the flag changes the slots only", settings(Ok(2), no_keys, no_keys), { max: 100, timeout: 30, slots: 2, max_toolchains: 10 }),
+		("a key of talon.toml with a default below", settings(Err(Unset), { ..no_keys, max: Ok(5), timeout: Ok(1) }, no_keys), { max: 5, timeout: 1, slots: 12, max_toolchains: 10 }),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}

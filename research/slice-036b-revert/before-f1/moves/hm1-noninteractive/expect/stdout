@@ -1,0 +1,53 @@
+== add acme/json@2.2.0 --file ws/apps/b/main.roc
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: passed
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+exit 13
+== add acme/json@2.2.0 --json --file ws/apps/b/main.roc
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"consent","code":13,"message":"moving the held variable json needs consent. Pass --allow-moves or --yes.","details":{"moves":[{"alias":"json","name":"acme/json","from":"2.0.0","to":"2.2.0","why":"json 2.0.0 is outside =2.2.0","members":["$PROJECT/ws/apps/a/main.roc"]}]}}}
+exit 13
+== add acme/json@2.2.0 --dry-run --file ws/apps/b/main.roc
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+$PROJECT/ws/apps/b/main.roc
+  + json: acme/json 2.2.0
+$PROJECT/ws/talon.toml: json = "=2.2.0"
+resolved at 2026-10-15T12:00:00Z, 4 probes
+dry run: nothing was written
+exit 0
+== add acme/lex@1.1.0 --file ws/apps/b/main.roc
+exit 10
+== add acme/json@2.2.0 --allow-moves --file ws/apps/b/main.roc
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+$PROJECT/ws/apps/b/main.roc
+  + json: acme/json 2.2.0
+$PROJECT/ws/talon.toml: json = "=2.2.0"
+resolved at 2026-10-15T12:00:00Z, 4 probes
+exit 0
+== update yaml@1.1.0 --yes --file ws/apps/a/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: passed
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/a/main.roc
+  ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/ws/apps/b/main.roc
+  ~ base: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/ws/talon.toml: yaml = "=1.1.0"
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0

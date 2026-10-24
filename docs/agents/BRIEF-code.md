@@ -10,6 +10,8 @@ You are the code agent for one slice of the `tln` CLI (`TESTING.md` 7.1, step 3)
 | A test, a fixture or an expected file | Only when it contradicts the design, or has a plain bug (a typo, a wrong path, a test that cannot compile). Each change gets a row in the slice file "Disputes (from the code agent)": the test, the change, the design source. Never change a test only to make your code pass. |
 | Nothing else | No design file. No commit or push. Not `cloudflare-workers/`. No path entry to a generic package (R-GP3). |
 
+Do not read the test agent's files under `research/slice-NNN-revert/` (its `mutate.py`, generators and logs can show the private reference code). Only `before/` and `stubs/` are for you (manager rule, 2026-10-24).
+
 If the design does not say what the code must do, do not choose: write a question in the slice file (TW17), skip that part, and report it.
 
 ## Read first
@@ -37,7 +39,7 @@ For shell runs, use the pinned binary: `ROC=/home/george/dev/Karakatiza666/talon
 
 ## Done when
 
-`scripts/test.sh` exits 0: all old and new tests pass. Then do the revert check (TW12) for the slice: for each rule id of the slice, break the code of that rule in one small way, run the tests, see a test fail, and put the code back exactly. Record the results in the slice file "Verify results" (the mutation, the test that failed, or "not caught"). Check at the end that the code is the same as before the mutations (keep a copy and compare).
+`scripts/test.sh` exits 0: all old and new tests pass. Then do the revert check (TW12) for the slice, but only for the most tricky behaviors (user rule, 2026-10-23: reverts cost many tokens): about 5 to 10 mutations, chosen where a bug is likely and a test is easy to miss (edge cases, order, guards, conflicts). Do not mutate each rule id. For each, break the code in one small way, run only the test that must see it, see it fail, and put the code back exactly. Record the results in the slice file "Verify results" (the mutation, the test that failed, or "not caught"). Check at the end that the code is the same as before the mutations (keep a copy and compare).
 
 ## Final reply to the manager (under 50 lines)
 

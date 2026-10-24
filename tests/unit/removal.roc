@@ -104,3 +104,43 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-NI5 R-FL12 R-DL5 (slice 025): `remove` runs the ladder, so it can need a compiler download. `--allow-downloads` is `Ok(Yes)` when set. `--probe-downloads` is read and changes nothing (R-NI4 does not list `remove`: it has no optional probe).
+expect {
+	flag = |words| match Args.parse(words) {
+		Err(stop) => Err(Fail.line(stop.fail))
+		Ok(args) => match Removal.opts(args) {
+			Ok(o) => Ok(o.allow_downloads)
+			Err(f) => Err(Fail.line(f))
+		}
+	}
+	rows = [
+		(["remove", "json"], Ok(Err(NoFlag))),
+		(["remove", "json", "--allow-downloads"], Ok(Ok(Yes))),
+		(["rm", "json", "--probe-downloads"], Ok(Err(NoFlag))),
+		(["rm", "json", "--allow-downloads", "--probe-downloads", "--yes"], Ok(Ok(Yes))),
+	]
+	bad = rows.keep_if(|(words, want)| flag(words) != want).map(|(words, _)| (words, flag(words)))
+	dbg bad
+	bad == []
+}
+
+# R-FL11 R-FL7 R-LF2 R-PP7 (slice 031): `remove` resolves, so `--slots` and `--no-probe` are its flags too: `Opts.slots` and `Opts.no_probe` are the values that `Opts.read` gives.
+expect {
+	probe = |words| match Args.parse(words) {
+		Err(stop) => Err(Fail.line(stop.fail))
+		Ok(args) => match Removal.opts(args) {
+			Ok(o) => Ok((o.slots, o.no_probe))
+			Err(f) => Err(Fail.line(f))
+		}
+	}
+	rows = [
+		(["remove", "json"], Ok((Err(Unset), Bool.False))),
+		(["rm", "json", "--slots", "3"], Ok((Ok(3), Bool.False))),
+		(["remove", "json", "--no-probe", "--slots=2"], Ok((Ok(2), Bool.True))),
+		(["remove", "json", "--slots", "0"], Err("tln: error[usage]: --slots must be a whole number of 1 or more, not '0'")),
+	]
+	wrong = rows.keep_if(|(words, want)| probe(words) != want).map(|(words, want)| (words, want, probe(words)))
+	dbg wrong
+	wrong == []
+}

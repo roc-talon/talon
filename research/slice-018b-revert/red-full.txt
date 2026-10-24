@@ -1,0 +1,58 @@
+== selftest: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/selftest.log)
+SELFTEST FAIL: ci/yaml: .github/workflows/ci.yml and nightly.yml parse, have name, on, permissions (contents: read), jobs; each job has runs-on, timeout-minutes and steps; each action is pinned
+FAIL: .github/workflows/ci.yml is missing
+FAIL: .github/workflows/nightly.yml is missing
+SELFTEST FAIL: ci/fast: ci.yml runs on push and pull_request, a matrix of ubuntu, macos and windows runs scripts/test.sh (windows: check fmt l0), with shell bash, no OPT, SLOW, NET or REAL_ROC; Linux has bubblewrap
+FAIL: .github/workflows/ci.yml is missing
+SELFTEST FAIL: ci/nightly: nightly.yml runs on schedule and workflow_dispatch only, on ubuntu, scripts/test.sh with OPT=speed SLOW=1 NET=1 REAL_ROC=1 and GITHUB_TOKEN, no package cache
+FAIL: .github/workflows/nightly.yml is missing
+SELFTEST FAIL: ci/pin: scripts/env.sh has ROC_TAG (the one place of the nightly tag), scripts/get-roc.sh uses it, the workflows run get-roc.sh, cache by runner.os and env.ROC_TAG, have no cloudflare-workers path
+FAIL: scripts/env.sh: no line `ROC_TAG=${ROC_TAG:-nightly-<date>-<sha>}`
+FAIL: scripts/env.sh: the default of ROC must use $ROC_TAG
+FAIL: scripts/get-roc.sh is missing
+FAIL: .github/workflows/ci.yml is missing
+FAIL: .github/workflows/nightly.yml is missing
+SELFTEST FAIL: ci/portable: bash 4 scripts have an env bash shebang, no bc, the macOS job installs bash, coreutils, findutils and diffutils and puts the gnubin dirs on PATH
+FAIL: scripts/test.sh: uses bash 4 features, the first line must be `#!/usr/bin/env bash` (macOS /bin/bash is 3.2), found `#!/bin/bash`
+FAIL: scripts/test.sh: uses bc (Git Bash on Windows has none): use awk
+FAIL: tests/commands/run.sh: uses bash 4 features, the first line must be `#!/usr/bin/env bash` (macOS /bin/bash is 3.2), found `#!/bin/bash`
+FAIL: tests/run.sh: uses bash 4 features, the first line must be `#!/usr/bin/env bash` (macOS /bin/bash is 3.2), found `#!/bin/bash`
+FAIL: .github/workflows/ci.yml is missing
+SELFTEST FAIL: net tag: skipped in the fast set and with SLOW=1 REAL_ROC=1, run with NET=1 (net/bad fails)
+FAIL net/bad
+    exit code differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1 @@
+      -0
+      +3
+scenarios: 1 passed, 1 failed, 0 skipped
+FAIL net/bad
+    exit code differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1 @@
+      -0
+      +3
+scenarios: 1 passed, 1 failed, 0 skipped
+FAIL net/bad
+    exit code differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1 @@
+      -0
+      +3
+scenarios: 1 passed, 1 failed, 0 skipped
+selftest: 32 passed, 6 failed
+
+step       result seconds  budget
+check      pass   3.3      10
+fmt        pass   0.1      5
+l0         pass   3.1      10
+l2         pass   0.4      30
+l3         pass   9.2      60
+selftest   FAIL   14.1     15
+
+real	0m30.248s
+user	1m3.226s
+sys	0m26.773s

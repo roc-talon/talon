@@ -1,5 +1,7 @@
 import Args
+import Common
 import Compiler
+import Consent
 import Fail
 import Fx
 import Install
@@ -24,7 +26,7 @@ import Resolve
 ## | 4 | `Project.find!` with the start `cwd!`, `--file`, and the home dir | R-PD1 to R-PD8 |
 ## | 5 | A workspace root with no current member is a usage failure that lists the members (the text of `Install.check_member`: `no current member in the workspace at <root>. Members: <file>, <file>. Pass --file <member file>.`). No `Fx` call is made after step 4 for this failure. | R-WS12 |
 ## | 6 | `canonical!` of the member files that the run reads (the standalone file, or each member of a workspace), then `Known.record!` with `now`. A run that found a project records it, also a run that fails later and a `--dry-run`. | R-PD9, R-CC2, R-CC6 |
-## | 7 | The compiler: `programs!(["roc"])`, then `spawn_all!` of `roc version` (one job, limit 1, only when `roc` is on `PATH`), then `Compiler.on_path`. Each run does it, also with `--no-check` and `--force`, and also a run that fails later (D1 of slice 007). | R-SO7, R-PH6, R-PH8 |
+## | 7 | The compiler: `Install.on_path!` (`path_roc!`, the cache `path-roc.json`, the launcher test, and `roc version` of the first file that is not the launcher: R-SO9). Each run does it, also with `--no-check` and `--force`, and also a run that fails later (D1 of slice 007). | R-SO7, R-SO9, R-PH6, R-PH8 |
 ## | 8 | `Resolve.remove!` with a `Resolve.Request` (the fields of `Install.run!`: `command` is `Install`, `names` is `[]`, `frozen` is false, `no_check` and `dry_run` are the flags, the others as for `install`) and `{ names: opts.names, force: opts.force }` | R-CM3, R-RV1 to R-RV5 |
 ## | 9 | The output (below) | R-LF4, R-J1 to R-J6, R-FL4 |
 ##
@@ -35,15 +37,15 @@ Remove :: [].{
 
 	run! : Fx, Args => I32
 	run! = |fx, args| match Removal.opts(args) {
-		Err(fail) => Install.failed!(fx, args, fail)
+		Err(fail) => Common.failed!(fx, args, fail)
 		Ok(opts) => {
-			shown = Install.shown_fx(fx, args)
+			shown = Common.shown_fx(fx, args)
 			match flow!(shown, args, opts) {
 				Ok(outcome) => {
 					print!(fx, shown, args, opts, outcome)
 					0
 				}
-				Err(fail) => Install.failed!(fx, args, fail)
+				Err(fail) => Common.failed!(fx, args, fail)
 			}
 		}
 	}
@@ -56,7 +58,7 @@ flow! = |fx, args, opts| {
 	Install.check_member(Bool.True, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 	toolchain = Compiler.toolchain_of(start.env)?
-	compiler = Install.compiler!(fx, Bool.False)
+	compiler = Install.compiler!(fx, start.roots, Bool.False)
 	Resolve.remove!(
 		fx,
 		{
@@ -70,13 +72,15 @@ flow! = |fx, args, opts| {
 			now: start.now,
 			offline: args.offline,
 			strategy: Err(Unset),
-			nightly: Install.nightly_of(start.env),
+			nightly: Common.nightly_of(start.env),
 			compiler,
 			toolchain,
 			snapshot: Err(Unset),
 			dry_run: opts.dry_run,
 			add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },
 			prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: Err(NoFlag) },
+			downloads: { auto: Consent.auto_install(start.env), allow: opts.allow_downloads, probe: Err(NoFlag), env: start.env },
+			probe: { no_probe: opts.no_probe, slots: opts.slots },
 		},
 		{ names: opts.names, force: opts.force },
 	)

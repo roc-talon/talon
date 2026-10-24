@@ -1,26 +1,35 @@
 import Add
 import Answer
-import Clock
 import Closure
+import Compiler
+import ConfigToml
 import Consent
+import Db
+import Epochs
 import Fail
 import Fx
 import Gather
+import Guard
 import Ident
 import Index
 import Intent
 import Ladder
+import Lags
+import LadderJudge
 import Locked
 import Mode
 import Net
+import Nightlies
 import Pick
 import Pin
+import Probe
 import Project
 import Release
 import Report
 import Roots
 import Selector
 import Setting
+import Start
 import Text
 import Vars
 import Walk
@@ -29,10 +38,12 @@ import Walk
 ResolveBase :: [].{
 
 	## One run. `names` are the operands of `update` as typed (`json`, `json@^3`, `roc-lang/json`): `Ref.parse` and `Lookup.find` read them (slice 004).
-	## `strategy` is `--strategy`. `nightly` is `TALON_NIGHTLY` (R-NS8). `compiler` is the id of the `roc` on `PATH` (R-PH8). `now` is `Clock.now`.
+	## `strategy` is `--strategy`. `nightly` is `TALON_NIGHTLY` (R-NS8). `compiler` is the id and the file of the `roc` on `PATH` (R-PH8; the file is new in slice 023c: a probe runs it by its path, R-PX2). `now` is `Clock.now`.
+	## Slice 025 (R-NI4, R-NI5, R-DL5, R-EV6): `downloads` has the facts of the consent rules. `auto` is `TALON_AUTO_INSTALL` (`Consent.auto_install`). `allow` is `--allow-downloads` and `probe` is `--probe-downloads`
+	## (`Ok(Yes)` when the flag is set). `env` is the environment of the process: the offer of a compiler (`RocInstall.offer!`) reads `TALON_NOW`, the cache dirs, the net settings and `TALON_NIGHTLY` from it.
 	## `toolchain` is `ROC_TOOLCHAIN` (rank 2, R-SO2), a full compiler id (`Compiler.toolchain_of`), `Err(Unset)` when it is not set (slice 013: R-SO19 to R-SO22). It goes to `Pin.decide`.
 	Request : {
-		command : [Install, Update],
+		command : [Install, Update, Upgrade],
 		names : List(Str),
 		frozen : Bool,
 		no_check : Bool,
@@ -43,12 +54,31 @@ ResolveBase :: [].{
 		offline : Bool,
 		strategy : Try([Highest, Lowest], [Unset]),
 		nightly : Try(Bool, [Unset]),
-		compiler : Try(Str, [NoCompiler]),
+		compiler : Try({ id : Str, path : Str }, [NoCompiler]),
 		toolchain : Try(Str, [Unset]),
 		snapshot : Try(Str, [Unset]),
 		dry_run : Bool,
 		add : { as_platform : Bool, as_alias : Try(Str, [Unset]), no_pin : Bool },
 		prompt : { mode : Mode, yes : Bool, quiet : Bool, rename_keys : Try(Answer, [NoFlag]), allow_moves : Try(Answer, [NoFlag]) },
+		downloads : { auto : [Ask, Yes, No], allow : Try(Answer, [NoFlag]), probe : Try(Answer, [NoFlag]), env : List((Str, Str)) },
+		probe : { no_probe : Bool, slots : Try(U64, [Unset]) },
+	}
+
+	## Slice 031 (R-P5, R-LY4, R-FL11): the probe settings of the run. `Probe.settings` with the flag `--slots` (`request.probe.slots`), the `[resolution] probe` keys of the `talon.toml` of the run
+	## (`loaded.intent.resolution.probe`) and the `[probe]` table of `config.toml` (`loaded.config.probe`).
+	probe_settings : ResolveBase.Request, ResolveBase.Loaded -> Probe.Settings
+	probe_settings = |request, loaded| Probe.settings({ flag_slots: request.probe.slots, project: loaded.intent.resolution.probe, user: loaded.config.probe })
+
+	## Slice 025: the facts of the consent rules for the ladder (`Ladder.Downloads`). The flows pass them to `Ladder.run!` and `Ladder.verify!`: the mode, `--yes`, `--quiet` and `--offline` come from `request.prompt` and `request.offline`.
+	ladder_downloads : ResolveBase.Request -> Ladder.Downloads
+	ladder_downloads = |request| {
+		auto: request.downloads.auto,
+		allow: request.downloads.allow,
+		yes: request.prompt.yes,
+		mode: request.prompt.mode,
+		quiet: request.prompt.quiet,
+		offline: request.offline,
+		env: request.downloads.env,
 	}
 
 	Fact : { url : Str, release : Release }
@@ -58,8 +88,14 @@ ResolveBase :: [].{
 		headers : List({ path : Str, text : Str }),
 		tomls : List({ path : Str, text : Str }),
 		intent : Intent,
-		config : Intent.Config,
+		config : ConfigToml.Config,
+		version_file : Try(Str, [None]),
+		selected : Selected,
 	}
+
+	## Slice 022 (R-SO4 to R-SO7, R-SO19): the compiler that ranks 4 to 7 select when no header has a pin and `ROC_TOOLCHAIN` is not set, with the rank (`Pin.decide` input `compiler`, `compiler_from`).
+	## `load!` makes it from the `roc` on `PATH` (rank 7). `select!` replaces it. `version_file` is the id of the nearest `.roc-version` (`Compiler.version_file`), read in the same `read_files!` call as the headers.
+	Selected : { id : Try(Str, [NoCompiler]), from : [Range, VersionFile, Default, Path] }
 
 	Settings : { nightly : Bool, nightly_from : Pin.Source, strategy : [Highest, Lowest], min_age : U64 }
 
@@ -92,93 +128,21 @@ ResolveBase :: [].{
 	Prepared : { rows : List(FreshRow), facts : List(Fact) }
 
 	# What the ladder did: the number of `roc` runs and the state of the steps (R-DT5, R-LF3).
-	Ran : { probes : U64, check : [Passed, Skipped, NotRun], build : [Passed, Skipped, NotRun], notes : List(Str) }
+	Ran : { probes : U64, downloads : U64, check : [Passed, Skipped, NotRun], build : [Passed, Skipped, NotRun], notes : List(Str) }
 
 	# Steps H to J: the plan, the second read, the check of R-CC7, one `write_atomic!` call and the output.
-	Finish : { scoped : List(Vars.Scoped), wants : List(Vars.Want), asked : Asked, prepared : Prepared, renames : List(Rename), snapshot : Try(U64, [None]), known : List(Fact), paths : List(Closure.Node) }
+	Finish : { scoped : List(Vars.Scoped), wants : List(Vars.Want), asked : Asked, prepared : Prepared, renames : List(Rename), snapshot : Try(U64, [None]), known : List(Fact), paths : List(Closure.Node), lags : List(Lags.Lag) }
 
-	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need.
-	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move) }
+	## Slice 036b (R-AL4, R-P5, R-AL6): what the probe rounds of the oracle loop know, for the whole command (both searches, and the tuples that the ladder dropped). `compiler` is the compiler of the facts (the held spelling,
+	## then the id of the started compiler), `Err(None)` for no probe and no lookup. `checks` are the db rows that the command has. `looked` are the keys that it looked up. `count` is the number of probes that it started (the budget `probe.max`).
+	## `started` is the compiler that the first probe started. `tried` are the tuples that the ladder dropped, for `OracleBase.Compat.conflicts`.
+	## Slice 036b2: `used` are the scan results (`OracleBase.Compat.used`): one row for each release that the command scanned.
+	## Slice 039b: `optional` is the state of `PickOptional` (the type of `PickOptional.State`, written here because `PickOptional` imports this module): the optional compilers that are open, the ones that the command installed, and the counts. It goes on to a second search and to a re-search of the ladder.
+	## Slice 036c: `domain` is D (`OracleBase.Compat.domain`): `Err(NotRead)` until the command reads the compiler list (the verdict `Wide`), then the ids oldest first, or `[compiler]` when the list cannot be read. `inferred` are the inferred facts of `Epochs.epochs` over D and the rows.
+	Probed : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), count : U64, started : Try(Start.Started, [None]), tried : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), listed : Try(List(Nightlies.Release), [NotRead]), optional : { open : List(Str), got : List(Str), tried : U64, downloads : U64, dropped : U64 } }
 
-	# Step A of the flow: the member files and the `talon.toml` candidates in one `read_files!` call (R-PD6).
-	load! : Fx, ResolveBase.Request => Try(Loaded, Fail)
-	load! = |fx, request| {
-		files = member_files(request.project)?
-		root = match request.project.workspace {
-			Ok(ws) => ws.root
-			Err(Standalone) => files.first().map_ok(|f| Text.dir_of(f)) ?? ""
-		}
-		candidates = files.map(|f| Intent.paths({ member: f, root }))
-		toml_paths = candidates.join_map(|c| c).fold([], |found, path| if found.contains(path) found else found.append(path))
-		config_path = Roots.item(request.roots, Config)
-		results = fx.read_files!(files.concat(toml_paths).append(config_path))
-		headers = files.map2(results.take_first(files.len()), |path, result| (path, result))
-		toml_results = toml_paths.map2(results.drop_first(files.len()).take_first(toml_paths.len()), |path, result| (path, result))
-		config_result = match results.last() {
-			Ok(r) => r
-			Err(_) => Err(NotFound)
-		}
-		config = read_config!(fx, config_path, config_result)?
-		var $texts = no_texts
-		for (path, result) in headers {
-			match result {
-				Ok(text) => {
-					$texts = $texts.append({ path, text })
-				}
-				Err(_) => return Err(Fail.new(Environment, "cannot read ${path}"))
-			}
-		}
-		var $tomls = no_texts
-		for (path, result) in toml_results {
-			match result {
-				Ok(text) => {
-					$tomls = $tomls.append({ path, text })
-				}
-				Err(NotFound) => {}
-				Err(_) => return Err(Fail.new(Environment, "cannot read ${path}"))
-			}
-		}
-		root_toml = Text.join(root, "talon.toml")
-		var $intents = no_intents
-		for t in $tomls {
-			role = match request.project.workspace {
-				Ok(_) => if t.path == root_toml Root else Member
-				Err(Standalone) => Root
-			}
-			read = Intent.read({ path: t.path, text: t.text, role })?
-			for w in read.warnings {
-				fx.err!("warning: ${w}\n")
-			}
-			$intents = $intents.append({ path: t.path, intent: read.intent })
-		}
-		members = files.map2(
-			candidates,
-			|file, paths| {
-				locked = match $texts.find_first(|t| t.path == file) {
-					Ok(t) => Locked.read({ path: file, text: t.text })
-					Err(_) => Err(Fail.new(Environment, "cannot read ${file}"))
-				}
-				toml = match paths.find_first(|p| $intents.any(|i| i.path == p)) {
-					Ok(p) => match $intents.find_first(|i| i.path == p) {
-						Ok(i) => Ok({ path: i.path, intent: i.intent })
-						Err(_) => Err(NoToml)
-					}
-					Err(_) => Err(NoToml)
-				}
-				(file, locked, toml)
-			},
-		)
-		checked = members.map_try(|(file, locked, toml)| locked.map_ok(|l| { file, locked: l, toml }))?
-		settings_path = match request.project.workspace {
-			Ok(_) => root_toml
-			Err(Standalone) => files.first().map_ok(|f| Text.join(Text.dir_of(f), "talon.toml")) ?? ""
-		}
-		intent = match $intents.find_first(|i| i.path == settings_path) {
-			Ok(i) => i.intent
-			Err(_) => empty_intent({})?
-		}
-		Ok({ members: checked, headers: $texts, tomls: $tomls, intent, config })
-	}
+	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need, and the facts of the probe rounds.
+	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move), nightly : Try(Str, [None]), probed : Probed }
 
 	## R-NS8 to R-NS10, R-C7, R-LY4: the settings. The priority is the flag or the environment, `talon.toml`, `config.toml`, the default.
 	settings_of : ResolveBase.Request, Loaded -> Settings
@@ -186,7 +150,7 @@ ResolveBase :: [].{
 		intent = loaded.intent
 		strategy = match request.strategy {
 			Ok(s) => s
-			Err(Unset) => intent.resolution.strategy ?? Highest
+			Err(Unset) => if request.command == Upgrade Highest else intent.resolution.strategy ?? Highest
 		}
 		(nightly, nightly_from) = match (request.nightly, intent.toolchain.nightly, loaded.config.nightly) {
 			(Ok(b), _, _) => (b, Env)
@@ -208,18 +172,26 @@ ResolveBase :: [].{
 	check_pin = |loaded, settings, decision, role| match decision.outside {
 		Ok(pin) => Err(Pin.outside_failure({ pin, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from }))
 		Err(None) => match decision.held {
-			Err(NoCompiler) => Err(Fail.new(Environment, "cannot select a compiler: there is no roc on PATH that Talon can identify, and the header has no roc pin"))
+			Err(NoCompiler) => Err(Compiler.failure(NoCompiler))
 			Ok(id) => {
 				gate = |held_from| Pin.gate({ compiler: id, held_from, req: loaded.intent.toolchain.roc, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from })
 				match (decision.held_from, role) {
 					(Pin, _) => Ok({})
 					(Env, Verify) => Ok({})
 					(Env, Lock) => gate(Env)
+					(Range, _) => gate(Range)
+					(VersionFile, _) => gate(VersionFile)
+					(Default, _) => gate(Default)
 					(Path, _) => gate(Path)
 				}
 			}
 		}
 	}
+
+	## R-SO18 (slice 022): the lines of the warning for a `.roc-version` that differs from the header pin, without `warning: ` and without a line end. One line for each different pin text of the members (`Text.sorted_unique`), in
+	## byte order, from `Compiler.roc_version_note` with `loaded.version_file`. No `.roc-version`, or no pin, or the same compiler: no line. `install` and `ls` print them (`warning: <line>` on stderr).
+	roc_version_warnings : Loaded -> List(Str)
+	roc_version_warnings = |loaded| Text.sorted_unique(loaded.members.keep_oks(|m| m.locked.roc)).keep_oks(|pin| Compiler.roc_version_note({ pin: Ok(pin), version_file: loaded.version_file }))
 
 	# R-SO20: the note of `Pin.decide` as a list of 0 or 1 lines.
 	pin_notes : Pin.Decision -> List(Str)
@@ -228,20 +200,15 @@ ResolveBase :: [].{
 		Err(None) => []
 	}
 
-	# R-EV1, R-DT3, R-DT4: `--snapshot` wins over `[resolution] snapshot` of `talon.toml`. A `log:<n>` needs a registry: direct has none.
-	snapshot_of : ResolveBase.Request, Intent -> Try(Try(U64, [None]), Fail)
-	snapshot_of = |request, intent| match request.snapshot {
-		Err(Unset) => Intent.direct_snapshot(intent.resolution.snapshot)
-		Ok(text) => if text.starts_with("log:") {
-			match U64.from_str(text.drop_prefix("log:")) {
-				Ok(n) => Intent.direct_snapshot(Ok(Log(n)))
-				Err(_) => Err(bad_snapshot(text))
-			}
-		} else {
-			match Clock.parse_utc(text) {
-				Ok(seconds) => Ok(Ok(seconds))
-				Err(BadTime) => Err(bad_snapshot(text))
-			}
+	## R-CC7, R-CC1: the end of each write of project files. `files` are the facts of `Guard.check_all` (the text of the first read, the text just before the write, and the spans). `edited` has the new text of each file. The files that `Guard.check_all` lets pass, in its order, are written with one `write_atomic!` call, and only those whose new text differs from the text just read. A conflict is the failure of `Guard.check_all` (exit 17). It gives the paths that were written, and makes no call when there are none.
+	write_checked! : Fx, { files : List({ path : Str, read : Str, now : Str, spans_read : List(Str), spans_now : List(Str) }), edited : List({ path : Str, now : Str, new : Str }) } => Try(List(Str), Fail)
+	write_checked! = |fx, run| {
+		ordered = Guard.check_all(run.files)?
+		changed = ordered.keep_oks(|o| run.edited.find_first(|e| e.path == o.path)).keep_if(|e| e.new != e.now)
+		if changed.is_empty() return Ok([])
+		match fx.write_atomic!(changed.map(|e| { path: e.path, content: e.new })) {
+			Ok(_) => Ok(changed.map(|e| e.path))
+			Err(failed) => Err(Fail.new(Environment, "cannot write ${failed.path}"))
 		}
 	}
 
@@ -259,34 +226,12 @@ ResolveBase :: [].{
 	read_releases! : Fx, ResolveBase.Request, List(Str) => Try(List(Fact), Fail)
 	read_releases! = |fx, request, urls| {
 		got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, urls)?
-		var $facts = no_facts
+		var $facts = ResolveBase.no_facts
 		for g in got {
 			release = Release.read({ path: g.path, text: g.text })?
 			$facts = $facts.append({ url: g.id, release })
 		}
 		Ok($facts)
-	}
-
-	# The first steps of `install!` and `verify!`: the files, the variables, and the pin of the compiler.
-	prepared! : Fx, ResolveBase.Request, [Lock, Verify] => Try({ loaded : Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision }, Fail)
-	prepared! = |fx, request, role| {
-		loaded = ResolveBase.load!(fx, request)?
-		built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
-		# R-WS6: only `install` and `add` stop for a key that no header has. `update` and `verify` ignore it (R-I5).
-		if role == Lock and request.command == Install {
-			Vars.check_keys(built.wants)?
-		}
-		settings = ResolveBase.settings_of(request, loaded)
-		decision = Pin.decide({
-			members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: Bool.False }),
-			compiler: request.compiler,
-			toolchain: request.toolchain,
-			role,
-			req: loaded.intent.toolchain.roc,
-			nightly: settings.nightly,
-			no_check: request.no_check,
-		})?
-		Ok({ loaded, built, decision })
 	}
 
 	# The rows of the header of the current member, for `Add.decide`.
@@ -297,7 +242,7 @@ ResolveBase :: [].{
 	}
 
 	# The owner of the hash of each chosen value, with the flag that the entry moves (a new entry moves too).
-	owner_rows : List(Vars.Scoped), List({ name : Str, is_platform : Bool }), List(Pick.Chosen) -> List({ owner : Ladder.Owner, moved : Bool })
+	owner_rows : List(Vars.Scoped), List({ name : Str, is_platform : Bool }), List(Pick.Chosen) -> List({ owner : LadderJudge.Owner, moved : Bool })
 	owner_rows = |scoped, news, chosen| {
 		count = scoped.len()
 		var_rows = scoped.map2(chosen.take_first(count), |s, c| (s.variable.name ?? s.variable.group.form, s.variable.is_platform, c, is_move(c)))
@@ -321,6 +266,13 @@ ResolveBase :: [].{
 			)
 	}
 
+	## Slice 038 (R-UP3): the chosen release is in another series than the variable has now (another group: a replace under the same alias).
+	new_series : Vars.Scoped, Pick.Chosen -> Bool
+	new_series = |s, c| match Ident.of_url(c.url) {
+		Ok(ident) => ident.group != s.variable.group
+		Err(_) => Bool.False
+	}
+
 	# R-SE7, U2 of slice 009: the notice for a platform entry that moves (once for each change of the version, also when 2 members use it).
 	moved_platform_notes : List(Vars.Scoped), List(Pick.Chosen) -> List(Str)
 	moved_platform_notes = |scoped, chosen| scoped
@@ -333,7 +285,7 @@ ResolveBase :: [].{
 				_ => Err(NotMoved)
 			},
 		)
-		.fold(no_names, |found, text| if found.contains(text) found else found.append(text))
+		.fold(ResolveBase.no_names, |found, text| if found.contains(text) found else found.append(text))
 
 	## Slice 010 (R-AL2): the entries of a member after the planned edits. A `Set` or `Replace` changes the value of an entry, an `Add` appends one. The pin write is no entry.
 	entries_after : Vars.Member, List(Edit) -> List(Closure.Entry)
@@ -372,54 +324,20 @@ ResolveBase :: [].{
 	## Slice 010 (R-C8, question Q11): the warnings of the closures on stderr, one line for each text, no repeat. `--quiet` hides them (question Q22).
 	closure_notes! : Fx, Request, List({ file : Str, walked : Closure.Walked }) => {}
 	closure_notes! = |fx, request, closures| {
-		lines = closures.join_map(|c| Closure.notes(c.walked.rows)).fold(no_names, |found, line| if found.contains(line) found else found.append(line))
+		lines = closures.join_map(|c| Closure.notes(c.walked.rows)).fold(ResolveBase.no_names, |found, line| if found.contains(line) found else found.append(line))
 		if !request.prompt.quiet {
 			for line in lines {
 				fx.err!("${line}\n")
 			}
 		}
 	}
+
+	no_names : List(Str)
+	no_names = []
+
+	no_facts : List(Fact)
+	no_facts = []
 }
-
-# R-NS10, R-C7: `config.toml` is read in the same `read_files!` call as the headers. A file that is not there gives no setting.
-read_config! : Fx, Str, Try(Str, [NotFound, Denied, Other(Str)]) => Try(Intent.Config, Fail)
-read_config! = |fx, path, result| match result {
-	Ok(text) => {
-		read = Intent.read_config({ path, text })?
-		for w in read.warnings {
-			fx.err!("warning: ${w}\n")
-		}
-		Ok(read.config)
-	}
-	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset) })
-	Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
-}
-
-bad_snapshot : Str -> Fail
-bad_snapshot = |text| Fail.new(Usage, "--snapshot '${text}' is not a UTC time or log:<n>. Use a UTC time, for example 2026-10-12T00:00:00Z.")
-
-no_texts : List({ path : Str, text : Str })
-no_texts = []
-
-no_intents : List({ path : Str, intent : Intent })
-no_intents = []
-
-# The intent of a missing `talon.toml`: the read of the empty text.
-empty_intent : {} -> Try(Intent, Fail)
-empty_intent = |_| Intent.read({ path: "talon.toml", text: "", role: Root }).map_ok(|r| r.intent)
-
-# R-PD5: the members of a workspace, or the current file of a standalone project.
-member_files : Project -> Try(List(Str), Fail)
-member_files = |project| match project.workspace {
-	Ok(ws) => if ws.members.is_empty() Err(Fail.new(Usage, "the workspace at ${ws.root} has no member files")) else Ok(ws.members)
-	Err(Standalone) => match project.file {
-		Ok(file) => Ok([file])
-		Err(NoCurrent) => Err(Fail.new(Usage, "no project file found. Pass --file <path>."))
-	}
-}
-
-no_facts : List(Fact)
-no_facts = []
 
 is_move : Pick.Chosen -> Bool
 is_move = |c| match c.change {
@@ -428,11 +346,8 @@ is_move = |c| match c.change {
 }
 
 # The owner of the hash of a chosen URL (R-PH13: the blame names `<name> <version>`).
-owner_of : Str, Bool, Pick.Chosen -> Try(Ladder.Owner, [Foreign])
+owner_of : Str, Bool, Pick.Chosen -> Try(LadderJudge.Owner, [Foreign])
 owner_of = |name, is_platform, c| Ident.of_url(c.url).map_ok(|ident| { hash: ident.hash, name, version: c.version, is_platform })
-
-no_names : List(Str)
-no_names = []
 
 no_closures : List({ file : Str, walked : Closure.Walked })
 no_closures = []

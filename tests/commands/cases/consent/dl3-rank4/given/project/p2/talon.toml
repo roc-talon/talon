@@ -1,0 +1,4 @@
+[toolchain]
+roc = ">=nightly-2026-10-08-0000000"
+
+[dependencies]

@@ -18,11 +18,12 @@ expect {
 	bad == []
 }
 
-# R-J3 R-J4 R-OUT4 R-OUT5 R-LF4 R-DT5 R-LF3 (slice 007): the `data` of `install` and `add`. It holds each fact that the human text prints. The keys come in a fixed order. A step that did not run is null.
+# R-J3 R-J4 R-OUT4 R-OUT5 R-LF4 R-DT5 R-LF3 R-DL1 (slice 007, slice 025: `downloads` is the count of compilers that the command downloaded, answer Q7 of the review): the `data` of `install` and `add`. It holds each fact that the human text prints. The keys come in a fixed order. A step that did not run is null.
 expect {
 	full = {
 		at: "2026-10-15T12:00:00Z",
 		probes: 3,
+		downloads: 1,
 		dry_run: Bool.False,
 		check: Passed,
 		build: Passed,
@@ -38,6 +39,7 @@ expect {
 	skipped = {
 		at: "2026-10-15T12:00:00Z",
 		probes: 0,
+		downloads: 0,
 		dry_run: Bool.True,
 		check: Skipped,
 		build: Skipped,
@@ -55,7 +57,7 @@ expect {
 	rows = [
 		(
 			render(full),
-			"{\"snapshot\":\"2026-10-15T12:00:00Z\",\"probes\":3,\"downloads\":0,\"dry_run\":false,\"check\":\"passed\",\"build\":\"passed\",\"added\":[{\"alias\":\"parser\",\"name\":\"acme/parser\",\"version\":\"1.2.0\"}],\"moved\":[{\"alias\":\"json\",\"from\":{\"name\":\"acme/json\",\"version\":\"2.0.0\"},\"to\":{\"name\":\"acme/json\",\"version\":\"2.1.0\"}}],\"kept\":[{\"alias\":\"util\",\"name\":\"acme/util\",\"version\":\"1.0.0\"}],\"pinned\":\"nightly-2026-10-14-38a3029\",\"toml\":[{\"path\":\"/p/talon.toml\",\"key\":\"json\",\"value\":\"=2.1.0\"}],\"renamed\":[{\"path\":\"/p/talon.toml\",\"from\":\"js\",\"to\":\"json\"}],\"notes\":[\"acme/json 2.1.0 is 1d old (min-release-age 2d)\"],\"written\":[\"/p/main.roc\",\"/p/talon.toml\"]}",
+			"{\"snapshot\":\"2026-10-15T12:00:00Z\",\"probes\":3,\"downloads\":1,\"dry_run\":false,\"check\":\"passed\",\"build\":\"passed\",\"added\":[{\"alias\":\"parser\",\"name\":\"acme/parser\",\"version\":\"1.2.0\"}],\"moved\":[{\"alias\":\"json\",\"from\":{\"name\":\"acme/json\",\"version\":\"2.0.0\"},\"to\":{\"name\":\"acme/json\",\"version\":\"2.1.0\"}}],\"kept\":[{\"alias\":\"util\",\"name\":\"acme/util\",\"version\":\"1.0.0\"}],\"pinned\":\"nightly-2026-10-14-38a3029\",\"toml\":[{\"path\":\"/p/talon.toml\",\"key\":\"json\",\"value\":\"=2.1.0\"}],\"renamed\":[{\"path\":\"/p/talon.toml\",\"from\":\"js\",\"to\":\"json\"}],\"notes\":[\"acme/json 2.1.0 is 1d old (min-release-age 2d)\"],\"written\":[\"/p/main.roc\",\"/p/talon.toml\"]}",
 		),
 		(
 			render(skipped),

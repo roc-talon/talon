@@ -1,0 +1,10 @@
+d0acfa69025fa2b1f6726634d62e4dc062d123d6cf0f0c15f7e56929cf3fe001  ./cli/lib/InstallFlow.roc
+1e46341c4e3a4702db6a1b4a7215748246dfa7325871984ca78c73339732ec46  ./cli/lib/Lags.roc
+affbdfebd97de8efd871a617029052cfc7c97385d2c4ed0d30da78f7a17bec31  ./cli/lib/NightlyFlow.roc
+7781cd542668daef0f9aade7d774c1f4e1834888bbb3be835d2a332c49f93c09  ./cli/lib/NightlyPlan.roc
+7105a8e740cf2b979d1cdced9f62cd49f34af08c21c3bab2b216113f1c8a8deb  ./cli/lib/OracleRequest.roc
+88963c8a2e09e3d89f592edf45847de08fca8237e78cb4b963a4bccc4acaf987  ./cli/lib/Oracle.roc
+b60ac6db497e1a819ee93a42779a80fd60d00d9eef93e12702df8092ee46cee8  ./cli/lib/PickFlow.roc
+8ca7174aa6d163d02401cff048d567fb947a7fe7e47c4fdd93d83f022541ea77  ./cli/lib/PickLoop.roc
+d00e786311a808293337dcfc65fe26cfb4e593459e5d261dae34edc72ff4d283  ./cli/lib/ResolveBase.roc
+5b4f595dfcf5eaf82ea030791a62f020ca6a67ae956490e4b76617bfca38075b  ./packages/resolve/Solver.roc

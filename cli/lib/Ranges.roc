@@ -36,8 +36,51 @@ Ranges :: [].{
 		)
 		Err(_) => Bool.False
 	}
+
+	## R-UP5 (slice 038): the range that a header version gets when `tln upgrade` moves a variable to `version` (`X.Y.Z`). A range that admits the version does not change. Else the same form at the new version:
+	## the prefix (`^`, `~` or none), the number of parts (1 to 3, each taken from the new version) and a wildcard end (`.*`) stay. A range that starts with `=` (an anchor) is `=<version>`.
+	##
+	## | Range | Version | Result |
+	## | --- | --- | --- |
+	## | `^2.1` | `3.0.2` | `^3.0` |
+	## | `^0.25` | `0.26.1` | `^0.26` |
+	## | `0.25.*` | `0.26.1` | `0.26.*` |
+	## | `2` | `3.0.2` | `3` |
+	## | `^2.1.3` | `3.0.2` | `^3.0.2` |
+	## | `=2.0.0` | `3.0.2` | `=3.0.2` |
+	## | `^2.1` | `2.5.0` | `^2.1` (it admits the version) |
+	## | `~1.4` | `2.0.0` | `~2.0` |
+	## | `1.0.*` | `1.2.0` | `1.2.*` |
+	## | `>=1.2, <1.5` (a form that the design does not give: question Q1) | `3.0.2` | `Err(NoForm)` |
+	rewrite : { range : Str, version : Str } -> Try(Str, [NoForm])
+	rewrite = |facts| if Ranges.admits({ ranges: [facts.range], version: facts.version }) {
+		Ok(facts.range)
+	} else {
+		match Semver.parse(facts.version) {
+			Ok(v) => moved_form(facts.range.trim(), v)
+			Err(_) => Err(NoForm)
+		}
+	}
 }
 
 # The first version of the next series: `2.1.0` gives `3.0.0`, `0.25.0` gives `0.26.0`.
 next_series : Semver -> Str
 next_series = |v| if v.major() >= 1 "${(v.major() + 1).to_str()}.0.0" else "0.${(v.minor() + 1).to_str()}.0"
+
+# R-UP5: an anchor is an anchor of the new version. Else the prefix, the number of parts and the wildcard end stay, and the parts come from the version.
+moved_form : Str, Semver -> Try(Str, [NoForm])
+moved_form = |range, v| {
+	numbers = [v.major().to_str(), v.minor().to_str(), v.patch().to_str()]
+	if range.starts_with("=") {
+		Ok("=${Str.join_with(numbers, ".")}")
+	} else {
+		prefix = if range.starts_with("^") "^" else if range.starts_with("~") "~" else ""
+		body = range.drop_prefix(prefix)
+		parts = body.drop_suffix(".*").split_on(".")
+		if parts.len() <= 3 and parts.all(|p| U64.from_str(p).is_ok()) {
+			Ok("${prefix}${Str.join_with(numbers.take_first(parts.len()), ".")}${if body.ends_with(".*") ".*" else ""}")
+		} else {
+			Err(NoForm)
+		}
+	}
+}

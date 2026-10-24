@@ -1,0 +1,339 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+packages/resolve/tests/domain.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ─────────────────────────────── packages/resolve/tests/domain.roc:37:1
+
+expect {
+    lowest = { ..query(mix), rules: rules(Lowest) }
+    three = ["2.0.0", "10.0.0", "0.9.0"].map(cand)
+    tie = [{ id: "b", version: "1.0.0", published_at: 0, yanked: Bool.False }, { id: "a", version: "1.0.0", published_at: 0, yanked: Bool.False }]
+    rows = [
+        (ids(query(mix)), ["x1.10.0", "x1.9.0", "x1.2.0", "x1.0.0"], "highest: by version, not by text"),
+        (ids(lowest), ["x1.0.0", "x1.2.0", "x1.9.0", "x1.10.0"], "lowest"),
+        (ids(query(mix.rev())), ["x1.10.0", "x1.9.0", "x1.2.0", "x1.0.0"], "the order of the input does not matter"),
+        (ids({ ..lowest, candidates: mix.rev() }), ["x1.0.0", "x1.2.0", "x1.9.0", "x1.10.0"], "the order of the input does not matter, lowest"),
+        (ids(query(three)), ["x10.0.0", "x2.0.0", "x0.9.0"], "the major version counts first"),
+        (ids({ ..query(mix), ranges: [">=1.2.0", "<1.10.0"] }), ["x1.9.0", "x1.2.0"], "2 ranges are an intersection"),
+        (ids({ ..query(mix), ranges: ["^1.2"] }), ["x1.10.0", "x1.9.0", "x1.2.0"], "a caret range"),
+        (ids({ ..query(mix), ranges: ["=1.9.0"] }), ["x1.9.0"], "an exact range"),
+        (ids({ ..query(mix), ranges: ["*"] }), ["x1.10.0", "x1.9.0", "x1.2.0", "x1.0.0"], "the star range admits all"),
+        (ids({ ..query(mix), ranges: [">=2.0.0"] }), [], "no value in the range"),
+        (ids(query([])), [], "no candidate"),
+        (ids(query(tie)), ["a", "b"], "one version, 2 ids: byte order"),
+        (ids({ ..query(tie), rules: rules(Lowest) }), ["a", "b"], "one version, 2 ids: byte order, lowest"),
+    ]
+    bad = rows.keep_if(|(got, want, _)| got != want).map(|(_, _, label)| label)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ─────────────────────────────── packages/resolve/tests/domain.roc:63:1
+
+expect {
+    cur = |v| Ok({ id: "x${v}", version: v })
+    snap = |time| { ..query([at("1.0.0", 0), at("1.1.0", 500), at("1.2.0", 501)]), rules: { now: 1000, min_age: 0, snapshot: Ok(time), strategy: Highest } }
+    rows = [
+        (ids(query([cand("1.0.0"), yank("1.1.0")])), ["x1.0.0"], "R-C6: yanked is no value"),
+        (ids({ ..query([cand("1.0.0"), yank("1.1.0")]), current: cur("1.1.0") }), ["x1.1.0", "x1.0.0"], "R-C9: a yanked header value stays"),
+        (ids(query([cand("1.0.0"), young("1.1.0")])), ["x1.0.0"], "R-C7: too young"),
+        (ids(query([cand("1.0.0"), at("1.1.0", 900)])), ["x1.1.0", "x1.0.0"], "R-C7: exactly as old as min-release-age is allowed"),
+        (ids(query([cand("1.0.0"), at("1.1.0", 901)])), ["x1.0.0"], "R-C7: one second too young"),
+        (ids({ ..query([cand("1.0.0"), young("1.1.0")]), current: cur("1.1.0") }), ["x1.1.0", "x1.0.0"], "R-C9: a young header value stays"),
+        (ids({ ..query([cand("1.0.0"), young("1.1.0")]), named: Ok("1.1.0") }), ["x1.1.0", "x1.0.0"], "R-C7: a version that the user names is not too young"),
+        (ids({ ..query([cand("1.0.0"), yank("1.1.0")]), named: Ok("1.1.0") }), ["x1.0.0"], "R-C6: a named version that is yanked is no value"),
+        (ids({ ..query([cand("1.0.0"), young("1.1.0")]), named: Ok("1.0.0") }), ["x1.0.0"], "the name of another version exempts nothing"),
+        (ids({ ..snap(500), candidates: [at("1.0.0", 0), at("1.1.0", 600)], named: Ok("1.1.0") }), ["x1.1.0", "x1.0.0"], "Q1: a named version after the snapshot time is still a value"),
+        (ids({ ..snap(500), candidates: [at("1.0.0", 0), at("1.1.0", 600)] }), ["x1.0.0"], "the same release with no name is after the snapshot: no value"),
+        (ids({ ..snap(500), candidates: [at("1.0.0", 0), at("1.1.0", 600)], named: Ok("1.1.0"), ranges: ["=1.0.0"] }), ["x1.0.0"], "Q1: a range still hides a named version that it does not admit"),
+        (ids(snap(500)), ["x1.1.0", "x1.0.0"], "R-C7: a release after the snapshot time is no value, one at that time is"),
+        (ids({ ..snap(499), current: cur("1.2.0") }), ["x1.2.0", "x1.0.0"], "R-C9: a header value after the snapshot stays"),
+        (ids({ ..query([cand("1.0.0")]), current: cur("1.5.0") }), ["x1.5.0", "x1.0.0"], "R-C9: a header value that the list does not have is added"),
+        (ids({ ..query([cand("1.0.0"), cand("1.6.0")]), current: cur("1.0.0"), ranges: [">=1.5.0"] }), ["x1.6.0"], "R-C1: a range still excludes the header value"),
+        (ids({ ..query([]), current: cur("1.5.0") }), ["x1.5.0"], "no candidate: the header value is the one value"),
+        (ids({ ..query([young("1.0.0"), yank("1.1.0")]), current: Err(None) }), [], "all hidden, no header value: no value"),
+    ]
+    bad = rows.keep_if(|(got, want, _)| got != want).map(|(_, _, label)| label)
+    dbg bad
+    bad == []
+}
+
+Ran 2 tests in 190.9 ms.:
+    0 passed
+    2 failed
+    0 compiler errors
+packages/resolve/tests/solver.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ─────────────────────────────── packages/resolve/tests/solver.roc:73:1
+
+expect {
+    x = pkg("x", ["1.0.0", "2.0.0"])
+    p = pf("pf", ["1.0.0", "2.0.0"])
+    facts = known([x, p]) |> on_pf("x-2.0.0", "pf-1.0.0") |> on_pf("x-1.0.0", "pf-2.0.0")
+    ab = [pkg("a", ["1.0.0", "2.0.0", "3.0.0"]), pkg("b", ["1.0.0", "2.0.0"])]
+    ranged = { ..pkg("a", ["1.0.0", "2.0.0", "3.0.0"]), ranges: ["<3.0.0"] }
+    yanked_top = { ..pkg("a", []), candidates: [cand("a", "1.0.0"), { ..cand("a", "2.0.0"), yanked: Bool.True }] }
+    young_top = { ..pkg("a", []), candidates: [cand("a", "1.0.0"), { ..cand("a", "2.0.0"), published_at: 950 }] }
+    held = { ..yanked_top, current: Ok({ id: "a-2.0.0", version: "2.0.0" }) }
+    named_young = { ..young_top, named: Ok("2.0.0") }
+    both_pf1 = known([x, p]) |> on_pf("x-2.0.0", "pf-1.0.0") |> on_pf("x-1.0.0", "pf-1.0.0")
+    rows = [
+        (req(ab, known(ab)), "done a=3.0.0 b=2.0.0", "highest: the best of each slot"),
+        (low(req(ab, known(ab))), "done a=1.0.0 b=1.0.0", "lowest"),
+        (req([x, p], facts), "done x=2.0.0 pf=1.0.0", "x first: x gets its best, the platform follows (R-C3)"),
+        (req([p, x], facts), "done pf=2.0.0 x=1.0.0", "the platform first: it gets its best, x follows (R-C3)"),
+        (low(req([x, p], facts)), "done x=1.0.0 pf=2.0.0", "lowest, x first"),
+        (low(req([p, x], facts)), "done pf=1.0.0 x=2.0.0", "lowest, the platform first"),
+        (req([ranged], known([ranged])), "done a=2.0.0", "R-C1: a range through the request"),
+        (req([yanked_top], known([yanked_top])), "done a=1.0.0", "R-C6: a yanked release through the request"),
+        (req([young_top], known([young_top])), "done a=1.0.0", "R-C7: too young, through the request and its rules"),
+        (req([held], known([held])), "done a=2.0.0", "R-C9: the header value stays, through the request"),
+        (req([named_young], known([named_young])), "done a=2.0.0", "R-C7: a named version is not too young, through the request"),
+        (req([p, x], both_pf1), "done pf=1.0.0 x=2.0.0", "R-C3: the facts of the releases that lose count too: both x need pf-1.0.0, so the platform gives way"),
+        (req([pkg("a", [])], []), "fail", "a slot with no release"),
+        (req([ranged, pkg("b", [])], []), "fail", "the first slot is fine, the second has no release"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── packages/resolve/tests/solver.roc:107:1
+
+expect {
+    ab = [pkg("a", ["1.0.0", "2.0.0"]), pkg("b", ["1.0.0", "2.0.0"])]
+    all = known(ab)
+    only = |ids| all.keep_if(|f| ids.contains(f.id))
+    without = |ids| all.keep_if(|f| !ids.contains(f.id))
+    a2_needs_b3 = only(["a-2.0.0"]) |> needs("a-2.0.0", [("b", "3.0.0")])
+    rows = [
+        (req(ab, []), "need a-2.0.0 b-2.0.0", "no fact: the best tuple"),
+        (req(ab, only(["a-2.0.0"])), "need b-2.0.0", "only what is missing"),
+        (req(ab, only(["b-2.0.0"])), "need a-2.0.0", "only what is missing, the first slot"),
+        (req(ab, only(["a-2.0.0", "b-2.0.0"])), "done a=2.0.0 b=2.0.0", "the facts of the tuple: done"),
+        (req(ab, without(["a-1.0.0", "b-1.0.0"])), "done a=2.0.0 b=2.0.0", "a release outside the tuple needs no fact"),
+        (req(ab, a2_needs_b3), "need a-1.0.0 b-2.0.0", "a fact changes the tuple: the new release is asked for, the next one stays"),
+        (req(ab, a2_needs_b3.concat(only(["a-1.0.0", "b-2.0.0"]))), "done a=1.0.0 b=2.0.0", "the facts of the new tuple: done"),
+        (req([pkg("a", ["1.0.0"]), pkg("b", ["1.0.0"])], only(["a-1.0.0"]) |> needs("a-1.0.0", [("b", "2.0.0")])), "fail", "a fact shows that no tuple exists: fail, no ask for b"),
+        (req([{ ..pkg("a", ["1.0.0"]), ranges: [">=2.0.0"] }], []), "fail", "no value: fail, not a need"),
+        (req([], []), "done ", "no slot: the empty tuple"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── packages/resolve/tests/solver.roc:133:1
+
+expect {
+    a2 = pkg("a", ["1.0.0", "2.0.0"])
+    b3 = pkg("b", ["1.0.0", "2.0.0", "3.0.0"])
+    c3 = pkg("c", ["1.0.0", "2.0.0", "3.0.0"])
+    b19 = pkg("b", ["1.9.0", "1.10.0"])
+    json = { ..pkg("json", ["1.0.0", "2.0.0"]), group: "acme/json" }
+    b_low = { ..b3, ranges: ["<2.0.0"] }
+    rows = [
+        (req([a2, b3], known([a2, b3]) |> needs("a-2.0.0", [("b", "4.0.0")])), "done a=1.0.0 b=3.0.0", "a limit above all values excludes the release"),
+        (low(req([a2, b3], known([a2, b3]) |> needs("a-1.0.0", [("b", "2.0.0")]))), "done a=1.0.0 b=2.0.0", "lowest: the slot gets the limit, the lowest value at or above it"),
+        (low(req([a2, b3], known([a2, b3]) |> needs("a-1.0.0", [("b", "3.0.0")]))), "done a=1.0.0 b=3.0.0", "the limit is a value: allowed"),
+        (low(req([a2, pkg("b", ["1.0.0"]), c3], known([a2, pkg("b", ["1.0.0"]), c3]) |> needs("a-1.0.0", [("c", "2.0.0")]) |> needs("b-1.0.0", [("c", "3.0.0")]))), "done a=1.0.0 b=1.0.0 c=3.0.0", "2 limits: the highest wins"),
+        (low(req([a2, b19], known([a2, b19]) |> needs("a-1.0.0", [("b", "1.10.0")]))), "done a=1.0.0 b=1.10.0", "a semver: 1.10.0 is above 1.9.0"),
+        (low(req([a2, b19], known([a2, b19]) |> needs("a-1.0.0", [("b", "1.9.0")]))), "done a=1.0.0 b=1.9.0", "a semver: 1.9.0 is the lowest value at or above 1.9.0"),
+        (req([a2], known([a2]) |> needs("a-2.0.0", [("t", "5.0.0")])), "done a=2.0.0", "a dep on a group with no slot is not read"),
+        (req([a2], known([a2]) |> needs("a-2.0.0", [("a", "3.0.0")])), "done a=2.0.0", "a dep on the own group is not read (a cycle: the closure walk of the caller finds it)"),
+        (req([a2, json], known([a2, json]) |> needs("a-2.0.0", [("acme/json", "3.0.0")])), "done a=1.0.0 json=2.0.0", "the dep names the group: the slot json has the group acme/json"),
+        (req([a2, json], known([a2, json]) |> needs("a-2.0.0", [("json", "3.0.0")])), "done a=2.0.0 json=2.0.0", "the name of a slot is not a group"),
+        (low(req([a2, b_low], known([a2, b_low]) |> needs("a-1.0.0", [("b", "2.0.0")]))), "done a=2.0.0 b=1.0.0", "the limit is checked against the domain: the range <2.0.0 leaves no value at or above 2.0.0"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── packages/resolve/tests/solver.roc:160:1
+
+expect {
+    x = pkg("x", ["1.0.0", "2.0.0"])
+    p1 = pf("pf", ["1.0.0"])
+    p2 = pf("pf", ["1.0.0", "2.0.0"])
+    rows = [
+        (req([x, p1], known([x, p1]) |> on_pf("x-2.0.0", "pf-9.0.0")), "done x=1.0.0 pf=1.0.0", "R-C3: a platform that is no value of the platform slot excludes the release"),
+        (req([x], known([x]) |> on_pf("x-2.0.0", "pf-9.0.0")), "done x=2.0.0", "R-C3: no platform slot, no check"),
+        (req([{ ..x, candidates: [cand("x", "1.0.0")] }, p2], known([x, p2])), "done x=1.0.0 pf=2.0.0", "R-C3: a release with no platform fits each platform"),
+        (req([p2], known([p2]) |> kind_of("pf-2.0.0", Package)), "done pf=1.0.0", "R-C4: a platform slot refuses a package release"),
+        (req([x], known([x]) |> kind_of("x-2.0.0", Platform)), "done x=1.0.0", "R-C4: a package slot refuses a platform release"),
+        (req([x], known([x]) |> kind_of("x-2.0.0", App)), "done x=1.0.0", "R-C4: an app release is never a value of a package slot"),
+        (req([p2], known([p2]) |> kind_of("pf-2.0.0", App)), "done pf=1.0.0", "R-C4: an app release is never a value of a platform slot"),
+        (req([x], known([x]) |> kind_of("x-1.0.0", App) |> kind_of("x-2.0.0", Platform)), "fail", "R-C4: no release of the right kind: fail"),
+        (req([p2], []), "need pf-2.0.0", "R-C4: no fact, the kind is taken as right: the step asks"),
+        (req([p2], only_fact(known([p2]), "pf-2.0.0") |> kind_of("pf-2.0.0", Package)), "need pf-1.0.0", "R-C4: the fact shows the wrong kind: the next release is asked for"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── packages/resolve/tests/solver.roc:192:1
+
+expect {
+    abc = [pkg("a", ["1.0.0", "2.0.0"]), pkg("b", ["1.0.0", "2.0.0"]), pkg("c", ["1.0.0", "2.0.0"])]
+    r = |conflicts| conflicting(req(abc, known(abc)), conflicts)
+    abcd = [pkg("a", ["1.0.0", "2.0.0"]), pkg("b", ["1.0.0", "2.0.0"]), pkg("c", ["1.0.0", "2.0.0"]), pkg("d", ["1.0.0", "2.0.0"])]
+    cd = |c, d| [inn("a", ["a-2.0.0"]), inn("c", [c]), inn("d", [d])]
+    deep = [cd("c-2.0.0", "d-2.0.0"), cd("c-2.0.0", "d-1.0.0"), cd("c-1.0.0", "d-1.0.0"), cd("c-1.0.0", "d-2.0.0")]
+    rows = [
+        (r([]), "done a=2.0.0 b=2.0.0 c=2.0.0", "no conflict"),
+        (r([[inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]), "done a=2.0.0 b=1.0.0 c=2.0.0", "2 terms: a takes its best, b gives way"),
+        (r([[inn("a", ["a-2.0.0"])]]), "done a=1.0.0 b=2.0.0 c=2.0.0", "one term: the value is out"),
+        (r([[not_in("a", ["a-1.0.0"]), not_in("b", ["b-2.0.0"])]]), "done a=2.0.0 b=2.0.0 c=2.0.0", "NotIn: a=2 is not in {a-1}, b=2 is in {b-2}: the conflict does not hold"),
+        (r([[inn("a", ["a-2.0.0"]), not_in("b", ["b-1.0.0"])]]), "done a=2.0.0 b=1.0.0 c=2.0.0", "NotIn: a=2 and b other than b-1 cannot hold together, so b is b-1"),
+        (r([[inn("b", ["b-2.0.0"]), inn("c", ["c-1.0.0"])], [inn("b", ["b-2.0.0"]), inn("c", ["c-2.0.0"])]]), "done a=2.0.0 b=1.0.0 c=2.0.0", "a conflict after a decision: b=2 leaves no value for c, so b=1"),
+        (r([[inn("a", ["a-2.0.0"]), inn("b", ["b-1.0.0"])], [inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]), "done a=1.0.0 b=2.0.0 c=2.0.0", "a=2 leaves no value for b: a goes back to its second best"),
+        (r([[inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])], [inn("b", ["b-2.0.0"]), inn("c", ["c-2.0.0"])]]), "done a=2.0.0 b=1.0.0 c=2.0.0", "a chain: b gives way, then the second conflict does not hold"),
+        (r([[inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"]), inn("c", ["c-2.0.0"])]]), "done a=2.0.0 b=2.0.0 c=1.0.0", "3 terms: the last slot gives way"),
+        (r([[inn("a", ["a-9.0.0"])]]), "done a=2.0.0 b=2.0.0 c=2.0.0", "an id that is no value: never true"),
+        (r([[inn("z", ["z-1.0.0"]), inn("a", ["a-2.0.0"])]]), "done a=2.0.0 b=2.0.0 c=2.0.0", "a name that is no slot: never applies"),
+        (r([[inn("a", ["a-1.0.0", "a-2.0.0"])]]), "fail", "all values of a are out"),
+        (r([[not_in("a", [])]]), "fail", "NotIn of no id is all values"),
+        (r([[inn("a", ["a-1.0.0"]), inn("b", ["b-1.0.0"])], [inn("a", ["a-1.0.0"]), inn("b", ["b-2.0.0"])], [inn("a", ["a-2.0.0"]), inn("b", ["b-1.0.0"])], [inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]), "fail", "no pair of a and b is left"),
+        (conflicting(req(abc, []), [[inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]), "need a-2.0.0 b-1.0.0 c-2.0.0", "the conflict and the need together: the facts of the new tuple"),
+        (r([[inn("a", ["a-1.0.0"]), inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]), "done a=2.0.0 b=2.0.0 c=2.0.0", "2 terms of one slot with no common value: never true"),
+        (r([[inn("a", ["a-1.0.0", "a-2.0.0"]), inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]), "done a=2.0.0 b=1.0.0 c=2.0.0", "2 terms of one slot: the values that both hold"),
+        (conflicting(req(abcd, known(abcd)), deep), "done a=1.0.0 b=2.0.0 c=2.0.0 d=2.0.0", "a conflict 3 decisions deep: a=2 has no tuple, but c=2 and b=2 stay valid for a=1"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Ran 5 tests in 313.2 ms.:
+    0 passed
+    5 failed
+    0 compiler errors
+tests/unit/add.roc: All (9) tests passed in 749.3 ms.
+tests/unit/alias.roc: All (4) tests passed in 479.2 ms.
+tests/unit/args.roc: All (5) tests passed in 444.2 ms.
+tests/unit/buildskip.roc: All (5) tests passed in 508.6 ms.
+tests/unit/cacheview.roc: All (4) tests passed in 2307.1 ms.
+tests/unit/clean.roc: All (6) tests passed in 2581.5 ms.
+tests/unit/clock.roc: All (2) tests passed in 222.6 ms.
+tests/unit/closuregaps.roc: All (2) tests passed in 1086.5 ms.
+tests/unit/closure.roc: All (7) tests passed in 1500.7 ms.
+tests/unit/common.roc: All (1) tests passed in 301.8 ms.
+tests/unit/compiler.roc: All (7) tests passed in 2222.6 ms.
+tests/unit/consent.roc: All (12) tests passed in 2211.3 ms.
+tests/unit/db.roc: All (7) tests passed in 405.8 ms.
+tests/unit/download.roc: All (4) tests passed in 288.8 ms.
+tests/unit/epochs.roc: All (4) tests passed in 558.0 ms.
+tests/unit/evidence.roc: All (7) tests passed in 4618.0 ms.
+tests/unit/facts.roc: All (5) tests passed in 613.3 ms.
+tests/unit/fetch.roc: All (2) tests passed in 378.4 ms.
+tests/unit/frozen.roc: All (1) tests passed in 3379.6 ms.
+tests/unit/gc.roc: All (9) tests passed in 2354.4 ms.
+tests/unit/github.roc: All (5) tests passed in 641.4 ms.
+tests/unit/guard.roc: All (1) tests passed in 122.5 ms.
+tests/unit/ident.roc: All (2) tests passed in 165.2 ms.
+tests/unit/index.roc: All (6) tests passed in 731.6 ms.
+tests/unit/intent.roc: All (9) tests passed in 2730.2 ms.
+tests/unit/kind.roc: All (3) tests passed in 186.3 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2639.8 ms.
+tests/unit/launch.roc: All (1) tests passed in 751.4 ms.
+tests/unit/link.roc: All (6) tests passed in 707.5 ms.
+tests/unit/listing.roc: All (4) tests passed in 612.5 ms.
+tests/unit/locked.roc: All (3) tests passed in 2221.2 ms.
+tests/unit/lock.roc: All (2) tests passed in 117.4 ms.
+tests/unit/lookup.roc: All (7) tests passed in 764.2 ms.
+tests/unit/manage.roc: All (18) tests passed in 3102.4 ms.
+tests/unit/members.roc: All (2) tests passed in 192.1 ms.
+tests/unit/mode.roc: All (3) tests passed in 191.8 ms.
+tests/unit/net.roc: All (2) tests passed in 264.7 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1206.3 ms.
+tests/unit/opts.roc: All (4) tests passed in 537.3 ms.
+tests/unit/out.roc: All (4) tests passed in 211.2 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 1022.5 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1794.6 ms.
+tests/unit/picker.roc: All (2) tests passed in 134.5 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1886.9 ms.
+tests/unit/pick.roc: All (3) tests passed in 1947.0 ms.
+tests/unit/pin.roc: All (9) tests passed in 1035.2 ms.
+tests/unit/pins.roc: All (6) tests passed in 1643.3 ms.
+tests/unit/probe.roc: All (5) tests passed in 464.1 ms.
+tests/unit/project.roc: All (7) tests passed in 2009.8 ms.
+tests/unit/projects.roc: All (3) tests passed in 421.0 ms.
+tests/unit/prompt.roc: All (5) tests passed in 331.7 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2588.3 ms.
+tests/unit/ranges.roc: All (1) tests passed in 324.4 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1624.3 ms.
+tests/unit/ref.roc: All (4) tests passed in 509.2 ms.
+tests/unit/removal.roc: All (4) tests passed in 1842.2 ms.
+tests/unit/report.roc: All (3) tests passed in 216.0 ms.
+tests/unit/roots.roc: All (3) tests passed in 148.7 ms.
+tests/unit/scan.roc: All (2) tests passed in 172.3 ms.
+tests/unit/selector.roc: All (2) tests passed in 326.9 ms.
+tests/unit/setup.roc: All (10) tests passed in 666.0 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 206.0 ms.
+tests/unit/temp.roc: All (4) tests passed in 176.1 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1790.6 ms.
+tests/unit/units.roc: All (6) tests passed in 739.3 ms.
+tests/unit/update.roc: All (2) tests passed in 1970.5 ms.
+tests/unit/uses.roc: All (2) tests passed in 599.0 ms.
+tests/unit/vars.roc: All (6) tests passed in 1778.0 ms.
+tests/unit/verify.roc: All (2) tests passed in 1358.0 ms.
+tests/unit/why.roc: All (6) tests passed in 1904.6 ms.
+== l1: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l1.log)
+tests/fuzz/epochs.roc: Done 20000 runs in 1 second(s)
+tests/fuzz/pubgrub.roc: FAILED (exit 77, seed 1, 20000 runs)
+[roc crashed] todo
+MS: 0 ; base unit: 0000000000000000000000000000000000000000
+
+
+artifact_prefix='/home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/art/'; Test unit written to /home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+Base64: 
+
+Next steps:
+  ./target show /home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+  ./target replay /home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+  ./target minimize /home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709 .roc-fuzz/minimized-crash
+
+replay: /home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/target replay /home/george/dev/Karakatiza666/talon/.work/l1/pubgrub/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+
+step       result seconds  budget
+check      pass   1.0      10
+fmt        pass   0.1      5
+l0         FAIL   6.1      10
+l1         FAIL   4.7      60
+l2         pass   1.1      30
+l3         pass   9.8      60
+selftest   pass   8.4      20

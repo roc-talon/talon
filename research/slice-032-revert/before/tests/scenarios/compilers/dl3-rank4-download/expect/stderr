@@ -1,0 +1,5 @@
+tln: error[consent]: 1 compiler download (572 B) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: no installed compiler is in [toolchain] roc (>=nightly-2026-10-10-0000000). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+downloading nightly-2026-10-12-1b2c3d4 (572 B)
+tln: error[no_tuple]: no compiler release is in [toolchain] roc (>=nightly-2026-10-10-0000000), and nightly is false (set by TALON_NIGHTLY)
+downloading nightly-2026-10-13-0a1b2c3 (572 B)

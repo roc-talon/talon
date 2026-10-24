@@ -1,0 +1,2 @@
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st tln update json --dry-run

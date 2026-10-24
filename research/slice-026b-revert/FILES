@@ -1,0 +1,7 @@
+cli/lib/Manage.roc
+cli/lib/Pin.roc
+cli/lib/Consent.roc
+cli/lib/Ladder.roc
+cli/lib/Run.roc
+cli/lib/main.roc
+cli/lib/RocUse.roc

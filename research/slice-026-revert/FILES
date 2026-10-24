@@ -1,0 +1,10 @@
+cli/lib/Manage.roc
+cli/lib/Toolchain.roc
+cli/lib/Pin.roc
+cli/lib/RocManage.roc
+cli/lib/RocInstall.roc
+cli/lib/Run.roc
+cli/lib/main.roc
+cli/lib/Base.roc
+cli/lib/OnPath.roc
+cli/lib/Install.roc

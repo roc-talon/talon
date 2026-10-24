@@ -1,0 +1,4 @@
+R-UP4 R-SP16 R-SP17 R-SP23 R-SP24 R-SP25 R-UP5 R-UP3 R-NI3 R-C1 (slice 038): 2 runs on 2 projects with the same start. The command code is `Upgrade.run!` and `InstallFlow.finish!`.
+The world: lib 1.0.0 (the header value) and 2.0.0 both need core 1.2.0, and the header holds core 1.0.0 (a header that was edited by hand). So no tuple exists with core held, and the second search moves core (R-SP16). core has the key `1.0.*` and lib has `^1.0`: the command holds core only because the user did not name it (R-SP23), and the key is no constraint in upgrade (R-C1 has no range, R-UP1).
+Run 1 (q2, `upgrade lib`, non-interactive: `CI=true`, no `--yes`): the report of the move on stderr, exit 13 (R-SP17). Nothing is written.
+Run 2 (q3, `upgrade lib --yes`): lib moves to 2.0.0 (new series) and core moves to 1.2.0. The keys become `lib = "^2.0"` and `core = "1.2.*"` (R-UP4, R-SP25, R-UP5).

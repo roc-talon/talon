@@ -1,0 +1,4 @@
+e16: compile rc=0 L0=caught L1=caught
+e34: compile rc=0 L0=caught L1=caught
+e35: compile rc=0 L0=caught L1=caught
+restored: True

@@ -29,14 +29,14 @@ exit 2
 == tln remove json --frozen
 exit 2
 == tln remove parser --json
-{"schema":1,"command":"remove","ok":true,"data":{"probes":3,"dry_run":false,"check":"passed","build":"passed","removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[{"path":"$PROJECT/talon.toml","table":"dependencies","key":"parser"},{"path":"$PROJECT/talon.toml","table":"overrides","key":"parser"},{"path":"$PROJECT/talon.toml","table":"patch","key":"parser"}],"patches":[{"alias":"parser","dir":"$PROJECT/.talon/patches/parser/"}],"pinned":"nightly-2026-10-14-38a3029","notes":[],"written":["$PROJECT/talon.toml","$PROJECT/main.roc"]},"error":null}
+{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":"skipped","removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[{"path":"$PROJECT/talon.toml","table":"dependencies","key":"parser"},{"path":"$PROJECT/talon.toml","table":"overrides","key":"parser"},{"path":"$PROJECT/talon.toml","table":"patch","key":"parser"}],"patches":[{"alias":"parser","dir":"$PROJECT/.talon/patches/parser/"}],"pinned":"nightly-2026-10-14-38a3029","notes":[],"written":["$PROJECT/talon.toml","$PROJECT/main.roc"]},"error":null}
 exit 0
 the patch files stay
 == tln rm acme/xml --no-check --json --quiet
 {"schema":1,"command":"rm","ok":true,"data":{"probes":0,"dry_run":false,"check":"skipped","build":"skipped","removed":[{"alias":"xml","kind":"release","name":"acme/xml","version":"1.0.0"}],"toml":[{"path":"$PROJECT/talon.toml","table":"dependencies","key":"xml"}],"patches":[],"pinned":null,"notes":[],"written":["$PROJECT/talon.toml","$PROJECT/main.roc"]},"error":null}
 exit 0
 == tln remove util odd util --force --json
-{"schema":1,"command":"remove","ok":true,"data":{"probes":3,"dry_run":false,"check":"passed","build":"passed","removed":[{"alias":"util","kind":"path","name":"../util/main.roc","version":null},{"alias":"odd","kind":"foreign","name":"https://example.com/pkg/latest.tar.gz","version":null}],"toml":[],"patches":[],"pinned":null,"notes":[],"written":["$PROJECT/main.roc"]},"error":null}
+{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":"skipped","removed":[{"alias":"util","kind":"path","name":"../util/main.roc","version":null},{"alias":"odd","kind":"foreign","name":"https://example.com/pkg/latest.tar.gz","version":null}],"toml":[],"patches":[],"pinned":null,"notes":[],"written":["$PROJECT/main.roc"]},"error":null}
 exit 0
 == tln remove json --force
 note: json is still imported in 1 line. The app cannot check until you change the imports.

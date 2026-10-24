@@ -1,0 +1,131 @@
+# R-CC8 R-TF1 R-TF2 R-TF3 R-P4 R-NS12 R-CV6 R-PK7 TW4 (slice 030): db_query! and db_write! of the real Fx, with `fxprobe` (no Talon logic in it). One process; the write, the busy timeout and the 2 processes at once are in the case db2.
+# The python3 parts play "another program": they change the file as another Talon or a user would, and read what the real Fx wrote.
+FX=$(command -v fxprobe)
+DB=$HOME/.cache/roc/talon/compat.db
+H1=9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17
+H2=Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu
+NT=nightly-2026-10-14-38a3029
+A=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+B=bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb
+mkdir -p t
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+
+echo "== 1. a query of a file that does not exist: no row, and the read makes no file and no dir"
+$FX db-query $DB 5000 facts $H1:$NT:any
+$FX db-query $DB 5000 pinned $NT:linux_x86_64
+test ! -e $HOME/.cache && echo "nothing was made"
+
+echo "== 2. a write makes the dirs and the file. 5 rows in one call: a pass, a fail with 2 modules, a fail with a module twice (the file holds a set: sorted, no repeat), a build pass with its closure, a hang of a release (R-NS12)"
+$FX db-write $DB 5000 facts replace $H1:$NT:any:pass:: $H2:$NT:any:fail:Yaml.roc,Json.roc: $H2:$NT:other:fail:Yaml.roc,Json.roc,Yaml.roc: $H1:$NT:linux_x86_64:pass::c0ffee $H1:0.1.0:any:hang::
+echo "== 3. the file is in WAL mode (R-CC8) and has the format 1 (R-TF1)"
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("journal_mode", c.execute("PRAGMA journal_mode").fetchone()[0])
+print("user_version", c.execute("PRAGMA user_version").fetchone()[0])
+print("tables", sorted(r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type = 'table'")))
+PY
+
+echo "== 4. the rows of 6 keys: 5 rows, and a key with no row. The modules are sorted."
+$FX db-query $DB 5000 facts $H1:$NT:any $H2:$NT:any $H2:$NT:other $H1:$NT:linux_x86_64 $H1:0.1.0:any $H2:$NT:linux_x86_64
+echo "== 5. no key: no row. A key of another hash, nightly or target is not a row of a key that is not in the query."
+$FX db-query $DB 5000 facts
+$FX db-query $DB 5000 facts $H2:$NT:linux_x86_64 $H1:other:any $H2:0.1.0:any
+
+echo "== 5b. a write with no row is ok and changes nothing (the doc of db_write!): not a SQL error, and no file is made for a missing db"
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("rows before", c.execute("SELECT COUNT(*) FROM facts").fetchone()[0], c.execute("SELECT COUNT(*) FROM pinned").fetchone()[0])
+PY
+$FX db-write $DB 5000 facts replace
+$FX db-write $DB 5000 facts keep
+$FX db-write $DB 5000 pinned
+$FX db-write t/none.db 5000 facts replace
+test ! -e t/none.db && echo "no file was made"
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("rows after", c.execute("SELECT COUNT(*) FROM facts").fetchone()[0], c.execute("SELECT COUNT(*) FROM pinned").fetchone()[0])
+PY
+
+echo "== 6. Keep leaves the row that exists and adds the new one. Replace changes the row. R-P4: one row for each key (hash, nightly, target)."
+$FX db-write $DB 5000 facts keep $H2:$NT:any:pass:: $H2:$NT:linux_x86_64:crash::
+$FX db-query $DB 5000 facts $H2:$NT:any $H2:$NT:linux_x86_64
+$FX db-write $DB 5000 facts replace $H2:$NT:any:pass:: $H1:$NT:any:fail:A.roc:
+$FX db-query $DB 5000 facts $H2:$NT:any $H1:$NT:any
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("rows", c.execute("SELECT COUNT(*) FROM facts").fetchone()[0])
+PY
+
+echo "== 7. R-TF2: a later Talon with the same format added a column. This Talon ignores it in a query, and a Replace keeps its value (an upsert, not a delete and an insert)."
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("ALTER TABLE facts ADD COLUMN note TEXT")
+c.execute("UPDATE facts SET note = 'kept' WHERE hash = ? AND nightly = 'nightly-2026-10-14-38a3029' AND target = 'any'", ("9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17",))
+c.commit()
+PY
+$FX db-query $DB 5000 facts $H1:$NT:any
+$FX db-write $DB 5000 facts replace $H1:$NT:any:pass:: $H2:$NT:new:hang::
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+for r in c.execute("SELECT hash, nightly, target, outcome, note FROM facts WHERE note IS NOT NULL OR target = 'new' ORDER BY hash, nightly, target"):
+    print("note", r)
+PY
+
+echo "== 8. R-CV6: the first sha256 of an asset stays. A second write for the same (tag, target) changes nothing. Another target of the tag is a new row."
+$FX db-write $DB 5000 pinned $NT:linux_x86_64:$A:github-digest
+$FX db-write $DB 5000 pinned $NT:linux_x86_64:$B:registry $NT:linux_arm64:$B:registry
+$FX db-query $DB 5000 pinned $NT:linux_x86_64 $NT:linux_arm64 $NT:macos_apple_silicon
+
+echo "== 9. R-TF3: a file with a newer format (2). A query and a write give TooNew, and the bytes of the file stay the same (not even the WAL switch is done)."
+python3 -I - t/new.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target)) WITHOUT ROWID")
+c.execute("INSERT INTO facts VALUES ('x', 'n', 'any', 'pass', '', '')")
+c.execute("PRAGMA user_version = 2")
+c.commit()
+c.close()
+PY
+before=$(sha t/new.db)
+$FX db-query t/new.db 5000 facts x:n:any
+$FX db-write t/new.db 5000 facts replace x:n:any:fail::
+$FX db-write t/new.db 5000 pinned t:any:$A:registry
+after=$(sha t/new.db)
+test "$before" = "$after" && echo "the file is the same"
+ls t | sort
+
+echo "== 10. a file that is not a database, and a dir that cannot be made (its parent is a file): Failed, and the text file is the same"
+printf 'this is not a database file, only text, padding padding padding padding padding padding padding padding' > t/text.db
+before=$(sha t/text.db)
+$FX db-query t/text.db 5000 facts x:n:any | sed -e 's/Failed(.*/Failed(...)/'
+$FX db-write t/text.db 5000 facts replace x:n:any:pass:: | sed -e 's/Failed(.*/Failed(...)/'
+$FX db-write t/text.db/sub/x.db 5000 facts replace x:n:any:pass:: | sed -e 's/Failed(.*/Failed(...)/'
+after=$(sha t/text.db)
+test "$before" = "$after" && echo "the text file is the same"
+
+echo "== 11. R-CC8: another process holds the write lock. A write with a busy timeout of 200 ms gives Busy and writes nothing. A query does not wait (WAL: a reader does not block) and does not see the row that is not committed."
+python3 -I - $DB $PWD/held <<'PY' &
+import sqlite3, sys, time
+c = sqlite3.connect(sys.argv[1], isolation_level=None)
+c.execute("BEGIN IMMEDIATE")
+c.execute("INSERT INTO facts (hash, nightly, target, outcome, modules, closure) VALUES ('held', 'n', 'any', 'pass', '', '')")
+open(sys.argv[2], "w").close()
+time.sleep(1.0)
+c.execute("COMMIT")
+PY
+HOLD=$!
+i=0
+while [ ! -e held ] && [ $i -lt 250 ]; do sleep 0.02; i=$((i + 1)); done
+$FX db-write $DB 200 facts replace $H1:$NT:busy:pass::
+$FX db-query $DB 200 facts held:n:any $H1:$NT:busy
+wait $HOLD
+echo "== 12. the lock is free: the same write works and the held row is there"
+$FX db-write $DB 200 facts replace $H1:$NT:busy:pass::
+$FX db-query $DB 200 facts held:n:any $H1:$NT:busy
+rm -rf t held

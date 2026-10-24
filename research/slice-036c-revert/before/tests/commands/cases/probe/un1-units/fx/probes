@@ -1,0 +1,6 @@
+# run 1: the baseline has the error in acme/parser Parser.roc (the unit fail has Parser.roc too: excused, and Yaml.roc: blamed)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+# run 2: the same baseline, the candidate has the same error, the build passes: the unit fail of Parser.roc is the error of the baseline (R-P6)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-same.stdout	../fixtures/check/out/pkg-same.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

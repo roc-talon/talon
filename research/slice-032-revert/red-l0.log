@@ -1,0 +1,268 @@
+tests/unit/add.roc: All (9) tests passed in 693.6 ms.
+tests/unit/alias.roc: All (4) tests passed in 377.5 ms.
+tests/unit/args.roc: All (5) tests passed in 395.0 ms.
+tests/unit/buildskip.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/buildskip.roc:33:1
+
+expect {
+    row_of = |label, got, want| (label, got, want)
+    rows = [
+        row_of("2 packages: sha256 of a, b with line ends", BuildSkip.digest([used("a", "A.roc"), used("b", "B.roc")]), d1),
+        row_of("the order of the list does not matter", BuildSkip.digest([used("b", "B.roc"), used("a", "A.roc")]), d1),
+        row_of("2 modules of one package are one hash", BuildSkip.digest([used("a", "A.roc"), used("b", "B.roc"), used("a", "Other.roc"), used("b", "B.roc")]), d1),
+        row_of("the module path does not matter", BuildSkip.digest([used("a", "x/Deep.roc"), used("b", "main.roc")]), d1),
+        row_of("a package that is not used is not in the digest", BuildSkip.digest([used("a", "A.roc")]), "87428fc522803d31065e7bce3cf03fe475096631e5e07bbd7a0fde60c4cf25c7"),
+        row_of("the byte order: a capital letter comes first", BuildSkip.digest([used("b", "B.roc"), used("A", "A.roc")]), "7fb70b2c8e53af12ab5a1631e86294849c1b682d9cac55e8ca78b22da8dfb3fb"),
+        row_of("a real pair of hashes", BuildSkip.digest([used("9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK", "Stdout.roc"), used("7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21", "Json.roc")]), d2),
+        row_of("no used package: the SHA-256 of no bytes", BuildSkip.digest([]), "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/buildskip.roc:52:1
+
+expect {
+    system = |os, arch| { os, arch }
+    row_of = |label, got, want| (label, Str.inspect(got), Str.inspect(want))
+    nodes = [node("a", Bool.False), node(pf_hash, Bool.True), node("b", Bool.False)]
+    rows = [
+        row_of("linux x64", BuildSkip.target(system(Linux, X64)), Ok("x64musl")),
+        row_of("linux arm64", BuildSkip.target(system(Linux, Arm64)), Ok("arm64musl")),
+        row_of("macos x64", BuildSkip.target(system(Macos, X64)), Ok("x64mac")),
+        row_of("macos arm64", BuildSkip.target(system(Macos, Arm64)), Ok("arm64mac")),
+        row_of("windows x64", BuildSkip.target(system(Windows, X64)), Ok("x64win")),
+        row_of("windows arm64 has no target (R-HF10)", BuildSkip.target(system(Windows, Arm64)), Err(Unknown)),
+        row_of("another os", BuildSkip.target(system(Other("freebsd"), X64)), Err(Unknown)),
+        row_of("another arch", BuildSkip.target(system(Linux, Other("riscv64"))), Err(Unknown)),
+        row_of("the platform node gives the hash", BuildSkip.pf_hash(nodes), Ok(pf_hash)),
+        row_of("a closure with no platform node has no hash", BuildSkip.pf_hash([node("a", Bool.False), node("b", Bool.False)]), Err(NoPlatform)),
+        row_of("an empty closure has no hash", BuildSkip.pf_hash([]), Err(NoPlatform)),
+        row_of("the key: platform hash, compiler, target", BuildSkip.key({ pf: pf_hash, nightly: nt, system: linux_x64 }), Ok(key)),
+        row_of("the key of another compiler", BuildSkip.key({ pf: pf_hash, nightly: other, system: linux_x64 }), Ok({ ..key, nightly: other })),
+        row_of("the key of another target", BuildSkip.key({ pf: pf_hash, nightly: nt, system: system(Macos, Arm64) }), Ok({ ..key, target: "arm64mac" })),
+        row_of("an unknown system has no key", BuildSkip.key({ pf: pf_hash, nightly: nt, system: system(Windows, Arm64) }), Err(Unknown)),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/buildskip.roc:81:1
+
+expect {
+    decide = |facts| BuildSkip.decide({ facts, key, digest: d1 })
+    row_of = |label, got, want| (label, Str.inspect(got), Str.inspect(want))
+    rows = [
+        row_of("a pass with the same digest", decide([row(key, Pass, d1)]), Skip),
+        row_of("a pass with the same digest, among other rows", decide([row({ ..key, nightly: other }, Pass, d2), row(key, Pass, d1), row({ ..key, target: "any" }, Pass, "")]), Skip),
+        row_of("a pass of this digest and a pass of another digest", decide([row(key, Pass, d2), row(key, Pass, d1)]), Skip),
+        row_of("a pass of this digest and a fail of another digest", decide([row(key, Fail, d2), row(key, Pass, d1)]), Skip),
+        row_of("a pass of this digest and a crash of another digest", decide([row(key, Crash, d2), row(key, Pass, d1)]), Skip),
+        row_of("no row", decide([]), Build),
+        row_of("a pass with another digest (a used package changed)", decide([row(key, Pass, d2)]), Build),
+        row_of("a pass with no digest", decide([row(key, Pass, "")]), Build),
+        row_of("a pass of another platform", decide([row({ ..key, hash: "other" }, Pass, d1)]), Build),
+        row_of("a pass of another compiler", decide([row({ ..key, nightly: other }, Pass, d1)]), Build),
+        row_of("a pass of another target", decide([row({ ..key, target: "arm64mac" }, Pass, d1)]), Build),
+        row_of("a check pass (target any) is no build pass", decide([row({ ..key, target: "any" }, Pass, d1)]), Build),
+        row_of("a pass with no digest, and no digest in the candidate either", BuildSkip.decide({ facts: [row(key, Pass, "")], key, digest: "" }), Build),
+        row_of("a recorded fail", decide([row(key, Fail, d1)]), Build),
+        row_of("a recorded fail with no digest", decide([row(key, Fail, "")]), Build),
+        row_of("a recorded hang", decide([row(key, Hang, d1)]), Build),
+        row_of("a recorded crash", decide([row(key, Crash, d1)]), Build),
+        row_of("a pass and a fail of this digest (the fail blocks)", decide([row(key, Pass, d1), row(key, Fail, d1)]), Build),
+        row_of("a fail and a pass of this digest (the order does not matter)", decide([row(key, Fail, d1), row(key, Pass, d1)]), Build),
+        row_of("a pass and a hang of this digest", decide([row(key, Pass, d1), row(key, Hang, d1)]), Build),
+        row_of("a pass and a crash of this digest", decide([row(key, Pass, d1), row(key, Crash, d1)]), Build),
+        row_of("a pass of this digest and a fail of this digest in another compiler", decide([row(key, Pass, d1), row({ ..key, nightly: other }, Fail, d1)]), Skip),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ─────────────────────────────────────── tests/unit/buildskip.roc:116:1
+
+expect {
+    pkg_err = |hash, path| { file: Package({ hash, path }), title: "type mismatch", message: "a" }
+    app_err = { file: App("main.roc"), title: "type mismatch", message: "a" }
+    made = |class, errors| BuildSkip.row({ key, digest: d1, class, errors })
+    want = |outcome, modules| Ok({ hash: pf_hash, nightly: nt, target: "x64musl", outcome, modules, closure: d1 })
+    rows = [
+        ("pass", Str.inspect(made(Pass, [])), Str.inspect(want(Pass, []))),
+        ("fail with a module of the platform", Str.inspect(made(Fail(2), [pkg_err(pf_hash, "Std.roc"), app_err])), Str.inspect(want(Fail, ["Std.roc"]))),
+        ("fail with no module of the platform", Str.inspect(made(Fail(1), [app_err, pkg_err("other", "A.roc")])), Str.inspect(want(Fail, []))),
+        ("hang", Str.inspect(made(Hang, [])), Str.inspect(want(Hang, []))),
+        ("crash", Str.inspect(made(Crash("exit 139"), [])), Str.inspect(want(Crash, []))),
+        ("a signal from outside is no fact", Str.inspect(made(NoFact("signal 9"), [])), Str.inspect(Err(NoFact))),
+        ("not started is no fact", Str.inspect(made(NoFact("not started: x"), [])), Str.inspect(Err(NoFact))),
+    ]
+    bad = rows.keep_if(|(_, got, wanted)| got != wanted).map(|(label, got, wanted)| (label, wanted, got))
+    dbg bad
+    fact = BuildSkip.row({ key, digest: d1, class: Pass, errors: [] })
+    text = match fact {
+        Ok(found) => Db.fact_line(found)
+        Err(_) => "no row"
+    }
+    bad == [] and BuildSkip.skipped_line == "build: skipped (recorded pass)" and text == "fact\t${pf_hash}\t${nt}\tx64musl\tpass\t\t${d1}"
+}
+
+Ran 4 tests in 476.1 ms.:
+    0 passed
+    4 failed
+    0 compiler errors
+tests/unit/cacheview.roc: All (4) tests passed in 2614.0 ms.
+tests/unit/clean.roc: All (6) tests passed in 2022.3 ms.
+tests/unit/clock.roc: All (2) tests passed in 277.9 ms.
+tests/unit/closuregaps.roc: All (2) tests passed in 1359.7 ms.
+tests/unit/closure.roc: All (7) tests passed in 1480.7 ms.
+tests/unit/common.roc: All (1) tests passed in 357.2 ms.
+tests/unit/compiler.roc: All (7) tests passed in 2239.8 ms.
+tests/unit/consent.roc: All (12) tests passed in 2330.8 ms.
+tests/unit/db.roc: FAILED
+[dbg] []
+[dbg] []
+[dbg] ([], [], [])
+[dbg] (True, True, True, True, True, [])
+[dbg] []
+[dbg] (False, True)
+
+── ✗ fail ────────────────────────────────────────────── tests/unit/db.roc:180:1
+
+expect {
+    low = { ..build_row, closure: "a1" }
+    high = { ..build_row, outcome: Fail, closure: "b2" }
+    check = { ..build_row, target: "any", closure: "" }
+    text = |facts| Db.file_text({ format: 1, facts, pinned: [] })
+    want = Str.join_with(["format\t1", Db.fact_line(check), Db.fact_line(low), Db.fact_line(high), ""], "\n")
+    dbg (text([high, check, low]) == want, text([low, high, check]) == want)
+    text([high, check, low]) == want and text([low, high, check]) == want
+}
+
+Mentioned values:
+build_row = { hash: h1, nightly: nt, target: "linux_x86_64", outcome: Pass,
+modules: [], closure: "c0ffee" }
+
+Ran 7 tests in 402.1 ms.:
+    6 passed
+    1 failed
+    0 compiler errors
+tests/unit/download.roc: All (4) tests passed in 203.0 ms.
+tests/unit/facts.roc: FAILED
+[dbg] ["build hang keeps the closure", "build crash keeps the closure", "build fail keeps the closure"]
+
+── ✗ fail ──────────────────────────────────────────── tests/unit/facts.roc:30:1
+
+expect {
+    built = { ..base, command: Build({ output: "/tmp/x" }), closure: "c0ffee" }
+    row = |outcome, target, modules, closure| Ok({ hash: h1, nightly: nt, target, outcome, modules, closure })
+    rows = [
+        (Facts.of_probe(base), row(Pass, "any", [], ""), "check pass"),
+        (Facts.of_probe({ ..base, closure: "ignored" }), row(Pass, "any", [], ""), "check pass drops the closure"),
+        (Facts.of_probe(built), row(Pass, host, [], "c0ffee"), "build pass"),
+        (Facts.of_probe({ ..built, class: Hang }), row(Hang, host, [], "c0ffee"), "build hang keeps the closure"),
+        (Facts.of_probe({ ..base, class: Hang, closure: "ignored" }), row(Hang, "any", [], ""), "check hang drops the closure"),
+        (Facts.of_probe({ ..base, class: Fail(1), closure: "ignored" }), row(Fail, "any", [], ""), "check fail drops the closure"),
+        (Facts.of_probe({ ..base, class: Hang }), row(Hang, "any", [], ""), "check hang"),
+        (Facts.of_probe({ ..base, class: Crash("signal 11") }), row(Crash, "any", [], ""), "check crash"),
+        (Facts.of_probe({ ..built, class: Crash("exit 139") }), row(Crash, host, [], "c0ffee"), "build crash keeps the closure"),
+        (Facts.of_probe({ ..base, class: NoFact("signal 9") }), Err(NoFact), "signal from outside"),
+        (Facts.of_probe({ ..built, class: NoFact("not started: x") }), Err(NoFact), "not started"),
+        (Facts.of_probe({ ..base, class: Fail(1), errors: [pkg_err(h1, "Yaml.roc")], nightly: "0.1.0" }), Ok({ hash: h1, nightly: "0.1.0", target: "any", outcome: Fail, modules: ["Yaml.roc"], closure: "" }), "release id"),
+        (Facts.of_probe({ ..built, class: Fail(2), errors: [pkg_err(h1, "A.roc")], closure: "c0ffee" }), row(Fail, host, ["A.roc"], "c0ffee"), "build fail keeps the closure"),
+    ]
+    bad = rows.keep_if(|(got, want, _)| got != want).map(|(_, _, label)| label)
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+host = "linux_x86_64"
+h1 = "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17"
+base = { hash: h1, nightly: nt, host, command: Check, class: Pass, errors: [],
+closure: "" }
+nt = "nightly-2026-10-14-38a3029"
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] { details: Err(NoDetails), kind: Integrity, message: "the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef (github-digest), now fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 (registry). Talon does not use this compiler. Select another compiler." }
+Ran 5 tests in 525.8 ms.:
+    4 passed
+    1 failed
+    0 compiler errors
+tests/unit/fetch.roc: All (2) tests passed in 389.9 ms.
+tests/unit/frozen.roc: All (1) tests passed in 2929.1 ms.
+tests/unit/gc.roc: All (9) tests passed in 2849.9 ms.
+tests/unit/github.roc: All (5) tests passed in 608.6 ms.
+tests/unit/guard.roc: All (1) tests passed in 166.0 ms.
+tests/unit/ident.roc: All (2) tests passed in 220.7 ms.
+tests/unit/index.roc: All (6) tests passed in 869.5 ms.
+tests/unit/intent.roc: All (9) tests passed in 3074.3 ms.
+tests/unit/kind.roc: All (3) tests passed in 226.7 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2830.9 ms.
+tests/unit/launch.roc: All (1) tests passed in 656.5 ms.
+tests/unit/link.roc: All (6) tests passed in 885.9 ms.
+tests/unit/listing.roc: All (4) tests passed in 787.8 ms.
+tests/unit/locked.roc: All (3) tests passed in 2171.7 ms.
+tests/unit/lock.roc: All (2) tests passed in 178.1 ms.
+tests/unit/lookup.roc: All (7) tests passed in 785.7 ms.
+tests/unit/manage.roc: All (18) tests passed in 3213.4 ms.
+tests/unit/members.roc: All (2) tests passed in 205.9 ms.
+tests/unit/mode.roc: All (3) tests passed in 231.0 ms.
+tests/unit/net.roc: All (2) tests passed in 220.2 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1185.6 ms.
+tests/unit/opts.roc: All (4) tests passed in 469.8 ms.
+tests/unit/out.roc: All (4) tests passed in 236.8 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 966.8 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1708.5 ms.
+tests/unit/picker.roc: All (2) tests passed in 136.7 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1572.0 ms.
+tests/unit/pick.roc: All (3) tests passed in 1742.0 ms.
+tests/unit/pin.roc: All (9) tests passed in 1056.3 ms.
+tests/unit/pins.roc: All (6) tests passed in 1553.3 ms.
+tests/unit/probe.roc: All (5) tests passed in 405.4 ms.
+tests/unit/project.roc: All (7) tests passed in 1994.7 ms.
+tests/unit/projects.roc: All (3) tests passed in 471.4 ms.
+tests/unit/prompt.roc: All (5) tests passed in 307.0 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2475.8 ms.
+tests/unit/ranges.roc: All (1) tests passed in 286.0 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1584.1 ms.
+tests/unit/ref.roc: All (4) tests passed in 403.5 ms.
+tests/unit/removal.roc: All (4) tests passed in 1834.5 ms.
+tests/unit/report.roc: All (3) tests passed in 246.7 ms.
+tests/unit/roots.roc: All (3) tests passed in 217.9 ms.
+tests/unit/scan.roc: All (2) tests passed in 263.2 ms.
+tests/unit/selector.roc: All (2) tests passed in 227.5 ms.
+tests/unit/setup.roc: All (10) tests passed in 797.7 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 261.5 ms.
+tests/unit/temp.roc: All (4) tests passed in 189.7 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1727.0 ms.
+tests/unit/units.roc: All (6) tests passed in 813.9 ms.
+tests/unit/update.roc: All (2) tests passed in 1893.8 ms.
+tests/unit/uses.roc: All (2) tests passed in 439.5 ms.
+tests/unit/vars.roc: All (6) tests passed in 1648.4 ms.
+tests/unit/verify.roc: All (2) tests passed in 1340.2 ms.
+tests/unit/why.roc: All (6) tests passed in 1883.9 ms.

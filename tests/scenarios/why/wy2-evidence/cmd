@@ -1,0 +1,15 @@
+# R-EF1 R-EF3 R-CM7 R-PH12 R-OUT4 R-J3 R-J4 R-CC8 R-TF2 (slice 032b: E1 to E3, E6): the evidence of `tln why` on the real binary (the real `Fx`: the SQLite store, the file reads). The project is the one of `update/up2-unit-flags`. Its header has the pin `roc: nightly-2026-10-14-38a3029` (rank 3 of the compiler selection),
+# so `why` runs no `roc` at all (`roc.log` has only the calls of the `update` run). The header of the cached parser 1.0.0 has the same pin (rank 3 of the evidence).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# No `compat.db` yet: the query of a file that does not exist gives no row (R-CC8). Only the pin of the header of parser is a source.
+st tln why parser
+# A dry run of `update` records the unit facts of its candidate tuple: platform, json 2.1.0 and parser pass on the compiler (the file `facts.tsv`).
+st tln update json --dry-run
+# Rank 1 is the fact of the store and wins (the `*`). Rank 3 is the pin. The same with `--json` (E6: `data.members[].evidence`).
+st tln why parser
+st tln why parser --json
+# The platform has a fact and no pin in its header.
+st tln why pf
+# json 2.0.0 is the header value: the facts of its candidate 2.1.0 are not facts of 2.0.0, and its header has no pin: no source has a value, so no block (the `--json` has `evidence: []`).
+st tln why json
+st tln why json --json

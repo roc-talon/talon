@@ -1,0 +1,36 @@
+A1 caught by l0p l2 l3
+A2 caught by l0p l2
+A3 caught by l0p l2 l3
+A4 caught by l0p l2 l3
+A5 caught by l0p
+A6 caught by l0p l2 l3
+W1 caught by l0p l2
+W2 caught by l0p l2
+W3 caught by l0p
+W4 caught by l0p l2
+W5 caught by l0p l2 l3
+W6 caught by l0p l2
+W7 caught by l0p
+W8 caught by l0p l2
+D1 caught by l2 l3
+D2 caught by l2 l3
+D3 INVALID (does not compile cleanly)
+D4 caught by l2
+D5 INVALID (does not compile cleanly)
+D6 caught by l2 l3
+D7 caught by l2 l3
+D8 caught by l2 l3
+I1 caught by l3
+I2 caught by l2 l3
+I3 caught by l2
+I4 caught by l2 l3
+I5 caught by l2 l3
+I6 NOT CAUGHT
+C1 caught by l0c l2
+C2 caught by l0c
+C3 caught by l0c l2
+C4 caught by l0c l2 l3
+C5 caught by l0c
+C6 caught by l0c l2
+caught 31 of 34
+done

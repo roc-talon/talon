@@ -1,0 +1,52 @@
+== add acme/json@^2.1 --file pa/main.roc
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/pa/main.roc
+  + json: acme/json 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+$PROJECT/pa/talon.toml: json = "^2.1"
+resolved at 2026-10-15T12:00:00Z, 6 probes
+exit 0
+== add acme/json@^2.1 --no-check --file pn/main.roc
+check: skipped
+$PROJECT/pn/main.roc
+  + json: acme/json 2.1.0
+$PROJECT/pn/talon.toml: json = "^2.1"
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0
+== install --file pi/main.roc
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/pi/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== update json --file pu/main.roc
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/pu/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== verify --file pv/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/pv/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file pk/main.roc
+check: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/pk/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+verified: the tuple passes. No project file was written.
+exit 0

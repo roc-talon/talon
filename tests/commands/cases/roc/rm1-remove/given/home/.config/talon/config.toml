@@ -1,0 +1,3 @@
+# tln settings
+nightly = true
+default-roc = "nightly-2026-October-14-38a3029"   # tln roc default writes it

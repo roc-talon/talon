@@ -1,0 +1,7 @@
+D14 R-TF3 cli/lib/Db.roc caught unit/db
+F15 R-CC8 cli/lib/Facts.roc caught l2 db/
+X03 R-TF3 cli/RealDb.roc caught l3 fx/db
+X10 DID NOT COMPILE 
+X14 R-P4 cli/RealDb.roc caught l3 fx/db
+R02 R-CC8 tests/lib.sh caught selftest
+R04 R-TF1 tests/tools/dumpdb.py caught selftest

@@ -15,10 +15,12 @@ import toml.Value
 ## | `file` | The current project file, or `NoCurrent` (a workspace with no current member) | R-PD1, R-PD4, R-PD5 |
 ## | `workspace` | `Ok({ root, members })`: the root directory and the member files, sorted. `Standalone` otherwise. | R-PD3, R-PD5 |
 ## | `toml` | The `talon.toml` of the project, or `NoToml` | R-PD6 |
+## | `roc_version` | Slice 022: the path of the nearest `.roc-version`, or `None`. The walk starts at the directory of the project file (`file`, G4 of the review of slice 022: so `--file` and the walk agree), or at the first directory of the walk when there is no current member, and goes up to the stop of R-PD2 (the stop directory is checked too). | R-SO5, R-SO18, R-PD2 |
 Project := {
 	file : Try(Str, [NoCurrent]),
 	workspace : Try({ root : Str, members : List(Str) }, [Standalone]),
 	toml : Try(Str, [NoToml]),
+	roc_version : Try(Str, [None]),
 }.{
 	is_eq : _
 
@@ -118,12 +120,12 @@ Project := {
 		}
 		match chosen {
 			Err(NoFile) => match root_dir {
-				Ok(dir) => Ok({ file: Err(NoCurrent), workspace, toml: nearest_toml(facts.walk, first_dir(facts.walk), dir) })
+				Ok(dir) => Ok({ file: Err(NoCurrent), workspace, toml: nearest_toml(facts.walk, first_dir(facts.walk), dir), roc_version: nearest_version(facts.walk, first_dir(facts.walk)) })
 				Err(NoRoot) => Err(Fail.new(Usage, "no project file found. Checked: ${Str.join_with(facts.walk.map(|d| d.dir), ", ")}. Pass --file <path>."))
 			}
 			Ok(file) => match (root_dir, facts.members.contains(file)) {
-				(Ok(dir), Bool.True) => Ok({ file: Ok(file), workspace, toml: nearest_toml(facts.walk, Text.dir_of(file), dir) })
-				_ => Ok({ file: Ok(file), workspace: Err(Standalone), toml: own_toml(facts.walk, Text.dir_of(file), root_dir) })
+				(Ok(dir), Bool.True) => Ok({ file: Ok(file), workspace, toml: nearest_toml(facts.walk, Text.dir_of(file), dir), roc_version: nearest_version(facts.walk, Text.dir_of(file)) })
+				_ => Ok({ file: Ok(file), workspace: Err(Standalone), toml: own_toml(facts.walk, Text.dir_of(file), root_dir), roc_version: nearest_version(facts.walk, Text.dir_of(file)) })
 			}
 		}
 	}
@@ -160,6 +162,17 @@ Project := {
 	## With no project file (no current member), step 5 does not run.
 	find! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try(Project, Fail)
 	find! = |fx, facts| {
+		found = Project.find_loose!(fx, facts)?
+		match found.header {
+			Ok({}) => Ok(found.project)
+			Err(fail) => Err(fail)
+		}
+	}
+
+	## Slice 023, R-TF5 (review of Q6): `find!` with the same arguments and the same calls (steps 1 to 5), but a header that `Project.check_header` refuses is not a failure of the search. The result has the
+	## project and `header`, the result of the check (`Ok({})`, or the failure that `find!` gives). Any other failure stops the search as in `find!`. The `roc` proxy uses it: a bad header drops only the `roc:` pin.
+	find_loose! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, header : Try({}, Fail) }, Fail)
+	find_loose! = |fx, facts| {
 		start_and_file = match facts.file {
 			Ok(typed) => match fx.canonical!([Project.absolute({ base: facts.start, path: typed })]) {
 				[Ok(real)] => Ok((Text.dir_of(real), Ok(real)))
@@ -178,10 +191,9 @@ Project := {
 		match project.file {
 			Ok(path) => {
 				text = read_text!(fx, path)?
-				_ = Project.check_header({ path, text })?
-				Ok(project)
+				Ok({ project, header: Project.check_header({ path, text }).map_ok(|_| {}) })
 			}
-			Err(NoCurrent) => Ok(project)
+			Err(NoCurrent) => Ok({ project, header: Ok({}) })
 		}
 	}
 }
@@ -254,6 +266,23 @@ climb_toml = |walk, root_dir| match walk {
 		Ok(_) => Ok(Text.join(d.dir, "talon.toml"))
 		Err(None) => if d.dir == root_dir Err(NoToml) else climb_toml(above, root_dir)
 	}
+}
+
+# R-SO5, R-PD2: the nearest `.roc-version` from `from` up to the stop of the walk (the stop directory is in the walk).
+nearest_version : List(Dir), Str -> Try(Str, [None])
+nearest_version = |walk, from| match walk {
+	[] => Err(None)
+	[d, .. as above] => if d.dir != from {
+		nearest_version(above, from)
+	} else {
+		climb_version(walk)
+	}
+}
+
+climb_version : List(Dir) -> Try(Str, [None])
+climb_version = |walk| match walk {
+	[] => Err(None)
+	[d, .. as above] => if d.names.contains(".roc-version") Ok(Text.join(d.dir, ".roc-version")) else climb_version(above)
 }
 
 # A project file that is not a member: the `talon.toml` of its own directory, when that is not the root file.

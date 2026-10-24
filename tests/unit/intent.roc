@@ -80,7 +80,7 @@ expect {
 		Ok({ intent, warnings }) => Ok((intent.toolchain, intent.deps, intent.overrides, intent.resolution, warnings))
 		Err(e) => Err(e.line())
 	}
-	empty_want = Ok(({ roc: Err(Unset), roc_text: Err(Unset), nightly: Err(Unset) }, [], [], { priority: Err(Unset), strategy: Err(Unset), min_release_age: Err(Unset), snapshot: Err(Unset) }, []))
+	empty_want = Ok(({ roc: Err(Unset), roc_text: Err(Unset), nightly: Err(Unset) }, [], [], { priority: Err(Unset), strategy: Err(Unset), min_release_age: Err(Unset), snapshot: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }, []))
 	dbg empty_view
 
 	member_text = lines(["# a member", "[dependencies]", "json = \"^2.3\"", "", "[overrides]", "x = \"^1\"", "", "[patch]", "y = 1"])
@@ -289,4 +289,110 @@ expect {
 	spans = Intent.table_spans({ text, keys: [dep_json, ov_json, patch_json, { table: Overrides, key: "http" }, { table: Dependencies, key: "nosuch" }] })
 	dbg spans
 	bad == [] and spans == ["\"^2.1\"", "\"someone/roc-json@^2.1.3\"", "{ path = \"./.talon/patches/json/main.roc\", base = \"abc\" }", "", ""]
+}
+
+# R-SO6 R-TF4 R-SC12 R-LY1 (slice 022): `default-roc` of `config.toml` is the global default (rank 6). It is a full compiler id: a nightly tag in either form, a release, or a build that has a name (`git-<sha8>`, `link-<name>`,
+# `copy-<name>`, R-NS6). A prefix, another local build (`debug-<sha>`), and a value that is not a string are a value of the wrong form: exit 19 with the file, the line and the key (R-TF4).
+expect {
+	read = |text| Intent.read_config({ path: "/c/config.toml", text })
+	cfg_shown = |r| match r {
+		Ok(done) => Ok((done.config.default_roc, done.config.nightly, done.config.min_release_age))
+		Err(f) => Err((f.kind.code(), f.message))
+	}
+	bad_form = Err((19, "/c/config.toml:2: default-roc: must be a full compiler id"))
+	rows = [
+		("a nightly", "default-roc = \"nightly-2026-10-09-258ab27\"\n", Ok((Ok("nightly-2026-10-09-258ab27"), Err(Unset), Err(Unset)))),
+		("the other tag form", "default-roc = \"nightly-2026-July-23-fdd77c3\"\n", Ok((Ok("nightly-2026-July-23-fdd77c3"), Err(Unset), Err(Unset)))),
+		("a release", "default-roc = \"0.1.0\"\n", Ok((Ok("0.1.0"), Err(Unset), Err(Unset)))),
+		("a git build", "default-roc = \"git-0123abcd\"\n", Ok((Ok("git-0123abcd"), Err(Unset), Err(Unset)))),
+		("a link build, with the other keys", "nightly = false\ndefault-roc = \"link-dev\"\nmin-release-age = \"1d\"\n", Ok((Ok("link-dev"), Ok(Bool.False), Ok(86400)))),
+		("not set", "nightly = true\n", Ok((Err(Unset), Ok(Bool.True), Err(Unset)))),
+		("git with no name", "# the default\ndefault-roc = \"git-\"\n", bad_form),
+		("a prefix", "# the default\ndefault-roc = \"nightly-2026-10\"\n", bad_form),
+		("a local build of roc", "# the default\ndefault-roc = \"debug-3f9a1c2\"\n", bad_form),
+		("not a string", "# the default\ndefault-roc = 5\n", bad_form),
+		("empty", "# the default\ndefault-roc = \"\"\n", bad_form),
+	]
+	bad = rows.keep_if(|(_, text, want)| cfg_shown(read(text)) != want).map(|(label, text, want)| (label, want, cfg_shown(read(text))))
+	dbg bad
+	bad == []
+}
+
+# R-GC9 R-TF4 R-LY3 (slice 028): `gc-age` of `config.toml` is the GC age: `"<n>d"`, a whole number of days, as `min-release-age`. Not set: `Unset` (the command uses 30 days). A value of the wrong form is exit 19 with the file, the line and the key.
+expect {
+	read = |text| Intent.read_config({ path: "/c/config.toml", text })
+	age_of = |r| match r {
+		Ok(done) => Ok((done.config.gc_age, done.config.min_release_age, done.warnings))
+		Err(f) => Err((f.kind.code(), f.message))
+	}
+	bad_form = |line| Err((19, "/c/config.toml:${line}: gc-age: must be a number of days, for example \"30d\""))
+	rows = [
+		("7 days", "gc-age = \"7d\"\n", Ok((Ok(604800), Err(Unset), []))),
+		("30 days and the other key", "min-release-age = \"2d\"\ngc-age = \"30d\"\n", Ok((Ok(2592000), Ok(172800), []))),
+		("0 days", "gc-age = \"0d\"\n", Ok((Ok(0), Err(Unset), []))),
+		("not set", "nightly = true\n", Ok((Err(Unset), Err(Unset), []))),
+		("no unit", "# the age\ngc-age = \"7\"\n", bad_form("2")),
+		("hours", "# the age\ngc-age = \"7h\"\n", bad_form("2")),
+		("a number", "# the age\n# more\ngc-age = 7\n", bad_form("3")),
+		("empty", "gc-age = \"\"\n", bad_form("1")),
+	]
+	bad = rows.keep_if(|(_, text, want)| age_of(read(text)) != want).map(|(label, text, want)| (label, want, age_of(read(text))))
+	dbg bad
+	bad == []
+}
+
+no_probe = { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }
+
+# R-P5 R-PP7 R-TF4 R-LY4 (slice 031): the probe keys of `talon.toml`, the inline table `probe` of `[resolution]` (the example of Design 4.3). The 4 keys are whole numbers, and 0 is a value (`max-toolchains = 0`, R-DL6). A key that is not in the file is `Unset`.
+# A value that is not a whole number is exit 19 with the file, the line and the key. `slots` and `timeout` need 1 or more (question Q5 of the slice). A key that is not one of the 4 is a warning (R-TF4).
+expect {
+	read = |text| Intent.read({ path: "/p/talon.toml", text, role: Root })
+	probe_shown = |r| match r {
+		Ok(done) => Ok((done.intent.resolution.probe, done.warnings))
+		Err(f) => Err((f.kind.code(), f.message))
+	}
+	bad_key = |line, key, why| Err((19, "/p/talon.toml:${line}: resolution.probe.${key}: ${why}"))
+	whole = "must be a whole number"
+	rows = [
+		("the example of Design 4.3", "[resolution]\nprobe = { max = 100, max-toolchains = 10, slots = 12 }\n", Ok(({ max: Ok(100), timeout: Err(Unset), slots: Ok(12), max_toolchains: Ok(10) }, []))),
+		("the 4 keys, 0 is a value", "[resolution]\nstrategy = \"highest\"\nprobe = { max = 0, timeout = 5, slots = 1, max-toolchains = 0 }\n", Ok(({ max: Ok(0), timeout: Ok(5), slots: Ok(1), max_toolchains: Ok(0) }, []))),
+		("the table has other keys", "[resolution]\nmin-release-age = \"3d\"\nprobe = { timeout = 7 }\nsnapshot = \"log:5\"\n", Ok(({ ..no_probe, timeout: Ok(7) }, []))),
+		("no probe key", "[resolution]\nstrategy = \"highest\"\n", Ok((no_probe, []))),
+		("no resolution table", "[dependencies]\njson = \"^2.1\"\n", Ok((no_probe, []))),
+		("a string", "[resolution]\nprobe = { slots = \"12\" }\n", bad_key("2", "slots", whole)),
+		("a decimal number", "[resolution]\nstrategy = \"highest\"\nprobe = { max = 1.5 }\n", bad_key("3", "max", whole)),
+		("a negative number", "[resolution]\nprobe = { timeout = -1 }\n", bad_key("2", "timeout", whole)),
+		("a boolean", "[resolution]\nprobe = { max-toolchains = true }\n", bad_key("2", "max-toolchains", whole)),
+		("slots 0", "[resolution]\nprobe = { slots = 0 }\n", bad_key("2", "slots", "must be 1 or more")),
+		("timeout 0", "[resolution]\nprobe = { max = 3, timeout = 0 }\n", bad_key("2", "timeout", "must be 1 or more")),
+		("an unknown key is a warning", "[resolution]\nprobe = { max = 5, speed = 2 }\n", Ok(({ ..no_probe, max: Ok(5) }, ["/p/talon.toml:2: unknown key resolution.probe.speed"]))),
+	]
+	bad = rows.keep_if(|(_, text, want)| probe_shown(read(text)) != want).map(|(label, text, want)| (label, want, probe_shown(read(text))))
+	dbg bad
+	bad == []
+}
+
+# R-P5 R-PP7 R-TF4 R-LY4 (slice 031): the probe keys of `config.toml`, the table `[probe]` (CLI 6.1). The same keys, values and failures as in `talon.toml`. The key in the message is `probe.<key>`. Other keys of the file are read as before.
+expect {
+	read = |text| Intent.read_config({ path: "/c/config.toml", text })
+	probe_shown = |r| match r {
+		Ok(done) => Ok((done.config.probe, done.config.gc_age, done.warnings))
+		Err(f) => Err((f.kind.code(), f.message))
+	}
+	bad_key = |line, key, why| Err((19, "/c/config.toml:${line}: probe.${key}: ${why}"))
+	whole = "must be a whole number"
+	rows = [
+		("the example of CLI 6.1", "nightly = true\n\n[probe]\nslots = 12\nmax-toolchains = 10\n", Ok(({ ..no_probe, slots: Ok(12), max_toolchains: Ok(10) }, Err(Unset), []))),
+		("the 4 keys, 0 is a value", "gc-age = \"7d\"\n[probe]\nmax = 0\ntimeout = 1\nslots = 4\nmax-toolchains = 0\n", Ok(({ max: Ok(0), timeout: Ok(1), slots: Ok(4), max_toolchains: Ok(0) }, Ok(604800), []))),
+		("no table", "nightly = false\n", Ok((no_probe, Err(Unset), []))),
+		("a string", "[probe]\nmax = 5\nslots = \"many\"\n", bad_key("3", "slots", whole)),
+		("a negative number", "[probe]\nmax = -3\n", bad_key("2", "max", whole)),
+		("a decimal number", "[probe]\ntimeout = 2.5\n", bad_key("2", "timeout", whole)),
+		("slots 0", "[probe]\nslots = 0\n", bad_key("2", "slots", "must be 1 or more")),
+		("timeout 0", "[probe]\n\ntimeout = 0\n", bad_key("3", "timeout", "must be 1 or more")),
+		("an unknown key is a warning", "[probe]\nslots = 2\nspeed = 9\n", Ok(({ ..no_probe, slots: Ok(2) }, Err(Unset), ["/c/config.toml:3: unknown key probe.speed"]))),
+	]
+	bad = rows.keep_if(|(_, text, want)| probe_shown(read(text)) != want).map(|(label, text, want)| (label, want, probe_shown(read(text))))
+	dbg bad
+	bad == []
 }

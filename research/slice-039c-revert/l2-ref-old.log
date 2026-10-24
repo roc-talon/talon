@@ -1,0 +1,141 @@
+FAIL upgrade/ur1-roc
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -13,6 +13,7 @@
+       resolved at 2026-10-15T12:00:00Z, 5 probes
+       exit 0
+       == env:HOME={w}/home3 upgrade roc --yes --file p3/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: json 1.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p3/main.roc
+      @@ -20,9 +21,11 @@
+       resolved at 2026-10-15T12:00:00Z, 7 probes
+       exit 0
+       == env:CI=true env:HOME={w}/home4 upgrade roc --file p4/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: json 1.3.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:HOME={w}/home5 upgrade lib roc --file p5/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p5/main.roc
+      @@ -78,6 +81,7 @@
+       resolved at 2026-10-15T12:00:00Z, 5 probes
+       exit 0
+       == env:HOME={w}/home6 upgrade roc --file ws3/apps/a/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: json 1.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/ws3/apps/a/main.roc
+      @@ -85,6 +89,7 @@
+       resolved at 2026-10-15T12:00:00Z, 6 probes
+       exit 0
+       == env:HOME={w}/home6 upgrade --file pu/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: skipped (recorded pass)
+       $PROJECT/pu/main.roc
+FAIL upgrade/ur4-candidate
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,5 @@
+       == upgrade --file pu/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/pu/main.roc
+      @@ -7,6 +8,7 @@
+       resolved at 2026-10-15T12:00:00Z, 7 probes
+       exit 0
+       == upgrade --file pp/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: skipped (recorded pass)
+       $PROJECT/pp/main.roc
+FAIL upgrade/ur5-optional
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +1,9 @@
+       == env:CI=true env:HOME={w}/home1 upgrade roc --file p1/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:CI=true env:HOME={w}/home2 upgrade roc --probe-downloads --file p2/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p2/main.roc
+      @@ -9,6 +11,7 @@
+       resolved at 2026-10-15T12:00:00Z, 7 probes
+       exit 0
+       == env:HOME={w}/home3 upgrade roc --yes --file p3/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p3/main.roc
+      @@ -16,31 +19,39 @@
+       resolved at 2026-10-15T12:00:00Z, 7 probes
+       exit 0
+       == env:CI=true env:TALON_AUTO_INSTALL=yes env:HOME={w}/home4 upgrade roc --allow-downloads --file p4/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:CI=true env:HOME={w}/home5 upgrade roc --probe-downloads --file p5/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:CI=true env:HOME={w}/home6 upgrade roc --probe-downloads --file p6/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:CI=true env:HOME={w}/home7 upgrade roc --probe-downloads --file p7/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:CI=true env:HOME={w}/home8 upgrade roc --probe-downloads --file p8/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:HOME={w}/home9 upgrade roc --dry-run --probe-downloads --file p9/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       dry run: nothing was written
+       exit 0
+       == env:CI=true env:HOME={w}/home10 upgrade roc --probe-downloads --json --file p10/main.roc
+      -{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":7,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":"nightly-2026-10-11-1f1f1f1","toml":[],"renamed":[],"notes":[],"written":["$PROJECT/p10/main.roc"]},"error":null}
+      +{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":7,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":"nightly-2026-10-11-1f1f1f1","toml":[],"renamed":[],"notes":["roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2"],"written":["$PROJECT/p10/main.roc"]},"error":null}
+       exit 0
+       == env:HOME={w}/home11 upgrade roc --file p11/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       nothing to change
+       exit 0
+       == env:HOME={w}/home12 upgrade roc --probe-downloads --file p12/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p12/main.roc
+      @@ -64,6 +75,7 @@
+       resolved at 2026-10-15T12:00:00Z, 5 probes
+       exit 0
+       == env:CI=true env:HOME={w}/home16 upgrade roc --probe-downloads --file p16/main.roc
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-10-0e0e0e0 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p16/main.roc
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -18,6 +18,7 @@
+       no download of nightly-2026-10-10-0e0e0e0: download of nightly-2026-10-10-0e0e0e0 failed: 404 (https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-10-0e0e0e0/roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz). The release has no fact and is not asked again.
+       skipped 2 compiler downloads (148.1 MB), pass --probe-downloads
+       downloading nightly-2026-10-11-1f1f1f1 (74.1 MB)
+      +note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: jx 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+       check: passed
+       build: passed
+       $PROJECT/p10/main.roc
+commands: 95 passed, 3 failed

@@ -1,0 +1,6 @@
+# The fake downloads of the packages (as slice 010). An unbundle makes the dir of the hash with the main.roc of fx/pkgs. A download makes the archive in the temp dir.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst	0	-	-	dir:{cwd}/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq;copy:{cwd}/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc={w}/fx/pkgs/json_2.1.0.roc
+unbundle 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst	0	-	-	dir:{cwd}/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f;copy:{cwd}/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/main.roc={w}/fx/pkgs/json_2.0.5.roc
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.0123456789abcdef.tmp/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst
+8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst

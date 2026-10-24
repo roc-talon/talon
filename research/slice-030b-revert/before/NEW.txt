@@ -1,0 +1,5 @@
+tests/unit/pins.roc
+tests/commands/cases/roc/cv1-pins/
+tests/scenarios/compilers/cv1-first-seen/
+docs/slices/030b-cv6-wiring.md
+research/slice-030b-revert/

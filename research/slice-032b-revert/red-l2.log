@@ -1,0 +1,436 @@
+FAIL closure/cl2-chain
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -102,8 +102,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+      -read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -124,8 +122,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+      -read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+FAIL evidence/ev1-why
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,71 +2,53 @@
+       $PROJECT/pa/main.roc
+         acme/json 2.1.0 (direct)
+           json
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: fail (Yaml.roc)
+      -        3 pin: pass
+      -    note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       exit 0
+       == why json --file pa/main.roc --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pa/main.roc","package":{"alias":"json","name":"acme/json","version":"2.1.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[{"rank":1,"source":"local","result":"fail","modules":["Yaml.roc"],"winner":true},{"rank":3,"source":"pin","result":"pass","modules":[],"winner":false}],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pa/main.roc","package":{"alias":"json","name":"acme/json","version":"2.1.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}]]}]},"error":null}
+       exit 0
+       == why json --file pb/main.roc
+       $PROJECT/pb/main.roc
+         acme/json 2.1.0 (direct)
+           json
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: fail (Yaml.roc)
+      -        3 pin: pass
+       exit 0
+       == why json --file pc/main.roc
+       $PROJECT/pc/main.roc
+         acme/json 2.0.0 (direct)
+           json
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: pass
+       exit 0
+       == env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 why json --file pc/main.roc
+       $PROJECT/pc/main.roc
+         acme/json 2.0.0 (direct)
+           json
+      -    evidence on nightly-2026-10-09-258ab27:
+      -      * 1 local: pass
+       exit 0
+       == env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 why json --file pa/main.roc
+       $PROJECT/pa/main.roc
+         acme/json 2.1.0 (direct)
+           json
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: fail (Yaml.roc)
+      -        3 pin: pass
+      -    note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       exit 0
+       == why parser --file pd/main.roc --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pd/main.roc","package":{"alias":"parser","name":"acme/parser","version":"1.0.0","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"parser","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst"}]],"compiler":"nightly-2026-10-09-258ab27","evidence":[],"notes":[]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pd/main.roc","package":{"alias":"parser","name":"acme/parser","version":"1.0.0","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"parser","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst"}]]}]},"error":null}
+       exit 0
+       == why util --file pe/main.roc --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pe/main.roc","package":{"alias":"util","name":"./util/main.roc","version":null,"kind":"path","id":"$PROJECT/pe/util/main.roc","direct":true,"via":null,"raised":null,"foreign":true,"platform":false},"paths":[[{"alias":"util","kind":"path","id":"$PROJECT/pe/util/main.roc"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[],"notes":[]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pe/main.roc","package":{"alias":"util","name":"./util/main.roc","version":null,"kind":"path","id":"$PROJECT/pe/util/main.roc","direct":true,"via":null,"raised":null,"foreign":true,"platform":false},"paths":[[{"alias":"util","kind":"path","id":"$PROJECT/pe/util/main.roc"}]]}]},"error":null}
+       exit 0
+       == why parser --file pa/main.roc
+       $PROJECT/pa/main.roc
+         acme/parser 1.0.0 (direct)
+           parser
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 3 pin: pass
+       exit 0
+       == why json --file pa/main.roc
+       $PROJECT/pa/main.roc
+         acme/json 2.1.0 (direct)
+           json
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 3 pin: pass
+       exit 0
+       == why json --file pa/main.roc
+      -exit 19
+      +$PROJECT/pa/main.roc
+      +  acme/json 2.1.0 (direct)
+      +    json
+      +exit 0
+       == why pf --file pa/main.roc
+       $PROJECT/pa/main.roc
+         acme/pfx 0.1.1 (direct)
+           pf
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: fail
+       exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +0,0 @@
+      -warning: compat.db is busy: Talon goes on with no saved facts
+      -tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -16,9 +16,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+       args
+       env_all
+       clock
+      @@ -36,9 +33,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+       args
+       env_all
+       clock
+      @@ -57,10 +51,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+       args
+       env_all
+       clock
+      @@ -79,13 +69,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -path_roc
+      -read_files $HOME/.cache/roc/talon/path-roc.json
+      -spawn_all limit=1
+      -  job - /fake/bin/roc version
+      -write_atomic $HOME/.cache/roc/talon/path-roc.json
+      -read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -103,8 +86,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -122,9 +103,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+       args
+       env_all
+       clock
+      @@ -143,8 +121,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -180,8 +156,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -199,8 +173,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -218,8 +190,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       args
+       env_all
+       clock
+      @@ -237,5 +207,3 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+      -read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+FAIL evidence/ev2-no-compiler
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -4,7 +4,7 @@
+           json
+       exit 0
+       == why json --file p1/main.roc --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/p1/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]],"compiler":null,"evidence":[],"notes":[]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/p1/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]]}]},"error":null}
+       exit 0
+       == why json --file p2/main.roc
+       $PROJECT/p2/main.roc
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -16,7 +16,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -path_roc
+       args
+       env_all
+       clock
+      @@ -34,7 +33,6 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -path_roc
+       args
+       env_all
+       clock
+      @@ -54,5 +52,3 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
+      -path_roc
+      -list_dirs $HOME/.cache/roc/toolchains
+FAIL evidence/ev3-summary
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +1,6 @@
+       == add acme/json@^2.1 --file pa/main.roc
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pa/main.roc
+         + json: acme/json 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+      @@ -18,7 +17,6 @@
+       == install --file pi/main.roc
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pi/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+      @@ -27,7 +25,6 @@
+       == update json --file pu/main.roc
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pu/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+      @@ -37,7 +34,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pv/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+      @@ -45,7 +41,6 @@
+       exit 0
+       == verify --file pk/main.roc
+       check: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pk/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       verified: the tuple passes. No project file was written.
+FAIL ladder/bs2-build-skip-verify
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,7 +2,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -13,7 +12,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -21,13 +19,12 @@
+       verified: the tuple passes. No project file was written.
+       exit 0
+       == verify --file p1/main.roc --json
+      -{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1","module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":[]},"error":null}
+      +{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+       exit 0
+       == verify --file p2/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p2/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -38,7 +35,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -49,7 +45,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p2/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -60,14 +55,14 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       exit 10
+       == update json --file p4/main.roc --json
+      -{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":5,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/p4/main.roc"]},"error":null}
+      +{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":5,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":[],"written":["$PROJECT/p4/main.roc"]},"error":null}
+       exit 0
+       == update json --file p5/main.roc --json
+      -{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/p5/main.roc"]},"error":null}
+      +{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":[],"written":["$PROJECT/p5/main.roc"]},"error":null}
+       exit 0
+       == update json --file pk/main.roc --json
+      -{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":null,"added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/pk/main.roc"]},"error":null}
+      +{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":null,"added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":[],"written":["$PROJECT/pk/main.roc"]},"error":null}
+       exit 0
+       == remove parser --file p6/main.roc --json
+      -{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":"skipped","removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[],"patches":[],"pinned":"nightly-2026-10-14-38a3029","notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/p6/main.roc"]},"error":null}
+      +{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":"skipped","removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[],"patches":[],"pinned":"nightly-2026-10-14-38a3029","notes":[],"written":["$PROJECT/p6/main.roc"]},"error":null}
+       exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +1,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -10,27 +9,23 @@
+       tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pfx 0.1.1: unsupported target
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p4/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+       resolved at 2026-10-15T12:00:00Z, 5 probes
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p5/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+       resolved at 2026-10-15T12:00:00Z, 2 probes
+       check: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pk/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+       resolved at 2026-10-15T12:00:00Z, 2 probes
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p6/main.roc
+         - parser: acme/parser 1.0.0
+         + roc: nightly-2026-10-14-38a3029
+FAIL probe/un1-units
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -22,7 +22,6 @@
+       == update json file=p5/main.roc compiler=nightly-2026-10-09-258ab27
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-09-258ab27. Your app does not import it.
+       $PROJECT/p5/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+FAIL probe/un3-verify-units
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -5,7 +5,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p2/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+commands: 73 passed, 7 failed

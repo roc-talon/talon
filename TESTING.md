@@ -36,6 +36,16 @@ flowchart TB
 | L5 | Talon and `roc` agree on group keys, MVS and the cache layout, on each nightly | `conformance/*/run.sh` | Own cache dir per suite | Long | For each new nightly |
 | Other | `install.sh`, `install.ps1` | `install/test.sh` (exists) | Fake release on `file://` | Seconds | When `install/` changes |
 
+The runs differ in the build mode and in the cases that they include:
+
+| Run | Command | Test binaries | Cases | When |
+| --- | --- | --- | --- | --- |
+| Fast | `scripts/test.sh` | `--opt=dev` | No `slow` case | Before each hand-off (TW20) |
+| Merge | `OPT=speed SLOW=1 scripts/test.sh` | `--opt=speed` (LLVM) | All `slow` cases | Before a merge, and each night |
+| Nightly | `OPT=speed SLOW=1 NET=1 REAL_ROC=1 scripts/test.sh`, and the long L1 runs | `--opt=speed` | The `slow` cases and L4 | Each night |
+
+The dev backend and LLVM can give two results for one program. The merge run finds such a difference. A difference is a roc bug: report it. The case keeps the `speed` result (TW25).
+
 ## 2. Code shape for tests
 
 Evidence: `research/core-shape/README.md`.
@@ -121,7 +131,7 @@ The real `Fx` keeps the jobs that are about time, processes and the system. L3 t
 | TW3 | `Fx` calls are coarse: "fetch this URL to this file and check this hash", "run this probe round". Not "read 4 KB". |
 | TW4 | The real `Fx` has no Talon logic. It gets L3 tests: one case for each `Fx` call and each job in 2.3. |
 
-One `roc test` run of a small module with 4 `expect`s takes 15 to 25 ms (`research/test-fs/`). A small basic-cli test app builds in about 0.5 s (`research/core-shape/inject_test.roc`). The build time of the full `tests/commands/` app is not measured yet.
+One `roc test` run of a small module with 4 `expect`s takes 15 to 25 ms (`research/test-fs/`). A small basic-cli test app builds in about 0.5 s (`research/core-shape/inject_test.roc`). The full `tests/commands/` app builds in 5 s with `--opt=dev` and in 98 s with `--opt=speed` (2026-10-22). Its 35 cases run in 0.5 s. The `tln` app builds in 2 s and in 87 s.
 
 ## 3. CLI scenario tests (L3, L4)
 
@@ -141,8 +151,17 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
   expect/tree.diff   expected change to given/ (a diff of the file trees, temp files and talon/compat.db left out)
   expect/facts.tsv   expected rows of talon/compat.db (optional, from P1)
   expect/roc.log     expected roc calls, in order (optional)
-  tags               optional: real-roc, slow, tty, windows, exdev
+  tags               optional: real-roc, slow, net, tty, windows, exdev
 ```
+
+| Tag | Meaning | In the fast set |
+| --- | --- | --- |
+| `slow` | The case takes more than 2 s with small limits (TW27) | Skipped. `SLOW=1` runs it. |
+| `real-roc` | L4: the pinned roc, not the fake | Skipped. `REAL_ROC=1` runs it. |
+| `net` | The case needs the real network (GitHub API, real downloads). The cases of this tag cut no network. | Skipped. `NET=1` runs it (the nightly run only). |
+| `tty` | A pseudo terminal (3.2) | Runs |
+| `windows` | Windows only | Skipped on Linux |
+| `exdev` | Needs two file systems | Skipped |
 
 ### 3.2 The runner
 
@@ -158,7 +177,10 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
 | TTY | A case with the tag `tty` runs under a pseudo terminal and reads its answers from `given/answers`. The runner sets `TALON_INTERACTIVE=1` for it, because `CI=true` turns on non-interactive mode (CLI 4). Else stdin and stderr are not a TTY (R-NR1). |
 | Compare | stdout, stderr, exit code, tree diff and `roc.log`. A difference fails the case and prints a diff. |
 | Update | `UPDATE=1 tests/run.sh <case>` writes the actual output to `expect/`. Only for a change that the slice intends (TW11). |
-| Parallel | Cases run in parallel. Each has its own dirs. |
+| Parallel | Cases run in parallel, at most `JOBS` at one time (default: the CPU count). Each has its own dirs. The L0 files run in parallel the same way. |
+| Build mode | `OPT=dev` (default) or `OPT=speed`. The three scripts that build a test binary (`scripts/test.sh`, `tests/run.sh`, `tests/commands/run.sh`) pass `--opt=<mode>` to `roc build`. Another value: exit 2 (TW25). |
+| Slow cases | A case with the tag `slow` is skipped. `SLOW=1` runs it (TW27). |
+| Memory | `scripts/test.sh` limits its `roc` jobs to `TEST_MEM_GB` (default: a third of MemAvailable): jobs = min(CPUs, (budget - reserve) / peak of one call). It also removes old files from the roc object cache (`OBJ_KEEP`, default 3 per dir): a large cache made `roc check cli/main.roc` use 14 GB. Numbers: `research/test-memory/RESULTS.md`. |
 
 ### 3.3 Changes the design needs for these tests
 
@@ -232,8 +254,8 @@ tmpfs is not the file system of all users. These cases need their own setup:
 | Case | Rule | Setup |
 | --- | --- | --- |
 | `rename` across file systems (`EXDEV`) | R-B4 | Container with two tmpfs mounts, tag `exdev` |
-| Case-insensitive names | macOS default | CI job on macOS |
-| `rename` of a running `.exe`, no symlinks | R-S3, R-IS5, R-RM5, CLI 6.2 | CI job on Windows |
+| Case-insensitive names | macOS default | CI job on macOS (`.github/workflows/ci.yml`) |
+| `rename` of a running `.exe`, no symlinks | R-S3, R-IS5, R-RM5, CLI 6.2 | CI job on Windows (`.github/workflows/ci.yml`). The Windows job runs `check fmt l0` until a slice adds more. |
 | Disk full | Store, GC | tmpfs with a small `size=` |
 
 ## 6. Regression depth
@@ -268,7 +290,7 @@ flowchart LR
 | 2. Tests | Test agent | The slice file, the design sections it names, public signatures | Tests, fixtures, stubs that `crash "todo"` | Read or write the code bodies | The new tests compile and fail for the right reason ("todo" or a wrong value), and all old tests pass |
 | Review | Human | The slice file and the tests | Accept, or notes | | The tests say what the design means. This is the cheapest place to find a wrong reading of the design. The human accepts or changes the proposed output (TW24). |
 | 3. Code | Code agent | The slice file, the tests, the code | Code | Edit a test or a fixture (TW18) | All tests pass |
-| 4. Verify | Verify agent or script | All | Results in the slice file | | L0, L1 fast, L2 and L3 fast pass. `scripts/revert-check.sh` passes. `scripts/rules.sh` shows the slice ids covered. |
+| 4. Verify | Verify agent or script | All | Results in the slice file | | L0, L1 fast, L2 and L3 fast pass in fast mode (TW25). `scripts/revert-check.sh` passes. `scripts/rules.sh` shows the slice ids covered. |
 | 5. Close | Human | The diff | Commit (only when asked) | | Design changed in the same commit if a question was settled. The output catalog (CLI 3) has the accepted `data` fields (R-OUT3). |
 
 ### 7.2 Slice file
@@ -301,11 +323,15 @@ R-H3, R-H5, R-C2 (Design 4.2, Resolution 2)
 | TW17 | If the design does not say what to do, or says two things, the agent does not choose. It writes the question in the slice file and in Design 9 (Open), and stops that part of the slice. |
 | TW18 | The test agent and the code agent are two agents. The code agent does not change tests. If it thinks a test is wrong, it writes a dispute and stops. Reason: one agent tends to write tests that fit its own code, not the design. |
 | TW19 | A slice is one rule group or one command path, small enough for one review: about 400 lines of code or less. |
-| TW20 | Before each hand-off, the fast set (L0, L1 fast, L2, L3 fast) passes, in under 3 minutes. |
+| TW20 | Before each hand-off, the fast set (L0, L1 fast, L2, L3 fast) passes, in under 3 minutes. Each step has a share of this time (TW26). |
 | TW21 | `UPDATE=1` is allowed only for outputs that the slice changes. The agent reads each changed expected file before the hand-off. |
 | TW22 | Prototype and research code goes in the repo (`research/`), never only in a temp dir. |
 | TW23 | No commit or push unless the user asks. |
 | TW24 | Output that the design does not give (human text, `data` fields) is not a TW17 question. The scope agent proposes it in the slice file, the test agent writes it in the expected files, and the human accepts it at the review (CLI 3, R-OUT1 to R-OUT5). A fact that the design does not give (what the command decides) is still a TW17 question. |
+| TW25 | The fast set builds the test binaries (`l2`, `tln`, `fxprobe`, `flowprobe`) with `--opt=dev`. `OPT=speed` gives the LLVM build. The merge run and the nightly run use `OPT=speed`. If a case passes in one mode and fails in the other, it is a roc bug: report it. The case keeps the `speed` result. |
+| TW26 | `scripts/test.sh` prints the budget of each step. With `OPT=dev` (the default) it prints a `WARN` line for a step over its budget and for a run over 180 s. With `OPT=speed` it prints no `WARN` line (the LLVM build is slow on purpose). A warning does not fail the run. The budgets (seconds): check 10, fmt 5, l0 10, l1 60, l2 30, l3 60, selftest 20. `BUDGET_<STEP>=<s>` and `BUDGET_TOTAL=<s>` change them for one run. After a warning, the slice removes the cause before the hand-off (a slow case gets the tag `slow`, TW27), or the human changes a budget in this file. |
+| TW27 | An L3 case with a real wait sets small limits (for example `probe.timeout = 1` in `config.toml`). A case that still takes more than 2 s has the tag `slow`. The fast set skips it. `SLOW=1` runs it. The merge run and the nightly run set `SLOW=1`. |
+| TW28 | CI is in `.github/workflows/`. `ci.yml` runs the fast set (`scripts/test.sh`) on Linux, macOS and Windows for each push and pull request. The Windows job runs `check fmt l0` until a slice adds more. `nightly.yml` runs `OPT=speed SLOW=1 NET=1 REAL_ROC=1 scripts/test.sh` each night and on request (the merge run). The nightly tag of the compiler is `ROC_TAG` of `scripts/env.sh` and nowhere else. A workflow gets the compiler with `scripts/get-roc.sh` and never uses a path of `cloudflare-workers/`. A selftest row reads the workflow files (no runner can run them in the test run). |
 
 ### 7.4 First scope, by phase (draft)
 

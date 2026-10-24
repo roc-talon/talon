@@ -1,0 +1,3 @@
+R-RP1 R-RP3 R-H6 R-SP12 R-LD4 (slice 039, gap A7): the header of the candidate copy when the pin moves. `fx/probe-text` puts the header lines of the copy in `calls.log` (`  | <line>`). lib 1.1.0 fails on n12, so bare `upgrade` moves lib and the nightly to n11.
+Run 1 (project `pu`, no `roc:` entry, with package changes): `Pin.decide` would write H (the member has changes and no pin). The move writes the new pin instead. The header of the candidate copy has one `roc:` line, with n11 (never H, never 2 lines). The project file gets `+ roc: <n11>`.
+Run 2 (project `pp`, the pin H): the candidate header has the pin n11 (one line). The project file gets `~ roc: <H> -> <n11>`.

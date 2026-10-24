@@ -1,0 +1,47 @@
+# R-R8 R-CV1 R-CV4 R-CV5 R-CV7 R-SC10 R-SC13 R-C7 R-NS4 R-HF2 R-HF4 R-HF5 R-SE9 R-SE11 R-CC1 R-CC2 R-CC4 R-CC6 R-GC10 R-SO15 R-NI6 R-DL4 R-CM19 R-TF1 R-J3 R-DA2 R-DA3 R-DA4:
+# `tln roc install <id>` end to end with the real Fx, the real curl and tar, and the fake release server (tests/tools/mk-nightly.sh with ARCHIVE=real made given/http:
+# `ARCHIVE=real mk-nightly.sh given/http nightly-2026-10-21-5349569@2026-10-21T18:00:00Z nightly-2026-10-14-38a3029 nightly-2026-10-12-2664a27 nightly-2026-10-09-258ab27 nightly-2026-July-31-123c5d7@2026-07-31T11:56:54Z`,
+# and the body of the asset of 2026-10-12 is slow). The fake `roc` of each archive makes `compat-<sha256 of the tag>` for `roc check` and exits 1, as the real roc does for an empty file.
+# The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW): the nightly of 2026-10-21 is 18 hours old, so `min-release-age` (2 days) hides it from `@latest` but not from a name (R-NS4, R-C7).
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+T=$XDG_CACHE_HOME/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+
+echo "== 1: a full id (R-R8). The first install is the global default (R-SO15). No temp, no lock and no probe dir is left (R-CC2, R-CC4)."
+st tln roc install nightly-2026-10-09-258ab27
+ls -A $T $T/nightly-2026-10-09-258ab27
+test -x $T/nightly-2026-10-09-258ab27/roc && echo "roc is executable"
+$T/nightly-2026-10-09-258ab27/roc version
+cat $C
+
+echo "== 2: @latest, and the alias i (R-CM19). The nightly of 2026-10-21 is too young. The default stays."
+st tln roc i @latest
+ls $T
+cat $C
+
+echo "== 3: an installed id: no new request, no lock"
+st tln roc install nightly-2026-10-14-38a3029
+
+echo "== 4: a name is not hidden by min-release-age (R-NS4). A unique prefix (R-SC10). The alias add, and --json (R-J3, R-CM19)."
+st tln roc add nightly-2026-10-21 --json
+
+echo "== 5: the other tag form of a nightly (R-CV1): the id is the tag text of the list"
+st tln roc install nightly-2026-07-31-123c5d7
+ls $T
+
+echo "== 6: 2 runs at the same time for one new id: one download (R-CC4, R-DA5). One of them installs it, the other finds it."
+tln roc install nightly-2026-10-12-2664a27 > one.out 2> /dev/null &
+first=$!
+tln roc install nightly-2026-10-12-2664a27 > two.out 2> /dev/null &
+second=$!
+wait $first && echo "first exit 0" || echo "first exit $?"
+wait $second && echo "second exit 0" || echo "second exit $?"
+cat one.out two.out | sort
+rm -f one.out two.out
+
+echo "== the store has the 5 compilers only"
+ls $T
+find $XDG_CACHE_HOME/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '
+ls $XDG_CACHE_HOME/roc/talon/tmp 2> /dev/null | wc -l | tr -d ' '
+cat $C

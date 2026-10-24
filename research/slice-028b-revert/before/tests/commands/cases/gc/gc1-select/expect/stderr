@@ -1,0 +1,21 @@
+would remove toolchain git-dd03c09e
+would remove toolchain nightly-2026-05-01-6666666
+would remove toolchain nightly-2026-08-01-aaaaaaa
+would remove toolchain nightly-2026-08-12-5555555
+would remove toolchain nightly-2026-09-01-9999999
+would remove $HOME/.cache/roc/compat-6666666
+would remove $HOME/.cache/roc/compat-aaaaaaa
+would remove $HOME/.cache/roc/compat-5555555
+would remove $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp
+would remove $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp
+would remove $HOME/.cache/roc/talon/tmp/0123456789abcdef
+would remove $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks
+would remove $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+would remove $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+would remove project $PROJECT/pgone/main.roc
+would remove project $PROJECT/pold/main.roc
+would remove project $PROJECT/pplain/main.roc
+dry run: nothing was removed
+tln: error[usage]: tln cache gc takes no operand, got 1
+tln: error[input]: $HOME2/.cache/roc/talon/projects.json: the content does not parse
+tln: error[input]: $HOME3/.config/talon/config.toml:2: gc-age: must be a number of days, for example "30d"

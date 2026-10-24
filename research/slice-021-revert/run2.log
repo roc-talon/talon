@@ -1,0 +1,5 @@
+T2: DID NOT COMPILE (R-CM15: 2 operands are read as the first) 
+T5: CAUGHT by l0:toolchain (R-SC10: the text never names the host)
+T10: CAUGHT by l0:toolchain (R-SE11: a wrong hash is ok)
+T17b: CAUGHT by l0:toolchain (R-NI6: the MB size is cut, not rounded)
+SAME as code-final

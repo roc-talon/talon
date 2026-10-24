@@ -18,7 +18,10 @@ The user confirmed these answers on 2026-10-22. They replace "proposal of the ma
 | Bad `TALON_NIGHTLY` value | Counts as not set | Slice 012 Q31 |
 | `remove`: a local module that cannot be read | The scan skips it | Slice 008 Q7 |
 | `remove --force` with no import | The check runs | Slice 008 Q4 |
-| Old duplicate rule ids | Renumber the later copies, fix references and the index | To do on resume |
-| O1 (P2): releases of the movable groups with a registry | A second query, only when the first search fails | To do on resume: a design edit (Registry, R-DI1) |
+| Old duplicate rule ids | Renumber the later copies. Done 2026-10-22: there were no duplicates (the manager's count was wrong); the R-SE index row was fixed | `docs/design-gaps/APPLIED.md` |
+| O1 (P2): releases of the movable groups with a registry | A second query, only when the first search fails. Done 2026-10-22 (R-AP3, R-AP16, R-AL2, R-AL8, R-SP24, R-DI1), with O3: the second answer uses the first `log_size` | `docs/design-gaps/APPLIED.md` |
 
 The other proposals of the manager in slices 007 to 017 stay as written, and the user has not changed them.
+| P1 test builds | `--opt=dev` in the fast set; `OPT=speed` before a merge and each night | `docs/slices/PLAN-P1.md`, slice 018 |
+| CI | Linux, macOS and Windows jobs in P1, and the release workflow | Slices 018b, 052 |
+| The network exit criterion of P1 | A nightly `net` test with a fixed `--snapshot` time | Slice 053 |

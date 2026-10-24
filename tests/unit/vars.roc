@@ -344,3 +344,124 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-SP6 R-SP7 R-UP1 R-VA5 R-DI11 R-SP23 R-UP12 R-UP13 (slice 038): the scope of `tln upgrade` (`Vars.scope` with the command `Upgrade`). With no names, each indexed variable is free (R-SP6), except an anchor (a range with `=`),
+# which is held and gets the note `<alias>: anchor, held` (R-UP1, R-VA5), and a fixed host, which is held with its note (R-DI11). With names, only the named are free (R-SP7): a named anchor is free, and a named
+# fixed host is held. A free variable has no range (R-UP1) and opens every series (`any_series`). A movable variable (held only because the user did not name it, R-SP23) has no range either, so a move is not
+# bounded by the key of `talon.toml` (R-SP23: "none in upgrade"). A held anchor keeps its range. The nightly is not a variable here (slice 039 frees it: R-UP12, R-UP13).
+expect {
+	toml = |text| Ok({ path: "/p/talon.toml", text, role: Standalone })
+	header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""])
+	plain = member("/p/main.roc", header, Err(NoToml))
+	anchored = member("/p/main.roc", header, toml("[dependencies]\nparser = \"=2.0.0\"\njson = \"^2.1\"\n"))
+	vars_of = |m| match Vars.build({ members: [m], priority: Err(Unset) }) {
+		Ok(built) => built.vars
+		Err(e) => crash e.line()
+	}
+	view = |r| match r {
+		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable, s.any_series, s.note, s.variable.ranges.map(|x| x.range))))
+		Err(e) => Err(e.line())
+	}
+	scope = |names, vs| view(Vars.scope({ command: Upgrade, names, selectors: [], vars: vs }))
+	fixed_note = Ok("fixed: example.com has no index without a registry")
+	rows = [
+		(
+			"upgrade, no talon.toml: each indexed variable is free with no range, a fixed host is held with its note (R-SP6, R-UP1, R-DI11)",
+			scope([], vars_of(plain)),
+			Ok([
+				(["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
+				(["parser"], Bool.True, Bool.False, Bool.True, Err(None), []),
+				(["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.True, Bool.False, Bool.True, Err(None), []),
+			]),
+		),
+		(
+			"upgrade, an anchor and a key: the anchor is held with its note and keeps its range, the key `^2.1` of a free variable is dropped (R-UP1, R-VA5)",
+			scope([], vars_of(anchored)),
+			Ok([
+				(["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
+				(["parser"], Bool.False, Bool.False, Bool.False, Ok("parser: anchor, held"), ["=2.0.0"]),
+				(["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.True, Bool.False, Bool.True, Err(None), []),
+			]),
+		),
+		(
+			"upgrade parser: a named anchor is free, with no range, and the others are held and movable with no range (R-SP7, R-VA5, R-SP23)",
+			scope(["parser"], vars_of(anchored)),
+			Ok([
+				(["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+				(["parser"], Bool.True, Bool.False, Bool.True, Err(None), []),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+			]),
+		),
+		(
+			"upgrade json: only json is free, an unnamed anchor is neither free nor movable and has no note (R-SP7, R-SP23)",
+			scope(["json"], vars_of(anchored)),
+			Ok([
+				(["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
+				(["parser"], Bool.False, Bool.False, Bool.False, Err(None), ["=2.0.0"]),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+			]),
+		),
+		(
+			"upgrade fixed: a named fixed host stays held and keeps its note (R-DI11)",
+			scope(["fixed"], vars_of(plain)),
+			Ok([
+				(["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+				(["parser"], Bool.False, Bool.True, Bool.False, Err(None), []),
+				(["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+			]),
+		),
+		("upgrade nope: the name is no alias (R-SC14)", scope(["nope"], vars_of(plain)), Err("tln: error[usage]: 'nope' is not in the project")),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-SP8 R-SP23 R-UP13 (slice 039): the scope of `tln upgrade roc` (`Vars.scope` with the command `NightlyOnly`: the nightly is free, the packages are held). No package is free (R-SP8) and none opens a series. A held package that
+# is not an anchor and has an indexed host is movable, with no range, as in `upgrade <name>` (R-SP23, question Q2 of slice 039). An anchor keeps its range and is not movable. A fixed host is not movable. No note is printed:
+# the notes `<alias>: anchor, held` belong to a run that frees the packages (R-UP1).
+expect {
+	toml = |text| Ok({ path: "/p/talon.toml", text, role: Standalone })
+	header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""])
+	plain = member("/p/main.roc", header, Err(NoToml))
+	anchored = member("/p/main.roc", header, toml("[dependencies]\nparser = \"=2.0.0\"\njson = \"^2.1\"\n"))
+	vars_of = |m| match Vars.build({ members: [m], priority: Err(Unset) }) {
+		Ok(built) => built.vars
+		Err(e) => crash e.line()
+	}
+	view = |r| match r {
+		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable, s.any_series, s.note, s.variable.ranges.map(|x| x.range))))
+		Err(e) => Err(e.line())
+	}
+	scope = |vs| view(Vars.scope({ command: NightlyOnly, names: [], selectors: [], vars: vs }))
+	rows = [
+		(
+			"upgrade roc, no talon.toml: no package is free, the indexed ones are movable with no range, the fixed host is neither (R-SP8, R-SP23)",
+			scope(vars_of(plain)),
+			Ok([
+				(["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+				(["parser"], Bool.False, Bool.True, Bool.False, Err(None), []),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+			]),
+		),
+		(
+			"upgrade roc, an anchor and a key: the anchor keeps its range and is not movable, with no note (R-SP8, R-VA5)",
+			scope(vars_of(anchored)),
+			Ok([
+				(["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+				(["parser"], Bool.False, Bool.False, Bool.False, Err(None), ["=2.0.0"]),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+				(["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+			]),
+		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}

@@ -1,0 +1,4 @@
+packages/resolve/tests/conflicts.roc
+docs/slices/035-pubgrub-conflicts.md
+research/slice-035-revert/ (everything)
+(changed after the review, old copies in before/scripts/test.sh, before/tests/selftest.sh: scripts/test.sh, tests/selftest.sh, tests/fuzz/pubgrub.roc +1 line; before/tests/fuzz/pubgrub.roc is the 034 file)

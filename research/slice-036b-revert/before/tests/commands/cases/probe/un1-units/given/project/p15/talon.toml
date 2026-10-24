@@ -1,0 +1,4 @@
+[dependencies]
+
+[resolution]
+probe = { slots = 5, timeout = 7 }

@@ -1,0 +1,54 @@
+# R-CV6 R-CV3 R-CV1 R-CV4 R-CC8 R-TF3 R-EC16 R-EC19 R-J5 R-SC10 R-C7 R-NS4 R-SO15: the first sha256 of each compiler asset, with the real Fx (the real SQLite store), the real curl and tar, and the fake release server
+# (the given/http of the case compilers/ri1-install-flow: 5 nightlies, the digests are those of the archives). The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW): the nightly of 2026-10-21 is 18 hours old, so `min-release-age`
+# (2 days) hides it from @latest but not from a name. `expect/facts.tsv` is the store at the end: it has the first value of each asset.
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+T=$XDG_CACHE_HOME/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+LIST="$TALON_TEST_DIR/http/api/repos/roc-lang/nightlies/releases?per_page=100"
+# The server answers with the list of the file. The list of the cache of Talon is kept 60 s, so a run that must see a new list removes it.
+swap() { sed -i "s/sha256:$1[0-9a-f]*/sha256:$2/" "$LIST"; rm -rf "$XDG_CACHE_HOME/roc/talon/index"; }
+d14=3fa1627ea
+d09=ff21969c0
+fake14=1111111111111111111111111111111111111111111111111111111111111111
+fake09=2222222222222222222222222222222222222222222222222222222222222222
+
+echo "== 1: the first read of the list records the first sha256 of each asset (R-CV6, R-CV3): the store has 5 rows after it (expect/facts.tsv). The install is as before."
+st tln roc install nightly-2026-10-09-258ab27
+
+echo "== 2: the server gives another sha256 for 2026-10-14 and 2026-10-09 (a swap of the assets). @latest: both are no candidates, so it is 2026-10-12 (the nightly of 2026-10-21 is too young). One warning for each change."
+swap $d14 $fake14
+swap $d09 $fake09
+st tln roc install @latest
+ls $T
+
+echo "== 3: a command that names the tag stops with exit 16 and the text of R-CV6 (R-EC16): the id, a prefix of it, and --json (R-J5). Nothing is downloaded."
+st tln roc install nightly-2026-10-14-38a3029
+st tln roc install nightly-2026-10-14
+st tln roc install nightly-2026-10-14-38a3029 --json
+st tln roc default nightly-2026-10-14-38a3029
+ls $T
+
+echo "== 4: an installed compiler with a changed tag stays in use (R-CV6): the id is installed, so there is no new request (the file http.log), and it can be the default."
+st tln roc install nightly-2026-10-09-258ab27
+st tln roc default nightly-2026-10-12-2664a27
+st tln roc default nightly-2026-10-09-258ab27
+cat $C
+
+echo "== 5: a name is not hidden by min-release-age (R-NS4). The list is read again from the cache (no request): the 2 changes are the same."
+st tln roc install nightly-2026-10-21-5349569
+ls $T
+
+echo "== 6: compat.db is not a database (R-CC8): the warning names the file and the fix, nothing is recorded, and the install goes on. The store of the case (expect/facts.tsv) is not touched: this run has its own cache dir."
+mkdir -p "$TALON_TEST_DIR/c2/roc/talon"
+printf 'this is not a database, it is a text file\n' > "$TALON_TEST_DIR/c2/roc/talon/compat.db"
+XDG_CACHE_HOME=$TALON_TEST_DIR/c2 ROC_CACHE_DIR=$TALON_TEST_DIR/c2/roc st tln roc install nightly-2026-July-31-123c5d7
+ls $TALON_TEST_DIR/c2/roc/toolchains
+cat "$TALON_TEST_DIR/c2/roc/talon/compat.db"
+
+echo "== 7: compat.db has a newer format (R-TF3): exit 19, the file and the fix are named, nothing is installed, the file stays."
+mkdir -p "$TALON_TEST_DIR/c3/roc/talon"
+python3 -I -c "import sqlite3,sys; c=sqlite3.connect(sys.argv[1]); c.execute('PRAGMA user_version=2'); c.execute('CREATE TABLE t(x)'); c.commit(); c.close()" "$TALON_TEST_DIR/c3/roc/talon/compat.db"
+XDG_CACHE_HOME=$TALON_TEST_DIR/c3 ROC_CACHE_DIR=$TALON_TEST_DIR/c3/roc st tln roc install nightly-2026-10-12-2664a27
+ls $TALON_TEST_DIR/c3/roc/toolchains 2> /dev/null | wc -l | tr -d ' '
+python3 -I -c "import sqlite3,sys; print('user_version', sqlite3.connect(sys.argv[1]).execute('PRAGMA user_version').fetchone()[0])" "$TALON_TEST_DIR/c3/roc/talon/compat.db"

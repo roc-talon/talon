@@ -15,6 +15,8 @@ import Fail
 ## | `snapshot` | The text of `--snapshot` (R-FL9). `Resolve` checks the form (`Intent.direct_snapshot`). |
 ## | `rename_keys` | `--rename-keys`: `Ok(Yes)` when set (R-NI1 answer flag) |
 ## | `allow_moves` | `--allow-moves`: `Ok(Yes)` when set (R-NI3 answer flag) |
+## | `allow_downloads` | `--allow-downloads`: `Ok(Yes)` when set (R-NI5 answer flag, slice 025) |
+## | `probe_downloads` | `--probe-downloads`: `Ok(Yes)` when set (R-NI4 answer flag, slice 025) |
 Opts := {
 	names : List(Str),
 	frozen : Bool,
@@ -28,6 +30,9 @@ Opts := {
 	snapshot : Try(Str, [Unset]),
 	rename_keys : Try(Answer, [NoFlag]),
 	allow_moves : Try(Answer, [NoFlag]),
+	allow_downloads : Try(Answer, [NoFlag]),
+	probe_downloads : Try(Answer, [NoFlag]),
+	slots : Try(U64, [Unset]),
 }.{
 	is_eq : _
 
@@ -39,13 +44,16 @@ Opts := {
 	## | 2 | `--strategy` with a value other than `highest` or `lowest` | `--strategy must be highest or lowest, not '<value>'` | R-FL10 |
 	## | 3 | `--frozen` with one name or more (`install` with names changes the header) | `flag '--frozen' works only for tln install with no names` | R-FL13 |
 	## | 4 | `--platform` with no name or with 2 or more names (question Q3) | `flag '--platform' names one entry: got <n> names` | R-AD29 |
+	## | 5 | Slice 031: `--slots` with a value that is not a whole number of 1 or more (question Q6) | `--slots must be a whole number of 1 or more, not '<value>'` | R-FL11 |
 	##
+	## Slice 031 (R-FL11, R-PP7): `slots` is the value of `--slots <n>` (or `--slots=<n>`), `Err(Unset)` when the flag is not given. It is the flag layer of `Probe.settings`.
 	## `--dry-run` with `--frozen` is allowed (question Q8). `--no-pin` with no exact version is ignored (slice 004, Q8). `--slots` and `--no-probe` are read and
 	## change nothing in P0 (R-LF2: no unit probe). `--yes`, `--json` and the other global flags are not options of the command: `Args` has them.
 	read : Args -> Try(Opts, Fail)
 	read = |args| {
 		check_registry(args)?
 		strategy = strategy_of(args)?
+		slots = slots_of(args)?
 		given = |flag| args.options.any(|(name, _)| name == flag)
 		count = args.operands.len()
 		if given("--frozen") and count > 0 {
@@ -67,6 +75,9 @@ Opts := {
 			snapshot: value_of(args, "--snapshot"),
 			rename_keys: if given("--rename-keys") Ok(Yes) else Err(NoFlag),
 			allow_moves: if given("--allow-moves") Ok(Yes) else Err(NoFlag),
+			allow_downloads: if given("--allow-downloads") Ok(Yes) else Err(NoFlag),
+			probe_downloads: if given("--probe-downloads") Ok(Yes) else Err(NoFlag),
+			slots,
 		})
 	}
 }
@@ -92,4 +103,14 @@ strategy_of = |args| match value_of(args, "--strategy") {
 	Ok("highest") => Ok(Ok(Highest))
 	Ok("lowest") => Ok(Ok(Lowest))
 	Ok(other) => Err(Fail.new(Usage, "--strategy must be highest or lowest, not '${other}'"))
+}
+
+# R-FL11: `--slots <n>`, a whole number of 1 or more.
+slots_of : Args -> Try(Try(U64, [Unset]), Fail)
+slots_of = |args| match value_of(args, "--slots") {
+	Err(Unset) => Ok(Err(Unset))
+	Ok(text) => match U64.from_str(text) {
+		Ok(n) if n >= 1 => Ok(Ok(n))
+		_ => Err(Fail.new(Usage, "--slots must be a whole number of 1 or more, not '${text}'"))
+	}
 }

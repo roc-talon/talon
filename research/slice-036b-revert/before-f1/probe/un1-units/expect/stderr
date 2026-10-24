@@ -1,0 +1,10 @@
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-08-0a1b2c3 fails for acme/parser 1.0.0 (Yaml.roc)
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-09-258ab27 fails for acme/json 2.1.0 (Yaml.roc)
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-10-abcdef0 fails for acme/json 2.1.0 (no module is named)
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-11-1a2b3c4 fails for the platform acme/pf 0.1.0 (crashes); acme/parser 1.0.0 (hangs)
+tln: error[internal]: the unit check of acme/json 2.1.0 on nightly-2026-10-12-2664a27 gave no result: signal 9. Run the command again.
+tln: error[budget]: the probe budget is spent: probe.max is 3 and 1 unit check did not run. Run the command again to go on (the facts are saved), or set probe.max higher.
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-09-258ab27 fails for acme/json 2.1.0 (Yaml.roc)
+tln: error[budget]: the probe budget is spent: probe.max is 4. Set probe.max higher.
+tln: error[budget]: the probe budget is spent: probe.max is 5. Set probe.max higher.
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-04-8a7b6c5 fails for acme/json 2.1.0 (Yaml.roc)

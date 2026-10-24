@@ -1,0 +1,332 @@
+import Args
+import Common
+import Compiler
+import Fail
+import Fx
+import Item
+import Launch
+import Manage
+import Nightlies
+import Out
+import Pin
+import Projects
+import RocInstall
+import Roots
+import Temp
+import Toolchain
+
+## The commands `tln roc list` (`ls`), `tln roc default <ref>`, `tln roc remove <id>` (`rm`) and `tln roc update` (`up`, slice 026) (slice 024, CLI 6.6: R-CS2, R-RR1 to R-RR3; R-CM15, R-CM19). Direct style over `Fx` (TESTING.md 2.2 part C): `Manage` decides, this module orders
+## the calls. `Run.tln!` calls them for the commands `["roc", "list"]`, `["roc", "default"]` and `["roc", "remove"]`. The calls, in order (the L2 cases `roc/ls1-list`, `roc/df1-default`
+## and `roc/rm1-remove`, and the L3 case `compilers/mg1-manage` fix them). There is no new `Fx` call in this slice.
+##
+## `roc list`:
+##
+## | Step | Does | Rule |
+## | --- | --- | --- |
+## | 1 | `Manage.read_list(args)`. A failure is printed with `Common.failed!` (no `Fx` call). | R-CM15 |
+## | 2 | `env_all!`, `Roots.from_env`, then one `read_files!` of `config.toml` (a missing file is the empty text), `Intent.read_config` (the warnings go to stderr, one line each, `warning: <text>`). No `clock!`, no `platform!`. | R-LY1 |
+## | 3 | `Launch.toolchains!`: one `list_dirs!` of `<cache>/toolchains` | R-LY1 |
+## | 4 | One `read_files!` with 2 paths for each installed id, in the order of the ids: `.talon.json`, then `.last-use`. No call when no compiler is installed. | R-CC9 |
+## | 5 | `Manage.rows`, then the table on stdout and the warning on stderr (`Manage.ls_report`). With `--json` stdout is only the envelope (`Manage.ls_data`) and no table is printed. The table is the answer of the command: `--quiet` does not hide it. | R-OUT2, R-J3 |
+##
+## `roc default`:
+##
+## | Step | Does | Rule |
+## | --- | --- | --- |
+## | 1 | `Manage.read` with `Default`. A failure is printed with `Common.failed!`. | R-CM15 |
+## | 2 | `env_all!`, `Roots.from_env`, `Launch.toolchains!` (one `list_dirs!`) | R-LY1 |
+## | 3 | The installed compilers first (R-SC9: `git-dd03` is a prefix of an installed id, and no list has it). A text that does not start with `@` goes to `Nightlies.pick` with `named` and `auto` both the installed ids and `base: Err(None)`. `Ok(id)`: go to step 5. `Ambiguous`: `Nightlies.failure`. `NoMatch`, and a text that starts with `@`: step 4. | R-SC5, R-SC10, R-SC13, R-R5 |
+## | 4 | The text names a compiler that is not installed: `RocInstall.offer!` (`id` the text, `offline` from `--offline`). `Present(found)`: step 5 with `found.id`. `Download(offer)`: `Prompt.ask!` with `Consent.roc_install` (the prompt of `roc install`, R-DL3: the command names the download, so the default is yes), a decline is `Consent.roc_install_declined` (exit 13, nothing changes). Then `RocInstall.install_offer!`. | R-DL3, R-DL4, R-NI6, R-CC4 |
+## | 5 | `Fx.with_lock!` on `Roots.item(Config)` with `Wait`: `read_files!` of `config.toml` (a missing file is the empty text), `Manage.default_set`. `Same`: no more calls. `Set(text)`: a second `read_files!`, the bytes must be the first bytes, else `default_set` runs on the new bytes (R-CC7), then `write_atomic!`. | R-CS2, R-CC6, R-CC7 |
+## | 6 | The output: `Manage.default_report` on stdout (with `--json` on stderr, and stdout is only the envelope with `Manage.default_data`). The compat warnings of an install: the `stderr` lines of `Toolchain.report` (`how` `Installed`). | R-OUT2, R-J3 |
+##
+## `roc remove`:
+##
+## | Step | Does | Rule |
+## | --- | --- | --- |
+## | 1 | `Manage.read` with `Remove`. A failure is printed with `Common.failed!`. | R-CM15 |
+## | 2 | `env_all!`, `Roots.from_env`, one `read_files!` of `config.toml`, `Intent.read_config` (warnings as in `list`): `default_roc` and the `nightly` switch (`Pin.switch` with `Common.nightly_of(env)`, no `talon.toml`, R-NS8) | R-RR1, R-NS3 |
+## | 3 | `Launch.toolchains!`. `Nightlies.pick` with `named` and `auto` the installed ids and `base: Err(None)`: a full id, or a prefix of an installed id. A failure is `Nightlies.failure` (`no compiler matches <text>`, or the ambiguous list: exit 2). | R-SC5, R-SC10 |
+## | 4 | One `read_files!` of `projects.json` (`Missing` is no project), `Projects.entries` (a failure: exit 19, R-TF6). With one project or more: one `read_files!` of the project files, in the order of the entries. Then `Manage.pinned_by`. | R-RR2, R-PD9 |
+## | 5 | One `read_files!` of the `.talon.json` of each installed id, in the order of the ids: `Manage.compat_of` for the id, `Compiler.times` for the order of `next_default`. | R-GC3, R-RR1 |
+## | 6 | `Fx.with_lock!` on the item `Roots.item(Toolchain(id))` with `Wait` (`Fx.with_lock!` prints `waiting for another tln: <item>` once when the lock is busy, as `roc install`, R-CC5). In the lock: `random!`, `rename!` of the item to `Manage.trash_name`, then one `delete!` of the trash dir and the compat dir `Roots.item(Compat(<compat id>))` (no compat dir when `compat_of` is `Err`). R-CC10: no age rule, the user named it. R-RR3, R-RM2: a `link-*` entry is only the dir in `toolchains/`, so the dir goes and the target of the link is never touched. | R-CC10, R-RR3, R-RM2, R-GC3 |
+## | 7 | The compiler was the default (`Pin.same_id` of `default_roc` and the id): `Manage.next_default` (`installed` without the id, the switch, `Compiler.times`). `Fx.with_lock!` on the `config.toml` item with `Wait`: `read_files!`, `Manage.default_set` or `Manage.default_unset` for `Err(None)`, a second `read_files!` and `write_atomic!` as in `default` step 5. | R-RR1, R-CC6, R-CC7 |
+## | 8 | The output: `Manage.remove_report` on stdout (with `--json` on stderr, stdout is only the envelope with `Manage.remove_data`). | R-RR2, R-OUT2, R-J3 |
+##
+## `roc update` (slice 026, R-CS3, R-RU1 to R-RU4). It has no flag of its own and takes no operand. The calls, in order (the L2 case `roc/up1-update` and the L3 case `compilers/ru1-update` fix them):
+##
+## | Step | Does | Rule |
+## | --- | --- | --- |
+## | 1 | `Manage.read_update(args)`. A failure is printed with `Common.failed!` (no `Fx` call). | R-CM15 |
+## | 2 | `env_all!`, `Roots.from_env`, `RocInstall.read_config!` (one `read_files!` of `config.toml`): `default-roc` is the default before the command. | R-RU2 |
+## | 3 | `RocInstall.offer!` with the text `@latest` (the steps 2 to 6 of `roc install`: the list, and `Nightlies.pick` over the compilers that the `nightly` switch and `min-release-age` allow). `Present`: the newest compiler is installed already, so nothing is downloaded and the first line is `<id> is the newest` (answer Q1 of the review). The default is still decided in step 5. A failure is the failure of `roc install @latest` (exit 10 for the switch, exit 15 for `--offline` with no cached list). | R-RU1, R-NS2, R-NS3, R-C7, R-DI12 |
+## | 4 | `Download(offer)`: `RocInstall.ask_download!` (the prompt of `roc install`: interactive, the default is yes; non-interactive: no prompt, the answer line on stderr), then `RocInstall.install_offer!` (lock, download, extract, the first default of R-SO15). A No is `Consent.roc_install_declined` (exit 13). | R-NI6, R-DL3, R-DL4, R-CC4 |
+## | 5 | The default. `install_offer!` made the first default (`default: Set`): done. The default text is the id already: `Same`, no call, `changed` is false. Else `Manage.update_move({ default: <step 2> })`: `Stay` makes no call. `Move`: under the lock of `config.toml` (`Wait`), `Manage.default_set` as `roc default` does (two reads, `write_atomic!`: R-CC6, R-CC7). | R-RU2, R-SO15 |
+## | 6 | The output: `Manage.update_report` (stdout, and the compat warnings on stderr), or with `--json` the envelope with `Manage.update_data` on stdout and the human text on stderr. No project file is read or written, and no known project is recorded (R-RU3). | R-OUT2, R-J3, R-RU3 |
+RocManage :: [].{
+
+	## Steps 1 to 5 of `roc list`.
+	list! : Fx, Args => I32
+	list! = |fx, args| match Manage.read_list(args) {
+		Err(fail) => Common.failed!(fx, args, fail)
+		Ok({}) => match list_flow!(fx, args) {
+			Ok({}) => 0
+			Err(fail) => Common.failed!(fx, args, fail)
+		}
+	}
+
+	## Steps 1 to 6 of `roc default`.
+	default! : Fx, Args => I32
+	default! = |fx, args| match Manage.read({ args, verb: Default }) {
+		Err(fail) => Common.failed!(fx, args, fail)
+		Ok(text) => match default_flow!(fx, args, text) {
+			Ok(done) => {
+				print_default!(fx, args, done)
+				0
+			}
+			Err(fail) => Common.failed!(fx, args, fail)
+		}
+	}
+
+	## Steps 1 to 8 of `roc remove`.
+	remove! : Fx, Args => I32
+	remove! = |fx, args| match Manage.read({ args, verb: Remove }) {
+		Err(fail) => Common.failed!(fx, args, fail)
+		Ok(text) => match remove_flow!(fx, text) {
+			Ok(done) => {
+				print_remove!(fx, args, done)
+				0
+			}
+			Err(fail) => Common.failed!(fx, args, fail)
+		}
+	}
+
+	## `tln roc update` (`up`, slice 026, R-CS3, R-RU1 to R-RU4). The calls are in the table at the top of this file. The body is the work of the code agent.
+	update! : Fx, Args => I32
+	update! = |_fx, _args| crash "todo"
+}
+
+# What the edit of `config.toml` gives: the old default, and whether a write happened.
+Edited : { previous : Try(Str, [Unset]), changed : Bool }
+
+# Steps 2 to 5 of `roc list`, and the output.
+list_flow! : Fx, Args => Try({}, Fail)
+list_flow! = |fx, args| {
+	roots = Roots.from_env(fx.env_all!())?
+	config = RocInstall.read_config!(fx, roots)?
+	ids = Launch.toolchains!(fx, roots)
+	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
+	reads = if ids.is_empty() [] else fx.read_files!(paths)
+	facts = { rows: Manage.rows({ found: found_of(ids, reads), default: config.default_roc }), default: config.default_roc }
+	report = Manage.ls_report(facts)
+	if args.json {
+		fx.out!(Out.json_ok({ command: args.typed, data: Manage.ls_data(facts) }))
+	} else {
+		for line in report.stdout {
+			fx.out!(line)
+		}
+	}
+	for line in report.stderr {
+		fx.err!(line)
+	}
+	Ok({})
+}
+
+# Step 4 of `roc list`: the 2 results of each id, in the order of the ids.
+found_of : List(Str), List(Manage.Read) -> List({ id : Str, meta : Manage.Read, last_use : Manage.Read })
+found_of = |ids, reads| ids.map2(
+	reads.chunks_of(2),
+	|id, pair| match pair {
+		[meta, last_use] => { id, meta, last_use }
+		_ => { id, meta: Err(NotFound), last_use: Err(NotFound) }
+	},
+)
+
+# What `default!` prints: the id, the 2 flags of `Manage.default_data`, the compat lines of a download.
+Defaulted : { id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]), edited : Edited }
+
+# Steps 2 to 5 of `roc default`.
+default_flow! : Fx, Args, Str => Try(Defaulted, Fail)
+default_flow! = |fx, args, text| {
+	env = fx.env_all!()
+	roots = Roots.from_env(env)?
+	installed = Launch.toolchains!(fx, roots)
+	got = fetched!(fx, args, { env, installed, text })?
+	path = Roots.item(roots, Config)
+	edited = edit_config!(fx, path, |current| Manage.default_set({ path, text: current, id: got.id }))?
+	# `install_offer!` wrote the first default (R-SO15): for the whole command the default was not set before and is changed now.
+	whole = if got.first_default {
+		{ previous: Err(Unset), changed: Bool.True }
+	} else edited
+	Ok({ id: got.id, installed: got.installed, compat: got.compat, edited: whole })
+}
+
+# Steps 3 and 4: an installed compiler (a unique prefix is expanded), else the download of `roc install`.
+fetched! : Fx, Args, { env : List((Str, Str)), installed : List(Str), text : Str } => Try({ id : Str, installed : Bool, first_default : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
+fetched! = |fx, args, facts| {
+	present = |id| Ok({ id, installed: Bool.False, first_default: Bool.False, compat: Err(Unknown) })
+	if facts.text.starts_with("@") {
+		download!(fx, args, facts)
+	} else {
+		match Nightlies.pick({ text: facts.text, named: facts.installed, auto: facts.installed, base: Err(None) }) {
+			Ok(id) => present(id)
+			Err(NoMatch(_)) => download!(fx, args, facts)
+			Err(error) => Err(Nightlies.failure(error))
+		}
+	}
+}
+
+# Step 4: `roc install` for the text. The consent comes before the lock.
+download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try({ id : Str, installed : Bool, first_default : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
+download! = |fx, args, facts| match RocInstall.offer!(fx, { id: facts.text, env: facts.env, offline: args.offline })? {
+	Present(found) => Ok({ id: found.id, installed: Bool.False, first_default: Bool.False, compat: Err(Unknown) })
+	Download(offer) => {
+		RocInstall.ask_download!(fx, args, facts.env, { id: offer.id, size: offer.size })?
+		done = RocInstall.install_offer!(fx, offer)?
+		Ok({ id: done.id, installed: done.how == Installed, first_default: done.default == Set, compat: done.compat })
+	}
+}
+
+# Step 5, R-CC6, R-CC7: the edit of `config.toml` under its lock. `decide` makes the edit from the text. When it gives `Set`, the file is read again, and
+# `decide` runs again on new bytes before the write.
+edit_config! : Fx, Str, (Str -> Try({ previous : Try(Str, [Unset]), edit : [Same, Set(Str)] }, Fail)) => Try(Edited, Fail)
+edit_config! = |fx, path, decide| fx.locked!(path, || write_config!(fx, path, decide))
+
+write_config! : Fx, Str, (Str -> Try({ previous : Try(Str, [Unset]), edit : [Same, Set(Str)] }, Fail)) => Try(Edited, Fail)
+write_config! = |fx, path, decide| {
+	first = RocInstall.read_text!(fx, path)?
+	done = decide(first)?
+	match done.edit {
+		Same => Ok({ previous: done.previous, changed: Bool.False })
+		Set(_) => {
+			second = RocInstall.read_text!(fx, path)?
+			last = if second == first done else decide(second)?
+			match last.edit {
+				Same => Ok({ previous: last.previous, changed: Bool.False })
+				Set(content) => match fx.write_atomic!([{ path, content }]) {
+					Ok(_) => Ok({ previous: last.previous, changed: Bool.True })
+					Err({ path: failed, err }) => Err(Fail.new(Environment, "cannot write ${failed}: ${Str.inspect(err)}"))
+				}
+			}
+		}
+	}
+}
+
+# Step 6: the text of `roc default`.
+print_default! : Fx, Args, Defaulted => {}
+print_default! = |fx, args, done| {
+	shown = Common.shown_fx(fx, args)
+	edit : [Same, Set]
+	edit = if done.edited.changed Set else Same
+	for line in Manage.default_report({ id: done.id, installed: done.installed, edit }) {
+		shown.out!(line)
+	}
+	if done.installed {
+		for line in Toolchain.report({ id: done.id, how: Installed, default: Kept, compat: done.compat }).stderr {
+			fx.err!(line)
+		}
+	}
+	if args.json {
+		fx.out!(Out.json_ok({ command: args.typed, data: Manage.default_data({ id: done.id, previous: done.edited.previous, edit, installed: done.installed }) }))
+	}
+}
+
+# What `remove!` prints.
+Removed : { id : Str, item : Str, was_default : Bool, default : Try(Str, [None]), projects : List(Str) }
+
+# Steps 2 to 7 of `roc remove`.
+remove_flow! : Fx, Str => Try(Removed, Fail)
+remove_flow! = |fx, text| {
+	env = fx.env_all!()
+	roots = Roots.from_env(env)?
+	config = RocInstall.read_config!(fx, roots)?
+	switch = Pin.switch({ env: Common.nightly_of(env), toml: Err(Unset), config: config.nightly })
+	installed = Launch.toolchains!(fx, roots)
+	id = Nightlies.pick({ text, named: installed, auto: installed, base: Err(None) }).map_err(|error| Nightlies.failure(error))?
+	projects = pinned!(fx, roots, id)?
+	metas = fx.read_files!(installed.map(|each| Roots.item(roots, ToolchainMeta(each))))
+	rows = installed.map2(metas, |each, meta| { id: each, text: meta })
+	own = rows.find_first(|row| row.id == id)
+	compat = match own {
+		Ok(row) => Manage.compat_of(row.text)
+		Err(_) => Err(None)
+	}
+	item = Roots.item(roots, Toolchain(id))
+	trash!(fx, roots, { id, item, compat })?
+	was_default = match config.default_roc {
+		Ok(default) => Pin.same_id(default, id)
+		Err(Unset) => Bool.False
+	}
+	next = if was_default {
+		Manage.next_default({ installed: installed.keep_if(|each| each != id), removed: id, nightly: switch.nightly, times: Compiler.times(rows) })
+	} else {
+		Err(None)
+	}
+	if was_default {
+		move_default!(fx, roots, next)?
+	}
+	after = if was_default next else config.default_roc.map_err(|Unset| None)
+	Ok({ id, item, was_default, default: after, projects })
+}
+
+# Step 4, R-RR2: `projects.json` (a missing file has no project), then the project files in one call.
+pinned! : Fx, Roots, Str => Try(List(Str), Fail)
+pinned! = |fx, roots, id| {
+	path = Roots.item(roots, ProjectsJson)
+	text = match fx.read_files!([path]) {
+		[Ok(found)] => found
+		[Err(NotFound)] => return Ok([])
+		other => return Err(Fail.new(Environment, "cannot read ${path}: ${Str.inspect(other)}"))
+	}
+	entries = Projects.entries({ path, text })?
+	if entries.is_empty() {
+		Ok([])
+	} else {
+		reads = fx.read_files!(entries.map(|entry| entry.path))
+		Ok(Manage.pinned_by({ id, projects: entries.map2(reads, |entry, read| { path: entry.path, text: read }) }))
+	}
+}
+
+# Step 6, R-CC10, R-RR3, R-RM2: under the lock of the item, the dir is renamed to the trash name, then the trash dir and the compat dir are deleted.
+# A `link-*` dir holds no target: the dir goes, the target stays. A failed delete is ignored: the trash dir is stale and GC removes it (R-CC2).
+trash! : Fx, Roots, { id : Str, item : Str, compat : Try(Str, [None]) } => Try({}, Fail)
+trash! = |fx, roots, facts| fx.locked!(facts.item, || move_to_trash!(fx, roots, facts))
+
+move_to_trash! : Fx, Roots, { id : Str, item : Str, compat : Try(Str, [None]) } => Try({}, Fail)
+move_to_trash! = |fx, roots, facts| {
+	trash = Manage.trash_name({ item: facts.item, hex: Temp.hex(fx.random!()) })
+	match fx.rename!({ from: facts.item, to: trash }) {
+		Ok(_) => {}
+		Err(err) => return Err(Fail.new(Environment, "cannot remove ${facts.item}: ${Str.inspect(err)}"))
+	}
+	compat_dir = match facts.compat {
+		Ok(compat) => [Roots.item(roots, Item.Compat(compat))]
+		Err(None) => []
+	}
+	_ = fx.delete!([trash].concat(compat_dir))
+	Ok({})
+}
+
+# Step 7, R-RR1: the default goes to the next compiler, or is unset.
+move_default! : Fx, Roots, Try(Str, [None]) => Try({}, Fail)
+move_default! = |fx, roots, next| {
+	path = Roots.item(roots, Config)
+	decide = |current| match next {
+		Ok(id) => Manage.default_set({ path, text: current, id })
+		Err(None) => Manage.default_unset({ path, text: current }).map_ok(|edit| { previous: Err(Unset), edit })
+	}
+	_ = edit_config!(fx, path, decide)?
+	Ok({})
+}
+
+# Step 8: the text of `roc remove`.
+print_remove! : Fx, Args, Removed => {}
+print_remove! = |fx, args, done| {
+	shown = Common.shown_fx(fx, args)
+	for line in Manage.remove_report({ id: done.id, was_default: done.was_default, next: done.default, projects: done.projects }) {
+		shown.out!(line)
+	}
+	if args.json {
+		fx.out!(Out.json_ok({ command: args.typed, data: Manage.remove_data(done) }))
+	}
+}

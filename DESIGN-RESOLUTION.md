@@ -344,7 +344,7 @@ flowchart TD
 | # | Step | Action |
 | --- | --- | --- |
 | R-AL1 | 1 | Collect variables, ranges and anchors (section 1). For a command that runs step 6, run the baseline check on the current header (section 4). |
-| R-AL2 | 2 | With a registry, send one closure query (Registry 4.1). Its answer gives the header facts (R-AL8) of each candidate and of their closures, and the shared matrix for these hashes. With direct, this step sends nothing: steps 3 to 6 get each fact when they need it (R-AL8, source 4). |
+| R-AL2 | 2 | With a registry, send one closure query (Registry 4.1). The second search of a held move can send one more (Resolution 9, R-SP24). An answer gives the header facts (R-AL8) of each candidate and of their closures, and the shared matrix for these hashes. With direct, this step sends nothing: steps 3 to 6 get each fact when they need it (R-AL8, source 4). |
 | R-AL3 | 3 | PubGrub picks the best tuple by `priority`, under R-C1 to R-C4, R-C6, R-C7 and R-C9. |
 | R-AL4 | 4 | For each pair (hash, roc) with no fact, run a unit probe. Order: installed nightly first, then the strongest hint. Up to 12 checks run at the same time (section 4, "Parallel probes"). |
 | R-AL5 | 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for the hash and an interval of compiler releases (R-EP7). Go back to step 3. Inferred facts (R-EP6) order and prune the search, but the step needs real facts to finish (R-EP8). |
@@ -356,11 +356,11 @@ R-AL8: Header facts. The header facts of a node are its kind, its deps (the URL 
 | Source | Node | Cost |
 | --- | --- | --- |
 | 1 | The facts that this command has already | none |
-| 2 | The closure answer of step 2, when the command sent one | none (one request in step 2) |
+| 2 | The closure answer of step 2, and of the second query of R-SP24, when the command sent them | none (one request in step 2, one in R-SP24) |
 | 3 | `packages/<hash>/main.roc` when it exists, or the path file | one file read |
 | 4 | A download of the archive (CLI 7.1, R-DI7), then source 3 | one archive, at most 10 MB |
 
-A closure of depth d takes at most d lists. The registry makes it 1 request (step 2), unless the answer lacks a hash (Registry R-AP28 case 3).
+A closure of depth d takes at most d lists. The registry makes it 1 request (step 2), and 1 more for the second search of a held move (R-SP24), unless the answer lacks a hash (Registry R-AP28 case 3).
 
 R-AL9: The closure of a tuple is the closure that roc builds (Design 2): the header entries, the path entries and their entries (R-H7), and the deps of the winner of each group, to the end. The winner of a group is the highest version that an edge names. Talon never asks for the facts of a version that does not win, also when the registry answer has them. Each user of a closure applies this one rule: the solver for R-C2 and R-C3, `tln list`, `tln why`, and the walk before the ladder. A problem of the rule (a cycle, one label with two hashes, a header pin lower than a dep needs, two platforms) is a conflict of the tuple in steps 3 to 5: the solver tries the next tuple (P0: R-PH10). When no variable is free (`install --frozen`, `list`, `why`), it stops with exit code 10 (`no_tuple`) and names the problem.
 
@@ -479,7 +479,7 @@ R-SP22: A hold that cannot stay follows the consent rows above. `tln install --f
 
 R-SP23: A movable variable is a variable that the command holds only because the user did not name it: R-SP3, R-SP4, R-SP7, R-SP9, R-SP19, and a group of other members (Design 4.4, R-WS12). These are never movable: the nightly outside `tln upgrade` (R-RP2, R-RP4), an anchor (`=`, R-VA5), a patched entry (R-PA4), a fixed anchor (R-DI11). The user frees them by name. An unmanaged entry (Design 4.2, R-H4) is no variable, so it is never movable. A moved variable keeps the constraints of a free variable of the command: R-C1 (its ranges; none in `upgrade`, R-UP1), R-C6, R-C7 and R-C9.
 
-R-SP24: The second search is the search of section 5 with two changes. The order of the variables: the movable variables first, in `priority` order (section 1), then the free variables in `priority` order. The order of the values of a movable variable: its current value first, then the nearest values. With `strategy = "highest"`: the higher versions from low to high, then the lower versions from high to low. With `"lowest"`: the lower versions from high to low, then the higher versions from low to high. So a movable variable keeps its value when a tuple exists with it and the earlier movable variables, and else moves the smallest step. The moved variables are those whose value differs from the header.
+R-SP24: The second search is the search of section 5 with two changes. The order of the variables: the movable variables first, in `priority` order (section 1), then the free variables in `priority` order. The order of the values of a movable variable: its current value first, then the nearest values. With `strategy = "highest"`: the higher versions from low to high, then the lower versions from high to low. With `"lowest"`: the lower versions from high to low, then the higher versions from low to high. So a movable variable keeps its value when a tuple exists with it and the earlier movable variables, and else moves the smallest step. The moved variables are those whose value differs from the header. The candidates of the movable variables come from the index of the command: with a registry, from a second closure query that Talon sends only for this search (Registry 4.1, R-AP16); with `direct`, from the release lists (CLI 7.3, R-DI1).
 
 R-SP25: A move writes each member that has an entry for the group of the moved variable (Design 4.4, R-WS1), with the same value. In `install`, `add` and `update` the new value is inside the ranges, so `talon.toml` does not change. In `upgrade`, R-UP5 applies to each moved variable.
 

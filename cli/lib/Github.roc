@@ -2,6 +2,7 @@ import Clock
 import Fail
 import Fx
 import Item
+import JsonDoc
 import Net
 import Roots
 import Text
@@ -180,7 +181,7 @@ Github :: [].{
 	## | 1 | One `list_dirs!` of `repo_dir`. `NotFound` is an empty list. The `mtime` of page `n` is that of the entry `<n>.meta`. |
 	## | 2 | Page 1 has the URL `list_url`. A later page has the `next` of the meta of the page before it. For each page: when the listing has its `meta` entry, one `read_files!` of `[meta, body]` (a `body` that is missing is a page that is not cached). Then `plan`. |
 	## | 3 | `Use`: the cached body. `Fetch` and `Revalidate`: one `http_get!` with `Net.headers` (the token is resolved before the first request, below) and the `ETag` of the cache for `Revalidate`. 200: the new body, `meta_text` with the new ETag (the header `ETag`, any case) and the `Link` next. 304 (only after `Revalidate`): the cached body and its `next`. A rate limit (`rate_limit`): `rate_limit_failure`. An error of the call: `network_failure`. Any other status: `status_failure`. |
-	## | 4 | After the last page (no `next`), with no failure: one `write_atomic!` for all pages that changed: for each page the body (200 only) and then the meta (200, and 304: the same text, to renew the time of the page). No call when no page changed. A failure at any step writes nothing (R-DI13). |
+	## | 4 | After the last page (no `next`), with no failure: one `write_atomic!` for all pages that changed: for each page the body (200 only, and only when the body is a JSON array: G3) and then the meta (200 with such a body, and 304: the same text, to renew the time of the page). No call when no page changed. A failure at any step writes nothing (R-DI13). |
 	##
 	## The token (R-RG3): before the first `http_get!`, and only then, `Net.token`. For `AskGh`: one `programs!(["gh"])`, and when `gh` is there one `spawn_all!({ jobs: [{ argv: ["gh", "auth", "token"], cwd: Err(Inherit) }], limit: 1 })`, read by `Net.token_from_gh`. `Test` and `Env` make no call. The token is for the list requests only (R-DI9: not for `.roc-version`, not for an archive).
 	releases! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64, offline : Bool } => Try({ pages : List(Str), source : [Live, Cached(U64), Missing] }, Fail)
@@ -236,6 +237,13 @@ Token : [Unresolved, Resolved(Try(Str, [None]))]
 State : { pages : List(Str), writes : List({ path : Str, content : Str }), oldest : Try(U64, [None]), token : Token }
 
 CachedPage : { etag : Try(Str, [None]), next : Try(Str, [None]), mtime : U64, body : Str }
+
+# Does the body of a page parse as a JSON array (a list of releases)?
+is_list : Str -> Bool
+is_list = |body| match JsonDoc.parse(body) {
+	Ok(Arr(_)) => Bool.True
+	_ => Bool.False
+}
 
 # The value of a header, with the name in any case.
 header_value : List((Str, Str)), Str -> Try(Str, [NotFound])
@@ -326,7 +334,8 @@ pages_from! = |fx, run, state, n, url| {
 					(200, _) => {
 						new_etag = header_value(answer.headers, "etag").map_err(|_| None)
 						next = Github.next_link(answer.headers)
-						writes = [{ path: files.body, content: answer.body }, { path: files.meta, content: Github.meta_text({ etag: new_etag, next }) }]
+						# G3: a body that is not a JSON array is not cached, so the next call asks again.
+						writes = if is_list(answer.body) [{ path: files.body, content: answer.body }, { path: files.meta, content: Github.meta_text({ etag: new_etag, next }) }] else []
 						next_page!(fx, run, { ..asked, pages: asked.pages.append(answer.body), writes: asked.writes.concat(writes) }, n, next)
 					}
 					(304, Ok(c)) if etag != Err(None) => {

@@ -1,0 +1,44 @@
+| Id | Rule | File | Result | First failing test |
+| --- | --- | --- | --- | --- |
+| N01 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N02 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N03 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N04 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N05 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N06 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N07 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N08 | R-GC3 | cli/lib/Gc.roc | caught | unit/gc |
+| N09 | R-GC2 | cli/lib/Gc.roc | caught | unit/gc |
+| N10 | R-GC3 | cli/lib/Gc.roc | caught | unit/gc |
+| N11 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| N12 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| N13 | R-GC9 | cli/lib/Gc.roc | caught | unit/gc |
+| N14 | R-GC1 | cli/lib/Gc.roc | caught | unit/gc |
+| N15 | R-GC1 | cli/lib/Gc.roc | caught | unit/gc |
+| N16 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| N17 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| N18 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| N19 | R-GC11 | cli/lib/Gc.roc | caught | l2 gc/ |
+| N20 | R-OUT2 | cli/lib/Gc.roc | caught | unit/gc |
+| N21 | R-OUT4 | cli/lib/Gc.roc | caught | unit/gc |
+| N22 | R-OUT4 | cli/lib/Gc.roc | caught | unit/gc |
+| N23 | R-GC3 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N24 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N25 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N26 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N27 | R-GC9 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N28 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N29 | R-EV22 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N30 | R-GC3 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N31 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N32 | R-GC11 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N33 | R-GC11 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| N35 | R-GC1 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| N36 | R-GC1 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| N37 | R-GC1 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| N38 | R-GC1 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| N39 | R-GC11 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| S1 | R-GC11 | cli/lib/Toolchain.roc | caught | unit/toolchain |
+| S2 | R-GC11 | cli/lib/Toolchain.roc | caught | unit/toolchain |
+| S3 | R-GC11 | cli/lib/Toolchain.roc | caught | unit/toolchain |
+| S4 | R-GC11 | cli/lib/Toolchain.roc | caught | unit/toolchain |

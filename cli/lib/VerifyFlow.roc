@@ -1,11 +1,15 @@
+import BuildSkip
 import Clock
 import Fail
 import Fx
 import Ladder
+import LadderPlan
 import PickFlow
 import Pin
 import Report
 import ResolveBase
+import ResolveLoad
+import ResolveSelect
 
 Request : ResolveBase.Request
 
@@ -19,11 +23,11 @@ VerifyFlow :: [].{
 	## The flow of `Resolve.verify!`. The differences from `install!` are in the doc of `Resolve.verify!`.
 	verify! : Fx, Request => Try(Report.Outcome, Fail)
 	verify! = |fx, request| {
-		start = ResolveBase.prepared!(fx, request, Verify)?
+		start = ResolveLoad.prepared!(fx, request, Verify)?
 		settings = ResolveBase.settings_of(request, start.loaded)
 		ResolveBase.check_pin(start.loaded, settings, start.decision, Verify)?
-		snapshot = ResolveBase.snapshot_of(request, start.loaded.intent)?
-		picked = PickFlow.pick!(fx, request, start.loaded, start.built, settings, snapshot)?
+		snapshot = ResolveSelect.snapshot_of(request, start.loaded.intent)?
+		picked = PickFlow.pick!(fx, request, start.loaded, start.built, settings, snapshot, Err(None))?
 		verified!(fx, request, start.loaded, picked, start.decision)
 	}
 }
@@ -59,26 +63,32 @@ verified! = |fx, request, loaded, picked, decision| {
 	ResolveBase.closure_notes!(fx, request, closures)
 	ran = if request.no_check {
 		fx.out!("check: skipped\n")
-		{ probes: 0, check: Skipped, build: Skipped, notes: [] }
+		{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }
 	} else {
 		rows = ResolveBase.owner_rows(facts.scoped, [], picked.chosen)
-		notes = Ladder.verify!(
+		done = Ladder.verify!(
 			fx,
 			{
 				roots: request.roots,
+				now: request.now,
 				path_roc: request.compiler,
 				held: decision.held ?? "",
 				members: checked,
 				replace,
 				owners: rows.map(|r| r.owner),
 				moved: rows.keep_if(|r| r.moved).map(|r| r.owner),
+				downloads: ResolveBase.ladder_downloads(request),
+				probe: ResolveBase.probe_settings(request, loaded),
+				no_probe: request.probe.no_probe,
+				closures,
 			},
 		)?
 		{
-			probes: checked.fold(0, |total, m| total + if m.kind == App 3 else 2),
+			probes: done.probes,
+			downloads: done.downloads,
 			check: Passed,
-			build: if checked.any(|m| m.kind == App) Passed else NotRun,
-			notes,
+			build: BuildSkip.state({ apps: checked.count_if(|m| m.kind == App), skipped: done.skipped }),
+			notes: done.notes,
 		}
 	}
 	for file in files {
@@ -103,6 +113,7 @@ verified! = |fx, request, loaded, picked, decision| {
 			},
 		),
 		probes: ran.probes,
+		downloads: ran.downloads,
 		dry_run: Bool.False,
 		check: ran.check,
 		build: ran.build,
@@ -117,14 +128,14 @@ verified! = |fx, request, loaded, picked, decision| {
 	})
 }
 
-no_replace : List(Ladder.Replace)
+no_replace : List(LadderPlan.Replace)
 no_replace = []
 
 # The member files that `verify` checks: the current member when `--file` names one, else all members.
 checked_members : ResolveBase.Request, Loaded -> List(Ladder.Checked)
 checked_members = |request, loaded| {
 	current = request.project.file ?? ""
-	all = loaded.members.map(|m| { file: m.file, kind: m.locked.kind })
+	all = loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file) })
 	named = all.keep_if(|m| m.file == current)
 	if named.is_empty() all else named
 }

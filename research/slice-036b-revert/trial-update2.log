@@ -1,0 +1,103 @@
+consent/dl1-resolve changed: calls.log OK
+consent/dl3-rank4 changed: calls.log OK
+evidence/ev3-summary changed: calls.log OK
+evidence/ev4-baseline-note changed: calls.log OK
+install/in1-flow changed: calls.log,stderr,stdout,tree.diff CHECK
+    calls.log +write_atomic $PROJECT/app/talon.toml $PROJECT/app/main.roc
+    calls.log +read_files $PROJECT/app/talon.toml
+    stderr ? changed
+    stdout ? changed
+    tree.diff ? changed
+ladder/bs1-build-skip changed: calls.log OK
+ladder/bs2-build-skip-verify changed: calls.log OK
+ladder/bs3-build-record changed: calls.log,stderr,stdout,tree.diff CHECK
+    calls.log +programs gh
+    calls.log +  User-Agent: tln/0.0.0
+    calls.log +platform
+    calls.log +delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    calls.log +list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
+    calls.log +http_get https://api.github.com/repos/acme/parser/releases?per_page=100
+    calls.log +write_atomic $HOME/.cache/roc/talon/index/github/acme/parser/1.json $HOME/.cache/roc/talon/index/github/acme/parser/1.meta
+    calls.log +list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
+    calls.log +http_get https://api.github.com/repos/acme/pf/releases?per_page=100
+    calls.log +write_atomic $HOME/.cache/roc/talon/index/github/acme/pf/1.json $HOME/.cache/roc/talon/index/github/acme/pf/1.meta
+    calls.log +read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+    calls.log +read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.meta $HOME/.cache/roc/talon/index/github/acme/parser/1.json
+    calls.log +read_files $HOME/.cache/roc/talon/index/github/acme/pf/1.meta $HOME/.cache/roc/talon/index/github/acme/pf/1.json
+    calls.log +read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/Std.roc $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/Parser.roc
+    calls.log +read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/Std.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/Parser.roc
+    calls.log +read_files $PROJECT/p2/main.roc
+    calls.log +write_atomic $PROJECT/p2/main.roc
+    calls.log +read_files $PROJECT/p3/main.roc
+    calls.log +write_atomic $PROJECT/p3/main.roc
+    calls.log +read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/Std.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+    calls.log +tty
+    calls.log +read_files $PROJECT/p7/main.roc
+    calls.log +write_atomic $PROJECT/p7/main.roc
+    calls.log +read_files $PROJECT/p8/main.roc
+    calls.log +write_atomic $PROJECT/p8/main.roc
+    calls.log -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+    calls.log -read_files $PROJECT/p5/main.roc
+    calls.log -write_atomic $PROJECT/p5/main.roc
+    stderr ? changed
+    stdout ? changed
+    tree.diff ? changed
+ladder/ld-ladder-flow changed: calls.log,stderr,stdout,tree.diff CHECK
+    calls.log +programs gh
+    calls.log +  User-Agent: tln/0.0.0
+    calls.log +platform
+    calls.log +delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    calls.log +read_files $PROJECT/p4/main.roc
+    calls.log +write_atomic $PROJECT/p4/main.roc
+    calls.log +list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
+    calls.log +http_get https://api.github.com/repos/acme/parser/releases?per_page=100
+    calls.log +write_atomic $HOME/.cache/roc/talon/index/github/acme/parser/1.json $HOME/.cache/roc/talon/index/github/acme/parser/1.meta
+    calls.log +list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
+    calls.log +http_get https://api.github.com/repos/acme/pf/releases?per_page=100
+    calls.log +write_atomic $HOME/.cache/roc/talon/index/github/acme/pf/1.json $HOME/.cache/roc/talon/index/github/acme/pf/1.meta
+    calls.log +read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/Std.roc $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/Parser.roc
+    calls.log +tty
+    calls.log +read_files $PROJECT/p9/main.roc
+    calls.log +write_atomic $PROJECT/p9/main.roc
+    calls.log -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc
+    calls.log -read_files $PROJECT/p8/main.roc
+    calls.log -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/Parser.roc
+    calls.log -write_atomic $PROJECT/p8/main.roc
+    stderr ? changed
+    stdout ? changed
+    tree.diff ? changed
+ladder/ld-no-check-refuse changed: calls.log OK
+moves/hm1-noninteractive changed: calls.log OK
+moves/hm2-interactive changed: calls.log OK
+probe/pb1-ladder changed: calls.log OK
+probe/un1-units changed: calls.log,stderr,stdout,tree.diff CHECK
+    calls.log +programs gh
+    calls.log +  User-Agent: tln/0.0.0
+    calls.log +delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    calls.log +list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
+    calls.log +http_get https://api.github.com/repos/acme/parser/releases?per_page=100
+    calls.log +write_atomic $HOME/.cache/roc/talon/index/github/acme/parser/1.json $HOME/.cache/roc/talon/index/github/acme/parser/1.meta
+    calls.log +list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
+    calls.log +http_get https://api.github.com/repos/acme/pf/releases?per_page=100
+    calls.log +write_atomic $HOME/.cache/roc/talon/index/github/acme/pf/1.json $HOME/.cache/roc/talon/index/github/acme/pf/1.meta
+    calls.log +platform
+    calls.log +read_files $HOME/.cache/roc/packages/u2J5ZhgwXSYn55Ac7xti1xFYVGz78yhBDqfZY2ZtFR6/Parser.roc $HOME/.cache/roc/packages/u2J5ZhgwXSYn55Ac7xti1xFYVGz78yhBDqfZY2ZtFR6/Yaml.roc
+    calls.log +tty
+    calls.log +read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.meta $HOME/.cache/roc/talon/index/github/acme/parser/1.json
+    calls.log +read_files $HOME/.cache/roc/talon/index/github/acme/pf/1.meta $HOME/.cache/roc/talon/index/github/acme/pf/1.json
+    calls.log +read_files $HOME/.cache/roc/packages/u2J5ZhgwXSYn55Ac7xti1xFYVGz78yhBDqfZY2ZtFR6/Parser.roc
+    calls.log +read_files $PROJECT/p6/main.roc
+    calls.log +read_files $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/Yaml.roc
+    calls.log +write_atomic $PROJECT/p6/main.roc
+    calls.log +read_files $PROJECT/p7/main.roc
+    calls.log +write_atomic $PROJECT/p7/main.roc
+    calls.log +read_files $PROJECT/p14/main.roc
+    calls.log +write_atomic $PROJECT/p14/main.roc
+    calls.log +read_files $PROJECT/p18/main.roc
+    calls.log +read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/Lib.roc
+    calls.log +write_atomic $PROJECT/p18/main.roc
+    calls.log -read_files $PROJECT/p2/main.roc
+    calls.log -write_atomic $PROJECT/p2/main.roc
+    stderr ? changed
+    stdout ? changed
+    tree.diff ? changed

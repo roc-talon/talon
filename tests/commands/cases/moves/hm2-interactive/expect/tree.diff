@@ -1,3 +1,13 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,7 @@
++format	1
++fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-14-38a3029	any	pass		
++fact	4G1RyBFYE1Y7HJ7xqLJs8ox3os8U3Fp5RdLFvxzyJ3i8	nightly-2026-10-14-38a3029	any	pass		
++fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	any	pass		
++fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
++fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
++fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
 --- home/.cache/roc/talon/index/github/acme/json/1.json
 +++ home/.cache/roc/talon/index/github/acme/json/1.json
 @@ -0,0 +1 @@

@@ -1,0 +1,8 @@
+cli/lib/Toolchain.roc
+cli/lib/RocInstall.roc
+tests/unit/toolchain.roc
+tests/scenarios/compilers/ri1-install-flow/
+tests/scenarios/compilers/ri2-refusals/
+tests/scenarios/fx/ri-real-fx-jobs/
+tests/commands/cases/roc/ri1-flow/
+docs/slices/021-roc-install.md

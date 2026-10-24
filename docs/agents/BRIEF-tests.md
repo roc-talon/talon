@@ -47,6 +47,7 @@ For shell runs, use the pinned binary: `ROC=/home/george/dev/Karakatiza666/talon
 | `roc check` of each new or changed Roc file | 0 errors. The stubs compile. |
 | `roc fmt --check` | Exit 0 |
 | The new tests | Each fails for the right reason ("todo", or a wrong value). Record the fail output in the slice file. |
+| Revert check | Only for the most tricky behaviors (user rule, 2026-10-23: reverts cost many tokens): about 5 to 10 mutations of a private reference, where a bug is likely and a test is easy to miss. No full mutation sweep. For a gap test, one hand mutation for that row. |
 | The old tests | All pass (`scripts/test.sh`, when it exists) |
 | Slice file | Rules, the public signatures, the test table (layer, file, case, rule ids), the output proposals, out of scope, questions. The status is `review`. |
 

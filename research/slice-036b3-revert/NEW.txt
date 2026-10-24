@@ -1,0 +1,7 @@
+cli/lib/InstallPlan.roc
+cli/lib/InstallWrite.roc
+cli/lib/ManageUpdate.roc
+cli/lib/ManageUse.roc
+packages/resolve/SolverBase.roc
+packages/resolve/SolverProbe.roc
+packages/resolve/SolverWhy.roc

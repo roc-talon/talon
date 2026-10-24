@@ -1,0 +1,5 @@
+unit check of acme/json 2.0.0 on nightly-2026-10-14-38a3029: pass
+tln: error[usage]: 'yaml' is not in the project
+tln: error[usage]: tln probe takes one name or one bundle file
+tln: error[usage]: tln probe --share needs a registry, and this version of tln has only --registry direct
+tln: error[usage]: tln probe --range needs a header alias or a bundle file: the project file has no hash

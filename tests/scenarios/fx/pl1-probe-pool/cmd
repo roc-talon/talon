@@ -1,0 +1,49 @@
+# R-PP6 R-PP7 R-PP3 R-P3 R-FL11 TW4 (slice 031): the pool of the real Fx. `fxprobe pool <slots>` runs a round with `probes!`. Each probe is the script `prog <name> <seconds>`: it logs `start <name>` and `end <name>`.
+# The pool adds the weights of the running probes (the real Fx does not know a check from a build). The log gives the largest number of probes at one time and the order of the starts.
+cat > prog <<'SH'
+#!/bin/sh
+echo "start $1 $(date +%s%N)" >> "$LOGFILE"
+sleep "$2"
+echo "end $1" >> "$LOGFILE"
+SH
+chmod +x prog
+LOGFILE=$PWD/log
+export LOGFILE
+# One round: the line `<name> <seconds> [weight]` is one probe of the round.
+round() {
+    pool=$1
+    shift
+    : > "$LOGFILE"
+    args=""
+    for p in "$@"; do
+        set -- $p
+        w=""
+        [ -n "${3:-}" ] && w="weight=$3"
+        args="$args -- 5 $PWD program=$PWD/prog $w $1 $2"
+    done
+    # shellcheck disable=SC2086
+    fxprobe pool "$pool" ${args#-- }
+    echo "max at once: $(awk '$1 == "start" { c++; if (c > m) m = c } $1 == "end" { c-- } END { print m + 0 }' "$LOGFILE")"
+    echo "last start: $(awk '$1 == "start" { n = $2 } END { print n }' "$LOGFILE")"
+}
+echo "== 13 checks (weight 1) in a pool of 12: 12 at once, the 13th waits for a free slot"
+round 12 "c01 0.5" "c02 0.5" "c03 0.5" "c04 0.5" "c05 0.5" "c06 0.5" "c07 0.5" "c08 0.5" "c09 0.5" "c10 0.5" "c11 0.5" "c12 0.5" "c13 0.5"
+echo "== 4 builds (weight 4) in a pool of 12: 3 at once"
+round 12 "b1 0.5 4" "b2 0.5 4" "b3 0.5 4" "b4 0.5 4"
+echo "== 1 build and 9 checks: the build and 8 checks are 12 slots, the 9th check waits (9 at once)"
+round 12 "b1 0.5 4" "c1 0.5" "c2 0.5" "c3 0.5" "c4 0.5" "c5 0.5" "c6 0.5" "c7 0.5" "c8 0.5" "c9 0.5"
+echo "== a pool of 2 (--slots 2): 2 checks at once"
+round 2 "c1 0.4" "c2 0.4" "c3 0.4" "c4 0.4" "c5 0.4"
+echo "== FIFO: in a pool of 5 the second build (4 slots) does not fit, and the check behind it does not start before it (c1 starts about 0.5 s after b1, not with b1)"
+round 5 "b1 0.5 4" "b2 0.5 4" "c1 0.5" "c2 0.5"
+echo "c1 waited for b2: $(awk '$2 == "b1" && $1 == "start" { b = $3 } $2 == "c1" && $1 == "start" { c = $3 } END { if (c - b > 400000000) print "yes"; else print "no" }' "$LOGFILE")"
+echo "== a weight above the pool takes the whole pool: 2 builds in a pool of 2 run one after the other"
+round 2 "b1 0.4 4" "b2 0.4 4"
+echo "== a pool of 1: one probe at a time"
+round 1 "c1 0.3" "c2 0.3" "c3 0.3"
+echo "== R-P3: a probe that hangs keeps its slot until the timeout kills it (1 s). In a pool of 2 the 3 checks use the other slot (2 at once). The result of the hang is TimedOut."
+: > "$LOGFILE"
+fxprobe pool 2 1 "$PWD" program="$PWD/prog" hang 30 -- 5 "$PWD" program="$PWD/prog" c1 0.3 -- 5 "$PWD" program="$PWD/prog" c2 0.3 -- 5 "$PWD" program="$PWD/prog" c3 0.3
+echo "max at once (a hang counts until the end of the round): $(awk '$1 == "start" { c++; if (c > m) m = c } $1 == "end" { c-- } END { print m + 0 }' "$LOGFILE")"
+echo "last start: $(awk '$1 == "start" { n = $2 } END { print n }' "$LOGFILE")"
+rm -f log prog

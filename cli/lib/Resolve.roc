@@ -5,6 +5,7 @@ import Picker
 import RemoveFlow
 import Report
 import ResolveBase
+import ResolveLoad
 import Vars
 import VerifyFlow
 
@@ -82,7 +83,7 @@ Resolve :: [].{
 	## The request is the one of `install!` (`command` is `Update`, `names` is `[]`).
 	picks! : Fx, Request => Try(List(Picker.Item), Fail)
 	picks! = |fx, request| {
-		loaded = ResolveBase.load!(fx, request)?
+		loaded = ResolveLoad.load!(fx, request)?
 		built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
 		items = Vars.picker(built.vars).keep_oks(
 			|alias| match built.vars.find_first(|v| v.uses.any(|u| u.alias == alias)) {

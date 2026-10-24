@@ -1,0 +1,9 @@
+cli/lib/OracleBase.roc
+cli/lib/OracleCause.roc
+cli/lib/OracleHint.roc
+cli/lib/OracleRequest.roc
+cli/lib/OracleSearch.roc
+cli/lib/PinOrder.roc
+cli/lib/ProbeFlow.roc
+cli/lib/ToolchainFail.roc
+cli/lib/ToolchainReport.roc

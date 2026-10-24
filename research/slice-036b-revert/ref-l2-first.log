@@ -1,0 +1,64 @@
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+       list_dirs $HOME/.cache/roc/toolchains
+       canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       probes 1
+FAIL workspace/ws2-verify-members
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -31,22 +31,23 @@
+       http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
+         User-Agent: tln/0.0.0
+       write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+      +list_dirs $HOME/.cache/roc/toolchains
+      +canonical $HOME/.cache $HOME/.cache/roc
+      +probes 2
+      +  probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      +  probe $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      +db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+      -list_dirs $HOME/.cache/roc/toolchains
+      -canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 3
+      +probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -  probe $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -  probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      @@ -77,12 +78,12 @@
+       read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+       list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+       read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+       list_dirs $HOME/.cache/roc/toolchains
+       canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       probes 1
+commands: 53 passed, 29 failed
+
+step       result seconds  budget
+l2         FAIL   4.4      30

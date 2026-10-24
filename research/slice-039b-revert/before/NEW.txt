@@ -1,0 +1,3 @@
+cli/lib/PickOptional.roc
+tests/commands/cases/upgrade/ur5-optional
+docs/slices/039b-upgrade-roc-downloads.md

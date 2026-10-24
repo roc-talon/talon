@@ -1,0 +1,126 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        ("a fail of 3.0.0 with a module: no module is used yet, so it touches nothing (036b2 adds the scan): done", run([row(json("3.0.0"), nightly, Fail, ["Yaml.roc"])]), "done json=3.0.0"),
+        ("a pass of another compiler: no check of this pair", run([row(json("3.0.0"), "nightly-2026-10-01-aaaaaaa", Pass, [])]), pair("3.0.0")),
+        ("a build row (target host): no check of this pair", run([{ ..row(json("3.0.0"), nightly, Pass, []), target: "x64musl" }]), pair("3.0.0")),
+        ("the same rows in another order (R-DT2)", run([hard("2.0.0"), hard("3.0.0")]), "done json=1.0.0"),
+        ("a real fail row of the header value beats the assumed pass: that value is out, and the pass of 3.0.0 is the result", run([row(json("1.0.0"), nightly, Fail, []), row(json("3.0.0"), nightly, Pass, [])]), "done json=3.0.0"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+nightly = "nightly-2026-10-14-38a3029"
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+json_slot = slot("json", [], json("1.0.0"), Free, [cand(json("1.0.0"), 30),
+cand(json("2.0.0"), 30), cand(json("3.0.0"), 30)])
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 7 tests in 2945.7 ms.:
+    6 passed
+    1 failed
+    0 compiler errors
+tests/unit/oracle.roc: All (5) tests passed in 4028.8 ms.
+tests/unit/out.roc: All (4) tests passed in 327.9 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 1578.4 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2933.1 ms.
+tests/unit/picker.roc: All (2) tests passed in 169.6 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 3293.5 ms.
+tests/unit/pick.roc: All (3) tests passed in 2941.9 ms.
+tests/unit/pin.roc: All (9) tests passed in 1290.4 ms.
+tests/unit/pins.roc: All (6) tests passed in 2731.0 ms.
+tests/unit/probe.roc: All (5) tests passed in 713.9 ms.
+tests/unit/project.roc: All (7) tests passed in 2854.9 ms.
+tests/unit/projects.roc: All (3) tests passed in 536.7 ms.
+tests/unit/prompt.roc: All (5) tests passed in 555.7 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2802.6 ms.
+tests/unit/ranges.roc: All (1) tests passed in 447.4 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1924.3 ms.
+tests/unit/ref.roc: All (4) tests passed in 626.7 ms.
+tests/unit/removal.roc: All (4) tests passed in 2165.0 ms.
+tests/unit/report.roc: All (3) tests passed in 420.8 ms.
+tests/unit/roots.roc: All (3) tests passed in 351.6 ms.
+tests/unit/scan.roc: All (2) tests passed in 442.7 ms.
+tests/unit/selector.roc: All (2) tests passed in 416.0 ms.
+tests/unit/setup.roc: All (10) tests passed in 674.5 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 232.4 ms.
+tests/unit/temp.roc: All (4) tests passed in 223.2 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 2144.5 ms.
+tests/unit/units.roc: All (6) tests passed in 951.3 ms.
+tests/unit/update.roc: All (2) tests passed in 2141.1 ms.
+tests/unit/uses.roc: All (2) tests passed in 665.8 ms.
+tests/unit/vars.roc: All (6) tests passed in 1737.4 ms.
+tests/unit/verify.roc: All (2) tests passed in 1615.7 ms.
+tests/unit/why.roc: All (6) tests passed in 2154.7 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+      @@ -225,19 +225,8 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+      -list_dirs $HOME/.cache/roc/toolchains
+      -canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+      -random
+      -copy_tree $PROJECT/p6 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+      -probes 1
+      -  probe $PROJECT/p6 nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=9
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p7/main.roc
+       list_dirs $PROJECT/p7
+       list_dirs $PROJECT
+      @@ -473,19 +462,8 @@
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+       db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -list_dirs $HOME/.cache/roc/toolchains
+      -canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+      -random
+      -copy_tree $PROJECT/p14 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+      -probes 1
+      -  probe $PROJECT/p14 nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=9
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p15/main.roc
+       list_dirs $PROJECT/p15
+       list_dirs $PROJECT
+      @@ -625,18 +603,9 @@
+         probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-04-8a7b6c5 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+      -random
+      -copy_tree $PROJECT/p18 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/Lib.roc
+      -write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+      -probes 1
+      -  probe $PROJECT/p18 nightly-2026-10-04-8a7b6c5 $HOME/bin/roc check main.roc timeout=9
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       read_files $PROJECT/p18/Lib.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/ws/apps/a/main.roc
+       list_dirs $PROJECT/ws/apps/a
+       list_dirs $PROJECT/ws/apps
+commands: 81 passed, 3 failed
+
+step       result seconds  budget
+l0         FAIL   6.5      10
+l2         FAIL   2.4      30

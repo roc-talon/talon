@@ -1,0 +1,8 @@
+cli/lib/Setup.roc
+tests/unit/setup.roc
+tests/commands/cases/setup/st1-flow
+tests/commands/cases/setup/st2-copy-fallback
+tests/scenarios/setup/st1-setup-real
+tests/scenarios/fx/st1-real-fx-hard-link
+tests/commands/cases/setup/st3-gaps
+tests/commands/cases/setup/st4-no-tln

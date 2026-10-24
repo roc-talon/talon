@@ -1,0 +1,11 @@
+A1	an anchor is free when no name is given (R-UP1)	l0 caught by: vars {'ranges': 'pass', 'vars': 'FAIL', 'upgrade': 'pass'}	l2: -
+A2	a movable variable keeps its ranges (R-SP23)	l0 caught by: vars {'ranges': 'pass', 'vars': 'FAIL', 'upgrade': 'pass'}	l2: -
+A3	the wildcard end is lost (R-UP5)	l0 caught by: ranges,upgrade {'ranges': 'FAIL', 'vars': 'pass', 'upgrade': 'FAIL'}	l2: -
+A4	a fail row of a module that the app does not use is a reason (R-UM1)	l0 caught by: upgrade {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'FAIL'}	l2: -
+A5	2 members under one file give 2 pairs for one key (R-SP25)	l0 caught by: upgrade {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'FAIL'}	l2: -
+A6	update X@latest does not rewrite the range (R-UP11)	l0 caught by: upgrade {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'FAIL'}	l2: -
+A7	the suffix new series is on the wrong lines (R-UP3)	l0 caught by: none {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'pass'}	l2: FAIL upgrade/ug1-flow,upgrade/ug2-lag,upgrade/ug3-move
+A8	update reports lags too (R-UP10)	l0 caught by: none {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'pass'}	l2: FAIL resolve/rs-new-toml,upgrade/ug1-flow,upgrade/ug2-lag
+A9	upgrade uses the strategy of talon.toml (Q2)	l0 caught by: none {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'pass'}	l2: FAIL upgrade/ug1-flow
+A10	the toml line has (was ...) also when the value is the same (Q6)	l0 caught by: none {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'pass'}	l2: pass
+A6	update X@latest does not rewrite the range (R-UP11)	l0 caught by: none {'ranges': 'pass', 'vars': 'pass', 'upgrade': 'pass'}	l2: FAIL upgrade/ug1-flow

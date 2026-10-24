@@ -1,0 +1,4 @@
+[
+{"tag_name":"nightly-2026-10-14-38a3029","draft":false,"prerelease":false,"published_at":"2026-10-14T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","size":574,"digest":"sha256:4693ae12293e49d2412392528a48964ff2d45e23883808496ba15034f47825ed","content_type":"application/gzip","browser_download_url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz"}]},
+{"tag_name":"nightly-2026-10-09-258ab27","draft":false,"prerelease":false,"published_at":"2026-10-09T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","size":573,"digest":"sha256:40aeccb5f16c6a8a604037a1eb8d0f8e803753d4f891a038fa8fb6e243630393","content_type":"application/gzip","browser_download_url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz"}]}
+]

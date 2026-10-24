@@ -1,0 +1,21 @@
+tln: error[usage]: tln verify writes nothing, so it rejects --dry-run
+tln: error[usage]: tln verify writes nothing, so it rejects --frozen
+tln: error[usage]: tln verify takes no name
+check: passed
+build: passed
+verified: the tuple passes. Nothing was written.
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. Nothing was written.
+tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is a nightly, and nightly is false (set by TALON_NIGHTLY). Run tln upgrade roc or tln roc use <id>.
+tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is a nightly, and nightly is false (set by [toolchain] nightly in talon.toml). Run tln upgrade roc or tln roc use <id>.
+tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. Run: tln roc install nightly-2026-10-09-258ab27.
+tln: error[usage]: ROC_TOOLCHAIN is not a full compiler id: nightly-2026-10
+tln: error[input]: $PROJECT/main.roc:5: the roc pin nightly-2026-10-14 is not a full compiler id
+tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is a nightly, and nightly is false (set by nightly in config.toml). Run tln upgrade roc or tln roc use <id>.
+tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. Run: tln roc install nightly-2026-10-09-258ab27.
+tln: error[no_tuple]: the compiler nightly-2026-10-14-38a3029 from ROC_TOOLCHAIN is outside [toolchain] roc (>=nightly-2026-10-20-aaaaaaa). Change ROC_TOOLCHAIN or [toolchain] roc.

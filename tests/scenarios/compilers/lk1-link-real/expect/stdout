@@ -1,0 +1,105 @@
+== 1: R-R12 R-LK4: link. The dir of link-dev has only .talon.json: no copy, no file system link. The text of .talon.json has the absolute path of the target and the time of Talon.
+== tln roc link dev roc-src/zig-out/bin/roc
+linked link-dev -> $PROJECT/roc-src/zig-out/bin/roc
+exit 0
+.talon.json
+{"format":1,"id":"link-dev","path":"$PROJECT/roc-src/zig-out/bin/roc","installed_at":"2026-10-22T12:00:00Z"}
+== 2: R-R5 R-LK4 R-PX2: the proxy runs the target path, by +link-dev (rank 1), by ROC_TOOLCHAIN (rank 2) and by the global default (rank 6). The arguments go on. .last-use has the time of Talon (R-CC9).
+== $WORK/launch/roc +link-dev check --opt=speed
+build 1 ran as $PROJECT/roc-src/zig-out/bin/roc: check --opt=speed
+exit 0
+== env ROC_TOOLCHAIN=link-dev $WORK/launch/roc version
+build 1 ran as $PROJECT/roc-src/zig-out/bin/roc: version
+exit 0
+== tln roc default link-dev
+link-dev is now the default compiler
+exit 0
+== $WORK/launch/roc version
+build 1 ran as $PROJECT/roc-src/zig-out/bin/roc: version
+exit 0
+2026-10-22T12:00:00Z
+== 3: R-LK1: a link follows its target: a rebuild changes the compiler under the same id.
+== $WORK/launch/roc +link-dev version
+build 2 ran as $PROJECT/roc-src/zig-out/bin/roc: version
+exit 0
+== 4: R-R13 R-LK2 R-LK3: a copy of build 2 keeps the executable bit, and a later rebuild does not change it. The dir has roc and .talon.json (source, not path).
+== tln roc link --copy fix-2 roc-src/zig-out/bin/roc
+copied $PROJECT/roc-src/zig-out/bin/roc to copy-fix-2
+exit 0
+.talon.json
+roc
+{"format":1,"id":"copy-fix-2","source":"$PROJECT/roc-src/zig-out/bin/roc","installed_at":"2026-10-22T12:00:00Z"}
+== $WORK/launch/roc +copy-fix-2 version
+build 2 ran as $HOME/.cache/roc/toolchains/copy-fix-2/roc: version
+exit 0
+== $WORK/launch/roc +link-dev version
+build 3 ran as $PROJECT/roc-src/zig-out/bin/roc: version
+exit 0
+== 5: R-LK2: a name that exists is an error, the copy stays. --force replaces the copy (now build 3). A link has no --force (R-FL12): exit 2, and the same for a link that exists.
+== tln roc link --copy fix-2 roc-src/zig-out/bin/roc
+exit 2
+== $WORK/launch/roc +copy-fix-2 version
+build 2 ran as $HOME/.cache/roc/toolchains/copy-fix-2/roc: version
+exit 0
+== tln roc link --copy --force fix-2 roc-src/zig-out/bin/roc
+copied $PROJECT/roc-src/zig-out/bin/roc to copy-fix-2
+exit 0
+== $WORK/launch/roc +copy-fix-2 version
+build 3 ran as $HOME/.cache/roc/toolchains/copy-fix-2/roc: version
+exit 0
+== tln roc link --force dev roc-src/zig-out/bin/roc
+exit 2
+== tln roc link dev roc-src/zig-out/bin/roc
+exit 2
+== 6: R-LK2 R-LK4: a symbolic link at the source (the path has a .. part). A copy is a plain file with the bytes behind the link. A link records the absolute path with no symbolic link resolved, so a rebuild that replaces the symbolic link is followed.
+== tln roc link --copy via-link roc-src/zig-out/../lnk-roc
+copied $PROJECT/roc-src/lnk-roc to copy-via-link
+exit 0
+the copy is a plain file
+== $WORK/launch/roc +copy-via-link version
+build 3 ran as $HOME/.cache/roc/toolchains/copy-via-link/roc: version
+exit 0
+== tln roc link via-link roc-src/zig-out/../lnk-roc
+linked link-via-link -> $PROJECT/roc-src/lnk-roc
+exit 0
+{"format":1,"id":"link-via-link","path":"$PROJECT/roc-src/lnk-roc","installed_at":"2026-10-22T12:00:00Z"}
+== $WORK/launch/roc +link-via-link version
+other build ran as $PROJECT/roc-src/lnk-roc: version
+exit 0
+== 7: R-CM15 R-FL12 R-R12: the usage failures: no operand, a missing file, a name that is not one word, a flag of another command, --force with no --copy.
+== tln roc link
+exit 2
+== tln roc link dev2 roc-src/missing
+exit 2
+== tln roc link bad name roc-src/zig-out/bin/roc
+exit 2
+== tln roc link --git dev3 roc-src/zig-out/bin/roc
+exit 2
+== 7b: R-EV22 (gap row): a TALON_NOW that is not a UTC time is exit 2 with its text, before the lock. Nothing is made (the final ls shows no link-dev9).
+== env TALON_NOW=yesterday tln roc link dev9 roc-src/zig-out/bin/roc
+exit 2
+== 8: R-J3 R-LY1: roc list shows the 2 kinds with the date of TALON_NOW. --json has the envelope only.
+== tln roc ls
+  ID             KIND  INSTALLED   LAST USE
+  copy-fix-2     copy  2026-10-22  2026-10-22
+  copy-via-link  copy  2026-10-22  2026-10-22
+* link-dev       link  2026-10-22  2026-10-22
+  link-via-link  link  2026-10-22  2026-10-22
+exit 0
+== tln roc link --json --copy fix-4 roc-src/zig-out/bin/roc
+{"schema":1,"command":"roc link","ok":true,"data":{"id":"copy-fix-4","kind":"copy","source":"$PROJECT/roc-src/zig-out/bin/roc","replaced":false},"error":null}
+exit 0
+== 9: R-LK4 R-E1: the target is deleted. The proxy does not look at the file: the start fails with exit 18. The copy still runs.
+== $WORK/launch/roc +link-dev version
+tln: error[environment]: cannot run $PROJECT/roc-src/zig-out/bin/roc: (text of the platform)
+exit 18
+== $WORK/launch/roc +copy-fix-2 version
+build 3 ran as $HOME/.cache/roc/toolchains/copy-fix-2/roc: version
+exit 0
+== R-CC1: no temp dir, no trash dir, no lock is left in toolchains/
+0
+copy-fix-2
+copy-fix-4
+copy-via-link
+link-dev
+link-via-link

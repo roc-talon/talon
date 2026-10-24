@@ -1,0 +1,105 @@
+# R-GC5 R-GC6 R-GC3 R-GC9 R-GC11 R-CC2 R-CC10 R-EV22 R-PD12 R-PD13 R-CM15 R-J3 R-OUT2 (slice 028): `tln cache gc` on the real binary, with the real Fx (list, read, lock, rename, delete, write).
+# R-GC1 R-GC2 R-GC3 R-GC4 R-GC11 (slice 028b, part 8, and the sizes of all parts): the age rule for build-cache dirs and packages, and the real tree_info of the real Fx.
+# The store: 7 nightlies, a link, 7 compat dirs, a package, 3 project files. config.toml has `gc-age = "7d"`. TALON_NOW is 2026-10-22T12:00:00Z. No network (the command needs none).
+# The stale items are made here: `touch -d` gives the age of the real clock (2000: older than 1 day). A new item has the real time, so it is younger than 1 day.
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+R=$XDG_CACHE_HOME/roc
+T=$R/toolchains
+old='2000-01-01 00:00:00'
+left() { (cd $R && find talon toolchains packages \( -name '*.tmp' -o -name '*.trash' -o -name '*.locks' -o -name '*.lock' -o -path 'talon/tmp/*' \) | sort); }
+kept() { (cd $R && ls toolchains && ls | grep compat); }
+mkdir -p $R/talon/tmp
+touch $R/compat-other/cache.bin $R/compat-other/deep/entry.bin
+printf '{"format":1,"projects":[{"path":"%s/pa/main.roc","last_use":1792540800},{"path":"%s/pb/main.roc","last_use":1792281600},{"path":"%s/pold/main.roc","last_use":1785542400},{"path":"%s/pgone/main.roc","last_use":1792454400}]}\n' "$PWD" "$PWD" "$PWD" "$PWD" > $R/talon/projects.json
+sed -i "s#ROC_SRC#$PWD/roc-src/roc#" $T/link-dev/.talon.json
+mkdir $T/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $T/nightly-2026-09-05-4444444.0123456789abcdef.trash $T/nightly-2026-09-06-3333333.1123456789abcdef.trash
+echo partial > $T/nightly-2026-09-05-4444444.0123456789abcdef.trash/roc
+touch -d "$old" $T/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $T/nightly-2026-09-05-4444444.0123456789abcdef.trash
+mkdir $R/talon/tmp/0123456789abcdef $R/talon/tmp/1123456789abcdef
+echo copy > $R/talon/tmp/0123456789abcdef/main.roc
+touch -d "$old" $R/talon/tmp/0123456789abcdef
+echo registry > $R/talon/tmp/2123456789abcdef.locks
+echo registry > $R/talon/tmp/3123456789abcdef.locks
+touch -d "$old" $R/talon/tmp/2123456789abcdef.locks
+echo partial > $R/packages/h1.0123456789abcdef.tmp
+echo partial > $R/talon/projects.json.fedcba9876543210.tmp
+touch -d "$old" $R/packages/h1.0123456789abcdef.tmp $R/talon/projects.json.fedcba9876543210.tmp
+
+echo "== 1: a dry run (R-GC11). It lists what a run would remove and removes nothing. The age is 7 days (R-GC9, D17): bbbbbbb is pinned by pa and used 10 days ago, so it stays (a pin keeps at any age). ddddddd has no pin and was used 10 days ago, so it goes. eeeeeee has no pin and was used 3 days ago, so it stays."
+st tln cache gc --dry-run
+left
+kept
+
+echo "== 2: another GC holds the lock (R-CC10): the line, exit 0, nothing removed, the lock dir of the other GC stays"
+mkdir $R/talon/gc.lock; echo other > $R/talon/gc.lock/owner; touch $R/talon/gc.lock/beat
+st tln cache gc
+test -d $R/talon/gc.lock && echo "gc.lock is kept"
+left
+kept
+rm -r $R/talon/gc.lock
+
+echo "== 3: an install holds the lock of 6666666 (R-CC10): it is skipped and its compat dir stays. All else that is old goes. The young items stay (R-CC2)."
+mkdir $T/nightly-2026-05-01-6666666.lock; echo other > $T/nightly-2026-05-01-6666666.lock/owner; touch $T/nightly-2026-05-01-6666666.lock/beat
+st tln cache gc
+left
+kept
+cat $R/talon/projects.json
+
+echo "== 4: the install is done: the next run removes 6666666 and its compat dir. --json: the text goes to stderr."
+rm -r $T/nightly-2026-05-01-6666666.lock
+st tln cache gc --json
+kept
+
+echo "== 5: nothing is left to remove"
+st tln cache gc
+left
+
+echo "== 6: TALON_NOW is the time for the toolchains and the projects, the real clock is the time for the temps (R-EV22). 7 months later by TALON_NOW, pa and pb are too old, so they pin nothing, and bbbbbbb, ccccccc and eeeeeee are old. The young temps are not stale."
+st env TALON_NOW=2027-06-01T00:00:00Z tln cache gc --dry-run
+
+echo "== 7: R-CM15, no operand. R-GC1, R-GC8: the build cache compat-other (its files are touched now) and an app file stay whole. The package CZsY7... stays (nothing uses it, but its files are young: R-GC4). No lock dir is left."
+st tln cache gc nightly-2026-08-01-aaaaaaa
+ls $R/packages
+find $R/compat-other $HOME/.local/bin -type f | sort
+find $R -name '*.lock' | wc -l | tr -d ' '
+
+echo "== 8: R-GC1 R-GC2 R-GC3 R-GC4 R-GC11 (slice 028b): build-cache dirs and packages, with the real clock and the real sizes. ROC_CACHE_DIR is \$HOME/.cache/roc-builds, so the build-cache dirs are not in the cache root (R-LY1). The age is 7 days (config.toml): a file that was touched with the year 2000 is old, a new file is young."
+BD=$HOME/.cache/roc-builds
+PK=$R/packages
+mkdir -p $BD/compat-old $BD/compat-mixed/deep $BD/compat-new $BD/nightly-2025-01-01-abc1234 $BD/debug-9999999 $BD/other-old
+echo "old cache" > $BD/compat-old/cache.bin
+echo "old file" > $BD/compat-mixed/old.bin
+echo "new file" > $BD/compat-mixed/deep/new.bin
+echo "new cache" > $BD/compat-new/cache.bin
+echo "old nightly" > $BD/nightly-2025-01-01-abc1234/c.bin
+echo "old debug" > $BD/debug-9999999/e.bin
+echo "not a build cache dir" > $BD/other-old/old.bin
+touch -d "$old" $BD/compat-old/cache.bin $BD/compat-mixed/old.bin $BD/nightly-2025-01-01-abc1234/c.bin $BD/debug-9999999/e.bin $BD/other-old/old.bin
+# pa uses P1 (895yie..., its pf), P1 names P3 (4DQvwn...). P4 is used by nothing and is old, with its sidecar. P5 is used by nothing and is young. P6 is used by nothing, its main.roc is old and one file in it is young. P1, P3 and P4 are old.
+P1=895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw
+P3=4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN
+P4=EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc
+P5=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
+P6=3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA
+mkdir -p $PK/$P1 $PK/$P3 $PK/$P4 $PK/$P5 $PK/$P6/deep
+printf 'package [Lib] {\n\ttext: "https://github.com/acme/text/releases/download/1.0.0/%s.tar.zst",\n}\n' $P3 > $PK/$P1/main.roc
+echo '{}' > $PK/$P1.deps.json
+echo 'package [Lib] {}' > $PK/$P3/main.roc
+echo 'package [Lib] {}' > $PK/$P4/main.roc
+echo '{}' > $PK/$P4.deps.json
+echo 'package [Lib] {}' > $PK/$P5/main.roc
+echo 'package [Lib] {}' > $PK/$P6/main.roc
+echo 'module []' > $PK/$P6/deep/touched.roc
+touch -d "$old" $PK/$P1/main.roc $PK/$P1.deps.json $PK/$P3/main.roc $PK/$P4/main.roc $PK/$P4.deps.json $PK/$P6/main.roc
+files_left() { (cd $HOME/.cache && find roc-builds roc/packages -type f | sort); }
+files_left
+echo "== 8a: a dry run lists compat-old, debug-9999999 and nightly-2025-01-01-abc1234 (R-GC2, R-GC3), and the package P4 (R-GC4), each with its size, and removes nothing"
+st env ROC_CACHE_DIR=$BD tln cache gc --dry-run
+files_left
+echo "== 8b: the real run removes the same, and the sidecar of P4. compat-mixed stays whole: one file is young, so no file in it is removed (R-GC1). P1 and P3 are old, but pa uses P1 and P1 names P3. P5 and P6 are young. other-old is no build-cache dir."
+st env ROC_CACHE_DIR=$BD tln cache gc --json
+files_left
+echo "== 8c: nothing is left to remove"
+st env ROC_CACHE_DIR=$BD tln cache gc
+

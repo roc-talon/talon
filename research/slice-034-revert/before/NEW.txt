@@ -1,0 +1,7 @@
+packages/resolve/main.roc
+packages/resolve/Domain.roc
+packages/resolve/Solver.roc
+packages/resolve/tests/domain.roc
+packages/resolve/tests/solver.roc
+tests/fuzz/pubgrub.roc
+docs/slices/034-pubgrub-core.md

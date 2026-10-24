@@ -1,0 +1,34 @@
+== tln install
+exit 13
+== tln install --frozen
+exit 14
+== tln install --yes
+$PROJECT/talon.toml: key js -> json
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0
+== tln install --frozen
+the header satisfies talon.toml
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln install --frozen
+the header satisfies talon.toml
+exit 0
+== tln install --frozen acme/json
+exit 2
+== tln add acme/util
+exit 2
+== tln add --file apps/b/main.roc acme/json@2.2.0
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+exit 13
+== tln add --file apps/b/main.roc acme/json
+check: passed
+build: passed
+$PROJECT/apps/b/main.roc
+  + json: acme/json 2.0.0
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== tln probe ./apps/b
+exit 1

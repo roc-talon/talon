@@ -1,0 +1,6 @@
+cli/lib/Toolchain.roc
+cli/lib/Compiler.roc
+cli/lib/Consent.roc
+cli/lib/RocInstall.roc
+cli/lib/ResolveBase.roc
+cli/lib/Proxy.roc

@@ -272,3 +272,69 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-SO5 R-SO18 R-PD2 (slice 022, G4 of the review): `roc_version` is the path of the nearest `.roc-version` on the walk up from the directory of the project file (the stop directory is in the walk, so it is checked).
+# A `.roc-version` below that directory (in the start directory, when the project file is in a parent) is not used, so `--file` and the walk agree. With no current member (a workspace root) the walk starts at its first
+# directory. The result does not depend on a `talon.toml`: `select` decides that (R-SO5, R-PD6).
+expect {
+	rv = ".roc-version"
+	shown_rv = |r| match r {
+		Ok(p) => Ok(p.roc_version)
+		Err(f) => Err(Fail.line(f))
+	}
+	rows = [
+		(
+			"the main.roc of a parent directory, a .roc-version at the stop directory",
+			Err(Unset),
+			[d("/s/app/src", ["x.roc"], Err(None)), d("/s/app", ["main.roc"], Err(None)), d("/s", [".git", rv], Err(None))],
+			[],
+			Ok(Ok("/s/.roc-version")),
+		),
+		(
+			"a .roc-version below the directory of the project file is not used (G4)",
+			Err(Unset),
+			[d("/s/app/src", ["x.roc", rv], Err(None)), d("/s/app", ["main.roc"], Err(None)), d("/s", [".git"], Err(None))],
+			[],
+			Ok(Err(None)),
+		),
+		(
+			"the nearest wins",
+			Err(Unset),
+			[d("/s/app", ["main.roc", rv], Err(None)), d("/s", [".git", rv], Err(None))],
+			[],
+			Ok(Ok("/s/app/.roc-version")),
+		),
+		(
+			"--file: the walk starts in the directory of the file",
+			Ok("/s/app/main.roc"),
+			[d("/s/app", ["main.roc", rv], Err(None)), d("/s", [".git"], Err(None))],
+			[],
+			Ok(Ok("/s/app/.roc-version")),
+		),
+		(
+			"none on the walk",
+			Err(Unset),
+			[d("/s/app", ["main.roc"], Err(None)), d("/s", [".git"], Err(None))],
+			[],
+			Ok(Err(None)),
+		),
+		(
+			"a member of a workspace: the root has one, and it has a talon.toml too",
+			Ok("/r/apps/a/main.roc"),
+			[d("/r/apps/a", ["main.roc"], Err(None)), d("/r/apps", [], Err(None)), d("/r", [".git", "main.roc", "talon.toml", rv], Ok(ws))],
+			members4,
+			Ok(Ok("/r/.roc-version")),
+		),
+		(
+			"a workspace with no current member: from the first directory",
+			Err(Unset),
+			[d("/r", [".git", "talon.toml", rv], Ok(ws))],
+			members4,
+			Ok(Ok("/r/.roc-version")),
+		),
+	]
+	run = |file, walk, members| shown_rv(Project.find({ file, walk, members }))
+	bad = rows.keep_if(|(_, file, walk, members, want)| run(file, walk, members) != want).map(|(label, file, walk, members, want)| (label, want, run(file, walk, members)))
+	dbg bad
+	bad == []
+}

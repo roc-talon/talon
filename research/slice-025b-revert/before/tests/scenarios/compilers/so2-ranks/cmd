@@ -1,0 +1,30 @@
+# R-SO1 R-SO3 R-SO4 R-SO5 R-SO6 R-SO13 R-SO14 R-SO18 R-NS2 R-NS4 R-EV5 R-PH6 (slice 022): the selection ranks on the real binary. The fake roc on PATH is nightly-2026-10-14-38a3029.
+# The store has 1 compiler: nightly-2026-10-09-258ab27. TALON_NOW=2026-10-22T12:00:00Z. Every run stops before a probe, so no `roc check` call is made.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+C=$XDG_CONFIG_HOME/talon/config.toml
+mkdir -p $XDG_CONFIG_HOME/talon
+
+# R-SO18: w1 has the header pin nightly-2026-10-14-38a3029 and .roc-version nightly-2026-10-13-91fa0c2. `ls` prints the warning on stderr, and the list on stdout.
+st tln ls --file w1/main.roc
+# R-SO5: w2 has no pin and no talon.toml, so .roc-version (rank 5) names the compiler. It is a nightly and the switch is off (rank 1): exit 10, the text names .roc-version.
+st env TALON_NIGHTLY=0 tln install --file w2/main.roc
+# R-SO6: w3 has no pin and no .roc-version, so the global default (rank 6) names the compiler: exit 10 and the text names the default.
+printf 'default-roc = "nightly-2026-10-09-258ab27"\n' > $C
+st env TALON_NIGHTLY=0 tln install --file w3/main.roc
+# R-SO5: .roc-version beats the default (rank 5 before rank 6): the text names .roc-version again.
+st env TALON_NIGHTLY=0 tln install --file w2/main.roc
+# R-SO4 R-SO13: [toolchain] roc is a range, and the only installed compiler (2026-10-09) is below it: exit 13, no fall through to .roc-version or the default.
+st tln install --file w5/main.roc
+# R-SC12 R-EC19: a prefix in .roc-version is a value of the wrong form: exit 19.
+st tln install --file w4/main.roc
+# R-TF4: a default-roc that is not a full id: exit 19, the text names config.toml.
+printf 'default-roc = "debug-1a2b3c4"\n' > $C
+st tln install --file w3/main.roc
+rm $C
+
+# R-NS2 R-NS4: the switch is off and the list has no release: `roc install @latest` exit 10, and the text names the switch and its source.
+st env TALON_NIGHTLY=0 tln roc install @latest
+printf 'nightly = false\n' > $C
+st tln roc install @latest
+echo "== the files are not changed"
+cat w1/.roc-version

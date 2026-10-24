@@ -1,0 +1,5 @@
+T05 R-GC4 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1
+T06 R-GC11 cli/RealFiles.roc NOT CAUGHT 
+Z01 R-GC11 cli/lib/Toolchain.roc caught unit/toolchain
+Z02 R-GC11 cli/lib/Toolchain.roc caught unit/toolchain
+code equals code-final: True

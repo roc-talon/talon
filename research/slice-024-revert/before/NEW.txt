@@ -1,0 +1,9 @@
+cli/lib/Manage.roc
+cli/lib/RocManage.roc
+tests/unit/manage.roc
+tests/commands/cases/roc/ls1-list/
+tests/commands/cases/roc/df1-default/
+tests/commands/cases/roc/rm1-remove/
+tests/scenarios/compilers/mg1-manage/
+docs/slices/024-roc-manage.md
+research/slice-024-revert/

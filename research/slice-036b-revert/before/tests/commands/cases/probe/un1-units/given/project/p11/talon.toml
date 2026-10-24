@@ -1,0 +1,4 @@
+[dependencies]
+
+[resolution]
+probe = { max = 3 }

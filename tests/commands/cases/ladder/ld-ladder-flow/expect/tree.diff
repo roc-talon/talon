@@ -1,3 +1,14 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,8 @@
++format	1
++fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail		2d071fc7bb0ebcae596395e13d72344d13989c7e0408fa2a22573238d7276b71
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		d1d95da222dbe7df7798e9b3ef0cdbfed122f1ef9e83c6b969bd4313191f491d
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
++fact	8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f	nightly-2026-10-14-38a3029	any	pass		
++fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
 --- home/.cache/roc/talon/index/github/acme/json/1.json
 +++ home/.cache/roc/talon/index/github/acme/json/1.json
 @@ -0,0 +1 @@

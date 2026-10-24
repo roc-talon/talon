@@ -110,3 +110,52 @@ The test agent writes the tests first, then the code agent (TW18). Rows that sha
 | 3 | unmanaged entries (NC1 to NC6) | Uses the TN entities in `Lookup` and `Alias`. Changes `Add` and the write path before HM changes them. R-SP23 of HM relies on "an unmanaged entry is no variable". |
 | 4 | one closure model (CF1 to CF3) | Merges the 2 loops in `PickFlow` and `Walk`, and puts the closure rule in `Pick.step`. HM then reuses the one loop. |
 | 5 | held moves (HM1 to HM7) | Largest. Changes `Pick.step` again (slot holds, second search) and the write path. Builds on the CF loop and the NC `Add` changes. |
+
+## 7. Answers of 2026-10-22: duplicate ids and O1
+
+Source: `docs/slices/ANSWERS.md`.
+
+### 7.1 Duplicate rule ids
+
+No id is renumbered. A check of each pair shows one definition and one row that is not a definition. The earlier check counted each line that starts with `| R-XX |` as a definition.
+
+| Id | Definition | Other line | What the other line is |
+| --- | --- | --- | --- |
+| R-CR1 | DESIGN.md:94 | DESIGN.md:288 | The index row of DESIGN.md 5 |
+| R-CF1 | DESIGN.md:500 | DESIGN.md:342 | The index row of DESIGN.md 5 |
+| R-AP45 | DESIGN-REGISTRY.md:189 | DESIGN-REGISTRY.md:253 | The test row of the rule (Registry 4.2, "Tests") |
+| R-AP46 | DESIGN-REGISTRY.md:198 | DESIGN-REGISTRY.md:251 | The test row of the rule |
+| R-AP47 | DESIGN-REGISTRY.md:210 | DESIGN-REGISTRY.md:252 | The test row of the rule |
+
+Each citation in the design files, `cli/`, `tests/`, `docs/`, `research/` and `cloudflare-workers/` cites the one definition. So no citation changes.
+
+`scripts/rules.sh` gives each id once (`sort -u` on the id and the file). With no group argument, it gives no id twice.
+
+The index row R-SE (DESIGN.md:344) now says R-SE1 to R-SE16. All other index rows of DESIGN.md 5 give the largest id of their group.
+
+### 7.2 O1: releases of the movable groups with a registry (P2)
+
+Answer: a second closure query, only when the first search with the held variables fixed finds no tuple (R-SP16). The first query does not change. With `direct`, nothing changes (R-DI1 already lists the movable groups).
+
+| File:line | Rule | Edit |
+| --- | --- | --- |
+| DESIGN-REGISTRY.md:73 | R-AP3 | One more round trip for the second search of a held move |
+| DESIGN-REGISTRY.md:100 | R-AP16 `groups` | The first query does not hold the movable groups. The second query: only these groups with the ranges of a moved variable (R-SP23), empty `hashes`, the same `compilers` |
+| DESIGN-RESOLUTION.md:347 | R-AL2 | The second search can send one more query |
+| DESIGN-RESOLUTION.md:359, 363 | R-AL8 source 2, closure cost | The answer of the second query is source 2. 1 more request |
+| DESIGN-RESOLUTION.md:482 | R-SP24 | The candidates of the movable variables: second query with a registry, release lists with `direct` |
+| DESIGN-CLI.md:1277 | R-DI1 | The movable group is listed only when the first search fails. With a registry, the closure query gives the lists, and the movable groups come in a second query |
+
+New open item (TW17, not decided here):
+
+| # | Item | Why |
+| --- | --- | --- |
+| O3 | The two answers have two `log_size` values (R-AP17, R-AP18). Which one does R-DT5 print, and does the client hide the releases of the second answer with a `log_index` larger than the `log_size` of the first answer (as `--snapshot`, R-AP19)? | Proposal: yes, the first `log_size` is the snapshot of the whole command. Else a publish between the 2 queries gives a tuple from 2 states of the log (R-DT1 to R-DT6). |
+
+### O3 (decided by the manager, 2026-10-22)
+
+The second query of a held move: the client applies the `log_size` of the first answer to the second answer as a `log:N` snapshot (R-AP19). The 2 answers show one state of the log, and R-DT5 prints the first `log_size`. No change to the Worker. Edit: DESIGN-REGISTRY.md R-AP16 `groups`.
+
+### Correction (2026-10-22)
+
+The "old duplicate ids" of section 4 were a wrong count: R-AP45 to R-AP47, R-CF1 and R-CR1 each have one definition, and the other line is an index row or a test row. No id was renumbered. Only the R-SE index row was fixed (R-SE1 to R-SE16).

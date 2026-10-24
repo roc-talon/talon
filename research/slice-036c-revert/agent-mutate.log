@@ -1,0 +1,21 @@
+C1: CAUGHT (    0 compiler errors)  [D2 revisit: the assumed pass on every compiler of D]
+C2: CAUGHT (    0 compiler errors)  [an inferred fact replaces the assumed pass]
+C3: CAUGHT (    0 compiler errors)  [the hint is the newest nightly, not the oldest]
+cli/lib/Explain.roc: OK
+cli/lib/Oracle.roc: OK
+cli/lib/OracleDomain.roc: OK
+cli/lib/PickLoop.roc: OK
+cli/lib/main.roc: OK
+C4: CAUGHT (    0 compiler errors)  [Wide for a failure with no probe cause]
+C5: CAUGHT (    0 compiler errors)  [Wide for a Pairs of Allowed]
+C6: CAUGHT (    0 compiler errors)  [Off does not ask for D before a lookup round]
+C7: CAUGHT (    0 compiler errors)  [H not in D is not degraded to [H]]
+C8: CAUGHT (    0 compiler errors)  [the hint does not accept a header that was not read]
+C9: CAUGHT (    0 compiler errors)  [the option to stop using a module is repeated]
+C10: CAUGHT (FAIL probe/dm1-domain)  [wide! asks the db again for the keys that were looked up]
+C11: CAUGHT (FAIL probe/dm1-domain)  [a list without H is read as D]
+cli/lib/Explain.roc: OK
+cli/lib/Oracle.roc: OK
+cli/lib/OracleDomain.roc: OK
+cli/lib/PickLoop.roc: OK
+cli/lib/main.roc: OK

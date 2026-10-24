@@ -1,0 +1,19 @@
+nightly nightly-2026-July-31-123c5d7 2026-07-31T11:56:54Z 162 a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795 http://127.0.0.1:$PORT/dl/nightly-2026-July-31-123c5d7/roc_nightly-linux_x86_64-2026-07-31-123c5d7.tar.gz
+nightly nightly-2026-10-09-258ab27 2026-10-09T15:00:00Z 160 none http://127.0.0.1:$PORT/dl/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz
+nightly nightly-2026-10-14-38a3029 2026-10-14T15:00:00Z 160 bee54f080cebed509680dccb0abb85c275451b79136541016e4d164896e9ff7c http://127.0.0.1:$PORT/dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz
+exit 0
+nightly-2026-July-31-123c5d7 162
+nightly-2026-10-09-258ab27 160
+nightly-2026-10-14-38a3029 160
+nightly-2026-July-31-123c5d7: digest differs
+roc
+echo "Roc compiler version nightly-2026-July-31-123c5d7"
+nightly-2026-10-09-258ab27: no digest
+roc
+echo "Roc compiler version nightly-2026-10-09-258ab27"
+nightly-2026-10-14-38a3029: digest ok
+roc
+echo "Roc compiler version nightly-2026-10-14-38a3029"
+exit 15
+0
+exit 15

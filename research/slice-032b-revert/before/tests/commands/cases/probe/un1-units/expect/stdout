@@ -1,0 +1,79 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-08-0a1b2c3
+exit 10
+== update json file=p2/main.roc compiler=nightly-2026-10-07-3f4e5d6
+check: passed
+note: unchanged error: acme/parser 1.0.0 Parser.roc: type mismatch
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p3/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p5/main.roc compiler=nightly-2026-10-09-258ab27
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p6/main.roc compiler=nightly-2026-10-09-258ab27
+exit 10
+== update json file=p7/main.roc compiler=nightly-2026-10-10-abcdef0
+exit 10
+== update json file=p8/main.roc compiler=nightly-2026-10-11-1a2b3c4
+exit 10
+== update json file=p9/main.roc compiler=nightly-2026-10-12-2664a27
+exit 1
+== update json file=p10/main.roc compiler=nightly-2026-10-13-91fa0c2
+check: passed
+build: passed
+$PROJECT/p10/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p11/main.roc compiler=nightly-2026-10-15-38e6c42
+exit 12
+== update json file=p12/main.roc compiler=nightly-2026-10-15-38e6c42
+check: passed
+build: passed
+$PROJECT/p12/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p13/main.roc no-probe compiler=nightly-2026-10-16-1df370f
+check: passed
+build: passed
+$PROJECT/p13/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p14/main.roc no-probe compiler=nightly-2026-10-09-258ab27
+exit 10
+== update json file=p15/main.roc slots=3 compiler=nightly-2026-10-18-5349569
+check: passed
+build: passed
+$PROJECT/p15/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p16/main.roc compiler=nightly-2026-10-17-601b54c
+exit 12
+== update json file=p17/main.roc compiler=nightly-2026-10-05-9f8e7d6
+exit 12
+== update json file=p18/main.roc compiler=nightly-2026-10-04-8a7b6c5
+exit 10
+== update json file=ws/apps/a/main.roc compiler=nightly-2026-10-03-7a6b5c4
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: passed
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+$PROJECT/ws/apps/b/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

@@ -1,0 +1,15 @@
+M1	an anchor is free when no name is given (R-UP1)	l0 caught by: vars	l2: -
+M2	a free variable keeps its ranges (R-UP1)	l0 caught by: vars	l2: -
+M3	a movable variable keeps its ranges (R-SP23)	l0 caught by: vars	l2: -
+M4	an anchor is not rewritten to =<new> (R-UP5)	l0 caught by: ranges,upgrade	l2: -
+M6	a range that admits the version is rewritten (R-UP5)	l0 caught by: ranges,vars,upgrade	l2: -
+M7	two members under one file give two pairs for one key (R-SP25)	l0 caught by: upgrade	l2: -
+M8	the name form loses its name (R-I2)	l0 caught by: upgrade	l2: -
+M9	a fail row of a module that the app does not use is a reason (R-UM1)	l0 caught by: upgrade	l2: -
+M10	a movable variable can be a lag (R-SP23)	l0 caught by: none	l2: FAIL upgrade/ug3-move
+M11	update X@latest does not rewrite the range (R-UP11)	l0 caught by: upgrade	l2: -
+M12	each move of upgrade ends with new series (R-UP3)	l0 caught by: none	l2: FAIL upgrade/ug2-lag,upgrade/ug3-move
+M13	update reports lags too (R-UP10)	l0 caught by: none	l2: pass
+M14	the lags are not in the notes of --json (R-J3)	l0 caught by: none	l2: FAIL upgrade/ug2-lag
+M15	the scope of upgrade is the scope of update (R-SP6)	l0 caught by: upgrade	l2: -
+done

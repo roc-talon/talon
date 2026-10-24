@@ -1,0 +1,33 @@
+== update json file=r4/main.roc compiler=nightly-2026-10-14-0abcdef
+check: passed
+build: passed
+$PROJECT/r4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-14-0abcdef
+exit 0
+== update json file=r4s/main.roc compiler=0.1.3
+check: passed
+build: passed
+$PROJECT/r4s/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: 0.1.3
+exit 0
+== install file=r4n/main.roc compiler=nightly-2026-10-14-0abcdef auto-install=no
+exit 13
+== install file=r5/main.roc nightly=false compiler=nightly-2026-10-14-38a3029
+exit 10
+== install file=r5t/main.roc nightly=false compiler=nightly-2026-10-14-38a3029
+exit 10
+== install file=r6/main.roc nightly=false compiler=nightly-2026-10-14-38a3029
+exit 10
+== update json file=r8/main.roc no-check toolchain=git-0123abcd nightly=false compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/r8/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== install file=r18/main.roc no-check compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0
+== install file=r18b/main.roc no-check compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0

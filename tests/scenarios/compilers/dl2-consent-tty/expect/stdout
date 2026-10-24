@@ -1,0 +1,31 @@
+== R-DL1 R-DL3 R-NM8: the question has the count and the size, and the default is No. The answer is n: exit 13, nothing is downloaded, the store is empty.
+== env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+nightly-2026-10-13-5349569 is not installed. Download 1 compiler, 573 B? [y/N] tln: error[consent]: nightly-2026-10-13-5349569 is not installed. Nothing was downloaded. Run: tln roc install nightly-2026-10-13-5349569, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+exit 13
+
+downloads of A: 0
+== R-DL1 R-NM6: the same command, the answer is y: one download, the install, then the probes run the new compiler.
+== env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+nightly-2026-10-13-5349569 is not installed. Download 1 compiler, 573 B? [y/N] check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+nightly-2026-10-13-5349569 
+downloads of A: 1
+== R-CC4: A is installed now: no question.
+== env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0

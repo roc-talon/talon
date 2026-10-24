@@ -1,0 +1,7 @@
+update json file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+update parser file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=p2/main.roc no-probe compiler=nightly-2026-10-14-38a3029
+update json file=p3/main.roc compiler=nightly-2026-10-09-258ab27
+update parser file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=p5/main.roc compiler=nightly-2026-10-08-0a1b2c3
+update json file=p6/main.roc compiler=nightly-2026-10-07-3f4e5d6

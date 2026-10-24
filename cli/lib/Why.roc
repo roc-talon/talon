@@ -1,5 +1,8 @@
 import Args
 import Closure
+import Common
+import Evidence
+import EvidenceFlow
 import Fail
 import Fx
 import Install
@@ -24,9 +27,10 @@ import Scope
 ## | Step | Does | Rule |
 ## | --- | --- | --- |
 ## | 1 | `Why.read(args)`. A failure is printed with `Out.fail` (no `Fx` call). | R-CM7, R-FL7, R-EC2 |
-## | 2 to 8 | The steps 2 to 8 of `Ls.run!`: `Install.begin!`, `Known.record!`, the load of the members, the walk of the current member (else all members). No compiler call, no write except `projects.json`. A failure of the walk is the failure of the run (nothing on stdout). The code is `Ls.walk!` (with `notes` false). It is in `Ls`, not in `ResolveBase`: `ResolveBase` cannot import `Install` (`Install` imports `Resolve`, which imports `ResolveBase`). | R-PD1 to R-PD9, R-H7, R-FE7, R-EC10 |
+## | 2 to 8 | The steps 2 to 8 of `Ls.run!`: `Install.begin!`, `Known.record!`, the load of the members, the walk of the current member (else all members). No compiler call, no write except `projects.json`. A failure of the walk is the failure of the run (nothing on stdout). The code is `Ls.walk_full!` (with `notes` false): it also gives the `ResolveBase.Request` and the `ResolveBase.Loaded` for step 9b. It is in `Ls`, not in `ResolveBase`: `ResolveBase` cannot import `Install` (`Install` imports `Resolve`, which imports `ResolveBase`). | R-PD1 to R-PD9, R-H7, R-FE7, R-EC10 |
 ## | 9 | For each member: `Why.find` over the rows of its walk. A member with no match is left out (question Q23). A failure of `find` is printed with `Out.fail`: its `block` goes to stderr first, then the failure line (R-E4: the failure line is the last line). With no match in any member the failure is `Why.find` of the first member. | R-SC1, R-SC8, R-SC14 |
-## | 10 | The output: `Why.text` of each member in the order of the members, or with `--json` only the envelope `Out.json_ok({ command: args.typed, data: Why.data(found) })` (`command` is `why`). The answer is not hidden by `--quiet` (R-FL4). `why` prints no R-C8 line (question Q24). | R-J1 to R-J6, R-OUT4 |
+## | 9b | `EvidenceFlow.blocks!` for the found packages (slice 032b, R-EF1, R-EF3): one `Evidence.Block` for each. A failure (`compat.db` too new, exit 19) is the failure of the run. | R-CM7, R-PH12, R-TF3 |
+## | 10 | The output: `Why.show` of each member in the order of the members (`Why.text` and the block), or with `--json` only the envelope `Out.json_ok({ command: args.typed, data: Why.shown_data(shown) })` (`command` is `why`). The answer is not hidden by `--quiet` (R-FL4). `why` prints no R-C8 line (question Q24). | R-J1 to R-J6, R-OUT4 |
 ##
 ## The forms of a name (R-SC6 to R-SC8, `Lookup.find` with the scope `Project`): a header alias, a full name (`owner/repo`, `host/path`), a short name (the repo name, or the repo name without a leading `roc-`).
 ## An alias of a package that is not a header entry (the alias in the header of a package) is no alias here (R-SC6: an alias is unique in one header). The series is part of the name when 2 packages of one repo are in the closure (R-SC15):
@@ -38,6 +42,17 @@ Why :: [].{
 
 	## The answer of one member: its project file, its walk, and the row of the package (`Why.find`).
 	Found : { file : Str, walked : Closure.Walked, target : Closure.Row }
+
+	## One member of `tln why` with its evidence (slice 032b, R-CM7, R-PH12, R-EF3). `evidence` is the block of the package of `found` (`EvidenceFlow.blocks!`).
+	Shown : { found : Why.Found, evidence : Evidence.Block }
+
+	## The text of one member with its evidence (a proposal, TW24): `Why.text` of `found`, then `Evidence.text` of the block. With no compiler and with no line the text is the one of `Why.text`, so a `why` with no evidence prints what it printed before.
+	show : Why.Shown -> Str
+	show = |shown| "${Why.text(shown.found)}${Evidence.text(shown.evidence)}"
+
+	## The `data` of `--json` with the evidence: the same as `Why.data` (the same keys in the same order), and each member also has the 3 keys of `Evidence.fields` (`compiler`, `evidence`, `notes`) after `paths` (R-OUT4, R-OUT5).
+	shown_data : List(Why.Shown) -> JsonDoc
+	shown_data = |members| JsonDoc.Obj([("members", Arr(members.map(shown_doc)))])
 
 	## The operand of `tln why`: exactly one name. `Opts.read` of the line is checked first (its failures: the texts of `Opts.read`, R-FL5). Each failure has the kind `Usage` (exit 2, R-EC2).
 	## `Args.parse` has rejected the flags that `why` does not take (R-FL7, R-FL12: `--strategy`, `--frozen`, `--tree`, ...).
@@ -135,23 +150,27 @@ Why :: [].{
 	## The command (the table above).
 	run! : Fx, Args => I32
 	run! = |fx, args| match Why.read(args) {
-		Err(fail) => Install.failed!(fx, args, fail)
-		Ok(opts) => match Ls.walk!(fx, args, Bool.False) {
-			Err(fail) => Install.failed!(fx, args, fail)
-			Ok(closures) => match answers(opts.name, closures) {
+		Err(fail) => Common.failed!(fx, args, fail)
+		Ok(opts) => match Ls.walk_full!(fx, args, Bool.False) {
+			Err(fail) => Common.failed!(fx, args, fail)
+			Ok(walk) => match answers(opts.name, walk.closures) {
 				Err({ fail, block }) => {
 					if !block.is_empty() fx.err!(block)
-					Install.failed!(fx, args, fail)
+					Common.failed!(fx, args, fail)
 				}
-				Ok(found) => {
-					if args.json {
-						fx.out!(Out.json_ok({ command: args.typed, data: Why.data(found) }))
-					} else {
-						for f in found {
-							fx.out!(Why.text(f))
+				Ok(found) => match EvidenceFlow.blocks!(fx, { request: walk.request, loaded: walk.loaded }, found) {
+					Err(fail) => Common.failed!(fx, args, fail)
+					Ok(blocks) => {
+						shown = found.map2(blocks, |f, evidence| { found: f, evidence })
+						if args.json {
+							fx.out!(Out.json_ok({ command: args.typed, data: Why.shown_data(shown) }))
+						} else {
+							for s in shown {
+								fx.out!(Why.show(s))
+							}
 						}
+						0
 					}
-					0
 				}
 			}
 		}
@@ -209,6 +228,13 @@ member_doc = |found| JsonDoc.Obj([
 	("package", Listing.object_of(found.target)),
 	("paths", Arr(Why.paths({ walked: found.walked, target: found.target.id }).map(|p| Arr(p.map(step_doc))))),
 ])
+
+# `member_doc` and the keys of `Evidence.fields` after `paths`.
+shown_doc : Why.Shown -> JsonDoc
+shown_doc = |shown| match member_doc(shown.found) {
+	Obj(fields) => Obj(fields.concat(Evidence.fields(shown.evidence)))
+	other => other
+}
 
 step_doc : Why.Step -> JsonDoc
 step_doc = |step| JsonDoc.Obj([

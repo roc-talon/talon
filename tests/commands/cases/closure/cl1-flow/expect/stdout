@@ -16,7 +16,7 @@ nothing to change
 exit 0
 == verify --no-check --file p1/main.roc
 check: skipped
-verified: the tuple passes. Nothing was written.
+verified: the tuple passes. No project file was written.
 exit 0
 == update --no-check --file p3/main.roc
 check: skipped

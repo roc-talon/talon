@@ -1,0 +1,94 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+            Ok([
+                (["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
+                (["parser"], Bool.True, Bool.False, Bool.True, Err(None), []),
+                (["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.True, Bool.False, Bool.True, Err(None), []),
+            ]),
+        ),
+        (
+            "upgrade, an anchor and a key: the anchor is held with its note and keeps its range, the key `^2.1` of a free variable is dropped (R-UP1, R-VA5)",
+            scope([], vars_of(anchored)),
+            Ok([
+                (["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
+                (["parser"], Bool.False, Bool.False, Bool.False, Ok("parser: anchor, held"), ["=2.0.0"]),
+                (["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.True, Bool.False, Bool.True, Err(None), []),
+            ]),
+        ),
+        (
+            "upgrade parser: a named anchor is free, with no range, and the others are held and movable with no range (R-SP7, R-VA5, R-SP23)",
+            scope(["parser"], vars_of(anchored)),
+            Ok([
+                (["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+                (["parser"], Bool.True, Bool.False, Bool.True, Err(None), []),
+                (["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+            ]),
+        ),
+        (
+            "upgrade json: only json is free, an unnamed anchor is neither free nor movable and has no note (R-SP7, R-SP23)",
+            scope(["json"], vars_of(anchored)),
+            Ok([
+                (["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
+                (["parser"], Bool.False, Bool.False, Bool.False, Err(None), ["=2.0.0"]),
+                (["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+            ]),
+        ),
+        (
+            "upgrade fixed: a named fixed host stays held and keeps its note (R-DI11)",
+            scope(["fixed"], vars_of(plain)),
+            Ok([
+                (["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+                (["parser"], Bool.False, Bool.True, Bool.False, Err(None), []),
+                (["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+            ]),
+        ),
+        ("upgrade nope: the name is no alias (R-SC14)", scope(["nope"], vars_of(plain)), Err("tln: error[usage]: 'nope' is not in the project")),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Ran 7 tests in 2222.4 ms.:
+    6 passed
+    1 failed
+    0 compiler errors
+tests/unit/verify.roc: All (2) tests passed in 1422.9 ms.
+tests/unit/why.roc: All (6) tests passed in 2706.6 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL resolve/rs-new-toml
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -10,7 +10,7 @@
+       build: passed
+       $PROJECT/main.roc
+         ~ json: acme/json 2.2.0 -> 2.2.1
+      -$PROJECT/talon.toml: json = "^2.2" (was "=2.2.0")
+      +$PROJECT/talon.toml: json = "^2.2"
+       exit 0
+       == update json@2.2.5 compiler=nightly-2026-10-14-38a3029
+       exit 10
+FAIL upgrade/ug1-flow
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+FAIL upgrade/ug2-lag
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+FAIL upgrade/ug3-move
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+commands: 89 passed, 4 failed
+
+step       result seconds  budget
+check      pass   1.1      10
+fmt        pass   0.1      5
+l0         FAIL   7.3      10
+l2         FAIL   5.1      30
+l3         pass   9.8      60
+selftest   pass   10.8     20
+l1         pass   28.3     60

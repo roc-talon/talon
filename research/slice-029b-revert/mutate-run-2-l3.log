@@ -1,0 +1,7 @@
+S01 R-LY1 cli/lib/CacheShow.roc caught l3 cache/cv
+S02 R-LY1 cli/lib/CacheShow.roc NOT CAUGHT 
+S03 R-FL4 cli/lib/CacheShow.roc caught l3 cache/cv
+S05 R-GC13 cli/lib/CacheShow.roc caught l3 cache/cv
+S06 R-LY1 cli/lib/CacheShow.roc caught l3 cache/cv
+S11 R-FL4 cli/lib/CacheShow.roc caught l3 cache/cv
+S12 R-CM17 cli/lib/CacheShow.roc caught l3 cache/cv

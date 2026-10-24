@@ -2,3 +2,5 @@
 .roc-fuzz
 .work
 llvm-build/
+roc-object-vache/
+.cache/

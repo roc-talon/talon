@@ -1,0 +1,12 @@
+tln: error[network]: no cached list of compilers and --offline is set
+tln: error[consent]: 1 compiler download (73.0 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: no installed compiler is in [toolchain] roc (>=nightly-2026-10-17-0000000). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[no_tuple]: no compiler release is in [toolchain] roc (*), and nightly is false (set by TALON_NIGHTLY)
+tln: error[no_tuple]: no compiler release is in [toolchain] roc (>=nightly-2026-10-25-0000000)
+downloading nightly-2026-10-12-2664a27 (73.6 MB)
+downloading nightly-2026-10-16-1df370f (73.2 MB)
+downloading nightly-2026-10-15-38e6c42 (73.3 MB)
+downloading nightly-2026-10-10-abcdef0 (73.8 MB)
+downloading nightly-2026-10-14-38a3029 (73.4 MB)
+downloading nightly-2026-10-11-1a2b3c4 (73.7 MB)
+tln: error[no_tuple]: no compiler release is in [toolchain] roc (>=nightly-2026-10-25-0000000)

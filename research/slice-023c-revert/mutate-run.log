@@ -1,0 +1,84 @@
+C1: CAUGHT by l0:compiler, l2:pb1-ladder  (tests: l0:compiler, l2:pb1-ladder)
+C2: CAUGHT by l0:compiler, l2:pb1-ladder  (tests: l0:compiler, l2:pb1-ladder)
+C3: CAUGHT by l0:compiler  (tests: l0:compiler)
+C4: CAUGHT by l0:compiler, l2:pb1-ladder  (tests: l0:compiler, l2:pb1-ladder)
+C5: CAUGHT by l0:compiler, l2:pb1-ladder  (tests: l0:compiler, l2:pb1-ladder)
+C6: CAUGHT by l0:compiler  (tests: l0:compiler)
+L1: CAUGHT by l0:launch, l2:pb1-ladder, l3:pb1-probes  (tests: l0:launch, l2:pb1-ladder, l3:pb1-probes)
+L2: CAUGHT by l0:launch, l2:pb1-ladder, l3:pb1-probes  (tests: l0:launch, l2:pb1-ladder, l3:pb1-probes)
+L3: CAUGHT by l0:launch, l2:pb1-ladder, l3:pb1-probes  (tests: l0:launch, l2:pb1-ladder, l3:pb1-probes)
+L4: CAUGHT by l0:launch, l2:pb1-ladder  (tests: l0:launch, l2:pb1-ladder)
+L5: CAUGHT by l2:pb1-ladder, l3:pb1-probes  (tests: l2:pb1-ladder, l3:pb1-probes)
+L6: INVALID (does not compile)
+── ● unused variable ────────────────────────────────── cli/lib/Launch.roc:64:16
+
+Variable fx is defined here and then never used.
+
+child_env! = |fx, roots, run| {
+              ^^
+
+If you don't need this variable, prefix it with an underscore like _fx to
+suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────────── cli/main.roc
+
+
+L7: CAUGHT by l2:pb1-ladder, l3:pb1-probes  (tests: l2:pb1-ladder, l3:pb1-probes)
+L8: CAUGHT by l0:launch, l2:pb1-ladder  (tests: l0:launch, l2:pb1-ladder)
+L9: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)
+L10: CAUGHT by l2:pb1-ladder, l3:pb1-probes  (tests: l2:pb1-ladder, l3:pb1-probes)
+D1: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)
+D2: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)
+D3: CAUGHT by l2:pb2-verify  (tests: l2:pb2-verify, l3:pb1-probes)
+D4: CAUGHT by l2:pb2-verify  (tests: l2:pb2-verify, l3:pb1-probes)
+D5: CAUGHT by l2:pb1-ladder, l2:pb2-verify  (tests: l2:pb1-ladder, l2:pb2-verify)
+D6: CAUGHT by l2:pb1-ladder, l3:pb1-probes  (tests: l2:pb1-ladder, l3:pb1-probes)
+D7: INVALID (does not compile)
+── ● unused variable ────────────────────────────────── cli/lib/Ladder.roc:185:3
+
+Variable started is defined here and then never used.
+
+started = start!(fx, { roots: request.roots, path_roc: request.path_roc, held: request.held })?
+^^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _started to
+suppress this warning.
+
+── 0 errors and 1 warning ─────────────────────────────
+D8: INVALID (does not compile)
+── ● unused variable ────────────────────────────────── cli/lib/Ladder.roc:215:3
+
+Variable started is defined here and then never used.
+
+started = start!(fx, { roots: request.roots, path_roc: request.path_roc, held: request.held })?
+^^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _started to
+suppress this warning.
+
+── 0 errors and 1 warning ─────────────────────────────
+D9: CAUGHT by l0:ladder, l2:pb1-ladder  (tests: l0:ladder, l2:pb1-ladder)
+D10: CAUGHT by l0:verify, l2:pb2-verify  (tests: l0:verify, l2:pb2-verify)
+D11: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)
+D12: CAUGHT by l2:pb1-ladder, l3:pb1-probes  (tests: l2:pb1-ladder, l3:pb1-probes)
+D13: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)
+D14: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)
+J1: CAUGHT by l3:pr1-real-fx-probes, l3:pb1-probes  (tests: l3:pr1-real-fx-probes, l3:pb1-probes)
+J2: CAUGHT by l3:pr1-real-fx-probes, l3:pb1-probes  (tests: l3:pr1-real-fx-probes, l3:pb1-probes)
+I1: CAUGHT by l2:vf1-flow, l3:pb1-probes  (tests: l2:rs-unmanaged, l2:vf1-flow, l3:pb1-probes)
+F1: INVALID (does not compile)
+── ✗ does not exist ────────────────────────────── cli/lib/InstallFlow.roc:363:7
+
+Launch.toolchains! does not exist.
+
+_ = Launch.toolchains!(fx, request.roots)
+    ^^^^^^^^^^^^^^^^^^
+
+── 1 error and 0 warnings ───────────────────────────────────────── cli/main.roc
+
+
+P1: CAUGHT by l2:px1-flow  (tests: l2:px1-flow)
+rerun after rewrite, L6: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder, l3:pb1-probes)
+rerun after rewrite, D7: CAUGHT by l2:pb2-verify  (tests: l2:pb2-verify)
+rerun after rewrite, D8: CAUGHT by l2:resolve/rs-workspace-shared-group, l2:pb1-ladder  (tests: l2:resolve/rs-workspace-shared-group, l2:pb1-ladder)
+rerun after rewrite, F1: CAUGHT by l2:pb1-ladder  (tests: l2:pb1-ladder)

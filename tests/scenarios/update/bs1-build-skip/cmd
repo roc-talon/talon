@@ -1,0 +1,22 @@
+# R-BS1 R-BS2 R-ID6 R-P4 R-EF2 R-PH9 R-LD5 R-PP4 R-CM11 R-J3 R-OUT4 (slice 032): the build skip on the real binary (the real `Fx`: the SQLite store, `platform!`, the real file reads of the scan). The fake roc passes every check and build.
+# The project is the one of `update/up2-unit-flags`, and its app imports `pf.Std` and `json.Parser`: the used closure is the platform and json (R-BS2). The key of the build fact is (platform hash, compiler, `x64musl`: Linux x64, `BuildSkip.target`).
+# The probe counts: the baseline, the check of the candidate and each unit check that ran, and the build when it ran (R-PP4: a skipped build starts no probe).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# No row: the build runs and its pass is recorded with the digest of the used closure (the file `facts.tsv`, last column). A dry run changes no project file, but it records the facts.
+st tln update json --dry-run
+# The same candidate again: the key and the digest are known, so the build is skipped. The whole-app check ran (R-EF2). `--json` says that the build was skipped (R-OUT4).
+st tln update json --dry-run --json
+# The same, with the write of the header.
+st tln update json
+# parser moves and the app does not import it: the digest is the same (R-BS2), the build is skipped.
+st tln update parser
+# `verify` checks the tuple of the newest platform: another platform hash, so another key, and the build runs (R-BS2: a change to the platform changes the key).
+st tln verify
+# The same tuple again: the key and the digest are known, so the build is skipped (R-CM11).
+st tln verify --json
+# Manager review (R-BS2, R-P4): the primary key of the facts has the digest. The app stops using json (the import is a comment): the used closure is the platform only, a digest that is new for the key of `verify`. The build runs and its pass is a second row of the same key.
+sed -i 's/^import json.Parser$/# import json.Parser/' main.roc
+st tln verify --json
+# json is used again: the first digest of the key is still recorded, so the build is skipped. Without the digest in the key, the row of the last run would have replaced it and the build would run again.
+sed -i 's/^# import json.Parser$/import json.Parser/' main.roc
+st tln verify

@@ -1,0 +1,11 @@
+== a tree, a file, a tree with only empty dirs, a missing path, and a dir with only a link: one call, the order of the list
+== t: the newest file is deep/two (the dirs are 2030 and do not count), 4 + 10 + 1 bytes, the 2 links are not followed
+== t/one: a file has its own time and size. only: no file below, so its own time (2003). missing: NotFound. out: only a link below, so its own time (2006) and size 0.
+tree 1031536000 15 t
+tree 1000000000 4 t/one
+tree 1046660583 0 only
+err missing NotFound
+tree 1149573966 0 out
+== a path of a tree is the same in a second call (the call changes nothing)
+tree 1031536000 15 t
+== no path: no answer

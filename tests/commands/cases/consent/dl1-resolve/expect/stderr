@@ -1,0 +1,21 @@
+tln: error[network]: no cached list of compilers and --offline is set
+tln: error[consent]: nightly-2026-10-12-2664a27 is not installed. Nothing was downloaded. Run: tln roc install nightly-2026-10-12-2664a27, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: 1 compiler download (73.7 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+downloading nightly-2026-10-10-abcdef0 (73.8 MB)
+downloading nightly-2026-10-15-38e6c42 (73.3 MB)
+tln: error[consent]: the compiler nightly-2026-10-14-38a3029 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-14-38a3029, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+downloading nightly-2026-10-16-1df370f (73.2 MB)
+tln: error[consent]: 1 compiler download (73.9 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler 0.2.0 is not installed. Run: tln roc install 0.2.0.
+downloading nightly-2026-10-18-5349569 (73.0 MB)
+downloading nightly-2026-10-08-0a1b2c3 (74.0 MB)
+downloading nightly-2026-10-09-258ab27 (73.9 MB)
+downloading nightly-2026-10-12-2664a27 (73.6 MB)
+downloading nightly-2026-10-11-1a2b3c4 (73.7 MB)
+downloading nightly-2026-10-14-38a3029 (73.4 MB)
+check: passed
+build: passed
+$PROJECT/u17/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+downloading nightly-2026-10-07-3f4e5d6 (72.0 MB)

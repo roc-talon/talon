@@ -1,0 +1,16 @@
+# run 1: 3 members, each with the baseline, the candidate check and the build
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2: apps/a passes all 3 probes, apps/b has a new error in an app file (main.roc has a duplicate definition): exit 11
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr

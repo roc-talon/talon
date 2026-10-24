@@ -1,0 +1,81 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+args
+args
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/a/main.roc $PROJECT/b/main.roc $PROJECT/c/main.roc $PROJECT/d/main.roc $PROJECT/e/main.roc $PROJECT/gone/main.roc
+read_files $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash $HOME/.cache/roc/compat-258ab27
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/a/main.roc $PROJECT/b/main.roc $PROJECT/c/main.roc $PROJECT/d/main.roc $PROJECT/e/main.roc $PROJECT/gone/main.roc
+read_files $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash $HOME/.cache/roc/compat-38a3029
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/a/main.roc $PROJECT/b/main.roc $PROJECT/c/main.roc $PROJECT/d/main.roc $PROJECT/e/main.roc $PROJECT/gone/main.roc
+read_files $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/a/main.roc $PROJECT/b/main.roc $PROJECT/c/main.roc $PROJECT/d/main.roc $PROJECT/e/main.roc $PROJECT/gone/main.roc
+read_files $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json
+lock $HOME/.cache/roc/toolchains/link-dev nowait: busy
+lock $HOME/.cache/roc/toolchains/link-dev wait: held
+random
+rename $HOME/.cache/roc/toolchains/link-dev $HOME/.cache/roc/toolchains/link-dev.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/link-dev.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/link-dev
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/a/main.roc $PROJECT/b/main.roc $PROJECT/c/main.roc $PROJECT/d/main.roc $PROJECT/e/main.roc $PROJECT/gone/main.roc
+read_files $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json
+lock $HOME/.cache/roc/toolchains/git-dd03c09e nowait: held
+random
+rename $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/git-dd03c09e

@@ -1,7 +1,7 @@
+import BuildSkip
 import Fail
 import Fx
-import Guard
-import Intent
+import IntentEdit
 import Ladder
 import Locked
 import Lookup
@@ -11,9 +11,12 @@ import Release
 import Removal
 import Report
 import ResolveBase
+import ResolveLoad
+import ResolveSelect
 import Scan
 import Scope
 import Text
+import UnitFlow
 import Vars
 import header.Header
 
@@ -29,7 +32,7 @@ RemoveFlow :: [].{
 	## The flow of `Resolve.remove!`. The steps are in the doc of `Resolve.remove!`.
 	remove! : Fx, Request, { names : List(Str), force : Bool } => Try(Report.RemoveOutcome, Fail)
 	remove! = |fx, request, facts| {
-		loaded = ResolveBase.load!(fx, request)?
+		loaded = ResolveSelect.select!(fx, request, ResolveLoad.load!(fx, request)?)?
 		current = request.project.file ?? ""
 		member = match loaded.members.find_first(|m| m.file == current) {
 			Ok(m) => m
@@ -44,7 +47,8 @@ RemoveFlow :: [].{
 		settings = ResolveBase.settings_of(request, loaded)
 		decision = Pin.decide({
 			members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: m.file == current }),
-			compiler: request.compiler,
+			compiler: loaded.selected.id,
+			compiler_from: loaded.selected.from,
 			toolchain: request.toolchain,
 			role: Lock,
 			req: loaded.intent.toolchain.roc,
@@ -65,7 +69,7 @@ RemoveFlow :: [].{
 		ops = aliases.map(|alias| Remove(alias)).concat(pins.map(|w| Pin(w.id)))
 		ran = if skip_check {
 			if request.no_check fx.out!("check: skipped\n")
-			{ probes: 0, check: Skipped, build: Skipped, notes: [] }
+			{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }
 		} else {
 			removal_ladder!(fx, request, loaded, member, { aliases, ops, decision })?
 		}
@@ -77,7 +81,7 @@ RemoveFlow :: [].{
 			Err(NoToml) => ""
 		}
 		removed_rows = plans.map(|p| removed_of(p.alias, p.plan.what))
-		toml_rows = keys.map(|k| { path: toml_path, table: Intent.table_name(k.table), key: k.key })
+		toml_rows = keys.map(|k| { path: toml_path, table: IntentEdit.table_name(k.table), key: k.key })
 		patches = plans.keep_oks(|p| p.plan.patch_dir.map_ok(|dir| { alias: p.alias, dir }))
 		fx.out!("${current}\n")
 		for r in removed_rows {
@@ -189,7 +193,7 @@ import_hits! = |fx, loaded, member, aliases| {
 	var $found = aliases.map(|alias| { alias, hits: [] })
 	while !$sources.is_empty() or !$todo.is_empty() {
 		seen = $seen.concat($todo)
-		sources = $sources.concat(read_sources!(fx, $todo))
+		sources = $sources.concat(UnitFlow.texts!(fx, $todo))
 		levels = aliases.map(|alias| Scan.level({ alias, project_dir: Text.dir_of(member.file), sources, seen }))
 		$found = $found.map2(levels, |f, level| { alias: f.alias, hits: f.hits.concat(level.hits) })
 		$todo = match levels.first() {
@@ -200,14 +204,6 @@ import_hits! = |fx, loaded, member, aliases| {
 		$sources = []
 	}
 	$found.keep_if(|f| !f.hits.is_empty())
-}
-
-# The files of one level that can be read, with their text. No call when there is no file.
-read_sources! : Fx, List(Str) => List(Scan.Source)
-read_sources! = |fx, paths| if paths.is_empty() {
-	[]
-} else {
-	paths.map2(fx.read_files!(paths), |path, result| (path, result)).keep_oks(|(path, result)| result.map_ok(|text| { path, text }))
 }
 
 # R-RV2, R-EC11 (proposal, TW24): the message of the failure. The import lines are in the message, so the `--json` error has them too.
@@ -238,16 +234,20 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 			},
 		)
 	candidate = { file: member.file, kind: member.locked.kind, text: ResolveBase.loaded_text(loaded, member.file), ops: facts.ops }
+	# R-LD2, R-CM2: the closure of the header without the removed entries gives the packages of the unit probes.
+	entries = ResolveBase.entries_after(member, []).keep_if(|e| !facts.aliases.contains(e.alias))
+	closures = ResolveBase.closure!(fx, request, { members: [{ file: member.file, entries }], known: [] })?
 	result = Ladder.run!(
 		fx,
-		{ roots: request.roots, path_roc: request.compiler, held: facts.decision.held ?? "", members: [candidate], owners, moved: [] },
+		{ roots: request.roots, now: request.now, path_roc: request.compiler, held: facts.decision.held ?? "", members: [candidate], owners, moved: [], downloads: ResolveBase.ladder_downloads(request), probe: ResolveBase.probe_settings(request, loaded), no_probe: request.probe.no_probe, closures, loop: Ladder.no_loop },
 	)
 	match result {
-		Ok(notes) => Ok({
-			probes: if member.locked.kind == App 3 else 2,
+		Ok(done) => Ok({
+			probes: done.probes,
+			downloads: done.downloads,
 			check: Passed,
-			build: if member.locked.kind == App Passed else NotRun,
-			notes,
+			build: BuildSkip.state({ apps: if member.locked.kind == App 1 else 0, skipped: done.skipped }),
+			notes: done.notes,
 		})
 		Err(fail) => if fail.kind == NoTuple {
 			Err(Fail.new(NoTuple, "${fail.message}. tln remove moves no other entry. Pass --no-check to remove ${Str.join_with(facts.aliases, ", ")} anyway."))
@@ -258,7 +258,7 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 }
 
 # Step 9, R-CC7, R-CC1: the second read, the check, and one `write_atomic!` call (the `talon.toml` first). With `--dry-run` there is no read and no write.
-write_removal! : Fx, ResolveBase.Request, Loaded, { file : Str, ops : List(Locked.Op), toml : Try({ path : Str, text : Str }, [NoToml]), keys : List({ table : Intent.Table, key : Str }) } => Try(List(Str), Fail)
+write_removal! : Fx, ResolveBase.Request, Loaded, { file : Str, ops : List(Locked.Op), toml : Try({ path : Str, text : Str }, [NoToml]), keys : List({ table : IntentEdit.Table, key : Str }) } => Try(List(Str), Fail)
 write_removal! = |fx, request, loaded, facts| {
 	if request.dry_run return Ok([])
 	toml_paths = match facts.toml {
@@ -281,7 +281,7 @@ write_removal! = |fx, request, loaded, facts| {
 			new = if is_header {
 				Locked.edit({ path: f.path, text: f.now, ops: facts.ops })?
 			} else {
-				Intent.remove({ path: f.path, text: f.now, keys: facts.keys })?
+				IntentEdit.remove({ path: f.path, text: f.now, keys: facts.keys })?
 			}
 			Ok({ path: f.path, now: f.now, new })
 		},
@@ -290,16 +290,11 @@ write_removal! = |fx, request, loaded, facts| {
 		|f| {
 			is_header = f.path == facts.file
 			read = ResolveBase.loaded_text(loaded, f.path)
-			spans = |text| if is_header Locked.spans({ text, ops: facts.ops }) else Intent.table_spans({ text, keys: facts.keys })
+			spans = |text| if is_header Locked.spans({ text, ops: facts.ops }) else IntentEdit.table_spans({ text, keys: facts.keys })
 			{ path: f.path, read, now: f.now, spans_read: spans(read), spans_now: spans(f.now) }
 		},
 	)
-	ordered = Guard.check_all(checked)?
-	changed = ordered.keep_oks(|o| edited.find_first(|e| e.path == o.path)).keep_if(|e| e.new != e.now)
-	match fx.write_atomic!(changed.map(|e| { path: e.path, content: e.new })) {
-		Ok(_) => Ok(changed.map(|e| e.path))
-		Err(failed) => Err(Fail.new(Environment, "cannot write ${failed.path}"))
-	}
+	ResolveBase.write_checked!(fx, { files: checked, edited })
 }
 
 # One entry of the outcome and its line (`- <alias>: <what>`).

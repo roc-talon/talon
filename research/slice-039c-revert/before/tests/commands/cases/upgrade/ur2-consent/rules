@@ -1,0 +1,10 @@
+R-NI12 R-NI5 R-NI4 R-BL3 R-DL1 R-DL3 R-DL4 R-DL5 R-UP6 R-RP1 (slice 039, the prompt of `tln upgrade roc`, U5 reading (c)): 9 runs, each in its own home and project. All projects have json 1.0.0 only, so the answer is always the pin move to N (n12). The `roc` on PATH is n08, so H (h0) is installed only where the home has it. The prompt names the required downloads only (N and H). Other compilers are not named (U5).
+Run 1 (H and N missing, a person who says Enter): one prompt for both, `Download 2 compilers, <size>: <N>, <H>?` (R-DL1, R-NI5, R-BL3). N is first. The person says Enter, so no answer line. U5 row.
+Run 2 (H and N missing, CI): no flag, no person. Exit 13, the text says that 2 downloads need consent (R-DL5). No download starts.
+Run 3 (H and N missing, CI, `--allow-downloads`): no question. The answer line `downloading 2 compilers` (R-DL3, R-DL4). Both compilers are installed, the pin moves.
+Run 4 (H and N missing, a person who says n): exit 13, the text says that N is not installed and nothing was downloaded (R-DL5). No download starts.
+Run 5 (H and N missing, CI, TALON_AUTO_INSTALL=no): exit 13, the refusal names H (R-DL5, R-NI5).
+Run 6 (N installed, H missing, a person who says Enter): one prompt for H alone, `Download 1 compiler, <size>: <H>?` (R-BL3). U5 row.
+Run 7 (H installed, N missing, a person who says n): the one prompt names N only, `Download 1 compiler, <size>: <N>?` (R-NI12). The person says n: exit 13, nothing is downloaded.
+Run 8 (H installed, N missing, CI, TALON_AUTO_INSTALL=no): the command names N, so it is not a refusal: the download starts and the answer line is printed (R-NI12, R-DL4).
+Run 9 (H installed, N missing, a person who says Enter): the same prompt as run 7. The download starts and the pin moves (R-NI12).

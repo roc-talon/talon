@@ -1,0 +1,46 @@
+# R-PX2 R-PX6 R-CC9 R-SO2 R-SO9 R-SO10 R-SO21 R-SO22 R-PH7 R-CV1 R-EC13 (slice 023c): the probes of `tln verify` run the selected compiler by its path, on the real binary.
+# The project is the one of verify/vf1-verify. Its header pin and the `roc` on PATH (the fake roc of the runner) are nightly-2026-10-14-38a3029. A1 (nightly-2026-10-09-258ab27) is a fake compiler in
+# toolchains/: it writes one line for each run to prog.log (its id, the dir, the command, the number of arguments, the 3 variables that tln sets). The probes of a round start together, so the lines are sorted.
+# TALON_NOW=2026-10-15T12:00:00Z. The runner has CI=true.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+T=$HOME/.cache/roc/toolchains
+A1=nightly-2026-10-09-258ab27
+P=nightly-2026-10-14-38a3029
+M=nightly-2026-10-21-5349569
+chmod +x $T/$A1/roc $D/p-stage/roc
+show() {
+    echo "-- compiler runs"
+    if [ -f $D/prog.log ]; then sort $D/prog.log; fi
+    rm -f $D/prog.log
+    echo "-- roc on PATH"
+    if [ -f $D/roc.log ]; then sort $D/roc.log; fi
+    rm -f $D/roc.log
+}
+echo "== R-SO21 R-SO2 R-PX2 R-PX6 R-CC9: ROC_TOOLCHAIN (rank 2) is installed, and the header pin is another compiler. verify runs on the run compiler: the 3 probes run toolchains/A1/roc, with the cache variables and TALON_IN_PROXY."
+st env ROC_TOOLCHAIN=$A1 tln verify
+show
+echo "last use of A1: $(cat $T/$A1/.last-use)"
+echo "== R-PX6: XDG_CACHE_HOME is a link and ROC_CACHE_DIR has a ..: the probes get canonical paths (the same rule as the proxy)."
+ln -s $HOME/.cache $D/linkcache
+st env XDG_CACHE_HOME=$D/linkcache ROC_CACHE_DIR=$HOME/.cache/roc/../roc ROC_TOOLCHAIN=$A1 tln verify
+show
+echo "== R-SO22 R-PH7 R-EC13 R-DL5 (slice 025: TALON_AUTO_INSTALL=no keeps the refusal, the run has no person): ROC_TOOLCHAIN is not installed. The first probe needs it, so exit 13 with the text of Compiler.require. No compiler runs, no toolchain dir is made."
+st env TALON_AUTO_INSTALL=no ROC_TOOLCHAIN=$M tln verify
+show
+test ! -e $T/$M && echo "no dir for $M"
+echo "== R-SO22: --no-check runs no probe, so ROC_TOOLCHAIN does not stop it."
+st env ROC_TOOLCHAIN=$M tln verify --no-check
+show
+echo "== R-SO9 R-PX2: the pin is the id of the roc on PATH, and the first roc on PATH is a launcher (a copy of tln). The probes run the file that PATH gave for the compiler, not the name roc: the fake roc runs 3 times and the launcher does not run."
+mkdir -p $D/launch
+cp "$(command -v tln)" $D/launch/roc
+(PATH=$D/launch:$PATH; st tln verify)
+show
+echo "== R-SO10 R-CV1 (D7 of slice 023): the pin is installed, and the roc on PATH has the same id: the installed copy runs, and the roc on PATH does not."
+mkdir -p $T/$P
+cp $D/p-stage/roc $T/$P/roc
+st tln verify
+show
+echo "last use of the pin: $(cat $T/$P/.last-use)"
+rm -r $T/$P

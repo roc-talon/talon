@@ -1,0 +1,321 @@
+[
+ {
+  "tag_name": "nightly-2026-July-31-f5556d8",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2026-07-31T11:56:54Z",
+  "assets": [
+   {
+    "id": 496645088,
+    "name": "echo.wasm.zst",
+    "size": 3750496,
+    "digest": "sha256:66a5005630dbe0a431c9d6904fc3e08cfac8e0a2daea863920909ec038fa998b",
+    "content_type": "application/zstd",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/echo.wasm.zst"
+   },
+   {
+    "id": 496645090,
+    "name": "playground.wasm",
+    "size": 17276224,
+    "digest": "sha256:cd3d210120f41c9a0a561f773df97e024b6753ead9d50d7355fe971d6fde7225",
+    "content_type": "application/wasm",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/playground.wasm"
+   },
+   {
+    "id": 496645086,
+    "name": "roc_nightly-linux_arm64-2026-07-31-f5556d8.tar.gz",
+    "size": 52265469,
+    "digest": "sha256:7224684cca4e9f47f7ea504075b88702e9528cc429ec08284094e976c48c5420",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/roc_nightly-linux_arm64-2026-07-31-f5556d8.tar.gz"
+   },
+   {
+    "id": 496645087,
+    "name": "roc_nightly-linux_x86_64-2026-07-31-f5556d8.tar.gz",
+    "size": 55349383,
+    "digest": "sha256:4eadc41b5dff4985442204bf138522b25c22a90cc1c1fac76589a419bee10968",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/roc_nightly-linux_x86_64-2026-07-31-f5556d8.tar.gz"
+   },
+   {
+    "id": 496645089,
+    "name": "roc_nightly-macos_apple_silicon-2026-07-31-f5556d8.tar.gz",
+    "size": 53627706,
+    "digest": "sha256:f5fda083820204e25767bf574294cb77448f9c17b193f6101944a75d1f7515d2",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/roc_nightly-macos_apple_silicon-2026-07-31-f5556d8.tar.gz"
+   },
+   {
+    "id": 496645112,
+    "name": "roc_nightly-macos_x86_64-2026-07-31-f5556d8.tar.gz",
+    "size": 57183092,
+    "digest": "sha256:ea5804c440d33d4b2ee99e1a6c89426e344d282e0b98f563640e2ffd3fffbb20",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/roc_nightly-macos_x86_64-2026-07-31-f5556d8.tar.gz"
+   },
+   {
+    "id": 496645114,
+    "name": "roc_nightly-windows_x86_64-2026-07-31-f5556d8.zip",
+    "size": 53685782,
+    "digest": "sha256:666a00dd1a266f2d43a064cfc0ba585705ec503789e66169348e9967a2e14e28",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-31-f5556d8/roc_nightly-windows_x86_64-2026-07-31-f5556d8.zip"
+   }
+  ]
+ },
+ {
+  "tag_name": "nightly-2026-July-23-fdd77c3",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2026-07-23T06:04:47Z",
+  "assets": [
+   {
+    "id": 486835167,
+    "name": "echo.wasm.zst",
+    "size": 3132399,
+    "digest": "sha256:ce64a6453e795bbbc39b58e254f406bd67c8d41e7c57c8e55dff19a8a0cca072",
+    "content_type": "application/zstd",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/echo.wasm.zst"
+   },
+   {
+    "id": 486835166,
+    "name": "playground.wasm",
+    "size": 13366967,
+    "digest": "sha256:c5b93d54cd4d28494c6232afea930ad33bf024b86225c1d2767974088cf5d14f",
+    "content_type": "application/wasm",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/playground.wasm"
+   },
+   {
+    "id": 486835164,
+    "name": "roc_nightly-linux_arm64-2026-07-23-fdd77c3.tar.gz",
+    "size": 49868609,
+    "digest": "sha256:db85f02c07c64d7ea37e0939f5c7dd0bf6e1d48945ba7ad21c28e1da69feda0c",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/roc_nightly-linux_arm64-2026-07-23-fdd77c3.tar.gz"
+   },
+   {
+    "id": 486835163,
+    "name": "roc_nightly-linux_x86_64-2026-07-23-fdd77c3.tar.gz",
+    "size": 52926127,
+    "digest": "sha256:b21e29d99eefb247b30a0b8a2bebb53a9ca331476309eef8c5c09e1cbf92423a",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/roc_nightly-linux_x86_64-2026-07-23-fdd77c3.tar.gz"
+   },
+   {
+    "id": 486835165,
+    "name": "roc_nightly-macos_apple_silicon-2026-07-23-fdd77c3.tar.gz",
+    "size": 51231275,
+    "digest": "sha256:0e1b03dd91c3223bcb55a75a44171387d70e5b0083904026b78a160445290af4",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/roc_nightly-macos_apple_silicon-2026-07-23-fdd77c3.tar.gz"
+   },
+   {
+    "id": 486835173,
+    "name": "roc_nightly-macos_x86_64-2026-07-23-fdd77c3.tar.gz",
+    "size": 54775109,
+    "digest": "sha256:6076811fe139db5755e468d52633a63befd705d5fbeb9a683f7cc7e83659c2bf",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/roc_nightly-macos_x86_64-2026-07-23-fdd77c3.tar.gz"
+   },
+   {
+    "id": 486835177,
+    "name": "roc_nightly-windows_x86_64-2026-07-23-fdd77c3.zip",
+    "size": 51316174,
+    "digest": "sha256:7bddc6154d30abf4405e0d6030ff1f79f2044da97e193c3e1acc2e2ea3e02fbf",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-fdd77c3/roc_nightly-windows_x86_64-2026-07-23-fdd77c3.zip"
+   }
+  ]
+ },
+ {
+  "tag_name": "nightly-2026-July-23-306abd6",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2026-07-23T11:30:53Z",
+  "assets": [
+   {
+    "id": 487114662,
+    "name": "echo.wasm.zst",
+    "size": 3130287,
+    "digest": "sha256:c8e0979005ad3495d8e8e17e01469062ce477901d86846ecdaef389ac03eeb3d",
+    "content_type": "application/zstd",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/echo.wasm.zst"
+   },
+   {
+    "id": 487114663,
+    "name": "playground.wasm",
+    "size": 13367807,
+    "digest": "sha256:130e702a34c172c92e5fffea13610421d3f5f246bbe91b9bcda9e6ca5bdab8c4",
+    "content_type": "application/wasm",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/playground.wasm"
+   },
+   {
+    "id": 487114659,
+    "name": "roc_nightly-linux_arm64-2026-07-23-306abd6.tar.gz",
+    "size": 49866416,
+    "digest": "sha256:7f30ca230ed940e3717fbf67e5d266c333bebc9dfd53885c6f73d43ded326c7a",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/roc_nightly-linux_arm64-2026-07-23-306abd6.tar.gz"
+   },
+   {
+    "id": 487114658,
+    "name": "roc_nightly-linux_x86_64-2026-07-23-306abd6.tar.gz",
+    "size": 52925834,
+    "digest": "sha256:b7be895f2a61ede7987dbe20a3902c5fb4f6945dd3c579b06165acded19b3f54",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/roc_nightly-linux_x86_64-2026-07-23-306abd6.tar.gz"
+   },
+   {
+    "id": 487114660,
+    "name": "roc_nightly-macos_apple_silicon-2026-07-23-306abd6.tar.gz",
+    "size": 51229043,
+    "digest": "sha256:607dcdd9794bc82b7d776d17da1e287c59cfcf81649e2973bcc23f5f78794dc4",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/roc_nightly-macos_apple_silicon-2026-07-23-306abd6.tar.gz"
+   },
+   {
+    "id": 487114677,
+    "name": "roc_nightly-macos_x86_64-2026-07-23-306abd6.tar.gz",
+    "size": 54774196,
+    "digest": "sha256:29c72cdf4322498bac8e9b4376d185d918b8df1769aa74b66bd105524f83cc48",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/roc_nightly-macos_x86_64-2026-07-23-306abd6.tar.gz"
+   },
+   {
+    "id": 487114679,
+    "name": "roc_nightly-windows_x86_64-2026-07-23-306abd6.zip",
+    "size": 51317403,
+    "digest": "sha256:201ee9f5b2fe2a7c3be9121a3d7b250cdb939fe04e3885d0ece03e7e6718936e",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-July-23-306abd6/roc_nightly-windows_x86_64-2026-07-23-306abd6.zip"
+   }
+  ]
+ },
+ {
+  "tag_name": "nightly-2026-February-10-c95f04d",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2026-02-10T10:13:03Z",
+  "assets": [
+   {
+    "id": 353546416,
+    "name": "playground.wasm",
+    "size": 3353067,
+    "digest": "sha256:4b0305c3fbb590b918ae0c2bd699858c7cbeb1a3cb63313e9f41ddc9dceb664e",
+    "content_type": "application/wasm",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/playground.wasm"
+   },
+   {
+    "id": 353546412,
+    "name": "roc_nightly-linux_arm64-2026-02-10-ea7058b.tar.gz",
+    "size": 42837809,
+    "digest": "sha256:0a7e677e46da0c8b7e3ecf0d1018bb53bacde7f59fd79156ceadb915a24654f9",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/roc_nightly-linux_arm64-2026-02-10-ea7058b.tar.gz"
+   },
+   {
+    "id": 353546417,
+    "name": "roc_nightly-linux_x86_64-2026-02-10-ea7058b.tar.gz",
+    "size": 45149172,
+    "digest": "sha256:d47afe60da0c81e6e9669faa15d06157027c28b2639bc01d2b099b7ef934e355",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/roc_nightly-linux_x86_64-2026-02-10-ea7058b.tar.gz"
+   },
+   {
+    "id": 353546414,
+    "name": "roc_nightly-macos_apple_silicon-2026-02-10-ea7058b.tar.gz",
+    "size": 44227164,
+    "digest": "sha256:2663db4ae344656c48141087676d2e883d00eae8711e0802eff12e980ec8abdb",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/roc_nightly-macos_apple_silicon-2026-02-10-ea7058b.tar.gz"
+   },
+   {
+    "id": 353546418,
+    "name": "roc_nightly-macos_x86_64-2026-02-10-ea7058b.tar.gz",
+    "size": 47138037,
+    "digest": "sha256:28f5c50ac48114f346a2e7f6674fe5aaf2295440b7977046288d37ee0b6daf2f",
+    "content_type": "application/x-gtar",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/roc_nightly-macos_x86_64-2026-02-10-ea7058b.tar.gz"
+   },
+   {
+    "id": 353546424,
+    "name": "roc_nightly-windows_arm64-2026-02-10-ea7058b.zip",
+    "size": 40739837,
+    "digest": "sha256:13d7761ee02ae633c338ca12e39793e520b4cb38664dac91e0ba3d57c68a0ea6",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/roc_nightly-windows_arm64-2026-02-10-ea7058b.zip"
+   },
+   {
+    "id": 353546437,
+    "name": "roc_nightly-windows_x86_64-2026-02-10-ea7058b.zip",
+    "size": 43742863,
+    "digest": "sha256:519d5d33db8743224d211382903a45bb94e82ce117c4d7d4b53ff1096fddb1f9",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2026-February-10-c95f04d/roc_nightly-windows_x86_64-2026-02-10-ea7058b.zip"
+   }
+  ]
+ },
+ {
+  "tag_name": "nightly-2025-November-03-4215483",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2025-11-03T09:26:27Z",
+  "assets": []
+ },
+ {
+  "tag_name": "nightly-2025-October-25-c3487d2",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2025-10-25T09:05:00Z",
+  "assets": [
+   {
+    "id": 308532243,
+    "name": "roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz",
+    "size": 42789570,
+    "digest": "sha256:6edf3f221dd0a15036436c60dda9f78417629f41ceffffc719a1c4e021cbc045",
+    "content_type": "application/gzip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2025-October-25-c3487d2/roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz"
+   },
+   {
+    "id": 308532245,
+    "name": "roc_nightly-linux_x86_64-2025-10-25-2b89aee.tar.gz",
+    "size": 44431265,
+    "digest": "sha256:b8effe57b39f38e1e780ac6a57d98b5983b95fc01f369ed689487901f4cdbe23",
+    "content_type": "application/gzip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2025-October-25-c3487d2/roc_nightly-linux_x86_64-2025-10-25-2b89aee.tar.gz"
+   },
+   {
+    "id": 308532244,
+    "name": "roc_nightly-macos_apple_silicon-2025-10-25-2b89aee.tar.gz",
+    "size": 34638701,
+    "digest": "sha256:b23806251bbc1a2043db5a16e9ae00f781ce19952b1f1b59445c297bf0ab47cc",
+    "content_type": "application/gzip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2025-October-25-c3487d2/roc_nightly-macos_apple_silicon-2025-10-25-2b89aee.tar.gz"
+   },
+   {
+    "id": 308532242,
+    "name": "roc_nightly-macos_x86_64-2025-10-25-2b89aee.tar.gz",
+    "size": 37302420,
+    "digest": "sha256:22bc3a93c39170a65ad1be3e0b20f1da75019ab9741379e003f70a7ff2279332",
+    "content_type": "application/gzip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2025-October-25-c3487d2/roc_nightly-macos_x86_64-2025-10-25-2b89aee.tar.gz"
+   },
+   {
+    "id": 308532240,
+    "name": "roc_nightly-windows_arm64-2025-10-25-2b89aee.zip",
+    "size": 32676676,
+    "digest": "sha256:f8b76a608cd8e1a573d13e90d507cea40f2b61fa1fe074e5a7b33b40f548a4f4",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2025-October-25-c3487d2/roc_nightly-windows_arm64-2025-10-25-2b89aee.zip"
+   },
+   {
+    "id": 308532247,
+    "name": "roc_nightly-windows_x86_64-2025-10-25-2b89aee.zip",
+    "size": 35611689,
+    "digest": "sha256:bdf77086fcc9da7e97df7236fde35519b1b486e56c1e7b1535e00ac7c38b69df",
+    "content_type": "application/zip",
+    "browser_download_url": "http://127.0.0.1:$PORT/dl/nightly-2025-October-25-c3487d2/roc_nightly-windows_x86_64-2025-10-25-2b89aee.zip"
+   }
+  ]
+ }
+]

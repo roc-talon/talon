@@ -839,8 +839,9 @@ R-CV8: Asset targets, as in the nightly `nightly-2026-10-14-38a3029`:
 | macOS arm64 | `macos_apple_silicon` | `.tar.gz` |
 | macOS x86_64 | `macos_x86_64` | `.tar.gz` |
 | Windows x86_64 | `windows_x86_64` | `.zip` |
+| Windows arm64 | `windows_arm64` | `.zip` |
 
-Windows arm64 has no asset in these nightlies (R-CV2).
+A nightly can lack the asset of a host: for example `nightly-2026-10-14-38a3029` has no `windows_arm64` asset, and older nightlies have one. Such a nightly is not a candidate on that host (R-CV2).
 
 #### Download consent
 
@@ -1274,7 +1275,7 @@ group to resolve ──▶ list releases (R-DI2, cached with ETag)
 
 | # | Rule |
 | --- | --- |
-| R-DI1 | Talon lists releases only for a group that it must resolve or show: a free direct dep, the platform, an `[overrides]` group (Resolution 6), the group of `tln add`, the group of a movable variable in the second search of a held move (Resolution 9, R-SP24), and the rows of `tln outdated`. A transitive group needs no list, because package headers set its version (MVS, Design 2). A command that resolves nothing (`tln install --frozen`, `tln list`, the `roc` proxy) makes no index call, also with a registry. It reads the closure from `packages/` and the archives (Resolution 5, R-AL8, sources 3 and 4). |
+| R-DI1 | Talon lists releases only for a group that it must resolve or show: a free direct dep, the platform, an `[overrides]` group (Resolution 6), the group of `tln add`, the group of a movable variable in the second search of a held move (Resolution 9, R-SP24, only when the search with the held variables fixed finds no tuple), and the rows of `tln outdated`. A transitive group needs no list, because package headers set its version (MVS, Design 2). With a registry, the closure query gives the lists (Registry 4.1, R-AP16), and the groups of the movable variables come in a second query. A command that resolves nothing (`tln install --frozen`, `tln list`, the `roc` proxy) makes no index call, also with a registry. It reads the closure from `packages/` and the archives (Resolution 5, R-AL8, sources 3 and 4). |
 | R-DI2 | The list call is `GET https://api.github.com/repos/<owner>/<repo>/releases?per_page=100`. `TALON_GITHUB_API` replaces the base `https://api.github.com` when it is set (section 1). Talon follows the `Link: rel="next"` header to the last page. It keeps each page and its `ETag` in `talon/index/github/<owner>/<repo>/` (6.1). A page younger than 60 s is used with no request, as `GET /v1/packages/{owner}/{repo}/releases` (Registry 4, R-AP1, R-AP24). For an older page, Talon sends `If-None-Match`. A `304` answer keeps the page. GitHub does not count a `304` answer against the rate limit when the request has a token. |
 | R-DI3 | Only a published release is a candidate. Talon skips a draft and a release that GitHub marks `prerelease`. A deleted release is not in the list, so it is not a candidate (R-C6). |
 | R-DI4 | The package asset is the one asset with the name `<hash>.tar.zst`, where `<hash>` is the base58 form of 32 bytes (Design 2). Other assets are not packages, for example `docs.tar.gz` and `<hash>.tar.zst.intoto.jsonl`. A release with no such asset is not a candidate. A release with 2 or more is not a candidate, because roc rejects one label with two hashes (Design 2, "Conflicting Package Contents"). Talon prints a warning that names the release. |

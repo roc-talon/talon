@@ -7,7 +7,7 @@ tln: error[usage]: 'util@1' is not in the project
 tln: error[usage]: tln remove needs one name or more
 tln: error[usage]: flag '--frozen' works only for tln install with no names
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   - parser: acme/parser 1.0.0
   + roc: nightly-2026-10-14-38a3029
@@ -16,7 +16,7 @@ $PROJECT/talon.toml: - [overrides] parser
 $PROJECT/talon.toml: - [patch] parser
 kept: $PROJECT/.talon/patches/parser/ (the patch files of parser)
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   - util: ../util/main.roc
   - odd: https://example.com/pkg/latest.tar.gz

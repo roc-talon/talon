@@ -1,0 +1,286 @@
+import Answer
+import Base
+import Clock
+import Common
+import Compiler
+import Consent
+import Exit
+import Fail
+import Fx
+import Install
+import Intent
+import Known
+import Launch
+import Locked
+import Mode
+import Net
+import Out
+import Pin
+import Project
+import Prompt
+import RocInstall
+import Roots
+import Text
+
+## The `roc` proxy (CLI 6.2, R-PX1 to R-PX7; slice 023). `tln` runs as the proxy when its program name is `roc` (R-ST8): it selects the compiler (Resolution 13),
+## writes the `.last-use` of the compiler (R-CC9) and runs it in place of itself (R-HF6: a child with the terminal of the process, the exit code passes through, R-E1).
+## `Run.run!` calls `Proxy.run!` when `Proxy.is_proxy(fx.program_name!())`. This module has the pure decisions (TESTING.md 2.2, part A) and the command code.
+## Slice 023 has no download: a compiler that is not installed is a refusal (R-DL8, R-DL10). Slice 023b adds the install (R-PX4): the prompt, `TALON_AUTO_INSTALL` and the lock (steps 9a to 9f below).
+## The probes of the other commands still run the name `roc` (slice 023c).
+##
+## The calls of `run!`, in order (the L2 case `proxy/px1-flow` fixes them). `program_name!` is called by `Run.run!` first and is not in `calls.log`.
+## "Early" is: `roc +<id>` is used, or `ROC_TOOLCHAIN` is set (rank 1 or 2). "Opted out" is `TALON_PROXY=0`.
+##
+## | Step | Does | Rule |
+## | --- | --- | --- |
+## | 1 | `args!`, `env_all!`. `Roots.from_env` (a failure is exit 18), `Compiler.toolchain_of` (rank 2: a failure is exit 2), `Proxy.split`, `Proxy.target`, `Proxy.opted_out`. | R-EV13, R-SO1, R-SO2, R-SO8, R-PD7, R-EV7 |
+## | 2 | Not opted out: `clock!` and `Clock.now` (`TALON_NOW`: a bad value is exit 2, Q7). Opted out: no `clock!` call. | R-EV22 |
+## | 3 | `cwd!` | R-PD7 |
+## | 4 | With a target file (`File` or `Main`), and not (opted out and early): `Project.find_loose!` (as `find!`, but a header that does not parse is no failure: the project is returned and only the `roc:` pin is dropped, R-TF5, review of Q6) with `file: Ok(<target>)`, `start: cwd`, `home`. Any other failure is no project (the proxy does not stop, roc reports the error itself). `Main` is the file `main.roc`. | R-PD7, R-PD1, R-PD3, R-PD5, R-PD6, R-TF5 |
+## | 5 | A project that has a file, and not opted out: `Known.record_recent!` of `[project.file]`, before the selection (a run that fails later records, as slice 007 D2). A failure is returned. | R-PD9, R-PD10 |
+## | 6 | Early: no `read_files!`. Else one `read_files!`, the paths in this order, only those that exist as a path: the project file, the `talon.toml` (the root `talon.toml` of a workspace, else `project.toml`), `config.toml`, `.roc-version`. With no project: `config.toml` only. The `roc:` pin is `Locked.read` of the header (a failure is no pin, R-TF5). A `talon.toml`, `config.toml` or `.roc-version` that does not parse is a failure (exit 19, R-TF4, R-SC12, Q5). | R-SO3 to R-SO6, R-TF4, R-TF5 |
+## | 7 | One `list_dirs!` of `<cache>/toolchains` (a missing dir is empty, `Compiler.installed`) when early, or a pin, a range, a `.roc-version` with no `talon.toml`, or `default-roc` is set. Else no call. A range and a non-empty listing: one `read_files!` of the `.talon.json` of each installed id (sorted), for `Compiler.times`. | R-SO4, R-NS1 |
+## | 8 | `Proxy.select` with `path: Err(NoCompiler)`. A result `Installed` of a rank other than `Range` is the compiler. Else, and not `Proxy.in_proxy`: `Install.on_path_file!` (`path_roc!` and the calls of slice 022b), then `Proxy.select` again with the id of the file. With `TALON_IN_PROXY=1` the call is never made. | R-SO7, R-SO9, R-EV17 |
+## | 9 | `NoCompiler`: `Compiler.failure(NoCompiler)` (exit 18). `NoneInRange`: `Compiler.failure(NoneInRange(<range text>))` (exit 13). `Missing`: `Proxy.missing` (exit 13). No `exec!`. | R-SO13, R-SO14, R-DL8, R-DL10 |
+## | 9g | Slice 024b (R-LK4): `Launch.program!` with the id of the compiler, `installed` (the listing of step 7, and the id of an install of 9f) and `path`. For a `link-*` id in the listing: one `read_files!` of its `.talon.json`, and the program is the absolute path that it records (`Link.target`). A failure of it is the failure of the run: no `.last-use`, no `canonical!`, no `exec!`. Any other id: no call (`copy-*` runs `toolchains/copy-<name>/roc`). The result is the program of step 12. | R-LK4, R-R5, R-LK2 |
+## | 10 | The compiler is in the listing of step 7, and not opted out: `write_atomic!` of `<cache>/toolchains/<id>/.last-use` with `Proxy.last_use(now)`. A failure is ignored (Q7). The compiler on `PATH` has no `.last-use`. | R-CC9, R-PX2 |
+## | 11 | Not opted out: `canonical!` of the directory of `roots.cache` (the path of `XDG_CACHE_HOME`) and of `roots.build` (one call, in this order). | R-PX6 |
+## | 12 | `exec!` of `[<the program of step 9g>] ++ <the arguments after +<id>>` with `Proxy.child_env`. `Ok(code)`: the exit code of the run is `code`. `Err(NotStarted(text))`: `Proxy.start_failed` (Q8). | R-PX2, R-PX3, R-HF6, R-E1 |
+##
+## Slice 023b, the install of a compiler that is not installed (R-PX4, R-DL1, R-DL8 to R-DL10, R-NI5, R-CC4). It replaces the refusal of step 9 for `Missing`. `NoCompiler` and `NoneInRange` stay as in step 9
+## (R-SO13 is slice 025). The calls, in order (the L2 case `proxy/px2-install` fixes them). The steps 9a to 9d make no `Fx` call except `tty!` in 9b. `<auto>` is `Consent.auto_install`.
+##
+## | Step | Does | Rule |
+## | --- | --- | --- |
+## | 9a | `Consent.auto_install(env)`. `Mode.from_env({ env, json: Bool.False })`. | R-EV6 |
+## | 9b | `Proxy.want({ id, auto, mode })`. `NeedTty`: one `tty!` call, `Mode.with_tty`, then `Proxy.want` again. `Refuse`: the failure `Proxy.missing` (exit 13), no more calls. | R-DL8, R-DL9, R-DL10, R-NI5 |
+## | 9c | `RocInstall.offer!(fx, { id, env, offline: Bool.False })` (the steps 2 to 6 of `tln roc install`: the list, the pick, the digest). A failure is returned. `Present`: go to 9f. | R-CC4 step 1, R-CV4 |
+## | 9d | `Install`: `Prompt.ask!` with `Consent.proxy_download({ id, source, size })`, `flag: Ok(Yes)` (the answer line goes to stderr, R-NM6). `Ask`: the same with `flag: Err(NoFlag)`, the mode of 9b (`Interactive`, so one `ask!` call). The answer `No`: `Consent.roc_install_declined(id)` (exit 13). No lock is taken yet (R-CC3 point 5, R-CC4 step 2). | R-DL1, R-DL3, R-DL5, R-NI5 |
+## | 9e | `RocInstall.install_offer!(fx, offer)` (the steps 8 to 12 of `tln roc install`: the lock, the download, the default). A failure is returned (its kind gives the exit code). | R-CC4, R-SO15 |
+## | 9f | The compiler is the `id` of the offer or of the result (the id of the list: the other tag form of a pin gives the id of the list). Steps 10 to 12 go on with it as an installed compiler: `.last-use` is written, `exec!` runs it. | R-CC9, R-PX2 |
+##
+## Where the output goes (slice 023 D10: the stdout and stderr of the proxy belong to roc): stdout gets nothing from the install, never. stderr gets only these lines: the prompt text (`Fx.ask!`), the answer line (R-NM6), the warnings of `config.toml` that `offer!` prints (D7 of slice 021), `waiting for another tln: <id>` (R-CC5)
+## and the line of a failure (R-E4). No progress line (R-DA6 is not built). No `installed ...` line, no `... is now the default compiler` line, no compat warning (Q3).
+##
+## A failure prints `Fail.line` on stderr, as the other commands (R-E4). The proxy has no `--json` and no flag (R-PD17).
+Proxy :: [].{
+
+	## R-ST8, R-PX1, R-HF9: is the program name the proxy? The base name (the text after the last `/` or `\`) without a `.exe` at the end is `roc`. So `roc`, `/home/u/.local/bin/roc`, `roc.exe` and `C:\talon\bin\roc.exe` are the proxy.
+	## `tln`, `tln.exe`, `rocky`, `Roc` and the empty text are not.
+	is_proxy : Str -> Bool
+	is_proxy = |name| {
+		segment = Text.last_segment(name)
+		base = segment.split_on("\\").last() ?? segment
+		base == "roc" or base == "roc.exe"
+	}
+
+	## R-SO1: `roc +<id> <arguments>`. When the first argument starts with `+` and has more text, `argument` is `Ok(<text after the +>)` and `rest` is the other arguments. Else `argument` is `Err(Unset)` and
+	## `rest` is the arguments as they are (a `+` that is not the first argument goes to roc). The id is not checked here (Q4).
+	split : List(Str) -> { argument : Try(Str, [Unset]), rest : List(Str) }
+	split = |args| match args {
+		[first, .. as rest] if first.starts_with("+") and first != "+" => { argument: Ok(first.drop_prefix("+")), rest }
+		_ => { argument: Err(Unset), rest: args }
+	}
+
+	## R-SO8, R-PD7: the target file of the proxy, from the arguments after `split` (the path of the file as typed, relative to the current directory).
+	##
+	## | Arguments | Result |
+	## | --- | --- |
+	## | The first argument that ends in `.roc` (also `./x/app.roc`, `/a/b.roc`) | `File(<that argument>)`. It is looked for in all the arguments, so `roc check app.roc` and `roc --opt=speed app.roc` and `roc app.roc -- x.roc` all give `app.roc`. |
+	## | No such argument, no subcommand or a subcommand that compiles a file (`check`, `build`, `test`, `docs`, `deps`, `run` with no source) | `Main` (roc reads `main.roc`) |
+	## | `version`, `help`, `install ...`, `run <source>` where the source is not a `.roc` file (a bundle URL, an installed name), no `.roc` argument | `NoFile` |
+	##
+	## Not decided (questions Q2, Q3): the subcommands that this list does not name (`fmt`, `bundle`, `repl`, ...), and an option with a separate value (`--replace-dep OLD NEW`, `-j 4`). The tests have no row for them.
+	target : List(Str) -> [File(Str), Main, NoFile]
+	target = |args| {
+		own = match args.split_first("--") {
+			Ok(parts) => parts.before
+			Err(NotFound) => args
+		}
+		match own.find_first(is_source_file) {
+			Ok(file) => File(file)
+			Err(_) => if no_file_command(own) NoFile else Main
+		}
+	}
+
+	## R-PX7, R-EV7: `TALON_PROXY=0`. Any other value, and no variable, is false.
+	opted_out : List((Str, Str)) -> Bool
+	opted_out = |env| env.contains(("TALON_PROXY", "0"))
+
+	## R-EV17, R-SO9: `TALON_IN_PROXY=1` is set. Any other value, and no variable, is false. A proxy that sees it does not look at `PATH` (rank 7).
+	in_proxy : List((Str, Str)) -> Bool
+	in_proxy = |env| Base.in_proxy(env)
+
+	## The rank that selected the compiler: `Compiler.Rank` with the header pin (rank 3) between `Env` and `Range` (`Base.Rank`).
+	Rank : Base.Rank
+
+	## R-SO1 to R-SO7, R-SO10, R-SO12 to R-SO14, R-CV1 (the ranks of the proxy): `Base.select`. Rank 3 is the `roc:` pin of the header, with no `nightly` switch and no range (R-SO19: the proxy has no gate).
+	select : { pin : Try(Str, [NoPin]), facts : Compiler.Facts } -> Try({ id : Str, rank : Proxy.Rank, state : [Installed, Missing] }, [NoCompiler, NoneInRange])
+	select = |run| Base.select(run)
+
+	## R-PX4, R-DL8 to R-DL10, R-NI5, R-DL3: what the proxy does for a selected compiler that is not installed, before any request.
+	##
+	## | Case | Result |
+	## | --- | --- |
+	## | `id` is not a nightly tag (`Pin.is_nightly` is false: a prefix such as `nightly-2026-10`, `git-<sha8>`, `link-<name>`, `copy-<name>`, a release version, the empty text), whatever `auto` and `mode` are (question Q2: no source of compiler releases is known, R-NS2, and a build has no asset) | `Refuse` |
+	## | `auto` is `No` | `Refuse`, in each mode (R-DL10) |
+	## | `auto` is `Yes` | `Install`, in each mode (R-DL9): the answer is Yes with no prompt |
+	## | `auto` is `Ask`, `mode` is `NonInteractive` | `Refuse` (R-DL8: the proxy never prompts in non-interactive mode, R-DL4) |
+	## | `auto` is `Ask`, `mode` is `Interactive` | `Ask`: the prompt R-NI5 (default Yes for the proxy, R-DL3) |
+	## | `auto` is `Ask`, `mode` is `NeedsTty` | `NeedTty`: the caller asks the terminal (R-HF1), then calls again with `Mode.with_tty` |
+	##
+	## `auto` `Yes` with `NeedsTty` never gives `NeedTty`: the answer needs no person, so the run makes no `tty!` call.
+	want : { id : Str, auto : [Ask, Yes, No], mode : Mode } -> [Refuse, Install, Ask, NeedTty]
+	want = |run| {
+		if !Pin.is_nightly(run.id) or run.auto == No {
+			Refuse
+		} else if run.auto == Yes {
+			Install
+		} else {
+			match run.mode {
+				Interactive => Ask
+				NeedsTty => NeedTty
+				NonInteractive => Refuse
+			}
+		}
+	}
+
+	## R-DL8, R-DL10, R-NI5: the refusal for a selected id that is not installed. Kind `Consent` (exit 13), before the compiler runs. The text names `tln roc install <id>` and `TALON_AUTO_INSTALL=yes`
+	## (a proposal, TW24): `the compiler <id> (<source>) is not installed. Run: tln roc install <id>, or set TALON_AUTO_INSTALL=yes.` `<source>` is the rank: `roc +<id>` (`Argument`), `ROC_TOOLCHAIN` (`Env`),
+	## `the roc: entry of the header` (`Pin`), `.roc-version` (`VersionFile`), `the global default` (`Default`). `Range` and `Path` never give `Missing`; the text for them is `the compiler range`
+	## and `the roc on PATH`.
+	missing : { id : Str, rank : Proxy.Rank } -> Fail
+	missing = |run| Fail.new(Consent, "the compiler ${run.id} (${source_text(run)}) is not installed. Run: tln roc install ${run.id}, or set TALON_AUTO_INSTALL=yes.")
+
+	## R-E1: the child did not start. Kind `Environment` (exit 18), the text (a proposal, TW24): `cannot run <program>: <text>`.
+	start_failed : { program : Str, text : Str } -> Fail
+	start_failed = |run| Fail.new(Environment, "cannot run ${run.program}: ${run.text}")
+
+	## The proxy: steps 1 to 12 of the table above. It gives the exit code of the child, or the code of a failure.
+	run! : Fx => I32
+	run! = |fx| match go!(fx) {
+		Ok(code) => code
+		Err(fail) => {
+			fx.err!(Out.fail({ command: "roc", json: Bool.False, fail }).stderr)
+			Exit.choose({ failures: [fail], child: Err(NoChild) })
+		}
+	}
+}
+
+# R-SO8: an argument that names the target file. An option and a URL are not a file.
+is_source_file : Str -> Bool
+is_source_file = |arg| arg.ends_with(".roc") and !arg.starts_with("-") and !arg.contains("://")
+
+# R-SO8, Q2: the commands and flags that have no target file. `run` has none when it names a source that is not a file.
+no_file_command : List(Str) -> Bool
+no_file_command = |args| {
+	flags = args.any(|arg| ["-h", "--help", "-V", "--version"].contains(arg))
+	match args.first() {
+		Ok("version") | Ok("help") | Ok("install") => Bool.True
+		Ok("run") => args.drop_first(1).any(|arg| !arg.starts_with("-"))
+		_ => flags
+	}
+}
+
+source_text : { id : Str, rank : Proxy.Rank } -> Str
+source_text = |run| match run.rank {
+	Argument => "roc +${run.id}"
+	Env => "ROC_TOOLCHAIN"
+	Pin => "the roc: entry of the header"
+	Range => "the compiler range"
+	VersionFile => ".roc-version"
+	Default => "the global default"
+	Path => "the roc on PATH"
+}
+
+# The steps 1 to 12 of the table in the doc of `Proxy`.
+go! : Fx => Try(I32, Fail)
+go! = |fx| {
+	words = fx.args!()
+	env = fx.env_all!()
+	roots = Roots.from_env(env)?
+	toolchain = Compiler.toolchain_of(env)?
+	split = Proxy.split(words)
+	off = Proxy.opted_out(env)
+	early = split.argument.is_ok() or toolchain.is_ok()
+	now = if off 0 else Clock.now!(fx, env)?
+	cwd = fx.cwd!()
+	found = Base.find!(fx, { target: Proxy.target(split.rest), skip: off and early, cwd, env })
+	if !off {
+		Known.record_recent!(fx, { roots, files: Base.project_files(found), now })?
+	}
+	read = if early Ok(Base.no_facts) else Base.load!(fx, roots, found, Read)
+	loaded = read?
+	lists = early or loaded.pin.is_ok() or loaded.req.is_ok() or (loaded.version_file.is_ok() and !loaded.has_toml) or loaded.default.is_ok()
+	installed = if lists Launch.toolchains!(fx, roots) else []
+	times = if loaded.req.is_ok() and !installed.is_empty() Base.times!(fx, roots, installed) else []
+	facts = Base.facts({ argument: split.argument, toolchain, loaded, env_nightly: Common.nightly_of(env), installed, times })
+	picked = Base.choose!(fx, { roots, env, pin: loaded.pin, facts })
+	on_path = picked.on_path
+	selected = picked.selected
+	chosen = match selected {
+		Ok(sel) => sel
+		Err(NoCompiler) => return Err(Compiler.failure(NoCompiler))
+		Err(NoneInRange) => ranged!(fx, { loaded, roots, env, now, off })?
+	}
+	missing = chosen.state == Missing
+	id = if missing install_missing!(fx, { id: chosen.id, rank: chosen.rank, env })? else chosen.id
+	have = if missing installed.append(id) else installed
+	program = Launch.program!(fx, { roots, id, installed: have, path: on_path })?
+	if !off and have.contains(id) {
+		Launch.touch!(fx, roots, { id, now })
+	}
+	child_env = Launch.child_env!(fx, roots, { opted_out: off })
+	match fx.exec!({ argv: [program].concat(split.rest), env: child_env }) {
+		Ok(code) => Ok(code)
+		Err(NotStarted(text)) => Err(Proxy.start_failed({ program, text }))
+	}
+}
+
+# Steps 9a to 9f: the compiler that is not installed. It gives the id of the compiler that is installed after it.
+install_missing! : Fx, { id : Str, rank : Proxy.Rank, env : List((Str, Str)) } => Try(Str, Fail)
+install_missing! = |fx, run| {
+	auto = Consent.auto_install(run.env)
+	mode = Mode.from_env({ env: Dict.from_list(run.env), json: Bool.False })
+	first = Proxy.want({ id: run.id, auto, mode })
+	known = if first == NeedTty Mode.with_tty(mode, fx.tty!()) else mode
+	match Proxy.want({ id: run.id, auto, mode: known }) {
+		Install => offer_and_install!(fx, run, { mode: known, flag: Ok(Yes) })
+		Ask => offer_and_install!(fx, run, { mode: known, flag: Err(NoFlag) })
+		Refuse | NeedTty => Err(Proxy.missing({ id: run.id, rank: run.rank }))
+	}
+}
+
+# Steps 9c to 9f. The prompt comes after the offer (it needs the size) and before the lock (R-CC3 point 5).
+offer_and_install! : Fx, { id : Str, rank : Proxy.Rank, env : List((Str, Str)) }, { mode : Mode, flag : Try(Answer, [NoFlag]) } => Try(Str, Fail)
+offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, env: run.env, offline: Bool.False })? {
+	Present(found) => Ok(found.id)
+	Download(offer) => {
+		prompt = Consent.proxy_download({ id: offer.id, source: source_text({ id: run.id, rank: run.rank }), size: offer.size })
+		asked = Prompt.ask!(fx, prompt, { mode: how.mode, yes: Bool.False, quiet: Bool.False, flag: how.flag })?
+		if asked.answer == Yes {
+			done = RocInstall.install_offer!(fx, offer)?
+			Ok(done.id)
+		} else {
+			Err(Consent.roc_install_declined(offer.id))
+		}
+	}
+}
+
+# R-SO13, R-DL5, R-DL8 (slice 025b): no installed compiler is in the range. `TALON_AUTO_INSTALL=no` refuses (the proxy has no flag). Else the newest compiler that the range allows is the missing compiler of rank 4.
+# With `TALON_PROXY=0` `now` is 0, so the time is read here.
+ranged! : Fx, { loaded : Base.Loaded, roots : Roots, env : List((Str, Str)), now : U64, off : Bool } => Try(Base.Selected, Fail)
+ranged! = |fx, run| {
+	loaded = run.loaded
+	if Consent.auto_refuses({ auto: Consent.auto_install(run.env), yes: Bool.False, flag: Err(NoFlag) }) {
+		return Err(Compiler.failure(NoneInRange(loaded.req_text)))
+	}
+	req = match loaded.req {
+		Ok(found) => found
+		Err(Unset) => Any
+	}
+	now = if run.off Clock.now!(fx, run.env)? else run.now
+	switch = Pin.switch({ env: Common.nightly_of(run.env), toml: loaded.toml_nightly, config: loaded.config_nightly })
+	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, snapshot: Err(None), switch })?
+	Ok({ id, rank: Range, state: Missing })
+}

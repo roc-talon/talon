@@ -1,0 +1,60 @@
+| id | rule | result | first failing line |
+| --- | --- | --- | --- |
+| b1 | R-BS2 | caught | l0:buildskip 1 failed |
+| b2 | R-BS2 | caught | l0:buildskip 1 failed |
+| b3 | R-BS2 | caught | l0:buildskip 1 failed |
+| b4 | R-ID6 | caught | l0:buildskip 1 failed |
+| b5 | R-ID6 | caught | l0:buildskip 1 failed |
+| b6 | R-ID6 | caught | l0:buildskip 1 failed |
+| b7 | R-ID6 | caught | l0:buildskip 1 failed |
+| b8 | R-ID6 | caught | l0:buildskip 1 failed |
+| b9 | R-NS12 | caught | l0:buildskip 1 failed |
+| b10 | R-ID6 | caught | l0:buildskip 1 failed |
+| b11 | R-BS2 | caught | l0:buildskip 1 failed |
+| b12 | R-BS1 | caught | l0:buildskip 1 failed |
+| b13 | R-BS2 | caught | l0:buildskip 1 failed |
+| b14 | R-P4 | caught | l0:buildskip 1 failed |
+| b15 | R-ID6 | caught | l0:buildskip 1 failed |
+| b16 | R-P3 | caught | l0:buildskip 1 failed |
+| b17 | R-BS2 | caught | l0:buildskip 1 failed |
+| b18 | R-BS1 | NOT CAUGHT |  |
+| b19 | R-LD5 | caught | l2 FAIL gaps/g1-slice009 |
+| f1 | R-LD7 | caught | l2 FAIL resolve/rs-highest-use |
+| f2 | R-UM1 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| f3 | R-BS1 | caught | l2 FAIL consent/dl1-resolve |
+| f4 | R-BS2 | caught | l2 FAIL consent/dl2-verify-workspace |
+| f5 | R-BS1 | caught | l2 FAIL consent/dl2-verify-workspace |
+| f6 | R-P4 | caught | l2 FAIL consent/dl1-resolve |
+| f7 | R-P3 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| f8 | R-P4 | NOT CAUGHT |  |
+| f9 | R-P4 | NOT CAUGHT |  |
+| f10 | R-ID6 | caught | l2 FAIL consent/dl1-resolve |
+| f11 | R-ID6 | caught | l2 FAIL probe/pb1-ladder |
+| l1 | R-BS2 | caught | l2 FAIL consent/dl2-verify-workspace |
+| l2 | R-BS1 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| l3 | R-PP4 | caught | l2 FAIL install/in1-flow |
+| l4 | R-BS2 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| l5 | R-P4 | caught | l2 FAIL consent/dl1-resolve |
+| l6 | R-UM1 | NOT CAUGHT |  |
+| l7 | R-UM1 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| l8 | R-BS1 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| l9 | R-BS1 | caught | l3 FAIL update/bs1-build-skip |
+| l10 | R-BS1 | caught | l2 FAIL consent/dl1-resolve |
+| l11 | R-P5 | caught | l2 FAIL ladder/bs3-build-record |
+| l12 | R-UM1 | caught | l2 FAIL gaps/g1-slice009 |
+| l13 | R-UM1 | caught | l2 FAIL probe/un1-units |
+| l14 | R-UM1 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| w1 | R-LD5 | NOT CAUGHT |  |
+| w2 | R-BS1 | caught | l3 FAIL update/bs1-build-skip |
+| w3 | R-BS1 | NOT CAUGHT |  |
+| w4 | R-BS1 | caught | l2 FAIL ladder/bs2-build-skip-verify |
+| w5 | R-LD5 | caught | l2 FAIL gaps/g1-slice009 |
+| w6 | R-LD5 | caught | l2 FAIL remove/rm1-flow |
+| n1 | R-P4 | caught | l0:facts 1 failed |
+| n2 | R-P4 | caught | l0:facts 1 failed |
+| n3 | R-P3 | caught | l0:facts 1 failed |
+| n4 | R-P3 | caught | l0:facts 1 failed |
+| n5 | R-P4 | caught | l0:db 1 failed |
+| n6 | R-P4 | caught | l3 FAIL update/bs1-build-skip |
+| n7 | R-P4 | caught | l3 FAIL update/bs1-build-skip |
+| n8 | R-P4 | NOT CAUGHT |  |

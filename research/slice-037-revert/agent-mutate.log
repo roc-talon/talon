@@ -1,0 +1,25 @@
+P1: CAUGHT (    0 compiler errors)  [the first round asks the oldest releases, not the newest (R-PB3)]
+P2: CAUGHT (    0 compiler errors)  [the picks of a round are not the quartile places (R-PP2)]
+P3: CAUGHT (    0 compiler errors)  [a hang or a crash is asked again (R-EP5)]
+P4: CAUGHT (    0 compiler errors)  [one unknown end gives no exit 12 (R-PB4)]
+P5: CAUGHT (FAIL probe/pc1-targets)  [a bundle is unbundled again when its dir is there (R-FE3)]
+P6: CAUGHT (FAIL probe/pc2-range)  [the budget does not count the probes that started (R-P5, R-PP4)]
+P7: CAUGHT (FAIL probe/pc2-range)  [a compiler that is not installed is asked (R-NI4)]
+P8: BAD (does not compile) (compile error)  [the build runs after a failed check (R-LD5)]
+P9: CAUGHT (FAIL probe/pc1-targets)  [a known fact is not replaced by a new probe (R-P4)]
+P10: CAUGHT (FAIL probe/pc2-range)  [the range search does not read the known facts (R-AL4)]
+cli/lib/ProbeBundle.roc: OK
+cli/lib/ProbeCmd.roc: OK
+cli/lib/ProbeRange.roc: OK
+cli/lib/ProbeSearch.roc: OK
+cli/lib/ProbeShow.roc: OK
+cli/lib/ProbeUnit.roc: OK
+cli/lib/main.roc: OK
+P8: CAUGHT (FAIL probe/pc1-targets)  [the build runs after a failed check (R-LD5)]
+cli/lib/ProbeBundle.roc: OK
+cli/lib/ProbeCmd.roc: OK
+cli/lib/ProbeRange.roc: OK
+cli/lib/ProbeSearch.roc: OK
+cli/lib/ProbeShow.roc: OK
+cli/lib/ProbeUnit.roc: OK
+cli/lib/main.roc: OK

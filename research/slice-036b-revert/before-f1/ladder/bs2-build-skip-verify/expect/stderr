@@ -1,0 +1,36 @@
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pfx 0.1.1: unsupported target
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-15T12:00:00Z, 5 probes
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p5/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-15T12:00:00Z, 2 probes
+check: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/pk/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-15T12:00:00Z, 2 probes
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p6/main.roc
+  - parser: acme/parser 1.0.0
+  + roc: nightly-2026-10-14-38a3029

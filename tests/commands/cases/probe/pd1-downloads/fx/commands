@@ -1,0 +1,11 @@
+probe json --range --file p1/main.roc
+env:CI=true probe json --range --file p1/main.roc
+env:TALON_AUTO_INSTALL=no probe json --range --probe-downloads --json --file p1/main.roc
+env:CI=true env:TALON_AUTO_INSTALL=yes probe parser --range --allow-downloads --file p1/main.roc
+probe parser --range --yes --file p1/main.roc
+env:HOME={w}/home2 probe parser2 --range --probe-downloads --file p2/main.roc
+env:HOME={w}/home3 probe json --range --probe-downloads --file p3/main.roc
+env:HOME={w}/home4 probe json --range --probe-downloads --json --file p1/main.roc
+env:HOME={w}/home5 probe json --range --probe-downloads --file p4/main.roc
+env:HOME={w}/home6 probe json --range --probe-downloads --file p5/main.roc
+env:HOME={w}/home7 probe json --range --probe-downloads --file p6/main.roc

@@ -1,0 +1,11 @@
+talon.toml: key "js" is "acme/json", which the header names "json"
+tln: error[consent]: 1 stale key in talon.toml needs consent. Pass --rename-keys or --yes.
+tln: error[frozen]: the header does not satisfy talon.toml: talon.toml: key "js" is "acme/json", which the header names "json"
+talon.toml: key "js" is "acme/json", which the header names "json"
+renamed 1 stale key in talon.toml
+tln: error[usage]: flag '--frozen' works only for tln install with no names
+tln: error[usage]: no current member in the workspace at $PROJECT. Members: $PROJECT/apps/a/main.roc, $PROJECT/apps/b/main.roc. Pass --file <member file>.
+~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
+  writes $PROJECT/apps/a/main.roc
+tln: error[consent]: moving the held variable json needs consent. Pass --allow-moves or --yes.
+tln: error[internal]: command 'probe' is not built yet

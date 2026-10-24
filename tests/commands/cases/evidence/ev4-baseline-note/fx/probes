@@ -1,0 +1,4 @@
+# the baseline has the error in acme/parser Parser.roc, the candidate has the same error, the build passes
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-same.stdout	../fixtures/check/out/pkg-same.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

@@ -1,0 +1,16 @@
+# R-NI7 R-NR2 R-NR3 R-NM8 R-GC12 R-GC13 R-GC14 (slice 029): a person is there (a pseudo terminal, given/answers is `n`, then an empty line). stdout and stderr are one stream, so the prompt shows in expect/stdout (the typed answer does not).
+# The prompt shows the count, the size and the default (R-NR2). The default is Yes (R-NI7).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+files() { (cd $HOME && find .cache .config .local -type f | sort); }
+snap() { files > $D/snap.new; diff $D/snap.old $D/snap.new | grep '^[<>]' || true; cp $D/snap.new $D/snap.old; }
+files > $D/snap.old
+echo "== 1: the answer n: nothing is removed, exit 0"
+st tln cache clean --all
+snap
+echo "== 2: the answer Enter is the default Yes: the index and the x builds go (no --all: the packages and the build caches stay)"
+st tln cache clean
+snap
+echo "== 3: --yes answers the prompt (R-NM8): no question, the answer line, the removal of the packages dir and the build caches"
+st tln cache clean --all --yes
+snap

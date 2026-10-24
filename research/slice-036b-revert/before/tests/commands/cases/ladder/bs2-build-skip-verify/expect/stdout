@@ -1,0 +1,73 @@
+== verify --file p1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file p1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file p1/main.roc --json
+{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1","module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":[]},"error":null}
+exit 0
+== verify --file p2/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file p1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file p2/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file p3/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 10
+== update json --file p4/main.roc --json
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":5,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/p4/main.roc"]},"error":null}
+exit 0
+== update json --file p5/main.roc --json
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/p5/main.roc"]},"error":null}
+exit 0
+== update json --file pk/main.roc --json
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":null,"added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/pk/main.roc"]},"error":null}
+exit 0
+== remove parser --file p6/main.roc --json
+{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":false,"check":"passed","build":"skipped","removed":[{"alias":"parser","kind":"release","name":"acme/parser","version":"1.0.0"}],"toml":[],"patches":[],"pinned":"nightly-2026-10-14-38a3029","notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."],"written":["$PROJECT/p6/main.roc"]},"error":null}
+exit 0

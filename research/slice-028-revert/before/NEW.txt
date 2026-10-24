@@ -1,0 +1,6 @@
+cli/lib/Gc.roc
+cli/lib/CacheGc.roc
+tests/unit/gc.roc
+tests/commands/cases/gc/gc1-select
+tests/commands/cases/gc/gc2-busy
+tests/scenarios/cache/gc1-real

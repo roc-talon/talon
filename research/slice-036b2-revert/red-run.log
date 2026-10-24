@@ -1,0 +1,131 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        ("a scan with no module (a row with an empty list): done, and no second scan", run([yaml("3.0.0")], [use("3.0.0", [])]), "done json=3.0.0"),
+        ("the scan result of another release does not count", run([yaml("3.0.0")], [use("2.0.0", ["Yaml.roc"])]), "scan ${p("3.0.0")}"),
+        ("a fail in main.roc: used by every release, no scan: the next release", run([row(json("3.0.0"), nightly, Fail, ["main.roc"])], []), "pairs ${p("2.0.0")}@${nightly}"),
+        ("a fail in main.roc and in Yaml.roc: the same", run([row(json("3.0.0"), nightly, Fail, ["Yaml.roc", "main.roc"])], []), "pairs ${p("2.0.0")}@${nightly}"),
+        ("a fail of a release that is not chosen: no scan", run([yaml("2.0.0"), row(json("3.0.0"), nightly, Pass, [])], []), "done json=3.0.0"),
+        ("a fail with a module of another compiler: no check of this pair", run([row(json("3.0.0"), "nightly-2026-10-01-aaaaaaa", Fail, ["Yaml.roc"])], []), "pairs ${p("3.0.0")}@${nightly}"),
+        ("2 slots: the chosen releases with a fail are scanned in the order of the slots, once each", run2([yaml("3.0.0"), row(u("a", "2.0.0"), nightly, Fail, ["Lib.roc"])], []), "scan ${p("3.0.0")} a/releases/download/2.0.0/ax2x0x0.tar.zst"),
+        ("2 slots: only the release with a fail is scanned", run2([yaml("3.0.0"), pass_a], []), "scan ${p("3.0.0")}"),
+        ("2 slots: json has a scan result and a fail that touches nothing: only a is scanned", run2([yaml("3.0.0"), row(u("a", "2.0.0"), nightly, Fail, ["Lib.roc"])], [use("3.0.0", [])]), "scan a/releases/download/2.0.0/ax2x0x0.tar.zst"),
+        ("the verdict has the whole tuple, one release for each slot", tuple, "json=3.0.0 a=2.0.0"),
+        ("`Off`: a row from the db with a module is scanned too", off, "scan ${p("3.0.0")}"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+nightly = "nightly-2026-10-14-38a3029"
+json_slot = slot("json", [], json("1.0.0"), Free, [cand(json("1.0.0"), 30),
+cand(json("2.0.0"), 30), cand(json("3.0.0"), 30)])
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+
+Ran 8 tests in 2501.7 ms.:
+    6 passed
+    2 failed
+    0 compiler errors
+tests/unit/oracle.roc: All (5) tests passed in 3696.5 ms.
+tests/unit/out.roc: All (4) tests passed in 154.8 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 820.4 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2287.1 ms.
+tests/unit/picker.roc: All (2) tests passed in 140.5 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 2576.3 ms.
+tests/unit/pick.roc: All (3) tests passed in 2588.0 ms.
+tests/unit/pin.roc: All (9) tests passed in 989.6 ms.
+tests/unit/pins.roc: All (6) tests passed in 1410.3 ms.
+tests/unit/probe.roc: All (5) tests passed in 347.8 ms.
+tests/unit/project.roc: All (7) tests passed in 2210.3 ms.
+tests/unit/projects.roc: All (3) tests passed in 488.8 ms.
+tests/unit/prompt.roc: All (5) tests passed in 361.6 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2819.0 ms.
+tests/unit/ranges.roc: All (1) tests passed in 280.0 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1746.8 ms.
+tests/unit/ref.roc: All (4) tests passed in 311.0 ms.
+tests/unit/removal.roc: All (4) tests passed in 2109.8 ms.
+tests/unit/report.roc: All (3) tests passed in 211.7 ms.
+tests/unit/roots.roc: All (3) tests passed in 185.1 ms.
+tests/unit/scan.roc: All (2) tests passed in 205.1 ms.
+tests/unit/selector.roc: All (2) tests passed in 418.8 ms.
+tests/unit/setup.roc: All (10) tests passed in 771.0 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 368.1 ms.
+tests/unit/temp.roc: All (4) tests passed in 116.8 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 2006.6 ms.
+tests/unit/units.roc: All (6) tests passed in 936.3 ms.
+tests/unit/update.roc: All (2) tests passed in 1992.9 ms.
+tests/unit/uses.roc: All (2) tests passed in 543.4 ms.
+tests/unit/vars.roc: All (6) tests passed in 1646.7 ms.
+tests/unit/verify.roc: All (2) tests passed in 1317.9 ms.
+tests/unit/why.roc: All (6) tests passed in 1859.4 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+      @@ -225,8 +225,19 @@
+       random
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+      +list_dirs $HOME/.cache/roc/toolchains
+      +canonical $HOME/.cache $HOME/.cache/roc
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+      +random
+      +copy_tree $PROJECT/p6 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+      +probes 1
+      +  probe $PROJECT/p6 nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=9
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+      +delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p7/main.roc
+       list_dirs $PROJECT/p7
+       list_dirs $PROJECT
+      @@ -462,8 +473,19 @@
+       list_dirs $HOME/.cache/roc/packages
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+       db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +list_dirs $HOME/.cache/roc/toolchains
+      +canonical $HOME/.cache $HOME/.cache/roc
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+      +random
+      +copy_tree $PROJECT/p14 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+      +probes 1
+      +  probe $PROJECT/p14 nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=9
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+      +delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p15/main.roc
+       list_dirs $PROJECT/p15
+       list_dirs $PROJECT
+      @@ -603,9 +625,18 @@
+         probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-04-8a7b6c5 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+      +random
+      +copy_tree $PROJECT/p18 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/Lib.roc
+      +write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+      +probes 1
+      +  probe $PROJECT/p18 nightly-2026-10-04-8a7b6c5 $HOME/bin/roc check main.roc timeout=9
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       read_files $PROJECT/p18/Lib.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
+      +delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/ws/apps/a/main.roc
+       list_dirs $PROJECT/ws/apps/a
+       list_dirs $PROJECT/ws/apps
+commands: 82 passed, 4 failed
+
+step       result seconds  budget
+check      pass   1.2      10
+fmt        pass   0.1      5
+l0         FAIL   8.9      10
+l2         FAIL   1.7      30
+l3         pass   9.7      60
+selftest   pass   9.1      20
+l1         pass   29.2     60

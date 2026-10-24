@@ -1,8 +1,12 @@
 import Clock
+import ConfigToml
 import Fail
+import IntentEdit
 import Pin
+import Probe
 import Ranges
 import Text
+import TomlKeys
 import toml.Toml
 import toml.Value
 
@@ -21,7 +25,7 @@ import toml.Value
 ## | `[resolution]` | `strategy` | `"highest"` or `"lowest"` | `resolution.strategy` |
 ## | `[resolution]` | `min-release-age` | `"<n>d"`: a whole number of days (question Q10). `"0d"` turns it off (R-C7). | `resolution.min_release_age`, in seconds |
 ## | `[resolution]` | `snapshot` | `"log:<n>"` or an RFC 3339 UTC time (R-DT3, R-DT4) | `resolution.snapshot` |
-## | `[resolution]` | `probe` | a table (P1: known, not read in P0) | |
+## | `[resolution]` | `probe` | An inline table `{ max = 100, timeout = 30, slots = 12, max-toolchains = 10 }`. Each key is a whole number that is 0 or more (`slots` and `timeout`: 1 or more, question Q5). Slice 031 (R-P5, R-PP7). | `resolution.probe` (`Probe.Keys`) |
 ## | `[workspace]` | `members` | a list of patterns (read by `Project.workspace_of`, slice 002) | |
 ## | `[audit]`, `[patch]` | any | P3 and P1: known tables, the content is not read in P0 | |
 ##
@@ -36,6 +40,7 @@ Intent := {
 		strategy : Try([Highest, Lowest], [Unset]),
 		min_release_age : Try(U64, [Unset]),
 		snapshot : Try([Log(U64), Time(U64)], [Unset]),
+		probe : Probe.Keys,
 	},
 }.{
 	is_eq : _
@@ -67,139 +72,22 @@ Intent := {
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(doc) => {
 			scan = read_tables(doc, facts.role, facts.text)
-			match scan.issues.sort_with(|a, b| compare_lines(a.line, b.line)) {
+			match scan.issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
 				[first, ..] => Err(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}"))
-				[] => Ok({ intent: scan.intent, warnings: scan.warnings.sort_with(|a, b| compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
+				[] => Ok({ intent: scan.intent, warnings: scan.warnings.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
 			}
 		}
 	}
 
-	## The settings of P0 that `config.toml` has (CLI 6.1, R-LY4): `nightly` (R-NS10) and `min-release-age` in seconds (R-C7). The other keys are known and not read in P0.
-	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]) }
+	## The read of `config.toml` is in `ConfigToml.read` (slice 031b). This name stays for the unit tests.
+	read_config = ConfigToml.read
 
-	## Reads the text of a `config.toml` (R-TF4). A key with a value of the wrong form is a failure of kind `Input` (exit 19): `<path>:<line>: <key>: <why>`.
-	## An unknown top-level key is a warning: `<path>:<line>: unknown key <key>`.
-	read_config : { path : Str, text : Str } -> Try({ config : Config, warnings : List(Str) }, Fail)
-	read_config = |facts| match Toml.parse(facts.text) {
-		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
-		Ok(doc) => {
-			nightly = config_field(
-				doc,
-				"nightly",
-				|v| match v {
-					Value.Boolean(b) => Ok(b)
-					_ => Err("must be true or false")
-				},
-			)
-			age = config_field(
-				doc,
-				"min-release-age",
-				|v| match v {
-					Value.String(text) => days_of(text).map_err(|NotDays| "must be a number of days, for example \"2d\"")
-					_ => Err("must be a number of days, for example \"2d\"")
-				},
-			)
-			issues = nightly.issues.concat(age.issues)
-			match issues.sort_with(|a, b| compare_lines(a.line, b.line)) {
-				[first, ..] => Err(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}"))
-				[] => {
-					unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: key_line(doc, [key]), message: "unknown key ${key}" })
-					warnings = unknown.sort_with(|a, b| compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}")
-					Ok({ config: { nightly: nightly.value, min_release_age: age.value }, warnings })
-				}
-			}
-		}
-	}
-
-	## The edit of `talon.toml` for the keys that Talon writes (R-AD23 to R-AD28, R-UP11, R-WS14): each `{ key, value }` sets `[dependencies] <key> = "<value>"`.
-	## A key that is there gets a new string value (`Toml.replace`), so the comment on its line stays. A key that is not there is added after the last
-	## entry of the table (`Toml.insert`), and the table is made when it is not there. The empty text gives a new file with the table. A key whose
-	## value is the text already: no change. Else all other bytes stay. A text that is not TOML is the failure of `read` (kind `Input`).
-	apply : { path : Str, text : Str, writes : List({ key : Str, value : Str }) } -> Try(Str, Fail)
-	apply = |facts| if facts.writes.is_empty() {
-		Ok(facts.text)
-	} else {
-		match Toml.parse(facts.text) {
-			Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
-			Ok(doc) => facts.writes.fold_try(doc, |current, w| write_key(facts.path, current, w)).map_ok(|done| done.to_str())
-		}
-	}
-
-	## R-CC7: the text of the value of each key in `[dependencies]` (the text that `Toml.get` gives, printed with `Value.print`), `""` for a key that is not there,
-	## in the order of `keys`. Used as the span texts for `Guard.check_all`.
-	spans : { text : Str, keys : List(Str) } -> List(Str)
-	spans = |facts| match Toml.parse(facts.text) {
-		Ok(doc) => facts.keys.map(
-			|key| match Toml.get(doc, ["dependencies", key]) {
-				Ok(value) => Value.print(value)
-				Err(NotFound) => ""
-			},
-		)
-		Err(_) => facts.keys.map(|_| "")
-	}
-
-	## R-NI1, R-I8 (slice 007): the edit of `talon.toml` that renames stale keys. Each `{ from, to }` renames the key `from` of `[dependencies]` to `to` (a stale key of `[overrides]` is out of scope in slice 007). Only the bytes of the key change: the value, the comment on the line, the order and all other bytes stay (R-H1 style).
-	## The key may be bare or quoted: the new key has the form of the old one. `Guard` gets the spans of `spans({ text, keys: <the from keys> })` (R-CC7).
-	##
-	## | Case | Result |
-	## | --- | --- |
-	## | A `from` key that is not in the file | Failure of kind `Internal`: `<path>: the key '<from>' is not there` |
-	## | A `to` key that is already in the table | Failure of kind `Usage`: `<path>: the key '<to>' is already there` |
-	## | A text that is not TOML | The failure of `read` (kind `Input`) |
-	## | No rename | The text as it is |
-	rename : { path : Str, text : Str, renames : List({ from : Str, to : Str }) } -> Try(Str, Fail)
-	rename = |facts| if facts.renames.is_empty() {
-		Ok(facts.text)
-	} else {
-		match Toml.parse(facts.text) {
-			Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
-			Ok(doc) => facts.renames.fold_try(doc, |current, r| rename_key(facts.path, current, r)).map_ok(|done| done.to_str())
-		}
-	}
-
-	## A table of `talon.toml` whose keys are header aliases: `[dependencies]` (R-I2), `[overrides]` (R-OV1), `[patch]` (R-PA12). Slice 008.
-	Table : [Dependencies, Overrides, Patch]
-
-	## R-CM3, R-RV1, R-RV4 (slice 008): the edit of `talon.toml` that removes keys. Each `{ table, key }` removes the entry `key` of that table
-	## (`Toml.remove`: the lines of the entry go, with the comment on its last line, and the comment lines above and the header of a table that becomes empty
-	## stay). All other bytes stay. A `[patch]` entry is an inline table (`json = { path = "...", base = "..." }`): it goes whole. The order of the keys does not
-	## change the result.
-	##
-	## | Case | Result |
-	## | --- | --- |
-	## | A key that is not in the table | Failure of kind `Internal`: `<path>: the key '<key>' is not there` |
-	## | A text that is not TOML | The failure of `read` (kind `Input`) |
-	## | No key | The text as it is |
-	remove : { path : Str, text : Str, keys : List({ table : Table, key : Str }) } -> Try(Str, Fail)
-	remove = |facts| if facts.keys.is_empty() {
-		Ok(facts.text)
-	} else {
-		match Toml.parse(facts.text) {
-			Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
-			Ok(doc) => facts.keys.fold_try(doc, |current, k| remove_key(facts.path, current, k)).map_ok(|done| done.to_str())
-		}
-	}
-
-	## R-CC7: the text of the value of each `{ table, key }` (the text that `Toml.get` gives, printed with `Value.print`), `""` for a key that is not there, in the order
-	## of `keys`. The spans for `Guard.check_all` of a write that removes keys (`spans` has `[dependencies]` only).
-	table_spans : { text : Str, keys : List({ table : Table, key : Str }) } -> List(Str)
-	table_spans = |facts| match Toml.parse(facts.text) {
-		Ok(doc) => facts.keys.map(
-			|k| match Toml.get(doc, [Intent.table_name(k.table), k.key]) {
-				Ok(value) => Value.print(value)
-				Err(NotFound) => ""
-			},
-		)
-		Err(_) => facts.keys.map(|_| "")
-	}
-
-	## The name of a `Table` in `talon.toml` and in the output: `dependencies`, `overrides`, `patch`.
-	table_name : Table -> Str
-	table_name = |table| match table {
-		Dependencies => "dependencies"
-		Overrides => "overrides"
-		Patch => "patch"
-	}
+	## The edits of `talon.toml` are in `IntentEdit` (slice 031b). These names stay for the unit tests.
+	apply = IntentEdit.apply
+	spans = IntentEdit.spans
+	rename = IntentEdit.rename
+	remove = IntentEdit.remove
+	table_spans = IntentEdit.table_spans
 
 	## R-DT3: with `direct` there is no registry log, so a `log:<n>` snapshot is a failure of kind `Usage` (exit 2, R-EC2):
 	## `snapshot log:<n> needs a registry: direct has no log. Use a UTC time, for example 2026-10-12T00:00:00Z.` A time is the cutoff for `Pick` (R-DT4). No snapshot: `Ok(Err(None))`.
@@ -225,7 +113,7 @@ Intent := {
 	}
 }
 
-Note : { line : U64, message : Str }
+Note : TomlKeys.Note
 
 Scan : { intent : Intent, issues : List(Note), warnings : List(Note) }
 
@@ -234,35 +122,6 @@ climb : Str, Str, List(Str) -> List(Str)
 climb = |dir, root, found| {
 	next = found.append(Text.join(dir, "talon.toml"))
 	if dir == root or dir.is_empty() next else climb(Text.dir_of(dir), root, next)
-}
-
-compare_lines : U64, U64 -> [Before, Same, After]
-compare_lines = |a, b| if a < b Before else if a > b After else Same
-
-cannot_write : Str, Str -> Fail
-cannot_write = |path, key| Fail.new(Input, "${path}: the key dependencies.${key} cannot be written")
-
-# One key of `[dependencies]`: a new string value, or no change when it is the text already.
-write_key : Str, Toml, { key : Str, value : Str } -> Try(Toml, Fail)
-write_key = |path, doc, w| match Toml.get(doc, ["dependencies", w.key]) {
-	Ok(Value.String(old)) if old == w.value => Ok(doc)
-	Ok(_) => Toml.replace(doc, ["dependencies", w.key], Value.String(w.value)).map_err(|_| cannot_write(path, w.key))
-	Err(NotFound) => Toml.insert(doc, ["dependencies", w.key], Value.String(w.value)).map_err(|_| cannot_write(path, w.key))
-}
-
-# One stale key of `[dependencies]` gets its new name (`Toml.rename` changes only the bytes of the key).
-rename_key : Str, Toml, { from : Str, to : Str } -> Try(Toml, Fail)
-rename_key = |path, doc, r| match Toml.rename(doc, ["dependencies", r.from], r.to) {
-	Ok(done) => Ok(done)
-	Err(NoEntry) => Err(Fail.new(Internal, "${path}: the key '${r.from}' is not there"))
-	Err(KeyExists) => Err(Fail.new(Usage, "${path}: the key '${r.to}' is already there"))
-}
-
-# One key of one table goes (`Toml.remove` takes the lines of the entry).
-remove_key : Str, Toml, { table : Intent.Table, key : Str } -> Try(Toml, Fail)
-remove_key = |path, doc, k| match Toml.remove(doc, [Intent.table_name(k.table), k.key]) {
-	Ok(done) => Ok(done)
-	Err(NoEntry) => Err(Fail.new(Internal, "${path}: the key '${k.key}' is not there"))
 }
 
 dependency_tables : List(Str)
@@ -297,34 +156,14 @@ field = |doc, table, key, parse| match Toml.get(doc, [table, key]) {
 	Err(NotFound) => { value: Err(Unset), issues: [] }
 	Ok(found) => match parse(found) {
 		Ok(parsed) => { value: Ok(parsed), issues: [] }
-		Err(why) => { value: Err(Unset), issues: [{ line: key_line(doc, [table, key]), message: "${table}.${key}: ${why}" }] }
+		Err(why) => { value: Err(Unset), issues: [{ line: TomlKeys.key_line(doc, [table, key]), message: "${table}.${key}: ${why}" }] }
 	}
-}
-
-# The keys of `config.toml` (CLI 6.1). `probe` is a table.
-config_keys : List(Str)
-config_keys = ["default-roc", "registry", "nightly", "min-release-age", "gc-age", "share", "probe"]
-
-# A top-level key of `config.toml`, or the reason that it is wrong.
-config_field : Toml, Str, (Value -> Try(a, Str)) -> { value : Try(a, [Unset]), issues : List(Note) }
-config_field = |doc, key, parse| match Toml.get(doc, [key]) {
-	Err(NotFound) => { value: Err(Unset), issues: [] }
-	Ok(found) => match parse(found) {
-		Ok(parsed) => { value: Ok(parsed), issues: [] }
-		Err(why) => { value: Err(Unset), issues: [{ line: key_line(doc, [key]), message: "${key}: ${why}" }] }
-	}
-}
-
-key_line : Toml, List(Str) -> U64
-key_line = |doc, path| match Toml.line(doc, path) {
-	Ok(n) => n
-	Err(NoEntry) => 1
 }
 
 # The keys of a table, in the order of their lines.
 keys_of : Toml, Str -> List({ key : Str, value : Value, line : U64 })
 keys_of = |doc, table| match Toml.get(doc, [table]) {
-	Ok(Value.Table(t)) => t.to_list().map(|(key, value)| { key, value, line: key_line(doc, [table, key]) }).sort_with(|a, b| compare_lines(a.line, b.line))
+	Ok(Value.Table(t)) => t.to_list().map(|(key, value)| { key, value, line: TomlKeys.key_line(doc, [table, key]) }).sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line))
 	_ => []
 }
 
@@ -368,7 +207,7 @@ check_tables = |doc, role, text| {
 			} else {
 				{ issues: [], warnings: [] }
 			}
-			_ => { issues: [], warnings: [{ line: key_line(doc, [name]), message: "unknown key ${name}" }] }
+			_ => { issues: [], warnings: [{ line: TomlKeys.key_line(doc, [name]), message: "unknown key ${name}" }] }
 		},
 	)
 	{ issues: rows.join_map(|r| r.issues), warnings: rows.join_map(|r| r.warnings) }
@@ -405,13 +244,6 @@ read_toolchain = |doc| {
 	}
 }
 
-# `"<n>d"`: a whole number of days, in seconds (Q10).
-days_of : Str -> Try(U64, [NotDays])
-days_of = |text| match text.split_last("d") {
-	Ok({ before, after }) if after.is_empty() and !before.is_empty() => U64.from_str(before).map_ok(|n| n * 86400).map_err(|_| NotDays)
-	_ => Err(NotDays)
-}
-
 read_snapshot : Value -> Try([Log(U64), Time(U64)], Str)
 read_snapshot = |v| {
 	bad = "must be \"log:<n>\" or a UTC time"
@@ -427,7 +259,7 @@ read_snapshot = |v| {
 	}
 }
 
-read_resolution : Toml -> { value : { priority : Try(List(Str), [Unset]), strategy : Try([Highest, Lowest], [Unset]), min_release_age : Try(U64, [Unset]), snapshot : Try([Log(U64), Time(U64)], [Unset]) }, issues : List(Note), warnings : List(Note) }
+read_resolution : Toml -> { value : { priority : Try(List(Str), [Unset]), strategy : Try([Highest, Lowest], [Unset]), min_release_age : Try(U64, [Unset]), snapshot : Try([Log(U64), Time(U64)], [Unset]), probe : Probe.Keys }, issues : List(Note), warnings : List(Note) }
 read_resolution = |doc| {
 	priority = field(
 		doc,
@@ -458,15 +290,16 @@ read_resolution = |doc| {
 		"resolution",
 		"min-release-age",
 		|v| match v {
-			Value.String(text) => days_of(text).map_err(|NotDays| "must be a number of days, for example \"2d\"")
+			Value.String(text) => TomlKeys.days_of(text).map_err(|NotDays| "must be a number of days, for example \"2d\"")
 			_ => Err("must be a number of days, for example \"2d\"")
 		},
 	)
 	snapshot = field(doc, "resolution", "snapshot", read_snapshot)
+	probe = TomlKeys.read_probe(doc, ["resolution", "probe"], "resolution.probe")
 	{
-		value: { priority: priority.value, strategy: strategy.value, min_release_age: age.value, snapshot: snapshot.value },
-		issues: priority.issues.concat(strategy.issues).concat(age.issues).concat(snapshot.issues),
-		warnings: unknown_keys(doc, "resolution", ["priority", "strategy", "min-release-age", "snapshot", "probe"]),
+		value: { priority: priority.value, strategy: strategy.value, min_release_age: age.value, snapshot: snapshot.value, probe: probe.value },
+		issues: priority.issues.concat(strategy.issues).concat(age.issues).concat(snapshot.issues).concat(probe.issues),
+		warnings: unknown_keys(doc, "resolution", ["priority", "strategy", "min-release-age", "snapshot", "probe"]).concat(probe.warnings),
 	}
 }
 

@@ -1,0 +1,9 @@
+m02 conflict resolution: it never resolves, it learns the conflict row itself (the search does not end) | L0 conflicts:timeout; solver:timeout (50 s)
+m05 unit propagation: a false lit does not stop a row | L0 conflicts:timeout; solver:timeout (50 s)
+m09 R-EP9: `Off` asks for probes | L0 conflicts:caught [dbg] ["no check: the best tuple", "a fail in a used module excludes its pair", "2 adjacent fails", ; solver:pass (1 s)
+m10 Why: `Derived` names the first step twice | L0 conflicts:caught [dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of par; solver:pass (1 s)
+final code restored: True packages/resolve/Solver.roc: OK packages/resolve/Search.roc: OK packages/resolve/main.roc: OK packages/resolve/Domain.roc: OK 
+
+real	1m41.603s
+user	7m30.476s
+sys	0m3.273s

@@ -1,0 +1,5 @@
+2a95533a085caae836bf84326e767c37d86abaa0605176e13623825f3a3db037  cli/lib/Explain.roc
+f1f3a70122e0dbb12d3b30f57bc2ae3e88b8f01a7f280eee89c9af9efdbf35a0  cli/lib/Oracle.roc
+b0935ac4ebf882ae68879b0eaa3b68e45cc0b6506513b47e445c67b354ca02ee  cli/lib/OracleDomain.roc
+b3462f9db1b153623fe8d9fa8977a0f2c9190723dea9c1ae4cb4d3d61c850760  cli/lib/PickLoop.roc
+562e217cada9ad2f19ea462d1e661407b231f042f154061307a9488dcf2245b1  cli/lib/main.roc

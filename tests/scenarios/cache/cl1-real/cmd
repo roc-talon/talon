@@ -1,0 +1,44 @@
+# R-GC12 R-GC13 R-GC14 R-CM17 R-NI7 R-NR3 R-NR1 R-J3 R-OUT2 R-LY1 (slice 029): `tln cache clean` on the real binary, with the real Fx (tree_info, list_dirs, delete). The runner sets CI=true and ROC_CACHE_DIR to the cache root, so the build root is the cache root.
+# The sizes are the real sizes of the fixture files. `snap` prints the files that a part removed (`<`) or made (`>`). No network (the command needs none).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+R=$HOME/.cache/roc
+B=$HOME/.cache/roc-builds
+files() { (cd $HOME && find .cache .config .local -type f | sort); }
+snap() { files > $D/snap.new; diff $D/snap.old $D/snap.new | grep '^[<>]' || true; cp $D/snap.new $D/snap.old; }
+files > $D/snap.old
+
+echo "== 1: a dry run (R-GC12, R-GC14): the index and the x builds, with the sizes, the total, the last line. Nothing is removed."
+st tln cache clean --dry-run
+snap
+echo "== 2: a dry run with --all (R-GC13): also the packages dir and the build-cache dirs of the build root (here the cache root: compat-aaaaaaa, nightly-2025-01-01-abc1234, debug-9999999). compat-file is a file and stays out. No toolchain, tool or setting is in the list."
+st tln cache clean --all --dry-run
+snap
+echo "== 3: no flag (R-GC12, R-GC14, R-NI7): CI=true, so there is no person and no prompt: the answer line on stderr, then the removal of the index and x. The packages and the build caches stay."
+st tln cache clean
+snap
+echo "lock dirs left (R-CC10: the lock of talon/gc is released): $(find $R -name '*.lock' | wc -l | tr -d ' ')"
+echo "== 4: --all with --json (R-GC13, R-J3): the packages dir and the build caches go. The index and x are gone already (they are no item). The text goes to stderr, stdout has the envelope. All that is left is listed: toolchains, tools, settings, the app install, compat.db, projects.json (R-GC13, R-GC14), compat-file, and the dir that has no build-cache name."
+st tln cache clean --all --json
+snap
+files
+echo "== 5: nothing is left (R-GC14): the line, exit 0"
+st tln cache clean --all
+snap
+echo "== 6: ROC_CACHE_DIR is another dir (R-LY1): the build root is \$HOME/.cache/roc-builds. Its 3 build caches go. other-old stays (the name). compat-zzzzzzz is in the cache root, not in the build root, so it stays."
+mkdir -p $R/compat-zzzzzzz
+echo "compat cache in the cache root" > $R/compat-zzzzzzz/c.bin
+files > $D/snap.old
+st env ROC_CACHE_DIR=$B tln cache clean --all
+snap
+files | grep -e roc-builds -e zzzzzzz || true
+echo "== 7: an operand is a usage failure (R-CM17): exit 2, nothing is removed"
+mkdir -p $R/talon/index $R/talon/x/0123abcd
+echo '{"page":1}' > $R/talon/index/releases.json
+echo "binary" > $R/talon/x/0123abcd/tln-app
+files > $D/snap.old
+st tln cache clean packages
+snap
+echo "== 8: the terminal is asked for (TALON_INTERACTIVE=1), but stdin is not a terminal (R-NR1), so there is no prompt: the default Yes, the answer line, the removal (R-GC14)"
+st env TALON_INTERACTIVE=1 tln cache clean
+snap

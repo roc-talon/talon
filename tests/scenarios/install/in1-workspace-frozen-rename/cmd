@@ -19,7 +19,7 @@ st tln add acme/util
 st tln add --file apps/b/main.roc acme/json@2.2.0
 # With no selector the new entry gets the held version.
 st tln add --file apps/b/main.roc acme/json
-# W2: `probe` takes a path (R-SC1), so no ref check stops it. The command is not built yet (slice 001).
+# W2: `probe` takes a path (R-SC1), so no ref check stops it. The operand is no header alias and no bundle file: exit 2 (slice 037).
 st tln probe ./apps/b
 # The index pages are the fixtures of slice 003: the tree diff shows the project files and projects.json only.
 rm -rf "$XDG_CACHE_HOME/roc/talon/index"

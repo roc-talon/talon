@@ -1,0 +1,75 @@
+# R-SO9 R-SO10 R-TF1 R-TF3 R-TF6 TW10 (slice 022b): the launcher test of the roc on PATH, on the real binary. The tln of this case is also the running program.
+# a/roc is a copy of tln: the launcher. b/roc is an old copy of a launcher: the size of tln, other bytes. It is a script that prints its id and adds a line to b.log.
+# bin/roc is the fake roc of the runner (nightly-2026-10-14-38a3029). Every run has TALON_NIGHTLY=0: the gate names the id of the roc on PATH (exit 10), before any probe.
+TLN=$(command -v tln)
+SIZE=$(wc -c < "$TLN" | tr -d ' ')
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+SHA=$(sha "$TLN")
+MT=$(if stat -c %Y "$TLN" > /dev/null 2>&1; then stat -c %Y "$TLN"; else stat -f %m "$TLN"; fi)
+D=$TALON_TEST_DIR
+mkdir -p $D/a $D/b
+cp "$TLN" $D/a/roc
+{ printf '#!/bin/sh\necho version >> "%s/b.log"\necho "Roc compiler version nightly-2026-10-13-91fa0c2"\nexit 0\n' "$D"; head -c "$SIZE" /dev/zero | tr '\0' '#'; } | head -c "$SIZE" > $D/b/roc
+chmod +x $D/b/roc
+touch -t 202311142213.20 $D/a/roc
+touch -t 202311142221.40 $D/b/roc
+cp -p $D/b/roc $D/b.keep
+BSHA=$(sha $D/b/roc)
+FS=$(wc -c < $D/bin/roc | tr -d ' ')
+FM=$(if stat -L -c %Y $D/bin/roc > /dev/null 2>&1; then stat -L -c %Y $D/bin/roc; else stat -L -f %m $D/bin/roc; fi)
+CACHE=$XDG_CACHE_HOME/roc/talon/path-roc.json
+P=$D/a:$D/b:$D/bin:/usr/bin:/bin
+# st <label> <command...>: prints the label (the real command has the machine paths of tln), then the exit code.
+st() { echo "== $1"; shift; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# One row for each line, sorted, with the values of tln written as words (the build of tln changes them).
+rows() { sed -e 's/{"format":1,"files":\[//' -e 's/\]}$//' -e 's/\],"note":"keep"}$//' -e 's/},{/}\n{/g' "$CACHE" | sed -e "s#$TLN#\$TLN#g" -e "s/\"size\":$SIZE/\"size\":\$SIZE/g" -e "s/$SHA/\$SHA/g" -e "s/$BSHA/\$B_SHA/g" -e "s/\"mtime\":$MT/\"mtime\":\$MTIME/g" -e "s/\"size\":$FS/\"size\":\$FAKE_SIZE/g" -e "s/\"mtime\":$FM/\"mtime\":\$FAKE_MTIME/g" | sort; }
+runs() { echo "b.log: $(cat $D/b.log 2> /dev/null | wc -l | tr -d ' ') run(s) of b/roc"; }
+
+echo "== run 1: a/roc is the launcher (same size, same sha256). b/roc has the size of tln and other bytes: it is the compiler. bin/roc is not looked at."
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+runs
+rows
+echo "== run 2: the same files. The rows are used: no new run of b/roc, the rows are the same."
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+runs
+rows
+echo "== run 3: b/roc changed (a new mtime): roc version runs again, and the row of b/roc is replaced (one row for each path)."
+touch -t 202311142230.00 $D/b/roc
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+runs
+rows
+echo "== run 4: b/roc is gone. a/roc is the launcher again. bin/roc is the compiler: one roc version call of the fake, and its row has the id."
+rm $D/b/roc
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+rows | grep "bin/roc"
+echo "== run 5: the file has a newer format (R-TF3): it is ignored and never written. The compiler is found again (b/roc is back)."
+cp "$CACHE" $D/cache.old
+printf '{"format":2,"files":[]}\n' > $CACHE
+cp $CACHE $D/cache.newer
+cp -p $D/b.keep $D/b/roc
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+runs
+cmp $CACHE $D/cache.newer && echo "the file is not changed"
+echo "== run 6: the file is not valid JSON (R-TF6): a warning on stderr, and the file is made again."
+printf 'garbage' > $CACHE
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+runs
+rows
+echo "== run 7: the file is valid again: no warning."
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P "$TLN" install --file p/main.roc
+echo "== run 8: unknown fields stay (R-TF2) and a binary that is no compiler runs once (R-SO9). The file gets the top field note and the field x in the row of a/roc."
+mkdir -p $D/c
+printf '#!/bin/sh\necho version >> "%s/c.log"\necho "not a version"\nexit 3\n' "$D" > $D/c/roc
+chmod +x $D/c/roc
+touch -t 202311142240.00 $D/c/roc
+CS=$(wc -c < $D/c/roc | tr -d ' ')
+sed -e 's/{"format":1,/{"format":1,"note":"keep",/' -e 's#\("path":"[^"]*/a/roc","size":[0-9]*,"mtime":[0-9]*,"sha256":"[0-9a-f]*"\)#\1,"x":1#' "$CACHE" > $D/cache.edit
+cp $D/cache.edit $CACHE
+P2=$D/c:$D/bin
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P2 "$TLN" install --file p/main.roc
+echo "c.log: $(cat $D/c.log 2> /dev/null | wc -l | tr -d ' ') run(s) of c/roc"
+echo "top field note: $(grep -c '"note":"keep"' $CACHE)"
+rows | grep "a/roc\|c/roc" | sed -e "s/\"size\":$CS/\"size\":\$C_SIZE/"
+echo "== run 9: the same. c/roc ran with no id (id null), so it does not run again."
+st "tln install --file p/main.roc" env TALON_NIGHTLY=0 PATH=$P2 "$TLN" install --file p/main.roc
+echo "c.log: $(cat $D/c.log 2> /dev/null | wc -l | tr -d ' ') run(s) of c/roc"

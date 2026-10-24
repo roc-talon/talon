@@ -1,0 +1,6 @@
+tln: error[environment]: no compiler is selected. Run: tln roc install @latest, then tln roc default <id>
+tln: error[consent]: the compiler nightly-2026-10-21-5349569 (the roc: entry of the header) is not installed. Run: tln roc install nightly-2026-10-21-5349569, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-21-5349569 (the roc: entry of the header) is not installed. Run: tln roc install nightly-2026-10-21-5349569, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-21-5349569 (roc +nightly-2026-10-21-5349569) is not installed. Run: tln roc install nightly-2026-10-21-5349569, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: no installed compiler is in [toolchain] roc (>=nightly-2026-10-21-5349569). This version of tln does not download a compiler for a run.
+tln: error[environment]: cannot run $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc: NotFound

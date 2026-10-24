@@ -1,0 +1,103 @@
+# The fast set (TW20, TW28): scripts/test.sh on Linux, macOS and Windows.
+# The compiler tag is ROC_TAG of scripts/env.sh. scripts/get-roc.sh installs it.
+name: ci
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fast:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            steps: ''
+          - os: macos-latest
+            steps: ''
+          - os: windows-latest
+            steps: check fmt l0
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ubuntu 24.04 blocks user namespaces. Without this, tests/lib.sh netoff runs the cases with the network on (TW15).
+      - name: Linux tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      # The scripts use GNU tools: date %N, find -printf, timeout, nproc, GNU diff and sed, bash 4.
+      - name: macOS tools
+        if: runner.os == 'macOS'
+        run: |
+          brew install bash coreutils findutils diffutils gnu-sed
+          prefix=$(brew --prefix)
+          echo "$prefix/bin" >> "$GITHUB_PATH"
+          for d in coreutils findutils diffutils gnu-sed; do
+            echo "$prefix/opt/$d/libexec/gnubin" >> "$GITHUB_PATH"
+          done
+
+      - name: macOS tool check
+        if: runner.os == 'macOS'
+        run: |
+          bash --version | head -n 1
+          date +%s.%N
+          find . -maxdepth 0 -printf '%h\n'
+          timeout 1 true
+          nproc
+          diff --version | head -n 1
+          sed --version | head -n 1
+
+      - name: Pinned compiler tag
+        run: |
+          . scripts/env.sh
+          echo "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"
+
+      - name: Cache of the compiler
+        uses: actions/cache@v4
+        with:
+          path: .work/nightlies
+          key: roc-${{ runner.os }}-${{ runner.arch }}-${{ env.ROC_TAG }}
+
+      - name: Install the compiler
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
+
+      # The key is the hash of the package URLs in the roc headers, not of all files: a new commit keeps the cache.
+      - name: Hash of the package URLs
+        id: pkgs
+        run: |
+          dirs=$(ls -d cli tests packages 2> /dev/null || true)
+          hash=$({ grep -rhoE 'https://[^"]+[.]tar[.]zst' --include='*.roc' $dirs || true; } | sort -u | sha256sum | cut -d' ' -f1)
+          echo "hash=$hash" >> "$GITHUB_OUTPUT"
+
+      - name: Cache of the packages
+        uses: actions/cache@v4
+        with:
+          path: .work/cache/roc
+          key: roc-pkgs-${{ runner.os }}-${{ steps.pkgs.outputs.hash }}
+
+      - name: Test
+        shell: bash
+        run: scripts/test.sh ${{ matrix.steps }}
+
+      - name: Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs-${{ matrix.os }}
+          path: .work/logs
+          if-no-files-found: ignore

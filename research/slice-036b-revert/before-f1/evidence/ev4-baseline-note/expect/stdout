@@ -1,0 +1,8 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-08-0a1b2c3
+check: passed
+note: unchanged error: acme/parser 1.0.0 Parser.roc: type mismatch
+build: passed
+note: module Yaml fails on nightly-2026-10-08-0a1b2c3. Your app does not import it.
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

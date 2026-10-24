@@ -1,0 +1,4 @@
+index: cached at 2026-10-14T17:46:40Z
+index: cached at 2026-10-14T17:46:40Z
+tln: error[usage]: tln outdated takes no name
+tln: error[usage]: flag '--snapshot' is not for 'outdated'

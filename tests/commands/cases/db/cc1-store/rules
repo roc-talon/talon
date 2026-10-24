@@ -1,0 +1,6 @@
+R-EF1 R-P4 R-PP4 R-NS12 R-CC8 R-CV6 R-TF1 R-TF3 R-PK7 (slice 030): Facts.load!, Facts.save! and Facts.pin! with the fake Fx (tests/commands/main.roc, entry db; the fake store is the text file compat.tsv).
+Runs 1 to 3: the facts of 3 keys (R-EF1 rank 1: a check row and a fail row with 2 modules), no key gives no db call, a round of 2 new rows is one db_write (R-CC8, R-PP4: a build pass with its closure, a crash).
+Runs 4 to 7: Replace changes the row, Keep leaves it, a round with no row makes no call, the read-back shows the replaced row.
+Runs 8 to 11 (R-CV6): a new asset is queried and written, the same sha256 is queried only, a changed sha256 stops with exit 16 and no write, the same sha256 with another source is the same.
+Runs 12 to 14 (R-CC8): a busy read, a busy write and a failed write give a warning on stderr, no exit code, and the write is kept in memory (`Kept`). Runs 15 to 17 (R-TF3): a file with a newer format stops with exit 19 for a read, a write and a pin, and writes nothing.
+Runs 18 and 19 (R-NS12): a fact of a release (the compiler id 0.1.0) is the same table.

@@ -1,0 +1,24 @@
+# run 1: the unit check of json 2.1.0 passes, the whole-app check finds a new error in acme/json 2.1.0 (a named release): the loop drops 2.1.0 and the ladder runs on json 2.0.5 (rows 3 to 5: no row, they pass)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr
+# row 3 to 5: the ladder on json 2.0.5 passes
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2: the whole-app check crashes (no release is named): the loop drops the whole tuple and the ladder runs on json 2.0.5 (rows 8 to 10)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+signal:11	-	-
+# rows 8 to 10: the ladder on json 2.0.5 passes
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 3 (named blame, 2 free groups): json 2.1.0 with parser 1.2.0 is the first tuple, its check has a new error in acme/json 2.1.0 (the baseline has the error of acme/parser). The conflict is on json 2.1.0, so the next tuple is json 2.0.5 with parser 1.2.0 (rows 13 to 15: no row, they pass)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr
+# rows 13 to 15: the ladder on json 2.0.5 passes
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 4 (the budget counts the probes of the dropped tuple): probe.max is 5: the loop probe (1), the baseline and the units of pf and parser (3) and the check (1) are 5. The check fails with a new error in acme/json 2.1.0, and the probe of json 2.0.5 in the loop has no budget left: exit 12 (rows 16 and 17)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr

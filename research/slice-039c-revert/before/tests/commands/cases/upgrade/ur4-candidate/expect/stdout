@@ -1,0 +1,16 @@
+== upgrade --file pu/main.roc
+check: passed
+build: passed
+$PROJECT/pu/main.roc
+  ~ lib: acme/lib 1.0.0 -> 1.1.0
+  + roc: nightly-2026-10-11-1f1f1f1
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0
+== upgrade --file pp/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/pp/main.roc
+  ~ lib: acme/lib 1.0.0 -> 1.1.0
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-11-1f1f1f1
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0

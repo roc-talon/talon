@@ -1,0 +1,23 @@
+# R-R12, R-LK4: a link. The path is made absolute from the current directory. No copy and no link of the file system: the dir has only .talon.json, made in a temp dir and renamed (R-CC1, R-CC4 step 6).
+roc link dev roc-src/zig-out/bin/roc
+# R-LK2: the name exists: exit 2, nothing is written. For a link there is no --force (R-FL12 names --force for roc link --copy, question Q1).
+roc link dev roc-src/zig-out/bin/roc
+# R-LK2: copy-fix-1 exists (given): exit 2, and the text names --force
+roc link --copy fix-1 roc-src/zig-out/bin/roc
+# R-R13, R-LK2: a copy. copy_file! into the temp dir (roc), then .talon.json last, then the rename.
+roc link --copy fix-2 roc-src/zig-out/bin/roc
+# R-LK2: --force replaces a copy: the old dir goes to the trash name, the new dir takes its place, the trash is deleted. --json: the envelope only on stdout (R-J3).
+roc link --copy --force fix-1 roc-src/other/roc --json
+# R-FL12 (R-LK2 names --force for --copy only), R-CM15: exit 2 for each of these. No call of the effects.
+roc link --force dev3 roc-src/zig-out/bin/roc
+roc link dev
+roc link a b c
+roc link bad/name roc-src/zig-out/bin/roc
+# R-R12: the target is missing: exit 2, before any lock
+roc link dev4 roc-src/missing
+# R-CC1: the copy of a directory fails (the fake copy_file! says Other): the temp dir is deleted, no item, exit 18
+roc link --copy dev5 roc-src
+# R-CC3, R-CC5: the lock of the item is busy (fx/locks): the line waiting for another tln, then the wait lock. --quiet hides the stdout line (R-FL4).
+roc link dev6 roc-src/zig-out/bin/roc --quiet
+# R-LY1, R-LK4, R-LK2: roc list reads installed_at of the new .talon.json and shows the kinds
+roc ls

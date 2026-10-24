@@ -1,0 +1,175 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/w3/apps/a/main.roc
+list_dirs $PROJECT/w3/apps/a
+list_dirs $PROJECT/w3/apps
+list_dirs $PROJECT/w3
+read_files $PROJECT/w3/talon.toml
+list_dirs $PROJECT/w3/apps/b
+read_files $PROJECT/w3/apps/a/main.roc
+canonical $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc $PROJECT/w3/apps/a/talon.toml $PROJECT/w3/apps/talon.toml $PROJECT/w3/talon.toml $PROJECT/w3/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+programs gh
+http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $PROJECT/w3/lib/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+read_files $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc
+write_atomic $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/w3/apps/a/main.roc
+list_dirs $PROJECT/w3/apps/a
+list_dirs $PROJECT/w3/apps
+list_dirs $PROJECT/w3
+read_files $PROJECT/w3/talon.toml
+list_dirs $PROJECT/w3/apps/b
+read_files $PROJECT/w3/apps/a/main.roc
+canonical $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc $PROJECT/w3/apps/a/talon.toml $PROJECT/w3/apps/talon.toml $PROJECT/w3/talon.toml $PROJECT/w3/apps/b/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+clock
+cwd
+canonical $PROJECT/w3/apps/a/main.roc
+list_dirs $PROJECT/w3/apps/a
+list_dirs $PROJECT/w3/apps
+list_dirs $PROJECT/w3
+read_files $PROJECT/w3/talon.toml
+list_dirs $PROJECT/w3/apps/b
+read_files $PROJECT/w3/apps/a/main.roc
+canonical $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc $PROJECT/w3/apps/a/talon.toml $PROJECT/w3/apps/talon.toml $PROJECT/w3/talon.toml $PROJECT/w3/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $PROJECT/w3/lib/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/w4/apps/a/main.roc
+list_dirs $PROJECT/w4/apps/a
+list_dirs $PROJECT/w4/apps
+list_dirs $PROJECT/w4
+read_files $PROJECT/w4/talon.toml
+list_dirs $PROJECT/w4/apps/b
+read_files $PROJECT/w4/apps/a/main.roc
+canonical $PROJECT/w4/apps/a/main.roc $PROJECT/w4/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/w4/apps/a/main.roc $PROJECT/w4/apps/b/main.roc $PROJECT/w4/apps/a/talon.toml $PROJECT/w4/apps/talon.toml $PROJECT/w4/talon.toml $PROJECT/w4/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/core
+programs gh
+http_get https://api.github.com/repos/acme/core/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/core/1.json $HOME/.cache/roc/talon/index/github/acme/core/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $PROJECT/w4/lib/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/w5/apps/a/main.roc
+list_dirs $PROJECT/w5/apps/a
+list_dirs $PROJECT/w5/apps
+list_dirs $PROJECT/w5
+read_files $PROJECT/w5/talon.toml
+list_dirs $PROJECT/w5/apps/b
+read_files $PROJECT/w5/apps/a/main.roc
+canonical $PROJECT/w5/apps/a/main.roc $PROJECT/w5/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/w5/apps/a/main.roc $PROJECT/w5/apps/b/main.roc $PROJECT/w5/apps/a/talon.toml $PROJECT/w5/apps/talon.toml $PROJECT/w5/talon.toml $PROJECT/w5/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/util
+programs gh
+http_get https://api.github.com/repos/acme/util/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/util/1.json $HOME/.cache/roc/talon/index/github/acme/util/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/FaSACze7PmHRTFb729jy9fkoZS2rNK2RretLTUpxLB51/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $PROJECT/w5/lib2/main.roc
+read_files $PROJECT/w5/apps/a/main.roc
+write_atomic $PROJECT/w5/apps/a/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/solo/main.roc
+list_dirs $PROJECT/solo
+read_files $PROJECT/solo/main.roc
+canonical $PROJECT/solo/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+programs roc
+spawn_all limit=1
+  job - roc version
+read_files $PROJECT/solo/main.roc $PROJECT/solo/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $PROJECT/solo/nothere/main.roc

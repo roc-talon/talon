@@ -1,0 +1,131 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        ("the platform first: the platform wins (R-VA6, R-SP11)", one([pf_slot, json_slot], all_facts), Ok([pf_chosen("0.25.2"), json_chosen("2.2.0")])),
+        ("the order of the facts does not matter (R-DT2)", one([json_slot, pf_slot], all_facts.rev()), Ok([json_chosen("2.3.0"), pf_chosen("0.25.1")])),
+        ("R-C2: a dependency on a higher version of a held slot", one([json_slot, http_slot], c2_facts), Ok([json_chosen("2.2.0"), ("http", "1.8.0", Keep, Err(None))])),
+        ("R-C2: the other order of the slots", one([http_slot, json_slot], c2_facts), Ok([("http", "1.8.0", Keep, Err(None)), json_chosen("2.2.0")])),
+        ("a held slot needs its fact too", one([http_slot], []), Err(Ok([http_url("1.8.0")]))),
+    ]
+    bad_rounds = rounds.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad_rounds
+
+    fail_line = |slots, facts| match step(slots, facts, Highest, 2 * day, Err(None)) {
+        Fail(fail) => "${fail.kind.code().to_str()} ${fail.line()}"
+        _ => "no failure"
+    }
+    too_new = slot("json", Bool.False, ["^2"], Err(None), Bool.True, [jc("2.3.0", 1), jc("2.2.0", 1)])
+    outside = slot("json", Bool.False, ["^5"], Ok(json_url("2.1.0")), Bool.True, [jc("2.3.0", 30), jc("3.0.0", 30), jc("1.0.0", 30)])
+    only_platforms = [{ url: json_url("2.3.0"), release: { kind: Platform, pf: Err(None), deps: [] } }, { url: json_url("2.2.0"), release: { kind: App, pf: Err(None), deps: [] } }]
+    no_fit_json = slot("json", Bool.False, ["^2"], Err(None), Bool.True, [jc("2.3.0", 30)])
+    no_fit_pf = slot("pf", Bool.True, ["0.25.*"], Err(None), Bool.True, [pc("0.25.2", 30)])
+    fails = [
+        ("no release in the ranges (R-C1)", fail_line([outside], facts_of([outside])), "10 tln: error[no_tuple]: no tuple works: json has no release that satisfies ^5 (4 releases, 4 outside the ranges, 0 too new)"),
+        ("all releases are too new (R-C7)", fail_line([too_new], facts_of([too_new])), "10 tln: error[no_tuple]: no tuple works: json has no release that satisfies ^2 (2 releases, 0 outside the ranges, 2 too new)"),
+        ("2 ranges in the text", fail_line([{ ..outside, ranges: ["^5", ">=1.0.0, <2.0.0"] }], facts_of([outside])), "10 tln: error[no_tuple]: no tuple works: json has no release that satisfies ^5 and >=1.0.0, <2.0.0 (4 releases, 4 outside the ranges, 0 too new)"),
+        ("a package entry and only platform releases (R-C4)", fail_line([{ ..too_new, candidates: [jc("2.3.0", 30), jc("2.2.0", 30)] }], only_platforms), "10 tln: error[no_tuple]: no tuple works: json has no release of the kind package in ^2 (R-C4)"),
+        ("one release each, and they do not fit (R-C3, R-PH13)", fail_line([no_fit_json, no_fit_pf], [json_names_pf, pf_fact("0.25.2")]), "10 tln: error[no_tuple]: no tuple works: the releases of json, pf do not fit together (R-C2, R-C3)"),
+    ]
+    bad_fails = fails.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad_fails
+    bad_rounds == [] and bad_fails == []
+}
+
+[dbg] []
+Ran 3 tests in 614.6 ms.:
+    1 passed
+    2 failed
+    0 compiler errors
+tests/unit/pin.roc: All (9) tests passed in 758.9 ms.
+tests/unit/pins.roc: All (6) tests passed in 1895.9 ms.
+tests/unit/probe.roc: All (5) tests passed in 341.2 ms.
+tests/unit/project.roc: All (7) tests passed in 2114.8 ms.
+tests/unit/projects.roc: All (3) tests passed in 389.6 ms.
+tests/unit/prompt.roc: All (5) tests passed in 324.6 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2767.2 ms.
+tests/unit/ranges.roc: All (1) tests passed in 283.8 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1705.5 ms.
+tests/unit/ref.roc: All (4) tests passed in 406.3 ms.
+tests/unit/removal.roc: All (4) tests passed in 2082.4 ms.
+tests/unit/report.roc: All (3) tests passed in 236.9 ms.
+tests/unit/roots.roc: All (3) tests passed in 201.6 ms.
+tests/unit/scan.roc: All (2) tests passed in 241.5 ms.
+tests/unit/selector.roc: All (2) tests passed in 299.2 ms.
+tests/unit/setup.roc: All (10) tests passed in 688.4 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 273.3 ms.
+tests/unit/temp.roc: All (4) tests passed in 193.7 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 2117.0 ms.
+tests/unit/units.roc: All (6) tests passed in 934.5 ms.
+tests/unit/update.roc: All (2) tests passed in 2172.8 ms.
+tests/unit/uses.roc: All (2) tests passed in 397.6 ms.
+tests/unit/vars.roc: All (6) tests passed in 1848.7 ms.
+tests/unit/verify.roc: All (2) tests passed in 1415.6 ms.
+tests/unit/why.roc: All (6) tests passed in 1986.7 ms.
+== selftest: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/selftest.log)
+packages/resolve/tests/moves.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────── packages/resolve/tests/moves.roc:65:1
+
+expect {
+    x = held(slot("x", ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"]), "1.2.0")
+    y = slot("y", ["1.0.0", "2.0.0"])
+    base = req([x, y], known([x, y]))
+    out = |vs| without(base, vs.map(|v| [("x", v)]))
+    rows = [
+        (base, [], "done x=1.4.0 y=2.0.0", "no movable slot: the plain step, the highest of each slot"),
+        (base, ["x"], "done x=1.2.0 y=2.0.0", "the movable x keeps its value, y is highest"),
+        (low(base), ["x"], "done x=1.2.0 y=1.0.0", "the same with lowest: y is lowest, x keeps its value"),
+        (out(["1.2.0"]), ["x"], "done x=1.3.0 y=2.0.0", "Highest: the nearest higher release first"),
+        (low(out(["1.2.0"])), ["x"], "done x=1.1.0 y=1.0.0", "Lowest: the nearest lower release first"),
+        (out(["1.2.0", "1.3.0"]), ["x"], "done x=1.4.0 y=2.0.0", "Highest: the higher releases from low to high (1.4.0 after 1.3.0)"),
+        (out(["1.2.0", "1.3.0", "1.4.0"]), ["x"], "done x=1.1.0 y=2.0.0", "Highest: the lower releases come after all the higher ones, from high to low"),
+        (out(["1.2.0", "1.3.0", "1.4.0", "1.1.0"]), ["x"], "done x=1.0.0 y=2.0.0", "Highest: the last lower release"),
+        (low(out(["1.2.0", "1.1.0"])), ["x"], "done x=1.0.0 y=1.0.0", "Lowest: the lower releases from high to low (1.0.0 after 1.1.0)"),
+        (low(out(["1.2.0", "1.1.0", "1.0.0"])), ["x"], "done x=1.3.0 y=1.0.0", "Lowest: the higher releases come after all the lower ones, from low to high"),
+        (out(["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"]), ["x"], "fail", "no value of x is left: no tuple"),
+        (out(["1.2.0"]), [], "done x=1.4.0 y=2.0.0", "the plain step ignores the old value: highest"),
+    ]
+
+==> /tmp/talon-selftest/ug-type.out <==
+== l0: FAIL (log: /tmp/talon-selftest/unit-guard/work-type/logs/l0.log)
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 620.0 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 369.6 ms.
+packages/resolve/tests/moves.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────── packages/resolve/tests/moves.roc:65:1
+
+expect {
+    x = held(slot("x", ["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"]), "1.2.0")
+    y = slot("y", ["1.0.0", "2.0.0"])
+    base = req([x, y], known([x, y]))
+    out = |vs| without(base, vs.map(|v| [("x", v)]))
+    rows = [
+        (base, [], "done x=1.4.0 y=2.0.0", "no movable slot: the plain step, the highest of each slot"),
+        (base, ["x"], "done x=1.2.0 y=2.0.0", "the movable x keeps its value, y is highest"),
+        (low(base), ["x"], "done x=1.2.0 y=1.0.0", "the same with lowest: y is lowest, x keeps its value"),
+        (out(["1.2.0"]), ["x"], "done x=1.3.0 y=2.0.0", "Highest: the nearest higher release first"),
+        (low(out(["1.2.0"])), ["x"], "done x=1.1.0 y=1.0.0", "Lowest: the nearest lower release first"),
+        (out(["1.2.0", "1.3.0"]), ["x"], "done x=1.4.0 y=2.0.0", "Highest: the higher releases from low to high (1.4.0 after 1.3.0)"),
+        (out(["1.2.0", "1.3.0", "1.4.0"]), ["x"], "done x=1.1.0 y=2.0.0", "Highest: the lower releases come after all the higher ones, from high to low"),
+        (out(["1.2.0", "1.3.0", "1.4.0", "1.1.0"]), ["x"], "done x=1.0.0 y=2.0.0", "Highest: the last lower release"),
+        (low(out(["1.2.0", "1.1.0"])), ["x"], "done x=1.0.0 y=1.0.0", "Lowest: the lower releases from high to low (1.0.0 after 1.1.0)"),
+        (low(out(["1.2.0", "1.1.0", "1.0.0"])), ["x"], "done x=1.3.0 y=1.0.0", "Lowest: the higher releases come after all the lower ones, from low to high"),
+        (out(["1.0.0", "1.1.0", "1.2.0", "1.3.0", "1.4.0"]), ["x"], "fail", "no value of x is left: no tuple"),
+        (out(["1.2.0"]), [], "done x=1.4.0 y=2.0.0", "the plain step ignores the old value: highest"),
+    ]
+selftest: 57 passed, 2 failed
+
+step       result seconds  budget
+check      pass   1.0      10
+fmt        pass   0.1      5
+l0         FAIL   7.6      10
+l2         pass   1.1      30
+l3         pass   9.8      60
+selftest   FAIL   8.6      20
+l1         pass   42.5     60

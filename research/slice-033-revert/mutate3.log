@@ -1,0 +1,5 @@
+m14 fail: no modules: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: the modules of an inferred fail
+m15 fail: modules not sorted, with repeats: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: the modules of an inferred fail
+m24 fail: the modules of the first source only (Q1): L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: the modules of an inferred fail
+m25 fail: the modules of the last source only (Q1): L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: the modules of an inferred fail
+reference restored: True

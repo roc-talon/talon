@@ -42,7 +42,8 @@ Temp :: [].{
 	## The stale items that `tln cache gc` deletes (R-CC2, R-GC6): an entry is stale when it is
 	## (1) a name that ends with `.<16hex>.tmp` or `.<16hex>.trash` (a file or a directory), or
 	## (2) a directory `<16hex>` whose parent directory is named `tmp` and whose grandparent is named `talon`
-	## (a probe copy of an app),
+	## (a probe copy of an app), or
+	## (3) a file `<16hex>.locks` in such a `tmp` dir (slice 028: the registry of the locks of a process that ended, `RealLocks`),
 	## and its age is more than 1 day (86400 s): `now - mtime`. `mtime` is the modification time and `now` is the real
 	## clock, never `TALON_NOW` (R-EV22). An age of exactly 86400 s is not stale. `entries` has full paths. The result is
 	## sorted. The age of a lock heartbeat is not here (`Lock.state`).
@@ -80,12 +81,15 @@ has_stamp = |name, ext| name.ends_with(".${ext}") and {
 	size >= 17 and bytes.get(size - 17) == Ok(46) and is_hex16(Str.from_utf8_lossy(bytes.sublist({ start: size - 16, len: 16 })))
 }
 
-# The kinds of R-CC2 and R-GC6: a temp, a trash dir, a stale lock dir (Q6), a probe copy `talon/tmp/<16hex>`.
+# The kinds of R-CC2 and R-GC6: a temp, a trash dir, a stale lock dir (Q6), a probe copy `talon/tmp/<16hex>`, a lock registry `talon/tmp/<16hex>.locks` (D10 of slice 028).
 is_stale_kind : { path : Str, is_dir : Bool, mtime : U64 } -> Bool
 is_stale_kind = |e| {
 	name = Text.last_segment(e.path)
 	parent = Text.dir_of(e.path)
-	has_stamp(name, "tmp") or has_stamp(name, "trash") or has_stamp(name, "stale") or (e.is_dir and is_hex16(name) and Text.last_segment(parent) == "tmp" and Text.last_segment(Text.dir_of(parent)) == "talon")
+	in_talon_tmp = Text.last_segment(parent) == "tmp" and Text.last_segment(Text.dir_of(parent)) == "talon"
+	probe_copy = e.is_dir and is_hex16(name) and in_talon_tmp
+	registry = !e.is_dir and name.ends_with(".locks") and is_hex16(name.drop_suffix(".locks")) and in_talon_tmp
+	has_stamp(name, "tmp") or has_stamp(name, "trash") or has_stamp(name, "stale") or probe_copy or registry
 }
 
 # Exactly 1 day is not old. A time in the future is not old.

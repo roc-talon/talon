@@ -1,0 +1,60 @@
+d01 Highest and Lowest swapped: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s1-2.0.0. Want need 
+d02 a tie is in the reverse byte order: L0=caught L1=MISSED
+d02b a tie keeps the order of the input: L0=caught L1=MISSED
+d03 ranges: any instead of all: L0=caught L1=MISSED
+d04 a yanked release is a value: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.10.0 s1-1.0.0 s
+d05 the header value is hidden when yanked: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want need s1-2.0.0
+d06 young: >= (a release exactly min_age old is hidden): L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want need s0-1.0.0
+d07 young: not applied: L0=caught L1=caught  [roc crashed] R-AL9: a need for a release that no domain has
+d08 late: >= (a release at the snapshot time is hidden): L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.10.0. Want need
+d09 snapshot ignored: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.0.0. Want need 
+d10 the header value is hidden when too young or late: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.9.0. Want need 
+d12 a named version is hidden when too young: L0=caught L1=MISSED
+d13 a named version is a value when yanked: L0=caught L1=MISSED
+d14 the header value is not added when the list lacks it: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want need s0-1.0.0
+d15 a range does not exclude the header value: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got done s0=2.0.0. Want fail
+d16 the version order reads the minor and patch only: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s1-2.0.0 s2-1.0.0. W
+d17 a pre-release or bad version is a value (parse failure kept as 0.0.0): L0=MISSED L1=MISSED
+s01 a Package slot takes an App release: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with done s0=1.0.0 s1=1.10.0, the oracle for all facts has done s0=1.9.0 s1=1.10.0
+s02 a Platform slot takes an App release: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got done s0=1.10.0. Want need
+s03 the kind of a fact is read only for App: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got done s0=1.0.0 s1=1.10.0 s
+s04 a release with no fact is not fit: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with fail, the oracle for all facts has done s0=1.9.0
+s05 dep: > (the limit itself is no value): L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s1-1.0.0. Want need 
+s06 a dep on the own group is read: DOES NOT COMPILE
+k, vk)).keep_if(|(k, vk)| vk.group == dep.group).join_map(
+                                                           ^
+
+If you don't need this variable, prefix it with an underscore like _k to
+suppress this warning.
+
+── 0 errors and 1 warning ──────────────────────────── packages/resolve/main.roc
+
+
+s07 a dep names the slot name, not the group: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with done s0=1.0.0 s1=1.0.0 s2=1.0.0, the oracle for all facts has done s0=1.0.0 s1=1.0.0 s2=2.0.0
+s08 the platform of a platform slot release is read (no skip for its own slot): L0=MISSED L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want done s0=2.0.0 
+s09 the platform check holds with 2 platform slots (the first one): L0=MISSED L1=MISSED
+s10 a platform that is no value does not exclude: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with done s0=1.0.0 s1=1.10.0 s2=1.0.0, the oracle for all facts has done s0=2.0.0 s1=1.10.0 s2=1.0.0
+s11 a dep limit is not read when it is above all values: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got done s0=1.0.0 s1=1.0.0 s2
+s12 the decision takes the worst value: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s1-2.0.0. Want need 
+s13 learn only the last decision (unsound): L0=caught L1=MISSED
+s14 Need names all chosen ids: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-2.0.0 s1-1.10.0 s
+s15 Need names the first missing id only: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s1-1.10.0. Want need
+s16 Done with one missing fact: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got done s0=1.0.0 s1=1.9.0 s2
+s17 Need in the reverse order: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s2-1.0.0 s1-1.10.0. 
+s18 a Contra term does not stop a unit propagation: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want need s1-1.10.0
+s20 a conflict with an unknown name applies without that term: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want need s1-1.10.0
+s21 the sign of a term is swapped: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.10.0 s1-1.9.0 s
+s22 the version of a chosen is the id: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got done s0=s0-1.9.0. Want do
+s23 the strategy is ignored: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s1-2.0.0. Want need 
+s24 the header value is not passed to the domain: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.9.0. Want need 
+s25 the ranges are not passed to the domain: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.9.0 s2-2.0.0. W
+s26 the rules are not the request rules (min_age 0): L0=caught L1=caught  [roc crashed] R-AL9: a need for a release that no domain has
+s27 the named version is not passed: L0=caught L1=MISSED
+s28 a fact for another release is read (first fact wins): L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got fail. Want need s1-1.10.0
+s29 the facts of a release that is not chosen are not read (only the first value of a variable): L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with done s0=2.0.0 s1=1.10.0, the oracle for all facts has done s0=2.0.0 s1=1.9.0
+s30 the conflicts of the caller are not read: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8 R-C1 R-C2 R-C3 R-C4 R-C6 R-C7 R-C9: the step differs from the oracle for the same facts. Got need s0-1.10.0 s1-1.9.0 s
+s31 the deps are not read: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with done s0=1.0.0 s1=1.0.0 s2=1.0.0, the oracle for all facts has done s0=1.0.0 s1=1.0.0 s2=2.0.0
+s32 the platform is not read: L0=caught L1=caught  [roc crashed] R-VA6 R-AL3 R-AL8: the loop ends with done s0=1.0.0 s1=1.10.0 s2=1.0.0, the oracle for all facts has done s0=2.0.0 s1=1.10.0 s2=1.0.0
+s33 the terms of one variable are not joined (last wins): L0=caught L1=caught  [roc crashed] R-DT2: the order of the candidates, the facts or the conflicts changed the step
+s34 (equivalent, kept to show it) a term with no value still gives an incompatibility: the term is Contra for each state: L0=MISSED L1=MISSED
+finished

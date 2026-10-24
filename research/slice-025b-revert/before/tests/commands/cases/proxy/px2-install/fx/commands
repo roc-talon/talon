@@ -1,0 +1,22 @@
+# R-PX4 R-DL8 R-NI5 R-DL3: the pin is not installed, a person is there (tty), the answer is Enter (the default is Yes). One prompt, then the install under the lock, the default compiler (R-SO15), .last-use, and the run. stdout stays empty.
+@roc check p1/main.roc
+# R-CC4 step 1: now it is installed. No list, no tty, no prompt, no lock.
+@roc check p1/main.roc
+# R-NI5 R-CC4 step 2: the answer is n. Exit 13, nothing is installed, no lock, the compiler does not run.
+@roc +nightly-2026-10-12-2664a27 version
+# R-DL9: TALON_AUTO_INSTALL=yes in a non-interactive run (CI): no prompt, no tty call. The answer line is on stderr (R-NM6). The default stays (R-SO15: the first install only).
+@roc +nightly-2026-10-14-38a3029 version env:TALON_AUTO_INSTALL=yes env:CI=true
+# R-DL8: ask (the default) in a non-interactive run: no prompt, no request, exit 13 with the text that names TALON_AUTO_INSTALL=yes and tln roc install
+@roc +nightly-2026-10-12-2664a27 version env:CI=true
+# R-DL10: no, with a person there: no prompt and no tty call, exit 13
+@roc +nightly-2026-10-12-2664a27 version env:TALON_AUTO_INSTALL=no
+# R-DL9: yes, with a person there (rank 2, ROC_TOOLCHAIN): no prompt, no tty call
+@roc version env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 env:TALON_AUTO_INSTALL=yes
+# R-CV4 R-CC4: the digest of the asset is wrong. Exit 16 (integrity), the compiler does not run, the temp dir is deleted, the id is not installed
+@roc +nightly-2026-10-17-601b54c version env:TALON_AUTO_INSTALL=yes
+# Q3: the compat id is not known (2 compat dirs). The proxy prints no warning. Exit 0.
+@roc +nightly-2026-10-16-1df370f version env:TALON_AUTO_INSTALL=yes
+# Q2: a text that is not a full nightly id is never downloaded, also with yes. The text of the refusal of slice 023.
+@roc +nightly-2026-10 version env:TALON_AUTO_INSTALL=yes
+# Q1: another value of TALON_AUTO_INSTALL counts as not set (ask). No person (CI): the refusal of run 5, exit 13, no tty call
+@roc +nightly-2026-10-12-2664a27 version env:TALON_AUTO_INSTALL=true env:CI=true

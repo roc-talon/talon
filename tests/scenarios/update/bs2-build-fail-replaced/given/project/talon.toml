@@ -1,0 +1,3 @@
+[dependencies]
+lex = "acme/lex@^1"
+pf = "acme/pfx@=0.1.0"

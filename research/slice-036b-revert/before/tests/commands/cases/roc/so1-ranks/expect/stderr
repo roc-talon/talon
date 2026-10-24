@@ -1,0 +1,5 @@
+tln: error[consent]: no installed compiler is in [toolchain] roc (>=nightly-2026-10-20-aaaaaaa). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[no_tuple]: the compiler nightly-2026-10-13-91fa0c2 from .roc-version is a nightly, and nightly is false (set by TALON_NIGHTLY). Change .roc-version or the nightly switch.
+tln: error[no_tuple]: the compiler nightly-2026-10-09-258ab27 from the global default is a nightly, and nightly is false (set by TALON_NIGHTLY). Change the default (tln roc default) or the nightly switch.
+tln: error[no_tuple]: the compiler nightly-2026-10-09-258ab27 from the global default is a nightly, and nightly is false (set by TALON_NIGHTLY). Change the default (tln roc default) or the nightly switch.
+warning: .roc-version names nightly-2026-10-13-91fa0c2, the header names nightly-2026-10-14-38a3029

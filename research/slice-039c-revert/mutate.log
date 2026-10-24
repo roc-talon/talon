@@ -1,0 +1,11 @@
+P1: CAUGHT by l2:upgrade/ur6-moves (R-RP2, R-SP23: `update` moves the nightly too)
+P2: CAUGHT by l0f:packages/resolve/tests/moves.roc (R-SP24: a movable compiler takes the nearest lower compilers first with Highest)
+P3: CAUGHT by l0:oraclefree (R-RP4: the compiler is not movable in the second search (it is free: the newest compiler that works))
+P4: CAUGHT by l0:nightlyplan (R-CV1: a tuple on H in the other tag form is a move)
+P5: CAUGHT by l0:upgrade (R-UP2: a lag also when the compiler is newer than N)
+P6: CAUGHT by l0:upgrade (R-EP14: no reason from an inferred fail)
+P7: CAUGHT by l2:upgrade/ur6-moves (the compiler list D is not read before the second search: the movable nightly has only H)
+P8: CAUGHT by l2:upgrade/ur6-moves (R-SP25: the move of the nightly lists only the first member)
+P9: CAUGHT by l2:upgrade/ur6-moves (R-RP4: the pin of a held move is not written)
+P10: CAUGHT by l2:upgrade/ur6-moves (R-SP9: the free nightly is named as a held variable in the report and the prompt)
+done

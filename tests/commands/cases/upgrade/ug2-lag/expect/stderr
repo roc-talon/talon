@@ -1,0 +1,13 @@
+core: anchor, held
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: json 3.0.0 is not used, 2.2.0 is chosen: needs core >= 1.2.0
+note: parser 1.1.0 is not used, 1.0.0 is chosen: fails the unit check on nightly-2026-10-14-38a3029
+note: pf 0.2.0 is not used, 0.1.1 is chosen: text 2.0.0 needs pf 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/q1j/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ text: acme/text 1.0.0 -> 2.0.0 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written

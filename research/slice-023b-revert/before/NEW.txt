@@ -1,0 +1,4 @@
+tests/commands/cases/proxy/px2-install/
+tests/scenarios/compilers/px2-proxy-install/
+docs/slices/023b-proxy-install.md
+research/slice-023b-revert/

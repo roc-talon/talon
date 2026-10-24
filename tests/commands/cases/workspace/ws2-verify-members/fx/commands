@@ -1,0 +1,2 @@
+verify --file apps/a/main.roc
+verify

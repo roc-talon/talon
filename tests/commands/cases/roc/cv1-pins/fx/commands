@@ -1,0 +1,36 @@
+# R-CC8 R-CV6 (Q2): the first read of compat.db is busy (call 1). The warning says that Talon goes on with no saved facts, nothing is recorded (no db_write), and the install goes on. The list is fetched once (the first run).
+roc install nightly-2026-10-15-38e6c42 --yes
+# R-CC8 (Q2): the read fails (call 2): the warning names the file and the fix, nothing is recorded, the install goes on.
+roc install nightly-2026-10-14-38a3029 --yes
+# R-CV6 R-CC8 (Q2): 2026-10-16 has another sha256 in the recorded rows, but the read is busy (call 3): Talon does not know it, and goes on. The sha256 of the download is the listed one, so it passes (the check of R-CV4 is not the check of R-CV6).
+roc install nightly-2026-10-16-1df370f --yes
+# R-CV4 R-CC8 (Q2): the read is busy (call 4) and the listed digest of 2026-10-12 is not the digest of the download: exit 16 from the download check. The check against the list still runs when compat.db is busy.
+roc install nightly-2026-10-12-2664a27 --yes
+# R-CV6 R-CV3 R-C7: the read works (calls 5 and 6). The rows 2026-10-18, 2026-10-16 and 2026-10-13 have another recorded sha256: they are no candidates, so @latest is 2026-10-17 (warnings, one for each). 6 new rows are recorded in one write, 2026-10-14 is the same. The list is the cached one: a cached list is recorded too. 2026-10-16 is installed (run 3) but stays in the warnings.
+roc install @latest --yes
+# R-CV6: an installed compiler whose tag changed stays in use: it is installed, so there is no list read and no db call. Exit 0.
+roc install nightly-2026-10-18-5349569 --yes
+# R-CV6: `roc default` of that installed compiler works too, with no list read and no db call.
+roc default nightly-2026-10-18-5349569
+# R-CV6 R-CV1 R-EC16: a command that names a changed tag that is not installed stops with exit 16 and the text of R-CV6. No prompt, no download, no write. The list is the cached one, one db_query (call 7) and no write: no new row.
+roc install nightly-2026-10-13-91fa0c2 --yes
+# R-CV6 R-SC10: a prefix of exactly one changed tag names it (call 8).
+roc install nightly-2026-10-13 --yes
+# R-CV6: `roc default` names the tag (call 9).
+roc default nightly-2026-10-13-91fa0c2
+# R-CV6: `roc use` names the tag (call 10): exit 16 before any probe or write.
+roc use nightly-2026-10-13-91fa0c2 --file p1/main.roc
+# R-CV6 R-SO22 R-DL1: the pin of the project is the changed tag, which is not installed (call 12: the loop reads the facts first, call 11, and the probe of the loop needs the compiler): the first probe needs it, the offer stops with exit 16. No prompt.
+update json --file p-pin/main.roc
+# R-CV6 R-SO13 R-C7: rank 4. HOME is home2, which has no compiler. The range of p-range holds 5 releases. The newest, 2026-10-18, and 2026-10-16 and 2026-10-13 are changed (calls 13 and 14: the new rows are recorded; the loop reads the facts, call 15; the ladder reads the list a second time for the offer, call 16: no write), so the required download is 2026-10-17. The warnings (once, from the offer), then the prompt (the answer is n: exit 13).
+env:HOME={w}/home2 update json --file p-range/main.roc
+# R-CC8 R-CV6: HOME is home3, which has one recorded row (2026-10-13, changed). The read works (call 17) and the write of the 9 new rows is busy (call 18): the warning says that the facts are not saved, and the install goes on. The change is known from the read, so the warning for 2026-10-13 is printed too.
+env:HOME={w}/home3 roc install nightly-2026-10-09-258ab27 --yes
+# R-TF3 R-CV6: a db with a newer format (call 19): exit 19, no list use, no install. The same for each command that reads the list.
+env:HOME={w}/home4 roc install @latest --yes
+# R-CV6 R-SC10: HOME is home2 (the list is cached, call 20 reads the rows: nothing new). The text names no compiler and no changed tag (2030 is a prefix of no tag): the failure is the usual one (exit 2), and the warnings of the 3 changes come before it.
+env:HOME={w}/home2 roc install nightly-2030 --yes
+# R-CV3 R-CV6 R-DI12: HOME is home5, which has a cached list and no compat.db. --offline reads the cached list, and a cached list is recorded too (calls 21 and 22: all 10 rows are new). The compiler is not installed and --offline is set: exit 15.
+env:HOME={w}/home5 roc install nightly-2026-10-14-38a3029 --offline
+# R-CV6 R-C9 R-SL7 (review of slice 030b, Q1): HOME is home. The default is 2026-10-18 (run 7), installed, with a changed tag: it stays the base of a step (call 23: the list is the cached one, no write). @-2 is 2026-10-15, not 2026-10-16: that tag changed too, so the step does not land on it. 2026-10-15 is installed. Exit 0.
+roc install @-2 --yes

@@ -91,6 +91,12 @@ Vars :: [].{
 	## | `Install`, no names | A variable with an entry that is outside the intersection of its ranges (R-SP20). A key that no header has is a want, not a variable. With no `talon.toml` and one member nothing is outside (R-SP21). | All others (R-SP19) |
 	## | `Update`, no names | Each variable with a `host` that is `Indexed` (R-SP2) | A `Fixed` host (R-VA5, R-DI11) |
 	## | `Update`, names | The named variables (R-SP3) | All others |
+	## | `Upgrade`, no names (slice 038) | Each `Indexed` variable that has no anchor (a range with a `=` prefix, R-VA5) (R-SP6, R-UP1) | A `Fixed` host (R-DI11), and an anchor (note `<alias>: anchor, held`, the alias is the first use) |
+	## | `Upgrade`, names | The named variables, an anchor too (R-SP7, R-UP1). A named `Fixed` host stays held (R-DI11) | All others, with no note, except the `Fixed` host that was named |
+	## | `NightlyOnly` (slice 039: `upgrade roc`, R-SP8, no other name) | None | All. A held variable that is `Indexed` and not an anchor is movable (R-SP23, `movable_of(variable, false)`) with `ranges` `[]`. `any_series` is false and there is no note (the notes of `Upgrade` belong to a run that frees the packages) |
+	##
+	## `Upgrade` has no range for a free variable (R-UP1: `variable.ranges` is `[]`) and `any_series` is true for it (R-UP3: every series). A held variable that is `Indexed` and not an anchor is movable (R-SP23), and its `ranges` are `[]` too
+	## (R-SP23: its ranges, none in `upgrade`). A held anchor keeps its ranges. The note of an unnamed `Fixed` host (`Index.fixed_line`) is given when there are no names, and when the host is named.
 	##
 	## A named variable with a selector: its `ranges` are the one range of the selector (`from` is `selector`), and `any_series` is true (R-SP5). A named variable
 	## with a `Fixed` host is held, with the note `Index.fixed_line(host)` (R-DI11: no command frees it, also when named).
@@ -100,7 +106,7 @@ Vars :: [].{
 	## variables (R-WS8: members use one alias for 2 groups): `"<x>" matches <n> packages. Use a name from the list.` (the line of the tie of R-SC14: `Lookup.find` prints the list before it, so
 	## this line is a backstop).
 	scope : {
-		command : [Install, Update],
+		command : [Install, Update, Upgrade, NightlyOnly],
 		names : List(Str),
 		selectors : List({ alias : Str, range : Str }),
 		vars : List(Var),
@@ -257,7 +263,7 @@ named_indexes = |vars, names| names.fold_try(
 )
 
 # R-SP1 to R-SP5, R-SP20, R-DI11: the state of one variable for the command.
-scoped_one : [Install, Update], Bool, Bool, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped
+scoped_one : [Install, Update, Upgrade, NightlyOnly], Bool, Bool, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped
 scoped_one = |command, all, is_named, selector, variable| {
 	indexed = variable.host == Indexed
 	fixed_note = match variable.host {
@@ -268,6 +274,18 @@ scoped_one = |command, all, is_named, selector, variable| {
 		Install => {
 			free = outside_range(variable)
 			{ variable, free, movable: movable_of(variable, free), any_series: Bool.False, note: Err(None) }
+		}
+		Upgrade => {
+			anchor = variable.ranges.any(|r| r.range.starts_with("="))
+			free = indexed and (if all !anchor else is_named)
+			movable = movable_of(variable, free)
+			held_anchor = all and anchor and indexed
+			note = if held_anchor Ok("${variable.uses.first().map_ok(|u| u.alias) ?? ""}: anchor, held") else if all or is_named fixed_note else Err(None)
+			{ variable: if free or movable { ..variable, ranges: [] } else variable, free, movable, any_series: free, note }
+		}
+		NightlyOnly => {
+			movable = movable_of(variable, Bool.False)
+			{ variable: if movable { ..variable, ranges: [] } else variable, free: Bool.False, movable, any_series: Bool.False, note: Err(None) }
 		}
 		Update => {
 			free = indexed and (all or is_named)

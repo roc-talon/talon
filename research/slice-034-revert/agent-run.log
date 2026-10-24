@@ -1,0 +1,60 @@
+m01 Highest and Lowest swapped: L0=caught
+m02 a tie is in the reverse byte order: L0=caught
+m04 ranges: any in place of all: L0=caught
+m05 a yanked release is a value: L0=caught
+m07 young: >= (exactly min_age old is hidden): L0=caught
+m08 young: not applied: L0=caught
+m09 late: >= (a release at the snapshot time is hidden): L0=caught
+m10 snapshot ignored: L0=caught
+m11 the header value is hidden when young or late: L0=caught
+m12 the header value is not added when the list lacks it: L0=caught
+m13 a range does not exclude the header value: L0=caught
+m14 a named version is never exempt: L0=caught
+m15 a named version that is yanked is a value: L0=caught
+m16 a named version is exempt from the age only (not the snapshot): L0=caught
+m17 the version order reads the minor and patch only: L0=caught
+m18 a Package slot takes an App release: L0=caught
+m20 a release with no fact is not fit: L0=caught
+m21 dep: the limit itself is no value: L0=caught
+m22 a dep on the own group is read: L0=caught
+m24 a limit above all values is not read: L0=caught
+m25 the deps are not read: L0=caught
+m26 the platform is not read: L0=caught
+m27 the platform check holds with 2 platform slots (the first): L0=MISSED L1=MISSED
+m28 the release of the platform slot is checked against its own pf: L0=MISSED L1=MISSED
+m29 the platform check has the wrong sense: L0=caught
+m30 the decision takes the worst value: L0=caught
+m31 learn only the last decision (unsound): L0=caught
+m32 go back to the same decisions (no end): L0=caught(timeout)
+m34 the depth of a clash is one too low: L0=caught
+m35 the conflicts of the caller are not read: L0=caught
+m36 the sign of a term is swapped: L0=caught
+m37 a conflict with an unknown name applies without that term: DOES NOT COMPILE
+nch of this match can never match.
+
+|terms| match Ok(terms.keep_oks(|t| lit_of(vars, t))) {
+        ^^^^^
+
+This pattern matches a type that has no possible values (an uninhabited type),
+so no value can ever match it.
+
+── 0 errors and 1 warning ──────────────────────────── packages/resolve/main.roc
+
+
+m38 the terms of one variable are not joined (the last wins): L0=caught
+m39 a term with no value still gives an incompatibility: L0=MISSED L1=MISSED
+m40 unit propagation off (no end): L0=caught(timeout)
+m41 a false term does not stop a unit propagation: L0=caught
+m42 all terms true is no clash: L0=caught
+m43 a term is true when one place is in the set: L0=caught
+m45 Need names all chosen ids: L0=caught
+m46 Need names the first missing id only: L0=caught
+m47 Done with one fact missing: L0=caught
+m48 Need in the reverse order: L0=caught
+m49 Need names a release twice: L0=MISSED L1=MISSED
+m51 the strategy is ignored: L0=caught
+m52 the header value is not passed to the domain: L0=caught
+m53 the ranges are not passed to the domain: L0=caught
+m54 the named version is not passed: L0=caught
+m56 the names of a Fail are the other slots: L0=MISSED L1=MISSED
+m37 a conflict with an unknown name applies without that term: L0=caught

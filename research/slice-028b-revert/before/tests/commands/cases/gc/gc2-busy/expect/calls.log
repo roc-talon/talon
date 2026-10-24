@@ -1,0 +1,16 @@
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: busy
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: busy
+args
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+args

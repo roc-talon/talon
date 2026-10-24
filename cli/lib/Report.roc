@@ -9,7 +9,7 @@ import JsonDoc
 ## | `at` | The time that the resolve is at, `YYYY-MM-DDTHH:MM:SSZ` (R-DT5: `TALON_NOW`, or the time of `--snapshot`) | the line `resolved at <time>, <n> probes` |
 ## | `probes` | The number of `roc` runs of the ladder: 3 for an app that changes (baseline, check, build), 2 for a package or a platform, 0 with `--no-check` | the same line |
 ## | `dry_run` | `--dry-run` | the line `dry run: nothing was written` |
-## | `check`, `build` | The state of the ladder steps: `Passed`, `Skipped` (`--no-check`), `NotRun` (nothing changed, or a package for the build) | `check: passed`, `build: passed`, `check: skipped` |
+## | `check`, `build` | The state of the ladder steps: `Passed`, `Skipped` (`--no-check`, or for `build` a recorded pass of the build id: R-BS1, slice 032; `check` is `Passed` then), `NotRun` (nothing changed, or a package for the build) | `check: passed`, `build: passed`, `check: skipped` |
 ## | `added` | The new header entries (`+ <alias>: <name> <version>`) | the `+` lines |
 ## | `moved` | The entries that moved or were replaced (`~ <alias>: ...`): `from` and `to` are the name and the version | the `~` lines |
 ## | `kept` | The entries that `add` found in the header and left as they are (R-AD21) | `<alias>: <name> <version> is in the header` |
@@ -25,6 +25,7 @@ Report :: [].{
 	Outcome : {
 		at : Str,
 		probes : U64,
+		downloads : U64,
 		dry_run : Bool,
 		check : [Passed, Skipped, NotRun],
 		build : [Passed, Skipped, NotRun],
@@ -51,10 +52,10 @@ Report :: [].{
 	## | --- | --- |
 	## | `snapshot` | `at` |
 	## | `probes` | `probes` (number) |
-	## | `downloads` | 0 (number: P0 has no download of a compiler, R-PH7) |
+	## | `downloads` | `downloads` (number): the compilers that this command downloaded, 1 after one download and 0 with none (slice 025, answer Q7 of the review) |
 	## | `dry_run` | `dry_run` (true or false) |
 	## | `check` | `"passed"`, `"skipped"` or null for `NotRun` |
-	## | `build` | the same |
+	## | `build` | the same. `"skipped"` for `build` has 2 reasons: `--no-check` (`check` is `"skipped"` too) and a recorded pass (`check` is `"passed"`) |
 	## | `added` | a list of `{ "alias", "name", "version" }` |
 	## | `moved` | a list of `{ "alias", "from": { "name", "version" }, "to": { "name", "version" } }` |
 	## | `kept` | a list of `{ "alias", "name", "version" }` |
@@ -67,7 +68,7 @@ Report :: [].{
 	data = |o| JsonDoc.Obj([
 		("snapshot", Text(o.at)),
 		("probes", Num(o.probes.to_i64_wrap())),
-		("downloads", Num(0)),
+		("downloads", Num(o.downloads.to_i64_wrap())),
 		("dry_run", Flag(o.dry_run)),
 		("check", step_doc(o.check)),
 		("build", step_doc(o.build)),
@@ -135,7 +136,7 @@ Report :: [].{
 	## | `probes` | `probes` (number) |
 	## | `dry_run` | `dry_run` (true or false) |
 	## | `check` | `"passed"`, `"skipped"` or null for `NotRun` |
-	## | `build` | the same |
+	## | `build` | the same. `"skipped"` for `build` has 2 reasons: `--no-check` (`check` is `"skipped"` too) and a recorded pass (`check` is `"passed"`) |
 	## | `removed` | a list of `{ "alias", "kind": "release" or "path" or "foreign", "name", "version" }` (`version` is null when `Err(None)`) |
 	## | `toml` | a list of `{ "path", "table", "key" }` |
 	## | `patches` | a list of `{ "alias", "dir" }` |

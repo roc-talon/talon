@@ -1,0 +1,24 @@
+== a hard link: the same file (the same inode), the same bytes, still executable. No temp file is made by the call.
+linked
+same file
+executable
+the old file runs: ./out/tln
+== the permission bits are the ones of the source: a file with no executable bit stays so
+linked
+not executable
+== a rename over the source (what a tool update does): the link keeps the old file
+the new file runs: ./src/tln
+the old file runs: ./out/tln
+other file
+== the target exists: Exists. Nothing is replaced.
+err Exists
+the old file runs: ./out/tln
+== the source is missing: NotFound. Nothing is made.
+err NotFound
+nothing was made
+== the parent dir of the target is missing: NotFound. The call makes no dir.
+err NotFound
+no dir was made
+== the source is a directory: Other
+err Other(text of the platform)
+nothing was made

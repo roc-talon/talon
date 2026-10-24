@@ -1,0 +1,27 @@
+== upgrade --file q1/main.roc
+core: anchor, held
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: json 3.0.0 is not used, 2.2.0 is chosen: needs core >= 1.2.0
+note: parser 1.1.0 is not used, 1.0.0 is chosen: fails the unit check on nightly-2026-10-14-38a3029
+note: pf 0.2.0 is not used, 0.1.1 is chosen: text 2.0.0 needs pf 0.1.1
+check: passed
+build: passed
+$PROJECT/q1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ text: acme/text 1.0.0 -> 2.0.0 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 9 probes
+exit 0
+== upgrade --dry-run --json --file q1j/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":true,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.2.0"}},{"alias":"text","from":{"name":"acme/text","version":"1.0.0"},"to":{"name":"acme/text","version":"2.0.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1","json 3.0.0 is not used, 2.2.0 is chosen: needs core >= 1.2.0","parser 1.1.0 is not used, 1.0.0 is chosen: fails the unit check on nightly-2026-10-14-38a3029","pf 0.2.0 is not used, 0.1.1 is chosen: text 2.0.0 needs pf 0.1.1"],"written":[]},"error":null}
+exit 0
+== update --file q1u/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/q1u/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 4 probes
+exit 0

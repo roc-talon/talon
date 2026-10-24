@@ -1,0 +1,33 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1792065600}]}
+--- project/main.roc
++++ project/main.roc
+@@ -1,11 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",   # the platform
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+-	xml: "https://github.com/acme/xml/releases/download/1.0.0/E6PYifPFJi9TKEr1v2C6JGTpcG9ghozE74kaMeyETSao.tar.zst",
+ 	lex: "https://github.com/acme/lex/releases/download/1.0.0/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst",
+-	util: "../util/main.roc",
+-	odd: "https://example.com/pkg/latest.tar.gz",
++	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
+ import pf.Stdout
+--- project/talon.toml
++++ project/talon.toml
+@@ -1,11 +1,6 @@
+ [dependencies]
+-json = "^2"
+-parser = "^1"   # the parser range
+-xml = "^1"
+ lex = "^1"
+ 
+ [overrides]
+-parser = "acme/parser@^1.0.3"
+ 
+ [patch]
+-parser = { path = "./.talon/patches/parser/main.roc", base = "EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc" }

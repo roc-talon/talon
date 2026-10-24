@@ -1,0 +1,62 @@
+m01 partition: `to` is empty: L0=caught L1=caught  [roc crashed] R-EP4 R-EP11 R-EP13: the epochs are not one interval for each release
+m02 partition: reversed order: L0=caught L1=caught  [roc crashed] R-EP4 R-EP11 R-EP13: the epochs are not one interval for each release
+m03 partition: releases with no asset left out (R-EP11): L0=caught L1=caught  [roc crashed] R-EP4 R-EP11 R-EP13: the epochs are not one interval for each release
+m04 infer: a build row counts as a unit fact (target not read): DOES NOT COMPILE
+──────── cli/lib/Epochs.roc:60:14
+
+Variable f is defined here and then never used.
+
+.keep_if(|f| Bool.True)
+          ^
+
+If you don't need this variable, prefix it with an underscore like _f to
+suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────── cli/lib/main.roc
+
+
+m05 infer: a fault counts as a code result (fail): L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m06 infer: a pair with a fault only counts as a gap: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m07 case (b): no result after counts as a result: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m08 case (b): the farthest result before, not the nearest: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m09 conflict: pass or fail both give a result (pass wins): L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m10 conflict: fail wins: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m11 case (a) left out: DOES NOT COMPILE
+ defined here and then never used.
+
+same_epoch = seen(idx.keep_if(|j| span.0 <= j and j <= span.1))
+^^^^^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _same_epoch
+to suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────── cli/lib/main.roc
+
+
+m12 case (b) left out: DOES NOT COMPILE
+cli/lib/Epochs.roc:100:6
+
+Variable between is defined here and then never used.
+
+between = match before {
+^^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _between to
+suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────── cli/lib/main.roc
+
+
+m13 from: the order of the cases, with repeats: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m14 fail: no modules: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: the modules of an inferred fail
+m15 fail: modules not sorted, with repeats: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: the modules of an inferred fail
+m16 order: the hashes in the order of the facts: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m17 order: the releases of a hash in reverse: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m18 a release that no interval holds belongs to all of D: L0=caught L1=MISSED
+m19 case (a): the first release of the epoch is not a source: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m20 case (b): the nearest fact (a fault too) blocks, not the nearest code result: L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m21 case (a): a fault in the epoch is a source (as a pass): L0=caught L1=caught  [roc crashed] R-EP6 R-EP14: infer differs from the oracle
+m22 epochs: crash facts dropped before infer (a crash pair becomes a gap): L0=MISSED L1=caught  [roc crashed] R-EP10: epochs is not infer with the partition
+m23 infer reads only the first 8 facts: L0=caught L1=MISSED
+reference restored: True
+done

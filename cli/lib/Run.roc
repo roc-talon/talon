@@ -1,5 +1,8 @@
 import Add
 import Args
+import CacheClean
+import CacheGc
+import CacheShow
 import Exit
 import Fail
 import Fx
@@ -8,10 +11,19 @@ import Install
 import Kind
 import Ls
 import Out
+import OutdatedFlow
+import ProbeFlow
+import Proxy
 import Ref
 import Remove
+import RocInstall
+import RocLink
+import RocManage
+import RocUse
 import Scope
+import SetupFlow
 import Update
+import Upgrade
 import Verify
 import Why
 
@@ -25,7 +37,11 @@ Run :: [].{
 	## `--help`, `help` and `--version` print on stdout with code 0. No command prints the usage on stderr
 	## with code 2 (Q7).
 	run! : Fx => I32
-	run! = |fx| {
+	run! = |fx| if Proxy.is_proxy(fx.program_name!()) Proxy.run!(fx) else Run.tln!(fx)
+
+	## The commands of `tln` (the program name is not `roc`, R-ST8).
+	tln! : Fx => I32
+	tln! = |fx| {
 		words = fx.args!()
 		match Help.route(words) {
 			Help => {
@@ -51,12 +67,42 @@ Run :: [].{
 							Remove.run!(fx, args)
 						} else if args.command == ["update"] {
 							Update.run!(fx, args)
+						} else if args.command == ["upgrade"] {
+							Upgrade.run!(fx, args)
 						} else if args.command == ["verify"] {
 							Verify.run!(fx, args)
 						} else if args.command == ["list"] {
 							Ls.run!(fx, args)
 						} else if args.command == ["why"] {
 							Why.run!(fx, args)
+						} else if args.command == ["outdated"] {
+							OutdatedFlow.run!(fx, args)
+						} else if args.command == ["probe"] {
+							ProbeFlow.run!(fx, args)
+						} else if args.command == ["roc", "install"] {
+							RocInstall.run!(fx, args)
+						} else if args.command == ["roc", "link"] {
+							RocLink.link!(fx, args)
+						} else if args.command == ["roc", "list"] {
+							RocManage.list!(fx, args)
+						} else if args.command == ["roc", "default"] {
+							RocManage.default!(fx, args)
+						} else if args.command == ["roc", "remove"] {
+							RocManage.remove!(fx, args)
+						} else if args.command == ["roc", "update"] {
+							RocManage.update!(fx, args)
+						} else if args.command == ["roc", "use"] {
+							RocUse.use!(fx, args)
+						} else if args.command == ["cache", "gc"] {
+							CacheGc.run!(fx, args)
+						} else if args.command == ["cache", "clean"] {
+							CacheClean.run!(fx, args)
+						} else if args.command == ["cache", "dir"] {
+							CacheShow.dir!(fx, args)
+						} else if args.command == ["cache", "list"] {
+							CacheShow.list!(fx, args)
+						} else if args.command == ["setup"] {
+							SetupFlow.run!(fx, args)
 						} else {
 							fail!(fx, { command: args.typed, json: args.json, fail: Fail.new(Internal, "command '${args.typed}' is not built yet") })
 						}

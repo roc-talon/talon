@@ -1,0 +1,3 @@
+docs/slices/022-selection-ranks.md
+tests/commands/cases/roc/so1-ranks
+tests/scenarios/compilers/so2-ranks

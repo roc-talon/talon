@@ -1,0 +1,381 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/ws/apps/b/main.roc
+list_dirs $PROJECT/ws/apps/b
+list_dirs $PROJECT/ws/apps
+list_dirs $PROJECT/ws
+read_files $PROJECT/ws/talon.toml
+list_dirs $PROJECT/ws/apps/a
+read_files $PROJECT/ws/apps/b/main.roc
+canonical $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
+programs gh
+http_get https://api.github.com/repos/acme/yaml/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/yaml/1.json $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+programs gh
+http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+probes 1
+  probe $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc $HOME/.cache/roc/packages/2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh/main.roc $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
+random
+copy_tree $PROJECT/ws/apps/a $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 4
+  probe $PROJECT/ws/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $HOME/.cache/roc/packages/2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3 existing=replace
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+canonical $PROJECT/ws/apps/b/main.roc
+list_dirs $PROJECT/ws/apps/b
+list_dirs $PROJECT/ws/apps
+list_dirs $PROJECT/ws
+read_files $PROJECT/ws/talon.toml
+list_dirs $PROJECT/ws/apps/a
+read_files $PROJECT/ws/apps/b/main.roc
+canonical $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
+read_files $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta $HOME/.cache/roc/talon/index/github/acme/yaml/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc $HOME/.cache/roc/packages/2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh/main.roc $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
+random
+copy_tree $PROJECT/ws/apps/a $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+canonical $PROJECT/ws/apps/b/main.roc
+list_dirs $PROJECT/ws/apps/b
+list_dirs $PROJECT/ws/apps
+list_dirs $PROJECT/ws
+read_files $PROJECT/ws/talon.toml
+list_dirs $PROJECT/ws/apps/a
+read_files $PROJECT/ws/apps/b/main.roc
+canonical $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
+read_files $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta $HOME/.cache/roc/talon/index/github/acme/yaml/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc $HOME/.cache/roc/packages/2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh/main.roc $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
+random
+copy_tree $PROJECT/ws/apps/a $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+canonical $PROJECT/ws/apps/b/main.roc
+list_dirs $PROJECT/ws/apps/b
+list_dirs $PROJECT/ws/apps
+list_dirs $PROJECT/ws
+read_files $PROJECT/ws/talon.toml
+list_dirs $PROJECT/ws/apps/a
+read_files $PROJECT/ws/apps/b/main.roc
+canonical $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/lex
+programs gh
+http_get https://api.github.com/repos/acme/lex/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/lex/1.json $HOME/.cache/roc/talon/index/github/acme/lex/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/7r2t7xhwfM9esnfmYrQCSFZAmkzvfsyTeo1J5276kjmc/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
+read_files $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta $HOME/.cache/roc/talon/index/github/acme/yaml/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+args
+env_all
+clock
+cwd
+canonical $PROJECT/ws/apps/b/main.roc
+list_dirs $PROJECT/ws/apps/b
+list_dirs $PROJECT/ws/apps
+list_dirs $PROJECT/ws
+read_files $PROJECT/ws/talon.toml
+list_dirs $PROJECT/ws/apps/a
+read_files $PROJECT/ws/apps/b/main.roc
+canonical $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
+read_files $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta $HOME/.cache/roc/talon/index/github/acme/yaml/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc $HOME/.cache/roc/packages/2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh/main.roc $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
+random
+copy_tree $PROJECT/ws/apps/a $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/talon.toml
+write_atomic $PROJECT/ws/talon.toml $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/ws/apps/a/main.roc
+list_dirs $PROJECT/ws/apps/a
+list_dirs $PROJECT/ws/apps
+list_dirs $PROJECT/ws
+read_files $PROJECT/ws/talon.toml
+list_dirs $PROJECT/ws/apps/b
+read_files $PROJECT/ws/apps/a/main.roc
+canonical $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
+read_files $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta $HOME/.cache/roc/talon/index/github/acme/yaml/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+probes 1
+  probe $HOME/.cache/roc/packages/4G1RyBFYE1Y7HJ7xqLJs8ox3os8U3Fp5RdLFvxzyJ3i8 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc $HOME/.cache/roc/packages/4G1RyBFYE1Y7HJ7xqLJs8ox3os8U3Fp5RdLFvxzyJ3i8/main.roc $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+random
+copy_tree $PROJECT/ws/apps/a $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 1
+  probe $PROJECT/ws/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/talon.toml
+write_atomic $PROJECT/ws/talon.toml $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc

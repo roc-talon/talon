@@ -1,0 +1,32 @@
+# Revert check of the code, slice 017 (26 mutations, see code-mutate.py)
+
+Rule: a mutation is CAUGHT when a listed test fails. Only the tests that should catch it were run (no full sweep). F5 did not compile at the first run (a warning), and was written again.
+
+P1: CAUGHT by l0:pickmoves (R-SP24: the movable slots are last in the second search)
+P2: CAUGHT by l0:pickmoves (R-SP24: Highest goes down first)
+P3: CAUGHT by l0:pickmoves (R-SP24: Lowest goes up first)
+P4: CAUGHT by l0:pickmoves (R-C1 does not apply to a movable slot)
+P5: CAUGHT by l2:moves/ (R-WS2: 2 slots of one group can have 2 values)
+P6: CAUGHT by l0:pickclosure (Q1: each member has all slots)
+P7: CAUGHT by l0:pickclosure (P5: the Need list has repeats)
+P8: CAUGHT by l0:pickmoves (the result is in the order of the search, not of the slots)
+P9: CAUGHT by l0:pickmoves (R-SP16: a free slot that moves has a row of moves)
+P10: CAUGHT by l0:pickmoves (R-C1: only the ranges of the slot, not of its group)
+V1: CAUGHT by l0:vars (R-SP23: an anchor is movable)
+V2: CAUGHT by l0:vars (R-SP23: a fixed host is movable)
+V3: CAUGHT by l0:vars (R-I8: a stale key stops install)
+R1: CAUGHT by l2:workspace/ws1 (R-WS6: update stops for the key)
+F1: CAUGHT by l2:moves/ (R-SP16: no second search)
+F2: CAUGHT by l2:moves/hm1 (R-C7: the named version is hidden for the held group)
+F3: CAUGHT by l2:moves/ (R-AL8: the second search reads the files again)
+F4: CAUGHT by l2:moves/ (R-SP23: no slot is movable)
+F6: CAUGHT by l2:moves/ (R-SP25: the move writes one member only (the report))
+I1: CAUGHT by l2:moves/ (R-SP26: --dry-run asks)
+I2: CAUGHT by l2:moves/ (R-NI3: the answer No writes)
+I3: CAUGHT by l2:moves/ (R-J5: no details in the failure)
+I4: CAUGHT by l2:moves/ (R-SP16: the prompt is before the ladder)
+I5: CAUGHT by l2:moves/ (the note of the named version is printed twice)
+C1: CAUGHT by l0:consent (R-SP25: the report has no files)
+F5: CAUGHT by l2:moves/ (R-DI1: the index of a free group is read a second time)
+
+Result: 26 of 26 CAUGHT. The code after the run equals the copy before the run (diff -r of cli/lib: no difference).

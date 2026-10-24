@@ -1,0 +1,6 @@
+tests/commands/cases/consent/dl1-resolve
+tests/commands/cases/consent/dl2-verify-workspace
+tests/scenarios/compilers/dl1-resolve-consent
+tests/scenarios/compilers/dl2-consent-tty
+docs/slices/025-download-consent.md
+research/slice-025-revert

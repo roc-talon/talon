@@ -1,0 +1,13 @@
+
+step       result seconds  budget
+check      pass   1.2      10
+fmt        pass   0.2      5
+l0         pass   7.8      10
+l2         pass   4.3      30
+l3         pass   9.7      60
+selftest   pass   10.8     20
+l1         pass   28.5     60
+
+real	1m2.870s
+user	3m29.395s
+sys	0m58.173s

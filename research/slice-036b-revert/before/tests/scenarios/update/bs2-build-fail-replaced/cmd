@@ -1,0 +1,11 @@
+# R-BS2 R-P4 R-P3 (slice 032, gap n8): a build that fails is recorded with the digest, and a later pass of the same digest replaces the row (the primary key is the key and the digest). The real `Fx`: the SQLite store (the upsert changes the outcome).
+# The fake roc: the build fails at first (the rule is changed between the runs, `$TALON_TEST_DIR/roc.tsv`). The project is the one of `update/bs1-build-skip`.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+sed -i 's/^build \*.*/build *\t1\tbuild-target.stdout\tbuild-target.stderr/' "$TALON_TEST_DIR/roc.tsv"
+# The build fails for the host target: exit 10, and the fail row is recorded for the digest of the used closure.
+st tln update json --dry-run
+sed -i 's/^build \*.*/build *\t0\tbuild-pass.stdout\t-/' "$TALON_TEST_DIR/roc.tsv"
+# The same digest: the fail blocks the skip, the build runs and passes. The pass replaces the fail row (`facts.tsv` has one pass row for the digest).
+st tln update json --dry-run
+# The same digest again: the pass is recorded, so the build is skipped.
+st tln update json --dry-run

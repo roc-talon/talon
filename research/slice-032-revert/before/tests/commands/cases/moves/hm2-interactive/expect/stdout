@@ -1,0 +1,33 @@
+== add acme/json@2.2.0 --file ws/apps/b/main.roc
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: passed
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: passed
+exit 13
+== add acme/json@2.2.0 --file ws/apps/b/main.roc
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: passed
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: passed
+$PROJECT/ws/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+$PROJECT/ws/apps/b/main.roc
+  + json: acme/json 2.2.0
+$PROJECT/ws/talon.toml: json = "=2.2.0"
+resolved at 2026-10-15T12:00:00Z, 6 probes
+exit 0
+== install --file ws2/apps/a/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+$PROJECT/ws2/apps/a/main.roc: check: passed
+$PROJECT/ws2/apps/a/main.roc: build: passed
+$PROJECT/ws2/apps/b/main.roc: check: passed
+$PROJECT/ws2/apps/b/main.roc: build: passed
+$PROJECT/ws2/apps/a/main.roc
+  ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/ws2/apps/b/main.roc
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 8 probes
+exit 0

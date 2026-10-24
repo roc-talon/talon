@@ -18,14 +18,17 @@ normalize() {
 hexnorm() { sed -e 's#/talon/tmp/[0-9a-f]\{16\}#/talon/tmp/$HEX#g'; }
 
 # tree_diff <W>: the change of home/ and project/ against orig/, as a unified diff with no times.
-# Left out: compat.db, a dir or file named tmp, and files that end in .tmp (TESTING.md 3.1).
+# Left out: compat.db and its WAL files compat.db-wal and compat.db-shm (slice 030: a process that ends leaves them, the rows are in `expect/facts.tsv`), path-roc.json (slice 022b: it holds the size and the mtime of files of the machine), a dir or file named tmp, and files that end in .tmp (TESTING.md 3.1).
 # The paths of the work dir in the file content are `$HOME`, `$PROJECT` and `$WORK` (slice 002: `projects.json` has paths).
 tree_diff() {
-    (cd "$1" && diff -rNu -x compat.db -x tmp -x '*.tmp' orig/home home
-        diff -rNu -x compat.db -x tmp -x '*.tmp' orig/project project) |
+    (cd "$1" && diff -rNu -x 'compat.db*' -x path-roc.json -x tmp -x '*.tmp' orig/home home
+        diff -rNu -x 'compat.db*' -x path-roc.json -x tmp -x '*.tmp' orig/project project) |
         sed -e 's#^\(---\|+++\) orig/#\1 #' -e 's#^\(---\|+++\) \([^	]*\)	.*$#\1 \2#' \
             -e '/^diff -rNu /d' | normalize "$1"
 }
+
+# dump_facts <W>: the rows of `home/.cache/roc/talon/compat.db` as text, for `expect/facts.tsv` (slice 030). `tests/tools/dumpdb.py` has the form. No db file: no output.
+dump_facts() { python3 -I "$(dirname "${BASH_SOURCE[0]}")/tools/dumpdb.py" "$1/home/.cache/roc/talon/compat.db"; }
 
 # compare_file <label> <expected file> <actual file>: prints a diff and returns 1 on a difference.
 # A missing expected file is an empty file.
@@ -63,3 +66,43 @@ netoff() {
 
 # parallel_jobs: how many cases run at the same time.
 parallel_jobs() { echo "${JOBS:-$(nproc 2> /dev/null || echo 4)}"; }
+
+# check_opt: the build mode of the test binaries (TW25). OPT is dev (default) or speed. Another value: exit 2, before any build.
+check_opt() {
+    OPT=${OPT:-dev}
+    case $OPT in
+    dev | speed) export OPT ;;
+    *) echo "OPT must be dev or speed (got: $OPT)" >&2; exit 2 ;;
+    esac
+}
+
+# --- Memory rule of scripts/test.sh (research/test-memory/RESULTS.md) ---
+# jobs_for <cores> <budget_mb> <reserve_mb> <per_job_mb>: how many jobs fit. min(cores, (budget - reserve) / per_job), never under 1. A pure function.
+jobs_for() {
+    awk -v c="$1" -v b="$2" -v r="$3" -v p="$4" 'BEGIN { n = int((b - r) / p); if (n > c) n = c; if (n < 1) n = 1; print n }'
+}
+# mem_budget_mb: the memory that one run may use. TEST_MEM_GB, or a third of MemAvailable (Linux), or 8 GB when the machine does not say.
+mem_budget_mb() {
+    if [ -n "${TEST_MEM_GB:-}" ]; then
+        awk -v g="$TEST_MEM_GB" 'BEGIN { printf "%d\n", g * 1024 }'
+    else
+        awk '/^MemAvailable:/ { printf "%d\n", $2 / 1024 / 3; f = 1 } END { if (!f) print 8192 }' /proc/meminfo 2> /dev/null || echo 8192
+    fi
+}
+# roc_jobs <reserve_mb> <per_job_mb>: jobs for the `roc` calls of a step. JOBS caps it (default: the CPU count).
+roc_jobs() { jobs_for "$(parallel_jobs)" "$(mem_budget_mb)" "$1" "$2"; }
+# prune_roc_objects: `roc check` and `roc build` read every file of the object cache (objects-v7) into memory, so the cost grows with the cache:
+# 11 GB of files gave 14 GB RSS and 3.7 s for `roc check cli/main.roc` (0.3 s and 0.5 GB with none). Each edit of cli/lib adds a 13 MB file.
+# Keep the OBJ_KEEP (default 3) newest files of each dir. A file under 10 minutes old stays, so a run at the same time does not lose its file.
+prune_roc_objects() {
+    local o d f keep=${OBJ_KEEP:-3} old
+    for o in "${ROC_CACHE_DIR:-/nonexistent}"/compat-*/objects-v7; do
+        [ -d "$o" ] || continue
+        while IFS= read -r d; do
+            old=()
+            while IFS= read -r f; do old+=("$f"); done < <(find "$d" -maxdepth 1 -type f -mmin +10)
+            [ ${#old[@]} -gt "$keep" ] || continue
+            ls -t -- "${old[@]}" | tail -n +$((keep + 1)) | while IFS= read -r f; do rm -f -- "$f"; done
+        done < <(find "$o" -type d)
+    done
+}

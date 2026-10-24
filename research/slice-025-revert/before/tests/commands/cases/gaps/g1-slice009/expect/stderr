@@ -1,0 +1,7 @@
+tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. Run: tln roc install nightly-2026-10-09-258ab27.
+tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolchain] roc (0.1.0). Run tln upgrade roc or tln roc use <id>.
+check: passed
+$PROJECT/pk/lib/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+verified: the tuple passes. Nothing was written.

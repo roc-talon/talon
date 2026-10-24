@@ -13,6 +13,7 @@ import lib.Github
 import lib.Index
 import lib.Known
 import lib.Net
+import lib.Nightlies
 import lib.Roots
 import RealFx
 
@@ -30,6 +31,15 @@ import RealFx
 ## | `hint <owner>/<repo> <tag>` | `Github.hint!` | `hint <text>` or `no hint` |
 ## | `fetch [--offline] <url>...` | `Fetch.packages!` with `roc` on `PATH` | `present <url>` or `fetched <url>` for each URL. A failure prints its line to stderr. The exit code is the lowest code of the failures (`Exit.choose`). |
 ## | In all | The roots come from `Roots.from_env`, the settings from `Net.from_env`, the real clock from `Fx.clock!` | |
+##
+## Slice 020 adds two flows (the stand-ins of `tln roc install`, `tln roc use` and the like, slice 021 and later). Both read the list of `roc-lang/nightlies`
+## with `Nightlies.list!`. Options: `--offline`, `--host <target>` (an asset target of R-CV8, default `linux_x86_64`), `--min-age <seconds>` (default 0),
+## `--snapshot <RFC 3339 time>` (default none). The time of the age is `TALON_NOW` (`Clock.now`), else the real clock.
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `nightlies [options]` | `Nightlies.list!`, then `Nightlies.visible` | stderr: `index: cached at <time>` (offline, from the cache). stdout: for each visible nightly in the order of R-NS1: `nightly <id> <published_at> <size> <sha256 or none> <url>`, or `nightly <id> <published_at> no asset`, or `nightly <id> <published_at> <n> assets`. `no cached page` (offline, no page 1). |
+## | `compiler [options] [--base <id>] <text>` | `Nightlies.list!`, then `Nightlies.pick`. `named` is the id of each candidate on the host (`Nightlies.candidates`). `auto` is the visible candidates (the base is kept: R-C9). | `compiler <id>`, or the failure line on stderr and the exit code of its kind |
 main! = |args| {
 	fx = RealFx.make!(args.map(|a| a.display()))
 	match fx.args!() {
@@ -46,8 +56,10 @@ main! = |args| {
 		["releases", .. as rest] => finish!(fx, releases!(fx, rest))
 		["hint", name, tag] => finish!(fx, hint!(fx, name, tag))
 		["fetch", .. as rest] => fetch!(fx, rest)
+		["nightlies", .. as rest] => finish!(fx, nightlies!(fx, rest))
+		["compiler", .. as rest] => finish!(fx, compiler!(fx, rest))
 		_ => {
-			fx.err!("usage: flowprobe record <file>... | releases | hint | fetch\n")
+			fx.err!("usage: flowprobe record <file>... | releases | hint | fetch | nightlies | compiler\n")
 			Err(Exit(99))
 		}
 	}
@@ -158,4 +170,104 @@ fetch! = |fx, words| {
 	}
 	code = Exit.choose({ failures: $failures, child: Err(NoChild) })
 	if code == 0 Ok({}) else Err(Exit(code))
+}
+
+## The value after an option (`--host linux_x86_64`).
+option_of : List(Str), Str -> Try(Str, [NotSet])
+option_of = |words, name| match words.map2(words.drop_first(1), |a, b| (a, b)).find_first(|(a, _)| a == name) {
+	Ok((_, value)) => Ok(value)
+	Err(_) => Err(NotSet)
+}
+
+## The words that are no option and no value of an option.
+plain_words : List(Str) -> List(Str)
+plain_words = |words| {
+	values = ["--host", "--min-age", "--snapshot", "--base"].keep_oks(|name| option_of(words, name))
+	words.keep_if(|w| !w.starts_with("--") and !values.contains(w))
+}
+
+Listing : { releases : List(Nightlies.Release), source : [Live, Cached(U64), Missing], visible : List(Nightlies.Release) }
+
+## The list of `roc-lang/nightlies` and the visible part of it, for the options of a flow.
+listing! : Fx, List(Str) => Try(Listing, Fail)
+listing! = |fx, words| {
+	env = fx.env_all!()
+	roots = Roots.from_env(env)?
+	net = Net.from_env(env)
+	target = option_of(words, "--host") ?? "linux_x86_64"
+	host = match [LinuxX64, LinuxArm64, MacosApple, MacosX64, WindowsX64, WindowsArm64].find_first(|h| Nightlies.target(h) == target) {
+		Ok(h) => h
+		Err(_) => return Err(Fail.new(Usage, "no such host: ${target}"))
+	}
+	talon_now = match env.find_first(|(name, _)| name == "TALON_NOW") {
+		Ok((_, text)) => Ok(text)
+		Err(_) => Err(NotSet)
+	}
+	now = match Clock.now({ talon_now, real: fx.clock!() }) {
+		Ok(t) => t
+		Err(BadTime(text)) => return Err(Fail.new(Usage, "TALON_NOW is not a UTC time: ${text}"))
+	}
+	min_age = match option_of(words, "--min-age") {
+		Ok(text) => U64.from_str(text) ?? 0
+		Err(NotSet) => 0
+	}
+	snapshot = match option_of(words, "--snapshot") {
+		Ok(text) => match Clock.parse_utc(text) {
+			Ok(t) => Ok(t)
+			Err(BadTime) => return Err(Fail.new(Usage, "--snapshot is not a UTC time: ${text}"))
+		}
+		Err(NotSet) => Err(None)
+	}
+	keep = match option_of(words, "--base") {
+		Ok(base) => [base]
+		Err(NotSet) => []
+	}
+	found = Nightlies.list!(fx, { net, roots, now: fx.clock!(), offline: words.contains("--offline"), host })?
+	Ok({ releases: found.releases, source: found.source, visible: Nightlies.visible({ list: found.releases, now, min_age, snapshot, keep }) })
+}
+
+nightlies! : Fx, List(Str) => Try({}, Fail)
+nightlies! = |fx, words| {
+	found = listing!(fx, words)?
+	match found.source {
+		Missing => fx.out!("no cached page\n")
+		Cached(time) => {
+			fx.err!("${Github.offline_line(time)}\n")
+			show_nightlies!(fx, found.visible)
+		}
+		Live => show_nightlies!(fx, found.visible)
+	}
+	Ok({})
+}
+
+show_nightlies! : Fx, List(Nightlies.Release) => {}
+show_nightlies! = |fx, list| {
+	for r in list {
+		head = "nightly ${r.id} ${Clock.format_utc(r.published_at)}"
+		match r.asset {
+			Ok(asset) => fx.out!("${head} ${asset.size.to_str()} ${asset.sha256 ?? "none"} ${asset.url}\n")
+			Err(NoAsset) => fx.out!("${head} no asset\n")
+			Err(Several(n)) => fx.out!("${head} ${n.to_str()} assets\n")
+		}
+	}
+}
+
+compiler! : Fx, List(Str) => Try({}, Fail)
+compiler! = |fx, words| {
+	text = match plain_words(words).last() {
+		Ok(t) => t
+		Err(_) => return Err(Fail.new(Usage, "compiler needs a text"))
+	}
+	found = listing!(fx, words)?
+	base = match option_of(words, "--base") {
+		Ok(id) => Ok(id)
+		Err(NotSet) => Err(None)
+	}
+	named = Nightlies.candidates(found.releases).map(|r| r.id)
+	auto = Nightlies.candidates(found.visible).map(|r| r.id)
+	match Nightlies.pick({ text, named, auto, base }) {
+		Ok(id) => fx.out!("compiler ${id}\n")
+		Err(error) => return Err(Nightlies.failure(error))
+	}
+	Ok({})
 }

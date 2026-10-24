@@ -8,4 +8,4 @@ tln: error[usage]: no current member in the workspace at $PROJECT. Members: $PRO
 ~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
   writes $PROJECT/apps/a/main.roc
 tln: error[consent]: moving the held variable json needs consent. Pass --allow-moves or --yes.
-tln: error[internal]: command 'probe' is not built yet
+tln: error[usage]: './apps/b' is not in the project

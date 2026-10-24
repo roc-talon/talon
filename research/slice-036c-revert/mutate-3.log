@@ -1,0 +1,2 @@
+M14	the hint does not accept a header that was not read	l0 caught by: oracledomain	l2 dm1: -
+M13	wide! asks the db again for the keys that were looked up	l0 caught by: none	l2 dm1: FAIL

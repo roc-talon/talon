@@ -12,9 +12,11 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 spawn_all limit=1
-  job - roc version
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
@@ -112,9 +114,8 @@ lock $HOME/.cache/roc/talon/projects.json nowait: held
 list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/web
 programs gh
@@ -153,9 +154,8 @@ lock $HOME/.cache/roc/talon/projects.json nowait: held
 list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/web
 read_files $HOME/.cache/roc/talon/index/github/acme/web/1.meta $HOME/.cache/roc/talon/index/github/acme/web/1.json
@@ -186,9 +186,8 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/text
 read_files $HOME/.cache/roc/talon/index/github/acme/text/1.meta $HOME/.cache/roc/talon/index/github/acme/text/1.json

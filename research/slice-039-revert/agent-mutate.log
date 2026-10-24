@@ -1,0 +1,13 @@
+/home/george/dev/Karakatiza666/talon/research/slice-039-revert/agent-mutate.py:75: SyntaxWarning: 'continue' in a 'finally' block
+  continue
+A1: CAUGHT by l0:nightlyplan (U5 (c): a compiler that is not installed is askable)
+A2: CAUGHT by l0:nightlyplan (Q3: H is the oldest pin, not the newest)
+A3: CAUGHT by l0:oraclefree (the scan and the lookups use H, not the compiler of the tuple)
+A4: CAUGHT by l2:upgrade/ur1 (R-CC9: no .last-use for the other compiler of a probe round)
+A5: CAUGHT by l2:probe/pb1 (R-CV1: 2 spellings of the started compiler are 2 compilers)
+A6: CAUGHT by l2:upgrade/ur1 (the ladder starts no candidate compiler)
+A7: NOT CAUGHT by - (the pin of Pin.decide is a second op of the candidate header)
+A8: NOT CAUGHT by - (data.downloads has no download of the plan)
+A9: CAUGHT by l2:upgrade/ur2 (R-NI12: N alone is asked as a required download (TALON_AUTO_INSTALL=no refuses it))
+A10: CAUGHT by l2:upgrade/ur1 (D is not read before the first step of a free compiler)
+A11: CAUGHT by l2:upgrade/ur1 (the word roc is a package name)

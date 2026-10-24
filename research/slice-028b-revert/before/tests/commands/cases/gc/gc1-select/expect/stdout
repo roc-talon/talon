@@ -1,0 +1,54 @@
+== cache gc --dry-run
+would remove toolchain git-dd03c09e
+would remove toolchain nightly-2026-05-01-6666666
+would remove toolchain nightly-2026-08-01-aaaaaaa
+would remove toolchain nightly-2026-08-12-5555555
+would remove toolchain nightly-2026-09-01-9999999
+would remove $HOME/.cache/roc/compat-6666666
+would remove $HOME/.cache/roc/compat-aaaaaaa
+would remove $HOME/.cache/roc/compat-5555555
+would remove $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp
+would remove $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp
+would remove $HOME/.cache/roc/talon/tmp/0123456789abcdef
+would remove $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks
+would remove $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+would remove $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+would remove project $PROJECT/pgone/main.roc
+would remove project $PROJECT/pold/main.roc
+would remove project $PROJECT/pplain/main.roc
+dry run: nothing was removed
+exit 0
+== cache gc --dry-run --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["git-dd03c09e","nightly-2026-05-01-6666666","nightly-2026-08-01-aaaaaaa","nightly-2026-08-12-5555555","nightly-2026-09-01-9999999"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666","$HOME/.cache/roc/compat-aaaaaaa","$HOME/.cache/roc/compat-5555555"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","$HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp","$HOME/.cache/roc/talon/tmp/0123456789abcdef","$HOME/.cache/roc/talon/tmp/2123456789abcdef.locks","$HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash","$HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp"],"projects":["$PROJECT/pgone/main.roc","$PROJECT/pold/main.roc","$PROJECT/pplain/main.roc"]},"error":null}
+exit 0
+== cache gc
+removed toolchain git-dd03c09e
+removed toolchain nightly-2026-08-01-aaaaaaa
+removed toolchain nightly-2026-08-12-5555555
+removed toolchain nightly-2026-09-01-9999999
+skipped toolchain nightly-2026-05-01-6666666: an install holds it
+removed $HOME/.cache/roc/compat-aaaaaaa
+removed $HOME/.cache/roc/compat-5555555
+removed $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp
+removed $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp
+removed $HOME/.cache/roc/talon/tmp/0123456789abcdef
+removed $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks
+removed $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+removed $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+removed project $PROJECT/pgone/main.roc
+removed project $PROJECT/pold/main.roc
+removed project $PROJECT/pplain/main.roc
+exit 0
+== cache gc
+skipped toolchain nightly-2026-05-01-6666666: an install holds it
+exit 0
+== cache gc nightly-2026-08-01-aaaaaaa
+exit 2
+== env:HOME={w}/home2 cache gc
+exit 19
+== env:HOME={w}/home3 cache gc
+exit 19
+== env:HOME={w}/home4 cache gc --dry-run
+would remove toolchain nightly-2026-09-11-eeeeeee
+dry run: nothing was removed
+exit 0

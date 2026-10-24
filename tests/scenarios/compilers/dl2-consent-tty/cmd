@@ -1,0 +1,17 @@
+# R-DL1 R-DL3 R-NI5 R-NM6 R-NM8 R-FL12 R-SO22 R-BL3 R-CC4 R-CC9 R-HF1 (slice 025): a person is there (a pseudo terminal, given/answers is `n` then `y`). `tln verify` needs a compiler that is not installed (ROC_TOOLCHAIN, rank 2). The fixtures
+# are the ones of compilers/dl1-resolve-consent. stdout and stderr are one stream, so the prompt shows in expect/stdout (the typed answer does not).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+T=$HOME/.cache/roc/toolchains
+A=nightly-2026-10-13-5349569
+store() { if [ -d $T ]; then ls $T | tr '\n' ' '; fi; echo; }
+echo "== R-DL1 R-DL3 R-NM8: the question has the count and the size, and the default is No. The answer is n: exit 13, nothing is downloaded, the store is empty."
+st env ROC_TOOLCHAIN=$A tln verify
+store
+echo "downloads of A: $(if [ -f $D/http.log ]; then grep -c "GET /dl/$A" $D/http.log; else echo 0; fi)"
+echo "== R-DL1 R-NM6: the same command, the answer is y: one download, the install, then the probes run the new compiler."
+st env ROC_TOOLCHAIN=$A tln verify
+store
+echo "downloads of A: $(grep -c "GET /dl/$A" $D/http.log)"
+echo "== R-CC4: A is installed now: no question."
+st env ROC_TOOLCHAIN=$A tln verify

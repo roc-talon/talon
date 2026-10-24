@@ -1,0 +1,186 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+}
+
+Ran 7 tests in 4079.0 ms.:
+    0 passed
+    7 failed
+    0 compiler errors
+tests/unit/facts.roc: All (5) tests passed in 523.2 ms.
+tests/unit/fetch.roc: All (2) tests passed in 427.4 ms.
+tests/unit/frozen.roc: All (1) tests passed in 3034.4 ms.
+tests/unit/gc.roc: All (9) tests passed in 2772.3 ms.
+tests/unit/github.roc: All (5) tests passed in 450.3 ms.
+tests/unit/guard.roc: All (1) tests passed in 207.3 ms.
+tests/unit/ident.roc: All (2) tests passed in 292.9 ms.
+tests/unit/index.roc: All (6) tests passed in 643.4 ms.
+tests/unit/intent.roc: All (9) tests passed in 2491.6 ms.
+tests/unit/kind.roc: All (3) tests passed in 200.8 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2957.6 ms.
+tests/unit/launch.roc: All (1) tests passed in 554.8 ms.
+tests/unit/link.roc: All (6) tests passed in 1029.7 ms.
+tests/unit/listing.roc: All (4) tests passed in 689.8 ms.
+tests/unit/locked.roc: All (3) tests passed in 1947.1 ms.
+tests/unit/lock.roc: All (2) tests passed in 155.5 ms.
+tests/unit/lookup.roc: All (7) tests passed in 934.9 ms.
+tests/unit/manage.roc: All (18) tests passed in 2568.6 ms.
+tests/unit/members.roc: All (2) tests passed in 293.0 ms.
+tests/unit/mode.roc: All (3) tests passed in 203.6 ms.
+tests/unit/net.roc: All (2) tests passed in 234.1 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 957.6 ms.
+tests/unit/opts.roc: All (4) tests passed in 438.2 ms.
+tests/unit/out.roc: All (4) tests passed in 215.4 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 908.2 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1487.0 ms.
+tests/unit/picker.roc: All (2) tests passed in 125.5 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1495.6 ms.
+tests/unit/pick.roc: All (3) tests passed in 1594.7 ms.
+tests/unit/pin.roc: All (9) tests passed in 945.9 ms.
+tests/unit/pins.roc: All (6) tests passed in 1796.3 ms.
+tests/unit/probe.roc: All (5) tests passed in 421.4 ms.
+tests/unit/project.roc: All (7) tests passed in 2010.2 ms.
+tests/unit/projects.roc: All (3) tests passed in 438.8 ms.
+tests/unit/prompt.roc: All (5) tests passed in 332.3 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2469.0 ms.
+tests/unit/ranges.roc: All (1) tests passed in 270.1 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1531.7 ms.
+tests/unit/ref.roc: All (4) tests passed in 428.2 ms.
+tests/unit/removal.roc: All (4) tests passed in 1816.5 ms.
+tests/unit/report.roc: All (3) tests passed in 261.4 ms.
+tests/unit/roots.roc: All (3) tests passed in 182.4 ms.
+tests/unit/scan.roc: All (2) tests passed in 222.8 ms.
+tests/unit/selector.roc: All (2) tests passed in 279.9 ms.
+tests/unit/setup.roc: All (10) tests passed in 668.1 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 312.1 ms.
+tests/unit/temp.roc: All (4) tests passed in 150.6 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1797.9 ms.
+tests/unit/units.roc: All (6) tests passed in 721.5 ms.
+tests/unit/update.roc: All (2) tests passed in 1884.4 ms.
+tests/unit/uses.roc: All (2) tests passed in 488.6 ms.
+tests/unit/vars.roc: All (6) tests passed in 1615.8 ms.
+tests/unit/verify.roc: All (2) tests passed in 1284.5 ms.
+tests/unit/why.roc: All (6) tests passed in 1901.0 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -10,27 +9,23 @@
+       tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pfx 0.1.1: unsupported target
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p4/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+       resolved at 2026-10-15T12:00:00Z, 5 probes
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p5/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+       resolved at 2026-10-15T12:00:00Z, 2 probes
+       check: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/pk/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-14-38a3029
+       resolved at 2026-10-15T12:00:00Z, 2 probes
+       check: passed
+       build: skipped (recorded pass)
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p6/main.roc
+         - parser: acme/parser 1.0.0
+         + roc: nightly-2026-10-14-38a3029
+FAIL probe/un1-units
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -22,7 +22,6 @@
+       == update json file=p5/main.roc compiler=nightly-2026-10-09-258ab27
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-09-258ab27. Your app does not import it.
+       $PROJECT/p5/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+FAIL probe/un3-verify-units
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -5,7 +5,6 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+       build: passed
+      -note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+       $PROJECT/p2/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+commands: 73 passed, 7 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+FAIL why/wy1-why
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -8,7 +8,7 @@
+           util (path) -> core
+       exit 0
+       == tln why pfx --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"pf","name":"acme/pfx","version":"0.1.1","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":true},"paths":[[{"alias":"pf","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[],"notes":[]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"pf","name":"acme/pfx","version":"0.1.1","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":true},"paths":[[{"alias":"pf","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst"}]]}]},"error":null}
+       exit 0
+       == tln why util
+       $PROJECT/main.roc
+FAIL why/wy2-evidence
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,8 +2,6 @@
+       $PROJECT/main.roc
+         acme/parser 1.0.0 (direct)
+           parser
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 3 pin: pass
+       exit 0
+       == tln update json --dry-run
+       check: passed
+      @@ -17,19 +15,14 @@
+       $PROJECT/main.roc
+         acme/parser 1.0.0 (direct)
+           parser
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: pass
+      -        3 pin: pass
+       exit 0
+       == tln why parser --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"parser","name":"acme/parser","version":"1.0.0","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"parser","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[{"rank":1,"source":"local","result":"pass","modules":[],"winner":true},{"rank":3,"source":"pin","result":"pass","modules":[],"winner":false}],"notes":[]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"parser","name":"acme/parser","version":"1.0.0","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"parser","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst"}]]}]},"error":null}
+       exit 0
+       == tln why pf
+       $PROJECT/main.roc
+         acme/pfx 0.1.0 (direct)
+           pf
+      -    evidence on nightly-2026-10-14-38a3029:
+      -      * 1 local: pass
+       exit 0
+       == tln why json
+       $PROJECT/main.roc
+      @@ -37,5 +30,5 @@
+           json
+       exit 0
+       == tln why json --json
+      -{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[],"notes":[]}]},"error":null}
+      +{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]]}]},"error":null}
+       exit 0
+scenarios: 60 passed, 2 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.3      10
+fmt        pass   0.2      5
+l0         FAIL   6.2      10
+l2         FAIL   1.6      30
+l3         FAIL   9.8      60
+selftest   pass   8.1      20

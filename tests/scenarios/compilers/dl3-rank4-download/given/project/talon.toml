@@ -1,0 +1,5 @@
+[toolchain]
+roc = ">=nightly-2026-10-10-0000000"
+
+[dependencies]
+lex = "acme/lex@^1"

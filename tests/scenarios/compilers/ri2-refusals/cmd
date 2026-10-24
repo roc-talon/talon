@@ -1,0 +1,60 @@
+# R-CV4 R-CV5 R-SE9 R-SE11 R-HF5 R-DA7 R-CC2 R-CC4 R-NS2 R-SC10 R-SC11 R-SC13 R-C7 R-NS3 R-DI12 R-J5 R-EC2 R-EC15 R-EC16 R-TF4 R-SO15 R-LY4 R-CM15 R-CV2: what `tln roc install` refuses, with the real curl and tar, and the fake release server
+# (tests/tools/mk-nightly.sh with ARCHIVE=real made given/http: `ARCHIVE=real mk-nightly.sh given/http nightly-2026-10-21-5349569@2026-10-21T18:00:00Z nightly-2026-10-13-91fa0c2+baddigest
+# nightly-2026-10-12-2664a27+nodigest nightly-2026-10-11-1a2b3c4+evil nightly-2026-10-10-abcdef0 nightly-2026-10-09-258ab27 nightly-2026-10-08-0badc0d+noasset`; then the archive of 2026-10-10 was deleted, so its asset is a 404).
+# After each refusal the store has no compiler, no temp, no lock and no probe dir, and no default was written (R-CC2, R-CC4, R-SO15). The time is TALON_NOW=2026-10-22T12:00:00Z.
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+T=$XDG_CACHE_HOME/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+# What is left: the compilers, the number of temps, locks and probe dirs, and whether config.toml is there.
+state() {
+    echo "compilers: $(ls $T 2> /dev/null | tr '\n' ' ')"
+    echo "left: $(find $XDG_CACHE_HOME/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' ') temps and locks, $(ls $XDG_CACHE_HOME/roc/talon/tmp 2> /dev/null | wc -l | tr -d ' ') probe dirs, config.toml: $(test -e $C && echo yes || echo no)"
+}
+
+echo "== 1: the sha256 differs (R-CV4, R-SE11): exit 16, the download is deleted. Then the same with --json (R-J5)."
+st tln roc install nightly-2026-10-13-91fa0c2
+state
+st tln roc install nightly-2026-10-13-91fa0c2 --json
+
+echo "== 2: an asset with no digest (R-CV4): exit 16 before any download"
+st tln roc install nightly-2026-10-12-2664a27
+state
+
+echo "== 3: the digest is right and the archive has a member with .. (R-SE9, R-HF5): tar refuses it, exit 16. Nothing is written outside the temp dir."
+st tln roc install nightly-2026-10-11-1a2b3c4 2>&1 | sed -e 's#): tar: .*#): <the message of tar>#'
+test -e $XDG_CACHE_HOME/roc/evil.txt && echo "evil.txt was written" || echo "evil.txt is not there"
+state
+
+echo "== 4: the server answers 404 for the asset (R-DA7): exit 15"
+st tln roc install nightly-2026-10-10-abcdef0
+state
+
+echo "== 5: the operand: none, 2, no match, a prefix of many (R-SC10, R-SC11, R-SC13). The exact id of a nightly with no asset for this host names the host (R-CV2, review of slice 021 Q6). A prefix of that id is only no match."
+st tln roc install
+st tln roc install nightly-2026-10-09-258ab27 nightly-2026-10-13-91fa0c2
+st tln roc install nightly-2030
+st tln roc install nightly-2026-10-1
+st tln roc install nightly-2026-10-08-0badc0d
+st tln roc install nightly-2026-10-08
+
+echo "== 6: min-release-age hides every nightly (R-C7, R-NS3): @latest has no compiler, exit 10."
+TALON_NOW=2026-07-01T00:00:00Z st tln roc install @latest
+state
+
+echo "== 7: --offline with a cached list: the compiler is not installed, exit 15 (R-DI12). With no cached list: exit 15."
+st tln roc install nightly-2026-10-09-258ab27 --offline
+rm -r $XDG_CACHE_HOME/roc/talon/index
+st tln roc install nightly-2026-10-09-258ab27 --offline
+state
+
+echo "== 8: a config.toml with a wrong value (R-TF4): exit 19, before any request"
+mkdir -p $XDG_CONFIG_HOME/talon
+printf 'nightly = "yes"\n' > $C
+st tln roc install @latest
+
+echo "== 9: min-release-age 0d from config.toml (R-C7): @latest is the young nightly. The default is added to config.toml, and the other bytes stay (R-SO15, R-CC6)."
+printf '# my settings\nmin-release-age = "0d"\n' > $C
+st tln roc install @latest
+state
+cat $C

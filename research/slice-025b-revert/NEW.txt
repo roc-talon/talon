@@ -1,0 +1,12 @@
+tests/commands/cases/consent/dl3-rank4
+tests/scenarios/compilers/dl3-rank4-download
+tests/commands/cases/proxy/px2-install/given/project/p2
+tests/commands/cases/proxy/px2-install/given/project/p3
+tests/commands/cases/proxy/px2-install/given/project/p4
+tests/commands/cases/proxy/px2-install/given/project/p5
+tests/commands/cases/proxy/px2-install/given/project/p6
+tests/commands/cases/proxy/px2-install/given/project/p7
+docs/slices/025b-rank4-download.md
+research/slice-025b-revert
+tests/commands/cases/proxy/px2-install/given/project/p8
+tests/commands/cases/proxy/px2-install/given/cfg2

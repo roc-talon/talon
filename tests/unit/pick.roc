@@ -2,6 +2,7 @@ app [main!] { lib: "../../cli/lib/main.roc" }
 
 import lib.Ident
 import lib.Index
+import lib.Oracle
 import lib.Pick
 import lib.Release
 
@@ -33,7 +34,7 @@ slot = |id, is_platform, ranges, current, free, candidates| { id, is_platform, r
 
 package_fact = |url| { url, release: { kind: Package, pf: Err(None), deps: [] } }
 
-step = |slots, facts, strategy, min_age, snapshot| Pick.step({ slots, strategy, now, min_age, snapshot, facts, unmanaged: [], paths: [], second: Bool.False })
+step = |slots, facts, strategy, min_age, snapshot| Oracle.step({ slots, strategy, now, min_age, snapshot, facts, unmanaged: [], paths: [], second: Bool.False })
 
 view = |r| match r {
 	Need(urls) => Err(Ok(urls))

@@ -1,9 +1,9 @@
-== verify --file lc/main.roc
+== env:TALON_AUTO_INSTALL=no verify --file lc/main.roc
 exit 13
 == verify --file pin/main.roc
 exit 10
 == verify --json --file pk/lib/main.roc
-{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":null,"added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":4,"downloads":0,"dry_run":false,"check":"passed","build":null,"added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
 exit 0
 == update -i --file nf/main.roc
 nothing picked

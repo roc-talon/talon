@@ -1,0 +1,182 @@
+--- M1 l0 rc=1
+[dbg] []
+[dbg] [True, True]
+Ran 4 tests in 343.2 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M1 l2 rc=1
+       $PROJECT/ws2/apps/b/main.roc
+         package  current  wanted  latest              nightly range
+      -  json     2.1.0    2.1.5   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+      +  json     2.1.0    2.2.0   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+       exit 0
+commands: 0 passed, 2 failed
+=== M1 (wanted ignores the ranges): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M2 l0 rc=1
+[dbg] []
+[dbg] [True, True]
+Ran 4 tests in 292.4 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M2 l2 rc=1
+      -  parser   1.0.0    1.0.0   2.0.0 (new series)  nightly-2026-10-10-0e0e0e0? .. nightly-2026-10-10-0e0e0e0?
+      +  parser   1.0.0    1.1.0   2.0.0 (new series)  nightly-2026-10-10-0e0e0e0? .. nightly-2026-10-10-0e0e0e0?
+         util     1.0.0    1.0.0   1.2.0               nightly-2026-10-08-8c8c8c8 .. nightly-2026-10-14-4c4c4c4
+         pf       0.1.0    0.1.1   0.2.0 (new series)  none known
+         fixed: example.org has no index without a registry
+commands: 1 passed, 1 failed
+=== M2 (min-release-age hides nothing): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M3 l0 rc=1
+[dbg] []
+[dbg] [True, True]
+Ran 4 tests in 298.8 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M3 l2 rc=1
+      -  package  current  wanted  latest              nightly range
+      -  json     2.1.0    2.1.5   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+      +  package  current  wanted  latest  nightly range
+      +  json     2.1.0    2.1.5   2.2.0   nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+       exit 0
+commands: 0 passed, 2 failed
+=== M3 (latest stays in the series of current): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M4 l0 rc=1
+}
+
+Ran 4 tests in 267.3 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M4 l2 rc=1
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=24
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
+       args
+       env_all
+       clock
+commands: 1 passed, 1 failed
+=== M4 (behind ignores latest): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M5 l2 rc=1
+      +write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+       args
+       env_all
+       clock
+commands: 1 passed, 1 failed
+=== M5 (the compiler list is read also when no row is behind): l2: FAIL(rc=1)
+--- M6 l2 rc=1
+to definitions written before it, but not to definitions written later in the
+same block. Move named above this use, or move both to the top level.
+
+1 error and 0 warnings found in 3.2s while successfully building:
+
+    /home/george/dev/Karakatiza666/talon/.work/bin/l2
+=== M6 (Vars.build over the shown members only (Q8)): l2: FAIL(rc=1)
+--- M7 l0 rc=1
+}
+
+Ran 4 tests in 284.7 ms.:
+    2 passed
+    2 failed
+    0 compiler errors
+--- M7 l2 rc=1
+       $PROJECT/ws2/apps/b/main.roc
+         package  current  wanted  latest              nightly range
+      -  json     2.1.0    2.1.5   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+      +  json     2.1.0    2.1.5   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-10-0e0e0e0
+       exit 0
+commands: 0 passed, 2 failed
+=== M7 (an end that is no real fact has no ?): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M8 l2 rc=1
+If you don't need this variable, prefix it with an underscore like _named to
+suppress this warning.
+
+0 errors and 1 warning found in 3.1s while successfully building:
+
+    /home/george/dev/Karakatiza666/talon/.work/bin/l2
+=== M8 (the current member does not limit the members): l2: FAIL(rc=1)
+--- M9 l2 rc=1
+       +]
+      ---- home/.cache/roc/talon/projects.json
+      -+++ home/.cache/roc/talon/projects.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/apps/a/main.roc","last_use":1792065600},{"path":"$PROJECT/apps/b/main.roc","last_use":1792065600},{"path":"$PROJECT/ws2/apps/a/main.roc","last_use":1792065600},{"path":"$PROJECT/ws2/apps/b/main.roc","last_use":1792065600}]}
+commands: 0 passed, 2 failed
+=== M9 (the project is not recorded): l2: FAIL(rc=1)
+--- M10 l2 rc=1
+      +list_dirs $HOME/.cache/roc/talon/index/github/acme/lex
+      +read_files $HOME/.cache/roc/talon/index/github/acme/lex/1.meta $HOME/.cache/roc/talon/index/github/acme/lex/1.json
+       list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
+       read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.meta $HOME/.cache/roc/talon/index/github/acme/parser/1.json
+       platform
+commands: 1 passed, 1 failed
+=== M10 (the index is read for the groups of members that are not shown): l2: FAIL(rc=1)
+--- M11 l2 rc=0
+commands: 2 passed, 0 failed
+=== M11 (a fixed host that 2 groups have is listed twice): l2: pass
+--- M12 l0 rc=1
+
+[dbg] [True, True]
+Ran 4 tests in 260.4 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M12 l2 rc=1
+      -  pf       0.1.0    0.1.1   0.2.0 (new series)  none known
+      +  pf       0.1.0    0.1.1   0.2.0 (new series)  -
+         fixed: example.org has no index without a registry
+       exit 0
+       == outdated --file p2/main.roc
+commands: 1 passed, 1 failed
+=== M12 (no real pass gives - in place of none known): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M13 l0 rc=1
+
+[dbg] [True, True]
+Ran 4 tests in 314.7 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M13 l2 rc=1
+      -  json     2.1.0    2.2.0   3.0.2 (new series)  -
+      +  json     2.1.0    2.2.0   3.0.2 (new series)  none known
+       exit 0
+       == outdated json --file p1/main.roc
+       exit 2
+commands: 1 passed, 1 failed
+=== M13 (an empty compiler list gives none known in place of -): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M14 l0 rc=1
+}
+
+Ran 4 tests in 307.0 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+--- M14 l2 rc=1
+      -  package  current  wanted  latest              nightly range
+      -  json     2.1.0    2.1.5   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+      +  package current wanted latest             nightly range
+      +  json    2.1.0   2.1.5  3.0.0 (new series) nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+       exit 0
+commands: 0 passed, 2 failed
+=== M14 (the padding is 1 space): l0: FAIL(rc=1), l2: FAIL(rc=1)
+--- M6 l2 rc=1
+       $PROJECT/ws2/apps/b/main.roc
+         package  current  wanted  latest              nightly range
+      -  json     2.1.0    2.1.5   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+      +  json     2.1.0    2.2.0   3.0.0 (new series)  nightly-2026-10-09-9d9d9d9? .. nightly-2026-10-10-0e0e0e0?
+       exit 0
+commands: 1 passed, 1 failed
+=== M6 (Vars.build over the shown members only (Q8)): l2: FAIL(rc=1)
+--- M8 l2 rc=1
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+      +db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
+       args
+       env_all
+       clock
+commands: 1 passed, 1 failed
+=== M8 (the current member does not limit the members): l2: FAIL(rc=1)
+--- M15 l2 rc=0
+commands: 2 passed, 0 failed
+=== M15 (alias and current are of the first use of any member): l2: pass

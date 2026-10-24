@@ -1,0 +1,48 @@
+== selftest: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/selftest.log)
+SELFTEST FAIL: unit guard: the l0 step passes a clean unit file (exit 1), fails on an unused variable (exit 1) and on a type error (exit 1)
+==> /tmp/talon-selftest/ug-clean.out <==
+== l0: FAIL (log: /tmp/talon-selftest/unit-guard/work-clean/logs/l0.log)
+tests/unit/g.roc: FAILED
+── ✗ invalid package dependency ────────────────────────────────────────────────
+
+Could not load the package at
+/tmp/talon-selftest/unit-guard/packages/resolve/main.roc: FileNotFound.
+
+
+step       result seconds  budget
+l0         FAIL   0.1      10
+
+==> /tmp/talon-selftest/ug-warn.out <==
+== l0: FAIL (log: /tmp/talon-selftest/unit-guard/work-warn/logs/l0.log)
+tests/unit/g.roc: FAILED
+── ✗ invalid package dependency ────────────────────────────────────────────────
+
+Could not load the package at
+/tmp/talon-selftest/unit-guard/packages/resolve/main.roc: FileNotFound.
+
+
+step       result seconds  budget
+l0         FAIL   0.0      10
+
+==> /tmp/talon-selftest/ug-type.out <==
+== l0: FAIL (log: /tmp/talon-selftest/unit-guard/work-type/logs/l0.log)
+tests/unit/g.roc: FAILED
+── ✗ invalid package dependency ────────────────────────────────────────────────
+
+Could not load the package at
+/tmp/talon-selftest/unit-guard/packages/resolve/main.roc: FileNotFound.
+
+
+step       result seconds  budget
+l0         FAIL   0.0      10
+selftest: 57 passed, 1 failed
+
+step       result seconds  budget
+check      pass   1.6      10
+fmt        pass   0.2      5
+l0         pass   7.9      10
+l2         pass   1.8      30
+l3         pass   9.8      60
+selftest   FAIL   8.5      20
+l1         pass   29.5     60
+exit 1

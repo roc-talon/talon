@@ -1,0 +1,44 @@
+# R-PX2 rank 3: the pin of the header names an installed compiler
+@roc check p3/main.roc
+# rank 1: roc +<id>, no target file (R-SO8), the other arguments go on
+@roc +nightly-2026-10-14-38a3029 version
+# rank 2 beats the pin
+@roc check p3/main.roc env:ROC_TOOLCHAIN=nightly-2026-10-14-38a3029
+# rank 4: no pin, the newest installed in the range by published_at (A2 is later than A3 although its sha sorts after)
+@roc build p4/main.roc --opt=speed
+# rank 5: .roc-version, no talon.toml
+@roc check p5/main.roc
+# R-TF5 (review of slice 023, Q6): a header that does not parse drops only the roc: pin. The talon.toml of the directory stays (rank 4: the range gives the newest installed), and the project is recorded (R-PD10)
+@roc check p12/main.roc
+# the same, no talon.toml: the .roc-version of the directory stays (rank 5)
+@roc check p14/main.roc
+# R-SO8: no target file, so no header: rank 6
+@roc version
+# rank 7: the roc on PATH, runs by its path, no .last-use
+@roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg
+# R-EV17: TALON_IN_PROXY=1, no rank 7: no compiler, and no path_roc call
+@roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:TALON_IN_PROXY=1
+# R-DL8, R-SO12: the pin is not installed, non-interactive (no TTY): exit 13, nothing runs
+@roc check p9/main.roc
+# R-DL10
+@roc check p9/main.roc env:TALON_AUTO_INSTALL=no
+# rank 1, not installed
+@roc +nightly-2026-10-21-5349569 check
+# R-SO13: rank 4 has a range and no installed compiler (and not the one on PATH) is in it: exit 13, no fall through to the default
+@roc check p13/main.roc
+# R-E1: the exit code of the child
+@roc check p10/main.roc
+# R-E1: the child cannot start
+@roc check p11/main.roc
+# R-PX7: TALON_PROXY=0
+@roc check p3/main.roc env:TALON_PROXY=0
+# R-CV1: the pin in the other tag form
+@roc check p16/main.roc
+# R-PD3 R-PD5 R-PD6: a member of a workspace. The range is the one of the root talon.toml (R-SO4), rank 4 beats the global default (rank 6)
+@roc check pw/apps/a/main.roc
+# R-PD10: 6 hours later the entry of p3 is not older than 1 day, so projects.json is not written. .last-use is (R-CC9). The runs go forward in time.
+@roc check p3/main.roc env:TALON_NOW=2026-10-22T18:00:00Z
+# R-PD10: 2 days after the first run the entry is older than 1 day: projects.json is written again
+@roc check p3/main.roc env:TALON_NOW=2026-10-24T12:00:00Z
+# R-PX7, R-PD7: TALON_PROXY=0 with rank 1: nothing needs the project, so it is not searched (no canonical call, no record, no .last-use)
+@roc +nightly-2026-10-14-38a3029 check p3/main.roc env:TALON_PROXY=0

@@ -1,0 +1,51 @@
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 verify --file apps/a/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/apps/b/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/apps/b/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== env:TALON_AUTO_INSTALL=no env:ROC_TOOLCHAIN=nightly-2026-10-21-5349569 verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 13
+== env:ROC_TOOLCHAIN=nightly-2026-10-21-5349569 verify --no-check
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/apps/b/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0

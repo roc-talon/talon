@@ -1,0 +1,2 @@
+header ETag: "nl1"
+header Link: <http://127.0.0.1:$PORT/api/repos/roc-lang/nightlies/releases?per_page=100&page=2>; rel="next", <http://127.0.0.1:$PORT/api/repos/roc-lang/nightlies/releases?per_page=100&page=2>; rel="last"

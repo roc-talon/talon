@@ -1,5 +1,7 @@
 import Args
+import Common
 import Compiler
+import Consent
 import Fail
 import Fx
 import Install
@@ -24,7 +26,7 @@ import Resolve
 ## | 9 | The output (below) | R-J1 to R-J6, R-FL4 |
 ##
 ## The output (a proposal, TW24): `Resolve.verify!` prints the ladder lines and the plan (the header path, then `  ~ <alias>: <name> <old> -> <new>` for each entry of the tuple that differs from the header). Then the
-## command prints `verified: the tuple passes. Nothing was written.` (the last line, not with `--quiet`). It prints no R-DT5 line. With `--json` the envelope is `Out.json_ok({ command: args.typed, data: Report.data(outcome) })`
+## command prints `verified: the tuple passes. No project file was written.` (the last line, not with `--quiet`). It prints no R-DT5 line. With `--json` the envelope is `Out.json_ok({ command: args.typed, data: Report.data(outcome) })`
 ## (the `data` of `install`: `written` is `[]`, `dry_run` is false, `added`, `kept`, `toml`, `renamed` and `pinned` are empty). A failure is printed with `Out.fail` and the code is `Exit.choose`.
 Verify :: [].{
 
@@ -57,18 +59,18 @@ Verify :: [].{
 
 	run! : Fx, Args => I32
 	run! = |fx, args| match Verify.read(args) {
-		Err(fail) => Install.failed!(fx, args, fail)
+		Err(fail) => Common.failed!(fx, args, fail)
 		Ok(opts) => {
-			shown = Install.shown_fx(fx, args)
+			shown = Common.shown_fx(fx, args)
 			match flow!(shown, args, opts) {
 				Ok(outcome) => {
-					shown.out!("verified: the tuple passes. Nothing was written.\n")
+					shown.out!("verified: the tuple passes. No project file was written.\n")
 					if args.json {
 						fx.out!(Out.json_ok({ command: args.typed, data: Report.data(outcome) }))
 					}
 					0
 				}
-				Err(fail) => Install.failed!(fx, args, fail)
+				Err(fail) => Common.failed!(fx, args, fail)
 			}
 		}
 	}
@@ -81,7 +83,7 @@ flow! = |fx, args, opts| {
 	Install.check_member(Bool.False, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 	toolchain = Compiler.toolchain_of(start.env)?
-	compiler = Install.compiler!(fx, Bool.False)
+	compiler = Install.compiler!(fx, start.roots, Bool.False)
 	Resolve.verify!(
 		fx,
 		{
@@ -95,13 +97,15 @@ flow! = |fx, args, opts| {
 			now: start.now,
 			offline: args.offline,
 			strategy: opts.strategy,
-			nightly: Install.nightly_of(start.env),
+			nightly: Common.nightly_of(start.env),
 			compiler,
 			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: Bool.False,
 			add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },
 			prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: Err(NoFlag) },
+			downloads: { auto: Consent.auto_install(start.env), allow: opts.allow_downloads, probe: opts.probe_downloads, env: start.env },
+			probe: { no_probe: opts.no_probe, slots: opts.slots },
 		},
 	)
 }

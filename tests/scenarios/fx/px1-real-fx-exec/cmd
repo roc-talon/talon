@@ -1,0 +1,29 @@
+# R-HF6 R-HF9 R-E1 R-ST8 TW4 (slice 023): exec! and program_name! of the real Fx, with `fxprobe` (no Talon logic in it).
+# exec!: a child with the stdin, the stdout and the stderr of the process, the exit code (128 + the signal number for a signal), the variables of `env` added to the environment.
+# program_name!: the name that the process was started with, as typed.
+FX=$(command -v fxprobe)
+mkdir -p s lnk bin
+printf '#!/bin/sh\necho "child out, %s arguments"\nfor a in "$@"; do echo "arg: $a"; done\necho "child err" >&2\n' '$#' > s/args.sh
+printf '#!/bin/sh\necho "vars: A=$PX_A B=$PX_B"\n' > s/env.sh
+chmod +x s/args.sh s/env.sh
+
+echo "== the exit code 0, the arguments as they are (an argument with a space is one argument), the output of the child goes to the terminal of the process"
+$FX exec -- $PWD/s/args.sh one "two words" --file x
+echo "== the exit code of the child passes through"
+$FX exec -- sh -c 'exit 7'
+echo "== a signal gives 128 + the number (kill -9 is 137)"
+$FX exec -- sh -c 'kill -9 $$'
+echo "== the variables of env are added, and replace a variable of the process"
+$FX exec PX_A=1 PX_B=two -- $PWD/s/env.sh
+env PX_A=old $FX exec PX_A=new -- $PWD/s/env.sh
+echo "== the current directory is the one of the process"
+$FX exec -- pwd
+echo "== a child that cannot start (no such file) is an error, not an exit code"
+$FX exec -- $PWD/s/missing | sed -e 's/^exec err .*/exec err (text of the platform)/'
+echo "== program_name!: the name as typed. A link named roc, with its path and by name from PATH."
+ln -s $FX lnk/roc
+cp $FX bin/roc.exe
+./lnk/roc program-name
+env PATH=$PWD/lnk:/usr/bin:/bin roc program-name
+$PWD/bin/roc.exe program-name
+rm -rf s lnk bin

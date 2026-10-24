@@ -1,0 +1,31 @@
+env_all
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+list_dirs $PROJECT/apps
+list_dirs $PROJECT/apps/a $PROJECT/apps/b
+read_files $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/a/talon.toml $PROJECT/apps/talon.toml $PROJECT/talon.toml $PROJECT/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+random
+copy_tree $PROJECT/apps/a $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/apps/a nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/apps/a/main.roc
+write_atomic $PROJECT/apps/a/main.roc

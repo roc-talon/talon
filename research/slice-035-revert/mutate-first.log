@@ -1,0 +1,51 @@
+c01 the decision takes the last place of the variable | L0 conflicts:caught [dbg] ["no check: the best tuple", "a fail in a used module excludes its pair", "2 adjacent fails", ; solver:caught [dbg] ["highest: the best of each slot", "lowest", "x first: x gets its best, the platform follows ( (1 s)
+c02 the decision takes the last variable that is open | L0 conflicts:caught [dbg] ["a fail in a used module excludes its pair", "2 adjacent fails", "a pass between 2 fails stay; solver:caught [dbg] ["x first: x gets its best, the platform follows (R-C3)", "the platform first: it gets its bes (1 s)
+c03 resolution forgets the part of the cause (the union is the term alone) DOES NOT COMPILE 
+c04 the level to go back to is the lowest level of the other satisfiers | L0 conflicts:pass; solver:timeout (60 s)
+c05 a term that is true in each state is not dropped (normal) DOES NOT COMPILE 
+c06 2 terms of one variable are joined by union | L0 conflicts:pass; solver:caught [dbg] ["2 terms of one slot with no common value: never true"] (1 s)
+c07 a conflict (all terms true) is ignored by propagation | L0 conflicts:caught [dbg] ["no compiler for any release of x"]; solver:caught [dbg] ["R-C3: the facts of the releases that lose count too: both x need pf-1.0.0, so the platform g (1 s)
+c08 a satisfier at the latest level is learned at once (no resolution) | L0 conflicts:timeout; solver:timeout (120 s)
+c09 the resolution step keeps the first term of the cause instead of its terms (rest of the cause lost) | L0 conflicts:caught [dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of par; solver:pass (1 s)
+c10 the new trail keeps all levels after a learn | L0 conflicts:timeout; solver:timeout (120 s)
+c11 the learned incompatibility is not kept (the list before the resolution) | L0 conflicts:timeout; solver:timeout (120 s)
+w01 the explanation has the final step only | L0 conflicts:caught [dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of par; solver:pass (1 s)
+w02 Derived names the step 0 twice DOES NOT COMPILE 
+w03 the terms are NotIn | L0 conflicts:pass; solver:pass | L1 caught: [roc crashed] R-AL3: a step of the explanation does not follow from its leaves (37 s)
+w04 the steps are in the reverse order | L0 conflicts:caught [dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of par; solver:pass (1 s)
+w05 the explanation uses the first incompatibility as final | L0 conflicts:caught [dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of par; solver:pass (1 s)
+w06 the given conflicts are not sorted (R-DT2) | L0 conflicts:caught [dbg] ["4 conflicts of the caller: no pair", "a term with all values of its slot is left out"]; solver:pass (1 s)
+w07 the given conflicts are sorted before they are normalized (R-DT2) | L0 conflicts:caught [dbg] ["4 conflicts of the caller: no pair", "a term with all values of its slot is left out"]; solver:pass (1 s)
+w08 the cause of a dep names no release DOES NOT COMPILE 
+w09 the cause of a platform names another url | L0 conflicts:caught [dbg] ["R-C3: each release of a names pf-2.0.0, and the caller forbids it"]; solver:pass (1 s)
+w10 a slot with no value names no slot DOES NOT COMPILE 
+p01 a fail with no module is not hard | L0 conflicts:caught [dbg] ["R-UM1: a fail with no module is a hard fail", "no used module for the release: a fail with n; solver:pass (1 s)
+p02 each fail touches | L0 conflicts:caught [dbg] ["R-UM1: a fail with no used module is ignored", "no used module for the release: a fail with ; solver:pass (1 s)
+p03 the inferred fails count in RealOnly | L0 conflicts:caught [dbg] ["R-EP8: no tuple with all facts, but one with the real facts: no fail, a probe for the inferr; solver:pass (1 s)
+p04 a fault is not an interval | L0 conflicts:caught [dbg] ["a hang excludes its pair", "a crash excludes its pair"]; solver:pass (1 s)
+p05 the run starts one place too early | L0 conflicts:caught [dbg] ["a fail in a used module excludes its pair", "2 adjacent fails", "a pass between 2 fails stay; solver:pass (1 s)
+p06 the run ends one place too late | L0 conflicts:caught [dbg] ["a pass between 2 fails stays a value", "lowest: the oldest compiler that has no fail"]; solver:pass (1 s)
+p07 the run does not stop at a pass | L0 conflicts:caught [dbg] ["a fail in a used module excludes its pair", "2 adjacent fails", "a pass between 2 fails stay; solver:pass (1 s)
+p08 the run is the seed alone DOES NOT COMPILE 
+p09 the modules are not cut to the used ones | L0 conflicts:pass; solver:pass | L1 MISSED (66 s)
+p10 the inferred compilers are not named | L0 conflicts:caught [dbg] ["R-EP9: no probe may run: the interval of parser-2.0.0 names its inferred compiler n6", "R-EP; solver:pass (1 s)
+p11 a fault names modules | L0 conflicts:caught [dbg] ["R-EP7: a fault is an interval of its own and cuts the runs, an inferred fail is part of a ru; solver:pass (1 s)
+p12 the first and last compiler of the interval are swapped | L0 conflicts:caught [dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of par; solver:pass (1 s)
+p13 no used modules (R-UM1) | L0 conflicts:caught [dbg] ["a fail in a used module excludes its pair", "2 adjacent fails", "a pass between 2 fails stay; solver:pass (1 s)
+p14 the probe facts of a platform slot are not read | L0 conflicts:caught [dbg] ["the platform slot has probe facts too (R-LD3)"]; solver:pass (1 s)
+r01 the compiler order follows the wrong strategy | L0 conflicts:caught [dbg] ["no check: the best tuple", "a fail in a used module excludes its pair", "2 adjacent fails", ; solver:pass (1 s)
+r02 a candidate that is not in D is a value DOES NOT COMPILE 
+r03 a header fact is asked for a compiler | L0 conflicts:caught [dbg] ["no check: the best tuple", "a fail in a used module excludes its pair", "2 adjacent fails", ; solver:pass (1 s)
+n01 Allowed: Done when A has all facts (B not read) | L0 conflicts:caught [dbg] ["R-EP8 second pass: an inferred fail blocked the better pair: a probe for it"]; solver:pass (1 s)
+n02 Allowed: no A gives Fail | L0 conflicts:caught [dbg] ["R-EP8: no tuple with all facts, but one with the real facts: no fail, a probe for the inferr; solver:pass (1 s)
+n03 Allowed: the Fail has the explanation of the search with inferred facts | L0 conflicts:pass; solver:pass | L1 caught: [roc crashed] R-EP8: with probes allowed, a reason names an inferred fact (41 s)
+n04 probes before headers | L0 conflicts:caught [dbg] ["no header fact: the header first, no probe"]; solver:caught [dbg] ["no fact: the best tuple", "only what is missing", "only what is missing, the first slot", "2 (1 s)
+n05 a pair with an inferred check has a real fact | L0 conflicts:caught [dbg] ["R-EP8: an inferred pass is no real fact: a probe", "R-EP8 second pass: an inferred fail bloc; solver:pass (1 s)
+n06 a probe is asked twice for one release | L0 conflicts:caught [dbg] ["2 slots with one release: one probe"]; solver:pass (1 s)
+n07 Off asks for probes | L0 conflicts:caught [dbg] ["no check: the best tuple", "a fail in a used module excludes its pair", "2 adjacent fails", ; solver:pass (1 s)
+n08 Off: Fail from the real facts only | L0 conflicts:caught [dbg] ["R-EP9: an inferred fail decides when no probe may run", "the inferred fails next to a real f; solver:pass (1 s)
+n09 the second pass asks for the pairs of A | L0 conflicts:caught [dbg] ["R-EP8: no tuple with all facts, but one with the real facts: no fail, a probe for the inferr; solver:pass (1 s)
+n10 the probe names the first compiler DOES NOT COMPILE 
+n11 the second pass is for A, not for B | L0 conflicts:caught [dbg] ["R-EP8 second pass: an inferred fail blocked the better pair: a probe for it"]; solver:pass (1 s)
+n12 an unknown pair is not fit in Off (the step asks for no fact, but fails) | L0 conflicts:caught [dbg] ["no check: the best tuple", "lowest: the oldest compiler", "a conflict of the caller can name; solver:pass (1 s)
+stub restored: True

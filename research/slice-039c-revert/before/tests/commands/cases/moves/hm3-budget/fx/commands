@@ -1,0 +1,1 @@
+add acme/json@2.2.0 --file ws/apps/b/main.roc

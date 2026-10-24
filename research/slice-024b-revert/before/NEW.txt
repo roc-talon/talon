@@ -1,0 +1,9 @@
+cli/lib/Link.roc
+cli/lib/RocLink.roc
+tests/unit/link.roc
+tests/commands/cases/link/lk1-link/
+tests/commands/cases/proxy/lk2-run-link/
+tests/scenarios/compilers/lk1-link-real/
+tests/scenarios/fx/lk1-real-fx-copy-file/
+research/slice-024b-revert/
+docs/slices/024b-roc-link.md

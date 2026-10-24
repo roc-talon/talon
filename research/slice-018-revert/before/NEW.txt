@@ -1,0 +1,2 @@
+docs/slices/018-test-speed.md
+research/slice-018-revert/

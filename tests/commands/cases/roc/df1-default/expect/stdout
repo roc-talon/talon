@@ -1,0 +1,36 @@
+== roc default nightly-2026-10-09-258ab27
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+== roc default nightly-2026-10-11-1a2b3c4
+nightly-2026-10-11-1a2b3c4 is now the default compiler
+exit 0
+== roc default nightly-2026-10-11
+nightly-2026-10-11-1a2b3c4 is already the default compiler
+exit 0
+== roc default git-dd03
+git-dd03c09e is now the default compiler
+exit 0
+== roc default nightly-2026-10-1
+exit 2
+== roc default
+exit 2
+== roc default link-dev copy-fix-1
+exit 2
+== roc default link-dev --json
+{"schema":1,"command":"roc default","ok":true,"data":{"id":"link-dev","previous":"git-dd03c09e","changed":true,"installed":false},"error":null}
+exit 0
+== roc default nightly-2026-10-17-601b54c
+installed nightly-2026-10-17-601b54c
+nightly-2026-10-17-601b54c is now the default compiler
+exit 0
+== roc default nightly-2026-10-12-2664a27
+exit 13
+== roc default nightly-2026-10-13-91fa0c2 --offline
+exit 15
+== roc default nightly-2026-10-13-91fa0c2 env:HOME={w}/home2
+installed nightly-2026-10-13-91fa0c2
+nightly-2026-10-13-91fa0c2 is now the default compiler
+exit 0
+== roc default nightly-2026-10-13-91fa0c2 --json env:HOME={w}/home3
+{"schema":1,"command":"roc default","ok":true,"data":{"id":"nightly-2026-10-13-91fa0c2","previous":null,"changed":true,"installed":true},"error":null}
+exit 0

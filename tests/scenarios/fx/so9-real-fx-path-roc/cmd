@@ -1,0 +1,30 @@
+# R-SO9 TW4: the job of path_roc! of the real Fx (slice 022b), with `fxprobe` (no Talon logic in it): the `roc` files on PATH, in the order of PATH, and the running program.
+# The case makes 6 directories. PATH has only them, so the result does not depend on the machine.
+FX=$(command -v fxprobe)
+mt() { if stat -c %Y "$1" > /dev/null 2>&1; then stat -c %Y "$1"; else stat -f %m "$1"; fi; }
+sz() { wc -c < "$1" | tr -d ' '; }
+mkdir d2 d3 d4 d4/roc d5 d6
+printf '#!/bin/sh\n' > d2/roc
+chmod +x d2/roc
+printf '#!/bin/sh\n' > d3/roc
+chmod -x d3/roc
+ln -s ../d2/roc d5/roc
+printf '#!/bin/sh\necho six\n' > d6/roc
+chmod +x d6/roc
+# 2023-11-14 22:13:20 UTC and 22:21:40 UTC (TZ is UTC)
+touch -t 202311142213.20 d2/roc d3/roc
+touch -t 202311142221.40 d6/roc
+P=$PWD/d1:$PWD/d2:$PWD/d3:$PWD/d4:$PWD/d5:$PWD/d6
+
+echo "== the running program: the path with the links resolved, the size and the mtime, as the system tools give them"
+out=$(env PATH=$P "$FX" path-roc | head -1)
+test "$out" = "exe $(cd "$(dirname "$FX")" && pwd -P)/fxprobe $(sz "$FX") $(mt "$FX")" && echo "exe matches"
+
+echo "== files named roc in the directories of PATH, in the order of PATH"
+echo "d1 does not exist, d3/roc cannot run, d4/roc is a directory, d5/roc is a link to d2/roc (the size and the mtime are the ones of the target)"
+env PATH=$P "$FX" path-roc | tail -n +2
+
+echo "== PATH with no directory that has a roc"
+env PATH=$PWD/d1:$PWD/d3:$PWD/d4 "$FX" path-roc | tail -n +2
+echo "(end)"
+rm -rf d2 d3 d4 d5 d6

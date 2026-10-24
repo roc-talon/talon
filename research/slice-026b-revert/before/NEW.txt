@@ -1,0 +1,7 @@
+cli/lib/RocUse.roc
+tests/commands/cases/roc/us1-use/
+tests/commands/cases/roc/us2-workspace/
+tests/commands/cases/roc/us3-step/
+tests/scenarios/compilers/us1-use/
+docs/slices/026b-roc-use.md
+research/slice-026b-revert/

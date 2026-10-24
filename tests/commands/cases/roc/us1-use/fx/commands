@@ -1,0 +1,56 @@
+# R-CS1 R-U3 R-H1 R-RP1 R-PH8 R-CC7 R-PD9: HOME is home, which has O, N and M installed. p1 has the pin O and comments in the header. No download, no list. The baseline check runs on O in the project dir, the candidate check and the build run on N in the temp copy (the log of the probes names the compiler of each). The pin is written with a span edit: the comments stay. The project is recorded.
+roc use nightly-2026-10-14-38a3029 --file p1/main.roc
+# R-J3 R-OUT4 R-CS1: --json. Human text goes to stderr, stdout is only the envelope: id, files with the previous pin, the probes, the downloads, check, build, notes.
+roc use nightly-2026-10-14-38a3029 --file p3/main.roc --json
+# R-CS1 R-RP3 R-BL1 R-SO6: p4 has no roc pin. The baseline is the compiler that Resolution 13 selects: the global default O (rank 6). The header gets the entry `roc: "nightly-2026-10-14-38a3029"` as its last entry.
+roc use nightly-2026-10-14-38a3029 --file p4/main.roc
+# R-U6: ROC_TOOLCHAIN is set (rank 2, above the pin). The command still pins N after the check and prints the note that ROC_TOOLCHAIN has a higher priority. The baseline is the pin of p5, as for the other runs.
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 roc use nightly-2026-10-14-38a3029 --file p5/main.roc
+# R-U2 R-NI6 R-DL3 R-DL4 R-CC4: HOME is home2, which has O only. The new compiler N is the one download, and the command names it, so the prompt is the one of roc install (a person: the default is yes, the answer is Enter). The list, the prompt, the install, then the probes.
+env:HOME={w}/home2 roc use nightly-2026-10-14-38a3029 --file p6/main.roc
+# R-U2 R-U3 R-DL1 R-DL5 R-NI5 (question Q4): HOME is home4, which has no compiler. N (new) and O (baseline) are both missing. No person (CI) and --allow-downloads: no prompt, one answer line that names the count and the total size, 2 installs, the probes.
+env:CI=true env:HOME={w}/home4 roc use nightly-2026-10-14-38a3029 --file p7/main.roc --allow-downloads
+# R-U3 R-NI5 R-DL1 R-DL3 (question Q4): HOME is home5, which has N only. The baseline O is the one download. The command does not name it, so the prompt is the one of `roc use` (the default is Yes) and the answer is Enter (the default is Yes, review of slice 026b).
+env:HOME={w}/home5 roc use nightly-2026-10-14-38a3029 --file p8/main.roc
+# R-U3 R-NI5 R-DL1 R-DL4 R-EC13 (question Q4): HOME is home3, which has no compiler, no person, no flag. The 2 downloads are in one stop with the count and the size: exit 13. Nothing is downloaded, nothing is written.
+env:CI=true env:HOME={w}/home3 roc use nightly-2026-10-14-38a3029 --file p9/main.roc
+# R-U1 R-R4 R-LK3: a link build is no pin. Exit 2 with no Fx call (the text says to use ROC_TOOLCHAIN or tln roc default).
+roc use link-dev
+# R-U1 R-LK3: a prefix of an installed link build (HOME is home6): the operand names an installed id, and that id is a link build. Exit 2, nothing is written.
+env:HOME={w}/home6 roc use link --file p16/main.roc
+# R-U4 R-EC2: --no-check is an error for roc use (R-H6 allows no pin move without the check). Exit 2 with no Fx call.
+roc use nightly-2026-10-14-38a3029 --no-check
+# R-U5 R-NS7: talon.toml has [toolchain] roc = ">=nightly-2026-10-12-2664a27" and the operand is O, which is older. The command names the range, writes nothing, and does not edit talon.toml. No probe. Exit 10 (review of slice 026b: as R-NS2).
+roc use nightly-2026-10-09-258ab27 --file p12/main.roc
+# R-U5 R-NS5 R-NS2: the nightly switch is off (TALON_NIGHTLY=0) and the operand is a nightly. The command names the switch and its source. No probe, no write. Exit 10.
+env:TALON_NIGHTLY=0 roc use nightly-2026-10-14-38a3029 --file p13/main.roc
+# R-U3 R-H6 R-EC11 R-BL5: the baseline passes and the candidate has a new error in an app file: exit 11, the header is not written, no build. The temp copy is deleted (R-CC2).
+roc use nightly-2026-10-14-38a3029 --file p14/main.roc
+# R-U3 R-H6 R-BL5 R-P6: the app has errors already (baseline). The candidate has the same errors and nothing new: it passes, the errors are notes, and the pin is written. The build has the same errors too.
+roc use nightly-2026-10-14-38a3029 --file p15/main.roc
+# R-U3 R-NI5 R-DL5 R-EC13 (question Q4): HOME is home9, which has N only. The baseline O is missing and TALON_AUTO_INSTALL=no: the command refuses with the text of the refusal (exit 13), and it does not ask. Nothing is written.
+env:TALON_AUTO_INSTALL=no env:HOME={w}/home9 roc use nightly-2026-10-14-38a3029 --file p17/main.roc
+# R-J3 R-OUT4 R-U3 R-DL5 R-NI5: a package member (p18, the pin O) with --json. HOME is home7, which has N only. The baseline O is the one download (CI and --allow-downloads: no prompt). data.downloads is 1, data.build is null (no member is an app), 2 probes.
+env:CI=true env:HOME={w}/home7 roc use nightly-2026-10-14-38a3029 --file p18/main.roc --allow-downloads --json
+# R-SO2 R-BL1 R-DL1 R-NI6 R-U6: ROC_TOOLCHAIN is N, the new compiler, and N is missing (HOME is home10, which has O only). p19 has no pin, so its baseline is N too. N is one download (the prompt of roc install, Enter): the list has one entry, not 2.
+env:HOME={w}/home10 env:ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 roc use nightly-2026-10-14-38a3029 --file p19/main.roc
+# R-U3 R-NI5 R-DL3 (question Q4): HOME is home8, which has N only. The baseline O is missing, the person answers n: exit 13, nothing is downloaded, nothing is written.
+env:HOME={w}/home8 roc use nightly-2026-10-14-38a3029 --file p20/main.roc
+# R-BL1 R-U3 (R-RC4): the baseline check crashes (SIGSEGV) on its own compiler O. The command stops and names O, not N (the compiler of the baseline is not the new one). Nothing is written.
+roc use nightly-2026-10-14-38a3029 --file p21/main.roc
+# R-U3 R-NI5 R-DL1 R-DL3 (question Q4): HOME is home11, which has no compiler. N (new) and O (baseline) are both missing and a person is asked: one prompt for both, the default is Yes (the command names its download, review of slice 026b), the answer is Enter.
+env:HOME={w}/home11 roc use nightly-2026-10-14-38a3029 --file p22/main.roc
+# R-H1 (question Q7, a proposal): the only member has the new pin already, in the other tag form. No download, no probe, no write. The one line says so. Exit 0.
+roc use nightly-2026-10-14-38a3029 --file p23/main.roc
+# R-U5 R-NS1 R-NS7 (review of slice 026b): talon.toml has [toolchain] roc = ">=nightly-2026-10-14-ffffff0". N and the bound are two nightlies of one day. By the tag text N is below the bound, by `published_at` (HOME is home12: the bound at 10:00, N at 15:00) N is in the range. The order of time wins: the pin is written.
+env:HOME={w}/home12 roc use nightly-2026-10-14-38a3029 --file p24/main.roc
+# R-U5 R-NS1 R-NS2 (review of slice 026b): the same range, but N is missing (HOME is home13). The time of N comes from the list (2026-10-14 15:00), the bound is installed (10:00). N is in the range, so the one download (the prompt of roc install, Enter) and the pin follow.
+env:HOME={w}/home13 roc use nightly-2026-10-14-38a3029 --file p25/main.roc
+# R-CV1 R-U6 R-J3 (gap rows of the test agent): ROC_TOOLCHAIN is the other tag form of N. p26 has no pin, so its baseline is that form: it is the new compiler, so it is not started again (no second Start). The pin is written, the note is in data.notes (the last text) with --json.
+env:ROC_TOOLCHAIN=nightly-2026-October-14-38a3029 roc use nightly-2026-10-14-38a3029 --file p26/main.roc --json
+# R-U6 (gap row): ROC_TOOLCHAIN is set, but p23 has the pin already: nothing is written, so there is no note. One line, exit 0.
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 roc use nightly-2026-10-14-38a3029 --file p23/main.roc
+# R-NS2 R-U3 (gap row): the pin of p28 is the release 0.1.0, which is not installed. No list has a release compiler, so the command stops before any offer (no list request): the failure of Compiler.require, no probe, no write.
+roc use nightly-2026-10-14-38a3029 --file p28/main.roc
+# R-CC7 R-H6 (gap row): the header of p29 changes between the first read and the write (a hook after the first probe round changes the text of the roc entry, which the command edits). The write sees it: exit 17, nothing is written. A change outside the span of the edit is no stop (R-H1).
+roc use nightly-2026-10-14-38a3029 --file p29/main.roc

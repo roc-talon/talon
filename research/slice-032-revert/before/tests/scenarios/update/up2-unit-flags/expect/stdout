@@ -1,0 +1,31 @@
+== tln update json --dry-run --no-probe
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 3 probes
+dry run: nothing was written
+exit 0
+== tln update json --dry-run --slots 0
+exit 2
+== tln update json --dry-run --slots many
+exit 2
+== tln update json --dry-run --slots 2
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 6 probes
+dry run: nothing was written
+exit 0
+== tln update json --dry-run
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 3 probes
+dry run: nothing was written
+exit 0
+== tln update json --dry-run --json
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":3,"downloads":0,"dry_run":true,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+exit 0

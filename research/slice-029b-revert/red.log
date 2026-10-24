@@ -1,0 +1,135 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    4 failed
+    0 compiler errors
+tests/unit/clean.roc: All (6) tests passed in 2220.8 ms.
+tests/unit/clock.roc: All (2) tests passed in 281.4 ms.
+tests/unit/closuregaps.roc: All (2) tests passed in 1174.2 ms.
+tests/unit/closure.roc: All (7) tests passed in 1222.0 ms.
+tests/unit/common.roc: All (1) tests passed in 281.1 ms.
+tests/unit/compiler.roc: All (7) tests passed in 2323.0 ms.
+tests/unit/consent.roc: All (12) tests passed in 1972.2 ms.
+tests/unit/download.roc: All (4) tests passed in 235.6 ms.
+tests/unit/fetch.roc: All (2) tests passed in 318.0 ms.
+tests/unit/frozen.roc: All (1) tests passed in 2475.3 ms.
+tests/unit/gc.roc: All (9) tests passed in 2802.7 ms.
+tests/unit/github.roc: All (5) tests passed in 322.0 ms.
+tests/unit/guard.roc: All (1) tests passed in 289.2 ms.
+tests/unit/ident.roc: All (2) tests passed in 181.9 ms.
+tests/unit/index.roc: All (6) tests passed in 734.3 ms.
+tests/unit/intent.roc: All (7) tests passed in 2506.2 ms.
+tests/unit/kind.roc: All (3) tests passed in 147.4 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2691.6 ms.
+tests/unit/launch.roc: All (1) tests passed in 476.7 ms.
+tests/unit/link.roc: All (6) tests passed in 372.0 ms.
+tests/unit/listing.roc: All (4) tests passed in 532.8 ms.
+tests/unit/locked.roc: All (3) tests passed in 2199.2 ms.
+tests/unit/lock.roc: All (2) tests passed in 121.5 ms.
+tests/unit/lookup.roc: All (7) tests passed in 783.5 ms.
+tests/unit/manage.roc: All (18) tests passed in 3008.0 ms.
+tests/unit/members.roc: All (2) tests passed in 118.5 ms.
+tests/unit/mode.roc: All (3) tests passed in 150.7 ms.
+tests/unit/net.roc: All (2) tests passed in 205.7 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1270.7 ms.
+tests/unit/opts.roc: All (3) tests passed in 435.0 ms.
+tests/unit/out.roc: All (4) tests passed in 214.6 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 944.6 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1790.8 ms.
+tests/unit/picker.roc: All (2) tests passed in 188.9 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1625.3 ms.
+tests/unit/pick.roc: All (3) tests passed in 1609.8 ms.
+tests/unit/pin.roc: All (9) tests passed in 907.8 ms.
+tests/unit/probe.roc: All (3) tests passed in 384.7 ms.
+tests/unit/project.roc: All (7) tests passed in 1884.9 ms.
+tests/unit/projects.roc: All (3) tests passed in 417.0 ms.
+tests/unit/prompt.roc: All (5) tests passed in 298.6 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2463.2 ms.
+tests/unit/ranges.roc: All (1) tests passed in 278.1 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1668.5 ms.
+tests/unit/ref.roc: All (4) tests passed in 369.7 ms.
+tests/unit/removal.roc: All (3) tests passed in 1770.7 ms.
+tests/unit/report.roc: All (3) tests passed in 208.1 ms.
+tests/unit/roots.roc: All (3) tests passed in 222.1 ms.
+tests/unit/scan.roc: All (2) tests passed in 253.5 ms.
+tests/unit/selector.roc: All (2) tests passed in 299.3 ms.
+tests/unit/setup.roc: All (10) tests passed in 1580.2 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 280.4 ms.
+tests/unit/temp.roc: All (4) tests passed in 117.1 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1805.4 ms.
+tests/unit/update.roc: All (2) tests passed in 1952.5 ms.
+tests/unit/vars.roc: All (6) tests passed in 1721.1 ms.
+tests/unit/verify.roc: All (2) tests passed in 1385.1 ms.
+tests/unit/why.roc: All (6) tests passed in 1949.8 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL cache/cv1-view
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+commands: 68 passed, 1 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -$HOME/.cache/roc/debug-9999999 (16 B)
+      -$HOME/.cache/roc/nightly-2025-01-01-abc1234 (18 B)
+      -total 159 B
+      -exit 0
+      +exit 1
+       lock dirs left (list takes no lock): 0
+       == 5: list with --json (R-J3, R-OUT4): items with bytes, total. Only the envelope on stdout.
+       == tln cache list --json
+      -{"schema":1,"command":"cache list","ok":true,"data":{"items":[{"path":"$HOME/.cache/roc/talon/index","bytes":24},{"path":"$HOME/.cache/roc/talon/x","bytes":47},{"path":"$HOME/.cache/roc/packages","bytes":30},{"path":"$HOME/.cache/roc/compat-aaaaaaa","bytes":24},{"path":"$HOME/.cache/roc/debug-9999999","bytes":16},{"path":"$HOME/.cache/roc/nightly-2025-01-01-abc1234","bytes":18}],"total":159},"error":null}
+      -exit 0
+      +exit 1
+       == 6: ROC_CACHE_DIR is another dir (R-LY1): the build root is $HOME/.cache/roc-builds. Its 3 build caches are listed with the index, x and packages of the cache root. other-old stays out (the name). compat-aaaaaaa is in the cache root, not in the build root, so it is not listed. --quiet shows the list (R-FL4).
+       == env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache list --quiet
+      -$HOME/.cache/roc/talon/index (24 B)
+      -$HOME/.cache/roc/talon/x (47 B)
+      -$HOME/.cache/roc/packages (30 B)
+      -$HOME/.cache/roc-builds/compat-bbbbbbb (19 B)
+      -$HOME/.cache/roc-builds/debug-8888888 (34 B)
+      -$HOME/.cache/roc-builds/nightly-2025-02-02-def5678 (36 B)
+      -total 190 B
+      -exit 0
+      +exit 1
+       == 7: an operand is a usage failure (R-CM17): exit 2 for both commands
+       == tln cache dir packages
+      -exit 2
+      +exit 1
+       == tln cache list packages
+      -exit 2
+      +exit 1
+       == 8: --all is a flag of clean only (R-CM17): exit 2
+       == tln cache list --all
+       exit 2
+       == 9: after clean --all nothing is left to list: the line, then the empty data (R-OUT2, R-OUT4)
+       == tln cache list
+      -nothing to clean
+      -exit 0
+      +exit 1
+       == tln cache list --json
+      -{"schema":1,"command":"cache list","ok":true,"data":{"items":[],"total":0},"error":null}
+      -exit 0
+      +exit 1
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,3 +1,12 @@
+      -tln: error[usage]: tln cache dir takes no operand, got 1
+      -tln: error[usage]: tln cache list takes no operand, got 1
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+       tln: error[usage]: flag '--all' is not for 'cache list'
+      +[ROC CRASHED] todo
+      +[ROC CRASHED] todo
+scenarios: 53 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   0.9      10
+fmt        pass   0.1      5
+l0         FAIL   5.2      10
+l2         FAIL   1.3      30
+l3         FAIL   9.6      60
+selftest   pass   7.2      20

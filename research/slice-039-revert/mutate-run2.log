@@ -1,0 +1,5 @@
+N1: CAUGHT by l0:nightlyplan (U5 (c): a compiler that is not installed is askable)
+N6: CAUGHT by l0:nightlyplan (R-RP1: the pin is written when it does not change)
+N7: CAUGHT by l2:upgrade/ur1 (R-UP6: the range gate stops a free nightly)
+N8: CAUGHT by l2:upgrade/ur2 (R-DL1: the baseline has no prompt of its own, N is named alone)
+N9: CAUGHT by l2:upgrade/ug2 (the old probes of upgrade change when N is H)

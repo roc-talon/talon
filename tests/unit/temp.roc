@@ -83,3 +83,27 @@ expect {
 		"/c/roc/toolchains/n1.fedcba9876543210.trash",
 	]
 }
+
+# R-CC2 R-GC6 (slice 028): the registry of the locks of a process, `talon/tmp/<16hex>.locks` (a file, `RealLocks`), stays when the process crashed. `tln cache gc` deletes it when it is older than 1 day, as a temp.
+# It is a file named `<16hex>.locks` in a dir `tmp` of a dir `talon`. A dir with this name, a name that is not 16 hex digits, and the same name in another dir are not chosen.
+expect {
+	now = 2000000
+	day = 86400
+	e = |path, is_dir, mtime| { path, is_dir, mtime }
+	entries = [
+		e("/c/roc/talon/tmp/0123456789abcdef.locks", Bool.False, 0),
+		e("/c/roc/talon/tmp/1123456789abcdef.locks", Bool.False, now - day - 1),
+		e("/c/roc/talon/tmp/2123456789abcdef.locks", Bool.False, now - day),
+		e("/c/roc/talon/tmp/3123456789abcdef.locks", Bool.False, now + 500),
+		e("/c/roc/talon/tmp/4123456789abcdef.locks", Bool.True, 0),
+		e("/c/roc/talon/tmp/short.locks", Bool.False, 0),
+		e("/c/roc/talon/tmp/012345678901234g.locks", Bool.False, 0),
+		e("/c/roc/talon/tmp/5123456789abcdef.lock", Bool.False, 0),
+		e("/c/roc/talon/0123456789abcdef.locks", Bool.False, 0),
+		e("/c/roc/toolchains/0123456789abcdef.locks", Bool.False, 0),
+		e("/x/tmp/0123456789abcdef.locks", Bool.False, 0),
+	]
+	got = Temp.old({ entries, now })
+	dbg got
+	got == ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
+}

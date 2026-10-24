@@ -1,0 +1,38 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -1,2 +1,10 @@
+ format	1
++fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	crash		05a31fcbee31c451e9e62e866de5248d7593c2993e1c0291b46eeeaa2d826683
+ fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail		0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	hang		2d071fc7bb0ebcae596395e13d72344d13989c7e0408fa2a22573238d7276b71
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		460b94c37f685ff327e5a1526559b392c5d6333cd798d982b23d7ee4c9726682
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail	Std.roc	4c7d97e45d98174aba28a77569e2d97022d4c0a9955c21e97a0e83d9a4023f83
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
++fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+--- home/.cache/roc/talon/index/github/acme/json/1.json
++++ home/.cache/roc/talon/index/github/acme/json/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-08-16T12:00:00Z","assets":[{"name":"7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]},{"tag_name":"2.0.5","draft":false,"prerelease":false,"published_at":"2026-09-05T12:00:00Z","assets":[{"name":"8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/json/releases/download/2.0.5/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst"}]},{"tag_name":"2.1.0","draft":false,"prerelease":false,"published_at":"2026-09-25T12:00:00Z","assets":[{"name":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}]},{"tag_name":"2.2.0","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst"}]},{"tag_name":"3.0.0","draft":false,"prerelease":false,"published_at":"2026-09-15T12:00:00Z","assets":[{"name":"8AqXyjW9XeTVqeYhoeQFQpHtmPYeee2fg8fttuExN9Gb.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/json/releases/download/3.0.0/8AqXyjW9XeTVqeYhoeQFQpHtmPYeee2fg8fttuExN9Gb.tar.zst"}]}]
+\ No newline at end of file
+--- project/p5/main.roc
++++ project/p5/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst",
+ 	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }
+--- project/p6/main.roc
++++ project/p6/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst",
+ 	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }

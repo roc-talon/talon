@@ -1,3 +1,11 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,5 @@
++format	1
++fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
++fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
 --- home/.cache/roc/talon/index/github/acme/json/1.json
 +++ home/.cache/roc/talon/index/github/acme/json/1.json
 @@ -0,0 +1 @@
@@ -53,3 +61,13 @@
  	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
  }
  
+--- project/q9/main.roc
++++ project/q9/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst",
+ 	parser: "https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }

@@ -1,0 +1,6 @@
+cli/lib/Evidence.roc
+cli/lib/EvidenceFlow.roc
+tests/unit/evidence.roc
+tests/commands/cases/evidence/
+tests/scenarios/why/wy2-evidence/
+docs/slices/032b-evidence.md

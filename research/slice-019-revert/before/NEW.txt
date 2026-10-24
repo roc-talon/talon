@@ -1,0 +1,1 @@
+tests/commands/cases/workspace/ws2-verify-members/ (the whole dir)

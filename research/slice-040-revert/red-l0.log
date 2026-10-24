@@ -1,0 +1,207 @@
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 974.4 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 270.4 ms.
+packages/resolve/tests/moves.roc: All (5) tests passed in 1504.8 ms.
+packages/resolve/tests/solver.roc: All (5) tests passed in 918.4 ms.
+tests/unit/add.roc: All (9) tests passed in 411.7 ms.
+tests/unit/alias.roc: All (4) tests passed in 227.5 ms.
+tests/unit/args.roc: All (5) tests passed in 156.3 ms.
+tests/unit/buildskip.roc: All (5) tests passed in 397.6 ms.
+tests/unit/cacheview.roc: All (4) tests passed in 1445.6 ms.
+tests/unit/clean.roc: All (6) tests passed in 1687.6 ms.
+tests/unit/clock.roc: All (2) tests passed in 157.7 ms.
+tests/unit/closuregaps.roc: All (2) tests passed in 819.8 ms.
+tests/unit/closure.roc: All (7) tests passed in 1170.8 ms.
+tests/unit/common.roc: All (1) tests passed in 139.9 ms.
+tests/unit/compiler.roc: All (7) tests passed in 1916.8 ms.
+tests/unit/consent.roc: All (15) tests passed in 1787.2 ms.
+tests/unit/db.roc: All (7) tests passed in 222.8 ms.
+tests/unit/download.roc: All (4) tests passed in 137.6 ms.
+tests/unit/epochs.roc: All (4) tests passed in 407.0 ms.
+tests/unit/evidence.roc: All (7) tests passed in 3307.5 ms.
+tests/unit/explain.roc: All (2) tests passed in 135.1 ms.
+tests/unit/facts.roc: All (5) tests passed in 241.0 ms.
+tests/unit/fetch.roc: All (2) tests passed in 297.1 ms.
+tests/unit/frozen.roc: All (1) tests passed in 1557.0 ms.
+tests/unit/gc.roc: All (9) tests passed in 2077.9 ms.
+tests/unit/github.roc: All (5) tests passed in 384.4 ms.
+tests/unit/guard.roc: All (1) tests passed in 66.2 ms.
+tests/unit/ident.roc: All (2) tests passed in 152.7 ms.
+tests/unit/index.roc: All (6) tests passed in 484.2 ms.
+tests/unit/intent.roc: All (9) tests passed in 1916.7 ms.
+tests/unit/kind.roc: All (3) tests passed in 107.7 ms.
+tests/unit/ladder.roc: All (4) tests passed in 1822.8 ms.
+tests/unit/launch.roc: All (1) tests passed in 347.9 ms.
+tests/unit/link.roc: All (6) tests passed in 316.1 ms.
+tests/unit/listing.roc: All (4) tests passed in 423.9 ms.
+tests/unit/locked.roc: All (3) tests passed in 1024.2 ms.
+tests/unit/lock.roc: All (2) tests passed in 57.8 ms.
+tests/unit/lookup.roc: All (7) tests passed in 326.5 ms.
+tests/unit/manage.roc: All (18) tests passed in 1970.5 ms.
+tests/unit/members.roc: All (2) tests passed in 132.9 ms.
+tests/unit/mode.roc: All (3) tests passed in 95.0 ms.
+tests/unit/net.roc: All (2) tests passed in 143.1 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 745.8 ms.
+tests/unit/nightlyplan.roc: All (8) tests passed in 1360.3 ms.
+tests/unit/opts.roc: All (4) tests passed in 241.2 ms.
+tests/unit/oracledomain.roc: All (4) tests passed in 2942.8 ms.
+tests/unit/oraclefree.roc: All (4) tests passed in 2884.9 ms.
+tests/unit/oracleprobe.roc: All (8) tests passed in 2414.3 ms.
+tests/unit/oracle.roc: All (5) tests passed in 4452.9 ms.
+tests/unit/outdated.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/outdated.roc:45:1
+
+expect {
+    no_name = "tln: error[usage]: tln outdated takes no name"
+    registry = "tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct."
+    rows = [
+        (["outdated"], Ok("ok")),
+        (["outdated", "--json", "--quiet", "--yes", "--offline"], Ok("ok")),
+        (["outdated", "--file", "apps/a/main.roc", "--registry", "direct"], Ok("ok")),
+        (["outdated", "json"], Err(no_name)),
+        (["outdated", "json@^2"], Err(no_name)),
+        (["outdated", "--json", "json", "parser"], Err(no_name)),
+        (["outdated", "--registry", "https://r.example"], Err(registry)),
+        (["outdated", "--registry", "https://r.example", "json"], Err(registry)),
+        (["outdated", "--snapshot", "2026-10-01T00:00:00Z"], Err("tln: error[usage]: flag '--snapshot' is not for 'outdated'")),
+        (["outdated", "--strategy", "lowest"], Err("tln: error[usage]: flag '--strategy' is not for 'outdated'")),
+        (["outdated", "--dry-run"], Err("tln: error[usage]: flag '--dry-run' is not for 'outdated'")),
+    ]
+    bad = rows.keep_if(|(words, want)| read_view(words) != want).map(|(words, want)| (words, want, read_view(words)))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/outdated.roc:69:1
+
+expect {
+    d30 = |vs| vs.map(|v| (v, 30))
+    json = ["2.0.0", "2.1.0", "2.2.0", "3.0.2"]
+    other_form = cand("https://github.com/acme/json/releases/download/v2.3.0/jsonxv2x3x0.tar.zst", 30)
+    snap = |input| { ..input, snapshot: Ok(now - 10 * day) }
+    rows = [
+        ("a range inside the series: the newest in range, and the newest of all series", view(Outdated.versions(ask("2.1.0", ["^2.1"], d30(json)))), ("2.2.0", "3.0.2", Bool.True)),
+        ("no range (the implied range is the caller's job): the newest of the series", view(Outdated.versions(ask("2.1.0", [], d30(json)))), ("2.2.0", "3.0.2", Bool.True)),
+        ("an anchor: wanted stays, latest does not", view(Outdated.versions(ask("2.1.0", ["=2.1.0"], d30(json)))), ("2.1.0", "3.0.2", Bool.True)),
+        ("a tilde range stops below the next minor", view(Outdated.versions(ask("2.1.0", ["~2.1"], d30(["2.1.0", "2.1.5", "2.2.0", "3.0.2"])))), ("2.1.5", "3.0.2", Bool.True)),
+        ("two ranges are an intersection (R-C1)", view(Outdated.versions(ask("2.1.0", ["^2.1", "<2.2.0"], d30(json)))), ("2.1.0", "3.0.2", Bool.True)),
+        ("the newest of the series is the newest of all: no new series", view(Outdated.versions(ask("2.1.0", ["^2.1"], d30(["2.1.0", "2.2.0"])))), ("2.2.0", "2.2.0", Bool.False)),
+        ("a young release is hidden (R-C7): 2.2.0 is 1 day old", view(Outdated.versions(ask("2.1.0", ["^2.1"], [("2.1.0", 30), ("2.2.0", 1), ("3.0.2", 30)]))), ("2.1.0", "3.0.2", Bool.True)),
+        ("each newer release is young: nothing is newer", view(Outdated.versions(ask("2.1.0", ["^2.1"], [("2.1.0", 30), ("2.2.0", 1), ("3.0.2", 0)]))), ("2.1.0", "2.1.0", Bool.False)),
+        ("the header value is no candidate to hide (R-C9): it is 1 day old", view(Outdated.versions(ask("2.1.0", ["^2.1"], [("2.1.0", 1)]))), ("2.1.0", "2.1.0", Bool.False)),
+        ("a release exactly at min-release-age is visible", view(Outdated.versions(ask("2.1.0", ["^2.1"], [("2.1.0", 30), ("2.2.0", 2)]))), ("2.2.0", "2.2.0", Bool.False)),
+        ("the snapshot hides what is published after it (R-C7): 2.2.0 is 5 days old, the snapshot is 10 days ago", view(Outdated.versions(snap(ask("2.1.0", ["^2.1"], [("2.1.0", 30), ("2.2.0", 5), ("3.0.2", 20)])))), ("2.1.0", "3.0.2", Bool.True)),
+        ("a release in another URL form is no candidate (R-DI5)", view(Outdated.versions({ ..ask("2.1.0", ["^2.1"], d30(["2.1.0"])), list: [cand(u("json", "2.1.0"), 30), other_form] })), ("2.1.0", "2.1.0", Bool.False)),
+        ("the current group is the newest: wanted and latest are it (a lower series is no new series)", view(Outdated.versions(ask("3.0.2", [], d30(json)))), ("3.0.2", "3.0.2", Bool.False)),
+        ("a header value that the list does not have (R-C9) is the base: the list gives the newer release", view(Outdated.versions(ask("2.1.0", ["^2.1"], d30(["2.2.0"])))), ("2.2.0", "2.2.0", Bool.False)),
+        ("an empty list: the header value", view(Outdated.versions(ask("2.1.0", ["^2.1"], []))), ("2.1.0", "2.1.0", Bool.False)),
+        ("the order is the version number: 2.10.0 is above 2.9.0 although it is older", view(Outdated.versions(ask("2.0.0", [], [("2.0.0", 90), ("2.9.0", 5), ("2.10.0", 40)]))), ("2.10.0", "2.10.0", Bool.False)),
+        ("below 1.0 the series is 0.minor: 0.1.1 is wanted and 0.2.0 is a new series", view(Outdated.versions(ask("0.1.0", ["^0.1.0"], d30(["0.1.0", "0.1.1", "0.2.0"])))), ("0.1.1", "0.2.0", Bool.True)),
+        ("a header value that is no release URL has no versions", view(Outdated.versions({ ..ask("2.1.0", [], d30(json)), current: "./local/main.roc" })), ("", "", Bool.False)),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(name, got, want)| (name, got, want))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/outdated.roc:101:1
+
+expect {
+    d = ["n1", "n2", "n3", "n4", "n5", "n6"]
+    fact = |hash, id, outcome| { hash, nightly: id, target: "any", outcome, modules: [], closure: "" }
+    text = |domain, facts| Outdated.range_text(Outdated.range_of({ hash: "H", domain, facts }))
+    rows = [
+        ("no fact", text(d, []), "none known"),
+        ("a pass with fails on both sides: both ends are real", text(d, [fact("H", "n2", Fail), fact("H", "n3", Pass), fact("H", "n4", Pass), fact("H", "n5", Fail)]), "n3 .. n4"),
+        ("one pass, no fail: both ends are unknown", text(d, [fact("H", "n3", Pass)]), "n3? .. n3?"),
+        ("a pass on each release: the ends of D are real", text(d, [fact("H", "n1", Pass), fact("H", "n2", Pass), fact("H", "n3", Pass), fact("H", "n4", Pass), fact("H", "n5", Pass), fact("H", "n6", Pass)]), "n1 .. n6"),
+        ("a fail below and no fact above: one end is real", text(d, [fact("H", "n2", Fail), fact("H", "n3", Pass)]), "n3 .. n3?"),
+        ("only fails: no real pass", text(d, [fact("H", "n3", Fail), fact("H", "n4", Fail)]), "none known"),
+        ("the facts of another hash are not read", text(d, [fact("G", "n3", Pass), fact("G", "n4", Pass)]), "none known"),
+        ("a fact of a release that D does not have is not read", text(d, [fact("H", "n9", Pass)]), "none known"),
+        ("a check fact has the target any: a build fact is not read", text(d, [{ hash: "H", nightly: "n3", target: "x86_64-linux", outcome: Pass, modules: [], closure: "c" }]), "none known"),
+        ("D is not read: `-` also with facts", text([], [fact("H", "n3", Pass)]), "-"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(name, got, want)| (name, got, want))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/outdated.roc:126:1
+
+expect {
+    known = Known(Range({ from: { id: "n3", real: Bool.True }, to: { id: "n4", real: Bool.False } }))
+    rows = [
+        row("json", "2.1.0", "2.2.0", "3.0.2", Bool.True, known),
+        row("parser", "1.0.0", "1.0.0", "2.0.0", Bool.True, Unread),
+        row("pf", "0.1.0", "0.1.0", "0.1.0", Bool.False, Known(NoPass)),
+        row("util", "1.0.0", "1.1.0", "1.1.0", Bool.False, Unread),
+    ]
+    behind = rows.map(|r| Outdated.behind(r))
+    table = Outdated.text({ file: "/p/main.roc", rows: rows.keep_if(|r| Outdated.behind(r)), fixed: ["example.org", "x.test"] })
+    clean = Outdated.text({ file: "/p/main.roc", rows: [], fixed: ["example.org"] })
+    empty = Outdated.text({ file: "/q/main.roc", rows: [], fixed: [] })
+    json = Outdated.data([{ file: "/p/main.roc", rows: [row("json", "2.1.0", "2.2.0", "3.0.2", Bool.True, known), row("util", "1.0.0", "1.1.0", "1.1.0", Bool.False, Unread), row("pf", "0.1.0", "0.1.1", "0.1.1", Bool.False, Known(NoPass))], fixed: ["example.org"] }, { file: "/q/main.roc", rows: [], fixed: [] }]).render()
+    table_want = "/p/main.roc\n  package  current  wanted  latest              nightly range\n  json     2.1.0    2.2.0   3.0.2 (new series)  n3 .. n4?\n  parser   1.0.0    1.0.0   2.0.0 (new series)  -\n  util     1.0.0    1.1.0   1.1.0               -\n  fixed: example.org has no index without a registry\n  fixed: x.test has no index without a registry\n"
+    json_want = "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"json\",\"name\":\"acme/json\",\"current\":\"2.1.0\",\"wanted\":\"2.2.0\",\"latest\":\"3.0.2\",\"new_series\":true,\"nightly_range\":{\"state\":\"range\",\"from\":{\"id\":\"n3\",\"real\":true},\"to\":{\"id\":\"n4\",\"real\":false}}},{\"alias\":\"util\",\"name\":\"acme/util\",\"current\":\"1.0.0\",\"wanted\":\"1.1.0\",\"latest\":\"1.1.0\",\"new_series\":false,\"nightly_range\":{\"state\":\"unread\"}},{\"alias\":\"pf\",\"name\":\"acme/pf\",\"current\":\"0.1.0\",\"wanted\":\"0.1.1\",\"latest\":\"0.1.1\",\"new_series\":false,\"nightly_range\":{\"state\":\"no-pass\"}}],\"fixed\":[\"example.org\"]},{\"file\":\"/q/main.roc\",\"packages\":[],\"fixed\":[]}]}"
+    dbg [table == table_want, json == json_want]
+    behind == [Bool.True, Bool.True, Bool.False, Bool.True] and table == table_want and clean == "/p/main.roc\n  all packages are up to date\n  fixed: example.org has no index without a registry\n" and empty == "/q/main.roc\n  all packages are up to date\n" and json == json_want
+}
+
+Ran 4 tests in 457.5 ms.:
+    0 passed
+    4 failed
+    0 compiler errors
+tests/unit/out.roc: All (4) tests passed in 89.3 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 739.4 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2636.5 ms.
+tests/unit/picker.roc: All (2) tests passed in 55.8 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 3532.1 ms.
+tests/unit/pick.roc: All (3) tests passed in 3568.6 ms.
+tests/unit/pin.roc: All (9) tests passed in 721.3 ms.
+tests/unit/pins.roc: All (6) tests passed in 1266.6 ms.
+tests/unit/probecmd.roc: All (7) tests passed in 1679.5 ms.
+tests/unit/proberange.roc: All (3) tests passed in 1204.5 ms.
+tests/unit/probe.roc: All (5) tests passed in 329.3 ms.
+tests/unit/project.roc: All (7) tests passed in 1692.9 ms.
+tests/unit/projects.roc: All (3) tests passed in 280.2 ms.
+tests/unit/prompt.roc: All (5) tests passed in 213.7 ms.
+tests/unit/proxy.roc: All (7) tests passed in 3652.7 ms.
+tests/unit/ranges.roc: All (2) tests passed in 146.1 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1618.9 ms.
+tests/unit/ref.roc: All (4) tests passed in 210.6 ms.
+tests/unit/removal.roc: All (4) tests passed in 1754.5 ms.
+tests/unit/report.roc: All (3) tests passed in 109.0 ms.
+tests/unit/roots.roc: All (3) tests passed in 110.9 ms.
+tests/unit/scan.roc: All (2) tests passed in 147.2 ms.
+tests/unit/selector.roc: All (2) tests passed in 178.6 ms.
+tests/unit/setup.roc: All (10) tests passed in 548.5 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 157.5 ms.
+tests/unit/temp.roc: All (4) tests passed in 104.7 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1684.5 ms.
+tests/unit/units.roc: All (6) tests passed in 673.9 ms.
+tests/unit/update.roc: All (2) tests passed in 2616.3 ms.
+tests/unit/upgrade.roc: All (6) tests passed in 5025.2 ms.
+tests/unit/uses.roc: All (2) tests passed in 222.1 ms.
+tests/unit/vars.roc: All (8) tests passed in 1770.4 ms.
+tests/unit/verify.roc: All (2) tests passed in 1713.5 ms.
+tests/unit/why.roc: All (6) tests passed in 3204.6 ms.

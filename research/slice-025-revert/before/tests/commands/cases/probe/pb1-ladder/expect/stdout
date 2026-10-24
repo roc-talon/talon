@@ -1,0 +1,59 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p3/main.roc compiler=nightly-2026-10-14-38a3029
+exit 13
+== update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p5/main.roc compiler=nightly-2026-10-09-258ab27
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p6/main.roc no-check compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/p6/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p7/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p7/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-09-258ab27
+exit 0
+== update json file=p8/main.roc toolchain=nightly-2026-10-21-5349569 compiler=nightly-2026-10-14-38a3029
+exit 13
+== update json file=p9/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
+check: passed
+build: passed
+$PROJECT/p9/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p10/main.roc toolchain=link-dev compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p10/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p11/main.roc toolchain=copy-fix-1 compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p11/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

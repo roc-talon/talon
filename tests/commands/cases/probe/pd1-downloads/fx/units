@@ -1,0 +1,14 @@
+# <hash>:<compiler> <code> <stdout> <stderr>: the answer of a unit probe. No row: it passes.
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-01-1b1b1b1	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-02-2c2c2c2	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-03-3d3d3d3	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-04-4e4e4e4	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-08-8c8c8c8	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-09-9d9d9d9	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-10-0e0e0e0	1	-	../fixtures/check/out/unit-fail.stderr
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-01-1b1b1b1	1	-	../fixtures/check/out/unit-fail.stderr
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-02-2c2c2c2	1	-	../fixtures/check/out/unit-fail.stderr
+EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt:nightly-2026-10-01-1b1b1b1	1	-	../fixtures/check/out/unit-fail.stderr
+EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt:nightly-2026-10-02-2c2c2c2	1	-	../fixtures/check/out/unit-fail.stderr
+EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt:nightly-2026-10-04-4e4e4e4	1	-	../fixtures/check/out/unit-fail.stderr
+EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt:nightly-2026-10-03-3d3d3d3	signal:11	-	-

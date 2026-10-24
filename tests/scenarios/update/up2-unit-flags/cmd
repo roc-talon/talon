@@ -1,0 +1,13 @@
+# R-LF3 R-FL11 R-PP4 R-AL4 R-LD2 R-LD3 R-P4 R-EC2 R-PP7 R-LY4 (slice 031): the unit probes and the flags `--no-probe` and `--slots` on the real binary (the fake roc passes every check). The project is the one of `update/up1-update-entries`. Every run is a dry run: the probes run, no file changes.
+# The printed number of probes is the number that started (R-PP4): the baseline, the check of the candidate and the build are 3, and each unit check that ran is one more.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# `--no-probe`: no unit probe, no fact: 3 probes, and no compat.db.
+st tln update json --dry-run --no-probe
+# `--slots` is a whole number of 1 or more (exit 2, CLI 3 R-EC2). Nothing runs.
+st tln update json --dry-run --slots 0
+st tln update json --dry-run --slots many
+# A pool of 2 slots: the same probes, 2 at a time. The units have no fact: they run, and the facts are written (the file `facts.tsv`).
+st tln update json --dry-run --slots 2
+# The facts are known now: only the 3 probes of the ladder run, and the file does not change.
+st tln update json --dry-run
+st tln update json --dry-run --json

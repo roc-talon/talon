@@ -1,0 +1,9 @@
+warning: .roc-version names nightly-2026-10-13-91fa0c2, the header names nightly-2026-10-14-38a3029
+tln: error[no_tuple]: the compiler nightly-2026-10-13-91fa0c2 from .roc-version is a nightly, and nightly is false (set by TALON_NIGHTLY). Change .roc-version or the nightly switch.
+tln: error[no_tuple]: the compiler nightly-2026-10-09-258ab27 from the global default is a nightly, and nightly is false (set by TALON_NIGHTLY). Change the default (tln roc default) or the nightly switch.
+tln: error[no_tuple]: the compiler nightly-2026-10-13-91fa0c2 from .roc-version is a nightly, and nightly is false (set by TALON_NIGHTLY). Change .roc-version or the nightly switch.
+tln: error[consent]: no installed compiler is in [toolchain] roc (>=nightly-2026-10-20-aaaaaaa). This version of tln does not download a compiler for a run.
+tln: error[input]: $PROJECT/w4/.roc-version: .roc-version is not a full compiler id: nightly-2026-10-13
+tln: error[input]: $HOME/.config/talon/config.toml:1: default-roc: must be a full compiler id
+tln: error[no_tuple]: no compiler release is known, and nightly is false (set by TALON_NIGHTLY)
+tln: error[no_tuple]: no compiler release is known, and nightly is false (set by nightly in config.toml)

@@ -6,17 +6,17 @@ build: passed
 $PROJECT/main.roc
   + util: acme/util 1.1.0
   + roc: nightly-2026-10-14-38a3029
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 6 probes
 dry run: nothing was written
 exit 0
 no talon.toml
 == tln add acme/util
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   + util: acme/util 1.1.0
   + roc: nightly-2026-10-14-38a3029
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 2 probes
 exit 0
 no talon.toml
 == tln add acme/util
@@ -33,7 +33,7 @@ Run tln update json to move it.
 exit 0
 == tln add json@^2.1
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
 $PROJECT/talon.toml: json = "^2.1"
@@ -41,17 +41,17 @@ resolved at 2026-10-15T12:00:00Z, 3 probes
 exit 0
 == tln add acme/xml@^1 acme/lex@1.1.0
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   + xml: acme/xml 1.2.0
   + lex: acme/lex 1.1.0
 $PROJECT/talon.toml: xml = "^1"
 $PROJECT/talon.toml: lex = "=1.1.0"
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 4 probes
 exit 0
 == tln i acme/pre@1.0.0 --no-pin
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   + pre: acme/pre 1.0.0
 resolved at 2026-10-15T12:00:00Z, 3 probes
@@ -70,7 +70,7 @@ exit 2
 exit 2
 == tln add acme/9lives --as nine
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   + nine: acme/9lives 1.0.0
 resolved at 2026-10-15T12:00:00Z, 3 probes

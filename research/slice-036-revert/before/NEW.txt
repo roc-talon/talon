@@ -1,0 +1,4 @@
+cli/lib/Oracle.roc
+tests/unit/oracle.roc
+packages/resolve/tests/moves.roc
+docs/slices/036-oracle-loop.md

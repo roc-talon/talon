@@ -1,0 +1,10 @@
+scenarios: 2 passed, 0 failed, 0 skipped
+
+real	1m20.288s
+user	1m41.140s
+sys	0m4.855s
+commands: 1 passed, 0 failed
+
+real	1m18.547s
+user	1m38.414s
+sys	0m4.179s

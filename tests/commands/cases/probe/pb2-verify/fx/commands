@@ -1,0 +1,5 @@
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 verify --file apps/a/main.roc
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 verify
+verify
+env:TALON_AUTO_INSTALL=no env:ROC_TOOLCHAIN=nightly-2026-10-21-5349569 verify
+env:ROC_TOOLCHAIN=nightly-2026-10-21-5349569 verify --no-check

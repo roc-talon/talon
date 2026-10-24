@@ -92,6 +92,13 @@ expect {
 		(["cache", "gc", "--file", "main.roc"], usage(Bool.False, "cache gc")),
 		(["cache", "gc", "--all"], usage(Bool.False, "cache gc")),
 		(["install", "--force"], usage(Bool.False, "install")),
+		# R-FL12 (slice 024b, G4 of slice 024): `--copy` is a flag of `roc link` only.
+		(["install", "json", "--copy"], usage(Bool.False, "install")),
+		(["roc", "install", "--copy", "nightly-2026-10-09-258ab27"], usage(Bool.False, "roc install")),
+		(["roc", "rm", "--copy", "link-dev"], usage(Bool.False, "roc rm")),
+		(["remove", "json", "--copy"], usage(Bool.False, "remove")),
+		(["roc", "link", "--copy=yes", "dev", "p"], usage(Bool.False, "roc link")),
+		(["roc", "link", "--frobnicate", "dev", "p"], usage(Bool.False, "roc link")),
 		(["remove", "json", "--as", "x"], usage(Bool.False, "remove")),
 		(["x", "owner/app", "--json"], usage(Bool.True, "x")),
 		(["--registry"], usage(Bool.False, "")),
@@ -102,7 +109,7 @@ expect {
 	bad == []
 }
 
-# R-FL12 R-FL7 R-FL6: the flags that the design names for a command are accepted.
+# R-FL12 R-FL7 R-FL6 R-NI4 R-NI5 (slice 025: the answer flags of the download prompts): the flags that the design names for a command are accepted.
 # Resolve flags: install, remove, update, upgrade, verify, and `--slots` also for probe, tool install and x.
 # `--file`: the commands that use a project (R-PD14). `--dry-run` has its own meaning for cache gc and clean.
 expect {
@@ -116,10 +123,22 @@ expect {
 		["up", "json", "--strategy", "lowest", "--no-pin", "--allow-moves"],
 		["upgrade", "--strategy", "highest", "--allow-moves"],
 		["verify", "--strategy", "lowest", "--slots", "2"],
+		["install", "--allow-downloads", "--probe-downloads"],
+		["add", "json", "--allow-downloads"],
+		["update", "json", "--allow-downloads", "--probe-downloads"],
+		["remove", "json", "--allow-downloads"],
+		["verify", "--allow-downloads", "--probe-downloads"],
 		["list", "--tree", "--file", "main.roc"],
 		["ls", "--tree"],
 		["why", "parser", "--file", "main.roc"],
 		["probe", "--slots", "2"],
+		["roc", "link", "dev", "../roc/zig-out/bin/roc"],
+		["roc", "link", "--copy", "fix-1", "../roc/zig-out/bin/roc", "--json"],
+		["roc", "link", "--copy", "--force", "fix-1", "p", "--yes", "--quiet"],
+		["roc", "update"],
+		["roc", "up", "--json", "--yes", "--offline", "--quiet"],
+		["roc", "use", "nightly-2026-10-14-38a3029", "--file", "p/main.roc", "--allow-downloads", "--json", "--yes", "--quiet", "--offline"],
+		["roc", "use", "@-1"],
 		["cache", "gc", "--dry-run"],
 		["cache", "clean", "--all", "--dry-run"],
 		["tool", "install", "owner/app", "--as", "app", "--slots", "2"],
@@ -143,6 +162,13 @@ expect {
 		msg(["list", "--frobnicate"]),
 		msg(["cache", "gc", "--file", "main.roc"]),
 		msg(["--registry"]),
+		msg(["list", "--allow-downloads"]),
+		msg(["roc", "install", "@latest", "--allow-downloads"]),
+		msg(["cache", "gc", "--probe-downloads"]),
+		msg(["roc", "update", "--file", "main.roc"]),
+		msg(["roc", "up", "--allow-downloads"]),
+		msg(["roc", "use", "nightly-2026-10-14-38a3029", "--no-check"]),
+		msg(["roc", "use", "nightly-2026-10-14-38a3029", "--probe-downloads"]),
 	]
 	dbg msgs
 	msgs == [
@@ -152,5 +178,12 @@ expect {
 		"flag '--frobnicate' is not for 'list'",
 		"flag '--file' is not for 'cache gc'",
 		"flag '--registry' needs a value",
+		"flag '--allow-downloads' is not for 'list'",
+		"flag '--allow-downloads' is not for 'roc install'",
+		"flag '--probe-downloads' is not for 'cache gc'",
+		"flag '--file' is not for 'roc update'",
+		"flag '--allow-downloads' is not for 'roc update'",
+		"flag '--no-check' is not for 'roc use'",
+		"flag '--probe-downloads' is not for 'roc use'",
 	]
 }

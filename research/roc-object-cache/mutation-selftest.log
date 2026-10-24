@@ -1,0 +1,10 @@
+== selftest: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/selftest.log)
+SELFTEST FAIL: test.sh: each roc build must have --no-cache (the object cache gives a bad build): 0 of 4 builds have it
+build tests/commands/main.roc --opt=dev --output=/tmp/talon-selftest/work-nocache/bin/l2
+build cli/fxprobe.roc --opt=dev --output=/tmp/talon-selftest/work-nocache/bin/fxprobe
+build cli/main.roc --opt=dev --output=/tmp/talon-selftest/work-nocache/bin/tln
+build cli/flowprobe.roc --opt=dev --output=/tmp/talon-selftest/work-nocache/bin/flowprobe
+selftest: 66 passed, 1 failed
+
+step       result seconds  budget
+selftest   FAIL   14.2     20

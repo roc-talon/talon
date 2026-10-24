@@ -50,6 +50,17 @@ check main.roc
 check slow.roc
 check warn.roc
 where am i
+== R-PX2 R-PX6 (slice 023c): the program of a probe is the file that runs, not the name roc. env adds variables to the environment of the child (a name that the process has too takes the value of env). The other variables stay.
+probe 0 Exited(0) stdout="envprog: $PROJECT/envprog args=check main.roc A=added B=process IN=1
+" stderr=""
+== one round with 2 programs: each probe has its own program and its own env
+probe 0 Exited(0) stdout="envprog: $PROJECT/envprog args=check a.roc A=first B=process IN=
+" stderr=""
+probe 1 Exited(0) stdout="envprog: $PROJECT/envprog args=check b.roc A=second B=own IN=
+" stderr=""
+== a program that is not a file: the probe does not start
+probe 0 NotStarted("NotFound") stdout="" stderr=""
+the roc on PATH did not run
 == copy_tree!: files, a dir, an empty dir. A name in the skip list is not copied (at any depth). The parent dirs of the target are made.
 copied
 .

@@ -1,3 +1,6 @@
+import Fail
+import Fx
+
 ## The time of a run (R-EV18, R-EV22). `Fx.clock!` gives the real time. `TALON_NOW` fixes the time for
 ## the decisions about the age of data. Locks and temp files use the real time (R-EV22).
 Clock :: [].{
@@ -47,6 +50,19 @@ Clock :: [].{
 	now = |facts| match facts.talon_now {
 		Ok(text) => Clock.parse_utc(text).map_err(|BadTime| BadTime(text))
 		Err(NotSet) => Ok(facts.real)
+	}
+
+	## R-EV22: the time of a run for a command. One `Fx.clock!` call, also when `TALON_NOW` is set. `env` is the environment (`Fx.env_all!`). A bad `TALON_NOW` is a failure of kind `Usage` (exit 2, Q5): `TALON_NOW is not a UTC time: <text>`.
+	now! : Fx, List((Str, Str)) => Try(U64, Fail)
+	now! = |fx, env| {
+		talon_now = match env.find_first(|(name, _)| name == "TALON_NOW") {
+			Ok((_, text)) => Ok(text)
+			Err(_) => Err(NotSet)
+		}
+		match Clock.now({ talon_now, real: fx.clock!() }) {
+			Ok(time) => Ok(time)
+			Err(BadTime(text)) => Err(Fail.new(Usage, "TALON_NOW is not a UTC time: ${text}"))
+		}
 	}
 }
 

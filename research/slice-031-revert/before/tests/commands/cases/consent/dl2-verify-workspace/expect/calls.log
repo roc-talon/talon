@@ -1,0 +1,154 @@
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+list_dirs $PROJECT/apps
+list_dirs $PROJECT/apps/a $PROJECT/apps/b
+canonical $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/a/talon.toml $PROJECT/apps/talon.toml $PROJECT/talon.toml $PROJECT/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
+programs gh
+http_get https://api.github.com/repos/acme/parser/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/parser/1.json $HOME/.cache/roc/talon/index/github/acme/parser/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
+programs gh
+http_get https://api.github.com/repos/acme/pf/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pf/1.json $HOME/.cache/roc/talon/index/github/acme/pf/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+tty
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=11
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=11
+ask "nightly-2026-10-18-5349569 is not installed. Download 1 compiler, 73.0 MB? [y/N] "
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-18-5349569/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz
+sha256_file $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz -C $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+canonical $HOME/.cache $HOME/.cache/roc
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 2
+  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 1
+  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 2
+  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+list_dirs $PROJECT/apps
+list_dirs $PROJECT/apps/a $PROJECT/apps/b
+canonical $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/a/talon.toml $PROJECT/apps/talon.toml $PROJECT/talon.toml $PROJECT/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
+read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.meta $HOME/.cache/roc/talon/index/github/acme/parser/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
+read_files $HOME/.cache/roc/talon/index/github/acme/pf/1.meta $HOME/.cache/roc/talon/index/github/acme/pf/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 2
+  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 1
+  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 2
+  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef

@@ -1,0 +1,23 @@
+== tln ls --file w1/main.roc
+$PROJECT/w1/main.roc
+  pf    acme/pf 0.1.0    direct
+  json  acme/json 2.0.0  direct
+exit 0
+== env TALON_NIGHTLY=0 tln install --file w2/main.roc
+exit 10
+== env TALON_NIGHTLY=0 tln install --file w3/main.roc
+exit 10
+== env TALON_NIGHTLY=0 tln install --file w2/main.roc
+exit 10
+== tln install --file w5/main.roc
+exit 13
+== tln install --file w4/main.roc
+exit 19
+== tln install --file w3/main.roc
+exit 19
+== env TALON_NIGHTLY=0 tln roc install @latest
+exit 10
+== tln roc install @latest
+exit 10
+== the files are not changed
+nightly-2026-10-13-91fa0c2

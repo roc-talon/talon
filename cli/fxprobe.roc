@@ -4,7 +4,9 @@ app [main!] {
 	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
 }
 
+import lib.Db
 import lib.Fx
+import lib.Text
 import RealFx
 
 ## A test tool, not part of `tln` (TESTING.md 2.3, TW4). It calls one real `Fx` function and prints what
@@ -34,8 +36,53 @@ import RealFx
 ##
 ## | Call | Does | Prints |
 ## | --- | --- | --- |
-## | `probes <timeout> <dir> <roc args> [-- <timeout> <dir> <roc args>]...` | `probes!`: one probe for each group of words, with the compiler id `nightly-fake` | `probe <i> <ended> stdout=<text> stderr=<text>` for each probe, in the order of the probes |
+## | `probes <timeout> <dir> [program=<file>] [env:<NAME>=<value>]... <roc args> [-- <timeout> <dir> ...]...` | `probes!`: one probe for each group of words, with the compiler id `nightly-fake`. Slice 023c: the words `program=<file>` and `env:<NAME>=<value>` right after the dir are the `program` (default `roc`, the name on `PATH`) and one variable of `env` | `probe <i> <ended> stdout=<text> stderr=<text>` for each probe, in the order of the probes |
 ## | `copytree <from> <to> [<skip name>...]` | `copy_tree!` | `copied`, or `err <error>` |
+## Slice 031 adds one call and one word:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `pool <slots> <timeout> <dir> [program=<file>] [weight=<n>] [env:<NAME>=<value>]... <roc args> [-- ...]...` | `probes!` with the pool of `<slots>` (R-PP6, R-PP7). `weight=<n>` is the `weight` of a probe (default 1). `probes` is `pool 12`. | the same lines as `probes` |
+## Slice 021 adds two calls:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `platform` | `platform!` | `os <linux, macos, windows or the name>` and `arch <x64, arm64 or the name>` |
+## | `sha256 <file>...` | `sha256_file!` for each file | `sha256 <hex> <file>`, or `err <file> <error>` |
+## Slice 022b adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `path-roc` | `path_roc!` | `exe <path> <size> <mtime>` (or `exe unknown`), then `file <path> <size> <mtime>` for each `roc` file on `PATH`, in the order of `PATH` |
+## Slice 023 adds two calls:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `program-name` | `program_name!` | `program <text>` |
+## | `exec [<NAME>=<value>]... -- <argv words>` | `exec!` with these variables | `exec ok <code>` or `exec err <text>` (after the output of the child, which goes to the terminal of the process) |
+## Slice 024b adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `copyfile <from> <to>` | `copy_file!` | `copied`, or `err <error>` |
+## Slice 027 adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `hardlink <from> <to>` | `hard_link!` | `linked`, or `err <error>` |
+## Slice 028b adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `tree <path>...` | `tree_info!` with all the paths in one call | `tree <newest> <size> <path>` for each path, or `err <path> <error>` |
+## Slice 030 adds two calls (the db calls of the real `Fx`; `<busy_ms>` is the busy timeout of the call, and the format is `Db.format`):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `db-query <path> <busy_ms> facts <hash:nightly:target>...` | `db_query!` with `Facts(keys)` | the `Db.fact_line` of each row, sorted by the line (no row: `none`), or `err <the error>` |
+## | `db-query <path> <busy_ms> pinned <tag:target>...` | `db_query!` with `Pinned(keys)` | the `Db.pinned_line` of each row, sorted, or `none`, or `err <the error>` |
+## | `db-write <path> <busy_ms> facts <replace or keep> <hash:nightly:target:outcome:modules:closure>...` | `db_write!` with `Facts` (`modules` are split at `,`) | `ok` or `err <the error>` |
+## | `db-write <path> <busy_ms> pinned <tag:target:sha256:source>...` | `db_write!` with `Pinned` (`source` is `github-digest` or `registry`) | `ok` or `err <the error>` |
 main! = |args| {
 	fx = RealFx.make!(args.map(|a| a.display()))
 	match fx.args!() {
@@ -168,21 +215,141 @@ probe! = |fx, call, rest| match (call, rest) {
 		}
 		Busy => say!(fx, "busy ${item}")
 	}
-	("probes", words) => {
-		specs = split_jobs(words).keep_oks(
-			|group| match group {
-				[timeout, dir, .. as args] => Ok({ compiler: "nightly-fake", args, dir, timeout: U64.from_str(timeout) ?? 30 })
-				_ => Err(BadGroup)
-			},
-		)
-		results = fx.probes!(specs)
-		for (i, result) in results.map_with_index(|r, i| (i, r)) {
-			say!(fx, "probe ${i.to_str()} ${Str.inspect(result.ended)} stdout=${Str.inspect(result.stdout)} stderr=${Str.inspect(result.stderr)}")
-		}
-	}
+	("probes", words) => show_probes!(fx, 12, words)
+	("pool", [size, .. as words]) => show_probes!(fx, U64.from_str(size) ?? 12, words)
 	("copytree", [from, to, .. as skip]) => match fx.copy_tree!({ from, to, skip }) {
 		Ok(_) => say!(fx, "copied")
 		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("copyfile", [from, to]) => match fx.copy_file!({ from, to }) {
+		Ok(_) => say!(fx, "copied")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("tree", paths) => for (path, found) in paths.map2(fx.tree_info!(paths), |p, f| (p, f)) {
+		match found {
+			Ok(info) => say!(fx, "tree ${info.newest.to_str()} ${info.size.to_str()} ${path}")
+			Err(err) => say!(fx, "err ${path} ${Str.inspect(err)}")
+		}
+	}
+	("hardlink", [from, to]) => match fx.hard_link!({ from, to }) {
+		Ok(_) => say!(fx, "linked")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("platform", _) => {
+		found = fx.platform!()
+		say!(
+			fx,
+			"os ${
+				match found.os {
+					Linux => "linux"
+					Macos => "macos"
+					Windows => "windows"
+					Other(name) => name
+				}
+			}",
+		)
+		say!(
+			fx,
+			"arch ${
+				match found.arch {
+					X64 => "x64"
+					Arm64 => "arm64"
+					Other(name) => name
+				}
+			}",
+		)
+	}
+	("sha256", paths) => for path in paths {
+		match fx.sha256_file!(path) {
+			Ok(hex) => say!(fx, "sha256 ${hex} ${path}")
+			Err(err) => say!(fx, "err ${path} ${Str.inspect(err)}")
+		}
+	}
+	("path-roc", _) => {
+		found = fx.path_roc!()
+		match found.exe {
+			Ok(exe) => say!(fx, "exe ${exe.path} ${exe.size.to_str()} ${exe.mtime.to_str()}")
+			Err(Unknown) => say!(fx, "exe unknown")
+		}
+		for file in found.found {
+			say!(fx, "file ${file.path} ${file.size.to_str()} ${file.mtime.to_str()}")
+		}
+	}
+	("program-name", _) => say!(fx, "program ${fx.program_name!()}")
+	("exec", words) => {
+		sep = words.map_with_index(|w, i| (w, i)).find_first(|(w, _)| w == "--")
+		match sep {
+			Ok((_, at)) => {
+				env = words.take_first(at).keep_oks(
+					|w| match w.split_first("=") {
+						Ok({ before, after }) => Ok((before, after))
+						Err(_) => Err(NoEquals)
+					},
+				)
+				match fx.exec!({ argv: words.drop_first(at + 1), env }) {
+					Ok(code) => say!(fx, "exec ok ${code.to_str()}")
+					Err(NotStarted(text)) => say!(fx, "exec err ${text}")
+				}
+			}
+			Err(_) => fx.err!("usage: fxprobe exec [NAME=value]... -- <argv words>\n")
+		}
+	}
+	("db-query", [path, busy, "facts", .. as specs]) => {
+		keys = specs.keep_oks(
+			|spec| match spec.split_on(":") {
+				[hash, nightly, target] => Ok({ hash, nightly, target })
+				_ => Err(BadSpec)
+			},
+		)
+		match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Facts(keys)) {
+			Ok(Facts(rows)) => lines_of!(fx, rows.map(Db.fact_line))
+			Ok(Pinned(_)) => say!(fx, "err wrong answer")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
+	}
+	("db-query", [path, busy, "pinned", .. as specs]) => {
+		keys = specs.keep_oks(
+			|spec| match spec.split_on(":") {
+				[tag, target] => Ok({ tag, target })
+				_ => Err(BadSpec)
+			},
+		)
+		match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Pinned(keys)) {
+			Ok(Pinned(rows)) => lines_of!(fx, rows.map(Db.pinned_line))
+			Ok(Facts(_)) => say!(fx, "err wrong answer")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
+	}
+	("db-write", [path, busy, "facts", mode, .. as specs]) => {
+		rows = specs.keep_oks(
+			|spec| match spec.split_on(":") {
+				[hash, nightly, target, outcome, modules, closure] => match Db.outcome_of(outcome) {
+					Ok(o) => Ok({ hash, nightly, target, outcome: o, modules: Db.modules_of(modules), closure })
+					Err(_) => Err(BadSpec)
+				}
+				_ => Err(BadSpec)
+			},
+		)
+		write = Facts({ rows, existing: if mode == "keep" Keep else Replace })
+		match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, write) {
+			Ok(_) => say!(fx, "ok")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
+	}
+	("db-write", [path, busy, "pinned", .. as specs]) => {
+		rows = specs.keep_oks(
+			|spec| match spec.split_on(":") {
+				[tag, target, sha256, source] => match Db.source_of(source) {
+					Ok(src) => Ok({ tag, target, sha256, source: src })
+					Err(_) => Err(BadSpec)
+				}
+				_ => Err(BadSpec)
+			},
+		)
+		match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Pinned(rows)) {
+			Ok(_) => say!(fx, "ok")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
 	}
 	("random", _) => if fx.random!() != fx.random!() say!(fx, "random ok") else say!(fx, "random same")
 	_ => fx.err!("unknown call\n")
@@ -219,3 +386,40 @@ split_jobs = |words| words.fold(
 		}
 	},
 )
+
+# One line for each text of the list, in byte order. No text: `none`.
+lines_of! : Fx, List(Str) => {}
+lines_of! = |fx, texts| if texts.is_empty() {
+	say!(fx, "none")
+} else {
+	for text in Text.sorted(texts) {
+		say!(fx, text)
+	}
+}
+
+# The `probes` and `pool` calls: one probe for each group of words. `weight=<n>` is the weight of the probe (slice 031, default 1).
+show_probes! : Fx, U64, List(Str) => {}
+show_probes! = |fx, pool, words| {
+	specs = split_jobs(words).keep_oks(
+		|group| match group {
+			[timeout, dir, .. as more] => {
+				program = match more.keep_if(|word| word.starts_with("program=")).first() {
+					Ok(word) => word.drop_prefix("program=")
+					Err(_) => "roc"
+				}
+				weight = match more.keep_if(|word| word.starts_with("weight=")).first() {
+					Ok(word) => U64.from_str(word.drop_prefix("weight=")) ?? 1
+					Err(_) => 1
+				}
+				env = more.keep_if(|word| word.starts_with("env:")).map(|word| word.drop_prefix("env:").split_first("=")).keep_oks(|split| split.map_ok(|pair| (pair.before, pair.after)))
+				args = more.keep_if(|word| !word.starts_with("program=") and !word.starts_with("env:") and !word.starts_with("weight="))
+				Ok({ compiler: "nightly-fake", program, args, dir, env, timeout: U64.from_str(timeout) ?? 30, weight })
+			}
+			_ => Err(BadGroup)
+		},
+	)
+	results = fx.probes!({ pool, specs })
+	for (i, result) in results.map_with_index(|r, i| (i, r)) {
+		say!(fx, "probe ${i.to_str()} ${Str.inspect(result.ended)} stdout=${Str.inspect(result.stdout)} stderr=${Str.inspect(result.stderr)}")
+	}
+}

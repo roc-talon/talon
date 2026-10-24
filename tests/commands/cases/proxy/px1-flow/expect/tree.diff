@@ -1,0 +1,16 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p10/main.roc","last_use":1792670400},{"path":"$PROJECT/p11/main.roc","last_use":1792670400},{"path":"$PROJECT/p12/main.roc","last_use":1792670400},{"path":"$PROJECT/p13/main.roc","last_use":1792670400},{"path":"$PROJECT/p14/main.roc","last_use":1792670400},{"path":"$PROJECT/p16/main.roc","last_use":1792670400},{"path":"$PROJECT/p3/main.roc","last_use":1792843200},{"path":"$PROJECT/p4/main.roc","last_use":1792670400},{"path":"$PROJECT/p5/main.roc","last_use":1792670400},{"path":"$PROJECT/p7/main.roc","last_use":1792670400},{"path":"$PROJECT/p9/main.roc","last_use":1792670400},{"path":"$PROJECT/pw/apps/a/main.roc","last_use":1792670400}]}
+--- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+@@ -0,0 +1 @@
++2026-10-24T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z

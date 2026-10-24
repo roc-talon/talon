@@ -1,6 +1,7 @@
 app [main!] { lib: "../../cli/lib/main.roc" }
 
 import lib.Ident
+import lib.Oracle
 import lib.Pick
 
 main! = |_args| Ok({})
@@ -36,10 +37,10 @@ view = |r| match r {
 
 input = |slots, facts, strategy, second| { slots, strategy, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second }
 
-run = |slots, facts, strategy, second| view(Pick.step(input(slots, facts, strategy, second)))
+run = |slots, facts, strategy, second| view(Oracle.step(input(slots, facts, strategy, second)))
 
 # The rows that `Pick.moves` gives for the tuple of the second search.
-moved = |slots, facts, strategy| match Pick.step(input(slots, facts, strategy, Bool.True)) {
+moved = |slots, facts, strategy| match Oracle.step(input(slots, facts, strategy, Bool.True)) {
 	Done(chosen) => Pick.moves({ slots, chosen, facts }).map(|m| (m.id, m.from, m.to, m.why))
 	_ => [("step", "gave no tuple", "", "")]
 }
@@ -134,7 +135,7 @@ expect {
 	# A path file of the app names core 1.1.0, and no release of a slot shows it.
 	file = "/p/app/main.roc"
 	path_input = { ..input([core_low], [pkg(u("core", "1.0.0"), []), pkg(u("core", "1.1.0"), [])], Highest, Bool.True), unmanaged: [{ file, entries: [{ alias: "util", value: "../util/main.roc", is_platform: Bool.False }] }], paths: [{ id: "/p/util/main.roc", entries: [{ alias: "c", value: u("core", "1.1.0"), is_platform: Bool.False }] }] }
-	by_path = match Pick.step(path_input) {
+	by_path = match Oracle.step(path_input) {
 		Done(chosen) => Pick.moves({ slots: [core_low], chosen, facts: path_input.facts }).map(|m| (m.id, m.from, m.to, m.why))
 		_ => [("step", "gave no tuple", "", "")]
 	}

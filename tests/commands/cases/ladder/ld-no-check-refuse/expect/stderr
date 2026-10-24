@@ -1,2 +1,2 @@
-tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. This version of tln runs only the roc on PATH (nightly-2026-10-14-38a3029).
-tln: error[consent]: the compiler nightly-2026-10-14-38a3029 is not installed. This version of tln runs only the roc on PATH (nightly-2026-10-09-258ab27).
+tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-09-258ab27, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-14-38a3029 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-14-38a3029, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.

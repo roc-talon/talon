@@ -54,23 +54,28 @@ fail_view = |r| match r {
 # header, R-BL1) and the check in the temp copy (the candidate header, R-BL2), in this order (the results are read in the order of the list). Then one build in the
 # copy (R-LD6). The build is always in the plan of an app: P0 has no `compat.db`, so it never skips the build (R-BS1, R-BS2, R-PH9). A package or a platform has no app, so it has no build (R-LD7).
 # Each probe is `check` or `build` (R-SE4, R-P1).
+# R-PX2 R-PX6 R-CC9 (slice 023c): each probe of the plan has the `program` and the `env` of the facts, the same for each probe (the selected compiler by its path, the cache variables).
+# R-PP6 (slice 031): a check has the weight 1 and the build has the weight 4 (the slots that it takes from the pool).
 expect {
 	copy = "/c/talon/tmp/0123456789abcdef"
-	spec = |dir, args| { compiler: id, args, dir, timeout: 30 }
+	program = "/h/.cache/roc/toolchains/${id}/roc"
+	env = [("XDG_CACHE_HOME", "/h/.cache"), ("ROC_CACHE_DIR", "/h/.cache/roc"), ("TALON_IN_PROXY", "1")]
+	spec = |dir, args| { compiler: id, program, args, dir, env, timeout: 30, weight: if args.first() == Ok("build") 4 else 1 }
 	first = [spec("/p/app", ["check", "main.roc"]), spec(copy, ["check", "main.roc"])]
-	for_app = Ladder.plan({ compiler: id, kind: App, dir: "/p/app", file: "main.roc", copy, timeout: 30 })
-	for_package = Ladder.plan({ compiler: id, kind: Package, dir: "/p/lib", file: "main.roc", copy, timeout: 30 })
-	for_platform = Ladder.plan({ compiler: id, kind: Platform, dir: "/p/pf", file: "main.roc", copy, timeout: 30 })
-	slow = Ladder.plan({ compiler: "0.1.0", kind: App, dir: "/p/app", file: "app.roc", copy, timeout: 7 })
+	for_app = Ladder.plan({ compiler: id, program, env, kind: App, dir: "/p/app", file: "main.roc", copy, timeout: 30 })
+	for_package = Ladder.plan({ compiler: id, program, env, kind: Package, dir: "/p/lib", file: "main.roc", copy, timeout: 30 })
+	for_platform = Ladder.plan({ compiler: id, program, env, kind: Platform, dir: "/p/pf", file: "main.roc", copy, timeout: 30 })
+	slow = Ladder.plan({ compiler: "0.1.0", program: "/usr/bin/roc", env: [], kind: App, dir: "/p/app", file: "app.roc", copy, timeout: 7 })
 	first_rows = [
 		("app: first round", for_app.first, first),
 		("package: first round with its own dir", for_package.first, [spec("/p/lib", ["check", "main.roc"]), spec(copy, ["check", "main.roc"])]),
-		("compiler, file and timeout are the ones of the facts", slow.first, [{ compiler: "0.1.0", args: ["check", "app.roc"], dir: "/p/app", timeout: 7 }, { compiler: "0.1.0", args: ["check", "app.roc"], dir: copy, timeout: 7 }]),
+		("compiler, program, env, file and timeout are the ones of the facts", slow.first, [{ compiler: "0.1.0", program: "/usr/bin/roc", args: ["check", "app.roc"], dir: "/p/app", env: [], timeout: 7, weight: 1 }, { compiler: "0.1.0", program: "/usr/bin/roc", args: ["check", "app.roc"], dir: copy, env: [], timeout: 7, weight: 1 }]),
 	]
 	build_rows = [
 		("app: the build, in the copy, once", for_app.build, Ok(spec(copy, ["build", "main.roc", "--output=${copy}/tln-probe.out"]))),
 		("package: no build", for_package.build, Err(None)),
 		("platform: no build", for_platform.build, Err(None)),
+		("the build has the program and the env of the facts", slow.build, Ok({ compiler: "0.1.0", program: "/usr/bin/roc", args: ["build", "app.roc", "--output=${copy}/tln-probe.out"], dir: copy, env: [], timeout: 7, weight: 4 })),
 	]
 	bad = first_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name).concat(build_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name))
 	dbg bad
@@ -127,7 +132,7 @@ expect {
 	bad == [] and errors_equal
 }
 
-# R-LD4 R-BL5 R-P6 R-PH10 R-PH13 C6 R-RC2 R-RC3 R-RC4 R-P3 R-EC10 R-EC11 R-EC1: ladder step 2. The candidate passes when it has no new error, also when the app has errors (R-P6), and the
+# R-LD4 R-BL5 R-P6 R-P8 R-PH10 R-PH13 C6 R-RC2 R-RC3 R-RC4 R-P3 R-EC10 R-EC11 R-EC1: ladder step 2. The candidate passes when it has no new error, also when the app has errors (R-P6), and the
 # unchanged and removed errors are notes. A new error in a file of a hash blames that hash (exit 10, one tuple: R-PH10), and a new error in an app file stops with exit 11 (R-LD4).
 # A hang or a crash of the candidate is exit 10 with the changed entries. A signal from outside is no fact (exit 1).
 expect {
@@ -159,6 +164,11 @@ expect {
 			"an app error wins over the blame of a hash",
 			fail_view(check(mixed, [], copy_dir, owners, [json])),
 			Err((11, "a new error in an app file: main.roc (type redeclared). The app is not a free variable: fix it, or pass --no-check.")),
+		),
+		(
+			"R-P8: an error that the baseline hid in the same module is new (a conservative result)",
+			fail_view(check(out(Exited(1), "", pkg_same_err.replace_each("type mismatch", "missing method")), base, copy_dir, owners, [json])),
+			Err((10, "no tuple works: the whole-app check found new errors in acme/parser 1.0.0 (Parser.roc: missing method)")),
 		),
 		(
 			"hang",

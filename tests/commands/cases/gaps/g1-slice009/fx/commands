@@ -1,4 +1,4 @@
-verify --file lc/main.roc
+env:TALON_AUTO_INSTALL=no verify --file lc/main.roc
 verify --file pin/main.roc
 verify --json --file pk/lib/main.roc
 update -i --file nf/main.roc

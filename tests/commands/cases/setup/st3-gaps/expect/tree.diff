@@ -1,0 +1,27 @@
+--- home/.bashrc
++++ home/.bashrc
+@@ -0,0 +1 @@
++export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+--- home/.local/bin/tln
++++ home/.local/bin/tln
+@@ -0,0 +1 @@
++tln binary v3
+--- home/.local/share/bash-completion/completions/tln
++++ home/.local/share/bash-completion/completions/tln
+@@ -0,0 +1,16 @@
++# bash completion for tln. Made by tln setup.
++_tln() {
++	local cur="${COMP_WORDS[COMP_CWORD]}"
++	local words=""
++	if [ "$COMP_CWORD" -eq 1 ]; then
++		words="init install remove update upgrade outdated why probe list patch verify x publish audit roc tool cache setup yank move share"
++	elif [ "$COMP_CWORD" -eq 2 ]; then
++		case "${COMP_WORDS[1]}" in
++			roc) words="install link use list remove default update" ;;
++			tool) words="install list update rebuild remove" ;;
++			cache) words="gc clean list dir" ;;
++		esac
++	fi
++	COMPREPLY=($(compgen -W "$words" -- "$cur"))
++}
++complete -F _tln tln

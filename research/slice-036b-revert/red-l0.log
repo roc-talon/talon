@@ -1,0 +1,236 @@
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 1362.2 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 407.6 ms.
+packages/resolve/tests/moves.roc: All (4) tests passed in 1587.5 ms.
+packages/resolve/tests/solver.roc: All (5) tests passed in 1188.8 ms.
+tests/unit/add.roc: All (9) tests passed in 752.9 ms.
+tests/unit/alias.roc: All (4) tests passed in 363.6 ms.
+tests/unit/args.roc: All (5) tests passed in 464.4 ms.
+tests/unit/buildskip.roc: All (5) tests passed in 793.3 ms.
+tests/unit/cacheview.roc: All (4) tests passed in 1877.6 ms.
+tests/unit/clean.roc: All (6) tests passed in 2188.2 ms.
+tests/unit/clock.roc: All (2) tests passed in 242.5 ms.
+tests/unit/closuregaps.roc: All (2) tests passed in 893.3 ms.
+tests/unit/closure.roc: All (7) tests passed in 1415.7 ms.
+tests/unit/common.roc: All (1) tests passed in 322.6 ms.
+tests/unit/compiler.roc: All (7) tests passed in 2124.4 ms.
+tests/unit/consent.roc: All (12) tests passed in 1982.3 ms.
+tests/unit/db.roc: All (7) tests passed in 389.5 ms.
+tests/unit/download.roc: All (4) tests passed in 238.2 ms.
+tests/unit/epochs.roc: All (4) tests passed in 1007.9 ms.
+tests/unit/evidence.roc: All (7) tests passed in 4543.3 ms.
+tests/unit/facts.roc: All (5) tests passed in 485.3 ms.
+tests/unit/fetch.roc: All (2) tests passed in 509.7 ms.
+tests/unit/frozen.roc: All (1) tests passed in 2461.3 ms.
+tests/unit/gc.roc: All (9) tests passed in 2338.1 ms.
+tests/unit/github.roc: All (5) tests passed in 594.0 ms.
+tests/unit/guard.roc: All (1) tests passed in 158.6 ms.
+tests/unit/ident.roc: All (2) tests passed in 189.7 ms.
+tests/unit/index.roc: All (6) tests passed in 693.0 ms.
+tests/unit/intent.roc: All (9) tests passed in 2693.4 ms.
+tests/unit/kind.roc: All (3) tests passed in 244.3 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2382.8 ms.
+tests/unit/launch.roc: All (1) tests passed in 605.1 ms.
+tests/unit/link.roc: All (6) tests passed in 754.2 ms.
+tests/unit/listing.roc: All (4) tests passed in 559.9 ms.
+tests/unit/locked.roc: All (3) tests passed in 1887.0 ms.
+tests/unit/lock.roc: All (2) tests passed in 118.3 ms.
+tests/unit/lookup.roc: All (7) tests passed in 664.8 ms.
+tests/unit/manage.roc: All (18) tests passed in 2990.1 ms.
+tests/unit/members.roc: All (2) tests passed in 246.2 ms.
+tests/unit/mode.roc: All (3) tests passed in 192.8 ms.
+tests/unit/net.roc: All (2) tests passed in 196.9 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1112.3 ms.
+tests/unit/opts.roc: All (4) tests passed in 326.7 ms.
+tests/unit/oracleprobe.roc: FAILED
+[dbg] [("no check: the best release is asked for, the header value is not", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("a hard fail of 3.0.0: the next release is asked for", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("a hang of 3.0.0 (a fault, R-EP5): the same", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("a crash of 3.0.0: the same", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("hard fails of 3.0.0 and 2.0.0: the header value is a pass, so it is the result and nothing is asked for", "done json=1.0.0", "done json=3.0.0"), ("a pass of another compiler: no check of this pair", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("a build row (target host): no check of this pair", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("the same rows in another order (R-DT2)", "done json=1.0.0", "done json=3.0.0")]
+
+── ✗ fail ────────────────────────────────────── tests/unit/oracleprobe.roc:64:1
+
+expect {
+    run = |checks| view(Oracle.step_probed(input([json_slot], json_facts), compat(checks, [], Allowed)))
+    pair = |ver| "pairs ${p(ver)}@${nightly}"
+    hard = |ver| row(json(ver), nightly, Fail, [])
+    rows = [
+        ("no check: the best release is asked for, the header value is not", run([]), pair("3.0.0")),
+        ("a hard fail of 3.0.0: the next release is asked for", run([hard("3.0.0")]), pair("2.0.0")),
+        ("a hang of 3.0.0 (a fault, R-EP5): the same", run([row(json("3.0.0"), nightly, Hang, [])]), pair("2.0.0")),
+        ("a crash of 3.0.0: the same", run([row(json("3.0.0"), nightly, Crash, [])]), pair("2.0.0")),
+        ("hard fails of 3.0.0 and 2.0.0: the header value is a pass, so it is the result and nothing is asked for", run([hard("3.0.0"), hard("2.0.0")]), "done json=1.0.0"),
+        ("a pass of 3.0.0: done", run([row(json("3.0.0"), nightly, Pass, [])]), "done json=3.0.0"),
+        ("a fail of 3.0.0 with a module: no module is used yet, so it touches nothing (036b2 adds the scan): done", run([row(json("3.0.0"), nightly, Fail, ["Yaml.roc"])]), "done json=3.0.0"),
+        ("a pass of another compiler: no check of this pair", run([row(json("3.0.0"), "nightly-2026-10-01-aaaaaaa", Pass, [])]), pair("3.0.0")),
+        ("a build row (target host): no check of this pair", run([{ ..row(json("3.0.0"), nightly, Pass, []), target: "x64musl" }]), pair("3.0.0")),
+        ("the same rows in another order (R-DT2)", run([hard("2.0.0"), hard("3.0.0")]), "done json=1.0.0"),
+        ("a real fail row of the header value beats the assumed pass: that value is out, and the pass of 3.0.0 is the result", run([row(json("1.0.0"), nightly, Fail, []), row(json("3.0.0"), nightly, Pass, [])]), "done json=3.0.0"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+nightly = "nightly-2026-10-14-38a3029"
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+json_slot = slot("json", [], json("1.0.0"), Free, [cand(json("1.0.0"), 30),
+cand(json("2.0.0"), 30), cand(json("3.0.0"), 30)])
+
+[dbg] [("the platform pair is marked", "pairs pf/releases/download/0.1.1/pfx0x1x1.tar.zst@nightly-2026-10-14-38a3029!", "done pf=0.1.1"), ("a new name: its release is asked for", "pairs new/releases/download/1.0.0/newx1x0x0.tar.zst@nightly-2026-10-14-38a3029", "done new=1.0.0"), ("2 slots: the pairs are in the order of the slots", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029 pf/releases/download/0.1.1/pfx0x1x1.tar.zst@nightly-2026-10-14-38a3029!", "done json=3.0.0 pf=0.1.1"), ("a slot that has its pair: only the other is asked for", "pairs pf/releases/download/0.1.1/pfx0x1x1.tar.zst@nightly-2026-10-14-38a3029!", "done json=3.0.0 pf=0.1.1")]
+
+── ✗ fail ────────────────────────────────────── tests/unit/oracleprobe.roc:88:1
+
+expect {
+    pf = |ver| u("pf", ver)
+    pf_slot = { ..slot("pf", [], pf("0.1.0"), Free, [cand(pf("0.1.0"), 30), cand(pf("0.1.1"), 30)]), is_platform: Bool.True }
+    new_slot = { ..slot("new", [], u("new", "1.0.0"), Free, [cand(u("new", "1.0.0"), 30)]), current: Err(None) }
+    held = slot("json", [], json("1.0.0"), Held, [])
+    facts = json_facts.concat([pf_fact(pf("0.1.0")), pf_fact(pf("0.1.1")), fact(u("new", "1.0.0"), [])])
+    run = |slots, checks| view(Oracle.step_probed(input(slots, facts), compat(checks, [], Allowed)))
+    rows = [
+        ("the platform pair is marked", run([pf_slot], []), "pairs pf/releases/download/0.1.1/pfx0x1x1.tar.zst@${nightly}!"),
+        ("a new name: its release is asked for", run([new_slot], []), "pairs new/releases/download/1.0.0/newx1x0x0.tar.zst@${nightly}"),
+        ("2 slots: the pairs are in the order of the slots", run([json_slot, pf_slot], []), "pairs ${p("3.0.0")}@${nightly} pf/releases/download/0.1.1/pfx0x1x1.tar.zst@${nightly}!"),
+        ("a slot that has its pair: only the other is asked for", run([json_slot, pf_slot], [row(json("3.0.0"), nightly, Pass, [])]), "pairs pf/releases/download/0.1.1/pfx0x1x1.tar.zst@${nightly}!"),
+        ("a held slot is never asked for", run([held], []), "done json=1.0.0"),
+        ("a header value that is the best release: nothing changes, nothing is asked for", run([slot("json", [], json("3.0.0"), Free, [cand(json("1.0.0"), 30), cand(json("3.0.0"), 30)])], []), "done json=3.0.0"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+nightly = "nightly-2026-10-14-38a3029"
+json_slot = slot("json", [], json("1.0.0"), Free, [cand(json("1.0.0"), 30),
+cand(json("2.0.0"), 30), cand(json("3.0.0"), 30)])
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+
+[dbg] [("the best release is not looked up: a lookup is asked for", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("a row with a hard fail: the next release is looked up", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0"), ("both are looked up and fail: the header value", "done json=1.0.0", "done json=3.0.0"), ("a lookup of another compiler is no lookup of this pair", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0")]
+
+── ✗ fail ───────────────────────────────────── tests/unit/oracleprobe.roc:110:1
+
+expect {
+    run = |checks, looked| view(Oracle.step_probed(input([json_slot], json_facts), compat(checks, looked, Off)))
+    asked = |ver| "pairs ${p(ver)}@${nightly}"
+    hard = |ver| row(json(ver), nightly, Fail, [])
+    rows = [
+        ("the best release is not looked up: a lookup is asked for", run([], []), asked("3.0.0")),
+        ("looked up, no row: it is fit", run([], [key(json("3.0.0"), nightly)]), "done json=3.0.0"),
+        ("a row with a hard fail: the next release is looked up", run([hard("3.0.0")], [key(json("3.0.0"), nightly)]), asked("2.0.0")),
+        ("both are looked up and fail: the header value", run([hard("3.0.0"), hard("2.0.0")], [key(json("3.0.0"), nightly), key(json("2.0.0"), nightly)]), "done json=1.0.0"),
+        ("a row of 3.0.0 without a key in `looked` is a lookup too (the key is the row's own): it is known", run([row(json("3.0.0"), nightly, Pass, [])], []), "done json=3.0.0"),
+        ("a lookup of another compiler is no lookup of this pair", run([], [key(json("3.0.0"), "nightly-2026-10-01-aaaaaaa")]), asked("3.0.0")),
+        ("nothing changes: no lookup", view(Oracle.step_probed(input([slot("json", [], json("3.0.0"), Free, [cand(json("3.0.0"), 30)])], json_facts), compat([], [], Off))), "done json=3.0.0"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+nightly = "nightly-2026-10-14-38a3029"
+json_slot = slot("json", [], json("1.0.0"), Free, [cand(json("1.0.0"), 30),
+cand(json("2.0.0"), 30), cand(json("3.0.0"), 30)])
+
+[dbg] []
+[dbg] [("the whole tuple is dropped: the next release is asked for", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0 core=1.0.0"), ("the blame names only json 3.0.0: the same result", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0 core=1.0.0"), ("a conflict that names 2 releases of 2 slots: json 3.0.0 stays with a core that is not 1.0.0 only, so with the held core it is out", "done json=2.0.0 core=1.0.0", "done json=3.0.0 core=1.0.0"), ("a place that is no slot never applies", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=3.0.0 core=1.0.0"), ("the pairs come before the closure walk: json 3.0.0 has a closure problem, but the first answer is still its pair", "pairs json/releases/download/3.0.0/jsonx3x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=2.0.0 core=1.0.0"), ("with the pass, the closure walk drops json 3.0.0 and the next best release is asked for", "pairs json/releases/download/2.0.0/jsonx2x0x0.tar.zst@nightly-2026-10-14-38a3029", "done json=2.0.0 core=1.0.0")]
+
+── ✗ fail ───────────────────────────────────── tests/unit/oracleprobe.roc:156:1
+
+expect {
+    core_slot = slot("core", [], u("core", "1.0.0"), Held, [])
+    facts = json_facts.concat([fact(u("core", "1.0.0"), [])])
+    run = |slots, conflicts, checks| view(Oracle.step_probed(input(slots, facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts }))
+    pass = |ver| row(json(ver), nightly, Pass, [])
+    deep = [fact(json("1.0.0"), []), fact(json("2.0.0"), []), fact(json("3.0.0"), [u("mid", "1.0.0")]), fact(u("mid", "1.0.0"), [u("core", "1.1.0")]), fact(u("core", "1.0.0"), [])]
+    rows = [
+        ("the whole tuple is dropped: the next release is asked for", run([json_slot, core_slot], [[{ at: 0, id: json("3.0.0") }, { at: 1, id: u("core", "1.0.0") }]], []), "pairs ${p("2.0.0")}@${nightly}"),
+        ("the blame names only json 3.0.0: the same result", run([json_slot, core_slot], [[{ at: 0, id: json("3.0.0") }]], []), "pairs ${p("2.0.0")}@${nightly}"),
+        ("a conflict that names 2 releases of 2 slots: json 3.0.0 stays with a core that is not 1.0.0 only, so with the held core it is out", run([json_slot, core_slot], [[{ at: 0, id: json("3.0.0") }, { at: 1, id: u("core", "1.0.0") }]], [pass("2.0.0")]), "done json=2.0.0 core=1.0.0"),
+        ("a place that is no slot never applies", run([json_slot, core_slot], [[{ at: 7, id: json("3.0.0") }]], []), "pairs ${p("3.0.0")}@${nightly}"),
+        ("no conflict, a pass: json 3.0.0", run([json_slot, core_slot], [], [pass("3.0.0")]), "done json=3.0.0 core=1.0.0"),
+        ("the pairs come before the closure walk: json 3.0.0 has a closure problem, but the first answer is still its pair", view(Oracle.step_probed(input([json_slot, core_slot], deep), compat([], [], Allowed))), "pairs ${p("3.0.0")}@${nightly}"),
+        ("with the pass, the closure walk drops json 3.0.0 and the next best release is asked for", view(Oracle.step_probed(input([json_slot, core_slot], deep), compat([pass("3.0.0")], [], Allowed))), "pairs ${p("2.0.0")}@${nightly}"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+nightly = "nightly-2026-10-14-38a3029"
+json_slot = slot("json", [], json("1.0.0"), Free, [cand(json("1.0.0"), 30),
+cand(json("2.0.0"), 30), cand(json("3.0.0"), 30)])
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+
+[dbg] [("a hard fail of the only value", "tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for acme/json 3.0.0 (no module is named)", "done json=3.0.0"), ("a hang", "tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for acme/json 3.0.0 (hangs)", "done json=3.0.0"), ("a crash", "tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for acme/json 3.0.0 (crashes)", "done json=3.0.0"), ("the platform", "tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for the platform acme/pf 0.1.1 (no module is named)", "done pf=0.1.1"), ("2 slots that both fail: the explanation names the causes of its proof, here the first slot (the crash of the platform is not part of it)", "tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for acme/json 3.0.0 (no module is named)", "done json=3.0.0 pf=0.1.1"), ("the platform fails first in the order of the slots: its blame", "tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for the platform acme/pf 0.1.1 (crashes)", "done pf=0.1.1 json=3.0.0")]
+
+── ✗ fail ───────────────────────────────────── tests/unit/oracleprobe.roc:179:1
+
+expect {
+    exact = slot("json", ["=3.0.0"], json("1.0.0"), Free, [cand(json("1.0.0"), 30), cand(json("3.0.0"), 30)])
+    pf_slot = { ..slot("pf", ["=0.1.1"], u("pf", "0.1.0"), Free, [cand(u("pf", "0.1.0"), 30), cand(u("pf", "0.1.1"), 30)]), is_platform: Bool.True }
+    facts = json_facts.concat([pf_fact(u("pf", "0.1.0")), pf_fact(u("pf", "0.1.1"))])
+    a_slot = slot("a", [], u("a", "1.0.0"), Free, [cand(u("a", "1.0.0"), 30)])
+    b_slot = slot("b", [], u("b", "1.0.0"), Held, [])
+    run = |slots, checks| view(Oracle.step_probed(input(slots, facts), compat(checks, [], Allowed)))
+    line = |text| "tln: error[no_tuple]: no tuple works: the unit check on ${nightly} fails for ${text}"
+    rows = [
+        ("a hard fail of the only value", run([exact], [row(json("3.0.0"), nightly, Fail, [])]), line("acme/json 3.0.0 (no module is named)")),
+        ("a hang", run([exact], [row(json("3.0.0"), nightly, Hang, [])]), line("acme/json 3.0.0 (hangs)")),
+        ("a crash", run([exact], [row(json("3.0.0"), nightly, Crash, [])]), line("acme/json 3.0.0 (crashes)")),
+        ("the platform", run([pf_slot], [row(u("pf", "0.1.1"), nightly, Fail, [])]), line("the platform acme/pf 0.1.1 (no module is named)")),
+        ("2 slots that both fail: the explanation names the causes of its proof, here the first slot (the crash of the platform is not part of it)", run([exact, pf_slot], [row(json("3.0.0"), nightly, Fail, []), row(u("pf", "0.1.1"), nightly, Crash, [])]), line("acme/json 3.0.0 (no module is named)")),
+        ("the platform fails first in the order of the slots: its blame", run([pf_slot, exact], [row(json("3.0.0"), nightly, Fail, []), row(u("pf", "0.1.1"), nightly, Crash, [])]), line("the platform acme/pf 0.1.1 (crashes)")),
+        ("no probe cause (a release that needs a higher version of a held group): the text of `step`", view(Oracle.step_probed(input([a_slot, b_slot], [fact(u("a", "1.0.0"), [u("b", "1.5.0")]), fact(u("b", "1.0.0"), [])]), compat([], [], Allowed))), "tln: error[no_tuple]: no tuple works: the releases of a, b do not fit together (R-C2, R-C3)"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+nightly = "nightly-2026-10-14-38a3029"
+json_facts = [fact(json("1.0.0"), []), fact(json("2.0.0"), []),
+fact(json("3.0.0"), [])]
+
+Ran 6 tests in 2251.9 ms.:
+    1 passed
+    5 failed
+    0 compiler errors
+tests/unit/oracle.roc: All (5) tests passed in 3425.3 ms.
+tests/unit/out.roc: All (4) tests passed in 149.1 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 946.8 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2302.2 ms.
+tests/unit/picker.roc: All (2) tests passed in 129.7 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 2090.6 ms.
+tests/unit/pick.roc: All (3) tests passed in 2071.7 ms.
+tests/unit/pin.roc: All (9) tests passed in 919.9 ms.
+tests/unit/pins.roc: All (6) tests passed in 1573.1 ms.
+tests/unit/probe.roc: All (5) tests passed in 328.1 ms.
+tests/unit/project.roc: All (7) tests passed in 1773.6 ms.
+tests/unit/projects.roc: All (3) tests passed in 462.7 ms.
+tests/unit/prompt.roc: All (5) tests passed in 306.6 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2856.0 ms.
+tests/unit/ranges.roc: All (1) tests passed in 289.2 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1768.1 ms.
+tests/unit/ref.roc: All (4) tests passed in 344.3 ms.
+tests/unit/removal.roc: All (4) tests passed in 1977.0 ms.
+tests/unit/report.roc: All (3) tests passed in 264.1 ms.
+tests/unit/roots.roc: All (3) tests passed in 242.9 ms.
+tests/unit/scan.roc: All (2) tests passed in 169.9 ms.
+tests/unit/selector.roc: All (2) tests passed in 390.6 ms.
+tests/unit/setup.roc: All (10) tests passed in 888.8 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 317.5 ms.
+tests/unit/temp.roc: All (4) tests passed in 188.1 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1991.8 ms.
+tests/unit/units.roc: All (6) tests passed in 795.7 ms.
+tests/unit/update.roc: All (2) tests passed in 2037.4 ms.
+tests/unit/uses.roc: All (2) tests passed in 543.1 ms.
+tests/unit/vars.roc: All (6) tests passed in 1724.2 ms.
+tests/unit/verify.roc: All (2) tests passed in 1390.0 ms.
+tests/unit/why.roc: All (6) tests passed in 2018.2 ms.

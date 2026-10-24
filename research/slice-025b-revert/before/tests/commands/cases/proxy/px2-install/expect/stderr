@@ -1,0 +1,10 @@
+tln: error[consent]: nightly-2026-10-12-2664a27 is not installed. Nothing was downloaded.
+downloading nightly-2026-10-14-38a3029 (73.4 MB)
+tln: error[consent]: the compiler nightly-2026-10-12-2664a27 (roc +nightly-2026-10-12-2664a27) is not installed. Run: tln roc install nightly-2026-10-12-2664a27, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-12-2664a27 (roc +nightly-2026-10-12-2664a27) is not installed. Run: tln roc install nightly-2026-10-12-2664a27, or set TALON_AUTO_INSTALL=yes.
+downloading nightly-2026-10-13-91fa0c2 (73.5 MB)
+downloading nightly-2026-10-17-601b54c (73.1 MB)
+tln: error[integrity]: sha256 of nightly-2026-10-17-601b54c differs: expected 2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881, got b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78. Talon deleted the download.
+downloading nightly-2026-10-16-1df370f (73.2 MB)
+tln: error[consent]: the compiler nightly-2026-10 (roc +nightly-2026-10) is not installed. Run: tln roc install nightly-2026-10, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-12-2664a27 (roc +nightly-2026-10-12-2664a27) is not installed. Run: tln roc install nightly-2026-10-12-2664a27, or set TALON_AUTO_INSTALL=yes.

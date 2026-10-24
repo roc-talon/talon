@@ -120,7 +120,7 @@ Pick :: [].{
 			Err(NoFailure) => match search(search_order(facts, domains), [], ctx) {
 				Err(NoFit) => Fail(Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(facts.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)"))
 				Ok(found) => if found.need.is_empty() {
-					Done(facts.slots.map2(found.picked, |slot, p| chosen_of(slot, p.c, facts)))
+					Done(facts.slots.map2(found.picked, |slot, p| Pick.chosen_for({ slot, url: p.c.url, version: p.c.ident.version, published_at: p.c.published_at, now: facts.now, min_age: facts.min_age })))
 				} else {
 					Need(found.need)
 				}
@@ -143,6 +143,80 @@ Pick :: [].{
 		known = Dict.from_list(facts.facts.map(|f| (f.url, f.release)))
 		rows.keep_oks(|(slot, c)| moved_row(slot, c, rows, known))
 	}
+
+	## Slice 036 (N1): the first slot with no release left, as the failure of `step` (the table of `Fail` above), or `Err(NoFailure)`. `Oracle.step` gives the same text.
+	empty_domain : {
+		slots : List(Slot),
+		strategy : [Highest, Lowest],
+		now : U64,
+		min_age : U64,
+		snapshot : Try(U64, [None]),
+		facts : List({ url : Str, release : Release }),
+		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
+		paths : List(Closure.Node),
+		second : Bool,
+	} -> Try(Fail, [NoFailure])
+	empty_domain = |facts| {
+		known = Dict.from_list(facts.facts.map(|f| (f.url, f.release)))
+		first_failure(facts.slots, facts.slots.map(|slot| domain_of(slot, facts, known)))
+	}
+
+	## Slice 036 (N1): the closure of a tuple (R-AL9, the rule 4 of the table of the closure above). `picked` are the chosen URLs in the order of the slots. `Problem`: a member has a problem of the closure.
+	## `Fine(ids)`: the nodes with no fact, no repeat (an unknown node is taken as fit). `members` and `nodes` are as in `step`.
+	closure_verdict : { members : List({ file : Str, entries : List(Closure.Entry) }), nodes : List(Closure.Node), picked : List({ files : List(Str), is_platform : Bool, url : Str }) } -> [Problem, Fine(List(Str))]
+	closure_verdict = |input| {
+		slot_entries = |m| input.picked.keep_if(|p| p.files.is_empty() or m.file == "" or p.files.contains(m.file)).map(|p| { alias: "", value: p.url, is_platform: p.is_platform })
+		results = input.members.map(|m| Closure.step({ file: m.file, entries: slot_entries(m).concat(m.entries), nodes: input.nodes }))
+		if results.any(
+			|r| match r {
+				Fail(_) => Bool.True
+				_ => Bool.False
+			},
+		) {
+			Problem
+		} else {
+			ids = results.join_map(
+				|r| match r {
+					Need(need) => need
+					_ => []
+				},
+			)
+			Fine(ids.fold([], |found, id| if found.contains(id) found else found.append(id)))
+		}
+	}
+
+	## Slice 036 (N1): one `Chosen` for the slot and the release `url` (version `version`, published at `published_at`). `change` and `note` are as in the doc of `Chosen`.
+	chosen_for : { slot : Slot, url : Str, version : Str, published_at : U64, now : U64, min_age : U64 } -> Chosen
+	chosen_for = |input| {
+		old = match input.slot.current {
+			Ok(url) => Ident.of_url(url).map_ok(|ident| ident.version) ?? ""
+			Err(None) => ""
+		}
+		days = |seconds| (seconds // 86400).to_str()
+		hidden_by_age = input.slot.named == Ok(input.version) and input.slot.current != Ok(input.url) and too_young(input.now, input.min_age, input.published_at)
+		{
+			id: input.slot.id,
+			url: input.url,
+			version: input.version,
+			change: if input.slot.current == Ok(input.url) Keep else Move(old),
+			note: if hidden_by_age Ok("${input.slot.id} ${input.version} is ${days(if input.now > input.published_at input.now - input.published_at else 0)}d old (min-release-age ${days(input.min_age)}d)") else Err(None),
+		}
+	}
+
+	## Slice 038 (R-UP2): the newest release of the domain of one slot with no range (rules 1, 3, 4 and 5 of `step`, order `Highest`). `Err(None)` when the domain is empty.
+	newest : Slot, { now : U64, min_age : U64, snapshot : Try(U64, [None]), facts : List({ url : Str, release : Release }) } -> Try(Index.Candidate, [None])
+	newest = |slot, ctx| Pick.newest_in({ ..slot, ranges: [] }, ctx)
+
+	## Slice 040 (R-UP10, R-C1): `newest` with the ranges of the slot kept (rule 2 of `step`). `Err(None)` when the domain is empty.
+	newest_in : Slot, { now : U64, min_age : U64, snapshot : Try(U64, [None]), facts : List({ url : Str, release : Release }) } -> Try(Index.Candidate, [None])
+	newest_in = |slot, ctx| {
+		one = { slots: [slot], strategy: Highest, now: ctx.now, min_age: ctx.min_age, snapshot: ctx.snapshot, facts: ctx.facts, unmanaged: [], paths: [], second: Bool.False }
+		domain_of(slot, one, Dict.from_list(ctx.facts.map(|f| (f.url, f.release)))).ordered.first().map_err(|_| None)
+	}
+
+	## Slice 038: is version `a` above version `b` (`X.Y.Z`)? A text that does not parse is never above.
+	newer : Str, Str -> Bool
+	newer = |a, b| is_newer(a, b)
 
 	## A release fact as a node of the closure (the platform entry first, then the dependencies). The aliases are empty: the pick keeps none.
 	node_of : { url : Str, release : Release } -> Closure.Node
@@ -237,11 +311,11 @@ search_order = |facts, domains| {
 is_hidden : Pick.Slot, Step, Cand -> Bool
 is_hidden = |slot, facts, c| {
 	exempt = slot.current == Ok(c.url) or slot.named == Ok(c.ident.version)
-	!exempt and (too_young(facts, c) or after_snapshot(facts, c))
+	!exempt and (too_young(facts.now, facts.min_age, c.published_at) or after_snapshot(facts, c))
 }
 
-too_young : Step, Cand -> Bool
-too_young = |facts, c| c.published_at + facts.min_age > facts.now
+too_young : U64, U64, U64 -> Bool
+too_young = |now, min_age, published_at| published_at + min_age > now
 
 after_snapshot : Step, Cand -> Bool
 after_snapshot = |facts, c| match facts.snapshot {
@@ -331,46 +405,9 @@ is_newer = |a, b| match (Semver.parse(a), Semver.parse(b)) {
 	_ => Bool.False
 }
 
-# R-AL9, Q1 of slice 016: the closure of a tuple, with the rule of `Closure.step` (one call for each member file). The roots are the chosen URLs of the slots that name the member (`files`), then the entries of the member that no slot owns.
-# A `Fail` of any member is a problem of the tuple. Else `need` has the nodes that no fact is known for (the first member that asks, no repeat). An unknown node is taken as fit.
+# R-AL9, Q1 of slice 016: the closure of a tuple, with the rule of `Closure.step` (`Pick.closure_verdict`).
 closure_of : Ctx, List(Choice) -> [Problem, Fine(List(Str))]
-closure_of = |ctx, picked| {
-	slot_entries = |m| picked.keep_if(|p| p.files.is_empty() or m.file == "" or p.files.contains(m.file)).map(|p| { alias: "", value: p.c.url, is_platform: p.is_platform })
-	results = ctx.members.map(|m| Closure.step({ file: m.file, entries: slot_entries(m).concat(m.entries), nodes: ctx.nodes }))
-	if results.any(
-		|r| match r {
-			Fail(_) => Bool.True
-			_ => Bool.False
-		},
-	) {
-		Problem
-	} else {
-		ids = results.join_map(
-			|r| match r {
-				Need(need) => need
-				_ => []
-			},
-		)
-		Fine(ids.fold([], |found, id| if found.contains(id) found else found.append(id)))
-	}
-}
-
-chosen_of : Pick.Slot, Cand, Step -> Pick.Chosen
-chosen_of = |slot, c, facts| {
-	old = match slot.current {
-		Ok(url) => Ident.of_url(url).map_ok(|ident| ident.version) ?? ""
-		Err(None) => ""
-	}
-	days = |seconds| (seconds // 86400).to_str()
-	hidden_by_age = slot.named == Ok(c.ident.version) and slot.current != Ok(c.url) and too_young(facts, c)
-	{
-		id: slot.id,
-		url: c.url,
-		version: c.ident.version,
-		change: if slot.current == Ok(c.url) Keep else Move(old),
-		note: if hidden_by_age Ok("${slot.id} ${c.ident.version} is ${days(if facts.now > c.published_at facts.now - c.published_at else 0)}d old (min-release-age ${days(facts.min_age)}d)") else Err(None),
-	}
-}
+closure_of = |ctx, picked| Pick.closure_verdict({ members: ctx.members, nodes: ctx.nodes, picked: picked.map(|p| { files: p.files, is_platform: p.is_platform, url: p.c.url }) })
 
 # R-SP16: the row of a movable slot whose value moved, with the first conflict that its old value has in the final tuple.
 moved_row : Pick.Slot, Pick.Chosen, List((Pick.Slot, Pick.Chosen)), Dict(Str, Release) -> Try({ id : Str, from : Str, to : Str, why : Str }, [Stays])

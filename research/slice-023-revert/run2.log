@@ -1,0 +1,5 @@
+P4: CAUGHT by l0:proxy (R-PX3: the +id stays in the arguments)
+G2: CAUGHT by l2:proxy/px1-flow (R-CC9: no .last-use)
+G9: CAUGHT by l2:proxy/px1-flow (R-PX7: canonical in an opted out run)
+I1: CAUGHT by l3:compilers/px1-proxy (R-SO9: the path of a cache hit is the first file)
+SAME as code-final

@@ -1,0 +1,41 @@
+# R-CM17 R-GC13 R-LY1 R-FL4 R-J3 R-OUT2 R-OUT4 (slice 029b): `tln cache dir` and `tln cache list` on the real binary, with the real Fx (list_dirs, tree_info). The runner sets CI=true and ROC_CACHE_DIR to the cache root, so the build root is the cache root.
+# The sizes are the real sizes of the fixture files. `snap` prints the files that a part removed (`<`) or made (`>`): both commands only read, so it prints nothing. No network (the commands need none).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+R=$HOME/.cache/roc
+B=$HOME/.cache/roc-builds
+files() { (cd $HOME && find .cache .config .local -type f | sort); }
+snap() { files > $D/snap.new; diff $D/snap.old $D/snap.new | grep '^[<>]' || true; cp $D/snap.new $D/snap.old; }
+files > $D/snap.old
+
+echo "== 1: dir (R-CM17, R-LY1): the cache root and a line end. Nothing else."
+st tln cache dir
+snap
+echo "== 2: dir with --json (R-J3, R-OUT4): stdout has only the envelope, stderr nothing. With ROC_CACHE_DIR set to another dir, data.path is still the cache root."
+st tln cache dir --json
+st env ROC_CACHE_DIR=$B tln cache dir --json
+snap
+echo "== 3: dir with --quiet and ROC_CACHE_DIR set to another dir (R-FL4, R-LY1): the path is the answer, so it is shown. It is the cache root, not the build root."
+st env ROC_CACHE_DIR=$B tln cache dir --quiet
+snap
+echo "== 4: list (R-GC13, R-OUT2): what clean --all would remove, with the real sizes and the total, in the order index, x, packages, then the build-cache dirs of the build root (here the cache root: compat-aaaaaaa, nightly-2025-01-01-abc1234, debug-9999999). compat-file is a file and stays out. No toolchain, tool or setting is listed."
+st tln cache list
+snap
+echo "lock dirs left (list takes no lock): $(find $R -name '*.lock' | wc -l | tr -d ' ')"
+echo "== 5: list with --json (R-J3, R-OUT4): items with bytes, total. Only the envelope on stdout."
+st tln cache list --json
+snap
+echo "== 6: ROC_CACHE_DIR is another dir (R-LY1): the build root is \$HOME/.cache/roc-builds. Its 3 build caches are listed with the index, x and packages of the cache root. other-old stays out (the name). compat-aaaaaaa is in the cache root, not in the build root, so it is not listed. --quiet shows the list (R-FL4)."
+st env ROC_CACHE_DIR=$B tln cache list --quiet
+snap
+echo "== 7: an operand is a usage failure (R-CM17): exit 2 for both commands"
+st tln cache dir packages
+st tln cache list packages
+echo "== 8: --all is a flag of clean only (R-CM17): exit 2"
+st tln cache list --all
+echo "== 9: after clean --all nothing is left to list: the line, then the empty data (R-OUT2, R-OUT4)"
+tln cache clean --all > /dev/null 2>&1
+files > $D/snap.old
+st tln cache list
+st tln cache list --json
+snap

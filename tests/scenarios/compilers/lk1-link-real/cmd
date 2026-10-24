@@ -1,0 +1,72 @@
+# R-EV22 R-R12 R-R13 R-R5 R-LK1 R-LK2 R-LK3 R-LK4 R-CC1 R-CC3 R-FL12 R-CM15 R-J3 R-PX2 R-CC9 (slice 024b): `tln roc link` and `tln roc link --copy` on the real binary, with the real Fx (copy_file!, rename, lock, write), and the `roc` proxy that runs the result.
+# The compiler of the case is a script that prints its build number, so a rebuild is one rewrite of the file. The launcher is a copy of tln with the name roc. TALON_NOW=2026-10-22T12:00:00Z. No network (no command needs it).
+export TALON_NOW=2026-10-22T12:00:00Z
+TLN=$(command -v tln)
+D=$TALON_TEST_DIR
+T=$XDG_CACHE_HOME/roc/toolchains
+mkdir -p $D/launch roc-src/zig-out/bin
+cp "$TLN" $D/launch/roc
+L=$D/launch/roc
+B=roc-src/zig-out/bin/roc
+build() {
+    printf '#!/bin/sh\necho "build %s ran as $0: $*"\n' "$1" > $B
+    chmod +x $B
+}
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+build 1
+
+echo "== 1: R-R12 R-LK4: link. The dir of link-dev has only .talon.json: no copy, no file system link. The text of .talon.json has the absolute path of the target and the time of Talon."
+st tln roc link dev $B
+ls -A $T/link-dev
+cat $T/link-dev/.talon.json
+echo "== 2: R-R5 R-LK4 R-PX2: the proxy runs the target path, by +link-dev (rank 1), by ROC_TOOLCHAIN (rank 2) and by the global default (rank 6). The arguments go on. .last-use has the time of Talon (R-CC9)."
+st $L +link-dev check --opt=speed
+st env ROC_TOOLCHAIN=link-dev $L version
+st tln roc default link-dev
+st $L version
+cat $T/link-dev/.last-use
+echo "== 3: R-LK1: a link follows its target: a rebuild changes the compiler under the same id."
+build 2
+st $L +link-dev version
+echo "== 4: R-R13 R-LK2 R-LK3: a copy of build 2 keeps the executable bit, and a later rebuild does not change it. The dir has roc and .talon.json (source, not path)."
+st tln roc link --copy fix-2 $B
+ls -A $T/copy-fix-2
+cat $T/copy-fix-2/.talon.json
+build 3
+st $L +copy-fix-2 version
+st $L +link-dev version
+echo "== 5: R-LK2: a name that exists is an error, the copy stays. --force replaces the copy (now build 3). A link has no --force (R-FL12): exit 2, and the same for a link that exists."
+st tln roc link --copy fix-2 $B
+st $L +copy-fix-2 version
+st tln roc link --copy --force fix-2 $B
+st $L +copy-fix-2 version
+st tln roc link --force dev $B
+st tln roc link dev $B
+echo "== 6: R-LK2 R-LK4: a symbolic link at the source (the path has a .. part). A copy is a plain file with the bytes behind the link. A link records the absolute path with no symbolic link resolved, so a rebuild that replaces the symbolic link is followed."
+ln -s $PWD/$B roc-src/lnk-roc
+st tln roc link --copy via-link roc-src/zig-out/../lnk-roc
+test ! -L $T/copy-via-link/roc && echo "the copy is a plain file"
+st $L +copy-via-link version
+st tln roc link via-link roc-src/zig-out/../lnk-roc
+cat $T/link-via-link/.talon.json
+printf '#!/bin/sh\necho "other build ran as $0: $*"\n' > roc-src/other-roc
+chmod +x roc-src/other-roc
+ln -sf $PWD/roc-src/other-roc roc-src/lnk-roc
+st $L +link-via-link version
+echo "== 7: R-CM15 R-FL12 R-R12: the usage failures: no operand, a missing file, a name that is not one word, a flag of another command, --force with no --copy."
+st tln roc link
+st tln roc link dev2 roc-src/missing
+st tln roc link 'bad name' $B
+st tln roc link --git dev3 $B
+echo "== 7b: R-EV22 (gap row): a TALON_NOW that is not a UTC time is exit 2 with its text, before the lock. Nothing is made (the final ls shows no link-dev9)."
+st env TALON_NOW=yesterday tln roc link dev9 $B
+echo "== 8: R-J3 R-LY1: roc list shows the 2 kinds with the date of TALON_NOW. --json has the envelope only."
+st tln roc ls
+st tln roc link --json --copy fix-4 $B
+echo "== 9: R-LK4 R-E1: the target is deleted. The proxy does not look at the file: the start fails with exit 18. The copy still runs."
+rm $B
+st $L +link-dev version 2>&1 | sed -e 's/cannot run \(.*\): .*/cannot run \1: (text of the platform)/'
+st $L +copy-fix-2 version
+echo "== R-CC1: no temp dir, no trash dir, no lock is left in toolchains/"
+find $T -name '*.tmp' -o -name '*.trash' -o -name '*.lock' | wc -l | tr -d ' '
+ls $T

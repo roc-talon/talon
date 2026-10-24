@@ -1,0 +1,3 @@
+moving $HOME/.local/bin/roc to $HOME/.local/bin/roc.old
+tln: error[conflict]: $HOME/.local/bin/roc.old exists. Talon does not replace it. Move it away, then run tln setup --replace-roc again.
+note: $HOME/.local/bin/roc is not a Talon file, so no roc launcher was installed. To replace it, run: tln setup --replace-roc

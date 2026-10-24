@@ -1,2 +1,6 @@
 [overrides]
 json = "acme/json@=2.1.0"
+
+[dependencies]
+pf = "acme/pf@=0.1.0"
+parser = "acme/parser@=1.0.0"

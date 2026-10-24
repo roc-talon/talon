@@ -1,0 +1,11 @@
+update json file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=p3/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=p5/main.roc compiler=nightly-2026-10-09-258ab27
+update json file=p6/main.roc no-check compiler=nightly-2026-10-14-38a3029
+update json file=p7/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+update json file=p8/main.roc toolchain=nightly-2026-10-21-5349569 compiler=nightly-2026-10-14-38a3029
+update json file=p9/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+update json file=p10/main.roc toolchain=link-dev compiler=nightly-2026-10-14-38a3029
+update json file=p11/main.roc toolchain=copy-fix-1 compiler=nightly-2026-10-14-38a3029

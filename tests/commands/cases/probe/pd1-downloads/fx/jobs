@@ -1,0 +1,8 @@
+# R-DA3 the download, R-HF5 the extract, R-HF2 the chmod (as slice 021). The first rule whose needle is in the arguments answers.
+# home4 and home6 are the homes of runs 8 and 10: each download fails (the server answers 404).
+/home4/	22	-	curl: (22) The requested URL returned error: 404	-
+/home6/	22	-	curl: (22) The requested URL returned error: 404	-
+curl --fail	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-

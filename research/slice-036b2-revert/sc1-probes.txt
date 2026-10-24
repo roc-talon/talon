@@ -1,0 +1,20 @@
+# run 1 (rows 1 to 3): the loop drops json 2.1.0 (a unit fail in Yaml.roc that the app uses), so the ladder runs once, on json 2.0.5 and parser 1.2.0: the baseline, the check and the build pass
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2 (rows 4 to 6): the loop drops json 2.1.0 (a unit fail in main.roc, no scan), the ladder runs once on json 2.0.5
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 3 (rows 7 and 8): the baseline has the error of acme/parser 1.0.0 and the check of json 2.1.0 has a new error in acme/json 2.1.0 (the error in parser 1.0.0 is not new): the ladder drops json 2.1.0 (a named blame). Rows 9 to 11: the ladder on json 2.0.5 and parser 1.2.0 passes
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 4 (rows 12 and 13): the check has a new error in acme/parser 1.2.0: the ladder drops parser 1.2.0 (a named blame). Rows 14 to 16: the ladder on json 2.2.0 and parser 1.1.0 passes
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	pass.stdout	new-parser.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

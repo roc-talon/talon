@@ -1,0 +1,3 @@
+m27 the platform check holds with 2 platform slots (the first) L0=caught ['[dbg] ["R-C3 (Q2): with 2 platform slots nothing is checked, so a platform that is the second one is no conflict"]']
+m49 Need names a release twice L0=caught ['[dbg] ["2 slots choose one release with no fact: the need names it once"]']
+c3 a conflict with no terms is ignored L0=caught ['[dbg] ["a conflict with no term is always true: no tuple"]']

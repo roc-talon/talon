@@ -1,0 +1,198 @@
+[dbg] ["no check: the best tuple", "a fail in a used module excludes its pair", "2 adjacent fails", "a pass between 2 fails stays a value", "R-UM1: a fail with no used module is ignored", "R-UM1: a fail with no module is a hard fail", "one used module in 2 is enough", "a hang excludes its pair", "a crash excludes its pair", "a pass excludes nothing", "R-EP9: an inferred fail decides when no probe may run", "the inferred fails next to a real fail", "no compiler for x-2.0.0: x-1.0.0", "x first: the checks of x-1.0.0 do not change x-2.0.0", "lowest: the oldest compiler", "lowest: the oldest compiler that has no fail", "the candidates of roc are some of D: the fails still count by D", "no used module for the release: a fail with modules is ignored", "no used module for the release: a fail with no module is hard", "a compiler that is not in D: not read", "a release that is no value: not read", "the platform slot has probe facts too (R-LD3)", "R-VA6: roc first in priority keeps n6, x gives way", "a conflict of the caller can name the slot roc"]
+
+── ✗ fail ─────────────────────────── packages/resolve/tests/conflicts.roc:134:1
+
+expect {
+    w = |checks| world([x, roc(d6)], checks, yaml, Off)
+    x2 = "x-2.0.0"
+    x1 = "x-1.0.0"
+    all_x2 = each(x2, d6, ["Yaml"])
+    all_x1 = each(x1, d6, ["Yaml"])
+    pfs = pf("pf", ["1.0.0"])
+    rows = [
+        (w([]), "done x=2.0.0 roc=n6", "no check: the best tuple"),
+        (w([fr(x2, "n6", ["Yaml"])]), "done x=2.0.0 roc=n5", "a fail in a used module excludes its pair"),
+        (w([fr(x2, "n6", ["Yaml"]), fr(x2, "n5", ["Yaml"])]), "done x=2.0.0 roc=n4", "2 adjacent fails"),
+        (w([fr(x2, "n6", ["Yaml"]), pr(x2, "n5"), fr(x2, "n4", ["Yaml"])]), "done x=2.0.0 roc=n5", "a pass between 2 fails stays a value"),
+        (w([fr(x2, "n6", ["Other"])]), "done x=2.0.0 roc=n6", "R-UM1: a fail with no used module is ignored"),
+        (w([fr(x2, "n6", [])]), "done x=2.0.0 roc=n5", "R-UM1: a fail with no module is a hard fail"),
+        (w([fr(x2, "n6", ["Other", "Yaml"])]), "done x=2.0.0 roc=n5", "one used module in 2 is enough"),
+        (w([hang(x2, "n6")]), "done x=2.0.0 roc=n5", "a hang excludes its pair"),
+        (w([chk(x2, "n6", Crash, [], Real)]), "done x=2.0.0 roc=n5", "a crash excludes its pair"),
+        (w([pr(x2, "n6")]), "done x=2.0.0 roc=n6", "a pass excludes nothing"),
+        (w([fi(x2, "n6", ["Yaml"])]), "done x=2.0.0 roc=n5", "R-EP9: an inferred fail decides when no probe may run"),
+        (w([fr(x2, "n6", ["Yaml"]), fi(x2, "n5", ["Yaml"]), fi(x2, "n4", ["Yaml"])]), "done x=2.0.0 roc=n3", "the inferred fails next to a real fail"),
+        (w(all_x2), "done x=1.0.0 roc=n6", "no compiler for x-2.0.0: x-1.0.0"),
+        (w(all_x2.concat(all_x1)), "fail", "no compiler for any release of x"),
+        (w([fr(x2, "n6", ["Yaml"]), fr(x2, "n5", ["Yaml"]), fr(x1, "n6", ["Yaml"])]), "done x=2.0.0 roc=n4", "x first: the checks of x-1.0.0 do not change x-2.0.0"),
+        (low(w([])), "done x=1.0.0 roc=n1", "lowest: the oldest compiler"),
+        (low(w([fr(x1, "n1", ["Yaml"]), fr(x1, "n2", ["Yaml"])])), "done x=1.0.0 roc=n3", "lowest: the oldest compiler that has no fail"),
+        (world([x, roc(["n3", "n4", "n5"])], [fr(x2, "n5", ["Yaml"]), fr(x2, "n4", ["Yaml"])], yaml, Off), "done x=2.0.0 roc=n3", "the candidates of roc are some of D: the fails still count by D"),
+        (world([x, roc(d6)], [fr(x2, "n6", ["Yaml"])], [], Off), "done x=2.0.0 roc=n6", "no used module for the release: a fail with modules is ignored"),
+        (world([x, roc(d6)], [fr(x2, "n6", [])], [], Off), "done x=2.0.0 roc=n5", "no used module for the release: a fail with no module is hard"),
+        (w([fr(x2, "zz", ["Yaml"])]), "done x=2.0.0 roc=n6", "a compiler that is not in D: not read"),
+        (w([fr("q-1.0.0", "n6", ["Yaml"])]), "done x=2.0.0 roc=n6", "a release that is no value: not read"),
+        (world([x, pfs, roc(d6)], [fr("pf-1.0.0", "n6", ["Stdout"])], [{ id: "pf-1.0.0", modules: ["Stdout"] }], Off), "done x=2.0.0 pf=1.0.0 roc=n5", "the platform slot has probe facts too (R-LD3)"),
+        (world([roc(d6), x], [fr(x2, "n6", ["Yaml"])], yaml, Off), "done roc=n6 x=1.0.0", "R-VA6: roc first in priority keeps n6, x gives way"),
+        (conflicting(w([]), [[inn("x", [x2]), inn("roc", ["n6"])]]), "done x=2.0.0 roc=n5", "a conflict of the caller can name the slot roc"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+yaml = [{ id: "x-2.0.0", modules: ["Yaml"] }, { id: "x-1.0.0", modules:
+["Yaml"] }]
+x = pkg("x", ["1.0.0", "2.0.0"])
+d6 = ["n1", "n2", "n3", "n4", "n5", "n6"]
+
+[dbg] []
+[dbg] ["the example of Resolution 5: real facts only", "R-EP9: no probe may run: the interval of parser-2.0.0 names its inferred compiler n6", "R-EP7: a fault is an interval of its own and cuts the runs, an inferred fail is part of a run and is named", "R-EP7, R-UM1: a fail with no used module ends a run (n2 is no member)"]
+
+── ✗ fail ─────────────────────────── packages/resolve/tests/conflicts.roc:282:1
+
+expect {
+    parser = pkg("parser", ["1.0.0", "2.0.0"])
+    basic = pf("pf", ["0.24.0", "0.25.0"])
+    names = ["parser", "pf", "roc"]
+    doms = [["parser-1.0.0", "parser-2.0.0"], ["pf-0.24.0", "pf-0.25.0"], d6]
+    used = [{ id: "parser-1.0.0", modules: ["Yaml"] }, { id: "parser-2.0.0", modules: ["Yaml"] }, { id: "pf-0.24.0", modules: ["Stdout"] }, { id: "pf-0.25.0", modules: ["Stdout"] }]
+    # parser-2.0.0 checks on n3 and n4, pf-0.25.0 on n5 and n6. The older releases check on no compiler.
+    base_checks = each("parser-1.0.0", d6, ["Yaml"]).concat(each("pf-0.24.0", d6, ["Stdout"])).concat([fr("parser-2.0.0", "n1", ["Yaml"]), fr("parser-2.0.0", "n2", ["Yaml"]), pr("parser-2.0.0", "n3"), pr("parser-2.0.0", "n4")]).concat(each("pf-0.25.0", ["n1", "n2", "n3", "n4"], ["Stdout"])).concat([pr("pf-0.25.0", "n5"), pr("pf-0.25.0", "n6")])
+    example = base_checks.concat([fr("parser-2.0.0", "n5", ["Yaml"]), fr("parser-2.0.0", "n6", ["Yaml"])])
+    inferred = base_checks.concat([fr("parser-2.0.0", "n5", ["Yaml"]), fi("parser-2.0.0", "n6", ["Yaml"])])
+    slots = [parser, basic, roc(d6)]
+    pair = |a, b| "parser:{parser-2.0.0} & roc:{${a}} <- probe parser-2.0.0 fail ${b}"
+    # The reasons that no explanation can do without: pf-0.24.0 and parser-1.0.0 check on no compiler, pf-0.25.0 fails on n1 to n4, so only n5 and n6 stay, and parser-2.0.0 fails on both. The first fail of parser-2.0.0 (n1 and n2) is a reason that exists, but a proof does not need it.
+    first_fail = pair("n2,n1", "n1..n2 [Yaml] inferred []")
+    example_must = [
+        "parser:{parser-1.0.0} <- probe parser-1.0.0 fail n1..n6 [Yaml] inferred []",
+        pair("n6,n5", "n5..n6 [Yaml] inferred []"),
+        "pf:{pf-0.24.0} <- probe pf-0.24.0 fail n1..n6 [Stdout] inferred []",
+        "pf:{pf-0.25.0} & roc:{n4,n3,n2,n1} <- probe pf-0.25.0 fail n1..n4 [Stdout] inferred []",
+    ]
+    inferred_must = [
+        "parser:{parser-1.0.0} <- probe parser-1.0.0 fail n1..n6 [Yaml] inferred []",
+        pair("n6,n5", "n5..n6 [Yaml] inferred [n6]"),
+        "pf:{pf-0.24.0} <- probe pf-0.24.0 fail n1..n6 [Stdout] inferred []",
+        "pf:{pf-0.25.0} & roc:{n4,n3,n2,n1} <- probe pf-0.25.0 fail n1..n4 [Stdout] inferred []",
+    ]
+    # the runs of one release: a fault, a fail with no used module and an inferred fail cut or mark a run
+    x_slot = pkg("x", ["1.0.0", "2.0.0"])
+    runs = each("x-1.0.0", d6, ["Yaml"]).concat([fr("x-2.0.0", "n1", ["Yaml"]), fr("x-2.0.0", "n2", ["Yaml"]), hang("x-2.0.0", "n3"), fr("x-2.0.0", "n4", ["Yaml"]), fi("x-2.0.0", "n5", ["Yaml"]), fr("x-2.0.0", "n6", ["Yaml"])])
+    cut = each("x-1.0.0", d6, ["Yaml"]).concat([fr("x-2.0.0", "n1", ["Yaml"]), fr("x-2.0.0", "n2", ["Other"]), fr("x-2.0.0", "n3", ["Yaml"]), fr("x-2.0.0", "n4", ["Yaml"]), fr("x-2.0.0", "n5", ["Yaml"]), fr("x-2.0.0", "n6", ["Yaml"])])
+    xnames = ["x", "roc"]
+    xdoms = [["x-1.0.0", "x-2.0.0"], d6]
+    rows = [
+        (world(slots, example, used, Allowed), example_must, example_must.append(first_fail), names, doms, "the example of Resolution 5: real facts only"),
+        (world(slots, inferred, used, Off), inferred_must, inferred_must.append(first_fail), names, doms, "R-EP9: no probe may run: the interval of parser-2.0.0 names its inferred compiler n6"),
+        exact((
+            world([x_slot, roc(d6)], runs, yaml, Off),
+            [
+                "x:{x-1.0.0} <- probe x-1.0.0 fail n1..n6 [Yaml] inferred []",
+                "x:{x-2.0.0} & roc:{n2,n1} <- probe x-2.0.0 fail n1..n2 [Yaml] inferred []",
+                "x:{x-2.0.0} & roc:{n3} <- probe x-2.0.0 fault n3..n3 [] inferred []",
+                "x:{x-2.0.0} & roc:{n6,n5,n4} <- probe x-2.0.0 fail n4..n6 [Yaml] inferred [n5]",
+            ],
+            xnames,
+            xdoms,
+            "R-EP7: a fault is an interval of its own and cuts the runs, an inferred fail is part of a run and is named",
+        )),
+        exact((
+            conflicting(world([x_slot, roc(d6)], cut, yaml, Off), [[inn("roc", ["n2"])]]),
+            [
+                "x:{x-1.0.0} <- probe x-1.0.0 fail n1..n6 [Yaml] inferred []",
+                "x:{x-2.0.0} & roc:{n1} <- probe x-2.0.0 fail n1..n1 [Yaml] inferred []",
+                "x:{x-2.0.0} & roc:{n6,n5,n4,n3} <- probe x-2.0.0 fail n3..n6 [Yaml] inferred []",
+                "roc:{n2} <- given",
+            ],
+            xnames,
+            xdoms,
+            "R-EP7, R-UM1: a fail with no used module ends a run (n2 is no member)",
+        )),
+    ]
+    bad = wrong_why(rows)
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+yaml = [{ id: "x-2.0.0", modules: ["Yaml"] }, { id: "x-1.0.0", modules:
+["Yaml"] }]
+d6 = ["n1", "n2", "n3", "n4", "n5", "n6"]
+
+[dbg] ["4 conflicts of the caller: no pair", "a term with all values of its slot is left out", "R-C2: each release of a needs b-2.0.0, and the caller forbids it", "R-C3: each release of a names pf-2.0.0, and the caller forbids it", "a slot with no value"]
+
+── ✗ fail ─────────────────────────── packages/resolve/tests/conflicts.roc:349:1
+
+expect {
+    a = pkg("a", ["1.0.0", "2.0.0"])
+    b = pkg("b", ["1.0.0", "2.0.0"])
+    p = pf("pf", ["1.0.0", "2.0.0"])
+    r = |slots, facts, conflicts| { slots, rules: { now: 1000, min_age: 100, snapshot: Err(None), strategy: Highest }, facts, conflicts, compat: { domain: [], checks: [], used: [], probes: Allowed } }
+    both = [[inn("a", ["a-1.0.0"]), inn("b", ["b-1.0.0"])], [inn("a", ["a-1.0.0"]), inn("b", ["b-2.0.0"])], [inn("a", ["a-2.0.0"]), inn("b", ["b-1.0.0"])], [inn("a", ["a-2.0.0"]), inn("b", ["b-2.0.0"])]]
+    ab = ["a", "b"]
+    ab_doms = [["a-1.0.0", "a-2.0.0"], ["b-1.0.0", "b-2.0.0"]]
+    dep_facts = known([a, b]) |> needs("a-1.0.0", [("b", "2.0.0")]) |> needs("a-2.0.0", [("b", "2.0.0")])
+    pf_facts = known([a, p]) |> on_pf("a-1.0.0", "pf-2.0.0") |> on_pf("a-2.0.0", "pf-2.0.0")
+    none_a = { ..pkg("a", ["1.0.0"]), ranges: [">=2.0.0"] }
+    rows = [
+        exact((r([a, b], known([a, b]), both), ["a:{a-1.0.0} & b:{b-1.0.0} <- given", "a:{a-1.0.0} & b:{b-2.0.0} <- given", "a:{a-2.0.0} & b:{b-1.0.0} <- given", "a:{a-2.0.0} & b:{b-2.0.0} <- given"], ab, ab_doms, "4 conflicts of the caller: no pair")),
+        exact((r([a, b], known([a, b]), [[inn("a", ["a-1.0.0", "a-2.0.0"]), inn("b", ["b-1.0.0"])], [inn("b", ["b-2.0.0"])]]), ["b:{b-1.0.0} <- given", "b:{b-2.0.0} <- given"], ab, ab_doms, "a term with all values of its slot is left out")),
+        exact((r([a, b], dep_facts, [[inn("b", ["b-2.0.0"])]]), ["a:{a-1.0.0} & b:{b-1.0.0} <- dep a-1.0.0 b>=2.0.0", "a:{a-2.0.0} & b:{b-1.0.0} <- dep a-2.0.0 b>=2.0.0", "b:{b-2.0.0} <- given"], ab, ab_doms, "R-C2: each release of a needs b-2.0.0, and the caller forbids it")),
+        exact((r([a, p], pf_facts, [[inn("pf", ["pf-2.0.0"])]]), ["a:{a-1.0.0} & pf:{pf-1.0.0} <- pf a-1.0.0 pf-2.0.0", "a:{a-2.0.0} & pf:{pf-1.0.0} <- pf a-2.0.0 pf-2.0.0", "pf:{pf-2.0.0} <- given"], ["a", "pf"], [["a-1.0.0", "a-2.0.0"], ["pf-1.0.0", "pf-2.0.0"]], "R-C3: each release of a names pf-2.0.0, and the caller forbids it")),
+        exact((r([none_a, b], known([none_a, b]), []), ["true <- none a"], ab, [[], ["b-1.0.0", "b-2.0.0"]], "a slot with no value")),
+    ]
+    bad = wrong_why(rows)
+    dbg bad
+    bad == []
+}
+
+[dbg] ["no real fact: a probe for the pair of the best tuple", "no header fact: the header first, no probe", "a real pass for each pair: done", "a real fail: the next pair", "a real fail, then a real pass: done", "a real fail with no used module is a real fact (R-UM1): done", "a real hang: the next pair", "R-EP8: an inferred pass is no real fact: a probe", "R-EP8 second pass: an inferred fail blocked the better pair: a probe for it", "R-EP9: no probe: done on the inferred fail", "R-EP8: A has the pair n5 with no fact: the first need is for A (the first pass), not for B", "R-EP8: no tuple with all facts, but one with the real facts: no fail, a probe for the inferred pair", "2 slots: a probe for each pair, in the order of the slots", "the platform is probed too", "2 slots with one release: one probe", "R-EP9: no probe: a pair with no fact is taken as fit", "R-EP9: no probe, but a header fact is not a probe: a need"]
+
+── ✗ fail ─────────────────────────── packages/resolve/tests/conflicts.roc:375:1
+
+expect {
+    w = |checks, mode| world([x, roc(d6)], checks, yaml, mode)
+    x2 = "x-2.0.0"
+    x1 = "x-1.0.0"
+    two = world([x, roc(["n1", "n2"])], [fr(x2, "n1", ["Yaml"]), fi(x2, "n2", ["Yaml"]), fr(x1, "n1", ["Yaml"]), fr(x1, "n2", ["Yaml"])], yaml, Allowed)
+    y = pkg("y", ["1.0.0", "2.0.0"])
+    shared = { ..world([pkg("a", ["1.0.0"]), { ..pkg("b", []), candidates: [cand("a", "1.0.0")] }, roc(d6)], [], [], Allowed), facts: known([pkg("a", ["1.0.0"])]) }
+    rows = [
+        (w([], Allowed), "need x-2.0.0@n6", "no real fact: a probe for the pair of the best tuple"),
+        ({ ..w([], Allowed), facts: [] }, "need x-2.0.0", "no header fact: the header first, no probe"),
+        (w([pr(x2, "n6")], Allowed), "done x=2.0.0 roc=n6", "a real pass for each pair: done"),
+        (w([fr(x2, "n6", ["Yaml"])], Allowed), "need x-2.0.0@n5", "a real fail: the next pair"),
+        (w([fr(x2, "n6", ["Yaml"]), pr(x2, "n5")], Allowed), "done x=2.0.0 roc=n5", "a real fail, then a real pass: done"),
+        (w([fr(x2, "n6", ["Other"])], Allowed), "done x=2.0.0 roc=n6", "a real fail with no used module is a real fact (R-UM1): done"),
+        (w([hang(x2, "n6")], Allowed), "need x-2.0.0@n5", "a real hang: the next pair"),
+        (w([pi(x2, "n6")], Allowed), "need x-2.0.0@n6", "R-EP8: an inferred pass is no real fact: a probe"),
+        (w([pr(x2, "n5"), fi(x2, "n6", ["Yaml"])], Allowed), "need x-2.0.0@n6", "R-EP8 second pass: an inferred fail blocked the better pair: a probe for it"),
+        (w([pr(x2, "n5"), fi(x2, "n6", ["Yaml"])], Off), "done x=2.0.0 roc=n5", "R-EP9: no probe: done on the inferred fail"),
+        (w([fi(x2, "n6", ["Yaml"])], Allowed), "need x-2.0.0@n5", "R-EP8: A has the pair n5 with no fact: the first need is for A (the first pass), not for B"),
+        (two, "need x-2.0.0@n2", "R-EP8: no tuple with all facts, but one with the real facts: no fail, a probe for the inferred pair"),
+        ({ ..two, compat: { ..two.compat, probes: Off } }, "fail", "R-EP9: no probe: fail on the inferred fact"),
+        ({ ..two, compat: { ..two.compat, checks: [fr(x2, "n1", ["Yaml"]), fr(x2, "n2", ["Yaml"]), fr(x1, "n1", ["Yaml"]), fr(x1, "n2", ["Yaml"])] } }, "fail", "R-EP8: real facts only: fail"),
+        (world([x, y, roc(d6)], [], [], Allowed), "need x-2.0.0@n6 y-2.0.0@n6", "2 slots: a probe for each pair, in the order of the slots"),
+        (world([x, pf("pf", ["1.0.0", "2.0.0"]), roc(d6)], [], [], Allowed), "need x-2.0.0@n6 pf-2.0.0@n6", "the platform is probed too"),
+        (shared, "need a-1.0.0@n6", "2 slots with one release: one probe"),
+        (w([], Off), "done x=2.0.0 roc=n6", "R-EP9: no probe: a pair with no fact is taken as fit"),
+        ({ ..w([], Off), facts: [] }, "need x-2.0.0", "R-EP9: no probe, but a header fact is not a probe: a need"),
+    ]
+    bad = wrong(rows)
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+d6 = ["n1", "n2", "n3", "n4", "n5", "n6"]
+x = pkg("x", ["1.0.0", "2.0.0"])
+yaml = [{ id: "x-2.0.0", modules: ["Yaml"] }, { id: "x-1.0.0", modules:
+["Yaml"] }]
+
+Ran 6 tests in 33244.5 ms.:
+    2 passed
+    4 failed
+    0 compiler errors

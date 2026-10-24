@@ -1,0 +1,16 @@
+W01 R-GC13 cli/lib/CacheClean.roc caught l2 clean/
+W02 R-GC14 cli/lib/CacheClean.roc caught l2 clean/
+W03 R-GC14 cli/lib/CacheClean.roc caught l2 clean/
+W04 R-NR1 cli/lib/CacheClean.roc caught l2 clean/
+W05 R-NM8 cli/lib/CacheClean.roc caught l2 clean/
+W06 R-J3 cli/lib/CacheClean.roc caught l2 clean/
+W07 R-GC14 cli/lib/CacheClean.roc caught l2 clean/
+W08 R-NI7 cli/lib/CacheClean.roc caught l2 clean/
+W09 R-NR2 cli/lib/CacheClean.roc caught l2 clean/
+W10 R-GC12 cli/lib/CacheClean.roc caught l2 clean/
+W11 R-GC14 cli/lib/CacheClean.roc caught l2 clean/
+W12 R-J3 cli/lib/CacheClean.roc NOT CAUGHT 
+W13 R-GC14 cli/lib/CacheClean.roc caught l2 clean/
+W14 R-GC12 cli/lib/CacheClean.roc caught l2 clean/
+W15 R-NI7 cli/lib/CacheClean.roc NOT CAUGHT 
+W16 R-GC13 cli/lib/CacheClean.roc caught l2 clean/

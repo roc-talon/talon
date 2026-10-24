@@ -1,0 +1,5 @@
+[resolution]
+strategy = "lowest"
+
+[dependencies]
+json = "^2.1"

@@ -14,6 +14,7 @@ list_dirs $PROJECT
 read_files $PROJECT/range/talon.toml
 read_files $PROJECT/range/main.roc
 read_files $PROJECT/range/main.roc $PROJECT/range/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/off/main.roc
 list_dirs $PROJECT/off
 list_dirs $PROJECT

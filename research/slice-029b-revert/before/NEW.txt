@@ -1,0 +1,9 @@
+cli/lib/CacheView.roc
+cli/lib/CacheShow.roc
+tests/unit/cacheview.roc
+tests/commands/FakeBase.roc
+tests/commands/FakeFiles.roc
+tests/commands/FakeJobs.roc
+tests/commands/cases/cache/cv1-view
+tests/scenarios/cache/cv1-real
+docs/slices/029b-cache-list-dir.md

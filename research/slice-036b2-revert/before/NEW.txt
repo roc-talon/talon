@@ -1,0 +1,4 @@
+docs/slices/036b2-scan-loop.md
+tests/commands/cases/probe/sc1-scan/
+tests/commands/cases/moves/hm3-budget/
+research/slice-036b2-revert/ (all of it, except before/ copies)

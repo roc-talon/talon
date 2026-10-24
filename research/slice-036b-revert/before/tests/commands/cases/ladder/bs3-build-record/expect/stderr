@@ -1,0 +1,6 @@
+tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pf 0.1.0: unsupported target
+tln: error[no_tuple]: no tuple works: the build hangs on nightly-2026-10-14-38a3029 (no result in 30 s) on the platform acme/pf 0.1.0
+tln: error[no_tuple]: no tuple works: the build crashes on nightly-2026-10-14-38a3029 (signal 11) on the platform acme/pf 0.1.0
+tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pf 0.1.0: unsupported target
+tln: error[internal]: the build on nightly-2026-10-14-38a3029 gave no result: not started: no roc. Run the command again.
+tln: error[no_tuple]: no tuple works: the build found new errors in acme/pf 0.1.0 (Std.roc: type mismatch)

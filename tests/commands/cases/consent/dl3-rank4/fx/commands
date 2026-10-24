@@ -1,0 +1,32 @@
+# R-SO13 R-DI12 R-DL5: rank 4 has a range (p1: >=nightly-2026-10-17), the only installed compiler (2026-10-09) is below it, and the list is not cached. --offline: no request, exit 15 with the offline text, also with --allow-downloads. No lock, no write.
+env:CI=true update json --file p1/main.roc --offline --allow-downloads
+# R-SO4 R-SO13: p2 has a range that the installed compiler meets (>=nightly-2026-10-08). It is the held compiler: no list, no request, no prompt, no download. The probes run it by its path.
+update json --file p2/main.roc
+# R-SO13 R-DL1 R-DL2 R-DL4 R-NI5 R-SO22: p3 has the range of p1. No person, no flag: the list is read (one request), the newest release in the range (2026-10-18) is the required download, and the run stops with exit 13. The stop has the count and the size. No tty call, no prompt, no lock, no write.
+env:CI=true update json --file p3/main.roc
+# R-DL5 R-DL10 R-SO13: TALON_AUTO_INSTALL=no with no flag refuses before any request (the id is not known yet). The text names the range and the 3 ways to get a compiler. A person is there, and there is no tty call.
+env:TALON_AUTO_INSTALL=no update json --file p4/main.roc
+# R-NS2 R-NS3 R-SO13: the switch is off (TALON_NIGHTLY=0), the range is *, and the only installed compiler is a nightly, so rank 4 has none. The list has no release: exit 10, the text names the range, the switch and its source. No download, even with the flag.
+env:CI=true env:TALON_NIGHTLY=0 update json --file p5/main.roc --allow-downloads
+# R-NS7 R-SO13: the list has no release in the range (p6 starts after the newest nightly): exit 10, the text names the range. No download.
+env:CI=true update json --file p6/main.roc --allow-downloads
+# R-C7 R-NS3 R-DT4 R-SO13: --snapshot hides the releases that are later than the time, also for the compiler: the newest nightly that is published at or before 2026-10-12T20:00:00Z is 2026-10-12-2664a27 (the other releases after it are hidden). No person, the flag answers.
+env:CI=true update json --file p7/main.roc --allow-downloads --snapshot 2026-10-12T20:00:00Z
+# R-C7 R-NS3 R-SO13: min-release-age (the default, 2 days) hides the 2 newest nightlies when the time is 2026-10-19T12:00:00Z: the newest in the range is 2026-10-16-1df370f.
+env:CI=true env:TALON_NOW=2026-10-19T12:00:00Z update json --file p8/main.roc --allow-downloads
+# R-SO13 R-DL1 R-DL2 R-DL3 R-NI5 R-SO22 R-RP3: a person, the range of p1, the compiler of rank 4 is the download: the list, one prompt that names it with the size, the answer y, the install, the probes on it. The header gets it as the roc: pin.
+update json --file p9/main.roc
+# R-SO13 R-DL5: the range is exact (=nightly-2026-10-15-38e6c42) and the compiler is not installed. TALON_AUTO_INSTALL=no does not refuse when --allow-downloads is on the command line (a flag wins over the variable): the download is the id of the range.
+env:CI=true env:TALON_AUTO_INSTALL=no update json --file p10/main.roc --allow-downloads
+# R-SO13 R-DL5 R-NM10: --yes is an answer too: TALON_AUTO_INSTALL=no does not refuse a run with --yes (the range is exact, =nightly-2026-10-10-abcdef0).
+env:CI=true env:TALON_AUTO_INSTALL=no update json --file p13/main.roc --yes
+# R-SO13 R-DL7 R-SO21: verify holds the compiler of rank 4 too. It downloads the one of the range (=nightly-2026-10-14-38a3029) and writes no project file.
+env:CI=true verify --file p11/main.roc --allow-downloads
+# R-SO13 R-DL7: remove goes through the same selection (=nightly-2026-10-11-1a2b3c4).
+env:CI=true remove json --file p12/main.roc --allow-downloads
+# R-SO13 R-SO22 R-H6 (answer Q1 of the review, option a): --no-check runs no probe, so nothing is downloaded and nothing asks. Rank 4 still holds the newest release in the range for the index (R-SO19): the list is read (the cache), the range p14 is exact (=nightly-2026-10-08-0a1b2c3, not installed). No `tty`, no `ask`, no lock, no install, and no roc: pin is written (R-H6).
+update json --file p14/main.roc --no-check
+# R-SO13 R-NS7 (as run 6): --no-check, and the list has no release in the range (p15): exit 10, as with a check.
+update json --file p15/main.roc --no-check
+# R-SO13 R-DL5 R-SO22: --no-check with TALON_AUTO_INSTALL=no and no flag is not refused: no download happens, so nothing is refused (the list is read, the held compiler is the exact one of p16, =nightly-2026-10-07-3f4e5d6). No pin is written.
+env:TALON_AUTO_INSTALL=no update json --file p16/main.roc --no-check

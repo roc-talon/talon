@@ -8,7 +8,7 @@ $PROJECT/main.roc
     util (path) -> core
 exit 0
 == tln why pfx --json
-{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"pf","name":"acme/pfx","version":"0.1.1","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":true},"paths":[[{"alias":"pf","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst"}]]}]},"error":null}
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"pf","name":"acme/pfx","version":"0.1.1","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":true},"paths":[[{"alias":"pf","kind":"release","id":"https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[],"notes":[]}]},"error":null}
 exit 0
 == tln why util
 $PROJECT/main.roc

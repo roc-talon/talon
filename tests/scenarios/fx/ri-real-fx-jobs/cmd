@@ -1,0 +1,19 @@
+# R-CV8 R-CV4 R-DA4 TW4: the 2 jobs of the real Fx of slice 021, with `fxprobe` (no Talon logic in them): platform! and sha256_file!. The system is checked against `uname`, so the case holds on Linux and macOS.
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+
+echo "== platform!: the os and the cpu of this machine, as the names of the Fx (R-CV8)"
+case $(uname -s) in Linux) os=linux ;; Darwin) os=macos ;; *) os=other ;; esac
+case $(uname -m) in x86_64 | amd64) arch=x64 ;; arm64 | aarch64) arch=arm64 ;; *) arch=other ;; esac
+test "$(fxprobe platform)" = "os $os
+arch $arch" && echo "platform matches uname"
+
+echo "== sha256_file!: the 64 lower case hex digits of the bytes, for a small file, an empty file and a file of 5 MB"
+printf 'fake' > small.bin
+: > empty.bin
+head -c 5000000 /dev/zero > big.bin
+fxprobe sha256 small.bin empty.bin
+test "$(fxprobe sha256 big.bin)" = "sha256 $(sha big.bin) big.bin" && echo "big.bin: same as the system tool"
+
+echo "== sha256_file!: a file that does not exist"
+fxprobe sha256 missing.bin
+rm -f small.bin empty.bin big.bin

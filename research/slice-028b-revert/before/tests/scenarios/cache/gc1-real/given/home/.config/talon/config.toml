@@ -1,0 +1,3 @@
+# my settings
+gc-age = "7d"   # shorter than the default
+default-roc = "nightly-2026-October-14-38a3029"

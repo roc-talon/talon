@@ -1,0 +1,51 @@
+== run 1: a/roc is the launcher (same size, same sha256). b/roc has the size of tln and other bytes: it is the compiler. bin/roc is not looked at.
+== tln install --file p/main.roc
+exit 10
+b.log: 1 run(s) of b/roc
+{"path":"$TLN","size":$SIZE,"mtime":$MTIME,"sha256":"$SHA"}
+{"path":"$WORK/a/roc","size":$SIZE,"mtime":1700000000,"sha256":"$SHA"}
+{"path":"$WORK/b/roc","size":$SIZE,"mtime":1700000500,"sha256":"$B_SHA","id":"nightly-2026-10-13-91fa0c2"}
+== run 2: the same files. The rows are used: no new run of b/roc, the rows are the same.
+== tln install --file p/main.roc
+exit 10
+b.log: 1 run(s) of b/roc
+{"path":"$TLN","size":$SIZE,"mtime":$MTIME,"sha256":"$SHA"}
+{"path":"$WORK/a/roc","size":$SIZE,"mtime":1700000000,"sha256":"$SHA"}
+{"path":"$WORK/b/roc","size":$SIZE,"mtime":1700000500,"sha256":"$B_SHA","id":"nightly-2026-10-13-91fa0c2"}
+== run 3: b/roc changed (a new mtime): roc version runs again, and the row of b/roc is replaced (one row for each path).
+== tln install --file p/main.roc
+exit 10
+b.log: 2 run(s) of b/roc
+{"path":"$TLN","size":$SIZE,"mtime":$MTIME,"sha256":"$SHA"}
+{"path":"$WORK/a/roc","size":$SIZE,"mtime":1700000000,"sha256":"$SHA"}
+{"path":"$WORK/b/roc","size":$SIZE,"mtime":1700001000,"sha256":"$B_SHA","id":"nightly-2026-10-13-91fa0c2"}
+== run 4: b/roc is gone. a/roc is the launcher again. bin/roc is the compiler: one roc version call of the fake, and its row has the id.
+== tln install --file p/main.roc
+exit 10
+{"path":"$WORK/bin/roc","size":$FAKE_SIZE,"mtime":$FAKE_MTIME,"id":"nightly-2026-10-14-38a3029"}
+== run 5: the file has a newer format (R-TF3): it is ignored and never written. The compiler is found again (b/roc is back).
+== tln install --file p/main.roc
+exit 10
+b.log: 3 run(s) of b/roc
+the file is not changed
+== run 6: the file is not valid JSON (R-TF6): a warning on stderr, and the file is made again.
+== tln install --file p/main.roc
+exit 10
+b.log: 4 run(s) of b/roc
+{"path":"$TLN","size":$SIZE,"mtime":$MTIME,"sha256":"$SHA"}
+{"path":"$WORK/a/roc","size":$SIZE,"mtime":1700000000,"sha256":"$SHA"}
+{"path":"$WORK/b/roc","size":$SIZE,"mtime":1700000500,"sha256":"$B_SHA","id":"nightly-2026-10-13-91fa0c2"}
+== run 7: the file is valid again: no warning.
+== tln install --file p/main.roc
+exit 10
+== run 8: unknown fields stay (R-TF2) and a binary that is no compiler runs once (R-SO9). The file gets the top field note and the field x in the row of a/roc.
+== tln install --file p/main.roc
+exit 18
+c.log: 1 run(s) of c/roc
+top field note: 1
+{"path":"$WORK/a/roc","size":$SIZE,"mtime":1700000000,"sha256":"$SHA","x":1}
+{"path":"$WORK/c/roc","size":$C_SIZE,"mtime":1700001600,"id":null}
+== run 9: the same. c/roc ran with no id (id null), so it does not run again.
+== tln install --file p/main.roc
+exit 18
+c.log: 1 run(s) of c/roc

@@ -1,0 +1,131 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] []
+[dbg] [True, True]
+[dbg] Ok(([(["json"], [("^2.1", "/p/talon.toml:4")]), (["pf"], [(">=0.25.0, <0.26.0", "implied by /p/main.roc")])], []))
+[dbg] []
+[dbg] []
+[dbg] []
+Roc application crashed with this message:
+
+	todo: slice 039
+
+
+── ✗ fail ──────────────────────────────────────────── tests/unit/vars.roc:428:1
+
+expect {
+    toml = |text| Ok({ path: "/p/talon.toml", text, role: Standalone })
+    header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""])
+    plain = member("/p/main.roc", header, Err(NoToml))
+    anchored = member("/p/main.roc", header, toml("[dependencies]\nparser = \"=2.0.0\"\njson = \"^2.1\"\n"))
+    vars_of = |m| match Vars.build({ members: [m], priority: Err(Unset) }) {
+        Ok(built) => built.vars
+        Err(e) => crash e.line()
+    }
+    view = |r| match r {
+        Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable, s.any_series, s.note, s.variable.ranges.map(|x| x.range))))
+        Err(e) => Err(e.line())
+    }
+    scope = |vs| view(Vars.scope({ command: NightlyOnly, names: [], selectors: [], vars: vs }))
+    rows = [
+        (
+            "upgrade roc, no talon.toml: no package is free, the indexed ones are movable with no range, the fixed host is neither (R-SP8, R-SP23)",
+            scope(vars_of(plain)),
+            Ok([
+                (["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+                (["parser"], Bool.False, Bool.True, Bool.False, Err(None), []),
+                (["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+            ]),
+        ),
+        (
+            "upgrade roc, an anchor and a key: the anchor keeps its range and is not movable, with no note (R-SP8, R-VA5)",
+            scope(vars_of(anchored)),
+            Ok([
+                (["json"], Bool.False, Bool.True, Bool.False, Err(None), []),
+                (["parser"], Bool.False, Bool.False, Bool.False, Err(None), ["=2.0.0"]),
+                (["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
+                (["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+            ]),
+        ),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Ran 8 tests in 1966.2 ms.:
+    7 passed
+    1 failed
+    0 compiler errors
+tests/unit/verify.roc: All (2) tests passed in 1359.4 ms.
+tests/unit/why.roc: All (6) tests passed in 4055.5 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+      @@ -207,3 +155,28 @@
+       db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+      +env_all
+      +clock
+      +cwd
+      +canonical $PROJECT/p6/main.roc
+      +list_dirs $PROJECT/p6
+      +list_dirs $PROJECT
+      +read_files $PROJECT/p6/main.roc
+      +canonical $PROJECT/p6/main.roc
+      +lock $HOME/.cache/roc/talon/projects.json nowait: held
+      +list_dirs $HOME/.cache/roc/talon
+      +read_files $HOME/.cache/roc/talon/projects.json
+      +write_atomic $HOME/.cache/roc/talon/projects.json
+      +unlock $HOME/.cache/roc/talon/projects.json
+      +path_roc
+      +read_files $HOME/.cache/roc/talon/path-roc.json
+      +read_files $PROJECT/p6/main.roc $PROJECT/p6/talon.toml $HOME/.config/talon/config.toml
+      +list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+      +read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+      +list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+      +read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+      +random
+      +list_dirs $HOME/.cache/roc/packages
+      +read_files $HOME/.cache/roc/packages/9bGrMo4PEA6r1knwgZKj2HzQSLybqgC7pDc2RBE5ysH4/main.roc $HOME/.cache/roc/packages/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt/main.roc
+      +read_files $PROJECT/p6/main.roc
+      +write_atomic $PROJECT/p6/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -18,7 +18,7 @@
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p3/main.roc","last_use":1792065600},{"path":"$PROJECT/p4/main.roc","last_use":1792065600},{"path":"$PROJECT/p5/main.roc","last_use":1792065600}]}
+      ++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p4/main.roc","last_use":1792065600},{"path":"$PROJECT/p5/main.roc","last_use":1792065600},{"path":"$PROJECT/p6/main.roc","last_use":1792065600}]}
+       --- project/p1/main.roc
+       +++ project/p1/main.roc
+       @@ -1,6 +1,6 @@
+      @@ -34,6 +34,16 @@
+       @@ -1,6 +1,6 @@
+        app [main!] {
+        	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt.tar.zst",
+      +-	json: "https://github.com/acme/json/releases/download/1.0.0/FvurZfqoaDrU88tV2HLaPJ6LiLcGRxed3fBFg7twMRYR.tar.zst",
+      ++	json: "https://github.com/acme/json/releases/download/1.2.0/9bGrMo4PEA6r1knwgZKj2HzQSLybqgC7pDc2RBE5ysH4.tar.zst",
+      + 	roc: "nightly-2026-10-09-9d9d9d9",
+      + }
+      + 
+      +--- project/p6/main.roc
+      ++++ project/p6/main.roc
+      +@@ -1,6 +1,6 @@
+      + app [main!] {
+      + 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt.tar.zst",
+       -	json: "https://github.com/acme/json/releases/download/1.0.0/FvurZfqoaDrU88tV2HLaPJ6LiLcGRxed3fBFg7twMRYR.tar.zst",
+       +	json: "https://github.com/acme/json/releases/download/1.2.0/9bGrMo4PEA6r1knwgZKj2HzQSLybqgC7pDc2RBE5ysH4.tar.zst",
+        	roc: "nightly-2026-10-09-9d9d9d9",
+commands: 91 passed, 5 failed
+
+step       result seconds  budget
+check      pass   1.1      10
+fmt        pass   0.2      5
+l0         FAIL   7.7      10
+l2         FAIL   2.7      30
+l3         pass   9.8      60
+selftest   pass   11.2     20
+l1         pass   31.5     60

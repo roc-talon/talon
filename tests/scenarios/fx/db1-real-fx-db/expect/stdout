@@ -1,0 +1,63 @@
+== 1. a query of a file that does not exist: no row, and the read makes no file and no dir
+none
+none
+nothing was made
+== 2. a write makes the dirs and the file. 5 rows in one call: a pass, a fail with 2 modules, a fail with a module twice (the file holds a set: sorted, no repeat), a build pass with its closure, a hang of a release (R-NS12)
+ok
+== 3. the file is in WAL mode (R-CC8) and has the format 1 (R-TF1)
+journal_mode wal
+user_version 1
+tables ['facts', 'pinned']
+== 4. the rows of 6 keys: 5 rows, and a key with no row. The modules are sorted.
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	0.1.0	any	hang		
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	any	pass		
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	linux_x86_64	pass		c0ffee
+fact	Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu	nightly-2026-10-14-38a3029	any	fail	Json.roc,Yaml.roc	
+fact	Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu	nightly-2026-10-14-38a3029	other	fail	Json.roc,Yaml.roc	
+== 5. no key: no row. A key of another hash, nightly or target is not a row of a key that is not in the query.
+none
+none
+== 5b. a write with no row is ok and changes nothing (the doc of db_write!): not a SQL error, and no file is made for a missing db
+rows before 5 0
+ok
+ok
+ok
+ok
+no file was made
+rows after 5 0
+== 6. Keep leaves the row that exists and adds the new one. Replace changes the row. R-P4: one row for each key (hash, nightly, target).
+ok
+fact	Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu	nightly-2026-10-14-38a3029	any	fail	Json.roc,Yaml.roc	
+fact	Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu	nightly-2026-10-14-38a3029	linux_x86_64	crash		
+ok
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	any	fail	A.roc	
+fact	Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu	nightly-2026-10-14-38a3029	any	pass		
+rows 6
+== 7. R-TF2: a later Talon with the same format added a column. This Talon ignores it in a query, and a Replace keeps its value (an upsert, not a delete and an insert).
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	any	fail	A.roc	
+ok
+note ('9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17', 'nightly-2026-10-14-38a3029', 'any', 'pass', 'kept')
+note ('Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu', 'nightly-2026-10-14-38a3029', 'new', 'hang', None)
+== 8. R-CV6: the first sha256 of an asset stays. A second write for the same (tag, target) changes nothing. Another target of the tag is a new row.
+ok
+ok
+pinned	nightly-2026-10-14-38a3029	linux_arm64	bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb	registry
+pinned	nightly-2026-10-14-38a3029	linux_x86_64	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	github-digest
+== 9. R-TF3: a file with a newer format (2). A query and a write give TooNew, and the bytes of the file stay the same (not even the WAL switch is done).
+err TooNew(2)
+err TooNew(2)
+err TooNew(2)
+the file is the same
+new.db
+== 10. a file that is not a database, and a dir that cannot be made (its parent is a file): Failed, and the text file is the same
+err Failed(...)
+err Failed(...)
+err Failed(...)
+the text file is the same
+== 11. R-CC8: another process holds the write lock. A write with a busy timeout of 200 ms gives Busy and writes nothing. A query does not wait (WAL: a reader does not block) and does not see the row that is not committed.
+err Busy
+none
+== 12. the lock is free: the same write works and the held row is there
+ok
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	busy	pass		
+fact	held	n	any	pass		

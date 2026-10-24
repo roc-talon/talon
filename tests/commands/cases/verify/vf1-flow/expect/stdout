@@ -6,14 +6,14 @@ $PROJECT/v1/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
   ~ parser: acme/parser 1.0.0 -> 1.2.0
   ~ pf: acme/pfx 0.1.0 -> 0.1.1
-verified: the tuple passes. Nothing was written.
+verified: the tuple passes. No project file was written.
 exit 0
 == verify --file v2/lib/main.roc
 check: passed
 $PROJECT/v2/lib/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
   ~ parser: acme/parser 1.0.0 -> 1.2.0
-verified: the tuple passes. Nothing was written.
+verified: the tuple passes. No project file was written.
 exit 0
 == verify --file v3/main.roc
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
@@ -23,6 +23,6 @@ note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 exit 11
 == verify --file v5/main.roc
 check: passed
-build: passed
-verified: the tuple passes. Nothing was written.
+build: skipped (recorded pass)
+verified: the tuple passes. No project file was written.
 exit 0

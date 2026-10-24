@@ -1,0 +1,14 @@
+A1: CAUGHT by tests/unit/pickclosure.roc (    0 compiler errors)  [R-AL9: a closure problem is no conflict, the step gives up]
+A2: CAUGHT by tests/unit/oracle.roc (timeout)  [R-WS2, D7: no pair conflict for slots of one group]
+A3: CAUGHT by tests/unit/pickmoves.roc (    0 compiler errors)  [R-SP24: no movable slot goes first]
+A4: CAUGHT by tests/unit/pickmoves.roc (    0 compiler errors)  [R-SP1, R-C9: a movable slot is open in the first search]
+A5: CAUGHT by tests/unit/oracle.roc (    0 compiler errors)  [D3: the optimistic fact of a platform slot has the kind Package]
+A6: CAUGHT by tests/unit/oracle.roc (    0 compiler errors)  [R-WS8, D6: slot names by id, not by place]
+A7: CAUGHT by tests/unit/pick.roc (    0 compiler errors)  [R-C7: the note of a named version that is too young is lost]
+S1: CAUGHT by packages/resolve/tests/moves.roc (    0 compiler errors)  [R-DT2: the Need list is in the order of the search]
+S2: CAUGHT by packages/resolve/tests/moves.roc (    0 compiler errors)  [R-DT2: the Done list is in the order of the search]
+S3: CAUGHT by packages/resolve/tests/moves.roc (    0 compiler errors)  [R-SP23: the compiler slot is movable]
+cli/lib/Oracle.roc: OK
+cli/lib/Pick.roc: OK
+cli/lib/PickLoop.roc: OK
+packages/resolve/Solver.roc: OK

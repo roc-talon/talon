@@ -1,0 +1,6 @@
+cli/lib/Nightlies.roc
+tests/unit/nightlies.roc
+tests/tools/mk-nightly.sh
+tests/fixtures/nightlies/ (the whole dir)
+tests/scenarios/compilers/ (the whole dir)
+docs/slices/020-compiler-list.md

@@ -1,0 +1,13 @@
+adding $HOME/.local/bin to PATH in $HOME/.bashrc
+to stderr from nightly-2026-10-14-38a3029
+keeping $HOME/.local/bin/roc
+note: $HOME/.local/bin/roc is not a Talon file, so no roc launcher was installed. To replace it, run: tln setup --replace-roc
+moving $HOME/.local/bin/roc to $HOME/.local/bin/roc.old
+moving $HOME/.local/bin/roc to $HOME/.local/bin/roc.old
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+adding $HOME/.local/bin to PATH in $WORK/gh_path
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+not adding $WORK/h2/.local/bin to PATH
+warning: $WORK/bin/roc comes before $WORK/h2/.local/bin on PATH, so it runs in place of the roc launcher. Talon changes nothing there.
+tln: error[usage]: tln setup takes no operand, got 1

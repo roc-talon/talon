@@ -1,0 +1,103 @@
+env_all
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+probes 1
+  probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-03-3d3d3d3 $HOME/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=59
+canonical $PROJECT/p2/main.roc
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+probes 1
+  probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-12-9a9a9a9 $HOME/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+canonical $PROJECT/p3/main.roc
+list_dirs $PROJECT/p3
+list_dirs $PROJECT
+read_files $PROJECT/p3/talon.toml
+read_files $PROJECT/p3/main.roc
+read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=60
+canonical $PROJECT/p4/main.roc
+list_dirs $PROJECT/p4
+list_dirs $PROJECT
+read_files $PROJECT/p4/talon.toml
+read_files $PROJECT/p4/main.roc
+read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+canonical $PROJECT/p5/main.roc
+list_dirs $PROJECT/p5
+list_dirs $PROJECT
+read_files $PROJECT/p5/talon.toml
+read_files $PROJECT/p5/main.roc
+read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+probes 1
+  probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-10-0e0e0e0 $HOME/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=59

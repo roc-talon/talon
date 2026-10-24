@@ -1,0 +1,6 @@
+cli/lib/Clean.roc
+cli/lib/CacheClean.roc
+tests/unit/clean.roc
+tests/commands/cases/clean/cn1-clean
+tests/scenarios/cache/cl1-real
+docs/slices/029-cache-clean.md

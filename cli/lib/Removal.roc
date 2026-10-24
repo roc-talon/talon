@@ -1,6 +1,7 @@
+import Answer
 import Args
 import Fail
-import Intent
+import IntentEdit
 import Locked
 import Opts as FlagOpts
 import Text
@@ -11,7 +12,8 @@ import toml.Toml
 Removal :: [].{
 
 	## The flags of `tln remove` (also `rm`): `Args.parse` has checked that each flag is allowed (R-FL12). `names` are the operands.
-	Opts : { names : List(Str), force : Bool, dry_run : Bool, no_check : Bool }
+	## `allow_downloads` is `--allow-downloads` (slice 025, R-NI5: `remove` runs the ladder, which can need a compiler download): `Ok(Yes)` when set. `--probe-downloads` is read and changes nothing (R-NI4 does not list `remove`).
+	Opts : { names : List(Str), force : Bool, dry_run : Bool, no_check : Bool, allow_downloads : Try(Answer, [NoFlag]), no_probe : Bool, slots : Try(U64, [Unset]) }
 
 	## Reads the options of a `remove` line. Each failure has the kind `Usage` (exit 2). The texts are a proposal (TW24). The checks, in this order:
 	##
@@ -22,8 +24,8 @@ Removal :: [].{
 	## | 3 | `--frozen` (`remove` changes the header) | `flag '--frozen' works only for tln install with no names` | R-FL13, R-EC2 |
 	## | 4 | No operand (question Q2) | `tln remove needs one name or more` | |
 	##
-	## `--no-probe`, `--slots`, `--snapshot`, `--probe-downloads` and `--allow-downloads` are resolve flags (R-FL7): they are read and change nothing
-	## (`remove` resolves nothing, and P0 has no unit probe). `--force`, `--dry-run`, `--no-check` are the fields of `Opts`.
+	## `--snapshot` and `--probe-downloads` are resolve flags (R-FL7): they are read and change nothing. `--allow-downloads` is `Opts.allow_downloads` (slice 025). Slice 031: `--no-probe` and `--slots` are `Opts.no_probe` and `Opts.slots`
+	## (the same values as `Opts.read` gives: R-FL11, R-LF2). `--force`, `--dry-run`, `--no-check` are the fields of `Opts`.
 	opts : Args -> Try(Opts, Fail)
 	opts = |args| {
 		read = FlagOpts.read(args)?
@@ -33,11 +35,11 @@ Removal :: [].{
 		if read.names.is_empty() {
 			return Err(Fail.new(Usage, "tln remove needs one name or more"))
 		}
-		Ok({ names: read.names, force: has_flag(args, "--force"), dry_run: read.dry_run, no_check: read.no_check })
+		Ok({ names: read.names, force: has_flag(args, "--force"), dry_run: read.dry_run, no_check: read.no_check, allow_downloads: if has_flag(args, "--allow-downloads") Ok(Yes) else Err(NoFlag), no_probe: read.no_probe, slots: read.slots })
 	}
 
 	## The kind of the table in `talon.toml` that holds a key of the entry: `[dependencies]`, `[overrides]` (R-OV1), `[patch]` (R-PA12).
-	Table : Intent.Table
+	Table : IntentEdit.Table
 
 	## What the entry was, for the output: a release (`name` and `version` of its URL), a path entry (its path), a foreign URL (its URL).
 	What : [Release({ name : Str, version : Str }), Path(Str), Foreign(Str)]
@@ -90,7 +92,7 @@ has_flag : Args, Str -> Bool
 has_flag = |args, flag| args.options.any(|(name, _)| name == flag)
 
 # The keys of the alias in the 3 tables, in the order `[dependencies]`, `[overrides]`, `[patch]`.
-keys_of : { path : Str, text : Str }, Str -> Try(List({ table : Intent.Table, key : Str }), Fail)
+keys_of : { path : Str, text : Str }, Str -> Try(List({ table : IntentEdit.Table, key : Str }), Fail)
 keys_of = |file, alias| match Toml.parse(file.text) {
 	Err(TomlErr(e)) => Err(Fail.new(Input, "${file.path}:${e.line.to_str()}: not valid TOML"))
 	Ok(doc) => {

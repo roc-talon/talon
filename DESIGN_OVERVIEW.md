@@ -16,7 +16,7 @@ Store and fetch downloads the selected packages from GitHub Releases and puts th
 
 The toolchain manager installs compilers and runs the correct one when the user types `roc`. It also builds compilers and Roc apps (tools) from source.
 
-The registry is optional, and runs on Cloudflare. It gives the resolver the list of releases and the known compatibility results in one request. Without it, Talon reads the GitHub API. Talon never builds a package: `roc` compiles packages as part of the app. 
+The registry is optional, and runs on Cloudflare. It gives the resolver the list of releases and the known compatibility results in one request (a second one only when a workspace must move a held version). Without it, Talon reads the GitHub API. Talon never builds a package: `roc` compiles packages as part of the app. 
 
 The diagram below shows how Talon components relate to each other.
 

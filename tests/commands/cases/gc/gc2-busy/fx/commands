@@ -1,0 +1,8 @@
+# R-CC10: another tln cache gc holds the lock of the item talon/gc. The line, exit 0, nothing else (no read, no list, no delete).
+cache gc
+# R-CC10, R-J3: the same with --json. The envelope has ran false and empty lists.
+cache gc --json
+# R-GC11 (Q4): a dry run takes no lock, so it prints what it would remove while the other GC runs.
+cache gc --dry-run
+# R-CM15: the operand is refused before any lock.
+cache gc nightly

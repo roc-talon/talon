@@ -1,0 +1,14 @@
+tln: error[usage]: update -i needs a person to pick. Name the packages: tln update X Y.
+update can move these packages:
+  1) json    acme/json 2.0.0
+  2) parser  acme/parser 1.0.0
+  3) pf      acme/pfx 0.1.0
+update can move these packages:
+  1) json    acme/json 2.1.0
+  2) parser  acme/parser 1.0.0
+  3) pf      acme/pfx 0.1.1
+update can move these packages:
+  1) json    acme/json 2.1.0
+  2) parser  acme/parser 1.2.0
+  3) pf      acme/pfx 0.1.1
+tln: error[usage]: update -i needs a person to pick. Name the packages: tln update X Y.

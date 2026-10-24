@@ -1,0 +1,9 @@
+update json file=r4/main.roc compiler=nightly-2026-10-14-0abcdef
+update json file=r4s/main.roc compiler=0.1.3
+install file=r4n/main.roc compiler=nightly-2026-10-14-0abcdef
+install file=r5/main.roc nightly=false compiler=nightly-2026-10-14-38a3029
+install file=r5t/main.roc nightly=false compiler=nightly-2026-10-14-38a3029
+install file=r6/main.roc nightly=false compiler=nightly-2026-10-14-38a3029
+update json file=r8/main.roc no-check toolchain=git-0123abcd nightly=false compiler=nightly-2026-10-14-38a3029
+install file=r18/main.roc no-check compiler=nightly-2026-10-14-38a3029
+install file=r18b/main.roc no-check compiler=nightly-2026-10-14-38a3029

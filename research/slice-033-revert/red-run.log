@@ -1,0 +1,85 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+
+Ran 4 tests in 563.3 ms.:
+    0 passed
+    4 failed
+    0 compiler errors
+tests/unit/evidence.roc: All (7) tests passed in 4338.0 ms.
+tests/unit/facts.roc: All (5) tests passed in 542.5 ms.
+tests/unit/fetch.roc: All (2) tests passed in 460.7 ms.
+tests/unit/frozen.roc: All (1) tests passed in 2472.7 ms.
+tests/unit/gc.roc: All (9) tests passed in 2444.2 ms.
+tests/unit/github.roc: All (5) tests passed in 668.7 ms.
+tests/unit/guard.roc: All (1) tests passed in 94.1 ms.
+tests/unit/ident.roc: All (2) tests passed in 153.6 ms.
+tests/unit/index.roc: All (6) tests passed in 719.0 ms.
+tests/unit/intent.roc: All (9) tests passed in 2911.4 ms.
+tests/unit/kind.roc: All (3) tests passed in 200.9 ms.
+tests/unit/ladder.roc: All (4) tests passed in 3067.0 ms.
+tests/unit/launch.roc: All (1) tests passed in 882.8 ms.
+tests/unit/link.roc: All (6) tests passed in 648.3 ms.
+tests/unit/listing.roc: All (4) tests passed in 820.9 ms.
+tests/unit/locked.roc: All (3) tests passed in 2329.6 ms.
+tests/unit/lock.roc: All (2) tests passed in 155.9 ms.
+tests/unit/lookup.roc: All (7) tests passed in 894.3 ms.
+tests/unit/manage.roc: All (18) tests passed in 3256.5 ms.
+tests/unit/members.roc: All (2) tests passed in 236.7 ms.
+tests/unit/mode.roc: All (3) tests passed in 240.5 ms.
+tests/unit/net.roc: All (2) tests passed in 230.2 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1186.1 ms.
+tests/unit/opts.roc: All (4) tests passed in 499.6 ms.
+tests/unit/out.roc: All (4) tests passed in 187.2 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 1008.4 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1428.9 ms.
+tests/unit/picker.roc: All (2) tests passed in 161.1 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1609.2 ms.
+tests/unit/pick.roc: All (3) tests passed in 1663.0 ms.
+tests/unit/pin.roc: All (9) tests passed in 912.3 ms.
+tests/unit/pins.roc: All (6) tests passed in 1885.7 ms.
+tests/unit/probe.roc: All (5) tests passed in 367.2 ms.
+tests/unit/project.roc: All (7) tests passed in 2031.6 ms.
+tests/unit/projects.roc: All (3) tests passed in 507.4 ms.
+tests/unit/prompt.roc: All (5) tests passed in 295.8 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2607.5 ms.
+tests/unit/ranges.roc: All (1) tests passed in 291.6 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1709.8 ms.
+tests/unit/ref.roc: All (4) tests passed in 284.9 ms.
+tests/unit/removal.roc: All (4) tests passed in 1860.6 ms.
+tests/unit/report.roc: All (3) tests passed in 215.4 ms.
+tests/unit/roots.roc: All (3) tests passed in 227.5 ms.
+tests/unit/scan.roc: All (2) tests passed in 222.6 ms.
+tests/unit/selector.roc: All (2) tests passed in 267.0 ms.
+tests/unit/setup.roc: All (10) tests passed in 734.3 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 308.7 ms.
+tests/unit/temp.roc: All (4) tests passed in 135.9 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1921.4 ms.
+tests/unit/units.roc: All (6) tests passed in 661.9 ms.
+tests/unit/update.roc: All (2) tests passed in 2010.6 ms.
+tests/unit/uses.roc: All (2) tests passed in 418.6 ms.
+tests/unit/vars.roc: All (6) tests passed in 1809.0 ms.
+tests/unit/verify.roc: All (2) tests passed in 1342.5 ms.
+tests/unit/why.roc: All (6) tests passed in 1886.8 ms.
+== l1: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l1.log)
+tests/fuzz/epochs.roc: FAILED (exit 77, seed 1, 20000 runs)
+[roc crashed] todo
+MS: 0 ; base unit: 0000000000000000000000000000000000000000
+
+
+artifact_prefix='/home/george/dev/Karakatiza666/talon/.work/l1/epochs/art/'; Test unit written to /home/george/dev/Karakatiza666/talon/.work/l1/epochs/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+Base64: 
+
+Next steps:
+  ./target show /home/george/dev/Karakatiza666/talon/.work/l1/epochs/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+  ./target replay /home/george/dev/Karakatiza666/talon/.work/l1/epochs/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+  ./target minimize /home/george/dev/Karakatiza666/talon/.work/l1/epochs/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709 .roc-fuzz/minimized-crash
+
+replay: /home/george/dev/Karakatiza666/talon/.work/l1/epochs/target replay /home/george/dev/Karakatiza666/talon/.work/l1/epochs/art/crash-da39a3ee5e6b4b0d3255bfef95601890afd80709
+
+step       result seconds  budget
+check      pass   1.0      10
+fmt        pass   0.1      5
+l0         FAIL   6.0      10
+l1         FAIL   0.8      60
+l2         pass   1.0      30
+l3         pass   9.8      60
+selftest   pass   8.2      20

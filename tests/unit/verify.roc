@@ -35,10 +35,12 @@ expect {
 # replacements. The build (an app only) is one probe in the project dir with the replacements, and its output goes to the temp dir. A package or a platform has no build.
 expect {
 	tmp = "/c/talon/tmp/0123456789abcdef"
-	spec = |dir, args| { compiler: id, args, dir, timeout: 30 }
+	program = "/h/.cache/roc/toolchains/${id}/roc"
+	env = [("XDG_CACHE_HOME", "/h/.cache"), ("ROC_CACHE_DIR", "/h/.cache/roc"), ("TALON_IN_PROXY", "1")]
+	spec = |dir, args| { compiler: id, program, args, dir, env, timeout: 30, weight: if args.first() == Ok("build") 4 else 1 }
 	json = { old: old_json, new: new_json }
 	pf = { old: old_pf, new: new_pf }
-	plan = |kind, replace| Ladder.plan_replace({ compiler: id, kind, dir: "/p/app", file: "main.roc", tmp, replace, timeout: 30 })
+	plan = |kind, replace| Ladder.plan_replace({ compiler: id, program, env, kind, dir: "/p/app", file: "main.roc", tmp, replace, timeout: 30 })
 	for_app = plan(App, [json, pf])
 	app_first = [
 		spec("/p/app", ["check", "main.roc"]),
@@ -59,7 +61,8 @@ expect {
 	]
 	bad = first_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name).concat(build_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name))
 	dbg bad
-	slow = Ladder.plan_replace({ compiler: "0.1.0", kind: App, dir: "/q", file: "x.roc", tmp, replace: [json], timeout: 7 })
+	slow = Ladder.plan_replace({ compiler: "0.1.0", program: "/usr/bin/roc", env: [], kind: App, dir: "/q", file: "x.roc", tmp, replace: [json], timeout: 7 })
 	only_check_and_build = for_app.first.concat([for_app.build.ok_or(spec("/", []))]).all(|s| s.args.first() == Ok("check") or s.args.first() == Ok("build"))
-	slow.first == [{ compiler: "0.1.0", args: ["check", "x.roc"], dir: "/q", timeout: 7 }, { compiler: "0.1.0", args: ["check", "x.roc", "--replace-dep", old_json, new_json], dir: "/q", timeout: 7 }] and bad == [] and only_check_and_build
+	slow_spec = |args| { compiler: "0.1.0", program: "/usr/bin/roc", args, dir: "/q", env: [], timeout: 7, weight: if args.first() == Ok("build") 4 else 1 }
+	slow.first == [slow_spec(["check", "x.roc"]), slow_spec(["check", "x.roc", "--replace-dep", old_json, new_json])] and slow.build == Ok(slow_spec(["build", "x.roc", "--output=${tmp}/tln-probe.out", "--replace-dep", old_json, new_json])) and bad == [] and only_check_and_build
 }

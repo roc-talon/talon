@@ -1,0 +1,42 @@
+| Id | Rule | File | Result | First failing test |
+| --- | --- | --- | --- | --- |
+| G01 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| G02 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| G03 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| G04 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| C01 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| C02 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| C03 | R-GC4 | cli/lib/Gc.roc | caught | unit/gc |
+| C05 | R-GC3 | cli/lib/Gc.roc | caught | unit/gc |
+| C06 | R-GC3 | cli/lib/Gc.roc | caught | unit/gc |
+| A01 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| E01 | R-GC9 | cli/lib/Gc.roc | caught | unit/gc |
+| E02 | R-GC1 | cli/lib/Gc.roc | caught | unit/gc |
+| S01 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| F01 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| R01 | R-GC11 | cli/lib/Gc.roc | caught | unit/gc |
+| R02 | R-OUT2 | cli/lib/Gc.roc | caught | unit/gc |
+| R03 | R-GC11 | cli/lib/Gc.roc | caught | l2 gc/ |
+| R04 | R-OUT2 | cli/lib/Gc.roc | caught | unit/gc |
+| D01 | R-OUT4 | cli/lib/Gc.roc | caught | unit/gc |
+| W01 | R-GC3 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W02 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W03 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W04 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W05 | R-GC9 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W06 | R-EV22 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W07 | R-GC3 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W08 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W09 | R-GC11 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W10 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W11 | R-GC1 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W12 | R-GC4 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| W14 | R-GC11 | cli/lib/CacheGc.roc | caught | l2 gc/ |
+| T01 | R-GC11 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| T02 | R-GC3 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| T03 | R-GC3 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| T04 | R-GC4 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| T05 | R-GC4 | cli/RealFiles.roc | caught | l3 cache/gc1-real fx/tr1 |
+| T06 | R-GC11 | cli/RealFiles.roc | NOT CAUGHT |  |
+| Z01 | R-GC11 | cli/lib/Toolchain.roc | caught | unit/toolchain |
+| Z02 | R-GC11 | cli/lib/Toolchain.roc | caught | unit/toolchain |

@@ -1,0 +1,32 @@
+== verify
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+$PROJECT/apps/b/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+$PROJECT/apps/b/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0

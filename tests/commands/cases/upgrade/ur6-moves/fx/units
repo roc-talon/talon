@@ -1,0 +1,6 @@
+# <hash>:<compiler> <code> <stdout> <stderr>: the answer of a unit probe. No row: it passes.
+31QGBxcxY74xADaqfgtBFgCp3EQhCTVoYtoJqL9LxVrV:nightly-2026-10-09-9d9d9d9	1	-	unit-foreign.stderr
+6Phv4c18RFPc2U4WFPpEXkki4MczcYSTy15WaGJRyS4Q:nightly-2026-10-09-9d9d9d9	1	-	unit-foreign.stderr
+6Phv4c18RFPc2U4WFPpEXkki4MczcYSTy15WaGJRyS4Q:nightly-2026-10-10-0e0e0e0	1	-	unit-foreign.stderr
+6Phv4c18RFPc2U4WFPpEXkki4MczcYSTy15WaGJRyS4Q:nightly-2026-10-11-1f1f1f1	1	-	unit-foreign.stderr
+6Phv4c18RFPc2U4WFPpEXkki4MczcYSTy15WaGJRyS4Q:nightly-2026-10-12-2a2a2a2	1	-	unit-foreign.stderr

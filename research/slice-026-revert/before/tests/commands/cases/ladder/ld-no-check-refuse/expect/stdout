@@ -1,0 +1,34 @@
+== update json auto-install=no file=q1/main.roc compiler=nightly-2026-10-14-38a3029
+exit 13
+== update json file=q2/main.roc no-check compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/q2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=q3/main.roc no-check compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/q3/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=q4/main.roc compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0
+== update json file=q5/main.roc no-check compiler=nightly-2026-10-09-258ab27
+check: skipped
+$PROJECT/q5/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json auto-install=no file=q6/main.roc compiler=nightly-2026-10-09-258ab27
+exit 13
+== update json file=q7/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
+check: passed
+build: passed
+$PROJECT/q7/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=q8/main.roc no-check toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+check: skipped
+$PROJECT/q8/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

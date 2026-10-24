@@ -6,6 +6,8 @@ app [main!] {
 import pf.Path
 import FakeFx
 import lib.Answer
+import lib.Db
+import lib.Facts
 import lib.Fail
 import lib.Fetch
 import lib.Fx
@@ -31,8 +33,9 @@ import lib.Run
 ## | `locks` | `Fx.with_lock!` and `Known.record!` in a fixed script (slice 002): 4 `with_lock!` runs (a body that works, a body that fails, `NoWait` on a busy item, `Wait` on a busy item), then 3 `Known.record!` runs. It prints `<n> <result>` for each run. Exit code 0. |
 ## | `index` | `Github.releases!` and `Github.hint!` for each line of `fx/runs` (slice 003). The line is `releases <owner>/<repo> [offline] [now=<seconds>] [env:<NAME>=<value>]...` or `hint <owner>/<repo> <tag> [env:<NAME>=<value>]...`. `now` is the real clock (default 1792065600). The environment is `fx/env` and the `env:` words (one `env_all!` call at the start). It prints `== <line>`, then for `releases`: `source: <live, cached <seconds>, missing>` and `pages: <byte count of each page>`, for `hint`: `hint: <text>` or `no hint`; or `exit <code>` and the failure line on stderr. A page that was found offline prints `offline_line` once, as a command does. Exit code 0. |
 ## | `fetch` | `Fetch.packages!` for each line of `fx/runs` (slice 003). The line is `fetch [offline] [env:<NAME>=<value>]... <url>...` (one `env_all!` call at the start, the `env:` words are added to the environment, as for `index`). The roots are in the case dir (`home/.cache/roc`), the `roc` program is `roc`. It prints `== <line>`, then one line for each URL: `<url>: present`, `<url>: fetched`, or `<url>: exit <code>` with the failure line on stderr. Exit code 0. |
-## | `resolve` | `Project.find!` and `Resolve.run!` for each line of `fx/runs` (slice 005). The line is `<install or update> [<name>...] [frozen] [no-check] [offline] [lowest] [dry-run] [platform] [no-pin] [yes] [quiet] [rename-keys] [allow-moves] [as=<alias>] [snapshot=<text>] [nightly=<true or false>] [compiler=<id>] [toolchain=<id>] [file=<path>] [now=<seconds>]`. The start dir is `project/`, the roots are in the case dir as for `fetch`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). It prints `== <line>`, the output of the run on stdout, `exit <code>` on stdout and the failure line on stderr. Exit code 0. |
-## | `commands` | `Run.run!` (the whole command code) for each line of `fx/commands` (slice 007). The line is the words after `tln`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). For each line it writes the words to `fx/args`, prints `== <line>`, runs, and prints `exit <code>` (stdout). Use `{w}` in `fx/env` for the paths of the case (`HOME={w}/home`). |
+## | `resolve` | `Project.find!` and `Resolve.run!` for each line of `fx/runs` (slice 005). The line is `<install or update> [<name>...] [frozen] [no-check] [offline] [lowest] [dry-run] [platform] [no-pin] [yes] [quiet] [rename-keys] [allow-moves] [allow-downloads] [probe-downloads] [auto-install=<yes or no>] [as=<alias>] [snapshot=<text>] [nightly=<true or false>] [compiler=<id>] [toolchain=<id>] [file=<path>] [now=<seconds>]`. The start dir is `project/`, the roots are in the case dir as for `fetch`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). It prints `== <line>`, the output of the run on stdout, `exit <code>` on stdout and the failure line on stderr. Exit code 0. Slice 023c: `compiler=<id>` is the `roc` on `PATH` with that id, and its file is `<work dir>/home/bin/roc` (the file that a probe runs when the id is not installed). Slice 025: `allow-downloads` and `probe-downloads` are the answer flags, `auto-install=<yes or no>` is `TALON_AUTO_INSTALL` (`Request.downloads`; no word is `Ask`), `env` is the environment of the fake. The entry has one mode for all runs (`Mode.from_env` of `fx/env`), so the cases of slice 025 use the entry `commands`. |
+## | `commands` | `Run.run!` (the whole command code) for each line of `fx/commands` (slice 007). The line is the words after `tln`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). For each line it writes the words to `fx/args`, prints `== <line>`, runs, and prints `exit <code>` (stdout). Use `{w}` in `fx/env` for the paths of the case (`HOME={w}/home`). Slice 023: a line that starts with `@roc` runs as the `roc` proxy (`fx/program` is `roc` for this run, the other words are the arguments of `roc`). A word `env:<NAME>=<value>` (before or after `@roc`, not an argument) sets the variable for this run only (it replaces a line of `fx/env` with the same name). |
+## | `db` | `Facts.load!`, `Facts.save!` and `Facts.pin!` for each line of `fx/runs` (slice 030). The line is `load <hash>:<nightly>:<target>...`, `save <replace or keep> <hash>:<nightly>:<target>:<outcome>:<modules>:<closure>...` (`modules` are split with `,`, both `modules` and `closure` can be empty) or `pin <tag>:<target>:<sha256>:<github-digest or registry>`. The roots are the dirs of the case (`<w>/home/.cache/roc`). It prints `== <line>`, then for a `load` each fact as a line of `Db.fact_line` (2 spaces first) or `  none`, for a `save` `Saved` or `Kept`, for a `pin` `New` or `Same`. A failure prints `exit <code>` to stdout and the line of the failure to stderr. The exit code of the entry is 0. |
 ## | `harness` | Calls each `Fx` function once. It tests the fake and the runner, not Talon. Exit code 3. |
 main! = |args| {
 	match args.map(|a| a.display()) {
@@ -47,6 +50,7 @@ main! = |args| {
 				"fetch" => fetch_entry!(fx, w)
 				"resolve" => resolve_entry!(fx, w)
 				"commands" => commands_entry!(fx, w)
+				"db" => db_entry!(fx, w)
 				"harness" => harness_entry!(fx)
 				_ => {
 					fx.err!("unknown entry ${entry}\n")
@@ -382,9 +386,21 @@ commands_entry! = |fx, w| {
 	for dir in file_lines!("${w}/fx/gitdirs") {
 		_ = Path.create_all!(Path.utf8("${w}/project/${dir}/.git"))
 	}
+	base_env = match Path.read_utf8!(Path.utf8("${w}/fx/env")) {
+		Ok(text) => text.trim_end()
+		Err(_) => ""
+	}
 	for line in file_lines!("${w}/fx/commands").keep_if(|l| !l.starts_with("#")) {
 		fx.out!("== ${line}\n")
-		_ = Path.write_utf8!(Path.utf8("${w}/fx/args"), Str.join_with(words(line), "\n"))
+		all = words(line)
+		extra = all.keep_if(|word| word.starts_with("env:")).map(|word| word.drop_prefix("env:"))
+		rest = all.keep_if(|word| !word.starts_with("env:"))
+		proxy = rest.first() == Ok("@roc")
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/args"), Str.join_with(if proxy rest.drop_first(1) else rest, "\n"))
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/program"), if proxy "roc" else "tln")
+		names = extra.map(|pair| pair.split_on("=").first() ?? "")
+		kept = base_env.split_on("\n").keep_if(|row| !row.is_empty() and !names.contains(row.split_on("=").first() ?? ""))
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/env"), Str.join_with(kept.concat(extra), "\n"))
 		code = Run.run!(fx)
 		fx.out!("exit ${code.to_str()}\n")
 	}
@@ -407,7 +423,7 @@ resolve_entry! = |fx, w| {
 		value = |name| given.find_first(|word| word.starts_with("${name}=")).map_ok(|word| word.drop_prefix("${name}="))
 		fx.out!("== ${line}\n")
 		command = if given.first() == Ok("update") Update else Install
-		names = given.drop_first(1).keep_if(|word| !["compiler=", "toolchain=", "nightly=", "file=", "now=", "snapshot=", "as="].any(|key| word.starts_with(key)) and !["frozen", "no-check", "offline", "lowest", "dry-run", "platform", "no-pin", "yes", "quiet", "rename-keys", "allow-moves"].contains(word))
+		names = given.drop_first(1).keep_if(|word| !["compiler=", "toolchain=", "nightly=", "file=", "now=", "snapshot=", "as=", "auto-install=", "slots="].any(|key| word.starts_with(key)) and !["frozen", "no-check", "offline", "lowest", "dry-run", "platform", "no-pin", "yes", "quiet", "rename-keys", "allow-moves", "allow-downloads", "probe-downloads", "no-probe"].contains(word))
 		file = match value("file") {
 			Ok(f) => Ok(f)
 			Err(_) => Err(Unset)
@@ -434,7 +450,7 @@ resolve_entry! = |fx, w| {
 						_ => Err(Unset)
 					},
 					compiler: match value("compiler") {
-						Ok(id) => Ok(id)
+						Ok(id) => Ok({ id, path: "${w}/home/bin/roc" })
 						Err(_) => Err(NoCompiler)
 					},
 					toolchain: match value("toolchain") {
@@ -455,6 +471,26 @@ resolve_entry! = |fx, w| {
 						no_pin: given.contains("no-pin"),
 					},
 					prompt: { mode, yes: given.contains("yes"), quiet: given.contains("quiet"), rename_keys: if given.contains("rename-keys") Ok(Yes) else Err(NoFlag), allow_moves: if given.contains("allow-moves") Ok(Yes) else Err(NoFlag) },
+					downloads: {
+						auto: match value("auto-install") {
+							Ok("yes") => Yes
+							Ok("no") => No
+							_ => Ask
+						},
+						allow: if given.contains("allow-downloads") Ok(Yes) else Err(NoFlag),
+						probe: if given.contains("probe-downloads") Ok(Yes) else Err(NoFlag),
+						env,
+					},
+					probe: {
+						no_probe: given.contains("no-probe"),
+						slots: match value("slots") {
+							Ok(text) => match U64.from_str(text) {
+								Ok(n) => Ok(n)
+								Err(_) => Err(Unset)
+							}
+							Err(_) => Err(Unset)
+						},
+					},
 				},
 			)
 		}
@@ -467,4 +503,66 @@ resolve_entry! = |fx, w| {
 		}
 	}
 	0
+}
+
+## Slice 030. See the table at the top for the entry.
+db_entry! : Fx, Str => I32
+db_entry! = |fx, w| {
+	cache = "${w}/home/.cache/roc"
+	roots = Roots.{ cache, pkgs: "${cache}/packages", build: cache, config: "${w}/home/.config/talon", data: "${w}/home/.local/share/talon" }
+	for line in file_lines!("${w}/fx/runs").keep_if(|l| !l.starts_with("#")) {
+		fx.out!("== ${line}\n")
+		given = words(line)
+		match given {
+			["load", .. as specs] => {
+				keys = specs.keep_oks(
+					|spec| match spec.split_on(":") {
+						[hash, nightly, target] => Ok({ hash, nightly, target })
+						_ => Err(BadSpec)
+					},
+				)
+				match Facts.load!(fx, { roots, keys }) {
+					Ok(rows) => if rows.is_empty() fx.out!("  none\n") else for row in rows {
+						fx.out!("  ${Db.fact_line(row)}\n")
+					}
+					Err(fail) => report!(fx, fail)
+				}
+			}
+			["save", mode, .. as specs] => {
+				rows = specs.keep_oks(
+					|spec| match spec.split_on(":") {
+						[hash, nightly, target, outcome, modules, closure] => match Db.outcome_of(outcome) {
+							Ok(o) => Ok({ hash, nightly, target, outcome: o, modules: Db.modules_of(modules), closure })
+							Err(_) => Err(BadSpec)
+						}
+						_ => Err(BadSpec)
+					},
+				)
+				match Facts.save!(fx, { roots, rows, existing: if mode == "keep" Keep else Replace }) {
+					Ok(Saved) => fx.out!("  Saved\n")
+					Ok(Kept) => fx.out!("  Kept\n")
+					Err(fail) => report!(fx, fail)
+				}
+			}
+			["pin", spec] => match spec.split_on(":") {
+				[tag, target, sha256, source] => match Db.source_of(source) {
+					Ok(src) => match Facts.pin!(fx, { roots, listed: { tag, target, sha256, source: src } }) {
+						Ok(New) => fx.out!("  New\n")
+						Ok(Same) => fx.out!("  Same\n")
+						Err(fail) => report!(fx, fail)
+					}
+					Err(_) => fx.out!("  bad line\n")
+				}
+				_ => fx.out!("  bad line\n")
+			}
+			_ => fx.out!("  bad line\n")
+		}
+	}
+	0
+}
+
+report! : Fx, Fail => {}
+report! = |fx, fail| {
+	fx.out!("exit ${fail.kind.code().to_str()}\n")
+	fx.err!("${fail.line()}\n")
 }

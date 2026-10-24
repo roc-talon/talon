@@ -1,0 +1,58 @@
+m01 conflict resolution: the back-jump goes to the level of the satisfier, not below it | L0 conflicts:pass; solver:pass | L1 caught (timeout) (248 s)
+m02 conflict resolution: it never resolves, it learns the conflict row itself (the search does not end) DOES NOT COMPILE ── ● unconditional condition ───────────────── packages/resolve/Search.roc:137:7
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.True {
+   ^^^^^^^^^
+
+── 0 errors and 1 warning ──────────────────────────── packages/resolve/main.roc
+
+
+m03 conflict resolution: the union term of a resolvent uses `and` (an unsound resolvent) | L0 conflicts:timeout; solver:timeout (50 s)
+m04 conflict resolution: the previous satisfier of the term itself is not read | L0 conflicts:pass; solver:pass | L1 MISSED (65 s)
+m05 unit propagation: a false lit does not stop a row DOES NOT COMPILE ── ● unconditional condition ────────────────── packages/resolve/Search.roc:86:5
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+── 0 errors and 1 warning ──────────────────────────── packages/resolve/main.roc
+
+
+m06 R-EP8: B better than A gives `Done` with B (no second pass) | L0 conflicts:caught [dbg] ["R-EP8 second pass: an inferred fail blocked the better pair: a probe for it"]; solver:pass (1 s)
+m07 R-EP8: the `Fail` and the B search read the inferred checks (an inferred fact decides alone) | L0 conflicts:caught [dbg] ["R-EP8 second pass: an inferred fail blocked the better pair: a probe for it", "R-EP8: no tup; solver:pass (1 s)
+m08 R-EP9: `Off` reads real facts only | L0 conflicts:caught [dbg] ["R-EP9: an inferred fail decides when no probe may run", "the inferred fails next to a real f; solver:pass (1 s)
+m09 R-EP9: `Off` asks for probes DOES NOT COMPILE ── ● unconditional condition ──────────────── packages/resolve/Solver.roc:396:23
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+Ok((_, roc)) => if Bool.True dedupe(rels.keep_if(|id| !compat.checks.any(|c| c.id == id and c.nightly == roc.c.id and c.source == Real))).map(|id| Probe({ id, nightly: roc.c.id })) else []
+                   ^^^^^^^^^
+
+── 0 errors and 1 warning ──────────────────────────── packages/resolve/main.roc
+
+
+m10 Why: `Derived` names the first step twice DOES NOT COMPILE ── ● unused variable ──────────────────────── packages/resolve/Solver.roc:431:15
+
+Variable b is defined here and then never used.
+
+Derived(a, b) => Derived(at(a), at(a))
+           ^
+
+If you don't need this variable, prefix it with an underscore like _b to
+suppress this warning.
+
+── 0 errors and 1 warning ──────────────────────────── packages/resolve/main.roc
+
+
+m11 R-EP7: a run does not end at a pass (a pass is a touch) | L0 conflicts:caught [dbg] ["a pass between 2 fails stays a value", "a pass excludes nothing"]; solver:pass (1 s)
+final code restored: True packages/resolve/Solver.roc: OK packages/resolve/Search.roc: OK packages/resolve/main.roc: OK packages/resolve/Domain.roc: OK 
+
+real	6m5.962s
+user	8m5.143s
+sys	0m50.968s

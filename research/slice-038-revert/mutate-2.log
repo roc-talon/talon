@@ -1,0 +1,4 @@
+M11	update X@latest does not rewrite the range (R-UP11)	l0 caught by: none	l2: FAIL upgrade/ug1-flow
+M13	update reports lags too (R-UP10)	l0 caught by: none	l2: FAIL upgrade/ug2-lag
+M15	the scope of upgrade is the scope of update (R-SP6)	l0 caught by: none	l2: FAIL upgrade/ug1-flow,upgrade/ug2-lag,upgrade/ug3-move
+done

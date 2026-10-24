@@ -1,6 +1,6 @@
 # 017 Held moves
 
-Phase: P0. Status: code
+Phase: P0. Status: done
 
 This slice tests the decision `docs/design-gaps/G-held-moves.md` (applied to the design files: `docs/design-gaps/APPLIED.md`, rows HM1 to HM7). It also takes the items that the reviews of slices 009 and 016 moved here: G2 of slice 009 (R-WS6 for `update`), Q1 of slice 016 (the closure per member), K3, P5, P11, F2b and G3 of the slice 016 code review. It follows `docs/agents/BRIEF-tests.md`. The earlier slices are not committed: the pre-slice copies of the changed files are in `research/slice-017-revert/before/` (with `NEW.txt`).
 
@@ -142,7 +142,7 @@ Count: 6 new L0 expects (pickmoves 3, pickclosure 1, vars 2), 2 L0 expects chang
 
 ## Disputes (from the code agent)
 
-None yet.
+None. No test, fixture or expected file was changed.
 
 ## Notes for the code agent
 
@@ -218,3 +218,38 @@ Status: code.
 ## Paused (manager, 2026-10-21)
 
 The user paused the work. The code agent had made `scripts/test.sh` pass (manager run: all steps pass) and was in its revert check. The manager stopped it and its mutation script. One file held a mutation when the script stopped (`InstallFlow.roc`, the `--dry-run` line); the manager restored it from the code agent's copy, which equals the code before the mutations. To do on resume: the revert check of the code (research/slice-017-revert/code-mutate.py, run it again from the start), the code agent's report (decisions, the slice file sections), and the manager review of the code.
+
+## Code decisions (code agent)
+
+| # | Decision | Rejected option |
+| --- | --- | --- |
+| C1 | New module `cli/lib/PickMoves.roc` (26 lines, in `main.roc`): `second_wanted` (D4) and `moves_of` (`Pick.moves` joined with `Scoped`: name, member files). `PickFlow.roc` stays under 600 lines | The functions inside `PickFlow` (585 lines would become about 620) |
+| C2 | `PickLoop.run!` gives `Err(Stuck)`: `{ fail, facts, paths }`. A failure of a read (`Gather`, `Release.read`, `platform_wants`) is also a `Stuck`, with the facts at that time | A new error tag |
+| C3 | The second search ends with an `Err`: kind `NoTuple` gives the failure of the first search (D10). Another kind (a read of the second wave, for example `Environment` or `Network`) is returned as it is | Always the first failure (it hides a network or file error behind a `no_tuple` text) |
+| C4 | `Pick.moves` `why` for R-C1 reads the ranges of each slot whose chosen URL has the group of the moved slot (the slot itself, the new entry of `add`) | Ranges of the moved slot only (the row `core 1.2.0 is outside =1.3.0` needs the range of the new entry) |
+| C5 | `ResolveBase.prepared!` runs `Vars.check_keys` when `role == Lock` and `command == Install` (so `install`, `add`, `install --frozen`) | A check in `Vars.build` (G2 of slice 009) |
+| C6 | `Vars.build` keeps its `Try` type (the tests match `Ok`/`Err`), but it has no failure path now | A new signature (9 test call sites) |
+| C7 | `Picked` has `moves : List(Consent.Move)`. `InstallFlow.finish!` has a new last parameter `moves`, and `confirm_moves!` is after `ladder!` and before `write!` | None |
+| C8 | `PickFlow.fresh_of` has no `vars` parameter (it was used only for `check_held`). `Add.check_held` and `highest_version` are removed. The doc row 3 of `Resolve.install!` is changed | None |
+| C9 | G3 (a path file that cannot be read gives `Environment`, exit 18): `Gather.get!` already gives this kind. ws1 run 6 passes with no change of code | None |
+
+## Verify results (code agent)
+
+`scripts/test.sh` exits 0 on the final tree (check, fmt, L0, L2 35 of 35, L3 26 of 26 with 1 skipped, selftest). Revert check: `research/slice-017-revert/code-mutate.py`, results in `research/slice-017-revert/code-results.md`. 26 mutations, filtered runs, 26 CAUGHT, 0 not caught. `cli/lib` after the run equals the copy before it.
+
+| Group | Mutations | Caught by |
+| --- | --- | --- |
+| Search order and values (R-SP24, R-C1) | P1 to P4 | `pickmoves` |
+| One group one value (R-WS2) | P5 | L2 `moves` (the L0 rows pass without the rule: the cause was not checked, probably `Closure.step` also refuses 2 values of one series) |
+| Closure per member, order of the result, `Pick.moves` rows and texts (Q1, P5, R-SP16) | P6 to P10 | `pickclosure`, `pickmoves` |
+| Movable, stale key (R-SP23, R-I8) | V1 to V3 | `vars` |
+| R-WS6 only for `install` | R1 | L2 `ws1-closure-keys` |
+| Second search and flow (R-SP16, R-C7, R-AL8, R-SP23, R-DI1, R-SP25) | F1 to F6 | L2 `moves` (hm1, hm2) |
+| The prompt (R-SP26, R-NI3, R-J5, R-SP16, notes) | I1 to I5 | L2 `moves` |
+| The report (R-SP25) | C1 | L0 `consent` |
+
+Note: P5 is not caught by L0. The L0 tests of `pickmoves` pass without the group rule (probably the closure already refuses 2 values of one series: not checked). L2 `hm1` catches it. L3 `in1-workspace-frozen-rename` was not needed for any mutation.
+
+## Review of the code (manager, 2026-10-22)
+
+`scripts/test.sh` passes (manager run: l0 14.2 s, l2 80.2 s, l3 9.3 s). The revert check of the code caught 26 of 26. C1 to C9 are accepted. P5 (one group, one value) is caught by L2 only: accepted. Note for the P1 plan: the l2 step grew from 30 s (slice 005) to 80 s, and the fast set is about 114 s of the 180 s limit (TW20).

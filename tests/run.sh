@@ -1,8 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # L3 runner: `tln` end to end with the real Fx, fake roc, a new dir on tmpfs and a fixed environment
 # (TESTING.md 3). Usage: tests/run.sh [filter ...]
 #   filter    a case path, or a part of it (`json/`, `unknown`). No filter: the fast set.
 #   UPDATE=1  write the actual output to expect/ (TW21: only for outputs that the slice changes)
+#   SLOW=1      also run the cases with the tag slow (TW27)
+#   OPT=dev|speed    build mode of tln, fxprobe and flowprobe (default dev, TW25). Another value: exit 2
+#   NET=1       also run the cases with the tag net (real network; the nightly run only, TW28)
 #   REAL_ROC=1  also run the cases with the tag real-roc, with the pinned roc in place of the fake (L4)
 #   SCENARIOS=<dir>  another case tree (the self-test of the runner uses it)
 #   TLN=<file>       use this binary, do not build one
@@ -13,10 +16,12 @@
 # Extra to TESTING.md 3.2 (proposals of slice 001):
 #   - given/roc.tsv: tab-separated rules, see tests/fakes/roc.
 #   - stdout and stderr: `$HOME`, `$PROJECT` and `$WORK` stand for the dirs of the case.
-#   - tag tty: the cmd runs under a pseudo terminal (tests/tools/ptyrun.py). stdout and stderr are one
+#   - tag tty: the cmd runs under a pseudo terminal (tests/tools/ptyrun.py; with given/http/ it runs with the fake HTTP server, slice 025). stdout and stderr are one
 #     stream, so expect/stdout has all the output and expect/stderr must be empty.
 #     given/answers is the text that is typed in.
-#   - the tags slow, windows, exdev, and real-roc (without REAL_ROC=1) are not in the fast set.
+#   - the tags windows, exdev, slow (without SLOW=1), net (without NET=1) and real-roc (without REAL_ROC=1) are not in the fast set.
+#   - expect/facts.tsv (slice 030): the rows of `home/.cache/roc/talon/compat.db` after the cmd (the dump of tests/tools/dumpdb.py, the line form of `Db.file_text`).
+#     When the file is missing, the db is not compared. An empty file means that there is no db file. UPDATE=1 writes it, and removes it when the db is missing.
 #   - expect/roc.log: when it is missing, the case expects no roc call.
 #   - given/http/ (slice 003): routes for the fake HTTP server (tests/tools/fakehttp.py, the format is in its doc comment). The runner
 #     starts one server for the case (tests/tools/with-http.sh), in the namespace of the case (the network is off, but the loopback
@@ -36,10 +41,12 @@ run_case() {
     local dir=$1 name tags W
     name=${dir#"$SCENARIOS"/}
     tags=$(cat "$dir/tags" 2> /dev/null || true)
-    for t in slow windows exdev; do
+    for t in windows exdev; do
         case " $tags " in *" $t "*) return 2 ;; esac
     done
+    case " $tags " in *" slow "*) [ "${SLOW:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" real-roc "*) [ "${REAL_ROC:-0}" = 1 ] || return 2 ;; esac
+    case " $tags " in *" net "*) [ "${NET:-0}" = 1 ] || return 2 ;; esac
 
     W=$CASEROOT/$(echo "$name" | tr / _)
     rm -rf "$W"
@@ -69,6 +76,8 @@ run_case() {
     local cmdfile=$dir/cmd run
     if [[ " $tags " == *" tty "* ]]; then
         run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" sh -e "$cmdfile")
+        # Slice 025: a case with the tag tty and routes gets the fake HTTP server too (the pseudo terminal runs the server and the command).
+        [ -d "$W/http" ] && run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
     else
         # A case that hangs (a lock that waits for ever, slice 002) fails after CASE_TIMEOUT s with exit code 124.
         run=(timeout "${CASE_TIMEOUT:-120}" sh -e "$cmdfile")
@@ -80,6 +89,7 @@ run_case() {
     normalize "$W" < "$W/out/stdout.raw" | hexnorm > "$W/out/stdout"
     normalize "$W" < "$W/out/stderr.raw" | hexnorm > "$W/out/stderr"
     tree_diff "$W" > "$W/out/tree.diff"
+    dump_facts "$W" > "$W/out/facts.tsv"
     if [ -f "$W/roc.log" ]; then normalize "$W" < "$W/roc.log" | hexnorm > "$W/out/roc.log"; else : > "$W/out/roc.log"; fi
     if [ -f "$W/http.log" ]; then normalize "$W" < "$W/http.log" > "$W/out/http.log"; else : > "$W/out/http.log"; fi
 
@@ -90,6 +100,7 @@ run_case() {
         update_file "$ex/exit" "$W/out/exit"
         update_file "$ex/tree.diff" "$W/out/tree.diff"
         update_file "$ex/roc.log" "$W/out/roc.log" optional
+        update_file "$ex/facts.tsv" "$W/out/facts.tsv" optional
         update_file "$ex/http.log" "$W/out/http.log" optional
         return 0
     fi
@@ -107,6 +118,7 @@ run_case() {
         { echo "  unexpected roc call (the case has no expect/roc.log):"; sed -e 's/^/    /' "$W/out/roc.log"; } >> "$report"
         fail=1
     fi
+    [ -f "$ex/facts.tsv" ] && { compare_file "compat.db rows" "$ex/facts.tsv" "$W/out/facts.tsv" >> "$report" || fail=1; }
     [ -f "$ex/http.log" ] && { compare_file "http requests" "$ex/http.log" "$W/out/http.log" >> "$report" || fail=1; }
     if [ $fail = 1 ]; then cat "$report"; return 1; fi
     return 0
@@ -118,14 +130,15 @@ if [ "${1:-}" = --case ]; then
     exit $?
 fi
 
+check_opt
 # Build `tln`, `fxprobe` and `flowprobe` once for the run.
 BIN=$WORK/bin
 if [ -z "${TLN:-}" ]; then
-    "$ROC" build "$ROOT/cli/main.roc" --output="$BIN/tln" > "$WORK/build-tln.log" 2>&1 ||
+    "$ROC" build "$ROOT/cli/main.roc" --no-cache --opt="$OPT" --output="$BIN/tln" > "$WORK/build-tln.log" 2>&1 ||
         { echo "build of tln failed:"; cat "$WORK/build-tln.log"; exit 1; }
-    "$ROC" build "$ROOT/cli/fxprobe.roc" --output="$BIN/fxprobe" > "$WORK/build-fxprobe.log" 2>&1 ||
+    "$ROC" build "$ROOT/cli/fxprobe.roc" --no-cache --opt="$OPT" --output="$BIN/fxprobe" > "$WORK/build-fxprobe.log" 2>&1 ||
         { echo "build of fxprobe failed:"; cat "$WORK/build-fxprobe.log"; exit 1; }
-    "$ROC" build "$ROOT/cli/flowprobe.roc" --output="$BIN/flowprobe" > "$WORK/build-flowprobe.log" 2>&1 ||
+    "$ROC" build "$ROOT/cli/flowprobe.roc" --no-cache --opt="$OPT" --output="$BIN/flowprobe" > "$WORK/build-flowprobe.log" 2>&1 ||
         { echo "build of flowprobe failed:"; cat "$WORK/build-flowprobe.log"; exit 1; }
 else
     BIN=$(dirname "$TLN")

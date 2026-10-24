@@ -1,0 +1,7 @@
+cli/lib/Proxy.roc
+tests/unit/proxy.roc
+tests/commands/cases/proxy/
+tests/scenarios/compilers/px1-proxy/
+tests/scenarios/fx/px1-real-fx-exec/
+docs/slices/023-roc-proxy.md
+research/slice-023-revert/

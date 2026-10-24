@@ -1,3 +1,4 @@
+import Setting
 import Text
 
 ## A probe is one run of `roc check` or `roc build` (Resolution 4, R-LD1, R-P1). This module has the pure part (TESTING.md 2.2, part A): the
@@ -22,10 +23,13 @@ import Text
 ## The line `── <digit>...` (no `✗`, no `●`) is the summary. Exit code 2 with `0 errors` is a pass: the exit code is not the class.
 Probe :: [].{
 
-	## One probe for `Fx.probes!` (TESTING.md 2.3 row 3). `compiler` is the compiler id (a nightly tag or a release): the real `Fx` of P0 runs the
-	## `roc` on `PATH` (R-PH6), and `Compiler.require` has checked that this is the id. `args` are the arguments of `roc` (`Probe.args`). `dir` is the
-	## working directory. `timeout` is in seconds (R-RC3, R-P5: 30).
-	Spec : { compiler : Str, args : List(Str), dir : Str, timeout : U64 }
+	## One probe for `Fx.probes!` (TESTING.md 2.3 row 3). `compiler` is the compiler id (a nightly tag or a release): the id that the command holds, for the messages. `program` is the file that runs
+	## (slice 023c, R-PX2, R-PX6): `<cache>/toolchains/<id>/roc` for an installed compiler, else the file of the `roc` on `PATH` as `PATH` wrote it (`Launch.program`), never the name `roc`: the first `roc`
+	## on `PATH` can be the Talon launcher. `env` are variables that are set for the child in addition to the environment of the process (`Launch.child_env`: the canonical cache paths of R-PX6, and
+	## `TALON_IN_PROXY=1`, question Q1 of slice 023c). `args` are the arguments of `roc` (`Probe.args`). `dir` is the working directory. `timeout` is in seconds (R-RC3, R-P5: 30).
+	## Slice 031 (R-PP6): `weight` is the number of slots that the probe takes from the pool (`Probe.weight`: a check takes 1, a build takes 4). The real `Fx` only adds the weights (TW4: it does not know
+	## what a check or a build is).
+	Spec : { compiler : Str, program : Str, args : List(Str), dir : Str, env : List((Str, Str)), timeout : U64, weight : U64 }
 
 	## What `Fx.probes!` gives for one probe. `TimedOut`: the child did not end in `timeout` seconds and the real `Fx` killed it. `NotStarted`:
 	## the program could not start.
@@ -33,6 +37,39 @@ Probe :: [].{
 
 	## The compiler command of a probe (R-LD1, R-LD4, R-LD5, R-P1). `Build` writes the program to `output` and never runs it.
 	Command : [Check, Build({ output : Str })]
+
+	## Slice 031 (R-PP6): the slots that a probe of this command takes from the pool of `Fx.probes!`. `Check` is 1, `Build` is 4. So a pool of 12 slots runs 12 checks, or 3 builds, or a mix (R-PP7).
+	weight : Command -> U64
+	weight = |command| match command {
+		Check => 1
+		Build(_) => 4
+	}
+
+	## One layer of the `[probe]` keys (R-P5): `config.toml` `[probe]`, or `probe = { ... }` in the `[resolution]` table of `talon.toml` (Design 4.3, CLI 6.1). A key that the file does not set is `Err(Unset)`.
+	## The keys are `max`, `timeout`, `slots` and `max-toolchains`. All are whole numbers. `timeout` is in seconds.
+	Keys : { max : Try(U64, [Unset]), timeout : Try(U64, [Unset]), slots : Try(U64, [Unset]), max_toolchains : Try(U64, [Unset]) }
+
+	## The probe settings of one command (R-P5, R-PP7).
+	##
+	## | Field | Key | Default | Meaning |
+	## | --- | --- | --- | --- |
+	## | `max` | `probe.max` | 100 | The probes that a command may start (R-PP4: each probe that starts counts, also a baseline, a check of the candidate and a build) |
+	## | `timeout` | `probe.timeout` | 30 | Seconds that a probe may run (R-RC3). The `timeout` of each `Spec`. |
+	## | `slots` | `probe.slots`, `--slots <n>` | 12 | The size of the pool of slots (R-PP6, R-PP7, R-FL11) |
+	## | `max_toolchains` | `probe.max-toolchains` | 10 | The cap of compiler downloads for probes (R-P5, R-DL6). Read here, used by slice 036. |
+	Settings : { max : U64, timeout : U64, slots : U64, max_toolchains : U64 }
+
+	## The settings from the layers (R-LY4, `Setting.pick`): the flag `--slots` (for `slots` only), then the `talon.toml` of the project, then `config.toml`, then the default of the table of `Settings`.
+	settings : { flag_slots : Try(U64, [Unset]), project : Keys, user : Keys } -> Settings
+	settings = |layers| {
+		pick = |flag, project, user| Setting.pick({ flag, env: Err(Unset), project, user })
+		{
+			max: pick(Err(Unset), layers.project.max, layers.user.max) ?? 100,
+			timeout: pick(Err(Unset), layers.project.timeout, layers.user.timeout) ?? 30,
+			slots: pick(layers.flag_slots, layers.project.slots, layers.user.slots) ?? 12,
+			max_toolchains: pick(Err(Unset), layers.project.max_toolchains, layers.user.max_toolchains) ?? 10,
+		}
+	}
 
 	## The arguments of `roc`. `Check` is `["check", file]`. `Build({ output })` is `["build", file, "--output=<output>"]` (R-LD5: the host target is the
 	## default, so there is no `--target`). `file` is the file name of the project file, as the working directory sees it.

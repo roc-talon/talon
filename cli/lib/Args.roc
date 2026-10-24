@@ -250,6 +250,7 @@ allows = |cmd, flag| {
 		"--range" | "--share" => cmd == "probe"
 		"--all" => cmd == "cache clean"
 		"--force" => one_of(["remove", "roc link"])
+		"--copy" => cmd == "roc link"
 		"--rename-keys" => cmd == "install"
 		"--allow-moves" => one_of(["install", "update", "upgrade"])
 		"--probe-downloads" => resolving or cmd == "probe"

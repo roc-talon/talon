@@ -1,0 +1,3 @@
+docs/slices/039c-nightly-moves.md
+tests/commands/cases/upgrade/ur6-moves/
+research/slice-039c-revert/ (all except before/ copies of old files)

@@ -1,0 +1,58 @@
+# The nightly run and the merge run (TESTING.md 1, TW28): all steps, OPT=speed, the tags slow, real-roc and net.
+# workflow_dispatch is the merge run by hand. The packages are downloaded again each time (R-FE6), so no package cache.
+name: nightly
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  nightly:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      # Ubuntu 24.04 blocks user namespaces. Without this, tests/lib.sh netoff runs the cases with the network on (TW15).
+      - name: Linux tools
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get install -y bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+
+      - name: Pinned compiler tag
+        run: |
+          . scripts/env.sh
+          echo "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"
+
+      - name: Cache of the compiler
+        uses: actions/cache@v4
+        with:
+          path: .work/nightlies
+          key: roc-${{ runner.os }}-${{ runner.arch }}-${{ env.ROC_TAG }}
+
+      - name: Install the compiler
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
+
+      - name: Test
+        env:
+          OPT: speed
+          SLOW: 1
+          NET: 1
+          REAL_ROC: 1
+          GITHUB_TOKEN: ${{ github.token }}
+        run: scripts/test.sh
+
+      - name: Logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: logs
+          path: .work/logs
+          if-no-files-found: ignore

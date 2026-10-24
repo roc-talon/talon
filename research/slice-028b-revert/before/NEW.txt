@@ -1,0 +1,3 @@
+tests/commands/cases/gc/gc3-caches
+tests/scenarios/fx/tr1-real-fx-tree-info
+docs/slices/028b-gc-caches.md

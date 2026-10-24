@@ -1,0 +1,6 @@
+cli/lib/Upgrade.roc
+cli/lib/Lags.roc
+tests/unit/upgrade.roc
+tests/commands/cases/upgrade/
+docs/slices/038-upgrade.md
+research/slice-038-revert/

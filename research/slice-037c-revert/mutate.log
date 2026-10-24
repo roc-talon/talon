@@ -1,0 +1,11 @@
+M1 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | --allow-downloads is the opt-in of the optional downloads (R-DL5: it answers a required download only)
+M2 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: pass | the download is planned before the budget: a download with no room for its probe (R-P5)
+M3 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | the cap does not count the tries of earlier rounds (R-DL6)
+M4 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | a release whose download failed is asked again (R-P3)
+M5 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | phase 1 asks a release that is not installed when --yes is set: no installed-first order (R-P5)
+M6 l0: {'consent': 'FAIL', 'probecmd': 'pass'} l2: - | --yes is not an opt-in (R-NM8, R-NI4)
+M7 l0: {'consent': 'FAIL', 'probecmd': 'pass'} l2: - | a count of 0 is offered (R-DL6)
+M8 l0: {'consent': 'FAIL', 'probecmd': 'pass'} l2: - | the ids that the cap drops are not listed (R-DL6)
+M9 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | the note of the cap shows with a cap of 0 (R-DL6: nothing is offered)
+M10 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | data.downloads does not count the downloads
+M2 l0: {'consent': 'pass', 'probecmd': 'pass'} l2: FAIL | the download is planned before the budget: a download with no room for its probe (R-P5)

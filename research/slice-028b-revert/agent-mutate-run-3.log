@@ -1,0 +1,13 @@
+W06 R-EV22 cli/lib/CacheGc.roc caught l2 gc/
+W07 R-GC3 cli/lib/CacheGc.roc caught l2 gc/
+W08 R-GC4 cli/lib/CacheGc.roc caught l2 gc/
+W09 R-GC11 cli/lib/CacheGc.roc caught l2 gc/
+W10 R-GC4 cli/lib/CacheGc.roc caught l2 gc/
+W11 R-GC1 cli/lib/CacheGc.roc caught l2 gc/
+W12 R-GC4 cli/lib/CacheGc.roc caught l2 gc/
+W14 R-GC11 cli/lib/CacheGc.roc caught l2 gc/
+T01 R-GC11 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1
+T02 R-GC3 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1
+T03 R-GC3 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1
+T04 R-GC4 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1
+code equals code-final: True

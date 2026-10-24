@@ -1,0 +1,7 @@
+# The errors of compat.db, one rule for each call (the number counts db_query and db_write calls over the whole case).
+1: busy
+2: failed unable to open database file
+3: busy
+4: busy
+16: busy
+17: version 2

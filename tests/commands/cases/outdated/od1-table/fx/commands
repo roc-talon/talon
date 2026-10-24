@@ -1,0 +1,8 @@
+outdated --file p1/main.roc
+outdated --file p1/main.roc --json
+outdated --file p1/main.roc --quiet
+outdated --file p2/main.roc
+env:HOME={w}/home2 outdated --file p3/main.roc --offline
+env:HOME={w}/home3 outdated --file p4/main.roc --offline
+outdated json --file p1/main.roc
+outdated --file p1/main.roc --snapshot 2026-10-01T00:00:00Z

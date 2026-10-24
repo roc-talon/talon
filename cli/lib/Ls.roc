@@ -1,5 +1,6 @@
 import Args
 import Closure
+import Common
 import Exit
 import Fail
 import Fx
@@ -7,8 +8,12 @@ import Install
 import Known
 import Listing
 import Mode
+import Net
 import Out
+import Project
 import ResolveBase
+import ResolveLoad
+import Roots
 
 ## The command `tln list` (also `ls`: R-CM9, R-CM19, R-H4, R-C8; slice 010). The wiring of a run, in direct style over `Fx` (TESTING.md 2.2 part C): `Listing` decides the text, `Walk` reads the closure.
 ## `Run.run!` calls it for the command `list`. The calls, in order (the L2 case `closure/cl1-flow` and the L3 case `list/ls1-list` fix them):
@@ -30,7 +35,7 @@ Ls :: [].{
 
 	run! : Fx, Args => I32
 	run! = |fx, args| match Listing.read(args) {
-		Err(fail) => Install.failed!(fx, args, fail)
+		Err(fail) => Common.failed!(fx, args, fail)
 		Ok(opts) => match walk!(fx, args, Bool.True) {
 			Ok(closures) => {
 				if args.json {
@@ -42,35 +47,27 @@ Ls :: [].{
 				}
 				0
 			}
-			Err(fail) => Install.failed!(fx, args, fail)
+			Err(fail) => Common.failed!(fx, args, fail)
 		}
 	}
 
 	## Steps 2 to 8 of the table above: the environment, the project, the record, the load, and the walk of each member. With `notes` the warnings of R-C8 go to stderr (`tln list`). `tln why` calls it with `notes` false (slice 011, Q24).
 	walk! : Fx, Args, Bool => Try(List({ file : Str, walked : Closure.Walked }), Fail)
-	walk! = |fx, args, notes| {
+	walk! = |fx, args, notes| Ok(Ls.walk_full!(fx, args, notes)?.closures)
+
+	## Slice 032b: `walk!` with the `ResolveBase.Request` and the `ResolveBase.Loaded` of the run (`tln why` reads the evidence with them).
+	walk_full! : Fx, Args, Bool => Try({ closures : List({ file : Str, walked : Closure.Walked }), request : ResolveBase.Request, loaded : ResolveBase.Loaded }, Fail)
+	walk_full! = |fx, args, notes| {
 		start = Install.begin!(fx, args)?
 		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-		request = {
-			command: Install,
-			names: [],
-			frozen: Bool.False,
-			no_check: Bool.False,
-			project: start.project,
-			roots: start.roots,
-			net: start.net,
-			now: start.now,
-			offline: args.offline,
-			strategy: Err(Unset),
-			nightly: Install.nightly_of(start.env),
-			compiler: Err(NoCompiler),
-			toolchain: Err(Unset),
-			snapshot: Err(Unset),
-			dry_run: Bool.False,
-			add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },
-			prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: Err(NoFlag) },
+		request = Ls.request_of(args, start)
+		loaded = ResolveLoad.load!(fx, request)?
+		# R-SO18: `ls` warns when `.roc-version` and the header pin differ (`why` does not: `notes` is false).
+		if notes {
+			for line in ResolveBase.roc_version_warnings(loaded) {
+				fx.err!("warning: ${line}\n")
+			}
 		}
-		loaded = ResolveBase.load!(fx, request)?
 		current = start.project.file ?? ""
 		named = loaded.members.keep_if(|m| m.file == current)
 		members = if named.is_empty() loaded.members else named
@@ -78,6 +75,30 @@ Ls :: [].{
 		if notes {
 			ResolveBase.closure_notes!(fx, request, closures)
 		}
-		Ok(closures)
+		Ok({ closures, request, loaded })
+	}
+
+	## Slice 040: the `ResolveBase.Request` of a command that only reads (`tln list`, `why`, `outdated`): no flag of a resolve, no compiler, no probe. `start` is the result of `Install.begin!`.
+	request_of : Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project } -> ResolveBase.Request
+	request_of = |args, start| {
+		command: Install,
+		names: [],
+		frozen: Bool.False,
+		no_check: Bool.False,
+		project: start.project,
+		roots: start.roots,
+		net: start.net,
+		now: start.now,
+		offline: args.offline,
+		strategy: Err(Unset),
+		nightly: Common.nightly_of(start.env),
+		compiler: Err(NoCompiler),
+		toolchain: Err(Unset),
+		snapshot: Err(Unset),
+		dry_run: Bool.False,
+		add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },
+		prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: Err(NoFlag) },
+		downloads: { auto: Ask, allow: Err(NoFlag), probe: Err(NoFlag), env: start.env },
+		probe: { no_probe: Bool.False, slots: Err(Unset) },
 	}
 }

@@ -1,0 +1,139 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work-028/logs/l0.log)
+tests/unit/pathroc.roc: All (7) tests passed in 1567.5 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2140.8 ms.
+tests/unit/picker.roc: All (2) tests passed in 169.5 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 2692.2 ms.
+tests/unit/pick.roc: All (3) tests passed in 2699.8 ms.
+tests/unit/pin.roc: All (9) tests passed in 1701.4 ms.
+tests/unit/probe.roc: All (3) tests passed in 473.1 ms.
+tests/unit/project.roc: All (7) tests passed in 1950.3 ms.
+tests/unit/projects.roc: All (3) tests passed in 420.7 ms.
+tests/unit/prompt.roc: All (5) tests passed in 815.5 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2931.3 ms.
+tests/unit/ranges.roc: All (1) tests passed in 552.2 ms.
+tests/unit/rebase.roc: All (4) tests passed in 2666.9 ms.
+tests/unit/ref.roc: All (4) tests passed in 516.1 ms.
+tests/unit/removal.roc: All (3) tests passed in 2723.4 ms.
+tests/unit/report.roc: All (3) tests passed in 365.5 ms.
+tests/unit/roots.roc: All (3) tests passed in 446.7 ms.
+tests/unit/scan.roc: All (2) tests passed in 454.8 ms.
+tests/unit/selector.roc: All (2) tests passed in 181.8 ms.
+tests/unit/setup.roc: All (10) tests passed in 2095.2 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 530.1 ms.
+tests/unit/temp.roc: FAILED
+[dbg] []
+[dbg] (["/c/roc/talon/projects.json.0123456789abcdef.tmp", "/c/roc/talon/projects.json.fedcba9876543210.tmp"], ["/c/roc/toolchains/nightly-1.0123456789abcdef.tmp"], [])
+[dbg] ["/c/roc/packages/h1.0123456789abcdef.tmp", "/c/roc/talon/tmp/0123456789abcdef", "/c/roc/talon/x/d1.1123456789abcdef.tmp", "/c/roc/toolchains/n1.fedcba9876543210.trash"]
+[dbg] []
+
+── ✗ fail ───────────────────────────────────────────── tests/unit/temp.roc:89:1
+
+expect {
+    now = 2000000
+    day = 86400
+    e = |path, is_dir, mtime| { path, is_dir, mtime }
+    entries = [
+        e("/c/roc/talon/tmp/0123456789abcdef.locks", Bool.False, 0),
+        e("/c/roc/talon/tmp/1123456789abcdef.locks", Bool.False, now - day - 1),
+        e("/c/roc/talon/tmp/2123456789abcdef.locks", Bool.False, now - day),
+        e("/c/roc/talon/tmp/3123456789abcdef.locks", Bool.False, now + 500),
+        e("/c/roc/talon/tmp/4123456789abcdef.locks", Bool.True, 0),
+        e("/c/roc/talon/tmp/short.locks", Bool.False, 0),
+        e("/c/roc/talon/tmp/012345678901234g.locks", Bool.False, 0),
+        e("/c/roc/talon/tmp/5123456789abcdef.lock", Bool.False, 0),
+        e("/c/roc/talon/0123456789abcdef.locks", Bool.False, 0),
+        e("/c/roc/toolchains/0123456789abcdef.locks", Bool.False, 0),
+        e("/x/tmp/0123456789abcdef.locks", Bool.False, 0),
+    ]
+    got = Temp.old({ entries, now })
+    dbg got
+    got == ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
+}
+
+Ran 4 tests in 295.4 ms.:
+    3 passed
+    1 failed
+    0 compiler errors
+tests/unit/toolchain.roc: All (15) tests passed in 2330.0 ms.
+tests/unit/update.roc: All (2) tests passed in 2526.6 ms.
+tests/unit/vars.roc: All (6) tests passed in 2329.6 ms.
+tests/unit/verify.roc: All (2) tests passed in 1718.3 ms.
+tests/unit/why.roc: All (6) tests passed in 2094.7 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work-028/logs/l2.log)
+FAIL gc/gc1-select
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+FAIL gc/gc2-busy
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+commands: 64 passed, 2 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work-028/logs/l3.log)
+      -\ No newline at end of file
+      ---- home/.cache/roc/compat-ddddddd/cache.bin
+      -+++ home/.cache/roc/compat-ddddddd/cache.bin
+      -@@ -1 +0,0 @@
+      --build cache
+      -\ No newline at end of file
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pb/main.roc","last_use":1792281600}]}
+      ++{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pb/main.roc","last_use":1792281600},{"path":"$PROJECT/pold/main.roc","last_use":1785542400},{"path":"$PROJECT/pgone/main.roc","last_use":1792454400}]}
+       --- home/.cache/roc/toolchains/link-dev/.talon.json
+       +++ home/.cache/roc/toolchains/link-dev/.talon.json
+       @@ -1 +1 @@
+       -{"format":1,"id":"link-dev","path":"ROC_SRC","installed_at":"2026-06-01T00:00:00Z"}
+       +{"format":1,"id":"link-dev","path":"$PROJECT/roc-src/roc","installed_at":"2026-06-01T00:00:00Z"}
+      ---- home/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use
+      -@@ -1 +0,0 @@
+      --2026-05-02T10:00:00Z
+      ---- home/.cache/roc/toolchains/nightly-2026-05-01-6666666/roc
+      -+++ home/.cache/roc/toolchains/nightly-2026-05-01-6666666/roc
+      -@@ -1 +0,0 @@
+      --fake
+      -\ No newline at end of file
+      ---- home/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json
+      -+++ home/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json
+      -@@ -1 +0,0 @@
+      --{"format":1,"id":"nightly-2026-05-01-6666666","url":"http://127.0.0.1:1/dl/nightly-2026-05-01-6666666","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-05-01-6666666","compat":"6666666","installed_at":"2026-05-01T00:00:00Z"}
+      ---- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
+      -@@ -1 +0,0 @@
+      --2026-08-02T10:00:00Z
+      ---- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
+      -+++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
+      -@@ -1 +0,0 @@
+      --fake
+      -\ No newline at end of file
+      ---- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
+      -+++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
+      -@@ -1 +0,0 @@
+      --{"format":1,"id":"nightly-2026-08-01-aaaaaaa","url":"http://127.0.0.1:1/dl/nightly-2026-08-01-aaaaaaa","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-08-01-aaaaaaa","compat":"aaaaaaa","installed_at":"2026-08-01T00:00:00Z"}
+      ---- home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use
+      -@@ -1 +0,0 @@
+      --2026-10-12T00:00:00Z
+      ---- home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/roc
+      -+++ home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/roc
+      -@@ -1 +0,0 @@
+      --fake
+      -\ No newline at end of file
+      ---- home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json
+      -+++ home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json
+      -@@ -1 +0,0 @@
+      --{"format":1,"id":"nightly-2026-09-10-ddddddd","url":"http://127.0.0.1:1/dl/nightly-2026-09-10-ddddddd","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-09-10-ddddddd","compat":"ddddddd","installed_at":"2026-09-10T00:00:00Z"}
+      +--- home/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash/roc
+      ++++ home/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash/roc
+      +@@ -0,0 +1 @@
+      ++partial
+scenarios: 49 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.3      10
+fmt        pass   0.1      5
+l0         FAIL   4.7      10
+l2         FAIL   2.4      30
+l3         FAIL   9.4      60
+selftest   pass   3.7      20
+exit 1

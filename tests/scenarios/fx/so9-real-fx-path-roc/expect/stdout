@@ -1,0 +1,9 @@
+== the running program: the path with the links resolved, the size and the mtime, as the system tools give them
+exe matches
+== files named roc in the directories of PATH, in the order of PATH
+d1 does not exist, d3/roc cannot run, d4/roc is a directory, d5/roc is a link to d2/roc (the size and the mtime are the ones of the target)
+file $PROJECT/d2/roc 10 1700000000
+file $PROJECT/d5/roc 10 1700000000
+file $PROJECT/d6/roc 19 1700000500
+== PATH with no directory that has a roc
+(end)

@@ -1,0 +1,12 @@
+tln: error[no_tuple]: no tuple works: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch). tln remove moves no other entry. Pass --no-check to remove parser anyway.
+tln: error[app_error]: a new error in an app file: main.roc (type redeclared). The app is not a free variable: fix it, or pass --no-check.
+tln: error[conflict]: $PROJECT/r4/main.roc changed while tln ran. Nothing was written. Run the command again.
+tln: error[app_error]: the app imports json: $PROJECT/r5/lib/Lib.roc:3: import json.Json. Change these imports first, or pass --force to remove it anyway.
+check: passed
+$PROJECT/r5/lib/main.roc
+  - parser: acme/parser 1.0.0
+"roc-lang/http" matches 2 packages:
+  roc-lang/http@1      direct (http1)
+  roc-lang/http@2      direct (http2)
+tln: error[usage]: "roc-lang/http" matches 2 packages. Use a name from the list.
+tln: error[usage]: 'json@3' is not in the project

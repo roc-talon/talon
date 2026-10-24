@@ -1,0 +1,4 @@
+outdated
+outdated --file apps/a/main.roc
+outdated --file apps/b/main.roc --json
+outdated --file ws2/apps/b/main.roc

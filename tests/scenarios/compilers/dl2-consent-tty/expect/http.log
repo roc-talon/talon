@@ -1,0 +1,5 @@
+GET /api/repos/acme/json/releases?per_page=100 200
+GET /api/repos/acme/parser/releases?per_page=100 200
+GET /api/repos/acme/pfx/releases?per_page=100 200
+GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+GET /dl/nightly-2026-10-13-5349569/roc_nightly-linux_x86_64-2026-10-13-5349569.tar.gz 200

@@ -1,0 +1,49 @@
+# R-CS1 R-U1 R-U3 R-U4 R-U5 R-U6 R-RP1 R-PH8 R-NI5 R-DL1 R-DL4 R-DL5 R-H1 R-J3 R-OUT4 R-CC4 R-CC9 R-H6 (slice 026b): `tln roc use` end to end with the real Fx, the real curl and tar, and the fake release server
+# (tests/tools/mk-nightly.sh with ARCHIVE=probe made given/http: `ARCHIVE=probe mk-nightly.sh given/http nightly-2026-10-14-38a3029 nightly-2026-10-09-258ab27`). The fake roc of each archive passes `check` and `build`, and writes one
+# line for each run to prog.log (its id, the dir name of the run, the command). The temp copy has a random dir name, so the script shows it as `<copy>`. The project has the pin O (nightly-2026-10-09-258ab27, not installed) and the new
+# compiler is N (nightly-2026-10-14-38a3029, not installed). The runner has CI=true: no run has a person. TALON_NOW=2026-10-22T12:00:00Z.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+T=$HOME/.cache/roc/toolchains
+N=nightly-2026-10-14-38a3029
+O=nightly-2026-10-09-258ab27
+requests() { if [ -f $D/http.log ]; then grep -c "$1" $D/http.log; else echo 0; fi; }
+show() {
+    echo "-- compiler runs"
+    if [ -f $D/prog.log ]; then sed -E 's/cwd=[0-9a-f]{16}/cwd=<copy>/' $D/prog.log | sort; fi
+    rm -f $D/prog.log
+}
+store() { if [ -d $T ]; then ls $T | tr '\n' ' '; fi; echo; }
+echo "== R-DL1 R-NI5 R-DL4 R-EC13 (question Q4): N (new) and O (the baseline, the old pin) are both missing, no person and no flag: one stop for the 2 downloads, with the count and the size, exit 13. Nothing is installed, no compiler runs, the header is as it was."
+st tln roc use $N
+store
+show
+head -n 6 main.roc
+echo "requests for compilers: $(requests nightlies), downloads: $(requests 'GET /dl/')"
+echo "== R-U3 R-DL5 R-NI5 R-CC4 R-CC9 R-H1 R-RP1 R-PH8: --allow-downloads answers the prompt. One answer line on stderr, 2 downloads, then the baseline check on O in the project dir, the candidate check and the build on N in a temp copy. The pin is written with a span edit: the comments stay."
+st tln roc use $N --allow-downloads
+store
+show
+cat main.roc
+echo "last use of N: $(cat $T/$N/.last-use), last use of O: $(cat $T/$O/.last-use)"
+echo "requests for compilers: $(requests nightlies), downloads: $(requests 'GET /dl/')"
+echo "== R-J3 R-OUT4 R-U3: --json, both compilers are installed now (no download, no list request). The human text is on stderr, stdout is only the envelope."
+st tln roc use $N --file p2/main.roc --json
+show
+sed -n 4p p2/main.roc
+echo "requests for compilers: $(requests nightlies), downloads: $(requests 'GET /dl/')"
+echo "== R-U6: ROC_TOOLCHAIN is set: the pin is written after the check, and the note says that ROC_TOOLCHAIN has a higher priority."
+st env ROC_TOOLCHAIN=$O tln roc use $N --file p3/main.roc
+show
+echo "== R-U1: a link build is no pin (exit 2). R-U4: --no-check is an error (exit 2). No compiler runs, no file changes."
+st tln roc use link-dev --file p4/main.roc
+st tln roc use $N --file p4/main.roc --no-check
+show
+sed -n 4p p4/main.roc
+echo "== R-U5: [toolchain] roc of talon.toml does not admit the operand (the range is >=nightly-2026-10-12-2664a27): exit 10, the text names the range. R-U5: the nightly switch is off: exit 10, the text names the switch. talon.toml is not edited."
+st tln roc use $O --file rng/main.roc
+cat rng/talon.toml
+st env TALON_NIGHTLY=0 tln roc use $N --file sw/main.roc
+show
+echo "== the store has no temp dir and no lock (R-CC1, R-CC4)"
+find $HOME/.cache/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '

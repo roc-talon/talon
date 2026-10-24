@@ -1,0 +1,28 @@
+# R-CS3 R-RU1 R-RU2 R-NI6 R-DL3 R-NS1 R-RU3 R-RU4: a person, HOME is home. The newest compiler that min-release-age allows is 2026-10-18-5349569 (3 days old). It is not installed: the list is read, one prompt (the command names the download, so Enter is yes), the install, and the default (a nightly) moves to it. The old compiler stays (R-RU4). The project in the current directory has a roc: pin and is not touched (R-RU3).
+roc update
+# R-RU1: the newest is installed now. Nothing else happens: no lock, no write. The text names it.
+roc update
+# R-CM19 R-DI12 R-RU1: the alias up, and --offline. The list is cached, so the answer is the same and no request is made.
+roc up --offline
+# R-DL4 R-RU2 R-NI6: no person (CI), HOME is home2. The command is the consent: no prompt, the download starts. The default is a link build, so it stays and the note says how to change it.
+env:CI=true env:HOME={w}/home2 roc update
+# R-SO15 R-RU2 R-J3 R-OUT4 R-DL4: no person, HOME is home3 (no config.toml, no compiler), --json. The download starts, the first compiler is the default (R-SO15). stdout is only the envelope: previous is null, changed is true.
+env:CI=true env:HOME={w}/home3 roc update --json
+# R-C7 R-NS3 R-RU1 R-GC10: TALON_NOW is 2026-10-19T12:00:00Z, so min-release-age (the default, 2 days) hides the 2 newest nightlies (21 and 45 hours old). The newest that is allowed is 2026-10-16-1df370f. The default moves from the old nightly. The fake compat check of this home makes no compat dir, so the install warns on stderr (the warning is a part of the output of the command).
+env:CI=true env:HOME={w}/home4 env:TALON_NOW=2026-10-19T12:00:00Z roc update
+# R-NS2 R-NS3: the nightly switch is off and the list has no release: exit 10, the text names the switch and its source. Nothing is installed.
+env:CI=true env:HOME={w}/home5 env:TALON_NIGHTLY=0 roc update
+# R-DI12: --offline and no cached list: exit 15, nothing is installed.
+env:CI=true env:HOME={w}/home6 roc update --offline
+# R-CM15 R-CM19: roc update takes no operand: exit 2, no Fx call.
+roc update nightly-2026-10-18-5349569
+# R-DL3 R-NI6: a person answers n: exit 13, the text says nothing was downloaded. The default and the store do not change.
+env:HOME={w}/home7 roc update
+# R-CS3 R-RU1 R-RU2 (answer Q1): HOME is home8. The newest allowed release is installed already and the default is an older nightly. Nothing is downloaded, and the default moves to the newest (the line `is the newest`, then the move line). changed is true.
+env:CI=true env:HOME={w}/home8 roc update
+# R-CS3 R-RU1 R-RU2 R-SO15 R-J3 (answer Q1): HOME is home9, --json. The newest is installed and no default is set: it becomes the default. installed is false, previous is null, changed is true.
+env:CI=true env:HOME={w}/home9 roc update --json
+# R-RU1 R-RU2 (answer Q1): HOME is home10. The newest is installed and the default is a link build: nothing is downloaded, the default stays, the note says how to change it.
+env:CI=true env:HOME={w}/home10 roc update
+# R-DL4 R-DL5 R-DL10 R-RU1 (answer Q2): TALON_AUTO_INSTALL=no does not refuse a command that names the download (as roc install, R-DL4: the command is the consent). HOME is home11: the download starts, the default moves.
+env:CI=true env:HOME={w}/home11 env:TALON_AUTO_INSTALL=no roc update

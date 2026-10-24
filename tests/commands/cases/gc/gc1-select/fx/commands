@@ -1,0 +1,18 @@
+# R-CM17, R-GC11, R-GC5, R-GC6, R-GC3, R-GC9, R-EV22, D17: a dry run. Nothing is removed and no lock is taken. TALON_NOW (2026-10-22) is the time for the toolchains and the projects, the clock of the fake (2026-10-15) is the time for the temps.
+# The default age is 30 days. Toolchains that go: git-dd03c09e (no pin, installed 2026-06-01), 6666666 (old, a lock holds it in the next runs), aaaaaaa (old, no pin), 5555555 (last use 2026-08-20, only an old project pins it, so it pins nothing), 9999999 (no .last-use: installed_at, old).
+# Toolchains that stay: bbbbbbb (pinned), ccccccc (pinned by pb, last use 2026-08-11: a pin keeps at any age), ddddddd (no pin, used 10 days ago: used in the age), the default (config.toml has the other tag form), fffffff and 8888888 (used in the last day), 7777777 (no time), link-dev and copy-fix-1 (made by hand), zig-0.17.0 (no compiler).
+cache gc --dry-run
+# R-J3: the same with --json. The text goes to stderr, stdout has only the envelope.
+cache gc --dry-run --json
+# R-CC10, R-CC2, R-PD13: the real run. The GC lock, then for each toolchain its own lock (6666666 is busy: skipped), the rename to .trash, the delete with the compat dir. Then the stale temps (one delete), then projects.json (pold, pgone, pplain leave).
+cache gc
+# R-GC6: the second run removes nothing, and 6666666 is skipped again.
+cache gc
+# R-CM15: no operand.
+cache gc nightly-2026-08-01-aaaaaaa
+# R-TF6: a projects.json that does not parse. Exit 19. The pins are not known, so nothing is removed.
+env:HOME={w}/home2 cache gc
+# R-TF4: a gc-age that is not a number of days. Exit 19.
+env:HOME={w}/home3 cache gc
+# R-GC9, R-CC10, D17: gc-age is 0 days. A compiler that nothing pins and that was used 3 days ago goes (eeeeeee). The one used 12 hours ago stays: the last day is the floor (fffffff). The default stays.
+env:HOME={w}/home4 cache gc --dry-run

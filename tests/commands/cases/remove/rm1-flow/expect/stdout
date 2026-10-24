@@ -26,7 +26,7 @@ exit 2
 exit 2
 == remove roc-lang/http@2 --file r6/main.roc
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/r6/main.roc
   - http2: roc-lang/http 2.0.0
 exit 0

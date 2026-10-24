@@ -1,0 +1,8 @@
+update json file=q1/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=q2/main.roc no-check compiler=nightly-2026-10-14-38a3029
+update json file=q3/main.roc no-check compiler=nightly-2026-10-14-38a3029
+update json file=q4/main.roc compiler=nightly-2026-10-14-38a3029
+update json file=q5/main.roc no-check compiler=nightly-2026-10-09-258ab27
+update json file=q6/main.roc compiler=nightly-2026-10-09-258ab27
+update json file=q7/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+update json file=q8/main.roc no-check toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029

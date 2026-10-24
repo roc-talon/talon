@@ -1,4 +1,4 @@
-# R-LD1 R-RC3 R-RC4 R-P3 R-PP3 R-PP5 R-P1 R-SE4 R-CC2 TW4: the jobs of the real Fx of slice 006, one line for each, with `fxprobe` (no Talon logic in them).
+# R-LD1 R-RC3 R-RC4 R-P3 R-PP3 R-PP5 R-P1 R-SE4 R-CC2 R-PX2 R-PX6 TW4: the jobs of the real Fx of slice 006, one line for each, with `fxprobe` (no Talon logic in them).
 # probes!: roc on PATH is the fake roc of the runner. copy_tree!: the temp copy of an app.
 mkdir -p sub tree/sub tree/.git tree/empty
 echo app > tree/main.roc
@@ -16,6 +16,19 @@ fxprobe probes 5 /no/such/dir check main.roc
 echo "== the roc calls (the probes of a round start together: sorted)"
 sort "$TALON_TEST_DIR/roc.log"
 rm "$TALON_TEST_DIR/roc.log"
+echo "== R-PX2 R-PX6 (slice 023c): the program of a probe is the file that runs, not the name roc. env adds variables to the environment of the child (a name that the process has too takes the value of env). The other variables stay."
+cat > envprog <<'SH'
+#!/bin/sh
+echo "envprog: $0 args=$* A=$FX_A B=$FX_B IN=$TALON_IN_PROXY"
+SH
+chmod +x envprog
+FX_A=process FX_B=process fxprobe probes 5 "$PWD" program="$PWD/envprog" env:FX_A=added env:TALON_IN_PROXY=1 check main.roc
+echo "== one round with 2 programs: each probe has its own program and its own env"
+FX_B=process fxprobe probes 5 "$PWD" program="$PWD/envprog" env:FX_A=first check a.roc -- 5 "$PWD" program="$PWD/envprog" env:FX_A=second env:FX_B=own check b.roc
+echo "== a program that is not a file: the probe does not start"
+fxprobe probes 5 "$PWD" program="$PWD/no-such-program" check main.roc
+test ! -e "$TALON_TEST_DIR/roc.log" && echo "the roc on PATH did not run"
+rm envprog
 
 echo "== copy_tree!: files, a dir, an empty dir. A name in the skip list is not copied (at any depth). The parent dirs of the target are made."
 fxprobe copytree "$PWD/tree" "$PWD/out/deep/copy" .git skip.txt

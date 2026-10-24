@@ -1,0 +1,30 @@
+# R-CV1 R-CV2 R-CV3 R-CV7 R-NS1 R-DI2: the fake nightly release tools of PLAN-P1 3.2 (tests/tools/mk-nightly.sh made given/http with
+# `TARGETS="linux_x86_64 macos_apple_silicon" mk-nightly.sh given/http nightly-2026-10-14-38a3029 nightly-2026-July-31-123c5d7@2026-07-31T11:56:54Z+baddigest nightly-2026-10-09-258ab27+nodigest`).
+# The list and the archives must agree, so that slice 021 can download from them: each listed asset is a real `.tar.gz` of the size in the list, and its sha256 is the `digest`
+# (R-CV3), except the nightly with `+baddigest` (a digest of other bytes: the sha256 check of the install must fail, slice 021) and the nightly with `+nodigest` (no sha256: the install must fail, slice 021).
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+
+# The list: 3 nightlies in the order of R-NS1 (the list file has them newest first, in 3 different forms of date), Linux x86_64 assets, each with its size and digest.
+st flowprobe nightlies
+flowprobe nightlies --host macos_apple_silicon | awk '{ print $2, $4 }'
+
+# Each asset of the list is on the server, with the size and the sha256 of the list.
+tgz=$(mktemp)
+flowprobe nightlies | while read -r _ id _ size digest url; do
+    curl -s -o "$tgz" "$url"
+    if [ "$(wc -c < "$tgz" | tr -d ' ')" != "$size" ]; then echo "$id: size differs"; continue; fi
+    if [ "$digest" = none ]; then echo "$id: no digest"; elif [ "$(sha "$tgz")" = "$digest" ]; then echo "$id: digest ok"; else echo "$id: digest differs"; fi
+    tar -tzf "$tgz"
+    tar -xzOf "$tgz" roc | tail -n 1
+done
+rm -f "$tgz"
+
+# An answer that is not a list of releases: exit 15, the page number (the fake API of the `bad` route, with no cached page). The bad page is not cached: the cache has no page, and the
+# second call asks the server again (2 requests of the `bad` route in `http.log`, not 1).
+rm -r "$XDG_CACHE_HOME/roc/talon/index"
+TALON_GITHUB_API=$TALON_HTTP/bad st flowprobe nightlies
+find "$XDG_CACHE_HOME/roc/talon/index" -type f 2> /dev/null | wc -l | tr -d ' '
+TALON_GITHUB_API=$TALON_HTTP/bad st flowprobe nightlies
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

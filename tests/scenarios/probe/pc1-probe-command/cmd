@@ -1,0 +1,18 @@
+# R-CM8 R-PB1 R-PB2 R-PB6 R-PB7 R-SC1 R-LD2 R-LD3 R-P4 R-EC2 R-J3 R-J4 R-OUT4 (slice 037): `tln probe` on the real binary, with the real Fx and the fake roc. The packages of the header are in `packages/`, so no download runs.
+# `tln probe json` and `tln probe pf` run one unit check each (`roc check main.roc` in the package dir) and write one fact each (R-PB1, R-PB2, R-P4). The plain `tln probe` checks the project file and builds it (an app), and writes no fact (R-PB7).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st tln probe json
+st tln probe pf
+st tln probe
+# --json: the human text goes to stderr, the envelope to stdout (R-J3, R-J4).
+st tln probe --json json
+# A name that no header entry has, 2 operands, --share with the direct registry, --range with no operand: exit 2 (R-PB6, R-CM8).
+st tln probe yaml
+st tln probe json parser
+st tln probe --share json
+st tln probe --range
+# The roc calls. Each unit check runs in its package dir, so the dir is not in the log: the order is.
+echo "== the roc calls"
+sed 's#/talon/tmp/[0-9a-f]\{16\}/#/talon/tmp/HEX/#' "$TALON_TEST_DIR/roc.log"
+rm "$TALON_TEST_DIR/roc.log"
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"

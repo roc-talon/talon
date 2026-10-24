@@ -1,0 +1,22 @@
+== remove parser --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  - parser: acme/parser 1.0.0
+exit 0
+== remove parser --file p2/main.roc
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  - parser: acme/parser 1.0.0
+exit 0
+== remove parser --file p3/main.roc
+exit 10
+== remove parser --file p4/main.roc --no-probe
+exit 10
+== remove parser --file p5/main.roc --no-probe
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  - parser: acme/parser 1.0.0
+exit 0

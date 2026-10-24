@@ -1,0 +1,155 @@
+== 1: a dry run (R-GC11). It lists what a run would remove and removes nothing. The age is 7 days (R-GC9, D17): bbbbbbb is pinned by pa and used 10 days ago, so it stays (a pin keeps at any age). ddddddd has no pin and was used 10 days ago, so it goes. eeeeeee has no pin and was used 3 days ago, so it stays.
+== tln cache gc --dry-run
+would remove toolchain nightly-2026-05-01-6666666
+would remove toolchain nightly-2026-08-01-aaaaaaa
+would remove toolchain nightly-2026-09-10-ddddddd
+would remove $HOME/.cache/roc/compat-6666666
+would remove $HOME/.cache/roc/compat-aaaaaaa
+would remove $HOME/.cache/roc/compat-ddddddd
+would remove $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp
+would remove $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp
+would remove $HOME/.cache/roc/talon/tmp/$HEX
+would remove $HOME/.cache/roc/talon/tmp/$HEX.locks
+would remove $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+would remove $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+would remove project $PROJECT/pgone/main.roc
+would remove project $PROJECT/pold/main.roc
+dry run: nothing was removed
+exit 0
+packages/h1.0123456789abcdef.tmp
+talon/projects.json.fedcba9876543210.tmp
+talon/tmp/0123456789abcdef
+talon/tmp/0123456789abcdef/main.roc
+talon/tmp/1123456789abcdef
+talon/tmp/2123456789abcdef.locks
+talon/tmp/3123456789abcdef.locks
+toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+toolchains/nightly-2026-09-06-3333333.1123456789abcdef.trash
+toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+link-dev
+nightly-2026-05-01-6666666
+nightly-2026-08-01-aaaaaaa
+nightly-2026-09-05-4444444.0123456789abcdef.trash
+nightly-2026-09-06-3333333.1123456789abcdef.trash
+nightly-2026-09-10-ddddddd
+nightly-2026-09-11-eeeeeee
+nightly-2026-10-02-bbbbbbb
+nightly-2026-10-03-ccccccc
+nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+nightly-2026-10-14-38a3029
+compat-6666666
+compat-aaaaaaa
+compat-bbbbbbb
+compat-ccccccc
+compat-ddddddd
+compat-eeeeeee
+compat-other
+== 2: another GC holds the lock (R-CC10): the line, exit 0, nothing removed, the lock dir of the other GC stays
+== tln cache gc
+another tln cache gc runs
+exit 0
+gc.lock is kept
+packages/h1.0123456789abcdef.tmp
+talon/gc.lock
+talon/projects.json.fedcba9876543210.tmp
+talon/tmp/0123456789abcdef
+talon/tmp/0123456789abcdef/main.roc
+talon/tmp/1123456789abcdef
+talon/tmp/2123456789abcdef.locks
+talon/tmp/3123456789abcdef.locks
+toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+toolchains/nightly-2026-09-06-3333333.1123456789abcdef.trash
+toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+link-dev
+nightly-2026-05-01-6666666
+nightly-2026-08-01-aaaaaaa
+nightly-2026-09-05-4444444.0123456789abcdef.trash
+nightly-2026-09-06-3333333.1123456789abcdef.trash
+nightly-2026-09-10-ddddddd
+nightly-2026-09-11-eeeeeee
+nightly-2026-10-02-bbbbbbb
+nightly-2026-10-03-ccccccc
+nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+nightly-2026-10-14-38a3029
+compat-6666666
+compat-aaaaaaa
+compat-bbbbbbb
+compat-ccccccc
+compat-ddddddd
+compat-eeeeeee
+compat-other
+== 3: an install holds the lock of 6666666 (R-CC10): it is skipped and its compat dir stays. All else that is old goes. The young items stay (R-CC2).
+== tln cache gc
+removed toolchain nightly-2026-08-01-aaaaaaa
+removed toolchain nightly-2026-09-10-ddddddd
+skipped toolchain nightly-2026-05-01-6666666: an install holds it
+removed $HOME/.cache/roc/compat-aaaaaaa
+removed $HOME/.cache/roc/compat-ddddddd
+removed $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp
+removed $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp
+removed $HOME/.cache/roc/talon/tmp/$HEX
+removed $HOME/.cache/roc/talon/tmp/$HEX.locks
+removed $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash
+removed $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+removed project $PROJECT/pgone/main.roc
+removed project $PROJECT/pold/main.roc
+exit 0
+talon/tmp/1123456789abcdef
+talon/tmp/3123456789abcdef.locks
+toolchains/nightly-2026-05-01-6666666.lock
+toolchains/nightly-2026-09-06-3333333.1123456789abcdef.trash
+link-dev
+nightly-2026-05-01-6666666
+nightly-2026-05-01-6666666.lock
+nightly-2026-09-06-3333333.1123456789abcdef.trash
+nightly-2026-09-11-eeeeeee
+nightly-2026-10-02-bbbbbbb
+nightly-2026-10-03-ccccccc
+nightly-2026-10-14-38a3029
+compat-6666666
+compat-bbbbbbb
+compat-ccccccc
+compat-eeeeeee
+compat-other
+{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pb/main.roc","last_use":1792281600}]}
+== 4: the install is done: the next run removes 6666666 and its compat dir. --json: the text goes to stderr.
+== tln cache gc --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":["nightly-2026-05-01-6666666"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666"],"stale":[],"projects":[]},"error":null}
+exit 0
+link-dev
+nightly-2026-09-06-3333333.1123456789abcdef.trash
+nightly-2026-09-11-eeeeeee
+nightly-2026-10-02-bbbbbbb
+nightly-2026-10-03-ccccccc
+nightly-2026-10-14-38a3029
+compat-bbbbbbb
+compat-ccccccc
+compat-eeeeeee
+compat-other
+== 5: nothing is left to remove
+== tln cache gc
+nothing to remove
+exit 0
+talon/tmp/1123456789abcdef
+talon/tmp/3123456789abcdef.locks
+toolchains/nightly-2026-09-06-3333333.1123456789abcdef.trash
+== 6: TALON_NOW is the time for the toolchains and the projects, the real clock is the time for the temps (R-EV22). 7 months later by TALON_NOW, pa and pb are too old, so they pin nothing, and bbbbbbb, ccccccc and eeeeeee are old. The young temps are not stale.
+== env TALON_NOW=2027-06-01T00:00:00Z tln cache gc --dry-run
+would remove toolchain nightly-2026-09-11-eeeeeee
+would remove toolchain nightly-2026-10-02-bbbbbbb
+would remove toolchain nightly-2026-10-03-ccccccc
+would remove $HOME/.cache/roc/compat-eeeeeee
+would remove $HOME/.cache/roc/compat-bbbbbbb
+would remove $HOME/.cache/roc/compat-ccccccc
+would remove project $PROJECT/pa/main.roc
+would remove project $PROJECT/pb/main.roc
+dry run: nothing was removed
+exit 0
+== 7: R-CM15, no operand. R-GC1, R-GC8: the build cache compat-other (its files are touched now) and an app file stay whole. The package stays (part 1 removes no package). No lock dir is left.
+== tln cache gc nightly-2026-08-01-aaaaaaa
+exit 2
+CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+$HOME/.cache/roc/compat-other/cache.bin
+$HOME/.cache/roc/compat-other/deep/entry.bin
+$HOME/.local/bin/myapp
+0

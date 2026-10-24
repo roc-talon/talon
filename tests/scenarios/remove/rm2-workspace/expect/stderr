@@ -3,7 +3,7 @@ tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolcha
 tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolchain] roc (0.1.0). Run tln upgrade roc or tln roc use <id>.
 note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/apps/b/main.roc
   - json: acme/json 2.0.0
 $PROJECT/talon.toml: - [dependencies] json

@@ -1,0 +1,40 @@
+== outdated --file p1/main.roc
+$PROJECT/p1/main.roc
+  package  current  wanted  latest              nightly range
+  json     2.1.0    2.2.0   3.0.2 (new series)  nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-11-1f1f1f1
+  parser   1.0.0    1.0.0   2.0.0 (new series)  nightly-2026-10-10-0e0e0e0? .. nightly-2026-10-10-0e0e0e0?
+  util     1.0.0    1.0.0   1.2.0               nightly-2026-10-08-8c8c8c8 .. nightly-2026-10-14-4c4c4c4
+  pf       0.1.0    0.1.1   0.2.0 (new series)  none known
+  fixed: example.org has no index without a registry
+exit 0
+== outdated --file p1/main.roc --json
+{"schema":1,"command":"outdated","ok":true,"data":{"members":[{"file":"$PROJECT/p1/main.roc","packages":[{"alias":"json","name":"acme/json","current":"2.1.0","wanted":"2.2.0","latest":"3.0.2","new_series":true,"nightly_range":{"state":"range","from":{"id":"nightly-2026-10-09-9d9d9d9","real":true},"to":{"id":"nightly-2026-10-11-1f1f1f1","real":true}}},{"alias":"parser","name":"acme/parser","current":"1.0.0","wanted":"1.0.0","latest":"2.0.0","new_series":true,"nightly_range":{"state":"range","from":{"id":"nightly-2026-10-10-0e0e0e0","real":false},"to":{"id":"nightly-2026-10-10-0e0e0e0","real":false}}},{"alias":"util","name":"acme/util","current":"1.0.0","wanted":"1.0.0","latest":"1.2.0","new_series":false,"nightly_range":{"state":"range","from":{"id":"nightly-2026-10-08-8c8c8c8","real":true},"to":{"id":"nightly-2026-10-14-4c4c4c4","real":true}}},{"alias":"pf","name":"acme/pfx","current":"0.1.0","wanted":"0.1.1","latest":"0.2.0","new_series":true,"nightly_range":{"state":"no-pass"}}],"fixed":["example.org"]}]},"error":null}
+exit 0
+== outdated --file p1/main.roc --quiet
+$PROJECT/p1/main.roc
+  package  current  wanted  latest              nightly range
+  json     2.1.0    2.2.0   3.0.2 (new series)  nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-11-1f1f1f1
+  parser   1.0.0    1.0.0   2.0.0 (new series)  nightly-2026-10-10-0e0e0e0? .. nightly-2026-10-10-0e0e0e0?
+  util     1.0.0    1.0.0   1.2.0               nightly-2026-10-08-8c8c8c8 .. nightly-2026-10-14-4c4c4c4
+  pf       0.1.0    0.1.1   0.2.0 (new series)  none known
+  fixed: example.org has no index without a registry
+exit 0
+== outdated --file p2/main.roc
+$PROJECT/p2/main.roc
+  all packages are up to date
+  fixed: example.org has no index without a registry
+exit 0
+== env:HOME={w}/home2 outdated --file p3/main.roc --offline
+$PROJECT/p3/main.roc
+  package  current  wanted  latest              nightly range
+  json     2.1.0    2.2.0   3.0.2 (new series)  nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-11-1f1f1f1
+exit 0
+== env:HOME={w}/home3 outdated --file p4/main.roc --offline
+$PROJECT/p4/main.roc
+  package  current  wanted  latest              nightly range
+  json     2.1.0    2.2.0   3.0.2 (new series)  -
+exit 0
+== outdated json --file p1/main.roc
+exit 2
+== outdated --file p1/main.roc --snapshot 2026-10-01T00:00:00Z
+exit 2

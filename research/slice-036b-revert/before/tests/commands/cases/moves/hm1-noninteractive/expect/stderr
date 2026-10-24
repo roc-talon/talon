@@ -1,0 +1,20 @@
+~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
+  writes $PROJECT/ws/apps/a/main.roc
+tln: error[consent]: moving the held variable json needs consent. Pass --allow-moves or --yes.
+note: json 2.2.0 is 1d old (min-release-age 2d)
+$PROJECT/ws/apps/a/main.roc: check: passed
+$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+$PROJECT/ws/apps/b/main.roc: check: passed
+$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
+  writes $PROJECT/ws/apps/a/main.roc
+tln: error[consent]: moving the held variable json needs consent. Pass --allow-moves or --yes.
+~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
+  writes $PROJECT/ws/apps/a/main.roc
+tln: error[no_tuple]: no tuple works: the releases of json, lex, yaml, pf, lex do not fit together (R-C2, R-C3)
+~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
+  writes $PROJECT/ws/apps/a/main.roc
+moved the held variable json
+~ pf: acme/pfx 0.1.0 -> 0.1.1 (held): yaml 1.1.0 needs pf 0.1.1
+  writes $PROJECT/ws/apps/a/main.roc, $PROJECT/ws/apps/b/main.roc
+moved the held variable pf

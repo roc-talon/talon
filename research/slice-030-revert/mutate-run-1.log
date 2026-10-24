@@ -1,0 +1,66 @@
+D01 R-P4 cli/lib/Db.roc caught unit/db
+D02 R-P4 cli/lib/Db.roc caught unit/db
+D03 R-CV6 cli/lib/Db.roc caught unit/db
+D04 R-P4 cli/lib/Db.roc caught unit/db
+D05 R-P4 cli/lib/Db.roc caught unit/db
+D06 R-P4 cli/lib/Db.roc caught unit/db
+D07 R-PK7 cli/lib/Db.roc caught unit/db
+D08 R-PK7 cli/lib/Db.roc caught unit/db
+D09 R-PK7 cli/lib/Db.roc caught unit/db
+D10 R-PK7 cli/lib/Db.roc caught unit/db
+D11 R-PK7 cli/lib/Db.roc caught unit/db
+D12 R-TF1 cli/lib/Db.roc caught unit/db
+D13 R-TF3 cli/lib/Db.roc caught unit/db
+D14 BAD EDIT [2]
+D15 R-CC8 cli/lib/Db.roc caught unit/db
+D16 R-CC8 cli/lib/Db.roc caught unit/db
+D17 R-TF1 cli/lib/Db.roc caught unit/db
+D18 R-CC8 cli/lib/Db.roc caught unit/db
+D19 R-P4 cli/lib/Db.roc NOT CAUGHT 
+F01 R-P4 cli/lib/Facts.roc caught unit/facts
+F02 R-P4 cli/lib/Facts.roc caught unit/facts
+F03 R-P3 cli/lib/Facts.roc caught unit/facts
+F04 R-P4 cli/lib/Facts.roc caught unit/facts
+F05 R-P4 cli/lib/Facts.roc caught unit/facts
+F06 R-PP4 cli/lib/Facts.roc caught unit/facts
+F07 R-P4 cli/lib/Facts.roc caught unit/facts
+F08 R-EF1 cli/lib/Facts.roc caught unit/facts
+F09 R-CV6 cli/lib/Facts.roc caught unit/facts
+F10 R-CV6 cli/lib/Facts.roc caught unit/facts
+F11 R-CV6 cli/lib/Facts.roc caught unit/facts
+F12 R-CV6 cli/lib/Facts.roc caught unit/facts
+F13 R-EF1 cli/lib/Facts.roc caught l2 db/
+F14 R-CC8 cli/lib/Facts.roc caught l2 db/
+F15 BAD EDIT [2]
+F16 R-CC8 cli/lib/Facts.roc caught l2 db/
+F17 R-CC8 cli/lib/Facts.roc caught l2 db/
+F18 R-CV6 cli/lib/Facts.roc caught l2 db/
+F19 R-CV6 cli/lib/Facts.roc caught l2 db/
+F20 R-CC8 cli/lib/Facts.roc caught l2 db/
+F21 R-EF1 cli/lib/Facts.roc caught l2 db/
+F22 R-CC8 cli/lib/Facts.roc caught l2 db/
+F23 R-TF3 cli/lib/Facts.roc caught l2 db/
+F24 R-TF3 cli/lib/Facts.roc caught l2 db/
+X01 R-CC8 cli/RealDb.roc caught l3 fx/db
+X02 R-CC8 cli/RealDb.roc caught l3 fx/db
+X03 DID NOT COMPILE 
+X04 R-TF3 cli/RealDb.roc caught l3 fx/db
+X05 R-TF1 cli/RealDb.roc caught l3 fx/db
+X06 R-TF2 cli/RealDb.roc caught l3 fx/db
+X07 R-CV6 cli/RealDb.roc caught l3 fx/db
+X08 R-CC8 cli/RealDb.roc caught l3 fx/db
+X09 R-CC8 cli/RealDb.roc caught l3 fx/db
+X10 DID NOT COMPILE 
+X11 R-TF1 cli/RealDb.roc caught l3 fx/db
+X12 R-CC8 cli/RealDb.roc caught l3 fx/db
+X13 R-P4 cli/RealDb.roc caught l3 fx/db
+X14 R-P4 cli/RealDb.roc NOT CAUGHT 
+X15 R-TF2 cli/RealDb.roc caught l3 fx/db
+X16 R-CC8 cli/RealDb.roc NOT CAUGHT 
+R01 R-PK7 tests/run.sh caught selftest
+R02 BAD EDIT [2]
+R03 R-CV6 tests/tools/dumpdb.py caught selftest
+R04 R-TF1 tests/tools/dumpdb.py NOT CAUGHT 
+R05 R-P4 tests/tools/dumpdb.py caught selftest
+R06 R-PK7 tests/run.sh caught selftest
+R07 R-PK7 tests/tools/dumpdb.py caught selftest

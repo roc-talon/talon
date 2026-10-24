@@ -7,5 +7,5 @@ build: passed
 $PROJECT/main.roc
   ~ shell: acme/pf 0.1.0 -> 0.2.0
   + roc: nightly-2026-10-14-38a3029
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 5 probes
 dry run: nothing was written

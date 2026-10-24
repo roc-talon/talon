@@ -1,0 +1,18 @@
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.

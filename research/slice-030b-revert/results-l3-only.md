@@ -1,0 +1,11 @@
+| Id | Rule | File | Result | First failing test |
+| --- | --- | --- | --- | --- |
+| F07 | R-CC8 | cli/lib/Facts.roc | caught | l3 compilers/cv1-first-seen |
+| F08 | R-CC8 | cli/lib/Facts.roc | caught | l3 compilers/cv1-first-seen |
+| F09 | R-TF3 | cli/lib/Facts.roc | caught | l3 compilers/cv1-first-seen |
+| N05 | R-CV6 | cli/lib/Nightlies.roc | caught | l3 compilers/cv1-first-seen |
+| N06 | R-CV6 | cli/lib/Nightlies.roc | caught | l3 compilers/cv1-first-seen |
+| R01 | R-CV6 | cli/lib/RocInstall.roc | caught | l3 compilers/cv1-first-seen |
+| R02 | R-CV6 | cli/lib/RocInstall.roc | caught | l3 compilers/cv1-first-seen |
+| R03 | R-CV6 | cli/lib/RocInstall.roc | caught | l3 compilers/cv1-first-seen |
+| R05 | R-CV6 | cli/lib/RocInstall.roc | caught | l3 compilers/cv1-first-seen |

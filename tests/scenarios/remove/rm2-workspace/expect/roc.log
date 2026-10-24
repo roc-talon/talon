@@ -1,14 +1,9 @@
 version
-version
-version
 check main.roc
-check main.roc
-build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
-version
 check main.roc
 check main.roc
 build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
-version
 check main.roc
 check main.roc
-build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
+check main.roc
+check main.roc

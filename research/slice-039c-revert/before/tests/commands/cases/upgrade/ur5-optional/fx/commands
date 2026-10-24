@@ -1,0 +1,16 @@
+env:CI=true env:HOME={w}/home1 upgrade roc --file p1/main.roc
+env:CI=true env:HOME={w}/home2 upgrade roc --probe-downloads --file p2/main.roc
+env:HOME={w}/home3 upgrade roc --yes --file p3/main.roc
+env:CI=true env:TALON_AUTO_INSTALL=yes env:HOME={w}/home4 upgrade roc --allow-downloads --file p4/main.roc
+env:CI=true env:HOME={w}/home5 upgrade roc --probe-downloads --file p5/main.roc
+env:CI=true env:HOME={w}/home6 upgrade roc --probe-downloads --file p6/main.roc
+env:CI=true env:HOME={w}/home7 upgrade roc --probe-downloads --file p7/main.roc
+env:CI=true env:HOME={w}/home8 upgrade roc --probe-downloads --file p8/main.roc
+env:HOME={w}/home9 upgrade roc --dry-run --probe-downloads --file p9/main.roc
+env:CI=true env:HOME={w}/home10 upgrade roc --probe-downloads --json --file p10/main.roc
+env:HOME={w}/home11 upgrade roc --file p11/main.roc
+env:HOME={w}/home12 upgrade roc --probe-downloads --file p12/main.roc
+env:CI=true env:HOME={w}/home13 upgrade roc --probe-downloads --file p13/main.roc
+env:CI=true env:HOME={w}/home14 upgrade roc --probe-downloads --file p14/main.roc
+env:CI=true env:HOME={w}/home15 upgrade roc --file p15/main.roc
+env:CI=true env:HOME={w}/home16 upgrade roc --probe-downloads --file p16/main.roc

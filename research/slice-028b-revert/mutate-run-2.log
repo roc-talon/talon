@@ -1,0 +1,3 @@
+N24 R-GC4 cli/lib/CacheGc.roc caught l2 gc/
+N35 R-GC1 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1
+N39 R-GC11 cli/RealFiles.roc caught l3 cache/gc1-real fx/tr1

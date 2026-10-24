@@ -1,0 +1,15 @@
+# R-SL7 R-PD16 R-PD7 R-SO3: the base of @-1 is the compiler that Resolution 13 selects for main.roc of the current directory. Its header has the pin nightly-2026-10-14-38a3029 (rank 3, not installed: a base is a place in the list, not a compiler to run). One step older is 2026-10-13-91fa0c2, which is installed.
+roc install @-1
+# R-SL7: one step newer than the pin is 2026-10-15-38e6c42 (installed).
+roc install @+1
+# R-SL7: 2 steps older.
+roc install @-2
+# R-SL7 R-CS2: roc default takes a step too. The full id is stored (R-SC13): the config.toml of home gets default-roc.
+roc default @-1
+# R-SO2 R-SL7: ROC_TOOLCHAIN is rank 2, above the pin. The base is nightly-2026-10-16-1df370f, so @-1 is 2026-10-15-38e6c42. No file is read for the base (rank 2 needs none).
+env:ROC_TOOLCHAIN=nightly-2026-10-16-1df370f roc install @-1
+# R-SL7 R-NS1: a step that goes past the oldest release of the list: exit 2, the text names the base and the step.
+roc install @-99
+# R-SL7 R-NS3: the other forms of an operand need no base: no read of main.roc, no search of the project (the calls are those of slice 021).
+roc install nightly-2026-10-13-91fa0c2
+roc install @nightly-2026-10-13-91fa0c2

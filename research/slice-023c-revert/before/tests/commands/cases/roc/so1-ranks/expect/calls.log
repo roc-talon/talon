@@ -1,0 +1,111 @@
+env_all
+canonical $PROJECT/r4/main.roc
+list_dirs $PROJECT/r4
+list_dirs $PROJECT
+read_files $PROJECT/r4/talon.toml
+read_files $PROJECT/r4/main.roc
+read_files $PROJECT/r4/main.roc $PROJECT/r4/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/0.1.0/.talon.json $HOME/.cache/roc/toolchains/0.1.3/.talon.json $HOME/.cache/roc/toolchains/0.2.0/.talon.json $HOME/.cache/roc/toolchains/git-0123abcd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+random
+copy_tree $PROJECT/r4 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r4 nightly-2026-10-14-0abcdef check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-0abcdef check main.roc timeout=30
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-0abcdef build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/r4/main.roc
+write_atomic $PROJECT/r4/main.roc
+canonical $PROJECT/r4s/main.roc
+list_dirs $PROJECT/r4s
+list_dirs $PROJECT
+read_files $PROJECT/r4s/talon.toml
+read_files $PROJECT/r4s/main.roc
+read_files $PROJECT/r4s/main.roc $PROJECT/r4s/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/0.1.0/.talon.json $HOME/.cache/roc/toolchains/0.1.3/.talon.json $HOME/.cache/roc/toolchains/0.2.0/.talon.json $HOME/.cache/roc/toolchains/git-0123abcd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+random
+copy_tree $PROJECT/r4s $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/r4s 0.1.3 check main.roc timeout=30
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef 0.1.3 check main.roc timeout=30
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef 0.1.3 build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/r4s/main.roc
+write_atomic $PROJECT/r4s/main.roc
+canonical $PROJECT/r4n/main.roc
+list_dirs $PROJECT/r4n
+list_dirs $PROJECT
+read_files $PROJECT/r4n/talon.toml
+read_files $PROJECT/r4n/main.roc
+read_files $PROJECT/r4n/main.roc $PROJECT/r4n/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/0.1.0/.talon.json $HOME/.cache/roc/toolchains/0.1.3/.talon.json $HOME/.cache/roc/toolchains/0.2.0/.talon.json $HOME/.cache/roc/toolchains/git-0123abcd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+canonical $PROJECT/r5/main.roc
+list_dirs $PROJECT/r5
+list_dirs $PROJECT
+read_files $PROJECT/r5/main.roc
+read_files $PROJECT/r5/main.roc $PROJECT/r5/talon.toml $HOME/.config/talon/config.toml $PROJECT/r5/.roc-version
+list_dirs $HOME/.cache/roc/toolchains
+canonical $PROJECT/r5t/main.roc
+list_dirs $PROJECT/r5t
+list_dirs $PROJECT
+read_files $PROJECT/r5t/talon.toml
+read_files $PROJECT/r5t/main.roc
+read_files $PROJECT/r5t/main.roc $PROJECT/r5t/talon.toml $HOME/.config/talon/config.toml $PROJECT/r5t/.roc-version
+list_dirs $HOME/.cache/roc/toolchains
+canonical $PROJECT/r6/main.roc
+list_dirs $PROJECT/r6
+list_dirs $PROJECT
+read_files $PROJECT/r6/main.roc
+read_files $PROJECT/r6/main.roc $PROJECT/r6/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+canonical $PROJECT/r8/main.roc
+list_dirs $PROJECT/r8
+list_dirs $PROJECT
+read_files $PROJECT/r8/main.roc
+read_files $PROJECT/r8/main.roc $PROJECT/r8/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+read_files $PROJECT/r8/main.roc
+write_atomic $PROJECT/r8/main.roc
+canonical $PROJECT/r18/main.roc
+list_dirs $PROJECT/r18
+list_dirs $PROJECT
+read_files $PROJECT/r18/talon.toml
+read_files $PROJECT/r18/main.roc
+read_files $PROJECT/r18/main.roc $PROJECT/r18/talon.toml $HOME/.config/talon/config.toml $PROJECT/r18/.roc-version
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+canonical $PROJECT/r18b/main.roc
+list_dirs $PROJECT/r18b
+list_dirs $PROJECT
+read_files $PROJECT/r18b/talon.toml
+read_files $PROJECT/r18b/main.roc
+read_files $PROJECT/r18b/main.roc $PROJECT/r18b/talon.toml $HOME/.config/talon/config.toml $PROJECT/r18b/.roc-version
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc

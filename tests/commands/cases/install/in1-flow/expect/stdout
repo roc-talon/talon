@@ -3,18 +3,18 @@ check: passed
 build: passed
 $PROJECT/app/main.roc
   + util: acme/util 1.1.0
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 6 probes
 exit 0
 == add acme/lex --file app/main.roc
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/app/main.roc
   + lex: acme/lex 1.2.0
 resolved at 2026-10-15T12:00:00Z, 3 probes
 exit 0
 == add acme/json@^2.1 --file app/main.roc
 check: passed
-build: passed
+build: skipped (recorded pass)
 exit 17
 == add acme/util --file lib/main.roc
 check: passed

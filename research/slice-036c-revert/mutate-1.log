@@ -1,0 +1,5 @@
+M1	D2 revisit: the assumed pass on every compiler of D	l0 caught by: none	l2 dm1: pass
+M2	an inferred fact replaces the assumed pass	l0 caught by: oracledomain	l2 dm1: -
+M3	the hint is the newest nightly, not the oldest	l0 caught by: oracledomain	l2 dm1: -
+M4	the hint reads inferred facts	l0 caught by: none	l2 dm1: pass
+M5	Wide for a failure with no probe cause	l0 caught by: oracledomain	l2 dm1: -

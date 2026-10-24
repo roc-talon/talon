@@ -1,0 +1,3 @@
+upgrade --file q1/main.roc
+upgrade --dry-run --json --file q1j/main.roc
+update --file q1u/main.roc

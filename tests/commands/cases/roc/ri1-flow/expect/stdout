@@ -1,0 +1,30 @@
+== roc install nightly-2026-10-09-258ab27
+installed nightly-2026-10-09-258ab27
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+== roc i nightly-2026-10-09-258ab27
+nightly-2026-10-09-258ab27 is already installed
+exit 0
+== roc install nightly-2026-10-10-abcdef0 --offline
+exit 15
+== roc install nightly-2026-10-11-1a2b3c4
+installed nightly-2026-10-11-1a2b3c4
+exit 0
+== roc install nightly-2026-10-12-2664a27
+exit 13
+== roc add nightly-2026-10-13-91fa0c2
+nightly-2026-10-13-91fa0c2 is already installed
+exit 0
+== roc install nightly-2026-10-14-38a3029 --yes
+installed nightly-2026-10-14-38a3029
+exit 0
+== roc install nightly-2026-10-15-38e6c42 --json
+{"schema":1,"command":"roc install","ok":true,"data":{"id":"nightly-2026-10-15-38e6c42","path":"$HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42","installed":true,"default":false},"error":null}
+exit 0
+== roc install nightly-2026-10-16-1df370f --yes
+installed nightly-2026-10-16-1df370f
+exit 0
+== roc install nightly-2026-10-17-601b54c --yes
+exit 16
+== roc install nightly-2026-10-18-5349569 --yes
+exit 18

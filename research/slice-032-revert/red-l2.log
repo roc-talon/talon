@@ -1,0 +1,2663 @@
+FAIL consent/dl1-resolve
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -111,13 +111,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u1/main.roc
+       write_atomic $PROJECT/u1/main.roc
+      @@ -259,13 +256,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u4/main.roc
+       write_atomic $PROJECT/u4/main.roc
+      @@ -341,13 +335,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r5/main.roc
+       write_atomic $PROJECT/r5/main.roc
+      @@ -450,13 +441,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u7/main.roc
+       write_atomic $PROJECT/u7/main.roc
+      @@ -589,13 +577,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/f1/main.roc
+       write_atomic $PROJECT/f1/main.roc
+      @@ -675,13 +660,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-08-0a1b2c3 $HOME/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-08-0a1b2c3 $HOME/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u12/main.roc $PROJECT/u12/talon.toml
+       write_atomic $PROJECT/u12/talon.toml $PROJECT/u12/main.roc
+      @@ -757,13 +739,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r14/main.roc
+       write_atomic $PROJECT/r14/main.roc
+      @@ -843,13 +822,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2664a27 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2664a27 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u15/main.roc
+       write_atomic $PROJECT/u15/main.roc
+      @@ -929,13 +905,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1a2b3c4 $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1a2b3c4 $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u16/main.roc
+       write_atomic $PROJECT/u16/main.roc
+      @@ -1015,13 +988,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u17/main.roc
+       write_atomic $PROJECT/u17/main.roc
+      @@ -1101,13 +1071,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u18/main.roc $PROJECT/u18/talon.toml
+       write_atomic $PROJECT/u18/talon.toml $PROJECT/u18/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,6 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,55 @@
+      +@@ -0,0 +1,44 @@
+       +format	1
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-07-3f4e5d6	any	pass		
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-08-0a1b2c3	any	pass		
+      @@ -12,27 +12,16 @@
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-16-1df370f	any	pass		
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-18-5349569	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-10-abcdef0	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-10-abcdef0	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-11-1a2b3c4	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-11-1a2b3c4	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-12-2664a27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-12-2664a27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-13-91fa0c2	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-13-91fa0c2	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-15-38e6c42	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-15-38e6c42	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-16-1df370f	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-16-1df370f	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-18-5349569	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-18-5349569	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-07-3f4e5d6	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-08-0a1b2c3	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-09-258ab27	any	pass		
+FAIL consent/dl2-verify-workspace
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,7 +3,7 @@
+       $PROJECT/apps/a/main.roc: check: passed
+       $PROJECT/apps/a/main.roc: build: passed
+       $PROJECT/apps/b/main.roc: check: passed
+      -$PROJECT/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/b/main.roc: build: passed
+       $PROJECT/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.2.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -17,9 +17,9 @@
+       == verify
+       note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
+       $PROJECT/apps/a/main.roc: check: passed
+      -$PROJECT/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/a/main.roc: build: passed
+       $PROJECT/apps/b/main.roc: check: passed
+      -$PROJECT/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/b/main.roc: build: passed
+       $PROJECT/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.2.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -92,13 +92,10 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -110,8 +107,10 @@
+       probes 1
+         probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+      +probes 1
+      +  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -150,8 +149,10 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+      +probes 1
+      +  probe $PROJECT/apps/a nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -163,6 +164,8 @@
+       probes 1
+         probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+      +probes 1
+      +  probe $PROJECT/apps/b nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,11 +1,10 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,16 @@
+      +@@ -0,0 +1,15 @@
+       +format	1
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-18-5349569	any	pass		
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-18-5349569	any	pass		
+       +fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-18-5349569	any	pass		
+      -+fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-18-5349569	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +pinned	nightly-2026-10-08-0a1b2c3	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+       +pinned	nightly-2026-10-09-258ab27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+       +pinned	nightly-2026-10-10-abcdef0	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+FAIL consent/dl3-rank4
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -68,13 +68,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p2/main.roc
+       write_atomic $PROJECT/p2/main.roc
+      @@ -267,13 +264,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2664a27 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2664a27 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p7/main.roc
+       write_atomic $PROJECT/p7/main.roc
+      @@ -359,13 +353,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p8/main.roc
+       write_atomic $PROJECT/p8/main.roc
+      @@ -453,13 +444,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p9/main.roc
+       write_atomic $PROJECT/p9/main.roc
+      @@ -545,13 +533,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p10/main.roc
+       write_atomic $PROJECT/p10/main.roc
+      @@ -637,13 +622,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p13/main.roc
+       write_atomic $PROJECT/p13/main.roc
+      @@ -737,13 +719,10 @@
+       probes 1
+         probe $PROJECT/p11 nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       probes 1
+         probe $PROJECT/p11 nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.2.0/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -823,13 +802,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1a2b3c4 $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1a2b3c4 $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p12/main.roc
+       write_atomic $PROJECT/p12/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,6 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,44 @@
+      +@@ -0,0 +1,36 @@
+       +format	1
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-09-258ab27	any	pass		
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-10-abcdef0	any	pass		
+      @@ -10,19 +10,12 @@
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-18-5349569	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-12-2664a27	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-10-abcdef0	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-10-abcdef0	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-11-1a2b3c4	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-11-1a2b3c4	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-12-2664a27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-12-2664a27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-15-38e6c42	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-15-38e6c42	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-16-1df370f	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-16-1df370f	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-18-5349569	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-18-5349569	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-09-258ab27	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-10-abcdef0	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-11-1a2b3c4	any	pass		
+      @@ -32,7 +25,6 @@
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-18-5349569	any	pass		
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       +fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +pinned	nightly-2026-10-07-3f4e5d6	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+       +pinned	nightly-2026-10-08-0a1b2c3	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+       +pinned	nightly-2026-10-09-258ab27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+FAIL install/in1-flow
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,14 +7,14 @@
+       exit 0
+       == add acme/lex --file app/main.roc
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/app/main.roc
+         + lex: acme/lex 1.2.0
+      -resolved at 2026-10-15T12:00:00Z, 3 probes
+      +resolved at 2026-10-15T12:00:00Z, 4 probes
+       exit 0
+       == add acme/json@^2.1 --file app/main.roc
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       exit 17
+       == add acme/util --file lib/main.roc
+       check: passed
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -63,12 +63,9 @@
+         ~ Helpers.roc: import "inner/data.json" as local : Str
+         ~ inner/Deep.roc: import "$PROJECT/data/deep.txt" as deep : Str
+         ~ inner/Deep.roc: import "data.json" as same : Str
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/app/main.roc
+       write_atomic $PROJECT/app/main.roc
+      @@ -131,8 +128,9 @@
+         ~ inner/Deep.roc: import "$PROJECT/data/deep.txt" as deep : Str
+         ~ inner/Deep.roc: import "data.json" as same : Str
+       hook project/app/main.roc
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/app/main.roc
+       write_atomic $PROJECT/app/main.roc
+      @@ -173,6 +171,7 @@
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+         probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      +hook project/app/main.roc
+       db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      @@ -191,9 +190,9 @@
+         ~ Helpers.roc: import "inner/data.json" as local : Str
+         ~ inner/Deep.roc: import "$PROJECT/data/deep.txt" as deep : Str
+         ~ inner/Deep.roc: import "data.json" as same : Str
+      -hook project/app/main.roc
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml
+       args
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,12 +1,11 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,7 @@
+      +@@ -0,0 +1,6 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	7r2t7xhwfM9esnfmYrQCSFZAmkzvfsyTeo1J5276kjmc	nightly-2026-10-14-38a3029	any	pass		
+       +fact	7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	FaSACze7PmHRTFb729jy9fkoZS2rNK2RretLTUpxLB51	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL ladder/bs1-build-skip
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -6,13 +6,13 @@
+       exit 0
+       == update parser file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p1/main.roc
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+       exit 0
+       == update json file=p2/main.roc no-probe compiler=nightly-2026-10-14-38a3029
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p2/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -33,13 +33,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p1/main.roc
+       write_atomic $PROJECT/p1/main.roc
+      @@ -73,9 +69,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p1/main.roc
+       write_atomic $PROJECT/p1/main.roc
+      @@ -103,9 +99,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p2/main.roc
+       write_atomic $PROJECT/p2/main.roc
+      @@ -140,13 +136,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p3/main.roc
+       write_atomic $PROJECT/p3/main.roc
+      @@ -177,13 +169,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p4/main.roc
+       write_atomic $PROJECT/p4/main.roc
+      @@ -218,13 +206,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-08-0a1b2c3 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-08-0a1b2c3 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p5/main.roc
+       write_atomic $PROJECT/p5/main.roc
+      @@ -259,13 +243,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p6/main.roc
+       write_atomic $PROJECT/p6/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,24 +1,20 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -1,4 +1,21 @@
+      +@@ -1,4 +1,18 @@
+        format	1
+      --fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	x64musl	fail		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+      --fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	x64musl	pass		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-07-3f4e5d6	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-08-0a1b2c3	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-09-258ab27	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	any	pass		
+      - fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	x64musl	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	x64musl	pass		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+      ++fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	x64musl	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	x64musl	pass		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+      + fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	x64musl	fail		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+      + fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	x64musl	pass		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+      +-fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	x64musl	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	x64musl	pass		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		b7aa2c2e317cda75b8fcc56f557e7ba577029110c07db9cfc478449a8258cc17
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-07-3f4e5d6	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-08-0a1b2c3	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-09-258ab27	any	pass		
+FAIL ladder/bs2-build-skip-verify
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,7 +11,7 @@
+       == verify --file p1/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -19,7 +19,7 @@
+       verified: the tuple passes. No project file was written.
+       exit 0
+       == verify --file p1/main.roc --json
+      -{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+      +{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":3,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+       exit 0
+       == verify --file p2/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+      @@ -34,7 +34,7 @@
+       == verify --file p1/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      @@ -43,14 +43,14 @@
+       exit 0
+       == verify --file p2/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+      +exit 11
+      +== verify --file p3/main.roc
+      +note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+      -build: skipped (recorded pass)
+      -$PROJECT/p2/main.roc
+      +build: passed
+      +$PROJECT/p3/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+       verified: the tuple passes. No project file was written.
+       exit 0
+      -== verify --file p3/main.roc
+      -note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+      -exit 10
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,9 +1,9 @@
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p1/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+       verified: the tuple passes. No project file was written.
+      -tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pfx 0.1.1: unsupported target
+      +tln: error[app_error]: a new error in an app file: no file (unsupported target). The app is not a free variable: fix it, or pass --no-check.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -55,12 +55,9 @@
+       probes 1
+         probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -99,8 +96,9 @@
+       probes 1
+         probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -139,8 +137,9 @@
+       probes 1
+         probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -180,12 +179,9 @@
+       probes 1
+         probe $PROJECT/p2 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/p2 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -224,8 +220,9 @@
+       probes 1
+         probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/p1 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -264,8 +261,6 @@
+       probes 1
+         probe $PROJECT/p2 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -305,10 +300,7 @@
+       probes 1
+         probe $PROJECT/p3 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/p3 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,12 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,7 @@
+      +@@ -0,0 +1,4 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	fail	Yaml.roc	
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	fail		a12d6d195899afae325e2060442c1a1b2ca68e44f209f0306a502298c1a39692
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		d573c7af60da5956120924fbd13e972192a31f2c72751812dc7b1f84e1277135
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		d96f206ae85977de6abfa4381d959ccceb380d5a89e4f4baa47f0d57cb4a6366
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL ladder/bs3-build-record
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -14,7 +14,7 @@
+       exit 0
+       == update json file=p6/main.roc compiler=nightly-2026-10-14-38a3029
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p6/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,4 +2,4 @@
+       tln: error[no_tuple]: no tuple works: the build hangs on nightly-2026-10-14-38a3029 (no result in 30 s) on the platform acme/pf 0.1.0
+       tln: error[no_tuple]: no tuple works: the build crashes on nightly-2026-10-14-38a3029 (signal 11) on the platform acme/pf 0.1.0
+       tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pf 0.1.0: unsupported target
+      -tln: error[internal]: the build on nightly-2026-10-14-38a3029 gave no result: not started: no roc. Run the command again.
+      +tln: error[internal]: the whole-app check on nightly-2026-10-14-38a3029 gave no result: not started: no roc. Run the command again.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -33,13 +33,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p2/main.roc
+       list_dirs $PROJECT/p2
+      @@ -65,13 +61,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p3/main.roc
+       list_dirs $PROJECT/p3
+      @@ -97,13 +89,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p4/main.roc
+       list_dirs $PROJECT/p4
+      @@ -129,13 +117,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p5/main.roc
+       list_dirs $PROJECT/p5
+      @@ -161,13 +145,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p5/main.roc
+       write_atomic $PROJECT/p5/main.roc
+      @@ -195,9 +175,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p6/main.roc
+       write_atomic $PROJECT/p6/main.roc
+      @@ -225,10 +205,4 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Parser.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -probes 1
+      -  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,14 +1,10 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -1,2 +1,9 @@
+      +@@ -1,2 +1,5 @@
+        format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	crash		05a31fcbee31c451e9e62e866de5248d7593c2993e1c0291b46eeeaa2d826683
+        fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail		0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	hang		2d071fc7bb0ebcae596395e13d72344d13989c7e0408fa2a22573238d7276b71
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		460b94c37f685ff327e5a1526559b392c5d6333cd798d982b23d7ee4c9726682
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail		b469945cbe970dab1dff9675acca95a449c5424326b8dbb3f5b34950808a5d09
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL ladder/ld-ladder-flow
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -33,12 +33,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p1/main.roc
+       write_atomic $PROJECT/p1/main.roc
+      @@ -163,13 +160,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p7/main.roc
+       list_dirs $PROJECT/p7
+      @@ -195,13 +188,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p7/main.roc
+       write_atomic $PROJECT/p7/main.roc
+      @@ -232,13 +221,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p8/main.roc
+       write_atomic $PROJECT/p8/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,12 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,8 @@
+      +@@ -0,0 +1,5 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	fail		2d071fc7bb0ebcae596395e13d72344d13989c7e0408fa2a22573238d7276b71
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		d1d95da222dbe7df7798e9b3ef0cdbfed122f1ef9e83c6b969bd4313191f491d
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f	nightly-2026-10-14-38a3029	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL ladder/ld-no-check-refuse
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -35,7 +35,7 @@
+       == update json file=q9/main.roc toolchain=link-dev compiler=nightly-2026-10-14-38a3029
+       note: ROC_TOOLCHAIN is link-dev, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. A git, link or copy build cannot be a pin, so tln roc use does not take it. Use ROC_TOOLCHAIN or tln roc default for it.
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/q9/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -107,12 +107,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/q7/main.roc
+       write_atomic $PROJECT/q7/main.roc
+      @@ -153,8 +150,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/q9/main.roc
+       write_atomic $PROJECT/q9/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,10 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,5 @@
+      +@@ -0,0 +1,4 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL moves/hm1-noninteractive
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,7 +3,7 @@
+       $PROJECT/ws/apps/a/main.roc: check: passed
+       $PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       exit 13
+       == add acme/json@2.2.0 --json --file ws/apps/b/main.roc
+       {"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"consent","code":13,"message":"moving the held variable json needs consent. Pass --allow-moves or --yes.","details":{"moves":[{"alias":"json","name":"acme/json","from":"2.0.0","to":"2.2.0","why":"json 2.0.0 is outside =2.2.0","members":["$PROJECT/ws/apps/a/main.roc"]}]}}}
+      @@ -11,15 +11,15 @@
+       == add acme/json@2.2.0 --dry-run --file ws/apps/b/main.roc
+       note: json 2.2.0 is 1d old (min-release-age 2d)
+       $PROJECT/ws/apps/a/main.roc: check: passed
+      -$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       $PROJECT/ws/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.2.0
+       $PROJECT/ws/apps/b/main.roc
+         + json: acme/json 2.2.0
+       $PROJECT/ws/talon.toml: json = "=2.2.0"
+      -resolved at 2026-10-15T12:00:00Z, 4 probes
+      +resolved at 2026-10-15T12:00:00Z, 6 probes
+       dry run: nothing was written
+       exit 0
+       == add acme/lex@1.1.0 --file ws/apps/b/main.roc
+      @@ -27,27 +27,27 @@
+       == add acme/json@2.2.0 --allow-moves --file ws/apps/b/main.roc
+       note: json 2.2.0 is 1d old (min-release-age 2d)
+       $PROJECT/ws/apps/a/main.roc: check: passed
+      -$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       $PROJECT/ws/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.2.0
+       $PROJECT/ws/apps/b/main.roc
+         + json: acme/json 2.2.0
+       $PROJECT/ws/talon.toml: json = "=2.2.0"
+      -resolved at 2026-10-15T12:00:00Z, 4 probes
+      +resolved at 2026-10-15T12:00:00Z, 6 probes
+       exit 0
+       == update yaml@1.1.0 --yes --file ws/apps/a/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       $PROJECT/ws/apps/a/main.roc: check: passed
+       $PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       $PROJECT/ws/apps/a/main.roc
+         ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+       $PROJECT/ws/apps/b/main.roc
+         ~ base: acme/pfx 0.1.0 -> 0.1.1
+       $PROJECT/ws/talon.toml: yaml = "=1.1.0"
+      -resolved at 2026-10-15T12:00:00Z, 7 probes
+      +resolved at 2026-10-15T12:00:00Z, 8 probes
+       exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,9 +3,9 @@
+       tln: error[consent]: moving the held variable json needs consent. Pass --allow-moves or --yes.
+       note: json 2.2.0 is 1d old (min-release-age 2d)
+       $PROJECT/ws/apps/a/main.roc: check: passed
+      -$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       ~ json: acme/json 2.0.0 -> 2.2.0 (held): json 2.0.0 is outside =2.2.0
+         writes $PROJECT/ws/apps/a/main.roc
+       tln: error[consent]: moving the held variable json needs consent. Pass --allow-moves or --yes.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -64,12 +64,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -81,8 +78,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -128,8 +126,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -141,8 +140,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -188,8 +188,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -201,8 +202,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -281,8 +283,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -294,8 +297,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/talon.toml
+       write_atomic $PROJECT/ws/talon.toml $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+      @@ -346,12 +350,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -363,8 +364,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/talon.toml
+       write_atomic $PROJECT/ws/talon.toml $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,14 +1,12 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,9 @@
+      +@@ -0,0 +1,7 @@
+       +format	1
+       +fact	2iuyo7Nm3YsiNGM8YRPbNFECroxdtbeAfQ9L6WfH9zLh	nightly-2026-10-14-38a3029	any	pass		
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-14-38a3029	any	pass		
+       +fact	4G1RyBFYE1Y7HJ7xqLJs8ox3os8U3Fp5RdLFvxzyJ3i8	nightly-2026-10-14-38a3029	any	pass		
+       +fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL moves/hm2-interactive
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,31 +3,31 @@
+       $PROJECT/ws/apps/a/main.roc: check: passed
+       $PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       exit 13
+       == add acme/json@2.2.0 --file ws/apps/b/main.roc
+       note: json 2.2.0 is 1d old (min-release-age 2d)
+       $PROJECT/ws/apps/a/main.roc: check: passed
+      -$PROJECT/ws/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       $PROJECT/ws/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.2.0
+       $PROJECT/ws/apps/b/main.roc
+         + json: acme/json 2.2.0
+       $PROJECT/ws/talon.toml: json = "=2.2.0"
+      -resolved at 2026-10-15T12:00:00Z, 4 probes
+      +resolved at 2026-10-15T12:00:00Z, 6 probes
+       exit 0
+       == install --file ws2/apps/a/main.roc
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       $PROJECT/ws2/apps/a/main.roc: check: passed
+       $PROJECT/ws2/apps/a/main.roc: build: passed
+       $PROJECT/ws2/apps/b/main.roc: check: passed
+      -$PROJECT/ws2/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws2/apps/b/main.roc: build: passed
+       $PROJECT/ws2/apps/a/main.roc
+         ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+       $PROJECT/ws2/apps/b/main.roc
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+      -resolved at 2026-10-15T12:00:00Z, 7 probes
+      +resolved at 2026-10-15T12:00:00Z, 8 probes
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -55,12 +55,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -72,8 +69,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       tty
+       ask "Move the held variable json? [y/N] "
+      @@ -119,8 +117,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -132,8 +131,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       tty
+       ask "Move the held variable json? [y/N] "
+      @@ -190,12 +190,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws2/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -207,8 +204,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       tty
+       ask "Move the held variable pf? [y/N] "
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,13 +1,11 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,7 @@
+      +@@ -0,0 +1,5 @@
+       +format	1
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-14-38a3029	any	pass		
+       +fact	4G1RyBFYE1Y7HJ7xqLJs8ox3os8U3Fp5RdLFvxzyJ3i8	nightly-2026-10-14-38a3029	any	pass		
+       +fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+       @@ -0,0 +1 @@
+FAIL probe/pb1-ladder
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -20,7 +20,7 @@
+       exit 0
+       == update json file=p5/main.roc compiler=nightly-2026-10-09-258ab27
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p5/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+      @@ -31,7 +31,7 @@
+       exit 0
+       == update json file=p7/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p7/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         + roc: nightly-2026-10-09-258ab27
+      @@ -41,7 +41,7 @@
+       == update json file=p9/main.roc toolchain=nightly-2026-10-09-258ab27 compiler=nightly-2026-10-14-38a3029
+       note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p9/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -35,13 +35,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p1/main.roc
+       write_atomic $PROJECT/p1/main.roc
+      @@ -76,12 +73,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p2/main.roc
+       write_atomic $PROJECT/p2/main.roc
+      @@ -130,13 +124,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/.cache/roc/toolchains/nightly-2026-October-13-91fa0c2/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-October-13-91fa0c2/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/.cache/roc/toolchains/nightly-2026-October-13-91fa0c2/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p4/main.roc
+       write_atomic $PROJECT/p4/main.roc
+      @@ -166,8 +157,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p5/main.roc
+       write_atomic $PROJECT/p5/main.roc
+      @@ -210,8 +203,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p7/main.roc
+       write_atomic $PROJECT/p7/main.roc
+      @@ -251,8 +246,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p9/main.roc
+       write_atomic $PROJECT/p9/main.roc
+      @@ -290,13 +286,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef link-dev $PROJECT/roc-src/zig-out/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/link-dev/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef link-dev $PROJECT/roc-src/zig-out/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p10/main.roc
+       write_atomic $PROJECT/p10/main.roc
+      @@ -333,13 +326,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef copy-fix-1 $HOME/.cache/roc/toolchains/copy-fix-1/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/copy-fix-1/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef copy-fix-1 $HOME/.cache/roc/toolchains/copy-fix-1/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p11/main.roc
+       write_atomic $PROJECT/p11/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,6 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,21 @@
+      +@@ -0,0 +1,16 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	copy-fix-1	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	link-dev	any	pass		
+      @@ -8,15 +8,10 @@
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-October-13-91fa0c2	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	copy-fix-1	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	copy-fix-1	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	link-dev	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	link-dev	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-October-13-91fa0c2	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-October-13-91fa0c2	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	copy-fix-1	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	link-dev	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-09-258ab27	any	pass		
+FAIL probe/pb2-verify
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -10,9 +10,9 @@
+       == env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 verify
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       $PROJECT/apps/a/main.roc: check: passed
+      -$PROJECT/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/a/main.roc: build: passed
+       $PROJECT/apps/b/main.roc: check: passed
+      -$PROJECT/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/b/main.roc: build: passed
+       $PROJECT/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+      @@ -26,7 +26,7 @@
+       $PROJECT/apps/a/main.roc: check: passed
+       $PROJECT/apps/a/main.roc: build: passed
+       $PROJECT/apps/b/main.roc: check: passed
+      -$PROJECT/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/b/main.roc: build: passed
+       $PROJECT/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -52,13 +52,10 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -96,8 +93,10 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+      +probes 1
+      +  probe $PROJECT/apps/a nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -109,8 +108,10 @@
+       probes 1
+         probe $PROJECT/apps/b nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+      +probes 1
+      +  probe $PROJECT/apps/b nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -151,12 +152,9 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -166,8 +164,9 @@
+       probes 1
+         probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,13 +1,11 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,7 @@
+      +@@ -0,0 +1,5 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-09-258ab27	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-09-258ab27	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-09-258ab27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+       @@ -0,0 +1 @@
+FAIL probe/un1-units
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -15,7 +15,7 @@
+       exit 0
+       == update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p4/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       exit 0
+      @@ -71,7 +71,7 @@
+       $PROJECT/ws/apps/a/main.roc: check: passed
+       $PROJECT/ws/apps/a/main.roc: build: passed
+       $PROJECT/ws/apps/b/main.roc: check: passed
+      -$PROJECT/ws/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/ws/apps/b/main.roc: build: passed
+       $PROJECT/ws/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+       $PROJECT/ws/apps/b/main.roc
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -63,13 +63,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p2/main.roc
+       write_atomic $PROJECT/p2/main.roc
+      @@ -104,12 +100,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p3/main.roc
+       write_atomic $PROJECT/p3/main.roc
+      @@ -137,8 +130,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p4/main.roc
+       write_atomic $PROJECT/p4/main.roc
+      @@ -173,12 +167,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p5/main.roc
+       write_atomic $PROJECT/p5/main.roc
+      @@ -324,12 +315,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p10/main.roc
+       write_atomic $PROJECT/p10/main.roc
+      @@ -387,12 +375,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p12/main.roc
+       write_atomic $PROJECT/p12/main.roc
+      @@ -420,12 +405,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p13/main.roc
+       write_atomic $PROJECT/p13/main.roc
+      @@ -484,12 +466,9 @@
+       probes 1 pool=3
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/bin/roc check main.roc timeout=7
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1 pool=3
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=7
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p15/main.roc
+       write_atomic $PROJECT/p15/main.roc
+      @@ -553,8 +532,6 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-05-9f8e7d6 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       canonical $PROJECT/p18/main.roc
+       list_dirs $PROJECT/p18
+      @@ -617,12 +594,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       copy_tree $PROJECT/ws/apps/b $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -637,8 +611,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc check main.roc timeout=9
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+       write_atomic $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,6 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,48 @@
+      +@@ -0,0 +1,40 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-03-7a6b5c4	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-04-8a7b6c5	any	fail	Yaml.roc	
+      @@ -16,26 +16,18 @@
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-17-601b54c	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-18-5349569	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-03-7a6b5c4	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-03-7a6b5c4	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-05-9f8e7d6	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-07-3f4e5d6	x64musl	pass		9f021d9fb9cd6978d12ea47f43a5420ee729621157c57f37dac3589bc4a50002
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-08-0a1b2c3	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-09-258ab27	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-10-abcdef0	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-11-1a2b3c4	any	crash		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-12-2664a27	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-13-91fa0c2	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-13-91fa0c2	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-15-38e6c42	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-15-38e6c42	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-16-1df370f	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-17-601b54c	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-18-5349569	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-18-5349569	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-03-7a6b5c4	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-05-9f8e7d6	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-07-3f4e5d6	any	fail	Parser.roc	
+FAIL probe/un2-remove-units
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -6,7 +6,7 @@
+       exit 0
+       == remove parser --file p2/main.roc
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p2/main.roc
+         - parser: acme/parser 1.0.0
+       exit 0
+      @@ -16,7 +16,7 @@
+       exit 10
+       == remove parser --file p5/main.roc --no-probe
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/p5/main.roc
+         - parser: acme/parser 1.0.0
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -40,12 +40,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p1/main.roc
+       write_atomic $PROJECT/p1/main.roc
+      @@ -83,8 +80,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p2/main.roc
+       write_atomic $PROJECT/p2/main.roc
+      @@ -193,8 +191,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/p5/main.roc
+       write_atomic $PROJECT/p5/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,11 +1,10 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,5 @@
+      +@@ -0,0 +1,4 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	fail	Yaml.roc	
+       +fact	7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+FAIL probe/un3-verify-units
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -91,12 +91,9 @@
+       probes 1
+         probe $PROJECT/p2 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/p2 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,10 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,5 @@
+      +@@ -0,0 +1,4 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	fail	Yaml.roc	
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL remove/rm1-flow
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -26,7 +26,7 @@
+       exit 2
+       == remove roc-lang/http@2 --file r6/main.roc
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/r6/main.roc
+         - http2: roc-lang/http 2.0.0
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -47,15 +47,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Stdout.roc $HOME/.cache/roc/packages/GuxBH2KepzGXfnFhX9xrJoR3QiLpt2bsMoXQUBtS4fbX/Strs.roc $PROJECT/r1/Helpers.roc $PROJECT/r1/Gone.roc
+      -read_files $PROJECT/r1/Inner/Deep.roc $PROJECT/r1/Inner/Mid.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Combinators.roc
+      -read_files $PROJECT/r1/Inner/Leaf.roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r1/talon.toml $PROJECT/r1/main.roc
+       write_atomic $PROJECT/r1/talon.toml $PROJECT/r1/main.roc
+      @@ -168,12 +162,9 @@
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       hook project/r4/main.roc
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r4/main.roc
+       args
+      @@ -301,8 +292,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r6/main.roc
+       write_atomic $PROJECT/r6/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,13 +1,11 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,9 @@
+      +@@ -0,0 +1,7 @@
+       +format	1
+       +fact	4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w	nightly-2026-10-14-38a3029	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		8bc71017333d6108b52e11c01ae0171980a8255593386adb113fbb2c5736bcd8
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+       +fact	GuxBH2KepzGXfnFhX9xrJoR3QiLpt2bsMoXQUBtS4fbX	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/projects.json
+FAIL resolve/rs-install-add-key
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -33,12 +33,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/app/main.roc
+       write_atomic $PROJECT/app/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,10 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,5 @@
+      +@@ -0,0 +1,4 @@
+       +format	1
+       +fact	7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/parser/1.json
+       +++ home/.cache/roc/talon/index/github/acme/parser/1.json
+FAIL resolve/rs-unmanaged
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -26,14 +26,14 @@
+       == install acme/json@^2 as=json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+       note: entry changes: ./json/main.roc -> acme/json 2.1.0
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/unm/main.roc
+         ~ json: ./json/main.roc -> acme/json 2.1.0
+       exit 0
+       == install acme/pf platform file=plat/main.roc compiler=nightly-2026-10-14-38a3029
+       note: platform changes: ./pf/main.roc -> acme/pf 0.1.1
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/plat/main.roc
+         ~ pf: ./pf/main.roc -> acme/pf 0.1.1
+       exit 0
+      @@ -47,21 +47,21 @@
+       == install acme/pf platform file=plat2/main.roc compiler=nightly-2026-10-14-38a3029
+       note: platform changes: ./pf/main.roc -> acme/pf 0.1.0
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/plat2/main.roc
+         ~ base: ./pf/main.roc -> acme/pf 0.1.0
+       exit 0
+       == install acme/json as=json file=ovr/main.roc compiler=nightly-2026-10-14-38a3029
+       note: entry changes: ./json/main.roc -> acme/json 2.1.0
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/ovr/main.roc
+         ~ json: ./json/main.roc -> acme/json 2.1.0
+       exit 0
+       == install acme/json@latest as=json file=lat/main.roc compiler=nightly-2026-10-14-38a3029
+       note: entry changes: ./json/main.roc -> acme/json 2.1.0
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/lat/main.roc
+         ~ json: ./json/main.roc -> acme/json 2.1.0
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -47,12 +47,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/unm/main.roc
+       write_atomic $PROJECT/unm/main.roc
+      @@ -138,8 +135,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/unm/main.roc $PROJECT/unm/talon.toml
+       write_atomic $PROJECT/unm/main.roc
+      @@ -168,8 +166,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/plat/main.roc
+       write_atomic $PROJECT/plat/main.roc
+      @@ -205,12 +204,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/key/main.roc
+       write_atomic $PROJECT/key/main.roc
+      @@ -243,8 +239,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/plat2/main.roc
+       write_atomic $PROJECT/plat2/main.roc
+      @@ -277,8 +274,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/ovr/main.roc
+       write_atomic $PROJECT/ovr/main.roc
+      @@ -311,8 +309,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/lat/main.roc
+       write_atomic $PROJECT/lat/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,13 +1,11 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,7 @@
+      +@@ -0,0 +1,5 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       +fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+       @@ -0,0 +1 @@
+FAIL resolve/rs-update-scope
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -15,14 +15,14 @@
+       == update json@2.2.0 compiler=nightly-2026-10-14-38a3029
+       note: json 2.2.0 is 1d old (min-release-age 2d)
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/main.roc
+         ~ json: acme/json 2.1.0 -> 2.2.0
+       $PROJECT/talon.toml: json = "=2.2.0"
+       exit 0
+       == update parser@^1.1 lowest compiler=nightly-2026-10-14-38a3029
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/main.roc
+         ~ parser: acme/parser 1.2.0 -> 1.1.0
+       $PROJECT/talon.toml: parser = "^1.1"
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -31,12 +31,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/main.roc
+       write_atomic $PROJECT/main.roc
+      @@ -77,12 +74,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/main.roc
+       write_atomic $PROJECT/main.roc
+      @@ -111,8 +105,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/main.roc $PROJECT/talon.toml
+       write_atomic $PROJECT/talon.toml $PROJECT/main.roc
+      @@ -141,8 +136,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/main.roc $PROJECT/talon.toml
+       write_atomic $PROJECT/talon.toml $PROJECT/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,15 +1,13 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,10 @@
+      +@@ -0,0 +1,8 @@
+       +format	1
+       +fact	3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA	nightly-2026-10-14-38a3029	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       +fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	u2J5ZhgwXSYn55Ac7xti1xFYVGz78yhBDqfZY2ZtFR6	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL roc/so1-ranks
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -37,13 +37,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-0abcdef $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-0abcdef $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r4/main.roc
+       write_atomic $PROJECT/r4/main.roc
+      @@ -82,13 +79,10 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef 0.1.3 $HOME/.cache/roc/toolchains/0.1.3/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       write_atomic $HOME/.cache/roc/toolchains/0.1.3/.last-use
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef 0.1.3 $HOME/.cache/roc/toolchains/0.1.3/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/r4s/main.roc
+       write_atomic $PROJECT/r4s/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,13 +1,11 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,9 @@
+      +@@ -0,0 +1,7 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	0.1.3	any	pass		
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-0abcdef	any	pass		
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	0.1.3	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	0.1.3	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-0abcdef	any	pass		
+      -+fact	895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw	nightly-2026-10-14-0abcdef	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	0.1.3	any	pass		
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-0abcdef	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL update/up1-flow
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -15,10 +15,10 @@
+       exit 0
+       == update --file u1/main.roc
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       $PROJECT/u1/main.roc
+         ~ parser: acme/parser 1.0.0 -> 1.2.0
+      -resolved at 2026-10-15T12:00:00Z, 3 probes
+      +resolved at 2026-10-15T12:00:00Z, 4 probes
+       exit 0
+       == update -i --file u1/main.roc
+       exit 2
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -70,12 +70,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u1/main.roc
+       write_atomic $PROJECT/u1/main.roc
+      @@ -141,8 +138,9 @@
+       probes 1
+         probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/u1/main.roc
+       write_atomic $PROJECT/u1/main.roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,10 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,6 @@
+      +@@ -0,0 +1,5 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL verify/vf1-flow
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -23,6 +23,6 @@
+       exit 11
+       == verify --file v5/main.roc
+       check: passed
+      -build: skipped (recorded pass)
+      +build: passed
+       verified: the tuple passes. No project file was written.
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -54,12 +54,9 @@
+       probes 1
+         probe $PROJECT/v1 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/v1 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -211,6 +208,7 @@
+       probes 1
+         probe $PROJECT/v5 nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/v5 nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,10 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,5 @@
+      +@@ -0,0 +1,4 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       +fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+FAIL workspace/ws2-verify-members
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -10,9 +10,9 @@
+       == verify
+       note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+       $PROJECT/apps/a/main.roc: check: passed
+      -$PROJECT/apps/a/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/a/main.roc: build: passed
+       $PROJECT/apps/b/main.roc: check: passed
+      -$PROJECT/apps/b/main.roc: build: skipped (recorded pass)
+      +$PROJECT/apps/b/main.roc: build: passed
+       $PROJECT/apps/a/main.roc
+         ~ json: acme/json 2.0.0 -> 2.1.0
+         ~ pf: acme/pfx 0.1.0 -> 0.1.1
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -50,12 +50,9 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+      @@ -91,8 +88,9 @@
+       probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      @@ -102,6 +100,7 @@
+       probes 1
+         probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -platform
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      +probes 1
+      +  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+      +    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,10 +1,9 @@
+       --- home/.cache/roc/talon/compat.tsv
+       +++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,4 @@
+      +@@ -0,0 +1,3 @@
+       +format	1
+       +fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+       +fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+       @@ -0,0 +1 @@
+commands: 53 passed, 24 failed

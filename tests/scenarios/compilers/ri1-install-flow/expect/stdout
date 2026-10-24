@@ -1,0 +1,48 @@
+== 1: a full id (R-R8). The first install is the global default (R-SO15). No temp, no lock and no probe dir is left (R-CC2, R-CC4).
+installed nightly-2026-10-09-258ab27
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+$HOME/.cache/roc/toolchains:
+nightly-2026-10-09-258ab27
+
+$HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27:
+.talon.json
+LICENSE
+legal_details
+roc
+roc is executable
+Roc compiler version nightly-2026-10-09-258ab27
+default-roc = "nightly-2026-10-09-258ab27"
+== 2: @latest, and the alias i (R-CM19). The nightly of 2026-10-21 is too young. The default stays.
+installed nightly-2026-10-14-38a3029
+exit 0
+nightly-2026-10-09-258ab27
+nightly-2026-10-14-38a3029
+default-roc = "nightly-2026-10-09-258ab27"
+== 3: an installed id: no new request, no lock
+nightly-2026-10-14-38a3029 is already installed
+exit 0
+== 4: a name is not hidden by min-release-age (R-NS4). A unique prefix (R-SC10). The alias add, and --json (R-J3, R-CM19).
+{"schema":1,"command":"roc add","ok":true,"data":{"id":"nightly-2026-10-21-5349569","path":"$HOME/.cache/roc/toolchains/nightly-2026-10-21-5349569","installed":true,"default":false},"error":null}
+exit 0
+== 5: the other tag form of a nightly (R-CV1): the id is the tag text of the list
+installed nightly-2026-July-31-123c5d7
+exit 0
+nightly-2026-10-09-258ab27
+nightly-2026-10-14-38a3029
+nightly-2026-10-21-5349569
+nightly-2026-July-31-123c5d7
+== 6: 2 runs at the same time for one new id: one download (R-CC4, R-DA5). One of them installs it, the other finds it.
+first exit 0
+second exit 0
+installed nightly-2026-10-12-2664a27
+nightly-2026-10-12-2664a27 is already installed
+== the store has the 5 compilers only
+nightly-2026-10-09-258ab27
+nightly-2026-10-12-2664a27
+nightly-2026-10-14-38a3029
+nightly-2026-10-21-5349569
+nightly-2026-July-31-123c5d7
+0
+0
+default-roc = "nightly-2026-10-09-258ab27"

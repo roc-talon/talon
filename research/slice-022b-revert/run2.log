@@ -1,0 +1,4 @@
+P18: CAUGHT by l0:pathroc (R-TF2: read drops the row fields)
+I7: NOT CAUGHT by - (N2: the cache is read when no roc is on PATH)
+F1: CAUGHT by l3:fx/so9-real-fx-path-roc (N3: a link is not resolved)
+SAME as code-final

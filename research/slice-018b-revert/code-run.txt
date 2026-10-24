@@ -1,0 +1,25 @@
+E1  CAUGHT     ciscan pin                         the pin is another tag
+E2  CAUGHT     ciscan pin                         ROC has the tag text, a second place of the pin
+G1  CAUGHT     ciscan pin                         get-roc.sh has the old shebang
+G2  CAUGHT     ciscan pin                         the Windows target name is wrong
+G3  NOT CAUGHT -                                  no sha256 check (a static row cannot see it: checked by hand)
+T1  CAUGHT     ciscan portable                    bc is back in over()
+T2  CAUGHT     selftest row budget                over() is reversed
+T3  CAUGHT     ciscan portable                    test.sh has the old shebang
+R1  CAUGHT     selftest row net tag               the tag net is not skipped
+R2  CAUGHT     selftest row net tag               NET is on by default
+R3  CAUGHT     ciscan portable                    commands/run.sh has the old shebang
+C1  CAUGHT     ciscan fast                        the Windows job runs all steps
+C2  CAUGHT     ciscan fast                        the test step has the default shell (PowerShell on Windows)
+C3  CAUGHT     ciscan fast                        no sysctl for bubblewrap
+C4  CAUGHT     ciscan fast                        the fast job sets OPT
+C5  CAUGHT     ciscan pin                         the binary cache key has no runner.os
+C6  CAUGHT     ciscan pin                         the binary cache restores another tag
+C7  CAUGHT     ciscan portable                    the macOS step lacks diffutils
+C8  CAUGHT     ciscan yaml                        an action is not pinned
+C9  CAUGHT     ciscan pin                         no get-roc step, a local path
+N1  CAUGHT     ciscan nightly                     the nightly run has no NET=1
+N2  CAUGHT     ciscan nightly                     the nightly run starts on each push
+N3  CAUGHT     ciscan yaml                        write permission
+N4  CAUGHT     ciscan nightly                     the nightly run caches the packages
+caught 23 of 24. files equal to the copy: True

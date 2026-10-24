@@ -1,0 +1,13 @@
+tests/unit/oracleprobe.roc
+tests/commands/cases/probe/lp1-loop
+docs/slices/036b-probe-rounds.md
+research/slice-036b-revert/gen-lp1.py
+research/slice-036b-revert/lp1-rules.txt
+research/slice-036b-revert/mutate.py
+research/slice-036b-revert/check-diff.py
+research/slice-036b-revert/update-l2.sh
+research/slice-036b-revert/bk.sh
+tests/commands/cases/probe/lp2-fetch
+research/slice-036b-revert/gen-lp2.py
+research/slice-036b-revert/lp2-rules.txt
+research/slice-036b-revert/before-f1/ (the expected files before fix F1)

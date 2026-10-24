@@ -1,0 +1,21 @@
+B1: CAUGHT (    0 compiler errors)  [R-LF2: `Off` looks up a release again that was looked up]
+B2: CAUGHT (    0 compiler errors)  [R-AL5: a conflict of the ladder names the place of its slot]
+B3: CAUGHT (FAIL probe/lp1-loop)  [R-P5: the budget does not count the probes that ran]
+B4: CAUGHT (FAIL probe/pb1-ladder)  [R-CV1: the facts of the held spelling get no id of the started compiler]
+B5: CAUGHT (FAIL probe/lp1-loop)  [R-AL6, Q2: a ladder failure always drops the whole tuple]
+B6: CAUGHT (FAIL probe/lp1-loop)  [R-P5: the probes of a dropped tuple are not counted]
+B7: CAUGHT (FAIL ladder/bs3-build-record, FAIL ladder/ld-ladder-flow, FAIL probe/un1-units)  [R-PH13: the final failure is the last, not the first]
+B8: CAUGHT (FAIL ladder/ld-ladder-flow, FAIL probe/lp1-loop, FAIL resolve/rs-new-toml)  [R-AL4: the ladder asks the db again for the keys of the loop]
+B9: CAUGHT (FAIL probe/lp1-loop)  [D10: a new error in a hash blames the whole tuple]
+B10: NOT CAUGHT (commands: 4 passed, 0 failed)  [D10: a unit fail of the ladder blames the whole tuple]
+cli/lib/Oracle.roc: OK
+cli/lib/Fail.roc: OK
+cli/lib/PickLoop.roc: OK
+cli/lib/PickFlow.roc: OK
+cli/lib/InstallFlow.roc: OK
+cli/lib/VerifyFlow.roc: OK
+cli/lib/Ladder.roc: OK
+cli/lib/LadderJudge.roc: OK
+cli/lib/Units.roc: OK
+cli/lib/ResolveBase.roc: OK
+cli/lib/RemoveFlow.roc: OK

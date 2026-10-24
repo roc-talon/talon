@@ -11,15 +11,15 @@ $PROJECT/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
   ~ parser: acme/parser 1.0.0 -> 1.2.0
   ~ pf: acme/pfx 0.1.0 -> 0.1.1
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 6 probes
 dry run: nothing was written
 note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 check: passed
-build: passed
+build: skipped (recorded pass)
 $PROJECT/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
   ~ parser: acme/parser 1.0.0 -> 1.2.0
   ~ pf: acme/pfx 0.1.0 -> 0.1.1
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 2 probes
 dry run: nothing was written

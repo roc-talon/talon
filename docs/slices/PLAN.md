@@ -42,7 +42,7 @@ Few tests, each with a large reach. Every rule id of a slice is named by at leas
 | 014 (done) | One name model | `docs/design-gaps/G-tie-names.md`: R-SC1, R-SC6, R-SC14 to R-SC16, R-WS8, R-AU8. One shared entity builder for `why`, the pick and `remove`. | 013 |
 | 015 (done) | Unmanaged entries | `docs/design-gaps/G-never-change.md`: R-H4, R-H7, R-H9, R-AD18, R-AD19, R-AD21, R-AD22, R-AD31, R-AD38, R-RV5. The `Locked.edit` replace op. | 014 |
 | 016 (done) | One closure model | `docs/design-gaps/G-closure-fetch.md`: R-AL2, R-AL8, R-AL9, R-FE1, R-DI1, R-DI7. One loop for the pick and the walk, path entries in `Pick.step`. | 015 |
-| 017 | Held moves | `docs/design-gaps/G-held-moves.md`: R-SP16, R-SP17, R-SP23 to R-SP26, R-WS6, R-WS12, R-PH10, R-EC13, R-NI3. Also the per-member closure check (slice 016 Q1). | 016 |
+| 017 (done) | Held moves | `docs/design-gaps/G-held-moves.md`: R-SP16, R-SP17, R-SP23 to R-SP26, R-WS6, R-WS12, R-PH10, R-EC13, R-NI3. Also the per-member closure check (slice 016 Q1). | 016 |
 
 The manager can split a slice that is too large for one review (TW19), or join two small ones. A change to this table is recorded here.
 

@@ -61,3 +61,27 @@ expect {
 	dbg bad_admits
 	bad_implied == [] and bad_checks == [] and bad_admits == []
 }
+
+# R-UP5 (slice 038): the range that a header version gets when `tln upgrade` moves a variable. A range that admits the new version stays. Else the prefix, the number of parts
+# and the wildcard end stay, and the parts come from the new version. An anchor (`=`) is `=<new>`. A form with no design rule (a comparator, a list) is `Err(NoForm)` (question Q1).
+expect {
+	rows = [
+		("^2.1", "3.0.2", Ok("^3.0")),
+		("^0.25", "0.26.1", Ok("^0.26")),
+		("0.25.*", "0.26.1", Ok("0.26.*")),
+		("2", "3.0.2", Ok("3")),
+		("^2.1.3", "3.0.2", Ok("^3.0.2")),
+		("~1.4", "2.0.0", Ok("~2.0")),
+		("1.0.*", "1.2.0", Ok("1.2.*")),
+		("=2.0.0", "3.0.2", Ok("=3.0.2")),
+		("^2.1", "2.5.0", Ok("^2.1")),
+		("2", "2.5.0", Ok("2")),
+		("=2.0.0", "2.0.0", Ok("=2.0.0")),
+		("*", "3.0.2", Ok("*")),
+		(">=1.2, <1.5", "3.0.2", Err(NoForm)),
+		("^2.1", "x", Err(NoForm)),
+	]
+	bad = rows.keep_if(|(r, v, want)| Ranges.rewrite({ range: r, version: v }) != want).map(|(r, v, want)| (r, v, want, Ranges.rewrite({ range: r, version: v })))
+	dbg bad
+	bad == []
+}

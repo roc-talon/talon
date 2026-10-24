@@ -1,0 +1,192 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+
+	todo
+
+
+── ✗ fail ───────────────────────────────────────────── tests/unit/uses.roc:66:1
+
+expect {
+    level = |sources, seen| Uses.level({ project_dir: "/p/app", pkgs, edges, sources, seen })
+    first = level([{ owner: App, path: "/p/app/main.roc", text: main_text }], ["/p/app/main.roc"])
+    first_want = {
+        used: [{ hash: pf, path: "Stdout.roc" }, { hash: json, path: "Json.roc" }],
+        next: [{ owner: Package(pf), path: "${pkgs}/${pf}/Stdout.roc" }, { owner: Package(json), path: "${pkgs}/${json}/Json.roc" }, { owner: App, path: "/p/app/Helpers.roc" }],
+    }
+    read_one = [
+        { owner: Package(json), path: "${pkgs}/${json}/Json.roc", text: "import Wire\nimport util.Strs\nimport ./Internal/Nibble\nimport \"x.json\" as x : Str\n" },
+        { owner: App, path: "/p/app/Helpers.roc", text: "import json.Wire\nimport Util/Strs\nimport util.Strs\n" },
+        { owner: Package(pf), path: "${pkgs}/${pf}/Stdout.roc", text: "import Host\n" },
+    ]
+    seen_one = ["/p/app/main.roc", "${pkgs}/${pf}/Stdout.roc", "${pkgs}/${json}/Json.roc", "/p/app/Helpers.roc"]
+    second = level(read_one, seen_one)
+    second_want = {
+        used: [{ hash: json, path: "Wire.roc" }, { hash: util, path: "Strs.roc" }, { hash: json, path: "Internal/Nibble.roc" }, { hash: pf, path: "Host.roc" }],
+        next: [
+            { owner: Package(json), path: "${pkgs}/${json}/Wire.roc" },
+            { owner: Package(util), path: "${pkgs}/${util}/Strs.roc" },
+            { owner: Package(json), path: "${pkgs}/${json}/Internal/Nibble.roc" },
+            { owner: App, path: "/p/app/Util/Strs.roc" },
+            { owner: Package(pf), path: "${pkgs}/${pf}/Host.roc" },
+        ],
+    }
+    cycle = level(
+        [{ owner: Package(json), path: "${pkgs}/${json}/Wire.roc", text: "import Json\nimport parser.Parser\n" }],
+        ["/p/app/main.roc", "${pkgs}/${json}/Wire.roc", "${pkgs}/${json}/Json.roc"],
+    )
+    cycle_want = { used: [{ hash: json, path: "Json.roc" }], next: [] }
+    in_parser = level(
+        [{ owner: Package(parser), path: "${pkgs}/${parser}/Parser.roc", text: "import j.Wire\nimport Yaml\n" }],
+        ["${pkgs}/${parser}/Parser.roc"],
+    )
+    in_parser_want = { used: [{ hash: json, path: "Wire.roc" }, { hash: parser, path: "Yaml.roc" }], next: [{ owner: Package(json), path: "${pkgs}/${json}/Wire.roc" }, { owner: Package(parser), path: "${pkgs}/${parser}/Yaml.roc" }] }
+    none = level([], [])
+    rows = [
+        ("the app file: 2 modules used, 3 files next", Str.inspect(first), Str.inspect(first_want)),
+        ("the next level: package locals, an alias of the package header, the app local", Str.inspect(second), Str.inspect(second_want)),
+        ("a cycle: a file that was read is not next, the use is still reported", Str.inspect(cycle), Str.inspect(cycle_want)),
+        ("an alias of the header of a package (not the app header)", Str.inspect(in_parser), Str.inspect(in_parser_want)),
+        ("no source", Str.inspect(none), Str.inspect({ used: [], next: [] })),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Ran 2 tests in 309.4 ms.:
+    0 passed
+    2 failed
+    0 compiler errors
+tests/unit/vars.roc: All (6) tests passed in 1802.7 ms.
+tests/unit/verify.roc: All (2) tests passed in 1354.5 ms.
+tests/unit/why.roc: All (6) tests passed in 1863.4 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+       list_dirs $HOME/.cache/roc/toolchains
+       canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 3
+      +probes 2
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -  probe $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -  probe $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
+      -probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       probes 1
+      @@ -79,13 +72,11 @@
+       read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+       list_dirs $HOME/.cache/roc/toolchains
+       canonical $HOME/.cache $HOME/.cache/roc
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 1
+      +probes 2
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -probes 1
+         probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       probes 1
+      @@ -94,10 +85,9 @@
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       random
+       make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 1
+      +probes 2
+         probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -probes 1
+         probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst timeout=30
+           env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       probes 1
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,9 +1,3 @@
+      ---- home/.cache/roc/talon/compat.tsv
+      -+++ home/.cache/roc/talon/compat.tsv
+      -@@ -0,0 +1,3 @@
+      -+format	1
+      -+fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+      -+fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+       --- home/.cache/roc/talon/index/github/acme/json/1.json
+       +++ home/.cache/roc/talon/index/github/acme/json/1.json
+       @@ -0,0 +1 @@
+commands: 46 passed, 28 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+    roc calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -4,7 +4,10 @@
+       build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
+       check main.roc
+       check main.roc
+      +build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
+      +check main.roc
+       check main.roc
+      +build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
+       check main.roc
+       check main.roc
+       build main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out
+    compat.db rows differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +0,0 @@
+      -format	1
+      -fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+      -fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	any	pass		
+      -fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+FAIL verify/vf1-verify
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -15,7 +15,7 @@
+       verified: the tuple passes. No project file was written.
+       exit 0
+       == tln verify --strategy lowest --json
+      -{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":6,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+      +{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":3,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+       exit 0
+       == tln verify --no-check --json
+       {"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":"skipped","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+      @@ -50,12 +50,6 @@
+       check main.roc
+       check main.roc
+       check main.roc
+      -check main.roc
+      -check main.roc
+      -check main.roc
+      -check main.roc
+      -check main.roc
+      -check main.roc
+       check main.roc --replace-dep https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst --replace-dep https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst https://github.com/acme/parser/releases/download/1.2.0/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt.tar.zst --replace-dep https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst
+       version
+       == env ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 tln verify --no-check
+    compat.db rows differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +0,0 @@
+      -format	1
+      -fact	4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq	nightly-2026-10-14-38a3029	any	pass		
+      -fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-14-38a3029	any	pass		
+      -fact	7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21	nightly-2026-10-14-38a3029	any	pass		
+      -fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
+      -fact	EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc	nightly-2026-10-14-38a3029	any	pass		
+      -fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+scenarios: 47 passed, 12 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.6      10
+fmt        pass   0.1      5
+l0         FAIL   5.7      10
+l2         FAIL   1.7      30
+l3         FAIL   9.7      60
+selftest   pass   7.9      20
+done 1

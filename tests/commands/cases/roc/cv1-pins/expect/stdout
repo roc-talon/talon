@@ -1,0 +1,46 @@
+== roc install nightly-2026-10-15-38e6c42 --yes
+installed nightly-2026-10-15-38e6c42
+nightly-2026-10-15-38e6c42 is now the default compiler
+exit 0
+== roc install nightly-2026-10-14-38a3029 --yes
+installed nightly-2026-10-14-38a3029
+exit 0
+== roc install nightly-2026-10-16-1df370f --yes
+installed nightly-2026-10-16-1df370f
+exit 0
+== roc install nightly-2026-10-12-2664a27 --yes
+exit 16
+== roc install @latest --yes
+installed nightly-2026-10-17-601b54c
+exit 0
+== roc install nightly-2026-10-18-5349569 --yes
+nightly-2026-10-18-5349569 is already installed
+exit 0
+== roc default nightly-2026-10-18-5349569
+nightly-2026-10-18-5349569 is now the default compiler
+exit 0
+== roc install nightly-2026-10-13-91fa0c2 --yes
+exit 16
+== roc install nightly-2026-10-13 --yes
+exit 16
+== roc default nightly-2026-10-13-91fa0c2
+exit 16
+== roc use nightly-2026-10-13-91fa0c2 --file p1/main.roc
+exit 16
+== update json --file p-pin/main.roc
+exit 16
+== env:HOME={w}/home2 update json --file p-range/main.roc
+exit 13
+== env:HOME={w}/home3 roc install nightly-2026-10-09-258ab27 --yes
+installed nightly-2026-10-09-258ab27
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+== env:HOME={w}/home4 roc install @latest --yes
+exit 19
+== env:HOME={w}/home2 roc install nightly-2030 --yes
+exit 2
+== env:HOME={w}/home5 roc install nightly-2026-10-14-38a3029 --offline
+exit 15
+== roc install @-2 --yes
+nightly-2026-10-15-38e6c42 is already installed
+exit 0

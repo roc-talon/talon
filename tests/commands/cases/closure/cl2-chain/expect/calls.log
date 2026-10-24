@@ -12,9 +12,11 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 spawn_all limit=1
-  job - roc version
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/mid
 programs gh
@@ -65,9 +67,8 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/mid
 read_files $HOME/.cache/roc/talon/index/github/acme/mid/1.meta $HOME/.cache/roc/talon/index/github/acme/mid/1.json
@@ -101,6 +102,8 @@ read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERU
 random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 args
 env_all
 clock
@@ -121,6 +124,8 @@ read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERU
 random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 args
 env_all
 clock
@@ -135,9 +140,8 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/core
 read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json
@@ -166,9 +170,8 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/core
 read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json
@@ -190,9 +193,8 @@ lock $HOME/.cache/roc/talon/projects.json nowait: held
 list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-programs roc
-spawn_all limit=1
-  job - roc version
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/core
 read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json

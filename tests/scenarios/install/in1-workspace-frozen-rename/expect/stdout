@@ -28,7 +28,7 @@ check: passed
 build: passed
 $PROJECT/apps/b/main.roc
   + json: acme/json 2.0.0
-resolved at 2026-10-15T12:00:00Z, 3 probes
+resolved at 2026-10-15T12:00:00Z, 4 probes
 exit 0
 == tln probe ./apps/b
-exit 1
+exit 2

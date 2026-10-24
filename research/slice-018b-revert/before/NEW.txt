@@ -1,0 +1,3 @@
+docs/slices/018b-ci-jobs.md
+research/slice-018b-revert/
+tests/tools/ciscan.py

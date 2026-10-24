@@ -1,0 +1,37 @@
+| id | rule | result | first failing line |
+| --- | --- | --- | --- |
+| e1 | R-EP13 | caught | l0 2 failed |
+| e2 | R-EP4 | caught | l0 2 failed |
+| e3 | R-EP11 | caught | l0 2 failed |
+| e4 | R-EP11 | caught | l0 2 failed |
+| e5 | R-EP10 | caught | l0 1 failed |
+| e6 | R-EP12 | caught | l0 3 failed |
+| e7 | R-EP5 | caught | l0 3 failed |
+| e8 | R-EP5 | caught | l0 2 failed |
+| e9 | R-EP5 | caught | l0 3 failed |
+| e10 | R-EP5 | caught | l0 1 failed |
+| e11 | R-EP5 | caught | l0 3 failed |
+| e12 | R-EP6 | caught | l0 3 failed |
+| e13 | R-EP6 | caught | l0 1 failed |
+| e14 | R-EP6 | caught | l0 2 failed |
+| e15 | R-EP6 | caught | l0 3 failed |
+| e16 | R-EP6 | caught | l1 only: tests/fuzz/epochs.roc: FAILED (exit 77, seed 1, 20000 runs) |
+| e17 | R-EP6 | caught | l0 1 failed |
+| e18 | R-EP6 | caught | l0 3 failed |
+| e19 | R-EP6 | caught | l0 3 failed |
+| e20 | R-EP6 | caught | l0 1 failed |
+| e21 | R-EP6 | caught | l0 1 failed |
+| e22 | R-EP6 | caught | l0 2 failed |
+| e23 | R-EP6 | caught | l0 2 failed |
+| e24 | R-EP6 | caught | l0 3 failed |
+| e25 | R-EP6 | caught | l0 3 failed |
+| e26 | R-EP14 | caught | l0 3 failed |
+| e27 | R-EP14 | caught | l0 3 failed |
+| e28 | R-EP10 | caught | l0 3 failed |
+| e29 | R-EP10 | caught | l0 3 failed |
+| e30 | R-EP4 | caught | l0 1 failed |
+| e31 | R-EP4 | caught | l0 1 failed |
+| e32 | R-EP4 | caught | l0 1 failed |
+| e33 | R-EP4 | caught | l0 1 failed |
+| e34 | R-EP4 | NOT CAUGHT |  |
+| e35 | R-EP4 | NOT CAUGHT |  |

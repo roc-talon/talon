@@ -1,0 +1,4 @@
+# R-DL1 R-BL3 R-SO21 R-SO22 R-NI5 R-DL3: a workspace of 2 members with one pin that is not installed. `verify` runs the ladder for both members, and the run asks once and downloads once (one prompt for each command, not for each member or each probe). A person is there: the answer is y.
+verify
+# R-CC4 step 1: the compiler is installed now. No tty call, no prompt, no list, no lock: the same probes for both members.
+verify

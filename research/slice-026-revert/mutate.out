@@ -1,0 +1,29 @@
+U1	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U2	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U3	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U4	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U5	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U6	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U7	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+U8	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+N2	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+N3b	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+N4	caught	roc test tests/unit/manage.roc	cli/lib/Manage.roc
+N5	caught	tests/commands/run.sh roc/bs3	cli/lib/Base.roc
+U9	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+U10	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+U11	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+U12	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+U13	caught	tests/commands/run.sh roc/up1	cli/lib/RocManage.roc
+B1	caught	roc test tests/unit/toolchain.roc	cli/lib/Toolchain.roc
+B2	caught	tests/commands/run.sh roc/bs1	cli/lib/RocInstall.roc
+B3	caught	tests/commands/run.sh roc/bs1	cli/lib/Base.roc
+B4	caught	tests/commands/run.sh roc/bs1	cli/lib/Base.roc
+B5	caught	tests/run.sh compilers/bs1	cli/lib/Base.roc
+B6	caught	tests/run.sh compilers/bs1	cli/lib/Base.roc
+B7	caught	tests/commands/run.sh roc/bs2	cli/lib/Base.roc
+B9	caught	tests/commands/run.sh roc/bs2	cli/lib/Base.roc
+B10	caught	tests/commands/run.sh roc/bs3	cli/lib/Base.roc
+B11	caught	tests/commands/run.sh roc/bs1	cli/lib/Base.roc
+G1	caught	roc test tests/unit/pin.roc	cli/lib/Pin.roc
+G2	caught	roc test tests/unit/pin.roc	cli/lib/Pin.roc

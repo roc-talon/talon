@@ -1,0 +1,11 @@
+A1: CAUGHT by l2:upgrade/ur5-optional (R-DL4: a skip removes only the wanted compilers, so the line shows again)
+A2: CAUGHT by l2:upgrade/ur5-optional (R-DL5: --allow-downloads is an opt-in)
+A3: CAUGHT by l2:upgrade/ur5-optional (R-LF4: --dry-run does not answer No)
+A4: CAUGHT by l2:upgrade/ur5-optional (R-DL6: a failed try does not count for the cap)
+A5: CAUGHT by l2:upgrade/ur5-optional (R-P5: the download is made before the budget check)
+A6: CAUGHT by l2:upgrade/ur5-optional (R-DL6: the cap does not count the tries of earlier rounds)
+A7: CAUGHT by l2:upgrade/ur5-optional (R-J3: data.downloads does not count the optional downloads)
+A8: CAUGHT by l2:upgrade/ur5-optional (a compiler that the search installed is no value of the compiler slot)
+A9: CAUGHT by l2:upgrade/ur5-optional (R-DL6: the cap note shows also when the cap is 0)
+A10: CAUGHT by l0:nightlyplan (R-UP6: an installed compiler is optional)
+final compare: SAME

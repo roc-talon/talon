@@ -1,0 +1,135 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    got = Facts.changed_fail({ first, now })
+    want = Fail.new(Integrity, "the sha256 of ${nt} for ${host} changed: first seen ${sha_a} (github-digest), now ${sha_b} (registry). Talon does not use this compiler. Select another compiler.")
+    dbg got
+    got == want
+}
+
+Ran 5 tests in 377.5 ms.:
+    0 passed
+    5 failed
+    0 compiler errors
+tests/unit/fetch.roc: All (2) tests passed in 311.7 ms.
+tests/unit/frozen.roc: All (1) tests passed in 2622.3 ms.
+tests/unit/gc.roc: All (9) tests passed in 2758.9 ms.
+tests/unit/github.roc: All (5) tests passed in 734.9 ms.
+tests/unit/guard.roc: All (1) tests passed in 186.6 ms.
+tests/unit/ident.roc: All (2) tests passed in 246.5 ms.
+tests/unit/index.roc: All (6) tests passed in 755.0 ms.
+tests/unit/intent.roc: All (7) tests passed in 2449.3 ms.
+tests/unit/kind.roc: All (3) tests passed in 270.8 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2848.2 ms.
+tests/unit/launch.roc: All (1) tests passed in 727.3 ms.
+tests/unit/link.roc: All (6) tests passed in 829.9 ms.
+tests/unit/listing.roc: All (4) tests passed in 642.4 ms.
+tests/unit/locked.roc: All (3) tests passed in 1763.6 ms.
+tests/unit/lock.roc: All (2) tests passed in 167.0 ms.
+tests/unit/lookup.roc: All (7) tests passed in 844.9 ms.
+tests/unit/manage.roc: All (18) tests passed in 3086.1 ms.
+tests/unit/members.roc: All (2) tests passed in 203.5 ms.
+tests/unit/mode.roc: All (3) tests passed in 214.3 ms.
+tests/unit/net.roc: All (2) tests passed in 280.6 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1191.1 ms.
+tests/unit/opts.roc: All (3) tests passed in 455.5 ms.
+tests/unit/out.roc: All (4) tests passed in 158.6 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 1008.3 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1756.1 ms.
+tests/unit/picker.roc: All (2) tests passed in 125.4 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1569.3 ms.
+tests/unit/pick.roc: All (3) tests passed in 1685.0 ms.
+tests/unit/pin.roc: All (9) tests passed in 1147.1 ms.
+tests/unit/probe.roc: All (3) tests passed in 375.4 ms.
+tests/unit/project.roc: All (7) tests passed in 2004.2 ms.
+tests/unit/projects.roc: All (3) tests passed in 434.0 ms.
+tests/unit/prompt.roc: All (5) tests passed in 335.9 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2489.8 ms.
+tests/unit/ranges.roc: All (1) tests passed in 311.2 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1543.9 ms.
+tests/unit/ref.roc: All (4) tests passed in 395.3 ms.
+tests/unit/removal.roc: All (3) tests passed in 1777.6 ms.
+tests/unit/report.roc: All (3) tests passed in 144.8 ms.
+tests/unit/roots.roc: All (3) tests passed in 135.5 ms.
+tests/unit/scan.roc: All (2) tests passed in 236.2 ms.
+tests/unit/selector.roc: All (2) tests passed in 373.3 ms.
+tests/unit/setup.roc: All (10) tests passed in 1508.8 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 373.8 ms.
+tests/unit/temp.roc: All (4) tests passed in 214.5 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1894.9 ms.
+tests/unit/update.roc: All (2) tests passed in 1940.4 ms.
+tests/unit/vars.roc: All (6) tests passed in 1743.5 ms.
+tests/unit/verify.roc: All (2) tests passed in 1355.2 ms.
+tests/unit/why.roc: All (6) tests passed in 2002.7 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL db/cc1-store
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo
+commands: 69 passed, 1 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -fact	a12	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a13	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a14	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a15	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a16	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a17	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a18	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a19	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a2	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a20	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a21	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a22	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a23	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a24	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a25	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a26	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a27	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a28	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a29	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a3	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a30	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a4	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a5	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a6	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a7	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a8	nightly-2026-10-14-38a3029	any	pass		
+      -fact	a9	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b1	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b10	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b11	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b12	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b13	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b14	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b15	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b16	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b17	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b18	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b19	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b2	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b20	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b21	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b22	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b23	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b24	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b25	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b26	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b27	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b28	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b29	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b3	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b30	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b4	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b5	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b6	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b7	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b8	nightly-2026-10-14-38a3029	any	pass		
+      -fact	b9	nightly-2026-10-14-38a3029	any	pass		
+      -fact	held	n	any	pass		
+      -fact	late	nightly-2026-10-14-38a3029	any	crash		
+scenarios: 54 passed, 2 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.7      10
+fmt        pass   0.1      5
+l0         FAIL   5.4      10
+l2         FAIL   3.1      30
+l3         FAIL   9.5      60
+selftest   pass   7.6      20

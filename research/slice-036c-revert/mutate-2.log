@@ -1,0 +1,7 @@
+M1	D2 revisit: the assumed pass on every compiler of D	l0 caught by: oracledomain	l2 dm1: -
+M6	Wide for a Pairs of Allowed	l0 caught by: oracledomain	l2 dm1: -
+M7	Off does not ask for D before a lookup round	l0 caught by: oracledomain	l2 dm1: -
+M8	H not in D is not degraded to [H]	l0 caught by: oracledomain	l2 dm1: -
+M10	no cause line for an inferred fail on H alone	l0 caught by: explain	l2 dm1: -
+M14	the hint does not accept a header that was not read	l0 caught by: oracledomain,oracleprobe	l2 dm1: -
+M13 NO MATCH 2

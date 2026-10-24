@@ -1,0 +1,4 @@
+M16	a key with no form gets no note (Q1 b)	l0 caught by: upgrade	l2: -
+M17	the toml line has no (was ...) (Q6)	l0 caught by: none	l2: FAIL resolve/rs-new-toml,upgrade/ug1-flow,upgrade/ug3-move
+M18	upgrade uses the strategy of talon.toml (Q2)	l0 caught by: none	l2: FAIL upgrade/ug1-flow
+M19	upgrade accepts a selector (Q4)	l0 caught by: upgrade	l2: -

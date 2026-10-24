@@ -1,0 +1,138 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+            ]
+            and Gc.report(only_projects) == ["removed project /p/old/main.roc\n"]
+                and Gc.report(dry_projects) == ["would remove project /p/old/main.roc\n", "dry run: nothing was removed\n"]
+                    and Gc.freed(sized) == 3101503049
+                        and Gc.freed(only_projects) == 0
+                            and Gc.data(sized).render()
+                                == "{\"dry_run\":false,\"ran\":true,\"toolchains\":[\"t1\",\"t2\"],\"skipped\":[\"s1\"],\"compat\":[\"/c/c1\",\"/c/c1\"],\"stale\":[\"/c/x1\"],\"builds\":[\"/b/b1\"],\"packages\":[\"/c/roc/packages/p1\"],\"projects\":[\"/p/old/main.roc\"],\"sizes\":[{\"item\":\"t1\",\"bytes\":1500000},{\"item\":\"/c/c1\",\"bytes\":2000},{\"item\":\"/c/x1\",\"bytes\":999},{\"item\":\"/b/b1\",\"bytes\":3100000000},{\"item\":\"/c/roc/packages/p1\",\"bytes\":50}],\"freed\":3101503049}"
+}
+
+Ran 9 tests in 2713.4 ms.:
+    7 passed
+    2 failed
+    0 compiler errors
+tests/unit/github.roc: All (5) tests passed in 494.1 ms.
+tests/unit/guard.roc: All (1) tests passed in 276.9 ms.
+tests/unit/ident.roc: All (2) tests passed in 323.1 ms.
+tests/unit/index.roc: All (6) tests passed in 870.0 ms.
+tests/unit/intent.roc: All (7) tests passed in 2569.6 ms.
+tests/unit/kind.roc: All (3) tests passed in 272.8 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2581.2 ms.
+tests/unit/launch.roc: All (1) tests passed in 607.7 ms.
+tests/unit/link.roc: All (6) tests passed in 645.7 ms.
+tests/unit/listing.roc: All (4) tests passed in 611.0 ms.
+tests/unit/locked.roc: All (3) tests passed in 2077.0 ms.
+tests/unit/lock.roc: All (2) tests passed in 127.0 ms.
+tests/unit/lookup.roc: All (7) tests passed in 697.5 ms.
+tests/unit/manage.roc: All (18) tests passed in 3100.8 ms.
+tests/unit/members.roc: All (2) tests passed in 184.1 ms.
+tests/unit/mode.roc: All (3) tests passed in 145.5 ms.
+tests/unit/net.roc: All (2) tests passed in 188.8 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 1235.9 ms.
+tests/unit/opts.roc: All (3) tests passed in 468.7 ms.
+tests/unit/out.roc: All (4) tests passed in 138.2 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 1172.1 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1536.4 ms.
+tests/unit/picker.roc: All (2) tests passed in 150.6 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1582.6 ms.
+tests/unit/pick.roc: All (3) tests passed in 1337.5 ms.
+tests/unit/pin.roc: All (9) tests passed in 1073.7 ms.
+tests/unit/probe.roc: All (3) tests passed in 485.1 ms.
+tests/unit/project.roc: All (7) tests passed in 2036.2 ms.
+tests/unit/projects.roc: All (3) tests passed in 404.1 ms.
+tests/unit/prompt.roc: All (5) tests passed in 245.7 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2142.7 ms.
+tests/unit/ranges.roc: All (1) tests passed in 339.8 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1476.0 ms.
+tests/unit/ref.roc: All (4) tests passed in 421.2 ms.
+tests/unit/removal.roc: All (3) tests passed in 1701.8 ms.
+tests/unit/report.roc: All (3) tests passed in 197.4 ms.
+tests/unit/roots.roc: All (3) tests passed in 147.7 ms.
+tests/unit/scan.roc: All (2) tests passed in 238.0 ms.
+tests/unit/selector.roc: All (2) tests passed in 235.5 ms.
+tests/unit/setup.roc: All (10) tests passed in 1441.7 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 283.6 ms.
+tests/unit/temp.roc: All (4) tests passed in 198.4 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1747.2 ms.
+tests/unit/update.roc: All (2) tests passed in 1841.5 ms.
+tests/unit/vars.roc: All (6) tests passed in 1700.5 ms.
+tests/unit/verify.roc: All (2) tests passed in 1192.6 ms.
+tests/unit/why.roc: All (6) tests passed in 1903.3 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL gc/gc1-select
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -20,7 +20,7 @@
+       dry run: nothing was removed
+       exit 0
+       == cache gc --dry-run --json
+      -{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["git-dd03c09e","nightly-2026-05-01-6666666","nightly-2026-08-01-aaaaaaa","nightly-2026-08-12-5555555","nightly-2026-09-01-9999999"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666","$HOME/.cache/roc/compat-aaaaaaa","$HOME/.cache/roc/compat-5555555"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","$HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp","$HOME/.cache/roc/talon/tmp/0123456789abcdef","$HOME/.cache/roc/talon/tmp/2123456789abcdef.locks","$HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash","$HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp"],"builds":[],"packages":[],"projects":["$PROJECT/pgone/main.roc","$PROJECT/pold/main.roc","$PROJECT/pplain/main.roc"],"sizes":[{"item":"git-dd03c09e","bytes":89},{"item":"nightly-2026-05-01-6666666","bytes":269},{"item":"nightly-2026-08-01-aaaaaaa","bytes":269},{"item":"nightly-2026-08-12-5555555","bytes":269},{"item":"nightly-2026-09-01-9999999","bytes":243},{"item":"$HOME/.cache/roc/compat-6666666","bytes":11},{"item":"$HOME/.cache/roc/compat-aaaaaaa","bytes":11},{"item":"$HOME/.cache/roc/compat-5555555","bytes":11},{"item":"$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","bytes":7},{"item":"$HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp","bytes":7},{"item":"$HOME/.cache/roc/talon/tmp/0123456789abcdef","bytes":31},{"item":"$HOME/.cache/roc/talon/tmp/2123456789abcdef.locks","bytes":33},{"item":"$HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash","bytes":15},{"item":"$HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp","bytes":7}],"freed":1272},"error":null}
+      +{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["git-dd03c09e","nightly-2026-05-01-6666666","nightly-2026-08-01-aaaaaaa","nightly-2026-08-12-5555555","nightly-2026-09-01-9999999"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666","$HOME/.cache/roc/compat-aaaaaaa","$HOME/.cache/roc/compat-5555555"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","$HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp","$HOME/.cache/roc/talon/tmp/0123456789abcdef","$HOME/.cache/roc/talon/tmp/2123456789abcdef.locks","$HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash","$HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp"],"projects":["$PROJECT/pgone/main.roc","$PROJECT/pold/main.roc","$PROJECT/pplain/main.roc"]},"error":null}
+       exit 0
+       == cache gc
+       removed toolchain git-dd03c09e (89 B)
+FAIL gc/gc2-busy
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,7 +2,7 @@
+       another tln cache gc runs
+       exit 0
+       == cache gc --json
+      -{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":false,"toolchains":[],"skipped":[],"compat":[],"stale":[],"builds":[],"packages":[],"projects":[],"sizes":[],"freed":0},"error":null}
+      +{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":false,"toolchains":[],"skipped":[],"compat":[],"stale":[],"projects":[]},"error":null}
+       exit 0
+       == cache gc --dry-run
+       would remove toolchain nightly-2026-08-01-aaaaaaa (269 B)
+FAIL gc/gc3-caches
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -14,7 +14,7 @@
+       dry run: nothing was removed
+       exit 0
+       == env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc --dry-run --json
+      -{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["nightly-2026-08-01-aaaaaaa"],"skipped":[],"compat":["$HOME/.cache/roc-builds/compat-aaaaaaa"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp"],"builds":["$HOME/.cache/roc-builds/compat-bbbbbbb","$HOME/.cache/roc-builds/compat-over","$HOME/.cache/roc-builds/debug-9999999","$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234"],"packages":["$HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","$HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK","$HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"],"projects":["$PROJECT/pold/main.roc"],"sizes":[{"item":"nightly-2026-08-01-aaaaaaa","bytes":269},{"item":"$HOME/.cache/roc-builds/compat-aaaaaaa","bytes":34},{"item":"$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","bytes":8},{"item":"$HOME/.cache/roc-builds/compat-bbbbbbb","bytes":35},{"item":"$HOME/.cache/roc-builds/compat-over","bytes":29},{"item":"$HOME/.cache/roc-builds/debug-9999999","bytes":25},{"item":"$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234","bytes":45},{"item":"$HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","bytes":17},{"item":"$HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK","bytes":17},{"item":"$HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc","bytes":27}],"freed":506},"error":null}
+      +{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["nightly-2026-08-01-aaaaaaa"],"skipped":[],"compat":["$HOME/.cache/roc-builds/compat-aaaaaaa"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp"],"projects":["$PROJECT/pold/main.roc"]},"error":null}
+       exit 0
+       == env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc
+       removed toolchain nightly-2026-08-01-aaaaaaa (269 B)
+commands: 64 passed, 3 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+FAIL cache/gc1-real
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -116,7 +116,7 @@
+       {"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pb/main.roc","last_use":1792281600}]}
+       == 4: the install is done: the next run removes 6666666 and its compat dir. --json: the text goes to stderr.
+       == tln cache gc --json
+      -{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":["nightly-2026-05-01-6666666"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666"],"stale":[],"builds":[],"packages":[],"projects":[],"sizes":[{"item":"nightly-2026-05-01-6666666","bytes":269},{"item":"$HOME/.cache/roc/compat-6666666","bytes":11}],"freed":280},"error":null}
+      +{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":["nightly-2026-05-01-6666666"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666"],"stale":[],"projects":[]},"error":null}
+       exit 0
+       link-dev
+       nightly-2026-09-06-3333333.1123456789abcdef.trash
+      @@ -200,7 +200,7 @@
+       roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+       == 8b: the real run removes the same, and the sidecar of P4. compat-mixed stays whole: one file is young, so no file in it is removed (R-GC1). P1 and P3 are old, but pa uses P1 and P1 names P3. P5 and P6 are young. other-old is no build-cache dir.
+       == env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache gc --json
+      -{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":[],"skipped":[],"compat":[],"stale":[],"builds":["$HOME/.cache/roc-builds/compat-old","$HOME/.cache/roc-builds/debug-9999999","$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234"],"packages":["$HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"],"projects":[],"sizes":[{"item":"$HOME/.cache/roc-builds/compat-old","bytes":10},{"item":"$HOME/.cache/roc-builds/debug-9999999","bytes":10},{"item":"$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234","bytes":12},{"item":"$HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc","bytes":17}],"freed":49},"error":null}
+      +{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":[],"skipped":[],"compat":[],"stale":[],"projects":[]},"error":null}
+       exit 0
+       roc-builds/compat-mixed/deep/new.bin
+       roc-builds/compat-mixed/old.bin
+scenarios: 50 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.5      10
+fmt        pass   0.1      5
+l0         FAIL   5.1      10
+l2         FAIL   1.9      30
+l3         FAIL   9.4      60
+selftest   pass   7.0      20
+
+real	0m25.274s
+user	1m46.737s
+sys	0m39.047s

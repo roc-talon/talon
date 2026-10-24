@@ -1,0 +1,13 @@
+
+step       result seconds  budget
+check      pass   10.0     10
+fmt        pass   0.1      5
+l0         pass   7.1      10
+l2         pass   6.7      30
+l3         pass   9.4      60
+selftest   pass   3.7      20
+WARN check: 10.0 s is over the budget of 10 s (TW20)
+
+real	0m37.157s
+user	2m40.009s
+sys	1m10.381s

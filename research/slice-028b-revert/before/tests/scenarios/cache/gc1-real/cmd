@@ -1,0 +1,64 @@
+# R-GC5 R-GC6 R-GC3 R-GC9 R-GC11 R-CC2 R-CC10 R-EV22 R-PD12 R-PD13 R-CM15 R-J3 R-OUT2 (slice 028): `tln cache gc` on the real binary, with the real Fx (list, read, lock, rename, delete, write).
+# The store: 7 nightlies, a link, 7 compat dirs, a package, 3 project files. config.toml has `gc-age = "7d"`. TALON_NOW is 2026-10-22T12:00:00Z. No network (the command needs none).
+# The stale items are made here: `touch -d` gives the age of the real clock (2000: older than 1 day). A new item has the real time, so it is younger than 1 day.
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+R=$XDG_CACHE_HOME/roc
+T=$R/toolchains
+old='2000-01-01 00:00:00'
+left() { (cd $R && find talon toolchains packages \( -name '*.tmp' -o -name '*.trash' -o -name '*.locks' -o -name '*.lock' -o -path 'talon/tmp/*' \) | sort); }
+kept() { (cd $R && ls toolchains && ls | grep compat); }
+mkdir -p $R/talon/tmp
+touch $R/compat-other/cache.bin $R/compat-other/deep/entry.bin
+printf '{"format":1,"projects":[{"path":"%s/pa/main.roc","last_use":1792540800},{"path":"%s/pb/main.roc","last_use":1792281600},{"path":"%s/pold/main.roc","last_use":1785542400},{"path":"%s/pgone/main.roc","last_use":1792454400}]}\n' "$PWD" "$PWD" "$PWD" "$PWD" > $R/talon/projects.json
+sed -i "s#ROC_SRC#$PWD/roc-src/roc#" $T/link-dev/.talon.json
+mkdir $T/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $T/nightly-2026-09-05-4444444.0123456789abcdef.trash $T/nightly-2026-09-06-3333333.1123456789abcdef.trash
+echo partial > $T/nightly-2026-09-05-4444444.0123456789abcdef.trash/roc
+touch -d "$old" $T/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $T/nightly-2026-09-05-4444444.0123456789abcdef.trash
+mkdir $R/talon/tmp/0123456789abcdef $R/talon/tmp/1123456789abcdef
+echo copy > $R/talon/tmp/0123456789abcdef/main.roc
+touch -d "$old" $R/talon/tmp/0123456789abcdef
+echo registry > $R/talon/tmp/2123456789abcdef.locks
+echo registry > $R/talon/tmp/3123456789abcdef.locks
+touch -d "$old" $R/talon/tmp/2123456789abcdef.locks
+echo partial > $R/packages/h1.0123456789abcdef.tmp
+echo partial > $R/talon/projects.json.fedcba9876543210.tmp
+touch -d "$old" $R/packages/h1.0123456789abcdef.tmp $R/talon/projects.json.fedcba9876543210.tmp
+
+echo "== 1: a dry run (R-GC11). It lists what a run would remove and removes nothing. The age is 7 days (R-GC9, D17): bbbbbbb is pinned by pa and used 10 days ago, so it stays (a pin keeps at any age). ddddddd has no pin and was used 10 days ago, so it goes. eeeeeee has no pin and was used 3 days ago, so it stays."
+st tln cache gc --dry-run
+left
+kept
+
+echo "== 2: another GC holds the lock (R-CC10): the line, exit 0, nothing removed, the lock dir of the other GC stays"
+mkdir $R/talon/gc.lock; echo other > $R/talon/gc.lock/owner; touch $R/talon/gc.lock/beat
+st tln cache gc
+test -d $R/talon/gc.lock && echo "gc.lock is kept"
+left
+kept
+rm -r $R/talon/gc.lock
+
+echo "== 3: an install holds the lock of 6666666 (R-CC10): it is skipped and its compat dir stays. All else that is old goes. The young items stay (R-CC2)."
+mkdir $T/nightly-2026-05-01-6666666.lock; echo other > $T/nightly-2026-05-01-6666666.lock/owner; touch $T/nightly-2026-05-01-6666666.lock/beat
+st tln cache gc
+left
+kept
+cat $R/talon/projects.json
+
+echo "== 4: the install is done: the next run removes 6666666 and its compat dir. --json: the text goes to stderr."
+rm -r $T/nightly-2026-05-01-6666666.lock
+st tln cache gc --json
+kept
+
+echo "== 5: nothing is left to remove"
+st tln cache gc
+left
+
+echo "== 6: TALON_NOW is the time for the toolchains and the projects, the real clock is the time for the temps (R-EV22). 7 months later by TALON_NOW, pa and pb are too old, so they pin nothing, and bbbbbbb, ccccccc and eeeeeee are old. The young temps are not stale."
+st env TALON_NOW=2027-06-01T00:00:00Z tln cache gc --dry-run
+
+echo "== 7: R-CM15, no operand. R-GC1, R-GC8: the build cache compat-other (its files are touched now) and an app file stay whole. The package stays (part 1 removes no package). No lock dir is left."
+st tln cache gc nightly-2026-08-01-aaaaaaa
+ls $R/packages
+find $R/compat-other $HOME/.local/bin -type f | sort
+find $R -name '*.lock' | wc -l | tr -d ' '

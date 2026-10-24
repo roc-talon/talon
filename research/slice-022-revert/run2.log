@@ -1,0 +1,8 @@
+P6b: CAUGHT by l0:pin (R-NS1: a release of the same day is older (the other order))
+P10: CAUGHT by l0:pin (R-NS1: AtLeast ignores the times)
+P11: CAUGHT by l0:pin (R-SO19: held_from is always Path)
+R3: CAUGHT by l2:roc/so1-ranks resolve/rs-no-compiler (R-NS1: no .talon.json read)
+J1: DID NOT COMPILE (R-PD2: the walk stops at the first dir) 
+J2: DID NOT COMPILE (G4: the walk starts at the first dir) 
+T2: CAUGHT by l0:toolchain (R-NS2: the failure does not name the switch)
+SAME as code-final

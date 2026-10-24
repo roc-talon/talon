@@ -13,7 +13,7 @@ exit 2
 check: skipped
 $PROJECT/w3/apps/a/main.roc
   ~ json: acme/json 2.0.0 -> 2.1.0
-verified: the tuple passes. Nothing was written.
+verified: the tuple passes. No project file was written.
 exit 0
 == update --no-check --file w4/apps/a/main.roc
 exit 10

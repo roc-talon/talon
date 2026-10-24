@@ -1,0 +1,10 @@
+tln: error[usage]: link-dev exists. Run: tln roc remove link-dev
+tln: error[usage]: copy-fix-1 exists. Use --force to replace it.
+copied $PROJECT/roc-src/other/roc to copy-fix-1
+tln: error[usage]: flag '--force' is not for 'roc link' without --copy
+tln: error[usage]: tln roc link needs a name and a path: tln roc link <name> <path>
+tln: error[usage]: tln roc link takes a name and a path, got 3 operands
+tln: error[usage]: bad/name is not a valid compiler name: use one word with no space, no / and no \
+tln: error[usage]: no such file: roc-src/missing
+tln: error[environment]: cannot copy $PROJECT/roc-src: Other("is a directory")
+waiting for another tln: link-dev6

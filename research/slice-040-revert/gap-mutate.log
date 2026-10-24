@@ -1,0 +1,27 @@
+== M11 (no dedupe of the fixed hosts)
+FAIL outdated/od2-edges
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -26,6 +26,7 @@
+         package  current  wanted  latest  nightly range
+         jx       1.1.0    1.2.0   1.2.0   none known
+         fixed: example.org has no index without a registry
+      +  fixed: example.org has no index without a registry
+       exit 0
+       == outdated --file ws3/apps/b/main.roc
+       $PROJECT/ws3/apps/b/main.roc
+commands: 1 passed, 1 failed
+== M15 (alias and current of the first use of any member)
+FAIL outdated/od2-edges
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -30,5 +30,5 @@
+       == outdated --file ws3/apps/b/main.roc
+       $PROJECT/ws3/apps/b/main.roc
+         package  current  wanted  latest  nightly range
+      -  k        1.0.0    1.2.0   1.2.0   none known
+      +  jx       1.1.0    1.2.0   1.2.0   none known
+       exit 0
+commands: 1 passed, 1 failed

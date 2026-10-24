@@ -1,0 +1,29 @@
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.bashrc
+read_files $HOME/.local/share/bash-completion/completions/tln
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.bashrc
+read_files $HOME/.local/share/bash-completion/completions/tln
+tty
+ask "$HOME/.local/bin/roc is a roc that Talon did not write. Move it to $HOME/.local/bin/roc.old and install the roc launcher? [y/N] "
+ask "Add $HOME/.local/bin to PATH in $HOME/.bashrc? [Y/n] "
+make_dirs $HOME/.local/bin
+random
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+write_atomic $HOME/.bashrc
+write_atomic $HOME/.local/share/bash-completion/completions/tln

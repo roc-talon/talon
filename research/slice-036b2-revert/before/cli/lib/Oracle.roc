@@ -1,0 +1,346 @@
+import Closure
+import Db
+import Fail
+import Ident
+import Pick
+import Release
+import Text
+import resolve.Solver
+
+## The pure step of the oracle loop (slice 036 and 036b, Resolution 5 steps 3 and 5, R-AL3, R-AL4, R-SP24, R-PH10, R-PH13, R-EP8, R-EP9, R-LF2; TESTING.md 2.2 part B for the command). It is `Pick.step` over the solver step of the package `resolve` (`Solver.step_moves`),
+## and it knows the probe facts of one compiler. `PickLoop.run!` calls `Oracle.step_probed` in place of `Pick.step`. Pure: the same input gives the same output (R-DT2).
+##
+## The input is the one of `Pick.step` (its doc has the fields). The output is `Need` (the ids of the nodes that have no fact: a release URL or the file of a path node), `Pairs` (the pairs of a release and a compiler that the command must probe, or look up in the db with `Off`),
+## `Done` (one `Pick.Chosen` for each slot, in the order of the slots) or `Fail` (kind `NoTuple`).
+##
+## | Part | What the step does | Rule |
+## | --- | --- | --- |
+## | Slots | A slot is a solver slot with the name `s<index>` (the alias `id` of a slot is no key: one alias can name 2 groups in 2 members, R-WS8). Its group is the group of the releases (`Ident.group` of the header value, else of the first candidate). A `Free` slot, and a `Movable` slot with `second`, has its candidates and ranges. A `Held` slot, and a `Movable` slot with no `second`, has no candidate and no range: its one value is `current` (R-SP1, R-C9). `current` is `Err(None)` for a want (and for a value that is no release URL). | R-SP1, R-C1, R-C9 |
+## | Facts | A fact is a `Solver.Fact` of a release URL: its kind, its platform, and its deps as (group, version) (a dep that is no release URL is dropped, R-H4). | R-C2, R-C3, R-C4, R-AL8 |
+## | Rules | `now`, `min_age`, `snapshot` and `strategy` are the rules of the request (R-C7, R-DT4, R-VA6). | R-C7 |
+## | Compiler | With `compat.compiler` the request has a compiler slot (the last one) with the one value of D, the checks of the db rows of that compiler (target `any`, `used` is empty: the scan is slice 036b2), and `compat.probes`. The value that a header has now is a pass unless a real row says other (D2). Without a compiler the request has no compiler slot and `probes` is `Off`: the answer of the step of slice 036. | R-EP7, R-EP8, R-SO22 |
+## | Same group | Two slots of one group have one value (R-WS2, R-WS3): for each pair of slots with one group, a conflict of the caller says that the value of the second is the value of the first. | R-WS2, R-WS3 |
+## | Conflicts | A conflict of `compat.conflicts` is a list of (place of a slot, release URL): the releases cannot all be chosen. The command gives the tuples that the ladder dropped (R-AL5, R-AL6). | R-AL5 |
+## | Search | `second: false`: `Solver.step`. `second: true`: `Solver.step_moves` with the names of the `Movable` slots: they are first in the search, in the order of the slots, and try `current` first, then the nearest values (R-SP24). `Done`, `Need` and `Fail` are in the order of the slots. | R-SP24, R-PH10 |
+## | `Pairs` | `Allowed`: the pairs of the best tuple that have no real check, in the order of the slots, before the closure walk of that tuple (R-AL4, R-EP8). The header of a pair release that is not in `facts` is a `Need` first: the package is fetched before its probe (slice 036b F1). `Off` (`--no-probe`): after the closure walk, the chosen releases that change, have no row and are not in `compat.looked`: the command looks them up, it does not probe (R-LF2). A pair with no fact is fit (R-EP9). | R-AL4, R-EP8, R-EP9, R-LF2 |
+## | `Need` | The header facts that the best tuple lacks (`Solver.Need`, the releases of the slots), in the order of the slots, no repeat. After `Done` the closure of the tuple (below) can ask for more nodes, and then the step gives `Need` of those. | R-AL8, R-AL9 |
+## | Closure | After `Done` of the solver, the step walks the closure of the tuple as `Pick.step` does (R-AL9: `Closure.step` for each member, the rules 1 to 4 of the table of `Pick.step`). A problem of the closure is a conflict of the caller: the releases of that tuple cannot all be chosen. The step asks the solver again, so the next tuple is the best one that has no problem. A tuple with nodes that have no fact gives `Need` of those nodes (an unknown node is taken as fit). | R-AL9, 034 Q3 |
+## | `Fail` | The solver found no tuple. A proof with a unit fail (a hard fail, a hang, a crash of a release on the compiler) has the text `no tuple works: the unit check on <compiler> fails for <blame>; <blame>` (the text of `Units.judge`, R-PH13). Else the text of `Pick.step`: a slot with no value gives the first message of its table, else `no tuple works: the releases of <id>, <id> do not fit together (R-C2, R-C3)`. | R-PH10, R-PH13 |
+##
+## Equal to `Pick.step`: the rows of `tests/unit/pick.roc`, `pickclosure.roc` and `pickmoves.roc` run on `Oracle.step` and give the values that they gave before: the result, the failure texts and the `Need` lists.
+Oracle :: [].{
+
+	## The input of `step` (the one of `Pick.step`).
+	Input : {
+		slots : List(Pick.Slot),
+		strategy : [Highest, Lowest],
+		now : U64,
+		min_age : U64,
+		snapshot : Try(U64, [None]),
+		facts : List({ url : Str, release : Release }),
+		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
+		paths : List(Closure.Node),
+		second : Bool,
+	}
+
+	## Slice 036b (R-AL4, R-EP8, R-EP9, R-LF2): what the step knows about probes. `compiler` is the one compiler of D (the held compiler), `Err(None)` for no probe and no lookup (`--no-check`, `verify`). `checks` are the rows of the db that the command has, `looked` are the keys that it looked up,
+	## `probes` is `Off` for `--no-probe`, and `conflicts` are the tuples that the ladder dropped (a list of (place of a slot, release URL) for each).
+	Compat : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), probes : [Allowed, Off], conflicts : List(List({ at : U64, id : Str })) }
+
+	## A pair that the step wants facts for: a release URL on a compiler. `is_platform` marks the platform (R-LD3: it has a text of its own).
+	Pair : { id : Str, nightly : Str, is_platform : Bool }
+
+	## What `step_probed` gives.
+	Verdict : [Need(List(Str)), Pairs(List(Oracle.Pair)), Done(List(Pick.Chosen)), Fail(Fail)]
+
+	## The step of slice 036: `step_probed` with no compiler.
+	step : Oracle.Input -> [Need(List(Str)), Done(List(Pick.Chosen)), Fail(Fail)]
+	step = |input| match Oracle.step_probed(input, { compiler: Err(None), checks: [], looked: [], probes: Off, conflicts: [] }) {
+		Need(ids) => Need(ids)
+		Done(chosen) => Done(chosen)
+		Fail(fail) => Fail(fail)
+		Pairs(_) => Fail(Fail.new(Internal, "the step asked for a probe, and it has no compiler"))
+	}
+
+	## The step with the probe facts (the table above).
+	step_probed : Oracle.Input, Oracle.Compat -> Oracle.Verdict
+	step_probed = |input, compat| match Pick.empty_domain(input) {
+		Ok(fail) => Fail(fail)
+		Err(NoFailure) => search(input, compat, request_of(input, compat), movable_of(input), [])
+	}
+}
+
+Step : {
+	slots : List(Pick.Slot),
+	strategy : [Highest, Lowest],
+	now : U64,
+	min_age : U64,
+	snapshot : Try(U64, [None]),
+	facts : List({ url : Str, release : Release }),
+	unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
+	paths : List(Closure.Node),
+	second : Bool,
+}
+
+# D6: the solver names a slot by its place.
+slot_name : U64 -> Str
+slot_name = |i| "s${i.to_str()}"
+
+# R-SP24: only the second search moves the `Movable` slots.
+movable_of : Step -> List(Str)
+movable_of = |input| if input.second input.slots.map_with_index(|slot, i| (slot, i)).keep_if(|(slot, _)| slot.hold == Movable).map(|(_, i)| slot_name(i)) else []
+
+group_key : { form : Str, series : Str } -> Str
+group_key = |g| "${g.form} ${g.series}"
+
+# The group of the header value, else of the first candidate in the byte order of the URLs (R-DT2).
+slot_group : Pick.Slot -> Str
+slot_group = |slot| {
+	of_first = match slot.candidates.sort_with(|a, b| Text.compare(a.url, b.url)).first() {
+		Ok(c) => group_key(c.ident.group)
+		Err(_) => ""
+	}
+	match slot.current {
+		Ok(url) => Ident.of_url(url).map_ok(|ident| group_key(ident.group)) ?? of_first
+		Err(None) => of_first
+	}
+}
+
+# R-SP1, R-C9: a closed slot has the one value `current`, with no candidate and no range.
+solver_slot : Pick.Slot, U64, Bool -> Solver.Slot
+solver_slot = |slot, i, second| {
+	open = slot.hold == Free or (slot.hold == Movable and second)
+	{
+		name: slot_name(i),
+		group: slot_group(slot),
+		kind: if slot.is_platform Platform else Package,
+		candidates: if open slot.candidates.map(|c| { id: c.url, version: c.ident.version, published_at: c.published_at, yanked: Bool.False }) else [],
+		ranges: if open slot.ranges else [],
+		current: match slot.current {
+			Ok(url) => Ident.of_url(url).map_ok(|ident| { id: url, version: ident.version }).map_err(|_| None)
+			Err(None) => Err(None)
+		},
+		named: if open slot.named else Err(None),
+	}
+}
+
+# R-H4: a dep that is no release URL is dropped.
+solver_fact : { url : Str, release : Release } -> Solver.Fact
+solver_fact = |f| { id: f.url, kind: f.release.kind, pf: f.release.pf, deps: f.release.deps.keep_oks(|dep| Ident.of_url(dep).map_ok(|ident| { group: group_key(ident.group), version: ident.version })) }
+
+# The values of a solver slot with the group of each (the candidates and `current`).
+releases : Solver.Slot -> List((Str, Str))
+releases = |slot| {
+	listed = slot.candidates.map(|c| c.id)
+	ids = match slot.current {
+		Ok(c) => if listed.contains(c.id) listed else listed.append(c.id)
+		Err(_) => listed
+	}
+	ids.keep_oks(|id| Ident.of_url(id).map_ok(|ident| (id, group_key(ident.group))))
+}
+
+# D7, R-WS2: 2 slots have one value for a group. For each release of the first slot, the releases of the second slot in that group (other than it) cannot go with it.
+same_group : List(Solver.Slot) -> List(List(Solver.Term))
+same_group = |slots| {
+	rows = slots.map(|slot| (slot.name, releases(slot)))
+	rows.map_with_index(|(name, mine), i| (name, mine, rows.drop_first(i + 1))).join_map(
+		|(name, mine, later)| later.join_map(
+			|(other, theirs)| mine.join_map(
+				|(a, g)| {
+					clash = theirs.keep_if(|(b, h)| h == g and b != a).map(|(b, _)| b)
+					if clash.is_empty() [] else [[{ name, ids: [a], sign: In }, { name: other, ids: clash, sign: In }]]
+				},
+			),
+		),
+	)
+}
+
+# R-AL3, R-EP7: the request. The compiler slot is the last one, so the decision order of the other slots does not change.
+request_of : Step, Oracle.Compat -> Solver.Request
+request_of = |input, compat| {
+	slots = input.slots.map_with_index(|slot, i| solver_slot(slot, i, input.second))
+	base = {
+		slots,
+		rules: { now: input.now, min_age: input.min_age, snapshot: input.snapshot, strategy: input.strategy },
+		facts: input.facts.map(solver_fact),
+		conflicts: same_group(slots).concat(given(compat.conflicts)),
+		compat: { domain: [], checks: [], used: [], probes: Off },
+	}
+	match compat.compiler {
+		Ok(nightly) => { ..base, slots: slots.append(roc_slot(nightly)), compat: { domain: [nightly], checks: checks_of(input, compat, nightly), used: [], probes: compat.probes } }
+		Err(None) => base
+	}
+}
+
+roc_name : Str
+roc_name = "roc"
+
+# The compiler variable: one value, the compiler of D (the solver reads the `id` of a candidate only).
+roc_slot : Str -> Solver.Slot
+roc_slot = |nightly| { name: roc_name, group: roc_name, kind: Compiler, candidates: [{ id: nightly, version: nightly, published_at: 0, yanked: Bool.False }], ranges: [], current: Err(None), named: Err(None) }
+
+# R-AL5: a tuple that the ladder dropped is a conflict of the caller. A place that is no slot never applies.
+given : List(List({ at : U64, id : Str })) -> List(List(Solver.Term))
+given = |conflicts| conflicts.map(|terms| terms.map(|t| { name: slot_name(t.at), ids: [t.id], sign: In }))
+
+hash_of : Str -> Str
+hash_of = |url| match Ident.of_url(url) {
+	Ok(ident) => ident.hash
+	Err(_) => ""
+}
+
+# The row of a release on a compiler for the target `any` (a check: R-P4).
+row_of : List(Db.Fact), Str, Str -> Try(Db.Fact, [None])
+row_of = |rows, nightly, url| {
+	hash = hash_of(url)
+	rows.find_first(|f| f.hash == hash and f.nightly == nightly and f.target == "any").map_err(|_| None)
+}
+
+current_of : Pick.Slot -> List(Str)
+current_of = |slot| match slot.current {
+	Ok(url) => [url]
+	Err(None) => []
+}
+
+is_current : Pick.Slot, Str -> Bool
+is_current = |slot, url| match slot.current {
+	Ok(cur) => cur == url
+	Err(None) => Bool.False
+}
+
+# R-EP7, R-EP8, D2: the real checks of the rows, and a pass for the value that a header has now when no real row says other. A fail with modules touches nothing yet (the used modules are empty, slice 036b2).
+checks_of : Step, Oracle.Compat, Str -> List(Solver.Check)
+checks_of = |input, compat, nightly| {
+	urls = input.slots.join_map(|slot| slot.candidates.map(|c| c.url).concat(current_of(slot)))
+	real = urls.keep_oks(|url| row_of(compat.checks, nightly, url).map_ok(|f| { id: url, nightly, outcome: f.outcome, modules: f.modules, source: Real }))
+	assumed = input.slots.join_map(current_of).keep_if(|url| !real.any(|c| c.id == url)).map(|url| { id: url, nightly, outcome: Pass, modules: [], source: Real })
+	real.concat(assumed)
+}
+
+# D3: a release with no fact has an empty fact of the kind of its slot, so the tuple is the optimistic one and the closure walk can ask for the nodes below it.
+optimistic : Solver.Request, Solver.Ask -> Try(Solver.Fact, [NoHeader])
+optimistic = |req, ask| match ask {
+	Header(id) => {
+		holds = |slot| slot.candidates.any(|c| c.id == id) or (
+			match slot.current {
+				Ok(c) => c.id == id
+				Err(_) => Bool.False
+			}
+		)
+		kind = match req.slots.find_first(holds) {
+			Ok(slot) => if slot.kind == Platform Platform else Package
+			Err(_) => Package
+		}
+		Ok({ id, kind, pf: Err(None), deps: [] })
+	}
+	Probe(_) => Err(NoHeader)
+}
+
+is_header : Solver.Ask -> Bool
+is_header = |ask| match ask {
+	Header(_) => Bool.True
+	Probe(_) => Bool.False
+}
+
+platform_of : Step, Str -> Bool
+platform_of = |input, id| input.slots.any(|slot| slot.is_platform and (slot.candidates.any(|c| c.url == id) or is_current(slot, id)))
+
+# R-AL4: the pairs that the solver asks for, in its order.
+pairs_of : Step, List(Solver.Ask) -> List(Oracle.Pair)
+pairs_of = |input, asks| asks.keep_oks(
+	|ask| match ask {
+		Probe(p) => Ok({ id: p.id, nightly: p.nightly, is_platform: platform_of(input, p.id) })
+		Header(_) => Err(NoPair)
+	},
+)
+
+# R-AL9, R-EP8: a problem of the closure is a conflict of the whole tuple (034 Q3), and the solver gives the next tuple. `tried` are those conflicts. The facts of the releases that the solver asked for stay in `req`: they are optimistic (D3).
+search : Step, Oracle.Compat, Solver.Request, List(Str), List(List(Solver.Term)) -> Oracle.Verdict
+search = |input, compat, req, movable, tried| match Solver.step_moves({ ..req, conflicts: req.conflicts.concat(tried) }, movable) {
+	Fail(why) => Fail(failure(input, compat, why))
+	Need(asks) => if asks.any(is_header) {
+		search(input, compat, { ..req, facts: req.facts.concat(asks.keep_oks(|ask| optimistic(req, ask))) }, movable, tried)
+	} else {
+		fetch_first(input, pairs_of(input, asks))
+	}
+	Done(chosen) => walked(input, compat, { req, movable, tried }, chosen.keep_if(|c| c.name != roc_name))
+}
+
+# R-AL8, R-AL4: the release of a pair needs its package in the cache before its probe runs (a unit probe runs in the package dir), and the header of the package is a fact of the pick. So the header of each pair release that the command has not read is a `Need`. Then the pairs.
+fetch_first : Step, List(Oracle.Pair) -> Oracle.Verdict
+fetch_first = |input, pairs| match pairs.keep_if(|pair| !input.facts.any(|f| f.url == pair.id)).map(|pair| pair.id) {
+	[] => Pairs(pairs)
+	ids => Need(ids)
+}
+
+# The closure walk of a tuple (R-AL9), then the lookups of `Off` (R-LF2).
+walked : Step, Oracle.Compat, { req : Solver.Request, movable : List(Str), tried : List(List(Solver.Term)) }, List(Solver.Chosen) -> Oracle.Verdict
+walked = |input, compat, run, chosen| {
+	verdict = Pick.closure_verdict({
+		members: if input.unmanaged.is_empty() [{ file: "", entries: [] }] else input.unmanaged,
+		nodes: input.facts.map(|f| Pick.node_of(f)).concat(input.paths),
+		picked: input.slots.map2(chosen, |slot, c| { files: slot.files, is_platform: slot.is_platform, url: c.id }),
+	})
+	match verdict {
+		Problem => search(input, compat, run.req, run.movable, run.tried.append(chosen.map(|c| { name: c.name, ids: [c.id], sign: In })))
+		Fine([]) => match lookups(input, compat, chosen) {
+			[] => Done(input.slots.map2(chosen, |slot, c| chosen_of(input, slot, c)))
+			pairs => Pairs(pairs)
+		}
+		Fine(ids) => Need(ids)
+	}
+}
+
+# R-LF2, R-EP9: with `Off` the step cannot ask for a probe. A chosen release that changes, has no row and was not looked up is a pair for the command to look up in the db. No compiler, no lookup (R-SO22).
+lookups : Step, Oracle.Compat, List(Solver.Chosen) -> List(Oracle.Pair)
+lookups = |input, compat, chosen| match (compat.compiler, compat.probes) {
+	(Ok(nightly), Off) => {
+		wanted = input.slots.map2(chosen, |slot, c| (slot, c.id)).keep_if(
+			|(slot, url)| !is_current(slot, url) and row_of(compat.checks, nightly, url).is_err() and !compat.looked.any(|k| k.hash == hash_of(url) and k.nightly == nightly and k.target == "any"),
+		)
+		wanted
+			.fold([], |found, (_, url)| if found.contains(url) found else found.append(url))
+			.map(|url| { id: url, nightly, is_platform: platform_of(input, url) })
+	}
+	_ => []
+}
+
+# R-PH13: the text of a failure. A unit fail in the proof is the blame of `Units.judge` (the same text, so a run with one tuple gives the text of slice 031). Else the text of `Pick.step`.
+failure : Step, Oracle.Compat, Solver.Why -> Fail
+failure = |input, compat, why| {
+	nightly = compat.compiler ?? ""
+	blames = why.steps
+		.keep_oks(
+			|step| match step.cause {
+				Probe(p) => Ok(blame_text(input, compat, p.id, p.kind, p.modules))
+				_ => Err(NoProbe)
+			},
+		)
+		.fold([], |found, text| if found.contains(text) found else found.append(text))
+	if blames.is_empty() {
+		Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(input.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)")
+	} else {
+		Fail.new(NoTuple, "no tuple works: the unit check on ${nightly} fails for ${Str.join_with(blames, "; ")}")
+	}
+}
+
+# R-LD3, R-EP7: `<name> <version> (<what>)`, or `the platform <name> <version> (<what>)`. A fault is `hangs` or `crashes` (the db row says which), a fail with no module is `no module is named`.
+blame_text : Step, Oracle.Compat, Str, [Fail, Fault], List(Str) -> Str
+blame_text = |input, compat, id, kind, modules| {
+	name = match Ident.of_url(id) {
+		Ok(ident) => "${ident.name ?? id} ${ident.version}"
+		Err(_) => id
+	}
+	label = if platform_of(input, id) "the platform ${name}" else name
+	what = match kind {
+		Fault => match row_of(compat.checks, compat.compiler ?? "", id) {
+			Ok(f) => if f.outcome == Hang "hangs" else "crashes"
+			Err(_) => "crashes"
+		}
+		Fail => if modules.is_empty() "no module is named" else Str.join_with(modules, ", ")
+	}
+	"${label} (${what})"
+}
+
+chosen_of : Step, Pick.Slot, Solver.Chosen -> Pick.Chosen
+chosen_of = |input, slot, c| Pick.chosen_for({ slot, url: c.id, version: c.version, published_at: slot.candidates.find_first(|x| x.url == c.id).map_ok(|x| x.published_at) ?? 0, now: input.now, min_age: input.min_age })

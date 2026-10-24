@@ -1,4 +1,5 @@
 import Args
+import Common
 import Compiler
 import Consent
 import Fail
@@ -25,8 +26,8 @@ import Roots
 ## | 2 to 4 | `Install.begin!`: `env_all!`, `clock!`, the project | R-EV1, R-EV13, R-EV22, R-PD1 to R-PD8 |
 ## | 5 | No R-WS12 check: `update` works for all members of a workspace (R-SP2). `Install.check_member(false, project)`. | R-WS12 |
 ## | 6 | `canonical!` and `Known.record!` (as `install`). A run that stops in step 7 has recorded the project. | R-PD9 |
-## | 7 | Only with `-i` (R-SP4, R-NI2, R-NM7): `Mode.from_env({ env, json })`. `Consent.picker(mode)`: `Stop(fail)` is the failure (exit 2): no other `Fx` call is made after step 6 (no `programs!`, no `roc version`). `NeedTty`: `tty!`, `Mode.with_tty`, then again. `Run`: `Resolve.picks!` (one `read_files!` call), then the ask loop below. | R-SP4, R-SP14, R-NI2, R-NM7 |
-## | 8 | Not `--frozen` (it is always false: R-FL13): `Install.on_path!` (the compiler, as `install`) | R-SO7, R-PH8 |
+## | 7 | Only with `-i` (R-SP4, R-NI2, R-NM7): `Mode.from_env({ env, json })`. `Consent.picker(mode)`: `Stop(fail)` is the failure (exit 2): no other `Fx` call is made after step 6 (no `path_roc!`, no `roc version`). `NeedTty`: `tty!`, `Mode.with_tty`, then again. `Run`: `Resolve.picks!` (one `read_files!` call), then the ask loop below. | R-SP4, R-SP14, R-NI2, R-NM7 |
+## | 8 | Not `--frozen` (it is always false: R-FL13): `Install.on_path!` (the compiler, as `install`) | R-SO7, R-SO9, R-PH8 |
 ## | 9 | `Resolve.install!` with a `Resolve.Request` (the fields of `Install.run!`: `command` is `Update`, `names` are the operands, or the aliases that the picker gave, `add.no_pin` is `--no-pin`, `add.as_platform` is false, `add.as_alias` is `Err(Unset)`, `prompt.rename_keys` is `Err(NoFlag)`) | R-CM4, R-SP2, R-SP3, R-SP5 |
 ## | 10 | The output (below) | R-DT5, R-LF4, R-J1 to R-J6, R-FL4 |
 ##
@@ -64,34 +65,65 @@ Update :: [].{
 
 	run! : Fx, Args => I32
 	run! = |fx, args| match Update.read(args) {
-		Err(fail) => Install.failed!(fx, args, fail)
+		Err(fail) => Common.failed!(fx, args, fail)
 		Ok({ opts, pick }) => {
-			shown = Install.shown_fx(fx, args)
+			shown = Common.shown_fx(fx, args)
 			match flow!(shown, args, opts, pick) {
 				Ok(Moved(outcome)) => {
-					print!(fx, shown, args, opts, outcome)
+					Update.print!(fx, shown, args, opts, outcome)
 					0
 				}
 				Ok(NothingPicked) => {
 					shown.out!("nothing picked\n")
 					0
 				}
-				Err(fail) => Install.failed!(fx, args, fail)
+				Err(fail) => Common.failed!(fx, args, fail)
 			}
+		}
+	}
+
+	## Steps 2 to 6 (shared with `Upgrade.run!`): `Install.begin!`, `Install.check_member(false, ...)` and `Known.record!`.
+	begin! : Fx, Args => Try(Start, Fail)
+	begin! = |fx, args| {
+		start = Install.begin!(fx, args)?
+		Install.check_member(Bool.False, start.project)?
+		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
+		Ok(start)
+	}
+
+	## Steps 8 and 9 (shared with `Upgrade.run!`): the compiler and `Resolve.install!` with `which.command` and the names.
+	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str) } => Try(Report.Outcome, Fail)
+	resolve! = |fx, args, opts, start, which| {
+		toolchain = Compiler.toolchain_of(start.env)?
+		compiler = Install.compiler!(fx, start.roots, Bool.False)
+		Resolve.install!(fx, request_of(args, opts, start, { command: which.command, names: which.names, compiler, toolchain }))
+	}
+
+	## Step 10 (shared with `Upgrade.run!`): the lines after the flow, or the envelope (as `Install.run!`).
+	print! : Fx, Fx, Args, Opts, Report.Outcome => {}
+	print! = |fx, shown, args, opts, outcome| {
+		planned = !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
+		if planned {
+			shown.out!("${Report.resolved_line({ at: outcome.at, probes: outcome.probes })}\n")
+		}
+		if opts.dry_run {
+			shown.out!("dry run: nothing was written\n")
+		}
+		if args.json {
+			fx.out!(Out.json_ok({ command: args.typed, data: Report.data(outcome) }))
 		}
 	}
 }
 
+Start : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }
+
 # Steps 2 to 9: the environment, the project, the record, the picker, the compiler, and `Resolve.install!`.
 flow! : Fx, Args, Opts, Bool => Try([Moved(Report.Outcome), NothingPicked], Fail)
 flow! = |fx, args, opts, pick| {
-	start = Install.begin!(fx, args)?
-	Install.check_member(Bool.False, start.project)?
-	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
+	start = Update.begin!(fx, args)?
 	mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
-	request = |names, compiler, toolchain| request_of(args, opts, start, names, { compiler, toolchain })
 	picked = if pick {
-		items = picker_items!(fx, mode, request(opts.names, Err(NoCompiler), Err(Unset)))?
+		items = picker_items!(fx, mode, request_of(args, opts, start, { command: Update, names: opts.names, compiler: Err(NoCompiler), toolchain: Err(Unset) }))?
 		if items.is_empty() Ok([]) else ask_names!(fx, items)
 	} else {
 		Ok(opts.names)
@@ -100,17 +132,18 @@ flow! = |fx, args, opts, pick| {
 	if pick and names.is_empty() {
 		Ok(NothingPicked)
 	} else {
-		toolchain = Compiler.toolchain_of(start.env)?
-		compiler = Install.compiler!(fx, Bool.False)
-		Ok(Moved(Resolve.install!(fx, request(names, compiler, toolchain))?))
+		Ok(Moved(Update.resolve!(fx, args, opts, start, { command: Update, names })?))
 	}
 }
 
-# Step 9: the `Resolve.Request` (R-CM4, R-SP2, R-SP3, R-SP5).
-request_of : Args, Opts, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, List(Str), { compiler : Try(Str, [NoCompiler]), toolchain : Try(Str, [Unset]) } -> Resolve.Request
-request_of = |args, opts, start, names, selected| {
-	command: Update,
-	names,
+# Step 9: the `Resolve.Request` (R-CM4, R-SP2, R-SP3, R-SP5, R-SP6).
+request_of : Args, Opts, Start, { command : [Update, Upgrade], names : List(Str), compiler : Try({ id : Str, path : Str }, [NoCompiler]), toolchain : Try(Str, [Unset]) } -> Resolve.Request
+request_of = |args, opts, start, selected| {
+	command: match selected.command {
+		Update => Update
+		Upgrade => Upgrade
+	},
+	names: selected.names,
 	frozen: Bool.False,
 	no_check: opts.no_check,
 	project: start.project,
@@ -119,13 +152,15 @@ request_of = |args, opts, start, names, selected| {
 	now: start.now,
 	offline: args.offline,
 	strategy: opts.strategy,
-	nightly: Install.nightly_of(start.env),
+	nightly: Common.nightly_of(start.env),
 	compiler: selected.compiler,
 	toolchain: selected.toolchain,
 	snapshot: opts.snapshot,
 	dry_run: opts.dry_run,
 	add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: opts.no_pin },
 	prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: opts.allow_moves },
+	downloads: { auto: Consent.auto_install(start.env), allow: opts.allow_downloads, probe: opts.probe_downloads, env: start.env },
+	probe: { no_probe: opts.no_probe, slots: opts.slots },
 }
 
 # Step 7, R-NI2, R-NM7: a picker needs a person. The tty is asked only when the mode needs it (R-HF1). Then the free packages (one `read_files!` call).
@@ -157,19 +192,4 @@ ask_again! = |fx, items| match fx.ask!(Picker.question) {
 		Err(Invalid) => ask_again!(fx, items)
 	}
 	Err(EndOfInput) => Err(Consent.no_person)
-}
-
-# Step 10: the lines after the flow, or the envelope (as `Install.run!`).
-print! : Fx, Fx, Args, Opts, Report.Outcome => {}
-print! = |fx, shown, args, opts, outcome| {
-	planned = !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
-	if planned {
-		shown.out!("${Report.resolved_line({ at: outcome.at, probes: outcome.probes })}\n")
-	}
-	if opts.dry_run {
-		shown.out!("dry run: nothing was written\n")
-	}
-	if args.json {
-		fx.out!(Out.json_ok({ command: args.typed, data: Report.data(outcome) }))
-	}
 }

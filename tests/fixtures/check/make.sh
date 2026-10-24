@@ -13,6 +13,8 @@
 # A package is a dir `home/.cache/roc/packages/<hash>/` with a fake hash: roc does not check the hash of a dir that is there.
 # basic-cli comes from the pinned roc cache (a symbolic link). It is the only thing that this script needs from the network.
 # The times of roc (`in 41ms`) change from run to run: the tests never compare them.
+# Slice 031: the unit probes (R-LD2, R-LD3, R-UM1) run in the dir of a package, `check main.roc`, as Talon runs them (`Units.specs`). A report names a module by its file name (`Yaml.roc:5:12`).
+# `ONLY=unit tests/fixtures/check/make.sh` makes only the 4 unit cases and leaves the other outputs as they are (the times in them are not made again).
 set -eu
 HERE=$(cd "$(dirname "$0")" && pwd)
 . "$HERE/../../../scripts/env.sh"
@@ -23,7 +25,8 @@ HA=EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc
 HB1=7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21
 HB2=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
 
-rm -rf "$FIX" "$HERE/out"
+ONLY=${ONLY:-}
+if [ "$ONLY" = unit ]; then rm -rf "$FIX"; else rm -rf "$FIX" "$HERE/out"; fi
 mkdir -p "$FIX/home/.cache/roc/packages" "$FIX/home/.cache/roc/talon/tmp/$HEX" "$FIX/project" "$HERE/out"
 PKGS=$FIX/home/.cache/roc/packages
 ln -s "$ROC_CACHE_DIR/packages/$BASIC" "$PKGS/$BASIC"
@@ -52,20 +55,37 @@ run() {
     echo "$where $*" > "$HERE/out/$name.args"
 }
 
-run pass pass project check main.roc
-run warn warn project check main.roc
-run syntax syntax project check main.roc
-run not-found not-found project check main.roc
-run dup dup project check main.roc
-run dup-shifted dup-shifted copy check main.roc
-run app-errors app-errors project check main.roc
-run app-errors-shifted app-errors-shifted copy check main.roc
-run pkg-base pkg-base project check main.roc
-run pkg-same pkg-same copy check main.roc
-run pkg-new pkg-new copy check main.roc
-# The builds run in the copy, as Talon runs them (Ladder.plan): a build that works, a target that the platform lacks, a build with type errors.
-OUT=$FIX/home/.cache/roc/talon/tmp/$HEX/tln-probe.out
-run build-pass pass copy build main.roc --output="$OUT"
-run build-target pass copy build main.roc --output="$OUT" --target=x64freebsd
-run build-errors app-errors-shifted copy build main.roc --output="$OUT"
+if [ "$ONLY" != unit ]; then
+    run pass pass project check main.roc
+    run warn warn project check main.roc
+    run syntax syntax project check main.roc
+    run not-found not-found project check main.roc
+    run dup dup project check main.roc
+    run dup-shifted dup-shifted copy check main.roc
+    run app-errors app-errors project check main.roc
+    run app-errors-shifted app-errors-shifted copy check main.roc
+    run pkg-base pkg-base project check main.roc
+    run pkg-same pkg-same copy check main.roc
+    run pkg-new pkg-new copy check main.roc
+    # The builds run in the copy, as Talon runs them (Ladder.plan): a build that works, a target that the platform lacks, a build with type errors.
+    OUT=$FIX/home/.cache/roc/talon/tmp/$HEX/tln-probe.out
+    run build-pass pass copy build main.roc --output="$OUT"
+    run build-target pass copy build main.roc --output="$OUT" --target=x64freebsd
+    run build-errors app-errors-shifted copy build main.roc --output="$OUT"
+fi
+# unit <case> <source dir in src/>: `roc check main.roc` in the dir of a package.
+unit() {
+    local name=$1 src=$2 dir=$PKGS/$1
+    rm -rf "$dir" && mkdir -p "$dir"
+    cp -r "$HERE/src/$src/." "$dir/"
+    local rc=0
+    (cd "$dir" && env -i HOME=/nonexistent PATH=/usr/bin:/bin XDG_CACHE_HOME="$FIX/home/.cache" ROC_CACHE_DIR="$FIX/home/.cache/roc" \
+        "$ROC" check main.roc > "$HERE/out/$name.stdout" 2> "$HERE/out/$name.stderr") || rc=$?
+    echo "$rc" > "$HERE/out/$name.exit"
+    echo "unit check main.roc" > "$HERE/out/$name.args"
+}
+unit unit-pass unit-pass
+unit unit-fail unit-fail
+unit unit-fail-two unit-fail-two
+unit unit-warn unit-warn
 for f in "$HERE"/out/*.exit; do printf '%s %s\n' "$(basename "$f" .exit)" "$(cat "$f")"; done

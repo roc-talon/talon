@@ -1,0 +1,1 @@
+tln: error[app_error]: a new error in an app file: main.roc (type redeclared). The app is not a free variable: fix it, or pass --no-check.

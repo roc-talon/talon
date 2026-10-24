@@ -1,0 +1,268 @@
+tests/unit/add.roc: All (9) tests passed in 747.5 ms.
+tests/unit/alias.roc: All (4) tests passed in 449.9 ms.
+tests/unit/args.roc: All (5) tests passed in 405.1 ms.
+tests/unit/buildskip.roc: All (5) tests passed in 669.0 ms.
+tests/unit/cacheview.roc: All (4) tests passed in 2576.9 ms.
+tests/unit/clean.roc: All (6) tests passed in 2503.6 ms.
+tests/unit/clock.roc: All (2) tests passed in 444.6 ms.
+tests/unit/closuregaps.roc: All (2) tests passed in 1232.4 ms.
+tests/unit/closure.roc: All (7) tests passed in 1551.9 ms.
+tests/unit/common.roc: All (1) tests passed in 409.9 ms.
+tests/unit/compiler.roc: All (7) tests passed in 2609.6 ms.
+tests/unit/consent.roc: All (12) tests passed in 2332.1 ms.
+tests/unit/db.roc: All (7) tests passed in 454.9 ms.
+tests/unit/download.roc: All (4) tests passed in 365.4 ms.
+tests/unit/evidence.roc: FAILED
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/evidence.roc:33:1
+
+expect {
+    local = |outcome, modules| fact("H1", nt, "any", outcome, modules)
+    rows = [
+        ("no source", pair([], no_pin, no_hint), []),
+        ("rank 1 pass", pair([local(Pass, [])], no_pin, no_hint), [line(1, Local, Pass, [])]),
+        ("rank 1 fail has its modules", pair([local(Fail, ["A.roc", "Yaml.roc"])], no_pin, no_hint), [line(1, Local, Fail, ["A.roc", "Yaml.roc"])]),
+        ("rank 1 hang", pair([local(Hang, [])], no_pin, no_hint), [line(1, Local, Hang, [])]),
+        ("rank 1 crash", pair([local(Crash, [])], no_pin, no_hint), [line(1, Local, Crash, [])]),
+        ("a row of another compiler is no value", pair([fact("H1", other, "any", Pass, [])], no_pin, no_hint), []),
+        ("a row of another hash is no value", pair([fact("H2", nt, "any", Pass, [])], no_pin, no_hint), []),
+        ("a row of the other tag form is no value (the key is the text of the id)", pair([fact("H1", nt_long, "any", Pass, [])], no_pin, no_hint), []),
+        ("a build row is no evidence of a check", pair([fact("H1", nt, "x64musl", Fail, [])], no_pin, no_hint), []),
+        ("a build row and a check row: the check row", pair([fact("H1", nt, "x64musl", Fail, []), local(Pass, [])], no_pin, no_hint), [line(1, Local, Pass, [])]),
+        ("rank 3: the pin is the compiler", pair([], Ok(nt), no_hint), [line(3, Pin, Pass, [])]),
+        ("rank 3: a pin for another compiler is no value", pair([], Ok(other), no_hint), []),
+        ("rank 3: the other tag form of the compiler is the compiler", pair([], Ok(nt_long), no_hint), [line(3, Pin, Pass, [])]),
+        ("rank 4: the hint is the compiler", pair([], no_pin, Ok(nt)), [line(4, Hint, Pass, [])]),
+        ("rank 4: the other tag form of the compiler is the compiler", pair([], no_pin, Ok(nt_long)), [line(4, Hint, Pass, [])]),
+        ("rank 4: a hint for another compiler is no value", pair([], no_pin, Ok(other)), []),
+        ("all 3 sources: rank order, the fact wins over the hints", pair([local(Fail, ["Yaml.roc"])], Ok(nt), Ok(nt)), [line(1, Local, Fail, ["Yaml.roc"]), line(3, Pin, Pass, []), line(4, Hint, Pass, [])]),
+        ("rank 1 and rank 4", pair([local(Pass, [])], no_pin, Ok(nt)), [line(1, Local, Pass, []), line(4, Hint, Pass, [])]),
+        ("rank 3 and rank 4: the pin first", pair([], Ok(nt), Ok(nt)), [line(3, Pin, Pass, []), line(4, Hint, Pass, [])]),
+        ("the pin is for another compiler, the hint is not", pair([], Ok(other), Ok(nt)), [line(4, Hint, Pass, [])]),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/evidence.roc:65:1
+
+expect {
+    pin = |text| Evidence.pin_of({ path: "/c/packages/H1/main.roc", text })
+    app_text = "app [main!] {\n\tpf: platform \"https://github.com/acme/pfx/releases/download/0.1.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst\",\n\troc: \"${nt}\",\n}\n\nmain! = |_args| Ok({})\n"
+    rows = [
+        ("a package header with a pin", pin(pkg_header("\troc: \"${nt}\",\n")), Ok(nt)),
+        ("a package header with no pin", pin(pkg_header("")), Err(NoPin)),
+        ("an app header with a pin", pin(app_text), Ok(nt)),
+        ("a pin in the other tag form is returned as written", pin(pkg_header("\troc: \"${nt_long}\",\n")), Ok(nt_long)),
+        ("a pin that is a prefix is no pin (R-SC12)", pin(pkg_header("\troc: \"nightly-2026-10\",\n")), Err(NoPin)),
+        ("a text with no header", pin("main = 1\n"), Err(NoPin)),
+        ("an empty text", pin(""), Err(NoPin)),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/evidence.roc:84:1
+
+expect {
+    block = |compiler, lines, notes| Evidence.text({ compiler, lines, notes })
+    head = "    evidence on ${nt}:\n"
+    rows = [
+        ("no compiler", block(Err(None), [line(1, Local, Pass, [])], []), ""),
+        ("a compiler and no line", block(Ok(nt), [], []), ""),
+        ("one line: the winner", block(Ok(nt), [line(1, Local, Pass, [])], []), "${head}      * 1 local: pass\n"),
+        ("a hint only: the winner is the pin", block(Ok(nt), [line(3, Pin, Pass, [])], []), "${head}      * 3 pin: pass\n"),
+        ("3 lines: only the first has the mark", block(Ok(nt), [line(1, Local, Hang, []), line(3, Pin, Pass, []), line(4, Hint, Pass, [])], []), "${head}      * 1 local: hang\n        3 pin: pass\n        4 roc-version: pass\n"),
+        ("a fail with no module", block(Ok(nt), [line(1, Local, Fail, [])], []), "${head}      * 1 local: fail\n"),
+        ("a fail with 2 modules", block(Ok(nt), [line(1, Local, Fail, ["A.roc", "Yaml.roc"])], []), "${head}      * 1 local: fail (A.roc, Yaml.roc)\n"),
+        ("a crash", block(Ok(nt), [line(1, Local, Crash, [])], []), "${head}      * 1 local: crash\n"),
+        ("2 notes after the lines", block(Ok(nt), [line(1, Local, Fail, ["A.roc", "B.roc"]), line(3, Pin, Pass, [])], ["module A fails on ${nt}. Your app does not import it.", "module B fails on ${nt}. Your app does not import it."]), "${head}      * 1 local: fail (A.roc, B.roc)\n        3 pin: pass\n    note: module A fails on ${nt}. Your app does not import it.\n    note: module B fails on ${nt}. Your app does not import it.\n"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/evidence.roc:104:1
+
+expect {
+    json = |block| JsonDoc.Obj(Evidence.fields(block)).render()
+    rows = [
+        ("no compiler", json({ compiler: Err(None), lines: [], notes: [] }), "{\"compiler\":null,\"evidence\":[],\"notes\":[]}"),
+        ("a compiler and no line", json({ compiler: Ok(nt), lines: [], notes: [] }), "{\"compiler\":\"${nt}\",\"evidence\":[],\"notes\":[]}"),
+        (
+            "3 lines and a note",
+            json({ compiler: Ok(nt), lines: [line(1, Local, Fail, ["Yaml.roc"]), line(3, Pin, Pass, []), line(4, Hint, Pass, [])], notes: ["n1"] }),
+            "{\"compiler\":\"${nt}\",\"evidence\":[{\"rank\":1,\"source\":\"local\",\"result\":\"fail\",\"modules\":[\"Yaml.roc\"],\"winner\":true},{\"rank\":3,\"source\":\"pin\",\"result\":\"pass\",\"modules\":[],\"winner\":false},{\"rank\":4,\"source\":\"roc-version\",\"result\":\"pass\",\"modules\":[],\"winner\":false}],\"notes\":[\"n1\"]}",
+        ),
+        ("hang and crash words", json({ compiler: Ok(nt), lines: [line(1, Local, Hang, []), line(1, Local, Crash, [])], notes: [] }).drop_prefix("{\"compiler\":\"${nt}\",\"evidence\":[{\"rank\":1,\"source\":\"local\",\"result\":\"hang\""), ",\"modules\":[],\"winner\":true},{\"rank\":1,\"source\":\"local\",\"result\":\"crash\",\"modules\":[],\"winner\":false}],\"notes\":[]}"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/evidence.roc:123:1
+
+expect {
+    local = |hash, outcome, modules| fact(hash, nt, "any", outcome, modules)
+    ign = |hashes, facts, baseline, used| Evidence.ignored({ hashes, facts, nightly: nt, baseline, used })
+    used = |hash, path| { hash, path }
+    entry = |hash, path| { hash, path }
+    rows = [
+        ("a fail of a module that the app does not use", ign(["H1"], [local("H1", Fail, ["Yaml.roc"])], [], []), [entry("H1", "Yaml.roc")]),
+        ("a used module is no note (it is a blame)", ign(["H1"], [local("H1", Fail, ["Yaml.roc"])], [], [used("H1", "Yaml.roc")]), []),
+        ("2 modules, one is used", ign(["H1"], [local("H1", Fail, ["Wire.roc", "Yaml.roc"])], [], [used("H1", "Wire.roc")]), [entry("H1", "Yaml.roc")]),
+        ("2 modules, none is used: the order of the row", ign(["H1"], [local("H1", Fail, ["Wire.roc", "Yaml.roc"])], [], []), [entry("H1", "Wire.roc"), entry("H1", "Yaml.roc")]),
+        ("a used module of another package does not count", ign(["H1"], [local("H1", Fail, ["Yaml.roc"])], [], [used("H2", "Yaml.roc")]), [entry("H1", "Yaml.roc")]),
+        ("main.roc is used by every package", ign(["H1"], [local("H1", Fail, ["main.roc"])], [], []), []),
+        ("a module of the baseline is no note (R-P6)", ign(["H1"], [local("H1", Fail, ["Yaml.roc"])], [unit_err("H1", "Yaml.roc")], []), []),
+        ("an error of the baseline in another package does not explain it", ign(["H1"], [local("H1", Fail, ["Yaml.roc"])], [unit_err("H2", "Yaml.roc")], []), [entry("H1", "Yaml.roc")]),
+        ("an error of the baseline in another module does not explain it", ign(["H1"], [local("H1", Fail, ["Yaml.roc"])], [unit_err("H1", "Wire.roc")], []), [entry("H1", "Yaml.roc")]),
+        ("a fail with no module", ign(["H1"], [local("H1", Fail, [])], [], []), []),
+        ("a pass", ign(["H1"], [local("H1", Pass, [])], [], []), []),
+        ("a hang is no note, whatever the modules of the row", ign(["H1"], [local("H1", Hang, ["Yaml.roc"])], [], []), []),
+        ("a crash is no note, whatever the modules of the row", ign(["H1"], [local("H1", Crash, ["Yaml.roc"])], [], []), []),
+        ("no row", ign(["H1"], [], [], []), []),
+        ("a row of another compiler", ign(["H1"], [fact("H1", other, "any", Fail, ["Yaml.roc"])], [], []), []),
+        ("a build row", ign(["H1"], [fact("H1", nt, "x64musl", Fail, ["Yaml.roc"])], [], []), []),
+        ("2 hashes: the order of the hashes", ign(["H2", "H1"], [local("H1", Fail, ["A.roc"]), local("H2", Fail, ["B.roc"])], [], []), [entry("H2", "B.roc"), entry("H1", "A.roc")]),
+        ("a row of a hash that is not in the list", ign(["H1"], [local("H2", Fail, ["B.roc"])], [], []), []),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/evidence.roc:154:1
+
+expect {
+    text = |path| Evidence.note({ path, compiler: nt })
+    rows = [
+        ("a top module", text("Yaml.roc"), "module Yaml fails on ${nt}. Your app does not import it."),
+        ("a module in a directory", text("sub/Yaml.roc"), "module sub/Yaml fails on ${nt}. Your app does not import it."),
+        ("the name of a module", Evidence.module_name("Yaml.roc"), "Yaml"),
+        ("a path with no suffix", Evidence.module_name("Yaml"), "Yaml"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/evidence.roc:181:1
+
+expect {
+    block = { compiler: Ok(nt), lines: [line(1, Local, Pass, []), line(3, Pin, Pass, [])], notes: [] }
+    none = { compiler: Err(None), lines: [], notes: [] }
+    plain = Why.text(found)
+    first_old = Why.data([found]).render()
+    first_new = Why.shown_data([{ found, evidence: block }]).render()
+    bare_new = Why.shown_data([{ found, evidence: none }]).render()
+    head = first_old.drop_suffix("}]}")
+    tail = ",\"compiler\":\"${nt}\",\"evidence\":[{\"rank\":1,\"source\":\"local\",\"result\":\"pass\",\"modules\":[],\"winner\":true},{\"rank\":3,\"source\":\"pin\",\"result\":\"pass\",\"modules\":[],\"winner\":false}],\"notes\":[]}]}"
+    rows = [
+        ("no compiler: the text of Why.text", Why.show({ found, evidence: none }), plain),
+        ("a compiler and no line: the text of Why.text", Why.show({ found, evidence: { compiler: Ok(nt), lines: [], notes: [] } }), plain),
+        ("lines after the paths", Why.show({ found, evidence: block }), "${plain}    evidence on ${nt}:\n      * 1 local: pass\n        3 pin: pass\n"),
+        ("data: the keys are added to one member", first_new, "${head}${tail}"),
+        ("data: no compiler is null, the lists are empty", bare_new, "${head},\"compiler\":null,\"evidence\":[],\"notes\":[]}]}"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Ran 7 tests in 4079.0 ms.:
+    0 passed
+    7 failed
+    0 compiler errors
+tests/unit/facts.roc: All (5) tests passed in 523.2 ms.
+tests/unit/fetch.roc: All (2) tests passed in 427.4 ms.
+tests/unit/frozen.roc: All (1) tests passed in 3034.4 ms.
+tests/unit/gc.roc: All (9) tests passed in 2772.3 ms.
+tests/unit/github.roc: All (5) tests passed in 450.3 ms.
+tests/unit/guard.roc: All (1) tests passed in 207.3 ms.
+tests/unit/ident.roc: All (2) tests passed in 292.9 ms.
+tests/unit/index.roc: All (6) tests passed in 643.4 ms.
+tests/unit/intent.roc: All (9) tests passed in 2491.6 ms.
+tests/unit/kind.roc: All (3) tests passed in 200.8 ms.
+tests/unit/ladder.roc: All (4) tests passed in 2957.6 ms.
+tests/unit/launch.roc: All (1) tests passed in 554.8 ms.
+tests/unit/link.roc: All (6) tests passed in 1029.7 ms.
+tests/unit/listing.roc: All (4) tests passed in 689.8 ms.
+tests/unit/locked.roc: All (3) tests passed in 1947.1 ms.
+tests/unit/lock.roc: All (2) tests passed in 155.5 ms.
+tests/unit/lookup.roc: All (7) tests passed in 934.9 ms.
+tests/unit/manage.roc: All (18) tests passed in 2568.6 ms.
+tests/unit/members.roc: All (2) tests passed in 293.0 ms.
+tests/unit/mode.roc: All (3) tests passed in 203.6 ms.
+tests/unit/net.roc: All (2) tests passed in 234.1 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 957.6 ms.
+tests/unit/opts.roc: All (4) tests passed in 438.2 ms.
+tests/unit/out.roc: All (4) tests passed in 215.4 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 908.2 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 1487.0 ms.
+tests/unit/picker.roc: All (2) tests passed in 125.5 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 1495.6 ms.
+tests/unit/pick.roc: All (3) tests passed in 1594.7 ms.
+tests/unit/pin.roc: All (9) tests passed in 945.9 ms.
+tests/unit/pins.roc: All (6) tests passed in 1796.3 ms.
+tests/unit/probe.roc: All (5) tests passed in 421.4 ms.
+tests/unit/project.roc: All (7) tests passed in 2010.2 ms.
+tests/unit/projects.roc: All (3) tests passed in 438.8 ms.
+tests/unit/prompt.roc: All (5) tests passed in 332.3 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2469.0 ms.
+tests/unit/ranges.roc: All (1) tests passed in 270.1 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1531.7 ms.
+tests/unit/ref.roc: All (4) tests passed in 428.2 ms.
+tests/unit/removal.roc: All (4) tests passed in 1816.5 ms.
+tests/unit/report.roc: All (3) tests passed in 261.4 ms.
+tests/unit/roots.roc: All (3) tests passed in 182.4 ms.
+tests/unit/scan.roc: All (2) tests passed in 222.8 ms.
+tests/unit/selector.roc: All (2) tests passed in 279.9 ms.
+tests/unit/setup.roc: All (10) tests passed in 668.1 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 312.1 ms.
+tests/unit/temp.roc: All (4) tests passed in 150.6 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 1797.9 ms.
+tests/unit/units.roc: All (6) tests passed in 721.5 ms.
+tests/unit/update.roc: All (2) tests passed in 1884.4 ms.
+tests/unit/uses.roc: All (2) tests passed in 488.6 ms.
+tests/unit/vars.roc: All (6) tests passed in 1615.8 ms.
+tests/unit/verify.roc: All (2) tests passed in 1284.5 ms.
+tests/unit/why.roc: All (6) tests passed in 1901.0 ms.

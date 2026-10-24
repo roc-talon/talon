@@ -1,0 +1,17 @@
+M1	the first round asks the oldest releases, not the newest (R-PB3 "starts at the newest")	l0: {'proberange': 'FAIL', 'probecmd': 'pass'}	l2: -
+M2	the picks of a round are not the quartile places (R-PP2)	l0: {'proberange': 'FAIL', 'probecmd': 'pass'}	l2: -
+M3	the lower end is always real (R-PB4)	l0: {'proberange': 'FAIL', 'probecmd': 'pass'}	l2: -
+M4	a row of another hash is read	l0: {'proberange': 'FAIL', 'probecmd': 'pass'}	l2: -
+M5	a row of another target is read (R-LD2)	l0: {'proberange': 'FAIL', 'probecmd': 'pass'}	l2: -
+M6	a hang or a crash is asked again (R-EP5)	l0: {'proberange': 'FAIL', 'probecmd': 'pass'}	l2: -
+M8	one unknown end gives no exit 12 (R-PB4)	l0: {'proberange': 'pass', 'probecmd': 'FAIL'}	l2: -
+M9	a bundle is unbundled again when its dir is there (R-FE3)	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL
+M10	the range search does not read the known facts (R-AL4)	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL
+M11	nightly = false and min-release-age do not limit the candidates (R-NS3, R-C7)	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL
+M12	a known fact is not replaced by a new probe (R-P4)	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL
+M13	the build runs after a failed check	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL
+M14	--share with direct is not exit 2 (R-PB6)	l0: {'proberange': 'pass', 'probecmd': 'FAIL'}	l2: -
+M15	a compiler that is not installed is asked (no download in 037a, R-NI4)	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL
+M16	the selected compiler does not unbundle (R-FE4 rule 1)	l0: {'proberange': 'pass', 'probecmd': 'FAIL'}	l2: -
+M17	the oldest installed compiler unbundles (R-FE4 rule 2)	l0: {'proberange': 'pass', 'probecmd': 'FAIL'}	l2: -
+M18	roc by name unbundles (R-FE4)	l0: {'proberange': 'pass', 'probecmd': 'pass'}	l2: FAIL

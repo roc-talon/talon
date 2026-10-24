@@ -1,0 +1,8 @@
+cli/lib/ProbeCmd.roc
+cli/lib/ProbeRange.roc
+tests/unit/probecmd.roc
+tests/unit/proberange.roc
+tests/commands/cases/probe/pc1-targets
+tests/commands/cases/probe/pc2-range
+docs/slices/037-probe.md
+tests/scenarios/probe/pc1-probe-command

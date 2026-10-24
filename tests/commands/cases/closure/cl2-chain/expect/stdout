@@ -27,5 +27,5 @@ exit 0
 exit 10
 == verify --no-check --file p4/main.roc
 check: skipped
-verified: the tuple passes. Nothing was written.
+verified: the tuple passes. No project file was written.
 exit 0

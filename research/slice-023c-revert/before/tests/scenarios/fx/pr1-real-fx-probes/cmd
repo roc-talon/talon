@@ -1,0 +1,27 @@
+# R-LD1 R-RC3 R-RC4 R-P3 R-PP3 R-PP5 R-P1 R-SE4 R-CC2 TW4: the jobs of the real Fx of slice 006, one line for each, with `fxprobe` (no Talon logic in them).
+# probes!: roc on PATH is the fake roc of the runner. copy_tree!: the temp copy of an app.
+mkdir -p sub tree/sub tree/.git tree/empty
+echo app > tree/main.roc
+echo mod > tree/sub/Mod.roc
+echo ignored > tree/.git/HEAD
+echo skipped > tree/sub/skip.txt
+echo "== probes!: the program roc with the arguments, in the dir"
+fxprobe probes 5 "$PWD/sub" where am i
+echo "== one round: the results are in the order of the list, not of the ends (the first probe ends last). A crash, a failed check, warnings only."
+fxprobe probes 5 "$PWD" check slow.roc -- 5 "$PWD" check errors.roc -- 5 "$PWD" check boom.roc -- 5 "$PWD" check warn.roc
+echo "== a hang is killed at the timeout (1 s): TimedOut. The other probe of the round goes on and ends."
+fxprobe probes 1 "$PWD" check hang.roc -- 5 "$PWD" check main.roc
+echo "== a probe that cannot start (the dir is missing)"
+fxprobe probes 5 /no/such/dir check main.roc
+echo "== the roc calls (the probes of a round start together: sorted)"
+sort "$TALON_TEST_DIR/roc.log"
+rm "$TALON_TEST_DIR/roc.log"
+
+echo "== copy_tree!: files, a dir, an empty dir. A name in the skip list is not copied (at any depth). The parent dirs of the target are made."
+fxprobe copytree "$PWD/tree" "$PWD/out/deep/copy" .git skip.txt
+(cd out/deep/copy && find . | sort)
+cat out/deep/copy/sub/Mod.roc
+echo "== the target exists: Exists. The source is missing: NotFound."
+fxprobe copytree "$PWD/tree" "$PWD/out/deep/copy"
+fxprobe copytree "$PWD/no-such-tree" "$PWD/out/other"
+test ! -e out/other && echo "nothing was made"

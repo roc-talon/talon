@@ -1,0 +1,47 @@
+# R-CC8 R-TF1 R-P4 TW4 (slice 030): 2 processes use one compat.db at the same time (WAL and the busy timeout of 5000 ms). Each process is one `fxprobe`.
+FX=$(command -v fxprobe)
+DB=$HOME/.cache/roc/talon/compat.db
+NT=nightly-2026-10-14-38a3029
+mkdir -p out
+
+echo "== 1. 2 shell loops write 30 rows each, one fxprobe at a time in each loop, both loops at once, on a db that does not exist. No write fails (a failed WAL switch of the loser is not an error), and all 60 rows are in the file."
+loop() {
+    i=1
+    while [ $i -le 30 ]; do
+        $FX db-write $DB 5000 facts replace $1$i:$NT:any:pass::
+        i=$((i + 1))
+    done
+}
+loop a > out/a.txt &
+PA=$!
+loop b > out/b.txt &
+PB=$!
+wait $PA
+wait $PB
+cat out/a.txt out/b.txt | sort | uniq -c | sed -e 's/^ *//'
+python3 -I - $DB <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("journal_mode", c.execute("PRAGMA journal_mode").fetchone()[0])
+print("user_version", c.execute("PRAGMA user_version").fetchone()[0])
+print("rows", c.execute("SELECT COUNT(*) FROM facts").fetchone()[0])
+PY
+
+echo "== 2. a writer that holds the write lock for 0.8 s. A query does not wait for it. A write with the timeout of 5000 ms waits for it and then works (R-CC8: the busy timeout)."
+python3 -I - $DB $PWD/held <<'PY' &
+import sqlite3, sys, time
+c = sqlite3.connect(sys.argv[1], isolation_level=None)
+c.execute("BEGIN IMMEDIATE")
+c.execute("INSERT INTO facts (hash, nightly, target, outcome, modules, closure) VALUES ('held', 'n', 'any', 'pass', '', '')")
+open(sys.argv[2], "w").close()
+time.sleep(0.8)
+c.execute("COMMIT")
+PY
+HOLD=$!
+i=0
+while [ ! -e held ] && [ $i -lt 250 ]; do sleep 0.02; i=$((i + 1)); done
+$FX db-query $DB 5000 facts held:n:any a1:$NT:any
+$FX db-write $DB 5000 facts replace late:$NT:any:crash::
+wait $HOLD
+$FX db-query $DB 5000 facts held:n:any late:$NT:any
+rm -rf out held

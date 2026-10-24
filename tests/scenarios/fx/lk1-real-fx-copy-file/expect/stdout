@@ -1,0 +1,25 @@
+== the bytes and the executable bit are copied. The parent dirs of the target are made.
+copied
+same bytes
+executable
+the copy runs: ./out/deep/roc
+== a file that is not executable stays not executable
+copied
+same bytes
+not executable
+== a link at the source is followed: the target is a plain file with the bytes of the file behind the link
+copied
+not a link
+same bytes
+executable
+== a later change of the source does not change the copy (R-LK2: a fixed build)
+the copy runs: ./out/deep/roc
+== the target exists: Exists. Nothing is replaced.
+err Exists
+the copy runs: ./out/deep/roc
+== the source is missing: NotFound. Nothing is made.
+err NotFound
+nothing was made
+== the source is a directory: Other
+err Other(text of the platform)
+nothing was made
