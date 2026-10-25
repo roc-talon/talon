@@ -1,0 +1,12 @@
+m1-ties-largest-first {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+m2-header-edges-off {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+m3-after-ignored {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+m4-cycle-allowed {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+m5-no-skip {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+m6-last-failure-code {'l0': 'SURVIVED', 'l2': 'killed', 'l3': 'killed'}
+m7-skip-direct-only {'l0': 'killed', 'l2': 'killed', 'l3': 'SURVIVED'}
+m8-list-never-json {'l0': 'SURVIVED', 'l2': 'killed', 'l3': 'SURVIVED'}
+m9-standalone-is-node {'l0': 'killed', 'l2': 'killed', 'l3': 'SURVIVED'}
+m10-no-stop-at-failure {'l0': 'SURVIVED', 'l2': 'killed', 'l3': 'killed'}
+m11-keep-going-alone-ok {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+m12-failed-node-no-skip-record {'l0': 'SURVIVED', 'l2': 'killed', 'l3': 'killed'}

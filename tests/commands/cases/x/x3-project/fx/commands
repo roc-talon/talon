@@ -1,0 +1,14 @@
+x fmt cwd:p1 -- --check src
+x acme/fmt cwd:p1/sub -- --boom
+x acme/fmt@1.0.0 cwd:p1 --offline
+x gen cwd:p2
+x lz cwd:p6
+x fmt cwd:p8
+x foo cwd:w/m1 -- go
+x foo cwd:w/s -- go
+x foo cwd:w
+x fmt cwd:p9
+x fmt cwd:p7
+x acme/fmt cwd:free --offline
+x acme/fmt cwd:p10
+x fmt2 cwd:p10

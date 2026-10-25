@@ -1,0 +1,39 @@
+-- 1: no name: the order and the edges on stdout, no child runs (R-EA8).
+== tln run --each
+order of $PROJECT/ws/talon.toml:
+  apps/Z
+  apps/b
+  apps/c
+  apps/a
+edges:
+  apps/a -after-> apps/c
+exit 0
+-- 2: one script in each node, in the order, one child at a time, in the directory of the node. The line of each node is on stderr (R-EA7). The scripts of the root do not run (R-RUN13). The args of -- go to the last step in each node (R-RUN10).
+== tln run --each build -- one two words
+build Z args=one two words
+build b args=one two words
+build c args=one two words
+build a args=one two words
+exit 0
+-- 3: the first failure stops the command: its code is the code of the command, no later node starts (R-EA7). b ends by a signal.
+== tln run --each fail
+fail-ok Z
+exit 143
+-- 4: with --keep-going all other nodes run, a node after a failed node is skipped, the code is the code of the first failure (b: 143, then c: 3, a is skipped).
+== tln run --each fail --keep-going
+fail-ok Z
+exit 143
+-- 5: the command works on the workspace of the walk, also from a node (R-RUN13, R-PD3).
+== tln run --each build
+build Z args=
+build b args=
+build c args=
+build a args=
+exit 0
+-- 6: --keep-going needs --each: exit 2, no child (R-FL12).
+== tln run build --keep-going
+exit 2
+-- 7: a cycle is exit 19 before the first step: no child runs, no file is made (R-EA5).
+== tln run --each build
+exit 19
+cannot access 'made': No such file or directory

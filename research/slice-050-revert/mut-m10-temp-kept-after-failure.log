@@ -1,0 +1,86 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.9      10
+
+=== l2 exit 1
+FAIL tool/ts2-stops
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -28,7 +28,6 @@
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.2.6/sha256sums.txt
+       sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+      @@ -47,7 +46,6 @@
+       spawn_all limit=8
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.1/sha256sums.txt
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+      @@ -68,7 +66,6 @@
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.2/sha256sums.txt
+       sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+FAIL tool/ts3-nostart
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -24,4 +24,3 @@
+         job - chmod 0755 $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+       spawn_all limit=1
+         job - $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp --version
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+commands: 5 passed, 2 failed
+
+=== l3 exit 1
+FAIL tools/ts1-update-talon
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -28,6 +28,7 @@
+       == tln tool update talon
+       exit 16
+       $HOME/.cache/roc/talon/tmp:
+      +e6df161e1da59ef0
+       
+       $HOME/.local/bin:
+       roc
+      @@ -35,6 +36,7 @@
+       
+       $HOME/.local/share/talon/bin:
+       tln
+      +tln.e6df161e1da59ef0.tmp
+       tln 0.3.4
+       {"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+       downloads: 4
+      @@ -42,6 +44,8 @@
+       == tln tool update talon
+       exit 1
+       $HOME/.cache/roc/talon/tmp:
+      +00a37a0441577602
+      +e6df161e1da59ef0
+       
+       $HOME/.local/bin:
+       roc
+      @@ -49,6 +53,8 @@
+       
+       $HOME/.local/share/talon/bin:
+       tln
+      +tln.00a37a0441577602.tmp
+      +tln.e6df161e1da59ef0.tmp
+       tln 0.3.4
+       {"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+       downloads: 6
+scenarios: 0 passed, 1 failed, 0 skipped
+

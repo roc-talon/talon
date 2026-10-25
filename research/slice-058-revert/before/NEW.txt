@@ -1,0 +1,6 @@
+cli/lib/RunEach.roc
+cli/lib/RunEachFlow.roc
+tests/commands/cases/run/rn4-each/
+tests/scenarios/run/rn2-each/
+docs/slices/058-run-each.md
+research/slice-058-revert/

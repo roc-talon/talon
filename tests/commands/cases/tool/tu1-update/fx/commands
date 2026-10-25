@@ -5,4 +5,4 @@ tool update --json
 tool update foo
 tool update gp
 tool update nope
-tool update talon
+tool update --from-source

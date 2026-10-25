@@ -1,0 +1,12 @@
+== cache gc --dry-run
+would remove $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d (556 B)
+would free 556 B
+dry run: nothing was removed
+exit 0
+== cache gc
+removed $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d (556 B)
+freed 556 B
+exit 0
+== cache gc
+nothing to remove
+exit 0

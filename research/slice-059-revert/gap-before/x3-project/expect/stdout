@@ -1,0 +1,24 @@
+== x fmt cwd:p1 -- --check src
+exit 0
+== x acme/fmt cwd:p1/sub -- --boom
+exit 7
+== x acme/fmt@1.0.0 cwd:p1 --offline
+exit 0
+== x gen cwd:p2
+exit 0
+== x lz cwd:p6
+exit 14
+== x fmt cwd:p8
+exit 19
+== x foo cwd:w/m1 -- go
+exit 0
+== x foo cwd:w/s -- go
+exit 0
+== x foo cwd:w
+exit 0
+== x fmt cwd:p9
+exit 0
+== x fmt cwd:p7
+exit 0
+== x acme/fmt cwd:free --offline
+exit 0

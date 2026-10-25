@@ -1,0 +1,72 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+  json   acme/json 2.1.0      direct; raised from 2.0.0; patched
+  util   ../util/main.roc     direct; foreign
+  ext    https://x.org/e.zst  direct; foreign
+  lex    acme/lex 1.0.0       via json
+  inner  ./in/main.roc        via util; foreign
+"
+[dbg] "/p/main.roc
+  pf: acme/pfx 0.1.1 (direct)
+  json: acme/json 2.1.0 (direct; raised from 2.0.0; patched)
+    lex: acme/lex 1.0.0
+  util: ../util/main.roc (direct; foreign)
+    j: acme/json 2.1.0 (shown above)
+    inner: ./in/main.roc (foreign)
+  ext: https://x.org/e.zst (direct; foreign)
+"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"pf\",\"name\":\"acme/pfx\",\"version\":\"0.1.1\",\"kind\":\"release\",\"id\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":false,\"platform\":true,\"patched\":false},{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false,\"patched\":true},{\"alias\":\"util\",\"name\":\"../util/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/main.roc\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"lex\",\"name\":\"acme/lex\",\"version\":\"1.0.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\",\"direct\":false,\"via\":\"json\",\"raised\":null,\"foreign\":false,\"platform\":false,\"patched\":false},{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false}],\"links\":[{\"from\":null,\"alias\":\"pf\",\"to\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\"},{\"from\":null,\"alias\":\"json\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":null,\"alias\":\"util\",\"to\":\"/p/util/main.roc\"},{\"from\":null,\"alias\":\"ext\",\"to\":\"https://x.org/e.zst\"},{\"from\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"alias\":\"lex\",\"to\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"j\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"inner\",\"to\":\"/p/util/in/main.roc\"}],\"series\":[]}]}"
+[dbg] [NeedsTty, NonInteractive, NonInteractive, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NeedsTty, NonInteractive, NonInteractive, NeedsTty, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [Interactive, NonInteractive, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:545:1
+
+expect {
+    text = "[run]\nafter = [\"../a\"]\n"
+    warn_view(text, Member) == Ok([])
+        and warn_view(text, Standalone) == Ok([])
+            and warn_view("[dependencies]\njson = \"^1\"\n\n${text}", Member) == Ok([])
+                and warn_view("[run]\nafter = []\nfoo = 1\n", Member) == Ok(["talon.toml:3: unknown key run.foo"])
+                    and warn_view("[run]\nafter = []\nfoo = 1\n", Standalone) == Ok(["talon.toml:3: unknown key run.foo"])
+                        and warn_view("[workspace]\nmembers = []\n\n[run]\nafter = []\n", Root) == Err("19 talon.toml:4: the table [run] is not allowed in the workspace root file (it is for the other files of the workspace, R-EA3)")
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 63 tests in 5477.2 ms.:
+    62 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5151.1 ms.
+
+step       result seconds  budget
+l0         FAIL   5.7      10
+
+=== l2 exit 0
+commands: 1 passed, 0 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

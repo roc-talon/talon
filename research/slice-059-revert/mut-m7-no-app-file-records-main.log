@@ -1,0 +1,36 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   6.0      10
+
+=== l2 exit 1
+FAIL x/x3-project
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -178,7 +178,7 @@
+       list_dirs $PROJECT/p9
+       list_dirs $PROJECT
+       read_files $PROJECT/p9/talon.toml
+      -canonical $PROJECT/p9/talon.toml
+      +canonical $PROJECT/p9/main.roc
+       lock $HOME/.cache/roc/talon/projects.json nowait: held
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,7 +11,7 @@
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p6/main.roc","last_use":1792065600},{"path":"$PROJECT/p7/main.roc","last_use":1792065600},{"path":"$PROJECT/p9/talon.toml","last_use":1792065600},{"path":"$PROJECT/w/m1/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m2/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s/main.roc","last_use":1792065600}]}
+      ++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p6/main.roc","last_use":1792065600},{"path":"$PROJECT/p7/main.roc","last_use":1792065600},{"path":"$PROJECT/p9/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m1/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m2/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s/main.roc","last_use":1792065600}]}
+       --- home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen
+       +++ home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen
+       @@ -0,0 +1 @@
+commands: 4 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

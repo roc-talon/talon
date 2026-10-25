@@ -1,0 +1,5 @@
+Slice 050, `tln tool update talon` with no entry `talon` in `tools.json` (the installed version is `Help.version`, 0.0.0) and a `roc` in the bin dir that tln did not write (a system roc that `tln setup` did not replace, R-ST2). The entry `tln` is Talon's.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | v0.3.4 works. `roc` stays (R-ST6) with the warning, `tln` is made again. `tools.json` gets the entry `talon` (the last entry). `updated talon 0.0.0 to 0.3.4 (roc-talon/talon)` | R-ST6, R-ST9, R-ST11, R-S3, R-T4, Q-E1, Q-M1 |

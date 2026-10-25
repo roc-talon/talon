@@ -1,0 +1,7 @@
+tool update talon env:TALON_NOW=2026-07-05T12:00:00Z
+tool update talon env:TALON_NOW=2026-07-15T12:00:00Z
+tool update talon env:TALON_NOW=2026-09-03T12:00:00Z
+tool update talon env:TALON_NOW=2026-09-12T12:00:00Z
+tool update talon --offline
+tool update talon
+tool update talon

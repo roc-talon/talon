@@ -1,0 +1,4 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/w1/workers/Admin/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/api/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/ledger/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/mid/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/web/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/zlib/main.roc","last_use":1792065600},{"path":"$PROJECT/w2/a/main.roc","last_use":1792065600},{"path":"$PROJECT/w2/b/main.roc","last_use":1792065600},{"path":"$PROJECT/w3/a/main.roc","last_use":1792065600},{"path":"$PROJECT/w3/b/main.roc","last_use":1792065600},{"path":"$PROJECT/w4/a/main.roc","last_use":1792065600},{"path":"$PROJECT/w4/b/main.roc","last_use":1792065600}]}

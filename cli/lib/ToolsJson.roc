@@ -61,7 +61,7 @@ ToolsJson :: [].{
 		Ok(text) => {
 			file = open_file(facts.path, text)?
 			match tools_of(facts.path, file.fields)? {
-				Ok(tools) => tools.fold_try([], |kept, (key, doc)| Ok(kept.append(entry_of(facts.path, key, doc)?)))
+				Ok(tools) => others(tools).fold_try([], |kept, (key, doc)| Ok(kept.append(entry_of(facts.path, key, doc)?)))
 				Err(NoTools) => Ok([])
 			}
 		}
@@ -103,7 +103,7 @@ ToolsJson :: [].{
 		Ok(text) => {
 			file = open_file(facts.path, text)?
 			match tools_of(facts.path, file.fields)? {
-				Ok(tools) => tools.fold_try([], |kept, (key, doc)| Ok(kept.append(tool_of(facts.path, key, doc)?)))
+				Ok(tools) => others(tools).fold_try([], |kept, (key, doc)| Ok(kept.append(tool_of(facts.path, key, doc)?)))
 				Err(NoTools) => Ok([])
 			}
 		}
@@ -117,7 +117,7 @@ ToolsJson :: [].{
 		Ok(text) => {
 			file = open_file(facts.path, text)?
 			tools = tools_of(facts.path, file.fields)?
-			Ok(render_fields(with_tools(file.fields, tools, facts.tool)))
+			Ok(render_fields(with_doc(file.fields, tools, facts.tool.key, tool_doc(facts.tool))))
 		}
 	}
 
@@ -171,6 +171,46 @@ ToolsJson :: [].{
 					Ok(text)
 				}
 			}
+		}
+	}
+
+	## Slice 050 (CLI 6.5, R-IS6, R-S2, R-T4): the entry `talon` of `tools.json`. Talon is a tool with its own source kinds, and it is not an `Entry` or a `Tool`: `read` and `manifest` leave the key `talon` out (so `tool list`, `tool update` with no name, the lookups and the clash test never see it, question Q-S2), and
+	## `talon` and `put_talon` read and write it. The text of an entry (the same fields as a tool, the order of the table at the top):
+	##
+	## ```json
+	## "talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.2","url":"https://github.com/roc-talon/talon/releases/download/v0.3.2/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"<64 hex digits>","libs":[],"installed_at":"2026-10-15T12:00:00Z"}
+	## ```
+	##
+	## A source build (`--from-source`) has the source of a git tool (`{"kind":"git","commit","ref","path"}`) and the `build` of its compiler. The form of the kind `prebuilt` is question Q-S1 (R-IS6 says "source: install script").
+	TalonSource : [Prebuilt({ version : Str, url : Str }), Git({ commit : Str, ref : Str, path : Try(Str, [None]) })]
+
+	Talon : { source : TalonSource, hashes : List(Str), nightly : Str, target : Str, sha256 : Str, libs : List(Str), installed_at : Str }
+
+	## The entry `talon` of the file. A missing file, no `tools` field and no key `talon` give `Ok(Err(None))`. The failures are those of `read` for the parts that it reads (kind `Input`, exit 19), and for the entry: `<path>: tool talon: is not an object`, `<path>: tool talon: has no source that tln knows` (no object `source`, a kind other than `prebuilt` and `git`, a field of the kind that is missing).
+	## A field that is missing from `build` or from the entry gives the empty text or the empty list, as `manifest`. A git source has `path` only when the object has it.
+	talon : { path : Str, text : Try(Str, [NotFound]) } -> Try(Try(Talon, [None]), Fail)
+	talon = |facts| match facts.text {
+		Err(NotFound) => Ok(Err(None))
+		Ok(text) => {
+			file = open_file(facts.path, text)?
+			match tools_of(facts.path, file.fields)? {
+				Err(NoTools) => Ok(Err(None))
+				Ok(pairs) => match pairs.find_first(|(key, _)| key == "talon") {
+					Err(_) => Ok(Err(None))
+					Ok((_, doc)) => Ok(Ok(talon_of(facts.path, doc)?))
+				}
+			}
+		}
+	}
+
+	## The text of the file after `talon` is the entry `talon`: in its place when there is one (a field that Talon does not know stays, R-TF2), else the last entry of `tools` (a file with no `tools` field gets the field at the end, a missing file gives a new file). The other tools and the other top-level fields stay as they are. The failures are those of `put`.
+	put_talon : { path : Str, text : Try(Str, [NotFound]), talon : Talon } -> Try(Str, Fail)
+	put_talon = |facts| match facts.text {
+		Err(NotFound) => Ok(render_fields([("tools", Obj([("talon", talon_doc(facts.talon))]))]))
+		Ok(text) => {
+			file = open_file(facts.path, text)?
+			tools = tools_of(facts.path, file.fields)?
+			Ok(render_fields(with_doc(file.fields, tools, "talon", talon_doc(facts.talon))))
 		}
 	}
 }
@@ -278,37 +318,37 @@ text_field = |pairs, name| match pairs.find_first(|(field, _)| field == name) {
 	_ => Err(Missing)
 }
 
-# The fields of the file with `tool` in `tools`: replaced in its place, else the last tool. No `tools` field: the field is the last (R-TF2).
-with_tools : List((Str, JsonDoc)), Try(List((Str, JsonDoc)), [NoTools]), ToolsJson.Tool -> List((Str, JsonDoc))
-with_tools = |fields, tools, tool| match tools {
-	Err(NoTools) => fields.append(("tools", Obj([(tool.key, tool_doc(tool))])))
+# The `tools` pairs without the key `talon`: Talon is no tool of the list (question Q-S2).
+others : List((Str, JsonDoc)) -> List((Str, JsonDoc))
+others = |pairs| pairs.keep_if(|(key, _)| key != "talon")
+
+# The fields of the file with `doc` as the tool `key` in `tools`: replaced in its place, else the last tool. No `tools` field: the field is the last (R-TF2).
+with_doc : List((Str, JsonDoc)), Try(List((Str, JsonDoc)), [NoTools]), Str, JsonDoc -> List((Str, JsonDoc))
+with_doc = |fields, tools, key, doc| match tools {
+	Err(NoTools) => fields.append(("tools", Obj([(key, doc)])))
 	Ok(pairs) => {
-		merged = if pairs.any(|(key, _)| key == tool.key) {
-			pairs.map(|(key, doc)| if key == tool.key (key, merge(doc, tool)) else (key, doc))
+		merged = if pairs.any(|(name, _)| name == key) {
+			pairs.map(|(name, old)| if name == key (name, merge(old, doc)) else (name, old))
 		} else {
-			pairs.append((tool.key, tool_doc(tool)))
+			pairs.append((key, doc))
 		}
-		fields.map(|(name, doc)| if name == "tools" (name, Obj(merged)) else (name, doc))
+		fields.map(|(name, old)| if name == "tools" (name, Obj(merged)) else (name, old))
 	}
 }
 
-# The old tool with the fields of `tool` in their place. A field of the old tool that Talon does not know stays (R-TF2). The new fields that the old tool lacks follow, in the order of the table.
-merge : JsonDoc, ToolsJson.Tool -> JsonDoc
-merge = |old, tool| match old {
-	Obj(pairs) => {
-		fresh = match tool_doc(tool) {
-			Obj(fields) => fields
-			_ => []
-		}
+# The old object with the fields of `fresh` in their place. A field of the old object that Talon does not know stays (R-TF2). The new fields that the old object lacks follow, in the order of the table.
+merge : JsonDoc, JsonDoc -> JsonDoc
+merge = |old, fresh| match (old, fresh) {
+	(Obj(pairs), Obj(new_fields)) => {
 		replaced = pairs.map(
-			|(name, doc)| match fresh.find_first(|(key, _)| key == name) {
+			|(name, doc)| match new_fields.find_first(|(key, _)| key == name) {
 				Ok((_, new)) => (name, new)
 				Err(_) => (name, doc)
 			},
 		)
-		Obj(replaced.concat(fresh.keep_if(|(key, _)| !pairs.any(|(name, _)| name == key))))
+		Obj(replaced.concat(new_fields.keep_if(|(key, _)| !pairs.any(|(name, _)| name == key))))
 	}
-	_ => tool_doc(tool)
+	_ => fresh
 }
 
 # The tool as the table at the top of this file gives it. A git source has its `path` only with `--path`.
@@ -351,3 +391,70 @@ release_tool = |built| {
 
 render_fields : List((Str, JsonDoc)) -> Str
 render_fields = |fields| TalonFile.render({ format: 1, fields })
+
+# The entry `talon` of the `tools` object (question Q-S1).
+talon_of : Str, JsonDoc -> Try(ToolsJson.Talon, Fail)
+talon_of = |path, doc| {
+	bad = |what| Fail.new(Input, "${path}: tool talon: ${what}")
+	pairs = match doc {
+		Obj(found) => found
+		_ => return Err(bad("is not an object"))
+	}
+	source_fields = object_in(pairs, "source")
+	source = match talon_source(source_fields) {
+		Ok(known) => known
+		Err(_) => return Err(bad("has no source that tln knows"))
+	}
+	build = object_in(pairs, "build")
+	Ok({
+		source,
+		hashes: texts_field(build, "hashes"),
+		nightly: text_field(build, "nightly") ?? "",
+		target: text_field(build, "target") ?? "",
+		sha256: text_field(pairs, "sha256") ?? "",
+		libs: texts_field(pairs, "libs"),
+		installed_at: text_field(pairs, "installed_at") ?? "",
+	})
+}
+
+object_in : List((Str, JsonDoc)), Str -> List((Str, JsonDoc))
+object_in = |pairs, name| match pairs.find_first(|(field, _)| field == name) {
+	Ok((_, Obj(found))) => found
+	_ => []
+}
+
+talon_source : List((Str, JsonDoc)) -> Try(ToolsJson.TalonSource, [Unknown])
+talon_source = |pairs| match text_field(pairs, "kind") {
+	Ok("prebuilt") => match (text_field(pairs, "version"), text_field(pairs, "url")) {
+		(Ok(version), Ok(url)) => Ok(Prebuilt({ version, url }))
+		_ => Err(Unknown)
+	}
+	Ok("git") => match (text_field(pairs, "commit"), text_field(pairs, "ref")) {
+		(Ok(commit), Ok(ref)) => Ok(Git({ commit, ref, path: text_field(pairs, "path").map_err(|Missing| None) }))
+		_ => Err(Unknown)
+	}
+	_ => Err(Unknown)
+}
+
+# The entry `talon` as the doc comment of `talon` gives it. A git source has its `path` only when the entry has one.
+talon_doc : ToolsJson.Talon -> JsonDoc
+talon_doc = |talon| Obj([
+	("name", Text("roc-talon/talon")),
+	("source", talon_source_doc(talon.source)),
+	("build", Obj([("hashes", Arr(talon.hashes.map(|h| Text(h)))), ("nightly", Text(talon.nightly)), ("target", Text(talon.target))])),
+	("sha256", Text(talon.sha256)),
+	("libs", Arr(talon.libs.map(|l| Text(l)))),
+	("installed_at", Text(talon.installed_at)),
+])
+
+talon_source_doc : ToolsJson.TalonSource -> JsonDoc
+talon_source_doc = |source| match source {
+	Prebuilt(pre) => Obj([("kind", Text("prebuilt")), ("version", Text(pre.version)), ("url", Text(pre.url))])
+	Git(git) => {
+		head = [("kind", Text("git")), ("commit", Text(git.commit)), ("ref", Text(git.ref))]
+		match git.path {
+			Ok(path) => Obj(head.append(("path", Text(path))))
+			Err(None) => Obj(head)
+		}
+	}
+}

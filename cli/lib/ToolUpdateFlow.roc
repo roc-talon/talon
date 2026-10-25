@@ -41,6 +41,10 @@ ToolUpdateFlow :: [].{
 	## `tln tool rebuild`.
 	rebuild! : Fx, Args => I32
 	rebuild! = |fx, args| ended!(fx, args, Rebuild)
+
+	## Slice 050 (`TalonUpdateFlow`, `--from-source`, step 4e): the decision for the compilers `pins` that the build needs, as step 3 of `tool update`. No pin: no question.
+	consent_for! : Fx, Args, ToolBuild.Facts, List(Str) => Try({}, Fail)
+	consent_for! = |fx, args, base, pins| consent!(fx, args, base, pins)
 }
 
 # One tool that the command builds: the facts of the tool, its source (the bundle), the compiler of the build, and the scratch dir of a git source (R-CC2).
@@ -83,7 +87,7 @@ run! = |fx, args, cmd, kind| {
 	}
 	items = plan!(fx, args, machine.facts, tools, kind)?
 	jobs = jobs_of(items)
-	result = match consent!(fx, args, machine.facts, jobs) {
+	result = match consent!(fx, args, machine.facts, jobs.map(|j| j.id)) {
 		Ok(_) => build_all!(fx, args, items, kind)
 		Err(fail) => Err(fail)
 	}
@@ -246,11 +250,11 @@ platform_item! = |fx, args, job| match ToolFlow.platform_for!(fx, args, job.fact
 }
 
 # Step 3 (R-T25, R-DL1 to R-DL5): the compilers that no installed release covers, one decision for the command. No build: no question.
-consent! : Fx, Args, ToolBuild.Facts, List(Job) => Try({}, Fail)
-consent! = |fx, args, base, jobs| {
-	if jobs.is_empty() return Ok({})
+consent! : Fx, Args, ToolBuild.Facts, List(Str) => Try({}, Fail)
+consent! = |fx, args, base, pins| {
+	if pins.is_empty() return Ok({})
 	installed = Launch.toolchains!(fx, base.roots)
-	ids = ToolUpdate.downloads({ pins: jobs.map(|j| j.id), installed })
+	ids = ToolUpdate.downloads({ pins, installed })
 	if ids.is_empty() return Ok({})
 	mode = Mode.from_env({ env: Dict.from_list(base.env), json: args.json })
 	decide = |at| ToolUpdate.want({ ids, auto: Consent.auto_install(base.env), yes: args.yes, mode: at })

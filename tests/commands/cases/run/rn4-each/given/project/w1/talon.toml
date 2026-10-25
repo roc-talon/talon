@@ -1,0 +1,7 @@
+[workspace]
+members = ["workers/*/main.roc", "zlib/main.roc"]
+
+[scripts]
+build = "tool-root build"
+fail = "tool-root fail"
+ins = [{ in = "workers/web", run = "tool-in-web" }, { in = "workers/ledger", run = "tool-in-ledger" }]

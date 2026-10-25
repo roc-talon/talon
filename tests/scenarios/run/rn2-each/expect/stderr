@@ -1,0 +1,16 @@
+running apps/Z
+running apps/b
+running apps/c
+running apps/a
+running apps/Z
+running apps/b
+running apps/Z
+running apps/b
+running apps/c
+skipped apps/a (after apps/c)
+running apps/Z
+running apps/b
+running apps/c
+running apps/a
+tln: error[usage]: flag '--keep-going' needs --each
+tln: error[input]: the nodes of tln run --each depend on each other: x -after-> y -path-> x

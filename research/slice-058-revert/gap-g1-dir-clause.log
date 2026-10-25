@@ -1,0 +1,66 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:407:1
+
+expect {
+    web_toml = "[run]\nafter = [\"../ledger\", \"../ledger\"]\n"
+    nodes = [
+        nd("workers/web", ["main.roc"], web_toml),
+        nd("workers/ledger", ["main.roc"], ""),
+        nd("workers/api", ["main.roc", "extra.roc"], "[scripts]\nb = \"x\"\n"),
+        nd("libs/core", ["main.roc"], ""),
+    ]
+    api = hdr(["pf: platform \"../../platform/main.roc\"", "core: \"../../libs/core/main.roc\"", "util: \"../../libs/core/Util.roc\"", "json: \"${foo10}\"", "self: \"./extra.roc\"", "up: \"../../top.roc\"", "roc: \"nightly-2026-10-14-38a3029\""])
+    web = hdr(["pf: platform \"../../platform/main.roc\"", "ledger: \"../ledger/main.roc\""])
+    edges_view(nodes, [("workers/api/main.roc", api), ("workers/web/main.roc", web)]) == Ok("workers/api -path-> libs/core, workers/web -path-> workers/ledger, workers/web -after-> workers/ledger")
+        and edges_view(nodes, []) == Ok("workers/web -after-> workers/ledger")
+            and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\".\"]\n")], []) == Ok("a -after-> a")
+                and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\", \"/r/w/c\"]\n"), nd("b", ["m.roc"], ""), nd("c", ["m.roc"], "")], []) == Ok("a -after-> b, a -after-> c")
+                    and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n"), nd("b", ["m.roc"], "")], []) == Err("19 /r/w/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+                        and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"..\"]\n")], []) == Err("19 /r/w/a/talon.toml: run.after names '..', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+                            and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\"]\n"), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["x: \"../b/m.roc\""]))]) == Ok("a -path-> b, a -after-> b")
+                                and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
+                                    and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "app [main!] {\n\tpf: platform\n")]) == Err("2 /r/w/a/m.roc:3: the header is not valid")
+                                        and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/Util.roc\""]))]) == Ok("a -path-> b")
+                                            and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/sub/x.roc\""]))]) == Ok("")
+                                                and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
+                                                    and RunEach.header_paths(nodes) == ["/r/w/libs/core/main.roc", "/r/w/workers/api/extra.roc", "/r/w/workers/api/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/workers/web/main.roc"]
+}
+
+Mentioned values:
+foo10 = "https://github.com/acme/foo/releases/download/1.0.0/${h_foo10}.tar.zst"
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 63 tests in 5590.8 ms.:
+    62 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5273.3 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+

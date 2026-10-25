@@ -1,0 +1,138 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.9      10
+
+=== l2 exit 1
+FAIL tool/ts2-stops
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -5,11 +5,12 @@
+       == tool update talon env:TALON_NOW=2026-09-03T12:00:00Z
+       exit 15
+       == tool update talon env:TALON_NOW=2026-09-12T12:00:00Z
+      -exit 16
+      +updated talon 0.1.0 to 0.3.2 (roc-talon/talon)
+      +exit 0
+       == tool update talon --offline
+       exit 15
+       == tool update talon
+      -updated talon 0.1.0 to 0.3.4 (roc-talon/talon)
+      +updated talon 0.3.2 to 0.3.4 (roc-talon/talon)
+       exit 0
+       == tool update talon
+       talon 0.3.4 is up to date
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,5 @@
+       tln: error[integrity]: the release v0.2.5 of roc-talon/talon has no sha256sums.txt, so tln cannot check tln-x64musl. tln is not changed.
+       tln: error[integrity]: sha256sums.txt of v0.2.6 does not list tln-x64musl, so tln cannot check it. tln is not changed.
+       tln: error[network]: download of talon 0.3.1 failed: 404 (https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl)
+      -tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.2: the sha256 is c95468b70f6ae2b8b8e98d9e08f0046788db8cc9a9ed3bce1104520450bd8606, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
+       index: cached at 2026-10-15T12:00:00Z
+       tln: error[network]: tln 0.3.4 is not downloaded and --offline is set. Run the command without --offline.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -68,6 +68,23 @@
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.2/sha256sums.txt
+       sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      +spawn_all limit=1
+      +  job - chmod 0755 $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      +spawn_all limit=1
+      +  job - $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp --version
+      +lock $HOME/.local/share/talon/tools.json nowait: held
+      +read_files $HOME/.local/share/talon/tools.json
+      +list_dirs $HOME/.local/bin
+      +sha256_file $HOME/.local/share/talon/bin/tln
+      +sha256_file $HOME/.local/bin/tln
+      +sha256_file $HOME/.local/bin/roc
+      +rename $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln
+      +hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+      +rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+      +hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+      +rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+      +write_atomic $HOME/.local/share/talon/tools.json
+      +unlock $HOME/.local/share/talon/tools.json
+       delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+commands: 6 passed, 1 failed
+
+=== l3 exit 1
+FAIL tools/ts1-update-talon
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -26,7 +26,8 @@
+       downloads: 2
+       -- 3: later (v0.3.5 is old enough): the sha256 of the download is not the one of sha256sums.txt (R-S1, R-SE13). Exit 16. The old file, the entries and tools.json stay, no temp file stays.
+       == tln tool update talon
+      -exit 16
+      +updated talon 0.3.4 to 0.3.5 (roc-talon/talon)
+      +exit 0
+       $HOME/.cache/roc/talon/tmp:
+       
+       $HOME/.local/bin:
+      @@ -35,8 +36,8 @@
+       
+       $HOME/.local/share/talon/bin:
+       tln
+      -tln 0.3.4
+      -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      +tln 0.3.5
+      +{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.5","url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8","libs":[],"installed_at":"2026-10-30T12:00:00Z"}}}
+       downloads: 4
+       -- 4: later still (v0.3.6): the sha256 is right, but the new file exits with 3 for --version. Exit 1, the old file stays (R-S3), no temp file stays.
+       == tln tool update talon
+      @@ -49,8 +50,8 @@
+       
+       $HOME/.local/share/talon/bin:
+       tln
+      -tln 0.3.4
+      -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      +tln 0.3.5
+      +{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.5","url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8","libs":[],"installed_at":"2026-10-30T12:00:00Z"}}}
+       downloads: 6
+       -- 5: the entry talon is not a tool of the list (question Q-S2): the real binary reads the file and the list is empty.
+       == tln tool ls
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +1 @@
+      -tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.5: the sha256 is e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
+       tln: error[internal]: the new tln 0.3.6 does not start (exit 3). The old tln stays.
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,21 +7,21 @@
+       @@ -1,2 +1,2 @@
+        #!/bin/sh
+       -echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ++echo 'tln 0.3.5'
+       --- home/.local/bin/tln
+       +++ home/.local/bin/tln
+       @@ -1,2 +1,2 @@
+        #!/bin/sh
+       -echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ++echo 'tln 0.3.5'
+       --- home/.local/share/talon/bin/tln
+       +++ home/.local/share/talon/bin/tln
+       @@ -1,2 +1,2 @@
+        #!/bin/sh
+       -echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ++echo 'tln 0.3.5'
+       --- home/.local/share/talon/tools.json
+       +++ home/.local/share/talon/tools.json
+       @@ -1 +1 @@
+       -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"ca6c14a55e7cbcd29aed8dae76da7e04f7c4351abd9756de86b74a663cc2f64f","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      ++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.5","url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8","libs":[],"installed_at":"2026-10-30T12:00:00Z"}}}
+scenarios: 0 passed, 1 failed, 0 skipped
+

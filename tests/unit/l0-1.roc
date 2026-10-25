@@ -11,6 +11,7 @@ import PatchedTest
 import PinsTest
 import ProjectTest
 import ProjectsTest
+import TalonUpdateTest
 import TempTest
 import ToolTest
 import UpgradeTest

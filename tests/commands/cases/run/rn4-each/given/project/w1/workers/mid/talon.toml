@@ -1,0 +1,5 @@
+[run]
+after = ["../../zlib"]
+
+[scripts]
+other = "tool-mid other"

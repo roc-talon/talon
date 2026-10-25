@@ -20,6 +20,7 @@ import ToolsJson
 import XCache
 import XCacheIo
 import XCmd
+import XProject
 
 ## The command `tln x owner/app [-- args]` (slice 049, CLI 6.4: R-CM12, R-X1 to R-X5, R-B1 to R-B3, R-B5, R-B7 to R-B10, R-NI9, R-FL1, R-E1, R-SC4, R-AD7, R-C6). Direct style over `Fx` (TESTING.md 2.2 part C): `XCmd` and `XCache` decide, this module orders the calls. It builds as `tln tool install`
 ## does (the pieces of `ToolFlow` and `ToolBuild`), but writes an `x` cache entry (R-X2) and runs the binary (R-X4). `Run.run!` calls `run!` for the command `["x"]`. The calls, in order (the L2 cases `x/x1-run` and `x/x2-offline` and the L3 case `tools/x1-run` fix them):
@@ -27,6 +28,7 @@ import XCmd
 ## | Step | Does | Rule |
 ## | --- | --- | --- |
 ## | 1 | `XCmd.read(args)`. A failure is printed with `Common.failed!` (no `Fx` call). | R-CM12, R-FL1 |
+## | 1b | `XProject.run!` (slice 059, R-PT11): a project tool runs here. `Miss` (a selector, no `talon.toml`, no entry for the operand) goes on with step 2. | R-PT11, R-PT12 |
 ## | 2 | `ToolFlow.machine_for!` (the steps 2 and 3 of `ToolFlow`: `args`, `env_all`, `clock`, `platform`, `tools.json`, `config.toml`), then `XCacheIo.entries!`. | R-LY2, R-X2 |
 ## | 3 | `Lookup.find` with the scope `X` and `XCache.entities` (the installed tools and the entries). A short name with no match: its failure (R-AD7, R-NM11), exit 2. A full name: itself. The binary name is the repo name (`Text.last_segment`). | R-SC4, R-AD7 |
 ## | 4 | With no `--offline`: `ToolFlow.release_list_for!` (the calls of step 6 of `ToolFlow`). A failure of the kind `Network` (no network) is the offline case of step 7, any other failure ends the command. | R-B3, R-B7 |
@@ -40,9 +42,13 @@ XFlow :: [].{
 	run! : Fx, Args => I32
 	run! = |fx, args| match XCmd.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok(plan) => match flow!(fx, args, plan) {
-			Ok(code) => code
+		Ok(plan) => match XProject.run!(fx, args, plan) {
+			Ok(Ok(code)) => code
 			Err(fail) => Common.failed!(fx, args, fail)
+			Ok(Err(Miss)) => match flow!(fx, args, plan) {
+				Ok(code) => code
+				Err(fail) => Common.failed!(fx, args, fail)
+			}
 		}
 	}
 }

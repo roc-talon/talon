@@ -1,0 +1,13 @@
+cli/lib/TalonUpdate.roc
+cli/lib/TalonUpdateFlow.roc
+tests/unit/TalonUpdateTest.roc
+tests/commands/cases/tool/ts1-update/
+tests/commands/cases/tool/ts2-stops/
+tests/commands/cases/tool/ts3-nostart/
+tests/commands/cases/tool/ts3b-foreign/
+tests/commands/cases/tool/ts4-rocforeign/
+tests/commands/cases/tool/ts5-windows/
+tests/commands/cases/tool/ts6-source/
+tests/scenarios/tools/ts1-update-talon/
+docs/slices/050-tool-update-talon.md
+research/slice-050-revert/

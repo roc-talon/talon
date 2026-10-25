@@ -263,6 +263,7 @@ allows = |cmd, flag| {
 		"--undo" => one_of(["yank", "move"])
 		"--ignore" => cmd == "audit"
 		"--tool" => one_of(["install", "remove", "update", "upgrade"])
+		"--each" | "--keep-going" => cmd == "run"
 		_ => Bool.False
 	}
 }

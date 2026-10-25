@@ -1,0 +1,104 @@
+args
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/pa/main.roc $PROJECT/pb/main.roc $PROJECT/pgone/main.roc $PROJECT/pold/main.roc $PROJECT/pplain/main.roc
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+tree_info $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-aaaaaaa $HOME/.cache/roc/compat-5555555 $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+args
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/pa/main.roc $PROJECT/pb/main.roc $PROJECT/pgone/main.roc $PROJECT/pold/main.roc $PROJECT/pplain/main.roc
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+tree_info $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-aaaaaaa $HOME/.cache/roc/compat-5555555 $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/pa/main.roc $PROJECT/pb/main.roc $PROJECT/pgone/main.roc $PROJECT/pold/main.roc $PROJECT/pplain/main.roc
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+tree_info $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-aaaaaaa $HOME/.cache/roc/compat-5555555 $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+lock $HOME/.cache/roc/toolchains/git-dd03c09e nowait: held
+random
+rename $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/git-dd03c09e
+lock $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 nowait: busy
+lock $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa.0123456789abcdef.trash $HOME/.cache/roc/compat-aaaaaaa
+unlock $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa
+lock $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555.0123456789abcdef.trash $HOME/.cache/roc/compat-5555555
+unlock $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555
+lock $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999
+delete $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/pa/main.roc $PROJECT/pb/main.roc
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+tree_info $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+lock $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 nowait: busy
+unlock $HOME/.cache/roc/talon/gc
+args
+args
+env_all
+clock
+lock $HOME2/.cache/roc/talon/gc nowait: held
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains $HOME2/.cache/roc/packages $HOME2/.cache/roc/talon $HOME2/.cache/roc/talon/tmp $HOME2/.cache/roc/talon/index $HOME2/.cache/roc/talon/x
+list_dirs $HOME2/.cache/roc
+read_files $HOME2/.cache/roc/talon/projects.json
+unlock $HOME2/.cache/roc/talon/gc
+args
+env_all
+clock
+lock $HOME3/.cache/roc/talon/gc nowait: held
+read_files $HOME3/.config/talon/config.toml
+unlock $HOME3/.cache/roc/talon/gc
+args
+env_all
+clock
+read_files $HOME4/.config/talon/config.toml
+list_dirs $HOME4/.cache/roc/toolchains $HOME4/.cache/roc/packages $HOME4/.cache/roc/talon $HOME4/.cache/roc/talon/tmp $HOME4/.cache/roc/talon/index $HOME4/.cache/roc/talon/x
+list_dirs $HOME4/.cache/roc
+read_files $HOME4/.cache/roc/talon/projects.json
+read_files $HOME4/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME4/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME4/.cache/roc/toolchains/nightly-2026-09-11-eeeeeee/.talon.json $HOME4/.cache/roc/toolchains/nightly-2026-09-11-eeeeeee/.last-use $HOME4/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME4/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+tree_info $HOME4/.cache/roc/toolchains/nightly-2026-09-11-eeeeeee

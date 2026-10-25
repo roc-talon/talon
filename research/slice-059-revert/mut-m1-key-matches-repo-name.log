@@ -1,0 +1,72 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+[dbg] [("Key:format", "-")]
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:585:1
+
+expect {
+    rows = [
+        (choose_view("fmt", tools_x), "Key:fmt"),
+        (choose_view("lz", tools_x), "Key:lz"),
+        (choose_view("format", tools_x), "Key:format"),
+        (choose_view("acme/fmt", tools_x), "App:fmt"),
+        (choose_view("acme/lint", tools_x), "App:lz"),
+        (choose_view("acme/gen", tools_x), "App:gen"),
+        (choose_view("acme/fmtr", tools_x), "App:format"),
+        (choose_view("fmt@1.0.0", tools_x), "-"),
+        (choose_view("fmt@latest", tools_x), "-"),
+        (choose_view("acme/fmt@1.0.0", tools_x), "-"),
+        (choose_view("acme/fmt@latest", tools_x), "-"),
+        (choose_view("acme/fmt@^1", tools_x), "-"),
+        (choose_view("acme/gen@1.0.0", tools_x), "-"),
+        (choose_view("fmtr", tools_x), "-"),
+        (choose_view("Fmt", tools_x), "-"),
+        (choose_view("fm", tools_x), "-"),
+        (choose_view("nope", tools_x), "-"),
+        (choose_view("acme/nope", tools_x), "-"),
+        (choose_view("other/fmt", tools_x), "-"),
+        (choose_view("gitlab.com/acme/fmt", tools_x), "-"),
+        (choose_view("fmt", []), "-"),
+        (choose_view("acme/fmt", []), "-"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == [] and XProject.note({ key: "fmt", version: "1.1.0" }) == "project tool fmt 1.1.0 (talon.toml)"
+}
+
+Mentioned values:
+tools_x = [
+	{ key: "fmt", ref: "acme/fmt@^1.1.0", url: Ok(foo10), line: 2 },
+	{ key: "lz", ref: "acme/lint", url: Err(Unset), line: 3 },
+	{ key: "gen", ref: "acme/gen@1.0.0", url: Ok(foo10), line: 4 },
+	{ key: "format", ref: "acme/fmtr@^2", url: Ok(foo10), line: 5 },
+]
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 64 tests in 5572.0 ms.:
+    63 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5286.6 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 0
+commands: 5 passed, 0 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

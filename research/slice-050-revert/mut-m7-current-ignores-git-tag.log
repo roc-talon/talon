@@ -1,0 +1,117 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    cur = |entry| TalonUpdate.current({ entry, running: "0.0.0" })
+    rows = [
+        (cur(talon(Prebuilt({ version: "0.3.1", url: "u" }))), "0.3.1"),
+        (cur(talon(Git({ commit: "c", ref: "v0.3.2", path: Ok("cli") }))), "0.3.2"),
+        (cur(talon(Git({ commit: "c", ref: "main", path: Ok("cli") }))), "0.0.0"),
+        (cur(talon(Git({ commit: "c", ref: "v1.2", path: Err(None) }))), "0.0.0"),
+        (cur(Err(None)), "0.0.0"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] (["/c/roc/talon/projects.json.0123456789abcdef.tmp", "/c/roc/talon/projects.json.fedcba9876543210.tmp"], ["/c/roc/toolchains/nightly-1.0123456789abcdef.tmp"], [])
+[dbg] ["/c/roc/packages/h1.0123456789abcdef.tmp", "/c/roc/talon/tmp/0123456789abcdef", "/c/roc/talon/x/d1.1123456789abcdef.tmp", "/c/roc/toolchains/n1.fedcba9876543210.trash"]
+[dbg] ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [("pf", "0.2.0", "0.1.1", "text 2.0.0 needs pf 0.1.1"), ("json", "3.0.0", "2.2.0", "needs core >= 1.2.0"), ("parser", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("cli2", "2.0.0", "1.0.0", "needs pf 0.2.0"), ("hangs", "1.1.0", "1.0.0", "hangs the unit check on nightly-2026-10-14-38a3029"), ("crashy", "1.1.0", "1.0.0", "crashes the unit check on nightly-2026-10-14-38a3029"), ("farfail", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("usedfail", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("both", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("nofact", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("plain", "1.1.0", "1.0.0", "it does not fit the closure of the tuple")]
+[dbg] [("pf", "text 2.0.0 needs pf 0.1.1"), ("json", "needs core >= 1.2.0"), ("parser", "it does not fit the closure of the tuple"), ("cli2", "needs pf 0.2.0"), ("hangs", "it does not fit the closure of the tuple"), ("crashy", "it does not fit the closure of the tuple"), ("farfail", "it does not fit the closure of the tuple"), ("usedfail", "it does not fit the closure of the tuple"), ("both", "needs core >= 1.2.0"), ("nofact", "it does not fit the closure of the tuple"), ("plain", "it does not fit the closure of the tuple")]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "roc nightly-2026-10-05-5555555 is not used, nightly-2026-10-04-4444444 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-05-5555555"
+Ran 87 tests in 5119.9 ms.:
+    86 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-2.roc: All (51) tests passed in 5404.0 ms.
+tests/unit/l0-3.roc: All (85) tests passed in 5007.7 ms.
+tests/unit/l0-4.roc: All (72) tests passed in 4621.9 ms.
+tests/unit/l0-5.roc: All (73) tests passed in 5150.1 ms.
+tests/unit/l0-6.roc: All (53) tests passed in 4903.9 ms.
+tests/unit/l0-7.roc: All (64) tests passed in 5623.4 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5242.3 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL tool/ts6-source
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -5,7 +5,6 @@
+       talon git v0.3.4@d0d0d0d0 is up to date
+       exit 0
+       == tool update talon
+      -talon 0.3.4 is up to date
+      -exit 0
+      +exit 16
+       == tool update talon --from-source --offline
+       exit 15
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,5 @@
+       platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+       building roc-talon/talon git v0.3.4@d0d0d0d0 with nightly-2026-10-14-38a3029
+      +tln: error[integrity]: sha256sums.txt of v0.3.4 does not list tln-x64musl, so tln cannot check it. tln is not changed.
+       index: cached at 2026-10-15T12:00:00Z
+       tln: error[network]: roc-talon/talon@v0.3.4 needs a request to find its commit, and --offline is set
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -81,6 +81,19 @@
+       read_files $HOME/.config/talon/config.toml
+       list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+       read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      +list_dirs $HOME/.local/bin
+      +sha256_file $HOME/.local/share/talon/bin/tln
+      +sha256_file $HOME/.local/bin/tln
+      +sha256_file $HOME/.local/bin/roc
+      +random
+      +programs curl wget
+      +make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +spawn_all limit=8
+      +  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl
+      +  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt
+      +sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      +read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      +delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+commands: 6 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

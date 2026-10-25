@@ -1,0 +1,98 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    chmod = |os| Str.inspect(TalonUpdate.chmod_command({ os, file: "/d/bin/tln.0123456789abcdef.tmp" }))
+    rows = [
+        (check(Exited(0)), "ok"),
+        (check(Exited(3)), "tln: error[internal]: the new tln 0.3.4 does not start (exit 3). The old tln stays."),
+        (check(Signaled(11)), "tln: error[internal]: the new tln 0.3.4 does not start (signal 11). The old tln stays."),
+        (check(NotStarted("exec format error")), "tln: error[internal]: the new tln 0.3.4 does not start (not started: exec format error). The old tln stays."),
+        (chmod(Linux), "Ok([\"chmod\", \"0755\", \"/d/bin/tln.0123456789abcdef.tmp\"])"),
+        (chmod(Macos), "Ok([\"chmod\", \"0755\", \"/d/bin/tln.0123456789abcdef.tmp\"])"),
+        (chmod(Windows), "Err(NotNeeded)"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] (["/c/roc/talon/projects.json.0123456789abcdef.tmp", "/c/roc/talon/projects.json.fedcba9876543210.tmp"], ["/c/roc/toolchains/nightly-1.0123456789abcdef.tmp"], [])
+[dbg] ["/c/roc/packages/h1.0123456789abcdef.tmp", "/c/roc/talon/tmp/0123456789abcdef", "/c/roc/talon/x/d1.1123456789abcdef.tmp", "/c/roc/toolchains/n1.fedcba9876543210.trash"]
+[dbg] ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [("pf", "0.2.0", "0.1.1", "text 2.0.0 needs pf 0.1.1"), ("json", "3.0.0", "2.2.0", "needs core >= 1.2.0"), ("parser", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("cli2", "2.0.0", "1.0.0", "needs pf 0.2.0"), ("hangs", "1.1.0", "1.0.0", "hangs the unit check on nightly-2026-10-14-38a3029"), ("crashy", "1.1.0", "1.0.0", "crashes the unit check on nightly-2026-10-14-38a3029"), ("farfail", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("usedfail", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("both", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("nofact", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("plain", "1.1.0", "1.0.0", "it does not fit the closure of the tuple")]
+[dbg] [("pf", "text 2.0.0 needs pf 0.1.1"), ("json", "needs core >= 1.2.0"), ("parser", "it does not fit the closure of the tuple"), ("cli2", "needs pf 0.2.0"), ("hangs", "it does not fit the closure of the tuple"), ("crashy", "it does not fit the closure of the tuple"), ("farfail", "it does not fit the closure of the tuple"), ("usedfail", "it does not fit the closure of the tuple"), ("both", "needs core >= 1.2.0"), ("nofact", "it does not fit the closure of the tuple"), ("plain", "it does not fit the closure of the tuple")]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "roc nightly-2026-10-05-5555555 is not used, nightly-2026-10-04-4444444 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-05-5555555"
+Ran 87 tests in 5094.4 ms.:
+    86 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-2.roc: All (51) tests passed in 5220.6 ms.
+tests/unit/l0-3.roc: All (85) tests passed in 5178.7 ms.
+tests/unit/l0-4.roc: All (72) tests passed in 5076.0 ms.
+tests/unit/l0-5.roc: All (73) tests passed in 5255.1 ms.
+tests/unit/l0-6.roc: All (53) tests passed in 5027.0 ms.
+tests/unit/l0-7.roc: All (64) tests passed in 5599.4 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5367.3 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+build of the L2 app failed:
+── ● redundant pattern ─────────────────────────── cli/lib/TalonUpdate.roc:118:9
+
+The second branch of this match is redundant.
+
+why = match facts.ended {
+      ^^^^^
+
+This pattern can never match because earlier patterns already cover all the
+values it would match.
+
+0 errors and 1 warning found in 4.1s while successfully building:
+
+    /home/george/dev/Karakatiza666/talon/.work/bin/l2
+
+=== l3 exit 1
+build of tln failed:
+── ● redundant pattern ─────────────────────────── cli/lib/TalonUpdate.roc:118:9
+
+The second branch of this match is redundant.
+
+why = match facts.ended {
+      ^^^^^
+
+This pattern can never match because earlier patterns already cover all the
+values it would match.
+
+0 errors and 1 warning found in 4.2s while successfully building:
+
+    /home/george/dev/Karakatiza666/talon/.work/bin/tln
+

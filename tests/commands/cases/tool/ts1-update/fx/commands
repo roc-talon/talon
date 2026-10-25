@@ -1,0 +1,5 @@
+tool update talon
+tool update talon
+tool update roc-talon/talon --json
+tool list
+tool update

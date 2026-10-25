@@ -158,11 +158,11 @@ climb = |dir, root, found| {
 }
 
 known_tables : List(Str)
-known_tables = ["workspace", "toolchain", "resolution", "audit", "dependencies", "overrides", "patch", "build", "tools", "scripts"]
+known_tables = ["workspace", "toolchain", "resolution", "audit", "dependencies", "overrides", "patch", "build", "tools", "scripts", "run"]
 
 # R-WS5, R-TG5: the tables that a member file may have.
 member_tables : List(Str)
-member_tables = ["dependencies", "overrides", "patch", "build", "scripts"]
+member_tables = ["dependencies", "overrides", "patch", "build", "scripts", "run"]
 
 # R-TF4, R-WS5: the whole file. The issues are failures, the warnings go on.
 read_tables : Toml, [Standalone, Root, Member], Str -> Scan
@@ -185,7 +185,7 @@ read_tables = |doc, role, text| {
 			resolution: resolution.value,
 		},
 		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues).concat(tools.issues),
-		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings),
+		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings).concat(unknown_keys(doc, "run", ["after"])),
 	}
 }
 
@@ -272,6 +272,8 @@ check_tables = |doc, role, text| {
 		|(name, value)| match value {
 			Value.Table(_) => if !known_tables.contains(name) {
 				{ issues: [], warnings: [{ line: table_line(name), message: "unknown table [${name}]" }] }
+			} else if role == Root and name == "run" {
+				{ issues: [{ line: table_line(name), message: "the table [run] is not allowed in the workspace root file (it is for the other files of the workspace, R-EA3)" }], warnings: [] }
 			} else if role == Member and !member_tables.contains(name) {
 				{ issues: [{ line: table_line(name), message: "the table [${name}] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)" }], warnings: [] }
 			} else {

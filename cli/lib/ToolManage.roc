@@ -33,9 +33,9 @@ ToolManage :: [].{
 	## | 4 | `update` or `rebuild` with 2 operands or more | `tln tool <verb> takes one tool, or none for all tools, got <n>` |
 	## | 5 | The operand is not a ref (`Ref.parse(operand, Scope.Tool, false)`) | Its failure |
 	## | 6 | The operand has a selector (`foo@1`, `foo@latest`) | `tln tool <verb> takes a tool name, not a version: '<operand>'` |
-	## | 7 | The operand is `talon` or `roc-talon/talon` (slices 050 and 051) | `tln tool <verb> talon is not built yet` |
+	## | 7 | The operand is `talon` or `roc-talon/talon` and the verb is `rebuild` or `remove` (slices 051 and 050 question Q-R1: `update talon` is slice 050) | `tln tool <verb> talon is not built yet` |
 	## | 8 | `--dry-run`, `--remove-tools` or `--keep-all` with `remove` (R-FL12: they are for `tool rm talon`) | `tln tool remove <flag> works only for tln tool remove talon` |
-	## | 9 | `--from-source` with `update` (R-FL12: it is for `tool update talon`) | `tln tool update --from-source works only for tln tool update talon` |
+	## | 9 | `--from-source` with `update` and an operand that is not `talon` (R-FL12: it is for `tool update talon`) | `tln tool update --from-source works only for tln tool update talon` |
 	read : Args -> Try(Cmd, Fail)
 	read = |args| {
 		verb = match args.command {
@@ -51,7 +51,7 @@ ToolManage :: [].{
 			[one] => Ok(operand_ref(name, one)?)
 			_ => Err(None)
 		}
-		flag_check(args, name)?
+		flag_check(args, name, is_talon(ref))?
 		Ok({ verb, ref })
 	}
 
@@ -167,6 +167,13 @@ count_check = |verb, name, count| match verb {
 	_ => if count > 1 Err(usage("tln tool ${name} takes one tool, or none for all tools, got ${count.to_str()}")) else Ok({})
 }
 
+# Is the operand the tool `talon` (the key or the full name)?
+is_talon : Try(Ref, [None]) -> Bool
+is_talon = |ref| match ref {
+	Ok(found) => found.name == "talon" or found.name == "roc-talon/talon"
+	Err(None) => Bool.False
+}
+
 # Rows 5 to 7: the operand is a tool name with no selector, and not `talon`.
 operand_ref : Str, Str -> Try(Ref, Fail)
 operand_ref = |name, operand| {
@@ -175,7 +182,7 @@ operand_ref = |name, operand| {
 		Ok(_) => return Err(usage("tln tool ${name} takes a tool name, not a version: '${operand}'"))
 		Err(None) => {}
 	}
-	if ref.name == "talon" or ref.name == "roc-talon/talon" {
+	if name != "update" and is_talon(Ok(ref)) {
 		Err(usage("tln tool ${name} talon is not built yet"))
 	} else {
 		Ok(ref)
@@ -183,11 +190,11 @@ operand_ref = |name, operand| {
 }
 
 # Rows 8 and 9, R-FL12: the flags of `tool remove talon` and `tool update talon`.
-flag_check : Args, Str -> Try({}, Fail)
-flag_check = |args, name| {
+flag_check : Args, Str, Bool -> Try({}, Fail)
+flag_check = |args, name, talon| {
 	only = match name {
 		"remove" => ["--dry-run", "--remove-tools", "--keep-all"]
-		"update" => ["--from-source"]
+		"update" => if talon [] else ["--from-source"]
 		_ => []
 	}
 	match args.options.find_first(|(flag, _)| only.contains(flag)) {

@@ -1,0 +1,6 @@
+Slice 050, `tln tool update talon` on Windows (R-ST10, R-S3). The fake machine is `os=windows arch=x64`, so the asset is `tln-x64win.exe` and the files have `.exe`. The bin dir of Windows is `<USERPROFILE>\.local\bin` (R-LY8): in the case it is the dir `home\.local\bin` (a name with `\`). `tln.exe` and `roc.exe` of it and `<data>/bin/tln.exe` have the text `old tln`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | no `chmod` job. Under the lock, before the rename over the file: `rename!` of `<data>/bin/tln.exe`, then of the entries `tln.exe` and `roc.exe` to `<name>.<hex>.del` (the hex of the one `random!`), then the rename of the temp file, then the entries again (hard link to a temp name, rename). The 3 `.del` files stay: no later start deletes them in this slice (Q-W1) | R-ST10, R-S3, R-ST9, R-HF2 |
+| 2 | `tool update talon` | up to date | R-S2 |

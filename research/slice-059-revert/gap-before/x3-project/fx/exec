@@ -1,0 +1,2 @@
+# The exit code of the fake child (default 0), by a word of its argv.
+--boom	7

@@ -1,0 +1,42 @@
+== run --each build cwd:w1
+exit 0
+== run --each build -- --fast x cwd:w1
+exit 0
+== run --each cwd:w1
+order of $PROJECT/w1/talon.toml:
+  workers/Admin
+  workers/ledger
+  workers/web
+  zlib
+  workers/mid
+  workers/api
+edges:
+  workers/api -path-> workers/mid
+  workers/mid -after-> zlib
+  workers/web -after-> workers/ledger
+exit 0
+== run --each --json cwd:w1
+{"schema":1,"command":"run","ok":true,"data":{"order":["workers/Admin","workers/ledger","workers/web","zlib","workers/mid","workers/api"],"edges":[{"from":"workers/api","to":"workers/mid","kind":"path"},{"from":"workers/mid","to":"zlib","kind":"after"},{"from":"workers/web","to":"workers/ledger","kind":"after"}]},"error":null}
+exit 0
+== run --each fail cwd:w1
+exit 3
+== run --each fail --keep-going cwd:w1
+exit 3
+== run --each gone --keep-going cwd:w1
+exit 18
+== run --keep-going build cwd:w1
+exit 2
+== run ins cwd:w1
+exit 0
+== run --each build cwd:w1/workers/web
+exit 0
+== run --each build cwd:w2
+exit 19
+== run --each build cwd:w3
+exit 19
+== run --each build cwd:w4
+exit 19
+== run --each build cwd:p1
+exit 2
+== run --each build cwd:w1/workers/solo
+exit 2

@@ -1,0 +1,7 @@
+[run]
+after = ["../ledger"]
+
+[scripts]
+build = ["tool-web one", "tool-web two"]
+fail = "tool-ok web"
+gone = "tool-ok web"

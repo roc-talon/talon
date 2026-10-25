@@ -1,0 +1,51 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.7      10
+
+=== l2 exit 1
+FAIL run/rn4-each
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -10,6 +10,9 @@
+       running workers/api
+       running workers/Admin
+       running workers/ledger
+      +skipped workers/web (after workers/ledger)
+      +running zlib
+      +skipped workers/api (after zlib)
+       running workers/Admin
+       running workers/ledger
+       skipped workers/web (after workers/ledger)
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -121,6 +121,9 @@
+       exec_in $PROJECT/w1/workers/ledger tool-fail ledger
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +exec_in $PROJECT/w1/zlib tool-sig zlib
+      +  env TALON_SCRIPT=fail
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+       args
+       env_all
+       clock
+commands: 0 passed, 1 failed
+
+=== l3 exit 1
+FAIL run/rn2-each
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -4,6 +4,8 @@
+       running apps/a
+       running apps/Z
+       running apps/b
+      +running apps/c
+      +skipped apps/a (after apps/c)
+       running apps/Z
+       running apps/b
+       running apps/c
+scenarios: 0 passed, 1 failed, 0 skipped
+

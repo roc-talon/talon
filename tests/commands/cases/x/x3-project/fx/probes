@@ -1,0 +1,3 @@
+# One row for each build, in order (the build probes of the case).
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}
+1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr	-

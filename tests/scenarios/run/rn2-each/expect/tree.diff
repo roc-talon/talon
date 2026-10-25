@@ -1,0 +1,4 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/cyc/x/main.roc","last_use":1792065600},{"path":"$PROJECT/cyc/y/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/Z/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/a/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/b/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/c/main.roc","last_use":1792065600}]}

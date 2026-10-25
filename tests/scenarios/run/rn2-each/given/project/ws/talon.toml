@@ -1,0 +1,6 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[scripts]
+build = 'sh -c "echo root-build-must-not-run"'
+fail = 'sh -c "echo root-fail-must-not-run"'

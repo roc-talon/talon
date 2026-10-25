@@ -3,10 +3,15 @@ import lib.Fail
 import lib.Intent
 import lib.JsonDoc
 import lib.RunCmd
+import lib.RunEach
 import lib.RunFind
 import lib.RunPlan
+import lib.Ref
 import lib.RunTools
+import lib.Scope
 import lib.ScriptsToml
+import lib.ToolsToml
+import lib.XProject
 
 RunscriptTest :: [].{}
 
@@ -335,4 +340,286 @@ expect {
 				and RunTools.stop(stop).kind.code() == 13
 					and RunTools.stop(other).message == other.message
 						and RunTools.stop(build).message == build.message
+}
+
+# Slice 058, `tln run --each` (CLI 1: R-RUN13, R-EA1 to R-EA8, R-FL12, Design 4.4 R-WS5). Part A: `RunEach` (the nodes, the edges, the order, the skips, the output), the flags in `RunCmd.read` and the table `[run]` in `Intent.read`.
+
+root8 = "/r/w"
+
+lb = |dir| RunEach.label({ root: root8, dir })
+
+kind_text = |kind| match kind {
+	Path => "path"
+	After => "after"
+}
+
+edge_text = |e| "${lb(e.from)} -${kind_text(e.kind)}-> ${lb(e.to)}"
+
+# One node of the workspace `/r/w`: the directory, the member file names in it, the text of its `talon.toml`.
+nd = |dir, members, text| { dir: "/r/w/${dir}", members: members.map(|m| "/r/w/${dir}/${m}"), text }
+
+# What `RunEach.nodes` gives: `<node>=<its member files>` for each node.
+nodes_view = |members, present| {
+	files = RunEach.paths({ root: root8, members }).map(|path| { path, text: if present.contains(path) Ok("") else Err(None) })
+	Str.join_with(RunEach.nodes({ root: root8, members, files }).map(|n| "${lb(n.dir)}=${Str.join_with(n.members.map(|m| m.drop_prefix("${n.dir}/")), ",")}"), " ")
+}
+
+standalone_view = |toml_dirs, nodes| match RunEach.standalone({ toml_dirs, root: root8, nodes }) {
+	Ok(dir) => "standalone ${dir}"
+	Err(None) => "workspace"
+}
+
+# R-RUN13, NC2, NC5, R-PD5 (review of slice 058): the walk stops at the nearest `talon.toml`. When it is neither the root nor a node, the start directory is in a standalone project, and `--each` there is as with no workspace (`standalone`, rows at the end of the next `expect`).
+# R-EA1, R-WS5, NC4, R-PD6: the nodes. A node is the nearest `talon.toml` below the root of a member file. The root directory is no node. A `talon.toml` that is above a nearer one (`workers/talon.toml`), or that has no member file below it, is a standalone file and no node. A node has the member files in
+# its directory and below it, up to the next `talon.toml`. The paths to read are the candidates of the member files, with no root file, sorted, with no repeat.
+expect {
+	members = ["/r/w/workers/web/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/libs/core/src/main.roc", "/r/w/libs/core/more.roc", "/r/w/top.roc", "/r/w/tools/a.roc"]
+	present = ["/r/w/workers/web/talon.toml", "/r/w/workers/ledger/talon.toml", "/r/w/workers/talon.toml", "/r/w/libs/talon.toml", "/r/w/libs/core/src/talon.toml"]
+	RunEach.paths({ root: root8, members }) == [
+		"/r/w/libs/core/src/talon.toml",
+		"/r/w/libs/core/talon.toml",
+		"/r/w/libs/talon.toml",
+		"/r/w/tools/talon.toml",
+		"/r/w/workers/ledger/talon.toml",
+		"/r/w/workers/talon.toml",
+		"/r/w/workers/web/talon.toml",
+	]
+		and RunEach.paths({ root: root8, members: [] }) == []
+			and RunEach.paths({ root: root8, members: ["/r/w/top.roc"] }) == []
+				and nodes_view(members, present) == "libs=core/more.roc libs/core/src=main.roc workers/ledger=main.roc workers/web=main.roc"
+					and nodes_view(members, []) == ""
+						and nodes_view(["/r/w/a/m.roc"], ["/r/w/a/talon.toml"]) == "a=m.roc"
+							and nodes_view(["/r/w/a/b/m.roc", "/r/w/a/n.roc"], ["/r/w/a/talon.toml", "/r/w/a/b/talon.toml"]) == "a=n.roc a/b=m.roc"
+								and standalone_view(["/r/w/workers/solo", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers/solo"
+									and standalone_view(["/r/w/workers", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers"
+										and standalone_view(["/r/w/workers/web", "/r/w"], ["/r/w/workers/web"]) == "workspace"
+											and standalone_view(["/r/w"], []) == "workspace"
+												and standalone_view([], []) == "workspace"
+}
+
+hdr = |entries| "app [main!] {\n${Str.join_with(entries.map(|e| "\t${e},\n"), "")}}\n\nmain! = |_args| Ok({})\n"
+
+# What `RunEach.edges` gives: the edges as `<from> -<kind>-> <to>` (labels), in order, or the failure as `<code> <message>`.
+edges_view = |nodes, headers| match RunEach.edges({ nodes, headers: headers.map(|(file, text)| { file: "/r/w/${file}", text }) }) {
+	Ok(list) => Ok(Str.join_with(list.map(|e| edge_text(e)), ", "))
+	Err(f) => Err("${f.kind.code().to_str()} ${f.message}")
+}
+
+# R-EA2, R-EA3: the edges. Kind 1: a path entry of a member file that names a member file of another node, or a file in the directory of another node (also a file that is no member, and the platform entry). A release URL, a path in no node, in the root directory and in the same node give no edge.
+# A member file with no header or a header that does not parse is exit 2, as R-PD8 says for a project file (review of slice 058).
+# Kind 2: `after` of `[run]`, relative to the directory of the file. The same pair with the 2 kinds has 2 edges, `path` first. Repeats are one edge. The edges are sorted by `from`, `to` and the kind. `after = ["."]` is a node after itself.
+expect {
+	web_toml = "[run]\nafter = [\"../ledger\", \"../ledger\"]\n"
+	nodes = [
+		nd("workers/web", ["main.roc"], web_toml),
+		nd("workers/ledger", ["main.roc"], ""),
+		nd("workers/api", ["main.roc", "extra.roc"], "[scripts]\nb = \"x\"\n"),
+		nd("libs/core", ["main.roc"], ""),
+	]
+	api = hdr(["pf: platform \"../../platform/main.roc\"", "core: \"../../libs/core/main.roc\"", "util: \"../../libs/core/Util.roc\"", "json: \"${foo10}\"", "self: \"./extra.roc\"", "up: \"../../top.roc\"", "roc: \"nightly-2026-10-14-38a3029\""])
+	web = hdr(["pf: platform \"../../platform/main.roc\"", "ledger: \"../ledger/main.roc\""])
+	edges_view(nodes, [("workers/api/main.roc", api), ("workers/web/main.roc", web)]) == Ok("workers/api -path-> libs/core, workers/web -path-> workers/ledger, workers/web -after-> workers/ledger")
+		and edges_view(nodes, []) == Ok("workers/web -after-> workers/ledger")
+			and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\".\"]\n")], []) == Ok("a -after-> a")
+				and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\", \"/r/w/c\"]\n"), nd("b", ["m.roc"], ""), nd("c", ["m.roc"], "")], []) == Ok("a -after-> b, a -after-> c")
+					and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n"), nd("b", ["m.roc"], "")], []) == Err("19 /r/w/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+						and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"..\"]\n")], []) == Err("19 /r/w/a/talon.toml: run.after names '..', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+							and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\"]\n"), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["x: \"../b/m.roc\""]))]) == Ok("a -path-> b, a -after-> b")
+								and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
+									and edges_view([nd("a", ["m.roc"], "")], [("a/m.roc", "app [main!] {\n\tpf: platform\n")]) == Err("2 /r/w/a/m.roc:3: the header is not valid")
+										and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/Util.roc\""]))]) == Ok("a -path-> b")
+											and edges_view([nd("a", ["m.roc"], ""), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["u: \"../b/sub/x.roc\""]))]) == Ok("")
+												and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n")], [("a/m.roc", "main! = |_args| Ok({})\n")]) == Err("2 /r/w/a/m.roc has no app, package or platform header")
+													and RunEach.header_paths(nodes) == ["/r/w/libs/core/main.roc", "/r/w/workers/api/extra.roc", "/r/w/workers/api/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/workers/web/main.roc"]
+}
+
+after_view = |text| match RunEach.read_after({ path: "talon.toml", text }) {
+	Ok(list) => Ok(Str.join_with(list, "|"))
+	Err(f) => Err("${f.kind.code().to_str()} ${f.message}")
+}
+
+# R-EA3 (exit code 19): the form of `[run]`. No table and no key give no entry. The failure names the file and the line.
+expect {
+	after_view("") == Ok("")
+		and after_view("[scripts]\nb = \"x\"\n") == Ok("")
+			and after_view("[run]\n") == Ok("")
+				and after_view("[run]\nafter = []\n") == Ok("")
+					and after_view("[run]\n# c\nafter = [\"../a\", \"b/c\"]\n") == Ok("../a|b/c")
+						and after_view("[run]\nafter = \"../a\"\n") == Err("19 talon.toml:2: run.after: must be a list of strings (directories, relative to this file)")
+							and after_view("[run]\nafter = [\"a\", 5]\n") == Err("19 talon.toml:2: run.after: must be a list of strings (directories, relative to this file)")
+								and after_view("run = 1\n") == Err("19 talon.toml:1: run: must be a table")
+									and after_view("[run\n") == Err("19 talon.toml:1: not valid TOML")
+}
+
+# What `RunEach.order` gives: the nodes (labels) in order, or the failure as `<code> <message>`. An edge is `(from, to, kind)`: `from` comes after `to`.
+order_view = |names, links| {
+	full = |n| "/r/w/${n}"
+	edges = links.map(|(from, to, kind)| { from: full(from), to: full(to), kind })
+	match RunEach.order({ nodes: names.map(|n| full(n)), edges, root: root8 }) {
+		Ok(list) => Ok(Str.join_with(list.map(|x| lb(x)), " "))
+		Err(f) => Err("${f.kind.code().to_str()} ${f.message}")
+	}
+}
+
+# R-EA6, R-EA4, R-EA5, Q-S6: the order. Of the nodes that are ready, the smallest path goes first (byte order: `Zed` is before `alpha`), so a node that others need does not pull itself before smaller ready nodes: `alpha` after `gamma` gives Zed beta gamma alpha, not Zed gamma alpha beta. An edge through a node
+# that has no script stays (a after m after z gives z m a). A cycle is exit 19 with the loop (from the smallest node on it, the labels of the nodes), one text for each group of nodes in a cycle, and no partial order. A node that is after a cycle is not in the text.
+expect {
+	order_view(["alpha", "beta", "gamma", "Zed"], []) == Ok("Zed alpha beta gamma")
+		and order_view(["alpha", "beta", "gamma", "Zed"], [("alpha", "gamma", After)]) == Ok("Zed beta gamma alpha")
+			and order_view(["a", "m", "z"], [("a", "m", Path), ("m", "z", After)]) == Ok("z m a")
+				and order_view(["w/web", "w/ledger", "w/api"], [("w/web", "w/ledger", After), ("w/api", "w/web", Path)]) == Ok("w/ledger w/web w/api")
+					and order_view(["b", "a", "c"], [("a", "b", After), ("c", "b", After)]) == Ok("b a c")
+						and order_view([], []) == Ok("")
+							and order_view(["web", "ledger"], [("web", "ledger", After), ("ledger", "web", Path)]) == Err("19 the nodes of tln run --each depend on each other: ledger -path-> web -after-> ledger")
+								and order_view(["a"], [("a", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> a")
+									and order_view(["z", "a", "b", "c", "d", "e"], [("a", "b", After), ("b", "a", Path), ("d", "c", Path), ("c", "d", After), ("e", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> b -path-> a; c -after-> d -path-> c")
+										and order_view(["a", "b", "c", "d"], [("a", "b", After), ("b", "c", After), ("c", "a", After), ("a", "d", After), ("d", "a", Path)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> d -path-> a")
+											and order_view(["a", "b", "c"], [("a", "b", After), ("b", "c", After), ("c", "a", After)]) == Err("19 the nodes of tln run --each depend on each other: a -after-> b -after-> c -after-> a")
+}
+
+skip_view = |failed, node| {
+	edges = [("c", "b", After), ("b", "a", Path), ("d", "a", After), ("f", "e", After)].map(|(from, to, kind)| { from: "/r/w/${from}", to: "/r/w/${to}", kind })
+	match RunEach.skipped({ edges, failed: failed.map(|n| "/r/w/${n}"), node: "/r/w/${node}" }) {
+		Ok(dir) => lb(dir)
+		Err(None) => "run"
+	}
+}
+
+# R-EA7: with `--keep-going` a node is skipped when it comes after a failed node, direct or not (c after b after a: when a fails, b and c are skipped, the answer names a, the node that failed). The answer is the first failed node in the order of the run that the node comes after. Other nodes run.
+expect {
+	skip_view(["a"], "b") == "a"
+		and skip_view(["a"], "c") == "a"
+			and skip_view(["a"], "d") == "a"
+				and skip_view(["a"], "e") == "run"
+					and skip_view(["a"], "f") == "run"
+						and skip_view([], "c") == "run"
+							and skip_view(["e", "a"], "c") == "a"
+								and skip_view(["b", "a"], "c") == "b"
+									and skip_view(["c"], "b") == "run"
+										and skip_view(["a"], "a") == "run"
+}
+
+# R-EA8, R-EA5: the names of the nodes, and the output of `tln run --each` with no name: the order and the edges, as text and as `data` (the labels are relative to the root).
+expect {
+	edges = [{ from: "/r/w/workers/web", to: "/r/w/workers/ledger", kind: After }, { from: "/r/w/workers/web", to: "/r/w/libs/core", kind: Path }]
+	order = ["/r/w/libs/core", "/r/w/workers/ledger", "/r/w/workers/web"]
+	lb("/r/w/workers/web") == "workers/web"
+		and lb("/r/w") == "."
+			and lb("/other/x") == "/other/x"
+				and lb("/r/wx/y") == "/r/wx/y"
+					and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order, edges }) == "order of /r/w/talon.toml:\n  libs/core\n  workers/ledger\n  workers/web\nedges:\n  workers/web -after-> workers/ledger\n  workers/web -path-> libs/core\n"
+						and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: ["/r/w/a"], edges: [] }) == "order of /r/w/talon.toml:\n  a\nedges: none\n"
+							and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: [], edges: [] }) == "order of /r/w/talon.toml:\n  none\nedges: none\n"
+								and JsonDoc.render(RunEach.list_data({ root: root8, order, edges })) == "{\"order\":[\"libs/core\",\"workers/ledger\",\"workers/web\"],\"edges\":[{\"from\":\"workers/web\",\"to\":\"workers/ledger\",\"kind\":\"after\"},{\"from\":\"workers/web\",\"to\":\"libs/core\",\"kind\":\"path\"}]}"
+									and JsonDoc.render(RunEach.list_data({ root: root8, order: [], edges: [] })) == "{\"order\":[],\"edges\":[]}"
+}
+
+# What `Args.parse` and `RunCmd.read` give for `--each` and `--keep-going`: the script, the args and the 2 flags, or the failure as `<code> <message>`.
+each_view = |words| match Args.parse(words) {
+	Err(stop) => "${stop.fail.kind.code().to_str()} ${stop.fail.message}"
+	Ok(args) => match RunCmd.read(args) {
+		Ok(cmd) => {
+			what = match cmd.name {
+				Ok(name) => "script ${name}"
+				Err(None) => "list"
+			}
+			"${what} args=${Str.join_with(cmd.args, ",")} each=${if cmd.each "yes" else "no"} keep=${if cmd.keep_going "yes" else "no"}"
+		}
+		Err(f) => "${f.kind.code().to_str()} ${f.message}"
+	}
+}
+
+# R-RUN13, R-FL12, R-OUT2, R-RUN10, R-FL1, R-FL6: `--each` and `--keep-going` are flags of `run` only, and `--keep-going` needs `--each`. With `--each` one name or none (the order, R-EA8), the words after `--` are the args of each node (OP9). `--json` with a name is exit 2 (the steps write to stdout), with no name it is the order.
+# The other rules of the line stay (`--file` is no flag of `run`, 2 words, `--` with no name).
+expect {
+	each_view(["run", "--each", "build"]) == "script build args= each=yes keep=no"
+		and each_view(["run", "build", "--each"]) == "script build args= each=yes keep=no"
+			and each_view(["run", "--each", "build", "--keep-going", "--", "x", "y z"]) == "script build args=x,y z each=yes keep=yes"
+				and each_view(["run", "--each"]) == "list args= each=yes keep=no"
+					and each_view(["run", "--each", "--json"]) == "list args= each=yes keep=no"
+						and each_view(["run", "--each", "--keep-going"]) == "list args= each=yes keep=yes"
+							and each_view(["run", "build"]) == "script build args= each=no keep=no"
+								and each_view(["run", "build", "--keep-going"]) == "2 flag '--keep-going' needs --each"
+									and each_view(["run", "--keep-going"]) == "2 flag '--keep-going' needs --each"
+										and each_view(["run", "--each", "build", "--json"]) == "2 tln run build does not take --json: the steps write to stdout. Only tln run with no name does."
+											and each_view(["run", "--each", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
+												and each_view(["run", "--each", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
+													and each_view(["run", "--each", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
+														and each_view(["list", "--each"]) == "2 flag '--each' is not for 'list'"
+															and each_view(["install", "--keep-going"]) == "2 flag '--keep-going' is not for 'install'"
+}
+
+# R-EA3, R-WS5 (exit code 19): `[run]` is a table of the other files of the workspace, not of the root file. A workspace member and a standalone file may have it (the commands that read `talon.toml` print no warning and never look into it). A key of a table that is not allowed stops the command. An unknown key of `[run]` gives the R-TF4 warning in each role (review of slice 058).
+expect {
+	text = "[run]\nafter = [\"../a\"]\n"
+	warn_view(text, Member) == Ok([])
+		and warn_view(text, Standalone) == Ok([])
+			and warn_view("[dependencies]\njson = \"^1\"\n\n${text}", Member) == Ok([])
+				and warn_view("[run]\nafter = []\nfoo = 1\n", Member) == Ok(["talon.toml:3: unknown key run.foo"])
+					and warn_view("[run]\nafter = []\nfoo = 1\n", Standalone) == Ok(["talon.toml:3: unknown key run.foo"])
+						and warn_view("[workspace]\nmembers = []\n\n[run]\nafter = []\n", Root) == Err("19 talon.toml:4: the table [run] is not allowed in the workspace root file (it is for the other files of the workspace, R-EA3)")
+}
+
+# Slice 059, `tln x` of a project tool (CLI 6.4: R-PT11, R-PT12). Part A: `XProject.choose` and `XProject.note`.
+
+# The `[tools]` table of the rows: the keys fmt (`acme/fmt` with a range, a url), lz (`acme/lint` with no selector and no url), gen (`acme/gen` with an exact version) and format (`acme/fmtr`, so the short name `fmtr` is not a key).
+tools_x = [
+	{ key: "fmt", ref: "acme/fmt@^1.1.0", url: Ok(foo10), line: 2 },
+	{ key: "lz", ref: "acme/lint", url: Err(Unset), line: 3 },
+	{ key: "gen", ref: "acme/gen@1.0.0", url: Ok(foo10), line: 4 },
+	{ key: "format", ref: "acme/fmtr@^2", url: Ok(foo10), line: 5 },
+]
+
+# Review Q1: 2 entries with the same app (the keys fmt and fmt2 for `acme/fmt`, and lz for `acme/lint`).
+tools_two = [
+	{ key: "fmt", ref: "acme/fmt@^1.1.0", url: Ok(foo10), line: 2 },
+	{ key: "fmt2", ref: "acme/fmt@1.0.0", url: Ok(foo10), line: 3 },
+	{ key: "lz", ref: "acme/lint", url: Err(Unset), line: 4 },
+]
+
+# What `XProject.choose` gives for the operand of `tln x` as typed: `<how>:<key>` (`Key` or `App`), or `-` for no hit.
+choose_view = |text, tools| match Ref.parse(text, Scope.X, Bool.False) {
+	Ok(ref) => match XProject.choose({ ref, tools }) {
+		Ok({ entry, via: Key }) => "Key:${entry.key}"
+		Ok({ entry, via: App }) => "App:${entry.key}"
+		Err(None) => "-"
+		Err(Many(keys)) => "Many:${Str.join_with(keys, ",")}"
+	}
+	Err(fail) => fail.line()
+}
+
+# R-PT11, R-PT12: which entry `tln x` runs. A short name that is a key runs that entry (`Key`, also an entry with no `url`: the run gives exit 14). `owner/app` with no selector, when an entry has the same app, runs that entry (`App`). A selector means that the user asked for a version: no hit, for
+# the form `owner/app@sel` and for the form `key@sel`. Two entries with the same app are `Many` (the keys, review Q1), and `XProject.many` is the exit 2 text. A key is the whole name (exact case, no prefix), and the short name of an app is no key (`fmtr` is the repo of the key `format`). A name that is not an entry, a `host/path` name and no table are no hit. The note is the text of the design.
+expect {
+	rows = [
+		(choose_view("fmt", tools_x), "Key:fmt"),
+		(choose_view("lz", tools_x), "Key:lz"),
+		(choose_view("format", tools_x), "Key:format"),
+		(choose_view("acme/fmt", tools_x), "App:fmt"),
+		(choose_view("acme/lint", tools_x), "App:lz"),
+		(choose_view("acme/gen", tools_x), "App:gen"),
+		(choose_view("acme/fmtr", tools_x), "App:format"),
+		(choose_view("fmt@1.0.0", tools_x), "-"),
+		(choose_view("fmt@latest", tools_x), "-"),
+		(choose_view("acme/fmt@1.0.0", tools_x), "-"),
+		(choose_view("acme/fmt@latest", tools_x), "-"),
+		(choose_view("acme/fmt@^1", tools_x), "-"),
+		(choose_view("acme/gen@1.0.0", tools_x), "-"),
+		(choose_view("fmtr", tools_x), "-"),
+		(choose_view("Fmt", tools_x), "-"),
+		(choose_view("fm", tools_x), "-"),
+		(choose_view("nope", tools_x), "-"),
+		(choose_view("acme/nope", tools_x), "-"),
+		(choose_view("other/fmt", tools_x), "-"),
+		(choose_view("gitlab.com/acme/fmt", tools_x), "-"),
+		(choose_view("fmt", []), "-"),
+		(choose_view("acme/fmt", []), "-"),
+		(choose_view("acme/fmt", tools_two), "Many:fmt,fmt2"),
+		(choose_view("fmt2", tools_two), "Key:fmt2"),
+		(choose_view("acme/fmt@1.0.0", tools_two), "-"),
+		(choose_view("acme/lint", tools_two), "App:lz"),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == [] and XProject.note({ key: "fmt", version: "1.1.0" }) == "project tool fmt 1.1.0 (talon.toml)" and XProject.many({ name: "acme/fmt", keys: ["fmt", "fmt2"] }).line() == "tln: error[usage]: acme/fmt is the app of 2 entries of [tools]: fmt, fmt2. Use tln x <key>."
 }

@@ -1,0 +1,5 @@
+[run]
+after = ["../nope"]
+
+[scripts]
+build = "tool-a"

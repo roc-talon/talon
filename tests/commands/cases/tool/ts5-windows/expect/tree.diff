@@ -1,0 +1,18 @@
+--- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
++++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64win.exe","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64win.exe"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"tln-x64win.exe","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64win.exe"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]}]
+--- home/.local/share/talon/bin/tln.0123456789abcdef.del
++++ home/.local/share/talon/bin/tln.0123456789abcdef.del
+@@ -0,0 +1 @@
++old tln
+--- home/.local/share/talon/bin/tln.exe
++++ home/.local/share/talon/bin/tln.exe
+@@ -1 +1 @@
+-old tln
++fake tln 0.3.4
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64win.exe"},"build":{"hashes":[],"nightly":"","target":"x64win"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64win.exe"},"build":{"hashes":[],"nightly":"","target":"x64win"},"sha256":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}

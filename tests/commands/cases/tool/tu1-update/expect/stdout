@@ -20,5 +20,5 @@ gp: pinned to commit dd03c09e
 exit 0
 == tool update nope
 exit 2
-== tool update talon
+== tool update --from-source
 exit 2

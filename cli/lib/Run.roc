@@ -28,6 +28,8 @@ import RocUse
 import RunFlow
 import Scope
 import SetupFlow
+import TalonUpdate
+import TalonUpdateFlow
 import ToolGitFlow
 import ToolManageFlow
 import ToolsFlow
@@ -134,7 +136,7 @@ Run :: [].{
 						} else if args.command == ["tool", "remove"] {
 							ToolManageFlow.remove!(fx, args)
 						} else if args.command == ["tool", "update"] {
-							ToolUpdateFlow.update!(fx, args)
+							if TalonUpdate.is_target(args) TalonUpdateFlow.update!(fx, args) else ToolUpdateFlow.update!(fx, args)
 						} else if args.command == ["tool", "rebuild"] {
 							ToolUpdateFlow.rebuild!(fx, args)
 						} else {

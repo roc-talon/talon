@@ -1,0 +1,39 @@
+# R-PT11 R-PT12 R-PT8 R-PT9 R-PD9 R-X3 R-X4 R-E1 R-CM12 OP3 (slice 059): `tln x` of a project tool end to end with the real Fx (the app is a real child), the real curl, the real `roc unbundle`, the fake release server (given/http: the real app bundles of acme/app 1.1.0 and 1.0.0) and the fake compiler
+# nightly-2026-10-14-38a3029 in the store (as the case run/rn1-flow: its binary prints `ran: <repo> <version> args: ...` and exits 3). The project `proj` has `[tools]` with `app` locked to acme/app 1.1.0. The real `exec!` runs the app: its stdout and its exit code are the ones of `tln x`.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+X=$XDG_CACHE_HOME/roc/talon/x
+api() { if [ -f $D/http.log ]; then grep -c '/api/' $D/http.log || true; else echo 0; fi; }
+downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
+builds() { if [ -f $D/build.log ]; then wc -l < $D/build.log; else echo 0; fi; }
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+cd proj
+
+echo "-- 1: tln x with the key of [tools] (R-PT11). There is no build yet: the bundle of the url is fetched and built (R-PT9), with no release list and no yank check (R-PT8). The words after -- go to the app, its exit code is the exit code of tln (R-X4). The tools.json and the bin dir are not made (R-X3, R-PT12)."
+st tln x app -- one "two words"
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+ls -A $X | wc -l
+ls -A $HOME/.local/share/talon $HOME/.local/bin 2>&1 | sed -e 's/^ls: //'
+
+echo "-- 2: the full name with no selector, when an entry has the same app: the note on stderr, and the same build (R-PT11, R-PT9). No request, no build."
+st tln x acme/app
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+
+echo "-- 3: a global tool of the same app and an older release (tln tool install, R-T26)."
+st tln tool install acme/app@1.0.0
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+ls -A $HOME/.local/share/talon/bin
+
+echo "-- 4: the project version wins over a global tool (R-PT12): the key runs 1.1.0 and the global 1.0.0 is not used. No request, no build."
+st tln x app -- p
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+
+echo "-- 5: a selector means that the user asked for a version (R-PT11): the rules of R-X1 to R-X5 apply, the installed tool 1.0.0 runs in place (R-B5)."
+st tln x acme/app@1.0.0 -- g
+echo "downloads: $(downloads), builds: $(builds)"
+
+echo "-- 6: outside the project the key is no project tool: tln x is as before (R-PT11). The short name app is the installed tool, or an x entry of the app (R-B1: the newest version wins, so the 1.1.0 build of the project tool also matches)."
+cd ..
+st tln x app -- o
+echo "downloads: $(downloads), builds: $(builds)"

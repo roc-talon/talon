@@ -1,0 +1,157 @@
+=== l2 exit 1
+FAIL run/rn4-each
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -29,6 +29,8 @@
+       running workers/api
+       tln: error[input]: the nodes of tln run --each depend on each other: a -after-> b -path-> a
+       tln: error[input]: $PROJECT/w3/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)
+      +running a
+      +running b
+       tln: error[input]: $PROJECT/w4/b/talon.toml: script build: the step 'tool-p | tool-q' has the word '|': a step is one command; use 2 steps, or a .roc script
+       tln: error[usage]: tln run --each needs a workspace: no talon.toml with [workspace] on the walk. Checked: $PROJECT/p1, $PROJECT.
+       tln: error[usage]: tln run --each needs a workspace: $PROJECT/w1/workers/solo/talon.toml is a standalone project (no member file of a workspace is in it) and the walk stops there.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -15,21 +15,26 @@
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +read_files $PROJECT/w1/workers/Admin/talon.toml
+       exec_in $PROJECT/w1/workers/Admin tool-admin build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +read_files $PROJECT/w1/workers/ledger/talon.toml
+       exec_in $PROJECT/w1/workers/ledger tool-ledger build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +read_files $PROJECT/w1/workers/web/talon.toml
+       exec_in $PROJECT/w1/workers/web tool-web one
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+       exec_in $PROJECT/w1/workers/web tool-web two
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+      +read_files $PROJECT/w1/zlib/talon.toml
+       exec_in $PROJECT/w1/zlib tool-zlib build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      +read_files $PROJECT/w1/workers/api/talon.toml
+       exec_in $PROJECT/w1/workers/api tool-api build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+      @@ -49,21 +54,26 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +read_files $PROJECT/w1/workers/Admin/talon.toml
+       exec_in $PROJECT/w1/workers/Admin tool-admin build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +read_files $PROJECT/w1/workers/ledger/talon.toml
+       exec_in $PROJECT/w1/workers/ledger tool-ledger build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +read_files $PROJECT/w1/workers/web/talon.toml
+       exec_in $PROJECT/w1/workers/web tool-web one
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+       exec_in $PROJECT/w1/workers/web tool-web two --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+      +read_files $PROJECT/w1/zlib/talon.toml
+       exec_in $PROJECT/w1/zlib tool-zlib build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      +read_files $PROJECT/w1/workers/api/talon.toml
+       exec_in $PROJECT/w1/workers/api tool-api build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+      @@ -115,9 +125,11 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +read_files $PROJECT/w1/workers/Admin/talon.toml
+       exec_in $PROJECT/w1/workers/Admin tool-ok admin
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +read_files $PROJECT/w1/workers/ledger/talon.toml
+       exec_in $PROJECT/w1/workers/ledger tool-fail ledger
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -137,12 +149,15 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +read_files $PROJECT/w1/workers/Admin/talon.toml
+       exec_in $PROJECT/w1/workers/Admin tool-ok admin
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +read_files $PROJECT/w1/workers/ledger/talon.toml
+       exec_in $PROJECT/w1/workers/ledger tool-fail ledger
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +read_files $PROJECT/w1/zlib/talon.toml
+       exec_in $PROJECT/w1/zlib tool-sig zlib
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      @@ -162,15 +177,19 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +read_files $PROJECT/w1/workers/Admin/talon.toml
+       exec_in $PROJECT/w1/workers/Admin tool-ok admin
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +read_files $PROJECT/w1/workers/ledger/talon.toml
+       exec_in $PROJECT/w1/workers/ledger tool-gone ledger
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +read_files $PROJECT/w1/zlib/talon.toml
+       exec_in $PROJECT/w1/zlib tool-ok zlib
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      +read_files $PROJECT/w1/workers/api/talon.toml
+       exec_in $PROJECT/w1/workers/api tool-ok api
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+      @@ -212,9 +231,11 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +read_files $PROJECT/w1/workers/Admin/talon.toml
+       exec_in $PROJECT/w1/workers/Admin tool-admin build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +read_files $PROJECT/w1/workers/ledger/talon.toml
+       exec_in $PROJECT/w1/workers/ledger tool-ledger build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -224,9 +245,11 @@
+       exec_in $PROJECT/w1/workers/web tool-web two
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+      +read_files $PROJECT/w1/zlib/talon.toml
+       exec_in $PROJECT/w1/zlib tool-zlib build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      +read_files $PROJECT/w1/workers/api/talon.toml
+       exec_in $PROJECT/w1/workers/api tool-api build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+      @@ -278,6 +301,11 @@
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w4/a/main.roc $PROJECT/w4/b/main.roc
+      +read_files $PROJECT/w4/a/talon.toml
+      +exec_in $PROJECT/w4/a tool-a ok
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w4/a
+      +read_files $PROJECT/w4/b/talon.toml
+       args
+       env_all
+       clock
+commands: 0 passed, 1 failed
+

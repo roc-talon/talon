@@ -1,0 +1,105 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    }
+    rows = [
+        (plan(Linux, Make, Make), "make tln,roc warnings "),
+        (plan(Macos, Make, Make), "make tln,roc warnings "),
+        (plan(Windows, Make, Make), "make tln.exe,roc.exe warnings "),
+        (plan(Linux, Make, Foreign), "make tln warnings warning: /h/.local/bin/roc is not a file that tln wrote, so tln keeps it. Run: tln setup --replace-roc"),
+        (plan(Windows, Make, Foreign), "make tln.exe warnings warning: /h/.local/bin/roc.exe is not a file that tln wrote, so tln keeps it. Run: tln setup --replace-roc"),
+        (plan(Linux, Foreign, Make), "tln: error[usage]: /h/.local/bin/tln is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again."),
+        (plan(Linux, Foreign, Foreign), "tln: error[usage]: /h/.local/bin/tln is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again."),
+        (plan(Windows, Foreign, Make), "tln: error[usage]: /h/.local/bin/tln.exe is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again."),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] (["/c/roc/talon/projects.json.0123456789abcdef.tmp", "/c/roc/talon/projects.json.fedcba9876543210.tmp"], ["/c/roc/toolchains/nightly-1.0123456789abcdef.tmp"], [])
+[dbg] ["/c/roc/packages/h1.0123456789abcdef.tmp", "/c/roc/talon/tmp/0123456789abcdef", "/c/roc/talon/x/d1.1123456789abcdef.tmp", "/c/roc/toolchains/n1.fedcba9876543210.trash"]
+[dbg] ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [("pf", "0.2.0", "0.1.1", "text 2.0.0 needs pf 0.1.1"), ("json", "3.0.0", "2.2.0", "needs core >= 1.2.0"), ("parser", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("cli2", "2.0.0", "1.0.0", "needs pf 0.2.0"), ("hangs", "1.1.0", "1.0.0", "hangs the unit check on nightly-2026-10-14-38a3029"), ("crashy", "1.1.0", "1.0.0", "crashes the unit check on nightly-2026-10-14-38a3029"), ("farfail", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("usedfail", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("both", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("nofact", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("plain", "1.1.0", "1.0.0", "it does not fit the closure of the tuple")]
+[dbg] [("pf", "text 2.0.0 needs pf 0.1.1"), ("json", "needs core >= 1.2.0"), ("parser", "it does not fit the closure of the tuple"), ("cli2", "needs pf 0.2.0"), ("hangs", "it does not fit the closure of the tuple"), ("crashy", "it does not fit the closure of the tuple"), ("farfail", "it does not fit the closure of the tuple"), ("usedfail", "it does not fit the closure of the tuple"), ("both", "needs core >= 1.2.0"), ("nofact", "it does not fit the closure of the tuple"), ("plain", "it does not fit the closure of the tuple")]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "roc nightly-2026-10-05-5555555 is not used, nightly-2026-10-04-4444444 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-05-5555555"
+Ran 87 tests in 4998.1 ms.:
+    86 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-2.roc: All (51) tests passed in 5213.0 ms.
+tests/unit/l0-3.roc: All (85) tests passed in 5259.5 ms.
+tests/unit/l0-4.roc: All (72) tests passed in 4968.6 ms.
+tests/unit/l0-5.roc: All (73) tests passed in 4728.4 ms.
+tests/unit/l0-6.roc: All (53) tests passed in 5023.5 ms.
+tests/unit/l0-7.roc: All (64) tests passed in 5642.4 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5241.5 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL tool/ts4-rocforeign
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +0,0 @@
+      -warning: $HOME/.local/bin/roc is not a file that tln wrote, so tln keeps it. Run: tln setup --replace-roc
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -33,6 +33,8 @@
+       rename $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln
+       hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+       rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+      +hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+      +rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+       write_atomic $HOME/.local/share/talon/tools.json
+       unlock $HOME/.local/share/talon/tools.json
+       delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,6 +2,11 @@
+       +++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+       @@ -0,0 +1 @@
+       +[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]}]
+      +--- home/.local/bin/roc
+      ++++ home/.local/bin/roc
+      +@@ -1 +1 @@
+      +-system roc
+      ++fake tln 0.3.4
+       --- home/.local/bin/tln
+       +++ home/.local/bin/tln
+       @@ -1 +1 @@
+commands: 6 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

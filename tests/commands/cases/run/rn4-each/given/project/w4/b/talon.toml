@@ -1,0 +1,2 @@
+[scripts]
+build = ["tool-b", "tool-p | tool-q"]

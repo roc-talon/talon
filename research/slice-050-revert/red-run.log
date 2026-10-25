@@ -1,0 +1,155 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        }
+        Err(stop) => "parse: ${stop.fail.line()}"
+    }
+    line = |text| "tln: error[usage]: ${text}"
+    rows = [
+        (cmd(["tool", "list"]), "ls -"),
+        (cmd(["tool", "ls"]), "ls -"),
+        (cmd(["tool", "ls", "foo"]), line("tln tool list takes no tool name, got 1")),
+        (cmd(["tool", "remove", "foo"]), "remove foo"),
+        (cmd(["tool", "rm", "acme/foo"]), "remove acme/foo"),
+        (cmd(["tool", "rm"]), line("tln tool remove needs one tool: tln tool remove <tool>")),
+        (cmd(["tool", "rm", "foo", "bar"]), line("tln tool remove takes one tool, got 2")),
+        (cmd(["tool", "update"]), "update -"),
+        (cmd(["tool", "update", "foo"]), "update foo"),
+        (cmd(["tool", "update", "foo", "bar"]), line("tln tool update takes one tool, or none for all tools, got 2")),
+        (cmd(["tool", "rebuild"]), "rebuild -"),
+        (cmd(["tool", "rebuild", "acme/foo"]), "rebuild acme/foo"),
+        (cmd(["tool", "rebuild", "a", "b", "c"]), line("tln tool rebuild takes one tool, or none for all tools, got 3")),
+        (cmd(["tool", "update", "foo@1.2.0"]), line("tln tool update takes a tool name, not a version: 'foo@1.2.0'")),
+        (cmd(["tool", "rm", "foo@latest"]), line("tln tool remove takes a tool name, not a version: 'foo@latest'")),
+        (cmd(["tool", "rebuild", "acme/foo@dd03c09e"]), line("tln tool rebuild takes a tool name, not a version: 'acme/foo@dd03c09e'")),
+        (cmd(["tool", "rm", "talon"]), line("tln tool remove talon is not built yet")),
+        (cmd(["tool", "update", "talon"]), "update talon"),
+        (cmd(["tool", "update", "roc-talon/talon"]), "update roc-talon/talon"),
+        (cmd(["tool", "update", "talon", "--from-source"]), "update talon"),
+        (cmd(["tool", "update", "roc-talon/talon", "--from-source"]), "update roc-talon/talon"),
+        (cmd(["tool", "update", "talon", "foo"]), line("tln tool update takes one tool, or none for all tools, got 2")),
+        (cmd(["tool", "update", "talon@1"]), line("tln tool update takes a tool name, not a version: 'talon@1'")),
+        (cmd(["tool", "update", "--from-source"]), line("tln tool update --from-source works only for tln tool update talon")),
+        (cmd(["tool", "rebuild", "talon", "--from-source"]), "parse: tln: error[usage]: flag '--from-source' is not for 'tool rebuild'"),
+        (cmd(["tool", "rm", "talon", "--from-source"]), "parse: tln: error[usage]: flag '--from-source' is not for 'tool remove'"),
+        (cmd(["tool", "rebuild", "roc-talon/talon"]), line("tln tool rebuild talon is not built yet")),
+        (cmd(["tool", "rm", "foo", "--dry-run"]), line("tln tool remove --dry-run works only for tln tool remove talon")),
+        (cmd(["tool", "rm", "foo", "--keep-all"]), line("tln tool remove --keep-all works only for tln tool remove talon")),
+        (cmd(["tool", "rm", "foo", "--remove-tools"]), line("tln tool remove --remove-tools works only for tln tool remove talon")),
+        (cmd(["tool", "update", "foo", "--from-source"]), line("tln tool update --from-source works only for tln tool update talon")),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 85 tests in 6216.5 ms.:
+    84 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-4.roc: All (72) tests passed in 6208.2 ms.
+tests/unit/l0-5.roc: All (73) tests passed in 6450.2 ms.
+tests/unit/l0-6.roc: All (53) tests passed in 5996.1 ms.
+tests/unit/l0-7.roc: All (64) tests passed in 7161.2 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 6863.8 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL tool/ts1-update
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+FAIL tool/ts2-stops
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+FAIL tool/ts3b-foreign
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+FAIL tool/ts3-nostart
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+FAIL tool/ts4-rocforeign
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+FAIL tool/ts5-windows
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+FAIL tool/ts6-source
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050b
+commands: 145 passed, 7 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -== tln tool update talon
+       exit 1
+      -$HOME/.cache/roc/talon/tmp:
+      -
+       $HOME/.local/bin:
+       roc
+       tln
+       
+       $HOME/.local/share/talon/bin:
+       tln
+      -tln 0.3.4
+      -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      -downloads: 6
+      --- 5: the entry talon is not a tool of the list (question Q-S2): the real binary reads the file and the list is empty.
+      -== tln tool ls
+      -no tool is installed. Run: tln tool install owner/app
+      -exit 0
+      -== tln tool update
+      -no tool is installed. Run: tln tool install owner/app
+      -exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +1,2 @@
+      -tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.5: the sha256 is e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
+      -tln: error[internal]: the new tln 0.3.6 does not start (exit 3). The old tln stays.
+      +[ROC CRASHED] todo: slice 050b
+      +ls: cannot access '$HOME/.cache/roc/talon/tmp': No such file or directory
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,27 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"sha256sums.txt","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-20T12:00:00Z","assets":[{"name":"tln-x64musl","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},{"name":"sha256sums.txt","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]},{"tag_name":"v0.3.6","draft":false,"prerelease":false,"published_at":"2026-11-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.6/tln-x64musl"},{"name":"sha256sums.txt","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.6/sha256sums.txt"}]}]
+      ---- home/.local/bin/roc
+      -+++ home/.local/bin/roc
+      -@@ -1,2 +1,2 @@
+      - #!/bin/sh
+      --echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ---- home/.local/bin/tln
+      -+++ home/.local/bin/tln
+      -@@ -1,2 +1,2 @@
+      - #!/bin/sh
+      --echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ---- home/.local/share/talon/bin/tln
+      -+++ home/.local/share/talon/bin/tln
+      -@@ -1,2 +1,2 @@
+      - #!/bin/sh
+      --echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -1 +1 @@
+      --{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"ca6c14a55e7cbcd29aed8dae76da7e04f7c4351abd9756de86b74a663cc2f64f","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+scenarios: 77 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.6      10
+fmt        pass   0.2      5
+l0         FAIL   7.4      10
+l2         FAIL   9.3      30
+l3         FAIL   9.9      60
+selftest   pass   2.9      20
+l1         pass   34.2     60
+exit 1

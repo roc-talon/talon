@@ -1,0 +1,872 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        (talon(Ok(whole("\"talon\":5"))), input("tool talon: is not an object")),
+        (talon(Ok("not json")), input("the content does not parse")),
+        (talon(Ok("{\"format\":2,\"tools\":{}}")), input("format 2 is newer than this tln (format 1). Run: tln tool update talon")),
+        (talon(Ok("{\"format\":1,\"tools\":5}")), input("tools is not an object")),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+git_doc =
+"{\"name\":\"roc-talon/talon\",\"source\":{\"kind\":\"git\",\"commit\":\"d0d0d0d
+0\",\"ref\":\"v0.3.4\",\"path\":\"cli\"},\"build\":{\"hashes\":[\"H1\"],\"nightl
+y\":\"nightly-2026-10-14-38a3029\",\"target\":\"x64musl\"},\"sha256\":\"S2\",\"l
+ibs\":[],\"installed_at\":\"2026-10-16T08:00:00Z\"}"
+tool_doc =
+"{\"name\":\"acme/foo\",\"source\":{\"kind\":\"release\",\"version\":\"1.1.0\",\
+"url\":\"u\"}}"
+
+[dbg] []
+[dbg] []
+[dbg] (["/c/roc/talon/projects.json.0123456789abcdef.tmp", "/c/roc/talon/projects.json.fedcba9876543210.tmp"], ["/c/roc/toolchains/nightly-1.0123456789abcdef.tmp"], [])
+[dbg] ["/c/roc/packages/h1.0123456789abcdef.tmp", "/c/roc/talon/tmp/0123456789abcdef", "/c/roc/talon/x/d1.1123456789abcdef.tmp", "/c/roc/toolchains/n1.fedcba9876543210.trash"]
+[dbg] ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [("pf", "0.2.0", "0.1.1", "text 2.0.0 needs pf 0.1.1"), ("json", "3.0.0", "2.2.0", "needs core >= 1.2.0"), ("parser", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("cli2", "2.0.0", "1.0.0", "needs pf 0.2.0"), ("hangs", "1.1.0", "1.0.0", "hangs the unit check on nightly-2026-10-14-38a3029"), ("crashy", "1.1.0", "1.0.0", "crashes the unit check on nightly-2026-10-14-38a3029"), ("farfail", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("usedfail", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("both", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("nofact", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("plain", "1.1.0", "1.0.0", "it does not fit the closure of the tuple")]
+[dbg] [("pf", "text 2.0.0 needs pf 0.1.1"), ("json", "needs core >= 1.2.0"), ("parser", "it does not fit the closure of the tuple"), ("cli2", "needs pf 0.2.0"), ("hangs", "it does not fit the closure of the tuple"), ("crashy", "it does not fit the closure of the tuple"), ("farfail", "it does not fit the closure of the tuple"), ("usedfail", "it does not fit the closure of the tuple"), ("both", "needs core >= 1.2.0"), ("nofact", "it does not fit the closure of the tuple"), ("plain", "it does not fit the closure of the tuple")]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "roc nightly-2026-10-05-5555555 is not used, nightly-2026-10-04-4444444 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-05-5555555"
+Ran 87 tests in 5372.9 ms.:
+    86 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-2.roc: All (51) tests passed in 5180.1 ms.
+tests/unit/l0-3.roc: All (85) tests passed in 5121.1 ms.
+tests/unit/l0-4.roc: All (72) tests passed in 4917.7 ms.
+tests/unit/l0-5.roc: All (73) tests passed in 4862.8 ms.
+tests/unit/l0-6.roc: All (53) tests passed in 4838.9 ms.
+tests/unit/l0-7.roc: All (64) tests passed in 5591.8 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5248.9 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL tool/ts1-update
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,16 +1,11 @@
+       == tool update talon
+      -updated talon 0.3.1 to 0.3.4 (roc-talon/talon)
+      -exit 0
+      +exit 19
+       == tool update talon
+      -talon 0.3.4 is up to date
+      -exit 0
+      +exit 19
+       == tool update roc-talon/talon --json
+      -{"schema":1,"command":"tool update","ok":true,"data":{"tools":[{"tool":"talon","name":"roc-talon/talon","how":"up_to_date","from":null,"to":"0.3.4"}]},"error":null}
+      -exit 0
+      +{"schema":1,"command":"tool update","ok":false,"data":null,"error":{"kind":"input","code":19,"message":"$HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows"}}
+      +exit 19
+       == tool list
+      -TOOL  NAME     SOURCE                 COMPILER                    TARGET   INSTALLED
+      -gp    acme/gp  git dd03c09e@dd03c09e  nightly-2026-10-14-38a3029  x64musl  2026-09-01
+      -exit 0
+      +exit 19
+       == tool update
+      -gp: pinned to commit dd03c09e
+      -exit 0
+      +exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1,5 @@
+      -talon 0.3.4 is up to date
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,57 +3,16 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+      -  User-Agent: tln/0.0.0
+      -write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt
+      -sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -spawn_all limit=1
+      -  job - chmod 0755 $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -spawn_all limit=1
+      -  job - $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp --version
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+      -read_files $HOME/.local/share/talon/tools.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -rename $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln
+      -hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+      -rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+      -hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+      -rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+      -write_atomic $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+       args
+       env_all
+       read_files $HOME/.local/share/talon/tools.json
+      @@ -62,4 +21,3 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,24 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.1","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]},{"tag_name":"v0.3.9","draft":true,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.9/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.9/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.9/sha256sums.txt"}]},{"tag_name":"v0.4.0-rc1","draft":false,"prerelease":true,"published_at":"2026-10-02T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.4.0-rc1/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.4.0-rc1/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.4.0-rc1/sha256sums.txt"}]},{"tag_name":"nightly","draft":false,"prerelease":false,"published_at":"2026-10-03T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/nightly/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/nightly/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/nightly/sha256sums.txt"}]}]
+      ---- home/.local/bin/roc
+      -+++ home/.local/bin/roc
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/bin/tln
+      -+++ home/.local/bin/tln
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/share/talon/bin/tln
+      -+++ home/.local/share/talon/bin/tln
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -1 +1 @@
+      --{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"},"gp":{"name":"acme/gp","source":{"kind":"git","commit":"dd03c09e5f0a3b6c7d8e9f001122334455667788","ref":"dd03c09e"},"build":{"hashes":["GYSsHBiLMwr55ej1xUPJn141oVjjhaftyqg87fp5i3YM"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"gp":{"name":"acme/gp","source":{"kind":"git","commit":"dd03c09e5f0a3b6c7d8e9f001122334455667788","ref":"dd03c09e"},"build":{"hashes":["GYSsHBiLMwr55ej1xUPJn141oVjjhaftyqg87fp5i3YM"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}
+FAIL tool/ts2-stops
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,16 +1,14 @@
+       == tool update talon env:TALON_NOW=2026-07-05T12:00:00Z
+      -exit 16
+      +exit 19
+       == tool update talon env:TALON_NOW=2026-07-15T12:00:00Z
+      -exit 16
+      +exit 19
+       == tool update talon env:TALON_NOW=2026-09-03T12:00:00Z
+      -exit 15
+      +exit 19
+       == tool update talon env:TALON_NOW=2026-09-12T12:00:00Z
+      -exit 16
+      +exit 19
+       == tool update talon --offline
+      -exit 15
+      +exit 19
+       == tool update talon
+      -updated talon 0.1.0 to 0.3.4 (roc-talon/talon)
+      -exit 0
+      +exit 19
+       == tool update talon
+      -talon 0.3.4 is up to date
+      -exit 0
+      +exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,7 @@
+      -tln: error[integrity]: the release v0.2.5 of roc-talon/talon has no sha256sums.txt, so tln cannot check tln-x64musl. tln is not changed.
+      -tln: error[integrity]: sha256sums.txt of v0.2.6 does not list tln-x64musl, so tln cannot check it. tln is not changed.
+      -tln: error[network]: download of talon 0.3.1 failed: 404 (https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl)
+      -tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.2: the sha256 is c95468b70f6ae2b8b8e98d9e08f0046788db8cc9a9ed3bce1104520450bd8606, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
+      -index: cached at 2026-10-15T12:00:00Z
+      -tln: error[network]: tln 0.3.4 is not downloaded and --offline is set. Run the command without --offline.
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,123 +3,33 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+      -  User-Agent: tln/0.0.0
+      -write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.2.6/tln-x64musl
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.2.6/sha256sums.txt
+      -sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.1/sha256sums.txt
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.2/tln-x64musl
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.2/sha256sums.txt
+      -sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt
+      -sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -spawn_all limit=1
+      -  job - chmod 0755 $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -spawn_all limit=1
+      -  job - $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp --version
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+      -read_files $HOME/.local/share/talon/tools.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -rename $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln
+      -hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+      -rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+      -hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+      -rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+      -write_atomic $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,24 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.2.5","draft":false,"prerelease":false,"published_at":"2026-07-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.2.5/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.2.5/tln-arm64musl"}]},{"tag_name":"v0.2.6","draft":false,"prerelease":false,"published_at":"2026-07-10T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.2.6/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.2.6/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.2.6/sha256sums.txt"}]},{"tag_name":"v0.3.1","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/sha256sums.txt"}]},{"tag_name":"v0.3.2","draft":false,"prerelease":false,"published_at":"2026-09-10T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.2/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.2/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.2/sha256sums.txt"}]},{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]}]
+      ---- home/.local/bin/roc
+      -+++ home/.local/bin/roc
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/bin/tln
+      -+++ home/.local/bin/tln
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/share/talon/bin/tln
+      -+++ home/.local/share/talon/bin/tln
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -1 +1 @@
+      --{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.1.0","url":"https://github.com/roc-talon/talon/releases/download/v0.1.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+FAIL tool/ts3b-foreign
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +1,2 @@
+       == tool update talon
+      -exit 2
+      +exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1 @@
+      -tln: error[usage]: $HOME/.local/bin/tln is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again.
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,12 +3,3 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+      -  User-Agent: tln/0.0.0
+      -write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]}]
+FAIL tool/ts3-nostart
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +1,2 @@
+       == tool update talon
+      -exit 1
+      +exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1 @@
+      -tln: error[internal]: the new tln 0.3.4 does not start (exit 1). The old tln stays.
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,25 +3,3 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+      -  User-Agent: tln/0.0.0
+      -write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt
+      -sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -spawn_all limit=1
+      -  job - chmod 0755 $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -spawn_all limit=1
+      -  job - $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp --version
+      -delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]}]
+FAIL tool/ts5-windows
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,4 @@
+       == tool update talon
+      -updated talon 0.3.1 to 0.3.4 (roc-talon/talon)
+      -exit 0
+      +exit 19
+       == tool update talon
+      -talon 0.3.4 is up to date
+      -exit 0
+      +exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -0,0 +1,2 @@
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,47 +3,8 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+      -  User-Agent: tln/0.0.0
+      -write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+      -list_dirs $HOME\.local\bin
+      -sha256_file $HOME/.local/share/talon/bin/tln.exe
+      -sha256_file $HOME\.local\bin/tln.exe
+      -sha256_file $HOME\.local\bin/roc.exe
+      -random
+      -programs curl wget
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64win.exe
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt
+      -sha256_file $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+      -spawn_all limit=1
+      -  job - $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp --version
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+      -read_files $HOME/.local/share/talon/tools.json
+      -list_dirs $HOME\.local\bin
+      -sha256_file $HOME/.local/share/talon/bin/tln.exe
+      -sha256_file $HOME\.local\bin/tln.exe
+      -sha256_file $HOME\.local\bin/roc.exe
+      -rename $HOME/.local/share/talon/bin/tln.exe $HOME/.local/share/talon/bin/tln.0123456789abcdef.del
+      -rename $HOME\.local\bin/tln.exe $HOME\.local\bin/tln.0123456789abcdef.del
+      -rename $HOME\.local\bin/roc.exe $HOME\.local\bin/roc.0123456789abcdef.del
+      -rename $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln.exe
+      -hard_link $HOME/.local/share/talon/bin/tln.exe $HOME\.local\bin/tln.exe.0123456789abcdef.tmp
+      -rename $HOME\.local\bin/tln.exe.0123456789abcdef.tmp $HOME\.local\bin/tln.exe
+      -hard_link $HOME/.local/share/talon/bin/tln.exe $HOME\.local\bin/roc.exe.0123456789abcdef.tmp
+      -rename $HOME\.local\bin/roc.exe.0123456789abcdef.tmp $HOME\.local\bin/roc.exe
+      -write_atomic $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+      -delete $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,18 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64win.exe","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64win.exe"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"tln-x64win.exe","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64win.exe"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]}]
+      ---- home/.local/share/talon/bin/tln.0123456789abcdef.del
+      -+++ home/.local/share/talon/bin/tln.0123456789abcdef.del
+      -@@ -0,0 +1 @@
+      -+old tln
+      ---- home/.local/share/talon/bin/tln.exe
+      -+++ home/.local/share/talon/bin/tln.exe
+      -@@ -1 +1 @@
+      --old tln
+      -+fake tln 0.3.4
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -1 +1 @@
+      --{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64win.exe"},"build":{"hashes":[],"nightly":"","target":"x64win"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64win.exe"},"build":{"hashes":[],"nightly":"","target":"x64win"},"sha256":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+FAIL tool/ts6-source
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,11 +1,8 @@
+       == tool update talon --from-source
+      -updated talon 0.3.1 to git v0.3.4@d0d0d0d0 (roc-talon/talon)
+      -exit 0
+      +exit 19
+       == tool update talon --from-source
+      -talon git v0.3.4@d0d0d0d0 is up to date
+      -exit 0
+      +exit 19
+       == tool update talon
+      -talon 0.3.4 is up to date
+      -exit 0
+      +exit 19
+       == tool update talon --from-source --offline
+      -exit 15
+      +exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,4 @@
+      -platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+      -building roc-talon/talon git v0.3.4@d0d0d0d0 with nightly-2026-10-14-38a3029
+      -index: cached at 2026-10-15T12:00:00Z
+      -tln: error[network]: roc-talon/talon@v0.3.4 needs a request to find its commit, and --offline is set
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,89 +3,18 @@
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+      -  User-Agent: tln/0.0.0
+      -write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+      -http_get https://api.github.com/repos/roc-talon/talon/commits/v0.3.4
+      -  User-Agent: tln/0.0.0
+      -  Accept: application/vnd.github.sha
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/bin/roc
+      -programs curl wget
+      -random
+      -make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/roc-talon/talon/tarball/d0d0d0d05e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c
+      -spawn_all limit=1
+      -  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+      -read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/cli/main.roc
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -programs curl wget
+      -make_dirs $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+      -spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+      -rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+      -delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+      -list_dirs $HOME/.cache/roc/toolchains
+      -random
+      -list_dirs $HOME/.cache/roc/toolchains
+      -write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -canonical $HOME/.cache $HOME/.cache/roc
+      -make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 1
+      -  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/cli nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln timeout=3600
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+      -read_files $HOME/.local/share/talon/tools.json
+      -list_dirs $HOME/.local/bin
+      -sha256_file $HOME/.local/bin/tln
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -make_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+      -copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/tln $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+      -rename $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln
+      -sha256_file $HOME/.local/share/talon/bin/tln
+      -hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+      -rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+      -write_atomic $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -random
+      -hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+      -rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -http_get https://api.github.com/repos/roc-talon/talon/commits/v0.3.4
+      -  User-Agent: tln/0.0.0
+      -  Accept: application/vnd.github.sha
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+       args
+       env_all
+       clock
+       platform
+       read_files $HOME/.local/share/talon/tools.json
+      -read_files $HOME/.config/talon/config.toml
+      -list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+      -read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,47 +0,0 @@
+      ---- home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+      -+++ home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+      -@@ -0,0 +1,13 @@
+      -+platform ""
+      -+	requires {
+      -+		main! : List(Str) => Try({}, [Exit(I32), ..])
+      -+	}
+      -+	exposes []
+      -+	packages {}
+      -+	provides { "roc_main": main_for_host! }
+      -+	targets: {
+      -+		x64mac: { inputs: ["libhost.a", app] },
+      -+		arm64mac: { inputs: ["libhost.a", app] },
+      -+		x64musl: { inputs: ["libhost.a", app] },
+      -+		arm64musl: { inputs: ["libhost.a", app] },
+      -+	}
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]}]
+      ---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -@@ -0,0 +1 @@
+      -+2026-10-15T12:00:00Z
+      ---- home/.local/bin/roc
+      -+++ home/.local/bin/roc
+      -@@ -1 +1 @@
+      --old tln
+      -+fake
+      -\ No newline at end of file
+      ---- home/.local/bin/tln
+      -+++ home/.local/bin/tln
+      -@@ -1 +1 @@
+      --old tln
+      -+fake
+      -\ No newline at end of file
+      ---- home/.local/share/talon/bin/tln
+      -+++ home/.local/share/talon/bin/tln
+      -@@ -1 +1 @@
+      --old tln
+      -+fake
+      -\ No newline at end of file
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -1 +1 @@
+      --{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"git","commit":"d0d0d0d05e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v0.3.4","path":"cli"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+commands: 1 passed, 6 failed
+
+=== l3 exit 1
+FAIL tools/ts1-update-talon
+    exit code differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +1 @@
+      -0
+      +2
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,61 +1,10 @@
+       -- 1: v0.3.4 is the newest release that is old enough (R-T9). The binary and sha256sums.txt are downloaded (R-DA3), the sha256 is checked (R-S1), chmod 0755 (R-HF2), the new file runs with --version (R-S3), then it is renamed over the old file and the entries tln and roc are made again (R-ST9):
+       -- they are one file with the new binary (a hard link of the old file would still run 0.3.1). tools.json has the new entry. No temp file stays (R-CC2).
+       == tln tool update talon
+      -updated talon 0.3.1 to 0.3.4 (roc-talon/talon)
+      -exit 0
+      -$HOME/.cache/roc/talon/tmp:
+      -
+      -$HOME/.local/bin:
+      -roc
+      -tln
+      -
+      -$HOME/.local/share/talon/bin:
+      -tln
+      -$HOME/.local/bin/tln and $HOME/.local/share/talon/bin/tln are one file
+      -$HOME/.local/bin/roc and $HOME/.local/share/talon/bin/tln are one file
+      -$HOME/.local/share/talon/bin/tln can run
+      -tln 0.3.4
+      -tln 0.3.4
+      -tln 0.3.4
+      -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      -downloads: 2
+      --- 2: the same line again: the entry says 0.3.4, so tln is up to date. No download (R-S2).
+      -== tln tool update talon
+      -talon 0.3.4 is up to date
+      -exit 0
+      -downloads: 2
+      --- 3: later (v0.3.5 is old enough): the sha256 of the download is not the one of sha256sums.txt (R-S1, R-SE13). Exit 16. The old file, the entries and tools.json stay, no temp file stays.
+      -== tln tool update talon
+      -exit 16
+      -$HOME/.cache/roc/talon/tmp:
+      -
+      -$HOME/.local/bin:
+      -roc
+      -tln
+      -
+      -$HOME/.local/share/talon/bin:
+      -tln
+      -tln 0.3.4
+      -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      -downloads: 4
+      --- 4: later still (v0.3.6): the sha256 is right, but the new file exits with 3 for --version. Exit 1, the old file stays (R-S3), no temp file stays.
+      -== tln tool update talon
+      -exit 1
+      -$HOME/.cache/roc/talon/tmp:
+      -
+      +exit 19
+       $HOME/.local/bin:
+       roc
+       tln
+       
+       $HOME/.local/share/talon/bin:
+       tln
+      -tln 0.3.4
+      -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      -downloads: 6
+      --- 5: the entry talon is not a tool of the list (question Q-S2): the real binary reads the file and the list is empty.
+      -== tln tool ls
+      -no tool is installed. Run: tln tool install owner/app
+      -exit 0
+      -== tln tool update
+      -no tool is installed. Run: tln tool install owner/app
+      -exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +1,2 @@
+      -tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.5: the sha256 is e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
+      -tln: error[internal]: the new tln 0.3.6 does not start (exit 3). The old tln stays.
+      +tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+      +ls: cannot access '$HOME/.cache/roc/talon/tmp': No such file or directory
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,27 +0,0 @@
+      ---- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -+++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"sha256sums.txt","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-20T12:00:00Z","assets":[{"name":"tln-x64musl","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},{"name":"sha256sums.txt","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]},{"tag_name":"v0.3.6","draft":false,"prerelease":false,"published_at":"2026-11-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.6/tln-x64musl"},{"name":"sha256sums.txt","size":100,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.6/sha256sums.txt"}]}]
+      ---- home/.local/bin/roc
+      -+++ home/.local/bin/roc
+      -@@ -1,2 +1,2 @@
+      - #!/bin/sh
+      --echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ---- home/.local/bin/tln
+      -+++ home/.local/bin/tln
+      -@@ -1,2 +1,2 @@
+      - #!/bin/sh
+      --echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ---- home/.local/share/talon/bin/tln
+      -+++ home/.local/share/talon/bin/tln
+      -@@ -1,2 +1,2 @@
+      - #!/bin/sh
+      --echo 'tln 0.3.1'
+      -+echo 'tln 0.3.4'
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -1 +1 @@
+      --{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"ca6c14a55e7cbcd29aed8dae76da7e04f7c4351abd9756de86b74a663cc2f64f","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
+      -+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+scenarios: 0 passed, 1 failed, 0 skipped
+

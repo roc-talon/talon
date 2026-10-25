@@ -1,0 +1,2 @@
+[tools]
+fmt = "acme/fmt"

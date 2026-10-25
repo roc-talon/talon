@@ -38,7 +38,7 @@ ToolBuild :: [].{
 	attempt! : Fx, Args, Facts, Bundle, { id : Str, first : Bool } => Try(ToolCompiler.Attempt, Fail)
 	attempt! = |fx, args, facts, bundle, req| {
 		hex = Temp.hex(fx.random!())
-		base = ToolInstall.layout({ roots: facts.roots, bin: facts.bin, os: facts.os, key: facts.key, hash: bundle.hash, hex })
+		base = ToolInstall.layout({ roots: facts.roots, bin: facts.bin, os: facts.os, key: facts.file.drop_suffix(".exe"), hash: bundle.hash, hex })
 		layout = { ..base, dir: bundle.dir }
 		result = build_in!(fx, args, facts, { bundle, req, layout })
 		passed = match result {

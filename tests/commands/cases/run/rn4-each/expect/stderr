@@ -1,0 +1,34 @@
+running workers/Admin
+running workers/ledger
+running workers/web
+running zlib
+running workers/api
+running workers/Admin
+running workers/ledger
+running workers/web
+running zlib
+running workers/api
+running workers/Admin
+running workers/ledger
+running workers/Admin
+running workers/ledger
+skipped workers/web (after workers/ledger)
+running zlib
+skipped workers/api (after zlib)
+running workers/Admin
+running workers/ledger
+tln: error[environment]: script gone: the step 'tool-gone ledger' cannot start 'tool-gone': NotFound
+skipped workers/web (after workers/ledger)
+running zlib
+running workers/api
+tln: error[usage]: flag '--keep-going' needs --each
+running workers/Admin
+running workers/ledger
+running workers/web
+running zlib
+running workers/api
+tln: error[input]: the nodes of tln run --each depend on each other: a -after-> b -path-> a
+tln: error[input]: $PROJECT/w3/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)
+tln: error[input]: $PROJECT/w4/b/talon.toml: script build: the step 'tool-p | tool-q' has the word '|': a step is one command; use 2 steps, or a .roc script
+tln: error[usage]: tln run --each needs a workspace: no talon.toml with [workspace] on the walk. Checked: $PROJECT/p1, $PROJECT.
+tln: error[usage]: tln run --each needs a workspace: $PROJECT/w1/workers/solo/talon.toml is a standalone project (no member file of a workspace is in it) and the walk stops there.

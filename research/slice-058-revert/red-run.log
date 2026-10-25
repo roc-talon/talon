@@ -1,0 +1,193 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    order = ["/r/w/libs/core", "/r/w/workers/ledger", "/r/w/workers/web"]
+    lb("/r/w/workers/web") == "workers/web"
+        and lb("/r/w") == "."
+            and lb("/other/x") == "/other/x"
+                and lb("/r/wx/y") == "/r/wx/y"
+                    and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order, edges }) == "order of /r/w/talon.toml:\n  libs/core\n  workers/ledger\n  workers/web\nedges:\n  workers/web -after-> workers/ledger\n  workers/web -path-> libs/core\n"
+                        and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: ["/r/w/a"], edges: [] }) == "order of /r/w/talon.toml:\n  a\nedges: none\n"
+                            and RunEach.list_text({ file: "/r/w/talon.toml", root: root8, order: [], edges: [] }) == "order of /r/w/talon.toml:\n  none\nedges: none\n"
+                                and JsonDoc.render(RunEach.list_data({ root: root8, order, edges })) == "{\"order\":[\"libs/core\",\"workers/ledger\",\"workers/web\"],\"edges\":[{\"from\":\"workers/web\",\"to\":\"workers/ledger\",\"kind\":\"after\"},{\"from\":\"workers/web\",\"to\":\"libs/core\",\"kind\":\"path\"}]}"
+                                    and JsonDoc.render(RunEach.list_data({ root: root8, order: [], edges: [] })) == "{\"order\":[],\"edges\":[]}"
+}
+
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:526:1
+
+expect {
+    each_view(["run", "--each", "build"]) == "script build args= each=yes keep=no"
+        and each_view(["run", "build", "--each"]) == "script build args= each=yes keep=no"
+            and each_view(["run", "--each", "build", "--keep-going", "--", "x", "y z"]) == "script build args=x,y z each=yes keep=yes"
+                and each_view(["run", "--each"]) == "list args= each=yes keep=no"
+                    and each_view(["run", "--each", "--json"]) == "list args= each=yes keep=no"
+                        and each_view(["run", "--each", "--keep-going"]) == "list args= each=yes keep=yes"
+                            and each_view(["run", "build"]) == "script build args= each=no keep=no"
+                                and each_view(["run", "build", "--keep-going"]) == "2 flag '--keep-going' needs --each"
+                                    and each_view(["run", "--keep-going"]) == "2 flag '--keep-going' needs --each"
+                                        and each_view(["run", "--each", "build", "--json"]) == "2 tln run build does not take --json: the steps write to stdout. Only tln run with no name does."
+                                            and each_view(["run", "--each", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
+                                                and each_view(["run", "--each", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
+                                                    and each_view(["run", "--each", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
+                                                        and each_view(["list", "--each"]) == "2 flag '--each' is not for 'list'"
+                                                            and each_view(["install", "--keep-going"]) == "2 flag '--keep-going' is not for 'install'"
+}
+
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:545:1
+
+expect {
+    text = "[run]\nafter = [\"../a\"]\n"
+    warn_view(text, Member) == Ok([])
+        and warn_view(text, Standalone) == Ok([])
+            and warn_view("[dependencies]\njson = \"^1\"\n\n${text}", Member) == Ok([])
+                and warn_view("[run]\nafter = []\nfoo = 1\n", Member) == Ok(["talon.toml:3: unknown key run.foo"])
+                    and warn_view("[run]\nafter = []\nfoo = 1\n", Standalone) == Ok(["talon.toml:3: unknown key run.foo"])
+                        and warn_view("[workspace]\nmembers = []\n\n[run]\nafter = []\n", Root) == Err("19 talon.toml:4: the table [run] is not allowed in the workspace root file (it is for the other files of the workspace, R-EA3)")
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 63 tests in 6742.8 ms.:
+    55 passed
+    8 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 6622.7 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+      -unlock $HOME/.cache/roc/talon/projects.json
+      -read_files $PROJECT/w3/a/main.roc $PROJECT/w3/b/main.roc
+       args
+       env_all
+       clock
+      @@ -270,14 +186,6 @@
+       list_dirs $PROJECT
+       read_files $PROJECT/w4/talon.toml
+       list_dirs $PROJECT/w4/a $PROJECT/w4/b
+      -read_files $PROJECT/w4/a/talon.toml $PROJECT/w4/b/talon.toml
+      -canonical $PROJECT/w4/a/main.roc $PROJECT/w4/b/main.roc
+      -lock $HOME/.cache/roc/talon/projects.json nowait: held
+      -list_dirs $HOME/.cache/roc/talon
+      -read_files $HOME/.cache/roc/talon/projects.json
+      -write_atomic $HOME/.cache/roc/talon/projects.json
+      -unlock $HOME/.cache/roc/talon/projects.json
+      -read_files $PROJECT/w4/a/main.roc $PROJECT/w4/b/main.roc
+       args
+       env_all
+       clock
+      @@ -285,6 +193,15 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       read_files $PROJECT/p1/talon.toml
+      +canonical $PROJECT/p1/main.roc
+      +lock $HOME/.cache/roc/talon/projects.json nowait: held
+      +list_dirs $HOME/.cache/roc/talon
+      +read_files $HOME/.cache/roc/talon/projects.json
+      +write_atomic $HOME/.cache/roc/talon/projects.json
+      +unlock $HOME/.cache/roc/talon/projects.json
+      +exec_in $PROJECT/p1 tool-p1
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/p1
+       args
+       env_all
+       clock
+      @@ -295,4 +212,12 @@
+       list_dirs $PROJECT
+       read_files $PROJECT/w1/workers/solo/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/talon.toml
+       list_dirs $PROJECT/w1/workers/Admin $PROJECT/w1/workers/api $PROJECT/w1/workers/ledger $PROJECT/w1/workers/mid $PROJECT/w1/workers/web $PROJECT/w1/zlib
+      -read_files $PROJECT/w1/workers/Admin/talon.toml $PROJECT/w1/workers/api/talon.toml $PROJECT/w1/workers/ledger/talon.toml $PROJECT/w1/workers/mid/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/workers/web/talon.toml $PROJECT/w1/zlib/talon.toml
+      +canonical $PROJECT/w1/workers/solo/talon.toml
+      +lock $HOME/.cache/roc/talon/projects.json nowait: held
+      +list_dirs $HOME/.cache/roc/talon
+      +read_files $HOME/.cache/roc/talon/projects.json
+      +write_atomic $HOME/.cache/roc/talon/projects.json
+      +unlock $HOME/.cache/roc/talon/projects.json
+      +exec_in $PROJECT/w1/workers/solo tool-solo build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/solo
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,4 @@
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/w1/workers/Admin/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/api/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/ledger/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/mid/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/web/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/zlib/main.roc","last_use":1792065600},{"path":"$PROJECT/w2/a/main.roc","last_use":1792065600},{"path":"$PROJECT/w2/b/main.roc","last_use":1792065600},{"path":"$PROJECT/w3/a/main.roc","last_use":1792065600},{"path":"$PROJECT/w3/b/main.roc","last_use":1792065600},{"path":"$PROJECT/w4/a/main.roc","last_use":1792065600},{"path":"$PROJECT/w4/b/main.roc","last_use":1792065600}]}
+      ++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/Admin/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/api/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/ledger/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/mid/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/workers/solo/talon.toml","last_use":1792065600},{"path":"$PROJECT/w1/workers/web/main.roc","last_use":1792065600},{"path":"$PROJECT/w1/zlib/main.roc","last_use":1792065600}]}
+commands: 143 passed, 1 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+       -- 3: the first failure stops the command: its code is the code of the command, no later node starts (R-EA7). b ends by a signal.
+       == tln run --each fail
+      -fail-ok Z
+      -exit 143
+      +root-fail-must-not-run
+      +exit 0
+       -- 4: with --keep-going all other nodes run, a node after a failed node is skipped, the code is the code of the first failure (b: 143, then c: 3, a is skipped).
+       == tln run --each fail --keep-going
+      -fail-ok Z
+      -exit 143
+      +root-fail-must-not-run
+      +exit 0
+       -- 5: the command works on the workspace of the walk, also from a node (R-RUN13, R-PD3).
+       == tln run --each build
+      -build Z args=
+      -build b args=
+       build c args=
+      -build a args=
+       exit 0
+       -- 6: --keep-going needs --each: exit 2, no child (R-FL12).
+       == tln run build --keep-going
+      -exit 2
+      +root-build-must-not-run
+      +exit 0
+       -- 7: a cycle is exit 19 before the first step: no child runs, no file is made (R-EA5).
+       == tln run --each build
+      -exit 19
+      +exit 2
+       cannot access 'made': No such file or directory
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,16 +1 @@
+      -running apps/Z
+      -running apps/b
+      -running apps/c
+      -running apps/a
+      -running apps/Z
+      -running apps/b
+      -running apps/Z
+      -running apps/b
+      -running apps/c
+      -skipped apps/a (after apps/c)
+      -running apps/Z
+      -running apps/b
+      -running apps/c
+      -running apps/a
+      -tln: error[usage]: flag '--keep-going' needs --each
+      -tln: error[input]: the nodes of tln run --each depend on each other: x -after-> y -path-> x
+      +tln: error[usage]: no script 'build' in the talon.toml files that the walk checked: $PROJECT/cyc/talon.toml.
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,4 @@
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/cyc/x/main.roc","last_use":1792065600},{"path":"$PROJECT/cyc/y/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/Z/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/a/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/b/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/c/main.roc","last_use":1792065600}]}
+      ++{"format":1,"projects":[{"path":"$PROJECT/ws/apps/Z/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/a/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/b/main.roc","last_use":1792065600},{"path":"$PROJECT/ws/apps/c/main.roc","last_use":1792065600}]}
+scenarios: 75 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.6      10
+fmt        pass   0.3      5
+l0         FAIL   7.0      10
+l2         FAIL   8.4      30
+l3         FAIL   10.0     60
+selftest   pass   2.9      20
+l1         pass   35.9     60
+exit 1

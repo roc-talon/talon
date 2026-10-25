@@ -1,0 +1,2 @@
+[workspace]
+members = ["a/main.roc", "b/main.roc"]

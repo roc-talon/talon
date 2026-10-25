@@ -1,0 +1,5 @@
+cli/lib/XProject.roc
+tests/commands/cases/x/x3-project/
+tests/scenarios/ptools/pt2-x/
+tests/commands/cases/x/x1-run/fx/gitdirs
+tests/commands/cases/x/x2-offline/fx/gitdirs

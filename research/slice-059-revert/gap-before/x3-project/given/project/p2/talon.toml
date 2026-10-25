@@ -1,0 +1,2 @@
+[tools]
+gen = { ref = "acme/gen@^1", url = "https://github.com/acme/gen/releases/download/1.0.0/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst" }

@@ -11,4 +11,4 @@ Slice 048, `tln tool update` (entry `commands`). One home with the compiler `nig
 | 5 | `tool update foo` | one tool: the release list, `foo 1.2.0 is up to date` | R-T24, R-T26 |
 | 6 | `tool update gp` | a commit: `pinned to commit dd03c09e`, no request at all | R-T24 |
 | 7 | `tool update nope` | no installed tool has the short name: exit 2 | R-SC3 |
-| 8 | `tool update talon` | `talon` is slices 050 and 051: exit 2 `is not built yet`, no call | R-CM16 |
+| 8 | `tool update --from-source` | the flag is for `tool update talon` (slice 050, R-FL12): exit 2, no call | R-CM16, R-FL12 |

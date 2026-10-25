@@ -1,0 +1,13 @@
+tln: error[consent]: 2 compiler downloads are needed (nightly-2026-10-11-1a2b3c4, nightly-2026-10-12-2664a27). Pass --yes or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the download of nightly-2026-10-11-1a2b3c4, nightly-2026-10-12-2664a27 was declined. No tool was changed.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.2.0 with nightly-2026-10-11-1a2b3c4
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/gm git main@bbbbbbbb with nightly-2026-10-12-2664a27
+foo 1.2.0 is up to date
+bar 1.0.0 is up to date
+gm git main@bbbbbbbb is up to date
+gs git stable@aaaaaaaa is up to date
+gp: pinned to commit dd03c09e
+tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo).
+tln: error[usage]: tln tool update talon is not built yet

@@ -1,0 +1,10 @@
+#!/bin/sh
+# The curl of the case tx1-x-run (the real curl, one change): the URL `https://github.com/...` goes to the fake server, `<fake server>/dl/...`. Talon makes the URL of a release bundle from the repo name, the tag and the hash,
+# so the lists of releases (given/http/api) cannot point to the fake server. The port is in the file http.port of the case (tests/tools/with-http.sh).
+base=http://127.0.0.1:$(cat "$TALON_TEST_DIR/http.port")/dl/
+for a in "$@"; do
+    shift
+    case $a in https://github.com/*) a=$base${a#https://github.com/} ;; esac
+    set -- "$@" "$a"
+done
+exec /usr/bin/curl "$@"

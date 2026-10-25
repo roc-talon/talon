@@ -1,0 +1,4 @@
+[scripts]
+build = "tool-zlib build"
+fail = "tool-sig zlib"
+gone = "tool-ok zlib"

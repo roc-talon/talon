@@ -1,0 +1,6 @@
+[run]
+after = ["../c"]
+
+[scripts]
+build = 'sh -c "echo build $(basename $TALON_SCRIPT_DIR) args=$*" sh'
+fail = 'sh -c "echo fail-never-runs a"'

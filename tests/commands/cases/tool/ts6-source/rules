@@ -1,0 +1,8 @@
+Slice 050, part b: `tln tool update talon --from-source` (R-S2). The installed Talon is the prebuilt 0.3.1. The release list has v0.3.4 (the answer) and v0.3.5 (too young). The tag v0.3.4 has the commit `d0d0d0d0...`. The source archive has `cli/main.roc`, an app with the pin of the installed compiler `nightly-2026-10-14-38a3029` (no download, no prompt). The build is one row of `fx/probes`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon --from-source` | the list, the commit of the tag (`http_get`), the entries (checked before), `programs`, the source archive of the commit (curl, tar, `cli/main.roc` read), the platform of the app, the compiler (installed), the build in the source with no `--target`, the install under the lock (the entry `talon` is a git tool: commit, ref `v0.3.4`, path `cli`, the compiler), the entry `tln`, then the entry `roc`. `updated talon 0.3.1 to git v0.3.4@d0d0d0d0 (roc-talon/talon)`. No `--version` run (Q-F2). The scratch dir is deleted | R-S2, R-T22, R-ST9, R-T4, R-T5, R-T23, R-CC1, R-CC2, R-CC6 |
+| 2 | `tool update talon --from-source` | the commit of the tag is the one of the entry: `talon git v0.3.4@d0d0d0d0 is up to date`, no build | R-S2, R-T24 |
+| 3 | `tool update talon` | no flag: the installed version is the version of the tag ref of the entry (0.3.4): `talon 0.3.4 is up to date` | R-S2, R-S4 |
+| 4 | `tool update talon --from-source --offline` | exit 15, no request | R-DI12, R-T23 |

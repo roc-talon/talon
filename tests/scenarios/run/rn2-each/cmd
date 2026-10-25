@@ -1,0 +1,28 @@
+# R-RUN13 R-EA1 R-EA2 R-EA3 R-EA4 R-EA5 R-EA6 R-EA7 R-EA8 R-RUN10 R-RUN9 R-RUN7 R-FL12 (slice 058): `tln run --each` end to end with the real Fx (children are real `sh` processes). The workspace `ws` has the nodes `apps/Z`, `apps/a`, `apps/b`, `apps/c`: `a` is after `c` (`[run] after`),
+# the root has scripts of the same names that must not run. Byte order: `Z` is before `a`. The order is Z, b, c, a (the smallest ready node first): a depth first order would give Z, c, a, b. `cyc` has a cycle (`x` after `y` by `after`, `y` after `x` by a path entry).
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+cd ws
+
+echo "-- 1: no name: the order and the edges on stdout, no child runs (R-EA8)."
+st tln run --each
+
+echo "-- 2: one script in each node, in the order, one child at a time, in the directory of the node. The line of each node is on stderr (R-EA7). The scripts of the root do not run (R-RUN13). The args of -- go to the last step in each node (R-RUN10)."
+st tln run --each build -- one "two words"
+
+echo "-- 3: the first failure stops the command: its code is the code of the command, no later node starts (R-EA7). b ends by a signal."
+st tln run --each fail
+
+echo "-- 4: with --keep-going all other nodes run, a node after a failed node is skipped, the code is the code of the first failure (b: 143, then c: 3, a is skipped)."
+st tln run --each fail --keep-going
+
+echo "-- 5: the command works on the workspace of the walk, also from a node (R-RUN13, R-PD3)."
+( cd apps/c && st tln run --each build )
+
+echo "-- 6: --keep-going needs --each: exit 2, no child (R-FL12)."
+st tln run build --keep-going
+
+echo "-- 7: a cycle is exit 19 before the first step: no child runs, no file is made (R-EA5)."
+cd ../cyc
+st tln run --each build
+ls made 2>&1 | sed -e 's/^ls: //'

@@ -1,0 +1,287 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+  ext: https://x.org/e.zst (direct; foreign)
+"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"pf\",\"name\":\"acme/pfx\",\"version\":\"0.1.1\",\"kind\":\"release\",\"id\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":false,\"platform\":true,\"patched\":false},{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false,\"patched\":true},{\"alias\":\"util\",\"name\":\"../util/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/main.roc\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"lex\",\"name\":\"acme/lex\",\"version\":\"1.0.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\",\"direct\":false,\"via\":\"json\",\"raised\":null,\"foreign\":false,\"platform\":false,\"patched\":false},{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false}],\"links\":[{\"from\":null,\"alias\":\"pf\",\"to\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\"},{\"from\":null,\"alias\":\"json\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":null,\"alias\":\"util\",\"to\":\"/p/util/main.roc\"},{\"from\":null,\"alias\":\"ext\",\"to\":\"https://x.org/e.zst\"},{\"from\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"alias\":\"lex\",\"to\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"j\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"inner\",\"to\":\"/p/util/in/main.roc\"}],\"series\":[]}]}"
+[dbg] [NeedsTty, NonInteractive, NonInteractive, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NeedsTty, NonInteractive, NonInteractive, NeedsTty, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [Interactive, NonInteractive, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:395:1
+
+expect {
+    web_toml = "[run]\nafter = [\"../ledger\", \"../ledger\"]\n"
+    nodes = [
+        nd("workers/web", ["main.roc"], web_toml),
+        nd("workers/ledger", ["main.roc"], ""),
+        nd("workers/api", ["main.roc", "extra.roc"], "[scripts]\nb = \"x\"\n"),
+        nd("libs/core", ["main.roc"], ""),
+    ]
+    api = hdr(["pf: platform \"../../platform/main.roc\"", "core: \"../../libs/core/main.roc\"", "util: \"../../libs/core/Util.roc\"", "json: \"${foo10}\"", "self: \"./extra.roc\"", "up: \"../../top.roc\"", "roc: \"nightly-2026-10-14-38a3029\""])
+    web = hdr(["pf: platform \"../../platform/main.roc\"", "ledger: \"../ledger/main.roc\""])
+    edges_view(nodes, [("workers/api/main.roc", api), ("workers/web/main.roc", web)]) == Ok("workers/api -path-> libs/core, workers/web -path-> workers/ledger, workers/web -after-> workers/ledger")
+        and edges_view(nodes, []) == Ok("workers/web -after-> workers/ledger")
+            and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\".\"]\n")], []) == Ok("a -after-> a")
+                and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\", \"/r/w/c\"]\n"), nd("b", ["m.roc"], ""), nd("c", ["m.roc"], "")], []) == Ok("a -after-> b, a -after-> c")
+                    and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../nope\"]\n"), nd("b", ["m.roc"], "")], []) == Err("19 /r/w/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+                        and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"..\"]\n")], []) == Err("19 /r/w/a/talon.toml: run.after names '..', which is not a node of the workspace (a directory with a talon.toml and a member file)")
+                            and edges_view([nd("a", ["m.roc"], "[run]\nafter = [\"../b\"]\n"), nd("b", ["m.roc"], "")], [("a/m.roc", hdr(["x: \"../b/m.roc\""]))]) == Ok("a -path-> b, a -after-> b")
+                                and RunEach.header_paths(nodes) == ["/r/w/libs/core/main.roc", "/r/w/workers/api/extra.roc", "/r/w/workers/api/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/workers/web/main.roc"]
+}
+
+Mentioned values:
+foo10 = "https://github.com/acme/foo/releases/download/1.0.0/${h_foo10}.tar.zst"
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 63 tests in 6106.3 ms.:
+    62 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5573.8 ms.
+
+step       result seconds  budget
+l0         FAIL   6.3      10
+
+=== l2 exit 1
+FAIL run/rn4-each
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -5,18 +5,17 @@
+       == run --each cwd:w1
+       order of $PROJECT/w1/talon.toml:
+         workers/Admin
+      +  workers/api
+         workers/ledger
+         workers/web
+         zlib
+         workers/mid
+      -  workers/api
+       edges:
+      -  workers/api -path-> workers/mid
+         workers/mid -after-> zlib
+         workers/web -after-> workers/ledger
+       exit 0
+       == run --each --json cwd:w1
+      -{"schema":1,"command":"run","ok":true,"data":{"order":["workers/Admin","workers/ledger","workers/web","zlib","workers/mid","workers/api"],"edges":[{"from":"workers/api","to":"workers/mid","kind":"path"},{"from":"workers/mid","to":"zlib","kind":"after"},{"from":"workers/web","to":"workers/ledger","kind":"after"}]},"error":null}
+      +{"schema":1,"command":"run","ok":true,"data":{"order":["workers/Admin","workers/api","workers/ledger","workers/web","zlib","workers/mid"],"edges":[{"from":"workers/mid","to":"zlib","kind":"after"},{"from":"workers/web","to":"workers/ledger","kind":"after"}]},"error":null}
+       exit 0
+       == run --each fail cwd:w1
+       exit 3
+      @@ -31,7 +30,7 @@
+       == run --each build cwd:w1/workers/web
+       exit 0
+       == run --each build cwd:w2
+      -exit 19
+      +exit 0
+       == run --each build cwd:w3
+       exit 19
+       == run --each build cwd:w4
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,33 +1,35 @@
+       running workers/Admin
+      +running workers/api
+       running workers/ledger
+       running workers/web
+       running zlib
+      -running workers/api
+       running workers/Admin
+      +running workers/api
+       running workers/ledger
+       running workers/web
+       running zlib
+      -running workers/api
+       running workers/Admin
+      +running workers/api
+       running workers/ledger
+       running workers/Admin
+      +running workers/api
+       running workers/ledger
+       skipped workers/web (after workers/ledger)
+       running zlib
+      -skipped workers/api (after zlib)
+       running workers/Admin
+      +running workers/api
+       running workers/ledger
+       tln: error[environment]: script gone: the step 'tool-gone ledger' cannot start 'tool-gone': NotFound
+       skipped workers/web (after workers/ledger)
+       running zlib
+      -running workers/api
+       tln: error[usage]: flag '--keep-going' needs --each
+       running workers/Admin
+      +running workers/api
+       running workers/ledger
+       running workers/web
+       running zlib
+      -running workers/api
+      -tln: error[input]: the nodes of tln run --each depend on each other: a -after-> b -path-> a
+      +running b
+      +running a
+       tln: error[input]: $PROJECT/w3/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)
+       tln: error[input]: $PROJECT/w4/b/talon.toml: script build: the step 'tool-p | tool-q' has the word '|': a step is one command; use 2 steps, or a .roc script
+       tln: error[usage]: tln run --each needs a workspace: no talon.toml with [workspace] on the walk. Checked: $PROJECT/p1, $PROJECT.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -18,6 +18,9 @@
+       exec_in $PROJECT/w1/workers/Admin tool-admin build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/api tool-api build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       exec_in $PROJECT/w1/workers/ledger tool-ledger build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -30,9 +33,6 @@
+       exec_in $PROJECT/w1/zlib tool-zlib build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      -exec_in $PROJECT/w1/workers/api tool-api build
+      -  env TALON_SCRIPT=build
+      -  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       args
+       env_all
+       clock
+      @@ -52,6 +52,9 @@
+       exec_in $PROJECT/w1/workers/Admin tool-admin build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/api tool-api build --fast x
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       exec_in $PROJECT/w1/workers/ledger tool-ledger build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -64,9 +67,6 @@
+       exec_in $PROJECT/w1/zlib tool-zlib build --fast x
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      -exec_in $PROJECT/w1/workers/api tool-api build --fast x
+      -  env TALON_SCRIPT=build
+      -  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       args
+       env_all
+       clock
+      @@ -118,6 +118,9 @@
+       exec_in $PROJECT/w1/workers/Admin tool-ok admin
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/api tool-ok api
+      +  env TALON_SCRIPT=fail
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       exec_in $PROJECT/w1/workers/ledger tool-fail ledger
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -140,6 +143,9 @@
+       exec_in $PROJECT/w1/workers/Admin tool-ok admin
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/api tool-ok api
+      +  env TALON_SCRIPT=fail
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       exec_in $PROJECT/w1/workers/ledger tool-fail ledger
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -165,15 +171,15 @@
+       exec_in $PROJECT/w1/workers/Admin tool-ok admin
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/api tool-ok api
+      +  env TALON_SCRIPT=gone
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       exec_in $PROJECT/w1/workers/ledger tool-gone ledger
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+       exec_in $PROJECT/w1/zlib tool-ok zlib
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      -exec_in $PROJECT/w1/workers/api tool-ok api
+      -  env TALON_SCRIPT=gone
+      -  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       args
+       args
+       env_all
+      @@ -215,6 +221,9 @@
+       exec_in $PROJECT/w1/workers/Admin tool-admin build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/api tool-api build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       exec_in $PROJECT/w1/workers/ledger tool-ledger build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      @@ -227,9 +236,6 @@
+       exec_in $PROJECT/w1/zlib tool-zlib build
+         env TALON_SCRIPT=build
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      -exec_in $PROJECT/w1/workers/api tool-api build
+      -  env TALON_SCRIPT=build
+      -  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       args
+       env_all
+       clock
+      @@ -246,6 +252,12 @@
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/w2/a/talon.toml $PROJECT/w2/b/talon.toml
+       read_files $PROJECT/w2/a/main.roc $PROJECT/w2/b/main.roc
+      +exec_in $PROJECT/w2/b tool-b
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w2/b
+      +exec_in $PROJECT/w2/a tool-a
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w2/a
+       args
+       env_all
+       clock
+commands: 0 passed, 1 failed
+
+=== l3 exit 1
+FAIL run/rn2-each
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -35,5 +35,5 @@
+       exit 2
+       -- 7: a cycle is exit 19 before the first step: no child runs, no file is made (R-EA5).
+       == tln run --each build
+      -exit 19
+      +exit 0
+       cannot access 'made': No such file or directory
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -13,4 +13,5 @@
+       running apps/c
+       running apps/a
+       tln: error[usage]: flag '--keep-going' needs --each
+      -tln: error[input]: the nodes of tln run --each depend on each other: x -after-> y -path-> x
+      +running y
+      +running x
+scenarios: 0 passed, 1 failed, 0 skipped
+

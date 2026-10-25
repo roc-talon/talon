@@ -1,0 +1,10 @@
+m1-pick-ignores-age {l0: killed, l2: killed, l3: killed}
+m2-pick-allows-downgrade {l0: killed, l2: SURVIVED, l3: SURVIVED}
+m3-version-order-patch-first (after 3 new rows in L0 expect 3) {l0: killed, l2: killed, l3: SURVIVED}   (first run before the rows: l0 SURVIVED)
+m4-del-moves-all-os {l0: killed, l2: killed, l3: killed}
+m5-version-check-any-exit {l0: killed, l2: killed, l3: killed}
+ m6-talon-key-not-skipped {'l0': 'killed', 'l2': 'killed', 'l3': 'killed'}
+ m7-current-ignores-git-tag {'l0': 'killed', 'l2': 'killed', 'l3': 'SURVIVED'}
+ m8-no-sha-check {'l0': 'SURVIVED', 'l2': 'killed', 'l3': 'killed'}
+ m9-foreign-roc-replaced {'l0': 'killed', 'l2': 'killed', 'l3': 'SURVIVED'}
+ m10-temp-kept-after-failure {'l0': 'SURVIVED', 'l2': 'killed', 'l3': 'killed'}

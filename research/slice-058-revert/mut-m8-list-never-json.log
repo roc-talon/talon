@@ -1,0 +1,34 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.7      10
+
+=== l2 exit 1
+FAIL run/rn4-each
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -16,7 +16,17 @@
+         workers/web -after-> workers/ledger
+       exit 0
+       == run --each --json cwd:w1
+      -{"schema":1,"command":"run","ok":true,"data":{"order":["workers/Admin","workers/ledger","workers/web","zlib","workers/mid","workers/api"],"edges":[{"from":"workers/api","to":"workers/mid","kind":"path"},{"from":"workers/mid","to":"zlib","kind":"after"},{"from":"workers/web","to":"workers/ledger","kind":"after"}]},"error":null}
+      +order of $PROJECT/w1/talon.toml:
+      +  workers/Admin
+      +  workers/ledger
+      +  workers/web
+      +  zlib
+      +  workers/mid
+      +  workers/api
+      +edges:
+      +  workers/api -path-> workers/mid
+      +  workers/mid -after-> zlib
+      +  workers/web -after-> workers/ledger
+       exit 0
+       == run --each fail cwd:w1
+       exit 3
+commands: 0 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

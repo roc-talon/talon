@@ -1,0 +1,54 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.8      10
+
+=== l2 exit 1
+FAIL x/x3-project
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,7 +7,7 @@
+       == x gen cwd:p2
+       exit 0
+       == x lz cwd:p6
+      -exit 14
+      +exit 2
+       == x fmt cwd:p8
+       exit 19
+       == x foo cwd:w/m1 -- go
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,7 +2,7 @@
+       note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.
+       platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+       building acme/gen 1.0.0 with nightly-2026-10-14-38a3029
+      -tln: error[frozen]: the [tools] of $PROJECT/p6/talon.toml are not locked: tools.lz has no url. Run tln install to lock them.
+      +tln: error[usage]: 'lz' matches no installed tool or cached app. Use the full name (owner/repo).
+       tln: error[input]: $PROJECT/p8/talon.toml:2: tools.fmt: must be a table with ref and url
+       warning: $PROJECT/p7/talon.toml:2: unknown key tools.fmt.note
+       note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -105,6 +105,14 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      +env_all
+      +clock
+      +platform
+      +read_files $HOME/.local/share/talon/tools.json
+      +read_files $HOME/.config/talon/config.toml
+      +list_dirs $HOME/.cache/roc/talon/x
+      +read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      +list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+       args
+       env_all
+       clock
+commands: 4 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

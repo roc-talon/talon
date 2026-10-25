@@ -1,0 +1,6 @@
+tln: error[integrity]: the release v0.2.5 of roc-talon/talon has no sha256sums.txt, so tln cannot check tln-x64musl. tln is not changed.
+tln: error[integrity]: sha256sums.txt of v0.2.6 does not list tln-x64musl, so tln cannot check it. tln is not changed.
+tln: error[network]: download of talon 0.3.1 failed: 404 (https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl)
+tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.2: the sha256 is c95468b70f6ae2b8b8e98d9e08f0046788db8cc9a9ed3bce1104520450bd8606, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
+index: cached at 2026-10-15T12:00:00Z
+tln: error[network]: tln 0.3.4 is not downloaded and --offline is set. Run the command without --offline.

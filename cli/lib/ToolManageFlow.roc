@@ -75,7 +75,7 @@ ToolManageFlow :: [].{
 
 	## The machine and the manifest, for the commands that go through the tools (`remove` and `ToolUpdateFlow`): the environment, the roots, the network settings, the time, the system (`platform!`), the bin dir, the build target, `config.toml` (`min-release-age`, the probe timeout)
 	## and the tools of `tools.json`. `Facts` is the base of `ToolBuild.Facts`: `name`, `key` and `file` are empty, a tool command sets them for each tool.
-	machine! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool) }, Fail)
+	machine! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
 	machine! = |fx| {
 		env = fx.env_all!()
 		roots = Roots.from_env(env)?
@@ -88,7 +88,9 @@ ToolManageFlow :: [].{
 			Err(Unknown) => return Err(Fail.new(Environment, "tln has no build target for this machine"))
 		}
 		tools_file = Roots.item(roots, Item.ToolsJson)
-		tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
+		tools_text = SetupIo.read_text!(fx, tools_file)?
+		tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
+		talon = ToolsJson.talon({ path: tools_file, text: tools_text })?
 		config = RocInstall.read_config!(fx, roots)?
 		facts = {
 			env,
@@ -105,7 +107,7 @@ ToolManageFlow :: [].{
 			key: "",
 			file: "",
 		}
-		Ok({ facts, tools })
+		Ok({ facts, tools, talon })
 	}
 
 	## The facts of one tool: the base with the name, the key and the file name of the tool (R-ST15).

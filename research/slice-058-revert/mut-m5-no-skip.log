@@ -1,0 +1,146 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+  lex    acme/lex 1.0.0       via json
+  inner  ./in/main.roc        via util; foreign
+"
+[dbg] "/p/main.roc
+  pf: acme/pfx 0.1.1 (direct)
+  json: acme/json 2.1.0 (direct; raised from 2.0.0; patched)
+    lex: acme/lex 1.0.0
+  util: ../util/main.roc (direct; foreign)
+    j: acme/json 2.1.0 (shown above)
+    inner: ./in/main.roc (foreign)
+  ext: https://x.org/e.zst (direct; foreign)
+"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"pf\",\"name\":\"acme/pfx\",\"version\":\"0.1.1\",\"kind\":\"release\",\"id\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":false,\"platform\":true,\"patched\":false},{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false,\"patched\":true},{\"alias\":\"util\",\"name\":\"../util/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/main.roc\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"lex\",\"name\":\"acme/lex\",\"version\":\"1.0.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\",\"direct\":false,\"via\":\"json\",\"raised\":null,\"foreign\":false,\"platform\":false,\"patched\":false},{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false}],\"links\":[{\"from\":null,\"alias\":\"pf\",\"to\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\"},{\"from\":null,\"alias\":\"json\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":null,\"alias\":\"util\",\"to\":\"/p/util/main.roc\"},{\"from\":null,\"alias\":\"ext\",\"to\":\"https://x.org/e.zst\"},{\"from\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"alias\":\"lex\",\"to\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"j\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"inner\",\"to\":\"/p/util/in/main.roc\"}],\"series\":[]}]}"
+[dbg] [NeedsTty, NonInteractive, NonInteractive, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NeedsTty, NonInteractive, NonInteractive, NeedsTty, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [Interactive, NonInteractive, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:467:1
+
+expect {
+    skip_view(["a"], "b") == "a"
+        and skip_view(["a"], "c") == "a"
+            and skip_view(["a"], "d") == "a"
+                and skip_view(["a"], "e") == "run"
+                    and skip_view(["a"], "f") == "run"
+                        and skip_view([], "c") == "run"
+                            and skip_view(["e", "a"], "c") == "a"
+                                and skip_view(["b", "a"], "c") == "b"
+                                    and skip_view(["c"], "b") == "run"
+                                        and skip_view(["a"], "a") == "run"
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 63 tests in 5479.5 ms.:
+    62 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5359.9 ms.
+
+step       result seconds  budget
+l0         FAIL   5.7      10
+
+=== l2 exit 1
+FAIL run/rn4-each
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -12,13 +12,13 @@
+       running workers/ledger
+       running workers/Admin
+       running workers/ledger
+      -skipped workers/web (after workers/ledger)
+      +running workers/web
+       running zlib
+      -skipped workers/api (after zlib)
+      +running workers/api
+       running workers/Admin
+       running workers/ledger
+       tln: error[environment]: script gone: the step 'tool-gone ledger' cannot start 'tool-gone': NotFound
+      -skipped workers/web (after workers/ledger)
+      +running workers/web
+       running zlib
+       running workers/api
+       tln: error[usage]: flag '--keep-going' needs --each
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -143,9 +143,15 @@
+       exec_in $PROJECT/w1/workers/ledger tool-fail ledger
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +exec_in $PROJECT/w1/workers/web tool-ok web
+      +  env TALON_SCRIPT=fail
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+       exec_in $PROJECT/w1/zlib tool-sig zlib
+         env TALON_SCRIPT=fail
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      +exec_in $PROJECT/w1/workers/api tool-ok api
+      +  env TALON_SCRIPT=fail
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+       args
+       env_all
+       clock
+      @@ -168,6 +174,9 @@
+       exec_in $PROJECT/w1/workers/ledger tool-gone ledger
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +exec_in $PROJECT/w1/workers/web tool-ok web
+      +  env TALON_SCRIPT=gone
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+       exec_in $PROJECT/w1/zlib tool-ok zlib
+         env TALON_SCRIPT=gone
+         env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+commands: 0 passed, 1 failed
+
+=== l3 exit 1
+FAIL run/rn2-each
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -22,6 +22,7 @@
+       -- 4: with --keep-going all other nodes run, a node after a failed node is skipped, the code is the code of the first failure (b: 143, then c: 3, a is skipped).
+       == tln run --each fail --keep-going
+       fail-ok Z
+      +fail-never-runs a
+       exit 143
+       -- 5: the command works on the workspace of the walk, also from a node (R-RUN13, R-PD3).
+       == tln run --each build
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,7 +7,7 @@
+       running apps/Z
+       running apps/b
+       running apps/c
+      -skipped apps/a (after apps/c)
+      +running apps/a
+       running apps/Z
+       running apps/b
+       running apps/c
+scenarios: 0 passed, 1 failed, 0 skipped
+

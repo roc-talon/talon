@@ -1,0 +1,15 @@
+run --each build cwd:w1
+run --each build -- --fast x cwd:w1
+run --each cwd:w1
+run --each --json cwd:w1
+run --each fail cwd:w1
+run --each fail --keep-going cwd:w1
+run --each gone --keep-going cwd:w1
+run --keep-going build cwd:w1
+run ins cwd:w1
+run --each build cwd:w1/workers/web
+run --each build cwd:w2
+run --each build cwd:w3
+run --each build cwd:w4
+run --each build cwd:p1
+run --each build cwd:w1/workers/solo

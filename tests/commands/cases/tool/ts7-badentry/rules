@@ -1,0 +1,6 @@
+Slice 050 gap step, a `tools.json` with an entry `talon` that is not an object (`"talon":5`) and the tool `gp` (R-TF6: a Talon file with content that does not parse stops the command with exit 19 and names the file). `tool update talon` and `tool update` read the entry `talon` (`ToolManageFlow.machine!`). `tool list` is not a run of this case: the code skips the key `talon` and lists `gp` with exit 0, and the design does not say if that is right (question Q-B1 of the slice file). No request, no write.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | exit 19 `<path>: tool talon: is not an object`, no request | R-TF6, R-S2 |
+| 2 | `tool update` | exit 19, the same line | R-TF6, R-T25 |

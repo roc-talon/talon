@@ -1,0 +1,109 @@
+#!/usr/bin/env python3
+"""Writes the given files and the cmd of the L3 case tests/scenarios/tools/ts1-update-talon (slice 050). No expect/ file (UPDATE=1 writes them and the agent reads each one, TW21).
+Usage: python3 research/slice-050-revert/gen-l3.py (from the repo root)."""
+import hashlib, json, os, shutil, stat
+
+D = "tests/scenarios/tools/ts1-update-talon"
+URL = "https://github.com/roc-talon/talon/releases/download"
+
+
+def put(path, text, mode=None):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    open(path, "w").write(text)
+    if mode:
+        os.chmod(path, mode)
+
+
+def sha(text):
+    return hashlib.sha256(text.encode()).hexdigest()
+
+
+shutil.rmtree(D, ignore_errors=True)
+EXE = 0o755
+old = "#!/bin/sh\necho 'tln 0.3.1'\n"
+new = {"0.3.4": "#!/bin/sh\necho 'tln 0.3.4'\n", "0.3.5": "#!/bin/sh\necho 'tln 0.3.5'\n", "0.3.6": "#!/bin/sh\nexit 3\n"}
+home = f"{D}/given/home"
+for p in [f"{home}/.local/share/talon/bin/tln", f"{home}/.local/bin/tln", f"{home}/.local/bin/roc"]:
+    put(p, old, EXE)
+entry = {
+    "name": "roc-talon/talon",
+    "source": {"kind": "prebuilt", "version": "0.3.1", "url": f"{URL}/v0.3.1/tln-x64musl"},
+    "build": {"hashes": [], "nightly": "", "target": "x64musl"},
+    "sha256": sha(old),
+    "libs": [],
+    "installed_at": "2026-09-01T12:00:00Z",
+}
+put(f"{home}/.local/share/talon/tools.json", json.dumps({"format": 1, "tools": {"talon": entry}}, separators=(",", ":")) + "\n")
+
+
+def asset(tag, name):
+    return {"name": name, "size": 100, "browser_download_url": f"{URL}/{tag}/{name}"}
+
+
+def release(tag, published):
+    return {"tag_name": tag, "draft": False, "prerelease": False, "published_at": published, "assets": [asset(tag, "tln-x64musl"), asset(tag, "sha256sums.txt")]}
+
+
+rels = [release("v0.3.4", "2026-10-01T12:00:00Z"), release("v0.3.5", "2026-10-20T12:00:00Z"), release("v0.3.6", "2026-11-01T12:00:00Z")]
+put(f"{D}/given/http/api/repos/roc-talon/talon/releases?per_page=100", json.dumps(rels, separators=(",", ":")) + "\n")
+for ver, text in new.items():
+    base = f"{D}/given/http/dl/roc-talon/talon/releases/download/v{ver}"
+    put(f"{base}/tln-x64musl", text)
+    digest = "0" * 64 if ver == "0.3.5" else sha(text)
+    put(f"{base}/sha256sums.txt", f"{digest}  tln-x64musl\n{'0' * 64}  tln-arm64musl\n")
+shutil.copy("tests/scenarios/tools/ti3-tool-git/given/bin/curl", f"{D}/given/bin/curl") if os.path.isdir(f"{D}/given/bin") else (os.makedirs(f"{D}/given/bin"), shutil.copy("tests/scenarios/tools/ti3-tool-git/given/bin/curl", f"{D}/given/bin/curl"))
+put(
+    f"{D}/cmd",
+    r"""# R-S2 R-S3 R-T22 R-T9 R-ST9 R-ST10 R-SE13 R-S1 R-DA3 R-DA4 R-HF2 R-CC1 R-CC2 R-CC6 R-T4 (slice 050): `tln tool update talon` end to end with the real Fx: the real curl (the wrapper of given/bin/curl sends `https://github.com/...` to the fake server), the real sha256, the real `chmod`,
+# the real run of `<file> --version`, the real `rename` and hard links. The fake GitHub server (given/http) has the release list of roc-talon/talon and the files of v0.3.4 (works), v0.3.5 (the sha256 in sha256sums.txt is wrong) and v0.3.6 (a file that exits with 3).
+# `<data>/bin/tln`, `~/.local/bin/tln` and `roc` are 3 files with the same shell script (tln 0.3.1): the entries are Talon's (R-ST11). The entry `talon` of tools.json says 0.3.1. The default clock is 2026-10-15T12:00:00Z (min-release-age 2 days): v0.3.5 and v0.3.6 are in the future.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+B=$HOME/.local/bin
+DB=$XDG_DATA_HOME/talon/bin
+J=$XDG_DATA_HOME/talon/tools.json
+TMP=$XDG_CACHE_HOME/roc/talon/tmp
+downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
+linked() { if [ "$1" -ef "$2" ]; then echo "$1 and $2 are one file"; else echo "$1 and $2 are two files"; fi; }
+mode() { if [ -x "$1" ]; then echo "$1 can run"; else echo "$1 cannot run"; fi; }
+
+echo "-- 1: v0.3.4 is the newest release that is old enough (R-T9). The binary and sha256sums.txt are downloaded (R-DA3), the sha256 is checked (R-S1), chmod 0755 (R-HF2), the new file runs with --version (R-S3), then it is renamed over the old file and the entries tln and roc are made again (R-ST9):"
+echo "-- they are one file with the new binary (a hard link of the old file would still run 0.3.1). tools.json has the new entry. No temp file stays (R-CC2)."
+st tln tool update talon
+ls -A $B $DB $TMP
+linked $B/tln $DB/tln
+linked $B/roc $DB/tln
+mode $DB/tln
+$B/tln --version
+$B/roc --version
+$DB/tln --version
+cat $J
+echo "downloads: $(downloads)"
+
+echo "-- 2: the same line again: the entry says 0.3.4, so tln is up to date. No download (R-S2)."
+st tln tool update talon
+echo "downloads: $(downloads)"
+
+echo "-- 3: later (v0.3.5 is old enough): the sha256 of the download is not the one of sha256sums.txt (R-S1, R-SE13). Exit 16. The old file, the entries and tools.json stay, no temp file stays."
+export TALON_NOW=2026-10-30T12:00:00Z
+st tln tool update talon
+ls -A $B $DB $TMP
+$B/tln --version
+cat $J
+echo "downloads: $(downloads)"
+
+echo "-- 4: later still (v0.3.6): the sha256 is right, but the new file exits with 3 for --version. Exit 1, the old file stays (R-S3), no temp file stays."
+export TALON_NOW=2026-11-10T12:00:00Z
+st tln tool update talon
+ls -A $B $DB $TMP
+$B/tln --version
+cat $J
+echo "downloads: $(downloads)"
+
+echo "-- 5: the entry talon is not a tool of the list (question Q-S2): the real binary reads the file and the list is empty."
+st tln tool ls
+st tln tool update
+""",
+)
+print("ok")

@@ -1,0 +1,2 @@
+[tools]
+foo = { ref = "acme/own@^1", url = "https://github.com/acme/own/releases/download/1.0.0/7TBeuBWwAcsabfpRPKPeHdnMd8VcJ7yqiG4y24RKyRU4.tar.zst" }

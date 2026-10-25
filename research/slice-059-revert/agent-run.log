@@ -1,0 +1,32 @@
+m1-key-matches-repo-name killed by l0
+m2-first-entry-of-app-wins INVALID (does not compile) ──────────────────────── cli/lib/XProject.roc:53:5
+
+The third branch of this match is redundant.
+
+match same {
+^^^^^
+
+This pattern can never match because earlier patterns already cover all the
+values it would match.
+
+── 0 errors and 1 warning ───────────────────────────────────── cli/lib/main.roc
+
+
+m3-selector-does-not-stop-walk killed by l2
+m4-no-record killed by l2
+m5-table-of-the-file-not-of-the-root killed by l2
+m6-args-after-dashes-dropped INVALID (does not compile) Variable plan is defined here and then never used.
+
+exec_hit! = |fx, args, plan, what| {
+                       ^^^^
+
+If you don't need this variable, prefix it with an underscore like _plan to
+suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────── cli/lib/main.roc
+
+
+m7-note-for-key-too killed by l2
+m8-standalone-records-toml-not-main killed by l2
+m2-first-entry-of-app-wins killed by l0
+m6-args-after-dashes-dropped killed by l2

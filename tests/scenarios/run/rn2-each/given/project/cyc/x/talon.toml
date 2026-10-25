@@ -1,0 +1,5 @@
+[run]
+after = ["../y"]
+
+[scripts]
+build = 'sh -c "touch made"'

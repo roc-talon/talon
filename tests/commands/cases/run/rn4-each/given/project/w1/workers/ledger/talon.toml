@@ -1,0 +1,4 @@
+[scripts]
+build = "tool-ledger build"
+fail = "tool-fail ledger"
+gone = "tool-gone ledger"

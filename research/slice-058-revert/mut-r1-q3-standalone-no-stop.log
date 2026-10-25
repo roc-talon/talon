@@ -1,0 +1,126 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:371:1
+
+expect {
+    members = ["/r/w/workers/web/main.roc", "/r/w/workers/ledger/main.roc", "/r/w/libs/core/src/main.roc", "/r/w/libs/core/more.roc", "/r/w/top.roc", "/r/w/tools/a.roc"]
+    present = ["/r/w/workers/web/talon.toml", "/r/w/workers/ledger/talon.toml", "/r/w/workers/talon.toml", "/r/w/libs/talon.toml", "/r/w/libs/core/src/talon.toml"]
+    RunEach.paths({ root: root8, members }) == [
+        "/r/w/libs/core/src/talon.toml",
+        "/r/w/libs/core/talon.toml",
+        "/r/w/libs/talon.toml",
+        "/r/w/tools/talon.toml",
+        "/r/w/workers/ledger/talon.toml",
+        "/r/w/workers/talon.toml",
+        "/r/w/workers/web/talon.toml",
+    ]
+        and RunEach.paths({ root: root8, members: [] }) == []
+            and RunEach.paths({ root: root8, members: ["/r/w/top.roc"] }) == []
+                and nodes_view(members, present) == "libs=core/more.roc libs/core/src=main.roc workers/ledger=main.roc workers/web=main.roc"
+                    and nodes_view(members, []) == ""
+                        and nodes_view(["/r/w/a/m.roc"], ["/r/w/a/talon.toml"]) == "a=m.roc"
+                            and nodes_view(["/r/w/a/b/m.roc", "/r/w/a/n.roc"], ["/r/w/a/talon.toml", "/r/w/a/b/talon.toml"]) == "a=n.roc a/b=m.roc"
+                                and standalone_view(["/r/w/workers/solo", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers/solo"
+                                    and standalone_view(["/r/w/workers", "/r/w"], ["/r/w/workers/web"]) == "standalone /r/w/workers"
+                                        and standalone_view(["/r/w/workers/web", "/r/w"], ["/r/w/workers/web"]) == "workspace"
+                                            and standalone_view(["/r/w"], []) == "workspace"
+                                                and standalone_view([], []) == "workspace"
+}
+
+Mentioned values:
+root8 = "/r/w"
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 63 tests in 5536.4 ms.:
+    62 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5241.2 ms.
+
+step       result seconds  budget
+l0         FAIL   5.7      10
+
+=== l2 exit 1
+FAIL run/rn4-each
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -39,4 +39,4 @@
+       == run --each build cwd:p1
+       exit 2
+       == run --each build cwd:w1/workers/solo
+      -exit 2
+      +exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -31,4 +31,8 @@
+       tln: error[input]: $PROJECT/w3/a/talon.toml: run.after names '../nope', which is not a node of the workspace (a directory with a talon.toml and a member file)
+       tln: error[input]: $PROJECT/w4/b/talon.toml: script build: the step 'tool-p | tool-q' has the word '|': a step is one command; use 2 steps, or a .roc script
+       tln: error[usage]: tln run --each needs a workspace: no talon.toml with [workspace] on the walk. Checked: $PROJECT/p1, $PROJECT.
+      -tln: error[usage]: tln run --each needs a workspace: $PROJECT/w1/workers/solo/talon.toml is a standalone project (no member file of a workspace is in it) and the walk stops there.
+      +running workers/Admin
+      +running workers/ledger
+      +running workers/web
+      +running zlib
+      +running workers/api
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -296,3 +296,27 @@
+       read_files $PROJECT/w1/workers/solo/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/talon.toml
+       list_dirs $PROJECT/w1/workers/Admin $PROJECT/w1/workers/api $PROJECT/w1/workers/ledger $PROJECT/w1/workers/mid $PROJECT/w1/workers/web $PROJECT/w1/zlib
+       read_files $PROJECT/w1/workers/Admin/talon.toml $PROJECT/w1/workers/api/talon.toml $PROJECT/w1/workers/ledger/talon.toml $PROJECT/w1/workers/mid/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/workers/web/talon.toml $PROJECT/w1/zlib/talon.toml
+      +canonical $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +lock $HOME/.cache/roc/talon/projects.json nowait: held
+      +list_dirs $HOME/.cache/roc/talon
+      +read_files $HOME/.cache/roc/talon/projects.json
+      +unlock $HOME/.cache/roc/talon/projects.json
+      +read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+      +exec_in $PROJECT/w1/workers/Admin tool-admin build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+      +exec_in $PROJECT/w1/workers/ledger tool-ledger build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+      +exec_in $PROJECT/w1/workers/web tool-web one
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+      +exec_in $PROJECT/w1/workers/web tool-web two
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+      +exec_in $PROJECT/w1/zlib tool-zlib build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+      +exec_in $PROJECT/w1/workers/api tool-api build
+      +  env TALON_SCRIPT=build
+      +  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api
+commands: 0 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 1 passed, 0 failed, 0 skipped
+

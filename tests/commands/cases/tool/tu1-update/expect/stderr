@@ -10,4 +10,4 @@ gm git main@bbbbbbbb is up to date
 gs git stable@aaaaaaaa is up to date
 gp: pinned to commit dd03c09e
 tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo).
-tln: error[usage]: tln tool update talon is not built yet
+tln: error[usage]: tln tool update --from-source works only for tln tool update talon

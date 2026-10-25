@@ -1,0 +1,18 @@
+--- home/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95/foo
++++ home/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95/foo
+@@ -1,3 +0,0 @@
+-xbin acme/foo 0.0.1
+-xbin acme/foo 0.0.1
+-xbin acme/foo 0.0.1
+--- home/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95/manifest.json
++++ home/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95/manifest.json
+@@ -1 +0,0 @@
+-{"format":1,"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/5S7X8FDjGpVmeVYySyG3q7bxhredDMVRHnBJ8yFNjvfa.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"8a38228ca6cc18820033cbab6c064d6c7a51e118ad411249f49e52da6d87ea65","libs":[],"bundle":"5S7X8FDjGpVmeVYySyG3q7bxhredDMVRHnBJ8yFNjvfa","last_run":"2020-01-01T00:00:00Z"}
+--- home/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b/foo
++++ home/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b/foo
+@@ -1 +0,0 @@
+-xbin acme/foo 1.0.0
+--- home/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b/manifest.json
++++ home/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b/manifest.json
+@@ -1 +0,0 @@
+-{"format":1,"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/7SdG9xsjAfNSxHaHw9be8cCGGFAQTQbSXCgo5oWjEhhx.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"8a38228ca6cc18820033cbab6c064d6c7a51e118ad411249f49e52da6d87ea65","libs":[],"bundle":"7SdG9xsjAfNSxHaHw9be8cCGGFAQTQbSXCgo5oWjEhhx","last_run":"2026-09-15T11:59:59Z"}

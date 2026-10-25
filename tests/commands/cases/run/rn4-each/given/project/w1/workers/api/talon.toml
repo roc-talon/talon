@@ -1,0 +1,4 @@
+[scripts]
+build = "tool-api build"
+fail = "tool-ok api"
+gone = "tool-ok api"
