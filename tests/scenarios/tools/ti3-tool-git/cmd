@@ -1,0 +1,62 @@
+# R-T23 R-T24 R-T25 R-T7 R-T5 R-T26 R-T27 R-B6 R-SL10 R-SE12 R-CC1 R-CC2 R-CC6 R-DA3 R-R3 R-R7 R-T4 R-T8 (slice 048): `tln tool install --git`, `tool ls`, `tool update`, `tool rebuild` and `tool rm` end to end with the real Fx, the real curl, the real `tar`, the real `roc unbundle`
+# (the fake roc on PATH passes `unbundle` to the pinned roc, given/roc.tsv), the fake GitHub server (tests/tools/mk-tool-git.sh made the commit routes and the real source archives of acme/gtool: main is aaaaaaaa, next is bbbbbbbb; tests/tools/mk-tool.sh made the release
+# acme/foo 1.1.0) and the fake compiler nightly-2026-10-14-38a3029 in the store (given/home/.cache/roc/toolchains/.../roc: it writes a shell script as the binary that prints the comment line of main.roc). TALON_NOW=2026-10-15T12:00:00Z. The apps have the pin of the fake compiler, so no compiler is downloaded.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+B=$HOME/.local/bin
+DB=$XDG_DATA_HOME/talon/bin
+J=$XDG_DATA_HOME/talon/tools.json
+R=$D/http/api/repos/acme/gtool/commits
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+builds() { if [ -f $D/build.log ]; then wc -l < $D/build.log; else echo 0; fi; }
+
+echo "-- 1: a branch (R-T23). The commit of main, the source archive by the full sha (real curl, real tar, no top dir), main.roc read, the build in the extracted source with no --target (R-T8), the binary in the data bin dir, the entry a hard link (R-ST7). The scratch dir is removed (R-CC2). tools.json has the commit and the ref."
+st tln tool install --git acme/gtool@main
+ls -A $B $DB $XDG_CACHE_HOME/roc/talon/tmp
+$B/gtool
+cat $J
+cat $D/build.log
+
+echo "-- 2: a release tool next to it, and the list of both tools (R-T4, R-T5: the compiler of the build)."
+st tln tool install acme/foo
+st tln tool ls
+st tln tool ls --json
+
+echo "-- 3: the same git install again: the head is the installed commit (R-T26). No build."
+st tln tool install --git acme/gtool@main
+echo "builds: $(builds)"
+
+echo "-- 4: update with the heads unchanged (R-T24, R-T25): foo is the newest release, gtool has the same commit. No build."
+st tln tool update
+echo "builds: $(builds)"
+
+echo "-- 5: the branch moves (the route of main answers with the commit of next): update builds the new head and replaces the files (R-T24)."
+cp $R/next $R/main
+st tln tool update gtool
+$B/gtool
+cat $J
+echo "builds: $(builds)"
+
+echo "-- 6: rebuild of all tools (R-T7): the same sources and the compiler of tools.json. foo comes from the package cache, gtool from the recorded commit (no commit request, R-T5)."
+st tln tool rebuild
+$B/foo
+$B/gtool
+echo "builds: $(builds)"
+grep -c '/commits/' $D/http.log || true
+
+echo "-- 7: remove gtool (R-B6): the entry and the binary go, nothing goes to talon/x. A commit as a typed ref and --path (R-SL10, R-SE12): the app is apps/cli/main.roc."
+st tln tool rm gtool
+ls -A $B $DB
+st tln tool install acme/gtool@bbbbbbbb --path apps/cli
+$B/gtool
+cat $J
+st tln tool update gtool
+echo "builds: $(builds)"
+
+echo "-- 8: remove both tools: tools.json is empty, no file is left."
+st tln tool rm foo
+st tln tool rm acme/gtool
+st tln tool ls
+ls -A $B $DB
+cat $J

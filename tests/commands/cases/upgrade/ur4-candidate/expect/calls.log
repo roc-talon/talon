@@ -82,6 +82,7 @@ probes 1
   | 	roc: "nightly-2026-10-11-1f1f1f1",
   | }
 platform
+read_files $HOME/.cache/roc/packages/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 probes 1
@@ -148,6 +149,7 @@ probes 1
   | 	roc: "nightly-2026-10-11-1f1f1f1",
   | }
 platform
+read_files $HOME/.cache/roc/packages/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/pp/main.roc

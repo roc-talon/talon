@@ -1,0 +1,8 @@
+Slice 048, gap tests of `tln tool update` (entry `commands`). One home with the compiler `nightly-2026-10-14-38a3029` only, `TALON_NOW=2026-10-15T12:00:00Z`, the nightly list. `tools.json` has `np` (acme/np 1.0.0; the repo has 1.1.0, an app with no `roc:` pin),
+`mo` (acme/mo 1.0.0; the repo has 1.1.0, an app that pins `nightly-2026-October-14-38a3029`, the other tag form of the installed compiler) and `gm` (acme/gm from main). A fake tty (a person).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update np` | the new header has no pin: exit 2 (D11, 046 D3) before the platform step (no platform fetch, no build) | R-T24, R-T11 |
+| 2 | `tool update gm --offline` | a branch tool needs the commit now: exit 15 before any commit request (no `http_get`) | R-T24, R-DI12 |
+| 3 | `tool update mo` (`env:TALON_INTERACTIVE=1`) | the pin is not an installed id by its text, so a download is counted and the offer is read (the nightly list), but the offer is `Present` (the other tag form is installed): no prompt (no `ask`), no download. The build runs and `mo` is updated | R-T25, R-DL1 |

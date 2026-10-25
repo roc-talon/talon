@@ -1,0 +1,14 @@
+install --file p1/main.roc
+install --file p1/main.roc
+install --frozen --file p2/main.roc
+install --frozen --file p3/main.roc
+install --frozen --file p4/main.roc
+install --frozen --file p5/main.roc
+install --frozen --file p6/main.roc
+install --frozen --offline --file p7/main.roc
+install --frozen --file p8/main.roc
+install --frozen --file p9/main.roc
+install --file p1/main.roc --offline
+install --frozen --file p10/main.roc
+install --dry-run --file p11/main.roc
+install --frozen --allow-downloads --file p10/main.roc

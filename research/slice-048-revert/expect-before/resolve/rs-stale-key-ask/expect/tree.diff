@@ -1,0 +1,6 @@
+--- project/talon.toml
++++ project/talon.toml
+@@ -1,2 +1,2 @@
+ [dependencies]
+-js = "acme/json@^2"
++json = "acme/json@^2"

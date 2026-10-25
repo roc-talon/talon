@@ -1,0 +1,16 @@
+# R-CM25 R-PTH1 R-PTH2 R-PTH3 R-PTH4 R-EC2 R-J1 (slice 055): `tln path` on the real binary and the real Fx. The package pf is in the cache, the package json is not (the network is off).
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# a release entry in the cache: one line, the packages dir of the run (R-PTH1, R-CR1)
+st tln path pf
+# a path entry: the directory of its file, seen from the project (the directory does not exist, R-PTH5)
+st tln path lib
+# --json: the envelope
+st tln path pf --json
+# R-PTH3: a foreign URL and an unknown alias are exit 2. No alias: exit 2.
+st tln path odd
+st tln path nope
+st tln path
+# R-PTH2: the package is missing and --offline: exit 15
+st tln path json --offline
+echo "== the project is not changed"
+cat main.roc

@@ -1,0 +1,7 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-T23 the source archive (`source.tar.gz`, before the generic `tar -xf`), R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+unbundle kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst	0	-	-	dir:{cwd}/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD;copy:{cwd}/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc={w}/fx/src/gen-1.0.0.src
+unbundle EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst	0	-	-	dir:{cwd}/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa;copy:{cwd}/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc={w}/fx/src/bad-1.0.0.src
+unbundle EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.tar.zst	0	-	-	dir:{cwd}/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F;copy:{cwd}/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F/main.roc={w}/fx/src/yy-1.0.0.src
+curl --fail	0	-	-	file:{out}

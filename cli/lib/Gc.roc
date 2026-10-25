@@ -254,9 +254,14 @@ judge = |entry, got, now, age| if is_over(entry.last_use, now, age) {
 	match got {
 		Err(NotFound) => Gone
 		Err(_) => Live
-		Ok(text) => match Locked.read({ path: entry.path, text }) {
-			Ok(_) => Live
-			Err(_) => Gone
+		# Slice 056 (R-PD9, R-PT14): a `talon.toml` that `tln run` or `tln add --tool` recorded has no header. It is live while the file is there.
+		Ok(text) => if entry.path == "talon.toml" or entry.path.ends_with("/talon.toml") {
+			Live
+		} else {
+			match Locked.read({ path: entry.path, text }) {
+				Ok(_) => Live
+				Err(_) => Gone
+			}
 		}
 	}
 }

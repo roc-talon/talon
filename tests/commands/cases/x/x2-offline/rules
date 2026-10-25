@@ -1,0 +1,16 @@
+Slice 049, `tln x` with no check online (entry `commands`): R-B7, R-B8, R-NI9. One home with the compiler installed, `TALON_NOW=2026-10-15T12:00:00Z`, `CI=true` (no person) and a fake tty (a run with `env:TALON_INTERACTIVE=1` has a person, R-NM2). `fx/answers` is `n`, then `y`.
+`talon/x/` has entries of acme/foo 1.1.0 and 1.0.0, acme/qux 1.0.0, acme/net 1.0.0. acme/baz 1.0.0 is installed. The release list of acme/net cannot be reached (a transport error). No other repo has a route: a run that asks for a list gets 404.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `x acme/foo --offline` | no list is read. The newest entry (1.1.0) matches, so the prompt R-NI9 is due. No person and no flag: exit 13, the message names `--allow-unchecked` and `--yes`, nothing runs | R-B7, R-NI9, R-NM5 |
+| 2 | `x acme/foo --offline --allow-unchecked` | the answer flag is Yes: the answer line on stderr, the manifest gets `last_run`, the app runs, exit 0 | R-B7, R-NI9, R-NM6 |
+| 3 | `x acme/qux --offline --yes` | `--yes` is Yes too (R-NM8) | R-NI9, R-NM8 |
+| 4 | `x acme/baz --offline` | the installed tool runs in place with the note `baz 1.0.0 is installed. tln did not check it online ...` and no prompt (no `tty`, no `ask`) | R-B8, R-B5 |
+| 5 | `x acme/none --offline` | no installed tool and no entry: exit 15 | R-B7 |
+| 6 | `x acme/foo@2.0.0 --offline` | an exact version that no build has: exit 15 | R-B7, R-B2 |
+| 7 | `x acme/foo@1.0.0 --offline --yes` | an exact version that an entry has: it runs (not the newest entry) | R-B7, R-B10 |
+| 8 | `x acme/foo --offline env:TALON_INTERACTIVE=1` | a person: the prompt (`ask`), the answer is `n`: exit 13, nothing runs | R-NI9, R-NM8, R-B7 |
+| 9 | `x acme/foo --offline env:TALON_INTERACTIVE=1` | the answer is `y`: the app runs (each run asks `tty` and `ask`) | R-NI9, R-HF1 |
+| 10 | `x acme/net --yes` | no `--offline`, but the list cannot be reached (kind `network`): the same path as offline. The entry is offered, `--yes` accepts, the app runs | R-B7 |
+| 11 | `x acme/net2` | the list cannot be reached and no build matches: the failure of the request itself (exit 15, it names `--offline`) | R-B7 |

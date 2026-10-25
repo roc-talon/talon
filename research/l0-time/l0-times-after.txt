@@ -1,0 +1,12 @@
+1548 packages/resolve/tests/conflicts.roc
+458 packages/resolve/tests/domain.roc
+1569 packages/resolve/tests/moves.roc
+1572 packages/resolve/tests/solver.roc
+5878 tests/unit/l0-1.roc
+7188 tests/unit/l0-2.roc
+5792 tests/unit/l0-3.roc
+6030 tests/unit/l0-4.roc
+6273 tests/unit/l0-5.roc
+5865 tests/unit/l0-6.roc
+6018 tests/unit/l0-7.roc
+6120 tests/unit/l0-8.roc

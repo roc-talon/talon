@@ -1,0 +1,26 @@
+# R-GC12, R-GC14, R-CM17: a dry run with no flag. It lists the index and the x builds with their sizes (no packages, no build cache), the total, and the last line. Calls: args, env_all, one tree_info of the 2 paths. No list_dirs, no tty, no ask, no delete (nothing is removed, and the prompt is not shown).
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --dry-run
+# R-GC13, R-GC14: a dry run with --all. One list_dirs of the build root, then one tree_info. The list: the index, x, the packages dir, then the build-cache dirs in byte order. compat-bbbbbbb (the build cache of the installed compiler) is in it. other-old (no build-cache name) and compat-file (a file) are not asked. Toolchains, tools and compat.db are in no list.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --all --dry-run
+# R-GC14, R-J3, R-OUT4: the same with --json. The text goes to stderr, stdout has only the envelope (dry_run true, removed false, items with bytes, freed).
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --all --dry-run --json
+# R-J3, answer of the user (slice 007 D4): --json with --quiet gives the envelope only. Stdout has the envelope (no --all: the index and x), stderr has no line.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --dry-run --json --quiet
+# R-CM17: an operand is a usage failure (exit 2). The only call is args: the check comes before the environment.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean packages
+# R-NI7, R-NR2: in a terminal (CI=false, fx/tty) the prompt is asked with the count and the size, the default is Yes. The answer n (fx/answers, line 1): the line nothing was removed, exit 0, no delete. The calls have tty and ask, no delete.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds env:CI=false cache clean --all
+# R-NI7, R-GC12: the answer Enter (an empty line) is the default Yes. One delete under the lock talon/gc (R-CC10: lock nowait held, delete, unlock; the lock comes after the question: R-CC3 point 5) with the index and the x dir (no --all: the packages and the build caches stay). The tree diff shows only these 2 dirs gone.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds env:CI=false cache clean
+# R-GC14, R-GC12: the index and x are gone already (NotFound is no item) and no --all: nothing to remove, exit 0. No list_dirs (no --all), no prompt, no delete. The calls end after tree_info.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean
+# R-GC14, R-NM6, R-J3, R-NR1, R-GC13: in a terminal (CI=false, fx/tty) but with --json there is no person, so the answer is Yes with no prompt: the answer line on stderr, no tty call, no ask call. One delete under the lock talon/gc with the packages dir and the 4 build-cache dirs. The text goes to stderr, the envelope has the 5 items. Toolchains, tools, settings and compat.db stay.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds env:CI=false cache clean --all --json
+# R-GC14: nothing is left (packages and the build-cache dirs are gone, no path exists): the line nothing to remove, exit 0, no prompt and no delete. The calls end after tree_info.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --all
+# R-GC14, R-NI7, R-NR2: the fourth home. tree_info cannot measure the x dir (Denied), so it is an item with no size (Q5): the question counts 2 dirs and the size of the index only (the count is the number of items, not of sizes). The answer n (the third answer): nothing is removed, no lock.
+env:HOME={w}/home/h4 env:CI=false cache clean
+# R-GC14, R-CC3, R-CC5, R-CC10: the third home. A GC holds the lock talon/gc (fx/locks): clean prints the line waiting for another tln on stderr, waits, then deletes under the lock. The fake refuses to delete the x dir (fx/delete): the failure of kind environment, exit 18, no report on stdout, the lock is released. The one delete call had both paths, so the index is gone and x stays.
+env:HOME={w}/home/h3 cache clean
+# R-GC13, R-NI7, R-NM8, R-CC10: the second home. The build root is the cache root, so its dirs packages, toolchains and talon are no build-cache dir, and compat-file is a file. --yes answers the prompt in a terminal: no tty call, no ask call. The answer line is on stderr and --quiet does not hide it (R-FL4). --quiet hides stdout. Removed: the index and compat-ten.
+env:HOME={w}/home/h2 env:CI=false cache clean --all --yes --quiet

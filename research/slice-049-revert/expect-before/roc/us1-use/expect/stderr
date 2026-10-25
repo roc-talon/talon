@@ -1,0 +1,29 @@
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+downloading 2 compilers (147.3 MB)
+tln: error[consent]: 2 compiler downloads (147.3 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[usage]: tln roc use does not take link-dev: a git, link or copy build cannot be a pin. Use ROC_TOOLCHAIN or tln roc default for it.
+tln: error[usage]: tln roc use does not take link-dev: a git, link or copy build cannot be a pin. Use ROC_TOOLCHAIN or tln roc default for it.
+tln: error[usage]: flag '--no-check' is not for 'roc use'
+tln: error[no_tuple]: tln roc use nightly-2026-10-09-258ab27: it is outside [toolchain] roc (>=nightly-2026-10-12-2664a27). Use a compiler in the range, or change [toolchain] roc. tln roc use does not change talon.toml.
+tln: error[no_tuple]: tln roc use nightly-2026-10-14-38a3029: it is a nightly, and nightly is false (set by TALON_NIGHTLY). Use a release, or change the nightly switch. tln roc use does not change talon.toml.
+tln: error[app_error]: a new error in an app file: main.roc (type redeclared). The app is not a free variable: fix it, or pass --no-check.
+tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-09-258ab27, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+downloading 1 compiler (73.9 MB)
+check: passed
+$PROJECT/p18/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+tln: error[consent]: nightly-2026-10-09-258ab27 is not installed. Nothing was downloaded. Run: tln roc install nightly-2026-10-09-258ab27, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[internal]: the baseline check crashes on nightly-2026-10-09-258ab27 (signal 11). That is a compiler fault. Fix it, or pass --no-check.
+check: passed
+build: passed
+$PROJECT/p26/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+note: ROC_TOOLCHAIN is nightly-2026-October-14-38a3029. It has a higher priority than the new pin nightly-2026-10-14-38a3029, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set.
+tln: error[consent]: the compiler 0.1.0 is not installed. Run: tln roc install 0.1.0.
+tln: error[conflict]: $PROJECT/p29/main.roc changed while tln ran. Nothing was written. Run the command again.

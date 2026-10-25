@@ -1,3 +1,4 @@
+import Args
 import Fail
 import Fx
 import InstallFlow
@@ -56,6 +57,10 @@ Resolve :: [].{
 	## `Outcome.written` are the files that were written (`[]` for `--dry-run` and for no change). `added`, `moved`, `pinned`, `toml` and `renamed` are the planned changes for `--dry-run` and the written changes otherwise, and empty for a run that wrote nothing. The lines of stdout: the notes of the scope, the `note:` lines, the notes of the kept entries, the lines of the ladder, then the file lines (`<path>`, `  + ...`, `  ~ ...`, `<path>: <key> = "<value>"`, `<path>: key <from> -> <to>`).
 	install! : Fx, Request => Try(Report.Outcome, Fail)
 	install! = |fx, request| InstallFlow.install!(fx, request)
+
+	## Slice 056: `install!` with the tools step of `[tools]` (`InstallFlow.install_with!`). `tln install` passes its `Args`.
+	install_with! : Fx, Request, Try(Args, [None]) => Try(Report.Outcome, Fail)
+	install_with! = |fx, request, tools| InstallFlow.install_with!(fx, request, tools)
 
 	## Slice 008: the flow of `remove` (`Remove.run!`, also `rm`: R-CM3, R-RV1 to R-RV5, R-WS12). It resolves nothing: no index call, no pick, no fetch, no `Vars.build`. The `Request` is the one that `install!` takes. The fields that `remove` reads are
 	## `project`, `roots`, `now` (not used), `compiler`, `nightly`, `no_check` and `dry_run`. `names` of the `Request` is not used: `facts.names` are the operands of `remove`, `facts.force` is `--force`.

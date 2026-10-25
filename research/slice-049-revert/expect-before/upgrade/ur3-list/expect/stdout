@@ -1,0 +1,24 @@
+== upgrade --file p1/main.roc
+note: the compiler list could not be read; roc stays nightly-2026-10-09-9d9d9d9
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 1.0.0 -> 1.2.0
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== upgrade roc --file p2/main.roc
+exit 2
+== upgrade json roc --file p3/main.roc
+exit 2
+== upgrade json --file p4/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p4/main.roc
+  ~ json: acme/json 1.0.0 -> 1.2.0
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== upgrade --dry-run --json --file p5/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":true,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"1.0.0"},"to":{"name":"acme/json","version":"1.2.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["the compiler list could not be read; roc stays nightly-2026-10-09-9d9d9d9"],"written":[]},"error":null}
+exit 0
+== upgrade --no-check --file p6/main.roc
+exit 2

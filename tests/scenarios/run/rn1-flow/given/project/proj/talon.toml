@@ -1,0 +1,16 @@
+[tools]
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+
+[scripts]
+greet = 'sh -c "echo script=$TALON_SCRIPT dir=$(basename $TALON_SCRIPT_DIR)"'
+args = 'sh -c "echo $# args; for a in \"$@\"; do echo arg=$a; done" sh'
+chain = ["@greet", { in = "sub", run = "@here" }, 'sh -c "echo last $TALON_SCRIPT"']
+fail3 = ['sh -c "echo before"', 'sh -c "exit 3"', 'sh -c "echo never"']
+sig = 'sh -c "kill -TERM $$"'
+gone = ["sh -c \"echo first\"", "tln-no-such-program --x"]
+shell = ['sh -c "echo first"', 'sh -c "echo a" > made']
+t2 = "app one"
+t = ["app one two", 'sh -c "echo after"']
+penv = 'sh -c "case $PATH in */talon/x/*) echo path-has-x ;; *) echo path-clean ;; esac"'
+rb = "roc build main.roc --output=made"
+mark = 'sh -c "touch marker"'

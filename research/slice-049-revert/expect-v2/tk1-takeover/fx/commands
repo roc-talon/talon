@@ -1,0 +1,10 @@
+tool install acme/foo
+tool install acme/bar
+tool install acme/qux@2.0.0
+tool install acme/ren
+tool install acme/lat@latest
+tool install acme/yank
+tool install acme/off --offline
+tool install acme/off --offline --allow-unchecked
+tool install acme/foo
+tool install acme/bad

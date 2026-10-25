@@ -1,0 +1,11 @@
+1	CAUGHT	rebuild builds with the pin of the header, not the compiler of tools.json (R-T5)	(expected: L2 tr1 run 1 (the compiler of the build, and the line))	FAIL tool/tr1-rebuild | commands: 0 passed, 1 failed
+2	CAUGHT	update of a commit asks for the head (R-T24: no change, no request)	(expected: L2 tu1 run 6 (calls.log))	FAIL tool/tu1-update | commands: 0 passed, 1 failed
+3	CAUGHT	update builds a branch tool when the head is the installed commit (R-T24)	(expected: L2 tu1 run 3 (gs is rebuilt))	FAIL tool/tu1-update | commands: 0 passed, 1 failed
+4	CAUGHT	rm deletes a bin dir entry that is not Talon's (R-ST6, R-B6)	(expected: L2 tm1 runs 8, 9 (tree.diff))	FAIL tool/tm1-manage | commands: 0 passed, 1 failed
+5	CAUGHT	rm writes tools.json before it deletes the files (R-B6, order)	(expected: L2 tm1 run 7 (calls.log: write_atomic before delete))	FAIL tool/tm1-manage | commands: 0 passed, 1 failed
+6	CAUGHT	rm does not take the lock of tools.json (R-CC6)	(expected: L2 tm1 run 7 (no lock line))	FAIL tool/tm1-manage | commands: 0 passed, 1 failed
+7	CAUGHT	the same compiler is counted twice for the downloads (one prompt for the distinct ids, R-T25)	(expected: L0 ToolSourceTest downloads)	1 failed | 0 compiler errors | at ToolSourceTest.roc:261
+8	CAUGHT	--path is not checked (R-SE12)	(expected: L0 ToolSourceTest read, L2 tg2 run 6)	1 failed | 0 compiler errors | at ToolSourceTest.roc:33
+9	CAUGHT	tools.json records the commit as the ref (R-T23: the ref that the user typed)	(expected: L2 tg1 run 1 (tree.diff))	FAIL tool/tg1-git | commands: 0 passed, 1 failed
+10	CAUGHT	the scratch dir of a git install is not deleted after the build (R-CC2)	(expected: L2 tg1 run 1 (calls.log: delete))	FAIL tool/tg1-git | commands: 0 passed, 1 failed
+11	CAUGHT	update and rebuild name --as for a foreign entry (Q-U3, review)	(expected: L2 tr2 run 1, 4)	FAIL tool/tr2-rebuildstops | commands: 0 passed, 1 failed

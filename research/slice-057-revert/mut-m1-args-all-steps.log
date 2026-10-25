@@ -1,0 +1,98 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    dir_miss = [{ dir: "/r/p", scripts: Ok(p_scripts) }, { dir: "/r/p/nodir", scripts: Err(NoFile) }]
+    plan_view(files_sub, "hi", []) == "/r/p: tool-a one; /r/p: tool-b"
+        and plan_view(files_sub, "chain", ["x", "y"]) == "/r/p: tool-a one; /r/p: tool-b; /r/p: tool-c x y"
+            and plan_view(files_sub, "tail", ["z"]) == "/r/p: tool-d; /r/p: tool-a one; /r/p: tool-b; /r/p: tool-c z"
+                and plan_view(files_sub, "lasthi", ["q"]) == "/r/p: tool-c; /r/p: tool-a one; /r/p: tool-b q"
+                    and plan_view(files_sub, "all", []) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f"
+                        and plan_view(files_sub, "all", ["z"]) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f z"
+                            and plan_view([{ dir: "/r/p", scripts: Ok(p_scripts) }], "all", []) == "need /r/p/sub"
+                                and plan_view(files_sub, "up", []) == "/r: q"
+                                    and plan_view(files_sub, "empty", ["z"]) == ""
+                                        and plan_view(files_sub, "loop-a", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
+                                            and plan_view(files_sub, "entry", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
+                                                and plan_view(files_sub, "self", []) == "19 scripts call themselves: self -> self"
+                                                    and plan_view(files_sub, "gone", []) == "19 /r/p/talon.toml: script gone: the step '@nothere' names the script 'nothere', and /r/p/talon.toml has no such script"
+                                                        and plan_view(files_sub, "sh", []) == "19 /r/p/talon.toml: script sh: the step 'b && c' has the word '&&': a step is one command; use 2 steps, or a .roc script"
+                                                            and plan_view(files_sub, "blank", []) == "19 /r/p/talon.toml: script blank: the step '  ' has no command"
+                                                                and plan_view(files_sub, "out", []) == "19 /r/p/talon.toml: script out: the step 'in ../..: z' has the directory '../..', which is outside the repository (/r)"
+                                                                    and plan_view(dir_miss, "nofile", []) == "19 /r/p/talon.toml: script nofile: the step 'in nodir: @x' names the script 'x', and /r/p/nodir has no talon.toml"
+                                                                        and plan_view(files_sub, "nofile", []) == "need /r/p/nodir"
+}
+
+Mentioned values:
+p_scripts = [
+	sc("hi", [Line("tool-a one"), Line("tool-b")]),
+	sc("chain", [Line("@hi"), Line("tool-c")]),
+	sc("tail", [Line("tool-d"), Line("@chain")]),
+	sc("lasthi", [Line("tool-c"), Line("@hi")]),
+	sc("all", [In({ dir: "sub", run: "tool-e x" }), In({ dir: "sub", run: "@inner"
+}), Line("tool-f")]),
+	sc("entry", [Line("@loop-a")]),
+	sc("loop-a", [Line("x"), Line("@loop-b")]),
+	sc("loop-b", [Line("@loop-a")]),
+	sc("self", [Line("@self")]),
+	sc("gone", [Line("@nothere")]),
+	sc("sh", [Line("a"), Line("b && c")]),
+	sc("out", [In({ dir: "../..", run: "z" })]),
+	sc("up", [In({ dir: "..", run: "q" })]),
+	sc("nofile", [In({ dir: "nodir", run: "@x" })]),
+	sc("empty", []),
+	sc("blank", [Line("  ")]),
+]
+files_sub = [
+	{ dir: "/r/p", scripts: Ok(p_scripts) },
+	{ dir: "/r/p/sub", scripts: Ok([sc("inner", [Line("tool-g")])]) },
+]
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 54 tests in 5623.3 ms.:
+    53 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5401.2 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL run/rn1-scripts
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -26,7 +26,7 @@
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt
+      +exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt extra words
+         env TALON_SCRIPT=chain
+         env TALON_SCRIPT_DIR=$PROJECT/p1
+       exec_in $PROJECT/p1 tool-b extra words
+      @@ -44,10 +44,10 @@
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -exec_in $PROJECT/p1 tool-c
+      +exec_in $PROJECT/p1 tool-c last
+         env TALON_SCRIPT=tail
+         env TALON_SCRIPT_DIR=$PROJECT/p1
+      -exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt
+      +exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt last
+         env TALON_SCRIPT=tail
+         env TALON_SCRIPT_DIR=$PROJECT/p1
+       exec_in $PROJECT/p1 tool-b last
+commands: 2 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

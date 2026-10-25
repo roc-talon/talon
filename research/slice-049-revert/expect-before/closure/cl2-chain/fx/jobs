@@ -1,0 +1,4 @@
+# The fake download of the pick loop (slice 011): the header of text 1.1.0, the second level of the chain mid, text, core. An unbundle makes the dir of the hash with the main.roc of the fixture package (fx/pkgs). A download makes the archive in the temp dir.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst	0	-	-	dir:{cwd}/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm;copy:{cwd}/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc={w}/fx/pkgs/acme_text_1.1.0.roc
+HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst

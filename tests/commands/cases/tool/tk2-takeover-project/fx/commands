@@ -1,0 +1,5 @@
+tool install acme/foo
+tool install acme/ws
+tool install acme/tl
+tool install acme/oth
+tool install acme/bar

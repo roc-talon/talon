@@ -1,0 +1,123 @@
+== patch json --file p1/main.roc
+copied: $PROJECT/p1/.talon/patches/json/ (acme/json 2.1.0)
+$PROJECT/p1/talon.toml: + [patch] json (new file)
+edit the copy, then commit it and talon.toml. Review it with: tln patch json --diff
+exit 0
+== patch json --file p1/main.roc
+exit 2
+== patch pf --file p1/main.roc
+exit 2
+== patch util --file p1/main.roc
+exit 2
+== patch src --file p1/main.roc
+exit 2
+== list --file p1/main.roc
+$PROJECT/p1/main.roc
+  pf    acme/pf 0.1.0                            direct
+  json  acme/json 2.1.0                          direct; patched
+  util  ../ut/main.roc                           direct; foreign
+  src   https://example.org/archive/main.tar.gz  direct; foreign
+exit 0
+== patch parser --file p2/main.roc
+copied: $PROJECT/p2/.talon/patches/parser/ (acme/parser 1.0.0)
+$PROJECT/p2/talon.toml: + [patch] parser
+edit the copy, then commit it and talon.toml. Review it with: tln patch parser --diff
+exit 0
+== patch json --file p2/main.roc
+copied: $PROJECT/p2/.talon/patches/json/ (acme/json 2.1.0)
+$PROJECT/p2/talon.toml: + [patch] json
+edit the copy, then commit it and talon.toml. Review it with: tln patch json --diff
+exit 0
+== patch parser --diff --file p2/main.roc
+exit 0
+== patch json --diff --file p3/main.roc
+--- a/Inner/Gone.roc
++++ /dev/null
+@@ -1,1 +0,0 @@
+-# gone
+--- /dev/null
++++ b/Inner/New/Leaf.roc
+@@ -0,0 +1,1 @@
++leaf
+--- a/Json.roc
++++ b/Json.roc
+@@ -1,7 +1,6 @@
+ j01
+ j02
+-j03
+-j04
++j03 patched
+ j05
+ j06
+ j07
+@@ -13,6 +12,7 @@
+ j13
+ j14
+ j15
++j15 new line after
+ j16
+ j17
+ j18
+@@ -25,6 +25,6 @@
+ j25
+ j26
+ j27
+-j28
++j28 patched
+ j29
+ j30
+--- /dev/null
++++ b/New.roc
+@@ -0,0 +1,2 @@
++# new
++new = 1
+--- a/Old.roc
++++ /dev/null
+@@ -1,2 +0,0 @@
+-# old
+-old = 1
+--- /dev/null
++++ b/added_empty.txt
+Binary files a/data.bin and b/data.bin differ
+--- a/empty.txt
++++ b/empty.txt
+@@ -0,0 +1,1 @@
++now has text
+--- a/main.roc
++++ b/main.roc
+@@ -1,1 +1,1 @@
+-package [Json] {}
++package [Json, New] {}
+Binary files /dev/null and b/new.bin differ
+--- a/notes.txt
++++ b/notes.txt
+@@ -1,1 +1,1 @@
+-last line
+\ No newline at end of file
++last line
+--- a/shrink.txt
++++ b/shrink.txt
+@@ -1,2 +0,0 @@
+-x
+-y
+--- a/tail.txt
++++ b/tail.txt
+@@ -1,3 +1,3 @@
+ a
+-b
++X
+ c
+\ No newline at end of file
+exit 0
+== patch json --diff --json --file p3/main.roc
+{"schema":1,"command":"patch","ok":true,"data":{"alias":"json","base":"3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm","dir":"$PROJECT/p3/.talon/patches/json/","changes":[{"path":"Inner/Gone.roc","change":"deleted"},{"path":"Inner/New/Leaf.roc","change":"added"},{"path":"Json.roc","change":"modified"},{"path":"New.roc","change":"added"},{"path":"Old.roc","change":"deleted"},{"path":"added_empty.txt","change":"added"},{"path":"data.bin","change":"replaced"},{"path":"empty.txt","change":"modified"},{"path":"main.roc","change":"modified"},{"path":"new.bin","change":"added"},{"path":"notes.txt","change":"modified"},{"path":"shrink.txt","change":"modified"},{"path":"tail.txt","change":"modified"}],"diff":"--- a/Inner/Gone.roc\n+++ /dev/null\n@@ -1,1 +0,0 @@\n-# gone\n--- /dev/null\n+++ b/Inner/New/Leaf.roc\n@@ -0,0 +1,1 @@\n+leaf\n--- a/Json.roc\n+++ b/Json.roc\n@@ -1,7 +1,6 @@\n j01\n j02\n-j03\n-j04\n+j03 patched\n j05\n j06\n j07\n@@ -13,6 +12,7 @@\n j13\n j14\n j15\n+j15 new line after\n j16\n j17\n j18\n@@ -25,6 +25,6 @@\n j25\n j26\n j27\n-j28\n+j28 patched\n j29\n j30\n--- /dev/null\n+++ b/New.roc\n@@ -0,0 +1,2 @@\n+# new\n+new = 1\n--- a/Old.roc\n+++ /dev/null\n@@ -1,2 +0,0 @@\n-# old\n-old = 1\n--- /dev/null\n+++ b/added_empty.txt\nBinary files a/data.bin and b/data.bin differ\n--- a/empty.txt\n+++ b/empty.txt\n@@ -0,0 +1,1 @@\n+now has text\n--- a/main.roc\n+++ b/main.roc\n@@ -1,1 +1,1 @@\n-package [Json] {}\n+package [Json, New] {}\nBinary files /dev/null and b/new.bin differ\n--- a/notes.txt\n+++ b/notes.txt\n@@ -1,1 +1,1 @@\n-last line\n\\ No newline at end of file\n+last line\n--- a/shrink.txt\n+++ b/shrink.txt\n@@ -1,2 +0,0 @@\n-x\n-y\n--- a/tail.txt\n+++ b/tail.txt\n@@ -1,3 +1,3 @@\n a\n-b\n+X\n c\n\\ No newline at end of file\n"},"error":null}
+exit 0
+== patch json --json --file p4/main.roc
+{"schema":1,"command":"patch","ok":true,"data":{"alias":"json","name":"acme/json","version":"2.1.0","base":"3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm","dir":"$PROJECT/p4/.talon/patches/json/","toml":"$PROJECT/p4/talon.toml","toml_created":false},"error":null}
+exit 0
+== patch json --diff --file p5/main.roc
+exit 2
+== patch json --diff --file p6/main.roc
+exit 2
+== patch json --diff --file p7/main.roc
+exit 18

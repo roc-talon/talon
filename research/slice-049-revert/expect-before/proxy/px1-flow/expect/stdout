@@ -1,0 +1,44 @@
+== @roc check p3/main.roc
+exit 0
+== @roc +nightly-2026-10-14-38a3029 version
+exit 0
+== @roc check p3/main.roc env:ROC_TOOLCHAIN=nightly-2026-10-14-38a3029
+exit 0
+== @roc build p4/main.roc --opt=speed
+exit 0
+== @roc check p5/main.roc
+exit 0
+== @roc check p12/main.roc
+exit 0
+== @roc check p14/main.roc
+exit 0
+== @roc version
+exit 0
+== @roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg
+exit 0
+== @roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:TALON_IN_PROXY=1
+exit 18
+== @roc check p9/main.roc
+exit 13
+== @roc check p9/main.roc env:TALON_AUTO_INSTALL=no
+exit 13
+== @roc +nightly-2026-10-21-5349569 check
+exit 13
+== @roc check p13/main.roc env:TALON_AUTO_INSTALL=no
+exit 13
+== @roc check p10/main.roc
+exit 3
+== @roc check p11/main.roc
+exit 18
+== @roc check p3/main.roc env:TALON_PROXY=0
+exit 0
+== @roc check p16/main.roc
+exit 0
+== @roc check pw/apps/a/main.roc
+exit 0
+== @roc check p3/main.roc env:TALON_NOW=2026-10-22T18:00:00Z
+exit 0
+== @roc check p3/main.roc env:TALON_NOW=2026-10-24T12:00:00Z
+exit 0
+== @roc +nightly-2026-10-14-38a3029 check p3/main.roc env:TALON_PROXY=0
+exit 0

@@ -1,0 +1,89 @@
+== env:CI=true update json --file p1/main.roc --offline --allow-downloads
+exit 15
+== update json --file p2/main.roc
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-09-258ab27
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true update json --file p3/main.roc
+exit 13
+== env:TALON_AUTO_INSTALL=no update json --file p4/main.roc
+exit 13
+== env:CI=true env:TALON_NIGHTLY=0 update json --file p5/main.roc --allow-downloads
+exit 10
+== env:CI=true update json --file p6/main.roc --allow-downloads
+exit 10
+== env:CI=true update json --file p7/main.roc --allow-downloads --snapshot 2026-10-12T20:00:00Z
+check: passed
+build: passed
+$PROJECT/p7/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-12-2664a27
+resolved at 2026-10-12T20:00:00Z, 6 probes
+exit 0
+== env:CI=true env:TALON_NOW=2026-10-19T12:00:00Z update json --file p8/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/p8/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-16-1df370f
+resolved at 2026-10-19T12:00:00Z, 6 probes
+exit 0
+== update json --file p9/main.roc
+check: passed
+build: passed
+$PROJECT/p9/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-18-5349569
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=no update json --file p10/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/p10/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-15-38e6c42
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=no update json --file p13/main.roc --yes
+check: passed
+build: passed
+$PROJECT/p13/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-10-abcdef0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true verify --file p11/main.roc --allow-downloads
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
+check: passed
+build: passed
+$PROJECT/p11/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== env:CI=true remove json --file p12/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/p12/main.roc
+  - json: acme/json 2.0.0
+  + roc: nightly-2026-10-11-1a2b3c4
+exit 0
+== update json --file p14/main.roc --no-check
+check: skipped
+$PROJECT/p14/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 0 probes
+exit 0
+== update json --file p15/main.roc --no-check
+exit 10
+== env:TALON_AUTO_INSTALL=no update json --file p16/main.roc --no-check
+check: skipped
+$PROJECT/p16/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 0 probes
+exit 0

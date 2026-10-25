@@ -1,0 +1,48 @@
+== 1: the sha256 differs (R-CV4, R-SE11): exit 16, the download is deleted. Then the same with --json (R-J5).
+exit 16
+compilers: 
+left: 0 temps and locks, 0 probe dirs, config.toml: no
+{"schema":1,"command":"roc install","ok":false,"data":null,"error":{"kind":"integrity","code":16,"message":"sha256 of nightly-2026-10-13-91fa0c2 differs: expected a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795, got 179f29bb884446fec76f02e83d9ece892f8e9b89ea545ccb3883bc568baa55f7. Talon deleted the download."}}
+exit 16
+== 2: an asset with no digest (R-CV4): exit 16 before any download
+exit 16
+compilers: 
+left: 0 temps and locks, 0 probe dirs, config.toml: no
+== 3: the digest is right and the archive has a member with .. (R-SE9, R-HF5): tar refuses it, exit 16. Nothing is written outside the temp dir.
+downloading nightly-2026-10-11-1a2b3c4 (488 B)
+tln: error[integrity]: tar rejected nightly-2026-10-11-1a2b3c4 (http://127.0.0.1:$PORT/dl/nightly-2026-10-11-1a2b3c4/roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz): <the message of tar>
+exit 16
+evil.txt is not there
+compilers: 
+left: 0 temps and locks, 0 probe dirs, config.toml: no
+== 4: the server answers 404 for the asset (R-DA7): exit 15
+exit 15
+compilers: 
+left: 0 temps and locks, 0 probe dirs, config.toml: no
+== 5: the operand: none, 2, no match, a prefix of many (R-SC10, R-SC11, R-SC13). The exact id of a nightly with no asset for this host names the host (R-CV2, review of slice 021 Q6). A prefix of that id is only no match.
+exit 2
+exit 2
+exit 2
+exit 2
+exit 2
+exit 2
+== 6: min-release-age hides every nightly (R-C7, R-NS3): @latest has no compiler, exit 10.
+exit 10
+compilers: 
+left: 0 temps and locks, 0 probe dirs, config.toml: no
+== 7: --offline with a cached list: the compiler is not installed, exit 15 (R-DI12). With no cached list: exit 15.
+exit 15
+exit 15
+compilers: 
+left: 0 temps and locks, 0 probe dirs, config.toml: no
+== 8: a config.toml with a wrong value (R-TF4): exit 19, before any request
+exit 19
+== 9: min-release-age 0d from config.toml (R-C7): @latest is the young nightly. The default is added to config.toml, and the other bytes stay (R-SO15, R-CC6).
+installed nightly-2026-10-21-5349569
+nightly-2026-10-21-5349569 is now the default compiler
+exit 0
+compilers: nightly-2026-10-21-5349569 
+left: 0 temps and locks, 0 probe dirs, config.toml: yes
+# my settings
+min-release-age = "0d"
+default-roc = "nightly-2026-10-21-5349569"

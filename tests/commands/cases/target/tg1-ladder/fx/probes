@@ -1,0 +1,4 @@
+# run 1
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/build-target.stdout	../fixtures/check/out/build-target.stderr

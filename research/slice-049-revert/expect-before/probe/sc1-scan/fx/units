@@ -1,0 +1,6 @@
+# <hash>:<compiler> <code> <stdout> <stderr>: the answer of a unit probe. No row: it passes.
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-19-1a1a1a1	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-20-2b2b2b2	1	-	unit-main.stderr
+EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt:nightly-2026-10-21-3c3c3c3	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-23-5e5e5e5	1	-	../fixtures/check/out/unit-fail.stderr
+EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt:nightly-2026-10-23-5e5e5e5	1	-	../fixtures/check/out/unit-fail.stderr

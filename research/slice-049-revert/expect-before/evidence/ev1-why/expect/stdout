@@ -1,0 +1,72 @@
+== why json --file pa/main.roc
+$PROJECT/pa/main.roc
+  acme/json 2.1.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: fail (Yaml.roc)
+        3 pin: pass
+    note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+exit 0
+== why json --file pa/main.roc --json
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pa/main.roc","package":{"alias":"json","name":"acme/json","version":"2.1.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[{"rank":1,"source":"local","result":"fail","modules":["Yaml.roc"],"winner":true},{"rank":3,"source":"pin","result":"pass","modules":[],"winner":false}],"notes":["module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it."]}]},"error":null}
+exit 0
+== why json --file pb/main.roc
+$PROJECT/pb/main.roc
+  acme/json 2.1.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: fail (Yaml.roc)
+        3 pin: pass
+exit 0
+== why json --file pc/main.roc
+$PROJECT/pc/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: pass
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 why json --file pc/main.roc
+$PROJECT/pc/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-09-258ab27:
+      * 1 local: pass
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 why json --file pa/main.roc
+$PROJECT/pa/main.roc
+  acme/json 2.1.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: fail (Yaml.roc)
+        3 pin: pass
+    note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+exit 0
+== why parser --file pd/main.roc --json
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pd/main.roc","package":{"alias":"parser","name":"acme/parser","version":"1.0.0","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"parser","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst"}]],"compiler":"nightly-2026-10-09-258ab27","evidence":[],"notes":[]}]},"error":null}
+exit 0
+== why util --file pe/main.roc --json
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/pe/main.roc","package":{"alias":"util","name":"./util/main.roc","version":null,"kind":"path","id":"$PROJECT/pe/util/main.roc","direct":true,"via":null,"raised":null,"foreign":true,"platform":false},"paths":[[{"alias":"util","kind":"path","id":"$PROJECT/pe/util/main.roc"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[],"notes":[]}]},"error":null}
+exit 0
+== why parser --file pa/main.roc
+$PROJECT/pa/main.roc
+  acme/parser 1.0.0 (direct)
+    parser
+    evidence on nightly-2026-10-14-38a3029:
+      * 3 pin: pass
+exit 0
+== why json --file pa/main.roc
+$PROJECT/pa/main.roc
+  acme/json 2.1.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 3 pin: pass
+exit 0
+== why json --file pa/main.roc
+exit 19
+== why pf --file pa/main.roc
+$PROJECT/pa/main.roc
+  acme/pfx 0.1.1 (direct)
+    pf
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: fail
+exit 0

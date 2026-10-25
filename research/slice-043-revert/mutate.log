@@ -1,0 +1,13 @@
+A1: update holds a patched entry: it is free (R-PA4): caught by l0-vars, l2 patch/pa2-resolve
+A2: a patched entry is movable (R-SP23): caught by l0-vars
+A3: a release on which the diff does not apply ends the command: no `again` (R-PA5): caught by l2 patch/pa2-resolve
+A4: the temp copy keeps a file that the diff deletes (R-PA5): caught by l2 patch/pa2-resolve
+A5: update and upgrade rebase a stale patch too (R-PA6: only tln install): caught by l0
+A6: the proxy stops a stale patch with another exit code (R-PA6: 14): caught by l0, l2 proxy/px3-patch, l3 compilers/px3-proxy-patch
+A7: the flags go after -- (R-PX5): caught by l0, l2 proxy/px3-patch, l3 compilers/px3-proxy-patch
+A8: the baseline check gets the pairs of the candidate (R-PA10): caught by l2 patch/pa2-resolve
+A9: the base of the entry is not set to the new hash (R-PA5): caught by l2 patch/pa2-resolve
+A10: TALON_PROXY=0 checks and flags (R-PX7): caught by l2 proxy/px3-patch, l3 compilers/px3-proxy-patch
+A11: install --frozen does not check a stale patch (R-PA6): caught by l2 patch/pa2-resolve
+A12: verify has no pairs of patches (R-PA10): caught by l2 patch/pa2-resolve
+A13: the Guard has no span of the [patch] entry in the write of talon.toml (R-CC7): caught by l2 patch/pa2-resolve run 11 (hand mutation after the review)

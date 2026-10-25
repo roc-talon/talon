@@ -1,0 +1,47 @@
+== probe json --range --file p1/main.roc
+acme/json 2.1.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-07-7b7b7b7 (real)
+exit 12
+== env:CI=true probe json --range --file p1/main.roc
+acme/json 2.1.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-07-7b7b7b7 (real)
+exit 12
+== env:TALON_AUTO_INSTALL=no probe json --range --probe-downloads --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"range","hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","label":"acme/json 2.1.0","range":{"from":{"id":"nightly-2026-10-05-5f5f5f5","real":true},"to":{"id":"nightly-2026-10-07-7b7b7b7","real":true}},"probes":1,"downloads":1},"error":null}
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=yes probe parser --range --allow-downloads --file p1/main.roc
+acme/parser 1.0.0 passes on nightly-2026-10-03-3d3d3d3 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-03-3d3d3d3 (unknown)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 12
+== probe parser --range --yes --file p1/main.roc
+acme/parser 1.0.0 passes on nightly-2026-10-03-3d3d3d3 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-03-3d3d3d3 (real)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 0
+== env:HOME={w}/home2 probe parser2 --range --probe-downloads --file p2/main.roc
+acme/parser 1.2.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 12
+== env:HOME={w}/home3 probe json --range --probe-downloads --file p3/main.roc
+acme/json 2.1.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-07-7b7b7b7 (real)
+exit 12
+== env:HOME={w}/home4 probe json --range --probe-downloads --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":false,"data":null,"error":{"kind":"budget","code":12,"message":"the range has 1 end that is not a real fact (unknown): no installed compiler can show it. Run tln roc install for more compilers.","details":{"kind":"range","hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","label":"acme/json 2.1.0","range":{"from":{"id":"nightly-2026-10-05-5f5f5f5","real":false},"to":{"id":"nightly-2026-10-07-7b7b7b7","real":true}},"probes":8,"downloads":0}}}
+exit 12
+== env:HOME={w}/home5 probe json --range --probe-downloads --file p4/main.roc
+acme/json 2.1.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-07-7b7b7b7 (real)
+exit 12
+== env:HOME={w}/home6 probe json --range --probe-downloads --file p5/main.roc
+acme/json 2.1.0: no release of the compiler list has a real pass
+exit 12
+== env:HOME={w}/home7 probe json --range --probe-downloads --file p6/main.roc
+acme/json 2.1.0: no release of the compiler list has a real pass
+exit 12

@@ -67,6 +67,7 @@ real_fx = |args, token| Fx.{
 	tree_info!: RealFiles.tree_info!,
 	db_query!: RealDb.query!,
 	db_write!: RealDb.write!,
+	exec_in!: exec_in!,
 }
 
 ## Slice 023, R-HF9: the program name as typed (basic-cli `Env.program_name!`). The empty text when the system does not tell.
@@ -83,6 +84,22 @@ exec! = |run| match run.argv {
 	[] => Err(NotStarted("no program"))
 	[program, .. as rest] => {
 		cmd = Cmd.new_str(program).args_str(rest).envs_str(run.env).stdin(Inherit).stdout(Inherit).stderr(Inherit)
+		match cmd.run!() {
+			Ok(out) => match out.status {
+				Exited(code) => Ok(code)
+				Signaled(signal) => Ok(128 + signal)
+			}
+			Err(err) => Err(NotStarted(Str.inspect(err)))
+		}
+	}
+}
+
+## Slice 057, R-RUN5, R-RUN8, R-RUN9: `exec!` in the directory `cwd` (basic-cli `Cmd.cwd`). The same exit code rule.
+exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
+exec_in! = |run| match run.argv {
+	[] => Err(NotStarted("no program"))
+	[program, .. as rest] => {
+		cmd = Cmd.new_str(program).args_str(rest).envs_str(run.env).cwd(Path.utf8(run.cwd)).stdin(Inherit).stdout(Inherit).stderr(Inherit)
 		match cmd.run!() {
 			Ok(out) => match out.status {
 				Exited(code) => Ok(code)

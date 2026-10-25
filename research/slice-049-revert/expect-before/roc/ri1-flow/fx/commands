@@ -1,0 +1,11 @@
+roc install nightly-2026-10-09-258ab27
+roc i nightly-2026-10-09-258ab27
+roc install nightly-2026-10-10-abcdef0 --offline
+roc install nightly-2026-10-11-1a2b3c4
+roc install nightly-2026-10-12-2664a27
+roc add nightly-2026-10-13-91fa0c2
+roc install nightly-2026-10-14-38a3029 --yes
+roc install nightly-2026-10-15-38e6c42 --json
+roc install nightly-2026-10-16-1df370f --yes
+roc install nightly-2026-10-17-601b54c --yes
+roc install nightly-2026-10-18-5349569 --yes

@@ -1,0 +1,16 @@
+Slice 044, the install of Zig from the index (entry `zig`, one line of `fx/runs` for each run). The index is `fx/http/ziglang.org/download/index.json` (made by `research/slice-044-revert/gen-zig.py`). The fake curl writes the text `fake`, so the right `shasum` is the sha256 of `fake`.
+
+| Run | Need | World | Result | Rules |
+| --- | --- | --- | --- | --- |
+| 1 | 0.17.0, interactive, Enter | no zig on PATH, a stale temp of the item | the list, the prompt (`Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] `), then the lock, the temp is deleted, download, sha256, tar, delete archive, chmod, `.talon.json`, rename, unlock | R-D2, R-NI6, R-DL1, R-DL3, R-CC4, R-HF2, R-HF4, R-HF5, R-CV4 |
+| 2 | 0.17.0 | installed by run 1 | `found-installed`: no request, no lock | R-D1, R-CC4 step 1 |
+| 3 | 0.16.2 --yes, Windows | the index has a `.zip` for `x86_64-windows` | `zig.exe`, no `xz` needed, no chmod | R-D2, R-HF2, R-HF5 |
+| 4 | 0.15.1, the answer n | | exit 13, no lock, nothing downloaded | R-NI6, R-DL1, R-CC4 step 2 |
+| 5 | 0.14.1 --yes, a busy lock | the holder makes the dir | `present`: found under the lock, no download | R-CC3, R-CC4 steps 3, 4, R-CC5 |
+| 6 | 0.13.0 --yes | the index has the sha256 of other bytes | exit 16, the temp dir is deleted, no dir | R-D2, R-CV4, R-SE9 |
+| 7 | 0.12.1, non-interactive, no --yes | | the answer line `installing zig 0.12.1 (54.2 MB)`, no prompt, the download starts | R-DL4, R-NI6, R-NM6 |
+| 8 | 0.10.1, TALON_ZIG_INDEX | the route does not exist | the request goes to that URL, exit 15 | R-EV16, R-EV21, R-D2 |
+| 9 | 0.99.0 | the index has no such series | exit 18, no prompt | R-D2 |
+| 10 | 0.8.0 --yes | tar fails | exit 16 (as for a compiler), the temp dir is deleted | R-HF5, R-SE9 |
+| 11 | 0.7.0 --yes | curl fails with 404 | exit 15, the temp dir is deleted | R-DA3, R-DA7 |
+| 12 | 0.6.0 --offline | the installed Zig has other series | exit 15, no request | R-D1, R-DI12 |

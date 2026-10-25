@@ -1,0 +1,5 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[dependencies]
+parser = "acme/parser@^1"

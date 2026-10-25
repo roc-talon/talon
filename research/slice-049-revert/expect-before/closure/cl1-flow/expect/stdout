@@ -1,0 +1,26 @@
+== install --file p1/main.roc
+nothing to change
+exit 0
+== install --frozen --file p1/main.roc
+the header satisfies talon.toml
+exit 0
+== list --file p2/main.roc
+$PROJECT/p2/main.roc
+  pf    acme/pfx 0.1.1   direct
+  mid   acme/mid 1.0.0   direct
+  text  acme/text 1.1.0  via mid
+  core  acme/core 1.1.0  via mid
+exit 0
+== update --no-check --file p1/main.roc
+nothing to change
+exit 0
+== verify --no-check --file p1/main.roc
+check: skipped
+verified: the tuple passes. No project file was written.
+exit 0
+== update --no-check --file p3/main.roc
+check: skipped
+$PROJECT/p3/main.roc
+  ~ text: acme/text 1.0.0 -> 1.1.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0

@@ -1,0 +1,7 @@
+warning: acme/text has 2 series in the closure: 1 via web, 2 via util. The types of the 2 series are different types.
+warning: acme/text has 2 series in the closure: 1 via web, 2 via util. The types of the 2 series are different types.
+warning: acme/text has 2 series in the closure: 1 via web, 2 via util. The types of the 2 series are different types.
+tln: error[usage]: tln list takes no name
+tln: error[network]: acme/text 1.0.0 is not in the package cache and --offline is set (https://github.com/acme/text/releases/download/1.0.0/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN.tar.zst)
+tln: error[no_tuple]: acme/text 1.1.0 needs acme/core 1.1.0, but the header names acme/core 1.0.0
+tln: error[environment]: cannot read $PROJECT/dangle/missing/main.roc

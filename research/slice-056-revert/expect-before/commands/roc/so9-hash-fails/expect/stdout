@@ -1,0 +1,4 @@
+== install --file p/main.roc
+exit 18
+== install --file p/main.roc
+exit 18

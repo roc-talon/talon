@@ -1,0 +1,3 @@
+[patch]
+parser = { path = "./.talon/patches/parser/main.roc", base = "94teyByfUKwD2pmqGxJhetgKiJfj8dQ3b36aZHBpuj2H" }
+json = { path = "./.talon/patches/json/main.roc", base = "GQ3gWuCTr3WbMg3Kv6JoNqFRKoxGtahcpiYg9wnpxW9L" }

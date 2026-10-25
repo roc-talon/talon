@@ -1,0 +1,72 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ──────────────────────────────────── tests/unit/RunscriptTest.roc:75:1
+
+expect {
+    words_view("roc build  main.roc\tx") == ["roc", "build", "main.roc", "x"]
+        and words_view("  a  ") == ["a"]
+            and words_view("") == []
+                and words_view("tool \"two words\" 'three four' end") == ["tool", "two words", "three four", "end"]
+                    and words_view("a \"q \\\" b \\\\ c \\n\" 'x\\y'") == ["a", "q \" b \\ c \\n", "x\\y"]
+                        and words_view("echo $HOME ~ *.txt $") == ["echo", "$HOME", "~", "*.txt", "$"]
+                            and words_view("C:\\dir\\x.exe --a=b") == ["C:\\dir\\x.exe", "--a=b"]
+                                and words_view("x \"\" y") == ["x", "", "y"]
+                                    and words_view("a \"|\" \"&&\" '>' b") == ["a", "|", "&&", ">", "b"]
+                                        and words_view("a|b c;d e>f") == ["a|b", "c;d", "e>f"]
+                                            and words_view("a | b") == ["SHELL", "|"]
+                                                and words_view("a && b") == ["SHELL", "&&"]
+                                                    and words_view("a || b") == ["SHELL", "||"]
+                                                        and words_view("a ; b") == ["SHELL", ";"]
+                                                            and words_view("a > out") == ["SHELL", ">"]
+                                                                and words_view("a >> out") == ["SHELL", ">>"]
+                                                                    and words_view("a < in") == ["SHELL", "<"]
+                                                                        and words_view("a &") == ["SHELL", "&"]
+                                                                            and words_view("a $(b) c") == ["SHELL", "$(b)"]
+                                                                                and words_view("a `b` c") == ["SHELL", "`b`"]
+                                                                                    and words_view("a \"b") == ["UNCLOSED"]
+                                                                                        and words_view("a 'b c") == ["UNCLOSED"]
+                                                                                            and words_view("a \"b\\\" c") == ["UNCLOSED"]
+                                                                                                and words_view("a\"b c\"d e") == ["ab cd", "e"]
+                                                                                                    and words_view("x 'a\"b' \"c'd\"") == ["x", "a\"b", "c'd"]
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 55 tests in 5549.0 ms.:
+    54 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5331.5 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 0
+commands: 3 passed, 0 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

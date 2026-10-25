@@ -1,3 +1,4 @@
+import BuildTarget
 import Fail
 import Probe
 
@@ -88,15 +89,17 @@ LadderJudge :: [].{
 	## The rows 2 to 4 are in the order of the rules: a new error in an app file first, then an error with no file, then a new error in the file of a hash. `<name> <version>` of the
 	## platform is the owner with `is_platform` (`the platform` alone when `owners` has none).
 	build : { output : Probe.Output, dir : Str, pkgs : Str, baseline : List(Probe.Err), owners : List(Owner), compiler : Str, timeout : U64 } -> Try(Report, Fail)
-	build = |facts| match Probe.classify(facts.output) {
-		Pass => Ok({ lines: ["build: passed"] })
-		Fail(n) => match Probe.errors({ text: facts.output.stderr, dir: facts.dir, pkgs: facts.pkgs }) {
-			[] => Err(unreadable("the build on ${facts.compiler}", n))
-			errors => judge_build(facts.baseline, facts.owners, errors)
+	build = |facts| build_for({ output: facts.output, dir: facts.dir, pkgs: facts.pkgs, baseline: facts.baseline, owners: facts.owners, compiler: facts.compiler, timeout: facts.timeout, what: "the host target" })
+
+	## Slice 054 (R-TG1, R-TG2, R-LD5): `build` for a build with a build target. `Unlisted` is `build` (the text says `the host target`). `Named(t)` is `build` with one change: the text of the row "an error that has no file" is
+	## `no tuple works: the build for the target <t> failed on the platform <name> <version>: <title>; <title>`. Every other row is as in `build`.
+	build_at : { output : Probe.Output, dir : Str, pkgs : Str, baseline : List(Probe.Err), owners : List(Owner), compiler : Str, timeout : U64, target : BuildTarget.Chosen } -> Try(Report, Fail)
+	build_at = |facts| {
+		what = match facts.target {
+			Unlisted => "the host target"
+			Named(name) => "the target ${name}"
 		}
-		Hang => Err(Fail.of_tuple("no tuple works: the build hangs on ${facts.compiler} (no result in ${facts.timeout.to_str()} s) on ${platform_text(facts.owners)}", []))
-		Crash(text) => Err(Fail.of_tuple("no tuple works: the build crashes on ${facts.compiler} (${text}) on ${platform_text(facts.owners)}", []))
-		NoFact(text) => Err(Fail.new(Internal, "the build on ${facts.compiler} gave no result: ${text}. Run the command again."))
+		build_for({ output: facts.output, dir: facts.dir, pkgs: facts.pkgs, baseline: facts.baseline, owners: facts.owners, compiler: facts.compiler, timeout: facts.timeout, what })
 	}
 }
 
@@ -132,9 +135,22 @@ judge_check = |baseline, owners, errors| {
 	}
 }
 
+# Ladder step 3 (R-LD5, R-TG2): `what` is `the host target` or `the target <t>` in the text of a build that fails with an error that no file owns.
+build_for : { output : Probe.Output, dir : Str, pkgs : Str, baseline : List(Probe.Err), owners : List(LadderJudge.Owner), compiler : Str, timeout : U64, what : Str } -> Try(LadderJudge.Report, Fail)
+build_for = |facts| match Probe.classify(facts.output) {
+	Pass => Ok({ lines: ["build: passed"] })
+	Fail(n) => match Probe.errors({ text: facts.output.stderr, dir: facts.dir, pkgs: facts.pkgs }) {
+		[] => Err(unreadable("the build on ${facts.compiler}", n))
+		errors => judge_build(facts.baseline, facts.owners, errors, facts.what)
+	}
+	Hang => Err(Fail.of_tuple("no tuple works: the build hangs on ${facts.compiler} (no result in ${facts.timeout.to_str()} s) on ${platform_text(facts.owners)}", []))
+	Crash(text) => Err(Fail.of_tuple("no tuple works: the build crashes on ${facts.compiler} (${text}) on ${platform_text(facts.owners)}", []))
+	NoFact(text) => Err(Fail.new(Internal, "the build on ${facts.compiler} gave no result: ${text}. Run the command again."))
+}
+
 # Ladder step 3. The order of the rules: an app file, an error with no file (the platform), a hash (D8).
-judge_build : List(Probe.Err), List(LadderJudge.Owner), List(Probe.Err) -> Try(LadderJudge.Report, Fail)
-judge_build = |baseline, owners, errors| {
+judge_build : List(Probe.Err), List(LadderJudge.Owner), List(Probe.Err), Str -> Try(LadderJudge.Report, Fail)
+judge_build = |baseline, owners, errors, what| {
 	new = Probe.compare({ baseline, candidate: errors }).new
 	in_app = new.keep_if(|e| e.file != NoFile and !is_package(e))
 	no_file = new.keep_if(|e| e.file == NoFile)
@@ -142,7 +158,7 @@ judge_build = |baseline, owners, errors| {
 	if !in_app.is_empty() {
 		Err(app_error(in_app))
 	} else if !no_file.is_empty() {
-		Err(Fail.of_tuple("no tuple works: the build for the host target failed on ${platform_text(owners)}: ${Str.join_with(no_file.map(|e| e.title), "; ")}", platform_hashes(owners)))
+		Err(Fail.of_tuple("no tuple works: the build for ${what} failed on ${platform_text(owners)}: ${Str.join_with(no_file.map(|e| e.title), "; ")}", platform_hashes(owners)))
 	} else if !in_hashes.is_empty() {
 		Err(Fail.of_tuple("no tuple works: the build found new errors in ${blames(in_hashes, owners)}", hashes_of(in_hashes)))
 	} else {

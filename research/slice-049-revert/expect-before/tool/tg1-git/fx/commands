@@ -1,0 +1,7 @@
+tool install --git acme/gapp@main
+tool install --git acme/gapp@main
+tool install acme/sub@dd03c09e --path apps/cli
+tool install --git acme/gapp@v2 --json
+tool install --git acme/gapp@main --as other
+tool install --git acme/gapp@main --path pkg
+tool install --git acme/gapp@main --path nodir

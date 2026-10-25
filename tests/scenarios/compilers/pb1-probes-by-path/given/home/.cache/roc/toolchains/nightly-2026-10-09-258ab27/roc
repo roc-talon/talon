@@ -1,0 +1,10 @@
+#!/bin/sh
+# The fake compiler of the case pb1-probes-by-path (slice 023c). It writes one line to $TALON_TEST_DIR/prog.log: its id (the name of its
+# dir), the directory, the command, the file, the number of arguments and the 3 variables that tln sets for a compiler. It passes.
+id=$(basename "$(dirname "$0")")
+printf '%s cwd=%s %s %s n=%s XDG_CACHE_HOME=%s ROC_CACHE_DIR=%s TALON_IN_PROXY=%s\n' "$id" "$(basename "$PWD")" "$1" "$2" "$#" "$XDG_CACHE_HOME" "$ROC_CACHE_DIR" "$TALON_IN_PROXY" >> "$TALON_TEST_DIR/prog.log"
+case "$1" in
+check) echo "No errors found in 1ms for $2" ;;
+build) printf '0 errors and 0 warnings found in 1ms while successfully building:\n\n    %s\n' "${3#--output=}" ;;
+esac
+exit 0

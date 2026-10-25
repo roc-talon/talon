@@ -1,0 +1,13 @@
+downloading nightly-2026-10-18-5349569 (73.0 MB)
+downloading nightly-2026-10-18-5349569 (73.0 MB)
+installed nightly-2026-10-18-5349569
+nightly-2026-10-18-5349569 is now the default compiler
+downloading nightly-2026-10-16-1df370f (73.2 MB)
+warning: the compat id of nightly-2026-10-16-1df370f is not known: roc check touched no compat dir
+tln: error[no_tuple]: no compiler release is known, and nightly is false (set by TALON_NIGHTLY)
+tln: error[network]: no cached list of compilers and --offline is set
+tln: error[usage]: tln roc update takes no operand, got 1
+tln: error[consent]: nightly-2026-10-18-5349569 is not installed. Nothing was downloaded.
+nightly-2026-10-18-5349569 is the newest
+nightly-2026-10-18-5349569 is now the default compiler
+downloading nightly-2026-10-18-5349569 (73.0 MB)

@@ -1,0 +1,3 @@
+Build roc from Karakatiza666/roc@my-branch (3b9f7c1d)
+
+tln: error[input]: build.zig.zon of Karakatiza666/roc@my-branch has no minimum_zig_version

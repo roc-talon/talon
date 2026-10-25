@@ -1,3 +1,4 @@
+import BuildTarget
 import Clock
 import ConfigToml
 import Fail
@@ -6,6 +7,7 @@ import Pin
 import Probe
 import Ranges
 import Text
+import ToolsToml
 import TomlKeys
 import toml.Toml
 import toml.Value
@@ -27,7 +29,9 @@ import toml.Value
 ## | `[resolution]` | `snapshot` | `"log:<n>"` or an RFC 3339 UTC time (R-DT3, R-DT4) | `resolution.snapshot` |
 ## | `[resolution]` | `probe` | An inline table `{ max = 100, timeout = 30, slots = 12, max-toolchains = 10 }`. Each key is a whole number that is 0 or more (`slots` and `timeout`: 1 or more, question Q5). Slice 031 (R-P5, R-PP7). | `resolution.probe` (`Probe.Keys`) |
 ## | `[workspace]` | `members` | a list of patterns (read by `Project.workspace_of`, slice 002) | |
-## | `[audit]`, `[patch]` | any | P3 and P1: known tables, the content is not read in P0 | |
+## | `[patch]` | an alias | `{ path = "<file>", base = "<hash>" }`, an inline table (R-PA9, R-PA12, slice 042) | `patches` |
+## | `[build]` | `target` | One Roc target name (`BuildTarget.is_name`, R-TG3). Slice 054. The code agent reads it. Any role may have the table (R-WS5, R-TG5). Another value: exit 19 for an app, with no effect for a package or a platform (`build_check`, rows below) | `build.target` |
+## | `[audit]` | any | P3: a known table, the content is not read | |
 ##
 ## `Dep`: `key` is the alias. `name` is the part before the `@` of the value (`Err(None)` when the value is a range only). `range` is the
 ## part after it. `line` is the 1-based line of the key. A value that has no `@` is the range text. A `@` splits at its first place.
@@ -35,6 +39,13 @@ Intent := {
 	toolchain : { roc : Try(Pin.Req, [Unset]), roc_text : Try(Str, [Unset]), nightly : Try(Bool, [Unset]) },
 	deps : List(Dep),
 	overrides : List(Dep),
+	patches : List(PatchEntry),
+
+	## Slice 056 (R-PT1, R-PT2): the entries of `[tools]` (`ToolsToml.read_table`), in the order of their lines. An entry is `{ key, ref, url, line }` (`url` is `Err(Unset)` until `tln install` writes it).
+	tools : List(ToolsToml.Entry),
+
+	## Slice 054 (R-TG1, R-TG3, R-TG5, R-WS5): `[build] target`, a Roc target name (`BuildTarget.is_name`). `Err(Unset)` when the table or the key is missing.
+	build : { target : Try(Str, [Unset]), bad : Try({ line : U64, message : Str }, [Valid]) },
 	resolution : {
 		priority : Try(List(Str), [Unset]),
 		strategy : Try([Highest, Lowest], [Unset]),
@@ -47,6 +58,9 @@ Intent := {
 
 	Dep : { key : Str, name : Try(Str, [None]), range : Str, line : U64 }
 
+	## One entry of `[patch]` (R-PA12, slice 042): the alias, the `path` of the main file of the copy as written, and the `base` hash. The entries are in the order of their lines. An entry that is not an inline table with a string `path` and a string `base` is not read (no entry, no warning, no failure: the same as before slice 042, question Q5).
+	PatchEntry : { key : Str, path : Str, base : Str }
+
 	## The kind of a `talon.toml` in a project (R-WS5): `Standalone` (no `[workspace]` table anywhere on its project), `Root` (the file with
 	## `[workspace]`), `Member` (another `talon.toml` of a workspace).
 	Role : [Standalone, Root, Member]
@@ -54,16 +68,26 @@ Intent := {
 	## Reads the text of a `talon.toml`. `path` is for the messages. The result has the intent and the warnings (R-TF4: an unknown key or table is a
 	## warning and the command goes on).
 	##
-	## Allowed tables (R-WS5): `Standalone` and `Root`: `workspace`, `toolchain`, `resolution`, `audit`, `dependencies`, `overrides`, `patch`.
-	## `Member`: `dependencies`, `overrides`, `patch` only.
+	## Allowed tables (R-WS5): `Standalone` and `Root`: `workspace`, `toolchain`, `resolution`, `audit`, `dependencies`, `overrides`, `patch`, `build`.
+	## `Member`: `dependencies`, `overrides`, `patch`, `build` only (slice 054, R-WS5, R-TG5). The message of a table that a member does not allow ends with `(it has only dependencies, overrides, patch and build)`.
 	##
 	## Failures have the kind `Input` (exit 19, R-EC19, R-TF4, R-WS5). The messages name the file and the line (a proposal, TW24):
 	##
 	## | Case | Message |
 	## | --- | --- |
 	## | Text that is not TOML | `<path>:<line>: not valid TOML` |
-	## | A known table that the role does not allow (R-WS5). The line of the table. A `Standalone` file has no `workspace` table: the caller gives it the role `Root` | `<path>:<line>: the table [<name>] is not allowed in a workspace member file (it has only dependencies, overrides and patch)` |
+	## | A known table that the role does not allow (R-WS5). The line of the table. A `Standalone` file has no `workspace` table: the caller gives it the role `Root` | `<path>:<line>: the table [<name>] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)` |
 	## | A known key with a value of the wrong type or form: a key of `[dependencies]` or `[overrides]` that is not a string, a range that `Ranges.check` refuses, a `[toolchain] roc` that `Pin.parse_req` refuses, a `nightly` that is not a boolean, a `strategy` that is not `highest` or `lowest`, a `min-release-age` that is not `<n>d`, a `snapshot` that is not `log:<n>` or a UTC time, a `priority` that is not a list of strings | `<path>:<line>: <table>.<key>: <why>` with `<why>` one of `must be a string`, `'<text>' is not a version range`, `'<text>' is not a compiler range`, `must be true or false`, `must be "highest" or "lowest"`, `must be a number of days, for example "2d"`, `must be "log:<n>" or a UTC time`, `must be a list of strings` |
+	##
+	## Slice 054 (R-TG3, R-TG4), `[build]`, exit 19 (kind `Input`). `Intent.read` does not give these failures: it puts the first one in `build.bad`, and `Intent.build_check` gives it for the member of an app (a package or a platform has no build, so no failure). The line is the line of the key `target`:
+	##
+	## | Case | Message (a proposal, TW24) |
+	## | --- | --- |
+	## | `target` is not a string | `<path>:<line>: build.target: must be a string` |
+	## | `target` is a string that is not in `BuildTarget.names` | `<path>:<line>: build.target: '<text>' is not a Roc target` |
+	## | `[build]` is not a table | `<path>:<line>: build: must be a table` (not tested, as `read_probe`) |
+	##
+	## A key of `[build]` other than `target` is a warning: `<path>:<line>: unknown key build.<key>` (R-TF4). The table `[build]` is no longer an unknown table.
 	##
 	## Warnings: `<path>:<line>: unknown table [<name>]` and `<path>:<line>: unknown key <table>.<key>`, in the order of the file.
 	## Keys of `[dependencies]`, `[overrides]` and `[patch]` are never unknown. The warning for a `[resolution]` key other than the 5 above.
@@ -77,6 +101,15 @@ Intent := {
 				[] => Ok({ intent: scan.intent, warnings: scan.warnings.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
 			}
 		}
+	}
+
+	## Slice 054 (R-TG3, R-TG4): the check of a bad `[build] target` is for the member that uses the file, not for the read of the file. `Intent.read` never fails for `[build] target` (`bad` has the first problem, `target` is `Err(Unset)`).
+	## The caller (`ResolveLoad`) calls `build_check` for each member with the `talon.toml` that it uses (`path`) and the kind of the member file. An app with `bad` `Ok(note)` is exit 19 (kind `Input`): `<path>:<line>: <message>`
+	## (the text of the table above). A package or a platform has no build (R-TG4), so its `[build]` has no effect: `Ok({})`. `bad` `Err(Valid)`: `Ok({})`.
+	build_check : { path : Str, bad : Try({ line : U64, message : Str }, [Valid]), kind : [App, Package, Platform] } -> Try({}, Fail)
+	build_check = |x| match (x.kind, x.bad) {
+		(App, Ok(note)) => Err(Fail.new(Input, "${x.path}:${note.line.to_str()}: ${note.message}"))
+		_ => Ok({})
 	}
 
 	## The read of `config.toml` is in `ConfigToml.read` (slice 031b). This name stays for the unit tests.
@@ -124,11 +157,12 @@ climb = |dir, root, found| {
 	if dir == root or dir.is_empty() next else climb(Text.dir_of(dir), root, next)
 }
 
-dependency_tables : List(Str)
-dependency_tables = ["dependencies", "overrides", "patch"]
-
 known_tables : List(Str)
-known_tables = ["workspace", "toolchain", "resolution", "audit", "dependencies", "overrides", "patch"]
+known_tables = ["workspace", "toolchain", "resolution", "audit", "dependencies", "overrides", "patch", "build", "tools", "scripts"]
+
+# R-WS5, R-TG5: the tables that a member file may have.
+member_tables : List(Str)
+member_tables = ["dependencies", "overrides", "patch", "build", "scripts"]
 
 # R-TF4, R-WS5: the whole file. The issues are failures, the warnings go on.
 read_tables : Toml, [Standalone, Root, Member], Str -> Scan
@@ -137,18 +171,54 @@ read_tables = |doc, role, text| {
 	resolution = read_resolution(doc)
 	deps = read_deps(doc, "dependencies")
 	overrides = read_deps(doc, "overrides")
+	build = read_build(doc)
+	tools = ToolsToml.read_table(doc)
 	shape = check_tables(doc, role, text)
 	{
 		intent: {
 			toolchain: toolchain.value,
 			deps: deps.value,
 			overrides: overrides.value,
+			patches: read_patches(doc),
+			tools: tools.value,
+			build: build.value,
 			resolution: resolution.value,
 		},
-		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues),
-		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings),
+		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues).concat(tools.issues),
+		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings),
 	}
 }
+
+# R-TG3, R-TG4 (slice 054): `[build] target`. A bad value is no failure of the read: `target` is `Err(Unset)` and `bad` has the first problem (`Intent.build_check` is the failure, for an app).
+read_build : Toml -> { value : { target : Try(Str, [Unset]), bad : Try({ line : U64, message : Str }, [Valid]) }, warnings : List(Note) }
+read_build = |doc| {
+	target = field(
+		doc,
+		"build",
+		"target",
+		|v| match v {
+			Value.String(text) => if BuildTarget.is_name(text) Ok(text) else Err("'${text}' is not a Roc target")
+			_ => Err("must be a string")
+		},
+	)
+	bad = match target.issues {
+		[first, ..] => Ok(first)
+		[] => Err(Valid)
+	}
+	{ value: { target: target.value, bad }, warnings: unknown_keys(doc, "build", ["target"]) }
+}
+
+# R-PA12, R-PA9 (slice 042, question Q5): the entries of `[patch]` that are inline tables with a string `path` and a string `base`, in the order of the lines. Any other entry is not read.
+read_patches : Toml -> List(Intent.PatchEntry)
+read_patches = |doc| keys_of(doc, "patch").keep_oks(
+	|k| match k.value {
+		Value.Table(t) => match (t.get("path"), t.get("base")) {
+			(Ok(Value.String(path)), Ok(Value.String(base))) => Ok({ key: k.key, path, base })
+			_ => Err(NotPatch)
+		}
+		_ => Err(NotPatch)
+	},
+)
 
 # A value of a known key, or the reason that it is wrong.
 field : Toml, Str, Str, (Value -> Try(a, Str)) -> { value : Try(a, [Unset]), issues : List(Note) }
@@ -202,8 +272,8 @@ check_tables = |doc, role, text| {
 		|(name, value)| match value {
 			Value.Table(_) => if !known_tables.contains(name) {
 				{ issues: [], warnings: [{ line: table_line(name), message: "unknown table [${name}]" }] }
-			} else if role == Member and !dependency_tables.contains(name) {
-				{ issues: [{ line: table_line(name), message: "the table [${name}] is not allowed in a workspace member file (it has only dependencies, overrides and patch)" }], warnings: [] }
+			} else if role == Member and !member_tables.contains(name) {
+				{ issues: [{ line: table_line(name), message: "the table [${name}] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)" }], warnings: [] }
 			} else {
 				{ issues: [], warnings: [] }
 			}

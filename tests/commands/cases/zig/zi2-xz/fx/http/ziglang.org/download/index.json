@@ -1,0 +1,31 @@
+{
+  "master": {
+    "version": "0.18.0-dev.5+abcdef",
+    "date": "2026-10-20",
+    "x86_64-linux": {
+      "tarball": "https://ziglang.org/download/builds/zig-x86_64-linux-0.18.0-dev.5+abcdef.tar.xz",
+      "shasum": "9999999999999999999999999999999999999999999999999999999999999999",
+      "size": "1"
+    }
+  },
+  "0.17.0": {
+    "date": "2026-09-01",
+    "docs": "https://ziglang.org/documentation/0.17.0/",
+    "stdDocs": "https://ziglang.org/documentation/0.17.0/std/",
+    "src": {
+      "tarball": "https://ziglang.org/download/0.17.0/zig-0.17.0.tar.xz",
+      "shasum": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "size": "17000000"
+    },
+    "x86_64-linux": {
+      "tarball": "https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz",
+      "shasum": "b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78",
+      "size": "54227812"
+    },
+    "aarch64-macos": {
+      "tarball": "https://ziglang.org/download/0.17.0/zig-aarch64-macos-0.17.0.tar.xz",
+      "shasum": "b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78",
+      "size": "48000001"
+    }
+  }
+}

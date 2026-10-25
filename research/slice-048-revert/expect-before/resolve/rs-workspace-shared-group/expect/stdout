@@ -1,0 +1,11 @@
+== install compiler=nightly-2026-10-14-38a3029
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+$PROJECT/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+$PROJECT/apps/b/main.roc
+  ~ serde: acme/json 2.0.5 -> 2.1.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0

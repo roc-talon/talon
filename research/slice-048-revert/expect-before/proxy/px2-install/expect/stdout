@@ -1,0 +1,42 @@
+== @roc check p1/main.roc
+exit 0
+== @roc check p1/main.roc
+exit 0
+== @roc +nightly-2026-10-12-2664a27 version
+exit 13
+== @roc +nightly-2026-10-14-38a3029 version env:TALON_AUTO_INSTALL=yes env:CI=true
+exit 0
+== @roc +nightly-2026-10-12-2664a27 version env:CI=true
+exit 13
+== @roc +nightly-2026-10-12-2664a27 version env:TALON_AUTO_INSTALL=no
+exit 13
+== @roc version env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 env:TALON_AUTO_INSTALL=yes
+exit 0
+== @roc +nightly-2026-10-17-601b54c version env:TALON_AUTO_INSTALL=yes
+exit 16
+== @roc +nightly-2026-10-16-1df370f version env:TALON_AUTO_INSTALL=yes
+exit 0
+== @roc +nightly-2026-10 version env:TALON_AUTO_INSTALL=yes
+exit 13
+== @roc +nightly-2026-10-12-2664a27 version env:TALON_AUTO_INSTALL=true env:CI=true
+exit 13
+== @roc check p2/main.roc
+exit 0
+== @roc check p3/main.roc env:TALON_AUTO_INSTALL=no
+exit 13
+== @roc check p4/main.roc env:CI=true
+exit 13
+== @roc check p5/main.roc env:CI=true env:TALON_AUTO_INSTALL=yes
+exit 10
+== @roc check p6/main.roc env:CI=true env:TALON_AUTO_INSTALL=yes env:TALON_NIGHTLY=0
+exit 10
+== @roc check p7/main.roc env:TALON_PROXY=0 env:CI=true env:TALON_AUTO_INSTALL=yes
+exit 0
+== @roc check p8/main.roc env:XDG_CONFIG_HOME={w}/cfg2 env:TALON_NOW=2026-10-15T16:00:00Z env:CI=true env:TALON_AUTO_INSTALL=yes
+exit 0
+== @roc check p9/main.roc env:CI=true env:TALON_AUTO_INSTALL=yes
+exit 10
+== @roc check p10/main.roc env:XDG_CONFIG_HOME={w}/cfg3 env:CI=true env:TALON_AUTO_INSTALL=yes
+exit 10
+== @roc check p4/main.roc env:HOME={w}/home2 env:CI=true
+exit 13

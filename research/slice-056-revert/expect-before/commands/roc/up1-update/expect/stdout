@@ -1,0 +1,44 @@
+== roc update
+installed nightly-2026-10-18-5349569
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-18-5349569
+exit 0
+== roc update
+nightly-2026-10-18-5349569 is the newest
+exit 0
+== roc up --offline
+nightly-2026-10-18-5349569 is the newest
+exit 0
+== env:CI=true env:HOME={w}/home2 roc update
+installed nightly-2026-10-18-5349569
+note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default nightly-2026-10-18-5349569
+exit 0
+== env:CI=true env:HOME={w}/home3 roc update --json
+{"schema":1,"command":"roc update","ok":true,"data":{"id":"nightly-2026-10-18-5349569","path":"$HOME3/.cache/roc/toolchains/nightly-2026-10-18-5349569","installed":true,"previous":null,"changed":true},"error":null}
+exit 0
+== env:CI=true env:HOME={w}/home4 env:TALON_NOW=2026-10-19T12:00:00Z roc update
+installed nightly-2026-10-16-1df370f
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-16-1df370f
+exit 0
+== env:CI=true env:HOME={w}/home5 env:TALON_NIGHTLY=0 roc update
+exit 10
+== env:CI=true env:HOME={w}/home6 roc update --offline
+exit 15
+== roc update nightly-2026-10-18-5349569
+exit 2
+== env:HOME={w}/home7 roc update
+exit 13
+== env:CI=true env:HOME={w}/home8 roc update
+nightly-2026-10-18-5349569 is the newest
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-18-5349569
+exit 0
+== env:CI=true env:HOME={w}/home9 roc update --json
+{"schema":1,"command":"roc update","ok":true,"data":{"id":"nightly-2026-10-18-5349569","path":"$HOME9/.cache/roc/toolchains/nightly-2026-10-18-5349569","installed":false,"previous":null,"changed":true},"error":null}
+exit 0
+== env:CI=true env:HOME={w}/home10 roc update
+nightly-2026-10-18-5349569 is the newest
+note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default nightly-2026-10-18-5349569
+exit 0
+== env:CI=true env:HOME={w}/home11 env:TALON_AUTO_INSTALL=no roc update
+installed nightly-2026-10-18-5349569
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-18-5349569
+exit 0

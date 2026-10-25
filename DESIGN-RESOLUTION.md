@@ -69,6 +69,7 @@ R-NS12: Evidence and probes (sections 3 and 4) work the same for a release: a fa
 | R-C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, R-DI10). Both also apply where Talon selects a compiler by itself (R-NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` does not hide a version or a compiler that the user names (R-NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
 | R-C8 | Two series of one package (two groups, Design 4.1) in the closure | Warning (type identity) |
 | R-C9 | R-C6, R-C7 and a snapshot never hide the value that a header entry or the `roc:` pin has now. That value stays in the domain of its variable, so a hold, the implied range (Design 4.3) and `tln update` still work, for example after `tln add X@1.2.3` of a release that is 1 day old. They hide only the other candidates. `tln audit` reports a yanked value (R-C6). | Hard |
+| R-C10 | Build target: the `targets` of the platform release have the build target of the app project file (section 4, R-TG1). A release with no such target is not a candidate. Reason: the release cannot build the app, and Talon knows it from the header with no probe. When the platform is held (section 9) and its release does not have the build target, no tuple exists: exit code 10 (`no_tuple`). | Hard |
 
 ## 3. Compatibility evidence
 
@@ -96,11 +97,26 @@ R-LD1: A probe runs one compiler on one target and classifies the result. Probes
 | R-LD2 | 1 | Unit | `roc check packages/<hash>/main.roc` with nightly N | The modules of the hash that have errors |
 | R-LD3 | 1 | Platform | same, on the platform `main.roc` | The modules of the platform that have errors |
 | R-LD4 | 2 | Whole app | `roc check main.roc` with the candidate header in a temp copy | The hash that owns the file of each new error (see "Baseline check"). The app itself if a new error is in app files: then Talon stops and reports, because the user code is not a free variable. Errors that the baseline already has are not blamed. |
-| R-LD5 | 3 | Build | `roc build main.roc --output=<tmp>` for the host target | Link or target-file errors blame the platform for that target. Other errors as in step 2. Talon can skip this step (see "Build skip"). |
+| R-LD5 | 3 | Build | `roc build --target=<build target> main.roc --output=<tmp>`, for the build target of the project file (R-TG1) | Link or target-file errors blame the platform for that target. Other errors as in step 2. Talon can skip this step (see "Build skip"). |
 
 R-LD6: Step 3 catches what `check` cannot see: a missing host file for the target, link errors, and code generation bugs. It runs once, on the final tuple. (Measured: 309 ms for a basic-cli app.)
 
 R-LD7: A project file that is a package or a platform (CLI 1, R-PD8) has no app. Then step 2 runs `roc check` on that file, which works with no app (Design 2). Its own files count as app files. Step 3 does not run, because roc builds only an app, so there is no build skip. The lexical scan (below) starts at every module of the project file, not at the `import` lines of an app. `tln init package` follows this rule (CLI 5).
+
+### Build target
+
+Ladder step 3 builds the app for one target: the build target. A platform with no host target (for example `cloudflare-workers`, which has only `wasm32` in `targets`) then builds on each machine, and Talon does not blame the platform for a target that the app does not use (R-P4). Source: `research/talon-scripts/` 7.
+
+| # | Rule |
+| --- | --- |
+| R-TG1 | The build target of an app project file is the first of: (1) `target` in the `[build]` table of its `talon.toml` (CLI 1, R-PD6); (2) the host target, when the `targets` of the platform header has it. The host target is the target that `roc build` uses with no `--target`: the musl target of the host, else its glibc target (CLI 6.4, R-T8); (3) the one target of the platform, when its `targets` has exactly one. Else Talon stops with exit code 2. The message lists the targets of the platform and names `[build] target`. |
+| R-TG2 | Ladder step 3 (R-LD5) runs `roc build --target=<build target> main.roc --output=<tmp>`. The key of R-P4, of the build skip (R-BS1 row 1) and of the smoke build (R-SM3 row 1) has the build target. |
+| R-TG3 | `[build] target` is one Roc target name (Registry R-IK7 list). Another value gives exit code 19. The constraint on platform releases is section 2, R-C10. |
+| R-TG4 | A package or platform project file has no build (R-LD7). `[build]` in its `talon.toml` has no effect. |
+| R-TG5 | In a workspace, each member has its own build target (R-TG1 with the member `talon.toml`). A Worker member builds `wasm32` and a script member on basic-cli builds the host target. `[build]` is allowed where `[dependencies]` is allowed (Design 4.4, R-WS5). |
+| R-TG6 | The proxy does not use the build target: roc flags pass with no change (CLI 6.2, R-PX3). The build of a tool (CLI 6.4, R-T8) does not use it. `tln init --platform` uses R-TG1 rules 2 and 3 for the ladder of CLI 5, R-IN2, because there is no `talon.toml` yet (CLI R-IN5). |
+
+For `cloudflare-workers`, rule 3 selects `wasm32` with no `talon.toml` key. The `--no-cache` flag of the platform build (a warm build cache gave other code) does not matter for step 3: Talon does not use the output.
 
 ### Baseline check
 
@@ -334,7 +350,7 @@ flowchart TD
     D --> E["store fact"] --> C
     C -- "a fail in a used module,<br/>or a fault" --> F["learn: not (hash and roc in [a, b])<br/>(R-EP7)"] --> B
     C -- all pass --> G["whole-app check<br/>(new errors only)"]
-    G -- pass --> G2["build for host target<br/>(skip if recorded pass)"]
+    G -- pass --> G2["build for the build target<br/>(R-TG1, skip if recorded pass)"]
     G2 -- pass --> H["write header + roc pin"]
     G -- fail --> F
     G2 -- fail --> F
@@ -345,7 +361,7 @@ flowchart TD
 | --- | --- | --- |
 | R-AL1 | 1 | Collect variables, ranges and anchors (section 1). For a command that runs step 6, run the baseline check on the current header (section 4). |
 | R-AL2 | 2 | With a registry, send one closure query (Registry 4.1). The second search of a held move can send one more (Resolution 9, R-SP24). An answer gives the header facts (R-AL8) of each candidate and of their closures, and the shared matrix for these hashes. With direct, this step sends nothing: steps 3 to 6 get each fact when they need it (R-AL8, source 4). |
-| R-AL3 | 3 | PubGrub picks the best tuple by `priority`, under R-C1 to R-C4, R-C6, R-C7 and R-C9. |
+| R-AL3 | 3 | PubGrub picks the best tuple by `priority`, under R-C1 to R-C4, R-C6, R-C7, R-C9 and R-C10. |
 | R-AL4 | 4 | For each pair (hash, roc) with no fact, run a unit probe. Order: installed nightly first, then the strongest hint. Up to 12 checks run at the same time (section 4, "Parallel probes"). |
 | R-AL5 | 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for the hash and an interval of compiler releases (R-EP7). Go back to step 3. Inferred facts (R-EP6) order and prune the search, but the step needs real facts to finish (R-EP8). |
 | R-AL6 | 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. In P0, steps 4 and 5 do not run (Design 7, P0 limits). |
@@ -485,6 +501,8 @@ R-SP25: A move writes each member that has an entry for the group of the moved v
 
 R-SP26: `--dry-run` (R-LF4) does not ask R-NI3. It prints the report of R-SP16 and the header diff with the moves, writes nothing, and exits with code 0.
 
+Project tools (CLI 6.4) are not variables of these tables. A tool has its own closure and nightly (CLI R-PT4), so its move holds or frees no project variable. `update`, `upgrade` and `install` move the `url` of a `[tools]` entry by CLI 6.4, R-PT5: `update` inside the `ref` range, `upgrade` to the newest release with R-UP5 on the `ref` range, and `install` with no names only for an entry with no `url`.
+
 ## 10. Upgrade and new series
 
 `tln update` moves inside the ranges of `talon.toml`. `tln upgrade` moves to the newest releases, also to a new series, and changes the ranges to match. It is the Bun `update --latest` and the Cargo `cargo upgrade --incompatible`.
@@ -495,6 +513,8 @@ R-SP26: `--dry-run` (R-LF4) does not ask R-NI3. It prints the report of R-SP16 a
 | R-UP11 | `tln update X@sel` | The releases that match `sel`, in any series | As `tln add X@sel` (CLI 2). `@latest` follows R-UP5. | Held (R-RP1) |
 | R-UP12 | `tln upgrade` | All releases, in any series | R-UP5 | Free |
 | R-UP13 | `tln upgrade X [Y...]` | All releases, in any series | R-UP5 | Free only when `roc` is one of the names |
+
+A project tool (CLI 6.4, R-PT5) follows the same domains: `update` inside its `ref` range, `upgrade` in all releases of its app, and R-UP5 changes the `ref` range to match. Its selection is CLI R-PT4, not this search.
 
 | # | Rule |
 | --- | --- |
@@ -549,7 +569,7 @@ These are resolve flags (CLI 1). They apply to commands that resolve.
 
 | # | Flag | Meaning |
 | --- | --- | --- |
-| R-LF1 | `--frozen` | Do not resolve. Fetch the closure, check each hash, and fail if the header does not satisfy `talon.toml`, or `talon.toml` has a key that the header does not have (Design 4.3, R-I5). Write nothing. For CI. Same idea as Bun `--frozen-lockfile`. It does not imply `--offline` (Cargo `--frozen` does). |
+| R-LF1 | `--frozen` | Do not resolve. Fetch the closure, check each hash, and fail if the header does not satisfy `talon.toml`, or `talon.toml` has a key that the header does not have (Design 4.3, R-I5), or a `[tools]` entry fails CLI 6.4, R-PT7. Build each project tool that has no built binary (CLI R-PT6): only then does it need a compiler (R-SO14, R-SO22). Write nothing. For CI. Same idea as Bun `--frozen-lockfile`. It does not imply `--offline` (Cargo `--frozen` does). |
 | R-LF2 | `--no-probe` | Run no new unit probes (ladder step 1). Use known evidence only. The final ladder (steps 2 and 3 of section 4) still runs. |
 | R-LF3 | `--no-check` | Skip the baseline check and the final ladder: the whole-app check and the build (section 4, and section 5 step 6). Talon still writes the header, with no local proof for the tuple. R-H6 keeps the old `roc:` pin. |
 | R-LF4 | `--dry-run` | Print the header diff and the `talon.toml` diff. Write no project file. Probe results still go in `compat.db`, because they are facts (section 3). Talon answers No to optional downloads (R-NI4). A required download follows the consent rules (R-DL1 to R-DL6). |
@@ -589,7 +609,7 @@ R-SO9: Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6
 | --- | --- | --- |
 | R-SO12 | A rank selects a nightly that is not installed | A required download (R-DL2, prompt R-NI5) |
 | R-SO13 | Rank 4 has a range, and no installed compiler is in it | The newest compiler release in the range that the `nightly` switch allows is a required download (R-NI5) |
-| R-SO14 | No rank selects a compiler | Error with exit code 18 (`environment`, CLI 3, R-EC18): the fix is on the machine, not in the command. The message names `tln roc install @latest` and `tln roc default`. In P0 (Design 7, R-PH6) it says that no `roc` is on `PATH`. Talon does not guess. A command that needs no compiler (`install --frozen`, CLI 2, R-LF1) does not stop. |
+| R-SO14 | No rank selects a compiler | Error with exit code 18 (`environment`, CLI 3, R-EC18): the fix is on the machine, not in the command. The message names `tln roc install @latest` and `tln roc default`. In P0 (Design 7, R-PH6) it says that no `roc` is on `PATH`. Talon does not guess. A command that needs no compiler (`install --frozen`, section 12, R-LF1) does not stop. `install --frozen` needs a compiler only when it builds a project tool that has no built binary (CLI 6.4, R-PT6): then this row applies to that build. |
 
 R-SO15: The first compiler that Talon installs becomes the global default when none is set, as in rustup. So "no rank selects a compiler" happens only before the first install, when no `roc` is on `PATH`.
 
@@ -607,5 +627,5 @@ Sections 9 and 13 answer two questions. The held nightly (R-SP1) is what a comma
 | R-SO19 | A command holds the nightly (R-RP2) | The held nightly is the `roc:` pin (rank 3). With no pin, it is the compiler that ranks 2, 4, 5, 6 and 7 select (a `tln` command has no rank 1). Before the index and before any write, Talon checks it against the `[toolchain] roc` range and the `nightly` switch (R-NS7). A pin that fails: R-RP2. No pin, and rank 4 finds no installed compiler in the range: R-SO13. No pin, and another rank selects a compiler that the switch or the range does not admit: exit code 10 (`no_tuple`, R-NS2). The error names the compiler, the rank that selected it (`ROC_TOOLCHAIN`, `.roc-version`, the global default or the `roc` on `PATH`), and the range or the switch and its source. A local build (R-SO11, R-NS6) is not checked: Talon never writes it. |
 | R-SO20 | A command holds the nightly, the header has a pin, and `ROC_TOOLCHAIN` names another compiler | The held nightly stays the pin, and the probes run on it (R-BL1). Talon prints one note that names both ids and `tln roc use <id>`. `ROC_TOOLCHAIN` still selects the compiler of the proxy (R-U6). |
 | R-SO21 | `tln verify` | It writes nothing, so its probes run on the run compiler: rank 2, then the held nightly of R-SO19. R-RP2 still checks the pin, because the pin is part of the header. Use: `ROC_TOOLCHAIN=<id> tln verify` tests the header on another compiler. |
-| R-SO22 | The held nightly or the run compiler is not installed | It is a required download (R-DL2) at the first probe, not before. `--no-check` and `--frozen` run no probe, so they need no compiler, and `ROC_TOOLCHAIN` does not stop them. |
+| R-SO22 | The held nightly or the run compiler is not installed | It is a required download (R-DL2) at the first probe, not before. `--no-check` and `--frozen` run no probe, so they need no compiler for the project, and `ROC_TOOLCHAIN` does not stop them. One exception: `install --frozen` builds each project tool that has no built binary (CLI 6.4, R-PT6). That build selects its compiler as `tln x` does (CLI R-X1), and a missing compiler is a required download (R-DL2). |
 

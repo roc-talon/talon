@@ -1,0 +1,35 @@
+run hi cwd:p1
+run chain -- extra words cwd:p1
+run tail -- last cwd:p1
+run all cwd:p1
+run failing cwd:p1
+run sig cwd:p1
+run gone cwd:p1
+run loop-a cwd:p1
+run shell cwd:p1
+run dangling cwd:p1
+run out cwd:p1
+run nofile cwd:p1
+run noname cwd:p1
+run nosuch cwd:p1
+run hi extra cwd:p1
+run hi --json cwd:p1
+run hi --file x cwd:p1
+run hi --frozen cwd:p1
+build cwd:p1
+run cwd:p1
+run --json cwd:p1
+run s2 cwd:p2
+run bad cwd:p3
+run r cwd:w/m1
+run ms cwd:w/m1
+run r cwd:w/s
+run sx cwd:w/s
+run sy cwd:w/s2
+run dp cwd:w/deep/inner
+run r cwd:w/deep/inner
+run r cwd:w
+run r cwd:w/m2
+run r
+run -- x cwd:p1
+run unclosed cwd:p1

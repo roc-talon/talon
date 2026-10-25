@@ -1,0 +1,10 @@
+# <hash>[:<compiler>] <code> <stdout> <stderr>: the answer of a unit probe (check main.roc in the package dir). No row: it passes.
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-09-258ab27	1	-	../fixtures/check/out/unit-fail.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-10-abcdef0	1	-	unit-foreign.stderr
+895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw:nightly-2026-10-11-1a2b3c4	signal:11	-	-
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-11-1a2b3c4	timeout	-	-
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-12-2664a27	signal:9	-	-
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-13-91fa0c2	2	-	../fixtures/check/out/unit-warn.stderr
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-08-0a1b2c3	1	-	../fixtures/check/out/unit-fail-two.stderr
+EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc:nightly-2026-10-07-3f4e5d6	1	-	unit-parser.stderr
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq:nightly-2026-10-04-8a7b6c5	1	-	../fixtures/check/out/unit-fail.stderr

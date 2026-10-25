@@ -1,0 +1,9 @@
+# One row for each build, in order (the build probes of the case; a check of an app in a package dir is a unit probe: fx/units).
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}
+1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr	-
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}
+1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr	-
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}
+1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr	-
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}

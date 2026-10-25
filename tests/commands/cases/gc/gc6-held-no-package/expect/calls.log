@@ -1,0 +1,37 @@
+args
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc
+read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e5352cc1844c1b9723d0514/manifest.json $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json
+read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+tree_info $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc
+read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e5352cc1844c1b9723d0514/manifest.json $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json
+read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+tree_info $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d
+delete $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc
+read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e5352cc1844c1b9723d0514/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json
+read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+unlock $HOME/.cache/roc/talon/gc

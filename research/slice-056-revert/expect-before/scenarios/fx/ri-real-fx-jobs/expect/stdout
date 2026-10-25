@@ -1,0 +1,8 @@
+== platform!: the os and the cpu of this machine, as the names of the Fx (R-CV8)
+platform matches uname
+== sha256_file!: the 64 lower case hex digits of the bytes, for a small file, an empty file and a file of 5 MB
+sha256 b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 small.bin
+sha256 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855 empty.bin
+big.bin: same as the system tool
+== sha256_file!: a file that does not exist
+err missing.bin NotFound

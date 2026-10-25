@@ -1,0 +1,14 @@
+      -GET /api/repos/Karakatiza666/roc/tarball/e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0 200
+      -GET /api/repos/Karakatiza666/roc/commits/loop 200
+      -GET /api/repos/Karakatiza666/roc/tarball/c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c1 302
+      -GET /api/repos/Karakatiza666/roc/commits/nosuch 422
+scenarios: 67 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.4      10
+fmt        pass   0.2      5
+l0         FAIL   6.6      10
+l2         FAIL   7.5      30
+l3         FAIL   9.9      60
+selftest   pass   2.8      20
+l1         pass   36.9     60

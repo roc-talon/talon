@@ -1,0 +1,23 @@
+Slice 056, `tln add --tool` and `tln remove --tool` (entry `commands`): R-PT1 to R-PT6, R-PT12, R-PT16, R-FL7, R-FL12, R-CC7, R-PD9, R-DT4, R-C7, R-DL7, R-LF4. One home with the compiler `nightly-2026-10-14-38a3029` installed (the pin of each app), the platform in the package cache,
+`TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`min-release-age` is 2 days). The fake `roc build` writes the output file. No `tools.json`, no bin dir: a project tool never uses them (R-PT12).
+Project `p1` has a header and no `talon.toml` (the first run makes it). Project `p2` has a `talon.toml` with comments and a `[dependencies]` table.
+acme/foo has 1.1.0 and 1.0.0, acme/bar has 1.1.0 and 1.0.0, acme/snap has 1.1.0 (2026-09-01) and 1.0.0 (2026-08-01), acme/wasm has 1.0.0 (its platform has only the target wasm32), acme/bad has 1.0.0 (its build fails), acme/young has 1.0.0 (1 day old).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `add --tool acme/foo --file p1/main.roc` | `talon.toml` is made. The newest release 1.1.0 is chosen and built (the platform line and the build line on stderr, no `--target`), the binary is in `talon/x/<digest>/` (not in a bin dir), then the entry `foo = { ref = "acme/foo@^1.1.0", url = ... }` is written (the build comes first, R-PT3). The project is recorded. No `tools.json`, no lock, no probe of the header | R-PT3, R-PT4, R-PT6, R-PT12, R-PD9, R-X2 |
+| 2 | `add --tool acme/bar@^1.0 --as b --file p1/main.roc` | the key is `--as`, the `ref` has the selector as typed. A second entry of the table | R-PT3, R-PT1 |
+| 3 | `add --tool acme/foo --file p1/main.roc` | the key `foo` has the same app: the command acts as `update foo`: 1.1.0 is the url already, nothing is built or written | R-PT3 |
+| 4 | `add --tool acme/bar --as foo --file p1/main.roc` | the key `foo` is a tool of acme/foo: exit 2, nothing is built or written | R-PT3 |
+| 5 | `add --tool acme/wasm --file p1/main.roc` | the platform of the app has only wasm32: exit 2 before the build, nothing is written | R-PT16, R-T2 |
+| 6 | `add --tool acme/snap --snapshot 2026-08-15T00:00:00Z --file p1/main.roc` | the release 1.1.0 is hidden by the snapshot: 1.0.0 is built and written | R-PT4, R-DT4 |
+| 7 | `add --tool acme/foo --as dry --dry-run --json --file p1/main.roc` | the build of acme/foo 1.1.0 is in the `x` cache already (R-PT9): no build. `--dry-run` writes no file. The lines are on stderr, the envelope has `data.tools` | R-PT3, R-LF4, R-J3, R-PT6 |
+| 8 | `remove --tool b --file p1/main.roc` | the entry `b` goes. The `x` entry of the build stays (GC decides) | R-PT3 |
+| 9 | `remove --tool nope --file p1/main.roc` | exit 2: `no key 'nope' in [tools] of ...` with the keys | R-PT3 |
+| 10 | `add --tool acme/bad --file p1/main.roc` | the build fails: exit 11, nothing is written (the entry comes after the build) | R-PT3, R-PT6 |
+| 11 | `add --tool acme/young --file p1/main.roc` | the only release is younger than `min-release-age`: exit 2 | R-PT4, R-C7 |
+| 12 | `add --tool acme/bar --file p2/main.roc` | `p2` has a `talon.toml`: the new `[tools]` table is added at its end, after a blank line. The comments and the other tables stay | R-PT3, R-CC7 |
+| 13 | `add --tool acme/foo@dd03c09e --file p1/main.roc` | a git sha is no release selector: exit 2, no call after `args` | R-PT1, R-FL7 |
+| 14 | `add --tool acme/foo --no-pin --file p1/main.roc` | `--no-pin` is not a flag of `--tool`: exit 2, no call after `args` | R-PT3, R-FL7 |
+| 15 | `add --tool acme/foo@1.0.0 --as old --dry-run --file p1/main.roc` | the release 1.0.0 has no `x` entry: `--dry-run` builds nothing and writes nothing. It prints the lines of the plan (`added tool`, `would build tool`, the file line) and `dry run: nothing was written`. No fetch of the bundle, no compiler call (D8 of the review) | R-PT3, R-PT6, R-LF4 |
+| 16 | `add --tool acme/foo --as nf` (no `--file`) | the directory of the run has no project file and no `talon.toml` above it: the command makes `talon.toml` in the current directory (Q3 of the review). The build of acme/foo 1.1.0 is in the `x` cache (run 1). The file is recorded as a project (R-PD9, NC1) | R-PT3, R-PD9 |

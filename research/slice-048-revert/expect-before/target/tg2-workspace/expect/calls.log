@@ -1,0 +1,127 @@
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+list_dirs $PROJECT/apps
+list_dirs $PROJECT/apps/a $PROJECT/apps/b $PROJECT/apps/d
+canonical $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/d/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/d/main.roc $PROJECT/apps/a/talon.toml $PROJECT/apps/talon.toml $PROJECT/talon.toml $PROJECT/apps/b/talon.toml $PROJECT/apps/d/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/mpf
+programs gh
+http_get https://api.github.com/repos/acme/mpf/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/mpf/1.json $HOME/.cache/roc/talon/index/github/acme/mpf/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 2
+  probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+  probe $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+probes 1
+  probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $PROJECT/apps/a nightly-2026-10-14-38a3029 /fake/bin/roc build --target=x64glibc main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc build --target=wasm32 main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $PROJECT/apps/d nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $PROJECT/apps/d nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $PROJECT/apps/d nightly-2026-10-14-38a3029 /fake/bin/roc build --target=x64musl main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+cwd
+canonical $PROJECT/apps/b/main.roc
+list_dirs $PROJECT/apps/b
+list_dirs $PROJECT/apps
+list_dirs $PROJECT
+read_files $PROJECT/apps/b/talon.toml $PROJECT/talon.toml
+list_dirs $PROJECT/apps/a $PROJECT/apps/d
+read_files $PROJECT/apps/b/main.roc
+canonical $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/d/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/d/main.roc $PROJECT/apps/a/talon.toml $PROJECT/apps/talon.toml $PROJECT/talon.toml $PROJECT/apps/b/talon.toml $PROJECT/apps/d/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/mpf
+read_files $HOME/.cache/roc/talon/index/github/acme/mpf/1.meta $HOME/.cache/roc/talon/index/github/acme/mpf/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+probes 1
+  probe $PROJECT/apps/b nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc --replace-dep https://github.com/acme/mpf/releases/download/0.1.0/FG1yMWqvarJRUzi5cvvPsHF41qEpRhcP4GeFou9TzCy6.tar.zst https://github.com/acme/mpf/releases/download/0.1.1/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf.tar.zst timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME/.cache/roc/packages/CiKgP43Nj834QRCmbhTodbVTpigtBDjALkKD4GJNcXvf/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef

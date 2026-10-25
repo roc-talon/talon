@@ -6,12 +6,17 @@ import CacheShow
 import Exit
 import Fail
 import Fx
+import GitDefault
+import GitInstall
 import Help
+import Init
 import Install
 import Kind
 import Ls
 import Out
 import OutdatedFlow
+import PatchFlow
+import PathFlow
 import ProbeFlow
 import Proxy
 import Ref
@@ -20,12 +25,18 @@ import RocInstall
 import RocLink
 import RocManage
 import RocUse
+import RunFlow
 import Scope
 import SetupFlow
+import ToolGitFlow
+import ToolManageFlow
+import ToolsFlow
+import ToolUpdateFlow
 import Update
 import Upgrade
 import Verify
 import Why
+import XFlow
 
 ## The command code of `tln` (direct style, TESTING.md 2.2 part C).
 Run :: [].{
@@ -61,7 +72,12 @@ Run :: [].{
 				} else {
 					match check_refs(args) {
 						Err(failure) => fail!(fx, { command: args.typed, json: args.json, fail: failure })
-						Ok({}) => if args.command == ["install"] {
+						# Slice 056 (R-FL12): `Args.parse` allows `--tool` for `install` (`add`), `remove`, `update` and `upgrade` only. These lines are the commands of `[tools]`: their operands are keys.
+						Ok({}) => if args.options.any(|(name, _)| name == "--tool") {
+							ToolsFlow.run!(fx, args)
+						} else if args.command == ["init"] {
+							Init.run!(fx, args)
+						} else if args.command == ["install"] {
 							Install.run!(fx, args)
 						} else if args.command == ["remove"] {
 							Remove.run!(fx, args)
@@ -77,16 +93,18 @@ Run :: [].{
 							Why.run!(fx, args)
 						} else if args.command == ["outdated"] {
 							OutdatedFlow.run!(fx, args)
+						} else if args.command == ["patch"] {
+							PatchFlow.run!(fx, args)
 						} else if args.command == ["probe"] {
 							ProbeFlow.run!(fx, args)
 						} else if args.command == ["roc", "install"] {
-							RocInstall.run!(fx, args)
+							GitInstall.run!(fx, args)
 						} else if args.command == ["roc", "link"] {
 							RocLink.link!(fx, args)
 						} else if args.command == ["roc", "list"] {
 							RocManage.list!(fx, args)
 						} else if args.command == ["roc", "default"] {
-							RocManage.default!(fx, args)
+							GitDefault.run!(fx, args)
 						} else if args.command == ["roc", "remove"] {
 							RocManage.remove!(fx, args)
 						} else if args.command == ["roc", "update"] {
@@ -101,8 +119,24 @@ Run :: [].{
 							CacheShow.dir!(fx, args)
 						} else if args.command == ["cache", "list"] {
 							CacheShow.list!(fx, args)
+						} else if args.command == ["run"] {
+							RunFlow.run!(fx, args, |inner| Run.tln!(inner))
+						} else if args.command == ["path"] {
+							PathFlow.run!(fx, args)
 						} else if args.command == ["setup"] {
 							SetupFlow.run!(fx, args)
+						} else if args.command == ["x"] {
+							XFlow.run!(fx, args)
+						} else if args.command == ["tool", "install"] {
+							ToolGitFlow.run!(fx, args)
+						} else if args.command == ["tool", "list"] {
+							ToolManageFlow.list!(fx, args)
+						} else if args.command == ["tool", "remove"] {
+							ToolManageFlow.remove!(fx, args)
+						} else if args.command == ["tool", "update"] {
+							ToolUpdateFlow.update!(fx, args)
+						} else if args.command == ["tool", "rebuild"] {
+							ToolUpdateFlow.rebuild!(fx, args)
 						} else {
 							fail!(fx, { command: args.typed, json: args.json, fail: Fail.new(Internal, "command '${args.typed}' is not built yet") })
 						}
@@ -118,7 +152,8 @@ Run :: [].{
 check_refs : Args -> Try({}, Fail)
 check_refs = |args| {
 	commands = ["install", "update", "upgrade", "remove", "why", "patch"]
-	if !commands.contains(Str.join_with(args.command, " ")) {
+	# Slice 056: the operands of a line with `--tool` are keys of `[tools]` (`ToolsCmd.read` checks them).
+	if !commands.contains(Str.join_with(args.command, " ")) or args.options.any(|(name, _)| name == "--tool") {
 		return Ok({})
 	}
 	scope = Scope.of_command(args.command) ? |_| Fail.new(Internal, "no scope for '${args.typed}'")

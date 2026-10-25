@@ -44,6 +44,7 @@ import Probe
 ## | `tree_info!` | The newest file time and the size of each file or directory tree (slice 028b, R-GC3, R-GC4, R-GC11: the age rule and the sizes of `cache gc`) |
 ## | `db_query!` | The rows of `compat.db` for some keys (slice 030, R-EF1, R-CC8, R-TF1, R-TF3) |
 ## | `db_write!` | Writes rows to `compat.db` in one transaction (slice 030, R-CC8, R-P4, R-CV6, R-TF2) |
+## | `exec_in!` | `exec!` in a given working directory (slice 057, R-RUN5, R-RUN8, R-RUN9: the steps of `tln run`) |
 Fx := {
 	args! : () => List(Str),
 	env_all! : () => List((Str, Str)),
@@ -78,6 +79,7 @@ Fx := {
 	tree_info! : List(Str) => List(Try({ newest : U64, size : U64 }, [NotFound, Denied, Other(Str)])),
 	db_query! : Db.Open, Db.Query => Try(Db.Answer, Db.Err),
 	db_write! : Db.Open, Db.Write => Try({}, Db.Err),
+	exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)]),
 }.{
 	args! : Fx => List(Str)
 	args! = |Fx.{ args!: f, .. }| f()
@@ -248,6 +250,12 @@ Fx := {
 	## `Err(Busy)`: the lock stayed held for `open.busy_ms`, and nothing was written. It has no Talon logic (TW4).
 	db_write! : Fx, Db.Open, Db.Write => Try({}, Db.Err)
 	db_write! = |Fx.{ db_write!: f, .. }, open, write| f(open, write)
+
+	## Slice 057, R-RUN5, R-RUN8, R-RUN9, R-E1: `exec!` in the directory `cwd` (absolute): runs the child `argv` with the stdin, the stdout and the stderr of this process, and waits. `env` are variables that are set for the child in addition to the environment of this process (a name that is in both
+	## takes the value of `env`). The result is the exit code of the child, or `128 + <signal number>` when a signal ended it. `NotStarted(text)`: the child could not start (the program is not on `PATH`, `cwd` is missing, no permission). The real `Fx` has no Talon logic (TW4): it looks the program up
+	## on `PATH` as `exec!` does, it kills no child and has no timeout.
+	exec_in! : Fx, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
+	exec_in! = |Fx.{ exec_in!: f, .. }, run| f(run)
 
 	## R-CC3, R-CC5: `with_lock!` with `Wait` for a body that fails with a `Fail`. `Wait` never gives `Busy`, so `Busy` is a fault of Talon (kind `Internal`: `the lock of <item> was not taken`). The result is the result of `body!`.
 	locked! : Fx, Str, (() => Try(ok, Fail)) => Try(ok, Fail)

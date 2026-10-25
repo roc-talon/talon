@@ -1,0 +1,78 @@
+== update --file p1/main.roc
+json: patched, held
+nothing to change
+exit 0
+== upgrade --file p1/main.roc
+note: the compiler list could not be read; roc stays nightly-2026-10-14-38a3029
+json: patched, held
+nothing to change
+exit 0
+== install --file p1/main.roc
+nothing to change
+exit 0
+== update json --file p2/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p2/.talon/patches/json/, or remove the [patch] entry json.
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+rebased: $PROJECT/p2/.talon/patches/json/ (the patch of json, now on acme/json 2.2.0)
+$PROJECT/p2/talon.toml: ~ [patch] json (base J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC)
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== update json@^2.3 --file p3/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p3/.talon/patches/json/, or remove the [patch] entry json.
+exit 10
+== update json --dry-run --file p4/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p4/.talon/patches/json/, or remove the [patch] entry json.
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+rebased: $PROJECT/p4/.talon/patches/json/ (the patch of json, now on acme/json 2.2.0)
+$PROJECT/p4/talon.toml: ~ [patch] json (base J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC)
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written
+exit 0
+== install --frozen --file p5/main.roc
+exit 14
+== install --file p6/main.roc
+rebased: $PROJECT/p6/.talon/patches/json/ (the patch of json, now on acme/json 2.2.0)
+$PROJECT/p6/talon.toml: ~ [patch] json (base J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC)
+exit 0
+== verify --file p1/main.roc
+json: patched, held
+check: passed
+build: skipped (recorded pass)
+verified: the tuple passes. No project file was written.
+exit 0
+== update json --no-check --file p7/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p7/.talon/patches/json/, or remove the [patch] entry json.
+check: skipped
+$PROJECT/p7/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+rebased: $PROJECT/p7/.talon/patches/json/ (the patch of json, now on acme/json 2.2.0)
+$PROJECT/p7/talon.toml: ~ [patch] json (base J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC)
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0
+== update json --file p8/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p8/.talon/patches/json/, or remove the [patch] entry json.
+check: passed
+build: skipped (recorded pass)
+exit 17
+== update json --file p9/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p9/.talon/patches/json/, or remove the [patch] entry json.
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p9/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+rebased: $PROJECT/p9/.talon/patches/json/ (the patch of json, now on acme/json 2.2.0)
+$PROJECT/p9/talon.toml: ~ [patch] json (base J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC)
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== add acme/util --no-check --file p10/main.roc
+check: skipped
+$PROJECT/p10/main.roc
+  + util: acme/util 1.0.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0

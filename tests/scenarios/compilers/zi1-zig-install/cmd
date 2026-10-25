@@ -1,0 +1,47 @@
+# R-D1 R-D2 R-D3 R-D4 R-EV11 R-EV16 R-EV21 R-NI6 R-DL1 R-DL4 R-CC1 R-CC4 R-HF2 R-HF4 R-HF5 R-SE9 R-CV4 R-EC18 R-DA3 R-DA4 R-TF1: the Zig of a source build end to end with the real Fx, the real curl, tar and xz, and the fake Zig index
+# (the test tool `flowprobe zig` is the stand-in for `tln roc install --git`, slice 045). The fixture (given/http) was made by
+# `tests/tools/mk-zig.sh given/http 0.17.0 0.15.1+badsha 0.14.1+evil 0.13.0`: real `.tar.xz` archives with a fake `zig` script, and the index with the `$PORT` of the fake server in each URL.
+# `given/bin/zig` (on PATH) prints 0.16.0. `given/opt/z17/zig` prints 0.17.1. The run is non-interactive (`CI=true`), so the install starts with no prompt (R-DL4).
+# The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW).
+export TALON_NOW=2026-10-22T12:00:00Z
+export TALON_ZIG_INDEX=$TALON_HTTP/zig/index.json
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+T=$XDG_CACHE_HOME/roc/toolchains
+
+echo "== 1: PATH has zig 0.16.0 and 0.17.0 is needed. The archive is downloaded from the index, the sha256 is checked, tar strips the top dir, zig gets the executable bit, .talon.json is last. No temp, lock or archive is left."
+st flowprobe zig 0.17.0
+ls -A $T $T/zig-0.17.0
+test -x $T/zig-0.17.0/zig && echo "zig is executable"
+$T/zig-0.17.0/zig
+cat $T/zig-0.17.0/.talon.json
+
+echo "== 2: installed now: found, no new request"
+st flowprobe zig 0.17.0
+
+echo "== 3: ZIG comes first (R-D1, R-EV11), no request"
+ZIG=$TALON_TEST_DIR/opt/z17/zig st flowprobe zig 0.17.0
+
+echo "== 4: PATH, the same major and minor (0.16.0 for 0.16.5), no request"
+st flowprobe zig 0.16.5
+
+echo "== 5: --quiet hides the dependency list"
+st flowprobe zig --quiet 0.16.5
+
+echo "== 6: the sha256 of the index differs from the archive: exit 16, nothing is installed"
+st flowprobe zig 0.15.1
+ls -A $T
+
+echo "== 7: the archive has a member with .. (the sha256 is right): tar refuses it, nothing is installed, nothing is written outside"
+st flowprobe zig 0.14.1
+ls -A $T
+{ test -e $T/evil.txt || test -e $XDG_CACHE_HOME/roc/evil.txt; } && echo "evil.txt was written" || echo "evil.txt is not there"
+
+echo "== 8: --offline: exit 15, no request"
+st flowprobe zig --offline 0.13.0
+
+echo "== 9: no release of the series: exit 18, no download"
+st flowprobe zig 0.99.0
+
+echo "== 10: TALON_ZIG_INDEX names a route that does not exist: exit 15"
+TALON_ZIG_INDEX=$TALON_HTTP/zig/missing.json st flowprobe zig 0.12.0
+ls -A $T

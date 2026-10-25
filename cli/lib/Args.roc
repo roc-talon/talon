@@ -195,11 +195,11 @@ long_form = |word| match word {
 	other => other
 }
 
-# The 21 top-level commands of CLI 1, as the long form.
+# The top-level commands of CLI 1, as the long form (slice 055: `path`, R-CM25).
 top_level : Str -> Try(Str, [NotCommand])
 top_level = |word| {
 	long = long_form(word)
-	known = ["init", "install", "remove", "update", "upgrade", "outdated", "why", "probe", "list", "patch", "verify", "x", "publish", "audit", "roc", "tool", "cache", "setup", "yank", "move", "share"]
+	known = ["init", "install", "remove", "update", "upgrade", "outdated", "why", "probe", "list", "patch", "verify", "path", "run", "x", "publish", "audit", "roc", "tool", "cache", "setup", "yank", "move", "share"]
 	if known.contains(long) Ok(long) else Err(NotCommand)
 }
 
@@ -233,7 +233,7 @@ allows = |cmd, flag| {
 	match flag {
 		"--json" => cmd != "x"
 		"--yes" | "--offline" | "--quiet" | "--registry" => Bool.True
-		"--file" => one_of(["install", "remove", "update", "upgrade", "outdated", "why", "list", "patch", "probe", "verify", "audit", "publish", "roc use"])
+		"--file" => one_of(["install", "remove", "update", "upgrade", "outdated", "why", "list", "patch", "probe", "verify", "audit", "publish", "roc use", "path"])
 		"--frozen" | "--no-probe" | "--no-check" | "--snapshot" | "--strategy" => resolving
 		"--dry-run" => resolving or one_of(["cache gc", "cache clean", "tool remove"])
 		"--slots" => resolving or one_of(["probe", "tool install", "x"])
@@ -253,8 +253,8 @@ allows = |cmd, flag| {
 		"--copy" => cmd == "roc link"
 		"--rename-keys" => cmd == "install"
 		"--allow-moves" => one_of(["install", "update", "upgrade"])
-		"--probe-downloads" => resolving or cmd == "probe"
-		"--allow-downloads" => resolving or one_of(["probe", "roc use"])
+		"--probe-downloads" => resolving or one_of(["probe", "init"])
+		"--allow-downloads" => resolving or one_of(["probe", "roc use", "init"])
 		"--roc" | "--allow-unchecked" | "--resolve" => one_of(["tool install", "x"])
 		"--remove-tools" | "--keep-all" => cmd == "tool remove"
 		"--replace-roc" | "--no-modify-path" => cmd == "setup"
@@ -262,6 +262,7 @@ allows = |cmd, flag| {
 		"--to" => cmd == "move"
 		"--undo" => one_of(["yank", "move"])
 		"--ignore" => cmd == "audit"
+		"--tool" => one_of(["install", "remove", "update", "upgrade"])
 		_ => Bool.False
 	}
 }

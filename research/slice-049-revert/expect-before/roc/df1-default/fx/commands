@@ -1,0 +1,25 @@
+# R-CS2, R-CC6: no config.toml: it is made, one line
+roc default nightly-2026-10-09-258ab27
+# R-CS2, R-CC6: the value is replaced (comments and order: L0 `default_set`, L3 `mg1-manage`)
+roc default nightly-2026-10-11-1a2b3c4
+# R-SC13, R-SC10: a unique prefix of an installed id gives the full id. It is the default already: no write.
+roc default nightly-2026-10-11
+# R-R5, R-SC9: a prefix of an installed git build (no list has it). The full id is stored.
+roc default git-dd03
+# R-SC10: an ambiguous prefix lists the ids: exit 2, no change
+roc default nightly-2026-10-1
+# R-CM15: no operand, and 2 operands: exit 2
+roc default
+roc default link-dev copy-fix-1
+# R-R5, R-J3: a link, chosen by name. --json has the envelope only.
+roc default link-dev --json
+# R-DL3, R-NI6, R-CC4: a compiler that is not installed is the download of roc install (the prompt, Enter is yes). Then it is the default.
+roc default nightly-2026-10-17-601b54c
+# R-DL3: a declined prompt: exit 13, the default stays
+roc default nightly-2026-10-12-2664a27
+# R-DI12: --offline and the compiler is not installed (the list is cached now): exit 15, the default stays
+roc default nightly-2026-10-13-91fa0c2 --offline
+# Q7 (manager answer): the text and `changed` describe the whole command, compared with the state before it. HOME is home2: no config.toml, so the download writes the first default (R-SO15) and the command has changed it. Text: `installed <id>`, then `<id> is now the default compiler`.
+roc default nightly-2026-10-13-91fa0c2 env:HOME={w}/home2
+# Q7: the same with --json (home3, no prompt in a json run): `changed` is true
+roc default nightly-2026-10-13-91fa0c2 --json env:HOME={w}/home3

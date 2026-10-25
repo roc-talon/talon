@@ -1,0 +1,9 @@
+== setup
+made $HOME/.local/bin/tln (copy)
+made $HOME/.local/bin/roc (copy)
+moved $HOME/.local/bin/roc to $HOME/.local/bin/roc.old, linked as link-system
+completions: $HOME/.local/share/bash-completion/completions/tln
+exit 0
+== setup
+nothing to do: the entries, the PATH line and the completions are in place
+exit 0

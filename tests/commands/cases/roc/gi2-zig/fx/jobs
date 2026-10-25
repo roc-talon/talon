@@ -1,0 +1,10 @@
+# The source archive and the Zig archive (curl), their extract (tar), `zig version`, the build, the compat check. The first rule whose needle is in the arguments answers.
+zig version	0	0.17.0	-	-
+source.tar.gz -C	0	-	-	copy:{dir}/build.zig.zon={w}/fx/src/build.zig.zon
+zig-x86_64-linux-0.17.0.tar.xz -C	0	-	-	file:{dir}/zig;file:{dir}/LICENSE;dir:{dir}/lib
+curl --fail	0	-	-	file:{out}
+chmod 0755	0	-	-	-
+-Dcompiler-version=git-5349569a	1	-	error: unable to build the std library	-
+zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-	0	-	-	file:{cwd}/zig-out/bin/roc
+git-3b9f7c1d.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-3b9f7c1d
+git-9d9d9d9d.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-9d9d9d9d

@@ -1,0 +1,30 @@
+== roc rm nightly-2026-10-1
+exit 2
+== roc rm nightly-2099
+exit 2
+== roc rm
+exit 2
+== roc remove nightly-2026-10-11-1a2b3c4 nightly-2026-10-12-2664a27
+exit 2
+== roc rm nightly-2026-10-09-258ab27
+removed nightly-2026-10-09-258ab27
+known projects that pin nightly-2026-10-09-258ab27 (the proxy installs it again when one runs):
+  $PROJECT/c/main.roc
+exit 0
+== roc remove nightly-2026-10-14
+removed nightly-2026-10-14-38a3029
+the default compiler is now nightly-2026-10-12-2664a27
+known projects that pin nightly-2026-10-14-38a3029 (the proxy installs it again when one runs):
+  $PROJECT/a/main.roc
+  $PROJECT/b/main.roc
+exit 0
+== roc rm nightly-2026-10-12-2664a27 env:TALON_NIGHTLY=false
+removed nightly-2026-10-12-2664a27
+no default compiler is set now
+exit 0
+== roc rm link-dev
+removed link-dev
+exit 0
+== roc rm git-dd --json
+{"schema":1,"command":"roc rm","ok":true,"data":{"id":"git-dd03c09e","path":"$HOME/.cache/roc/toolchains/git-dd03c09e","was_default":false,"default":null,"projects":[]},"error":null}
+exit 0

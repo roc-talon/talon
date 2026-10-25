@@ -1,0 +1,7 @@
+platform pf/main.roc
+building acme/app 1.1.0 with nightly-2026-10-14-38a3029
+note: no yank and advisory data without a registry
+tln: error[usage]: flag '--json' is not for 'x'
+note: no yank and advisory data without a registry
+platform pf/main.roc
+building acme/app 1.0.0 with nightly-2026-10-14-38a3029

@@ -1,0 +1,6 @@
+add acme/json@^2.1 --file pa/main.roc
+add acme/json@^2.1 --no-check --file pn/main.roc
+install --file pi/main.roc
+update json --file pu/main.roc
+verify --file pv/main.roc
+verify --file pk/main.roc

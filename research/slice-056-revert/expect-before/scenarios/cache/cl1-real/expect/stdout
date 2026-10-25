@@ -1,0 +1,78 @@
+== 1: a dry run (R-GC12, R-GC14): the index and the x builds, with the sizes, the total, the last line. Nothing is removed.
+== tln cache clean --dry-run
+would remove $HOME/.cache/roc/talon/index (24 B)
+would remove $HOME/.cache/roc/talon/x (47 B)
+would free 71 B
+dry run: nothing was removed
+exit 0
+== 2: a dry run with --all (R-GC13): also the packages dir and the build-cache dirs of the build root (here the cache root: compat-aaaaaaa, nightly-2025-01-01-abc1234, debug-9999999). compat-file is a file and stays out. No toolchain, tool or setting is in the list.
+== tln cache clean --all --dry-run
+would remove $HOME/.cache/roc/talon/index (24 B)
+would remove $HOME/.cache/roc/talon/x (47 B)
+would remove $HOME/.cache/roc/packages (30 B)
+would remove $HOME/.cache/roc/compat-aaaaaaa (24 B)
+would remove $HOME/.cache/roc/debug-9999999 (16 B)
+would remove $HOME/.cache/roc/nightly-2025-01-01-abc1234 (18 B)
+would free 159 B
+dry run: nothing was removed
+exit 0
+== 3: no flag (R-GC12, R-GC14, R-NI7): CI=true, so there is no person and no prompt: the answer line on stderr, then the removal of the index and x. The packages and the build caches stay.
+== tln cache clean
+removed $HOME/.cache/roc/talon/index (24 B)
+removed $HOME/.cache/roc/talon/x (47 B)
+freed 71 B
+exit 0
+< .cache/roc/talon/index/releases.json
+< .cache/roc/talon/x/0123abcd/manifest.json
+< .cache/roc/talon/x/0123abcd/tln-app
+lock dirs left (R-CC10: the lock of talon/gc is released): 0
+== 4: --all with --json (R-GC13, R-J3): the packages dir and the build caches go. The index and x are gone already (they are no item). The text goes to stderr, stdout has the envelope. All that is left is listed: toolchains, tools, settings, the app install, compat.db, projects.json (R-GC13, R-GC14), compat-file, and the dir that has no build-cache name.
+== tln cache clean --all --json
+{"schema":1,"command":"cache clean","ok":true,"data":{"dry_run":false,"all":true,"removed":true,"items":[{"path":"$HOME/.cache/roc/packages","bytes":30},{"path":"$HOME/.cache/roc/compat-aaaaaaa","bytes":24},{"path":"$HOME/.cache/roc/debug-9999999","bytes":16},{"path":"$HOME/.cache/roc/nightly-2025-01-01-abc1234","bytes":18}],"freed":88},"error":null}
+exit 0
+< .cache/roc/compat-aaaaaaa/cache.bin
+< .cache/roc/debug-9999999/e.bin
+< .cache/roc/nightly-2025-01-01-abc1234/c.bin
+< .cache/roc/packages/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN/deep/x.roc
+< .cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.deps.json
+< .cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+.cache/roc-builds/compat-bbbbbbb/objects/o1.bin
+.cache/roc-builds/debug-8888888/e.bin
+.cache/roc-builds/nightly-2025-02-02-def5678/c.bin
+.cache/roc-builds/other-old/old.bin
+.cache/roc/compat-file
+.cache/roc/talon/compat.db
+.cache/roc/talon/projects.json
+.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+.config/talon/config.toml
+.local/bin/myapp
+.local/share/talon/bin/mytool
+.local/share/talon/tools.json
+== 5: nothing is left (R-GC14): the line, exit 0
+== tln cache clean --all
+nothing to remove
+exit 0
+== 6: ROC_CACHE_DIR is another dir (R-LY1): the build root is $HOME/.cache/roc-builds. Its 3 build caches go. other-old stays (the name). compat-zzzzzzz is in the cache root, not in the build root, so it stays.
+== env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache clean --all
+removed $HOME/.cache/roc-builds/compat-bbbbbbb (19 B)
+removed $HOME/.cache/roc-builds/debug-8888888 (34 B)
+removed $HOME/.cache/roc-builds/nightly-2025-02-02-def5678 (36 B)
+freed 89 B
+exit 0
+< .cache/roc-builds/compat-bbbbbbb/objects/o1.bin
+< .cache/roc-builds/debug-8888888/e.bin
+< .cache/roc-builds/nightly-2025-02-02-def5678/c.bin
+.cache/roc-builds/other-old/old.bin
+.cache/roc/compat-zzzzzzz/c.bin
+== 7: an operand is a usage failure (R-CM17): exit 2, nothing is removed
+== tln cache clean packages
+exit 2
+== 8: the terminal is asked for (TALON_INTERACTIVE=1), but stdin is not a terminal (R-NR1), so there is no prompt: the default Yes, the answer line, the removal (R-GC14)
+== env TALON_INTERACTIVE=1 tln cache clean
+removed $HOME/.cache/roc/talon/index (11 B)
+removed $HOME/.cache/roc/talon/x (7 B)
+freed 18 B
+exit 0
+< .cache/roc/talon/index/releases.json
+< .cache/roc/talon/x/0123abcd/tln-app

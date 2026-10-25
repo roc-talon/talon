@@ -1,0 +1,15 @@
+probe json --file p1/main.roc
+probe pf --file p1/main.roc
+probe parser@1 --file p1/main.roc
+probe json@3 --file p1/main.roc
+probe local --file p1/main.roc
+probe json --json --file p1/main.roc
+probe --file p1/main.roc
+probe --file p2/main.roc
+probe --file p3/main.roc
+probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
+probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
+probe --share json --file p1/main.roc
+probe json parser --file p1/main.roc
+probe --range --file p1/main.roc
+probe json --file p4/main.roc

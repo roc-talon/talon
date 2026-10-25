@@ -223,6 +223,16 @@ Github :: [].{
 		}
 	}
 
+	## R-RG3 (slice 045: shared with the commit request of `GitInstall`): the token of `gh auth token`. One `programs!(["gh"])`, and when `gh` is there one `spawn_all!` of `gh auth token`.
+	ask_gh! : Fx => Try(Str, [None])
+	ask_gh! = |fx| match fx.programs!(["gh"]) {
+		[Bool.True] => match fx.spawn_all!({ jobs: [{ argv: ["gh", "auth", "token"], cwd: Err(Inherit) }], limit: 1 }) {
+			[result] => Net.token_from_gh({ code: result.ended, stdout: result.stdout })
+			_ => Err(None)
+		}
+		_ => Err(None)
+	}
+
 	## The failure for a 404 of the release list (question Q2): kind `Usage` (exit 2), `no GitHub repository <owner>/<repo> (a private repository needs a token)`.
 	missing_repo : { owner : Str, repo : Str } -> Fail
 	missing_repo = |facts| Fail.new(Usage, "no GitHub repository ${facts.owner}/${facts.repo} (a private repository needs a token)")
@@ -284,21 +294,12 @@ token_of! = |fx, net, state| match state {
 	Resolved(token) => (token, state)
 	Unresolved => {
 		gh = match net.token {
-			AskGh => ask_gh!(fx)
+			AskGh => Github.ask_gh!(fx)
 			_ => Err(None)
 		}
 		token = Net.token({ plan: net.token, gh })
 		(token, Resolved(token))
 	}
-}
-
-ask_gh! : Fx => Try(Str, [None])
-ask_gh! = |fx| match fx.programs!(["gh"]) {
-	[Bool.True] => match fx.spawn_all!({ jobs: [{ argv: ["gh", "auth", "token"], cwd: Err(Inherit) }], limit: 1 }) {
-		[result] => Net.token_from_gh({ code: result.ended, stdout: result.stdout })
-		_ => Err(None)
-	}
-	_ => Err(None)
 }
 
 # The pages from page `n` (at `url`) to the last one.

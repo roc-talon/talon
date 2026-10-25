@@ -1,0 +1,30 @@
+== roc install --git Karakatiza666/roc@my-branch
+installed git-3b9f7c1d
+exit 0
+== roc install --git Karakatiza666/roc@my-branch
+git-3b9f7c1d is already installed
+exit 0
+== roc install --git @main
+installed git-5349569a
+exit 0
+== roc install @dd03c09e --json env:TALON_GITHUB_API=http://127.0.0.1:9/api
+{"schema":1,"command":"roc install","ok":true,"data":{"id":"git-dd03c09e","path":"$HOME/.cache/roc/toolchains/git-dd03c09e","installed":true,"default":false},"error":null}
+exit 0
+== roc install --git Karakatiza666/roc@my-branch --offline
+exit 15
+== roc install --git @nosuch
+exit 2
+== roc install --git Karakatiza666/roc@wip env:TALON_DOWNLOADER=wget
+exit 18
+== roc default --git Karakatiza666/roc@my-branch
+git-3b9f7c1d is now the default compiler
+exit 0
+== roc default --git roc-lang/roc@my-branch
+git-5a5a5a5a is now the default compiler
+exit 0
+== roc default --git Karakatiza666/roc@my-branch --json
+{"schema":1,"command":"roc default","ok":true,"data":{"id":"git-3b9f7c1d","previous":"git-5a5a5a5a","changed":true,"installed":false},"error":null}
+exit 0
+== roc install --git @main env:GITHUB_TOKEN=ghp_fake
+git-5349569a is already installed
+exit 0

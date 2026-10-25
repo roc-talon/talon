@@ -1,0 +1,2 @@
+R-SP18 R-SP1 R-SP20 R-H1 R-AD6 R-AD20 R-AD21 R-CM2 (slice 007 changed this case: install with names is tln add). The header has json 2.0.0, and the index has newer releases of json.
+Run 1: install json names the header alias json. With no selector the entry is kept (R-AD21): the note, no change, no index call. Run 2: install nosuch is a short name that is no alias, and GitHub has no index of short names (R-AD6): exit 2. Run 3: install with no names gives nothing to change.

@@ -1,0 +1,29 @@
+== 0.17.0
+zig 0.17.0 installed $HOME/.cache/roc/toolchains/zig-0.17.0/zig
+exit 0
+== 0.17.0
+zig 0.17.0 found-installed $HOME/.cache/roc/toolchains/zig-0.17.0/zig
+exit 0
+== 0.16.2 yes
+zig 0.16.2 installed $HOME/.cache/roc/toolchains/zig-0.16.2/zig.exe
+exit 0
+== 0.15.1
+exit 13
+== 0.14.1 yes
+zig 0.14.1 present $HOME/.cache/roc/toolchains/zig-0.14.1/zig
+exit 0
+== 0.13.0 yes
+exit 16
+== 0.12.1 env:TALON_INTERACTIVE=0
+zig 0.12.1 installed $HOME/.cache/roc/toolchains/zig-0.12.1/zig
+exit 0
+== 0.10.1 yes env:TALON_ZIG_INDEX=http://127.0.0.1:9/zig/index.json
+exit 15
+== 0.99.0
+exit 18
+== 0.8.0 yes
+exit 16
+== 0.7.0 yes
+exit 15
+== 0.6.0 offline
+exit 15

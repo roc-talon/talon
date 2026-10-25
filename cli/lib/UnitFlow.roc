@@ -35,6 +35,9 @@ UnitFlow :: [].{
 		probe : Probe.Settings,
 		no_probe : Bool,
 		member : { file : Str, kind : [App, Package, Platform], text : Str },
+
+		## Slice 054 (R-TG1): `[build] target` of the member (`Ladder.Member.target`).
+		target : Try(Str, [Unset]),
 		walked : Closure.Walked,
 		nodes : List(Units.Node),
 		facts : List(Db.Fact),

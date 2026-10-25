@@ -1,0 +1,2 @@
+R-C9 R-C7 R-WS1 R-WS2 R-WS7 R-SP20 R-H1: a variable with 2 members that hold different versions. Member a has json 2.0.0, member b has json 2.2.0. 2.2.0 is 1 day old, and min-release-age hides it (2d). The root talon.toml has json = "^2.1", so a is outside the range and install frees the variable.
+The value that the header holds now is the highest use: 2.2.0 (R-C9). It stays in the domain, and it is the best release in the range. So a moves to 2.2.0 and b does not change. If the lowest use were the current value, 2.2.0 would be hidden, and both members would go to 2.1.0.

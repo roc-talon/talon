@@ -1,0 +1,10 @@
+removing 2 cache dirs (71 B)
+removing 4 cache dirs (88 B)
+removed $HOME/.cache/roc/packages (30 B)
+removed $HOME/.cache/roc/compat-aaaaaaa (24 B)
+removed $HOME/.cache/roc/debug-9999999 (16 B)
+removed $HOME/.cache/roc/nightly-2025-01-01-abc1234 (18 B)
+freed 88 B
+removing 3 cache dirs (89 B)
+tln: error[usage]: tln cache clean takes no operand, got 1
+removing 2 cache dirs (18 B)

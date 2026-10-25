@@ -1,0 +1,25 @@
+== the exit code 0, the arguments as they are (an argument with a space is one argument), the output of the child goes to the terminal of the process
+child out, 4 arguments
+arg: one
+arg: two words
+arg: --file
+arg: x
+exec ok 0
+== the exit code of the child passes through
+exec ok 7
+== a signal gives 128 + the number (kill -9 is 137)
+exec ok 137
+== the variables of env are added, and replace a variable of the process
+vars: A=1 B=two
+exec ok 0
+vars: A=new B=
+exec ok 0
+== the current directory is the one of the process
+$PROJECT
+exec ok 0
+== a child that cannot start (no such file) is an error, not an exit code
+exec err (text of the platform)
+== program_name!: the name as typed. A link named roc, with its path and by name from PATH.
+program ./lnk/roc
+program roc
+program $PROJECT/bin/roc.exe

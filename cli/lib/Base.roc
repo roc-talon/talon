@@ -4,8 +4,10 @@ import ConfigToml
 import Fail
 import Fx
 import Intent
+import LadderPlan
 import Locked
 import OnPath
+import Patched
 import Pin
 import Project
 import Roots
@@ -33,11 +35,13 @@ Base :: [].{
 	Found : { project : Project, header : Try({}, Fail) }
 
 	## What the ranks 3 to 6 read (step 6 of the table of `Proxy`). `req_text` is the text of the range, for the failure of `NoneInRange`.
-	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]) }
+	## Slice 043 (R-PX5, R-PA6, R-PA10): `patch` has the patches of the header of the target file (`Patched.entries`: its rows and the `[patch]` table of the `talon.toml` that the step reads): `replace` are the `--replace-dep` pairs, `stale` are the entries whose `base` is not the hash of the header entry.
+	## A target with no header, no `talon.toml` or no patch has both lists empty.
+	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
 
 	## What `load!` reads when there is nothing to read (`ROC_TOOLCHAIN` or `roc +<id>` is used: no file counts).
 	no_facts : Base.Loaded
-	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, has_toml: Bool.False, version_file: Err(None), default: Err(Unset) }
+	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, has_toml: Bool.False, version_file: Err(None), default: Err(Unset), patch: { replace: [], stale: [] } }
 
 	## R-EV17, R-SO9: `TALON_IN_PROXY=1` is set. Any other value, and no variable, is false. A proxy that sees it does not look at `PATH` (rank 7).
 	in_proxy : List((Str, Str)) -> Bool
@@ -187,11 +191,16 @@ Base :: [].{
 		}
 		paths = files.concat(tomls).concat(own).concat(versions)
 		read = paths.map2(fx.read_files!(paths), |path, result| (path, result))
-		pin = match (found, files) {
-			(Ok(project), [file]) => pin_of(read, file, project.header)
+		locked = match (found, files) {
+			(Ok(project), [file]) => locked_of(read, file, project.header)
 			_ => Err(NoPin)
 		}
-		toolchain = read_toolchain(read, tomls)?
+		pin = match locked {
+			Ok(l) => l.roc
+			Err(NoPin) => Err(NoPin)
+		}
+		toml = read_toml(read, tomls)?
+		toolchain = toml.toolchain
 		config = match source {
 			Read => read_config(read, config_path)?
 			Given(given) => given
@@ -206,7 +215,7 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc })
+		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc, patch: patch_of(locked, toml) })
 	}
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
@@ -244,11 +253,11 @@ no_toolchain = { roc: Err(Unset), roc_text: Err(Unset), nightly: Err(Unset) }
 
 Reads : List((Str, Try(Str, [NotFound, Denied, Other(Str)])))
 
-# R-TF5: the `roc:` pin of the project file. A header that does not parse, or a pin that is not a full id, is no pin.
-pin_of : Reads, Str, Try({}, Fail) -> Try(Str, [NoPin])
-pin_of = |read, file, header| match (header, text_of(read, file)) {
+# R-TF5: the header of the project file. A header that does not parse is no header: the pin and the patches are dropped (a pin that is not a full id is no pin, `Locked.roc`).
+locked_of : Reads, Str, Try({}, Fail) -> Try(Locked, [NoPin])
+locked_of = |read, file, header| match (header, text_of(read, file)) {
 	(Ok({}), Ok(text)) => match Locked.read({ path: file, text }) {
-		Ok(locked) => locked.roc
+		Ok(locked) => Ok(locked)
 		Err(_) => Err(NoPin)
 	}
 	_ => Err(NoPin)
@@ -260,18 +269,28 @@ text_of = |read, path| match read.find_first(|(file, _)| file == path) {
 	Err(_) => Err(NotFound)
 }
 
-# R-SO4, R-TF4: the `[toolchain]` table of the `talon.toml`. A file that does not parse is exit 19 (Q5). The proxy prints no warning (D10).
-read_toolchain : Reads, List(Str) -> Try(TomlToolchain, Fail)
-read_toolchain = |read, tomls| match tomls {
+# R-SO4, R-TF4, R-PX5: the `[toolchain]` table and the `[patch]` table of the `talon.toml`. A file that does not parse is exit 19 (Q5). The proxy prints no warning (D10).
+read_toml : Reads, List(Str) -> Try({ toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str }, Fail)
+read_toml = |read, tomls| match tomls {
 	[path] => match text_of(read, path) {
 		Ok(text) => {
 			scanned = Intent.read({ path, text, role: Root })?
-			Ok(scanned.intent.toolchain)
+			Ok({ toolchain: scanned.intent.toolchain, patches: scanned.intent.patches, path })
 		}
-		Err(NotFound) => Ok(no_toolchain)
+		Err(NotFound) => Ok({ toolchain: no_toolchain, patches: [], path: "" })
 		Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 	}
-	_ => Ok(no_toolchain)
+	_ => Ok({ toolchain: no_toolchain, patches: [], path: "" })
+}
+
+# R-PX5, R-PA6, R-PA10: the patches of the header of the target file.
+patch_of : Try(Locked, [NoPin]), { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str } -> { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) }
+patch_of = |locked, toml| match locked {
+	Ok(l) => {
+		entries = Patched.entries({ rows: l.rows, patches: toml.patches, toml: toml.path })
+		{ replace: Patched.replaces(entries), stale: Patched.stale(entries) }
+	}
+	Err(NoPin) => { replace: [], stale: [] }
 }
 
 # R-SO6, R-TF4: `default-roc` and the settings of `config.toml`. A missing file gives no setting.

@@ -1,0 +1,4 @@
+[
+{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"3xcaydjtWtPvSYccPQzYYm4BSxJj3KUDvFPn1avCmJ3T.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/off/releases/download/1.1.0/3xcaydjtWtPvSYccPQzYYm4BSxJj3KUDvFPn1avCmJ3T.tar.zst"}]},
+{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"BYuNVhzvQhnhTpW8vQz25JRz9sUdzsGchP8MyXbmzXx3.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/off/releases/download/1.0.0/BYuNVhzvQhnhTpW8vQz25JRz9sUdzsGchP8MyXbmzXx3.tar.zst"}]}
+]

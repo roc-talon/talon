@@ -1,0 +1,3 @@
+tln: error[usage]: tln cache dir takes no operand, got 1
+tln: error[usage]: flag '--all' is not for 'cache list'
+tln: error[usage]: tln cache list takes no operand, got 1

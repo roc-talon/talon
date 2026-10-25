@@ -67,6 +67,7 @@ probes 1
   ~ inner/Deep.roc: import "$PROJECT/data/deep.txt" as deep : Str
   ~ inner/Deep.roc: import "data.json" as same : Str
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 /fake/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=30
@@ -137,6 +138,7 @@ probes 1
   ~ inner/Deep.roc: import "data.json" as same : Str
 hook project/app/main.roc
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/app/main.roc
@@ -203,6 +205,7 @@ probes 1
   ~ inner/Deep.roc: import "data.json" as same : Str
 hook project/app/main.roc
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml

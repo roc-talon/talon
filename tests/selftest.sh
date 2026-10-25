@@ -30,6 +30,9 @@ sec() {
     ( SEC=$name; ST=$T/tmp-$name; mkdir -p "$ST"; "$@" ) > "$RES/$name.out" 2>&1 &
 }
 
+# units: the l0 files of the repo (the drivers in tests/unit and the tests of the packages), as the l0 step has them (`unit_files` of tests/lib.sh). The unit modules are not l0 files.
+units() { (cd "$ROOT" && . "$SELF/lib.sh" && unit_files | sort -u); }
+
 # mk <root> <area/id> <cmd text>: a new L3 case. Then `put <root> <area/id> <file> <text>` adds a file.
 mk() { mkdir -p "$1/$2"; printf '%s\n' "$3" > "$1/$2/cmd"; }
 put() { mkdir -p "$(dirname "$1/$2/$3")"; printf '%s' "$4" > "$1/$2/$3"; }
@@ -361,31 +364,33 @@ sec slow s_slow
 # TW20: L0 files run in parallel (at most JOBS at one time). A failed file fails the step, and its name and output show.
 # The other files still run, and the log has the files in sorted order.
 s_l0_par() {
-n_unit=$(cd "$ROOT" && ls tests/unit/*.roc packages/*/tests/*.roc 2> /dev/null | sort -u | wc -l)
-fx l0-par env JOBS=4 FAKE_ROC_SLEEP=0.2 FAKE_ROC_FAIL=tests/unit/lock.roc FAKE_ROC_CONC="$T/l0-par.conc" TAIL=1000 "$ROOT/scripts/test.sh" l0
+n_unit=$(units | wc -l)
+F=$(units | sed -n 1p)
+fx l0-par env JOBS=4 FAKE_ROC_SLEEP=0.2 FAKE_ROC_FAIL="$F" FAKE_ROC_CONC="$T/l0-par.conc" TAIL=1000 "$ROOT/scripts/test.sh" l0
 maxc=$(sort -k1,1n -k2,2 "$T/l0-par.conc" 2> /dev/null | awk '{c += ($2 == "s") ? 1 : -1; if (c > m) m = c} END {print m + 0}')
 files=$(grep -o '^[^ :]*\.roc' "$T/l0-par.out")
-if [ $rc != 0 ] && grep -q '^== l0: FAIL' $T/l0-par.out && grep -q '^tests/unit/lock\.roc: FAILED' $T/l0-par.out &&
-    grep -q 'boom in tests/unit/lock.roc' $T/l0-par.out &&
+if [ $rc != 0 ] && grep -q '^== l0: FAIL' $T/l0-par.out && grep -q "^$F: FAILED" $T/l0-par.out &&
+    grep -q "boom in $F" $T/l0-par.out &&
     [ "$(grep -c '^[^ ]*[.]roc: 0 failed and 1 passed' $T/l0-par.out)" = $((n_unit - 1)) ] &&
     [ "$files" = "$(echo "$files" | sort)" ] && [ "$maxc" -ge 2 ] && [ "$maxc" -le 4 ]; then ok
-else bad "l0 in parallel: exit != 0, 'lock.roc: FAILED' with its output, $((n_unit - 1)) passes, sorted, 2 to 4 at one time (max seen: $maxc)"; head -n 70 $T/l0-par.out; fi
+else bad "l0 in parallel: exit != 0, '$F: FAILED' with its output, $((n_unit - 1)) passes, sorted, 2 to 4 at one time (max seen: $maxc)"; head -n 70 $T/l0-par.out; fi
 }
 sec l0_par s_l0_par
 
 # Slice 036b3 (l0 time): the l0 step starts the files in the order of the last run, the slowest first (`$WORK/l0-times`, lines "<ms> <file>"). A file with no time goes first. The report stays in the order of the files (row l0_par).
-# Each `roc test` has L0_THREADS compile threads (`--jobs=1`). The step writes the times of its run. The row seeds a time that grows with the name, so the order of the starts is the reverse of the sorted names, but the file lock.roc has no time: it starts first.
+# Each `roc test` has L0_THREADS compile threads (`--jobs=2`, the default). The step writes the times of its run. The row seeds a time that grows with the name, so the order of the starts is the reverse of the sorted names, but the first file has no time: it starts first.
 s_l0_order() {
-files=$(cd "$ROOT" && ls tests/unit/*.roc packages/*/tests/*.roc 2> /dev/null | sort -u)
+files=$(units)
 n_unit=$(echo "$files" | wc -l | tr -d ' ')
+F=$(echo "$files" | sed -n 1p)
 mkdir -p "$T/work-l0-ord"
-echo "$files" | grep -v '^tests/unit/lock\.roc$' | awk '{ print NR * 10 " " $0 }' > "$T/work-l0-ord/l0-times"
+echo "$files" | grep -vx "$F" | awk '{ print NR * 10 " " $0 }' > "$T/work-l0-ord/l0-times"
 fx l0-ord env JOBS=1 "$ROOT/scripts/test.sh" l0
 started=$(grep '^test ' "$T/l0-ord.log" | awk '{ print $2 }')
-want=$({ echo tests/unit/lock.roc; echo "$files" | grep -v '^tests/unit/lock\.roc$' | sort -r; })
-if [ $rc = 0 ] && [ "$started" = "$want" ] && [ "$(grep -c -e ' --jobs=1$' "$T/l0-ord.log")" = "$n_unit" ] &&
+want=$({ echo "$F"; echo "$files" | grep -vx "$F" | sort -r; })
+if [ $rc = 0 ] && [ "$started" = "$want" ] && [ "$(grep -c -e ' --jobs=2$' "$T/l0-ord.log")" = "$n_unit" ] &&
     [ "$(wc -l < "$T/work-l0-ord/l0-times" | tr -d ' ')" = "$n_unit" ] && [ "$(grep -Ec '^[0-9]+ [^ ]+\.roc$' "$T/work-l0-ord/l0-times")" = "$n_unit" ]; then ok
-else bad "l0 order: the files start with the no-time file first, then the longest time first, each roc test has --jobs=1, and the step writes a time for each of the $n_unit files"; echo "$started" | head -n 5; echo "$want" | head -n 5; cat "$T/l0-ord.out"; fi
+else bad "l0 order: the files start with the no-time file first, then the longest time first, each roc test has --jobs=2, and the step writes a time for each of the $n_unit files"; echo "$started" | head -n 5; echo "$want" | head -n 5; cat "$T/l0-ord.out"; fi
 }
 sec l0_order s_l0_order
 
@@ -438,6 +443,36 @@ elif [ $c_rc = 0 ] && grep -q "^tests/unit/g.roc: .*passed" "$T/ug-clean.out" &&
 else bad "unit guard: the l0 step passes a clean unit file (exit $c_rc), fails on an unused variable (exit $w_rc) and on a type error (exit $t_rc)"; head -n 30 "$T/ug-clean.out" "$T/ug-warn.out" "$T/ug-type.out"; fi
 }
 sec unit_guard s_unit_guard
+
+# Slice P1 5b (l0 time): the unit files are modules, and the drivers `tests/unit/l0-<n>.roc` import them. A module that no driver imports is never run, and `roc test` says nothing about it.
+# So the l0 step runs `unit_modules_check` (tests/lib.sh): each module is imported by exactly one driver. Pure function of the files: the row has no roc call.
+s_unit_modules() {
+D=$ST/um
+rm -rf "$D"
+mkdir -p "$D"
+printf 'import lib.Args\n\nATest :: [].{}\n' > "$D/ATest.roc"
+printf 'import lib.Args\n\nBTest :: [].{}\n' > "$D/BTest.roc"
+drv() { printf 'app [main!] { lib: "../../cli/lib/main.roc" }\n\n%s\nmain! = |_args| Ok({})\n' "$2" > "$D/$1.roc"; }
+chk() { out=$(. "$SELF/lib.sh"; unit_modules_check "$D"); crc=$?; }
+drv l0-1 $'import ATest\nimport BTest\n'
+chk
+ok_rc=$crc; ok_out=$out
+drv l0-1 $'import ATest\n'
+chk
+none_rc=$crc; none_out=$out
+drv l0-2 $'import ATest\nimport BTest\n'
+chk
+two_rc=$crc; two_out=$out
+rm -f "$D/l0-1.roc" "$D/l0-2.roc"
+chk
+nodrv_rc=$crc; nodrv_out=$out
+if [ $ok_rc = 0 ] && [ -z "$ok_out" ] &&
+    [ $none_rc = 1 ] && [ "$(echo "$none_out" | grep -c .)" = 1 ] && echo "$none_out" | grep -q "^l0: $D/BTest.roc: 0 drivers import BTest" &&
+    [ $two_rc = 1 ] && [ "$(echo "$two_out" | grep -c .)" = 1 ] && echo "$two_out" | grep -q "^l0: $D/ATest.roc: 2 drivers import ATest" &&
+    [ $nodrv_rc = 1 ] && [ "$(echo "$nodrv_out" | grep -c .)" = 2 ]; then ok
+else bad "unit modules: each module imported by exactly 1 driver passes; a module in no driver, a module in 2 drivers, or no driver at all gives one line for each fault (exit 1)"; echo "$ok_rc [$ok_out] $none_rc [$none_out] $two_rc [$two_out] $nodrv_rc [$nodrv_out]"; fi
+}
+sec unit_modules s_unit_modules
 s_chk_ok() {
 fx chk-ok env JOBS=4 FAKE_ROC_SLEEP=0.1 "$ROOT/scripts/test.sh" check
 if [ $rc = 0 ] && grep -Eq '^check +pass' $T/chk-ok.out; then ok; else bad "check in parallel: all files pass, exit 0"; cat $T/chk-ok.out; fi
@@ -509,8 +544,8 @@ sec bud_speed s_bud_speed
 # The time limit of one test process (PLAN-P1 5b, TEST_TIMEOUT of scripts/test.sh). A fake process hangs (10 s), the limit is 1 s: the step fails with a line that names the file and says
 # `timed out after 1 s`, in far less than 10 s, and the other files or cases of the run pass. One row for each step that starts a test process (one run each: the rows share the CPU with the row `mem`, which sets the time of the step).
 s_limit_l0() {
-hung=$(cd "$ROOT" && ls tests/unit/*.roc | sed -n 2p)
-n_unit=$(cd "$ROOT" && ls tests/unit/*.roc packages/*/tests/*.roc 2> /dev/null | sort -u | wc -l | tr -d ' ')
+hung=$(units | sed -n 2p)
+n_unit=$(units | wc -l | tr -d ' ')
 fx lim-l0 env TAIL=1000 TEST_TIMEOUT=1 FAKE_ROC_HANG="$hung" "$ROOT/scripts/test.sh" l0
 if [ $rc = 1 ] && [ -n "$hung" ] && grep -Eq '^l0 +FAIL ' $T/lim-l0.out && grep -qx "l0: $hung: timed out after 1 s" $T/lim-l0.out &&
     [ "$(grep -c 'timed out' $T/lim-l0.out)" = 1 ] && [ "$(grep -c ': 0 failed and 1 passed' $T/lim-l0.out)" = $((n_unit - 1)) ]; then ok

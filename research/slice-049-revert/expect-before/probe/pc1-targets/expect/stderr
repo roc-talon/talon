@@ -1,0 +1,7 @@
+tln: error[usage]: 'json@3' is not in the project
+tln: error[usage]: 'local' is a path entry or a foreign URL: it has no hash to probe
+unit check of acme/json 2.1.0 on nightly-2026-10-14-38a3029: pass
+tln: error[usage]: tln probe --share needs a registry, and this version of tln has only --registry direct
+tln: error[usage]: tln probe takes one name or one bundle file
+tln: error[usage]: tln probe --range needs a header alias or a bundle file: the project file has no hash
+tln: error[consent]: 1 compiler download (73.0 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.

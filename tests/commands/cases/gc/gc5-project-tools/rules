@@ -1,0 +1,11 @@
+Slice 056, `tln cache gc` and the `[tools]` of known projects (R-PT14, R-GC4, R-GC7, R-PD9, R-PD12, R-PD13, R-GC9): entry `commands`. `TALON_NOW=2026-10-15T12:00:00Z`, `gc-age` is the default (30 days), the clock of the fake is 2026-10-15 too.
+Every entry of `talon/x/` has the last run in 2020, and every package dir that is named below has its files from 2001: only the `[tools]` of a known project keeps them.
+Known projects (`projects.json`): `p1/main.roc` (its `talon.toml` has `a`: the bundle of `kp1`), `w/m1/main.roc` (a member: the `talon.toml` of its directory is missing, the root file `w/talon.toml` has `[workspace]` and the tool `kws`), `t/talon.toml` (an entry of `tln run`: the file itself has the tool `ktl`),
+`q/main.roc` (last used 40 days before TALON_NOW, over the GC age: its tool `kold` is not kept and the entry goes from `projects.json`), `gone/talon.toml` (the file is missing: the entry goes, its tool `kgone` is not kept).
+`talon/x/` has the entries `kp1`, `kws`, `ktl`, `kold`, `kgone`, `kfree` (no project names it) and `kfresh` (a run 1 day before: it stays, the age rule). `packages/` has the bundle dirs of `kp1` and `kws` (kept) and of `kold` and `kfree` (go).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `cache gc --dry-run` | after the reads of `projects.json` and of the project files, the walk of the headers (the platform is not in the cache), and the manifests of the `x` entries: one `read_files` of the `talon.toml` files of the known projects (the `talon.toml` of each directory up to the first file with `[workspace]`, and the entry `t/talon.toml` itself). `kold`, `kgone`, `kfree` and the 2 package dirs would go, the 2 projects would go from `projects.json` | R-PT14, R-GC4, R-GC7, R-PD12, R-PD13 |
+| 2 | `cache gc --json` | the real run: the same items are removed, `projects.json` has no more `q` and `gone` | R-PT14, R-GC7, R-GC4, R-J3, R-PD13 |
+| 3 | `cache gc` | the second run: nothing to remove (the kept entries stay for the 3 live projects) | R-PT14 |

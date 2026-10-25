@@ -1,0 +1,2 @@
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.

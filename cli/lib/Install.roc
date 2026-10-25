@@ -68,6 +68,14 @@ Install :: [].{
 	# Steps 2 to 4: the environment, the time, and the project (`remove` makes the same calls in the same order).
 	begin! : Fx, Args => Try({ env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, Fail)
 	begin! = |fx, args| {
+		got = Install.begin_loose!(fx, args)?
+		project = got.project?
+		Ok({ env: got.env, roots: got.roots, net: got.net, now: got.now, project })
+	}
+
+	## Slice 056 (Q3 of the review): the calls of `begin!`, but a failure of the search for the project file is the field `project`, not the failure of the run (`add --tool` makes `talon.toml` in `cwd` when `ToolsPlan.no_project` is true for it). `cwd` is the answer of the one `cwd!` call.
+	begin_loose! : Fx, Args => Try({ env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, cwd : Str, project : Try(Project, Fail) }, Fail)
+	begin_loose! = |fx, args| {
 		env = fx.env_all!()
 		roots = Roots.from_env(env)?
 		net = Net.from_env(env)
@@ -76,8 +84,9 @@ Install :: [].{
 			Ok((_, dir)) => dir
 			Err(_) => ""
 		}
-		project = Project.find!(fx, { start: fx.cwd!(), file: args.file, home })?
-		Ok({ env, roots, net, now, project })
+		cwd = fx.cwd!()
+		project = Project.find!(fx, { start: cwd, file: args.file, home })
+		Ok({ env, roots, net, now, cwd, project })
 	}
 
 	# Step 5, R-WS12: a run that needs a member (`add` with names, `remove`) needs a current member. No `Fx` call is made after the project is found.
@@ -133,7 +142,7 @@ flow! = |fx, args, opts| {
 	Known.record!(fx, { roots, files: Install.canonical_files!(fx, project), now })?
 	toolchain = Compiler.toolchain_of(env)?
 	compiler = Install.compiler!(fx, roots, opts.frozen)
-	Resolve.install!(
+	Resolve.install_with!(
 		fx,
 		{
 			command: Install,
@@ -156,6 +165,7 @@ flow! = |fx, args, opts| {
 			downloads: { auto: Consent.auto_install(env), allow: opts.allow_downloads, probe: opts.probe_downloads, env },
 			probe: { no_probe: opts.no_probe, slots: opts.slots },
 		},
+		Ok(args),
 	)
 }
 

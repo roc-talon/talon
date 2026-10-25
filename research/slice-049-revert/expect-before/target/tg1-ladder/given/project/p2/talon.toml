@@ -1,0 +1,2 @@
+[dependencies]
+pf = "acme/wpf@=0.1.1"

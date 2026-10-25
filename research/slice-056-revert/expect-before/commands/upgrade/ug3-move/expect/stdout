@@ -1,0 +1,14 @@
+== upgrade lib --file q2/main.roc
+check: passed
+build: passed
+exit 13
+== upgrade lib --yes --file q3/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/q3/main.roc
+  ~ lib: acme/lib 1.0.0 -> 2.0.0 new series
+  ~ core: acme/core 1.0.0 -> 1.2.0
+$PROJECT/q3/talon.toml: lib = "^2.0" (was "^1.0")
+$PROJECT/q3/talon.toml: core = "1.2.*" (was "1.0.*")
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0

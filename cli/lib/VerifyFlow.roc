@@ -4,6 +4,8 @@ import Fail
 import Fx
 import Ladder
 import LadderPlan
+import PatchApply
+import Patched
 import PickFlow
 import Pin
 import Report
@@ -135,7 +137,7 @@ no_replace = []
 checked_members : ResolveBase.Request, Loaded -> List(Ladder.Checked)
 checked_members = |request, loaded| {
 	current = request.project.file ?? ""
-	all = loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file) })
+	all = loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), patch: Patched.replaces(PatchApply.entries(m)), target: ResolveBase.member_target(m) })
 	named = all.keep_if(|m| m.file == current)
 	if named.is_empty() all else named
 }

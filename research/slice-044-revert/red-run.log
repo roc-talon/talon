@@ -1,0 +1,145 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+	todo: slice 044
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/ZigTest.roc:278:1
+
+expect {
+    llvm = { target: "x86_64-linux-musl", size: Ok(45_000_000) }
+    lines = |rows| "Dependencies:\n${Str.join_with(rows, "\n")}\n"
+    llvm_row = "  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build"
+    missing = Zig.deps({ need: "0.17.0", search: Missing("found zig 0.16.0 on PATH"), llvm })
+    found_path = Zig.deps({ need: "0.17.0", search: Found({ source: Path, path: "zig", version: "0.17.2" }), llvm })
+    found_env = Zig.deps({ need: "0.17.0", search: Found({ source: Env, path: "/opt/zig/zig", version: "0.17.1" }), llvm })
+    found_inst = Zig.deps({ need: "0.15.2", search: Found({ source: Installed, path: "/c/roc/toolchains/zig-0.15.1/zig", version: "0.15.1" }), llvm })
+    none = Zig.deps({ need: "0.17.0", search: Missing("zig not found"), llvm: { target: "aarch64-macos", size: Err(Unknown) } })
+    dbg missing
+    missing == lines(["  [ ] zig 0.17.x            found zig 0.16.0 on PATH", llvm_row])
+        and found_path == lines(["  [x] zig 0.17.x            found zig 0.17.2 on PATH", llvm_row])
+            and found_env == lines(["  [x] zig 0.17.x            found zig 0.17.1 in $ZIG", llvm_row])
+                and found_inst == lines(["  [x] zig 0.15.x            found zig 0.15.1 installed by Talon", llvm_row])
+                    and none == lines(["  [ ] zig 0.17.x            zig not found", "  [ ] LLVM bundle           aarch64-macos, zig gets it during the build"])
+}
+
+Roc application crashed with this message:
+
+	todo: slice 044
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/ZigTest.roc:297:1
+
+expect {
+    p = Consent.zig_install({ version: "0.17.0", size: 54_227_812 })
+    decide = |mode, yes, flag| Prompt.decide(p, { mode, yes, flag })
+    declined = Consent.zig_install_declined("0.17.0")
+    dbg p.question
+    p.id == "zig-install"
+        and p.kind == Default
+            and p.shape == YesNo
+                and p.default == Yes
+                    and p.question == "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+                        and p.subject == "the download of zig 0.17.0"
+                            and (p.answer_line)(Yes) == "installing zig 0.17.0 (54.2 MB)"
+                                and (p.answer_line)(No) == "no install of zig 0.17.0"
+                                    and Prompt.text(p) == "Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] "
+                                        and Prompt.reply(p, "") == Ok(Yes)
+                                            and Prompt.reply(p, "N") == Ok(No)
+                                                and decide(NonInteractive, Bool.False, Err(NoFlag)) == Use(Yes)
+                                                    and decide(NonInteractive, Bool.True, Err(NoFlag)) == Use(Yes)
+                                                        and decide(Interactive, Bool.False, Err(NoFlag)) == Ask
+                                                            and decide(Interactive, Bool.True, Err(NoFlag)) == Use(Yes)
+                                                                and decide(NeedsTty, Bool.False, Err(NoFlag)) == NeedTty
+                                                                    and declined == Fail.new(Consent, "zig 0.17.0 is not installed. Nothing was downloaded.")
+                                                                        and declined.kind.code() == 13
+}
+
+Ran 53 tests in 15415.0 ms.:
+    44 passed
+    9 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (40) tests passed in 18999.2 ms.
+tests/unit/l0-8.roc: All (60) tests passed in 17491.3 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL zig/zi1-install
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 044
+FAIL zig/zi2-xz
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 044
+FAIL zig/zs1-search
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 044
+commands: 113 passed, 3 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+      -
+      -installing zig 0.14.1 (384 B)
+      -tln: error[integrity]: tar rejected zig-0.14.1 (http://127.0.0.1:$PORT/zig/dl/0.14.1/zig-x86_64-linux-0.14.1.tar.xz): tar: Exiting with failure status due to previous errors
+      -Dependencies:
+      -  [ ] zig 0.13.x            found zig 0.16.0 on PATH
+      -  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+      -
+      -tln: error[network]: zig 0.13.x is not installed and --offline is set
+      -Dependencies:
+      -  [ ] zig 0.99.x            found zig 0.16.0 on PATH
+      -  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+      -
+      -tln: error[environment]: the Zig index has no release of zig 0.99.x
+      -Dependencies:
+      -  [ ] zig 0.12.x            found zig 0.16.0 on PATH
+      -  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+      -
+      -tln: error[network]: cannot read the Zig index http://127.0.0.1:$PORT/zig/missing.json: HTTP 404
+      +[ROC CRASHED] todo: slice 044
+      +ls: cannot access '$HOME/.cache/roc/toolchains': No such file or directory
+      +ls: cannot access '$HOME/.cache/roc/toolchains/zig-0.17.0': No such file or directory
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,21 +0,0 @@
+      ---- home/.cache/roc/toolchains/zig-0.17.0/doc/langref.html
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/doc/langref.html
+      -@@ -0,0 +1 @@
+      -+<html>fake langref 0.17.0</html>
+      ---- home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
+      -@@ -0,0 +1 @@
+      -+// fake std 0.17.0
+      ---- home/.cache/roc/toolchains/zig-0.17.0/LICENSE
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/LICENSE
+      -@@ -0,0 +1 @@
+      -+fake license of zig 0.17.0
+      ---- home/.cache/roc/toolchains/zig-0.17.0/.talon.json
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/.talon.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"id":"zig-0.17.0","url":"http://127.0.0.1:$PORT/zig/dl/0.17.0/zig-x86_64-linux-0.17.0.tar.xz","sha256":"9022625a4e807de3006fac0e8c4990b1cdb8f67a7a21bd09de42d14b1c0adce2","sha256_source":"zig-index","installed_at":"2026-10-22T12:00:00Z"}
+      ---- home/.cache/roc/toolchains/zig-0.17.0/zig
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/zig
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo 0.17.0
+    http requests differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,8 +0,0 @@
+      -GET /zig/index.json 200
+      -GET /zig/dl/0.17.0/zig-x86_64-linux-0.17.0.tar.xz 200
+      -GET /zig/index.json 200
+      -GET /zig/dl/0.15.1/zig-x86_64-linux-0.15.1.tar.xz 200
+      -GET /zig/index.json 200
+      -GET /zig/dl/0.14.1/zig-x86_64-linux-0.14.1.tar.xz 200
+      -GET /zig/index.json 200
+      -GET /zig/missing.json 404
+scenarios: 66 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   4.4      10
+fmt        pass   0.5      5
+l0         FAIL   20.6     10
+l2         FAIL   11.3     30
+l3         FAIL   14.0     60
+selftest   pass   10.8     20
+l1         pass   81.4     60
+WARN l0: 20.6 s is over the budget of 10 s (TW20)
+WARN l1: 81.4 s is over the budget of 60 s (TW20)
+exit=1

@@ -1,0 +1,7 @@
+platform pf/main.roc
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029
+platform pf/main.roc
+building acme/foo 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: foo is the binary name of acme/foo already. Use --as <name> to install other/foo under another binary name.
+platform pf/main.roc
+building other/foo 2.0.0 with nightly-2026-10-14-38a3029

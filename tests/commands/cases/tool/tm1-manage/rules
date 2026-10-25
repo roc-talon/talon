@@ -1,0 +1,20 @@
+Slice 048, `tln tool list` (`ls`) and `tln tool remove` (`rm`) (entry `commands`). One home, no network, no compiler. `tools.json` has 3 tools: `foo` (acme/foo 1.1.0, one run-time library, the file in the data bin dir and the bin dir entry have the same content: it is Talon's),
+`g` (acme/g, built from main, `--path apps/cli`, the bin dir entry is another file: not Talon's) and `z` (acme/z 2.0.0, the data bin file only: the entry is gone).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool ls` | the table with the column LIBS (foo has a library): one line for each tool in the order of the file, a git tool shows `git main@aaaaaaaa apps/cli`. No `clock`, no `platform`, no request, no lock | R-T4, R-T5, R-T8, R-CM16 |
+| 2 | `tool ls --json` | the envelope with `tools` (the 3 objects) | R-J1 to R-J4, R-OUT4 |
+| 3 | `tool rm nope` | no installed tool has the short name: exit 2, the lookup failure | R-SC3, R-AD6 |
+| 4 | `tool rm acme/zzz` | a full name that no tool has: exit 2 `is not an installed tool`, no lock | R-SC3 |
+| 5 | `tool rm talon` | `talon` is slices 050 and 051: exit 2 `is not built yet`, no call | R-CM16 |
+| 6 | `tool rm foo --dry-run` | the flag is for `tool rm talon`: exit 2, no call | R-FL12 |
+| 7 | `tool rm foo` | under the lock of `tools.json`: the entry is Talon's (same sha256): the entry and the binary are deleted, then `tools.json` is written without `foo`. Nothing is written in `talon/x/` | R-B6, R-ST11, R-CC6, R-PT12 |
+| 8 | `tool rm g --json` | the entry is not Talon's: kept, the warning on stderr, the binary is deleted, `tools.json` has no `g`. The envelope has `kept` | R-B6, R-ST6, R-J3 |
+| 9 | `tool rm acme/z` | the entry is gone already: only the binary is deleted, no warning | R-B6, R-ST6 |
+| 10 | `tool ls` | no tool: `no tool is installed. Run: tln tool install owner/app`. `tools.json` is `{"format":1,"tools":{}}` | R-T4, R-B6 |
+| 11 | `tool rm foo` | `foo` is not installed any more: exit 2 | R-SC3 |
+| 12 | `tool update` | gap test (C6): no tool is installed (`tools.json` is `{"tools":{}}`): the line `no tool is installed. ...` on stdout, exit 0, no request, no lock | R-T25, R-T7 |
+| 13 | `tool rebuild` | the same line, exit 0 | R-T7 |
+| 14 | `tool update --json` | the line goes to stderr, the envelope on stdout has `"tools":[]` | R-J1 to R-J4 |
+| 15 | `tool rebuild --json` | the same | R-J1 to R-J4 |

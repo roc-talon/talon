@@ -1,0 +1,8 @@
+cli/lib/Zig.roc
+cli/lib/ZigInstall.roc
+tests/unit/ZigTest.roc
+tests/commands/cases/zig/
+tests/scenarios/compilers/zi1-zig-install/
+tests/tools/mk-zig.sh
+docs/slices/044-zig.md
+research/slice-044-revert/

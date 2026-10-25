@@ -1,0 +1,3 @@
+tln: error[consent]: the compiler nightly-2026-10-11-1a2b3c4 is not installed. Nothing was downloaded and nothing was built. Run: tln roc install nightly-2026-10-11-1a2b3c4, pass --roc pinned, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: no compiler release is installed to try for acme/x 1.0.0. The compiler nightly-2026-10-11-1a2b3c4 is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-11-1a2b3c4 is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes. (--roc installed tries the installed compilers.)

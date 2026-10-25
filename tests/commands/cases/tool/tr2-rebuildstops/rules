@@ -1,0 +1,10 @@
+Slice 048, the stops of `tln tool rebuild` (entry `commands`). One home with the compiler `nightly-2026-10-14-38a3029`. `tools.json` has `foo` (acme/foo 1.1.0, built with the installed compiler), `fe` (acme/fe 1.0.0; `<bin>/fe` is a file that tln did not write), `zz` (a release URL that is no release URL) and `gh` (a git tool whose name is `host/a/b`).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool rebuild fe` | the entry is not Talon's: exit 2 before the bundle is fetched, no build | R-ST6, R-ST11, R-T7 |
+| 2 | `tool rebuild zz` | the URL of the manifest has no bundle hash: exit 19 that names the tool, no call after the file read | R-T7, R-TF1 |
+| 3 | `tool rebuild gh` | the name is not owner/repo, so the archive is not known: exit 19 | R-T7, R-T23 |
+| 4 | `tool rebuild` | all tools: `foo` is planned (the bundle is fetched), `fe` stops the plan: exit 2, nothing is built or changed (foo has the old files) | R-T7, R-T25, R-CC6 |
+| 5 | `tool rebuild nope` | no installed tool has the short name: exit 2 | R-SC3 |
+| 6 | `tool rebuild talon` | `talon` is slices 050 and 051: exit 2 `is not built yet`, no call | R-CM16 |

@@ -1,0 +1,31 @@
+== tool ls
+TOOL  NAME      SOURCE                      COMPILER                    TARGET   INSTALLED   LIBS
+foo   acme/foo  1.1.0                       nightly-2026-10-14-38a3029  x64musl  2026-10-01  libm.so.6
+g     acme/g    git main@aaaaaaaa apps/cli  nightly-2026-10-11-1a2b3c4  x64musl  2026-09-02  -
+z     acme/z    2.0.0                       nightly-2026-10-14-38a3029  x64musl  2026-09-03  -
+exit 0
+== tool ls --json
+{"schema":1,"command":"tool ls","ok":true,"data":{"tools":[{"tool":"foo","name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"},"nightly":"nightly-2026-10-14-38a3029","target":"x64musl","sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":["libm.so.6"],"installed_at":"2026-10-01T10:00:00Z"},{"tool":"g","name":"acme/g","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"main","path":"apps/cli"},"nightly":"nightly-2026-10-11-1a2b3c4","target":"x64musl","sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-02T08:00:00Z"},{"tool":"z","name":"acme/z","source":{"kind":"release","version":"2.0.0","url":"https://github.com/acme/z/releases/download/2.0.0/BqqXzLarZCK7BStmPqJBFA5mSKhYxcVMmo2CepVZJtEp.tar.zst"},"nightly":"nightly-2026-10-14-38a3029","target":"x64musl","sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-03T08:00:00Z"}]},"error":null}
+exit 0
+== tool rm nope
+exit 2
+== tool rm acme/zzz
+exit 2
+== tool rm talon
+exit 2
+== tool rm foo --dry-run
+exit 2
+== tool rm foo
+removed foo 1.1.0 (acme/foo)
+exit 0
+== tool rm g --json
+{"schema":1,"command":"tool rm","ok":true,"data":{"tool":"g","name":"acme/g","source":"git","version":null,"removed":["$HOME/.local/share/talon/bin/g"],"kept":["$HOME/.local/bin/g"]},"error":null}
+exit 0
+== tool rm acme/z
+removed z 2.0.0 (acme/z)
+exit 0
+== tool ls
+no tool is installed. Run: tln tool install owner/app
+exit 0
+== tool rm foo
+exit 2

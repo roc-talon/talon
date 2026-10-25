@@ -1,0 +1,13 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-T23 the source archive (`source.tar.gz`, before the generic `tar -xf`), R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+unbundle AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst	0	-	-	dir:{cwd}/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD;copy:{cwd}/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD/main.roc={w}/fx/src/np-1.1.0.src
+unbundle AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx.tar.zst	0	-	-	dir:{cwd}/AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx;copy:{cwd}/AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx/main.roc={w}/fx/src/np-1.0.0.src
+unbundle 3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst	0	-	-	dir:{cwd}/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J;copy:{cwd}/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J/main.roc={w}/fx/src/mo-1.1.0.src
+unbundle DW81pDMpCYEPDeFrtHB3JhrtFwmSfUzfNF43Q89RjUED.tar.zst	0	-	-	dir:{cwd}/DW81pDMpCYEPDeFrtHB3JhrtFwmSfUzfNF43Q89RjUED;copy:{cwd}/DW81pDMpCYEPDeFrtHB3JhrtFwmSfUzfNF43Q89RjUED/main.roc={w}/fx/src/mo-1.0.0.src
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+source.tar.gz -C	0	-	-	copy:{dir}/main.roc={w}/fx/src/gm.src
+curl --fail	0	-	-	file:{out}
+.zip -C	0	-	-	file:{dir}/roc.exe;file:{dir}/LICENSE;file:{dir}/legal_details
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+nightly-2026-10-11-1a2b3c4.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-1a2b3c4
+nightly-2026-10-12-2664a27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-2664a27

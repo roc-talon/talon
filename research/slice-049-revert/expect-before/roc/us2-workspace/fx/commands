@@ -1,0 +1,4 @@
+# R-CS1 R-WS13 R-WS4 R-U3 R-BL1 R-RP3 R-H1 (question Q5): a workspace of 4 members, in the root (no current member). apps/a has the pin O, apps/b has the pin M (two pins: `update` and `install` stop for this with exit 2, and name `tln roc use`: R-WS4), apps/c has no pin (its baseline is the global default O), apps/d has the pin N already, in the other tag form (R-H1: no probe, no write, no line). `roc use` writes the entry of each member that changes. Each member has its own baseline (the compiler of its own pin), so each member that changes is checked: 3 rounds of probes, the lines have the file of the member in front. Nothing is written before all 3 passed.
+roc use nightly-2026-10-14-38a3029
+# R-U3 R-H6 R-WS13 R-EC11 (question Q5): a second workspace (w2) with 2 members. apps/b has a new error in the candidate. The check of apps/a passed, but no member is written: exit 11, both headers stay.
+roc use nightly-2026-10-14-38a3029 --file w2/apps/a/main.roc

@@ -1,0 +1,3 @@
+tln: error[no_tuple]: no tuple works: the build for the target wasm32 failed on the platform acme/fpf 0.1.1: unsupported target
+tln: error[usage]: $PROJECT/p7/main.roc: no build target: the platform has the targets wasm32, x64mac, and none is the host target (x64musl, x64glibc). Set the target in the [build] table of talon.toml, for example: target = "wasm32"
+tln: error[input]: $PROJECT/p8/talon.toml:5: build.target: 'wasm64' is not a Roc target

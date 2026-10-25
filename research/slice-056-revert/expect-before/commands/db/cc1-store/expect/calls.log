@@ -1,0 +1,18 @@
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=keep
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1

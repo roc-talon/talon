@@ -1,0 +1,19 @@
+tln: error[environment]: script gone: the step 'tool-gone --flag' cannot start 'tool-gone': NotFound
+tln: error[input]: scripts call themselves: loop-a -> loop-b -> loop-a
+tln: error[input]: $PROJECT/p1/talon.toml: script shell: the step 'tool-p | tool-q' has the word '|': a step is one command; use 2 steps, or a .roc script
+tln: error[input]: $PROJECT/p1/talon.toml: script dangling: the step '@nothere' names the script 'nothere', and $PROJECT/p1/talon.toml has no such script
+tln: error[input]: $PROJECT/p1/talon.toml: script out: the step 'in ../..: tool-o' has the directory '../..', which is outside the repository ($PROJECT)
+tln: error[input]: $PROJECT/p1/talon.toml: script nofile: the step 'in nodir: @x' names the script 'x', and $PROJECT/p1/nodir has no talon.toml
+tln: error[input]: $PROJECT/p1/talon.toml: script noname: the step 'in sub: @missing' names the script 'missing', and $PROJECT/p1/sub/talon.toml has no such script
+tln: error[usage]: no script 'nosuch' in the talon.toml files that the walk checked: $PROJECT/p1/talon.toml.
+tln: error[usage]: tln run takes one script name, got 2 words. Pass arguments for the script after --.
+tln: error[usage]: tln run hi does not take --json: the steps write to stdout. Only tln run with no name does.
+tln: error[usage]: flag '--file' is not for 'run'
+tln: error[usage]: flag '--frozen' is not for 'run'
+tln: error[usage]: unknown command 'build'
+tln: error[input]: $PROJECT/p3/talon.toml:3: scripts.bad: a table step needs the strings in and run, and no other key
+tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/s/talon.toml.
+tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/deep/inner/talon.toml, $PROJECT/w/deep/talon.toml.
+tln: error[usage]: no talon.toml found. Checked: $PROJECT.
+tln: error[usage]: tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>.
+tln: error[input]: $PROJECT/p1/talon.toml: script unclosed: the step 'tool-q "two words' has a quote that is not closed

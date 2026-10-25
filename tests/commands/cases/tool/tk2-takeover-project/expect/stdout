@@ -1,0 +1,15 @@
+== tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+== tool install acme/ws
+installed ws 1.0.0 (acme/ws)
+exit 0
+== tool install acme/tl
+installed tl 1.0.0 (acme/tl)
+exit 0
+== tool install acme/oth
+installed oth 1.1.0 (acme/oth)
+exit 0
+== tool install acme/bar
+installed bar 1.0.0 (acme/bar)
+exit 0

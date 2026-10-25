@@ -1,0 +1,5 @@
+[dependencies]
+json = "acme/json@=2.1.0"
+
+[build]
+target = "wasm64"

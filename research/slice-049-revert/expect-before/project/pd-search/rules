@@ -1,0 +1,4 @@
+R-PD1 R-PD2 R-PD3 R-PD4 R-PD5 R-PD6 R-PD8 R-TF4 R-TF5 R-EC2 R-EC19 R-E4: the project search with the fake Fx, 14 searches (fx/searches) over the tree in given/project.
+Each search shows the project file, the workspace root with its member count, and the talon.toml, or the exit code and the error line. The calls.log fixes the effects of each search:
+one list_dirs for each directory of the walk (it stops at .git or at the home dir, and never lists above), one read_files for the talon.toml files, the list_dirs rounds of the members (the listings of the walk are reused), and one read_files for the project file.
+The tree has a main.roc and a talon.toml with [workspace] above the repositories: no search reads them (R-PD2).

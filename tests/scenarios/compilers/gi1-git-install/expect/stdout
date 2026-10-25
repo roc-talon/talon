@@ -1,0 +1,56 @@
+== 1: a branch (R-R10). The id is git-<sha8> (R-R1). The archive is got by the full sha (R-R3), curl makes the file, tar strips the top dir (the fake zig checks), the build runs in the tree, the temp dir is renamed. The first compiler is the default (R-SO15). No temp, lock or scratch dir is left (R-CC2, R-CC4).
+installed git-a1b2c3d4
+git-a1b2c3d4 is now the default compiler
+exit 0
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.cache/roc/toolchains:
+git-a1b2c3d4
+
+$HOME/.cache/roc/toolchains/git-a1b2c3d4:
+.talon.json
+roc
+Roc compiler version git-a1b2c3d4
+{"format":1,"id":"git-a1b2c3d4","repo":"https://github.com/Karakatiza666/roc","sha":"a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e","ref":"my-branch","sha256":"fe66248a49301fd14db2869865961ee84fdf711452cbef712522dfdfc53e8112","sha256_source":"computed","compat":"git-a1b2c3d4","installed_at":"2026-10-22T12:00:00Z"}
+sha256 of the archive: fe66248a49301fd14db2869865961ee84fdf711452cbef712522dfdfc53e8112
+default-roc = "git-a1b2c3d4"
+== 2: the head is the same: the id is there, no download, no build
+git-a1b2c3d4 is already installed
+exit 0
+== 3: the branch moved: the new head is a new id, the old one stays (R-R6). The default stays (R-SO15). Then tln roc default --git picks the newest build of the branch (R-R5).
+installed git-b2c3d4e5
+exit 0
+git-a1b2c3d4
+git-b2c3d4e5
+default-roc = "git-a1b2c3d4"
+git-b2c3d4e5 is now the default compiler
+exit 0
+default-roc = "git-b2c3d4e5"
+== 4: @main (R-R9): the commit is the commit of a nightly: the note, and the build goes on (R-R2)
+installed git-5349569a
+exit 0
+git-5349569a
+git-a1b2c3d4
+git-b2c3d4e5
+{"format":1,"id":"git-5349569a","repo":"https://github.com/roc-lang/roc","sha":"5349569a1b2c3d4e5f60718293a4b5c6d7e8f901","ref":"main","sha256":"d0af40a0e0ab6c70910f9ce2f69f58eda20845476a49c078c2100bb9624036c5","sha256_source":"computed","compat":"git-5349569a","installed_at":"2026-10-22T12:00:00Z"}
+== 5: an archive with a .. member (R-SE12, R-SE9: no hash, so tar is the guard): exit 16, nothing outside the scratch dir, nothing installed
+exit 16
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.cache/roc/toolchains:
+git-5349569a
+git-a1b2c3d4
+git-b2c3d4e5
+no evil.txt
+no evil.txt up
+== 6: the archive route redirects to http:// (R-DA3, R-SE12): curl refuses it, exit 15. The second route is never asked.
+exit 15
+curl refused the redirect: 1
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.cache/roc/toolchains:
+git-5349569a
+git-a1b2c3d4
+git-b2c3d4e5
+== 7: a ref that does not exist: the API answers 422, exit 2, no archive request (R-R3)
+exit 2

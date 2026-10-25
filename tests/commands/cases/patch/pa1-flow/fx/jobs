@@ -1,0 +1,3 @@
+# run 7: the fetch of acme/parser 1.0.0 (R-PA1: the package is not in the cache). The first rule whose needle is in the arguments answers.
+unbundle PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG.tar.zst	0	-	-	dir:{cwd}/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG;file:{cwd}/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/main.roc;file:{cwd}/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/Parse.roc
+PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG.0123456789abcdef.tmp/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG.tar.zst

@@ -1,0 +1,13 @@
+wrote $PROJECT/target.txt
+new
+old
+app lib link.txt target.txt 
+wrote $PROJECT/made/by/write/f.txt
+parent dirs made by the write
+recorded 2
+lock released
+ROC_CACHE_DIR has no Talon file
+recorded 1
+projects.json tools.json.0123456789abcdef.tmp 
+recorded 2
+projects.json is the same

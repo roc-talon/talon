@@ -1,0 +1,23 @@
+Build roc from Karakatiza666/roc@my-branch (a1b2c3d4)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+Build roc from Karakatiza666/roc@my-branch (b2c3d4e5)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+5349569a is nightly-2026-10-21-5349569. tln roc install nightly-2026-10-21-5349569 downloads it.
+Build roc from roc-lang/roc@main (5349569a)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+Build roc from Karakatiza666/roc@evil (e0e0e0e0)
+
+tln: error[integrity]: tar rejected git-e0e0e0e0 (http://127.0.0.1:$PORT/api/repos/Karakatiza666/roc/tarball/e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0): tar: Exiting with failure status due to previous errors
+Build roc from Karakatiza666/roc@loop (c0c0c0c0)
+
+tln: error[network]: download of git-c0c0c0c0 failed: <the message of curl>
+tln: error[usage]: no commit nosuch in Karakatiza666/roc

@@ -1,0 +1,14 @@
+tests/unit/ToolsplanTest.roc
+tests/commands/cases/ptool/pt1-add
+tests/commands/cases/ptool/pt2-install
+tests/commands/cases/ptool/pt3-move
+tests/commands/cases/gc/gc5-project-tools
+tests/commands/cases/tool/tk2-takeover-project
+tests/scenarios/ptools/pt1-flow
+cli/lib/ToolsToml.roc
+cli/lib/ToolsPlan.roc
+cli/lib/ToolsCmd.roc
+cli/lib/ToolsStep.roc
+cli/lib/ToolsFlow.roc
+cli/lib/ToolsHeld.roc
+tests/commands/cases/gc/gc6-held-no-package

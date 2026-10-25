@@ -1,0 +1,50 @@
+== 1: nothing is installed, no default. The newest allowed compiler is installed, and it is the default (R-SO15). The nightly of 2026-10-21 is too young (R-C7).
+installed nightly-2026-10-14-38a3029
+nightly-2026-10-14-38a3029 is now the default compiler
+exit 0
+nightly-2026-10-14-38a3029
+default-roc = "nightly-2026-10-14-38a3029"
+== 2: the newest is installed: the text names it, and nothing else happens (R-RU1). The alias up (R-CM19).
+nightly-2026-10-14-38a3029 is the newest
+exit 0
+nightly-2026-10-14-38a3029
+== 3: an older compiler becomes the default. The newest is installed, so nothing is downloaded, but the default moves to it (R-CS3, R-RU2, answer Q1 of the review): the line is-the-newest, then the move line.
+installed nightly-2026-10-09-258ab27
+exit 0
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+nightly-2026-10-14-38a3029 is the newest
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-14-38a3029
+exit 0
+default-roc = "nightly-2026-10-14-38a3029"
+nightly-2026-10-09-258ab27
+nightly-2026-10-14-38a3029
+== 4: --json: stdout is only the envelope. Nothing is new and the default is the newest already (step 3), so installed and changed are false, and previous is the newest.
+{"schema":1,"command":"roc update","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","path":"$HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029","installed":false,"previous":"nightly-2026-10-14-38a3029","changed":false},"error":null}
+exit 0
+== 5: a project with a roc: pin is not touched (R-RU3), and the old compilers stay (R-RU4). The header is as it was (the default is the newest, step 3).
+app [main!] {
+	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+	roc: "nightly-2026-10-09-258ab27",
+}
+
+main! = |_args| Ok({})
+== 6: a link build is the default (R-RU2): a new store, the link, the default, then update. The compiler is installed, the default stays, and the note says how to change it.
+linked link-dev -> $PROJECT/roc-src/roc
+exit 0
+link-dev is now the default compiler
+exit 0
+installed nightly-2026-10-14-38a3029
+note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default nightly-2026-10-14-38a3029
+exit 0
+link-dev
+nightly-2026-10-14-38a3029
+default-roc = "link-dev"
+== 7: --offline with no cached list (a new store): exit 15, nothing is installed (R-DI12).
+exit 15
+0
+== 8: the nightly switch is off and the list has no release (R-NS2, R-NS3): exit 10, the text names the switch. An operand is a usage error (exit 2).
+exit 10
+exit 2
+== the stores have no temp dir and no lock (R-CC1, R-CC4)
+0

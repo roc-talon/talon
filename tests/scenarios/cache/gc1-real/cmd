@@ -11,6 +11,8 @@ left() { (cd $R && find talon toolchains packages \( -name '*.tmp' -o -name '*.t
 kept() { (cd $R && ls toolchains && ls | grep compat); }
 mkdir -p $R/talon/tmp
 touch $R/compat-other/cache.bin $R/compat-other/deep/entry.bin
+# The given package CZsY7... must be young in step 7 (R-GC4, real clock): its files keep the time of the git checkout, so touch them now.
+find $R/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA -exec touch {} +
 printf '{"format":1,"projects":[{"path":"%s/pa/main.roc","last_use":1792540800},{"path":"%s/pb/main.roc","last_use":1792281600},{"path":"%s/pold/main.roc","last_use":1785542400},{"path":"%s/pgone/main.roc","last_use":1792454400}]}\n' "$PWD" "$PWD" "$PWD" "$PWD" > $R/talon/projects.json
 sed -i "s#ROC_SRC#$PWD/roc-src/roc#" $T/link-dev/.talon.json
 mkdir $T/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $T/nightly-2026-09-05-4444444.0123456789abcdef.trash $T/nightly-2026-09-06-3333333.1123456789abcdef.trash

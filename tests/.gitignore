@@ -1,0 +1,2 @@
+# Test fixtures hold fake cache dirs (given/home/.cache). The root .gitignore ignores .cache/, so track them here.
+!.cache/

@@ -1,0 +1,8 @@
+== install compiler=nightly-2026-10-14-38a3029
+exit 13
+== install compiler=nightly-2026-10-14-38a3029 rename-keys
+$PROJECT/talon.toml: key js -> json
+exit 0
+== install compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0

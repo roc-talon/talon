@@ -1,0 +1,2 @@
+status 302
+header Location: http://127.0.0.1:$PORT/api/loot/c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c1.tar.gz

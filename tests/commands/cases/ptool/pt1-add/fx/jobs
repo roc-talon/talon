@@ -1,0 +1,14 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-T23 the source archive (`source.tar.gz`, before the generic `tar -xf`), R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+unbundle DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3.tar.zst	0	-	-	dir:{cwd}/DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3;copy:{cwd}/DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3/main.roc={w}/fx/src/platform-wasm.src
+unbundle AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst	0	-	-	dir:{cwd}/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY;copy:{cwd}/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc={w}/fx/src/foo-1.1.0.src
+unbundle GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst	0	-	-	dir:{cwd}/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW;copy:{cwd}/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW/main.roc={w}/fx/src/foo-1.0.0.src
+unbundle ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst	0	-	-	dir:{cwd}/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3;copy:{cwd}/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3/main.roc={w}/fx/src/bar-1.1.0.src
+unbundle 2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst	0	-	-	dir:{cwd}/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN;copy:{cwd}/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN/main.roc={w}/fx/src/bar-1.0.0.src
+unbundle FdvbJ4YLq4KBhNdCktwDRdWJwnCs1tpVY4922pEJjGcZ.tar.zst	0	-	-	dir:{cwd}/FdvbJ4YLq4KBhNdCktwDRdWJwnCs1tpVY4922pEJjGcZ;copy:{cwd}/FdvbJ4YLq4KBhNdCktwDRdWJwnCs1tpVY4922pEJjGcZ/main.roc={w}/fx/src/snap-1.1.0.src
+unbundle 3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst	0	-	-	dir:{cwd}/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf;copy:{cwd}/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf/main.roc={w}/fx/src/snap-1.0.0.src
+unbundle AQmLxpDyCQjrkJWNY4WyvAtW6tJXq4EWYi41GwswnV8Z.tar.zst	0	-	-	dir:{cwd}/AQmLxpDyCQjrkJWNY4WyvAtW6tJXq4EWYi41GwswnV8Z;copy:{cwd}/AQmLxpDyCQjrkJWNY4WyvAtW6tJXq4EWYi41GwswnV8Z/main.roc={w}/fx/src/young-1.0.0.src
+unbundle EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst	0	-	-	dir:{cwd}/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa;copy:{cwd}/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc={w}/fx/src/bad-1.0.0.src
+unbundle B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6.tar.zst	0	-	-	dir:{cwd}/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6;copy:{cwd}/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6/main.roc={w}/fx/src/wasm-1.0.0.src
+curl --fail	0	-	-	file:{out}

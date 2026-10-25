@@ -1,0 +1,70 @@
+== 13 checks (weight 1) in a pool of 12: 12 at once, the 13th waits for a free slot
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+probe 3 Exited(0) stdout="" stderr=""
+probe 4 Exited(0) stdout="" stderr=""
+probe 5 Exited(0) stdout="" stderr=""
+probe 6 Exited(0) stdout="" stderr=""
+probe 7 Exited(0) stdout="" stderr=""
+probe 8 Exited(0) stdout="" stderr=""
+probe 9 Exited(0) stdout="" stderr=""
+probe 10 Exited(0) stdout="" stderr=""
+probe 11 Exited(0) stdout="" stderr=""
+probe 12 Exited(0) stdout="" stderr=""
+max at once: 12
+last start: c13
+== 4 builds (weight 4) in a pool of 12: 3 at once
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+probe 3 Exited(0) stdout="" stderr=""
+max at once: 3
+last start: b4
+== 1 build and 9 checks: the build and 8 checks are 12 slots, the 9th check waits (9 at once)
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+probe 3 Exited(0) stdout="" stderr=""
+probe 4 Exited(0) stdout="" stderr=""
+probe 5 Exited(0) stdout="" stderr=""
+probe 6 Exited(0) stdout="" stderr=""
+probe 7 Exited(0) stdout="" stderr=""
+probe 8 Exited(0) stdout="" stderr=""
+probe 9 Exited(0) stdout="" stderr=""
+max at once: 9
+last start: c9
+== a pool of 2 (--slots 2): 2 checks at once
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+probe 3 Exited(0) stdout="" stderr=""
+probe 4 Exited(0) stdout="" stderr=""
+max at once: 2
+last start: c5
+== FIFO: in a pool of 5 the second build (4 slots) does not fit, and the check behind it does not start before it (c1 starts about 0.5 s after b1, not with b1)
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+probe 3 Exited(0) stdout="" stderr=""
+max at once: 2
+last start: c2
+c1 waited for b2: yes
+== a weight above the pool takes the whole pool: 2 builds in a pool of 2 run one after the other
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+max at once: 1
+last start: b2
+== a pool of 1: one probe at a time
+probe 0 Exited(0) stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+max at once: 1
+last start: c3
+== R-P3: a probe that hangs keeps its slot until the timeout kills it (1 s). In a pool of 2 the 3 checks use the other slot (2 at once). The result of the hang is TimedOut.
+probe 0 TimedOut stdout="" stderr=""
+probe 1 Exited(0) stdout="" stderr=""
+probe 2 Exited(0) stdout="" stderr=""
+probe 3 Exited(0) stdout="" stderr=""
+max at once (a hang counts until the end of the round): 2
+last start: c3

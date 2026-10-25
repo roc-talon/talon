@@ -1,0 +1,74 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.7      10
+
+=== l2 exit 1
+FAIL run/rn1-scripts
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,9 +7,9 @@
+       == run all cwd:p1
+       exit 0
+       == run failing cwd:p1
+      -exit 3
+      +exit 1
+       == run sig cwd:p1
+      -exit 143
+      +exit 1
+       == run gone cwd:p1
+       exit 18
+       == run loop-a cwd:p1
+FAIL run/rn2-words
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -6,6 +6,6 @@
+       == run s -- more cwd:p1
+       exit 0
+       == run tf cwd:p1
+      -exit 2
+      +exit 1
+       == run w cwd:p1
+       exit 0
+commands: 1 passed, 2 failed
+
+=== l3 exit 1
+FAIL run/rn1-flow
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -53,10 +53,10 @@
+       -- 5: the first step that fails stops the run and its exit code is the exit code of tln (R-RUN5, R-RUN7). The step after it does not start.
+       == tln run fail3
+       before
+      -exit 3
+      +exit 1
+       -- 6: a child that ends by a signal: 128 + the number (R-RUN7).
+       == tln run sig
+      -exit 143
+      +exit 1
+       -- 7: a program that is not on PATH: exit 18 (environment), the 1st step ran (R-RUN7, R-EC18).
+       == tln run gone
+       first
+      @@ -73,7 +73,7 @@
+       -- 10: a step with a key of [tools] (R-RUN3 point 2). There is no build yet: the bundle of the url is fetched and built (R-PT9), with no release list (R-PT8). The binary exits 3, as the fake compiler writes it. The tools.json, the bin dir and PATH are not touched (R-PT12, R-PT10).
+       == tln run t
+       ran: acme/app 1.1.0 args: one two
+      -exit 3
+      +exit 1
+       api: 0, downloads: 1, builds: 1
+       1
+       cannot access '$HOME/.local/share/talon': No such file or directory
+      @@ -84,7 +84,7 @@
+       -- 11: the second run uses the build: no download, no build (R-PT9). The args of -- go to the last step, and when that is a tool, to the tool.
+       == tln run t2 -- extra two words
+       ran: acme/app 1.1.0 args: one extra two words
+      -exit 3
+      +exit 1
+       api: 0, downloads: 1, builds: 1
+       -- 12: the word roc runs the compiler that the proxy of this tln selects (R-RUN3 point 1: the pin of main.roc), in the directory of the step. The fake compiler logs its call and writes the output file.
+       == tln run rb
+scenarios: 1 passed, 1 failed, 0 skipped
+

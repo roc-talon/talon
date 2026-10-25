@@ -1,0 +1,55 @@
+== http_get!: the status, a header, the body. A status of 400 or more is an answer, not an error.
+status 200
+header x-test: yes
+body hello from the fake server
+status 404
+body {"message":"Not Found"}
+== a header of the request is sent: If-None-Match gives 304
+status 304
+header etag: "v1"
+body 
+== no answer: the error text of the platform
+err Failed("client error (Connect)")
+== programs!
+sh yes
+curl yes
+wget yes
+no-such-program-xyz no
+== make_dirs!: parents, and a dir that exists is not an error
+made
+made
+== rename!: a file, a missing source, a directory onto a directory that is not empty (R-FE3: the loser)
+renamed
+err NotFound
+err Exists
+the source stays
+renamed
+== random!
+random ok
+== spawn_all!: the exit code, the stdout, the last line of the stderr, a signal, a program that does not exist, the working directory
+job 0 Exited(3) stdout="out
+" stderr_last="err2"
+job 1 Signaled(9) stdout="" stderr_last=""
+job 2 NotStarted("NotFound") stdout="" stderr_last=""
+job 3 Exited(0) stdout="quiet
+" stderr_last=""
+job 0 Exited(0) stdout="$PROJECT/a/b
+" stderr_last=""
+== spawn_all! with limit 8 and 10 jobs on a slow body: the server sees 8 requests at the same time at most (R-DA5)
+      1 job 0 Exited(0) stdout="" stderr_last=""
+      1 job 1 Exited(0) stdout="" stderr_last=""
+      1 job 2 Exited(0) stdout="" stderr_last=""
+      1 job 3 Exited(0) stdout="" stderr_last=""
+      1 job 4 Exited(0) stdout="" stderr_last=""
+      1 job 5 Exited(0) stdout="" stderr_last=""
+      1 job 6 Exited(0) stdout="" stderr_last=""
+      1 job 7 Exited(0) stdout="" stderr_last=""
+      1 job 8 Exited(0) stdout="" stderr_last=""
+      1 job 9 Exited(0) stdout="" stderr_last=""
+8
+== a lock stays held while a child runs, and its beat is written again by the poll loop (R-CC12, R-CC3 point 3)
+beat of L was written again while the child runs
+held $PROJECT/L
+job 0 Exited(0) stdout="" stderr_last=""
+unlocked $PROJECT/L
+L.lock is gone

@@ -1,0 +1,5 @@
+run v cwd:p1
+run t cwd:p1
+run s -- more cwd:p1
+run tf cwd:p1
+run w cwd:p1

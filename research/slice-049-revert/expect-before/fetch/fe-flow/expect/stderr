@@ -1,0 +1,6 @@
+tln: error[network]: download of acme/json 2.1.1 failed: 404 (https://github.com/acme/json/releases/download/2.1.1/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst). Run tln audit to see why.
+tln: error[integrity]: roc unbundle rejected acme/json 2.1.2 (https://github.com/acme/json/releases/download/2.1.2/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst): Error: Hash mismatch
+tln: error[network]: acme/json 2.1.4 is not in the package cache and --offline is set (https://github.com/acme/json/releases/download/2.1.4/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst)
+tln: error[usage]: TALON_DOWNLOADER must be curl or wget, not 'bogus'
+tln: error[usage]: http://10.0.0.1/pkg/1.0.0/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst: a package URL must be https://, or http:// to 127.0.0.1, [::1] or localhost
+tln: error[environment]: cannot run roc: no such file

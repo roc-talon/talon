@@ -1,0 +1,27 @@
+== x acme/foo -- a b
+exit 3
+== x acme/foo
+exit 0
+== x foo
+exit 0
+== x acme/foo@1.0.0
+exit 0
+== x acme/bar
+exit 0
+== x acme/bar@latest
+exit 0
+== x acme/bar
+exit 0
+== x acme/baz
+exit 0
+== x acme/old
+exit 0
+== x acme/foo --json
+{"schema":1,"command":"x","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"flag '--json' is not for 'x'"}}
+exit 2
+== x nope
+exit 2
+== x acme/baz -- boom
+exit 18
+== x acme/nobin
+exit 0

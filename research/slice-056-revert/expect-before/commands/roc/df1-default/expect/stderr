@@ -1,0 +1,9 @@
+tln: error[usage]: nightly-2026-10-1 matches 2 compilers: nightly-2026-10-11-1a2b3c4, nightly-2026-10-14-38a3029. Use a longer prefix or the full id.
+tln: error[usage]: tln roc default needs one compiler: a full id, a prefix or @latest
+tln: error[usage]: tln roc default takes one compiler, got 2
+link-dev is now the default compiler
+tln: error[consent]: nightly-2026-10-12-2664a27 is not installed. Nothing was downloaded.
+tln: error[network]: nightly-2026-10-13-91fa0c2 is not installed and --offline is set
+downloading nightly-2026-10-13-91fa0c2 (73.5 MB)
+installed nightly-2026-10-13-91fa0c2
+nightly-2026-10-13-91fa0c2 is now the default compiler

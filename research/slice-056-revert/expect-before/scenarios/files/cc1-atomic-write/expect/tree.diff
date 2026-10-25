@@ -1,0 +1,18 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/app/main.roc","last_use":1792065600},{"path":"$PROJECT/lib/main.roc","last_use":1792152000}],"extra":5}
+--- project/link.txt
++++ project/link.txt
+@@ -0,0 +1 @@
++old
+--- project/made/by/write/f.txt
++++ project/made/by/write/f.txt
+@@ -0,0 +1 @@
++hello
+\ No newline at end of file
+--- project/target.txt
++++ project/target.txt
+@@ -0,0 +1 @@
++new
+\ No newline at end of file

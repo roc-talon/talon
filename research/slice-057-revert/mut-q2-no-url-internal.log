@@ -1,0 +1,91 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+  lex    acme/lex 1.0.0       via json
+  inner  ./in/main.roc        via util; foreign
+"
+[dbg] "/p/main.roc
+  pf: acme/pfx 0.1.1 (direct)
+  json: acme/json 2.1.0 (direct; raised from 2.0.0; patched)
+    lex: acme/lex 1.0.0
+  util: ../util/main.roc (direct; foreign)
+    j: acme/json 2.1.0 (shown above)
+    inner: ./in/main.roc (foreign)
+  ext: https://x.org/e.zst (direct; foreign)
+"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"pf\",\"name\":\"acme/pfx\",\"version\":\"0.1.1\",\"kind\":\"release\",\"id\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":false,\"platform\":true,\"patched\":false},{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false,\"patched\":true},{\"alias\":\"util\",\"name\":\"../util/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/main.roc\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"lex\",\"name\":\"acme/lex\",\"version\":\"1.0.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\",\"direct\":false,\"via\":\"json\",\"raised\":null,\"foreign\":false,\"platform\":false,\"patched\":false},{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false}],\"links\":[{\"from\":null,\"alias\":\"pf\",\"to\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\"},{\"from\":null,\"alias\":\"json\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":null,\"alias\":\"util\",\"to\":\"/p/util/main.roc\"},{\"from\":null,\"alias\":\"ext\",\"to\":\"https://x.org/e.zst\"},{\"from\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"alias\":\"lex\",\"to\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"j\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"inner\",\"to\":\"/p/util/in/main.roc\"}],\"series\":[]}]}"
+[dbg] [NeedsTty, NonInteractive, NonInteractive, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NeedsTty, NonInteractive, NonInteractive, NeedsTty, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [Interactive, NonInteractive, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:324:1
+
+expect {
+    stop = Fail.new(Consent, "the compiler nightly-2026-10-12-2664a27 is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.")
+    other = Fail.new(Consent, "no consent for the download of acme/foo")
+    build = Fail.new(AppError, "the build failed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.")
+    no_url = RunTools.no_url({ path: "/p/talon.toml", key: "fmt" })
+    no_url.kind.code() == 14
+        and no_url.message == "the [tools] of /p/talon.toml are not locked: tools.fmt has no url. Run tln install to lock them."
+            and RunTools.stop(stop).message == "the compiler nightly-2026-10-12-2664a27 is not installed. Pass --yes or set TALON_AUTO_INSTALL=yes."
+                and RunTools.stop(stop).kind.code() == 13
+                    and RunTools.stop(other).message == other.message
+                        and RunTools.stop(build).message == build.message
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 55 tests in 5571.1 ms.:
+    54 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5313.0 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL run/rn3-tools
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -25,4 +25,4 @@
+       == run bd cwd:p5
+       exit 11
+       == run nu cwd:p6
+      -exit 14
+      +exit 1
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -6,4 +6,4 @@
+       platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+       building acme/bad 1.0.0 with nightly-2026-10-14-38a3029
+       tln: error[app_error]: the build of acme/bad 1.0.0 with nightly-2026-10-14-38a3029 failed: 5 errors: type mismatch
+      -tln: error[frozen]: the [tools] of $PROJECT/p6/talon.toml are not locked: tools.lz has no url. Run tln install to lock them.
+      +tln: error[internal]: the [tools] of $PROJECT/p6/talon.toml are not locked: tools.lz has no url. Run tln install to lock them.
+commands: 2 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

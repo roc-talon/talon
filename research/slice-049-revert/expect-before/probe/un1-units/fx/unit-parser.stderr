@@ -1,0 +1,17 @@
+── ✗ type mismatch ─────────────────────────────────────────────── Parser.roc:5:12
+
+This expression is used in an unexpected way.
+
+bad = |n| n
+          ^
+
+It has the type:
+
+    U64
+
+But the annotation says it should be:
+
+    Str
+
+── 1 error and 0 warnings ───────────────────────────────────────────── main.roc
+

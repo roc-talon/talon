@@ -1,0 +1,9 @@
+answer p1: no
+answer p2: yes
+answer p3: option 1
+answer p4: option 2
+answer p5: yes
+answer p6: yes
+answer p7: no
+answer p8: yes
+tln: error[consent]: 1 stale key in talon.toml needs consent. Pass --rename-keys or --alt or --yes.

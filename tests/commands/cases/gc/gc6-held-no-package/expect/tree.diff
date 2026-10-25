@@ -1,0 +1,8 @@
+--- home/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/kb
++++ home/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/kb
+@@ -1 +0,0 @@
+-xbin acme/kb 1.0.0
+--- home/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/manifest.json
++++ home/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/manifest.json
+@@ -1 +0,0 @@
+-{"format":1,"name":"acme/kb","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/kb/releases/download/1.0.0/4vZMX41ycpMy8qHC3QhfyB5cs2eYGnc6ca3pCbCCyHjq.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"e930a94ae27b3bf1c8a27b2e96335b9189e48996ec2d3525c96ffea56cd70af9","libs":[],"bundle":"4vZMX41ycpMy8qHC3QhfyB5cs2eYGnc6ca3pCbCCyHjq","last_run":"2020-01-01T00:00:00Z"}

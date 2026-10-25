@@ -1,0 +1,18 @@
+downloading nightly-2026-10-13-91fa0c2 (454 B)
+tln: error[integrity]: sha256 of nightly-2026-10-13-91fa0c2 differs: expected a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795, got 179f29bb884446fec76f02e83d9ece892f8e9b89ea545ccb3883bc568baa55f7. Talon deleted the download.
+downloading nightly-2026-10-13-91fa0c2 (454 B)
+tln: error[integrity]: sha256 of nightly-2026-10-13-91fa0c2 differs: expected a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795, got 179f29bb884446fec76f02e83d9ece892f8e9b89ea545ccb3883bc568baa55f7. Talon deleted the download.
+tln: error[integrity]: the asset of nightly-2026-10-12-2664a27 has no sha256 digest. Talon does not install it.
+downloading nightly-2026-10-10-abcdef0 (453 B)
+tln: error[network]: download of nightly-2026-10-10-abcdef0 failed: 404 (http://127.0.0.1:$PORT/dl/nightly-2026-10-10-abcdef0/roc_nightly-linux_x86_64-2026-10-10-abcdef0.tar.gz)
+tln: error[usage]: tln roc install needs one compiler: a full id, a prefix or @latest
+tln: error[usage]: tln roc install takes one compiler, got 2
+tln: error[usage]: no compiler matches nightly-2030
+tln: error[usage]: nightly-2026-10-1 matches 4 compilers: nightly-2026-10-10-abcdef0, nightly-2026-10-11-1a2b3c4, nightly-2026-10-12-2664a27, nightly-2026-10-13-91fa0c2. Use a longer prefix or the full id.
+tln: error[usage]: nightly-2026-10-08-0badc0d has no asset for linux_x86_64
+tln: error[usage]: no compiler matches nightly-2026-10-08
+tln: error[no_tuple]: no compiler release is known
+tln: error[network]: nightly-2026-10-09-258ab27 is not installed and --offline is set
+tln: error[network]: no cached list of compilers and --offline is set
+tln: error[input]: $HOME/.config/talon/config.toml:1: nightly: must be true or false
+downloading nightly-2026-10-21-5349569 (456 B)

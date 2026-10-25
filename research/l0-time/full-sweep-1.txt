@@ -1,0 +1,8 @@
+N=8 T=2 run1 l0         pass   6.4      10
+N=8 T=2 run2 l0         pass   6.8      10
+N=12 T=1 run1 l0         pass   8.2      10
+N=12 T=1 run2 l0         pass   6.5      10
+N=12 T=2 run1 l0         pass   8.1      10
+N=12 T=2 run2 l0         pass   8.0      10
+N=6 T=3 run1 l0         pass   6.7      10
+N=6 T=3 run2 l0         pass   6.6      10

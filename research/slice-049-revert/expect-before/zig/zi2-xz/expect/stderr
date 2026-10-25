@@ -1,0 +1,11 @@
+Dependencies:
+  [ ] zig 0.17.x            zig not found
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.17.0 (54.2 MB)
+tln: error[environment]: xz is not on PATH: tar needs it to extract zig-x86_64-linux-0.17.0.tar.xz
+Dependencies:
+  [ ] zig 0.17.x            zig not found
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.17.0 (48.0 MB)

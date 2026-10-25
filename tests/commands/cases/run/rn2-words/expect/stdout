@@ -1,0 +1,11 @@
+== run v cwd:p1
+exit 0
+== run t cwd:p1
+tln 0.0.0
+exit 0
+== run s -- more cwd:p1
+exit 0
+== run tf cwd:p1
+exit 2
+== run w cwd:p1
+exit 0

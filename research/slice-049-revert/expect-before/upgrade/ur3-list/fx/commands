@@ -1,0 +1,6 @@
+upgrade --file p1/main.roc
+upgrade roc --file p2/main.roc
+upgrade json roc --file p3/main.roc
+upgrade json --file p4/main.roc
+upgrade --dry-run --json --file p5/main.roc
+upgrade --no-check --file p6/main.roc

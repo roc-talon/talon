@@ -1,0 +1,4 @@
+--yes | id=p0 kind=default shape=yesno default=no question=Yes_first? subject=a_first
+id=p1 kind=default shape=yesno default=yes question=Install_it? subject=an_install
+id=p2 kind=default shape=yesno default=no question=Remove_it? subject=a_removal
+id=p3 kind=required:--allow-moves shape=yesno default=no question=Move_it? subject=a_move

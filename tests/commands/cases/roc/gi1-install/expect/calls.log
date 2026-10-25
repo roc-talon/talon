@@ -1,0 +1,205 @@
+args
+env_all
+clock
+platform
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc/commits/my-branch
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+programs curl wget
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/Karakatiza666/roc/tarball/3b9f7c1d5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b
+sha256_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/build.zig.zon
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+lock $HOME/.cache/roc/toolchains/git-3b9f7c1d nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+make_dirs $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef/src zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-3b9f7c1d
+rename $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/git-3b9f7c1d
+unlock $HOME/.cache/roc/toolchains/git-3b9f7c1d
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc/commits/my-branch
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+args
+env_all
+clock
+platform
+programs gh
+http_get https://api.github.com/repos/roc-lang/roc/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+programs curl wget
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/roc-lang/roc/tarball/5349569a1b2c3d4e5f60718293a4b5c6d7e8f901
+sha256_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/build.zig.zon
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+lock $HOME/.cache/roc/toolchains/git-5349569a nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+make_dirs $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef/src zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-5349569a
+rename $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/git-5349569a
+unlock $HOME/.cache/roc/toolchains/git-5349569a
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+http_get http://127.0.0.1:9/api/repos/roc-lang/roc/commits/dd03c09e
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+programs curl wget
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz http://127.0.0.1:9/api/repos/roc-lang/roc/tarball/dd03c09e5f0a3b6c7d8e9f001122334455667788
+sha256_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/build.zig.zon
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+lock $HOME/.cache/roc/toolchains/git-dd03c09e nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+make_dirs $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef/src zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-dd03c09e
+rename $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/git-dd03c09e
+unlock $HOME/.cache/roc/toolchains/git-dd03c09e
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+args
+env_all
+clock
+platform
+programs gh
+http_get https://api.github.com/repos/roc-lang/roc/commits/nosuch
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+args
+env_all
+clock
+platform
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc/commits/wip
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+programs curl wget
+args
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+http_get https://api.github.com/repos/roc-lang/roc/commits/main
+  User-Agent: tln/0.0.0
+  Authorization: Bearer ghp_fake
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains

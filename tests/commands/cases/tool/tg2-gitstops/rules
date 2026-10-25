@@ -1,0 +1,13 @@
+Slice 048, the stops of `tln tool install --git` (entry `commands`). Same home as `tg1-git` (the compiler installed, `tools.json` with `gapp` = acme/gapp 1.0.0, a release), and the file `<bin>/fe`, which tln did not write. The fake tar writes no file.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install --git acme/empty@main` | the source has no `main.roc` at its top: exit 2 that names `--path`, the scratch dir is deleted, no build | R-T23, R-T10 |
+| 2 | `tool install --git acme/gapp@nosuch` | the API answers 422: exit 2, no download | R-T23, R-SL13 |
+| 3 | `tool install --git acme/gapp@main --offline` | exit 15, no request | R-DI12 |
+| 4 | `tool install --git acme/gapp@main` with `TALON_DOWNLOADER=wget` | the commit is found, then exit 18 (the message names curl): no download | R-DA3, R-SE12 |
+| 5 | `tool install --git acme/gapp` | no ref: exit 2, no call | R-SL13 |
+| 6 | `tool install --git acme/gapp@main --path ../x` | the path leaves the repository: exit 2, no call | R-SE12 |
+| 7 | `tool install --git other/gapp@main` | `gapp` is the binary name of acme/gapp: exit 2 that names `--as`, before any request | R-T28, R-NM11 |
+| 8 | `tool install --git acme/fe@main` | `<bin>/fe` is a file that tln did not write: after the commit request, exit 2 before the download and the build | R-ST6, R-ST11 |
+| 9 | `tool install --git acme/gapp@main --resolve` | `--resolve` is a later slice: exit 2 `is not built yet`, no call | R-T1 |

@@ -1,0 +1,30 @@
+# run 1: the baseline has 1 error (acme/parser), the candidate has the same error: it passes. The build passes.
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-same.stdout	../fixtures/check/out/pkg-same.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2: the candidate has a new error in acme/json 2.1.0 (R-PH10)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr
+# run 3: a new error in an app file (R-EC11)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr
+# run 4: the baseline hangs (R-P7). The ladder stops: the candidate check does not start (slice 031: the baseline is round 1, the candidate is round 2).
+timeout	-	-
+# run 5: the candidate crashes with SIGSEGV (R-RC4)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+signal:11	-	-
+# run 6: the build fails for the host target (R-LD5)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/build-target.stdout	../fixtures/check/out/build-target.stderr
+# run 7: the app has errors and the candidate has the same errors (R-P6). The build has them too.
+1	../fixtures/check/out/app-errors.stdout	../fixtures/check/out/app-errors.stderr
+1	../fixtures/check/out/app-errors-shifted.stdout	../fixtures/check/out/app-errors-shifted.stderr
+1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr
+# run 8 (slice 012, R-OV2): the raise comes from the key of [overrides]. Baseline, check and build pass.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 9 (slice 012, R-OV2): the raise to json 2.1.0 breaks a package: the check of the candidate has a new error in acme/json 2.1.0 (as run 2)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr

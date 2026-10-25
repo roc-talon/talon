@@ -1,0 +1,2 @@
+[tools]
+oth = { ref = "acme/oth@^1", url = "https://github.com/acme/oth/releases/download/1.0.0/9jAQbgeS6ThaE5QwiCTw3jJWSLsF19ENpupQcpDvsrx4.tar.zst" }

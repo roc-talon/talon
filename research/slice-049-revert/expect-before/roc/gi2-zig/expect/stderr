@@ -1,0 +1,26 @@
+Build roc from Karakatiza666/roc@my-branch (3b9f7c1d)
+
+Dependencies:
+  [ ] zig 0.17.x            zig not found
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+
+tln: error[consent]: zig 0.17.0 is not installed. Nothing was downloaded.
+Build roc from Karakatiza666/roc@my-branch (3b9f7c1d)
+
+Dependencies:
+  [ ] zig 0.17.x            zig not found
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+
+5349569a is nightly-2026-10-21-5349569. tln roc install nightly-2026-10-21-5349569 downloads it.
+Build roc from roc-lang/roc@main (5349569a)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+tln: error[internal]: zig build of git-5349569a failed (exit 1): error: unable to build the std library
+Build roc from Karakatiza666/roc@wip (9d9d9d9d)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+waiting for another tln: git-9d9d9d9d

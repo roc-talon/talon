@@ -1,0 +1,3 @@
+verify --file p1/main.roc
+verify --file p2/main.roc
+verify --file p3/main.roc

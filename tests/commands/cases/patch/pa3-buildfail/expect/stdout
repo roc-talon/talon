@@ -1,0 +1,3 @@
+== update json --file p1/main.roc
+note: tuple dropped: the patch of json does not apply to acme/json 2.3.0: Json.roc, Old.roc, data.bin. Edit the copy $PROJECT/p1/.talon/patches/json/, or remove the [patch] entry json.
+exit 18

@@ -196,6 +196,19 @@ Project := {
 			Err(NoCurrent) => Ok({ project, header: Ok({}) })
 		}
 	}
+
+	## Slice 057, R-RUN12, R-PD2, R-PD3: the walk of `find!` with no project file: the steps 2 to 4 of `find!` (the `list_dirs!` of each directory from `start` up to the stop of R-PD2, one `read_files!` of the `talon.toml` files of the walk, the `list_dirs!` that `Members.step` needs
+	## for the root). `walk` is the directories nearest first, the last one is the stop directory. `root` is the workspace root directory (R-PD3), `members` the member files of the root (sorted, `[]` for no root). The failures are those of `find!` for the same steps
+	## (a `talon.toml` that does not parse before the root: kind `Input`, exit 19; a file that cannot be read: kind `Environment`). No project file is chosen and no header is read, so `tln run` (R-PD16) uses no project.
+	scan! : Fx, { start : Str, home : Str } => Try({ walk : List({ dir : Str, names : List(Str), toml : Try(Str, [None]) }), root : Try(Str, [NoWorkspace]), members : List(Str) }, Fail)
+	scan! = |fx, facts| {
+		listed = walk!(fx, facts.start, facts.home, [])
+		walk = read_tomls!(fx, listed)?
+		match Project.root_of({ walk: walk })? {
+			Ok(root) => Ok({ walk, root: Ok(root.dir), members: expand_members!(fx, root, listed) })
+			Err(NoWorkspace) => Ok({ walk, root: Err(NoWorkspace), members: [] })
+		}
+	}
 }
 
 Dir : { dir : Str, names : List(Str), toml : Try(Str, [None]) }

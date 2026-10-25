@@ -1,0 +1,32 @@
+# R-CM17, R-LY1: dir prints the cache root, with a line end. ROC_CACHE_DIR is set, and the answer is still the cache root (not the build root). The calls are args and env_all only: the dir is not looked at.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache dir
+# R-J3, R-OUT4, R-FL1: --json gives the envelope only (data.path). No text on stdout, nothing on stderr.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache dir --json
+# R-FL4: the path is the answer of the command, so --quiet does not hide it.
+cache dir --quiet
+# R-LY1: XDG_CACHE_HOME moves the cache root: <xdg>/roc.
+env:XDG_CACHE_HOME={w}/xdg cache dir
+# R-CM17: the cache root of the fifth home does not exist. dir still prints it and makes nothing (no make_dirs call, empty tree diff).
+env:HOME={w}/home/h5 cache dir
+# R-CM17: an operand is a usage failure (exit 2). The only call is args: the check comes before the environment.
+cache dir packages
+# R-CM17, R-GC13: list shows what clean --all would remove (the same list as cn1-clean run 2): one list_dirs of the build root, one tree_info with the 7 paths, the sizes, the total. No tty, no ask, no lock, no delete, no clock. The toolchain, the tools, compat.db and the other dirs are not shown.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list
+# R-J3, R-OUT4: list --json: the envelope only (items with bytes, total). No text on stdout, nothing on stderr.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list --json
+# R-FL4: the list is the answer of the command, so --quiet does not hide it.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list --quiet
+# R-CM17, R-FL1: --all is a flag of clean only. Args stops the command (exit 2) before any call except args.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list --all
+# R-CM17: an operand is a usage failure (exit 2). The only call is args.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list packages
+# R-GC14 (Q5 of slice 029), R-CC10: the fourth home. tree_info cannot measure the x dir (fx/treeinfo): it is shown with no size, and the total is the size of the index only. A GC holds the lock talon/gc (fx/locks): list takes no lock, so it prints at once, with no waiting line and no lock call. The data has bytes null.
+env:HOME={w}/home/h4 cache list
+# R-OUT4, R-J3: the same with --json: the x item has bytes null (no size), total is the size of the index.
+env:HOME={w}/home/h4 cache list --json
+# R-OUT2: the fifth home has no cache dir. No path exists: the line nothing to clean, exit 0, no total. list_dirs is called (the build root is the cache root) and finds nothing.
+env:HOME={w}/home/h5 cache list
+# R-OUT4, R-J3: the same with --json: items is empty and total is 0.
+env:HOME={w}/home/h5 cache list --json
+# R-GC13, R-LY1: the second home. ROC_CACHE_DIR is not set, so the build root is the cache root: compat-ten (a dir) is listed, compat-file (a file) is not, and packages, toolchains and talon are no build-cache dir. The listing is of the cache root.
+env:HOME={w}/home/h2 cache list

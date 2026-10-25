@@ -1,0 +1,46 @@
+# R-PT3 R-PT4 R-PT5 R-PT6 R-PT7 R-PT9 R-PT12 R-PT14 R-LF1 R-SO14 R-SO22 R-GC4 R-GC7 R-PD9 R-B9 G1 G2 (slice 056): the project tools `[tools]` end to end with the real Fx, the real curl, the real `roc unbundle`, the fake release server (given/http: the release list and the
+# real app bundles of acme/app 1.1.0 and 1.0.0, as the case tools/tx1-x-run) and the fake compiler nightly-2026-10-14-38a3029 in the store (it writes a shell script as the binary). The project `app` has a platform that is a path entry and no `talon.toml`.
+# TALON_NOW=2026-10-15T12:00:00Z. The apps have the pin `roc: "nightly-2026-10-14-38a3029"`, so no compiler is downloaded.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+X=$XDG_CACHE_HOME/roc/talon/x
+api() { if [ -f $D/http.log ]; then grep -c '/api/' $D/http.log || true; else echo 0; fi; }
+downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
+builds() { if [ -f $D/build.log ]; then wc -l < $D/build.log; else echo 0; fi; }
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+
+echo "-- 1: tln add --tool selects the newest release, builds it (R-PT3, R-PT6) and then writes the entry: talon.toml is made, with the ref ^1.1.0 and the url. The build is in the x cache, there is no tools.json and no bin dir (R-PT12)."
+st tln add --tool acme/app --file app/main.roc
+cat app/talon.toml
+ls -A $X
+ls -A $HOME/.local/share/talon $HOME/.local/bin 2>&1 | sed -e 's/^ls: //'
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+
+echo "-- 2: a second entry for the same app, with an exact version: the key is --as (R-PT3). The build of 1.0.0 is a second x entry."
+st tln add --tool acme/app@1.0.0 --as old --file app/main.roc
+cat app/talon.toml
+echo "x: $(ls -A $X | wc -l) entries, api: $(api), downloads: $(downloads), builds: $(builds)"
+
+echo "-- 3: the machine has no x cache (a CI job). tln install --frozen checks the entries (R-PT7), makes no index call (R-AU6) and builds each tool that has no binary (R-PT6, R-SO22). It writes nothing."
+cp app/talon.toml $D/talon.toml.before
+rm -rf $X
+st tln install --frozen --file app/main.roc
+cmp app/talon.toml $D/talon.toml.before && echo "talon.toml: not changed"
+echo "x: $(ls -A $X | wc -l) entries, api: $(api), downloads: $(downloads), builds: $(builds)"
+
+echo "-- 4: 36 days later (more than the gc age). The project runs tln install --frozen again (R-PD9): the project is used, nothing is built. tln cache gc keeps the 2 builds, which no tln x run used for 36 days: the project names them (R-PT14, R-GC7). The compiler stays too: the project pins it. (The age of a package dir is its real time, so R-GC4 is an L2 case.)"
+export TALON_NOW=2026-11-20T12:00:00Z
+st tln install --frozen --file app/main.roc
+st tln cache gc
+echo "x: $(ls -A $X | wc -l) entries, builds: $(builds)"
+
+echo "-- 5: tln remove --tool drops the entry old. The next gc removes its build (no known project names the bundle of 1.0.0 now) and keeps the build of 1.1.0."
+st tln remove --tool old --file app/main.roc
+cat app/talon.toml
+st tln cache gc
+echo "x: $(ls -A $X | wc -l) entries, builds: $(builds)"
+
+echo "-- 6: the build of 1.1.0 is there, so tln install --frozen builds nothing (R-PT9)."
+st tln install --frozen --file app/main.roc
+echo "x: $(ls -A $X | wc -l) entries, builds: $(builds)"

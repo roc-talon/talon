@@ -1,0 +1,11 @@
+M1 host: glibc before musl (R-TG1 rule 2): CAUGHT by l0-3, l2 target/tg1-ladder
+M2 pick: rule 2 takes the order of the platform list, not of the host (R-TG1): CAUGHT by l0-3
+M3 pick: the one platform target wins over [build] target (R-TG1 rule 1): CAUGHT by l0-3
+M4 R-C10: the solver gets the facts with no gate: CAUGHT by l2 target/tg3-constraint
+M5 R-C10: no release is exit 2, not exit 10: CAUGHT by l0-3, l2 target/tg3-constraint
+M6 R-TG5: the member file has no target (member_target is always Unset): CAUGHT by l2 target/tg2-workspace target/tg1-ladder
+M7 R-TG4: the [build] of a package file is exit 19: CAUGHT by l0-3, l2 target/tg1-ladder
+M8 R-TG2: the build gets no --target but the key has the target: CAUGHT by l2 target/tg1-ladder target/tg2-workspace
+M9 R-C10: the platform of the header is not read first: CAUGHT by l2 target/tg3-constraint target/tg2-workspace
+M10 R-TG2: --target at the end of the arguments: CAUGHT by l0-3, l2 target/tg1-ladder
+files that differ from code-final: none

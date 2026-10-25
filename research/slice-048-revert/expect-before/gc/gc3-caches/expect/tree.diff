@@ -1,0 +1,65 @@
+--- home/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
++++ home/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
+@@ -1 +0,0 @@
+-package [Lib] {}
+--- home/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
++++ home/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+@@ -1 +0,0 @@
+-package [Lib] {}
+--- home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/deep/x.roc
++++ home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/deep/x.roc
+@@ -1 +0,0 @@
+-module []
+--- home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
++++ home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
+@@ -1 +0,0 @@
+-package [Lib] {}
+--- home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.deps.json
++++ home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.deps.json
+@@ -1 +0,0 @@
+-{}
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -1 +1 @@
+-{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pold/main.roc","last_use":1785542400}]}
++{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800}]}
+--- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
+@@ -1 +0,0 @@
+-2026-08-02T10:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
++++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
+@@ -1 +0,0 @@
+-roc
+--- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"nightly-2026-08-01-aaaaaaa","url":"http://127.0.0.1:1/dl/nightly-2026-08-01-aaaaaaa","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-08-01-aaaaaaa","compat":"aaaaaaa","installed_at":"2026-07-01T00:00:00Z"}
+--- home/.cache/roc-builds/compat-aaaaaaa/cache.bin
++++ home/.cache/roc-builds/compat-aaaaaaa/cache.bin
+@@ -1 +0,0 @@
+-build cache of a removed compiler
+--- home/.cache/roc-builds/compat-bbbbbbb/cache.bin
++++ home/.cache/roc-builds/compat-bbbbbbb/cache.bin
+@@ -1 +0,0 @@
+-old build cache of a kept compiler
+--- home/.cache/roc-builds/compat-over/x.bin
++++ home/.cache/roc-builds/compat-over/x.bin
+@@ -1 +0,0 @@
+-one second more than the age
+--- home/.cache/roc-builds/debug-9999999/e.bin
++++ home/.cache/roc-builds/debug-9999999/e.bin
+@@ -1 +0,0 @@
+-an old debug build cache
+--- home/.cache/roc-builds/nightly-2025-01-01-abc1234/c.bin
++++ home/.cache/roc-builds/nightly-2025-01-01-abc1234/c.bin
+@@ -1 +0,0 @@
+-an old nightly build cache
+--- home/.cache/roc-builds/nightly-2025-01-01-abc1234/deep/d.bin
++++ home/.cache/roc-builds/nightly-2025-01-01-abc1234/deep/d.bin
+@@ -1 +0,0 @@
+-second file of it
+--- home/h2/.cache/roc/compat-ten/x.bin
++++ home/h2/.cache/roc/compat-ten/x.bin
+@@ -1 +0,0 @@
+-ten days old

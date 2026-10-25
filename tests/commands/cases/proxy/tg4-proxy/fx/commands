@@ -1,0 +1,2 @@
+@roc build p1/main.roc
+@roc check p1/main.roc --opt=speed

@@ -1,0 +1,22 @@
+B1: glibc before musl in the host targets (R-TG1 rule 2): caught by l0-3, l2 target/*
+B2: the one target of the platform wins over [build] target (R-TG1 rule 1): caught by l0-3
+B3: inputs_dir counts as a target (R-TG1): caught by l0-3
+B4: a key of a nested record counts as a target (R-TG1): caught by l0-3
+B5: gate looks at the first want only (R-C10, two members): caught by l0-3
+B6: admits is true when the list lacks the target (R-C10): caught by l0-3, l2 target/*
+B7: the flag --target goes at the end of the arguments (R-TG2): caught by l0-3, l2 target/*, l3 update/tg1-wasm-platform
+B8: the key of the build fact has a fixed target (R-TG2, R-P4): caught by l0-3, l2 target/*
+B9: the exit 2 of rule 5 has the kind NoTuple (R-TG1): caught by l0-3, l2 target/*
+B10: a platform with no release that has the target is exit 2, not 10 (R-C10, OP10): caught by l0-3, l2 target/*
+B11: the member [build] target is not given to the build (R-TG1): caught by l2 target/*
+B12: the solver does not get the gate (R-C10): caught by l2 target/*
+
+12 mutations, 0 open, 0 not run
+B13: a bad [build] target of a package file is exit 19 (R-TG4, Q3): caught by l0-3, l2 target/*
+
+1 mutations, 0 open, 0 not run
+G1: wanted: the order of files, not of members (C5): caught by l0-3
+G2: wanted: a repeated pair is kept (C5): caught by l0-3
+G3: no_target: the text of R-C10 when any release (not all) is gated out (C3): caught by l2 target/*
+
+3 mutations, 0 open, 0 not run

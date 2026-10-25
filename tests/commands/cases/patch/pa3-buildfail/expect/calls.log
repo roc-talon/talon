@@ -1,0 +1,62 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/json
+programs gh
+http_get https://api.github.com/repos/acme/json/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+probes 1
+  probe $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb/main.roc
+list_dirs $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW $PROJECT/p1/.talon/patches/json $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH
+list_dirs $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Inner $PROJECT/p1/.talon/patches/json/Inner $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/Inner
+read_files $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Inner/Deep.roc $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Json.roc $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Old.roc $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/data.bin $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/main.roc $PROJECT/p1/.talon/patches/json/Inner/Deep.roc $PROJECT/p1/.talon/patches/json/Json.roc $PROJECT/p1/.talon/patches/json/New.roc $PROJECT/p1/.talon/patches/json/data.bin $PROJECT/p1/.talon/patches/json/main.roc $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/Inner/Deep.roc $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/Json.roc $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/Old.roc $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/data.bin $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/main.roc
+sha256_file $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/data.bin
+sha256_file $PROJECT/p1/.talon/patches/json/data.bin
+sha256_file $HOME/.cache/roc/packages/3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH/data.bin
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+probes 1
+  probe $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC nightly-2026-10-14-38a3029 /fake/bin/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW $PROJECT/p1/.talon/patches/json $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC
+list_dirs $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Inner $PROJECT/p1/.talon/patches/json/Inner $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/Inner
+read_files $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Inner/Deep.roc $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Json.roc $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/Old.roc $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/data.bin $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/main.roc $PROJECT/p1/.talon/patches/json/Inner/Deep.roc $PROJECT/p1/.talon/patches/json/Json.roc $PROJECT/p1/.talon/patches/json/New.roc $PROJECT/p1/.talon/patches/json/data.bin $PROJECT/p1/.talon/patches/json/main.roc $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/Extra.roc $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/Inner/Deep.roc $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/Json.roc $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/Old.roc $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/data.bin $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/main.roc
+sha256_file $HOME/.cache/roc/packages/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW/data.bin
+sha256_file $PROJECT/p1/.talon/patches/json/data.bin
+sha256_file $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC/data.bin
+random
+copy_tree $HOME/.cache/roc/packages/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC $HOME/.cache/roc/talon/tmp/patch-0123456789abcdef/json
+delete $HOME/.cache/roc/talon/tmp/patch-0123456789abcdef

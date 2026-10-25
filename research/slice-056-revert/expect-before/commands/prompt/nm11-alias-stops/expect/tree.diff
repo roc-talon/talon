@@ -1,0 +1,9 @@
+--- home/.cache/roc/talon/index/github/acme/9lives/1.json
++++ home/.cache/roc/talon/index/github/acme/9lives/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-15T12:00:00Z","assets":[{"name":"B8BEmGfcd49XAMfMC8a9ttLPzXq5xf87GUtkiqwTawt4.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/9lives/releases/download/1.0.0/B8BEmGfcd49XAMfMC8a9ttLPzXq5xf87GUtkiqwTawt4.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/app/main.roc","last_use":1792065600}]}

@@ -1,0 +1,63 @@
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache dir
+$HOME/.cache/roc
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache dir --json
+{"schema":1,"command":"cache dir","ok":true,"data":{"path":"$HOME/.cache/roc"},"error":null}
+exit 0
+== cache dir --quiet
+$HOME/.cache/roc
+exit 0
+== env:XDG_CACHE_HOME={w}/xdg cache dir
+$WORK/xdg/roc
+exit 0
+== env:HOME={w}/home/h5 cache dir
+$HOME/h5/.cache/roc
+exit 0
+== cache dir packages
+exit 2
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list
+$HOME/.cache/roc/talon/index (35 B)
+$HOME/.cache/roc/talon/x (47 B)
+$HOME/.cache/roc/packages (47 B)
+$HOME/.cache/roc-builds/compat-aaaaaaa (24 B)
+$HOME/.cache/roc-builds/compat-bbbbbbb (49 B)
+$HOME/.cache/roc-builds/debug-9999999 (16 B)
+$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (18 B)
+total 236 B
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list --json
+{"schema":1,"command":"cache list","ok":true,"data":{"items":[{"path":"$HOME/.cache/roc/talon/index","bytes":35},{"path":"$HOME/.cache/roc/talon/x","bytes":47},{"path":"$HOME/.cache/roc/packages","bytes":47},{"path":"$HOME/.cache/roc-builds/compat-aaaaaaa","bytes":24},{"path":"$HOME/.cache/roc-builds/compat-bbbbbbb","bytes":49},{"path":"$HOME/.cache/roc-builds/debug-9999999","bytes":16},{"path":"$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234","bytes":18}],"total":236},"error":null}
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list --quiet
+$HOME/.cache/roc/talon/index (35 B)
+$HOME/.cache/roc/talon/x (47 B)
+$HOME/.cache/roc/packages (47 B)
+$HOME/.cache/roc-builds/compat-aaaaaaa (24 B)
+$HOME/.cache/roc-builds/compat-bbbbbbb (49 B)
+$HOME/.cache/roc-builds/debug-9999999 (16 B)
+$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (18 B)
+total 236 B
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list --all
+exit 2
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache list packages
+exit 2
+== env:HOME={w}/home/h4 cache list
+$HOME/h4/.cache/roc/talon/index (11 B)
+$HOME/h4/.cache/roc/talon/x
+total 11 B
+exit 0
+== env:HOME={w}/home/h4 cache list --json
+{"schema":1,"command":"cache list","ok":true,"data":{"items":[{"path":"$HOME/h4/.cache/roc/talon/index","bytes":11},{"path":"$HOME/h4/.cache/roc/talon/x","bytes":null}],"total":11},"error":null}
+exit 0
+== env:HOME={w}/home/h5 cache list
+nothing to clean
+exit 0
+== env:HOME={w}/home/h5 cache list --json
+{"schema":1,"command":"cache list","ok":true,"data":{"items":[],"total":0},"error":null}
+exit 0
+== env:HOME={w}/home/h2 cache list
+$HOME/h2/.cache/roc/talon/index (11 B)
+$HOME/h2/.cache/roc/compat-ten (20 B)
+total 31 B
+exit 0

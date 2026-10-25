@@ -1,0 +1,4 @@
+[dependencies]
+pf = "acme/pf@=0.1.0"
+json = "acme/json@=2.1.0"
+parser = "acme/parser@=1.0.0"

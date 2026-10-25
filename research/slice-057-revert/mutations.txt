@@ -1,0 +1,19 @@
+Slice 057 revert check (reference with one change each, filtered runs: l0 all, l2 run/, l3 run/rn1 and fx/px2). Script: mut.py <id>. Logs: mut-<id>.log. A layer is "killed" when a test fails with no compiler warning.
+m1-args-all-steps          args go to every step                              l0 killed, l2 killed, l3 survived (only L0 and L2 have a script with more than one step and args)
+m2-walk-no-stop            the walk goes on after a root or standalone file   l0 killed, l2 killed, l3 survived
+m3-nc4-no-probe            NC4 probe of talon.toml between member and dir     l0 killed, l2 killed, l3 survived
+m4-in-outside-ok           an in directory outside the repository is allowed  l0 killed, l2 killed, l3 survived
+m5-path-over-key           the [tools] key is not preferred over PATH         l0 killed, l2 killed, l3 killed
+m6-exit-code-lost          a failing step gives exit 1, not its code          l0 survived (flow is not L0), l2 killed, l3 killed
+m7-record-skipped          R-PD9 record is not made                           l0 survived, l2 killed, l3 survived
+m8-cycle-check-off         no cycle check                                     l0 killed, l2 killed, l3 survived
+m9-roc-no-dashdash         .roc word gives no `--`                            l0 killed, l2 killed, l3 survived
+m10-shell-word-allowed     `>` is no shell word                               l0 killed, l2 survived (L2 uses `|`), l3 killed
+All 10 mutations are killed by at least one layer. The reference is back in the live tree after each run (ref-on.sh).
+Review changes (Q1, Q2, Q3, Q6), one hand mutation each (q3 twice):
+q1-no-name-args-ok         words after -- with no name accepted               l0 killed, l2 killed, l3 survived
+q2-no-url-internal         key with no url gives kind Internal                l0 killed, l2 killed, l3 survived
+q3a-quote-splits-word      a"b c"d is 2 words                                 l0 killed, l2 survived, l3 survived
+q3b-unclosed-ok            unclosed quote accepted                            l0 killed, l2 killed, l3 survived
+q6-allow-downloads-text    the consent stop keeps --allow-downloads           l0 survived (the L0 row calls stop directly), l2 killed, l3 survived
+Note: green-run.log shows `fmt FAIL` for the reference RunTools.roc (format only); the stubs and the tests pass fmt.

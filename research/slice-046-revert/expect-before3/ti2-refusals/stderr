@@ -1,0 +1,20 @@
+tln: error[usage]: foo is the binary name of acme/foo already. Use --as <name> to install other/foo under another binary name.
+tln: error[usage]: acme/lib has no release with an app bundle. tln does not build from source by itself. Run: tln tool install --git acme/lib@1.0.0
+tln: error[usage]: acme/none has no release. tln does not build from source by itself. Run: tln tool install --git acme/none@trunk
+tln: error[usage]: no release of acme/fresh is old enough for min-release-age
+tln: error[usage]: acme/nopin 1.0.0 has no roc: pin in its app header, so tln cannot tell which compiler to build with
+tln: error[consent]: the compiler nightly-2026-10-11-1a2b3c4 is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes. (--roc installed tries the installed compilers.)
+downloading nightly-2026-10-11-1a2b3c4 (73.7 MB)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/old 1.0.0 with nightly-2026-10-11-1a2b3c4
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/broken 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[app_error]: the build of acme/broken 1.0.0 with nightly-2026-10-14-38a3029 failed: 5 errors: type mismatch
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/qux 2.0.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: q is the binary name of acme-other/q already. Use --as <name> to install acme/qux under another binary name.
+tln: error[usage]: $HOME/.local/bin/qux is not a file that tln wrote, so tln does not replace it. Use --as <name> to install under another binary name.
+tln: error[usage]: acme/wasm 1.0.0 needs the platform 7gxU17qJYhjbDcuXdiqUNkHhKgLiuqjAxiaPKiZtk5VH, which has no native target (targets: wasm32). tln tool install makes a command line tool, so it needs a native platform.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/z 2.0.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: $HOME/.local/bin/z is not a file that tln wrote, so tln does not replace it. Use --as <name> to install under another binary name.

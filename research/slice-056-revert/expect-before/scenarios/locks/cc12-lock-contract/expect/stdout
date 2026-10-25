@@ -1,0 +1,28 @@
+# 1 a free item: held, and the lock dir is gone after unlock (point 1, 4)
+held $PROJECT/free
+unlocked $PROJECT/free
+free.lock is gone
+# 2 a live lock of another process: NoWait gives busy and leaves the dir (point 1)
+busy $PROJECT/live
+live.lock is kept
+# 3 a stale beat (more than 30 s): the next process takes it, with NoWait and with Wait (point 2)
+held $PROJECT/old
+unlocked $PROJECT/old
+held $PROJECT/oldw
+unlocked $PROJECT/oldw
+# 4 no beat file: the age of the directory counts
+held $PROJECT/nb_old
+unlocked $PROJECT/nb_old
+busy $PROJECT/nb_new
+nb_new.lock is kept
+# 5 the first run: the directory of the item does not exist yet
+held $PROJECT/deep/er/item
+unlocked $PROJECT/deep/er/item
+parent dirs made, item.lock is gone
+# 6 two locks in one process: the second is busy, and the first is released (the reverse order)
+held $PROJECT/x
+busy $PROJECT/live2
+unlocked $PROJECT/x
+x.lock is gone, y was never tried
+# 7 no stale dir is left (<item>.lock.<16hex>.stale)
+0

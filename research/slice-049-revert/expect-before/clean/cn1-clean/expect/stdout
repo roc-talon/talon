@@ -1,0 +1,49 @@
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --dry-run
+would remove $HOME/.cache/roc/talon/index (35 B)
+would remove $HOME/.cache/roc/talon/x (47 B)
+would free 82 B
+dry run: nothing was removed
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --all --dry-run
+would remove $HOME/.cache/roc/talon/index (35 B)
+would remove $HOME/.cache/roc/talon/x (47 B)
+would remove $HOME/.cache/roc/packages (47 B)
+would remove $HOME/.cache/roc-builds/compat-aaaaaaa (24 B)
+would remove $HOME/.cache/roc-builds/compat-bbbbbbb (49 B)
+would remove $HOME/.cache/roc-builds/debug-9999999 (16 B)
+would remove $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (18 B)
+would free 236 B
+dry run: nothing was removed
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --all --dry-run --json
+{"schema":1,"command":"cache clean","ok":true,"data":{"dry_run":true,"all":true,"removed":false,"items":[{"path":"$HOME/.cache/roc/talon/index","bytes":35},{"path":"$HOME/.cache/roc/talon/x","bytes":47},{"path":"$HOME/.cache/roc/packages","bytes":47},{"path":"$HOME/.cache/roc-builds/compat-aaaaaaa","bytes":24},{"path":"$HOME/.cache/roc-builds/compat-bbbbbbb","bytes":49},{"path":"$HOME/.cache/roc-builds/debug-9999999","bytes":16},{"path":"$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234","bytes":18}],"freed":236},"error":null}
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --dry-run --json --quiet
+{"schema":1,"command":"cache clean","ok":true,"data":{"dry_run":true,"all":false,"removed":false,"items":[{"path":"$HOME/.cache/roc/talon/index","bytes":35},{"path":"$HOME/.cache/roc/talon/x","bytes":47}],"freed":82},"error":null}
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean packages
+exit 2
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds env:CI=false cache clean --all
+nothing was removed
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds env:CI=false cache clean
+removed $HOME/.cache/roc/talon/index (35 B)
+removed $HOME/.cache/roc/talon/x (47 B)
+freed 82 B
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean
+nothing to remove
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds env:CI=false cache clean --all --json
+{"schema":1,"command":"cache clean","ok":true,"data":{"dry_run":false,"all":true,"removed":true,"items":[{"path":"$HOME/.cache/roc/packages","bytes":47},{"path":"$HOME/.cache/roc-builds/compat-aaaaaaa","bytes":24},{"path":"$HOME/.cache/roc-builds/compat-bbbbbbb","bytes":49},{"path":"$HOME/.cache/roc-builds/debug-9999999","bytes":16},{"path":"$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234","bytes":18}],"freed":154},"error":null}
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache clean --all
+nothing to remove
+exit 0
+== env:HOME={w}/home/h4 env:CI=false cache clean
+nothing was removed
+exit 0
+== env:HOME={w}/home/h3 cache clean
+exit 18
+== env:HOME={w}/home/h2 env:CI=false cache clean --all --yes --quiet
+exit 0

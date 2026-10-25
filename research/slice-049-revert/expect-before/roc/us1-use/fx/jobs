@@ -1,0 +1,25 @@
+# R-DA3 the download, R-HF5 the extract, R-HF2 the chmod, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+curl --fail	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+/home2/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home2/.cache/roc/compat-38a3029
+/home2/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home2/.cache/roc/compat-258ab27
+/home3/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home3/.cache/roc/compat-38a3029
+/home3/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home3/.cache/roc/compat-258ab27
+/home4/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home4/.cache/roc/compat-38a3029
+/home4/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home4/.cache/roc/compat-258ab27
+/home5/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home5/.cache/roc/compat-38a3029
+/home5/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home5/.cache/roc/compat-258ab27
+/home7/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home7/.cache/roc/compat-38a3029
+/home7/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home7/.cache/roc/compat-258ab27
+/home8/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home8/.cache/roc/compat-38a3029
+/home8/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home8/.cache/roc/compat-258ab27
+/home9/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home9/.cache/roc/compat-38a3029
+/home9/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home9/.cache/roc/compat-258ab27
+/home10/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home10/.cache/roc/compat-38a3029
+/home10/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home10/.cache/roc/compat-258ab27
+/home11/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home11/.cache/roc/compat-38a3029
+/home11/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home11/.cache/roc/compat-258ab27
+/home13/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home13/.cache/roc/compat-38a3029
+/home13/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home13/.cache/roc/compat-258ab27
+version	0	Roc compiler version nightly-2026-09-01-abcdef0	-	-

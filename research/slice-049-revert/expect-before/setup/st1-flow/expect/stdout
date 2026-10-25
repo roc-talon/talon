@@ -1,0 +1,39 @@
+== setup
+made $HOME/.local/bin/tln (hard link)
+made $HOME/.local/bin/baz (hard link)
+completions: $HOME/.local/share/bash-completion/completions/tln
+exit 0
+== setup --replace-roc --json
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"made","form":"hard-link"},{"name":"foo","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null},{"name":"baz","action":"kept","form":null}],"roc_old":true,"path":"on-path","completion":"present"},"error":null}
+exit 0
+== setup
+exit 0
+== setup --json
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"kept","form":null},{"name":"foo","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null},{"name":"baz","action":"kept","form":null}],"roc_old":false,"path":"on-path","completion":"present"},"error":null}
+exit 0
+== setup env:PATH=/usr/bin env:CI=false
+PATH: not changed. To add $HOME/.local/bin, put this line in $HOME/.bashrc: export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+exit 0
+== setup env:PATH=/usr/bin env:CI=false
+PATH: added $HOME/.local/bin to $HOME/.bashrc
+exit 0
+== setup env:PATH=/usr/bin
+exit 0
+== setup env:PATH=/usr/bin env:GITHUB_PATH={w}/home/gh/path
+PATH: added $HOME/.local/bin to $HOME/gh/path
+exit 0
+== setup env:PATH=/usr/bin env:GITHUB_PATH={w}/home/gh/path
+exit 0
+== setup env:PATH=/usr/bin env:SHELL=/usr/bin/fish
+PATH: added $HOME/.local/bin to $HOME/.config/fish/conf.d/talon.fish
+completions: $HOME/.config/fish/completions/tln.fish
+exit 0
+== setup env:PATH=/usr/bin env:SHELL=/bin/tcsh
+PATH: not changed (the shell is not bash, zsh or fish). To add $HOME/.local/bin, put this line in your shell profile: export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+exit 0
+== setup --no-modify-path env:PATH=/usr/bin env:SHELL=/bin/zsh
+PATH: not changed. To add $HOME/.local/bin, put this line in $HOME/.zshrc: export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+completions: $HOME/.local/share/zsh/site-functions/_tln
+exit 0
+== setup now
+exit 2

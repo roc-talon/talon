@@ -1,0 +1,136 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:249:1
+
+expect {
+    ws_walk = [d("/r/w/m1", ["y"]), d("/r/w", ["x"])]
+    deep_walk = [d("/r/w/deep/inner", ["di"]), d("/r/w/deep", ["dp"]), d("/r/w", ["r"])]
+    probe_inner = |exists| [{ path: "/r/w/deep/inner/talon.toml", exists }]
+    # no workspace: the first file with the name, the walk stops at a file with no such name
+    find_view(Ok("x"), [nod("/r/a/b"), d("/r/a", ["x"]), d("/r", ["x"])], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r"
+        and find_view(Ok("x"), [d("/r/a/b", ["y"]), d("/r/a", ["x"])], Err(NoWorkspace), [], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/a/b/talon.toml."
+            # a workspace: the member file has no `x`, the root has it. A member file that has the name holds it. The root ends the walk.
+            and find_view(Ok("x"), ws_walk, Ok("/r/w"), [m1], []) == "found /r/w Root tools=/r/w members=${m1} stop=/r/w"
+                and find_view(Ok("y"), ws_walk, Ok("/r/w"), [m1], []) == "found /r/w/m1 Member tools=/r/w members=${m1} stop=/r/w"
+                    and find_view(Ok("x"), [d("/r/w", ["r"]), d("/r", ["x"])], Ok("/r/w"), [m1], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/w/talon.toml."
+                        # a standalone project in a workspace directory (no member file in it or below it): its own file, its own tools, and the root script has no effect there
+                        and find_view(Ok("y"), [d("/r/w/s", ["y"]), d("/r/w", ["x"])], Ok("/r/w"), [m1], []) == "found /r/w/s Standalone tools=/r/w/s members= stop=/r/w"
+                            and find_view(Ok("x"), [d("/r/w/s", ["y"]), d("/r/w", ["x"])], Ok("/r/w"), [m1], []) == "2 no script 'x' in the talon.toml files that the walk checked: /r/w/s/talon.toml."
+                                # NC4: `deep` has the member below it, but `deep/inner/talon.toml` is between: the answer of the probe decides
+                                and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], []) == "need /r/w/deep/inner/talon.toml"
+                                    and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.True)) == "found /r/w/deep Standalone tools=/r/w/deep members= stop=/r/w"
+                                        and find_view(Ok("dp"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.False)) == "found /r/w/deep Member tools=/r/w members=${inner} stop=/r/w"
+                                            and find_view(Ok("r"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.True)) == "2 no script 'r' in the talon.toml files that the walk checked: /r/w/deep/inner/talon.toml, /r/w/deep/talon.toml."
+                                                and find_view(Ok("r"), deep_walk, Ok("/r/w"), [inner], probe_inner(Bool.False)) == "found /r/w Root tools=/r/w members=${inner} stop=/r/w"
+                                                    # a bad form: exit 19 for a file that the walk examines, none for a file above the stop
+                                                    and find_view(Ok("x"), [{ dir: "/r/a", toml: Ok({ names: ["x"], bad: Ok("/r/a/talon.toml:3: scripts.x: must be a table") }) }], Err(NoWorkspace), [], []) == "19 /r/a/talon.toml:3: scripts.x: must be a table"
+                                                        and find_view(Ok("x"), [d("/r/a", ["x"]), { dir: "/r", toml: Ok({ names: [], bad: Ok("/r/talon.toml:1: scripts: must be a table") }) }], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r"
+                                                            # no name (the list, R-RUN11): the first file with a script
+                                                            and find_view(Err(None), [d("/r/w/m1", []), d("/r/w", ["r"])], Ok("/r/w"), [m1], []) == "found /r/w Root tools=/r/w members=${m1} stop=/r/w"
+                                                                and find_view(Err(None), [d("/r/a", ["p", "q"])], Err(NoWorkspace), [], []) == "found /r/a Standalone tools=/r/a members= stop=/r/a"
+                                                                    and find_view(Err(None), [d("/r/a/b", []), d("/r/a", ["p"])], Err(NoWorkspace), [], []) == "2 no script in the talon.toml files that the walk checked: /r/a/b/talon.toml."
+                                                                        # no file
+                                                                        and find_view(Ok("x"), [nod("/r/a"), nod("/r")], Err(NoWorkspace), [], []) == "2 no talon.toml found. Checked: /r/a, /r."
+}
+
+Mentioned values:
+m1 = "/r/w/m1/main.roc"
+inner = "/r/w/deep/inner/main.roc"
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 54 tests in 5456.1 ms.:
+    53 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5193.5 ms.
+
+step       result seconds  budget
+l0         FAIL   5.7      10
+
+=== l2 exit 1
+FAIL run/rn1-scripts
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -97,7 +97,7 @@
+       == run dp cwd:w/deep/inner
+       exit 0
+       == run r cwd:w/deep/inner
+      -exit 2
+      +exit 0
+       == run r cwd:w
+       exit 0
+       == run r cwd:w/m2
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -13,5 +13,4 @@
+       tln: error[usage]: unknown command 'build'
+       tln: error[input]: $PROJECT/p3/talon.toml:3: scripts.bad: a table step needs the strings in and run, and no other key
+       tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/s/talon.toml.
+      -tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/deep/inner/talon.toml, $PROJECT/w/deep/talon.toml.
+       tln: error[usage]: no talon.toml found. Checked: $PROJECT.
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -348,12 +348,10 @@
+       list_dirs $PROJECT
+       read_files $PROJECT/w/deep/inner/talon.toml $PROJECT/w/deep/talon.toml $PROJECT/w/talon.toml
+       list_dirs $PROJECT/w/m1 $PROJECT/w/m2
+      -read_files $PROJECT/w/deep/inner/talon.toml
+      -canonical $PROJECT/w/deep/talon.toml
+      +canonical $PROJECT/w/deep/inner/main.roc
+       lock $HOME/.cache/roc/talon/projects.json nowait: held
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+      -write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       exec_in $PROJECT/w/deep tool-dp
+         env TALON_SCRIPT=dp
+      @@ -368,7 +366,14 @@
+       list_dirs $PROJECT
+       read_files $PROJECT/w/deep/inner/talon.toml $PROJECT/w/deep/talon.toml $PROJECT/w/talon.toml
+       list_dirs $PROJECT/w/m1 $PROJECT/w/m2
+      -read_files $PROJECT/w/deep/inner/talon.toml
+      +canonical $PROJECT/w/deep/inner/main.roc $PROJECT/w/m1/main.roc $PROJECT/w/m2/main.roc
+      +lock $HOME/.cache/roc/talon/projects.json nowait: held
+      +list_dirs $HOME/.cache/roc/talon
+      +read_files $HOME/.cache/roc/talon/projects.json
+      +unlock $HOME/.cache/roc/talon/projects.json
+      +exec_in $PROJECT/w tool-r
+      +  env TALON_SCRIPT=r
+      +  env TALON_SCRIPT_DIR=$PROJECT/w
+       args
+       env_all
+       clock
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,4 @@
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/talon.toml","last_use":1792065600},{"path":"$PROJECT/w/deep/inner/main.roc","last_use":1792065600},{"path":"$PROJECT/w/deep/talon.toml","last_use":1792065600},{"path":"$PROJECT/w/m1/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m2/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s2/talon.toml","last_use":1792065600}]}
+      ++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/talon.toml","last_use":1792065600},{"path":"$PROJECT/w/deep/inner/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m1/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m2/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s2/talon.toml","last_use":1792065600}]}
+commands: 2 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

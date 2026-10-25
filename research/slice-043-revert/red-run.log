@@ -1,0 +1,171 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+parser = gh("lukewilliamboswell", "roc-parser", "2.0.0", h_parser)
+json1 = gh("someone", "roc-json", "2.1.0", h_json1)
+cli = gh("roc-lang", "basic-cli", "0.25.0", h_cli)
+h_json1 = "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17"
+
+[dbg] [("the key is in member a: the group is patched and held, the note has the alias of the first use", [([("/w/a/main.roc", "json"), ("/w/b/main.roc", "j2")], True, False, Ok("json: patched, held")), ([("/w/a/main.roc", "pf"), ("/w/b/main.roc", "pf")], False, True, Err(None))], [([("/w/a/main.roc", "json"), ("/w/b/main.roc", "j2")], False, True, Err(None)), ([("/w/a/main.roc", "pf"), ("/w/b/main.roc", "pf")], False, True, Err(None))])]
+
+── ✗ fail ──────────────────────────────────────── tests/unit/VarsTest.roc:542:1
+
+expect {
+    header_a = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\""])
+    header_b = app_header(["pf: platform \"${cli}\"", "j2: \"${json1}\""])
+    a = member("/w/a/main.roc", header_a, Ok({ path: "/w/a/talon.toml", text: "[patch]\njson = { path = \"./.talon/patches/json/main.roc\", base = \"${h_json1}\" }\n", role: Member }))
+    b = member("/w/b/main.roc", header_b, Err(NoToml))
+    view = |ms| match Vars.build({ members: ms, priority: Err(Unset) }) {
+        Ok(built) => match Vars.scope({ command: Update, names: [], selectors: [], vars: built.vars }) {
+            Ok(scoped) => scoped.map(|s| (s.variable.uses.map(|u| (u.file, u.alias)), s.variable.patched, s.free, s.note))
+            Err(e) => crash e.line()
+        }
+        Err(e) => crash e.line()
+    }
+    rows = [
+        (
+            "the key is in member a: the group is patched and held, the note has the alias of the first use",
+            view([a, b]),
+            [(([("/w/a/main.roc", "json"), ("/w/b/main.roc", "j2")]), Bool.True, Bool.False, Ok("json: patched, held")), ([("/w/a/main.roc", "pf"), ("/w/b/main.roc", "pf")], Bool.False, Bool.True, Err(None))],
+        ),
+        (
+            "the key is in no member: no patch",
+            view([member("/w/a/main.roc", header_a, Err(NoToml)), b]),
+            [([("/w/a/main.roc", "json"), ("/w/b/main.roc", "j2")], Bool.False, Bool.True, Err(None)), ([("/w/a/main.roc", "pf"), ("/w/b/main.roc", "pf")], Bool.False, Bool.True, Err(None))],
+        ),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+    dbg bad
+    bad == []
+}
+
+Mentioned values:
+h_json1 = "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17"
+json1 = gh("someone", "roc-json", "2.1.0", h_json1)
+cli = gh("roc-lang", "basic-cli", "0.25.0", h_cli)
+
+Ran 51 tests in 6600.6 ms.:
+    49 passed
+    2 failed
+    0 compiler errors
+tests/unit/l0-3.roc: All (52) tests passed in 5796.5 ms.
+tests/unit/l0-4.roc: All (60) tests passed in 6063.8 ms.
+tests/unit/l0-5.roc: All (55) tests passed in 6086.7 ms.
+tests/unit/l0-6.roc: All (44) tests passed in 5927.6 ms.
+tests/unit/l0-7.roc: All (37) tests passed in 6221.5 ms.
+tests/unit/l0-8.roc: All (60) tests passed in 6266.4 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       == @roc check p4/main.roc
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +0,0 @@
+      -tln: error[frozen]: stale patch: json (base DeYFwFngjMLH3hBEqiMJBsuT29mP1ycDF5HwkG6QaKbS, the header has GQ3gWuCTr3WbMg3Kv6JoNqFRKoxGtahcpiYg9wnpxW9L). Run: tln install
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -16,7 +16,7 @@
+       list_dirs $HOME/.cache/roc/toolchains
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       canonical $HOME/.cache $HOME/.cache/roc
+      -exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check p1/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GQ3gWuCTr3WbMg3Kv6JoNqFRKoxGtahcpiYg9wnpxW9L.tar.zst $PROJECT/p1/.talon/patches/json/main.roc
+      +exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check p1/main.roc
+         env XDG_CACHE_HOME=$HOME/.cache
+         env ROC_CACHE_DIR=$HOME/.cache/roc
+         env TALON_IN_PROXY=1
+      @@ -37,7 +37,7 @@
+       list_dirs $HOME/.cache/roc/toolchains
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       canonical $HOME/.cache $HOME/.cache/roc
+      -exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build p1/main.roc --opt=speed --replace-dep https://github.com/acme/json/releases/download/2.1.0/GQ3gWuCTr3WbMg3Kv6JoNqFRKoxGtahcpiYg9wnpxW9L.tar.zst $PROJECT/p1/.talon/patches/json/main.roc
+      +exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build p1/main.roc --opt=speed
+         env XDG_CACHE_HOME=$HOME/.cache
+         env ROC_CACHE_DIR=$HOME/.cache/roc
+         env TALON_IN_PROXY=1
+      @@ -58,7 +58,7 @@
+       list_dirs $HOME/.cache/roc/toolchains
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       canonical $HOME/.cache $HOME/.cache/roc
+      -exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc p1/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GQ3gWuCTr3WbMg3Kv6JoNqFRKoxGtahcpiYg9wnpxW9L.tar.zst $PROJECT/p1/.talon/patches/json/main.roc -- a b
+      +exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc p1/main.roc -- a b
+         env XDG_CACHE_HOME=$HOME/.cache
+         env ROC_CACHE_DIR=$HOME/.cache/roc
+         env TALON_IN_PROXY=1
+      @@ -80,7 +80,7 @@
+       list_dirs $HOME/.cache/roc/toolchains
+       write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+       canonical $HOME/.cache $HOME/.cache/roc
+      -exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check p2/main.roc --replace-dep https://github.com/acme/parser/releases/download/1.0.0/94teyByfUKwD2pmqGxJhetgKiJfj8dQ3b36aZHBpuj2H.tar.zst $PROJECT/p2/.talon/patches/parser/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GQ3gWuCTr3WbMg3Kv6JoNqFRKoxGtahcpiYg9wnpxW9L.tar.zst $PROJECT/p2/.talon/patches/json/main.roc
+      +exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check p2/main.roc
+         env XDG_CACHE_HOME=$HOME/.cache
+         env ROC_CACHE_DIR=$HOME/.cache/roc
+         env TALON_IN_PROXY=1
+      @@ -99,6 +99,13 @@
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+       read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
+      +list_dirs $HOME/.cache/roc/toolchains
+      +write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+      +canonical $HOME/.cache $HOME/.cache/roc
+      +exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check p3/main.roc
+      +  env XDG_CACHE_HOME=$HOME/.cache
+      +  env ROC_CACHE_DIR=$HOME/.cache/roc
+      +  env TALON_IN_PROXY=1
+       args
+       env_all
+       cwd
+commands: 103 passed, 2 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+FAIL compilers/px3-proxy-patch
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,17 +1,19 @@
+       == R-PX5 R-PA10: a pair --replace-dep <the URL of the header entry> <the main file of the copy> for each [patch] entry, in the order of the table. The paths of the copies are absolute.
+       == $WORK/launch/roc check p1/main.roc
+      -ran nightly-2026-10-09-258ab27: check p1/main.roc --replace-dep https://github.com/acme/parser/releases/download/1.0.0/5dRxUNMWfxRaxQ6349dGWSCJH7N2RBZQfLbyYGaW2mZF.tar.zst $PROJECT/p1/.talon/patches/parser/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GGSH6vPj93jrSv7gN1V2Sntg54VgTmFxtWP38PBe1pMc.tar.zst $PROJECT/p1/.talon/patches/json/main.roc
+      +ran nightly-2026-10-09-258ab27: check p1/main.roc
+       XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       exit 0
+       == R-PX5: the flags come before -- (the arguments after it are for the app).
+       == $WORK/launch/roc p1/main.roc -- a b
+      -ran nightly-2026-10-09-258ab27: p1/main.roc --replace-dep https://github.com/acme/parser/releases/download/1.0.0/5dRxUNMWfxRaxQ6349dGWSCJH7N2RBZQfLbyYGaW2mZF.tar.zst $PROJECT/p1/.talon/patches/parser/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GGSH6vPj93jrSv7gN1V2Sntg54VgTmFxtWP38PBe1pMc.tar.zst $PROJECT/p1/.talon/patches/json/main.roc -- a b
+      +ran nightly-2026-10-09-258ab27: p1/main.roc -- a b
+       XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+       exit 0
+       == R-PA6 R-EC14: a stale patch. Exit 14 (frozen), the message names tln install, the compiler does not run, and no .last-use is written for it.
+       == $WORK/launch/roc check p2/main.roc
+      -exit 14
+      -no last use
+      +ran nightly-2026-10-09-258ab27: check p2/main.roc
+      +XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      +exit 0
+      +last use written
+       == R-PX7 R-EV7: TALON_PROXY=0 does no extra work: the stale patch is not checked and no flag is added.
+       == env TALON_PROXY=0 $WORK/launch/roc check p2/main.roc
+       ran nightly-2026-10-09-258ab27: check p2/main.roc
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,5 +1,5 @@
+       to stderr from nightly-2026-10-09-258ab27
+       to stderr from nightly-2026-10-09-258ab27
+      -tln: error[frozen]: stale patch: json (base F8mSQ1TwjBpLvJiwreL93h6J2vsNd2TG4Zzr7UKSSAez, the header has GGSH6vPj93jrSv7gN1V2Sntg54VgTmFxtWP38PBe1pMc). Run: tln install
+      +to stderr from nightly-2026-10-09-258ab27
+       to stderr from nightly-2026-10-09-258ab27
+       to stderr from nightly-2026-10-09-258ab27
+scenarios: 63 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.4      10
+fmt        pass   0.2      5
+l0         FAIL   6.8      10
+l2         FAIL   5.7      30
+l3         FAIL   10.0     60
+selftest   pass   3.0      20
+l1         pass   38.4     60

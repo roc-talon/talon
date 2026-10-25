@@ -1,0 +1,57 @@
+== cache gc --dry-run
+would remove toolchain git-dd03c09e (89 B)
+would remove toolchain nightly-2026-05-01-6666666 (269 B)
+would remove toolchain nightly-2026-08-01-aaaaaaa (269 B)
+would remove toolchain nightly-2026-08-12-5555555 (269 B)
+would remove toolchain nightly-2026-09-01-9999999 (243 B)
+would remove $HOME/.cache/roc/compat-6666666 (11 B)
+would remove $HOME/.cache/roc/compat-aaaaaaa (11 B)
+would remove $HOME/.cache/roc/compat-5555555 (11 B)
+would remove $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp (7 B)
+would remove $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp (7 B)
+would remove $HOME/.cache/roc/talon/tmp/0123456789abcdef (31 B)
+would remove $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks (33 B)
+would remove $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash (15 B)
+would remove $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp (7 B)
+would remove project $PROJECT/pgone/main.roc
+would remove project $PROJECT/pold/main.roc
+would remove project $PROJECT/pplain/main.roc
+would free 1.3 KB
+dry run: nothing was removed
+exit 0
+== cache gc --dry-run --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["git-dd03c09e","nightly-2026-05-01-6666666","nightly-2026-08-01-aaaaaaa","nightly-2026-08-12-5555555","nightly-2026-09-01-9999999"],"skipped":[],"compat":["$HOME/.cache/roc/compat-6666666","$HOME/.cache/roc/compat-aaaaaaa","$HOME/.cache/roc/compat-5555555"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","$HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp","$HOME/.cache/roc/talon/tmp/0123456789abcdef","$HOME/.cache/roc/talon/tmp/2123456789abcdef.locks","$HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash","$HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp"],"builds":[],"packages":[],"projects":["$PROJECT/pgone/main.roc","$PROJECT/pold/main.roc","$PROJECT/pplain/main.roc"],"sizes":[{"item":"git-dd03c09e","bytes":89},{"item":"nightly-2026-05-01-6666666","bytes":269},{"item":"nightly-2026-08-01-aaaaaaa","bytes":269},{"item":"nightly-2026-08-12-5555555","bytes":269},{"item":"nightly-2026-09-01-9999999","bytes":243},{"item":"$HOME/.cache/roc/compat-6666666","bytes":11},{"item":"$HOME/.cache/roc/compat-aaaaaaa","bytes":11},{"item":"$HOME/.cache/roc/compat-5555555","bytes":11},{"item":"$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","bytes":7},{"item":"$HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp","bytes":7},{"item":"$HOME/.cache/roc/talon/tmp/0123456789abcdef","bytes":31},{"item":"$HOME/.cache/roc/talon/tmp/2123456789abcdef.locks","bytes":33},{"item":"$HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash","bytes":15},{"item":"$HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp","bytes":7}],"freed":1272},"error":null}
+exit 0
+== cache gc
+removed toolchain git-dd03c09e (89 B)
+removed toolchain nightly-2026-08-01-aaaaaaa (269 B)
+removed toolchain nightly-2026-08-12-5555555 (269 B)
+removed toolchain nightly-2026-09-01-9999999 (243 B)
+skipped toolchain nightly-2026-05-01-6666666: an install holds it
+removed $HOME/.cache/roc/compat-aaaaaaa (11 B)
+removed $HOME/.cache/roc/compat-5555555 (11 B)
+removed $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp (7 B)
+removed $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp (7 B)
+removed $HOME/.cache/roc/talon/tmp/0123456789abcdef (31 B)
+removed $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks (33 B)
+removed $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash (15 B)
+removed $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp (7 B)
+removed project $PROJECT/pgone/main.roc
+removed project $PROJECT/pold/main.roc
+removed project $PROJECT/pplain/main.roc
+freed 992 B
+exit 0
+== cache gc
+skipped toolchain nightly-2026-05-01-6666666: an install holds it
+exit 0
+== cache gc nightly-2026-08-01-aaaaaaa
+exit 2
+== env:HOME={w}/home2 cache gc
+exit 19
+== env:HOME={w}/home3 cache gc
+exit 19
+== env:HOME={w}/home4 cache gc --dry-run
+would remove toolchain nightly-2026-09-11-eeeeeee (264 B)
+would free 264 B
+dry run: nothing was removed
+exit 0

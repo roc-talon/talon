@@ -1,0 +1,7 @@
+cli/lib/BuildTarget.roc
+tests/unit/BuildtargetTest.roc
+docs/slices/054-build-target.md
+tests/commands/cases/target/
+tests/commands/cases/proxy/tg4-proxy/
+tests/scenarios/update/tg1-wasm-platform/
+research/slice-054-revert/

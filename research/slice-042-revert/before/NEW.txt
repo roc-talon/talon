@@ -1,0 +1,8 @@
+cli/lib/Diff.roc
+cli/lib/PatchCmd.roc
+cli/lib/PatchFlow.roc
+docs/slices/042-patch.md
+tests/unit/diff.roc
+tests/fuzz/diff.roc
+tests/commands/cases/patch
+research/slice-042-revert

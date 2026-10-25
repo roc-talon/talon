@@ -1,0 +1,24 @@
+# 1: nothing is there, interactive, Enter is Yes. A stale temp is deleted (R-CC4 step 5). The full install, the order of the calls
+0.17.0
+# 2: now installed: found, no request, no lock
+0.17.0
+# 3: a Windows host (.zip, zig.exe, no chmod, no xz), --yes
+0.16.2 yes
+# 4: the person answers n: exit 13, no lock, nothing downloaded
+0.15.1
+# 5: a busy lock, the holder makes the dir: found under the lock, no download (R-CC4 step 4)
+0.14.1 yes
+# 6: the sha256 of the index differs from the download: exit 16, the temp dir is deleted
+0.13.0 yes
+# 7: non-interactive (no --yes): the answer line, no prompt, the download starts (R-DL4, R-NI6)
+0.12.1 env:TALON_INTERACTIVE=0
+# 8: TALON_ZIG_INDEX replaces the URL (R-EV16, R-EV21). The route does not exist: exit 15
+0.10.1 yes env:TALON_ZIG_INDEX=http://127.0.0.1:9/zig/index.json
+# 9: the index has no release of the series: exit 18, no prompt
+0.99.0
+# 10: tar fails: exit 16 (as for a compiler), the temp dir is deleted
+0.8.0 yes
+# 11: curl fails with 404: exit 15, the temp dir is deleted
+0.7.0 yes
+# 12: --offline and nothing fits: exit 15, no request
+0.6.0 offline

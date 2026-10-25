@@ -1,0 +1,39 @@
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc --dry-run
+would remove toolchain nightly-2026-08-01-aaaaaaa (269 B)
+would remove $HOME/.cache/roc-builds/compat-aaaaaaa (34 B)
+would remove $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp (8 B)
+would remove $HOME/.cache/roc-builds/compat-bbbbbbb (35 B)
+would remove $HOME/.cache/roc-builds/compat-over (29 B)
+would remove $HOME/.cache/roc-builds/debug-9999999 (25 B)
+would remove $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (45 B)
+would remove $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL (17 B)
+would remove $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK (17 B)
+would remove $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc (27 B)
+would remove project $PROJECT/pold/main.roc
+would free 506 B
+dry run: nothing was removed
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc --dry-run --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":true,"ran":true,"toolchains":["nightly-2026-08-01-aaaaaaa"],"skipped":[],"compat":["$HOME/.cache/roc-builds/compat-aaaaaaa"],"stale":["$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp"],"builds":["$HOME/.cache/roc-builds/compat-bbbbbbb","$HOME/.cache/roc-builds/compat-over","$HOME/.cache/roc-builds/debug-9999999","$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234"],"packages":["$HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","$HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK","$HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"],"projects":["$PROJECT/pold/main.roc"],"sizes":[{"item":"nightly-2026-08-01-aaaaaaa","bytes":269},{"item":"$HOME/.cache/roc-builds/compat-aaaaaaa","bytes":34},{"item":"$HOME/.cache/roc/packages/h1.0123456789abcdef.tmp","bytes":8},{"item":"$HOME/.cache/roc-builds/compat-bbbbbbb","bytes":35},{"item":"$HOME/.cache/roc-builds/compat-over","bytes":29},{"item":"$HOME/.cache/roc-builds/debug-9999999","bytes":25},{"item":"$HOME/.cache/roc-builds/nightly-2025-01-01-abc1234","bytes":45},{"item":"$HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","bytes":17},{"item":"$HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK","bytes":17},{"item":"$HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc","bytes":27}],"freed":506},"error":null}
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc
+removed toolchain nightly-2026-08-01-aaaaaaa (269 B)
+removed $HOME/.cache/roc-builds/compat-aaaaaaa (34 B)
+removed $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp (8 B)
+removed $HOME/.cache/roc-builds/compat-bbbbbbb (35 B)
+removed $HOME/.cache/roc-builds/compat-over (29 B)
+removed $HOME/.cache/roc-builds/debug-9999999 (25 B)
+removed $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (45 B)
+removed $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL (17 B)
+removed $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK (17 B)
+removed $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc (27 B)
+removed project $PROJECT/pold/main.roc
+freed 506 B
+exit 0
+== env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc
+nothing to remove
+exit 0
+== env:HOME={w}/home/h2 cache gc
+removed $HOME/h2/.cache/roc/compat-ten (13 B)
+freed 13 B
+exit 0

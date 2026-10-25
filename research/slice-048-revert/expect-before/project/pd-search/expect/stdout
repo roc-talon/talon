@@ -1,0 +1,46 @@
+== start=solo/sub
+file: $PROJECT/solo/main.roc
+workspace: standalone
+toml: $PROJECT/solo/talon.toml
+== start=r/apps/a
+file: $PROJECT/r/apps/a/main.roc
+workspace: $PROJECT/r (4 members)
+toml: $PROJECT/r/apps/a/talon.toml
+== start=r/apps/b/src
+file: $PROJECT/r/apps/b/main.roc
+workspace: $PROJECT/r (4 members)
+toml: $PROJECT/r/talon.toml
+== start=r/docs
+file: none
+workspace: $PROJECT/r (4 members)
+toml: $PROJECT/r/talon.toml
+== start=r/tools
+file: $PROJECT/r/tools/main.roc
+workspace: standalone
+toml: $PROJECT/r/tools/talon.toml
+== start=r/examples
+exit 2
+== start=. file=r/examples/hello.roc
+file: $PROJECT/r/examples/hello.roc
+workspace: $PROJECT/r (4 members)
+toml: $PROJECT/r/talon.toml
+== start=r file=apps/b/src/x.roc
+file: $PROJECT/r/apps/b/src/x.roc
+workspace: standalone
+toml: none
+== start=r file=main.roc
+file: $PROJECT/r/main.roc
+workspace: standalone
+toml: none
+== start=empty/deep/er
+exit 2
+== start=nohdr
+exit 2
+== start=badhdr
+exit 19
+== start=badtoml
+exit 19
+== start=h/work/app home=h
+file: $PROJECT/h/main.roc
+workspace: standalone
+toml: none

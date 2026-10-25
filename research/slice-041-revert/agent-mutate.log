@@ -1,0 +1,10 @@
+M1 | a failed run does not remove its main.roc | exit 1 | failed steps: ['l2'] | FAIL init/it1-app
+M2 | an existing CI file is overwritten | exit 1 | failed steps: ['l2'] | FAIL init/it1-app
+M3 | --ci none still writes the CI file | exit 1 | failed steps: ['l2'] | FAIL init/it1-app
+M4 | init refuses --probe-downloads | exit 1 | failed steps: ['l0'] | 
+M5 | init refuses --allow-downloads | exit 1 | failed steps: ['l0', 'l2'] | 
+M6 | a platform name with @ is accepted | exit 1 | failed steps: ['l0'] | 
+M7 | the consent flags do not reach the flow | exit 1 | failed steps: ['check', 'l0', 'l2'] | 
+M8 | an existing main.roc is overwritten | exit 1 | failed steps: ['l2'] | 
+M9 | the start release ignores min-release-age | exit 1 | failed steps: ['check', 'l0', 'l2'] | 
+M10 | --platform is accepted with package | exit 1 | failed steps: ['check', 'l0', 'l2'] | 

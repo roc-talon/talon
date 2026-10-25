@@ -42,10 +42,10 @@ flowchart LR
 
 | Component | Runs in | Its job | Not its job | Spec |
 | --- | --- | --- | --- | --- |
-| CLI | `tln` | Commands, prompts, output. Edits the header and `talon.toml`. | Select versions. Replace `roc build` or `roc check`. | CLI 1 to 5 |
+| CLI | `tln` | Commands, prompts, output. Edits the header and `talon.toml`. Runs the scripts of `talon.toml` when the user names one (`tln run`). | Select versions. Replace `roc build` or `roc check`. Run a script by itself (no hooks). | CLI 1 to 5 |
 | Resolver | `tln` | Select the packages, platform and nightly that work together | Set transitive versions (roc MVS does). Run the compiler. | Resolution |
 | Prober | `tln` | Run `roc check` and `roc build` to learn if a hash works with a nightly | Decide which versions to try | Resolution 4 |
-| Toolchain manager | `tln` | Install and select compilers, the `roc` proxy, cache GC. Build Roc apps from source and install them as tools on `PATH` (`tln tool install`, `tln x`). | Change the header `roc:` pin (only `tln upgrade` does) | CLI 6 |
+| Toolchain manager | `tln` | Install and select compilers, the `roc` proxy, cache GC. Build Roc apps from source and install them as tools on `PATH` (`tln tool install`, `tln x`). Build and run the project tools that `[tools]` of `talon.toml` locks. | Change the header `roc:` pin (only `tln upgrade` does) | CLI 6 |
 | Store and fetch | `tln` | Download and verify packages into the roc cache | Host package bytes | CLI 7 |
 | Registry | Cloudflare Worker | Index of releases and a shared compatibility matrix | Store bytes. Be required: Talon works with GitHub only. | Registry |
 | Compat bot | GitHub Actions | Probe packages on each new nightly and fill the matrix | Run inside the registry | Registry 6 |
@@ -61,3 +61,5 @@ flowchart LR
 | Transitive versions (MVS) | `roc` |
 | Package and compiler bytes | GitHub Releases |
 | Package names | GitHub (`owner/repo`) |
+| Build graphs, file-change detection, caches of task results, parallel task runs | `make`, `just` (a step of `tln run` can call them) |
+| Deploy, local dev servers of a platform (for example Wrangler for Workers) | The tools of the platform, as external programs |

@@ -1,0 +1,65 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-02-a1a1a1a
+note: tuple dropped: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.0.5
+exit 0
+== update json file=p2/main.roc compiler=nightly-2026-10-03-b2b2b2b
+note: tuple dropped: the whole-app check crashes on nightly-2026-10-03-b2b2b2b (signal 11) with acme/json 2.1.0
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.0.5
+exit 0
+== update json parser file=p11/main.roc dry-run compiler=nightly-2026-10-12-e1e1e1e
+note: tuple dropped: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)
+check: passed
+build: passed
+$PROJECT/p11/main.roc
+  ~ json: acme/json 2.0.0 -> 2.0.5
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+exit 0
+== update json file=p12/main.roc compiler=nightly-2026-10-13-f2f2f2f
+note: tuple dropped: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)
+exit 12
+== update json file=p3/main.roc compiler=nightly-2026-10-04-c3c3c3c
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ json: acme/json 2.0.0 -> 2.0.5
+exit 0
+== update json file=p4/main.roc compiler=nightly-2026-10-05-d4d4d4d
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.0.5
+exit 0
+== update json file=p5/main.roc compiler=nightly-2026-10-06-e5e5e5e
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-06-e5e5e5e. Your app does not import it.
+$PROJECT/p5/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p6/main.roc no-probe compiler=nightly-2026-10-07-f6f6f6f
+check: passed
+build: passed
+$PROJECT/p6/main.roc
+  ~ json: acme/json 2.0.0 -> 2.0.5
+exit 0
+== update json file=p7/main.roc no-probe compiler=nightly-2026-10-08-a7a7a7a
+check: passed
+build: passed
+$PROJECT/p7/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p8/main.roc compiler=nightly-2026-10-09-b8b8b8b
+exit 12
+== update json file=p9/main.roc compiler=nightly-2026-10-10-c9c9c9c
+exit 10
+== update json file=p10/main.roc no-check compiler=nightly-2026-10-11-d0d0d0d
+check: skipped
+$PROJECT/p10/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

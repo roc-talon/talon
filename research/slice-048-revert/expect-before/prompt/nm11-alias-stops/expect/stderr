@@ -1,0 +1,3 @@
+tln: error[usage]: the default alias '9lives' for 'acme/9lives' is not a valid name. Use --as <alias>.
+tln: error[usage]: 'app' is a reserved word, not a valid alias.
+tln: error[usage]: alias 'pf' is used by another package in the header.

@@ -1,0 +1,41 @@
+== check, no error
+probe 0 Exited(0) stdout="No errors found in <n>ms for main.roc
+" stderr=""
+== check, an error
+probe 0 Exited(1) stdout="" stderr="── ✗ type mismatch ───────────────────────────────────────────────── bad.roc:4:5
+
+This number is being used where a non-number type is needed.
+
+x = 5
+    ^
+
+Other code expects this to have the type:
+
+    Str
+
+── 1 error and 0 warnings ────────────────────────────────────────────── bad.roc
+
+"
+== build, no error: the output is in the out dir, the program is not run
+probe 0 Exited(0) stdout="0 errors and 0 warnings found in <n>ms while successfully building:
+
+    $PROJECT/../out/probe.out
+" stderr=""
+output made
+== a round of 2: the order of the list
+probe 0 Exited(1) stdout="" stderr="── ✗ type mismatch ───────────────────────────────────────────────── bad.roc:4:5
+
+This number is being used where a non-number type is needed.
+
+x = 5
+    ^
+
+Other code expects this to have the type:
+
+    Str
+
+── 1 error and 0 warnings ────────────────────────────────────────────── bad.roc
+
+"
+probe 1 Exited(0) stdout="No errors found in <n>ms for main.roc
+" stderr=""

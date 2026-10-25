@@ -1,0 +1,9 @@
+== install json compiler=nightly-2026-10-14-38a3029
+json: acme/json 2.0.0 is in the header
+Run tln update json to move it.
+exit 0
+== install nosuch compiler=nightly-2026-10-14-38a3029
+exit 2
+== install compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0

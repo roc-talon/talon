@@ -1,0 +1,9 @@
+== releases acme/gh
+source: live
+pages: [22]
+== releases acme/gh2 env:GH_TOKEN=viaenv
+source: live
+pages: [22]
+== releases acme/test env:TALON_GITHUB_API=http://127.0.0.1:1/api env:GITHUB_TOKEN=tok env:GH_TOKEN=tok2
+source: live
+pages: [22]

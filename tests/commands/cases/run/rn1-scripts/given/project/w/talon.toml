@@ -1,0 +1,5 @@
+[workspace]
+members = ["m1/main.roc", "m2/main.roc", "deep/inner/main.roc"]
+
+[scripts]
+r = "tool-r"

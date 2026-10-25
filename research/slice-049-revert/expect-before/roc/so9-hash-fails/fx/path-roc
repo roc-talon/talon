@@ -1,0 +1,5 @@
+# slice 022b, gap I8 (D12): the running tln has 200 bytes. missing/roc has 200 bytes in the answer, but the file does not exist, so sha256_file! gives NotFound.
+# The walk ends with no compiler. later/roc (7 bytes, a compiler) is never looked at: the walk does not go on past a file that it cannot test.
+exe {w}/bin/tln 200 1700000000
+file {w}/missing/roc 200 1700000100
+file {w}/later/roc 7 1700000200

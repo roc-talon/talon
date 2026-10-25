@@ -76,6 +76,44 @@ check_opt() {
     esac
 }
 
+# --- The l0 files (research/l0-time/RESULTS.md) ---
+# Each `roc test` process compiles the modules that it imports again, so one process for each unit file cost 43 s of CPU for 86 files. A unit file in tests/unit is a unit module (`<Name>Test.roc`,
+# no header, a type `<Name>Test :: [].{}`), and a few drivers (`tests/unit/l0-<n>.roc`, apps that import the modules) run them: 8 processes, 25 s of CPU.
+# unit_is_app <file>: the first line of the file starts with `app `. The loops below use no process for a file (82 files: 1 s with `head` and `grep`, 0.05 s with `read`).
+unit_is_app() { local first; IFS= read -r first < "$1" && [[ $first == app\ * ]]; }
+# unit_files: the files that the l0 step gives to `roc test`: the apps of tests/unit (the drivers) and the tests of the packages. Run it in the root of the repo.
+unit_files() {
+    local f
+    for f in tests/unit/*.roc; do
+        [ -f "$f" ] && unit_is_app "$f" && echo "$f"
+    done
+    ls packages/*/tests/*.roc 2> /dev/null
+    return 0
+}
+# unit_modules_check <dir>: every unit module of the dir (a file that is not an app) is imported by exactly one app of the dir. A module that no driver imports is never run, and `roc test` says nothing.
+# Prints one line for each fault. Exit 1 when there is a fault.
+unit_modules_check() {
+    local f n c line rc=0 drivers=() mods=()
+    local -A seen
+    for f in "$1"/*.roc; do
+        [ -f "$f" ] || continue
+        if unit_is_app "$f"; then drivers+=("$f"); else mods+=("$f"); fi
+    done
+    if [ ${#drivers[@]} -gt 0 ]; then
+        while IFS= read -r line; do seen[$line]=$((${seen[$line]:-0} + 1)); done < <(grep -hx 'import [A-Za-z0-9_]*' "${drivers[@]}")
+    fi
+    for f in ${mods[@]+"${mods[@]}"}; do
+        n=${f##*/}
+        n=${n%.roc}
+        c=${seen["import $n"]:-0}
+        if [ "$c" != 1 ]; then
+            echo "l0: $f: $c drivers import $n (it must be 1: add \`import $n\` to the driver with the smallest time in \$WORK/l0-times)"
+            rc=1
+        fi
+    done
+    return $rc
+}
+
 # --- Memory rule of scripts/test.sh (research/test-memory/RESULTS.md) ---
 # jobs_for <cores> <budget_mb> <reserve_mb> <per_job_mb>: how many jobs fit. min(cores, (budget - reserve) / per_job), never under 1. A pure function.
 jobs_for() {

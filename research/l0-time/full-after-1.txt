@@ -1,0 +1,30 @@
+== run 1 20:26:57
+
+step       result seconds  budget
+check      pass   1.3      10
+fmt        pass   0.1      5
+l0         pass   7.2      10
+l2         pass   6.7      30
+l3         pass   9.9      60
+selftest   pass   3.1      20
+l1         pass   46.0     60
+== run 2 20:28:12
+
+step       result seconds  budget
+check      pass   1.2      10
+fmt        pass   0.2      5
+l0         pass   6.8      10
+l2         pass   5.7      30
+l3         pass   9.8      60
+selftest   pass   2.9      20
+l1         pass   40.7     60
+== run 3 20:29:19
+
+step       result seconds  budget
+check      pass   1.3      10
+fmt        pass   0.2      5
+l0         pass   7.0      10
+l2         pass   6.5      30
+l3         pass   9.9      60
+selftest   pass   3.1      20
+l1         pass   42.0     60

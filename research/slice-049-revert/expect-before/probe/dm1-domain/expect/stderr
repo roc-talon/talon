@@ -1,0 +1,16 @@
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-03-3d3d3d3 fails for acme/json 2.1.0 (no module is named)
+  acme/json 2.1.0 fails on nightly-2026-10-02-2c2c2c2 .. nightly-2026-10-05-5f5f5f5
+  fix: tln roc use nightly-2026-10-06-6a6a6a6 (the oldest nightly that works)
+       or tln upgrade roc
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-12-9a9a9a9 fails for acme/json 2.1.0 (no module is named)
+  fix: tln roc use <id>
+       or tln upgrade roc
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-08-8c8c8c8 fails for acme/json 2.1.0 (no module is named)
+  acme/json 2.1.0 fails on nightly-2026-10-07-7b7b7b7 .. nightly-2026-10-09-9d9d9d9 (inferred on nightly-2026-10-08-8c8c8c8)
+  fix: tln roc use nightly-2026-10-06-6a6a6a6 (the oldest nightly that works)
+       or tln upgrade roc
+index: cached at 2026-10-15T11:59:50Z
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-10-0e0e0e0 fails for acme/json 2.1.0 (no module is named)
+  acme/json 2.1.0 fails on nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-10-0e0e0e0
+  fix: tln roc use nightly-2026-10-06-6a6a6a6 (the oldest nightly that works)
+       or tln upgrade roc

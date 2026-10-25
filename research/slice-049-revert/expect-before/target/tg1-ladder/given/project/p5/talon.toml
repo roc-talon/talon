@@ -1,0 +1,5 @@
+[dependencies]
+pf = "acme/mpf@=0.1.1"
+
+[build]
+target = "wasm32"

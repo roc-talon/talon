@@ -1,0 +1,73 @@
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-dev/.talon.json
+write_atomic $HOME/.cache/roc/toolchains/link-dev/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $PROJECT/roc-src/zig-out/bin/roc version
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
+args
+env_all
+clock
+cwd
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-dev/.talon.json
+write_atomic $HOME/.cache/roc/toolchains/link-dev/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $PROJECT/roc-src/zig-out/bin/roc version
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/copy-fix-1/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/copy-fix-1/roc version
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
+args
+env_all
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-dev/.talon.json
+exec $PROJECT/roc-src/zig-out/bin/roc version
+  env TALON_IN_PROXY=1
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-bad/.talon.json
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-new/.talon.json
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-gone/.talon.json
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/link-moved/.talon.json
+write_atomic $HOME/.cache/roc/toolchains/link-moved/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $PROJECT/roc-src/gone/roc version
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1

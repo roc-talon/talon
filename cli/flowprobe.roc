@@ -15,6 +15,7 @@ import lib.Known
 import lib.Net
 import lib.Nightlies
 import lib.Roots
+import lib.ZigInstall
 import RealFx
 
 ## A test tool, not part of `tln` (slice 002). It runs one Talon flow with the real `Fx`, so that an L3 case can check
@@ -40,6 +41,11 @@ import RealFx
 ## | --- | --- | --- |
 ## | `nightlies [options]` | `Nightlies.list!`, then `Nightlies.visible` | stderr: `index: cached at <time>` (offline, from the cache). stdout: for each visible nightly in the order of R-NS1: `nightly <id> <published_at> <size> <sha256 or none> <url>`, or `nightly <id> <published_at> no asset`, or `nightly <id> <published_at> <n> assets`. `no cached page` (offline, no page 1). |
 ## | `compiler [options] [--base <id>] <text>` | `Nightlies.list!`, then `Nightlies.pick`. `named` is the id of each candidate on the host (`Nightlies.candidates`). `auto` is the visible candidates (the base is kept: R-C9). | `compiler <id>`, or the failure line on stderr and the exit code of its kind |
+## Slice 044 adds one flow (the stand-in of `tln roc install --git`, slice 045, for its Zig step):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `zig [--yes] [--quiet] [--offline] [--llvm <target>:<size>] <need>` | `ZigInstall.ensure!` with the environment of the process (`ZIG`, `TALON_ZIG_INDEX`, `CI`, ...). `<need>` is the text of `minimum_zig_version`. `--llvm` gives the LLVM line of the dependency list (`<size>` is a number of bytes or `?`, default `x86_64-linux-musl:45000000`). | stderr: the dependency list, the answer line, the wait line. stdout: `zig <version> <how> <path>` (`how` is `found-env`, `found-path`, `found-installed`, `installed` or `present`). A failure prints its line to stderr and exits with the code of its kind. |
 main! = |args| {
 	fx = RealFx.make!(args.map(|a| a.display()))
 	match fx.args!() {
@@ -58,8 +64,9 @@ main! = |args| {
 		["fetch", .. as rest] => fetch!(fx, rest)
 		["nightlies", .. as rest] => finish!(fx, nightlies!(fx, rest))
 		["compiler", .. as rest] => finish!(fx, compiler!(fx, rest))
+		["zig", .. as rest] => finish!(fx, zig!(fx, rest))
 		_ => {
-			fx.err!("usage: flowprobe record <file>... | releases | hint | fetch | nightlies | compiler\n")
+			fx.err!("usage: flowprobe record <file>... | releases | hint | fetch | nightlies | compiler | zig\n")
 			Err(Exit(99))
 		}
 	}
@@ -269,5 +276,31 @@ compiler! = |fx, words| {
 		Ok(id) => fx.out!("compiler ${id}\n")
 		Err(error) => return Err(Nightlies.failure(error))
 	}
+	Ok({})
+}
+
+zig! : Fx, List(Str) => Try({}, Fail)
+zig! = |fx, words| {
+	llvm_text = option_of(words, "--llvm") ?? "x86_64-linux-musl:45000000"
+	llvm = match llvm_text.split_last(":") {
+		Ok(parts) => { target: parts.before, size: U64.from_str(parts.after).map_err(|_| Unknown) }
+		Err(_) => { target: llvm_text, size: Err(Unknown) }
+	}
+	need = match words.keep_if(|w| !w.starts_with("--") and w != llvm_text).last() {
+		Ok(t) => t
+		Err(_) => return Err(Fail.new(Usage, "zig needs the text of minimum_zig_version"))
+	}
+	done = ZigInstall.ensure!(
+		fx,
+		{ need, env: fx.env_all!(), yes: words.contains("--yes"), quiet: words.contains("--quiet"), json: Bool.False, offline: words.contains("--offline"), llvm },
+	)?
+	how = match done.how {
+		Found(Env) => "found-env"
+		Found(Path) => "found-path"
+		Found(Installed) => "found-installed"
+		Installed => "installed"
+		Present => "present"
+	}
+	fx.out!("zig ${done.version} ${how} ${done.path}\n")
 	Ok({})
 }

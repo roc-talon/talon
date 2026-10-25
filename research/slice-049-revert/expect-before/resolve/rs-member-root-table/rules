@@ -1,0 +1,2 @@
+R-WS5 R-EC19 R-TF4: a workspace member with its own talon.toml that has the table [resolution]. Only the root file may have it.
+install stops with exit 19 (kind input). The message names the file, the line of the table, and the tables that a member file may have. No file changes and no index call. The L0 test intent expect 2 checks the same rule for one file. This case checks that the command gives the member file the role Member, not Root.

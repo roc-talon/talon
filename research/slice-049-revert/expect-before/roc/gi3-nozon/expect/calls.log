@@ -1,0 +1,27 @@
+args
+env_all
+clock
+platform
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc/commits/my-branch
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+programs curl wget
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/Karakatiza666/roc/tarball/3b9f7c1d5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b
+sha256_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/build.zig.zon
+delete $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef

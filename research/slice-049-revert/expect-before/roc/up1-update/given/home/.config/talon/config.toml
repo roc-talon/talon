@@ -1,0 +1,4 @@
+# my settings
+nightly = true
+default-roc = "nightly-2026-10-09-258ab27"   # tln roc default writes it
+min-release-age = "2d"

@@ -1,0 +1,4 @@
+tln: error[input]: $HOME/.cache/roc/toolchains/link-bad/.talon.json: the link link-bad has no absolute target path
+tln: error[input]: $HOME/.cache/roc/toolchains/link-new/.talon.json: format 2 is newer than this tln (format 1). Run: tln tool update talon
+tln: error[environment]: $HOME/.cache/roc/toolchains/link-gone/.talon.json: the link link-gone has no .talon.json. Run: tln roc remove link-gone, then tln roc link gone <path>.
+tln: error[environment]: cannot run $PROJECT/roc-src/gone/roc: NotFound

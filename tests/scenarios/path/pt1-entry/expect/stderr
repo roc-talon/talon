@@ -1,0 +1,4 @@
+tln: error[usage]: 'odd' is a foreign URL (https://example.com/pkg/{v}/x.tar.zst): roc keeps it under another cache rule, so it has no directory in packages/ (R-PTH3)
+tln: error[usage]: no entry 'nope' in the header of $PROJECT/main.roc. Entries: pf, json, lib, odd.
+tln: error[usage]: tln path needs an alias: a name in the header of the project file
+tln: error[network]: acme/json 2.1.0 is not in the package cache and --offline is set (https://github.com/acme/json/releases/download/2.1.0/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst)

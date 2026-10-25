@@ -1,0 +1,141 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+expect {
+    text = lines(["[dependencies]", "json = \"^1\"", "", "[scripts]", "build = [\"roc build main.roc\", { in = \"d\", run = \"@x\" }]"])
+    bad = lines(["[scripts]", "n = 5"])
+    warn_view(text, Standalone) == Ok([])
+        and warn_view(text, Root) == Ok([])
+            and warn_view(text, Member) == Ok([])
+                and warn_view(bad, Standalone) == Ok([])
+                    and warn_view(bad, Member) == Ok([])
+                        and warn_view("[workspace]\nmembers = []\n\n[scripts]\nb = \"x\"\n", Root) == Ok([])
+                            and warn_view("[tools]\n", Member) == Err("19 talon.toml:1: the table [tools] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)")
+}
+
+Roc application crashed with this message:
+
+	todo: slice 057
+
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:315:1
+
+expect {
+    text = lines(["[tools]", "roc-cfw = { ref = \"acme/foo@^1\", url = \"${foo10}\" }", "fmt = { ref = \"acme/fmt\", note = \"x\" }"])
+    table_view(text) == Ok("roc-cfw,fmt|talon.toml:3: unknown key tools.fmt.note")
+        and table_view("[scripts]\nb = 5\n") == Ok("|")
+            and table_view("[tools]\nx = 5\ny = 6\n") == Err("19 talon.toml:2: tools.x: must be a table with ref and url")
+}
+
+Roc application crashed with this message:
+
+	todo: slice 057
+
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:324:1
+
+expect {
+    stop = Fail.new(Consent, "the compiler nightly-2026-10-12-2664a27 is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.")
+    other = Fail.new(Consent, "no consent for the download of acme/foo")
+    build = Fail.new(AppError, "the build failed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.")
+    no_url = RunTools.no_url({ path: "/p/talon.toml", key: "fmt" })
+    no_url.kind.code() == 14
+        and no_url.message == "the [tools] of /p/talon.toml are not locked: tools.fmt has no url. Run tln install to lock them."
+            and RunTools.stop(stop).message == "the compiler nightly-2026-10-12-2664a27 is not installed. Pass --yes or set TALON_AUTO_INSTALL=yes."
+                and RunTools.stop(stop).kind.code() == 13
+                    and RunTools.stop(other).message == other.message
+                        and RunTools.stop(build).message == build.message
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 55 tests in 6120.9 ms.:
+    44 passed
+    11 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 6120.9 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL run/rn1-scripts
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 057
+FAIL run/rn2-words
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 057
+FAIL run/rn3-tools
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 057
+commands: 140 passed, 3 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -+++ home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/main.roc
+      -@@ -0,0 +1,7 @@
+      -+app [main!] {
+      -+	pf: platform "pf/main.roc",
+      -+	roc: "nightly-2026-10-14-38a3029",
+      -+}
+      -+
+      -+# acme/app 1.1.0
+      -+main! = |_args| Ok({})
+      ---- home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/pf/main.roc
+      -+++ home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/pf/main.roc
+      -@@ -0,0 +1,13 @@
+      -+platform ""
+      -+	requires {
+      -+		main! : List(Str) => Try({}, [Exit(I32), ..])
+      -+	}
+      -+	exposes []
+      -+	packages {}
+      -+	provides { "roc_main": main_for_host! }
+      -+	targets: {
+      -+		x64musl: { inputs: ["libhost.a", app] },
+      -+		arm64musl: { inputs: ["libhost.a", app] },
+      -+	}
+      -+
+      -+main_for_host! = |_args| 0
+      ---- home/.cache/roc/talon/projects.json
+      -+++ home/.cache/roc/talon/projects.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/proj/main.roc","last_use":1792065600}]}
+      ---- home/.cache/roc/talon/x/3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa/app
+      -+++ home/.cache/roc/talon/x/3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa/app
+      -@@ -0,0 +1,3 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/app 1.1.0 args: $*"
+      -+exit 3
+      ---- home/.cache/roc/talon/x/3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa/manifest.json
+      -+++ home/.cache/roc/talon/x/3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa/manifest.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"bundle":"ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw","last_run":"2026-10-15T12:00:00Z"}
+      ---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -@@ -0,0 +1 @@
+      -+2026-10-15T12:00:00Z
+      ---- project/proj/made
+      -+++ project/proj/made
+      -@@ -0,0 +1,3 @@
+      -+#!/bin/sh
+      -+echo "ran:  args: $*"
+      -+exit 3
+    roc calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +0,0 @@
+      -unbundle ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst
+    http requests differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1 +0,0 @@
+      -GET /dl/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst 200
+scenarios: 73 passed, 2 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.5      10
+fmt        pass   0.2      5
+l0         FAIL   6.3      10
+l2         FAIL   7.6      30
+l3         FAIL   10.0     60
+selftest   pass   3.3      20

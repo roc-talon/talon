@@ -1,0 +1,14 @@
+cli/lib/XCache.roc
+cli/lib/XCmd.roc
+cli/lib/XCacheIo.roc
+cli/lib/XTake.roc
+cli/lib/XFlow.roc
+tests/unit/XCacheTest.roc
+tests/unit/XCmdTest.roc
+tests/commands/cases/x/x1-run/
+tests/commands/cases/x/x2-offline/
+tests/commands/cases/tool/tk1-takeover/
+tests/commands/cases/gc/gc4-x/
+tests/scenarios/tools/tx1-x-run/
+docs/slices/049-x.md
+research/slice-049-revert/

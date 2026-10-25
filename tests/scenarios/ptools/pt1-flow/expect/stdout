@@ -1,0 +1,53 @@
+-- 1: tln add --tool selects the newest release, builds it (R-PT3, R-PT6) and then writes the entry: talon.toml is made, with the ref ^1.1.0 and the url. The build is in the x cache, there is no tools.json and no bin dir (R-PT12).
+== tln add --tool acme/app --file app/main.roc
+added tool app 1.1.0 (acme/app)
+$PROJECT/app/talon.toml: tools.app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+exit 0
+[tools]
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa
+cannot access '$HOME/.local/share/talon': No such file or directory
+cannot access '$HOME/.local/bin': No such file or directory
+api: 1, downloads: 1, builds: 1
+-- 2: a second entry for the same app, with an exact version: the key is --as (R-PT3). The build of 1.0.0 is a second x entry.
+== tln add --tool acme/app@1.0.0 --as old --file app/main.roc
+added tool old 1.0.0 (acme/app)
+$PROJECT/app/talon.toml: tools.old = { ref = "acme/app@1.0.0", url = "https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst" }
+exit 0
+[tools]
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+old = { ref = "acme/app@1.0.0", url = "https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst" }
+x: 2 entries, api: 1, downloads: 2, builds: 2
+-- 3: the machine has no x cache (a CI job). tln install --frozen checks the entries (R-PT7), makes no index call (R-AU6) and builds each tool that has no binary (R-PT6, R-SO22). It writes nothing.
+== tln install --frozen --file app/main.roc
+the header satisfies talon.toml
+built tool app 1.1.0 (acme/app)
+built tool old 1.0.0 (acme/app)
+exit 0
+talon.toml: not changed
+x: 2 entries, api: 1, downloads: 2, builds: 4
+-- 4: 36 days later (more than the gc age). The project runs tln install --frozen again (R-PD9): the project is used, nothing is built. tln cache gc keeps the 2 builds, which no tln x run used for 36 days: the project names them (R-PT14, R-GC7). The compiler stays too: the project pins it. (The age of a package dir is its real time, so R-GC4 is an L2 case.)
+== tln install --frozen --file app/main.roc
+the header satisfies talon.toml
+exit 0
+== tln cache gc
+nothing to remove
+exit 0
+x: 2 entries, builds: 4
+-- 5: tln remove --tool drops the entry old. The next gc removes its build (no known project names the bundle of 1.0.0 now) and keeps the build of 1.1.0.
+== tln remove --tool old --file app/main.roc
+removed tool old (acme/app)
+$PROJECT/app/talon.toml: tools.old removed
+exit 0
+[tools]
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+== tln cache gc
+removed $HOME/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269 (499 B)
+freed 499 B
+exit 0
+x: 1 entries, builds: 4
+-- 6: the build of 1.1.0 is there, so tln install --frozen builds nothing (R-PT9).
+== tln install --frozen --file app/main.roc
+the header satisfies talon.toml
+exit 0
+x: 1 entries, builds: 4

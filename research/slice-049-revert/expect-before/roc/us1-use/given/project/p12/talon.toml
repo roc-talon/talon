@@ -1,0 +1,2 @@
+[toolchain]
+roc = ">=nightly-2026-10-12-2664a27"

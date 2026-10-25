@@ -119,6 +119,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.last-use
 probes 1
@@ -276,6 +277,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.last-use
 probes 1
@@ -358,6 +360,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.last-use
 probes 1
@@ -475,6 +478,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.last-use
 probes 1
@@ -623,6 +627,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
 probes 1
@@ -716,6 +721,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-08-0a1b2c3 $HOME/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.last-use
 probes 1
@@ -798,6 +804,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
 probes 1
@@ -891,6 +898,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2664a27 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.last-use
 probes 1
@@ -984,6 +992,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1a2b3c4 $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.last-use
 probes 1
@@ -1077,6 +1086,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 probes 1
@@ -1170,6 +1180,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/roc check main.roc timeout=30
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.last-use
 probes 1

@@ -1,0 +1,16 @@
+Slice 049, the take-over of an `x` cache entry by `tln tool install` (entry `commands`): R-B1 to R-B4, R-B7, R-NI9, R-PT13 (the copy is L0 only). One home with the compiler installed, `TALON_NOW=2026-10-15T12:00:00Z`, `CI=true` (no person), no tty.
+`tools.json` has `qux` 1.0.0 (the data bin file and the bin dir entry are there). `talon/x/` has entries of acme/foo 1.1.0, acme/bar 1.0.0, acme/qux 2.0.0, acme/ren 1.0.0, acme/lat 1.0.0, acme/yank 0.9.0, acme/off 1.0.0 and acme/bad 1.0.0 (its binary was changed after the build). acme/foo, bar, ren, lat, off have 1.1.0 as the newest release (acme/foo: 1.1.0 and 1.0.0).
+The fake `rename` of the binary of acme/ren to its temp name in the data bin dir says `Exists`: another file system.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/foo` | the entry 1.1.0 is the newest release: the note of R-C6, no `is available` line, no download, no build. Under the lock of `tools.json`: the sha256 of the entry binary, `rename` of the binary to the data bin dir, the bin dir entry (a hard link), `tools.json` from the manifest, then the entry dir is deleted | R-B1, R-B4, R-C6, R-T3, R-ST7, R-CC6 |
+| 2 | `tool install acme/bar` | the entry 1.0.0 matches (no selector) and 1.1.0 is newer: the line `installed cached 1.0.0 (1.1.0 is available: tln tool install bar@latest)` (R-B3) | R-B1, R-B3, R-B4 |
+| 3 | `tool install acme/qux@2.0.0` | an installed tool 1.0.0 and the entry 2.0.0: the exact selector is not the installed version, the entry is taken: `replaced qux 1.0.0 with 2.0.0` | R-B4, R-B2, R-T26, R-T27 |
+| 4 | `tool install acme/ren` | the `rename` fails: the binary is copied, then the entry dir is deleted all the same | R-B4 |
+| 5 | `tool install acme/lat@latest` | the entry 1.0.0 is not the newest release: no match, a normal build of 1.1.0. The old entry stays (it waits for GC) | R-B2, R-B4 |
+| 6 | `tool install acme/yank` | the entry 0.9.0 is not a candidate of the list (R-B3): a normal build of 1.0.0 | R-B3 |
+| 7 | `tool install acme/off --offline` | no list is read. The entry matches: the prompt R-NI9, no person: exit 13, nothing changed | R-B7, R-NI9, R-NM5 |
+| 8 | `tool install acme/off --offline --allow-unchecked` | the answer flag: the entry is taken, with no note of R-B3 | R-B7, R-NI9, R-B4 |
+| 9 | `tool install acme/foo` | foo 1.1.0 is installed (run 1): `foo 1.1.0 is installed`, no list of `talon/x` (R-T26 first) | R-T26 |
+| 10 | `tool install acme/bad` | the binary of the entry has not the sha256 of its manifest (the file was changed): the check is before the move, exit 16 (kind integrity, question Q-T3: the design does not say what follows), nothing is changed, the entry stays | R-B4 |

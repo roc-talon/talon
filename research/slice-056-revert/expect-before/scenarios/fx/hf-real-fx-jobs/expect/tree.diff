@@ -1,0 +1,5 @@
+--- project/new.txt
++++ project/new.txt
+@@ -0,0 +1 @@
++hello
+\ No newline at end of file

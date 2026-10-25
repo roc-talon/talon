@@ -1,0 +1,37 @@
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: /usr/local/bin/roc comes before $HOME/.local/bin on PATH, so it runs in place of the roc launcher. Talon changes nothing there.
+keeping $HOME/.local/bin/roc
+note: $HOME/.local/bin/roc is not a Talon file, so no roc launcher was installed. To replace it, run: tln setup --replace-roc
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: /usr/local/bin/roc comes before $HOME/.local/bin on PATH, so it runs in place of the roc launcher. Talon changes nothing there.
+moving $HOME/.local/bin/roc to $HOME/.local/bin/roc.old
+made $HOME/.local/bin/roc (hard link)
+moved $HOME/.local/bin/roc to $HOME/.local/bin/roc.old, linked as link-system
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: /usr/local/bin/roc comes before $HOME/.local/bin on PATH, so it runs in place of the roc launcher. Talon changes nothing there.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: /usr/local/bin/roc comes before $HOME/.local/bin on PATH, so it runs in place of the roc launcher. Talon changes nothing there.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+adding $HOME/.local/bin to PATH in $HOME/gh/path
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+adding $HOME/.local/bin to PATH in $HOME/.config/fish/conf.d/talon.fish
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/share/talon/bin/bar is missing, so tln setup made no entry for bar.
+not adding $HOME/.local/bin to PATH
+tln: error[usage]: tln setup takes no operand, got 1

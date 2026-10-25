@@ -1,0 +1,4 @@
+min-release-age = "0d"
+
+[probe]
+timeout = 9

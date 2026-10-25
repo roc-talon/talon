@@ -1,5 +1,6 @@
 import Add
 import Answer
+import BuildTarget
 import Closure
 import Compiler
 import ConfigToml
@@ -138,8 +139,9 @@ ResolveBase :: [].{
 	## `started` is the compiler that the first probe started. `tried` are the tuples that the ladder dropped, for `OracleBase.Compat.conflicts`.
 	## Slice 036b2: `used` are the scan results (`OracleBase.Compat.used`): one row for each release that the command scanned.
 	## Slice 039b: `optional` is the state of `PickOptional` (the type of `PickOptional.State`, written here because `PickOptional` imports this module): the optional compilers that are open, the ones that the command installed, and the counts. It goes on to a second search and to a re-search of the ladder.
+	## Slice 054 (R-C10): `seen` are the target names of the platform releases that the loop read (`BuildTarget.targets_of`). `BuildTarget.gate` needs them.
 	## Slice 036c: `domain` is D (`OracleBase.Compat.domain`): `Err(NotRead)` until the command reads the compiler list (the verdict `Wide`), then the ids oldest first, or `[compiler]` when the list cannot be read. `inferred` are the inferred facts of `Epochs.epochs` over D and the rows.
-	Probed : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), count : U64, started : Try(Start.Started, [None]), tried : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), listed : Try(List(Nightlies.Release), [NotRead]), optional : { open : List(Str), got : List(Str), tried : U64, downloads : U64, dropped : U64 } }
+	Probed : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), count : U64, started : Try(Start.Started, [None]), tried : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), listed : Try(List(Nightlies.Release), [NotRead]), optional : { open : List(Str), got : List(Str), tried : U64, downloads : U64, dropped : U64 }, seen : List(BuildTarget.Seen) }
 
 	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need, and the facts of the probe rounds.
 	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move), nightly : Try(Str, [None]), probed : Probed }
@@ -307,6 +309,13 @@ ResolveBase :: [].{
 	## Slice 010: the headers that the pick read, as the nodes of the closure walk (D3). The pick keeps no alias, so the aliases of these nodes are empty. A platform entry is the first entry.
 	known_nodes : List(Fact) -> List(Closure.Node)
 	known_nodes = |facts| facts.map(|f| Pick.node_of(f))
+
+	## Slice 054 (R-TG1, R-TG5, R-PD6): `[build] target` of the nearest `talon.toml` of a member (the root file when the member has no file of its own). `Err(Unset)` for no file or no key.
+	member_target : Vars.Member -> Try(Str, [Unset])
+	member_target = |member| match member.toml {
+		Ok(t) => t.intent.build.target
+		Err(NoToml) => Err(Unset)
+	}
 
 	## Slice 010 (R-CM2, R-H7, R-AL2): the closure walk of the members, in the order of the list. A node that one walk read is not read again by the next. A failure of one walk is the failure.
 	closure! : Fx, Request, { members : List({ file : Str, entries : List(Closure.Entry) }), known : List(Closure.Node) } => Try(List({ file : Str, walked : Closure.Walked }), Fail)

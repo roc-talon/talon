@@ -1,0 +1,24 @@
+== tool update env:TALON_INTERACTIVE=0
+exit 13
+== tool update
+exit 13
+== tool update
+updated foo 1.1.0 to 1.2.0 (acme/foo)
+bar 1.0.0 is up to date
+updated gm git main@11111111 to git main@bbbbbbbb (acme/gm)
+gs git stable@aaaaaaaa is up to date
+gp: pinned to commit dd03c09e
+exit 0
+== tool update --json
+{"schema":1,"command":"tool update","ok":true,"data":{"tools":[{"tool":"foo","name":"acme/foo","how":"up_to_date","from":null,"to":"1.2.0"},{"tool":"bar","name":"acme/bar","how":"up_to_date","from":null,"to":"1.0.0"},{"tool":"gm","name":"acme/gm","how":"up_to_date","from":null,"to":"git main@bbbbbbbb"},{"tool":"gs","name":"acme/gs","how":"up_to_date","from":null,"to":"git stable@aaaaaaaa"},{"tool":"gp","name":"acme/gp","how":"pinned","from":null,"to":"git dd03c09e@dd03c09e"}]},"error":null}
+exit 0
+== tool update foo
+foo 1.2.0 is up to date
+exit 0
+== tool update gp
+gp: pinned to commit dd03c09e
+exit 0
+== tool update nope
+exit 2
+== tool update talon
+exit 2

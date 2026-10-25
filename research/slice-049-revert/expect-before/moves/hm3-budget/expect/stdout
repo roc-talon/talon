@@ -1,0 +1,3 @@
+== add acme/json@2.2.0 --file ws/apps/b/main.roc
+note: json 2.2.0 is 1d old (min-release-age 2d)
+exit 12

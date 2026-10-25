@@ -1,0 +1,18 @@
+built with nightly-2026-10-12-2664a27 (pin: nightly-2026-10-11-1a2b3c4)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/ev 1.0.0 with nightly-2026-10-12-2664a27
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/two 1.0.0 with nightly-2026-10-12-2664a27
+building acme/two 1.0.0 with nightly-2026-10-05-aaaaaaa
+built with nightly-2026-10-05-aaaaaaa (pin: nightly-2026-10-11-1a2b3c4)
+trying 4 installed compiler releases
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/three 1.0.0 with nightly-2026-10-12-2664a27
+tln: error[consent]: no installed compiler release built acme/three 1.0.0 (nightly-2026-10-14-38a3029: check failed: expected list separator; nightly-2026-10-12-2664a27: build failed: type mismatch; nightly-2026-10-05-aaaaaaa: check failed: type mismatch; nightly-2026-10-01-bbbbbbb: check failed: type mismatch). The compiler nightly-2026-10-11-1a2b3c4 is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-11-1a2b3c4 is not installed. Nothing was downloaded and nothing was built. Run: tln roc install nightly-2026-10-11-1a2b3c4, pass --roc pinned, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-11-1a2b3c4 is not installed. Nothing was downloaded and nothing was built. Run: tln roc install nightly-2026-10-11-1a2b3c4, pass --roc pinned, or set TALON_AUTO_INSTALL=yes.
+built with nightly-2026-10-01-bbbbbbb (pin: nightly-2026-10-11-1a2b3c4)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/evp 1.0.0 with nightly-2026-10-01-bbbbbbb
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/dl 1.0.0 with nightly-2026-10-11-1a2b3c4

@@ -1,0 +1,15 @@
+cwd:i1 init
+cwd:i2 env:CI=true env:TALON_AUTO_INSTALL=no env:HOME={w}/home2 init --ci none
+cwd:i3 env:HOME={w}/home3 init app --yes
+cwd:i4 env:CI=true env:HOME={w}/home4 init
+cwd:i5 env:HOME={w}/home5 init --platform acme/pfx
+cwd:i6 env:HOME={w}/home6 init package
+cwd:i7 env:HOME={w}/home7 init
+cwd:i8/sub env:HOME={w}/home8 init
+cwd:i9 env:HOME={w}/home9 init --json
+cwd:i10 env:HOME={w}/home10 init lib
+cwd:i11 env:HOME={w}/home11 init
+cwd:i12 env:HOME={w}/home12 init
+cwd:i13 env:CI=true env:ROC_TOOLCHAIN=nightly-2026-10-10-0e0e0e0 env:HOME={w}/home13 init --allow-downloads
+cwd:i14 env:HOME={w}/home15 init --platform acme/young
+cwd:i15 env:HOME={w}/home14 init --offline

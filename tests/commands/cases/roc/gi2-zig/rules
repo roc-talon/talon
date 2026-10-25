@@ -1,0 +1,9 @@
+Slice 045, the Zig dependency and the failures of a source build (entry `commands`). No `zig` is on `PATH`, the home is empty (no compiler, no `config.toml`), the Zig index is the one of `zig/zi1-install`.
+Interactive: the first `ask!` gets `n`, the second the Enter key. The fake `zig version` prints 0.17.0 (the Zig that run 2 installs).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `--git Karakatiza666/roc@my-branch`, the answer `n` | the source is downloaded and read, the list shows zig missing, the prompt, exit 13. No lock, no toolchain dir, the scratch dir is deleted | R-NI6, R-DL1, R-D1, R-D3, R-D4, R-CC2 |
+| 2 | the same, Enter | Zig 0.17.0 is installed (its lock, then the build lock), the build runs with the program of that Zig, the first compiler is the default | R-D2, R-NI6, R-R3, R-SO15, R-CC3, R-CC4 |
+| 3 | `--git @main` | Zig is installed: found. `zig build` exits 1: exit 1, the temp dir and the scratch dir are deleted, no toolchain dir | R-R3, R-CC2 |
+| 4 | `--git Karakatiza666/roc@wip`, a busy lock whose holder makes the dir | under the lock the dir is there: no build, `is already installed` | R-CC3, R-CC4 steps 3, 4, R-CC5 |

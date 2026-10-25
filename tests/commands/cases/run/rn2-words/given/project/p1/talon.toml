@@ -1,0 +1,6 @@
+[scripts]
+v = "roc +nightly-2026-10-14-38a3029 version"
+t = "tln --version"
+s = "scripts/notes.roc --since v1"
+tf = ["tln frobnicate", "tool-never"]
+w = "scripts/notes.roc"

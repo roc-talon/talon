@@ -1,0 +1,13 @@
+upgrade --file p1/main.roc
+upgrade --file p2/main.roc
+upgrade parser --file p3/main.roc
+upgrade json --file p4/main.roc
+upgrade --strategy lowest --file p1/main.roc
+upgrade --file ws/apps/a/main.roc
+update --file p7/main.roc
+update json@latest --file p5/main.roc
+update json@latest --file p6/main.roc
+upgrade --dry-run --json --file p8/main.roc
+upgrade json --file p9/main.roc
+upgrade json --file p10/main.roc
+update json@^2.1 parser@^1 --file p11/main.roc

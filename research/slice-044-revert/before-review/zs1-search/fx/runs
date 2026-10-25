@@ -1,0 +1,14 @@
+# 1: nothing fits (PATH has 0.16.0, the installed dirs are 0.18.0 and no Zig), --offline: exit 15 after the list
+0.17.0 offline
+# 2: ZIG fits and comes first
+0.17.0 offline env:ZIG=/opt/z17/zig
+# 3: PATH, the same major and minor (0.16.0 for 0.16.2)
+0.16.2 offline
+# 4: an installed Zig (0.18.0 for 0.18.1)
+0.18.1 offline
+# 5: --quiet hides the list
+0.16.2 offline quiet
+# 6: ZIG and PATH both fit: ZIG comes first
+0.16.2 offline env:ZIG=/opt/z16/zig
+# 7: a Windows host runs zig.exe
+0.18.1 offline

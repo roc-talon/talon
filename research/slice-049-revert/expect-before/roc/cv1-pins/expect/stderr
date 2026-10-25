@@ -1,0 +1,34 @@
+warning: compat.db is busy: Talon goes on with no saved facts
+downloading nightly-2026-10-15-38e6c42 (73.3 MB)
+warning: cannot use $HOME/.cache/roc/talon/compat.db (unable to open database file): Talon goes on with no saved facts. Removing the file resets the stored facts and the first-seen sha256 of compilers.
+downloading nightly-2026-10-14-38a3029 (73.4 MB)
+warning: compat.db is busy: Talon goes on with no saved facts
+downloading nightly-2026-10-16-1df370f (73.2 MB)
+warning: compat.db is busy: Talon goes on with no saved facts
+downloading nightly-2026-10-12-2664a27 (73.6 MB)
+tln: error[integrity]: sha256 of nightly-2026-10-12-2664a27 differs: expected 2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881, got b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78. Talon deleted the download.
+warning: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-16-1df370f for linux_x86_64 changed: first seen bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-18-5349569 for linux_x86_64 changed: first seen aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+downloading nightly-2026-10-17-601b54c (73.1 MB)
+tln: error[integrity]: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not use this compiler. Select another compiler.
+tln: error[integrity]: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not use this compiler. Select another compiler.
+tln: error[integrity]: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not use this compiler. Select another compiler.
+tln: error[integrity]: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not use this compiler. Select another compiler.
+tln: error[integrity]: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not use this compiler. Select another compiler.
+warning: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-16-1df370f for linux_x86_64 changed: first seen bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-18-5349569 for linux_x86_64 changed: first seen aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+tln: error[consent]: nightly-2026-10-17-601b54c is not installed. Nothing was downloaded. Run: tln roc install nightly-2026-10-17-601b54c, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+warning: compat.db is busy: the facts of this command are not saved
+warning: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+downloading nightly-2026-10-09-258ab27 (73.9 MB)
+tln: error[input]: $HOME4/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon
+warning: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-16-1df370f for linux_x86_64 changed: first seen bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-18-5349569 for linux_x86_64 changed: first seen aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+tln: error[usage]: no compiler matches nightly-2030
+tln: error[network]: nightly-2026-10-14-38a3029 is not installed and --offline is set
+warning: the sha256 of nightly-2026-10-13-91fa0c2 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-16-1df370f for linux_x86_64 changed: first seen bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-18-5349569 for linux_x86_64 changed: first seen aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.

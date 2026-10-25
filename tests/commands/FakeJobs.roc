@@ -44,7 +44,7 @@ FakeJobs :: [].{
 				Ok(l) => Err(Failed(l.drop_prefix("error failed ")))
 				Err(_) => match (etag, sent) {
 					(Ok((_, tag)), Ok((_, same))) if tag == same => Ok({ status: 304, headers, body: "" })
-					_ => Ok({ status, headers, body: FakeBase.read_or_empty!(route) })
+					_ => Ok({ status, headers, body: route_body!(route) })
 				}
 			}
 		}
@@ -100,7 +100,7 @@ FakeJobs :: [].{
 		units = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/units")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
 		var $results = []
 		for spec in specs {
-			index = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(|l| l.starts_with("  probe ") and !l.contains("/packages/")).len()
+			index = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(|l| l.starts_with("  probe ") and !(l.contains("/packages/") and l.contains(" check "))).len()
 			FakeBase.log!(w, "  probe ${spec.dir} ${spec.compiler} ${spec.program} ${Str.join_with(spec.args, " ")} timeout=${spec.timeout.to_str()}")
 			if !spec.env.is_empty() {
 				FakeBase.log!(w, "    env ${Str.join_with(spec.env.map(|(name, value)| "${name}=${value}"), " ")}")
@@ -123,6 +123,13 @@ FakeJobs :: [].{
 			} else {
 				match rows.get(index) {
 					Ok([code, out, err]) => { ended: probe_ended(code), stdout: text!(out), stderr: text!(err) }
+					Ok([code, out, err, made]) => {
+						# Slice 046: a 4th field lists the items that the probe makes (`file:<path>`, `dir:<path>`, as `jobs`): `{w}` is the case dir, `{out}` is the value of `--output=`.
+						for item in made.split_on(";").keep_if(|m| m != "-" and !m.is_empty()) {
+							FakeBase.create_item!(item.replace_each("{w}", w).replace_each("{out}", output_of(spec.args)))
+						}
+						{ ended: probe_ended(code), stdout: text!(out), stderr: text!(err) }
+					}
 					_ => default_probe(spec)
 				}
 			}
@@ -136,6 +143,25 @@ FakeJobs :: [].{
 	exec! = |w, run| {
 		joined = Str.join_with(run.argv, " ")
 		FakeBase.log!(w, "exec ${joined}")
+		for (name, value) in run.env {
+			FakeBase.log!(w, "  env ${name}=${value}")
+		}
+		rules = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/exec")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
+		match rules.find_first(|row| joined.contains(row.first() ?? "")) {
+			Ok([_, code, ..]) => if code.starts_with("notstarted:") {
+				Err(NotStarted(code.drop_prefix("notstarted:")))
+			} else {
+				Ok(I32.from_str(code) ?? 99)
+			}
+			_ => Ok(0)
+		}
+	}
+
+	## Slice 057: `exec!` with a working directory. The log line is `exec_in <cwd> <arguments>`, the rules are those of `fx/exec`.
+	exec_in! : Str, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
+	exec_in! = |w, run| {
+		joined = Str.join_with(run.argv, " ")
+		FakeBase.log!(w, "exec_in ${run.cwd} ${joined}")
 		for (name, value) in run.env {
 			FakeBase.log!(w, "  env ${name}=${value}")
 		}
@@ -277,4 +303,18 @@ word_after : List(Str), Str -> Str
 word_after = |argv, flag| match argv.find_first_index(|word| word == flag) {
 	Ok(i) => argv.get(i + 1) ?? ""
 	Err(_) => ""
+}
+
+## Slice 046: the value of the `--output=<path>` argument of a build probe, or the empty text.
+output_of : List(Str) -> Str
+output_of = |args| match args.find_first(|word| word.starts_with("--output=")) {
+	Ok(word) => word.drop_prefix("--output=")
+	Err(_) => ""
+}
+
+## Slice 046: the body of a route. A route that is a directory (a repo URL `repos/acme/none` that is also the dir of `repos/acme/none/releases`) has its answer in the file `<dir>/@`.
+route_body! : Str => Str
+route_body! = |route| match Path.is_dir!(Path.utf8(route)) {
+	Ok(Bool.True) => FakeBase.read_or_empty!("${route}/@")
+	_ => FakeBase.read_or_empty!(route)
 }

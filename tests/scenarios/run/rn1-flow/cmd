@@ -1,0 +1,64 @@
+# R-CM24 R-RUN2 R-RUN4 R-RUN5 R-RUN7 R-RUN8 R-RUN9 R-RUN10 R-RUN11 R-RUN3 R-RUN6 R-PT8 R-PT9 R-PT10 R-PT12 R-HK1 R-RUN15 R-SE17 R-EC18 (slice 057): `tln run` end to end with the real Fx (children are real `sh` processes), the real curl, the real `roc unbundle`, the fake release server (given/http: the real app bundle of
+# acme/app 1.1.0) and the fake compiler nightly-2026-10-14-38a3029 in the store (as the case ptools/pt1-flow: its binary prints `ran: ... args: ...` and exits 3). The project `proj` has `[tools]` with `app` and many scripts, `proj/sub/talon.toml` has the script `here`.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+X=$XDG_CACHE_HOME/roc/talon/x
+api() { if [ -f $D/http.log ]; then grep -c '/api/' $D/http.log || true; else echo 0; fi; }
+downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
+builds() { if [ -f $D/build.log ]; then wc -l < $D/build.log; else echo 0; fi; }
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+cd proj
+
+echo "-- 1: the list of scripts (R-RUN11, R-CM24): on stdout, each name with its steps. No child runs."
+st tln run
+
+echo "-- 2: a script with a step that is one command: the 2 variables of R-RUN9 (the name of the script, the directory of the step), no other change of the environment (R-RUN3)."
+st tln run greet
+
+echo "-- 3: the words after -- go to the last step as they are (R-RUN10). An argument with a space is one argument."
+st tln run args -- one "two words" --flag
+
+echo "-- 4: @name and in steps (R-RUN4, R-RUN8). The step in sub runs @here from sub/talon.toml with its own directory. TALON_SCRIPT stays the name that the user typed."
+st tln run chain
+
+echo "-- 5: the first step that fails stops the run and its exit code is the exit code of tln (R-RUN5, R-RUN7). The step after it does not start."
+st tln run fail3
+
+echo "-- 6: a child that ends by a signal: 128 + the number (R-RUN7)."
+st tln run sig
+
+echo "-- 7: a program that is not on PATH: exit 18 (environment), the 1st step ran (R-RUN7, R-EC18)."
+st tln run gone
+
+echo "-- 8: a step with a shell word is exit 19 before the first step: no step runs, and no file is made (R-RUN2)."
+st tln run shell
+ls made 2>&1 | sed -e 's/^ls: //'
+
+echo "-- 9: a name that no talon.toml has is exit 2 (R-RUN12). tln build is no script call (R-RUN17)."
+st tln run nosuch
+st tln build
+
+echo "-- 10: a step with a key of [tools] (R-RUN3 point 2). There is no build yet: the bundle of the url is fetched and built (R-PT9), with no release list (R-PT8). The binary exits 3, as the fake compiler writes it. The tools.json, the bin dir and PATH are not touched (R-PT12, R-PT10)."
+st tln run t
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+ls -A $X | wc -l
+ls -A $HOME/.local/share/talon $HOME/.local/bin 2>&1 | sed -e 's/^ls: //'
+st tln run penv
+
+echo "-- 11: the second run uses the build: no download, no build (R-PT9). The args of -- go to the last step, and when that is a tool, to the tool."
+st tln run t2 -- extra "two words"
+echo "api: $(api), downloads: $(downloads), builds: $(builds)"
+
+echo "-- 12: the word roc runs the compiler that the proxy of this tln selects (R-RUN3 point 1: the pin of main.roc), in the directory of the step. The fake compiler logs its call and writes the output file."
+st tln run rb
+ls made
+tail -1 $D/build.log | sed -e "s,^$PWD,\$PROJECT/proj,"
+
+echo "-- 13: hooks: tln install --frozen and tln list never run a script (R-HK1, R-RUN15, R-SE17). Only tln run does."
+rm -f marker
+st tln install --frozen --file main.roc
+st tln list --file main.roc
+ls marker 2>&1 | sed -e 's/^ls: //'
+st tln run mark
+ls marker

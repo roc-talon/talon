@@ -1,0 +1,15 @@
+M1 | search order: PATH before ZIG | l0 FAIL | l2 FAIL | l3 pass
+M2 | match by the whole version, not the major and minor | l0 FAIL | l2 FAIL | l3 FAIL
+M3 | a temp dir, a lock dir and zig-dev count as an installed Zig | l0 FAIL | l2 FAIL | l3 pass
+M4 | the sha256 check does not stop the install | l0 pass | l2 FAIL | l3 FAIL
+M5 | any shasum text is accepted (short, not hex) | l0 FAIL | l2 pass | l3 pass
+M6 | the master entry counts when its version has the series | l0 FAIL | l2 pass | l3 pass
+M7 | the keys of the 2 macOS hosts are swapped | l0 FAIL | l2 FAIL | l3 pass
+M8a | the interactive default of the Zig prompt is No | l0 FAIL | l2 FAIL | l3 FAIL
+M8b | the Zig prompt is Required (non-interactive stops with exit 13) | l0 FAIL | l2 FAIL | l3 FAIL
+M9 | a No answer does not stop the install | l0 pass | l2 FAIL | l3 pass
+M10 | --offline does not stop before the request | l0 pass | l2 FAIL | l3 FAIL
+M11 | stale temps are not deleted | l0 pass | l2 FAIL | l3 pass
+M12 | xz is needed on every host | l0 FAIL | l2 FAIL | l3 pass
+M13 | --quiet does not hide the dependency list | l0 pass | l2 FAIL | l3 FAIL
+M14 | no check for the dir under the lock | l0 pass | l2 FAIL | l3 pass

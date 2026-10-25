@@ -1,0 +1,2 @@
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for acme/json 2.1.0 (Yaml.roc). tln remove moves no other entry. Pass --no-check to remove parser anyway.
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-14-38a3029 fails for acme/json 2.1.0 (Yaml.roc). tln remove moves no other entry. Pass --no-check to remove parser anyway.

@@ -1,0 +1,5 @@
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# R-TG1 rule 3, R-TG2: the platform has one target, wasm32. The build for it: `build --target=wasm32 main.roc --output=...` (the host target would fail). The real Fx reads the header of the platform in the package cache.
+st tln update pf --dry-run --file p1/main.roc
+# R-TG3: a value that is no Roc target: exit 19 with the file and the line. The real Fx reads `talon.toml`. (The exit 2 of R-TG1 names the host targets, so it has no L3 case: the text depends on the machine. L2 `target/tg1-ladder` run 7 has it.)
+st tln update pf --dry-run --file p2/main.roc

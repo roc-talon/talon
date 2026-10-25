@@ -1,0 +1,189 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    pkgs = "/h/.cache/roc/packages"
+    rows = [
+        ("pf", "release ${cli_url} ${pkgs}/${h_cli}"),
+        ("json", "release ${json_url} ${pkgs}/${h_json}"),
+        ("lib", "dir /w/proj/shared/lib"),
+        ("deep", "dir /w/proj/app/vendor/a/b"),
+        ("dot", "dir /w/proj/app/y"),
+        ("abs", "dir /opt/pf"),
+        ("odd", "tln: error[usage]: 'odd' is a foreign URL (${odd_url}): roc keeps it under another cache rule, so it has no directory in packages/ (R-PTH3)"),
+        ("nope", "tln: error[usage]: no entry 'nope' in the header of /w/proj/app/main.roc. Entries: pf, json, lib, deep, dot, abs, odd."),
+        ("PF", "tln: error[usage]: no entry 'PF' in the header of /w/proj/app/main.roc. Entries: pf, json, lib, deep, dot, abs, odd."),
+    ]
+    bad = rows.keep_if(|(alias, want)| pick_view(alias) != want).map(|(alias, want)| (alias, want, pick_view(alias)))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 055
+
+
+── ✗ fail ────────────────────────────────────── tests/unit/PathcmdTest.roc:91:1
+
+expect {
+    entry = |alias| match PathCmd.pick({ alias, rows: hdr_rows(header), file, roots }) {
+        Ok(e) => e
+        Err(_) => crash "bad test alias"
+    }
+    shown = |alias| "${PathCmd.text(entry(alias))}|${JsonDoc.render(PathCmd.data(entry(alias)))}"
+    checks = [
+        (shown("pf"), "/h/.cache/roc/packages/${h_cli}\n|{\"alias\":\"pf\",\"kind\":\"url\",\"dir\":\"/h/.cache/roc/packages/${h_cli}\"}"),
+        (shown("lib"), "/w/proj/shared/lib\n|{\"alias\":\"lib\",\"kind\":\"path\",\"dir\":\"/w/proj/shared/lib\"}"),
+    ]
+    bad = checks.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 40 tests in 6337.3 ms.:
+    37 passed
+    3 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (60) tests passed in 6945.2 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+       +
+      -+program = {
+      -+	init!: || crash "write the app",
+      -+	respond!: |_, _| crash "write the app",
+      -+	shutdown!: |_| crash "write the app",
+      ++jobs:
+      ++  check:
+      ++    runs-on: ubuntu-latest
+      ++    env:
+      ++      TALON_AUTO_INSTALL: "yes"
+      ++    steps:
+      ++      - uses: actions/checkout@v4
+      ++      - name: Install Talon
+      ++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
+      ++      - name: Install packages
+      ++        run: tln install --frozen
+      ++      - name: Check
+      ++        run: roc check
+      ++      - name: Test
+      ++        run: roc test
+      +--- project/t4/main.roc
+      ++++ project/t4/main.roc
+      +@@ -0,0 +1,6 @@
+      ++app [main!] {
+      ++	pf: platform "https://github.com/acme/cnst/releases/download/0.1.0/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK.tar.zst",
+      ++	roc: "nightly-2026-10-12-2a2a2a2",
+       +}
+      ++
+      ++main! = |_args| Ok({})
+       --- project/t5/.github/workflows/ci.yml
+       +++ project/t5/.github/workflows/ci.yml
+       @@ -0,0 +1,21 @@
+FAIL init/it3-platform-moved
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -87,10 +87,5 @@
+       delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+       read_files $PROJECT/t7/main.roc
+       write_atomic $PROJECT/t7/main.roc
+      -read_files $PROJECT/t7/main.roc
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -read_files $HOME/.cache/roc/packages/FxnfwdJpTBCZNn7ebELzAxEr4hTuKip7p5wUdarjXKjj/main.roc
+      -write_atomic $PROJECT/t7/main.roc
+       read_files $PROJECT/t7/.github/workflows/ci.yml
+       write_atomic $PROJECT/t7/.github/workflows/ci.yml
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -66,4 +66,4 @@
+       +	roc: "nightly-2026-10-12-2a2a2a2",
+       +}
+       +
+      -+main! = || crash "write the app"
+      ++main! = |_args| Ok({})
+FAIL path/pt1-entry
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 055
+commands: 109 passed, 4 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+FAIL path/pt1-entry
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,20 +1,17 @@
+       == tln path pf
+      -$HOME/.cache/roc/packages/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw
+      -exit 0
+      +exit 1
+       == tln path lib
+      -$WORK/shared/lib
+      -exit 0
+      +exit 1
+       == tln path pf --json
+      -{"schema":1,"command":"path","ok":true,"data":{"alias":"pf","kind":"url","dir":"$HOME/.cache/roc/packages/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw"},"error":null}
+      -exit 0
+      +exit 1
+       == tln path odd
+      -exit 2
+      +exit 1
+       == tln path nope
+      -exit 2
+      +exit 1
+       == tln path
+      -exit 2
+      +exit 1
+       == tln path json --offline
+      -exit 15
+      +exit 1
+       == the project is not changed
+       app [main!] {
+       	pf: platform "https://github.com/acme/pf/releases/download/0.2.0/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw.tar.zst",
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,7 @@
+      -tln: error[usage]: 'odd' is a foreign URL (https://example.com/pkg/{v}/x.tar.zst): roc keeps it under another cache rule, so it has no directory in packages/ (R-PTH3)
+      -tln: error[usage]: no entry 'nope' in the header of $PROJECT/main.roc. Entries: pf, json, lib, odd.
+      -tln: error[usage]: tln path needs an alias: a name in the header of the project file
+      -tln: error[network]: acme/json 2.1.0 is not in the package cache and --offline is set (https://github.com/acme/json/releases/download/2.1.0/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst)
+      +[ROC CRASHED] todo: slice 055
+      +[ROC CRASHED] todo: slice 055
+      +[ROC CRASHED] todo: slice 055
+      +[ROC CRASHED] todo: slice 055
+      +[ROC CRASHED] todo: slice 055
+      +[ROC CRASHED] todo: slice 055
+      +[ROC CRASHED] todo: slice 055
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +0,0 @@
+      ---- home/.cache/roc/talon/projects.json
+      -+++ home/.cache/roc/talon/projects.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1792065600}]}
+scenarios: 65 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.5      10
+fmt        pass   0.2      5
+l0         FAIL   7.4      10
+l2         FAIL   8.0      30
+l3         FAIL   9.9      60
+selftest   pass   2.9      20
+l1         pass   38.1     60
+exit 1

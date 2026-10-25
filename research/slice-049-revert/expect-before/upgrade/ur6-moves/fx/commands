@@ -1,0 +1,15 @@
+env:CI=true env:HOME={w}/home1 upgrade jb --file p1/main.roc
+env:CI=true env:HOME={w}/home2 upgrade jb --allow-moves --file p2/main.roc
+env:HOME={w}/home3 upgrade jb --file p3/main.roc
+env:HOME={w}/home4 upgrade jb --file p4/main.roc
+env:CI=true env:HOME={w}/home5 upgrade jb --dry-run --file p5/main.roc
+env:CI=true env:HOME={w}/home6 upgrade jb --json --file p6/main.roc
+env:CI=true env:HOME={w}/home7 update jb --file p7/main.roc
+env:CI=true env:HOME={w}/home8 upgrade jb roc --allow-moves --file p8/main.roc
+env:CI=true env:HOME={w}/home9 upgrade jb --file p9/main.roc
+env:CI=true env:HOME={w}/home10 upgrade jb --allow-moves --file p10/apps/a/main.roc
+env:CI=true env:HOME={w}/home11 upgrade jb --file p11/main.roc
+env:CI=true env:HOME={w}/home12 upgrade jb --allow-moves --file p12/main.roc
+env:CI=true env:HOME={w}/home13 upgrade roc --no-probe --file p13/main.roc
+env:CI=true env:HOME={w}/home14 upgrade roc --no-probe --file p14/main.roc
+env:CI=true env:HOME={w}/home15 upgrade roc --no-probe --file p15/main.roc

@@ -101,6 +101,19 @@ RocManage :: [].{
 		}
 	}
 
+	## Slice 045 (R-R5): `tln roc default --git <owner/repo@ref>` picked the installed id `run.id`. This sets the default as `roc default <id>` does: the edit of `config.toml` (`Manage.default_set`) and the text of `print_default!` for an id that is installed.
+	set_default! : Fx, Args, { roots : Roots, id : Str } => I32
+	set_default! = |fx, args, run| {
+		path = Roots.item(run.roots, Config)
+		match edit_config!(fx, path, |current| Manage.default_set({ path, text: current, id: run.id })) {
+			Ok(edited) => {
+				print_default!(fx, args, { id: run.id, installed: Bool.False, compat: Err(Unknown), edited })
+				0
+			}
+			Err(fail) => Common.failed!(fx, args, fail)
+		}
+	}
+
 	## `tln roc update` (`up`, slice 026, R-CS3, R-RU1 to R-RU4). The calls are in the table at the top of this file. The body is the work of the code agent.
 	update! : Fx, Args => I32
 	update! = |fx, args| match ManageUpdate.read_update(args) {

@@ -1,0 +1,75 @@
+== probes!: the program roc with the arguments, in the dir
+probe 0 Exited(0) stdout="$PROJECT/sub
+" stderr=""
+== one round: the results are in the order of the list, not of the ends (the first probe ends last). A crash, a failed check, warnings only.
+probe 0 Exited(0) stdout="No errors found in 5ms for main.roc
+" stderr=""
+probe 1 Exited(1) stdout="" stderr="── ✗ type mismatch ─ ../../home/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc:5:12
+
+This expression is used in an unexpected way.
+
+bad = |n| n
+          ^
+
+It has the type:
+
+    U64
+
+But the annotation says it should be:
+
+    Str
+
+── 1 error and 0 warnings ───────────────────────────────────────────── main.roc
+
+"
+probe 2 Signaled(11) stdout="" stderr=""
+probe 3 Exited(2) stdout="" stderr="── ● unused variable ────────────────────────────────────────────── main.roc:8:2
+
+Variable unused is defined here and then never used.
+
+unused = 5
+^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _unused to
+suppress this warning.
+
+── 0 errors and 1 warning ───────────────────────────────────────────── main.roc
+
+"
+== a hang is killed at the timeout (1 s): TimedOut. The other probe of the round goes on and ends.
+probe 0 TimedOut stdout="" stderr=""
+probe 1 Exited(0) stdout="No errors found in 5ms for main.roc
+" stderr=""
+== a probe that cannot start (the dir is missing)
+probe 0 NotStarted("NotFound") stdout="" stderr=""
+== the roc calls (the probes of a round start together: sorted)
+check boom.roc
+check errors.roc
+check hang.roc
+check main.roc
+check slow.roc
+check warn.roc
+where am i
+== R-PX2 R-PX6 (slice 023c): the program of a probe is the file that runs, not the name roc. env adds variables to the environment of the child (a name that the process has too takes the value of env). The other variables stay.
+probe 0 Exited(0) stdout="envprog: $PROJECT/envprog args=check main.roc A=added B=process IN=1
+" stderr=""
+== one round with 2 programs: each probe has its own program and its own env
+probe 0 Exited(0) stdout="envprog: $PROJECT/envprog args=check a.roc A=first B=process IN=
+" stderr=""
+probe 1 Exited(0) stdout="envprog: $PROJECT/envprog args=check b.roc A=second B=own IN=
+" stderr=""
+== a program that is not a file: the probe does not start
+probe 0 NotStarted("NotFound") stdout="" stderr=""
+the roc on PATH did not run
+== copy_tree!: files, a dir, an empty dir. A name in the skip list is not copied (at any depth). The parent dirs of the target are made.
+copied
+.
+./empty
+./main.roc
+./sub
+./sub/Mod.roc
+mod
+== the target exists: Exists. The source is missing: NotFound.
+err Exists
+err NotFound
+nothing was made

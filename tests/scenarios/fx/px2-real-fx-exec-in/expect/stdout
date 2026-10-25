@@ -1,0 +1,17 @@
+== the working directory is the given one, the arguments are as they are, the variable is added
+in: sub V=1 args: 2
+arg: two words
+arg: x
+exec-in ok 0
+== a relative program name is looked for as exec! does it, with the PATH of the process
+$PROJECT/d/sub
+exec-in ok 0
+== the exit code and the signal
+exec-in ok 7
+exec-in ok 143
+== the process keeps its own directory
+exec-in ok 0
+$PROJECT
+== no such directory, and no such program: an error
+exec-in err (text of the platform)
+exec-in err (text of the platform)

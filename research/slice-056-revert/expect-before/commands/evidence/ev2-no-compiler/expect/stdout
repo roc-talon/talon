@@ -1,0 +1,13 @@
+== why json --file p1/main.roc
+$PROJECT/p1/main.roc
+  acme/json 2.0.0 (direct)
+    json
+exit 0
+== why json --file p1/main.roc --json
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/p1/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]],"compiler":null,"evidence":[],"notes":[]}]},"error":null}
+exit 0
+== why json --file p2/main.roc
+$PROJECT/p2/main.roc
+  acme/json 2.0.0 (direct)
+    json
+exit 0

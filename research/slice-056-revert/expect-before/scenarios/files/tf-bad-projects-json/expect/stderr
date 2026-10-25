@@ -1,0 +1,3 @@
+tln: error[input]: $HOME/.cache/roc/talon/projects.json: the content does not parse
+tln: error[input]: $HOME/.cache/roc/talon/projects.json: format 2 is newer than this tln (format 1). Run: tln tool update talon
+tln: error[input]: $HOME/.cache/roc/talon/projects.json: the content does not parse

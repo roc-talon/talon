@@ -1,0 +1,5 @@
+verify --file v1/main.roc
+verify --file v2/lib/main.roc
+verify --file v3/main.roc
+verify --file v4/main.roc
+verify --file v5/main.roc

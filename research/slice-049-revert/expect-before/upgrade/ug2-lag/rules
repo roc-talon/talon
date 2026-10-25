@@ -1,0 +1,10 @@
+R-UP2 R-UP1 R-VA5 R-C2 R-C3 R-UM1 R-EP7 R-C7 R-OUT4 R-J3 R-UP10 (slice 038): 3 runs on 3 projects with the same start. The command code is `Lags.of` and `InstallFlow.finish!`.
+The world: pfx 0.1.0 to 0.2.0 (platform), core 1.0.0 and 1.2.0, json 3.0.0 needs core 1.2.0, text 2.0.0 names the platform pfx 0.1.1, parser 1.1.0 fails the unit check (a real db row after the probe of the held compiler).
+Run 1 (q1, `upgrade`, `talon.toml` with `core = "=1.0.0"`): core is an anchor and is held. The report names each free variable that did not get its newest release, in the order of the slots, with the first reason (a proposal, TW24):
+  json 3.0.0: needs core >= 1.2.0 (the held anchor, R-C2). The newest release that fits is 2.2.0.
+  parser 1.1.0: fails the unit check on the held compiler (a probed row, R-UM1).
+  pf 0.2.0: text 2.0.0 needs pf 0.1.1 (R-C3). text moves to a new series, and pf moves to 0.1.1.
+The three notes are in the stdout of the command (`note: ...`).
+Run 2 (q1j, `upgrade --dry-run --json`): the same three lines are in `notes` of the envelope (R-J3: no new field).
+Run 3 (q1u, `update`, no `talon.toml`): the old command has no lag notes (R-UP2 is for `upgrade`, R-UP10). The domain of `update` is the implied range, so json stays in the series 2 and the parser failure does not show.
+This case is a revert check target for the order and the text of the reasons.

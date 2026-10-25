@@ -1,0 +1,4 @@
+packages/resolve/tests/conflicts.roc
+packages/resolve/tests/domain.roc
+packages/resolve/tests/moves.roc
+packages/resolve/tests/solver.roc

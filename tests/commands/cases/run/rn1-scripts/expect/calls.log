@@ -1,0 +1,424 @@
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt
+  env TALON_SCRIPT=hi
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt
+  env TALON_SCRIPT=chain
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+exec_in $PROJECT/p1 tool-b extra words
+  env TALON_SCRIPT=chain
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 tool-c
+  env TALON_SCRIPT=tail
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+exec_in $PROJECT/p1 tool-a one two words three four $HOME ~ *.txt
+  env TALON_SCRIPT=tail
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+exec_in $PROJECT/p1 tool-b last
+  env TALON_SCRIPT=tail
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/sub/talon.toml
+exec_in $PROJECT/p1/sub tool-d x
+  env TALON_SCRIPT=all
+  env TALON_SCRIPT_DIR=$PROJECT/p1/sub
+exec_in $PROJECT/p1/sub tool-e
+  env TALON_SCRIPT=all
+  env TALON_SCRIPT_DIR=$PROJECT/p1/sub
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 tool-ok
+  env TALON_SCRIPT=failing
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+exec_in $PROJECT/p1 tool-fail
+  env TALON_SCRIPT=failing
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 tool-sig
+  env TALON_SCRIPT=sig
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 tool-gone --flag
+  env TALON_SCRIPT=gone
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/nodir/talon.toml
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/sub/talon.toml
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+args
+args
+args
+args
+args
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+read_files $PROJECT/p2/talon.toml
+canonical $PROJECT/p2/talon.toml
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p2 tool-s2
+  env TALON_SCRIPT=s2
+  env TALON_SCRIPT_DIR=$PROJECT/p2
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p3
+list_dirs $PROJECT
+read_files $PROJECT/p3/talon.toml
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/m1
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m2
+list_dirs $PROJECT/w/deep/inner
+canonical $PROJECT/w/deep/inner/main.roc $PROJECT/w/m1/main.roc $PROJECT/w/m2/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w tool-r
+  env TALON_SCRIPT=r
+  env TALON_SCRIPT_DIR=$PROJECT/w
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/m1
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m2
+list_dirs $PROJECT/w/deep/inner
+canonical $PROJECT/w/m1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w/m1 tool-m
+  env TALON_SCRIPT=ms
+  env TALON_SCRIPT_DIR=$PROJECT/w/m1
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/s
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/s/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m1 $PROJECT/w/m2
+list_dirs $PROJECT/w/deep/inner
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/s
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/s/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m1 $PROJECT/w/m2
+list_dirs $PROJECT/w/deep/inner
+canonical $PROJECT/w/s/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w/s tool-sx
+  env TALON_SCRIPT=sx
+  env TALON_SCRIPT_DIR=$PROJECT/w/s
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/s2
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/s2/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m1 $PROJECT/w/m2
+list_dirs $PROJECT/w/deep/inner
+canonical $PROJECT/w/s2/talon.toml
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w/s2 tool-sy
+  env TALON_SCRIPT=sy
+  env TALON_SCRIPT_DIR=$PROJECT/w/s2
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/deep/inner
+list_dirs $PROJECT/w/deep
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/deep/inner/talon.toml $PROJECT/w/deep/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/m1 $PROJECT/w/m2
+read_files $PROJECT/w/deep/inner/talon.toml
+canonical $PROJECT/w/deep/talon.toml
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w/deep tool-dp
+  env TALON_SCRIPT=dp
+  env TALON_SCRIPT_DIR=$PROJECT/w/deep
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/deep/inner
+list_dirs $PROJECT/w/deep
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/deep/inner/talon.toml $PROJECT/w/deep/talon.toml $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/m1 $PROJECT/w/m2
+read_files $PROJECT/w/deep/inner/talon.toml
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m1 $PROJECT/w/m2
+list_dirs $PROJECT/w/deep/inner
+canonical $PROJECT/w/deep/inner/main.roc $PROJECT/w/m1/main.roc $PROJECT/w/m2/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w tool-r
+  env TALON_SCRIPT=r
+  env TALON_SCRIPT_DIR=$PROJECT/w
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w/m2
+list_dirs $PROJECT/w
+list_dirs $PROJECT
+read_files $PROJECT/w/talon.toml
+list_dirs $PROJECT/w/deep $PROJECT/w/m1
+list_dirs $PROJECT/w/deep/inner
+canonical $PROJECT/w/deep/inner/main.roc $PROJECT/w/m1/main.roc $PROJECT/w/m2/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/w tool-r
+  env TALON_SCRIPT=r
+  env TALON_SCRIPT_DIR=$PROJECT/w
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT
+args
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json

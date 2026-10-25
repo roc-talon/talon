@@ -1,0 +1,4 @@
+GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+GET /dl/nightly-2026-10-17-601b54c/roc_nightly-linux_x86_64-2026-10-17-601b54c.tar.gz 200
+GET /dl/nightly-2026-10-15-38e6c42/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz 200
+GET /dl/nightly-2026-10-13-91fa0c2/roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz 200

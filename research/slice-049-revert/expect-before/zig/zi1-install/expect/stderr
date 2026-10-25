@@ -1,0 +1,61 @@
+Dependencies:
+  [ ] zig 0.17.x            zig not found
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [ ] zig 0.16.x            found zig 0.17.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.16.2 (79.0 MB)
+Dependencies:
+  [ ] zig 0.15.x            found zig 0.16.2 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[consent]: zig 0.15.1 is not installed. Nothing was downloaded.
+Dependencies:
+  [ ] zig 0.14.x            found zig 0.16.2 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.14.1 (54.2 MB)
+waiting for another tln: zig-0.14.1
+Dependencies:
+  [ ] zig 0.13.x            found zig 0.14.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.13.0 (54.2 MB)
+tln: error[integrity]: sha256 of zig-0.13.0 differs: expected a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795, got b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78. Talon deleted the download.
+Dependencies:
+  [ ] zig 0.12.x            found zig 0.14.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.12.1 (54.2 MB)
+Dependencies:
+  [ ] zig 0.10.x            found zig 0.12.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[network]: cannot read the Zig index http://127.0.0.1:9/zig/index.json: HTTP 404
+Dependencies:
+  [ ] zig 0.99.x            found zig 0.12.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[environment]: the Zig index has no release of zig 0.99.x
+Dependencies:
+  [ ] zig 0.8.x             found zig 0.12.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.8.0 (54.2 MB)
+tln: error[integrity]: tar rejected zig-0.8.0 (https://ziglang.org/download/0.8.0/zig-x86_64-linux-0.8.0.tar.xz): tar: Removing leading `/' from member names: bad archive
+Dependencies:
+  [ ] zig 0.7.x             found zig 0.12.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.7.0 (54.2 MB)
+tln: error[network]: download of zig-0.7.0 failed: 404 (https://ziglang.org/download/0.7.0/zig-x86_64-linux-0.7.0.tar.xz)
+Dependencies:
+  [ ] zig 0.6.x             found zig 0.12.1 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[network]: zig 0.6.x is not installed and --offline is set

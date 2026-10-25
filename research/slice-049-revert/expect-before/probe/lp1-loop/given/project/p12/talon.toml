@@ -1,0 +1,6 @@
+[dependencies]
+pf = "acme/pf@=0.1.0"
+parser = "acme/parser@=1.0.0"
+
+[resolution]
+probe = { max = 5 }

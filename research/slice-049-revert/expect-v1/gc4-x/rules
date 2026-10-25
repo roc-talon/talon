@@ -1,0 +1,10 @@
+Slice 049, `tln cache gc` and the `x` entries (R-GC7, R-GC9, R-PT14): entry `commands`. `TALON_NOW=2026-10-15T12:00:00Z`, `gc-age` is the default (30 days: 2592000 s). The clock of the fake is 2026-10-15 too.
+Entries of `talon/x/`: `fresh` (last run 1 day before), `boundary` (exactly 30 days before: stays), `over` (30 days and 1 s before: goes), `ancient` (2020: goes), `future` (a last run after TALON_NOW: stays), `garbage` (a manifest that does not parse: stays, question Q-G1),
+`newer` (format 2: stays), `nomanifest` (a dir with only a binary: stays), `badtime` (a `last_run` that is no time: stays), and a stale temp dir `fresh.0123456789abcdef.tmp` (a temp: older than 1 day, it goes as a stale temp, R-GC6; it is no entry, so no manifest is read for it).
+The `[tools]` exception (R-PT14) is L0 (`XCacheTest`): the reader of `[tools]` is slice 056, so `kept` is `[]` here.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `cache gc --dry-run` | the manifests of the 9 entry dirs are read (one `read_files`), `over` and `ancient` would go (with their sizes, in the one `tree_info`), the report line `would remove <path> (<size>)` | R-GC7, R-GC9, R-GC11 |
+| 2 | `cache gc --json` | the real run: one `delete` with the stale temp and the 2 dirs (the order of the lines of the report). The `--json` list `builds` has the 2 dirs | R-GC7, R-GC9, R-J3 |
+| 3 | `cache gc` | the second run removes nothing: `nothing to remove` | R-GC7 |

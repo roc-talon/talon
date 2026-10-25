@@ -1,0 +1,7 @@
+== setup --replace-roc
+exit 17
+== setup
+made $HOME/.local/bin/tln (hard link)
+PATH: added $HOME/.local/bin to $HOME/.bashrc
+completions: $HOME/.local/share/bash-completion/completions/tln
+exit 0

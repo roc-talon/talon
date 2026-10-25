@@ -1,0 +1,8 @@
+id=a kind=default shape=yesno default=yes question=Install_it? subject=an_install
+id=b kind=default shape=yesno default=no question=Remove_it? subject=a_removal
+id=c kind=default shape=options:3 default=2 question=Pick_one subject=a_pick
+id=d kind=required:--allow-moves shape=yesno default=no question=Move_it? subject=a_move
+--yes | id=e kind=default shape=yesno default=no question=Skip_this? subject=a_skip
+--yes | id=f kind=consent shape=yesno default=no question=Share_data? subject=a_share
+--answer=no | id=g kind=required:--alt shape=yesno default=yes question=Not_asked? subject=a_flag
+id=h kind=default shape=options:2 default=1 question=Last_one subject=the_last

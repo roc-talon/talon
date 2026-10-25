@@ -1,0 +1,44 @@
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - /opt/z17/zig version
+  job - zig version
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - /opt/z16/zig version
+  job - zig version
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=2
+  job - zig version

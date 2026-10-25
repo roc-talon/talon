@@ -1,0 +1,9 @@
+tln: error[usage]: copy-fix-2 exists. Use --force to replace it.
+tln: error[usage]: flag '--force' is not for 'roc link' without --copy
+tln: error[usage]: link-dev exists. Run: tln roc remove link-dev
+tln: error[usage]: tln roc link needs a name and a path: tln roc link <name> <path>
+tln: error[usage]: no such file: roc-src/missing
+tln: error[usage]: bad name is not a valid compiler name: use one word with no space, no / and no \
+tln: error[usage]: flag '--git' is not for 'roc link'
+tln: error[usage]: TALON_NOW is not a UTC time: yesterday
+copied $PROJECT/roc-src/zig-out/bin/roc to copy-fix-4

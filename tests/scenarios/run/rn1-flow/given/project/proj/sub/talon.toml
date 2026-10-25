@@ -1,0 +1,2 @@
+[scripts]
+here = 'sh -c "echo here script=$TALON_SCRIPT dir=$(basename $TALON_SCRIPT_DIR)"'

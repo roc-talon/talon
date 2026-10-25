@@ -1,0 +1,6 @@
+env_all
+list_dirs $PROJECT
+read_files $PROJECT/talon.toml
+list_dirs $PROJECT/apps
+list_dirs $PROJECT/apps/a
+read_files $PROJECT/apps/a/main.roc $PROJECT/apps/a/talon.toml $PROJECT/apps/talon.toml $PROJECT/talon.toml $HOME/.config/talon/config.toml

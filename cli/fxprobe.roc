@@ -60,6 +60,11 @@ import RealFx
 ## | --- | --- | --- |
 ## | `program-name` | `program_name!` | `program <text>` |
 ## | `exec [<NAME>=<value>]... -- <argv words>` | `exec!` with these variables | `exec ok <code>` or `exec err <text>` (after the output of the child, which goes to the terminal of the process) |
+## Slice 057 adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `exec-in <dir> [<NAME>=<value>]... -- <argv words>` | `exec_in!` with this directory and these variables | `exec-in ok <code>` or `exec-in err <text>` |
 ## Slice 024b adds one call:
 ##
 ## | Call | Does | Prints |
@@ -292,6 +297,24 @@ probe! = |fx, call, rest| match (call, rest) {
 				}
 			}
 			Err(_) => fx.err!("usage: fxprobe exec [NAME=value]... -- <argv words>\n")
+		}
+	}
+	("exec-in", [dir, .. as words]) => {
+		sep = words.map_with_index(|w, i| (w, i)).find_first(|(w, _)| w == "--")
+		match sep {
+			Ok((_, at)) => {
+				env = words.take_first(at).keep_oks(
+					|w| match w.split_first("=") {
+						Ok({ before, after }) => Ok((before, after))
+						Err(_) => Err(NoEquals)
+					},
+				)
+				match fx.exec_in!({ argv: words.drop_first(at + 1), env, cwd: dir }) {
+					Ok(code) => say!(fx, "exec-in ok ${code.to_str()}")
+					Err(NotStarted(text)) => say!(fx, "exec-in err ${text}")
+				}
+			}
+			Err(_) => fx.err!("usage: fxprobe exec-in <dir> [NAME=value]... -- <argv words>\n")
 		}
 	}
 	("db-query", [path, busy, "facts", .. as specs]) => {

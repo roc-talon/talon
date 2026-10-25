@@ -1,0 +1,23 @@
+== 1: the answer n: nothing is removed, exit 0
+== tln cache clean --all
+Remove 4 cache dirs, 115 B? [Y/n] nothing was removed
+exit 0
+== 2: the answer Enter is the default Yes: the index and the x builds go (no --all: the packages and the build caches stay)
+== tln cache clean
+Remove 2 cache dirs, 71 B? [Y/n] removed $HOME/.cache/roc/talon/index (24 B)
+removed $HOME/.cache/roc/talon/x (47 B)
+freed 71 B
+exit 0
+< .cache/roc/talon/index/releases.json
+< .cache/roc/talon/x/0123abcd/manifest.json
+< .cache/roc/talon/x/0123abcd/tln-app
+== 3: --yes answers the prompt (R-NM8): no question, the answer line, the removal of the packages dir and the build caches
+== tln cache clean --all --yes
+removing 2 cache dirs (44 B)
+removed $HOME/.cache/roc/packages (20 B)
+removed $HOME/.cache/roc/compat-aaaaaaa (24 B)
+freed 44 B
+exit 0
+< .cache/roc/compat-aaaaaaa/cache.bin
+< .cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.deps.json
+< .cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc

@@ -1,0 +1,23 @@
+== tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+== tool install acme/foo
+foo 1.1.0 is installed
+exit 0
+== tool install foo@1.0.0
+replaced foo 1.1.0 with 1.0.0 (acme/foo)
+exit 0
+== tool install acme/foo@1.3.0
+replaced foo 1.0.0 with 1.3.0 (acme/foo)
+exit 0
+== tool install acme/baz
+replaced baz git main with 1.0.0 (acme/baz)
+exit 0
+== tool install acme/qux --as q --json
+{"schema":1,"command":"tool install","ok":true,"data":{"tool":"q","name":"acme/qux","version":"2.0.0","how":"installed","previous":null,"bin":"$HOME/.local/bin/q","url":"https://github.com/acme/qux/releases/download/2.0.0/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst","nightly":"nightly-2026-10-14-38a3029","target":"x64musl","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","entry":"hard_link"},"error":null}
+exit 0
+== tool install acme/qux
+q 2.0.0 is installed
+exit 0
+== tool install acme/qux --as other
+exit 2

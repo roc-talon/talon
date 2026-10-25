@@ -1,0 +1,26 @@
+== tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+== tool install acme/bar
+installed bar 1.0.0 (acme/bar)
+exit 0
+== tool install acme/qux@2.0.0
+replaced qux 1.0.0 with 2.0.0 (acme/qux)
+exit 0
+== tool install acme/ren
+installed ren 1.0.0 (acme/ren)
+exit 0
+== tool install acme/lat@latest
+installed lat 1.1.0 (acme/lat)
+exit 0
+== tool install acme/yank
+installed yank 1.0.0 (acme/yank)
+exit 0
+== tool install acme/off --offline
+exit 13
+== tool install acme/off --offline --allow-unchecked
+installed off 1.0.0 (acme/off)
+exit 0
+== tool install acme/foo
+foo 1.1.0 is installed
+exit 0

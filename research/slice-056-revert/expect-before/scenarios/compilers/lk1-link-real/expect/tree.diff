@@ -1,0 +1,65 @@
+--- home/.cache/roc/toolchains/copy-fix-2/.last-use
++++ home/.cache/roc/toolchains/copy-fix-2/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/copy-fix-2/roc
++++ home/.cache/roc/toolchains/copy-fix-2/roc
+@@ -0,0 +1,2 @@
++#!/bin/sh
++echo "build 3 ran as $0: $*"
+--- home/.cache/roc/toolchains/copy-fix-2/.talon.json
++++ home/.cache/roc/toolchains/copy-fix-2/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"copy-fix-2","source":"$PROJECT/roc-src/zig-out/bin/roc","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/copy-fix-4/roc
++++ home/.cache/roc/toolchains/copy-fix-4/roc
+@@ -0,0 +1,2 @@
++#!/bin/sh
++echo "build 3 ran as $0: $*"
+--- home/.cache/roc/toolchains/copy-fix-4/.talon.json
++++ home/.cache/roc/toolchains/copy-fix-4/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"copy-fix-4","source":"$PROJECT/roc-src/zig-out/bin/roc","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/copy-via-link/.last-use
++++ home/.cache/roc/toolchains/copy-via-link/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/copy-via-link/roc
++++ home/.cache/roc/toolchains/copy-via-link/roc
+@@ -0,0 +1,2 @@
++#!/bin/sh
++echo "build 3 ran as $0: $*"
+--- home/.cache/roc/toolchains/copy-via-link/.talon.json
++++ home/.cache/roc/toolchains/copy-via-link/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"copy-via-link","source":"$PROJECT/roc-src/lnk-roc","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/link-dev/.last-use
++++ home/.cache/roc/toolchains/link-dev/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/link-dev/.talon.json
++++ home/.cache/roc/toolchains/link-dev/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"link-dev","path":"$PROJECT/roc-src/zig-out/bin/roc","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/link-via-link/.last-use
++++ home/.cache/roc/toolchains/link-via-link/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/link-via-link/.talon.json
++++ home/.cache/roc/toolchains/link-via-link/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"link-via-link","path":"$PROJECT/roc-src/lnk-roc","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -0,0 +1 @@
++default-roc = "link-dev"
+--- project/roc-src/lnk-roc
++++ project/roc-src/lnk-roc
+@@ -0,0 +1,2 @@
++#!/bin/sh
++echo "other build ran as $0: $*"
+--- project/roc-src/other-roc
++++ project/roc-src/other-roc
+@@ -0,0 +1,2 @@
++#!/bin/sh
++echo "other build ran as $0: $*"

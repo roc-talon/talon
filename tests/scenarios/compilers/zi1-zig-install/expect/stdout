@@ -1,0 +1,41 @@
+== 1: PATH has zig 0.16.0 and 0.17.0 is needed. The archive is downloaded from the index, the sha256 is checked, tar strips the top dir, zig gets the executable bit, .talon.json is last. No temp, lock or archive is left.
+zig 0.17.0 installed $HOME/.cache/roc/toolchains/zig-0.17.0/zig
+exit 0
+$HOME/.cache/roc/toolchains:
+zig-0.17.0
+
+$HOME/.cache/roc/toolchains/zig-0.17.0:
+.talon.json
+LICENSE
+doc
+lib
+zig
+zig is executable
+0.17.0
+{"format":1,"id":"zig-0.17.0","url":"http://127.0.0.1:$PORT/zig/dl/0.17.0/zig-x86_64-linux-0.17.0.tar.xz","sha256":"9022625a4e807de3006fac0e8c4990b1cdb8f67a7a21bd09de42d14b1c0adce2","sha256_source":"zig-index","installed_at":"2026-10-22T12:00:00Z"}
+== 2: installed now: found, no new request
+zig 0.17.0 found-installed $HOME/.cache/roc/toolchains/zig-0.17.0/zig
+exit 0
+== 3: ZIG comes first (R-D1, R-EV11), no request
+zig 0.17.1 found-env $WORK/opt/z17/zig
+exit 0
+== 4: PATH, the same major and minor (0.16.0 for 0.16.5), no request
+zig 0.16.0 found-path zig
+exit 0
+== 5: --quiet hides the dependency list
+zig 0.16.0 found-path zig
+exit 0
+== 6: the sha256 of the index differs from the archive: exit 16, nothing is installed
+exit 16
+zig-0.17.0
+== 7: the archive has a member with .. (the sha256 is right): tar refuses it, nothing is installed, nothing is written outside
+exit 16
+zig-0.17.0
+evil.txt is not there
+== 8: --offline: exit 15, no request
+exit 15
+== 9: no release of the series: exit 18, no download
+exit 18
+== 10: TALON_ZIG_INDEX names a route that does not exist: exit 15
+exit 15
+zig-0.17.0

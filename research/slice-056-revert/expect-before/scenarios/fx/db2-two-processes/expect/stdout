@@ -1,0 +1,10 @@
+== 1. 2 shell loops write 30 rows each, one fxprobe at a time in each loop, both loops at once, on a db that does not exist. No write fails (a failed WAL switch of the loser is not an error), and all 60 rows are in the file.
+60 ok
+journal_mode wal
+user_version 1
+rows 60
+== 2. a writer that holds the write lock for 0.8 s. A query does not wait for it. A write with the timeout of 5000 ms waits for it and then works (R-CC8: the busy timeout).
+fact	a1	nightly-2026-10-14-38a3029	any	pass		
+ok
+fact	held	n	any	pass		
+fact	late	nightly-2026-10-14-38a3029	any	crash		

@@ -1,0 +1,8 @@
+cli/lib/InitStub.roc
+cli/lib/PathCmd.roc
+cli/lib/PathFlow.roc
+docs/slices/055-path-and-init-platform.md
+tests/commands/cases/init/it2-platform
+tests/commands/cases/path/pt1-entry
+tests/scenarios/path/pt1-entry
+tests/unit/PathcmdTest.roc

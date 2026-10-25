@@ -1,0 +1,17 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-HF5 the extract, R-HF2 the chmod, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+unbundle 54mLFDP5hhTJVXZkWZh7Gbn3HcoPTGdF14YDcmvDNWdL.tar.zst	0	-	-	dir:{cwd}/54mLFDP5hhTJVXZkWZh7Gbn3HcoPTGdF14YDcmvDNWdL;copy:{cwd}/54mLFDP5hhTJVXZkWZh7Gbn3HcoPTGdF14YDcmvDNWdL/main.roc={w}/fx/src/lib-1.0.0.src
+unbundle CL1VHvBc7o6x5mzuBfG44R7UquD6Fxb2xpy6fPGXdD2Y.tar.zst	0	-	-	dir:{cwd}/CL1VHvBc7o6x5mzuBfG44R7UquD6Fxb2xpy6fPGXdD2Y;copy:{cwd}/CL1VHvBc7o6x5mzuBfG44R7UquD6Fxb2xpy6fPGXdD2Y/main.roc={w}/fx/src/fresh-1.0.0.src
+unbundle ARja6AFFGFrkWhbMVCBtwXWLKm5vLizRr5yUSj2QRUvw.tar.zst	0	-	-	dir:{cwd}/ARja6AFFGFrkWhbMVCBtwXWLKm5vLizRr5yUSj2QRUvw;copy:{cwd}/ARja6AFFGFrkWhbMVCBtwXWLKm5vLizRr5yUSj2QRUvw/main.roc={w}/fx/src/nopin-1.0.0.src
+unbundle G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.tar.zst	0	-	-	dir:{cwd}/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg;copy:{cwd}/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg/main.roc={w}/fx/src/old-1.0.0.src
+unbundle 696Zx8YWj7JQEyWpF9wuvYfnm8HpkXKTvmSXgZrEYfNY.tar.zst	0	-	-	dir:{cwd}/696Zx8YWj7JQEyWpF9wuvYfnm8HpkXKTvmSXgZrEYfNY;copy:{cwd}/696Zx8YWj7JQEyWpF9wuvYfnm8HpkXKTvmSXgZrEYfNY/main.roc={w}/fx/src/broken-1.0.0.src
+unbundle BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst	0	-	-	dir:{cwd}/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy;copy:{cwd}/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy/main.roc={w}/fx/src/qux-2.0.0.src
+unbundle B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6.tar.zst	0	-	-	dir:{cwd}/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6;copy:{cwd}/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6/main.roc={w}/fx/src/wasm-1.0.0.src
+unbundle BqqXzLarZCK7BStmPqJBFA5mSKhYxcVMmo2CepVZJtEp.tar.zst	0	-	-	dir:{cwd}/BqqXzLarZCK7BStmPqJBFA5mSKhYxcVMmo2CepVZJtEp;copy:{cwd}/BqqXzLarZCK7BStmPqJBFA5mSKhYxcVMmo2CepVZJtEp/main.roc={w}/fx/src/z-2.0.0.src
+unbundle BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.tar.zst	0	-	-	dir:{cwd}/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2;copy:{cwd}/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2/main.roc={w}/fx/src/nofile-1.0.0.src
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+unbundle 7gxU17qJYhjbDcuXdiqUNkHhKgLiuqjAxiaPKiZtk5VH.tar.zst	0	-	-	dir:{cwd}/7gxU17qJYhjbDcuXdiqUNkHhKgLiuqjAxiaPKiZtk5VH;copy:{cwd}/7gxU17qJYhjbDcuXdiqUNkHhKgLiuqjAxiaPKiZtk5VH/main.roc={w}/fx/src/platform-wasm.src
+curl --fail	0	-	-	file:{out}
+.zip -C	0	-	-	file:{dir}/roc.exe;file:{dir}/LICENSE;file:{dir}/legal_details
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+nightly-2026-10-11-1a2b3c4.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-1a2b3c4

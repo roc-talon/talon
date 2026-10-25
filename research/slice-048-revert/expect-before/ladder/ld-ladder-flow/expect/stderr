@@ -1,0 +1,6 @@
+tln: error[no_tuple]: no tuple works: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)
+tln: error[app_error]: a new error in an app file: main.roc (type redeclared). The app is not a free variable: fix it, or pass --no-check.
+tln: error[internal]: the baseline check hangs on nightly-2026-10-14-38a3029 (no result in 30 s). That is a compiler fault. Fix it, or pass --no-check.
+tln: error[no_tuple]: no tuple works: the whole-app check crashes on nightly-2026-10-14-38a3029 (signal 11) with acme/json 2.1.0
+tln: error[no_tuple]: no tuple works: the build for the host target failed on the platform acme/pf 0.1.0: unsupported target
+tln: error[no_tuple]: no tuple works: the whole-app check found new errors in acme/json 2.1.0 (Wire.roc: type mismatch)

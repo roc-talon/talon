@@ -1,0 +1,86 @@
+== env:CI=true remove json --file u13/main.roc --offline --allow-downloads
+exit 15
+== update json --file u1/main.roc
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== update json --file u2/main.roc
+exit 13
+== env:CI=true update json --file u3/main.roc
+exit 13
+== env:CI=true update json --file u4/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/u4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=yes remove json --file r5/main.roc
+check: passed
+build: passed
+$PROJECT/r5/main.roc
+  - json: acme/json 2.0.0
+exit 0
+== env:TALON_AUTO_INSTALL=no update json --file u6/main.roc
+exit 13
+== env:CI=true update json --file u7/main.roc --yes
+check: passed
+build: passed
+$PROJECT/u7/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=maybe update json --file u8/main.roc
+exit 13
+== env:CI=true env:TALON_AUTO_INSTALL=yes update json --file u11/main.roc
+exit 13
+== env:CI=true env:ROC_TOOLCHAIN=nightly-2026-10-18-5349569 update json --file f1/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/f1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-18-5349569
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true add acme/json@^2.1 --file u12/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/u12/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+$PROJECT/u12/talon.toml: json = "^2.1"
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true remove json --file r14/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/r14/main.roc
+  - json: acme/json 2.0.0
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=no update json --file u15/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/u15/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=no update json --file u16/main.roc --yes
+check: passed
+build: passed
+$PROJECT/u16/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:CI=true update json --file u17/main.roc --allow-downloads --json
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-22T12:00:00Z","probes":6,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.2.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":["$PROJECT/u17/main.roc"]},"error":null}
+exit 0
+== env:CI=true env:TALON_AUTO_INSTALL=yes add acme/json@^2.1 --file u18/main.roc
+check: passed
+build: passed
+$PROJECT/u18/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+$PROJECT/u18/talon.toml: json = "^2.1"
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0

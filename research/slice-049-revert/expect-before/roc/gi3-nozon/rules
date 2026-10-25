@@ -1,0 +1,6 @@
+Slice 045 gap row C4 (entry `commands`, one run). The same fixture as `gi1-install` (the fake API, curl, tar, no `zig` job is needed), but the fake tar writes a `build.zig.zon` that has no `minimum_zig_version` (`fx/src/build.zig.zon`).
+The design does not say what to do (question Q3: slice 044 review gave it to slice 045, the code agent chose the failure). The text is a proposal (TW24).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `--git Karakatiza666/roc@my-branch` | the source is downloaded and extracted, then `tln: error[input]: build.zig.zon of Karakatiza666/roc@my-branch has no minimum_zig_version` (exit 19). No Zig prompt, no build, no lock. The scratch dir is deleted, no toolchain dir | R-D4, R-CC2, R-R3 |

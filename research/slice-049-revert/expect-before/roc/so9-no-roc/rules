@@ -1,0 +1,1 @@
+R-SO9 R-SO14 (slice 022b, gap I7): no roc file on PATH. `path_roc!` gives no file, so rank 7 has no compiler and the run ends with exit 18 (R-SO14). The only call of the compiler step is `path_roc`: the cache `path-roc.json` is not read, nothing is hashed, nothing runs.

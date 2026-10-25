@@ -76,6 +76,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-07-3f4e5d6 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/Parser.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
@@ -123,6 +124,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
@@ -160,6 +162,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-14-38a3029 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p4/main.roc
@@ -202,6 +205,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-09-258ab27 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
@@ -345,6 +349,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-13-91fa0c2 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
@@ -418,6 +423,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-15-38e6c42 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
@@ -457,6 +463,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-16-1df370f $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
@@ -522,6 +529,7 @@ probes 1 pool=3
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/bin/roc check main.roc timeout=7
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1 pool=3
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-18-5349569 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=7
@@ -603,6 +611,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-05-9f8e7d6 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 canonical $PROJECT/p18/main.roc
@@ -670,6 +679,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
@@ -690,6 +700,7 @@ probes 1
   probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-03-7a6b5c4 $HOME/bin/roc check main.roc timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 platform
+read_files $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc

@@ -1,0 +1,40 @@
+== 1: the first read of the list records the first sha256 of each asset (R-CV6, R-CV3): the store has 5 rows after it (expect/facts.tsv). The install is as before.
+installed nightly-2026-10-09-258ab27
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+== 2: the server gives another sha256 for 2026-10-14 and 2026-10-09 (a swap of the assets). @latest: both are no candidates, so it is 2026-10-12 (the nightly of 2026-10-21 is too young). One warning for each change.
+installed nightly-2026-10-12-2664a27
+exit 0
+nightly-2026-10-09-258ab27
+nightly-2026-10-12-2664a27
+== 3: a command that names the tag stops with exit 16 and the text of R-CV6 (R-EC16): the id, a prefix of it, and --json (R-J5). Nothing is downloaded.
+exit 16
+exit 16
+{"schema":1,"command":"roc install","ok":false,"data":null,"error":{"kind":"integrity","code":16,"message":"the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen 3fa1627ea0da7c60c350ddbb16c199eca26d4162f38e0593f9d858f5dbda893d (github-digest), now 1111111111111111111111111111111111111111111111111111111111111111 (github-digest). Talon does not use this compiler. Select another compiler."}}
+exit 16
+exit 16
+nightly-2026-10-09-258ab27
+nightly-2026-10-12-2664a27
+== 4: an installed compiler with a changed tag stays in use (R-CV6): the id is installed, so there is no new request (the file http.log), and it can be the default.
+nightly-2026-10-09-258ab27 is already installed
+exit 0
+nightly-2026-10-12-2664a27 is now the default compiler
+exit 0
+nightly-2026-10-09-258ab27 is now the default compiler
+exit 0
+default-roc = "nightly-2026-10-09-258ab27"
+== 5: a name is not hidden by min-release-age (R-NS4). The list is read again from the cache (no request): the 2 changes are the same.
+installed nightly-2026-10-21-5349569
+exit 0
+nightly-2026-10-09-258ab27
+nightly-2026-10-12-2664a27
+nightly-2026-10-21-5349569
+== 6: compat.db is not a database (R-CC8): the warning names the file and the fix, nothing is recorded, and the install goes on. The store of the case (expect/facts.tsv) is not touched: this run has its own cache dir.
+installed nightly-2026-July-31-123c5d7
+exit 0
+nightly-2026-July-31-123c5d7
+this is not a database, it is a text file
+== 7: compat.db has a newer format (R-TF3): exit 19, the file and the fix are named, nothing is installed, the file stays.
+exit 19
+0
+user_version 2

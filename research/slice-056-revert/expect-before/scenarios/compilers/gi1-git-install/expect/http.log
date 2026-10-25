@@ -1,0 +1,13 @@
+GET /api/repos/Karakatiza666/roc/commits/my-branch 200
+GET /api/repos/roc-lang/nightlies/releases?per_page=100 200
+GET /api/repos/Karakatiza666/roc/tarball/a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e 200
+GET /api/repos/Karakatiza666/roc/commits/my-branch 200
+GET /api/repos/Karakatiza666/roc/commits/my-branch 200
+GET /api/repos/Karakatiza666/roc/tarball/b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f 200
+GET /api/repos/roc-lang/roc/commits/main 200
+GET /api/repos/roc-lang/roc/tarball/5349569a1b2c3d4e5f60718293a4b5c6d7e8f901 200
+GET /api/repos/Karakatiza666/roc/commits/evil 200
+GET /api/repos/Karakatiza666/roc/tarball/e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0e0 200
+GET /api/repos/Karakatiza666/roc/commits/loop 200
+GET /api/repos/Karakatiza666/roc/tarball/c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c0c1 302
+GET /api/repos/Karakatiza666/roc/commits/nosuch 422

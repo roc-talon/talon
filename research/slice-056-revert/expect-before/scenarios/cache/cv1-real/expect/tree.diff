@@ -1,0 +1,36 @@
+--- home/.cache/roc/compat-aaaaaaa/cache.bin
++++ home/.cache/roc/compat-aaaaaaa/cache.bin
+@@ -1 +0,0 @@
+-compat cache of aaaaaaa
+--- home/.cache/roc/debug-9999999/e.bin
++++ home/.cache/roc/debug-9999999/e.bin
+@@ -1 +0,0 @@
+-old debug cache
+--- home/.cache/roc/nightly-2025-01-01-abc1234/c.bin
++++ home/.cache/roc/nightly-2025-01-01-abc1234/c.bin
+@@ -1 +0,0 @@
+-old nightly cache
+--- home/.cache/roc/packages/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN/deep/x.roc
++++ home/.cache/roc/packages/4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN/deep/x.roc
+@@ -1 +0,0 @@
+-module []
+--- home/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
++++ home/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc
+@@ -1 +0,0 @@
+-package [Lib] {}
+--- home/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.deps.json
++++ home/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.deps.json
+@@ -1 +0,0 @@
+-{}
+--- home/.cache/roc/talon/index/releases.json
++++ home/.cache/roc/talon/index/releases.json
+@@ -1 +0,0 @@
+-{"page":1,"etag":"abc"}
+--- home/.cache/roc/talon/x/0123abcd/manifest.json
++++ home/.cache/roc/talon/x/0123abcd/manifest.json
+@@ -1 +0,0 @@
+-{"format":1}
+--- home/.cache/roc/talon/x/0123abcd/tln-app
++++ home/.cache/roc/talon/x/0123abcd/tln-app
+@@ -1 +0,0 @@
+-binary of an app that tln x built

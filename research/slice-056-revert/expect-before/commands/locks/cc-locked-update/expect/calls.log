@@ -1,0 +1,23 @@
+lock $HOME/lk/a nowait: held
+read_files $PROJECT/in.txt
+unlock $HOME/lk/a
+lock $HOME/lk/a nowait: held
+read_files $PROJECT/in.txt
+unlock $HOME/lk/a
+lock $HOME/lk/busy nowait: busy
+lock $HOME/lk/busy nowait: busy
+lock $HOME/lk/busy wait: held
+read_files $PROJECT/in.txt
+unlock $HOME/lk/busy
+lock $HOME/.cache/roc/talon/projects.json nowait: busy
+lock $HOME/.cache/roc/talon/projects.json wait: held
+list_dirs $HOME/.cache/roc/talon
+delete $HOME/.cache/roc/talon/projects.json.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+lock $HOME/.cache/roc/talon/projects.json nowait: busy
+lock $HOME/.cache/roc/talon/projects.json wait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json

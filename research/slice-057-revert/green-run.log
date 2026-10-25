@@ -1,0 +1,11 @@
+== fmt: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/fmt.log)
+The following file(s) failed `roc fmt --check`:    cli/lib/RunTools.roc
+You can fix this with `roc fmt FILENAME.roc`.Took 81.2 ms.
+
+step       result seconds  budget
+check      pass   1.6      10
+fmt        FAIL   0.2      5
+l0         pass   6.4      10
+l2         pass   7.1      30
+l3         pass   9.9      60
+selftest   pass   2.9      20

@@ -87,7 +87,7 @@ PickFlow :: [].{
 		found = PickIndex.index!(fx, request, repos, known)?
 		prepared = PickIndex.prepare!(fx, request, loaded, asked.fresh, found)?
 		input = PickIndex.slots_of(scoped, stale.live, found, asked, prepared.rows, settings, snapshot, PickAsk.unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
-		setup = { held, free, newest, movable: Err(None), optional, probes: if request.probe.no_probe Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file) }) }
+		setup = { held, free, newest, movable: Err(None), optional, probes: if request.probe.no_probe Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), target: ResolveBase.member_target(m) }) }
 		Ok({ loaded, settings, snapshot, scoped, asked, stale, found, known, prepared, input, setup })
 	}
 

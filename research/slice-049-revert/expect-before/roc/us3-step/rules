@@ -1,0 +1,1 @@
+R-SL7 R-PD16 R-CS1 R-U3 R-RP1 (slice 026b): `tln roc use @-1`. The base of the step is the compiler that Resolution 13 selects for main.roc of the current directory (the pin N), so the new pin is the nightly before it.

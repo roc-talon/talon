@@ -1,0 +1,10 @@
+#!/bin/sh
+# The fake compiler of the case ti3-tool-git: `roc build main.roc --opt=speed --output=<file>`.
+# It logs the directory of the build and the arguments, writes a shell script to <file> that prints the repo and the commit of the source (the comment line of main.roc),
+# and prints the summary of a build with no error.
+for a in "$@"; do case $a in --output=*) out=${a#--output=} ;; esac; done
+echo "$PWD $*" >> "$TALON_TEST_DIR/build.log"
+what=$(sed -n 's/^# //p' main.roc)
+printf '#!/bin/sh\necho "ran: %s"\n' "$what" > "$out"
+chmod +x "$out"
+printf '0 errors and 0 warnings found in 12ms while successfully building:\n\n    %s\n' "$out"

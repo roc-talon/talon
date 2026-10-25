@@ -1,0 +1,9 @@
+Slice 056, `tln cache gc` reads `[tools]` when only an `x` entry can go (gap test, decision D9 of 056d): R-PT14, R-GC7, R-PD13. `TALON_NOW=2026-10-15T12:00:00Z`, `gc-age` is the default (30 days).
+`talon/x/` has the entries `khold` (the last run in 2020: expired, and the `talon.toml` of a live project names its bundle), `kfree` (expired, no project names it) and `kfresh` (a run 1 day before). `packages/` has no dir. The only known project is `p1/main.roc` (used 3 days before).
+No package dir can go, so only the `x` entries ask for the `[tools]` of the project.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `cache gc --dry-run` | one `read_files` of the `talon.toml` files of the project, although no package dir can go. `kfree` would go, `khold` and `kfresh` stay | R-PT14, R-GC7 |
+| 2 | `cache gc` | the real run: `kfree` is deleted, `khold` and `kfresh` stay | R-PT14, R-GC7 |
+| 3 | `cache gc` | nothing to remove. `khold` is still expired by its age, so the `[tools]` read is made again and keeps it | R-PT14, R-GC7 |

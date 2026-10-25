@@ -1,0 +1,4 @@
+[scripts]
+ok = "tool-ok"
+bad = { in = "x" }
+"Bad Name" = "x"

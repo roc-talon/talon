@@ -1,0 +1,21 @@
+== tool install acme/ev
+installed ev 1.0.0 (acme/ev)
+exit 0
+== tool install acme/two
+installed two 1.0.0 (acme/two)
+exit 0
+== tool install acme/three --roc installed env:TALON_INTERACTIVE=0
+exit 13
+== tool install acme/again
+exit 13
+== tool install acme/cancel
+exit 13
+== tool install acme/evp --roc pinned
+installed evp 1.0.0 (acme/evp)
+exit 0
+== tool install acme/redo
+installed redo 1.0.0 (acme/redo)
+exit 0
+== tool install acme/dl
+installed dl 1.0.0 (acme/dl)
+exit 0

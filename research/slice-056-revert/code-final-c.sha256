@@ -1,0 +1,12 @@
+6a56b156c6fec65f04160736fa2647a7e5b004268d241a57d2b2b2c170d1cd77  research/slice-056-revert/code-final-c/InstallFlow.roc
+4ab54645a809bb6e3b92e34d8f5c678def68d6be65df653a66a19df66040b417  research/slice-056-revert/code-final-c/Install.roc
+f8f52ae72c721adf487f315c48455069d0ba07e8be5ae42d18268b34f9075376  research/slice-056-revert/code-final-c/Intent.roc
+7f91d4ab517b2dce81d12f22f1c6d96d74cd066b8e14acf392587285ce4aa534  research/slice-056-revert/code-final-c/Resolve.roc
+8c069f649b0a49a9de26bd37cbed9e12278d2d445b94c508ab553be643db38ea  research/slice-056-revert/code-final-c/ToolsCmd.roc
+2f66bf08ebd9561488353b4fc60256d9daac55c1526d77c31eaa56f1309df29a  research/slice-056-revert/code-final-c/ToolsFlow.roc
+c56e3abe339dd97f0d6e809798d73650abcd0c9d2dd99e443381b5352875f1cc  research/slice-056-revert/code-final-c/ToolsHeld.roc
+277f9510d7d2a5c29ef2bd9df6a97c2b809a880bcbed52e6ca81748f61417e9b  research/slice-056-revert/code-final-c/ToolsPlan.roc
+9ebe15d6cc8ab13056522ba757901faf93698c8a6cfa17063b02f607a7494991  research/slice-056-revert/code-final-c/ToolsStep.roc
+c9b7f33371e6c2b2d28fd9662aacdb25c7e094ff941f52645aba915d193cce10  research/slice-056-revert/code-final-c/ToolsToml.roc
+aa52ba8cecd2cb2e767495c5d3c5f612853ead92ddc17a9f3a38a3c72e94a488  research/slice-056-revert/code-final-c/Update.roc
+de3eacad5e1c07ff3f4a0a0764155665632ead15954f2627862233103f5137ba  research/slice-056-revert/code-final-c/XCacheIo.roc

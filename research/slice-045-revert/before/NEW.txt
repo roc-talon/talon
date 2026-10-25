@@ -1,0 +1,11 @@
+cli/lib/GitRef.roc
+cli/lib/GitBuild.roc
+cli/lib/GitInstall.roc
+cli/lib/GitDefault.roc
+tests/unit/GitTest.roc
+tests/tools/mk-git.sh
+tests/scenarios/compilers/gi1-git-install/
+tests/commands/cases/roc/gi1-install/
+tests/commands/cases/roc/gi2-zig/
+docs/slices/045-git-install.md
+research/slice-045-revert/ (stubs/, restore.sh, gen-git.py, mutants.py, mutants.log, red-*.log, build.zig.zon.roc-cf42a74)

@@ -36,8 +36,9 @@ Ls :: [].{
 	run! : Fx, Args => I32
 	run! = |fx, args| match Listing.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok(opts) => match walk!(fx, args, Bool.True) {
-			Ok(closures) => {
+		Ok(opts) => match Ls.walk_full!(fx, args, Bool.True) {
+			Ok(full) => {
+				closures = full.closures.map(|c| { file: c.file, walked: c.walked, patched: Ls.patched_keys(full.loaded, c.file) })
 				if args.json {
 					fx.out!(Out.json_ok({ command: args.typed, data: Listing.data(closures) }))
 				} else {
@@ -76,6 +77,16 @@ Ls :: [].{
 			ResolveBase.closure_notes!(fx, request, closures)
 		}
 		Ok({ closures, request, loaded })
+	}
+
+	## R-CM9, R-PA12 (slice 042): the keys of the `[patch]` table of the nearest `talon.toml` of the member `file`, in the order of the lines. No member, no `talon.toml`: the empty list.
+	patched_keys : ResolveBase.Loaded, Str -> List(Str)
+	patched_keys = |loaded, file| match loaded.members.find_first(|m| m.file == file) {
+		Ok(member) => match member.toml {
+			Ok(found) => found.intent.patches.map(|p| p.key)
+			Err(NoToml) => []
+		}
+		Err(_) => []
 	}
 
 	## Slice 040: the `ResolveBase.Request` of a command that only reads (`tln list`, `why`, `outdated`): no flag of a resolve, no compiler, no probe. `start` is the result of `Install.begin!`.

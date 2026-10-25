@@ -1,0 +1,6 @@
+== tool install acme/x
+exit 13
+== tool install acme/x --roc installed env:TALON_INTERACTIVE=0
+exit 13
+== tool install acme/x env:TALON_INTERACTIVE=0
+exit 13

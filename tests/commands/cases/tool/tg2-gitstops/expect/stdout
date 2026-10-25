@@ -1,0 +1,18 @@
+== tool install --git acme/empty@main
+exit 2
+== tool install --git acme/gapp@nosuch
+exit 2
+== tool install --git acme/gapp@main --offline
+exit 15
+== tool install --git acme/gapp@main env:TALON_DOWNLOADER=wget
+exit 18
+== tool install --git acme/gapp
+exit 2
+== tool install --git acme/gapp@main --path ../x
+exit 2
+== tool install --git other/gapp@main
+exit 2
+== tool install --git acme/fe@main
+exit 2
+== tool install --git acme/gapp@main --resolve
+exit 2

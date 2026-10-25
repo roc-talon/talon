@@ -1,0 +1,27 @@
+#!/bin/sh
+# The fake zig of slice 045 (L3). `zig version` prints 0.17.0 (R-D4: the series of `.minimum_zig_version` of the fake sources).
+# `zig build roc ...` logs its arguments to roc.log (the case compares them: R-R3), fails when the current dir is not the source tree with its top dir stripped (`build.zig.zon` and `src/main.zig`),
+# and writes `zig-out/bin/roc`: a script that prints the id for `version` and, for `check`, makes `compat-<id>` in the build cache and exits 1, as the real roc does for an empty file (R-GC10).
+case "$1" in
+version)
+    echo 0.17.0
+    exit 0
+    ;;
+build) ;;
+*)
+    echo "fake zig: no answer for: $*" >&2
+    exit 99
+    ;;
+esac
+printf 'zig %s\n' "$*" >> "$TALON_TEST_DIR/roc.log"
+if [ ! -f build.zig.zon ] || [ ! -f src/main.zig ]; then
+    echo "error: the source tree is not here" >&2
+    exit 1
+fi
+id=
+for arg in "$@"; do
+    case $arg in -Dcompiler-version=*) id=${arg#-Dcompiler-version=} ;; esac
+done
+mkdir -p zig-out/bin
+printf '#!/bin/sh\ncase "$1" in\ncheck)\n\tmkdir -p "${ROC_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/roc}/compat-%s"\n\techo "1 error and 0 warnings"\n\texit 1\n\t;;\nesac\necho "Roc compiler version %s"\n' "$id" "$id" > zig-out/bin/roc
+chmod 755 zig-out/bin/roc

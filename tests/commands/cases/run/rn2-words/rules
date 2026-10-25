@@ -1,0 +1,10 @@
+Slice 057, the first word of a step: `roc`, `tln` and a `.roc` script (entry `commands`): R-RUN3 (point 1), R-RUN6, R-RUN9, R-RUN7, R-PX1, R-E1. One home with the compiler `nightly-2026-10-14-38a3029` installed. The fake runs no child.
+`p1` has the scripts `v` (`roc +<id> version`), `t` (`tln --version`), `s` (a `.roc` script with a flag), `tf` (`tln frobnicate`, then a step that must not run) and `w` (a `.roc` script with no more words).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `run v` in `p1` | the proxy of this `tln` selects the compiler (rank 1, `+<id>`) and runs it by its path in the directory of the step. The `exec_in` line has the compiler file and the 2 variables of R-RUN9 (the proxy adds its own) | R-RUN3, R-PX1, R-RUN9, R-RUN5 |
+| 2 | `run t` in `p1` | `tln --version`: this `tln` runs the words (the version line on stdout), no child | R-RUN3 |
+| 3 | `run s -- more` in `p1` | a first word that ends with `.roc`: `roc scripts/notes.roc -- --since v1 more` through the proxy, in the directory of the step. The target file is relative to that directory | R-RUN6, R-RUN3, R-RUN10, R-PX1 |
+| 4 | `run tf` in `p1` | `tln frobnicate` is an unknown command: its exit code 2 stops the run, the next step does not start | R-RUN7, R-RUN3 |
+| 5 | `run w` in `p1` | a `.roc` script with no more words: `roc scripts/notes.roc --` (the `--` stays, R-RUN6) | R-RUN6 |

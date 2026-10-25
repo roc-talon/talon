@@ -1,0 +1,2 @@
+[patch]
+json = { path = "./.talon/patches/json/main.roc", base = "3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm" }

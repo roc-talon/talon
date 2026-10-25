@@ -1,0 +1,2 @@
+# R-SL7 R-PD16 R-CS1 R-U3: a step as the operand. The base is the compiler that Resolution 13 selects for main.roc of the current directory: the pin N (rank 3), so @-1 is M, which is installed (no download). The baseline runs on N, the candidate and the build on M. The same command moves a pin to an older nightly.
+roc use @-1

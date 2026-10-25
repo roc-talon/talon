@@ -1,0 +1,12 @@
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+installed cached 1.0.0 (1.1.0 is available: tln tool install bar@latest)
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+installed cached 1.0.0 (1.1.0 is available: tln tool install ren@latest)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/lat 1.1.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/yank 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[consent]: using the cached off 1.0.0, which was not checked online needs consent. Pass --allow-unchecked or --yes.
+using cached off 1.0.0, not checked online

@@ -1,0 +1,31 @@
+== releases acme/fresh
+source: live
+pages: [22]
+== releases acme/stale
+source: live
+pages: [22]
+== releases acme/two env:GITHUB_TOKEN=tok123
+source: live
+pages: [22, 22]
+== releases acme/limited
+exit 15
+== releases acme/limited2
+exit 15
+== releases acme/gone
+exit 15
+== releases acme/slow
+exit 15
+== releases acme/offlinec offline
+source: cached 1792000000
+pages: [22, 22, 2]
+== releases acme/nothing offline
+source: missing
+pages: []
+== hint acme/lib 2.1.0 env:GITHUB_TOKEN=tok123
+hint: nightly-2026-10-09-258ab27
+== hint acme/lib 3.0.0
+no hint
+== hint acme/lib 4.0.0
+exit 15
+== releases acme/nope
+exit 2

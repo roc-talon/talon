@@ -1,0 +1,25 @@
+# R-PX5 R-PA10 R-PA6 R-EC14 R-PX7 R-PX3 R-PD3 (slice 043): the `roc` proxy and the patches, on the real binary. The launcher is a copy of tln with the name roc. The compiler is a fake script (as in compilers/px1-proxy): it prints its arguments.
+# p1 has 2 `[patch]` entries (parser, json) whose bases are the hashes of the header entries. p2 has a stale patch (the base is not the hash of the header entry). p3 has no `[patch]` table.
+# TALON_NOW=2026-10-22T12:00:00Z. The runner has CI=true, so no run has a prompt.
+TLN=$(command -v tln)
+D=$TALON_TEST_DIR
+A1=nightly-2026-10-09-258ab27
+T=$HOME/.cache/roc/toolchains
+chmod +x $T/$A1/roc
+mkdir -p $D/launch
+cp "$TLN" $D/launch/roc
+L=$D/launch/roc
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+echo "== R-PX5 R-PA10: a pair --replace-dep <the URL of the header entry> <the main file of the copy> for each [patch] entry, in the order of the table. The paths of the copies are absolute."
+st $L check p1/main.roc
+echo "== R-PX5: the flags come before -- (the arguments after it are for the app)."
+st $L p1/main.roc -- a b
+echo "== R-PA6 R-EC14: a stale patch. Exit 14 (frozen), the message names tln install, the compiler does not run, and no .last-use is written for it."
+rm -f $T/$A1/.last-use
+st $L check p2/main.roc
+test -e $T/$A1/.last-use && echo "last use written" || echo "no last use"
+echo "== R-PX7 R-EV7: TALON_PROXY=0 does no extra work: the stale patch is not checked and no flag is added."
+st env TALON_PROXY=0 $L check p2/main.roc
+echo "== R-PX3: a project with no [patch] table: the arguments go as they are."
+st $L check p3/main.roc

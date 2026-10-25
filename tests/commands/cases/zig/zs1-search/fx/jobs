@@ -1,0 +1,6 @@
+# R-D1: `zig version` of the program of ZIG, and of `zig` on PATH. The first rule whose needle is in the arguments answers.
+/opt/z17/zig version	0	0.17.1	-	-
+/opt/z16/zig version	0	0.16.9	-	-
+/opt/bad/zig version	1	-	bad zig	-
+/opt/gone/zig version	notstarted:no such file	-	-	-
+zig version	0	0.16.0	-	-

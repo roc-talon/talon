@@ -4,7 +4,7 @@ Talon is a package manager and compiler manager for Roc. The CLI is `tln`.
 
 | Item | Value |
 | --- | --- |
-| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). Round 4 (2026-10-15): readiness audit, 18 gaps fixed (`docs/cli-audit.md`, round 4). Round 5 (2026-10-15): consistency audit, 19 fixes (`docs/cli-audit.md`, round 5). Round 6 (2026-10-15): audit, 22 fixes (`docs/cli-audit.md`, round 6). Round 7 (2026-10-15): audit, 16 fixes (`docs/cli-audit.md`, round 7). |
+| Status | Draft 3, 2026-10-14. Split into 4 files on 2026-10-15 (table below). CLI audit fixes: `docs/cli-audit.md` (rounds 1 and 2). Prompts and non-interactive mode: CLI 4. Round 3 (2026-10-15): the `nightly` switch (Resolution 1), install scripts (CLI 6.5), ideas from rocup (section 3), no `deps.toml` (Q19). Round 4 (2026-10-15): readiness audit, 18 gaps fixed (`docs/cli-audit.md`, round 4). Round 5 (2026-10-15): consistency audit, 19 fixes (`docs/cli-audit.md`, round 5). Round 6 (2026-10-15): audit, 22 fixes (`docs/cli-audit.md`, round 6). Round 7 (2026-10-15): audit, 16 fixes (`docs/cli-audit.md`, round 7). Draft change of 2026-10-24: project scripts (`tln run`), `tln path`, project tools (`[tools]`), the build target, no hooks (`research/talon-scripts/` 13, `research/talon-scripts/design-draft/DIFF.md`). |
 | Target compiler | Zig-based Roc, `nightly-2026-10-09-258ab27`. Source facts from roc-lang/roc at `2664a27`. |
 | Scope | CLI, resolver, compatibility prober, toolchain manager, registry on Cloudflare |
 | Language | Roc for the CLI and the registry Worker (section 6) |
@@ -26,8 +26,8 @@ A reference to a section of the same file is a number, for example 4.2 or sectio
 
 | # | Goal |
 | --- | --- |
-| G1 | The app header is the lockfile. Talon adds no second lock. |
-| G2 | `talon.toml` holds intent only (ranges, pins, policy). It is optional. A project with no `talon.toml` works. |
+| G1 | The app header is the lockfile. Talon adds no second lock file. The one lock value outside the header is the `url` of each project tool in `[tools]` of `talon.toml` (CLI 6.4, R-PT1): a tool is an app, so it cannot be a header entry (Resolution 2, R-C4). |
+| G2 | `talon.toml` holds intent (ranges, pins, policy, scripts, the build target), and the lock (`url`) of each project tool, next to its intent (`ref`). It is optional. A project with no `talon.toml` works. |
 | G3 | Resolution is deterministic: same intent + same registry snapshot + same evidence gives the same header. |
 | G4 | Talon installs and selects Roc compilers. It uses the cache directory that `roc` uses today. |
 | G5 | Bun-class speed and ergonomics: one binary, one round trip to resolve, parallel fetch. |
@@ -115,7 +115,7 @@ The app installs of `roc install` (section 2) are outside the cache root, one fo
 
 | Layer | File | Owner | Contains | Changes when |
 | --- | --- | --- | --- | --- |
-| Intent | `talon.toml` (optional) | Human | Ranges, anchors, policy, workspace | A human edits it, or `tln add` |
+| Intent | `talon.toml` (optional) | Human | Ranges, anchors, policy, workspace, scripts, build target, project tools (a `ref` and its locked `url`, G1) | A human edits it, or `tln add`. Only `add --tool`, `update`, `upgrade` and `install` write the `url` of a project tool (CLI 6.4, R-PT5) |
 | Lock | App header in `main.roc`, the project file (CLI 1, R-PD1 to R-PD8) | Talon (humans may edit) | Exact URL + hash per direct dep, `roc:` pin | `tln add`, `tln update`, `tln install` |
 | Evidence | `talon/compat.db` + registry matrix | Talon | Probe results per (hash, nightly) | Any probe |
 | Store | roc cache dirs (2.2) | Talon + roc | Unpacked packages, compilers | Any fetch |
@@ -180,7 +180,7 @@ R-H9: What each command does with an unmanaged entry (R-H4):
 | `remove X` | Removes the whole entry (CLI 2, R-RV5). Not the platform (R-RV3). |
 | `patch X` | Exit code 2 (Resolution 7, R-PA14). |
 
-### 4.3 talon.toml: intent only
+### 4.3 talon.toml: intent, and the lock of project tools
 
 R-I2: Keys are header aliases. A value is a range (`"^2.1"`), or a name and a range in the CLI ref form (`"roc-lang/http@^1"`, CLI 2, R-SL1). Talon reads `key = "<range>"` as the ref `key@<range>`, and `key = "<name>@<range>"` as `<name>@<range> --as key`. For a key that the header has, the header gives the URL group, so a range is enough. As with npm `package.json`, a user can add a dependency to `talon.toml` by hand, and `tln install` resolves it and writes the header entry (R-I5, R-I8).
 
@@ -205,6 +205,17 @@ probe = { max = 100, max-toolchains = 10, slots = 12 }
 
 [audit]
 ignore = ["someone/roc-old@1.0.0:yanked"]   # accept one finding of tln audit (CLI 1, R-AU9)
+
+[build]
+# target = "x64musl"           # the target of ladder step 3. Usually not set: the platform targets give it (Resolution 4, R-TG1)
+
+[tools]                        # project tools: intent (ref) and lock (url) (CLI 6.4, R-PT1). Phase P1
+roc-cfw = { ref = "Karakatiza666/roc-cloudflare-workers-cli@^1", url = "https://github.com/Karakatiza666/roc-cloudflare-workers-cli/releases/download/1.0.3/<hash>.tar.zst" }
+
+[scripts]                      # tln run <name> (CLI 1, R-RUN1). Phase P1
+check = ["roc check main.roc", "roc test main.roc"]
+notes = "scripts/notes.roc --since v0.3.0"   # a .roc script: an app with its own platform (R-RUN6)
+release = ["@check", "roc-cfw sync --check"]  # roc-cfw: the [tools] key above (R-RUN3)
 ```
 
 | # | In header | In talon.toml | Constraint |
@@ -254,7 +265,7 @@ R-WS10: Two series of one package are two groups (section 2), so they are two va
 | R-WS2 | A group variable has all constraints of each member entry for that group: the range in `talon.toml` or the implied range of that entry (4.3), and R-C1 to R-C9 (Resolution 2) in the closure of each member. |
 | R-WS3 | Two members with different versions of one group do not satisfy R-WS2 together. `tln install` resolves that group as an entry out of range (Resolution 9). The implied ranges are never lower than a header version, so the result is at least the highest member version. `--frozen` fails with exit code 14. |
 | R-WS4 | Two members with different `roc:` values have no nightly to hold (R-RP2). `install`, `add`, `update` and `remove` stop with exit code 2. The error lists the members and their pins, and names `tln roc use <id>` and `tln upgrade roc`. A member with no `roc:` entry gets the workspace value (R-RP3). |
-| R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[toolchain]`, `[resolution]` and `[audit]` (CLI 1, R-AU15). It can also hold `[dependencies]`, `[overrides]` and `[patch]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, and R-WS6). Each other `talon.toml` in the workspace holds only `[dependencies]`, `[overrides]` and `[patch]`. Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
+| R-WS5 | The root `talon.toml` (the file with `[workspace]`) holds `[workspace]`, `[toolchain]`, `[resolution]`, `[audit]` (CLI 1, R-AU15) and `[tools]` (CLI 6.4, R-PT2). It can also hold `[dependencies]`, `[overrides]`, `[patch]` and `[build]`, for each member whose nearest `talon.toml` is the root (CLI 1, R-PD6, R-WS6, and Resolution 4, R-TG5), and `[scripts]` (CLI 1, R-RUN14). A `talon.toml` under the root is a file of the workspace only when a member file (CLI 1, R-PD3) is in its directory, or below it up to the next directory with a `talon.toml`. Any other `talon.toml` under the root is the file of a standalone project (CLI 1, R-PD5, R-PD6): the rules of this section do not apply to it, and it is not a node of `tln run --each` (CLI 1, R-EA1). Each other `talon.toml` of the workspace holds only `[dependencies]`, `[overrides]`, `[patch]`, `[build]`, `[scripts]` and `[run]` (CLI 1, R-EA3). Talon does not merge two files: a member with a nearer `talon.toml` does not read these tables of the root. A key of a table that is not allowed in that file stops the command with exit code 19 (`input`, CLI 3). So one `strategy` covers the workspace. The minimums in the header of a package member follow the versions of the apps, as in Cargo workspaces (Resolution 8). |
 | R-WS6 | A `[dependencies]` key is an alias. It applies to each member under the directory of that `talon.toml` whose header has that alias. For a key that no such header has (row "no, yes" in 4.3), `tln install` adds the entry only when exactly one member is under that directory. Else it stops with exit code 2 and names `tln add --file <member file>` (CLI 1, R-PD5). Only `tln install` runs this check. `update`, `upgrade` and `verify` ignore the key (R-I5). |
 | R-WS7 | A range in any `talon.toml` of the workspace constrains the group variable of all members (R-WS2). So one range is enough for a group that many members use. Talon has no catalog (Bun, pnpm): a catalog keeps the members on one version, and R-WS2 already does that. |
 | R-WS8 | An alias that names different groups in different members is a tie (CLI 2). A command that takes names stops with exit code 2 and lists the groups as in the tie of CLI 2, R-SC14. |
@@ -291,9 +302,10 @@ Ids, and where each group is:
 | R-I1 to R-I9 | `talon.toml`: intent, implied ranges, the group check, `talon.toml` of a dependency | 4.3 |
 | R-VA1 to R-VA6 | Variables, anchors, `priority` | Resolution 1 |
 | R-NS1 to R-NS12 | The `nightly` switch | Resolution 1 |
-| R-C1 to R-C9 | Constraints | Resolution 2 |
+| R-C1 to R-C10 | Constraints | Resolution 2 |
 | R-EF1 to R-EF3 | Compatibility evidence | Resolution 3 |
 | R-LD1 to R-LD7, R-BL1 to R-BL6, R-BS1, R-BS2, R-SM1 to R-SM7, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, smoke build, result classes, used modules | Resolution 4 |
+| R-TG1 to R-TG6 | The build target of a project file | Resolution 4 |
 | R-P1 to R-P8 | Probe rules | Resolution 4 |
 | R-PP1 to R-PP7 | Parallel probes | Resolution 4 |
 | R-PB1 to R-PB7 | `tln probe` | Resolution 4 |
@@ -306,7 +318,9 @@ Ids, and where each group is:
 | R-DT1 to R-DT6 | Determinism, snapshots | Resolution 11 |
 | R-LF1 to R-LF5 | Lock and frozen modes | Resolution 12 |
 | R-SO1 to R-SO22 | Compiler selection order, the held nightly | Resolution 13 |
-| R-CM1 to R-CM23, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
+| R-CM1 to R-CM25, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
+| R-RUN1 to R-RUN17, R-EA1 to R-EA8, R-HK1 | `tln run`, `[scripts]`, the order of `tln run --each`, no hooks | CLI 1 |
+| R-PTH1 to R-PTH5 | `tln path` | CLI 1 |
 | R-SH1 to R-SH11 | Sharing probe results, `tln share`, the first-run prompt | CLI 1 |
 | R-AU1 to R-AU15 | `tln audit` | CLI 1 |
 | R-MV1 to R-MV5 | `tln move` | CLI 1 |
@@ -315,12 +329,13 @@ Ids, and where each group is:
 | R-AD1 to R-AD38, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
 | R-E1 to R-E6, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
 | R-NM1 to R-NM12, R-NI1 to R-NI16, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
-| R-IN1 to R-IN7 | `tln init` | CLI 5 |
+| R-IN1 to R-IN8 | `tln init` | CLI 5 |
 | R-LY1 to R-LY9 | Directory layout | CLI 6.1 |
 | R-PX1 to R-PX7 | The `roc` proxy | CLI 6.2 |
 | R-DL1 to R-DL10 | Download consent | CLI 6.2 |
 | R-GC1 to R-GC14 | Garbage collection, `tln cache clean` | CLI 6.3 |
 | R-T1 to R-T28, R-X1 to R-X5, R-B1 to R-B10 | Global tools, `tln x`, build reuse | CLI 6.4 |
+| R-PT1 to R-PT16 | Project tools, `[tools]` | CLI 6.4 |
 | R-S1 to R-S5, R-IS1 to R-IS8, R-RM1 to R-RM10 | Talon as a tool, install scripts, remove Talon | CLI 6.5 |
 | R-R1 to R-R13, R-LK1 to R-LK4, R-CS1 to R-CS3, R-U1 to R-U6, R-RU1 to R-RU4, R-RR1 to R-RR3, R-D1 to R-D4 | Compilers from source, links and copies, compiler commands, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
 | R-ST1 to R-ST15 | Setup, bin dir entries and launchers | CLI 6.7 |
@@ -341,7 +356,7 @@ Ids, and where each group is:
 | R-GA1 to R-GA7 | Gaps to build | 6.2 |
 | R-CF1 | Conformance suite | 6.3 |
 | R-PH1 to R-PH13 | Phase rules, P0 limits | 7 |
-| R-SE1 to R-SE16 | Security | 8 |
+| R-SE1 to R-SE17 | Security | 8 |
 | R-RL1 to R-RL4 | Registry role | Registry 1 |
 | R-SG1 to R-SG7 | Registry storage, Merkle log | Registry 3 |
 | R-AP1 to R-AP47 | Registry HTTP API | Registry 4 |
@@ -514,7 +529,7 @@ R-PH1: Each phase only adds commands and steps. A rule that a phase implements d
 | # | Phase | Commands |
 | --- | --- | --- |
 | R-PH2 | P0 | `install` (and `add`, `i`, `install --frozen`), `remove`, `update` (and `update -i`), `list`, `why`, `verify` |
-| R-PH3 | P1 | `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool ...`, `roc ...`, `cache ...`, `setup`, the `roc` proxy |
+| R-PH3 | P1 | `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool ...`, `roc ...`, `cache ...`, `setup`, the `roc` proxy, `run` (and `run --each`, CLI 1, R-RUN1 to R-RUN17, R-EA1 to R-EA8), `path` (R-PTH1 to R-PTH5), project tools (`add --tool`, `remove --tool`, and the `[tools]` part of `install`, `update` and `upgrade`, CLI 6.4, R-PT1 to R-PT16). P1 adds the `[tools]` step of the P0 command `install --frozen`, with its exit code 14 (R-PT7), as R-PH1 allows: a phase adds steps |
 | R-PH4 | P2 | `publish`, `probe --share`, `share`, and the share queue (CLI 1, R-SH4) |
 | R-PH5 | P3 | `audit`, `yank`, `move` |
 
@@ -527,8 +542,8 @@ P0 limits. P0 runs the rules of the design as written, with less to work with. P
 | R-PH6 | Compiler | The only installed compiler is the `roc` on `PATH` (Resolution 13, rank 7). Ranks 1 to 4 can select it when they name its id. There is no `toolchains/` and no global default. | Installed compilers, ranks 1 to 6 with downloads |
 | R-PH7 | Compiler downloads | None. A held `roc:` pin, or a rank that selects another compiler, is a required download (R-DL2) when a probe needs it (Resolution 13, R-SO22). P0 refuses it as `TALON_AUTO_INSTALL=no` does: exit code 13 (R-DL5). The error names the compiler id, and says that P0 runs only the `roc` on `PATH`. It does not name `--allow-downloads` or `TALON_AUTO_INSTALL`: P0 does not read them. Prompts R-NI4, R-NI5, R-NI6 and R-NI12 never show. | The consent rules R-DL1 to R-DL6 |
 | R-PH8 | Nightly | Always held (R-RP2). With no `roc:` entry, Talon writes the id of the `roc` on `PATH` (R-RP3), if it is a nightly or a release. | `upgrade roc`, `roc use` |
-| R-PH9 | Probes | The baseline check, the whole-app check and the build (ladder steps 2 and 3, Resolution 4) on one tuple. No unit probes (step 1). No `compat.db`, so the build skip never applies. | Unit probes, `compat.db`, the build skip |
-| R-PH10 | Search | One tuple: the best one by `priority` under R-C1 to R-C4, R-C6, R-C7 and R-C9 (Resolution 5 step 3). With no tuple, the second search of a held move (Resolution 9, R-SP24) gives the one tuple. If the ladder fails on it, Talon stops with exit code 10 and the blame of the ladder. | The PubGrub oracle loop (Resolution 5 steps 4 and 5), which tries other tuples |
+| R-PH9 | Probes | The baseline check, the whole-app check and the build (ladder steps 2 and 3, Resolution 4) on one tuple. The build is for the build target (Resolution 4, R-TG1 to R-TG6, which are P0). No unit probes (step 1). No `compat.db`, so the build skip never applies. | Unit probes, `compat.db`, the build skip |
+| R-PH10 | Search | One tuple: the best one by `priority` under R-C1 to R-C4, R-C6, R-C7, R-C9 and R-C10 (Resolution 5 step 3). With no tuple, the second search of a held move (Resolution 9, R-SP24) gives the one tuple. If the ladder fails on it, Talon stops with exit code 10 and the blame of the ladder. | The PubGrub oracle loop (Resolution 5 steps 4 and 5), which tries other tuples |
 | R-PH11 | Index | `direct` (CLI 7.3). The built-in default is `direct` until P2 (CLI 1). R-DI7 extracts a candidate with `roc unbundle` of the `roc` on `PATH` (CLI 7.1), and reads its `main.roc`. | P2: the registry |
 | R-PH12 | Output of `why` | The paths from the app to a package | The evidence for each version |
 
@@ -554,6 +569,7 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | R-SE14 | The account of a package owner is taken over later, and the attacker uses a rebind (Registry 7.3, R-TP9 rows 2 and 3) or a move (R-AP31) to send users to bad code | Accepted for now. The attacker gets little more than R-SE3 gives: with the account, they can already publish a new release in the repository. A rebind or a move changes no header URL and no label (Registry 7.3, R-PU19). A person must name the alias to follow a move (R-PU28), and Talon shows a transfer or a new repository first (R-PU30). `min-release-age` and the whole-app check apply. `repo_events` (R-TP13) and the log keep a record. A stranger who takes a deleted name gets 403 (R-TP9 row 4). |
 | R-SE15 | The contributor id of a user leaks (CLI 1, R-SH5) | Who has the id can send hints in its name, which count for its account after a login (Registry 6.1, R-CT8), and can delete the rows that it sent before a login (R-CT7). Accepted: the totals are for display only, and no rule reads them as evidence. The id is not in `config.toml`, Talon prints only 8 characters of it, and `tln share forget` makes a new one. The id cannot read anything: the tracker of the registry needs the JWT of a GitHub login (R-CT10). |
 | R-SE16 | A party that has a GitHub token of a user, from any app (or a registry that the user ran `tln share login` against), gets a JWT of that user (Registry 6.1, R-CT8 row 2) | Accepted: a login proves the account, and any token of the account proves it. With the JWT, the party can read the totals of the account and delete its rows (R-CT7). It cannot write evidence: a hint is rank 6, and the totals are for display only. |
+| R-SE17 | `tln run` runs the commands of `[scripts]` of a cloned repository, and project tools that `[tools]` locks | The same trust as `make` or `cargo build` in that repository. Talon runs a script only in `tln run`, only when the user names it, and only from the `talon.toml` files of the current project or workspace (CLI 1, R-HK1). No code runs on `git clone`, `tln install` or `tln add`: there are no hooks, and a package cannot declare a command. A step has no shell, so `-- <args>` cannot inject shell code (R-RUN2). A project tool runs the locked `url` only, with its hash (CLI 6.4, R-PT8). |
 
 ## 9. Questions
 

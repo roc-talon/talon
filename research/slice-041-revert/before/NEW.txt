@@ -1,0 +1,6 @@
+cli/lib/Init.roc
+cli/lib/InitText.roc
+tests/unit/init.roc
+tests/commands/cases/init/
+docs/slices/041-init.md
+research/slice-041-revert/

@@ -1,0 +1,11 @@
+verify --file p1/main.roc
+verify --file p1/main.roc
+verify --file p1/main.roc --json
+verify --file p2/main.roc
+verify --file p1/main.roc
+verify --file p2/main.roc
+verify --file p3/main.roc
+update json --file p4/main.roc --json
+update json --file p5/main.roc --json
+update json --file pk/main.roc --json
+remove parser --file p6/main.roc --json

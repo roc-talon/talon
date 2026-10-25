@@ -1,0 +1,21 @@
+Build roc from Karakatiza666/roc@my-branch (3b9f7c1d)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.1 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+5349569a is nightly-2026-10-21-5349569. tln roc install nightly-2026-10-21-5349569 downloads it.
+Build roc from roc-lang/roc@main (5349569a)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.1 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+Build roc from roc-lang/roc@dd03c09e (dd03c09e)
+
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.1 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, zig gets it during the build
+installed git-dd03c09e
+tln: error[network]: Karakatiza666/roc@my-branch needs a request to find its commit, and --offline is set
+tln: error[usage]: no commit nosuch in roc-lang/roc
+tln: error[environment]: tln roc install --git needs curl, but the download program is wget: a source archive has no published hash, and only curl refuses a redirect to http:// (R-DA3)
+git-3b9f7c1d is now the default compiler

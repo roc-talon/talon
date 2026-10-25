@@ -99,6 +99,13 @@ ResolveLoad :: [].{
 			},
 		)
 		checked = members.map_try(|(file, locked, toml)| locked.map_ok(|l| { file, locked: l, toml }))?
+		# R-TG3, R-TG4: a bad `[build] target` is exit 19 for the member that uses the file, when it is an app.
+		for m in checked {
+			match m.toml {
+				Ok(t) => Intent.build_check({ path: t.path, bad: t.intent.build.bad, kind: m.locked.kind })?
+				Err(NoToml) => {}
+			}
+		}
 		settings_path = match request.project.workspace {
 			Ok(_) => root_toml
 			Err(Standalone) => files.first().map_ok(|f| Text.join(Text.dir_of(f), "talon.toml")) ?? ""

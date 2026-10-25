@@ -1,0 +1,11 @@
+x acme/foo --offline
+x acme/foo --offline --allow-unchecked
+x acme/qux --offline --yes
+x acme/baz --offline
+x acme/none --offline
+x acme/foo@2.0.0 --offline
+x acme/foo@1.0.0 --offline --yes
+x acme/foo --offline env:TALON_INTERACTIVE=1
+x acme/foo --offline env:TALON_INTERACTIVE=1
+x acme/net --yes
+x acme/net2

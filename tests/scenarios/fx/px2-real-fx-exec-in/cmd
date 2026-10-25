@@ -1,0 +1,21 @@
+# R-RUN5 R-RUN7 R-RUN9 TW4 (slice 057): exec_in! of the real Fx, with `fxprobe` (no Talon logic in it). It is exec! with a working directory: the child runs in `cwd`, the exit code passes through (128 + the signal number for a signal),
+# the variables of `env` are added, and a directory that does not exist, or a program that is not found, is an error (`NotStarted`), not an exit code. The directory of the process does not change.
+FX=$(command -v fxprobe)
+mkdir -p d/sub
+printf '#!/bin/sh\necho "in: $(basename "$(pwd)") V=$PX_V args: $#"\nfor a in "$@"; do echo "arg: $a"; done\n' > d/sub/show.sh
+chmod +x d/sub/show.sh
+
+echo "== the working directory is the given one, the arguments are as they are, the variable is added"
+$FX exec-in $PWD/d/sub PX_V=1 -- $PWD/d/sub/show.sh "two words" x
+echo "== a relative program name is looked for as exec! does it, with the PATH of the process"
+$FX exec-in $PWD/d/sub -- pwd | sed -e "s,^$PWD,\$PROJECT,"
+echo "== the exit code and the signal"
+$FX exec-in $PWD/d -- sh -c 'exit 7'
+$FX exec-in $PWD/d -- sh -c 'kill -TERM $$'
+echo "== the process keeps its own directory"
+$FX exec-in $PWD/d/sub -- true
+pwd | sed -e "s,^$PWD,\$PROJECT,"
+echo "== no such directory, and no such program: an error"
+$FX exec-in $PWD/d/none -- true | sed -e 's/^exec-in err .*/exec-in err (text of the platform)/'
+$FX exec-in $PWD/d -- $PWD/d/missing | sed -e 's/^exec-in err .*/exec-in err (text of the platform)/'
+rm -rf d

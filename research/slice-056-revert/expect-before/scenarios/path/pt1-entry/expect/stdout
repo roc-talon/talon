@@ -1,0 +1,26 @@
+== tln path pf
+$HOME/.cache/roc/packages/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw
+exit 0
+== tln path lib
+$WORK/shared/lib
+exit 0
+== tln path pf --json
+{"schema":1,"command":"path","ok":true,"data":{"alias":"pf","kind":"url","dir":"$HOME/.cache/roc/packages/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw"},"error":null}
+exit 0
+== tln path odd
+exit 2
+== tln path nope
+exit 2
+== tln path
+exit 2
+== tln path json --offline
+exit 15
+== the project is not changed
+app [main!] {
+	pf: platform "https://github.com/acme/pf/releases/download/0.2.0/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw.tar.zst",
+	json: "https://github.com/acme/json/releases/download/2.1.0/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst",
+	lib: "../shared/lib/main.roc",
+	odd: "https://example.com/pkg/{v}/x.tar.zst",
+}
+
+main! = |_args| Ok({})

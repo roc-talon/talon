@@ -1,0 +1,21 @@
+would remove $HOME/.cache/roc/talon/index (35 B)
+would remove $HOME/.cache/roc/talon/x (47 B)
+would remove $HOME/.cache/roc/packages (47 B)
+would remove $HOME/.cache/roc-builds/compat-aaaaaaa (24 B)
+would remove $HOME/.cache/roc-builds/compat-bbbbbbb (49 B)
+would remove $HOME/.cache/roc-builds/debug-9999999 (16 B)
+would remove $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (18 B)
+would free 236 B
+dry run: nothing was removed
+tln: error[usage]: tln cache clean takes no operand, got 1
+removing 5 cache dirs (154 B)
+removed $HOME/.cache/roc/packages (47 B)
+removed $HOME/.cache/roc-builds/compat-aaaaaaa (24 B)
+removed $HOME/.cache/roc-builds/compat-bbbbbbb (49 B)
+removed $HOME/.cache/roc-builds/debug-9999999 (16 B)
+removed $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (18 B)
+freed 154 B
+removing 2 cache dirs (45 B)
+waiting for another tln: gc
+tln: error[environment]: cannot remove $HOME/h3/.cache/roc/talon/x: Denied
+removing 2 cache dirs (31 B)

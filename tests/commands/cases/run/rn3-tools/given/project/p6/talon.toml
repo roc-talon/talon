@@ -1,0 +1,5 @@
+[tools]
+lz = { ref = "acme/lz@^1" }
+
+[scripts]
+nu = ["lz --x", "tool-after"]

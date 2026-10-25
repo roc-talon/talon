@@ -1,0 +1,9 @@
+cwd:p1 path pf
+cwd:p1 path json --offline
+cwd:p1 path json
+path json --file p1/main.roc --json
+cwd:p1 path lib
+cwd:p1 path odd
+cwd:p5 path pf
+cwd:p1 path
+cwd:ws path pf

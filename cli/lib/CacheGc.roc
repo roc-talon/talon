@@ -13,7 +13,9 @@ import Projects
 import RocInstall
 import Roots
 import Temp
+import ToolsHeld
 import Trash
+import XCache
 
 ## `tln cache gc` (slice 028 part 1, CLI 6.3, R-GC5, R-GC6, R-GC9, R-GC11, R-CC2, R-CC10, R-PD12, R-PD13). Direct style over `Fx` (TESTING.md 2.2 part C): `Gc` decides, this module orders the calls.
 ## `Run.tln!` calls `run!` for the command `["cache", "gc"]`. Slice 028b adds the new `Fx` call `tree_info!` and the steps 5b, 6b, 8 (more decisions) and 10 (more paths): the L2 cases `gc/gc1-select` and `gc/gc3-caches` and the L3 case `cache/gc1-real` fix them. The calls, in order (the L2 cases `gc/gc1-select` and `gc/gc2-busy` and the L3 case `cache/gc1-real` fix them):
@@ -31,6 +33,7 @@ import Trash
 ## | 7 | With one compiler or more, one `read_files!` with 2 paths for each id, in the order of the ids: `.talon.json`, then `.last-use` (as `roc list`). | R-CC9 |
 ## | 8 | The decisions: `Gc.projects`, `Manage.rows`, `Gc.toolchains`, `Temp.old` of `Gc.entries` (with the real time), `Manage.compat_of`. Then (028b) `Gc.candidates`, `Gc.asks` and one `tree_info!` with all the asks (no call when `asks` is empty; a dry run calls it too), `Gc.expired` (builds: span `gc-age`, packages: span 86400, both with the real time) and `Gc.sizes`. A dry run stops here and prints. | R-GC5, R-GC6, R-GC3, R-GC2, R-GC4, R-GC11 |
 ## | 9 | For each toolchain to remove, in the order of the ids: `Fx.with_lock!` on `Roots.item(roots, Toolchain(id))` with `NoWait`. `Busy`: the id is skipped and nothing else is done for it. Held: `random!`, `rename!` of the dir to `Manage.trash_name`, then one `delete!` of the trash dir and the compat dir of the compiler (`Roots.item(roots, Compat(<compat id>))`, none when `compat_of` is `Err`). | R-CC10, R-GC3 |
+## | 8b | (049, R-GC7) The `x` entries: `XCache.dirs_of` of the entries of step 5, one `read_files!` of `XCache.manifest_of` of each dir (no call for no dir), `XCache.expired` with the time of Talon, `gc-age` and `kept: []` (the `[tools]` hashes are slice 056). The expired dirs are builds: they join `builds` (the report and `data.builds`) and the one `tree_info!` call. | R-GC7, R-GC9 |
 ## | 10 | One `delete!` with the stale paths of step 8, then (028b) the expired build dirs, then for each expired package its dir and `<dir>.deps.json` (no call when all are empty). | R-CC2, R-GC6, R-GC2, R-GC4 |
 ## | 11 | When `Gc.projects` has `gone` entries: `Fx.locked!` on `projects.json`: `read_files!`, `Projects.prune` for the entries of the first pass only (an entry that was added after step 6 stays), `write_atomic!` when something left. | R-PD13, R-CC6 |
 ## | 12 | The output: `Gc.report` on stdout (`--quiet` hides it, with `--json` it goes to stderr), with `--json` the envelope with `Gc.data` on stdout. | R-OUT2, R-J3 |
@@ -97,6 +100,7 @@ work! = |fx, roots, clocks, plan| {
 	known = known_projects!(fx, roots, { now: clocks.now, age })?
 	entries = Gc.entries({ dirs, listed })
 	protected = protect!(fx, roots, { live: known.live, entries })
+	projects = known.live.map(|project| project.path)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
 	reads = if ids.is_empty() [] else fx.read_files!(paths)
 	found = Manage.found_of(ids, reads)
@@ -109,7 +113,7 @@ work! = |fx, roots, clocks, plan| {
 	}
 	stale = Temp.old({ entries, now: clocks.real })
 	compat = going.keep_oks(|id| compat_of(id).map_ok(|c| Roots.item(roots, Compat(c))))
-	aged = aged!(fx, roots, { clocks, age, going, compat, stale, entries, builds, protected })
+	aged = aged!(fx, roots, { clocks, age, going, compat, stale, entries, builds, protected, projects })
 	if plan.dry_run {
 		return Ok({ dry_run: Bool.True, ran: Bool.True, toolchains: going, skipped: [], compat, stale, builds: aged.builds, pkgs: aged.pkgs, projects: known.gone, sizes: aged.sizes })
 	}
@@ -139,17 +143,30 @@ walk! = |fx, roots, live, nodes| match Gc.protected({ projects: live, nodes }) {
 }
 
 # Step 8 (028b), R-GC2, R-GC3, R-GC4, R-GC9, R-GC11: the dirs that the age rule removes, and the size of each ask. One `tree_info!` for all asks (D11), also in a dry run. `now` is the real clock (R-EV22).
-aged! : Fx, Roots, { clocks : Clocks, age : U64, going : List(Str), compat : List(Str), stale : List(Str), entries : List({ path : Str, is_dir : Bool, mtime : U64 }), builds : List({ path : Str, is_dir : Bool, mtime : U64 }), protected : List(Str) } => { builds : List(Str), pkgs : List(Str), sizes : List(Gc.Sized) }
+aged! : Fx, Roots, { clocks : Clocks, age : U64, going : List(Str), compat : List(Str), stale : List(Str), entries : List({ path : Str, is_dir : Bool, mtime : U64 }), builds : List({ path : Str, is_dir : Bool, mtime : U64 }), protected : List(Str), projects : List(Str) } => { builds : List(Str), pkgs : List(Str), sizes : List(Gc.Sized) }
 aged! = |fx, roots, facts| {
-	candidates = Gc.candidates({ roots, entries: facts.entries, builds: facts.builds, protected: facts.protected, owned: facts.compat })
-	asks = Gc.asks({ roots, toolchains: facts.going, compat: facts.compat, stale: facts.stale, builds: candidates.builds, pkgs: candidates.pkgs })
+	x_reads = x_reads!(fx, roots, facts.entries)
+	open = Gc.candidates({ roots, entries: facts.entries, builds: [], protected: facts.protected, owned: [] })
+	expired = |kept| XCache.expired({ dirs: x_reads.dirs, reads: x_reads.reads, now: facts.clocks.now, age: facts.age, kept })
+	# Slice 056 (R-PT14, R-GC4, R-GC7): the `[tools]` of the live projects keep an `x` entry and a package dir. They are read when something would go without them.
+	held = if !facts.projects.is_empty() and (!expired([]).is_empty() or !open.pkgs.is_empty()) ToolsHeld.of!(fx, facts.projects) else []
+	candidates = Gc.candidates({ roots, entries: facts.entries, builds: facts.builds, protected: facts.protected.concat(held), owned: facts.compat })
+	x_dirs = expired(held)
+	asks = Gc.asks({ roots, toolchains: facts.going, compat: facts.compat, stale: facts.stale, builds: candidates.builds.concat(x_dirs), pkgs: candidates.pkgs })
 	infos = if asks.is_empty() [] else fx.tree_info!(asks.map(|ask| ask.path))
 	measured = asks.map2(infos, |ask, info| { item: ask.item, path: ask.path, info })
 	{
-		builds: Gc.expired({ dirs: candidates.builds, measured, now: facts.clocks.real, span: facts.age }),
+		builds: Gc.expired({ dirs: candidates.builds, measured, now: facts.clocks.real, span: facts.age }).concat(x_dirs),
 		pkgs: Gc.expired({ dirs: candidates.pkgs, measured, now: facts.clocks.real, span: 86400 }),
 		sizes: Gc.sizes(measured),
 	}
+}
+
+# Step 8b, R-GC7: the manifests of the entry dirs of `talon/x`. The reads come before any removal.
+x_reads! : Fx, Roots, List({ path : Str, is_dir : Bool, mtime : U64 }) => { dirs : List(Str), reads : List(Try(Str, [NotFound, Denied, Other(Str)])) }
+x_reads! = |fx, roots, entries| {
+	dirs = XCache.dirs_of({ roots, entries })
+	{ dirs, reads: if dirs.is_empty() [] else fx.read_files!(dirs.map(XCache.manifest_of)) }
 }
 
 # Step 6, R-PD12: the entries of `projects.json` and the project files. A text that does not parse ends the run (exit 19, R-TF6).

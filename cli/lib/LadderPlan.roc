@@ -1,3 +1,4 @@
+import BuildTarget
 import Probe
 import Text
 
@@ -39,5 +40,27 @@ LadderPlan :: [].{
 			Package | Platform => Err(None)
 		}
 		{ first: [spec(Probe.args({ command: Check, file: facts.file }), 1), spec(flagged(Check), 1)], build }
+	}
+
+	## R-PA10, R-PX5 (slice 043): the same plan with the `--replace-dep` pairs of the patches (`Patched.replaces`). `base` are the pairs for the baseline check (the current header: the copy of each patch, as the proxy gives it), `candidate` are the pairs for the check of the candidate and for the build
+	## (the new header: the temp copy of a patch that moves, else the copy). Each pair is `--replace-dep <old> <new>` at the end of the arguments of its probe (after the file and after the pairs of `plan_replace`, in the order of the list). The unit probes are not changed (question Q3).
+	## Empty lists give the same plan.
+	with_patches : { plan : Plan, base : List(Replace), candidate : List(Replace) } -> Plan
+	with_patches = |x| {
+		flags = |pairs| pairs.join_map(|r| ["--replace-dep", r.old, r.new])
+		more = |spec, pairs| { ..spec, args: spec.args.concat(flags(pairs)) }
+		first = x.plan.first.map_with_index(|spec, i| if i == 0 more(spec, x.base) else more(spec, x.candidate))
+		{ first, build: x.plan.build.map_ok(|spec| more(spec, x.candidate)) }
+	}
+
+	## Slice 054 (R-TG1, R-TG2, R-LD5): the build spec with the build target. `Named(t)` puts `--target=<t>` after `build` and before the file: `["build", "--target=<t>", <file>, "--output=<out>", ...]` (the form of R-LD5: `roc build --target=<build target> main.roc --output=<tmp>`).
+	## The `--replace-dep` pairs stay at the end. Nothing else of the spec changes. `Unlisted` gives the spec as it is (no `--target`). The code agent calls it in `Ladder.build_round!` with the target that `BuildFlow.before!` found.
+	with_target : { spec : Probe.Spec, target : BuildTarget.Chosen } -> Probe.Spec
+	with_target = |x| match x.target {
+		Unlisted => x.spec
+		Named(name) => match x.spec.args {
+			["build", .. as rest] => { ..x.spec, args: ["build", "--target=${name}"].concat(rest) }
+			_ => x.spec
+		}
 	}
 }

@@ -1,0 +1,22 @@
+== x acme/foo --offline
+exit 13
+== x acme/foo --offline --allow-unchecked
+exit 0
+== x acme/qux --offline --yes
+exit 0
+== x acme/baz --offline
+exit 0
+== x acme/none --offline
+exit 15
+== x acme/foo@2.0.0 --offline
+exit 15
+== x acme/foo@1.0.0 --offline --yes
+exit 0
+== x acme/foo --offline env:TALON_INTERACTIVE=1
+exit 13
+== x acme/foo --offline env:TALON_INTERACTIVE=1
+exit 0
+== x acme/net --yes
+exit 0
+== x acme/net2
+exit 15

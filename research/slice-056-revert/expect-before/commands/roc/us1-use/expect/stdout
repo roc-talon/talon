@@ -1,0 +1,124 @@
+== roc use nightly-2026-10-14-38a3029 --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== roc use nightly-2026-10-14-38a3029 --file p3/main.roc --json
+{"schema":1,"command":"roc use","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","files":[{"path":"$PROJECT/p3/main.roc","previous":"nightly-2026-10-09-258ab27"}],"probes":3,"downloads":0,"check":"passed","build":"passed","notes":[]},"error":null}
+exit 0
+== roc use nightly-2026-10-14-38a3029 --file p4/main.roc
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 roc use nightly-2026-10-14-38a3029 --file p5/main.roc
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27. It has a higher priority than the new pin nightly-2026-10-14-38a3029, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set.
+exit 0
+== env:HOME={w}/home2 roc use nightly-2026-10-14-38a3029 --file p6/main.roc
+check: passed
+build: passed
+$PROJECT/p6/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:CI=true env:HOME={w}/home4 roc use nightly-2026-10-14-38a3029 --file p7/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/p7/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:HOME={w}/home5 roc use nightly-2026-10-14-38a3029 --file p8/main.roc
+check: passed
+build: passed
+$PROJECT/p8/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:CI=true env:HOME={w}/home3 roc use nightly-2026-10-14-38a3029 --file p9/main.roc
+exit 13
+== roc use link-dev
+exit 2
+== env:HOME={w}/home6 roc use link --file p16/main.roc
+exit 2
+== roc use nightly-2026-10-14-38a3029 --no-check
+exit 2
+== roc use nightly-2026-10-09-258ab27 --file p12/main.roc
+exit 10
+== env:TALON_NIGHTLY=0 roc use nightly-2026-10-14-38a3029 --file p13/main.roc
+exit 10
+== roc use nightly-2026-10-14-38a3029 --file p14/main.roc
+exit 11
+== roc use nightly-2026-10-14-38a3029 --file p15/main.roc
+check: passed
+note: unchanged error: main.roc: type mismatch
+note: unchanged error: main.roc: type mismatch
+note: unchanged error: Util.roc: type mismatch
+note: unchanged error: $PROJECT/lib-local/Local.roc: type mismatch
+build: passed
+$PROJECT/p15/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:TALON_AUTO_INSTALL=no env:HOME={w}/home9 roc use nightly-2026-10-14-38a3029 --file p17/main.roc
+exit 13
+== env:CI=true env:HOME={w}/home7 roc use nightly-2026-10-14-38a3029 --file p18/main.roc --allow-downloads --json
+{"schema":1,"command":"roc use","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","files":[{"path":"$PROJECT/p18/main.roc","previous":"nightly-2026-10-09-258ab27"}],"probes":2,"downloads":1,"check":"passed","build":null,"notes":[]},"error":null}
+exit 0
+== env:HOME={w}/home10 env:ROC_TOOLCHAIN=nightly-2026-10-14-38a3029 roc use nightly-2026-10-14-38a3029 --file p19/main.roc
+check: passed
+build: passed
+$PROJECT/p19/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+note: ROC_TOOLCHAIN is nightly-2026-10-14-38a3029. It has a higher priority than the new pin nightly-2026-10-14-38a3029, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set.
+exit 0
+== env:HOME={w}/home8 roc use nightly-2026-10-14-38a3029 --file p20/main.roc
+exit 13
+== roc use nightly-2026-10-14-38a3029 --file p21/main.roc
+exit 1
+== env:HOME={w}/home11 roc use nightly-2026-10-14-38a3029 --file p22/main.roc
+check: passed
+build: passed
+$PROJECT/p22/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== roc use nightly-2026-10-14-38a3029 --file p23/main.roc
+the roc pin is already nightly-2026-10-14-38a3029 in every member. Nothing was written.
+exit 0
+== env:HOME={w}/home12 roc use nightly-2026-10-14-38a3029 --file p24/main.roc
+check: passed
+build: passed
+$PROJECT/p24/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:HOME={w}/home13 roc use nightly-2026-10-14-38a3029 --file p25/main.roc
+check: passed
+build: passed
+$PROJECT/p25/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-October-14-38a3029 roc use nightly-2026-10-14-38a3029 --file p26/main.roc --json
+{"schema":1,"command":"roc use","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","files":[{"path":"$PROJECT/p26/main.roc","previous":null}],"probes":3,"downloads":0,"check":"passed","build":"passed","notes":["ROC_TOOLCHAIN is nightly-2026-October-14-38a3029. It has a higher priority than the new pin nightly-2026-10-14-38a3029, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set."]},"error":null}
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 roc use nightly-2026-10-14-38a3029 --file p23/main.roc
+the roc pin is already nightly-2026-10-14-38a3029 in every member. Nothing was written.
+exit 0
+== roc use nightly-2026-10-14-38a3029 --file p28/main.roc
+exit 13
+== roc use nightly-2026-10-14-38a3029 --file p29/main.roc
+check: passed
+build: passed
+exit 17

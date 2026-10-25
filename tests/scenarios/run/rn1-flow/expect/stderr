@@ -1,0 +1,6 @@
+tln: error[environment]: script gone: the step 'tln-no-such-program --x' cannot start 'tln-no-such-program': IO(NotFound)
+tln: error[input]: $PROJECT/proj/talon.toml: script shell: the step 'sh -c "echo a" > made' has the word '>': a step is one command; use 2 steps, or a .roc script
+tln: error[usage]: no script 'nosuch' in the talon.toml files that the walk checked: $PROJECT/proj/talon.toml.
+tln: error[usage]: unknown command 'build'
+platform pf/main.roc
+building acme/app 1.1.0 with nightly-2026-10-14-38a3029

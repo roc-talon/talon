@@ -1,0 +1,16 @@
+== @roc check p1/main.roc
+exit 0
+== @roc build p1/main.roc --opt=speed
+exit 0
+== @roc p1/main.roc -- a b
+exit 0
+== @roc check p2/main.roc
+exit 0
+== @roc check p3/main.roc
+exit 14
+== @roc check p3/main.roc env:TALON_PROXY=0
+exit 0
+== @roc check p4/main.roc
+exit 0
+== @roc version
+exit 0

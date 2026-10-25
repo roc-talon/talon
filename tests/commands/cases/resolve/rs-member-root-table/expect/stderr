@@ -1,1 +1,1 @@
-tln: error[input]: $PROJECT/apps/a/talon.toml:4: the table [resolution] is not allowed in a workspace member file (it has only dependencies, overrides and patch)
+tln: error[input]: $PROJECT/apps/a/talon.toml:4: the table [resolution] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)

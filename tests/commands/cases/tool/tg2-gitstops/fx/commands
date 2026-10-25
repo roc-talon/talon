@@ -1,0 +1,9 @@
+tool install --git acme/empty@main
+tool install --git acme/gapp@nosuch
+tool install --git acme/gapp@main --offline
+tool install --git acme/gapp@main env:TALON_DOWNLOADER=wget
+tool install --git acme/gapp
+tool install --git acme/gapp@main --path ../x
+tool install --git other/gapp@main
+tool install --git acme/fe@main
+tool install --git acme/gapp@main --resolve

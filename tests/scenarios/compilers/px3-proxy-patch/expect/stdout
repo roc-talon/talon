@@ -1,0 +1,24 @@
+== R-PX5 R-PA10: a pair --replace-dep <the URL of the header entry> <the main file of the copy> for each [patch] entry, in the order of the table. The paths of the copies are absolute.
+== $WORK/launch/roc check p1/main.roc
+ran nightly-2026-10-09-258ab27: check p1/main.roc --replace-dep https://github.com/acme/parser/releases/download/1.0.0/5dRxUNMWfxRaxQ6349dGWSCJH7N2RBZQfLbyYGaW2mZF.tar.zst $PROJECT/p1/.talon/patches/parser/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GGSH6vPj93jrSv7gN1V2Sntg54VgTmFxtWP38PBe1pMc.tar.zst $PROJECT/p1/.talon/patches/json/main.roc
+XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+exit 0
+== R-PX5: the flags come before -- (the arguments after it are for the app).
+== $WORK/launch/roc p1/main.roc -- a b
+ran nightly-2026-10-09-258ab27: p1/main.roc --replace-dep https://github.com/acme/parser/releases/download/1.0.0/5dRxUNMWfxRaxQ6349dGWSCJH7N2RBZQfLbyYGaW2mZF.tar.zst $PROJECT/p1/.talon/patches/parser/main.roc --replace-dep https://github.com/acme/json/releases/download/2.1.0/GGSH6vPj93jrSv7gN1V2Sntg54VgTmFxtWP38PBe1pMc.tar.zst $PROJECT/p1/.talon/patches/json/main.roc -- a b
+XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+exit 0
+== R-PA6 R-EC14: a stale patch. Exit 14 (frozen), the message names tln install, the compiler does not run, and no .last-use is written for it.
+== $WORK/launch/roc check p2/main.roc
+exit 14
+no last use
+== R-PX7 R-EV7: TALON_PROXY=0 does no extra work: the stale patch is not checked and no flag is added.
+== env TALON_PROXY=0 $WORK/launch/roc check p2/main.roc
+ran nightly-2026-10-09-258ab27: check p2/main.roc
+XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+exit 0
+== R-PX3: a project with no [patch] table: the arguments go as they are.
+== $WORK/launch/roc check p3/main.roc
+ran nightly-2026-10-09-258ab27: check p3/main.roc
+XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+exit 0

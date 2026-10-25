@@ -1,0 +1,41 @@
+Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.17.0 (356 B)
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.1 in $ZIG
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [x] zig 0.16.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [ ] zig 0.15.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.15.1 (356 B)
+tln: error[integrity]: sha256 of zig-0.15.1 differs: expected a3ead5eedad5df82318c51685dbc1c147a36d1ff8584fc82de6b08d0bf63a795, got 2487885c8c2c9851e0ff2a0272a4ac72c8816987313e1cafd99148a6dec4f245. Talon deleted the download.
+Dependencies:
+  [ ] zig 0.14.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+installing zig 0.14.1 (384 B)
+tln: error[integrity]: tar rejected zig-0.14.1 (http://127.0.0.1:$PORT/zig/dl/0.14.1/zig-x86_64-linux-0.14.1.tar.xz): tar: Exiting with failure status due to previous errors
+Dependencies:
+  [ ] zig 0.13.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[network]: zig 0.13.x is not installed and --offline is set
+Dependencies:
+  [ ] zig 0.99.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[environment]: the Zig index has no release of zig 0.99.x
+Dependencies:
+  [ ] zig 0.12.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[network]: cannot read the Zig index http://127.0.0.1:$PORT/zig/missing.json: HTTP 404

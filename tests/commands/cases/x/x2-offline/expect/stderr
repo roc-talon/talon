@@ -1,0 +1,10 @@
+tln: error[consent]: using the cached foo 1.1.0, which was not checked online needs consent. Pass --allow-unchecked or --yes.
+using cached foo 1.1.0, not checked online
+using cached qux 1.0.0, not checked online
+note: baz 1.0.0 is installed. tln did not check it online for yanks and advisories.
+tln: error[network]: no installed or cached build of acme/none matches, and --offline is set. Run the command without --offline.
+tln: error[network]: no installed or cached build of acme/foo matches, and --offline is set. Run the command without --offline.
+using cached foo 1.0.0, not checked online
+tln: error[consent]: foo 1.1.0 is in the cache, but it was not checked online and you did not accept it. Nothing was run.
+using cached net 1.0.0, not checked online
+tln: error[network]: cannot reach https://api.github.com/repos/acme/net2/releases?per_page=100: connection refused. Use --offline to work with the cached index.

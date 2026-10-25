@@ -1,0 +1,5 @@
+[dependencies]
+json = "^2.1"
+
+[patch]
+json = { path = "./.talon/patches/json/main.roc", base = "XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW" }

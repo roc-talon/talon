@@ -1,0 +1,99 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/np
+http_get https://api.github.com/repos/acme/np/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/np/1.json $HOME/.cache/roc/talon/index/github/acme/np/1.meta
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/np
+sha256_file $HOME/.local/share/talon/bin/np
+random
+list_dirs $HOME/.cache/roc/packages
+programs curl wget
+make_dirs $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst https://github.com/acme/np/releases/download/1.1.0/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst
+spawn_all limit=8
+  job $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp roc unbundle AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst
+rename $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD
+delete $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD/main.roc
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/mo
+http_get https://api.github.com/repos/acme/mo/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/mo/1.json $HOME/.cache/roc/talon/index/github/acme/mo/1.meta
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/mo
+sha256_file $HOME/.local/share/talon/bin/mo
+random
+list_dirs $HOME/.cache/roc/packages
+programs curl wget
+make_dirs $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst https://github.com/acme/mo/releases/download/1.1.0/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst
+spawn_all limit=8
+  job $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp roc unbundle 3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst
+rename $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J
+delete $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+programs curl wget
+make_dirs $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+spawn_all limit=8
+  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+tty
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+random
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-October-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J nightly-2026-October-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-October-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/mo timeout=3600
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/mo
+sha256_file $HOME/.local/share/talon/bin/mo
+make_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/mo $HOME/.local/share/talon/bin/mo.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/bin/mo.0123456789abcdef.tmp $HOME/.local/share/talon/bin/mo
+sha256_file $HOME/.local/share/talon/bin/mo
+hard_link $HOME/.local/share/talon/bin/mo $HOME/.local/bin/mo.0123456789abcdef.tmp
+rename $HOME/.local/bin/mo.0123456789abcdef.tmp $HOME/.local/bin/mo
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef

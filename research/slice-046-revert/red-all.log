@@ -1,0 +1,139 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        Same(e) => "same ${e.key}"
+        Taken(e) => "taken ${e.key} ${e.name}"
+        Elsewhere(e) => "elsewhere ${e.key}"
+    }
+    rows = [
+        (clash("bar", "acme/bar"), "free"),
+        (clash("foo", "acme/foo"), "same foo"),
+        (clash("g", "acme/g"), "same g"),
+        (clash("foo", "other/foo"), "taken foo acme/foo"),
+        (clash("q", "acme/foo"), "taken q acme/qux"),
+        (clash("qux", "acme/qux"), "elsewhere q"),
+        (Str.inspect(ToolsJson.entities(entries).map(|e| (e.alias, e.name, e.series, e.version))), "[(\"foo\", \"acme/foo\", \"1\", Ok(\"1.1.0\")), (\"q\", \"acme/qux\", \"2\", Ok(\"2.0.0\")), (\"g\", \"acme/g\", \"\", Err(None))]"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 046
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/ToolTest.roc:442:1
+
+expect {
+    rows = [
+        (ToolInstall.native(Err(NoSection)), Native),
+        (ToolInstall.native(Ok([])), Native),
+        (ToolInstall.native(Ok(["wasm32"])), WasmOnly(["wasm32"])),
+        (ToolInstall.native(Ok(["wasm32", "wasm32v1"])), WasmOnly(["wasm32", "wasm32v1"])),
+        (ToolInstall.native(Ok(["wasm32", "x64musl"])), Native),
+        (ToolInstall.native(Ok(["x64mac"])), Native),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    text = ToolInstall.not_native({ name: "acme/wasm", version: "1.0.0", hash: h1, names: ["wasm32", "wasm32v1"] }).line()
+    bad == [] and text == "tln: error[usage]: acme/wasm 1.0.0 needs the platform ${h1}, which has no native target (targets: wasm32, wasm32v1). tln tool install makes a command line tool, so it needs a native platform."
+}
+
+[dbg] []
+[dbg] [("pf", "0.2.0", "0.1.1", "text 2.0.0 needs pf 0.1.1"), ("json", "3.0.0", "2.2.0", "needs core >= 1.2.0"), ("parser", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("cli2", "2.0.0", "1.0.0", "needs pf 0.2.0"), ("hangs", "1.1.0", "1.0.0", "hangs the unit check on nightly-2026-10-14-38a3029"), ("crashy", "1.1.0", "1.0.0", "crashes the unit check on nightly-2026-10-14-38a3029"), ("farfail", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("usedfail", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("both", "1.1.0", "1.0.0", "fails the unit check on nightly-2026-10-14-38a3029"), ("nofact", "1.1.0", "1.0.0", "it does not fit the closure of the tuple"), ("plain", "1.1.0", "1.0.0", "it does not fit the closure of the tuple")]
+[dbg] [("pf", "text 2.0.0 needs pf 0.1.1"), ("json", "needs core >= 1.2.0"), ("parser", "it does not fit the closure of the tuple"), ("cli2", "needs pf 0.2.0"), ("hangs", "it does not fit the closure of the tuple"), ("crashy", "it does not fit the closure of the tuple"), ("farfail", "it does not fit the closure of the tuple"), ("usedfail", "it does not fit the closure of the tuple"), ("both", "needs core >= 1.2.0"), ("nofact", "it does not fit the closure of the tuple"), ("plain", "it does not fit the closure of the tuple")]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "roc nightly-2026-10-05-5555555 is not used, nightly-2026-10-04-4444444 is chosen: lib 1.1.0 fails the unit check on nightly-2026-10-05-5555555"
+Ran 74 tests in 5987.6 ms.:
+    60 passed
+    14 failed
+    0 compiler errors
+tests/unit/l0-2.roc: All (51) tests passed in 6645.1 ms.
+tests/unit/l0-3.roc: All (75) tests passed in 6038.0 ms.
+tests/unit/l0-4.roc: All (60) tests passed in 6247.6 ms.
+tests/unit/l0-5.roc: All (55) tests passed in 5774.9 ms.
+tests/unit/l0-6.roc: All (53) tests passed in 6035.3 ms.
+tests/unit/l0-7.roc: All (40) tests passed in 6215.0 ms.
+tests/unit/l0-8.roc: All (60) tests passed in 6166.1 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL tool/ti1-install
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 046
+FAIL tool/ti2-refusals
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 046
+commands: 119 passed, 2 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-08-15T12:00:00Z","assets":[{"name":"DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst","size":1000,"browser_download_url":"https://github.com/other/foo/releases/download/2.0.0/DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst"}]}]
+      ---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -@@ -0,0 +1 @@
+      -+2026-10-15T12:00:00Z
+      ---- home/.local/bin/bar
+      -+++ home/.local/bin/bar
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/bar 1.0.0"
+      ---- home/.local/bin/foo
+      -+++ home/.local/bin/foo
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/foo 1.1.0"
+      ---- home/.local/bin/ofoo
+      -+++ home/.local/bin/ofoo
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo "ran: other/foo 2.0.0"
+      ---- home/.local/share/talon/bin/bar
+      -+++ home/.local/share/talon/bin/bar
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/bar 1.0.0"
+      ---- home/.local/share/talon/bin/foo
+      -+++ home/.local/share/talon/bin/foo
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/foo 1.1.0"
+      ---- home/.local/share/talon/bin/ofoo
+      -+++ home/.local/share/talon/bin/ofoo
+      -@@ -0,0 +1,2 @@
+      -+#!/bin/sh
+      -+echo "ran: other/foo 2.0.0"
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/ACTN2PbnqZiVb3HXH4ghbrF1jNnCud8DAZAjHLasYsyy.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"6471f60a4f14cce754e935f3d73d976f4d70c1e536f8a5bc79a0d2869817aac9","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"ofoo":{"name":"other/foo","source":{"kind":"release","version":"2.0.0","url":"https://github.com/other/foo/releases/download/2.0.0/DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2ec41b1674fe74a6f2d0ce539b01d16a7dfd41f463f1ff0564d447c70eddb9f1","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+    roc calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +0,0 @@
+      -unbundle FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst
+      -unbundle 8toSm7CnoHHbbe3qNrwFvMKKZQ7esH2oVsjXHh5qW1Xs.tar.zst
+      -unbundle ACTN2PbnqZiVb3HXH4ghbrF1jNnCud8DAZAjHLasYsyy.tar.zst
+      -unbundle DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst
+    http requests differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +0,0 @@
+      -GET /api/repos/acme/foo/releases?per_page=100 200
+      -GET /dl/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst 200
+      -GET /dl/acme/foo/releases/download/1.0.0/8toSm7CnoHHbbe3qNrwFvMKKZQ7esH2oVsjXHh5qW1Xs.tar.zst 200
+      -GET /api/repos/acme/bar/releases?per_page=100 200
+      -GET /dl/acme/bar/releases/download/1.0.0/ACTN2PbnqZiVb3HXH4ghbrF1jNnCud8DAZAjHLasYsyy.tar.zst 200
+      -GET /api/repos/other/foo/releases?per_page=100 200
+      -GET /dl/other/foo/releases/download/2.0.0/DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst 200
+scenarios: 68 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.5      10
+fmt        pass   0.2      5
+l0         FAIL   6.8      10
+l2         FAIL   7.0      30
+l3         FAIL   9.9      60
+selftest   pass   3.0      20
+l1         pass   36.7     60

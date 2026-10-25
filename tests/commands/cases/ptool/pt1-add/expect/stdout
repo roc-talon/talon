@@ -1,0 +1,50 @@
+== add --tool acme/foo --file p1/main.roc
+added tool foo 1.1.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0
+== add --tool acme/bar@^1.0 --as b --file p1/main.roc
+added tool b 1.1.0 (acme/bar)
+$PROJECT/p1/talon.toml: tools.b = { ref = "acme/bar@^1.0", url = "https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst" }
+exit 0
+== add --tool acme/foo --file p1/main.roc
+nothing to change
+exit 0
+== add --tool acme/bar --as foo --file p1/main.roc
+exit 2
+== add --tool acme/wasm --file p1/main.roc
+exit 2
+== add --tool acme/snap --snapshot 2026-08-15T00:00:00Z --file p1/main.roc
+added tool snap 1.0.0 (acme/snap)
+$PROJECT/p1/talon.toml: tools.snap = { ref = "acme/snap@^1.0.0", url = "https://github.com/acme/snap/releases/download/1.0.0/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst" }
+exit 0
+== add --tool acme/foo --as dry --dry-run --json --file p1/main.roc
+{"schema":1,"command":"add","ok":true,"data":{"tools":[{"key":"dry","name":"acme/foo","action":"added","ref":"acme/foo@^1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst","version":"1.1.0","previous":null,"file":"$PROJECT/p1/talon.toml","built":false,"would_build":false}]},"error":null}
+exit 0
+== remove --tool b --file p1/main.roc
+removed tool b (acme/bar)
+$PROJECT/p1/talon.toml: tools.b removed
+exit 0
+== remove --tool nope --file p1/main.roc
+exit 2
+== add --tool acme/bad --file p1/main.roc
+exit 11
+== add --tool acme/young --file p1/main.roc
+exit 2
+== add --tool acme/bar --file p2/main.roc
+added tool bar 1.1.0 (acme/bar)
+$PROJECT/p2/talon.toml: tools.bar = { ref = "acme/bar@^1.1.0", url = "https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst" }
+exit 0
+== add --tool acme/foo@dd03c09e --file p1/main.roc
+exit 2
+== add --tool acme/foo --no-pin --file p1/main.roc
+exit 2
+== add --tool acme/foo@1.0.0 --as old --dry-run --file p1/main.roc
+added tool old 1.0.0 (acme/foo)
+would build tool old 1.0.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.old = { ref = "acme/foo@1.0.0", url = "https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst" }
+dry run: nothing was written
+exit 0
+== add --tool acme/foo --as nf
+added tool nf 1.1.0 (acme/foo)
+$PROJECT/talon.toml: tools.nf = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0

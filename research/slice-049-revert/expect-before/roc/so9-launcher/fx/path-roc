@@ -1,0 +1,10 @@
+# slice 022b, R-SO9: the running tln has 200 bytes. 4 roc files are on PATH, in this order:
+#   launcher/roc  a copy of tln (same bytes): the launcher, skipped
+#   old/roc       200 bytes with other bytes (an old copy of a launcher): not the launcher, so the compiler
+#   later/roc     200 bytes, no file: never reached (the walk stops at the first compiler), so it is never hashed
+#   small/roc     7 bytes: never reached
+exe {w}/bin/tln 200 1700000000
+file {w}/launcher/roc 200 1700000000
+file {w}/old/roc 200 1700000100
+file {w}/later/roc 200 1700000200
+file {w}/small/roc 7 1700000300

@@ -1,0 +1,16 @@
+# R-PX5, R-PA10: one [patch] entry: --replace-dep <the URL of the header entry> <the main file of the copy> at the end of the arguments
+@roc check p1/main.roc
+# the flags come after the other arguments of the command
+@roc build p1/main.roc --opt=speed
+# the arguments after -- are for the app: the flags come before it
+@roc p1/main.roc -- a b
+# 2 entries: in the order of the [patch] table (parser, then json)
+@roc check p2/main.roc
+# R-PA6: the base is not the hash of the header entry: a stale patch. Exit 14 (frozen), the compiler does not run, and no .last-use is written
+@roc check p3/main.roc
+# R-PX7: TALON_PROXY=0 does no extra work: no check and no flag
+@roc check p3/main.roc env:TALON_PROXY=0
+# a talon.toml with no [patch]: the arguments are as they are (R-PX3)
+@roc check p4/main.roc
+# a command that has no project file: no flag (R-PX3)
+@roc version

@@ -1,0 +1,10 @@
+cli/lib/Patched.roc
+cli/lib/PatchApply.roc
+cli/lib/PatchTree.roc
+docs/slices/043-patches-resolve.md
+tests/unit/PatchedTest.roc
+tests/commands/cases/patch/pa2-resolve/
+tests/commands/cases/proxy/px3-patch/
+tests/scenarios/compilers/px3-proxy-patch/
+research/slice-043-revert/
+tests/commands/cases/patch/pa3-buildfail/

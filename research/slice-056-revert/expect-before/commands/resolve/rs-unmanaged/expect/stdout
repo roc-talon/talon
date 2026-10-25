@@ -1,0 +1,67 @@
+== install file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0
+== update file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
+check: passed
+build: passed
+$PROJECT/unm/main.roc
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+exit 0
+== update json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== update other file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+json: ./json/main.roc is in the header
+exit 0
+== install other file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+other: https://example.com/pkg/latest.tar.gz is in the header
+exit 0
+== install json@^2 file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install acme/json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2
+== install acme/json@^2 as=json file=unm/main.roc compiler=nightly-2026-10-14-38a3029
+note: entry changes: ./json/main.roc -> acme/json 2.1.0
+check: passed
+build: skipped (recorded pass)
+$PROJECT/unm/main.roc
+  ~ json: ./json/main.roc -> acme/json 2.1.0
+exit 0
+== install acme/pf platform file=plat/main.roc compiler=nightly-2026-10-14-38a3029
+note: platform changes: ./pf/main.roc -> acme/pf 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/plat/main.roc
+  ~ pf: ./pf/main.roc -> acme/pf 0.1.1
+exit 0
+== install acme/json as=json file=key/main.roc compiler=nightly-2026-10-14-38a3029
+note: entry changes: ./json/main.roc -> acme/json 2.1.0
+check: passed
+build: passed
+$PROJECT/key/main.roc
+  ~ json: ./json/main.roc -> acme/json 2.1.0
+exit 0
+== install acme/pf platform file=plat2/main.roc compiler=nightly-2026-10-14-38a3029
+note: platform changes: ./pf/main.roc -> acme/pf 0.1.0
+check: passed
+build: skipped (recorded pass)
+$PROJECT/plat2/main.roc
+  ~ base: ./pf/main.roc -> acme/pf 0.1.0
+exit 0
+== install acme/json as=json file=ovr/main.roc compiler=nightly-2026-10-14-38a3029
+note: entry changes: ./json/main.roc -> acme/json 2.1.0
+check: passed
+build: skipped (recorded pass)
+$PROJECT/ovr/main.roc
+  ~ json: ./json/main.roc -> acme/json 2.1.0
+exit 0
+== install acme/json@latest as=json file=lat/main.roc compiler=nightly-2026-10-14-38a3029
+note: entry changes: ./json/main.roc -> acme/json 2.1.0
+check: passed
+build: skipped (recorded pass)
+$PROJECT/lat/main.roc
+  ~ json: ./json/main.roc -> acme/json 2.1.0
+exit 0

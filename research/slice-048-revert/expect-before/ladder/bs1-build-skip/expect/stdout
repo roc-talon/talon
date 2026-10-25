@@ -1,0 +1,42 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update parser file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p1/main.roc
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+exit 0
+== update json file=p2/main.roc no-probe compiler=nightly-2026-10-14-38a3029
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p3/main.roc compiler=nightly-2026-10-09-258ab27
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update parser file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+exit 0
+== update json file=p5/main.roc compiler=nightly-2026-10-08-0a1b2c3
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0
+== update json file=p6/main.roc compiler=nightly-2026-10-07-3f4e5d6
+check: passed
+build: passed
+$PROJECT/p6/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+exit 0

@@ -1,0 +1,8 @@
+# R-DA3 the source archive (curl), R-HF5 the extract, R-D4 `zig version`, R-R3 the build, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+zig version	0	0.17.1	-	-
+source.tar.gz -C	0	-	-	copy:{dir}/build.zig.zon={w}/fx/src/build.zig.zon
+curl --fail	0	-	-	file:{out}
+zig build roc -Doptimize=ReleaseFast -Dcompiler-version=git-	0	-	-	file:{cwd}/zig-out/bin/roc
+git-3b9f7c1d.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-3b9f7c1d
+git-5349569a.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-5349569a
+git-dd03c09e.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-dd03c09e

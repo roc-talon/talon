@@ -1,0 +1,8 @@
+GET /zig/index.json 200
+GET /zig/dl/0.17.0/zig-x86_64-linux-0.17.0.tar.xz 200
+GET /zig/index.json 200
+GET /zig/dl/0.15.1/zig-x86_64-linux-0.15.1.tar.xz 200
+GET /zig/index.json 200
+GET /zig/dl/0.14.1/zig-x86_64-linux-0.14.1.tar.xz 200
+GET /zig/index.json 200
+GET /zig/missing.json 404

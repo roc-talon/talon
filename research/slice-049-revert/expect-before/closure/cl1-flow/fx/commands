@@ -1,0 +1,6 @@
+install --file p1/main.roc
+install --frozen --file p1/main.roc
+list --file p2/main.roc
+update --no-check --file p1/main.roc
+verify --no-check --file p1/main.roc
+update --no-check --file p3/main.roc

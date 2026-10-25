@@ -149,6 +149,17 @@ RocInstall :: [].{
 		}
 	}
 
+	## Slice 045 (R-SO15): the default of the first compiler for the install of a git build.
+	first_default! : Fx, Roots, Str => Try([Set, Kept], Fail)
+	first_default! = |fx, roots, id| set_default!(fx, roots, id)
+
+	## One child process (slice 045: shared with `GitInstall`). The result is `NotStarted` when the call gives none.
+	spawn_one! : Fx, { argv : List(Str), cwd : Try(Str, [Inherit]) }, U64 => { ended : Download.Ended, stdout : Str, stderr_last : Str }
+	spawn_one! = |fx, job, limit| match fx.spawn_all!({ jobs: [job], limit }) {
+		[done] => done
+		_ => { ended: NotStarted("no result"), stdout: "", stderr_last: "" }
+	}
+
 	## One text of a file. A missing file is the empty text.
 	read_text! : Fx, Str => Try(Str, Fail)
 	read_text! = |fx, path| match fx.read_files!([path]) {
@@ -306,16 +317,9 @@ build! = |fx, ctx, p, program| {
 	}
 }
 
-# One child process. The result is `NotStarted` when the call gives none.
-spawn_one! : Fx, { argv : List(Str), cwd : Try(Str, [Inherit]) }, U64 => { ended : Download.Ended, stdout : Str, stderr_last : Str }
-spawn_one! = |fx, job, limit| match fx.spawn_all!({ jobs: [job], limit }) {
-	[done] => done
-	_ => { ended: NotStarted("no result"), stdout: "", stderr_last: "" }
-}
-
 download! : Fx, Ctx, Toolchain.Plan, Download.Program => Try({}, Fail)
 download! = |fx, ctx, p, program| {
-	done = spawn_one!(fx, { argv: Download.command({ program, url: ctx.asset.url, dest: p.archive }), cwd: Err(Inherit) }, 8)
+	done = RocInstall.spawn_one!(fx, { argv: Download.command({ program, url: ctx.asset.url, dest: p.archive }), cwd: Err(Inherit) }, 8)
 	failed = |outcome| Toolchain.download_failed({ id: ctx.id, url: ctx.asset.url, program, ended: done.ended, outcome, last_line: done.stderr_last })
 	match Download.outcome({ program, ended: done.ended, last_line: done.stderr_last }) {
 		Done => Ok({})
@@ -327,7 +331,7 @@ download! = |fx, ctx, p, program| {
 # R-HF5: `tar` runs, then the archive is deleted.
 extract! : Fx, Ctx, Toolchain.Plan => Try({}, Fail)
 extract! = |fx, ctx, p| {
-	done = spawn_one!(fx, { argv: Toolchain.tar_command({ archive: p.archive, dir: p.temp }), cwd: Err(Inherit) }, 1)
+	done = RocInstall.spawn_one!(fx, { argv: Toolchain.tar_command({ archive: p.archive, dir: p.temp }), cwd: Err(Inherit) }, 1)
 	match done.ended {
 		Exited(0) => {
 			_ = fx.delete!([p.archive])
@@ -341,7 +345,7 @@ extract! = |fx, ctx, p| {
 set_executable! : Fx, Ctx, Toolchain.Plan => Try({}, Fail)
 set_executable! = |fx, ctx, p| match Toolchain.chmod_command({ host: ctx.system, file: p.roc }) {
 	Err(NotNeeded) => Ok({})
-	Ok(argv) => match spawn_one!(fx, { argv, cwd: Err(Inherit) }, 1).ended {
+	Ok(argv) => match RocInstall.spawn_one!(fx, { argv, cwd: Err(Inherit) }, 1).ended {
 		Exited(0) => Ok({})
 		ended => Err(Fail.new(Environment, "cannot set the executable bit of ${p.roc}: ${Str.inspect(ended)}"))
 	}
@@ -355,7 +359,7 @@ learn_compat! = |fx, ctx, p| {
 		Ok(_) => {}
 		Err({ path, err }) => return Err(Fail.new(Environment, "cannot write ${path}: ${Str.inspect(err)}"))
 	}
-	_ = spawn_one!(fx, { argv: [p.roc, "check", p.probe_file], cwd: Ok(p.probe_dir) }, 1)
+	_ = RocInstall.spawn_one!(fx, { argv: [p.roc, "check", p.probe_file], cwd: Ok(p.probe_dir) }, 1)
 	after = build_entries!(fx, ctx.roots)
 	_ = fx.delete!([p.probe_dir])
 	Ok(Toolchain.learn_compat({ before, after }))

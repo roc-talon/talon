@@ -1,0 +1,77 @@
+--- project/p10/main.roc
++++ project/p10/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/ja/releases/download/1.0.0/E9EvSSCKCbHi53RJoBTZ7um6TqecP4Xnjg29D9wnFPKa.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-11-1f1f1f1",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p12/main.roc
++++ project/p12/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/ja/releases/download/1.0.0/E9EvSSCKCbHi53RJoBTZ7um6TqecP4Xnjg29D9wnFPKa.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-11-1f1f1f1",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p14/main.roc
++++ project/p14/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/jc/releases/download/1.0.0/7Yi5YQSjcPzatu6bRWkviUJX3szmPaeqtqVegv8nAvcb.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-12-2a2a2a2",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p15/main.roc
++++ project/p15/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/jc/releases/download/1.0.0/7Yi5YQSjcPzatu6bRWkviUJX3szmPaeqtqVegv8nAvcb.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-12-2a2a2a2",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p16/main.roc
++++ project/p16/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/jb/releases/download/1.0.0/5j7NUciLsYp9ZNkFHp8zL4Ru4HmRhVxEKuNAi4qLaXwj.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-10-0e0e0e0",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p2/main.roc
++++ project/p2/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/ja/releases/download/1.0.0/E9EvSSCKCbHi53RJoBTZ7um6TqecP4Xnjg29D9wnFPKa.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-11-1f1f1f1",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p3/main.roc
++++ project/p3/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/3WL32QKgy9mMLXh1MZAsNz2KrWUuUdgExzB7ifuMGsaj.tar.zst",
+ 	jx: "https://github.com/acme/ja/releases/download/1.0.0/E9EvSSCKCbHi53RJoBTZ7um6TqecP4Xnjg29D9wnFPKa.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-11-1f1f1f1",
+ }
+ 
+ main! = |_args| Ok({})

@@ -1,0 +1,7 @@
+tln: error[integrity]: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa (github-digest), now bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb (registry). Talon does not use this compiler. Select another compiler.
+warning: compat.db is busy: Talon goes on with no saved facts
+warning: compat.db is busy: the facts of this command are not saved
+warning: cannot use $HOME/.cache/roc/talon/compat.db (disk full): the facts of this command are not saved. Removing the file resets the stored facts and the first-seen sha256 of compilers.
+tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon
+tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon
+tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 3. This tln writes format 1. Run: tln tool update talon

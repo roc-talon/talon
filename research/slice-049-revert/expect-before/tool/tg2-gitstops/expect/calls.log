@@ -1,0 +1,70 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/empty/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/empty
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/empty/tarball/aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/main.roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/nosuch
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+programs curl wget
+args
+args
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/fe/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/fe
+sha256_file $HOME/.local/share/talon/bin/fe
+args

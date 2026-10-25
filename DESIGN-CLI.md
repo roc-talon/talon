@@ -9,17 +9,17 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | # | Command | Does | Bun equivalent |
 | --- | --- | --- | --- |
 | R-CM1 | `tln init [app\|package] [--platform <name>] [--ci github\|none]` | New app or package, with the nightly as the `roc:` entry of the header (not `.roc-version`, Resolution 13) and a CI file. Rules: section 5. | `bun init`, `bun create` |
-| R-CM2 | `tln install [name[@sel]...] [--platform] [--as <alias>] [--no-pin] [--no-check]` | With no names: keep the header, change only entries that break `talon.toml`, fetch the closure (Resolution 9). With names: add each one, resolve, write the header. Lookup, alias and `talon.toml` rules: section 2. `add` and `i` are the same command. | `bun install`, `bun add` |
-| R-CM3 | `tln remove json [--force]` | Remove the entry, its range, its override and its patch entry. Rules: section 2. | `bun remove` |
-| R-CM4 | `tln update [pkg[@sel]...] [-i] [--no-pin] [--no-check]` | Move within ranges. Names limit the scope. `pkg@sel` moves to the selector, also to a new series (Resolution 10). `--no-pin` as in `tln add` (section 2). The nightly does not move (R-RP1). `-i` is an interactive picker. Scope rules: Resolution 9. | `bun update -i` |
-| R-CM5 | `tln upgrade [pkg...] [roc] [--no-check]` | Move to the newest releases, also to new series, and to the newest nightly. Change the `talon.toml` ranges to match. Names limit the scope. The name `roc` frees the nightly. Rules: Resolution 10, R-RP1. | `bun update --latest` |
-| R-CM6 | `tln outdated` | Table: current, wanted, latest, nightly range | `bun outdated` |
+| R-CM2 | `tln install [name[@sel]...] [--platform] [--tool] [--as <alias>] [--no-pin] [--no-check]` | With no names: keep the header, change only entries that break `talon.toml`, fetch the closure (Resolution 9), and build each project tool that has no binary (6.4, R-PT6). `--tool` adds a project tool (6.4, R-PT3). With names: add each one, resolve, write the header. Lookup, alias and `talon.toml` rules: section 2. `add` and `i` are the same command. | `bun install`, `bun add` |
+| R-CM3 | `tln remove json [--force]`, `tln remove --tool <key>` | Remove the entry, its range, its override and its patch entry. Rules: section 2. `--tool` removes a `[tools]` entry (6.4, R-PT3). | `bun remove` |
+| R-CM4 | `tln update [pkg[@sel]...] [-i] [--no-pin] [--no-check] [--tool]` | Move within ranges. Project tools move too (6.4, R-PT5). Names limit the scope. `pkg@sel` moves to the selector, also to a new series (Resolution 10). `--no-pin` as in `tln add` (section 2). The nightly does not move (R-RP1). `-i` is an interactive picker. Scope rules: Resolution 9. | `bun update -i` |
+| R-CM5 | `tln upgrade [pkg...] [roc] [--no-check] [--tool]` | Move to the newest releases, also to new series, and to the newest nightly. Project tools move too (6.4, R-PT5). Change the `talon.toml` ranges to match. Names limit the scope. The name `roc` frees the nightly. Rules: Resolution 10, R-RP1. | `bun update --latest` |
+| R-CM6 | `tln outdated` | Table: current, wanted, latest, nightly range. Also a row for each project tool, with its yank state (6.4, R-PT8) | `bun outdated` |
 | R-CM7 | `tln why parser` | Paths from the app to a package, and why this version (evidence) | `bun why` |
 | R-CM8 | `tln probe [alias\|<bundle file>] [--range] [--share]` | Probe a header entry, a bundle file or the project file on the selected compiler. `--range` finds its compiler range. `--share` sends the facts of a header entry to the registry once, also when sharing is off. Rules: Resolution 4, R-PB1 to R-PB6. | |
 | R-CM9 | `tln list [--tree]` | Closure with marks: `direct` (a header entry), `raised` (Roc MVS selects a higher version than a package header names, Design 2), `foreign` (R-H4), `patched` (Resolution 7) | `bun pm ls` |
 | R-CM10 | `tln patch json [--diff]` | Edit a copy of a dependency. The copy is the patch, and it goes in VCS. `--diff` prints it against the original (Resolution 7, R-PA1 to R-PA8). | `bun patch` |
 | R-CM11 | `tln verify [--strategy highest\|lowest]` | Resolve in memory, run the probe ladder (Resolution 4) on the tuple with `--replace-dep`, and print the result. It writes no header and no `talon.toml`. Probes add evidence to `compat.db` as usual. It does not replace `roc check` (N2). Use: Resolution 8. | |
-| R-CM12 | `tln x owner/app [-- args]` | Build a Roc app and run it once. The binary stays in the cache. Rules: 6.4, R-X1 to R-X5. | `bunx` |
+| R-CM12 | `tln x owner/app [-- args]`, `tln x <key> [-- args]` | Build a Roc app and run it once. The binary stays in the cache. Rules: 6.4, R-X1 to R-X5. In a project, a `[tools]` key or the app of a `[tools]` entry runs the project tool (6.4, R-PT11). | `bunx` |
 | R-CM13 | `tln publish` | Register a release (Registry 7) | `bun publish` |
 | R-CM14 | `tln audit [--ignore <item>]... [--json]` | Report the closure hashes whose release is yanked, withdrawn on GitHub, or has a replaced asset, then the advisories and the scanner hook. With `direct`, or before P3, there is no yank and advisory data, and Talon prints a note (Resolution 2, R-C6). Rules: R-AU1 to R-AU12. Phase P3. | `bun audit`, `cargo audit` |
 | R-CM15 | `tln roc install/link/use/list/remove/default/update` | Compiler management. A nightly, a release, or a git ref built from source (6.6). `link --copy` copies a local build (R-LK2). `use` writes the header `roc:` pin, `default` writes the global default, `update` installs the newest compiler release that the `nightly` switch allows and moves the global default (6.6). | (uv `python`, rustup `toolchain link`) |
@@ -29,6 +29,8 @@ A reference such as CLI 6.2 is section 6.2 of `DESIGN-CLI.md`. Design, Resolutio
 | R-CM21 | `tln yank <tag> [--reason <text>] [--undo]` | Yank a release of the current GitHub repository, or remove the yank with `--undo`. It runs only in a GitHub Actions `workflow_dispatch` job, and it gets the repository from `$GITHUB_REPOSITORY`. A tag with no indexed release gives exit code 2. Rules: Registry 7.2, R-YK1 to R-YK7. Phase P3. | (`cargo yank`, `npm deprecate`) |
 | R-CM22 | `tln move <old-name> [--to <new-name>] [--undo]` | Set, offer or remove the successor of a package name (Registry 7.3, R-TP14, R-AP31). It runs only in a GitHub Actions `workflow_dispatch` job. It changes no header: a user follows a successor with `tln update <alias>` (Registry R-PU28). Rules: R-MV1 to R-MV5. Phase P3. | (Packagist "abandoned, use X", `npm deprecate`) |
 | R-CM23 | `tln share [on\|off\|login\|logout\|forget]` | Show or change the sharing of probe results with the registry, and the tracker of contributions. Rules: R-SH1 to R-SH10. Phase P2. | (`go telemetry on\|off`) |
+| R-CM24 | `tln run [<name>] [--each] [--keep-going] [-- args]` | Run the steps of a script of `[scripts]` in `talon.toml`, in order, with no shell. With `--each`, run it in each workspace directory, in dependency order. With no name, list the scripts or the order. Rules: R-RUN1 to R-RUN17, R-EA1 to R-EA8, R-HK1. Phase P1. | `bun run`, `npm run` |
+| R-CM25 | `tln path <alias>` | Print the directory of a header entry: `packages/<hash>/` for a release URL, fetched when missing. Read-only. Rules: R-PTH1 to R-PTH5. Phase P1. | |
 
 R-CM19: Verb aliases. A long form and its other forms are the same command at every level: top level, `tool`, `roc` and `cache`. Help and error text print the long form.
 
@@ -45,7 +47,7 @@ Global flags work for every command:
 
 | # | Flag | Meaning |
 | --- | --- | --- |
-| R-FL1 | `--json` | Machine-readable output. Turns on non-interactive mode (section 4). `tln x` rejects it with exit code 2, because the app writes to stdout (R-J1). The `roc` proxy has no Talon flags (6.2). |
+| R-FL1 | `--json` | Machine-readable output. Turns on non-interactive mode (section 4). `tln x` and `tln run <name>` reject it with exit code 2, because the app or the steps write to stdout (R-J1, R-RUN11). The `roc` proxy has no Talon flags (6.2). |
 | R-FL2 | `--yes` | Answer each prompt of the command with no prompt: "yes" to a yes/no prompt, and the default option of a prompt with options. Downloads too (R-DL5, 6.2). Each Required prompt also has its own answer flag (section 4). |
 | R-FL3 | `--offline` | Use the cache only (7.1) |
 | R-FL4 | `--quiet` | Print only errors and the answer lines of section 4. An answer line records an action, so `--quiet` keeps it. |
@@ -86,6 +88,9 @@ R-FL12: Command flags. A flag on a command that this table does not name for it 
 | `--roc pinned\|installed`, `--allow-unchecked`, `--resolve` | `tool install`, `x` (answer R-NI8, R-NI9) | 6.4 |
 | `--remove-tools`, `--keep-all` | `tool rm talon` (answer R-NI10) | 6.5 |
 | `--replace-roc`, `--no-modify-path` | `setup` (answer R-NI13, R-NI14) | 6.7 |
+| `--each` | `run` | section 1, R-RUN13, R-EA1 to R-EA8 |
+| `--keep-going` | `run` with `--each` | section 1, R-EA7 |
+| `--tool` | `install`, `add` (with one name), `remove`, `update`, `upgrade` | 6.4, R-PT3, R-PT5 |
 
 R-FL13: `--frozen` works only for `tln install` with no names. The other commands, and `install` with names, exist to change the header, so they reject `--frozen` with exit code 2.
 
@@ -198,9 +203,9 @@ A command that uses a project works on one project file: a `.roc` file with an `
 
 | # | Command | Uses a project |
 | --- | --- | --- |
-| R-PD14 | `install` (and `add`), `remove`, `update`, `upgrade`, `outdated`, `why`, `list`, `patch`, `probe`, `verify`, `audit`, `publish`, `roc use` | Yes. Talon finds it with R-PD1 to R-PD6. |
+| R-PD14 | `install` (and `add`), `remove`, `update`, `upgrade`, `outdated`, `why`, `list`, `patch`, `probe`, `verify`, `audit`, `publish`, `roc use`, `path` (R-PTH4) | Yes. Talon finds it with R-PD1 to R-PD6. |
 | R-PD15 | `init` | It creates `main.roc` in the current directory (section 5). It does not search. |
-| R-PD16 | The other `roc` subcommands, `tool`, `x`, `cache`, `setup`, `yank`, `move` | No. They reject `--file`. A relative selector `@+N` or `@-N` (section 2) uses the target file of the proxy (R-PD7). |
+| R-PD16 | The other `roc` subcommands, `tool`, `x`, `cache`, `setup`, `yank`, `move`, `run` | No. They reject `--file`. `run` and `tln x <key>` find a `talon.toml` with the walk of R-RUN12, not a project file (R-RUN12, 6.4 R-PT11). They still record project files (R-PD9). A relative selector `@+N` or `@-N` (section 2) uses the target file of the proxy (R-PD7). |
 | R-PD17 | The `roc` proxy | Its target file (R-PD7). It has no Talon flags. |
 
 | # | Rule |
@@ -218,11 +223,11 @@ Known projects. GC (6.3) and R-RR2 (6.6) use the list `talon/projects.json` (6.1
 
 | # | Rule |
 | --- | --- |
-| R-PD9 | Each command that uses a project records each project file that it reads: its canonical absolute path and the last-use time. A workspace command records each member file that it reads. `tln init` records the file that it creates. |
+| R-PD9 | Each command that uses a project records each project file that it reads: its canonical absolute path and the last-use time. A workspace command records each member file that it reads. `tln init` records the file that it creates. `tln run` and `tln x <key>` (6.4, R-PT11) use no project file (R-PD16), but they record the project files under each `talon.toml` that they read: the member files of R-EA1 for a workspace file (each member file for the root file), else the project file of R-PD4 in its directory. With no app file there, they record the path of that `talon.toml` itself. So GC keeps their project tools (6.4, R-PT14). |
 | R-PD10 | The proxy records its target file when the file has an `app`, `package` or `platform` header. It writes `projects.json` only when the entry is new or its last-use time is older than 1 day, so most runs write nothing (cost target, 6.2). |
 | R-PD11 | Talon never records a temp copy (`talon/tmp/`, 7.4) or a file in `packages/<hash>/`. |
-| R-PD12 | An entry holds only the path and the last-use time. GC and R-RR2 read the header of each project file again when they run: its `roc:` pin, and its closure from the package headers in the cache. So a hand edit of the header counts. |
-| R-PD13 | An entry leaves the list when GC or R-RR2 finds that its file is missing or has no `app`, `package` or `platform` header, or when GC finds that its last use is older than the GC age (6.3). Such an entry protects nothing. `tln cache clean` keeps the list (6.3). |
+| R-PD12 | An entry holds only the path and the last-use time. GC and R-RR2 read the header of each project file again when they run: its `roc:` pin, and its closure from the package headers in the cache. So a hand edit of the header counts. An entry whose path is a `talon.toml` (R-PD9, `tln run`, `tln x <key>`) has no header: GC reads only its `[tools]` (6.4, R-PT14), and R-RR2 ignores it. |
+| R-PD13 | An entry leaves the list when GC or R-RR2 finds that its file is missing or has no `app`, `package` or `platform` header (for a `talon.toml` entry: that the file is missing), or when GC finds that its last use is older than the GC age (6.3). Such an entry protects nothing. `tln cache clean` keeps the list (6.3). |
 
 ### Environment variables
 
@@ -269,7 +274,7 @@ R-EV23: Packages in tests. Talon has no fetch map from a header URL to another h
 
 `tln audit` is P3 (Design 7, R-PH5). R-AU7 gives the warnings of the phases before it.
 
-R-AU1: `tln audit` checks each hash in the closure of the project file: the header entries (Design 4.2) and the deps of each package header, to the end (7.3, R-DI7). It reads the release state of each hash from the index of the command: with a registry, the closure answer (Registry 4.1, R-AP17); with `direct`, the release list of R-DI2 for each group of the closure. So in `direct` mode, `audit` also lists transitive groups, which R-DI1 does not do for a resolve. It uses the state of now, with no snapshot (Registry 7.2, R-YK5).
+R-AU1: `tln audit` checks each hash in the closure of the project file: the header entries (Design 4.2) and the deps of each package header, to the end (7.3, R-DI7). It also checks the hash of the `url` of each project tool of the project (6.4, R-PT8), and only that hash: the closure of a tool is in its own header (R-PT4). It reads the release state of each hash from the index of the command: with a registry, the closure answer (Registry 4.1, R-AP17); with `direct`, the release list of R-DI2 for each group of the closure. So in `direct` mode, `audit` also lists transitive groups, which R-DI1 does not do for a resolve. It uses the state of now, with no snapshot (Registry 7.2, R-YK5).
 
 R-AU2: A finding has one `reason`. Both modes use these values. A new `withdrawn` value of the registry (Registry 7, for example R-PU24) gets its own row in this table:
 
@@ -320,6 +325,136 @@ R-MV1: `<old-name>` and `<new-name>` are full names of `github.com` (section 2, 
 | R-MV3 | The privacy guard (R-RG6) checks the successor only. It does not check `<old-name>`: that name is already in the index, and its repository is often deleted (state `missing`, Registry R-TP11), so the guard would stop the main case of a move. The registry answers 404 for an old name that it does not index. |
 | R-MV4 | The token is the token of R-TP2 (Registry 7.1), for the job repository. A refused request gives exit code 20 (`rejected`, R-E6). The message gives the problem `detail`: for 422 `successor-mismatch`, the check that failed (Registry R-AP31: index, kind, `exposes`, chain). After a 429, a 5xx or no answer, Talon sends the request again as in Registry R-AP34, because R-AP31 is idempotent. |
 | R-MV5 | `tln move` uses no project (R-PD16) and writes no file. It changes no header. A user sees the successor in `tln outdated`, and follows it with `tln update <alias>` (Registry R-PU28). The output is in the catalog (section 3, a proposal, R-OUT2). |
+
+### `tln run`
+
+`tln run` is P1 (Design 7, R-PH3). It runs a named list of commands from `[scripts]` of `talon.toml`. It has no shell, and only the user starts it: no other command and no package runs a script (R-HK1). Source: `research/talon-scripts/` 3, 4, 11.
+
+```toml
+[scripts]
+build = [
+  "roc build --target=wasm32 --no-cache --output=app.wasm main.roc",
+  "roc-cfw sync",
+]
+check = ["@build-wasm", "roc-cfw sync --check"]
+build-wasm = "roc build --target=wasm32 --no-cache --output=app.wasm main.roc"
+dev = ["@build", "wrangler dev --local"]
+deploy = ["@check", "wrangler deploy"]
+release-notes = "scripts/notes.roc --since v0.3.0"     # a .roc script (R-RUN6)
+all = [
+  { in = "workers/ledger", run = "@build" },             # another directory (R-RUN8)
+  { in = "workers/web", run = "@build" },
+]
+```
+
+| # | Rule |
+| --- | --- |
+| R-RUN1 | `[scripts]` is a table of `talon.toml`. A key is a script name: `[a-z0-9][a-z0-9:_-]*`, at most 64 characters. A value is a step, or an array of steps. A step is a string (a command line, or `@<name>`), or an inline table `{ in = "<dir>", run = "<step string>" }`. Another form gives exit code 19 (`input`, section 3). |
+| R-RUN2 | Talon splits a command line into words. A space or a tab separates two words. `"..."` and `'...'` quote a word, with the escapes `\"` and `\\` in `"..."` only. Talon does no expansion: no `$VAR`, no `~`, no glob, no command substitution. An unquoted word that is `\|`, `&&`, `\|\|`, `;`, `>`, `>>`, `<`, `&`, or a word that starts with `$(` or a backquote, gives exit code 19. The message names the step and says: "a step is one command; use 2 steps, or a .roc script". Reason: the same text runs on Linux, macOS and Windows (`research/talon-scripts/` 11, A3). |
+| R-RUN3 | The first word is the program. Talon finds it in this order: (1) the words `roc` and `tln` run the `tln` binary that runs `tln run` (proxy mode for `roc`, 6.2, R-PX1), so the step gets the compiler that Talon selects (Resolution 13), also when `tln setup` did not run; (2) a key of `[tools]` (6.4, R-PT1) runs the binary of the locked release of that key (R-PT9). The table is the `[tools]` of the workspace root (R-PD3) of the `talon.toml` that holds the script. When that file is the `talon.toml` of a standalone project (R-PD5, R-PD6), also inside a workspace directory, it is its own root and the table is its own (R-PT2). An `in` step (R-RUN8) uses the same table; (3) else `PATH` of the environment of `tln run`, as `Cmd` does. Talon adds no directory to `PATH`, so a child of a step does not see the project tools (R-PT10). |
+| R-RUN4 | A step `@<name>` runs the script `<name>` of the same `talon.toml`, with all its steps. A name that the file does not have gives exit code 19. A cycle (`a` runs `b`, `b` runs `a`) gives exit code 19 before the first step runs. |
+| R-RUN5 | `tln run <name>` runs the steps in order. Each step runs as a child with inherited stdin, stdout and stderr (Design 6.2, R-HF6: a child, not `execve`, because more steps can follow). The next step starts only when the step before it exits with 0. |
+| R-RUN6 | A first word that ends with `.roc` is a Roc script: Talon runs `roc <file> -- <other words>` through the proxy (R-RUN3). The file is relative to the working directory of the step (R-RUN8). Its header names its own platform, as each Roc app does. Talon has no script platform. |
+| R-RUN7 | Exit code: the exit code of the first step that fails, else 0 (R-E1). A step that a signal stops gives 128 + the signal number. When Talon itself fails before or between steps (a bad table, a missing program, a cycle), it uses its own codes with the line `tln: error[<kind>]: ...` (R-E4). A program that is not in `PATH` gives exit code 18 (`environment`), and the message names the program and the step. |
+| R-RUN8 | The working directory of each step is the directory of the `talon.toml` that holds the script. A step `{ in = "<dir>", run = ... }` runs in `<dir>`, relative to that directory. `<dir>` must be inside the repository (the stop directory of R-PD2); else exit code 19. An `@<name>` step in an `in` table runs the script of the `talon.toml` in `<dir>`; that file must exist and have the name, else exit code 19. The `in` steps of a script run in the order of the script: `[run] after` (R-EA3) does not change it. |
+| R-RUN9 | Environment: the environment of `tln run`, plus `TALON_SCRIPT` (the name of the script that the user named) and `TALON_SCRIPT_DIR` (the absolute working directory of the step). Talon reads no `.env` file and sets no other variable. |
+| R-RUN10 | `tln run <name> -- <args>` adds `<args>` as words to the end of the last step. When the last step is `@<name>`, the rule applies to that script. With `--each` (R-RUN13), the args go to the last step of the script in each node. With no `--`, a word after the name gives exit code 2. |
+| R-RUN11 | `tln run` with no name prints each script of the `talon.toml` that R-RUN12 finds, with its steps. It also prints a note for each `[tools]` key that is also a program on `PATH`: inside `tln run` the key wins (R-RUN3). With `--json`, `data` is `{ file, scripts: [{ name, steps: [...] }] }` (a proposal, R-OUT2, as the text of the note). `tln run <name> --json` gives exit code 2, as `tln x` (R-FL1): the steps write to stdout. |
+| R-RUN12 | Which `talon.toml`: Talon walks up from the current directory as in R-PD2, and stops at the workspace root (R-PD3) when there is one. The walk also stops at the `talon.toml` of a standalone project (R-PD5, R-PD6, Design 4.4 R-WS5): the scripts of a `talon.toml` above it have no effect there. The first `talon.toml` on the walk that has the name in `[scripts]` holds the script. With none, exit code 2. The message lists the files that the walk checked. `--file` is not a flag of `run` (R-FL6, R-PD16): a script is not for one project file. |
+| R-RUN13 | `tln run --each <name>` runs the script in each directory of the workspace whose `talon.toml` has the name, except the root file, in the dependency order of R-EA1 to R-EA8. With no workspace, exit code 2. A root script with `in` steps (R-RUN8) is the other way to give an order. |
+| R-RUN14 | `[scripts]` is allowed in the root `talon.toml` and in each other `talon.toml` of a workspace (Design 4.4, R-WS5). Talon never reads `[scripts]` of a `talon.toml` in a package archive (Design 4.3, R-I1). |
+| R-RUN15 | No other command runs a script. `install`, `add`, `update`, `upgrade`, `remove`, `init`, `tool install`, `x`, the proxy and the probes never read `[scripts]` (R-HK1). |
+| R-RUN16 | `tln run` uses no resolve flag (R-FL7), and does not resolve, fetch or write a project file. A step can be `tln install --frozen` when a script needs it. One exception: a project tool with no binary is fetched and built from its locked `url` (6.4, R-PT9). That is no resolve. |
+| R-RUN17 | Names of Talon commands are not script names: `tln build` is not `tln run build`. Reason: a new Talon command can never change what an old script name does (`research/talon-scripts/` 11, A7). |
+
+```text
+tln run build -- --verbose
+  |
+  v
+find the talon.toml (R-RUN12) ---- none ----> exit 2
+  |
+  v
+parse [scripts], expand @names, check cycles and words (R-RUN1, R-RUN2, R-RUN4) ---- bad ----> exit 19
+  |
+  v
+for each step, in order (R-RUN5):
+   cwd = dir of the file, or `in` (R-RUN8)
+   program = roc|tln -> this tln; [tools] key -> locked tool; *.roc -> roc <file> --; else PATH (R-RUN3, R-RUN6) ---- not found ----> exit 18
+   run as a child, inherited stdio
+   exit != 0 ----> stop, exit with that code (R-RUN7)
+  |
+  v
+exit 0
+```
+
+What `tln run` does not have. These are explanations, not rules:
+
+| Feature of other runners | In `tln run` | Reason |
+| --- | --- | --- |
+| A shell (`sh -c`, `cmd /c`) | No (R-RUN2). A user who wants a shell writes `sh -c "..."` as a step, which shows that the step is not portable | Portable text, no quoting bugs, no injection through `-- <args>` |
+| `node_modules/.bin` on `PATH` | No (R-RUN3) | No shadowing of a system program by a dependency |
+| Implicit `pre<name>` and `post<name>` | No (R-HK1) | Explicit steps (`@name`) say the same with no hidden order |
+| File dependencies, caching, parallel tasks (make, just, turbo) | No | Design N2: Talon is not a build system. `make` and `just` stay usable as a step |
+| `tln <script>` with no `run` | No (R-RUN17) | A name collision with a future command |
+| `.env` loading | No (R-RUN9) | Secrets in files that tools read by themselves |
+| `tln run --dry-run` | No. `tln run` with no name prints the scripts, and `tln run --each` with no name prints the order (R-RUN11, R-EA8) | |
+
+Order of `tln run --each`. The nodes are directories, not files: a script is in a `talon.toml`, and `--each` runs one script in each directory.
+
+```toml
+# workers/web/talon.toml
+[run]
+after = ["../ledger"]      # web reads ledger.wasm in its sync, so ledger runs first
+
+[scripts]
+build = ["roc build --target=wasm32 --no-cache --output=web.wasm main.roc", "roc-cfw sync"]
+```
+
+| # | Rule |
+| --- | --- |
+| R-EA1 | A node is a directory with a `talon.toml` of the workspace (Design 4.4, R-WS5), except the root directory. A directory with a standalone `talon.toml` is not a node. Its member files are the member files (R-PD3) in that directory or below it, up to the next directory with a `talon.toml`. |
+| R-EA2 | Edge kind 1, from the headers: node A comes after node B when a member file of A has a path entry (Design 4.2, R-H7) that names a member file of B, or a file in the directory of B. Talon reads only the project headers, as for R-H7: no import, no build. |
+| R-EA3 | Edge kind 2, declared: `after` in the `[run]` table of a `talon.toml` is an array of directories, relative to that file. Node A comes after each of them. Use it for an order that is not a Roc dependency, for example a Worker whose `sync` reads the wasm of another Worker. Each entry must be a node of R-EA1; else exit code 19, and the message names the file and the entry. `[run]` is allowed in each `talon.toml` of the workspace except the root file (Design 4.4, R-WS5). `after` orders the nodes of `--each` only: it has no effect on the `in` steps of a script (R-RUN8). |
+| R-EA4 | The edges apply to all scripts. When a node in the middle of a path has no script of that name, the order of the other nodes stays: if A is after B and B is after C, A runs after C also when B has no such script. |
+| R-EA5 | A cycle stops the command with exit code 19 (`input`) before the first step runs. The message prints each cycle as a list of directories with the kind of each edge, for example `workers/web -after-> workers/ledger -path-> workers/web`. |
+| R-EA6 | Ties: of the nodes that are ready, Talon runs the one with the smallest path (byte order of the path relative to the root). So the order is a function of the files only (Design G3). |
+| R-EA7 | One node at a time: no parallel runs. Talon prints one line for each node before its steps. Without `--keep-going`, the first failure stops the command, and Talon exits with that code (R-RUN7). With `--keep-going`, Talon skips each node that comes after a failed node (direct or not), prints `skipped <dir> (after <failed dir>)`, runs all other nodes, and exits with the code of the first failure. |
+| R-EA8 | `tln run --each` with no name prints the order and the edges (with `--json`: `data` is `{ order: [dir], edges: [{ from, to, kind }] }`, a proposal, R-OUT2), and runs nothing. |
+
+Limits. These keep `--each` a list in order, not a build system:
+
+| Not in `--each` | Reason |
+| --- | --- |
+| Parallel runs | Output of two nodes would mix, `roc` and other tools use shared caches, and Windows process groups differ. A later `--jobs` needs output rules first |
+| File-change detection, skip of an up-to-date node | Needs inputs and outputs of each step: a build system. Each run runs each step |
+| A cache of results | Same reason. `roc` has its own build cache |
+| Edges from `import` lines, from service bindings of a platform, or from file names in steps | Talon does not read them. An order that the headers do not give is one `after` line |
+| An order between scripts of one node, or other script names in the graph | The steps of a script are already in order (R-RUN5, R-RUN4) |
+
+No hooks. Talon runs no script by itself, and never runs code of a dependency:
+
+| Hook kind | In npm, Bun, pnpm, Cargo | Talon | Reason |
+| --- | --- | --- | --- |
+| Install scripts of a dependency (`preinstall`, `install`, `postinstall`) | npm runs them by default. Bun and pnpm (v10) run them only for packages on an allow list. Cargo `build.rs` runs at build | Never. A package has no way to declare code for Talon to run | Supply-chain attacks use them first. Talon runs no package output (Design 8, R-SE4). A Roc package needs no build step: `roc` compiles it as part of the app |
+| Install scripts of the project (`postinstall` in the root) | npm runs them on `npm install` | No | `tln install --frozen` in CI must be a pure fetch. The user adds a script and calls it |
+| `pre<name>` and `post<name>` of the project | npm runs them around `npm run <name>` | No | Hidden order. An explicit `@name` step does the same (R-RUN4) |
+| A hook on `roc build` (the proxy) | None | No | The proxy passes each command with no change (R-PX3) and has a cost target of 5 ms (R-PX2) |
+| A hook after `tln add` or `tln update` | None | No. The summary already prints a notice when the platform changes (Design 8, R-SE7). The text of that notice can name `tln run` when the project has `[scripts]` (a proposal, R-OUT2) | A command that changes the header must not run project code by itself |
+| Git hooks | husky (npm `prepare`) | Out of scope | Not a package manager job |
+
+R-HK1: Talon runs a command of `[scripts]` only in `tln run`, only when the user names the script, and only from the `talon.toml` files of the project or workspace of the current directory (R-RUN12, R-RUN13). No other command, no package, and no file in the cache can make Talon run a program, except the programs of the design: `roc`, the tools that the user installs or names (6.4), the project tools of `[tools]` when a step or `tln x` names them (R-PT9, R-PT11), and the child programs of Design 6.2 (`curl`, `tar`, and so on). A build of a project tool (`tln install`, R-PT6) does not run the tool. Trust: Design 8, R-SE17.
+
+### `tln path`
+
+`tln path <alias>` is P1 (Design 7, R-PH3). It prints the directory of a header entry, so that a tool of a platform (for example the helper of `cloudflare-workers`) can read files of the platform bundle without the cache rule of Design 2.2.
+
+| # | Rule |
+| --- | --- |
+| R-PTH1 | `tln path <alias>` prints the absolute directory of the header entry `<alias>` of the project file (R-PD4, `--file`): `packages/<hash>/` under the packages root (Design 2.2, R-CR1) for a release URL, and the directory of the file for a path entry (Design 4.2, R-H7). One line on stdout. With `--json`, `data` is `{ alias, kind: "url" \| "path", dir }` (a proposal, R-OUT2). |
+| R-PTH2 | When `packages/<hash>/` is missing, Talon fetches the entry first, as `tln install --frozen` fetches (7.1, R-FE2, R-FE3). It resolves nothing and writes no project file. `--offline` and a missing directory give exit code 15. |
+| R-PTH3 | An alias that is not in the header gives exit code 2. A foreign URL (Design 4.2, R-H4) gives exit code 2: roc keeps it under another cache rule. |
+| R-PTH4 | The command uses a project (R-PD14), so it records the project file (R-PD9). So GC keeps the directory while the project is in use (6.3, R-GC4). |
+| R-PTH5 | Talon reads and runs no file in the directory. A caller must not write in it: roc and Talon treat `packages/<hash>/` as fixed by the hash. |
 
 ## 2. References in the CLI
 
@@ -519,7 +654,7 @@ R-E5: Exit codes and the `--json` schema are part of the public interface. A cha
 | --- | --- | --- | --- | --- |
 | R-EC0 | 0 | `ok` | The command did its work | |
 | R-EC1 | 1 | `internal` | A Talon fault, or a compiler fault with no result | R-P7 (Resolution 4) |
-| R-EC2 | 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x`, no project file or no single current member (R-PD4, R-PD5, R-PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, an alias that names two groups), `tln remove` of the platform, `tln patch` of the platform (Resolution 7, R-PA8), `--as` with 2 or more names (section 2), `--no-check` with a free nightly (Resolution 10, R-UP9) or in `tln roc use` (R-U4), `tln probe --share` with no registry, with no hash or with a bundle file (Resolution 4, R-PB6), `tln share login`, `logout` or `forget` with no registry (R-SH10), `tln publish` or `tln yank` with no registry or with no GitHub Actions OIDC token (Registry 4, R-AP27, Registry 7.2, R-YK3), `tln yank` of a tag with no indexed release (R-CM21), a check of `tln move` before it sends (R-MV2), a `github.com` repository that GitHub does not know or that is private, before a registry request (R-RG6), or `tln add`, `tln tool install` and `tln x` of a repo with no release that is a candidate (6.4, R-T10, R-AD35) | Sections 1, 2 and 4, Design 4.4, Resolution 4, 10, 11 and 13, 6.6 |
+| R-EC2 | 2 | `usage` | Bad flag, bad ref, ambiguous name, invalid alias, a resolve flag on a command that does not resolve, a `log:` snapshot with no registry, an interactive-only flag (`update -i`) in non-interactive mode, `--frozen` on a command that changes the header, `--json` with `tln x` or `tln run <name>`, no project file or no single current member (R-PD4, R-PD5, R-PD8), `--file` on a command that uses no project, a workspace rule (Design 4.4: members with different `roc:` pins, an alias that names two groups), `tln remove` of the platform, `tln patch` of the platform (Resolution 7, R-PA8), `--as` with 2 or more names (section 2), `--no-check` with a free nightly (Resolution 10, R-UP9) or in `tln roc use` (R-U4), `tln probe --share` with no registry, with no hash or with a bundle file (Resolution 4, R-PB6), `tln share login`, `logout` or `forget` with no registry (R-SH10), `tln publish` or `tln yank` with no registry or with no GitHub Actions OIDC token (Registry 4, R-AP27, Registry 7.2, R-YK3), `tln yank` of a tag with no indexed release (R-CM21), a check of `tln move` before it sends (R-MV2), a `github.com` repository that GitHub does not know or that is private, before a registry request (R-RG6), or `tln add`, `tln tool install` and `tln x` of a repo with no release that is a candidate (6.4, R-T10, R-AD35) | Sections 1, 2 and 4, Design 4.4, Resolution 4, 10, 11 and 13, 6.6 |
 | R-EC10 | 10 | `no_tuple` | No tuple works. Talon prints the explanation. | Resolution 5 |
 | R-EC11 | 11 | `app_error` | A new error in an app file, or `tln remove` of an alias that the app imports. Talon stops and reports. | Resolution 4 ladder step 2, section 2 |
 | R-EC12 | 12 | `budget` | A probe budget is spent before a tuple was found | Resolution 4, R-P5 |
@@ -528,14 +663,14 @@ R-E5: Exit codes and the `--json` schema are part of the public interface. A cha
 | R-EC15 | 15 | `network` | A registry, GitHub or download error that a later run can fix (R-E6 for the registry) | 7.1, 7.3, R-E6 |
 | R-EC16 | 16 | `integrity` | A hash or checksum does not match | 7.1, 6.2 R-CV4 and R-CV6, Design 8 |
 | R-EC17 | 17 | `conflict` | Another process changed or uses what the command must change: a project file (the header, `talon.toml`) changed while the command ran (R-CC7), or a compiler to remove runs on Windows (R-CC10). Talon wrote nothing. Run the command again. | 7.4, R-CC7, R-CC10 |
-| R-EC18 | 18 | `environment` | A program that Talon needs is not on `PATH`: `curl` or `wget`, `tar`, `xz` for a Zig archive, `sh` on Unix, or `powershell` on Windows (Design 6.2, R-HF11). The message names the program. No selected compiler (Resolution 13, R-SO14). | Design 6.2, 7.5 |
+| R-EC18 | 18 | `environment` | A program that Talon needs is not on `PATH`: `curl` or `wget`, `tar`, `xz` for a Zig archive, `sh` on Unix, or `powershell` on Windows (Design 6.2, R-HF11), or the program of a `tln run` step (R-RUN7). The message names the program. No selected compiler (Resolution 13, R-SO14). | Design 6.2, 7.5 |
 | R-EC19 | 19 | `input` | A file that Talon reads is not valid: a TOML syntax error, or a known key with a value of the wrong type or form, in `talon.toml` or `config.toml` (for example a range that does not parse); a project header that does not parse; a table in a workspace `talon.toml` that Design 4.4 R-WS5 does not allow; a Talon file with a newer format or with bad content. The message names the file, and the line when there is one. | 6.1, R-TF1 to R-TF6, Design 4.4 |
 | R-EC20 | 20 | `rejected` | The registry refused a write, and the same request gets the same answer: a token claim, a repository binding, a label with another hash, a release that is not a candidate, or a hash that the registry does not index. Fix the release or the workflow, then run the command again. The message gives the problem `type` and `detail`. | R-E6, Registry 4.2, R-AP21 |
 | R-EC21 | 21 | `findings` | `tln audit` found a finding that fails (R-AU3): a yanked release, or a release whose asset was replaced | R-AU3 |
 
 | Rule | Text |
 | --- | --- |
-| R-E1 | A command that runs a child process (`roc` proxy, `tln x`) exits with the exit code of that process. Talon codes apply only to failures that Talon finds before or after the child runs. |
+| R-E1 | A command that runs a child process (`roc` proxy, `tln x`, `tln run`) exits with the exit code of that process (for `tln run`, the first step that fails, R-RUN7). Talon codes apply only to failures that Talon finds before or after the child runs. |
 | R-E2 | A command that fails for two reasons exits with the lower code in the table above, except `ok`. |
 | R-E3 | `--quiet` and `--json` do not change an exit code. |
 | R-E4 | The exit code alone cannot tell a Talon failure in R-E1 from a child failure with the same code (for example 13). So when Talon fails before or after the child runs, its last line on stderr is `tln: error[<kind>]: <message>`. A script that must tell them apart reads that line. |
@@ -730,6 +865,7 @@ Rules for a new prompt:
 | R-IN5 | `talon.toml` | Not created (G2) |
 | R-IN6 | CI file | `.github/workflows/ci.yml` for GitHub Actions, on `ubuntu-latest`. Steps: (1) install Talon with `curl -fsSL <releases>/download/v<version>/install.sh \| sh -s -- --yes --version <version>` (6.5), where `<version>` is the version of the `tln` that ran `init`. So a CI job does not take a new Talon release before a person changes this line: R-T9 does not apply to the install scripts. `tln setup` finds `GITHUB_PATH` and adds the bin dir there (R-ST4), so the later steps find `tln` and the `roc` launcher. (2) `tln install --frozen`. (3) `roc check`, then `roc test`. From P3, (4) `tln audit` (section 1, R-AU1). A finding that fails (R-AU3, exit code 21) fails the job, and `[audit] ignore` (R-AU9) is the way to accept one. Reason: `--frozen` sees no yank (R-AU6), and the job is the place where a team sees a yank of a dependency. The job sets `TALON_AUTO_INSTALL=yes` (required downloads only, R-DL5). `--ci none` writes no CI file. |
 | R-IN7 | Existing files | Talon never overwrites a file. If `main.roc` exists, it stops with exit code 2. |
+| R-IN8 | Template text with `--platform` | With `--platform <name>` (R-IN1), the body of `main.roc` is the smoke app of Resolution 4, R-SM2 for that platform, with one change: the body of each stub is `crash "write the app"`. The ladder of R-IN2 builds it for the target of Resolution 4, R-TG6. Reason: Talon knows no example of another platform, and the stub needs no file other than `main.roc` (7.3, R-DI7). A tool of the platform then writes a real body (for example `roc-cfw init`). When the `requires` of the platform has a type that R-SM2 cannot fill (its row "Any other type"), Talon writes nothing and stops with exit code 2. The message names the type. A `--platform` ref that names `roc-lang/basic-cli` gives the basic-cli template of R-IN1, not the stub. |
 
 ## 6. Toolchain manager
 
@@ -845,7 +981,7 @@ A nightly can lack the asset of a host: for example `nightly-2026-10-14-38a3029`
 
 #### Download consent
 
-R-DL7: One rule set covers each command that downloads a compiler or Zig: `add`, `update`, `upgrade`, `install`, `remove`, `verify`, `probe`, `roc install`, `roc use`, `roc default`, `roc update`, `tool install`, `x`, the `roc` proxy, and the Zig install of 6.6. Other sections refer to these rules and do not repeat them.
+R-DL7: One rule set covers each command that downloads a compiler or Zig: `add`, `update`, `upgrade`, `install`, `remove`, `verify`, `probe`, `roc install`, `roc use`, `roc default`, `roc update`, `tool install`, `x`, `run` (the build of a project tool, 6.4 R-PT9), the build of a project tool in `install` and `install --frozen` (6.4, R-PT6), the `roc` proxy, and the Zig install of 6.6. Other sections refer to these rules and do not repeat them.
 
 | # | Rule |
 | --- | --- |
@@ -871,10 +1007,10 @@ The proxy runs inside build scripts, and `roc` flags go to the compiler. So the 
 | R-GC1 | Files inside build caches | Expires after 30 days, in the background | Leaves to roc |
 | R-GC2 | `nightly-<tag>/`, `debug-<sha>/` dirs | Never removed | Removes a dir when no file in it changed in the GC age. Compilers from 2026-10-05 do not write them. (3.1 GB here.) |
 | R-GC3 | `compat-<id>/` dirs | Never removed | Removes the dir of each compiler that GC or `tln roc rm` removes. Removes another dir only when no file in it changed in the GC age. So the dir of a compiler that Talon did not install (the `roc` on `PATH`, Resolution 13 rank 7) stays while that compiler is in use. |
-| R-GC4 | `packages/<hash>/` | Never removed | Removes it if no known project used it in the GC age, and nothing in it changed in the last day: a resolve can read a new candidate that is in no closure yet (7.3, R-DI7) |
+| R-GC4 | `packages/<hash>/` | Never removed | Removes it if no known project used it in the GC age, and nothing in it changed in the last day: a resolve can read a new candidate that is in no closure yet (7.3, R-DI7). The bundle of a `[tools]` URL of a known project counts as used by that project (6.4, R-PT14) |
 | R-GC5 | Toolchains | n/a | Keeps the default, and the toolchains that a known project pins and used in the GC age. Never removes a toolchain that an install holds or that a run used in the last day (R-CC10). Never removes a `link-*` or `copy-*` entry: the user made it by hand (6.6, R-LK2), so only `tln roc rm` removes it. A `git-*` build follows the rule of a nightly (R-R6). |
 | R-GC6 | Temps and `.trash` dirs that a crash left (R-CC2) | n/a | Removes them when they are older than 1 day |
-| R-GC7 | `talon/x/<build digest>/` (binaries of `tln x`, 6.4) | n/a | Removes an entry that no `tln x` run used in the GC age |
+| R-GC7 | `talon/x/<build digest>/` (binaries of `tln x` and of project tools, 6.4) | n/a | Removes an entry that no `tln x` run used in the GC age, except an entry whose bundle hash is a `[tools]` URL of a known project that was used in the GC age (6.4, R-PT14) |
 | R-GC8 | App installs of `roc install` (Design 2) | Never removed. They are outside the cache root. | Leaves to roc |
 
 R-GC9: The GC age is `gc-age` in `config.toml` (6.1). The default is `30d`, the same as the expiry of roc build-cache files (Design 2.2). Last uses are the times that Talon records (R-PD9, R-CC9, R-X2), compared with the clock of Talon (`TALON_NOW`, section 1). The age of a file in a build-cache dir is its modification time, compared with the real clock.
@@ -1003,11 +1139,13 @@ Project dependencies from git are out of scope. A header holds only hash URLs (R
 | R-X4 | `tln x` runs the output. Probes do not (R-P1). Talon prints the platform URL and hash before the build. It does not ask again before the run: the user named the app. The app runs in place of `tln` (Design 6.2, R-HF6), so the exit code of `tln x` is the exit code of the app (R-E1). | The run is the purpose of the command. |
 | R-X5 | `tln cache gc` and `tln cache clean` (6.3) can remove the binary. The next run builds it again. | The cache is not a store (R-T3). |
 
+In a project, `tln x <key>` and `tln x owner/app` with no selector run the project tool of `[tools]` (R-PT11 below). The rules above apply outside a project, and to `tln x owner/app@<sel>`.
+
 #### Build reuse between `tln x` and `tln tool install`
 
-A build of an app is expensive: a `roc build --opt`, and maybe a compiler download. So Talon reuses a build that is already on this machine. Each binary has one owner at a time: the `x` cache or the tool list. Talon moves a binary between them. It never keeps two copies.
+A build of an app is expensive: a `roc build --opt`, and maybe a compiler download. So Talon reuses a build that is already on this machine. Each binary has one owner at a time: the `x` cache or the tool list. Talon moves a binary between them. It never keeps two copies, except in one case of R-B4: an entry that a project tool uses.
 
-R-B9: Each `tln x` cache entry has a manifest, with the same fields as a `tools.json` entry (R-T4): full name, source kind (release, or the commit and ref of a git build), version, build id, binary sha256, last run.
+R-B9: Each `tln x` cache entry has a manifest, with the same fields as a `tools.json` entry (R-T4): full name, source kind (release, or the commit and ref of a git build), version, build id, binary sha256, last run. The manifest also holds the hash of the app bundle that the build used (R-T10), so that a project tool finds the entry by its `url` (R-PT9).
 
 R-B10: Talon finds a reusable build by its manifest, not by its build id. A build matches a request when all of these are equal:
 
@@ -1024,7 +1162,7 @@ R-B10: Talon finds a reusable build by its manifest, not by its build id. A buil
 | R-B1 | With no selector, any matching build is used. When there are more than one, the newest version wins. An installed tool wins over an `x` cache entry of the same version. | No rebuild only because a newer version was released |
 | R-B2 | With a selector, a matching build is used only if its version satisfies the selector. `@latest`: the version is the newest release. `@1.3.0`: the version is 1.3.0. A range or series (`@1`, `@^1.2`): the version is the newest release in that range. | The user asked for a version, so an older build is not enough |
 | R-B3 | Online, Talon always resolves the request first. It checks that the version of the matching build is not yanked and has no advisory. If it is, Talon does not use the build and builds the newest release that is not yanked. There is no override. With no yank or advisory data (`direct`, or a registry before P3), Talon checks only that the release is still a candidate (R-DI3) and prints the note of R-C6. When the matching build is older than the newest release, Talon prints `installed cached 1.2.0 (1.4.0 is available: tln tool install foo@latest)`. | Reuse skips the build, not the safety checks (R-C6, `tln audit`) |
-| R-B4 | `tln tool install` takes over a matching `x` cache entry. It moves the binary to the bin dir (R-T3), checks the sha256, writes the `tools.json` entry from the manifest, makes the bin dir entry (R-ST7), and removes the cache entry. If a `rename` is not possible (another filesystem, or a running `.exe` on Windows), it copies, checks the sha256, then deletes the cache entry. | One owner, no second copy. The tool now has the lifetime of a tool, not of a cache entry. |
+| R-B4 | `tln tool install` takes over a matching `x` cache entry. It moves the binary to the bin dir (R-T3), checks the sha256, writes the `tools.json` entry from the manifest, makes the bin dir entry (R-ST7), and removes the cache entry. If a `rename` is not possible (another filesystem, or a running `.exe` on Windows), it copies, checks the sha256, then deletes the cache entry. When the `[tools]` of a known project (R-PD9) uses the entry (its bundle hash is a `[tools]` URL, R-PT14), Talon copies the binary, checks the sha256, and keeps the cache entry. | One owner, no second copy. The tool now has the lifetime of a tool, not of a cache entry. The exception keeps the build of a project tool, which never runs a global binary (R-PT12). |
 | R-B5 | `tln x` with a matching installed tool runs the tool binary in place. It writes no cache entry. | No copy, no build |
 | R-B6 | `tln tool rm` deletes the binary. Nothing goes back to the `x` cache. | The user asked for it to go |
 | R-B7 | With no network, or with `--offline`, Talon cannot resolve the request or check yanks. A matching `x` cache entry is then offered in a prompt: `foo 1.2.0 is in the cache. It was not checked online for yanks and advisories. Install it? [y/N]` (prompt R-NI9, section 4). In non-interactive mode, Talon stops with exit code 13 (`consent`, section 3). `--allow-unchecked` or `--yes` accepts. With no matching build, the command fails with exit code 15 (`network`). | A build that nobody checked online needs a choice from the user |
@@ -1042,6 +1180,51 @@ tln x foo ───────────── installed tool matches ──�
 tln tool rm foo ─────── binary deleted, nothing goes back to the cache (R-B6)
 offline install ─────── match? prompt, "not checked online" (R-B7). Non-interactive: exit 13.
 ```
+
+#### Project tools: `[tools]`
+
+A project tool is a tool app that a project pins in `[tools]` of its `talon.toml`, with a range (`ref`) and the locked release URL (`url`). `tln run` and `tln x` run the project version before a global one. Prior art: Go 1.24 `tool` lines in `go.mod`, `uv tool run` with a version. Phase P1 (Design 7, R-PH3). Source: `research/talon-scripts/` 6.2.
+
+```toml
+# talon.toml (the root file of a workspace, or the file of a standalone project)
+[tools]
+roc-cfw = { ref = "Karakatiza666/roc-cloudflare-workers-cli@^1", url = "https://github.com/Karakatiza666/roc-cloudflare-workers-cli/releases/download/1.0.3/<hash>.tar.zst" }
+```
+
+A tool is an app, so it cannot be an entry of the project header (Resolution 2, R-C4: an `app` release is never a candidate, and an unused header entry joins MVS, Design 2). So the lock of a tool is the `url` next to its intent (`ref`). This is the only lock value in `talon.toml` (Design G1, G2). There is no lock file.
+
+```text
+[tools] key ──ref──▶ intent: owner/app + range       (the human writes it, or tln add --tool)
+            └─url──▶ lock: release URL + hash          (Talon writes it; the tool's own header locks its closure and roc:)
+```
+
+| # | Rule |
+| --- | --- |
+| R-PT1 | `[tools]` is a table of `talon.toml`. A key is the name of the program in a step: `[a-z0-9][a-z0-9._-]*`. A value is an inline table with `ref` (required: a ref of section 2, `owner/app` and a selector; no selector is `@latest`, as R-T26) and `url` (a release URL of Design 4.1 with a version and a hash, Design 4.2, R-H3). Another form gives exit code 19. |
+| R-PT2 | Where: a standalone project has `[tools]` in its own `talon.toml` (R-PD6). In a workspace, only the root `talon.toml` has `[tools]` (Design 4.4, R-WS5, as `[toolchain]`). A `[tools]` table in another file of the workspace gives exit code 19. So a workspace has one version of each tool, as it has one nightly (R-WS4). The `talon.toml` of a standalone project (R-PD5, R-PD6, Design 4.4 R-WS5) is its own root, also inside a workspace directory: its `[tools]` is allowed, and its steps use it (R-RUN3). |
+| R-PT3 | `tln add --tool owner/app[@sel] [--as <key>]` selects a release (R-PT4), builds it (R-PT6), and only then writes the entry: `ref` with the selector, or `^<version>` when there is none (as Design 4.3, R-I4), and `url`. Talon creates `talon.toml` when it is missing. The default key is the binary name of the app (R-T28 form). A key that exists gives exit code 2 unless the `ref` names the same app: then the command acts as `tln update <key>`. `tln remove --tool <key>` removes the entry. `--tool` takes no project resolve flag except `--snapshot`, `--dry-run` and `--allow-downloads` (R-FL7). |
+| R-PT4 | Selection of a release, in `add --tool`, `update`, `upgrade` and `install` of an entry with no `url`: the rules of `tln tool install` for one release: candidates of R-T10 (one app bundle), R-DI3 (no draft, no prerelease), `min-release-age` (R-T9, Resolution 2, R-C7) for a range, no yanked release (R-B3), and `--snapshot` (Resolution 11). The newest candidate in the range wins. A tool is not a variable of the project resolve: its closure, its platform and its nightly come from its own header (R-T1), and no probe runs against the project. |
+| R-PT5 | Which commands move a `url`. `tln update` and `tln upgrade` with no names move each tool, as each header entry: `update` inside the `ref` range, `upgrade` to the newest release, with the `ref` range changed to match (Resolution 10, R-UP5). With names, a name that is a `[tools]` key moves that tool. A name that is a header alias and a `[tools]` key gives exit code 2 and names `--tool` (as Design 4.4, R-WS8). With `--tool`, each name of `update` and `upgrade` is a `[tools]` key. With `--tool` and no names, `update` and `upgrade` move only the tools, and no header entry. `tln install` with no names writes the `url` of an entry that has only `ref` (as Design 4.3, R-I5). As in R-PT3, Talon builds the new release (R-PT6) before it writes the `url`. No other command writes `url`. A hand edit of `url` is accepted, as a hand edit of the header (Design 4.1, R-ID7). |
+| R-PT6 | Build. A project tool builds with the path of `tln x` (R-X1, R-T1, R-T8, R-T12 to R-T21) from its app bundle at `url`. The hash of the bundle is checked (7.1, R-FE2). Talon prints the platform URL and hash before the build (Design 8, R-SE8). The binary goes in `talon/x/<build digest>/` with its manifest (R-X2, R-B9), and the manifest also holds the bundle hash. `tln install` (with or without `--frozen`) builds each tool that has no binary, after the fetch of the closure. So a CI job that runs `tln install --frozen` runs no build in `tln run`. |
+| R-PT7 | `--frozen` (Resolution 12, R-LF1). `tln install --frozen` fails with exit code 14 when an entry has no `url`, or when the version of `url` is not in the range of `ref`, or when the app of `url` is not the app of `ref` (its group, Design 4.1). It makes no index call (7.3, R-DI1): it fetches the bundle at `url` and builds. So it does not see a yank (R-AU6). |
+| R-PT8 | No online check at run time. A run of a project tool (R-PT9, R-PT11) uses the `url` as the lock, as a build uses the header: no resolve, no yank check, no R-B3 request and no R-B7 prompt. Reason: the project chose the hash, as it chose the header hashes. A cache entry is not a leftover here. Yanks and advisories of tool URLs are findings of `tln audit` (R-AU1 to R-AU12: the `[tools]` URLs join the list of hashes) and rows of `tln outdated` (R-CM6). |
+| R-PT9 | `tln run`: a step whose first word is a `[tools]` key (R-RUN3) runs the binary of that `url`. Talon finds it in this order: (1) a `talon/x/` entry with the same bundle hash and target (R-B9); (2) else Talon builds it (R-PT6) and then runs it. A project tool never runs the binary of a global tool (R-PT12). A build in `tln run` follows the consent rules R-DL1 to R-DL6 (R-DL7 names `run`): a compiler download is a required download (R-DL2). In non-interactive mode it needs `TALON_AUTO_INSTALL=yes`, else exit code 13. |
+| R-PT10 | Talon adds no directory to `PATH` (R-RUN3). A program that a step starts does not find a project tool by its key. A step that needs it in a child names it as a step of its own. |
+| R-PT11 | `tln x <key> [-- args]`, in a directory where the walk of R-RUN12 finds a `talon.toml` whose `[tools]` table (the table of R-RUN3: the workspace root, or the file of a standalone project) has that key, runs the project tool as R-PT9. `tln x owner/app` with no selector, when a `[tools]` entry has the same app (group), also runs the project version, and prints `project tool <key> <version> (talon.toml)`. `tln x owner/app@<sel>` with a selector keeps the rules of R-X1 to R-X5: the user asked for a version. Outside a project, `tln x` is as before. |
+| R-PT12 | Global and project tools are independent. `tln tool install`, `update`, `rebuild` and `rm` never read or write `[tools]`. `tln add --tool` and `tln update` never change `tools.json`. A project tool never runs the binary of a global tool, also when the bundle hash is equal: its builds are only in `talon/x/` (R-B9), and no data of a project tool goes in `tools.json`. A global tool does not change what a step runs: inside `tln run`, the project version wins. Outside `tln run` and `tln x`, a shell finds the global tool on `PATH` (R-T3), not the project version. |
+| R-PT13 | `tln tool install` of a `talon/x/` entry that a project tool also uses: R-B4 copies the binary to the bin dir and keeps the entry, so the project tool keeps its build (R-PT9). `tln tool rm` deletes only the global copy (R-B6). |
+| R-PT14 | GC (6.3). R-GC7 keeps a `talon/x/` entry whose bundle hash is a `[tools]` URL of a known project (R-PD9, which `tln run` and `tln x <key>` also update) that was used in the GC age, also when no `tln x` run used the entry. R-GC4 keeps the extracted bundle `packages/<hash>/` of such a URL in the same way. GC reads the `talon.toml` of each known project file, and each known `talon.toml` entry, again when it runs (as R-PD12). `tln cache clean` removes them (R-GC12, R-GC13): the next run builds again. |
+| R-PT15 | `--offline` (R-FL3): a run needs the binary or the cache. With no binary, Talon builds from `packages/<hash>/` and an installed compiler. With neither, exit code 15. |
+| R-PT16 | A tool of `[tools]` must be an app with a native platform (R-T2). Talon checks the platform header of the bundle before the build. A wasm platform gives exit code 2. |
+
+| Case | Network | Prompt | Exit code |
+| --- | --- | --- | --- |
+| `tln run` with the binary present | None | None | The code of the step |
+| `tln run` with no binary, bundle and compiler in cache | None | None | The code of the step |
+| `tln run` with no binary, compiler missing, interactive | Bundle, compiler | R-NI5 (required download) | 13 on No |
+| Same, CI with `TALON_AUTO_INSTALL=yes` | Bundle, compiler | None | The code of the step |
+| `tln install --frozen` with an entry with no `url` | None | None | 14 |
+| `--offline` with no binary and no cache | None | None | 15 |
 
 ### 6.5 Talon as a tool
 

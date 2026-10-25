@@ -233,7 +233,7 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 				_ => Err(NotRelease)
 			},
 		)
-	candidate = { file: member.file, kind: member.locked.kind, text: ResolveBase.loaded_text(loaded, member.file), ops: facts.ops }
+	candidate = { file: member.file, kind: member.locked.kind, text: ResolveBase.loaded_text(loaded, member.file), ops: facts.ops, patch: { base: [], candidate: [] }, target: ResolveBase.member_target(member) }
 	# R-LD2, R-CM2: the closure of the header without the removed entries gives the packages of the unit probes.
 	entries = ResolveBase.entries_after(member, []).keep_if(|e| !facts.aliases.contains(e.alias))
 	closures = ResolveBase.closure!(fx, request, { members: [{ file: member.file, entries }], known: [] })?

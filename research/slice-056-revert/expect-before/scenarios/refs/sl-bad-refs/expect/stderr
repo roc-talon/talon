@@ -1,0 +1,7 @@
+tln: error[usage]: bad selector 'mian' in 'owner/app@mian': use --git for a branch or tag
+tln: error[usage]: '@1.2.0' has no name: a reference with only @selector is for 'tln roc'
+tln: error[usage]: selector 'nightly-2026-10-09-258ab27' in 'owner/app@nightly-2026-10-09-258ab27' is for a compiler: use it with 'tln roc'
+tln: error[usage]: selector '-1' in 'json@-1' is for a compiler: use it with 'tln roc'
+tln: error[usage]: 'owner/app@' has an empty selector after '@'
+tln: error[usage]: 'a/b/c' is not a package name: use a short name, owner/repo or host/path
+tln: error[usage]: flag '--as' names one entry: got 2 names

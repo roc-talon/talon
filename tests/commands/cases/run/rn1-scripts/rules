@@ -1,0 +1,42 @@
+Slice 057, `tln run` with `[scripts]`, no tool and no compiler (entry `commands`): R-CM24, R-RUN1, R-RUN2, R-RUN4, R-RUN5, R-RUN7 to R-RUN12, R-RUN14, R-RUN16, R-RUN17, R-PD9, R-PD16, R-FL1, R-FL6, R-FL7, R-EC18, R-HK1, NC1, NC2, NC4, NC5.
+`TALON_NOW=2026-10-15T12:00:00Z`, `project/` has a `.git` (the stop of the walk). The fake runs no child: `fx/exec` gives the exit code by a word of the argv (`tool-fail` 3, `tool-sig` 143, `tool-gone` is not on PATH), else 0.
+Projects: `p1` (a standalone project with `main.roc`, many scripts, and `sub/talon.toml` with the script `inner`), `p2` (a `talon.toml` and no app file), `p3` (a `talon.toml` with bad forms), `w` (a workspace: root with `[scripts]`, members `m1` (own `talon.toml`, script `ms`) and `m2` (no `talon.toml`) and `deep/inner`;
+`w/s` is a standalone project with `main.roc`, `w/s2` a standalone `talon.toml` with no app file, `w/deep/talon.toml` has no member file of its own: the member `deep/inner/main.roc` has `deep/inner/talon.toml`, so `deep/talon.toml` is a standalone file, NC4).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `run hi` in `p1` | one child in `p1`: the words are as written (no expansion, R-RUN2: the L0 rows show the words). The variables `TALON_SCRIPT=hi` and `TALON_SCRIPT_DIR=<p1>` (R-RUN9). The project file `p1/main.roc` is recorded (R-PD9) | R-RUN2, R-RUN5, R-RUN8, R-RUN9, R-PD9, R-PD16, R-RUN16 |
+| 2 | `run chain -- extra words` in `p1` | `@hi` then `tool-b`: the args go to the last step (R-RUN10) | R-RUN4, R-RUN10 |
+| 3 | `run tail -- last` in `p1` | the last step is `@chain`: the args go to the last step of `chain` | R-RUN10, R-RUN4 |
+| 4 | `run all` in `p1` | `in` steps: the working directory is `p1/sub`, `TALON_SCRIPT_DIR` too, `TALON_SCRIPT` is `all`. The step `@inner` runs the script of `p1/sub/talon.toml` (one read of that file) | R-RUN8, R-RUN9, R-RUN4 |
+| 5 | `run failing` in `p1` | the 2nd step exits 3: the 3rd does not start, the exit code is 3 | R-RUN5, R-RUN7, R-E1 |
+| 6 | `run sig` in `p1` | the child ended by a signal: the code 143 passes through | R-RUN7 |
+| 7 | `run gone` in `p1` | the program is not on PATH: exit 18, the message names the program and the step | R-RUN7, R-EC18 |
+| 8 | `run loop-a` in `p1` | `loop-a` calls `loop-b`, which calls `loop-a`: exit 19 before the first step (`tool-x` does not run) | R-RUN4 |
+| 9 | `run shell` in `p1` | the 2nd step has the word `\|`: exit 19, and the 1st step (`tool-ok`) does not run | R-RUN2 |
+| 10 | `run dangling` in `p1` | `@nothere`: exit 19 | R-RUN4 |
+| 11 | `run out` in `p1` | the directory `../..` is outside the repository (the stop is `project/`): exit 19 | R-RUN8 |
+| 12 | `run nofile` in `p1` | `in = "nodir"` with `@x`: that directory has no `talon.toml`: exit 19 | R-RUN8 |
+| 13 | `run noname` in `p1` | `sub/talon.toml` has no script `missing`: exit 19 | R-RUN8 |
+| 14 | `run nosuch` in `p1` | no `talon.toml` has the name: exit 2, the message lists the files that the walk checked | R-RUN12 |
+| 15 | `run hi extra` in `p1` | a word after the name with no `--`: exit 2, no read | R-RUN10 |
+| 16 | `run hi --json` in `p1` | exit 2 (the steps write to stdout) | R-FL1, R-RUN11 |
+| 17 | `run hi --file x` in `p1` | exit 2 (`--file` is not a flag of `run`) | R-FL6, R-RUN16 |
+| 18 | `run hi --frozen` in `p1` | exit 2 (the resolve flags are not flags of `run`) | R-FL7, R-RUN16 |
+| 19 | `build` in `p1` | `tln build` is not `tln run build`: exit 2, unknown command (`p1` has a script `build`) | R-RUN17 |
+| 20 | `run` in `p1` | the list: each script with its steps, on stdout | R-RUN11, R-CM24 |
+| 21 | `run --json` in `p1` | the same list in `data` | R-RUN11 |
+| 22 | `run s2` in `p2` | a standalone `talon.toml` with no app file: the child runs, the `talon.toml` path itself is recorded (NC1) | R-PD9, NC1 |
+| 23 | `run bad` in `p3` | the table has a bad form: exit 19, the first issue by line | R-RUN1 |
+| 24 | `run r` in `w/m1` | the member file `w/m1/talon.toml` has no `r`: the walk goes up to the root file. The working directory is `w`. All member files are recorded (the root file) | R-RUN12, R-RUN8, R-PD9, R-RUN14 |
+| 25 | `run ms` in `w/m1` | the member file has the script: the working directory is `w/m1`, the member files of that node are recorded (only `w/m1/main.roc`) | R-RUN12, R-RUN14, R-PD9 |
+| 26 | `run r` in `w/s` | `w/s` is a standalone project in a workspace directory (no member file): the walk stops there, the root script has no effect: exit 2 (NC5) | R-RUN12, NC5, NC2 |
+| 27 | `run sx` in `w/s` | its own script runs in `w/s`, `w/s/main.roc` is recorded | R-RUN12, NC2, R-PD9 |
+| 28 | `run sy` in `w/s2` | a standalone `talon.toml` with no app file in a workspace directory: runs, records the `talon.toml` path | NC1, NC2, R-PD9 |
+| 29 | `run dp` in `w/deep/inner` | `w/deep/inner/talon.toml` is a member file and has no `dp`: the walk goes up. `w/deep/talon.toml` has no member file of its own (the member is the node `deep/inner`): one `read_files` of `w/deep/inner/talon.toml` tells it, so it is a standalone file and holds `dp` | R-RUN12, NC4 |
+| 30 | `run r` in `w/deep/inner` | the walk stops at the standalone file `w/deep/talon.toml`: exit 2 | R-RUN12, NC5, NC4 |
+| 31 | `run r` in `w` | the root itself: working directory `w` | R-RUN12 |
+| 32 | `run r` in `w/m2` | `w/m2` has no `talon.toml`: the walk goes to the root | R-RUN12 |
+| 33 | `run r` in `.` | no `talon.toml` on the walk: exit 2, the message lists the directories | R-RUN12 |
+| 34 | `run -- x` in `p1` | words after `--` and no name: exit 2, the words need a script name (Q1 of the review) | R-RUN10, R-RUN11 |
+| 35 | `run unclosed` in `p1` | the 2nd step has a quote that is not closed: exit 19 with the script named, and the 1st step (`tool-ok`) does not run (Q3 of the review) | R-RUN2 |

@@ -96,7 +96,7 @@ Update :: [].{
 	resolve! = |fx, args, opts, start, which| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
-		Resolve.install!(fx, request_of(args, opts, start, { command: which.command, names: which.names, compiler, toolchain }))
+		Resolve.install_with!(fx, request_of(args, opts, start, { command: which.command, names: which.names, compiler, toolchain }), Ok(args))
 	}
 
 	## Step 10 (shared with `Upgrade.run!`): the lines after the flow, or the envelope (as `Install.run!`).

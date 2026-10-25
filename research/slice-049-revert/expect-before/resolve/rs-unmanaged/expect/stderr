@@ -1,0 +1,4 @@
+tln: error[usage]: json is a path entry: Talon never changes it. To replace it, run tln add <name> --as json.
+tln: error[usage]: other is a foreign URL: Talon never changes it. To replace it, run tln add <name> --as other.
+tln: error[usage]: json is a path entry: Talon never changes it. To replace it, run tln add <name> --as json.
+tln: error[usage]: the default alias 'json' for 'acme/json' is used by a path entry in the header. Use --as <alias>, or --as json to replace that entry.

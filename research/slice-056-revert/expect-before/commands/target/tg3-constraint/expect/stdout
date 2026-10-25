@@ -1,0 +1,22 @@
+== update --file p1/main.roc
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.1
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ pf: acme/pf 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 4 probes
+exit 0
+== update --file p2/main.roc
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.1.2
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ pf: acme/pf 0.1.0 -> 0.1.2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+exit 0
+== install --file p3/main.roc
+exit 10
+== update --file p4/main.roc
+exit 10
+== update --file p5/main.roc
+exit 10

@@ -1,0 +1,27 @@
+== 0.17.0 offline
+exit 15
+== 0.17.0 offline env:ZIG=/opt/z17/zig
+zig 0.17.1 found-env /opt/z17/zig
+exit 0
+== 0.16.2 offline
+zig 0.16.0 found-path zig
+exit 0
+== 0.18.1 offline
+zig 0.18.10 found-installed $HOME/.cache/roc/toolchains/zig-0.18.10/zig
+exit 0
+== 0.16.2 offline quiet
+zig 0.16.0 found-path zig
+exit 0
+== 0.16.2 offline env:ZIG=/opt/z16/zig
+zig 0.16.9 found-env /opt/z16/zig
+exit 0
+== 0.18.1 offline
+zig 0.18.10 found-installed $HOME/.cache/roc/toolchains/zig-0.18.10/zig.exe
+exit 0
+== 0.17.0 offline env:ZIG=/opt/z16/zig
+zig 0.16.9 found-env /opt/z16/zig
+exit 0
+== 0.17.0 offline env:ZIG=/opt/bad/zig
+exit 18
+== 0.17.0 offline env:ZIG=/opt/gone/zig
+exit 18

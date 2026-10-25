@@ -1,0 +1,2 @@
+[dependencies]
+json = "acme/json@^2.1"

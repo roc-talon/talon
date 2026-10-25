@@ -1,0 +1,16 @@
+== update json@2.2.0 compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+$PROJECT/talon.toml: json = "=2.2.0"
+exit 0
+== update json@^2.2 compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.2.0 -> 2.2.1
+$PROJECT/talon.toml: json = "^2.2" (was "=2.2.0")
+exit 0
+== update json@2.2.5 compiler=nightly-2026-10-14-38a3029
+exit 10

@@ -1,0 +1,5 @@
+G1: CAUGHT by l0:diff (Q2: a fit before the wanted line is ignored)
+G2 DID NOT COMPILE 
+G3: CAUGHT by l0:intent (D10: the table form [patch.json] is not read)
+G2: CAUGHT by l0:diff (Q2: the first fit wins, not the nearest)
+G4: CAUGHT by l2:patch/pa1-flow (Q7: a missing base dir is not an Environment failure)

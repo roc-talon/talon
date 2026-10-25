@@ -1,0 +1,7 @@
+1 Ok("done")
+2 Err(Failed(Boom))
+3 Err(Busy)
+4 Ok("done")
+5 Ok({})
+6 Ok({})
+7 Ok({})

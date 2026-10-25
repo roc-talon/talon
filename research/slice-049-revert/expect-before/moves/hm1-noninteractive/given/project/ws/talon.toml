@@ -1,0 +1,5 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[dependencies]
+lex = "=1.0.0"

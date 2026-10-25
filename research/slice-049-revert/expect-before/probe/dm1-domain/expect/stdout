@@ -1,0 +1,11 @@
+== update json file=p1/main.roc compiler=nightly-2026-10-03-3d3d3d3
+exit 10
+== update json file=p2/main.roc compiler=nightly-2026-10-12-9a9a9a9
+exit 10
+== update json file=p3/main.roc no-probe compiler=nightly-2026-10-08-8c8c8c8
+exit 10
+== update json file=p4/main.roc no-probe compiler=nightly-2026-10-08-8c8c8c8
+nothing to change
+exit 0
+== update json file=p5/main.roc offline compiler=nightly-2026-10-10-0e0e0e0
+exit 10

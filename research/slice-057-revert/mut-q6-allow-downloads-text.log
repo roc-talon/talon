@@ -1,0 +1,23 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.6      10
+
+=== l2 exit 1
+FAIL run/rn3-tools
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,6 @@
+       platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+       building acme/gen 1.0.0 with nightly-2026-10-14-38a3029
+      -tln: error[consent]: the compiler nightly-2026-10-12-2664a27 is not installed. Pass --yes or set TALON_AUTO_INSTALL=yes.
+      +tln: error[consent]: the compiler nightly-2026-10-12-2664a27 is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+       tln: error[network]: acme/zz 1.0.0 is not in the package cache and --offline is set (https://github.com/acme/zz/releases/download/1.0.0/5wZEmdZcdS8vKFHyaPAZ2h2KU8esyahAUY7ruhqCjS9J.tar.zst)
+       note: the tool key 'fmt' is also a program on PATH: inside tln run the key wins (R-RUN3)
+       platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+commands: 2 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

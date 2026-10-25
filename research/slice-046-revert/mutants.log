@@ -1,0 +1,17 @@
+1	pick: a release is visible when published_at + min_age < now (the boundary is hidden)	KILLED by l0
+2	reuse: @latest or a range keeps the installed version whatever the newest release is	KILLED by l0
+3	reuse: a git tool is kept (a release install does not replace it)	KILLED by l0
+4	finish!: no check of the binary name under the lock	KILLED by l2
+5	finish!: a foreign bin dir entry is overwritten	KILLED by l2
+6	verdict: an entry with no old binary is Talon's	KILLED by l0
+7	want: --roc pinned is not the consent	KILLED by l0
+8	add: a replaced tool loses the fields that tln does not know	KILLED by l0
+9	first_app!: a bundle that is no app is taken	KILLED by l2
+10	the lock of tools.json is held during the build, not for the last step only (R-CC6)	KILLED by l3
+5	entry_verdict!: a foreign bin dir entry is overwritten	KILLED by l2
+11	no early check of the bin dir entry (review of Q8): the build runs before the stop	KILLED by l2
+12	no check of the bin dir entry under the lock (review of Q8)	KILLED by l2
+13	native: a platform with one wasm name is refused (any, not all)	KILLED by l0
+14	no check of the platform (R-T2)	KILLED by l2
+gap-C2: a name with 3 parts is read as owner/repo	CAUGHT
+gap-C6: a missing output file is not the build failure	CAUGHT

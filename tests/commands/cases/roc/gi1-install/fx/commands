@@ -1,0 +1,11 @@
+roc install --git Karakatiza666/roc@my-branch
+roc install --git Karakatiza666/roc@my-branch
+roc install --git @main
+roc install @dd03c09e --json env:TALON_GITHUB_API=http://127.0.0.1:9/api
+roc install --git Karakatiza666/roc@my-branch --offline
+roc install --git @nosuch
+roc install --git Karakatiza666/roc@wip env:TALON_DOWNLOADER=wget
+roc default --git Karakatiza666/roc@my-branch
+roc default --git roc-lang/roc@my-branch
+roc default --git Karakatiza666/roc@my-branch --json
+roc install --git @main env:GITHUB_TOKEN=ghp_fake

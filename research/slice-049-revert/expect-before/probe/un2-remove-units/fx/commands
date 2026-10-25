@@ -1,0 +1,5 @@
+remove parser --file p1/main.roc
+remove parser --file p2/main.roc
+remove parser --file p3/main.roc
+remove parser --file p4/main.roc --no-probe
+remove parser --file p5/main.roc --no-probe

@@ -1,4 +1,5 @@
 import Add
+import BuildTarget
 import Closure
 import Db
 import Epochs
@@ -47,8 +48,8 @@ PickLoop :: [].{
 	## Slice 039: `free` are the values of the compiler slot (`NightlyFlow.Plan.free`), `Err(Held)` when the slot has H only. The compiler of a tuple is `Looped.nightly`.
 	## Slice 039b: `optional` are the optional compilers of a free nightly (`NightlyFlow.Plan.optional`): `ids` start `ResolveBase.Probed.optional.open`, and the values of the compiler slot are `free`, the open ones and the installed ones.
 	## Slice 039c: `newest` is N of a free nightly (`NightlyFlow.Plan.newest`, for `Lags.nightly`). `movable` are the values of the movable compiler of the second search of `upgrade X` (`NightlyPlan.movable`): with `Ok` the loop calls `Oracle.step_moved` (R-RP4).
-	## `members` are the project files of the workspace (kind and header text): the scan of the used modules starts at each of them (slice 036b2).
-	Setup : { held : Try(Str, [None]), free : Try(List(Str), [Held]), newest : Try(Str, [NoneKnown]), movable : Try(List(Str), [None]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, probes : [Allowed, Off], settings : Probe.Settings, members : List({ file : Str, kind : [App, Package, Platform], text : Str }) }
+	## `members` are the project files of the workspace (kind and header text): the scan of the used modules starts at each of them (slice 036b2). Slice 054: `target` is the `[build] target` of the member (R-C10, `BuildTarget.wanted`).
+	Setup : { held : Try(Str, [None]), free : Try(List(Str), [Held]), newest : Try(Str, [NoneKnown]), movable : Try(List(Str), [None]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, probes : [Allowed, Off], settings : Probe.Settings, members : List({ file : Str, kind : [App, Package, Platform], text : Str, target : Try(Str, [Unset]) }) }
 
 	## What a search starts with: the facts and the nodes that the command has read, and the facts of the probe rounds.
 	State : { facts : List(ResolveBase.Fact), paths : List(Closure.Node), probed : ResolveBase.Probed }
@@ -60,7 +61,7 @@ PickLoop :: [].{
 
 	## The first state of a command: nothing read, nothing probed.
 	start : PickLoop.Setup, List(ResolveBase.Fact) -> PickLoop.State
-	start = |setup, facts| { facts, paths: [], probed: { compiler: setup.held, checks: [], looked: [], count: 0, started: Err(None), tried: [], used: [], domain: Err(NotRead), inferred: [], listed: Err(NotRead), optional: { open: setup.optional.ids, got: [], tried: 0, downloads: 0, dropped: 0 } } }
+	start = |setup, facts| { facts, paths: [], probed: { compiler: setup.held, checks: [], looked: [], count: 0, started: Err(None), tried: [], used: [], domain: Err(NotRead), inferred: [], listed: Err(NotRead), optional: { open: setup.optional.ids, got: [], tried: 0, downloads: 0, dropped: 0 }, seen: [] } }
 
 	## Slice 039c (Q3): the compiler list of the command, `[]` when it cannot be read. The command reads it at most once: the result is `ResolveBase.Probed.listed`.
 	releases! : Fx, ResolveBase.Request => List(Nightlies.Release)
@@ -74,14 +75,23 @@ PickLoop :: [].{
 			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 			Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
 		}
-		step_input = { slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, snapshot: input.snapshot, facts: state.facts, unmanaged: input.unmanaged, paths: state.paths, second: input.second }
+		# R-C10, D1 of slice 054: a platform release that lacks the `[build] target` of a member is no candidate. The solver gets it as an `App` release (R-C4).
+		wants = BuildTarget.wanted({ slots: input.slots.map(|s| { is_platform: s.is_platform, urls: slot_urls(s), files: s.files }), members: setup.members.map(|m| { file: m.file, target: m.target }) })
+		# The platform that the header has now is read first, so the gate knows it before the solver asks (R-C10, R-TG1 rule 1).
+		unread = unread_current(input.slots, wants, state.facts)
+		if !unread.is_empty() return match read_all!(fx, request, unread, state.facts, state.paths) {
+			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
+			Ok(read) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } })
+		}
+		gated = BuildTarget.gate({ facts: state.facts, seen: probed.seen, wanted: wants })
+		step_input = { slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, snapshot: input.snapshot, facts: gated, unmanaged: input.unmanaged, paths: state.paths, second: input.second }
 		verdict = match setup.movable {
 			Ok(values) => Oracle.step_moved(step_input, compat, values)
 			Err(None) => Oracle.step_free(step_input, compat, setup.free.map_ok(|ids| ids.concat(probed.optional.open).concat(probed.optional.got)))
 		}
 		match verdict {
 			Done(done) => Ok({ chosen: done.chosen, nightly: done.nightly, facts: state.facts, paths: state.paths, probed })
-			Fail(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
+			Fail(fail) => Err({ fail: no_target(input.slots, { wants, seen: probed.seen, before: state.facts, after: gated }, fail), facts: state.facts, paths: state.paths, probed })
 			Wide => match wide!(fx, request, input, probed) {
 				Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 				Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
@@ -90,7 +100,7 @@ PickLoop :: [].{
 				Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 				Ok(read) => match platform_wants(input.want_slots, read.facts) {
 					Err(fail) => Err({ fail, facts: read.facts, paths: read.paths, probed })
-					Ok(_) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed })
+					Ok(_) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } })
 				}
 			}
 			Scan(scan) => {
@@ -128,7 +138,7 @@ scan_rows! = |fx, request, input, setup, state, scan| {
 		}
 		match Closure.step({ file: member.file, entries: mine.concat(unmanaged), nodes }) {
 			Done(walked) => {
-				$used = $used.concat(UnitFlow.scan_in!(fx, { roots: request.roots, member, walked }))
+				$used = $used.concat(UnitFlow.scan_in!(fx, { roots: request.roots, member: { file: member.file, kind: member.kind, text: member.text }, walked }))
 			}
 			_ => {}
 		}
@@ -144,22 +154,62 @@ hash_of = |url| match Ident.of_url(url) {
 }
 
 # One `Gather.get!` for the ids of a `Need`: a release URL gives a fact, a path file gives a node of the closure.
-read_all! : Fx, ResolveBase.Request, List(Str), List(ResolveBase.Fact), List(Closure.Node) => Try({ facts : List(ResolveBase.Fact), paths : List(Closure.Node) }, Fail)
+read_all! : Fx, ResolveBase.Request, List(Str), List(ResolveBase.Fact), List(Closure.Node) => Try({ facts : List(ResolveBase.Fact), paths : List(Closure.Node), seen : List(BuildTarget.Seen) }, Fail)
 read_all! = |fx, request, ids, facts, paths| {
 	got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, ids)?
 	var $facts = facts
 	var $paths = paths
+	var $seen = no_seen
 	for g in got {
 		match Ident.of_url(g.id) {
 			Ok(_) => {
-				$facts = $facts.append({ url: g.id, release: Release.read({ path: g.path, text: g.text })? })
+				release = Release.read({ path: g.path, text: g.text })?
+				$facts = $facts.append({ url: g.id, release })
+				if release.kind == Platform {
+					$seen = $seen.append({ url: g.id, found: BuildTarget.targets_of(g.text) })
+				}
 			}
 			Err(Foreign) => {
 				$paths = $paths.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
 			}
 		}
 	}
-	Ok({ facts: $facts, paths: $paths })
+	Ok({ facts: $facts, paths: $paths, seen: $seen })
+}
+
+no_seen : List(BuildTarget.Seen)
+no_seen = []
+
+# The release URLs of a slot: its candidates and its current value (R-C10).
+slot_urls : Pick.Slot -> List(Str)
+slot_urls = |slot| slot.candidates.map(|c| c.url).concat(slot.current.map_ok(|url| [url]) ?? [])
+
+# The URLs that platform slots have now, that a member wants a target of (R-C10), and that no fact has yet. A value that is no release URL is not read.
+unread_current : List(Pick.Slot), List(BuildTarget.Want), List(ResolveBase.Fact) -> List(Str)
+unread_current = |slots, wants, facts| slots
+	.keep_if(|slot| slot.is_platform)
+	.keep_oks(|slot| slot.current)
+	.keep_if(|url| wants.any(|w| w.url == url) and Ident.of_url(url).is_ok() and !facts.any(|f| f.url == url))
+	.fold(ResolveBase.no_names, |found, url| if found.contains(url) found else found.append(url))
+
+# R-C10, OP10: when the gate left a platform slot with no release, the failure of the solver (R-C4) is the failure of the build target (exit 10). Another failure stays as it is.
+no_target : List(Pick.Slot), { wants : List(BuildTarget.Want), seen : List(BuildTarget.Seen), before : List(ResolveBase.Fact), after : List(ResolveBase.Fact) }, Fail -> Fail
+no_target = |slots, facts, fail| {
+	out = |url| facts.before.any(|f| f.url == url and f.release.kind == Platform) and facts.after.any(|f| f.url == url and f.release.kind == App)
+	read = |slot| slot_urls(slot).keep_if(|url| facts.before.any(|f| f.url == url))
+	dead = slots.find_first(|slot| slot.is_platform and !read(slot).is_empty() and read(slot).all(out))
+	lacking = |urls, w| urls.contains(w.url) and facts.seen.any(|s| s.url == w.url and (s.found.map_ok(|list| !list.contains(w.target)) ?? Bool.False))
+	if fail.kind != NoTuple {
+		fail
+	} else {
+		match dead {
+			Ok(slot) => match facts.wants.find_first(|w| lacking(slot_urls(slot), w)) {
+				Ok(w) => BuildTarget.no_release({ alias: slot.id, target: w.target })
+				Err(_) => fail
+			}
+			Err(_) => fail
+		}
+	}
 }
 
 # Q2, R-AD33: a key of `talon.toml` whose release is a platform is not added as a package.

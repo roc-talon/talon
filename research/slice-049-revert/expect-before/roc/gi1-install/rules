@@ -1,0 +1,18 @@
+Slice 045, `tln roc install --git` and `tln roc default --git` (entry `commands`, one line of `fx/commands` for each run). `zig` 0.17.1 is on `PATH` (the job `zig version`). The fake API gives the commit of
+each ref (`fx/http/api.github.com/repos/<owner>/<repo>/commits/<ref>`: the sha as text, the media type of the request), the nightly list has `nightly-2026-10-21-5349569`. The fake curl writes the text `fake`
+(so the sha256 of each archive is `b5d54c39...`), the fake tar writes the real `build.zig.zon` of roc-lang/roc (`fx/src/`, `minimum_zig_version = "0.17.0"`), the fake `zig build` writes `zig-out/bin/roc`.
+`config.toml` has a default, so no install sets the default (R-SO15 is in `gi2-zig`). The home has an old build of the branch (`git-0a1b2c3d`), one of another ref (`git-7e7e7e7e`, a later `installed_at`) and one of another repo with the same ref (`git-5a5a5a5a`, the latest).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `--git Karakatiza666/roc@my-branch` | the branch moved: a new id `git-3b9f7c1d`, the old `git-0a1b2c3d` stays. The calls: commit (media type, no token), list, header line, the archive by the full sha, sha256, tar, `build.zig.zon`, Zig found, the build, the compat check, `.talon.json`, rename | R-R1, R-R3, R-R6, R-R7, R-R10, R-D1, R-D3, R-D4, R-DA3, R-SE12, R-CC4 |
+| 2 | the same | the head is the same: `git-3b9f7c1d is already installed`, no download, no Zig, no lock | R-R6, R-CC4 step 1 |
+| 3 | `--git @main` | the commit is a nightly: the note, then the build anyway, no prompt (`git-5349569a`) | R-R2, R-R9, R-R3 |
+| 4 | `@dd03c09e --json`, `TALON_GITHUB_API` | a sha with no `--git`: `git-dd03c09e`. Both requests go to the loopback base. The envelope on stdout | R-R11, R-EV19, R-R1 |
+| 5 | `--git Karakatiza666/roc@my-branch --offline` | exit 15, no request | R-DI12, R-R3 |
+| 6 | `--git @nosuch` | the API answers 422: exit 2, no download, no scratch dir | R-R3, R-SL13 |
+| 7 | `--git Karakatiza666/roc@wip`, `TALON_DOWNLOADER=wget` | exit 18, the message names curl, no download | R-DA3, R-R7, R-SE12 |
+| 8 | `default --git Karakatiza666/roc@my-branch` | the newest build of that repo and ref (`git-3b9f7c1d`), not the newer ones of another ref or repo. `default-roc` changes | R-R5, R-R1, R-CS2 |
+| 9 | `default --git roc-lang/roc@my-branch` | the build of the other repo (`git-5a5a5a5a`) | R-R5 |
+| 10 | `default --git Karakatiza666/roc@my-branch --json` | back to `git-3b9f7c1d`, the envelope | R-R5, R-J3 |
+| 11 | `--git @main`, `GITHUB_TOKEN=ghp_fake` (review Q1) | the head of `main` is installed already: no build. The commit request has `Authorization: Bearer ghp_fake` (the token of the release list), and no `gh` is asked | R-R1, R-R3, R-RG3 |

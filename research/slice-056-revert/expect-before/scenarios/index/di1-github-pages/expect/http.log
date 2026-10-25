@@ -1,0 +1,7 @@
+GET /api/repos/acme/json/releases?per_page=100 200
+GET /api/repos/acme/json/releases?per_page=100&page=2 200
+GET /api/repos/acme/json/releases?per_page=100 304 if-none-match="page1"
+GET /api/repos/acme/json/releases?per_page=100&page=2 304 if-none-match="page2"
+GET /api/repos/acme/limited/releases?per_page=100 403
+GET /raw/acme/json/2.1.0/.roc-version 200
+GET /raw/acme/json/2.0.5/.roc-version 404

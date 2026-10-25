@@ -1,0 +1,4 @@
+# needle, TAB, code: the first rule whose needle is in the argv answers (default: exit 0). 143 is what the real Fx gives for a child that SIGTERM ended (128 + 15).
+tool-fail	3
+tool-sig	143
+tool-gone	notstarted:NotFound

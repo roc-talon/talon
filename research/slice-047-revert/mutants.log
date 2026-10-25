@@ -1,0 +1,22 @@
+1	CAUGHT	the digest ignores the hashes of the header (only the bundle)	(expected: L0 ToolCompilerTest 2)	1 failed | 0 compiler errors | at ToolCompilerTest.roc:60
+2	CAUGHT	the evidence takes the oldest release with a pass (not the first in the order)	(expected: L0 ToolCompilerTest 3, L2 ti3 run 1)	0 failed | 2 compiler errors
+3	CAUGHT	a fail row does not block a pass of the same digest	(expected: L0 ToolCompilerTest 3)	2 failed | 0 compiler errors | at ToolCompilerTest.roc:125, ToolCompilerTest.roc:94
+4	CAUGHT	--roc installed does not win over --yes	(expected: L0 ToolCompilerTest 5)	1 failed | 0 compiler errors | at ToolCompilerTest.roc:163
+8	CAUGHT	option 2 is allowed with no installed release	(expected: L0 ToolCompilerTest 7, L2 ti4 run 1)	1 failed | 0 compiler errors | at ToolCompilerTest.roc:241
+2	CAUGHT	the evidence takes the oldest release with a pass (not the first in the order)	(expected: L0 ToolCompilerTest 3, L2 ti3 run 1)	1 failed | 0 compiler errors | at ToolCompilerTest.roc:94
+Traceback (most recent call last):
+  File "/home/george/dev/Karakatiza666/talon/research/slice-047-revert/mutants.py", line 70, in <module>
+    main()
+    ~~~~^^
+  File "/home/george/dev/Karakatiza666/talon/research/slice-047-revert/mutants.py", line 57, in main
+    assert mutated.count(o) == 1, f"mutation {num}: old text found {mutated.count(o)} times"
+           ^^^^^^^^^^^^^^^^^^^^^
+AssertionError: mutation 5: old text found 0 times
+5	CAUGHT	the checks of option 2 run one by one (a probes! call for each)	(expected: L2 ti3 runs 2, 3, 4 (probes 4), L3 step 1 (the barrier))	FAIL tool/ti3-compiler | commands: 1 passed, 1 failed
+6	CAUGHT	no db_write after the round of checks	(expected: L2 ti3 runs 2, 3, 4)	FAIL tool/ti3-compiler | commands: 1 passed, 1 failed
+7	CAUGHT	a build that does not pass stops option 2 (no next release)	(expected: L2 ti3 run 2 (C is never built))	FAIL tool/ti3-compiler | commands: 1 passed, 1 failed
+9	CAUGHT	the prompt after option 2 offers option 2 again	(expected: L2 ti3 run 4)	FAIL tool/ti3-compiler | commands: 1 passed, 1 failed
+10	CAUGHT	tty is asked at once (not lazily)	(expected: L2 ti3 runs 1, 6 (no tty line))	FAIL tool/ti3-compiler | FAIL tool/ti4-nothing | commands: 0 passed, 2 failed
+11	CAUGHT	a flag removes the evidence pass (evidence only for no flag)	(expected: L2 ti3 run 6)	FAIL tool/ti3-compiler | commands: 1 passed, 1 failed
+12	CAUGHT	the build fact of the tries is not written	(expected: L2 ti3 run 2)	FAIL tool/ti3-compiler | commands: 1 passed, 1 failed
+5	CAUGHT	the checks of option 2 run one by one (a probes! call for each)	(expected: L2 ti3 runs 2, 3, 4 (probes 4), L3 step 1 (the barrier))	FAIL tools/ti2-tool-compiler | scenarios: 0 passed, 1 failed, 0 skipped

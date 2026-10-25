@@ -1,0 +1,3 @@
+tln: error[no_tuple]: no tuple works: pf has no platform release with the build target wasm32 (R-C10). Change [build] target in talon.toml, or use a platform that has it.
+tln: error[no_tuple]: no tuple works: pf has no platform release with the build target wasm32 (R-C10). Change [build] target in talon.toml, or use a platform that has it.
+tln: error[no_tuple]: no tuple works: pf has no release of the kind platform in =0.1.2 (R-C4)

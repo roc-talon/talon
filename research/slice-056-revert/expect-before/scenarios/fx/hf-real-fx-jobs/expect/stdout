@@ -1,0 +1,17 @@
+["args", "a", "b c"]
+$PROJECT
+CI=true
+HOME=$HOME
+LANG=C.UTF-8
+TALON_NOW=2026-10-15T12:00:00Z
+TALON_REGISTRY=direct
+TALON_TEST_DIR=$WORK
+TZ=UTC
+ok $PROJECT/main.roc "app [main!] {}
+"
+err $PROJECT/missing.roc NotFound
+wrote $PROJECT/new.txt
+to stdout
+clock ok
+stdin=False stderr=False
+end of input

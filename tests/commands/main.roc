@@ -21,6 +21,7 @@ import lib.Prompt
 import lib.Resolve
 import lib.Roots
 import lib.Run
+import lib.ZigInstall
 
 ## The L2 test app (TESTING.md 2.4). `l2 <work dir> <entry>` runs one case with the fake `Fx`.
 ## It writes the exit code to `<work dir>/out/exit`. The runner (`tests/commands/run.sh`) compares the files.
@@ -34,8 +35,9 @@ import lib.Run
 ## | `index` | `Github.releases!` and `Github.hint!` for each line of `fx/runs` (slice 003). The line is `releases <owner>/<repo> [offline] [now=<seconds>] [env:<NAME>=<value>]...` or `hint <owner>/<repo> <tag> [env:<NAME>=<value>]...`. `now` is the real clock (default 1792065600). The environment is `fx/env` and the `env:` words (one `env_all!` call at the start). It prints `== <line>`, then for `releases`: `source: <live, cached <seconds>, missing>` and `pages: <byte count of each page>`, for `hint`: `hint: <text>` or `no hint`; or `exit <code>` and the failure line on stderr. A page that was found offline prints `offline_line` once, as a command does. Exit code 0. |
 ## | `fetch` | `Fetch.packages!` for each line of `fx/runs` (slice 003). The line is `fetch [offline] [env:<NAME>=<value>]... <url>...` (one `env_all!` call at the start, the `env:` words are added to the environment, as for `index`). The roots are in the case dir (`home/.cache/roc`), the `roc` program is `roc`. It prints `== <line>`, then one line for each URL: `<url>: present`, `<url>: fetched`, or `<url>: exit <code>` with the failure line on stderr. Exit code 0. |
 ## | `resolve` | `Project.find!` and `Resolve.run!` for each line of `fx/runs` (slice 005). The line is `<install or update> [<name>...] [frozen] [no-check] [offline] [lowest] [dry-run] [platform] [no-pin] [yes] [quiet] [rename-keys] [allow-moves] [allow-downloads] [probe-downloads] [auto-install=<yes or no>] [as=<alias>] [snapshot=<text>] [nightly=<true or false>] [compiler=<id>] [toolchain=<id>] [file=<path>] [now=<seconds>]`. The start dir is `project/`, the roots are in the case dir as for `fetch`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). It prints `== <line>`, the output of the run on stdout, `exit <code>` on stdout and the failure line on stderr. Exit code 0. Slice 023c: `compiler=<id>` is the `roc` on `PATH` with that id, and its file is `<work dir>/home/bin/roc` (the file that a probe runs when the id is not installed). Slice 025: `allow-downloads` and `probe-downloads` are the answer flags, `auto-install=<yes or no>` is `TALON_AUTO_INSTALL` (`Request.downloads`; no word is `Ask`), `env` is the environment of the fake. The entry has one mode for all runs (`Mode.from_env` of `fx/env`), so the cases of slice 025 use the entry `commands`. |
-## | `commands` | `Run.run!` (the whole command code) for each line of `fx/commands` (slice 007). The line is the words after `tln`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). For each line it writes the words to `fx/args`, prints `== <line>`, runs, and prints `exit <code>` (stdout). Use `{w}` in `fx/env` for the paths of the case (`HOME={w}/home`). Slice 023: a line that starts with `@roc` runs as the `roc` proxy (`fx/program` is `roc` for this run, the other words are the arguments of `roc`). A word `env:<NAME>=<value>` (before or after `@roc`, not an argument) sets the variable for this run only (it replaces a line of `fx/env` with the same name). |
+## | `commands` | `Run.run!` (the whole command code) for each line of `fx/commands` (slice 007). The line is the words after `tln`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). For each line it writes the words to `fx/args`, prints `== <line>`, runs, and prints `exit <code>` (stdout). Use `{w}` in `fx/env` for the paths of the case (`HOME={w}/home`). Slice 023: a line that starts with `@roc` runs as the `roc` proxy (`fx/program` is `roc` for this run, the other words are the arguments of `roc`). A word `env:<NAME>=<value>` (before or after `@roc`, not an argument) sets the variable for this run only (it replaces a line of `fx/env` with the same name). Slice 041: a word `cwd:<dir>` (not an argument) sets the current directory of this run to `project/<dir>` (the fake `cwd!` reads `fx/cwd`; no word is `project`). |
 ## | `db` | `Facts.load!`, `Facts.save!` and `Facts.pin!` for each line of `fx/runs` (slice 030). The line is `load <hash>:<nightly>:<target>...`, `save <replace or keep> <hash>:<nightly>:<target>:<outcome>:<modules>:<closure>...` (`modules` are split with `,`, both `modules` and `closure` can be empty) or `pin <tag>:<target>:<sha256>:<github-digest or registry>`. The roots are the dirs of the case (`<w>/home/.cache/roc`). It prints `== <line>`, then for a `load` each fact as a line of `Db.fact_line` (2 spaces first) or `  none`, for a `save` `Saved` or `Kept`, for a `pin` `New` or `Same`. A failure prints `exit <code>` to stdout and the line of the failure to stderr. The exit code of the entry is 0. |
+## | `zig` | `ZigInstall.ensure!` for each line of `fx/runs` (slice 044). The line is `<need> [yes] [quiet] [json] [offline] [llvm=<target>:<size>] [env:<NAME>=<value>]...`: `need` is the text of `minimum_zig_version` (`0.17.0`), `llvm` is the LLVM line of the dependency list (`<size>` is a number of bytes, or `?` for an unknown size; default `x86_64-linux-musl:45000000`), a word `env:<NAME>=<value>` sets the variable for this run only (it replaces a line of `fx/env` with the same name, as for `commands`). It prints `== <line>`, then `zig <version> <how> <path>` (`how` is `found-env`, `found-path`, `found-installed`, `installed` or `present`) and `exit 0` on stdout, or the failure line on stderr and `exit <code>` on stdout. The entry calls `env_all!` once for each line (it is in `calls.log`). Exit code 0. |
 ## | `harness` | Calls each `Fx` function once. It tests the fake and the runner, not Talon. Exit code 3. |
 main! = |args| {
 	match args.map(|a| a.display()) {
@@ -50,6 +52,7 @@ main! = |args| {
 				"fetch" => fetch_entry!(fx, w)
 				"resolve" => resolve_entry!(fx, w)
 				"commands" => commands_entry!(fx, w)
+				"zig" => zig_entry!(fx, w)
 				"db" => db_entry!(fx, w)
 				"harness" => harness_entry!(fx)
 				_ => {
@@ -394,7 +397,9 @@ commands_entry! = |fx, w| {
 		fx.out!("== ${line}\n")
 		all = words(line)
 		extra = all.keep_if(|word| word.starts_with("env:")).map(|word| word.drop_prefix("env:"))
-		rest = all.keep_if(|word| !word.starts_with("env:"))
+		rest = all.keep_if(|word| !word.starts_with("env:") and !word.starts_with("cwd:"))
+		cwd = (all.find_first(|word| word.starts_with("cwd:")) ?? "cwd:").drop_prefix("cwd:")
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/cwd"), cwd)
 		proxy = rest.first() == Ok("@roc")
 		_ = Path.write_utf8!(Path.utf8("${w}/fx/args"), Str.join_with(if proxy rest.drop_first(1) else rest, "\n"))
 		_ = Path.write_utf8!(Path.utf8("${w}/fx/program"), if proxy "roc" else "tln")
@@ -403,6 +408,55 @@ commands_entry! = |fx, w| {
 		_ = Path.write_utf8!(Path.utf8("${w}/fx/env"), Str.join_with(kept.concat(extra), "\n"))
 		code = Run.run!(fx)
 		fx.out!("exit ${code.to_str()}\n")
+	}
+	0
+}
+
+## Slice 044. See the table at the top for the entry.
+zig_entry! : Fx, Str => I32
+zig_entry! = |fx, w| {
+	base_env = match Path.read_utf8!(Path.utf8("${w}/fx/env")) {
+		Ok(text) => text.trim_end()
+		Err(_) => ""
+	}
+	for line in file_lines!("${w}/fx/runs").keep_if(|l| !l.starts_with("#")) {
+		fx.out!("== ${line}\n")
+		all = words(line)
+		extra = all.keep_if(|word| word.starts_with("env:")).map(|word| word.drop_prefix("env:"))
+		names = extra.map(|pair| pair.split_on("=").first() ?? "")
+		kept = base_env.split_on("\n").keep_if(|row| !row.is_empty() and !names.contains(row.split_on("=").first() ?? ""))
+		_ = Path.write_utf8!(Path.utf8("${w}/fx/env"), Str.join_with(kept.concat(extra), "\n"))
+		llvm_word = (all.find_first(|word| word.starts_with("llvm=")) ?? "llvm=x86_64-linux-musl:45000000").drop_prefix("llvm=")
+		llvm = match llvm_word.split_last(":") {
+			Ok(parts) => { target: parts.before, size: U64.from_str(parts.after).map_err(|_| Unknown) }
+			Err(_) => { target: llvm_word, size: Err(Unknown) }
+		}
+		facts = {
+			need: all.first() ?? "",
+			env: fx.env_all!(),
+			yes: all.contains("yes"),
+			quiet: all.contains("quiet"),
+			json: all.contains("json"),
+			offline: all.contains("offline"),
+			llvm,
+		}
+		match ZigInstall.ensure!(fx, facts) {
+			Ok(done) => {
+				how = match done.how {
+					Found(Env) => "found-env"
+					Found(Path) => "found-path"
+					Found(Installed) => "found-installed"
+					Installed => "installed"
+					Present => "present"
+				}
+				fx.out!("zig ${done.version} ${how} ${done.path}\n")
+				fx.out!("exit 0\n")
+			}
+			Err(fail) => {
+				fx.err!("${fail.line()}\n")
+				fx.out!("exit ${fail.kind.code().to_str()}\n")
+			}
+		}
 	}
 	0
 }

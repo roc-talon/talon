@@ -1,0 +1,43 @@
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p1/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p1/main.roc
+tln: error[consent]: moving the held variables core, roc needs consent. Pass --allow-moves or --yes.
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p2/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p2/main.roc
+moved the held variables core, roc
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p3/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p3/main.roc
+tln: error[consent]: the held variables core, roc stay. Nothing was written.
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p4/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p4/main.roc
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p5/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p5/main.roc
+check: passed
+build: passed
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p6/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p6/main.roc
+tln: error[consent]: moving the held variables core, roc needs consent. Pass --allow-moves or --yes.
+tln: error[no_tuple]: no tuple works: the releases of lib, core, jb, pf do not fit together (R-C2, R-C3)
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p8/main.roc
+moved the held variable core
+tln: error[no_tuple]: no tuple works: the releases of libd, cored, jb, pf do not fit together (R-C2, R-C3)
+~ core: acme/core 1.0.0 -> 1.2.0 (held): lib 1.0.0 needs core >= 1.2.0
+  writes $PROJECT/p10/apps/a/main.roc, $PROJECT/p10/apps/b/main.roc
+~ roc: roc nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0 (held): core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9
+  writes $PROJECT/p10/apps/a/main.roc, $PROJECT/p10/apps/b/main.roc
+moved the held variables core, roc
+~ corep: acme/corep 1.0.0 -> 1.2.0 (held): libp 1.0.0 needs corep >= 1.2.0
+  writes $PROJECT/p12/main.roc
+moved the held variable corep

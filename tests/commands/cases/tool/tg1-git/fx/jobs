@@ -1,0 +1,4 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-T23 the source archive (`source.tar.gz`, before the generic `tar -xf`), R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+source.tar.gz -C	0	-	-	copy:{dir}/main.roc={w}/fx/src/gapp.src;dir:{dir}/apps/cli;copy:{dir}/apps/cli/main.roc={w}/fx/src/cli.src;dir:{dir}/pkg;copy:{dir}/pkg/main.roc={w}/fx/src/pkg.src
+curl --fail	0	-	-	file:{out}

@@ -1,0 +1,76 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+
+Ran 3 tests in 311.5 ms.:
+    0 passed
+    3 failed
+    0 compiler errors
+tests/unit/intent.roc: All (9) tests passed in 1668.4 ms.
+tests/unit/kind.roc: All (3) tests passed in 86.5 ms.
+tests/unit/ladder.roc: All (4) tests passed in 1802.1 ms.
+tests/unit/launch.roc: All (1) tests passed in 284.0 ms.
+tests/unit/link.roc: All (6) tests passed in 461.5 ms.
+tests/unit/listing.roc: All (4) tests passed in 388.5 ms.
+tests/unit/locked.roc: All (3) tests passed in 1325.2 ms.
+tests/unit/lock.roc: All (2) tests passed in 28.8 ms.
+tests/unit/lookup.roc: All (7) tests passed in 313.0 ms.
+tests/unit/manage.roc: All (18) tests passed in 2358.0 ms.
+tests/unit/members.roc: All (2) tests passed in 122.2 ms.
+tests/unit/mode.roc: All (3) tests passed in 66.5 ms.
+tests/unit/net.roc: All (2) tests passed in 150.2 ms.
+tests/unit/nightlies.roc: All (11) tests passed in 735.2 ms.
+tests/unit/nightlyplan.roc: All (8) tests passed in 1857.5 ms.
+tests/unit/opts.roc: All (4) tests passed in 181.4 ms.
+tests/unit/oracledomain.roc: All (4) tests passed in 2166.7 ms.
+tests/unit/oraclefree.roc: All (4) tests passed in 2854.7 ms.
+tests/unit/oracleprobe.roc: All (8) tests passed in 2258.1 ms.
+tests/unit/oracle.roc: All (5) tests passed in 3905.3 ms.
+tests/unit/outdated.roc: All (4) tests passed in 769.2 ms.
+tests/unit/out.roc: All (4) tests passed in 77.9 ms.
+tests/unit/pathroc.roc: All (7) tests passed in 621.6 ms.
+tests/unit/pickclosure.roc: All (5) tests passed in 2837.5 ms.
+tests/unit/picker.roc: All (2) tests passed in 45.1 ms.
+tests/unit/pickmoves.roc: All (3) tests passed in 3262.7 ms.
+tests/unit/pick.roc: All (3) tests passed in 3355.1 ms.
+tests/unit/pin.roc: All (9) tests passed in 736.3 ms.
+tests/unit/pins.roc: All (6) tests passed in 1496.4 ms.
+tests/unit/probecmd.roc: All (7) tests passed in 1934.6 ms.
+tests/unit/proberange.roc: All (3) tests passed in 1150.5 ms.
+tests/unit/probe.roc: All (5) tests passed in 236.2 ms.
+tests/unit/project.roc: All (7) tests passed in 1207.2 ms.
+tests/unit/projects.roc: All (3) tests passed in 204.1 ms.
+tests/unit/prompt.roc: All (5) tests passed in 202.4 ms.
+tests/unit/proxy.roc: All (7) tests passed in 2592.5 ms.
+tests/unit/ranges.roc: All (2) tests passed in 234.4 ms.
+tests/unit/rebase.roc: All (4) tests passed in 1565.7 ms.
+tests/unit/ref.roc: All (4) tests passed in 190.8 ms.
+tests/unit/removal.roc: All (4) tests passed in 1865.4 ms.
+tests/unit/report.roc: All (3) tests passed in 127.4 ms.
+tests/unit/roots.roc: All (3) tests passed in 99.0 ms.
+tests/unit/scan.roc: All (2) tests passed in 169.5 ms.
+tests/unit/selector.roc: All (2) tests passed in 128.3 ms.
+tests/unit/setup.roc: All (10) tests passed in 383.6 ms.
+tests/unit/talonfile.roc: All (3) tests passed in 161.7 ms.
+tests/unit/temp.roc: All (4) tests passed in 67.6 ms.
+tests/unit/toolchain.roc: All (15) tests passed in 2186.0 ms.
+tests/unit/units.roc: All (6) tests passed in 358.3 ms.
+tests/unit/update.roc: All (2) tests passed in 3064.6 ms.
+tests/unit/upgrade.roc: All (6) tests passed in 4633.6 ms.
+tests/unit/uses.roc: All (2) tests passed in 189.9 ms.
+tests/unit/vars.roc: All (8) tests passed in 2117.6 ms.
+tests/unit/verify.roc: All (2) tests passed in 1279.6 ms.
+tests/unit/why.roc: All (6) tests passed in 3339.7 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL init/it1-app
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 041
+commands: 101 passed, 1 failed
+
+step       result seconds  budget
+check      pass   1.2      10
+fmt        pass   0.2      5
+l0         FAIL   8.2      10
+l2         FAIL   4.5      30
+l3         pass   9.8      60
+selftest   pass   11.5     20
+l1         pass   29.1     60
+exit 1

@@ -1,0 +1,12 @@
+== why json
+$PROJECT/apps/a/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: pass
+$PROJECT/apps/b/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: pass
+exit 0

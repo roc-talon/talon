@@ -1,0 +1,14 @@
+--- home/.cache/roc/toolchains/zig-0.17.0/LICENSE
++++ home/.cache/roc/toolchains/zig-0.17.0/LICENSE
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/zig-0.17.0/.talon.json
++++ home/.cache/roc/toolchains/zig-0.17.0/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"zig-0.17.0","url":"https://ziglang.org/download/0.17.0/zig-aarch64-macos-0.17.0.tar.xz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"zig-index","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/zig-0.17.0/zig
++++ home/.cache/roc/toolchains/zig-0.17.0/zig
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file

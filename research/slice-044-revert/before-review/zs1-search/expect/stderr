@@ -1,0 +1,20 @@
+Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+
+tln: error[network]: zig 0.17.x is not installed and --offline is set
+Dependencies:
+  [x] zig 0.17.x            found zig 0.17.1 in $ZIG
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [x] zig 0.16.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [x] zig 0.18.x            found zig 0.18.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [x] zig 0.16.x            found zig 0.16.9 in $ZIG
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+Dependencies:
+  [x] zig 0.18.x            found zig 0.18.0 installed by Talon
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build

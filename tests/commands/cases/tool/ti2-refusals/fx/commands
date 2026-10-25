@@ -1,0 +1,14 @@
+tool install other/foo
+tool install acme/lib
+tool install acme/none env:TALON_GITHUB_API= env:GITHUB_TOKEN=ghp_fake
+tool install acme/fresh
+tool install acme/nopin
+tool install acme/old
+tool install acme/old --roc pinned
+tool install acme/broken
+tool install acme/qux --as q
+tool install acme/qux
+tool install acme/wasm
+tool install acme/z@2.0.0
+tool install example.com/pkgs/json
+tool install acme/nofile

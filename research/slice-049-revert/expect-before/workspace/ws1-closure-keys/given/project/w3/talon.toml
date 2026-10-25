@@ -1,0 +1,5 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[dependencies]
+newdep = "acme/newdep@^1"

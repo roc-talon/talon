@@ -1,0 +1,59 @@
+--- home/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
++++ home/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"nightly-2026-10-21-5349569","draft":false,"prerelease":false,"published_at":"2026-10-21T18:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz","size":160,"digest":"sha256:61f46f21c131d12e824f48178c1d235ba05b034a79eb8a635d80ff276ad67db1","content_type":"application/gzip","browser_download_url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-21-5349569/roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz"}]},
++{"tag_name":"nightly-2026-10-14-38a3029","draft":false,"prerelease":false,"published_at":"2026-10-14T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","size":160,"digest":"sha256:bee54f080cebed509680dccb0abb85c275451b79136541016e4d164896e9ff7c","content_type":"application/gzip","browser_download_url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz"}]}
++]
+--- home/.cache/roc/toolchains/git-5349569a/roc
++++ home/.cache/roc/toolchains/git-5349569a/roc
+@@ -0,0 +1,9 @@
++#!/bin/sh
++case "$1" in
++check)
++	mkdir -p "${ROC_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/roc}/compat-git-5349569a"
++	echo "1 error and 0 warnings"
++	exit 1
++	;;
++esac
++echo "Roc compiler version git-5349569a"
+--- home/.cache/roc/toolchains/git-5349569a/.talon.json
++++ home/.cache/roc/toolchains/git-5349569a/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"git-5349569a","repo":"https://github.com/roc-lang/roc","sha":"5349569a1b2c3d4e5f60718293a4b5c6d7e8f901","ref":"main","sha256":"d0af40a0e0ab6c70910f9ce2f69f58eda20845476a49c078c2100bb9624036c5","sha256_source":"computed","compat":"git-5349569a","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/git-a1b2c3d4/roc
++++ home/.cache/roc/toolchains/git-a1b2c3d4/roc
+@@ -0,0 +1,9 @@
++#!/bin/sh
++case "$1" in
++check)
++	mkdir -p "${ROC_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/roc}/compat-git-a1b2c3d4"
++	echo "1 error and 0 warnings"
++	exit 1
++	;;
++esac
++echo "Roc compiler version git-a1b2c3d4"
+--- home/.cache/roc/toolchains/git-a1b2c3d4/.talon.json
++++ home/.cache/roc/toolchains/git-a1b2c3d4/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"git-a1b2c3d4","repo":"https://github.com/Karakatiza666/roc","sha":"a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e","ref":"my-branch","sha256":"fe66248a49301fd14db2869865961ee84fdf711452cbef712522dfdfc53e8112","sha256_source":"computed","compat":"git-a1b2c3d4","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/git-b2c3d4e5/roc
++++ home/.cache/roc/toolchains/git-b2c3d4e5/roc
+@@ -0,0 +1,9 @@
++#!/bin/sh
++case "$1" in
++check)
++	mkdir -p "${ROC_CACHE_DIR:-${XDG_CACHE_HOME:-$HOME/.cache}/roc}/compat-git-b2c3d4e5"
++	echo "1 error and 0 warnings"
++	exit 1
++	;;
++esac
++echo "Roc compiler version git-b2c3d4e5"
+--- home/.cache/roc/toolchains/git-b2c3d4e5/.talon.json
++++ home/.cache/roc/toolchains/git-b2c3d4e5/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"git-b2c3d4e5","repo":"https://github.com/Karakatiza666/roc","sha":"b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f","ref":"my-branch","sha256":"11f6f7b270ae22087e1f405d93d4e5d7b6e39292a33f8bac040bd2f668e5d11a","sha256_source":"computed","compat":"git-b2c3d4e5","installed_at":"2026-10-23T12:00:00Z"}
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -0,0 +1 @@
++default-roc = "git-b2c3d4e5"

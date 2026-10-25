@@ -1,0 +1,55 @@
+== 1: dir (R-CM17, R-LY1): the cache root and a line end. Nothing else.
+== tln cache dir
+$HOME/.cache/roc
+exit 0
+== 2: dir with --json (R-J3, R-OUT4): stdout has only the envelope, stderr nothing. With ROC_CACHE_DIR set to another dir, data.path is still the cache root.
+== tln cache dir --json
+{"schema":1,"command":"cache dir","ok":true,"data":{"path":"$HOME/.cache/roc"},"error":null}
+exit 0
+== env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache dir --json
+{"schema":1,"command":"cache dir","ok":true,"data":{"path":"$HOME/.cache/roc"},"error":null}
+exit 0
+== 3: dir with --quiet and ROC_CACHE_DIR set to another dir (R-FL4, R-LY1): the path is the answer, so it is shown. It is the cache root, not the build root.
+== env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache dir --quiet
+$HOME/.cache/roc
+exit 0
+== 4: list (R-GC13, R-OUT2): what clean --all would remove, with the real sizes and the total, in the order index, x, packages, then the build-cache dirs of the build root (here the cache root: compat-aaaaaaa, nightly-2025-01-01-abc1234, debug-9999999). compat-file is a file and stays out. No toolchain, tool or setting is listed.
+== tln cache list
+$HOME/.cache/roc/talon/index (24 B)
+$HOME/.cache/roc/talon/x (47 B)
+$HOME/.cache/roc/packages (30 B)
+$HOME/.cache/roc/compat-aaaaaaa (24 B)
+$HOME/.cache/roc/debug-9999999 (16 B)
+$HOME/.cache/roc/nightly-2025-01-01-abc1234 (18 B)
+total 159 B
+exit 0
+lock dirs left (list takes no lock): 0
+== 5: list with --json (R-J3, R-OUT4): items with bytes, total. Only the envelope on stdout.
+== tln cache list --json
+{"schema":1,"command":"cache list","ok":true,"data":{"items":[{"path":"$HOME/.cache/roc/talon/index","bytes":24},{"path":"$HOME/.cache/roc/talon/x","bytes":47},{"path":"$HOME/.cache/roc/packages","bytes":30},{"path":"$HOME/.cache/roc/compat-aaaaaaa","bytes":24},{"path":"$HOME/.cache/roc/debug-9999999","bytes":16},{"path":"$HOME/.cache/roc/nightly-2025-01-01-abc1234","bytes":18}],"total":159},"error":null}
+exit 0
+== 6: ROC_CACHE_DIR is another dir (R-LY1): the build root is $HOME/.cache/roc-builds. Its 3 build caches are listed with the index, x and packages of the cache root. other-old stays out (the name). compat-aaaaaaa is in the cache root, not in the build root, so it is not listed. --quiet shows the list (R-FL4).
+== env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache list --quiet
+$HOME/.cache/roc/talon/index (24 B)
+$HOME/.cache/roc/talon/x (47 B)
+$HOME/.cache/roc/packages (30 B)
+$HOME/.cache/roc-builds/compat-bbbbbbb (19 B)
+$HOME/.cache/roc-builds/debug-8888888 (34 B)
+$HOME/.cache/roc-builds/nightly-2025-02-02-def5678 (36 B)
+total 190 B
+exit 0
+== 7: an operand is a usage failure (R-CM17): exit 2 for both commands
+== tln cache dir packages
+exit 2
+== tln cache list packages
+exit 2
+== 8: --all is a flag of clean only (R-CM17): exit 2
+== tln cache list --all
+exit 2
+== 9: after clean --all nothing is left to list: the line, then the empty data (R-OUT2, R-OUT4)
+== tln cache list
+nothing to clean
+exit 0
+== tln cache list --json
+{"schema":1,"command":"cache list","ok":true,"data":{"items":[],"total":0},"error":null}
+exit 0

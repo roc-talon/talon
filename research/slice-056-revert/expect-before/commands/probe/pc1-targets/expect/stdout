@@ -1,0 +1,49 @@
+== probe json --file p1/main.roc
+unit check of acme/json 2.1.0 on nightly-2026-10-14-38a3029: pass
+exit 0
+== probe pf --file p1/main.roc
+unit check of the platform acme/pf 0.1.0 on nightly-2026-10-14-38a3029: fail (Yaml.roc)
+exit 0
+== probe parser@1 --file p1/main.roc
+unit check of acme/parser 1.0.0 on nightly-2026-10-14-38a3029: hang
+exit 0
+== probe json@3 --file p1/main.roc
+exit 2
+== probe local --file p1/main.roc
+exit 2
+== probe json --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"unit","hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","label":"acme/json 2.1.0","compiler":"nightly-2026-10-14-38a3029","outcome":"pass","modules":[],"probes":1},"error":null}
+exit 0
+== probe --file p1/main.roc
+$PROJECT/p1/main.roc on nightly-2026-10-14-38a3029
+check: passed
+build: passed
+exit 0
+== probe --file p2/main.roc
+$PROJECT/p2/main.roc on nightly-2026-10-14-38a3029
+check: failed, 5 errors
+  main.roc: type mismatch
+  main.roc: type mismatch
+  main.roc: type mismatch
+  Util.roc: type mismatch
+  $PROJECT/lib-local/Local.roc: type mismatch
+exit 0
+== probe --file p3/main.roc
+$PROJECT/p3/main.roc on nightly-2026-10-14-38a3029
+check: passed
+build: not run (a package has no app)
+exit 0
+== probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
+unit check of 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f on nightly-2026-10-14-38a3029: pass
+exit 0
+== probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
+unit check of 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f on nightly-2026-10-14-38a3029: pass
+exit 0
+== probe --share json --file p1/main.roc
+exit 2
+== probe json parser --file p1/main.roc
+exit 2
+== probe --range --file p1/main.roc
+exit 2
+== probe json --file p4/main.roc
+exit 13

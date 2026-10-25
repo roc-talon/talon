@@ -1,0 +1,3 @@
+install frozen file=bad/main.roc compiler=nightly-2026-10-14-38a3029
+install frozen file=good/main.roc compiler=nightly-2026-10-14-38a3029
+install frozen file=pinned/main.roc compiler=nightly-2026-10-14-38a3029 nightly=false

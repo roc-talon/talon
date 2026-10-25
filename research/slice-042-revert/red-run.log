@@ -1,0 +1,17 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL patch/pa1-flow
+commands: 102 passed, 1 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+FAIL list/ls1-list
+scenarios: 62 passed, 1 failed, 1 skipped
+== l1: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l1.log)
+tests/fuzz/diff.roc: FAILED (exit 77, seed 1, 20000 runs)
+step       result seconds  budget
+check      pass   1.3      10
+fmt        pass   0.2      5
+l0         FAIL   10.8     10
+l2         FAIL   2.0      30
+l3         FAIL   9.9      60
+selftest   pass   12.0     20
+l1         FAIL   39.1     60

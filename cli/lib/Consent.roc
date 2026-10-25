@@ -187,6 +187,34 @@ Consent :: [].{
 	roc_install_declined : Str -> Fail
 	roc_install_declined = |id| Fail.new(Consent, "${id} is not installed. Nothing was downloaded.")
 
+	## R-NI6, R-DL1, R-DL3, R-DL4 (slice 044, the Zig of a source build): download Zig, which the build needs. Kind `Default` (R-NM4: no answer flag, `--yes` and non-interactive mode give `Yes`, the command names the
+	## build, R-DL4), yes/no, the interactive default is `Yes` (R-DL3: "the Zig of `roc install`"). `version` is the Zig version, `size` the archive size in bytes, as `Toolchain.size_text` writes it (R-NR2).
+	## The question is the text of the example in CLI 6.6, with the size as `size_text` writes it.
+	##
+	## | Field | Text (a proposal for the size form, TW24) |
+	## | --- | --- |
+	## | `id` | `zig-install` |
+	## | `question` | `Install zig <version> (<size>) for Talon builds?` |
+	## | `subject` | `the download of zig <version>` |
+	## | `answer_line` | `Yes`: `installing zig <version> (<size>)`. `No`: `no install of zig <version>`. |
+	zig_install : { version : Str, size : U64 } -> Prompt
+	zig_install = |facts| {
+		size = Toolchain.size_text(facts.size)
+		Prompt.{
+			id: "zig-install",
+			kind: Default,
+			shape: YesNo,
+			default: Yes,
+			question: "Install zig ${facts.version} (${size}) for Talon builds?",
+			subject: "the download of zig ${facts.version}",
+			answer_line: |answer| if answer == Yes "installing zig ${facts.version} (${size})" else "no install of zig ${facts.version}",
+		}
+	}
+
+	## R-CC4 step 2: the failure when the person answers No to `zig_install`. Kind `Consent` (exit 13), `zig <version> is not installed. Nothing was downloaded.`
+	zig_install_declined : Str -> Fail
+	zig_install_declined = |version| Fail.new(Consent, "zig ${version} is not installed. Nothing was downloaded.")
+
 	## R-NI5, R-DL1, R-DL3, R-DL5 (slice 023b, the `roc` proxy): a required download of a compiler that the run needs and the user did not name. Kind `Required(["--allow-downloads", "TALON_AUTO_INSTALL=yes"])` (the answer flags of
 	## R-NI5, `Prompt.decide` adds `--yes`), yes/no, the interactive default is `Yes` for the proxy (R-DL3). `source` is the words for the rank that chose the compiler (`roc +<id>`, `ROC_TOOLCHAIN`, `the roc: entry of the header`, `.roc-version`,
 	## `the global default`). `size` is the asset size in bytes, as `Toolchain.size_text` writes it. The prompt names the count and the size (R-DL1, R-NR2). The proxy never shows the generic text of a `Stop` (it uses `Proxy.missing`, R-DL8).

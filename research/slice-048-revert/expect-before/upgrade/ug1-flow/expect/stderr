@@ -1,0 +1,13 @@
+warning: acme/json has 2 series in the closure: 3 via json, 2 via parser. The types of the 2 series are different types.
+tln: error[usage]: --strategy lowest does not work with tln upgrade: upgrade only moves up
+parser: anchor, held
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p8/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.1 new series
+$PROJECT/p8/talon.toml: json = "^3.0" (was "^2.1")
+$PROJECT/p8/talon.toml: pf = "0.2.*" (was "0.1.*")
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written

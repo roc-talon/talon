@@ -1,0 +1,2 @@
+[dependencies]
+pf = "acme/npf@=0.1.1"

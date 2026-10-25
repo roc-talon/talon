@@ -23,11 +23,13 @@ Vars :: [].{
 	## `talon.toml` of its member (R-I3, R-WS7: this range limits the variable of all members), else the implied range of its version (R-I4).
 	## A range text that an earlier row has is not repeated. `from` is `<path>:<line>` for a `talon.toml` key, `implied by <file>` for an implied
 	## range, and `selector` for the range of `update X@sel`. `host` is `Index.host_kind` of the first use (R-DI11).
+	## Slice 043 (R-PA4): `patched` is true when a use is an entry (not the platform) whose alias is a key of the `[patch]` table of the nearest `talon.toml` of its member (`Intent.patches`, as `Patched.entries` reads it). `scope` holds such a variable.
 	Var : {
 		group : { form : Str, series : Str },
 		name : Try(Str, [NoName]),
 		is_platform : Bool,
 		host : [Indexed, Fixed(Str)],
+		patched : Bool,
 		uses : List({ file : Str, alias : Str, url : Str, version : Str }),
 		ranges : List({ range : Str, from : Str }),
 	}
@@ -154,6 +156,7 @@ variable_of = |members, uses, group| {
 		name: first.name,
 		is_platform: first.is_platform,
 		host: Index.host_kind(first.url),
+		patched: uses.any(|u| is_patched(members, u)),
 		uses: uses.map(|u| { file: u.file, alias: u.alias, url: u.url, version: u.version }),
 		ranges: uses.fold([], |found, u| add_range(found, range_of(members, u))),
 	}
@@ -161,6 +164,13 @@ variable_of = |members, uses, group| {
 
 add_range : List({ range : Str, from : Str }), { range : Str, from : Str } -> List({ range : Str, from : Str })
 add_range = |found, r| if found.any(|f| f.range == r.range) found else found.append(r)
+
+# R-PA4, R-PA12: a release entry (not the platform) whose alias is a key of the `[patch]` table of the `talon.toml` of its member.
+is_patched : List(Vars.Member), Use -> Bool
+is_patched = |members, u| match members.find_first(|m| m.file == u.file) {
+	Ok({ toml: Ok(t), .. }) => !u.is_platform and t.intent.patches.any(|p| p.key == u.alias)
+	_ => Bool.False
+}
 
 # R-I3, R-I4: the range of the key of the alias in the `talon.toml` of the member, else the implied range of the version.
 range_of : List(Vars.Member), Use -> { range : Str, from : Str }
@@ -276,11 +286,12 @@ scoped_one = |command, all, is_named, selector, variable| {
 			{ variable, free, movable: movable_of(variable, free), any_series: Bool.False, note: Err(None) }
 		}
 		Upgrade => {
-			anchor = variable.ranges.any(|r| r.range.starts_with("="))
+			anchor = variable.patched or variable.ranges.any(|r| r.range.starts_with("="))
 			free = indexed and (if all !anchor else is_named)
 			movable = movable_of(variable, free)
 			held_anchor = all and anchor and indexed
-			note = if held_anchor Ok("${variable.uses.first().map_ok(|u| u.alias) ?? ""}: anchor, held") else if all or is_named fixed_note else Err(None)
+			first_alias = variable.uses.first().map_ok(|u| u.alias) ?? ""
+			note = if held_anchor Ok("${first_alias}: ${if variable.patched "patched" else "anchor"}, held") else if all or is_named fixed_note else Err(None)
 			{ variable: if free or movable { ..variable, ranges: [] } else variable, free, movable, any_series: free, note }
 		}
 		NightlyOnly => {
@@ -288,8 +299,9 @@ scoped_one = |command, all, is_named, selector, variable| {
 			{ variable: if movable { ..variable, ranges: [] } else variable, free: Bool.False, movable, any_series: Bool.False, note: Err(None) }
 		}
 		Update => {
-			free = indexed and (all or is_named)
-			note = if all or is_named fixed_note else Err(None)
+			free = indexed and (is_named or (all and !variable.patched))
+			held_patch = all and variable.patched and indexed
+			note = if held_patch Ok("${variable.uses.first().map_ok(|u| u.alias) ?? ""}: patched, held") else if all or is_named fixed_note else Err(None)
 			match selector {
 				Ok((_, range)) if free => { variable: { ..variable, ranges: [{ range, from: "selector" }] }, free, movable: Bool.False, any_series: Bool.True, note }
 				_ => { variable, free, movable: movable_of(variable, free), any_series: Bool.False, note }
@@ -298,9 +310,9 @@ scoped_one = |command, all, is_named, selector, variable| {
 	}
 }
 
-# R-SP23, R-VA5, R-DI11: a held variable moves, unless it is an anchor (a range with `=`) or has a fixed host.
+# R-SP23, R-VA5, R-DI11, R-PA4: a held variable moves, unless it is an anchor (a range with `=`), is patched or has a fixed host.
 movable_of : Vars.Var, Bool -> Bool
-movable_of = |variable, free| !free and variable.host == Indexed and !variable.ranges.any(|r| r.range.starts_with("="))
+movable_of = |variable, free| !free and variable.host == Indexed and !variable.patched and !variable.ranges.any(|r| r.range.starts_with("="))
 
 # R-SP20, R-WS3: a use that is outside the intersection of the ranges of its variable.
 outside_range : Vars.Var -> Bool

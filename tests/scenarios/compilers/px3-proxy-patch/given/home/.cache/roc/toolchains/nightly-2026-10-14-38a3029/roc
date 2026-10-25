@@ -1,0 +1,10 @@
+#!/bin/sh
+# A fake compiler of the case (slice 023). It prints its id (the name of its dir), its arguments and the variables that the proxy sets, then acts on the first argument.
+id=$(basename "$(dirname "$0")")
+echo "ran $id: $*"
+echo "XDG_CACHE_HOME=$XDG_CACHE_HOME ROC_CACHE_DIR=$ROC_CACHE_DIR TALON_IN_PROXY=$TALON_IN_PROXY"
+echo "to stderr from $id" >&2
+case "$1" in
+exit7) exit 7 ;;
+kill9) kill -9 $$ ;;
+esac

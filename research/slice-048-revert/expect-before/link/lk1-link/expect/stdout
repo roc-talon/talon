@@ -1,0 +1,35 @@
+== roc link dev roc-src/zig-out/bin/roc
+linked link-dev -> $PROJECT/roc-src/zig-out/bin/roc
+exit 0
+== roc link dev roc-src/zig-out/bin/roc
+exit 2
+== roc link --copy fix-1 roc-src/zig-out/bin/roc
+exit 2
+== roc link --copy fix-2 roc-src/zig-out/bin/roc
+copied $PROJECT/roc-src/zig-out/bin/roc to copy-fix-2
+exit 0
+== roc link --copy --force fix-1 roc-src/other/roc --json
+{"schema":1,"command":"roc link","ok":true,"data":{"id":"copy-fix-1","kind":"copy","source":"$PROJECT/roc-src/other/roc","replaced":true},"error":null}
+exit 0
+== roc link --force dev3 roc-src/zig-out/bin/roc
+exit 2
+== roc link dev
+exit 2
+== roc link a b c
+exit 2
+== roc link bad/name roc-src/zig-out/bin/roc
+exit 2
+== roc link dev4 roc-src/missing
+exit 2
+== roc link --copy dev5 roc-src
+exit 18
+== roc link dev6 roc-src/zig-out/bin/roc --quiet
+exit 0
+== roc ls
+  ID                          KIND     INSTALLED   LAST USE
+  copy-fix-1                  copy     2026-10-22  -
+  copy-fix-2                  copy     2026-10-22  -
+  link-dev                    link     2026-10-22  -
+  link-dev6                   link     2026-10-22  -
+  nightly-2026-10-14-38a3029  nightly  2026-10-20  -
+exit 0

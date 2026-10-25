@@ -1,0 +1,24 @@
+--- project/out/deep/copy/main.roc
++++ project/out/deep/copy/main.roc
+@@ -0,0 +1 @@
++app
+--- project/out/deep/copy/sub/Mod.roc
++++ project/out/deep/copy/sub/Mod.roc
+@@ -0,0 +1 @@
++mod
+--- project/tree/.git/HEAD
++++ project/tree/.git/HEAD
+@@ -0,0 +1 @@
++ignored
+--- project/tree/main.roc
++++ project/tree/main.roc
+@@ -0,0 +1 @@
++app
+--- project/tree/sub/Mod.roc
++++ project/tree/sub/Mod.roc
+@@ -0,0 +1 @@
++mod
+--- project/tree/sub/skip.txt
++++ project/tree/sub/skip.txt
+@@ -0,0 +1 @@
++skipped

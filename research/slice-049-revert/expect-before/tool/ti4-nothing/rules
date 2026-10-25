@@ -1,0 +1,7 @@
+Slice 047, the compiler choice when no compiler release is installed (entry `commands`): the prompt has the options 1 and 3 (R-T15), `--roc installed` has nothing to try, and the evidence pass makes no query. Same pin as `ti3-compiler` (nightly-2026-10-11-1a2b3c4, not installed, in the nightly list), a fake tty, `TALON_NOW=2026-10-15T12:00:00Z`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/x` (answers `2`, `3`) | the prompt has no option 2 (no release is installed): `2` is not offered, so the command asks again; `3` is exit 13. No `db_query` (no key), no probe | R-T15, R-NI8, R-T13 |
+| 2 | `tool install acme/x --roc installed` (`env:TALON_INTERACTIVE=0`) | option 2 has no release: exit 13 `no compiler release is installed to try`, no line `trying`, no probe | R-T16, R-T20 |
+| 3 | `tool install acme/x` (`env:TALON_INTERACTIVE=0`) | no person and no flag: exit 13 that names `--roc pinned`, `--yes` and `TALON_AUTO_INSTALL=yes` (no query, no download) | R-T15, R-T16, R-NM5 |

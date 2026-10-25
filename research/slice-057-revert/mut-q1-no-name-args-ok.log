@@ -1,0 +1,155 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+  pf: acme/pfx 0.1.1 (direct)
+  json: acme/json 2.1.0 (direct; raised from 2.0.0; patched)
+    lex: acme/lex 1.0.0
+  util: ../util/main.roc (direct; foreign)
+    j: acme/json 2.1.0 (shown above)
+    inner: ./in/main.roc (foreign)
+  ext: https://x.org/e.zst (direct; foreign)
+"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"pf\",\"name\":\"acme/pfx\",\"version\":\"0.1.1\",\"kind\":\"release\",\"id\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":false,\"platform\":true,\"patched\":false},{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false,\"patched\":true},{\"alias\":\"util\",\"name\":\"../util/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/main.roc\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"lex\",\"name\":\"acme/lex\",\"version\":\"1.0.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\",\"direct\":false,\"via\":\"json\",\"raised\":null,\"foreign\":false,\"platform\":false,\"patched\":false},{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false}],\"links\":[{\"from\":null,\"alias\":\"pf\",\"to\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\"},{\"from\":null,\"alias\":\"json\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":null,\"alias\":\"util\",\"to\":\"/p/util/main.roc\"},{\"from\":null,\"alias\":\"ext\",\"to\":\"https://x.org/e.zst\"},{\"from\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"alias\":\"lex\",\"to\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"j\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"inner\",\"to\":\"/p/util/in/main.roc\"}],\"series\":[]}]}"
+[dbg] [NeedsTty, NonInteractive, NonInteractive, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NeedsTty, NonInteractive, NonInteractive, NeedsTty, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [Interactive, NonInteractive, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:216:1
+
+expect {
+    cmd_view(["run"]) == "list args="
+        and cmd_view(["run", "--json"]) == "list args="
+            and cmd_view(["run", "build"]) == "script build args="
+                and cmd_view(["run", "build", "--", "--verbose", "x y"]) == "script build args=--verbose,x y"
+                    and cmd_view(["run", "check:wasm", "--offline", "--yes", "--quiet"]) == "script check:wasm args="
+                        and cmd_view(["run", "a", "b"]) == "2 tln run takes one script name, got 2 words. Pass arguments for the script after --."
+                            and cmd_view(["run", "a", "--json"]) == "2 tln run a does not take --json: the steps write to stdout. Only tln run with no name does."
+                                and cmd_view(["run", "a", "--file", "x"]) == "2 flag '--file' is not for 'run'"
+                                    and cmd_view(["run", "a", "--frozen"]) == "2 flag '--frozen' is not for 'run'"
+                                        and cmd_view(["run", "--dry-run"]) == "2 flag '--dry-run' is not for 'run'"
+                                            and cmd_view(["run", "a", "--allow-downloads"]) == "2 flag '--allow-downloads' is not for 'run'"
+                                                and cmd_view(["run", "--", "x"]) == "2 tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>."
+                                                    and cmd_view(["build"]) == "2 unknown command 'build'"
+                                                        and cmd_view(["check"]) == "2 unknown command 'check'"
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 55 tests in 5379.9 ms.:
+    54 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5450.2 ms.
+
+step       result seconds  budget
+l0         FAIL   5.6      10
+
+=== l2 exit 1
+FAIL run/rn1-scripts
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -108,6 +108,47 @@
+       == run r
+       exit 2
+       == run -- x cwd:p1
+      -exit 2
+      +scripts of $PROJECT/p1/talon.toml
+      +hi:
+      +  tool-a one "two words" 'three four' $HOME ~ *.txt
+      +chain:
+      +  @hi
+      +  tool-b
+      +tail:
+      +  tool-c
+      +  @chain
+      +all:
+      +  in sub: tool-d x
+      +  in sub: @inner
+      +failing:
+      +  tool-ok
+      +  tool-fail
+      +  tool-never
+      +sig:
+      +  tool-sig
+      +gone:
+      +  tool-gone --flag
+      +loop-a:
+      +  tool-x
+      +  @loop-b
+      +loop-b:
+      +  @loop-a
+      +shell:
+      +  tool-ok
+      +  tool-p | tool-q
+      +dangling:
+      +  @nothere
+      +out:
+      +  in ../..: tool-o
+      +nofile:
+      +  in nodir: @x
+      +noname:
+      +  in sub: @missing
+      +build:
+      +  tool-build
+      +unclosed:
+      +  tool-ok
+      +  tool-q "two words
+      +exit 0
+       == run unclosed cwd:p1
+       exit 19
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -15,5 +15,4 @@
+       tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/s/talon.toml.
+       tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/deep/inner/talon.toml, $PROJECT/w/deep/talon.toml.
+       tln: error[usage]: no talon.toml found. Checked: $PROJECT.
+      -tln: error[usage]: tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>.
+       tln: error[input]: $PROJECT/p1/talon.toml: script unclosed: the step 'tool-q "two words' has a quote that is not closed
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -410,6 +410,17 @@
+       cwd
+       list_dirs $PROJECT
+       args
+      +env_all
+      +clock
+      +cwd
+      +list_dirs $PROJECT/p1
+      +list_dirs $PROJECT
+      +read_files $PROJECT/p1/talon.toml
+      +canonical $PROJECT/p1/main.roc
+      +lock $HOME/.cache/roc/talon/projects.json nowait: held
+      +list_dirs $HOME/.cache/roc/talon
+      +read_files $HOME/.cache/roc/talon/projects.json
+      +unlock $HOME/.cache/roc/talon/projects.json
+       args
+       env_all
+       clock
+commands: 2 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

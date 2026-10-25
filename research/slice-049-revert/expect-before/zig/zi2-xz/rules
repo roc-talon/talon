@@ -1,0 +1,6 @@
+Slice 044: a `.tar.xz` needs `xz` on a Linux host only (R-EC18, R-HF5). `programs` has `curl` and `tar`, no `xz`.
+
+| Run | World | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | Linux x64, `x86_64-linux` archive `.tar.xz` | exit 18 that names `xz`, after the lock and before `make_dirs`: nothing is made | R-EC18, R-HF5, R-D2 |
+| 2 | macOS arm64, `aarch64-macos` archive `.tar.xz` | the install works: `tar` reads `.tar.xz` itself (the same tar line, chmod runs) | R-HF5, R-D2 |

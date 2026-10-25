@@ -1,0 +1,4 @@
+tln: error[usage]: acme/np 1.1.0 has no roc: pin in its app header, so tln cannot tell which compiler to build with
+tln: error[network]: acme/gm@main needs a request to find its commit, and --offline is set
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/mo 1.1.0 with nightly-2026-October-14-38a3029

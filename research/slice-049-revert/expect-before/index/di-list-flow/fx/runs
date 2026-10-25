@@ -1,0 +1,13 @@
+releases acme/fresh
+releases acme/stale
+releases acme/two env:GITHUB_TOKEN=tok123
+releases acme/limited
+releases acme/limited2
+releases acme/gone
+releases acme/slow
+releases acme/offlinec offline
+releases acme/nothing offline
+hint acme/lib 2.1.0 env:GITHUB_TOKEN=tok123
+hint acme/lib 3.0.0
+hint acme/lib 4.0.0
+releases acme/nope

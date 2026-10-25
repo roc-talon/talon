@@ -1,0 +1,7 @@
+tln: error[consent]: the compiler nightly-2026-10-09-258ab27 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-09-258ab27, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[no_tuple]: the roc pin nightly-2026-10-14-38a3029 is outside [toolchain] roc (0.1.0). Run tln upgrade roc or tln roc use <id>.
+check: passed
+$PROJECT/pk/lib/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+verified: the tuple passes. No project file was written.

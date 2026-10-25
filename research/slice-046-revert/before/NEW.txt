@@ -1,0 +1,9 @@
+cli/lib/ToolsJson.roc
+cli/lib/ToolInstall.roc
+cli/lib/ToolFlow.roc
+tests/unit/ToolTest.roc
+tests/commands/cases/tool/
+tests/scenarios/tools/
+tests/tools/mk-tool.sh
+docs/slices/046-tool-install.md
+research/slice-046-revert/

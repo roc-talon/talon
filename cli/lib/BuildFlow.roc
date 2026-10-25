@@ -1,8 +1,10 @@
 import BuildSkip
+import BuildTarget
 import Facts
 import Fail
 import Fx
 import Probe
+import Text
 import UnitFlow
 
 ## Command code (part C) of ladder step 3, the build skip (slice 032, R-BS1, R-BS2, R-ID6, R-P4). `Ladder.run!` and `Ladder.verify!` call it for each member that has a build, after step 2 passed. The pure decisions are in `BuildSkip`.
@@ -25,17 +27,24 @@ import UnitFlow
 BuildFlow :: [].{
 
 	## What step 3 does for one member. `skip` is true when the build does not run. `id` is the build id when the key is known, else `Err(NoId)` (no skip is possible, nothing is recorded).
-	Plan : { skip : Bool, id : Try(BuildSkip.Id, [NoId]) }
+	## Slice 054 (R-TG1, R-TG2): `target` is the build target of the member (`BuildTarget.pick`): the build probe gets it (`LadderPlan.with_target`), and the id has it in its key. `Unlisted` for a member with no id (no key, no platform hash).
+	Plan : { skip : Bool, id : Try(BuildSkip.Id, [NoId]), target : BuildTarget.Chosen }
 
 	## `used` is the result of the scan of the verdict of step 1 (`Ok`), or `Err(NotScanned)` when step 1 did no scan.
 	before! : Fx, UnitFlow.Ctx, { used : Try(List(BuildSkip.Used), [NotScanned]) } => Try(BuildFlow.Plan, Fail)
 	before! = |fx, ctx, run| {
-		plain = { skip: Bool.False, id: Err(NoId) }
+		plain = { skip: Bool.False, id: Err(NoId), target: Unlisted }
 		pf = match BuildSkip.pf_hash(ctx.nodes) {
 			Ok(hash) => hash
 			Err(NoPlatform) => return Ok(plain)
 		}
-		key = match BuildSkip.key({ pf, nightly: ctx.started.id, system: fx.platform!() }) {
+		system = fx.platform!()
+		listed = match fx.read_files!([Text.join(ctx.roots.pkgs, "${pf}/main.roc")]) {
+			[Ok(text)] => BuildTarget.targets_of(text)
+			_ => Err(NoSection)
+		}
+		chosen = BuildTarget.pick({ project: ctx.target, host: BuildTarget.host(system), found: listed, file: ctx.member.file })?
+		key = match BuildTarget.key({ pf, nightly: ctx.started.id, chosen, system }) {
 			Ok(found) => found
 			Err(Unknown) => return Ok(plain)
 		}
@@ -49,7 +58,7 @@ BuildFlow :: [].{
 			Skip => Bool.True
 			Build => Bool.False
 		}
-		Ok({ skip, id: Ok({ key, digest }) })
+		Ok({ skip, id: Ok({ key, digest }), target: chosen })
 	}
 
 	## The record of the result of a build that ran (pass, fail, hang or crash). `output` is the output of the build probe, `dir` is the dir of the probe and `pkgs` is `Roots.pkgs` (for `Probe.errors`).

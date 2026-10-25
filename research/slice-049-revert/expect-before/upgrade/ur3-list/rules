@@ -1,0 +1,7 @@
+R-UP6 R-UP12 R-SP6 R-SP7 R-SP9 R-UP9 R-J3 (slice 039, Q1 answer: the list of compilers cannot be read): 6 runs, one home with only H installed, no route for the list of the nightlies (the fake http answers 404, so `Nightlies.list!` fails). json 1.0.0 and 1.2.0.
+Run 1 (bare `upgrade`): the nightly stays H and the note `note: the compiler list could not be read; roc stays <H>` is printed (a proposal, TW24). The packages still upgrade (json 1.2.0). No pin line.
+Run 2 (`upgrade roc`): the command fails with the failure of the list (exit 2, kind usage in the fake). Moving the nightly is the whole point of it, so there is no degrade.
+Run 3 (`upgrade json roc`): the same failure (the name `roc` is named).
+Run 4 (`upgrade json`): the nightly is held, the list is not read, there is no note.
+Run 5 (`upgrade --dry-run --json`): the note is in `data.notes`.
+Run 6 (`upgrade --no-check`): exit 2 (R-UP9). The check is before the list.

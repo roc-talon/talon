@@ -1,0 +1,58 @@
+# R-CM16 R-T1 R-T3 R-T4 R-T9 R-T10 R-T11 R-T26 R-T27 R-T28 R-ST7 R-ST10 R-ST15 R-LY2 R-LY3 R-CC1 R-CC6 R-SE9 (slice 046): `tln tool install` end to end with the real Fx, the real curl, the real `roc unbundle`
+# (the fake roc on PATH passes `unbundle` to the pinned roc, given/roc.tsv), the fake release server (tests/tools/mk-tool.sh made given/http: the release lists and the real app bundles of acme/foo 1.0.0, 1.1.0 and acme/bar 1.0.0)
+# and the fake compiler nightly-2026-10-14-38a3029 in the store (given/home/.cache/roc/toolchains/.../roc: it writes a shell script as the binary, and it can wait for a second build, see its comments).
+# TALON_NOW=2026-10-15T12:00:00Z. The apps have the pin `roc: "nightly-2026-10-14-38a3029"`, so no compiler is downloaded.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+B=$HOME/.local/bin
+DB=$XDG_DATA_HOME/talon/bin
+J=$XDG_DATA_HOME/talon/tools.json
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
+linked() { if [ "$1" -ef "$2" ]; then echo "$1 and $2 are one file"; else echo "$1 and $2 are two files"; fi; }
+
+echo "-- 1: the newest release (R-T9: both are old enough, R-T10: one app bundle each). The real roc unbundle checks the hash, the build runs in the package dir with --opt=speed and no --target (R-T8), the binary is copied to the data bin dir (R-T3), the bin dir entry is a hard link (R-ST7). The temp dir of the build is removed (R-CC2)."
+st tln tool install acme/foo
+ls -A $B $DB $XDG_CACHE_HOME/roc/talon/tmp
+linked $B/foo $DB/foo
+$B/foo
+cat $J
+cat $D/build.log
+echo "downloads: $(downloads)"
+
+echo "-- 2: the same line again: foo 1.1.0 is there (R-T26). No download, no build."
+st tln tool install acme/foo
+echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
+
+echo "-- 3: a named older version is a build (R-T26, R-B2): the entry is replaced (R-T27, R-CC1). The bin dir entry follows the new binary: it is one file with it."
+st tln tool install acme/foo@1.0.0
+linked $B/foo $DB/foo
+$B/foo
+cat $J
+ls -A $DB $B
+
+echo "-- 4: two installs at the same time (R-CC6). foo 1.1.0 and bar 1.0.0 build together: the fake compiler of each waits for the other one (bar starts after the build of foo has started, so the logs have one order). tools.json has both after the runs, and no lock is left."
+rm -f $D/started.*
+touch $D/barrier
+tln tool install acme/foo@1.1.0 > $D/out-foo.txt 2>&1 &
+PID1=$!
+while [ ! -f $D/started.foo ]; do sleep 0.1; done
+tln tool install acme/bar > $D/out-bar.txt 2>&1 &
+PID2=$!
+wait $PID1 && echo "foo: exit 0" || echo "foo: exit $?"
+wait $PID2 && echo "bar: exit 0" || echo "bar: exit $?"
+rm $D/barrier
+cat $D/out-foo.txt $D/out-bar.txt
+cat $J
+ls -A $B $DB
+$B/foo
+$B/bar
+
+echo "-- 5: the binary name of acme/foo is taken (R-T28, R-NM11): exit 2, no request for the list, no build. --as gives another binary name: other/foo is installed as ofoo."
+st tln tool install other/foo
+echo "requests for other/foo so far: $(grep -c other/foo $D/http.log || true)"
+st tln tool install other/foo --as ofoo
+ls -A $B $DB
+$B/ofoo
+cat $J

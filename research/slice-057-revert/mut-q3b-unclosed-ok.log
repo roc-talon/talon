@@ -1,0 +1,103 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        and plan_view(files_sub, "chain", ["x", "y"]) == "/r/p: tool-a one; /r/p: tool-b; /r/p: tool-c x y"
+            and plan_view(files_sub, "tail", ["z"]) == "/r/p: tool-d; /r/p: tool-a one; /r/p: tool-b; /r/p: tool-c z"
+                and plan_view(files_sub, "lasthi", ["q"]) == "/r/p: tool-c; /r/p: tool-a one; /r/p: tool-b q"
+                    and plan_view(files_sub, "all", []) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f"
+                        and plan_view(files_sub, "all", ["z"]) == "/r/p/sub: tool-e x; /r/p/sub: tool-g; /r/p: tool-f z"
+                            and plan_view([{ dir: "/r/p", scripts: Ok(p_scripts) }], "all", []) == "need /r/p/sub"
+                                and plan_view(files_sub, "up", []) == "/r: q"
+                                    and plan_view(files_sub, "empty", ["z"]) == ""
+                                        and plan_view(files_sub, "loop-a", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
+                                            and plan_view(files_sub, "entry", []) == "19 scripts call themselves: loop-a -> loop-b -> loop-a"
+                                                and plan_view(files_sub, "self", []) == "19 scripts call themselves: self -> self"
+                                                    and plan_view(files_sub, "gone", []) == "19 /r/p/talon.toml: script gone: the step '@nothere' names the script 'nothere', and /r/p/talon.toml has no such script"
+                                                        and plan_view(files_sub, "sh", []) == "19 /r/p/talon.toml: script sh: the step 'b && c' has the word '&&': a step is one command; use 2 steps, or a .roc script"
+                                                            and plan_view(files_sub, "unc", []) == "19 /r/p/talon.toml: script unc: the step 'tool-b \"x' has a quote that is not closed"
+                                                                and plan_view(files_sub, "blank", []) == "19 /r/p/talon.toml: script blank: the step '  ' has no command"
+                                                                    and plan_view(files_sub, "out", []) == "19 /r/p/talon.toml: script out: the step 'in ../..: z' has the directory '../..', which is outside the repository (/r)"
+                                                                        and plan_view(dir_miss, "nofile", []) == "19 /r/p/talon.toml: script nofile: the step 'in nodir: @x' names the script 'x', and /r/p/nodir has no talon.toml"
+                                                                            and plan_view(files_sub, "nofile", []) == "need /r/p/nodir"
+}
+
+Mentioned values:
+p_scripts = [
+	sc("hi", [Line("tool-a one"), Line("tool-b")]),
+	sc("chain", [Line("@hi"), Line("tool-c")]),
+	sc("tail", [Line("tool-d"), Line("@chain")]),
+	sc("lasthi", [Line("tool-c"), Line("@hi")]),
+	sc("all", [In({ dir: "sub", run: "tool-e x" }), In({ dir: "sub", run: "@inner"
+}), Line("tool-f")]),
+	sc("entry", [Line("@loop-a")]),
+	sc("loop-a", [Line("x"), Line("@loop-b")]),
+	sc("loop-b", [Line("@loop-a")]),
+	sc("self", [Line("@self")]),
+	sc("gone", [Line("@nothere")]),
+	sc("sh", [Line("a"), Line("b && c")]),
+	sc("out", [In({ dir: "../..", run: "z" })]),
+	sc("up", [In({ dir: "..", run: "q" })]),
+	sc("nofile", [In({ dir: "nodir", run: "@x" })]),
+	sc("empty", []),
+	sc("blank", [Line("  ")]),
+	sc("unc", [Line("tool-a"), Line("tool-b \"x")]),
+]
+files_sub = [
+	{ dir: "/r/p", scripts: Ok(p_scripts) },
+	{ dir: "/r/p/sub", scripts: Ok([sc("inner", [Line("tool-g")])]) },
+]
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 55 tests in 5635.4 ms.:
+    53 passed
+    2 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5313.9 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL run/rn1-scripts
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -110,4 +110,4 @@
+       == run -- x cwd:p1
+       exit 2
+       == run unclosed cwd:p1
+      -exit 19
+      +exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -16,4 +16,3 @@
+       tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/deep/inner/talon.toml, $PROJECT/w/deep/talon.toml.
+       tln: error[usage]: no talon.toml found. Checked: $PROJECT.
+       tln: error[usage]: tln run -- <words> needs a script name: the words after -- are the arguments of a script. Use tln run <name> -- <words>.
+      -tln: error[input]: $PROJECT/p1/talon.toml: script unclosed: the step 'tool-q "two words' has a quote that is not closed
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -422,3 +422,9 @@
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      +exec_in $PROJECT/p1 tool-ok
+      +  env TALON_SCRIPT=unclosed
+      +  env TALON_SCRIPT_DIR=$PROJECT/p1
+      +exec_in $PROJECT/p1 tool-q two words
+      +  env TALON_SCRIPT=unclosed
+      +  env TALON_SCRIPT_DIR=$PROJECT/p1
+commands: 2 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

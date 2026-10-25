@@ -51,6 +51,26 @@ IntentEdit :: [].{
 		}
 	}
 
+	## R-PA1, R-PA9, R-PA12 (slice 042): the edit of `talon.toml` that adds the `[patch]` entry of `alias`: `<alias> = { path = "<entry>", base = "<base>" }` (the form of R-PA9: an inline table, the key `path` first). The rules of `Toml.insert`:
+	## the entry goes after the last entry of `[patch]` when the table is there, else a new `[patch]` table goes at the end of the text, after a blank line. All other bytes stay. The empty text (a `talon.toml` that Talon makes, R-PA1)
+	## gives `[patch]` and the entry, in the form of R-PA9 (not the form `[patch.<alias>]` that `Toml.print` gives). A text with no line end at its end gets one first.
+	##
+	## | Case | Result |
+	## | --- | --- |
+	## | A text that is not TOML | The failure of `read` (kind `Input`, `<path>:<line>: not valid TOML`) |
+	## | The key `alias` is in `[patch]` already | The entry is replaced where it is (`Toml.replace`). `tln patch` refuses a copy dir that exists before, so this is the case of a key with no dir (answer Q3) |
+	add_patch : { path : Str, text : Str, alias : Str, entry : Str, base : Str } -> Try(Str, Fail)
+	add_patch = |facts| {
+		value = Value.Table(Dict.from_list([("path", Value.String(facts.entry)), ("base", Value.String(facts.base))]))
+		if facts.text == "" {
+			return Ok("[patch]\n${facts.alias} = ${Value.print(value)}\n")
+		}
+		match Toml.parse(facts.text) {
+			Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
+			Ok(doc) => patch_edit(doc, facts.alias, value).map_ok(|done| done.to_str()).map_err(|_| Fail.new(Input, "${facts.path}: the key patch.${facts.alias} cannot be written"))
+		}
+	}
+
 	## A table of `talon.toml` whose keys are header aliases: `[dependencies]` (R-I2), `[overrides]` (R-OV1), `[patch]` (R-PA12). Slice 008.
 	Table : [Dependencies, Overrides, Patch]
 
@@ -120,4 +140,11 @@ remove_key : Str, Toml, { table : IntentEdit.Table, key : Str } -> Try(Toml, Fai
 remove_key = |path, doc, k| match Toml.remove(doc, [IntentEdit.table_name(k.table), k.key]) {
 	Ok(done) => Ok(done)
 	Err(NoEntry) => Err(Fail.new(Internal, "${path}: the key '${k.key}' is not there"))
+}
+
+# R-PA1 (answer Q3): the entry of `[patch]` is replaced where it is, or added after the last entry.
+patch_edit : Toml, Str, Value -> Try(Toml, [Unwritable])
+patch_edit = |doc, alias, value| match Toml.get(doc, ["patch", alias]) {
+	Ok(_) => Toml.replace(doc, ["patch", alias], value).map_err(|_| Unwritable)
+	Err(NotFound) => Toml.insert(doc, ["patch", alias], value).map_err(|_| Unwritable)
 }

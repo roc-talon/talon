@@ -1,0 +1,14 @@
+== cache gc
+another tln cache gc runs
+exit 0
+== cache gc --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":false,"toolchains":[],"skipped":[],"compat":[],"stale":[],"builds":[],"packages":[],"projects":[],"sizes":[],"freed":0},"error":null}
+exit 0
+== cache gc --dry-run
+would remove toolchain nightly-2026-08-01-aaaaaaa (269 B)
+would remove $HOME/.cache/roc/compat-aaaaaaa (11 B)
+would free 280 B
+dry run: nothing was removed
+exit 0
+== cache gc nightly
+exit 2

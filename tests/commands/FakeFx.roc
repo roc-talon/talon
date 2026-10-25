@@ -13,6 +13,7 @@ import FakeJobs
 ## | File in `<w>/fx/` | Gives | Default |
 ## | --- | --- | --- |
 ## | `args` | One argument for each line | no arguments |
+## | `cwd` | Slice 041: the sub directory of `project/` that `cwd!` gives (one word, no `/` at the start) | `project/` |
 ## | `env` | `NAME=value`, one for each line | no variables |
 ## | `tty` | The lines `stdin=true`, `stderr=true` | both false |
 ## | `clock` | Seconds since the epoch | 1792065600 |
@@ -30,7 +31,7 @@ import FakeJobs
 ## | `hooks` | A concurrent edit of a file (slice 007), see below | none |
 ## | `path-roc` | The answer of `path_roc!` (slice 022b), see below | no `roc` file on `PATH` and an unknown running `tln` |
 ## | `program` | The program name of the process (slice 023, R-HF9): one word. The call `program_name!` is not in `calls.log` (each run calls it first). | `tln` |
-## | `exec` | The answers of `exec!` (slice 023), see below | each child exits with 0 |
+## | `exec` | The answers of `exec!` (slice 023) and `exec_in!` (slice 057), see below | each child exits with 0 |
 ## | `hardlink` | `fail <suffix>`, one for each line: a `hard_link!` whose target ends with `<suffix>` gives `Other("cross-device link")` and makes nothing (the other file system, R-ST7: the copy fallback) (slice 027) | every hard link works |
 ## | `delete` | `denied <suffix>`, one for each line: a path of `delete!` that ends with `<suffix>` gives `Denied` and is not deleted (slice 029: `cache clean` exit 18) | every delete works |
 ## | `treeinfo` | `denied <suffix>`, one for each line: `tree_info!` gives `Err(Denied)` for a path that ends with `<suffix>` (an item that cannot be measured, slice 029) | every path is measured |
@@ -38,7 +39,7 @@ import FakeJobs
 ## | `locks` | `busy <name>` or `busy <name> creates:<path>`, one for each line: a lock whose item path ends with `/<name>` is held by another process. `lock!` with `NoWait` gives `Busy`. With `Wait` it gives `Held` (the other process lets go). With `creates:<path>` the fake makes that directory first (`{w}` is the case dir): the other process finished its work (slice 021, R-CC4 step 4). | no lock is held by another process |
 ##
 ## `http/` (slice 003): a route is the file `http/<host>/<path>` or, with a query, `http/<host>/<path>?<query>` (the query file first). The body is the
-## file. `<file>.meta` has the lines `status <n>`, `header <Name>: <value>`, `error timeout` and `error failed <text>` (a transport error). A route that has a
+## file (slice 046: when the route is a directory, the file `<dir>/@`, for a URL that is also the parent of other routes). `<file>.meta` has the lines `status <n>`, `header <Name>: <value>`, `error timeout` and `error failed <text>` (a transport error). A route that has a
 ## header `ETag` answers 304 with no body to a request with the same `If-None-Match`. No file: status 404 and the body `{"message":"Not Found"}`.
 ## The log has the line `http_get <url>` and then one line `  <Name>: <value>` for each header of the request, in order.
 ##
@@ -53,7 +54,7 @@ import FakeJobs
 ## `probes` (slice 006): one row for each probe, in the order in which the probes are called (the n-th probe of the case gets the n-th row), with 3 fields split by a TAB: `code`,
 ## `stdout`, `stderr`. `code` is `<n>` (exit), `signal:<n>`, `timeout` or `notstarted:<text>`. `stdout` and `stderr` are the names of files, relative to `fx/` (`-` for none): a case
 ## uses the real outputs of `tests/fixtures/check/out/` with `../fixtures/check/out/<case>.stdout` (the runner links `fixtures/` into the work dir). Lines that start with `#` are comments.
-## A probe with no row passes: exit 0 and the text `No errors found in 0ms for <file>` for `check`, `0 errors and 0 warnings found in 0ms while successfully building:` and the
+## Slice 046: a row can have a 4th field, a list split by `;` of the items that the probe makes: `file:<path>` (a file with the text `fake`) or `dir:<path>`; `{w}` is the case dir and `{out}` is the value of the argument `--output=` of the probe (the binary of a tool build). A probe with no row passes: exit 0 and the text `No errors found in 0ms for <file>` for `check`, `0 errors and 0 warnings found in 0ms while successfully building:` and the
 ## output path for `build`. The log has `probes <n>` and then one line `  probe <dir> <compiler> <program> <arguments> timeout=<s>` for each probe (slice 023c: `program` is the file that runs, `compiler` is the id that the command holds).
 ## A probe with a non-empty `env` has one more line, `    env <NAME>=<value> <NAME>=<value> ...` (4 spaces, the variables in the order of the spec, joined by one space), before the lines of `probe-text`. The fake runs nothing.
 ##
@@ -66,6 +67,7 @@ import FakeJobs
 ## `exec` (slice 023, R-HF6, R-E1): one rule for each line, with 2 fields split by a TAB: `needle` and `code`. The first rule whose `needle` is in the arguments of the child (joined by one space) answers.
 ## `code` is `<n>` (the exit code, the real `Fx` gives `128 + <signal>` for a signal, so the case writes that number) or `notstarted:<text>`. Lines that start with `#` are comments.
 ## The log has `exec <arguments>` (the program and its arguments, joined by one space) and then one line `  env <NAME>=<value>` for each variable of `env`, in the order of the call. The fake runs nothing.
+## `exec_in!` (slice 057, R-RUN5, R-RUN8, R-RUN9): the same rules, the log line is `exec_in <cwd> <arguments>` (the working directory first) and then the same `  env` lines.
 ##
 ## `{w}` (slice 007): in `args` and in `env`, the text `{w}` is the case work dir (so `HOME={w}/home` is a path of the case).
 ##
@@ -104,7 +106,7 @@ import FakeJobs
 ## | --- | --- |
 ## | `FakeFx` | The record, the table above, and the small calls: `args!`, `env_all!`, `cwd!`, `tty!`, `clock!`, `out!`, `err!`, `lock!`, `unlock!`, `programs!`, `random!`, `platform!`, `path_roc!`, `program_name!`, `ask!` |
 ## | `FakeFiles` | `read_files!`, `write_atomic!`, `list_dirs!`, `tree_info!`, `delete!`, `canonical!`, `rename!`, `make_dirs!`, `copy_tree!`, `copy_file!`, `hard_link!`, `sha256_file!` |
-## | `FakeJobs` | `http_get!`, `spawn_all!`, `probes!`, `exec!` |
+## | `FakeJobs` | `http_get!`, `spawn_all!`, `probes!`, `exec!`, `exec_in!` |
 ## | `FakeDb` | `db_query!`, `db_write!` (slice 030): the store is the text file `compat.tsv` next to the db path |
 ## | `FakeBase` | The call log, `read_or_empty!`, `append!`, the text lines, `write_with_parents!`, `create_item!` |
 FakeFx :: [].{
@@ -121,7 +123,8 @@ FakeFx :: [].{
 		},
 		cwd!: || {
 			FakeBase.log!(w, "cwd")
-			"${w}/project"
+			sub = FakeBase.read_or_empty!("${w}/fx/cwd").trim()
+			if sub == "" "${w}/project" else "${w}/project/${sub}"
 		},
 		tty!: || {
 			FakeBase.log!(w, "tty")
@@ -237,6 +240,7 @@ FakeFx :: [].{
 			if name.is_empty() "tln" else name
 		},
 		exec!: |run| FakeJobs.exec!(w, run),
+		exec_in!: |run| FakeJobs.exec_in!(w, run),
 		sha256_file!: |path| FakeFiles.sha256_file!(w, path),
 		ask!: |prompt| {
 			asked = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(|l| l.starts_with("ask ")).len()

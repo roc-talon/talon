@@ -1,0 +1,13 @@
+== tool rebuild foo
+rebuilt foo 1.1.0 (acme/foo) with nightly-2026-10-12-2664a27
+exit 0
+== tool rebuild g env:TALON_INTERACTIVE=0
+exit 13
+== tool rebuild g --yes env:TALON_INTERACTIVE=0
+rebuilt g git main@aaaaaaaa (acme/g) with nightly-2026-10-11-1a2b3c4
+exit 0
+== tool rebuild --json
+{"schema":1,"command":"tool rebuild","ok":true,"data":{"tools":[{"tool":"foo","name":"acme/foo","how":"rebuilt","from":null,"to":"1.1.0"},{"tool":"g","name":"acme/g","how":"rebuilt","from":null,"to":"git main@aaaaaaaa"}]},"error":null}
+exit 0
+== tool rebuild foo
+exit 11

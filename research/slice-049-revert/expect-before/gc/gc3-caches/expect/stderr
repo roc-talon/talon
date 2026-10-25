@@ -1,0 +1,13 @@
+would remove toolchain nightly-2026-08-01-aaaaaaa (269 B)
+would remove $HOME/.cache/roc-builds/compat-aaaaaaa (34 B)
+would remove $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp (8 B)
+would remove $HOME/.cache/roc-builds/compat-bbbbbbb (35 B)
+would remove $HOME/.cache/roc-builds/compat-over (29 B)
+would remove $HOME/.cache/roc-builds/debug-9999999 (25 B)
+would remove $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (45 B)
+would remove $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL (17 B)
+would remove $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK (17 B)
+would remove $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc (27 B)
+would remove project $PROJECT/pold/main.roc
+would free 506 B
+dry run: nothing was removed

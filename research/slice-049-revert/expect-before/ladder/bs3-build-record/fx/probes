@@ -1,0 +1,31 @@
+# run 1 (digest A): the build fails for the host target (R-LD5). The fail is recorded for the digest (R-BS2).
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/build-target.stdout	../fixtures/check/out/build-target.stderr
+# run 2 (digest B): the build hangs (R-P3). The hang is recorded.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+timeout	-	-
+# run 3 (digest C): the build crashes with SIGSEGV (R-P3). The crash is recorded.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+signal:11	-	-
+# run 4 (digest D): the build fails again, as run 1.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/build-target.stdout	../fixtures/check/out/build-target.stderr
+# run 5 (digest D again): the fail row blocks the skip, so the build runs again. It passes, and the pass replaces the fail row of the digest.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 6 (digest D again): a pass is recorded, so the build is skipped. The fail, the hang and the crash of other digests (and the given row) do not block it.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+# run 7 (digest E): the build does not start: no fact (R-P3), no row.
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+notstarted:no roc	-	-
+# run 8 (digest E, as run 7): the build fails in a module of the platform (Std.roc): exit 10, the platform is blamed, and the fail row has the module (R-P4)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	build-platform.stdout	build-platform.stderr

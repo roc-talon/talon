@@ -1,0 +1,4 @@
+# 1: Linux, no xz on PATH: exit 18 that names xz, before any download. Nothing is made.
+0.17.0 yes
+# 2: macOS, no xz: tar reads .tar.xz itself, so the install works (chmod runs)
+0.17.0 yes

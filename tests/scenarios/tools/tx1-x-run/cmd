@@ -1,0 +1,53 @@
+# R-FL1 R-X1 R-X2 R-X3 R-X4 R-X5 R-E1 R-B1 R-B4 R-CM12 R-GC7 (slice 049): `tln x` end to end with the real Fx, the real curl, the real `roc unbundle`, the fake release server (tests/tools/mk-tool.sh made given/http: the release list and the
+# real app bundles of acme/app 1.1.0 and 1.0.0) and the fake compiler nightly-2026-10-14-38a3029 in the store (given/home/.cache/roc/toolchains/.../roc: it writes a shell script as the binary. The script prints its release and
+# its arguments and exits with 3). The real `exec!` runs it: its stdout and its exit code are the ones of `tln x`.
+# TALON_NOW=2026-10-15T12:00:00Z. The apps have the pin `roc: "nightly-2026-10-14-38a3029"`, so no compiler is downloaded.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+X=$XDG_CACHE_HOME/roc/talon/x
+downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+
+echo "-- 1: the first run builds the newest release (R-X1), puts the build in the x cache (R-X2) and runs it with the words after -- (R-CM12). The exit code of the app is the exit code of tln (R-X4). No tools.json and no bin dir entry (R-X3). The temp dir of the build is removed (R-CC2)."
+st tln x acme/app -- a "b c"
+ls -A $X $X/*
+ls -A $XDG_CACHE_HOME/roc/talon/tmp
+ls -A $HOME/.local/share/talon $HOME/.local/bin 2>&1 | sed -e 's/^ls: //'
+cat $X/*/manifest.json
+cat $D/build.log
+echo "downloads: $(downloads)"
+
+echo "-- 2: the same line again matches the entry (R-B1): no download, no build. The app runs again."
+st tln x acme/app
+echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
+
+echo "-- 3: --json is refused (R-FL1): exit 2, the JSON error line, and no request."
+st tln x acme/app --json
+echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
+
+echo "-- 4: tln tool install takes the entry (R-B4): no download, no build. The binary moves to the data bin dir (the entry dir is deleted), the bin dir entry is a hard link, tools.json has the tool."
+st tln tool install acme/app
+echo "x: $(ls -A $X | wc -l) entries"
+ls -A $HOME/.local/bin $XDG_DATA_HOME/talon/bin
+st $HOME/.local/bin/app c
+cat $XDG_DATA_HOME/talon/tools.json
+echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
+
+echo "-- 5: an exact version that the installed tool does not have is a build in the x cache (R-B2, R-B5): the installed tool is not changed."
+st tln x acme/app@1.0.0 -- d
+ls -A $X
+cat $XDG_DATA_HOME/talon/tools.json
+echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
+
+echo "-- 6: 36 days later the entry was not run for more than the gc age (R-GC7): tln cache gc removes it. The gc removes the old fake compiler too (not used for 36 days), so the case keeps a copy of the store and puts it back for step 7."
+cp -a $HOME/.cache/roc/toolchains $D/toolchains-saved
+export TALON_NOW=2026-11-20T12:00:00Z
+st tln cache gc
+echo "x: $(ls -A $X | wc -l) entries"
+
+echo "-- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download."
+rm -rf $HOME/.cache/roc/toolchains && cp -a $D/toolchains-saved $HOME/.cache/roc/toolchains
+st tln x acme/app@1.0.0 -- e
+ls -A $X
+echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"

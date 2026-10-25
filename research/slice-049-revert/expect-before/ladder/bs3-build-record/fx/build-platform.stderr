@@ -1,0 +1,14 @@
+── ✗ type mismatch ─ ../../../packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/Std.roc:3:15
+
+This expression is used in an unexpected way.
+
+encode = |s| s.count_utf8_bytes()
+             ^^^^^^^^^^^^^^^^^^^^
+
+It has the type:
+
+    U64
+
+But the annotation says it should be:
+
+    Str

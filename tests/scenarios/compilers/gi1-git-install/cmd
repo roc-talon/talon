@@ -1,0 +1,53 @@
+# R-R1 R-R3 R-R5 R-R6 R-R7 R-R9 R-R10 R-R2 R-SE12 R-DA3 R-DA4 R-HF5 R-SE9 R-EV19 R-D1 R-D4 R-CC1 R-CC2 R-CC4 R-SO15 R-TF1 R-NI6:
+# `tln roc install --git` end to end with the real Fx, the real curl and tar, the fake GitHub API (tests/tools/mk-git.sh made given/http: the commit routes and the real `.tar.gz` source archives; the fake nightly list
+# is `mk-nightly.sh` with one nightly that has the commit of `roc-lang/roc@main`) and the fake `zig` (given/bin/zig: version 0.17.0, a `zig build` that needs the source tree with its top dir stripped and writes `zig-out/bin/roc`).
+# The shas are made up: `my-branch` is `a1b2c3d4...` and moves to `b2c3d4e5...` in run 3 (the cmd copies given/alt/my-branch over the route). The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW), 1 day later in run 3.
+# The sha256 of an archive is made by `sha256sum` here, not by tln: it must be the one in `.talon.json` (R-R7: Talon computes it, GitHub publishes none).
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+T=$XDG_CACHE_HOME/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+S=$XDG_CACHE_HOME/roc/talon/tmp
+H=$TALON_TEST_DIR/http/api/repos/Karakatiza666/roc
+SHA1=a1b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e
+SHA2=b2c3d4e5f60718293a4b5c6d7e8f9a0b1c2d3e4f
+
+echo "== 1: a branch (R-R10). The id is git-<sha8> (R-R1). The archive is got by the full sha (R-R3), curl makes the file, tar strips the top dir (the fake zig checks), the build runs in the tree, the temp dir is renamed. The first compiler is the default (R-SO15). No temp, lock or scratch dir is left (R-CC2, R-CC4)."
+st tln roc install --git Karakatiza666/roc@my-branch
+ls -A $T $T/git-a1b2c3d4 $S
+$T/git-a1b2c3d4/roc version
+cat $T/git-a1b2c3d4/.talon.json
+echo "sha256 of the archive: $(sha256sum $H/tarball/$SHA1 | cut -d' ' -f1)"
+cat $C
+
+echo "== 2: the head is the same: the id is there, no download, no build"
+st tln roc install --git Karakatiza666/roc@my-branch
+
+echo "== 3: the branch moved: the new head is a new id, the old one stays (R-R6). The default stays (R-SO15). Then tln roc default --git picks the newest build of the branch (R-R5)."
+cp $TALON_TEST_DIR/alt/my-branch $H/commits/my-branch
+TALON_NOW=2026-10-23T12:00:00Z st tln roc install --git Karakatiza666/roc@my-branch
+ls -A $T
+cat $C
+st tln roc default --git Karakatiza666/roc@my-branch
+cat $C
+
+echo "== 4: @main (R-R9): the commit is the commit of a nightly: the note, and the build goes on (R-R2)"
+st tln roc install --git @main
+ls $T
+cat $T/git-5349569a/.talon.json
+
+echo "== 5: an archive with a .. member (R-SE12, R-SE9: no hash, so tar is the guard): exit 16, nothing outside the scratch dir, nothing installed"
+st tln roc install --git Karakatiza666/roc@evil
+ls -A $T $S
+test -e $XDG_CACHE_HOME/roc/talon/evil.txt || echo "no evil.txt"
+test -e $XDG_CACHE_HOME/roc/evil.txt || echo "no evil.txt up"
+
+echo "== 6: the archive route redirects to http:// (R-DA3, R-SE12): curl refuses it, exit 15. The second route is never asked."
+st tln roc install --git Karakatiza666/roc@loop 2> $TALON_TEST_DIR/err6.txt
+sed -e 's/failed: .*/failed: <the message of curl>/' $TALON_TEST_DIR/err6.txt >&2
+echo "curl refused the redirect: $(grep -c 'Protocol "http"' $TALON_TEST_DIR/err6.txt)"
+ls -A $T $S
+
+echo "== 7: a ref that does not exist: the API answers 422, exit 2, no archive request (R-R3)"
+st tln roc install --git Karakatiza666/roc@nosuch
+ls -A $S

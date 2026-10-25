@@ -1,0 +1,17 @@
+[scripts]
+hi = "tool-a one \"two words\" 'three four' $HOME ~ *.txt"
+chain = ["@hi", "tool-b"]
+tail = ["tool-c", "@chain"]
+all = [{ in = "sub", run = "tool-d x" }, { in = "sub", run = "@inner" }]
+failing = ["tool-ok", "tool-fail", "tool-never"]
+sig = "tool-sig"
+gone = "tool-gone --flag"
+loop-a = ["tool-x", "@loop-b"]
+loop-b = "@loop-a"
+shell = ["tool-ok", "tool-p | tool-q"]
+dangling = "@nothere"
+out = [{ in = "../..", run = "tool-o" }]
+nofile = { in = "nodir", run = "@x" }
+noname = { in = "sub", run = "@missing" }
+build = "tool-build"
+unclosed = ['tool-ok', 'tool-q "two words']

@@ -1,0 +1,5 @@
+[workspace]
+members = ["m1/main.roc"]
+
+[tools]
+ws = { ref = "acme/ws@^1", url = "https://github.com/acme/ws/releases/download/1.0.0/7Vrx6N69X1AR8QHzHnfiunuxWmFi8ufVm1b3h8b4ADRV.tar.zst" }

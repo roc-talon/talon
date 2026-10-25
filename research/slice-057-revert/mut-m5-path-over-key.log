@@ -1,0 +1,412 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+"
+[dbg] "/p/main.roc
+  pf: acme/pfx 0.1.1 (direct)
+  json: acme/json 2.1.0 (direct; raised from 2.0.0; patched)
+    lex: acme/lex 1.0.0
+  util: ../util/main.roc (direct; foreign)
+    j: acme/json 2.1.0 (shown above)
+    inner: ./in/main.roc (foreign)
+  ext: https://x.org/e.zst (direct; foreign)
+"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"packages\":[{\"alias\":\"pf\",\"name\":\"acme/pfx\",\"version\":\"0.1.1\",\"kind\":\"release\",\"id\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":false,\"platform\":true,\"patched\":false},{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false,\"patched\":true},{\"alias\":\"util\",\"name\":\"../util/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/main.roc\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false},{\"alias\":\"lex\",\"name\":\"acme/lex\",\"version\":\"1.0.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\",\"direct\":false,\"via\":\"json\",\"raised\":null,\"foreign\":false,\"platform\":false,\"patched\":false},{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false,\"patched\":false}],\"links\":[{\"from\":null,\"alias\":\"pf\",\"to\":\"https://github.com/acme/pfx/releases/download/0.1.1/pfxhash.tar.zst\"},{\"from\":null,\"alias\":\"json\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":null,\"alias\":\"util\",\"to\":\"/p/util/main.roc\"},{\"from\":null,\"alias\":\"ext\",\"to\":\"https://x.org/e.zst\"},{\"from\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"alias\":\"lex\",\"to\":\"https://github.com/acme/lex/releases/download/1.0.0/lexhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"j\",\"to\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"},{\"from\":\"/p/util/main.roc\",\"alias\":\"inner\",\"to\":\"/p/util/in/main.roc\"}],\"series\":[]}]}"
+[dbg] [NeedsTty, NonInteractive, NonInteractive, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NeedsTty, NonInteractive, NonInteractive, NeedsTty, NonInteractive, NeedsTty, NeedsTty, NeedsTty, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [Interactive, NonInteractive, NonInteractive, NonInteractive, NonInteractive]
+[dbg] [True, False, False, False, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] True
+[dbg] []
+[dbg] []
+
+── ✗ fail ─────────────────────────────────── tests/unit/RunscriptTest.roc:165:1
+
+expect {
+    program_view(["roc", "build", "x.roc"]) == "roc build x.roc"
+        and program_view(["tln", "install", "--frozen"]) == "tln install --frozen"
+            and program_view(["roc-cfw", "sync", "--check"]) == "tool roc-cfw sync --check"
+                and program_view(["fmt"]) == "tool fmt "
+                    and program_view(["scripts/notes.roc", "--since", "v1"]) == "roc scripts/notes.roc -- --since v1"
+                        and program_view(["notes.roc"]) == "roc notes.roc --"
+                            and program_view(["x.roc", "a"]) == "tool x.roc a"
+                                and program_view(["wrangler", "dev", "--local"]) == "path wrangler dev --local"
+                                    and program_view(["./run.sh"]) == "path ./run.sh "
+                                        and program_view([]) == "none"
+                                            and RunPlan.program({ words: ["roc", "a"], keys: ["roc", "tln"] }) == Ok(Roc(["a"]))
+                                                and RunPlan.program({ words: ["tln"], keys: ["roc", "tln"] }) == Ok(Tln([]))
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Ran 54 tests in 5573.2 ms.:
+    53 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (77) tests passed in 5124.9 ms.
+
+step       result seconds  budget
+l0         FAIL   5.8      10
+
+=== l2 exit 1
+FAIL run/rn3-tools
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,9 +7,9 @@
+       == run mk cwd:p2
+       exit 0
+       == run nc cwd:p3
+      -exit 13
+      +exit 0
+       == run off --offline cwd:p4
+      -exit 15
+      +exit 0
+       == run mc cwd:w/m1
+       exit 0
+       == run so cwd:w/s
+      @@ -23,4 +23,4 @@
+         in sub: fmt --in-sub
+       exit 0
+       == run bd cwd:p5
+      -exit 11
+      +exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,8 +1 @@
+      -platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+      -building acme/gen 1.0.0 with nightly-2026-10-14-38a3029
+      -tln: error[consent]: the compiler nightly-2026-10-12-2664a27 is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+      -tln: error[network]: acme/zz 1.0.0 is not in the package cache and --offline is set (https://github.com/acme/zz/releases/download/1.0.0/5wZEmdZcdS8vKFHyaPAZ2h2KU8esyahAUY7ruhqCjS9J.tar.zst)
+       note: the tool key 'fmt' is also a program on PATH: inside tln run the key wins (R-RUN3)
+      -platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+      -building acme/bad 1.0.0 with nightly-2026-10-14-38a3029
+      -tln: error[app_error]: the build of acme/bad 1.0.0 with nightly-2026-10-14-38a3029 failed: 5 errors: type mismatch
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,11 +11,7 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -exec_in $PROJECT/p1 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/fmt --check src
+      +exec_in $PROJECT/p1 fmt --check src
+         env TALON_SCRIPT=ck
+         env TALON_SCRIPT_DIR=$PROJECT/p1
+       exec_in $PROJECT/p1 tool-after
+      @@ -33,11 +29,7 @@
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -exec_in $PROJECT/p1/sub $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/fmt --in-sub
+      +exec_in $PROJECT/p1/sub fmt --in-sub
+         env TALON_SCRIPT=all
+         env TALON_SCRIPT_DIR=$PROJECT/p1/sub
+       args
+      @@ -53,41 +45,7 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -read_files $HOME/.config/talon/config.toml
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -programs curl wget
+      -make_dirs $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst https://github.com/acme/gen/releases/download/1.0.0/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst
+      -spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp roc unbundle kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst
+      -rename $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD
+      -delete $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+      -list_dirs $HOME/.cache/roc/toolchains
+      -random
+      -list_dirs $HOME/.cache/roc/toolchains
+      -write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -canonical $HOME/.cache $HOME/.cache/roc
+      -make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 1
+      -  probe $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/gen timeout=3600
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -random
+      -copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/gen $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3.0123456789abcdef.tmp/gen
+      -sha256_file $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3.0123456789abcdef.tmp/gen
+      -write_atomic $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3.0123456789abcdef.tmp/manifest.json
+      -rename $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3.0123456789abcdef.tmp $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -exec_in $PROJECT/p2 $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen --make
+      +exec_in $PROJECT/p2 gen --make
+         env TALON_SCRIPT=mk
+         env TALON_SCRIPT_DIR=$PROJECT/p2
+       exec_in $PROJECT/p2 tool-after
+      @@ -105,11 +63,7 @@
+       list_dirs $HOME/.cache/roc/talon
+       read_files $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -exec_in $PROJECT/p2 $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen --make
+      +exec_in $PROJECT/p2 gen --make
+         env TALON_SCRIPT=mk
+         env TALON_SCRIPT_DIR=$PROJECT/p2
+       exec_in $PROJECT/p2 tool-after
+      @@ -128,28 +82,12 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -read_files $HOME/.config/talon/config.toml
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -programs curl wget
+      -make_dirs $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.0123456789abcdef.tmp
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.0123456789abcdef.tmp/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.tar.zst https://github.com/acme/yy/releases/download/1.0.0/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.tar.zst
+      -spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.0123456789abcdef.tmp roc unbundle EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.tar.zst
+      -rename $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.0123456789abcdef.tmp/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F
+      -delete $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F/main.roc
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+      -list_dirs $HOME/.cache/roc/toolchains
+      -db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+      -tty
+      +exec_in $PROJECT/p3 old --x
+      +  env TALON_SCRIPT=nc
+      +  env TALON_SCRIPT_DIR=$PROJECT/p3
+      +exec_in $PROJECT/p3 tool-after
+      +  env TALON_SCRIPT=nc
+      +  env TALON_SCRIPT_DIR=$PROJECT/p3
+       args
+       env_all
+       clock
+      @@ -163,13 +101,12 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -read_files $HOME/.config/talon/config.toml
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      +exec_in $PROJECT/p4 off --x
+      +  env TALON_SCRIPT=off
+      +  env TALON_SCRIPT_DIR=$PROJECT/p4
+      +exec_in $PROJECT/p4 tool-after
+      +  env TALON_SCRIPT=off
+      +  env TALON_SCRIPT_DIR=$PROJECT/p4
+       args
+       env_all
+       clock
+      @@ -184,11 +121,7 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -exec_in $PROJECT/w/m1 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/foo go
+      +exec_in $PROJECT/w/m1 foo go
+         env TALON_SCRIPT=mc
+         env TALON_SCRIPT_DIR=$PROJECT/w/m1
+       exec_in $PROJECT/w/m1 tool-after
+      @@ -209,11 +142,7 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -exec_in $PROJECT/w/s $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/own go
+      +exec_in $PROJECT/w/s own go
+         env TALON_SCRIPT=so
+         env TALON_SCRIPT_DIR=$PROJECT/w/s
+       exec_in $PROJECT/w/s foo go
+      @@ -245,32 +174,9 @@
+       read_files $HOME/.cache/roc/talon/projects.json
+       write_atomic $HOME/.cache/roc/talon/projects.json
+       unlock $HOME/.cache/roc/talon/projects.json
+      -platform
+      -list_dirs $HOME/.cache/roc/talon/x
+      -read_files $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183/manifest.json $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json
+      -list_dirs $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3 $HOME/.cache/roc/talon/x/5f2e567994b262c2e1b35f06738c55efd06cf42348160a1df87a389a0cf57183 $HOME/.cache/roc/talon/x/f781003d53dfddd4d240ba18bffb463f59caaab373d9f78be731fe4773cd43d7 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
+      -read_files $HOME/.config/talon/config.toml
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -programs curl wget
+      -make_dirs $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.0123456789abcdef.tmp
+      -spawn_all limit=8
+      -  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.0123456789abcdef.tmp/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst https://github.com/acme/bad/releases/download/1.0.0/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst
+      -spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.0123456789abcdef.tmp roc unbundle EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst
+      -rename $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.0123456789abcdef.tmp/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa
+      -delete $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.0123456789abcdef.tmp
+      -read_files $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc
+      -random
+      -list_dirs $HOME/.cache/roc/packages
+      -read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+      -list_dirs $HOME/.cache/roc/toolchains
+      -random
+      -list_dirs $HOME/.cache/roc/toolchains
+      -write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -canonical $HOME/.cache $HOME/.cache/roc
+      -make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      -probes 1
+      -  probe $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/bad timeout=3600
+      -    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+      -delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+      +exec_in $PROJECT/p5 bd --x
+      +  env TALON_SCRIPT=bd
+      +  env TALON_SCRIPT_DIR=$PROJECT/p5
+      +exec_in $PROJECT/p5 tool-after
+      +  env TALON_SCRIPT=bd
+      +  env TALON_SCRIPT_DIR=$PROJECT/p5
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,47 +1,4 @@
+      ---- home/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F/main.roc
+      -+++ home/.cache/roc/packages/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F/main.roc
+      -@@ -0,0 +1,7 @@
+      -+app [main!] {
+      -+	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
+      -+	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
+      -+	roc: "nightly-2026-10-12-2664a27",
+      -+}
+      -+
+      -+main! = |_args| Ok({})
+      ---- home/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc
+      -+++ home/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc
+      -@@ -0,0 +1,7 @@
+      -+app [main!] {
+      -+	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
+      -+	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
+      -+	roc: "nightly-2026-10-14-38a3029",
+      -+}
+      -+
+      -+main! = |_args| Ok({})
+      ---- home/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc
+      -+++ home/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc
+      -@@ -0,0 +1,7 @@
+      -+app [main!] {
+      -+	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
+      -+	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
+      -+	roc: "nightly-2026-10-14-38a3029",
+      -+}
+      -+
+      -+main! = |_args| Ok({})
+       --- home/.cache/roc/talon/projects.json
+       +++ home/.cache/roc/talon/projects.json
+       @@ -0,0 +1 @@
+       +{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p3/main.roc","last_use":1792065600},{"path":"$PROJECT/p4/main.roc","last_use":1792065600},{"path":"$PROJECT/p5/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m1/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s/main.roc","last_use":1792065600}]}
+      ---- home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen
+      -+++ home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen
+      -@@ -0,0 +1 @@
+      -+fake
+      -\ No newline at end of file
+      ---- home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json
+      -+++ home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"name":"acme/gen","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/gen/releases/download/1.0.0/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"bundle":"kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD","last_run":"2026-10-15T12:00:00Z"}
+      ---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -@@ -0,0 +1 @@
+      -+2026-10-15T12:00:00Z
+commands: 2 passed, 1 failed
+
+=== l3 exit 1
+FAIL run/rn1-flow
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -72,10 +72,9 @@
+       exit 2
+       -- 10: a step with a key of [tools] (R-RUN3 point 2). There is no build yet: the bundle of the url is fetched and built (R-PT9), with no release list (R-PT8). The binary exits 3, as the fake compiler writes it. The tools.json, the bin dir and PATH are not touched (R-PT12, R-PT10).
+       == tln run t
+      -ran: acme/app 1.1.0 args: one two
+      -exit 3
+      -api: 0, downloads: 1, builds: 1
+      -1
+      +exit 18
+      +api: 0, downloads: 0, builds: 0
+      +0
+       cannot access '$HOME/.local/share/talon': No such file or directory
+       cannot access '$HOME/.local/bin': No such file or directory
+       == tln run penv
+      @@ -83,9 +82,8 @@
+       exit 0
+       -- 11: the second run uses the build: no download, no build (R-PT9). The args of -- go to the last step, and when that is a tool, to the tool.
+       == tln run t2 -- extra two words
+      -ran: acme/app 1.1.0 args: one extra two words
+      -exit 3
+      -api: 0, downloads: 1, builds: 1
+      +exit 18
+      +api: 0, downloads: 0, builds: 0
+       -- 12: the word roc runs the compiler that the proxy of this tln selects (R-RUN3 point 1: the pin of main.roc), in the directory of the step. The fake compiler logs its call and writes the output file.
+       == tln run rb
+       0 errors and 0 warnings found in 12ms while successfully building:
+      @@ -97,6 +95,7 @@
+       -- 13: hooks: tln install --frozen and tln list never run a script (R-HK1, R-RUN15, R-SE17). Only tln run does.
+       == tln install --frozen --file main.roc
+       the header satisfies talon.toml
+      +built tool app 1.1.0 (acme/app)
+       exit 0
+       == tln list --file main.roc
+       $PROJECT/proj/main.roc
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,5 +2,8 @@
+       tln: error[input]: $PROJECT/proj/talon.toml: script shell: the step 'sh -c "echo a" > made' has the word '>': a step is one command; use 2 steps, or a .roc script
+       tln: error[usage]: no script 'nosuch' in the talon.toml files that the walk checked: $PROJECT/proj/talon.toml.
+       tln: error[usage]: unknown command 'build'
+      +tln: error[environment]: script t: the step 'app one two' cannot start 'app': IO(NotFound)
+      +ls: cannot access '$HOME/.cache/roc/talon/x': No such file or directory
+      +tln: error[environment]: script t2: the step 'app one' cannot start 'app': IO(NotFound)
+       platform pf/main.roc
+       building acme/app 1.1.0 with nightly-2026-10-14-38a3029
+scenarios: 1 passed, 1 failed, 0 skipped
+

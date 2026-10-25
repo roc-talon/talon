@@ -1,0 +1,14 @@
+Slice 044, the search of the Zig for a source build (entry `zig`, one line of `fx/runs` for each run). No download: every run ends before the index.
+
+| Run | Need | World | Result | Rules |
+| --- | --- | --- | --- | --- |
+| 1 | 0.17.0 --offline | PATH has zig 0.16.0. `toolchains/` has zig-0.18.0, a stale temp dir `zig-0.17.0.<hex>.tmp`, a lock dir `zig-0.17.0.lock` and a file `zig-0.17.5`: none of them is a Zig that fits | the list has `[ ] zig 0.17.x  found zig 0.16.0 on PATH`, then exit 15 (`--offline`): no request | R-D1, R-D3, R-NI6 |
+| 2 | 0.17.0 --offline, ZIG=/opt/z17/zig | ZIG prints 0.17.1, PATH has 0.16.0 | `found-env`: ZIG comes first. Both `zig version` jobs run in one `spawn_all` | R-D1, R-EV11 |
+| 3 | 0.16.2 --offline | PATH has 0.16.0 | `found-path`: the same major and minor fits | R-D1, R-D4 |
+| 4 | 0.18.1 --offline | zig-0.18.0, zig-0.18.9 and zig-0.18.10 are installed, PATH has 0.16.0 | `found-installed` with 0.18.10, path `<item>/zig`: the newest version wins, in the order of the numbers (0.18.10 comes before 0.18.9 in byte order). No `zig version` job for an installed dir | R-D1 |
+| 5 | 0.16.2 --offline --quiet | as run 3 | no dependency list on stderr (R-FL4) | R-D3, R-FL4 |
+| 6 | 0.16.2 --offline, ZIG=/opt/z16/zig | ZIG prints 0.16.9 and PATH has 0.16.0: both fit | `found-env` with 0.16.9 (the order, not only the match) | R-D1, R-EV11 |
+| 7 | 0.18.1 --offline, Windows host | as run 4 | `found-installed` with 0.18.10, path `<item>/zig.exe` | R-D1 |
+| 8 | 0.17.0 --offline, ZIG=/opt/z16/zig | ZIG prints 0.16.9: not the series 0.17 | `found-env` with 0.16.9: ZIG is used as it is, with no version check (R-D1 asks for a matching version only for PATH) | R-D1, R-EV11 |
+| 9 | 0.17.0 --offline, ZIG=/opt/bad/zig | `zig version` of ZIG exits with 1. PATH has 0.16.0 | `tln: error[environment]: ZIG is set to /opt/bad/zig, but "/opt/bad/zig version" did not run`, exit 18. No list, no more calls | R-D1, R-EV11 |
+| 10 | 0.17.0 --offline, ZIG=/opt/gone/zig | the program of ZIG does not start | the same failure for `/opt/gone/zig`, exit 18 | R-D1, R-EV11 |

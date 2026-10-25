@@ -1,0 +1,4 @@
+== @roc build p1/main.roc
+exit 0
+== @roc check p1/main.roc --opt=speed
+exit 0

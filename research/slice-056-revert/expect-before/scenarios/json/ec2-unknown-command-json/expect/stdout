@@ -1,0 +1,1 @@
+{"schema":1,"command":"frobnicate","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"unknown command 'frobnicate'"}}

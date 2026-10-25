@@ -1,0 +1,5 @@
+== 0.17.0 yes
+exit 18
+== 0.17.0 yes
+zig 0.17.0 installed $HOME/.cache/roc/toolchains/zig-0.17.0/zig
+exit 0

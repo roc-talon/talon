@@ -1,0 +1,11 @@
+GET /api/repos/acme/gtool/commits/main 200
+GET /api/repos/acme/gtool/tarball/aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b 200
+GET /api/repos/acme/foo/releases?per_page=100 200
+GET /dl/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst 200
+GET /api/repos/acme/gtool/commits/main 200
+GET /api/repos/acme/gtool/commits/main 200
+GET /api/repos/acme/gtool/commits/main 200
+GET /api/repos/acme/gtool/tarball/bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c 200
+GET /api/repos/acme/gtool/tarball/bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c 200
+GET /api/repos/acme/gtool/commits/bbbbbbbb 200
+GET /api/repos/acme/gtool/tarball/bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c 200

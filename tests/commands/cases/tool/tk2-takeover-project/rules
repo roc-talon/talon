@@ -1,0 +1,12 @@
+Slice 056, the take-over of an `x` cache entry that a known project uses (entry `commands`): R-B4, R-PT13, R-PT14, R-PD9, R-PD12, NC3. One home with the compiler installed, `TALON_NOW=2026-10-15T12:00:00Z`, `CI=true` (no person), no tty, no `tools.json`.
+`talon/x/` has an entry of each of acme/foo, acme/ws, acme/tl, acme/oth and acme/bar (the newest release of each: acme/oth has 1.1.0 and the entries are of 1.1.0, the others 1.0.0 or 1.1.0). `projects.json` has `p1/main.roc` (its `talon.toml` has the `url` of the acme/foo build), `w/m1/main.roc` (a member of a workspace: the root file `w/talon.toml` has the `url` of the acme/ws build),
+`t/talon.toml` (an entry that `tln run` made: the file has the `url` of the acme/tl build) and `p2/main.roc` (its `talon.toml` has the `url` of acme/oth 1.0.0, not the build of 1.1.0).
+The fake `rename` is not used: a take-over with a project that uses the entry is a copy.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/foo` | the entry matches the newest release. A known project uses its bundle (the `url` of `p1/talon.toml`): the binary is copied (no `rename` of it), the entry dir stays. The calls before the sha256 check: `read_files` of `projects.json` and of the `talon.toml` files of the known projects | R-B4, R-PT13, R-PT14, NC3 |
+| 2 | `tool install acme/ws` | the member `w/m1/main.roc` has no `talon.toml` of its own: the walk goes up to `w/talon.toml`, which has `[workspace]` and the tool. Copy, the entry stays | R-PT14, NC3, R-PD9 |
+| 3 | `tool install acme/tl` | an entry of `projects.json` that is a `talon.toml` (R-PD9: `tln run` made it): the file itself is read. Copy, the entry stays | R-PT14, R-PD9, R-PD12 |
+| 4 | `tool install acme/oth` | the project `p2` names the bundle of 1.0.0, the entry is the build of 1.1.0: no project uses it, the binary is moved and the entry dir is deleted | R-B4, R-PT13 |
+| 5 | `tool install acme/bar` | no project names the bundle: move, the entry dir is deleted (as before this slice) | R-B4 |

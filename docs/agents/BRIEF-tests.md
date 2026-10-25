@@ -21,6 +21,7 @@ The manager commits finished slices only when the user asks, so earlier slices c
 Few tests, each with a large reach (`docs/slices/PLAN.md`, "Test budget"):
 
 - About 5 to 20 L0 `expect`s, for pure decisions with many cases or edge cases. One `expect` can check a list of cases.
+- L0 layout (manager rule, 2026-10-24, `research/l0-time/RESULTS.md`): a unit file is a module `tests/unit/<Name>Test.roc` with no header and the line `<Name>Test :: [].{}` after its imports. Exactly one driver `tests/unit/l0-<n>.roc` imports it (`scripts/test.sh` checks it). Put a new module in the driver with the smallest time in `$WORK/l0-times`. Prefer new rows in an existing module. Old comments that name `tests/unit/foo.roc` mean `FooTest.roc`.
 - About 2 to 6 deep tests (L2 or L3): a whole command flow, with the parts of earlier slices in the path. One case checks the exit code, stdout, stderr, the file tree and the call log, so it covers many rules.
 - Each rule id of the slice is named by at least one test. A rule that no test can check in P0 goes to "Out of scope" with the reason.
 - Do not test a generic package again (R-GP5). Test the Talon use of it.
@@ -49,6 +50,7 @@ For shell runs, use the pinned binary: `ROC=/home/george/dev/Karakatiza666/talon
 | The new tests | Each fails for the right reason ("todo", or a wrong value). Record the fail output in the slice file. |
 | Revert check | Only for the most tricky behaviors (user rule, 2026-10-23: reverts cost many tokens): about 5 to 10 mutations of a private reference, where a bug is likely and a test is easy to miss. No full mutation sweep. For a gap test, one hand mutation for that row. |
 | The old tests | All pass (`scripts/test.sh`, when it exists) |
+| Private reference | Keep `research/slice-NNN-revert/reference/` until the manager's review is applied. Delete it only when the manager says so (manager rule, 2026-10-25). |
 | Slice file | Rules, the public signatures, the test table (layer, file, case, rule ids), the output proposals, out of scope, questions. The status is `review`. |
 
 ## Final reply to the manager (under 60 lines)

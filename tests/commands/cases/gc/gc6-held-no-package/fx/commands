@@ -1,0 +1,3 @@
+cache gc --dry-run
+cache gc
+cache gc

@@ -1,0 +1,10 @@
+Slice 048, `tln tool rebuild` (entry `commands`). One home with the compilers `nightly-2026-10-14-38a3029` (the pin of each app) and `nightly-2026-10-12-2664a27`. `tools.json` has `foo` (acme/foo 1.1.0, built with `nightly-2026-10-12-2664a27`, which is not the pin of the header) and
+`g` (acme/g from main at aaaaaaaa, `--path apps/cli`, built with `nightly-2026-10-11-1a2b3c4`, which is not installed; it is in the nightly list). The builds are the rows of `fx/probes` in order: pass, pass, pass, pass, build errors.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool rebuild foo` | the bundle of the URL of `tools.json` is fetched, the platform checked, then the build with the compiler of `tools.json` (2664a27, not the pin 38a3029). The entry and the binary are made again, `tools.json` has the new `sha256` and `installed_at`. No request for the release list | R-T7, R-T5, R-ST9, R-CC6 |
+| 2 | `tool rebuild g` (`env:TALON_INTERACTIVE=0`) | the compiler of the build is not installed, no person and no flag: exit 13, nothing is built or changed. The source archive was fetched before (the plan is complete first) and the scratch dir is deleted | R-T5, R-T25, R-DL1, R-DL4 |
+| 3 | `tool rebuild g --yes` (`env:TALON_INTERACTIVE=0`) | the compiler is downloaded again (R-T5), then the archive of the recorded commit (no commit request) is built with it, in `apps/cli` | R-T7, R-T5, R-T23, R-DL1 |
+| 4 | `tool rebuild --json` | all tools in the order of the file: foo, then g (both compilers are installed now). The text on stderr, the envelope on stdout | R-T7, R-T25, R-J1 to R-J4 |
+| 5 | `tool rebuild foo` | the build has errors: exit 11, `tools.json` and the files are as before, the temp dir is deleted | R-T7, R-CC2 |

@@ -1,0 +1,28 @@
+== update pf --no-check --file w3/apps/a/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/w3/apps/a/main.roc
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/w3/apps/b/main.roc
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0
+== install --no-check --file w3/apps/a/main.roc
+exit 2
+== verify --no-check --file w3/apps/a/main.roc
+check: skipped
+$PROJECT/w3/apps/a/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+verified: the tuple passes. No project file was written.
+exit 0
+== update --no-check --file w4/apps/a/main.roc
+exit 10
+== add acme/util --as local --no-check --file w5/apps/a/main.roc
+note: entry changes: ../../lib/main.roc -> acme/util 1.1.0
+check: skipped
+$PROJECT/w5/apps/a/main.roc
+  ~ local: ../../lib/main.roc -> acme/util 1.1.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+exit 0
+== install --file solo/main.roc
+exit 18

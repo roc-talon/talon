@@ -1,0 +1,35 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p/main.roc
+list_dirs $PROJECT/p
+list_dirs $PROJECT
+read_files $PROJECT/p/main.roc
+canonical $PROJECT/p/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+sha256_file $WORK/missing/roc
+read_files $PROJECT/p/main.roc $PROJECT/p/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p/main.roc
+list_dirs $PROJECT/p
+list_dirs $PROJECT
+read_files $PROJECT/p/main.roc
+canonical $PROJECT/p/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+sha256_file $WORK/missing/roc
+read_files $PROJECT/p/main.roc $PROJECT/p/talon.toml $HOME/.config/talon/config.toml

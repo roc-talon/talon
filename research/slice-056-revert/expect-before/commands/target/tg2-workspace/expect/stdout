@@ -1,0 +1,24 @@
+== verify
+note: platform changes: acme/mpf 0.1.0 -> acme/mpf 0.1.1
+$PROJECT/apps/a/main.roc: check: passed
+$PROJECT/apps/a/main.roc: build: passed
+$PROJECT/apps/b/main.roc: check: passed
+$PROJECT/apps/b/main.roc: build: passed
+$PROJECT/apps/d/main.roc: check: passed
+$PROJECT/apps/d/main.roc: build: passed
+$PROJECT/apps/a/main.roc
+  ~ pf: acme/mpf 0.1.0 -> 0.1.1
+$PROJECT/apps/b/main.roc
+  ~ pf: acme/mpf 0.1.0 -> 0.1.1
+$PROJECT/apps/d/main.roc
+  ~ pf: acme/mpf 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --file apps/b/main.roc
+note: platform changes: acme/mpf 0.1.0 -> acme/mpf 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/apps/b/main.roc
+  ~ pf: acme/mpf 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0

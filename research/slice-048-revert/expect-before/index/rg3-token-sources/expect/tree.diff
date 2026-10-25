@@ -1,0 +1,15 @@
+--- home/.cache/roc/talon/index/github/acme/gh/1.json
++++ home/.cache/roc/talon/index/github/acme/gh/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"5.0.0"}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/gh2/1.json
++++ home/.cache/roc/talon/index/github/acme/gh2/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"5.1.0"}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/test/1.json
++++ home/.cache/roc/talon/index/github/acme/test/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"6.0.0"}]
+\ No newline at end of file

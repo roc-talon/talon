@@ -1,0 +1,394 @@
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ────────────────────────────────────────── tests/unit/GitTest.roc:36:1
+
+expect {
+    read = |words, bare| match Args.parse(words) {
+        Ok(args) => match GitRef.read({ args, bare_sha: bare }) {
+            Ok(found) => Ok(found)
+            Err(fail) => Err(fail.line())
+        }
+        Err(stop) => Err("parse: ${stop.fail.line()}")
+    }
+    src = |owner, repo, ref| Ok(Ok({ owner, repo, ref }))
+    not_git = Ok(Err(NotGit))
+    rows = [
+        (read(["roc", "install", "--git", "@main"], Bool.True), src("roc-lang", "roc", "main")),
+        (read(["roc", "install", "--git", "Karakatiza666/roc@my-branch"], Bool.True), src("Karakatiza666", "roc", "my-branch")),
+        (read(["roc", "install", "@dd03c09e"], Bool.True), src("roc-lang", "roc", "dd03c09e")),
+        (read(["roc", "install", "Karakatiza666/roc@dd03c09e"], Bool.True), src("Karakatiza666", "roc", "dd03c09e")),
+        (read(["roc", "install", "@${sha_a}"], Bool.True), src("roc-lang", "roc", sha_a)),
+        (read(["roc", "add", "--git", "@dd03c09e"], Bool.True), src("roc-lang", "roc", "dd03c09e")),
+        (read(["roc", "install", "--git", "roc-lang/roc@v0.1.0"], Bool.True), src("roc-lang", "roc", "v0.1.0")),
+        (read(["roc", "install", "--git", "@latest"], Bool.True), src("roc-lang", "roc", "latest")),
+        (read(["roc", "install", "--git", "@feature/x"], Bool.True), src("roc-lang", "roc", "feature/x")),
+        (read(["--git", "roc", "i", "@main"], Bool.True), src("roc-lang", "roc", "main")),
+        (read(["roc", "install", "nightly-2026-10-09-258ab27"], Bool.True), not_git),
+        (read(["roc", "install", "@nightly-2026-10-09-258ab27"], Bool.True), not_git),
+        (read(["roc", "install", "@latest"], Bool.True), not_git),
+        (read(["roc", "install", "@-1"], Bool.True), not_git),
+        (read(["roc", "install", "nightly-2026-10"], Bool.True), not_git),
+        (read(["roc", "install", "Karakatiza666/roc@1.2.3"], Bool.True), not_git),
+        (read(["roc", "install"], Bool.True), not_git),
+        (read(["roc", "install", "a", "b"], Bool.True), not_git),
+        (read(["roc", "default", "@dd03c09e"], Bool.False), not_git),
+        (read(["roc", "default", "Karakatiza666/roc@dd03c09e"], Bool.False), not_git),
+        (read(["roc", "default", "git-dd03c09e"], Bool.False), not_git),
+        (read(["roc", "default", "--git", "Karakatiza666/roc@my-branch"], Bool.False), src("Karakatiza666", "roc", "my-branch")),
+        (read(["roc", "default", "--git", "@main"], Bool.False), src("roc-lang", "roc", "main")),
+        (read(["roc", "install", "--git"], Bool.True), Err("tln: error[usage]: tln roc install --git needs one ref: owner/repo@ref or @ref")),
+        (read(["roc", "i", "--git"], Bool.True), Err("tln: error[usage]: tln roc i --git needs one ref: owner/repo@ref or @ref")),
+        (read(["roc", "default", "--git"], Bool.False), Err("tln: error[usage]: tln roc default --git needs one ref: owner/repo@ref or @ref")),
+        (read(["roc", "install", "--git", "@a", "@b"], Bool.True), Err("tln: error[usage]: tln roc install --git takes one ref, got 2")),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ────────────────────────────────────────── tests/unit/GitTest.roc:84:1
+
+expect {
+    api = "https://api.github.com"
+    loop = "http://127.0.0.1:41234/api"
+    rows = [
+        (GitRef.sha_id(sha_a), "git-dd03c09e"),
+        (GitRef.sha_id(sha_b), "git-cf42a741"),
+        (GitRef.archive_url({ api, source: fork, sha: sha_a }), "https://api.github.com/repos/Karakatiza666/roc/tarball/${sha_a}"),
+        (GitRef.archive_url({ api: loop, source: main_ref, sha: sha_b }), "http://127.0.0.1:41234/api/repos/roc-lang/roc/tarball/${sha_b}"),
+        (GitRef.commit_url({ api, source: fork }), "https://api.github.com/repos/Karakatiza666/roc/commits/my-branch"),
+        (GitRef.commit_url({ api: loop, source: { ..main_ref, ref: "dd03c09e" } }), "http://127.0.0.1:41234/api/repos/roc-lang/roc/commits/dd03c09e"),
+        (GitRef.repo_url(fork), "https://github.com/Karakatiza666/roc"),
+        (GitRef.repo_url(main_ref), "https://github.com/roc-lang/roc"),
+        (GitRef.name_text(fork), "Karakatiza666/roc@my-branch"),
+        (GitRef.header_line({ source: fork, sha: sha_a }), "Build roc from Karakatiza666/roc@my-branch (dd03c09e)"),
+        (GitRef.header_line({ source: main_ref, sha: sha_b }), "Build roc from roc-lang/roc@main (cf42a741)"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    headers = GitRef.commit_headers({})
+    dbg bad
+    dbg headers
+    bad == [] and headers == [("User-Agent", "tln/${Help.version}"), ("Accept", "application/vnd.github.sha")]
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:110:1
+
+expect {
+    url = "https://api.github.com/repos/Karakatiza666/roc/commits/my-branch"
+    of = |status, headers, body| GitRef.commit_of({ source: fork, url, now: 1792065600, status, headers, body })
+    no_commit = Err(Fail.new(Network, "GitHub gave no commit sha for Karakatiza666/roc@my-branch at ${url}"))
+    missing = Err(Fail.new(Usage, "no commit my-branch in Karakatiza666/roc"))
+    limited = [("X-RateLimit-Remaining", "0"), ("X-RateLimit-Reset", "1792069200")]
+    rows = [
+        (of(200, [], sha_a), Ok(sha_a)),
+        (of(200, [], "${sha_a}\n"), Ok(sha_a)),
+        (of(200, [], "dd03c09"), no_commit),
+        (of(200, [], sha_a.with_ascii_uppercased()), no_commit),
+        (of(200, [], "${sha_a}0"), no_commit),
+        (of(200, [], "{\"sha\":\"${sha_a}\"}"), no_commit),
+        (of(200, [], ""), no_commit),
+        (of(404, [], "{\"message\":\"Not Found\"}"), missing),
+        (of(422, [], "{\"message\":\"Not Found\"}"), missing),
+        (of(403, limited, "{}"), Err(Github.rate_limit_failure({ reset: Ok(1792069200) }))),
+        (of(429, [("Retry-After", "60")], "{}"), Err(Github.rate_limit_failure({ reset: Ok(1792065660) }))),
+        (of(403, [], "{}"), Err(Github.status_failure({ url, status: 403 }))),
+        (of(500, [], "oops"), Err(Github.status_failure({ url, status: 500 }))),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:140:1
+
+expect {
+    asset = Ok({ name: "roc_nightly-linux_x86_64-x.tar.gz", url: "http://127.0.0.1:1/x", size: 1, sha256: Err(None) })
+    rel = |id| { id, published_at: 1, asset }
+    releases = [
+        rel("nightly-2026-07-31-f5556d8"),
+        rel("nightly-2026-10-21-5349569"),
+        { id: "nightly-2026-10-22-aaaaaaa", published_at: 2, asset: Err(NoAsset) },
+        { id: "nightly-2026-10-23-bbbbbbb", published_at: 3, asset: Err(Several(2)) },
+        rel("nightly-2026-10-24-12345678"),
+        rel("nightly-2026-10-25-cf42a74"),
+        rel("nightly-2026-10-26-cf42a74"),
+        rel("v0.1.0"),
+    ]
+    note = |sha| GitRef.nightly_note({ sha, releases })
+    rows = [
+        (note("5349569a1b2c3d4e5f60718293a4b5c6d7e8f901"), Ok("5349569a is nightly-2026-10-21-5349569. tln roc install nightly-2026-10-21-5349569 downloads it.")),
+        (note("f5556d8000000000000000000000000000000000"), Ok("f5556d80 is nightly-2026-07-31-f5556d8. tln roc install nightly-2026-07-31-f5556d8 downloads it.")),
+        (note("aaaaaaa000000000000000000000000000000000"), Err(None)),
+        (note("bbbbbbb000000000000000000000000000000000"), Err(None)),
+        (note("1234567800000000000000000000000000000000"), Ok("12345678 is nightly-2026-10-24-12345678. tln roc install nightly-2026-10-24-12345678 downloads it.")),
+        (note("1234567900000000000000000000000000000000"), Err(None)),
+        (note(sha_b), Ok("cf42a741 is nightly-2026-10-25-cf42a74. tln roc install nightly-2026-10-25-cf42a74 downloads it.")),
+        (note(sha_a), Err(None)),
+        (note("5349568a1b2c3d4e5f60718293a4b5c6d7e8f901"), Err(None)),
+        (note("00053495690000000000000000000000000000cf"), Err(None)),
+    ]
+    none = GitRef.nightly_note({ sha: sha_a, releases: [] })
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == [] and none == Err(None)
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:174:1
+
+expect {
+    rows = [
+        (GitRef.llvm_target(LinuxX64), "x86_64-linux-musl"),
+        (GitRef.llvm_target(LinuxArm64), "aarch64-linux-musl"),
+        (GitRef.llvm_target(MacosApple), "aarch64-macos"),
+        (GitRef.llvm_target(MacosX64), "x86_64-macos"),
+        (GitRef.llvm_target(WindowsX64), "x86_64-windows"),
+        (GitRef.llvm_target(WindowsArm64), "aarch64-windows"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:192:1
+
+expect {
+    linux = GitBuild.plan({ roots, host: LinuxX64, id: "git-dd03c09e", hex: "0123456789abcdef" })
+    windows = GitBuild.plan({ roots, host: WindowsArm64, id: "git-dd03c09e", hex: "0123456789abcdef" })
+    want_linux = {
+        id: "git-dd03c09e",
+        item: "/c/roc/toolchains/git-dd03c09e",
+        temp: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp",
+        scratch: "/c/roc/talon/tmp/0123456789abcdef",
+        archive: "/c/roc/talon/tmp/0123456789abcdef/source.tar.gz",
+        src: "/c/roc/talon/tmp/0123456789abcdef/src",
+        zon: "/c/roc/talon/tmp/0123456789abcdef/src/build.zig.zon",
+        built: "/c/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc",
+        roc: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc",
+        meta: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/.talon.json",
+        probe_file: "/c/roc/talon/tmp/0123456789abcdef/empty.roc",
+    }
+    command = GitBuild.build_command({ zig: "zig", id: "git-dd03c09e" })
+    installed = GitBuild.build_command({ zig: "/c/roc/toolchains/zig-0.17.0/zig", id: "git-cf42a741" })
+    dbg linux
+    dbg windows
+    linux == want_linux
+        and windows == { ..want_linux, built: "/c/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc.exe", roc: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc.exe" }
+            and command == ["zig", "build", "roc", "-Doptimize=ReleaseFast", "-Dcompiler-version=git-dd03c09e"]
+                and installed == ["/c/roc/toolchains/zig-0.17.0/zig", "build", "roc", "-Doptimize=ReleaseFast", "-Dcompiler-version=git-cf42a741"]
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:221:1
+
+expect {
+    base = { id: "git-dd03c09e", source: fork, sha: sha_a, sha256: "9f".repeat(32), compat: Ok("c0ffee"), now: 1792670400 }
+    ok = GitBuild.meta(base)
+    unknown = GitBuild.meta({ ..base, compat: Err(Unknown) })
+    several = GitBuild.meta({ ..base, compat: Err(Several(["a", "b"])) })
+    short = GitBuild.meta({ ..base, source: { ..main_ref, ref: "dd03c09e" } })
+    dbg ok
+    ok == "{\"format\":1,\"id\":\"git-dd03c09e\",\"repo\":\"https://github.com/Karakatiza666/roc\",\"sha\":\"${sha_a}\",\"ref\":\"my-branch\",\"sha256\":\"${"9f".repeat(32)}\",\"sha256_source\":\"computed\",\"compat\":\"c0ffee\",\"installed_at\":\"2026-10-22T12:00:00Z\"}\n"
+        and unknown == ok.replace_each("\"compat\":\"c0ffee\"", "\"compat\":null")
+            and several == unknown
+                and short == ok.replace_each("Karakatiza666/roc", "roc-lang/roc").replace_each("my-branch", "dd03c09e")
+                    and JsonDoc.parse(ok.trim()).is_ok()
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:238:1
+
+expect {
+    build = |ended, last_line| GitBuild.build_failed({ id: "git-dd03c09e", ended, last_line })
+    rows = [
+        (build(Exited(1), "error: unable to find 'build.zig'"), Fail.new(Internal, "zig build of git-dd03c09e failed (exit 1): error: unable to find 'build.zig'")),
+        (build(Exited(2), ""), Fail.new(Internal, "zig build of git-dd03c09e failed (exit 2)")),
+        (build(Signaled(9), "Killed"), Fail.new(Internal, "zig build of git-dd03c09e failed (signal 9): Killed")),
+        (build(NotStarted("no such file"), ""), Fail.new(Internal, "zig build of git-dd03c09e failed (did not start: no such file)")),
+        (GitBuild.no_binary("git-dd03c09e"), Fail.new(Internal, "zig build of git-dd03c09e made no roc in zig-out/bin")),
+        (GitRef.offline_failure(fork), Fail.new(Network, "Karakatiza666/roc@my-branch needs a request to find its commit, and --offline is set")),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    curl = GitRef.needs_curl({})
+    none = GitBuild.none_installed(fork)
+    dbg bad
+    bad == []
+        and curl.kind == Environment
+            and curl.message.contains("curl")
+                and none.kind == Usage
+                    and none.message.contains("Karakatiza666/roc@my-branch")
+}
+
+Roc application crashed with this message:
+
+	todo: slice 045
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/GitTest.roc:262:1
+
+expect {
+    meta = |repo, ref, at| "{\"format\":1,\"id\":\"x\",\"repo\":\"${repo}\",\"sha\":\"${sha_a}\",\"ref\":\"${ref}\",\"sha256\":\"${"1".repeat(64)}\",\"sha256_source\":\"computed\",\"compat\":null,\"installed_at\":\"${at}\"}\n"
+    mine = "https://github.com/Karakatiza666/roc"
+    row = |id, text| { id, text }
+    old = row("git-1111aaaa", Ok(meta(mine, "my-branch", "2026-10-09T23:59:59Z")))
+    new = row("git-2222bbbb", Ok(meta(mine, "my-branch", "2026-10-10T00:00:00Z")))
+    older_text = row("git-3333cccc", Ok(meta(mine, "my-branch", "2025-12-31T23:59:59Z")))
+    other_repo = row("git-4444dddd", Ok(meta("https://github.com/roc-lang/roc", "my-branch", "2026-10-30T00:00:00Z")))
+    other_ref = row("git-5555eeee", Ok(meta(mine, "my-branch2", "2026-10-30T00:00:00Z")))
+    prefix_ref = row("git-6666ffff", Ok(meta(mine, "my-bran", "2026-10-30T00:00:00Z")))
+    lost = row("git-7777aaaa", Err(NotFound))
+    junk = row("git-8888bbbb", Ok("not json"))
+    nightly = row("git-9999cccc", Ok("{\"format\":1,\"id\":\"nightly-2026-10-09-258ab27\",\"installed_at\":\"2026-10-31T00:00:00Z\"}\n"))
+    no_time = row("git-aaaa0000", Ok("{\"format\":1,\"repo\":\"${mine}\",\"ref\":\"my-branch\"}\n"))
+    bad_time = row("git-bbbb0000", Ok(meta(mine, "my-branch", "yesterday")))
+    pick = |rows| GitBuild.newest({ source: fork, rows })
+    rows = [
+        (pick([old, new]), Ok("git-2222bbbb")),
+        (pick([new, old]), Ok("git-2222bbbb")),
+        (pick([older_text, old]), Ok("git-1111aaaa")),
+        (pick([old, other_repo, other_ref, prefix_ref, lost, junk, nightly, no_time, bad_time]), Ok("git-1111aaaa")),
+        (pick([other_repo, other_ref, prefix_ref, lost, junk, nightly, no_time, bad_time]), Err(None)),
+        (pick([]), Err(None)),
+        (GitBuild.newest({ source: { ..fork, repo: "roc2" }, rows: [old, new] }), Err(None)),
+        (GitBuild.newest({ source: { owner: "roc-lang", repo: "roc", ref: "my-branch" }, rows: [old, new, other_repo] }), Ok("git-4444dddd")),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] Ok(((Ok(AtLeast("nightly-2026-10-09-258ab27")), Ok(">=nightly-2026-10-09-258ab27"), Ok(True)), [("pf", Err(None), "0.25.*", 9), ("parser", Err(None), "=2.0.0", 10), ("json", Err(None), "^2.1", 11), ("http", Ok("roc-lang/http"), "^1", 12), ("yaml", Ok("yaml"), "2", 13)], [("unicode", Ok("roc-lang/unicode"), "^4.2", 16)], (Ok(["parser", "pf", "roc"]), Ok(Lowest), Ok(259200), Ok(Time(1791763200))), []))
+[dbg] Ok(({ nightly: Err(Unset), roc: Err(Unset), roc_text: Err(Unset) }, [], [], { min_release_age: Err(Unset), priority: Err(Unset), probe: { max: Err(Unset), max_toolchains: Err(Unset), slots: Err(Unset), timeout: Err(Unset) }, snapshot: Err(Unset), strategy: Err(Unset) }, []))
+[dbg] [True, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [Ok("# our intent
+[dependencies]
+pf = \"0.25.*\"  # the platform
+json = \"^3\"   # keep me
+
+# other tables
+[resolution]
+strategy = \"lowest\"
+"), Ok("# our intent
+[dependencies]
+pf = \"0.25.*\"  # the platform
+json = \"^2.1\"   # keep me
+http = \"^1\"
+
+# other tables
+[resolution]
+strategy = \"lowest\"
+")]
+[dbg] []
+[dbg] ["\"^2.1\"", "\"0.25.*\"", ""]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ["\"^2.1\"", "\"someone/roc-json@^2.1.3\"", "{ path = \"./.talon/patches/json/main.roc\", base = \"abc\" }", "", ""]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] Ok([("nightly-2025-November-03-4215483", 1762161987, False), ("nightly-2026-July-31-f5556d8", 1785499014, True), ("nightly-2026-August-05-24f0b47", 1785927600, True), ("nightly-2026-10-14-38a3029", 1791990180, True)])
+[dbg] []
+[dbg] [("nightly-2026-January-01-2c1b41a", Err(Several(2))), ("nightly-2026-February-10-c95f04d", Ok(("roc_nightly-linux_x86_64-2026-02-10-ea7058b.tar.gz", 22, "http://127.0.0.1:1/dl/x/roc_nightly-linux_x86_64-2026-02-10-ea7058b.tar.gz"))), ("nightly-2026-10-21-5349569", Ok(("roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz", 22, "http://127.0.0.1:1/dl/x/roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz")))]
+[dbg] []
+[dbg] []
+[dbg] ["nightly-2025-October-25-c3487d2", "nightly-2025-November-03-4215483", "nightly-2026-July-23-fdd77c3", "nightly-2026-July-23-306abd6", "nightly-2026-July-31-f5556d8", "nightly-2026-08-06-61bbb59", "nightly-2026-09-01-24e3995", "nightly-2026-09-01-db83307", "nightly-2026-10-01-aaaaaaa", "nightly-2026-10-01-bbbbbbb", "nightly-2026-10-03-ccccccc"]
+[dbg] ["nightly-2026-10-19-601b54c", "nightly-2026-10-20-7a8a800", "nightly-2026-07-31-f5556d8"]
+[dbg] ["nightly-2026-10-19-601b54c", "nightly-2026-07-31-f5556d8"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] ("{\"format\":1,\"projects\":[{\"path\":\"/a\",\"last_use\":1}],\"extra\":null}
+", "{\"format\":3}
+")
+Ran 75 tests in 1218.2 ms. (cached):
+    66 passed
+    9 failed
+    0 compiler errors

@@ -1,0 +1,8 @@
+tests/unit/l0-1.roc
+tests/unit/l0-2.roc
+tests/unit/l0-3.roc
+tests/unit/l0-4.roc
+tests/unit/l0-5.roc
+tests/unit/l0-6.roc
+tests/unit/l0-7.roc
+tests/unit/l0-8.roc

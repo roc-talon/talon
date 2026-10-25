@@ -1,0 +1,12 @@
+--- home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/Greet.roc
++++ home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/Greet.roc
+@@ -0,0 +1,5 @@
++## A fixture package of the Talon tests (slice 003).
++Greet := [].{
++	hello : Str -> Str
++	hello = |name| "Hello, ${name}!"
++}
+--- home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/main.roc
++++ home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/main.roc
+@@ -0,0 +1 @@
++package [Greet] {}

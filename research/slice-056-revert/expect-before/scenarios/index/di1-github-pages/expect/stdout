@@ -1,0 +1,24 @@
+candidate 2.1.0 2026-10-10T10:00:00Z 1000 https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+candidate 2.0.5 2026-09-01T09:30:00Z 2000 https://github.com/acme/json/releases/download/2.0.5/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst
+exit 0
+candidate 2.1.0 2026-10-10T10:00:00Z 1000 https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+candidate 2.0.5 2026-09-01T09:30:00Z 2000 https://github.com/acme/json/releases/download/2.0.5/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst
+exit 0
+candidate 2.1.0 2026-10-10T10:00:00Z 1000 https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+candidate 2.0.5 2026-09-01T09:30:00Z 2000 https://github.com/acme/json/releases/download/2.0.5/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst
+exit 0
+2
+candidate 2.1.0 2026-10-10T10:00:00Z 1000 https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+candidate 2.0.5 2026-09-01T09:30:00Z 2000 https://github.com/acme/json/releases/download/2.0.5/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst
+exit 0
+candidate 2.1.0 2026-10-10T10:00:00Z 1000 https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+exit 0
+no cached page
+exit 0
+exit 15
+nothing written
+exit 15
+hint nightly-2026-10-09-258ab27
+exit 0
+no hint
+exit 0

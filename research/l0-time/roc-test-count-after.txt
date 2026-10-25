@@ -1,0 +1,14 @@
+tests/unit/l0-1.roc 53
+tests/unit/l0-2.roc 49
+tests/unit/l0-3.roc 52
+tests/unit/l0-4.roc 60
+tests/unit/l0-5.roc 55
+tests/unit/l0-6.roc 44
+tests/unit/l0-7.roc 37
+tests/unit/l0-8.roc 60
+packages/resolve/tests/conflicts.roc 6
+packages/resolve/tests/domain.roc 2
+packages/resolve/tests/moves.roc 5
+packages/resolve/tests/solver.roc 5
+total 428
+not-passed 0

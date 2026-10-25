@@ -1,0 +1,9 @@
+tln: error[usage]: acme/empty@main has no main.roc at its top. Use --path <dir> for an app in a subdirectory.
+tln: error[usage]: no commit nosuch in acme/gapp
+tln: error[network]: acme/gapp@main needs a request to find its commit, and --offline is set
+tln: error[environment]: tln tool install --git needs curl, but the download program is wget: a source archive has no published hash, and only curl refuses a redirect to http:// (R-DA3)
+tln: error[usage]: 'acme/gapp' has no ref: use owner/repo@ref
+tln: error[usage]: --path '../x' must be a directory inside the repository: a relative path with no '..'
+tln: error[usage]: gapp is the binary name of acme/gapp already. Use --as <name> to install other/gapp under another binary name.
+tln: error[usage]: $HOME/.local/bin/fe is not a file that tln wrote, so tln does not replace it. Use --as <name> to install under another binary name.
+tln: error[usage]: tln tool install --resolve is not built yet

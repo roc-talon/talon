@@ -1,0 +1,37 @@
+== tln add acme/pf
+exit 2
+== tln add --platform acme/json
+exit 2
+== tln add acme/pf2 --json
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"'acme/pf2' is a platform. Use tln add --platform acme/pf2."}}
+exit 2
+== tln add --platform acme/pf --dry-run --json
+{"schema":1,"command":"add","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":5,"downloads":0,"dry_run":true,"check":"passed","build":"passed","added":[],"moved":[{"alias":"shell","from":{"name":"acme/pf","version":"0.1.0"},"to":{"name":"acme/pf","version":"0.2.0"}}],"kept":[],"pinned":"nightly-2026-10-14-38a3029","toml":[],"renamed":[],"notes":["platform changes: acme/pf 0.1.0 -> acme/pf 0.2.0"],"written":[]},"error":null}
+exit 0
+== tln add --platform acme/pf@0.2.0
+note: platform changes: acme/pf 0.1.0 -> acme/pf 0.2.0
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ shell: acme/pf 0.1.0 -> 0.2.0
+  + roc: nightly-2026-10-14-38a3029
+$PROJECT/talon.toml: shell = "=0.2.0"
+resolved at 2026-10-15T12:00:00Z, 2 probes
+exit 0
+== tln add --platform acme/pf@0.2.0
+nothing to change
+exit 0
+== tln i acme/lex --as lexer --json --quiet
+{"schema":1,"command":"i","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":3,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[{"alias":"lexer","name":"acme/lex","version":"1.2.0"}],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":["$PROJECT/main.roc"]},"error":null}
+exit 0
+== the files
+app [main!] {
+	shell: platform "https://github.com/acme/pf/releases/download/0.2.0/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst",
+	pf: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",   # a package with the alias pf
+	roc: "nightly-2026-10-14-38a3029",
+	lexer: "https://github.com/acme/lex/releases/download/1.2.0/7r2t7xhwfM9esnfmYrQCSFZAmkzvfsyTeo1J5276kjmc.tar.zst",
+}
+
+main! = |_args| Ok({})
+[dependencies]
+shell = "=0.2.0"

@@ -1,0 +1,16 @@
+# R-GC11, R-GC1, R-GC2, R-GC3, R-GC4, R-GC9, R-EV22 (slice 028b): a dry run. ROC_CACHE_DIR is $HOME/.cache/roc-builds, so the build-cache dirs are not in the cache root. gc-age is 30 days (the default). The clock of the fake is 2026-10-15 (the time of a file), TALON_NOW is 7 days later (the time of a toolchain and of a project).
+# Toolchains: aaaaaaa goes (no pin, used in August) and its compat dir goes with it whatever the age of its files (R-GC3 first sentence). The default and bbbbbbb (pa pins it) stay.
+# Build-cache dirs: compat-bbbbbbb (a compiler that stays, but no file changed for years: "another dir", R-GC3), nightly-2025-01-01-abc1234 and debug-9999999 (R-GC2), compat-over (1 s more than the age) go.
+#   compat-young (10 days), compat-mixed (one old file and one young file deep in it: the newest file decides, nothing inside is removed, R-GC1), compat-exact (exactly the age), compat-future, nightly-2026-10-01-def5678 stay. other-old is no build-cache dir (the name) and compat-file is a file: they are not asked.
+# Packages (the real clock, 1 day): P1 (pa uses it) and P3 (P1 names it) stay though old. P2 (pa names it) is not in the cache and is never fetched. P4 (old, nothing uses it, with its .deps.json) goes. P5 (changed 1 hour ago), P6 (one file changed 100 s ago), P7 (exactly 1 day) stay. P8 (1 s more than a day) goes.
+#   P9 is named only by pold, which was last used 82 days before TALON_NOW: it protects nothing, so P9 goes (R-GC4: a project used in the GC age).
+# The temp h1.0123456789abcdef.tmp is a stale temp (R-GC6). Every removed item has a size (the real size of the fixture files), the total follows.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc --dry-run
+# R-J3, R-OUT4: the same with --json. The text goes to stderr, stdout has only the envelope with builds, packages, sizes and freed.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc --dry-run --json
+# R-CC10, R-GC2, R-GC3, R-GC4, R-GC1: the real run. aaaaaaa is renamed to .trash and deleted with compat-aaaaaaa. Then one delete: the stale temp, the build dirs (whole dirs, never a file inside a dir that stays), and for each package its dir and its .deps.json. Then projects.json (pold leaves).
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc
+# The second run removes nothing: the dirs that stay are asked again (tree_info), no delete.
+env:ROC_CACHE_DIR={w}/home/.cache/roc-builds cache gc
+# R-GC9, R-GC3: the second home. gc-age is 7 days, ROC_CACHE_DIR is not set (the build-cache dirs are in the cache root, which GC lists once more). compat-ten goes (10 days), compat-five stays (5 days). No packages dir: no walk, no read of a package, although pa is live and names packages.
+env:HOME={w}/home/h2 cache gc

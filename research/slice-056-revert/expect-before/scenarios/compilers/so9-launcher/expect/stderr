@@ -1,0 +1,10 @@
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-14-38a3029, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+warning: $HOME/.cache/roc/talon/path-roc.json: path-roc.json is not valid. Talon made it again.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[no_tuple]: the roc on PATH, nightly-2026-10-13-91fa0c2, is a nightly, and nightly is false (set by TALON_NIGHTLY). No roc release is known, so no compiler can be selected.
+tln: error[environment]: no compiler is selected. Run: tln roc install @latest, then tln roc default <id>
+tln: error[environment]: no compiler is selected. Run: tln roc install @latest, then tln roc default <id>

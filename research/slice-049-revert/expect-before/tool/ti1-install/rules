@@ -1,0 +1,14 @@
+Slice 046, `tln tool install` for a release (entry `commands`). One home with the compiler `nightly-2026-10-14-38a3029` installed (the pin of each app), no `config.toml` (`min-release-age` is 2 days), `TALON_NOW=2026-10-15T12:00:00Z`.
+`tools.json` has one tool, `baz` (acme/baz, built from a git ref, the old binary and its bin dir entry are there). The fake `roc build` writes the output file (the 4th field of `fx/probes`).
+acme/foo has 4 releases: 1.0.0 (app), 1.1.0 (app), 1.2.0 (a package, not an app) and 1.3.0 (an app, 1 day old: `min-release-age` hides it).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/foo` | the newest visible release is 1.2.0, its bundle is a package: dropped. 1.1.0 is built (no `--target`), the binary is in the data bin dir, the bin dir entry is a hard link, `tools.json` has `foo` next to `baz`. The lock of `tools.json` is taken after the build. No `roc:` resolve, no probe of the project | R-CM16, R-T1, R-T2, R-T3, R-T4, R-T5, R-T8, R-T9, R-T10, R-T11, R-T12, R-SE8, R-ST15, R-LY2, R-LY3, R-CC6 |
+| 2 | `tool install acme/foo` | foo 1.1.0 is installed and no selector: no build, `foo 1.1.0 is installed` | R-T26 |
+| 3 | `tool install foo@1.0.0` | the short name finds the installed tool, the exact version 1.0.0 is not the installed one: built, `tools.json` and the files are replaced (the entry is made again) | R-T26, R-T27, R-ST15 |
+| 4 | `tool install acme/foo@1.3.0` | an exact version that is 1 day old: the note on stderr, built and replaced | R-T9, R-T26 |
+| 5 | `tool install acme/baz` | `baz` was built from a git ref: the release install replaces it. The hard link of the entry fails: a copy | R-T27, R-ST7, R-ST15 |
+| 6 | `tool install acme/qux --as q --json` | the binary name is `q` (`--as`); the envelope has the data | R-T28, R-J1 to R-J4, R-OUT2 |
+| 7 | `tool install acme/qux` | acme/qux is installed under the key `q` (run 6) and the command has no `--as`: it is the same tool (review 2). No build, no download, `q 2.0.0 is installed` | R-T26, R-T28 |
+| 8 | `tool install acme/qux --as other` | `--as` differs from the installed key `q`: exit 2, `acme/qux is installed as q already` (D2), before any request | R-T27, R-T28 |

@@ -47,6 +47,7 @@ Ladder :: [].{
 	baseline = LadderJudge.baseline
 	check = LadderJudge.check
 	build = LadderJudge.build
+	build_at = LadderJudge.build_at
 	plan = LadderPlan.plan
 	plan_replace = LadderPlan.plan_replace
 
@@ -60,10 +61,14 @@ Ladder :: [].{
 	no_loop = { started: Err(None), looked: [], checks: [], count: 0, base: Err(None) }
 
 	## One member of `run!`: a project file whose header changes. `ops` are the edits of its header (`Locked.edit` gives the candidate text).
-	Member : { file : Str, kind : [App, Package, Platform], text : Str, ops : List(Locked.Op) }
+	## Slice 043 (R-PA10): `patch` has the `--replace-dep` pairs of the patches of the member, for the baseline check and for the candidate check and the build (`LadderPlan.with_patches`). Both lists are empty for a member with no patch.
+	## Slice 054 (R-TG1, R-TG5): `target` is `[build] target` of the nearest `talon.toml` of the member (`Intent.build.target`), `Err(Unset)` for none.
+	Member : { file : Str, kind : [App, Package, Platform], text : Str, ops : List(Locked.Op), patch : { base : List(LadderPlan.Replace), candidate : List(LadderPlan.Replace) }, target : Try(Str, [Unset]) }
 
 	## A member of `verify!`: a project file and its kind. The header is not read or edited (the candidate is the replacement).
-	Checked : { file : Str, kind : [App, Package, Platform], text : Str }
+	## Slice 043 (R-PA10): `patch` has the pairs of the patches of the member (`Patched.replaces`): the baseline check, the candidate check and the build get them (`LadderPlan.with_patches`).
+	## Slice 054 (R-TG1, R-TG5): `target` as in `Member`.
+	Checked : { file : Str, kind : [App, Package, Platform], text : Str, patch : List(LadderPlan.Replace), target : Try(Str, [Unset]) }
 
 	## Command code (part C) of `tln verify` (R-CM11, R-LB2). It is `run!` with no copy and no edit of a header. The calls for one member, in order (the L2 case `verify/vf1-flow` fixes them):
 	##
@@ -173,7 +178,7 @@ Ladder :: [].{
 					fresh
 				}
 			}
-			own = { file: member.file, kind: member.kind, text: member.text, ops: member.ops }
+			own = { file: member.file, kind: member.kind, text: member.text, ops: member.ops, patch: { base: [], candidate: [] }, target: Err(Unset) }
 			$done = $done.append({ file: member.file, lines: probe_member!(fx, plain, { started, base, facts: [], count: 0 }, own)?.lines })
 		}
 		Ok({ notes: print_lines!(fx, $done), downloads: started.downloads })
@@ -239,7 +244,7 @@ probe_in_copy! = |fx, request, pair, member, copy| {
 	compiler = request.held
 	pkgs = request.roots.pkgs
 	timeout = request.probe.timeout
-	candidate_plan = LadderPlan.plan({ compiler, program: started.program, env: started.env, kind: member.kind, dir, file, copy, timeout })
+	candidate_plan = LadderPlan.with_patches({ plan: LadderPlan.plan({ compiler, program: started.program, env: started.env, kind: member.kind, dir, file, copy, timeout }), base: member.patch.base, candidate: member.patch.candidate })
 	(baseline_spec, candidate_spec) = match candidate_plan.first {
 		[before, after] => (before, after)
 		_ => return Err(no_answer("the plan"))
@@ -247,7 +252,7 @@ probe_in_copy! = |fx, request, pair, member, copy| {
 	# Slice 026b: the baseline check runs on its own compiler. For `run!` it is the compiler of the candidate (`base` is `started`).
 	other = base.id != started.id
 	first_spec = if other { ..baseline_spec, compiler: base.id, program: base.program, env: base.env } else baseline_spec
-	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures }, pair, { file: member.file, kind: member.kind, text: member.text })
+	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures }, pair, { file: member.file, kind: member.kind, text: member.text, target: member.target })
 	round = UnitFlow.first!(fx, ctx, { baseline: first_spec, count: pair.count })?
 	baseline = LadderJudge.baseline({ output: round.baseline, dir, pkgs, compiler: if other base.id else compiler, timeout })?
 	verdict = UnitFlow.verdict!(fx, ctx, { first: round, baseline }).map_err(|fail| fail.with_probes(round.count))?
@@ -271,13 +276,13 @@ known_facts! = |fx, roots, closures, nightly, loop| {
 }
 
 # The context of ladder step 1 for one member (the closure of the member file, no closure gives no package).
-unit_ctx : { roots : Roots, now : U64, held : Str, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) }, { started : Start.Started, base : Start.Started, facts : List(Db.Fact), count : U64 }, { file : Str, kind : [App, Package, Platform], text : Str } -> UnitFlow.Ctx
+unit_ctx : { roots : Roots, now : U64, held : Str, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) }, { started : Start.Started, base : Start.Started, facts : List(Db.Fact), count : U64 }, { file : Str, kind : [App, Package, Platform], text : Str, target : Try(Str, [Unset]) } -> UnitFlow.Ctx
 unit_ctx = |request, pair, member| {
 	walked = match request.closures.find_first(|c| c.file == member.file) {
 		Ok(c) => c.walked
 		Err(_) => { rows: [], links: [] }
 	}
-	{ roots: request.roots, now: request.now, started: pair.started, base: pair.base, held: request.held, probe: request.probe, no_probe: request.no_probe, member, walked, nodes: Units.nodes([walked]), facts: pair.facts }
+	{ roots: request.roots, now: request.now, started: pair.started, base: pair.base, held: request.held, probe: request.probe, no_probe: request.no_probe, member: { file: member.file, kind: member.kind, text: member.text }, target: member.target, walked, nodes: Units.nodes([walked]), facts: pair.facts }
 }
 
 VerifyRequest : { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Ladder.Checked), replace : List(LadderPlan.Replace), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) }
@@ -302,12 +307,12 @@ probe_in_place! = |fx, request, state, member, tmp| {
 	compiler = request.held
 	pkgs = request.roots.pkgs
 	timeout = request.probe.timeout
-	plan = LadderPlan.plan_replace({ compiler, program: started.program, env: started.env, kind: member.kind, dir, file: Text.last_segment(member.file), tmp, replace: request.replace, timeout })
+	plan = LadderPlan.with_patches({ plan: LadderPlan.plan_replace({ compiler, program: started.program, env: started.env, kind: member.kind, dir, file: Text.last_segment(member.file), tmp, replace: request.replace, timeout }), base: member.patch, candidate: member.patch })
 	(baseline_spec, candidate_spec) = match plan.first {
 		[before, after] => (before, after)
 		_ => return Err(no_answer("the plan"))
 	}
-	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures }, { started, base: started, facts: state.facts, count: state.count }, { file: member.file, kind: member.kind, text: member.text })
+	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures }, { started, base: started, facts: state.facts, count: state.count }, { file: member.file, kind: member.kind, text: member.text, target: member.target })
 	round = UnitFlow.first!(fx, ctx, { baseline: baseline_spec, count: state.count })?
 	baseline = LadderJudge.baseline({ output: round.baseline, dir, pkgs, compiler, timeout })?
 	verdict = UnitFlow.verdict!(fx, ctx, { first: round, baseline })?
@@ -331,9 +336,9 @@ build_round! = |fx, ctx, run| {
 		Ok({ lines: [BuildSkip.skipped_line], probes: run.count, skipped: 1 })
 	} else {
 		pkgs = ctx.roots.pkgs
-		third = UnitFlow.step!(fx, ctx, { spec: run.spec, count: run.count })?
+		third = UnitFlow.step!(fx, ctx, { spec: LadderPlan.with_target({ spec: run.spec, target: plan.target }), count: run.count })?
 		BuildFlow.after!(fx, ctx, { id: plan.id, output: third.output, dir: run.dir, pkgs })?
-		built = LadderJudge.build({ output: third.output, dir: run.dir, pkgs, baseline: run.baseline, owners: run.owners, compiler: ctx.held, timeout: ctx.probe.timeout }).map_err(|fail| fail.with_probes(third.count))?
+		built = LadderJudge.build_at({ output: third.output, dir: run.dir, pkgs, baseline: run.baseline, owners: run.owners, compiler: ctx.held, timeout: ctx.probe.timeout, target: plan.target }).map_err(|fail| fail.with_probes(third.count))?
 		Ok({ lines: built.lines, probes: third.count, skipped: 0 })
 	}
 }

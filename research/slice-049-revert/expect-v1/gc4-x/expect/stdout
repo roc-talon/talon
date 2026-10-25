@@ -1,0 +1,13 @@
+== cache gc --dry-run
+would remove $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a.0123456789abcdef.tmp (2 B)
+would remove $HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95 (599 B)
+would remove $HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b (559 B)
+would free 1.2 KB
+dry run: nothing was removed
+exit 0
+== cache gc --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":[],"skipped":[],"compat":[],"stale":["$HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a.0123456789abcdef.tmp"],"builds":["$HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95","$HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b"],"packages":[],"projects":[],"sizes":[{"item":"$HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a.0123456789abcdef.tmp","bytes":2},{"item":"$HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95","bytes":599},{"item":"$HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b","bytes":559}],"freed":1160},"error":null}
+exit 0
+== cache gc
+nothing to remove
+exit 0

@@ -1,0 +1,3 @@
+tln: error[usage]: $PROJECT/w3/talon.toml:5: the key 'newdep' is in no header, and 2 members are under $PROJECT/w3: $PROJECT/w3/apps/a/main.roc, $PROJECT/w3/apps/b/main.roc. Run tln add --file <member file> acme/newdep for one of them.
+tln: error[no_tuple]: no tuple works: the releases of core, pf do not fit together (R-C2, R-C3)
+tln: error[environment]: cannot read $PROJECT/solo/nothere/main.roc

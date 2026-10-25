@@ -1,0 +1,3 @@
+# an exit code of the child passes through (R-E1), and a child that cannot start is a failure of Talon
+p10/main.roc	3
+p11/main.roc	notstarted:NotFound

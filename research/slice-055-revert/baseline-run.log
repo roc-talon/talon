@@ -1,0 +1,12 @@
+
+step       result seconds  budget
+check      pass   3.5      10
+fmt        pass   0.3      5
+l0         pass   11.9     10
+l2         pass   9.9      30
+l3         pass   10.3     60
+selftest   pass   4.2      20
+l1         pass   68.1     60
+WARN l0: 11.9 s is over the budget of 10 s (TW20)
+WARN l1: 68.1 s is over the budget of 60 s (TW20)
+exit 0

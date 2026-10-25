@@ -1,0 +1,154 @@
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+tty
+ask "Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] "
+lock $HOME/.cache/roc/toolchains/zig-0.17.0 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+delete $HOME/.cache/roc/toolchains/zig-0.17.0.00000000000000aa.tmp
+random
+programs curl wget xz
+make_dirs $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz
+sha256_file $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz -C $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig
+write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/zig-0.17.0
+unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+lock $HOME/.cache/roc/toolchains/zig-0.16.2 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget xz
+make_dirs $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp/zig-x86_64-windows-0.16.2.zip https://ziglang.org/download/0.16.2/zig-x86_64-windows-0.16.2.zip
+sha256_file $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp/zig-x86_64-windows-0.16.2.zip
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp/zig-x86_64-windows-0.16.2.zip -C $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp/zig-x86_64-windows-0.16.2.zip
+write_atomic $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/zig-0.16.2.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/zig-0.16.2
+unlock $HOME/.cache/roc/toolchains/zig-0.16.2
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+tty
+ask "Install zig 0.15.1 (54.2 MB) for Talon builds? [Y/n] "
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+lock $HOME/.cache/roc/toolchains/zig-0.14.1 nowait: busy
+lock $HOME/.cache/roc/toolchains/zig-0.14.1 wait: held
+list_dirs $HOME/.cache/roc/toolchains
+unlock $HOME/.cache/roc/toolchains/zig-0.14.1
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+lock $HOME/.cache/roc/toolchains/zig-0.13.0 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget xz
+make_dirs $HOME/.cache/roc/toolchains/zig-0.13.0.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/zig-0.13.0.0123456789abcdef.tmp/zig-x86_64-linux-0.13.0.tar.xz https://ziglang.org/download/0.13.0/zig-x86_64-linux-0.13.0.tar.xz
+sha256_file $HOME/.cache/roc/toolchains/zig-0.13.0.0123456789abcdef.tmp/zig-x86_64-linux-0.13.0.tar.xz
+delete $HOME/.cache/roc/toolchains/zig-0.13.0.0123456789abcdef.tmp
+unlock $HOME/.cache/roc/toolchains/zig-0.13.0
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+lock $HOME/.cache/roc/toolchains/zig-0.12.1 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget xz
+make_dirs $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp/zig-x86_64-linux-0.12.1.tar.xz https://ziglang.org/download/0.12.1/zig-x86_64-linux-0.12.1.tar.xz
+sha256_file $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp/zig-x86_64-linux-0.12.1.tar.xz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp/zig-x86_64-linux-0.12.1.tar.xz -C $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp/zig-x86_64-linux-0.12.1.tar.xz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp/zig
+write_atomic $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/zig-0.12.1.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/zig-0.12.1
+unlock $HOME/.cache/roc/toolchains/zig-0.12.1
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get http://127.0.0.1:9/zig/index.json
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+lock $HOME/.cache/roc/toolchains/zig-0.8.0 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget xz
+make_dirs $HOME/.cache/roc/toolchains/zig-0.8.0.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/zig-0.8.0.0123456789abcdef.tmp/zig-x86_64-linux-0.8.0.tar.xz https://ziglang.org/download/0.8.0/zig-x86_64-linux-0.8.0.tar.xz
+sha256_file $HOME/.cache/roc/toolchains/zig-0.8.0.0123456789abcdef.tmp/zig-x86_64-linux-0.8.0.tar.xz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/zig-0.8.0.0123456789abcdef.tmp/zig-x86_64-linux-0.8.0.tar.xz -C $HOME/.cache/roc/toolchains/zig-0.8.0.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/zig-0.8.0.0123456789abcdef.tmp
+unlock $HOME/.cache/roc/toolchains/zig-0.8.0
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains
+clock
+http_get https://ziglang.org/download/index.json
+lock $HOME/.cache/roc/toolchains/zig-0.7.0 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget xz
+make_dirs $HOME/.cache/roc/toolchains/zig-0.7.0.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/zig-0.7.0.0123456789abcdef.tmp/zig-x86_64-linux-0.7.0.tar.xz https://ziglang.org/download/0.7.0/zig-x86_64-linux-0.7.0.tar.xz
+delete $HOME/.cache/roc/toolchains/zig-0.7.0.0123456789abcdef.tmp
+unlock $HOME/.cache/roc/toolchains/zig-0.7.0
+env_all
+platform
+programs zig
+list_dirs $HOME/.cache/roc/toolchains

@@ -1,0 +1,17 @@
+1	Nightlies.by_name: no exact-id branch	KILLED by l0
+2	commit request without the sha media type	KILLED by l0
+3	nightly note: sha anywhere in the commit	SURVIVED
+4	id has 7 characters	KILLED by l0
+5	newest: repo not compared	KILLED by l0
+6	newest: time not compared (last row wins)	KILLED by l0
+7	.talon.json ref field has the sha	KILLED by l0
+8	wget allowed	KILLED by l2
+9	scratch dir kept after a failure	KILLED by l2
+10	no first default	KILLED by l2
+11	offline does not stop	KILLED by l2
+12	422 is not a usage failure	KILLED by l0
+3	nightly note: sha anywhere in the commit	KILLED by l0
+13	default --git: no match by full sha	KILLED by l0
+14	default --git: a 1 digit text matches the sha	KILLED by l0
+15	commit request sends no token	KILLED by l2
+16	commit request asks gh for a token also when a variable gives one	KILLED by l2

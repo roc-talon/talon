@@ -1,0 +1,2 @@
+upgrade lib --file q2/main.roc
+upgrade lib --yes --file q3/main.roc

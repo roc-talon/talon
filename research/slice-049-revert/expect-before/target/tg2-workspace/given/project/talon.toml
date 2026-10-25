@@ -1,0 +1,6 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+# For the members whose nearest talon.toml is this file (R-WS5, R-TG5)
+[build]
+target = "x64glibc"

@@ -15,6 +15,7 @@ import Locked
 import Mode
 import Net
 import Out
+import Patched
 import Pin
 import Project
 import Prompt
@@ -211,6 +212,10 @@ go! = |fx| {
 	}
 	read = if early Ok(Base.no_facts) else Base.load!(fx, roots, found, Read)
 	loaded = read?
+	# R-PA6, R-PX5, R-PX7: a stale patch stops the proxy before the compiler is selected. `TALON_PROXY=0` does no extra work (no check, no flag).
+	if !off and !loaded.patch.stale.is_empty() {
+		return Err(Patched.stale_fail({ entries: loaded.patch.stale, by: Proxy }))
+	}
 	lists = early or loaded.pin.is_ok() or loaded.req.is_ok() or (loaded.version_file.is_ok() and !loaded.has_toml) or loaded.default.is_ok()
 	installed = if lists Launch.toolchains!(fx, roots) else []
 	times = if loaded.req.is_ok() and !installed.is_empty() Base.times!(fx, roots, installed) else []
@@ -231,7 +236,9 @@ go! = |fx| {
 		Launch.touch!(fx, roots, { id, now })
 	}
 	child_env = Launch.child_env!(fx, roots, { opted_out: off })
-	match fx.exec!({ argv: [program].concat(split.rest), env: child_env }) {
+	# R-PX5, R-PA10: `--replace-dep <header URL> <copy>` for each `[patch]` entry of the header of the target file.
+	args = Patched.proxy_args({ args: split.rest, target: Proxy.target(split.rest), replace: if off [] else loaded.patch.replace })
+	match fx.exec!({ argv: [program].concat(args), env: child_env }) {
 		Ok(code) => Ok(code)
 		Err(NotStarted(text)) => Err(Proxy.start_failed({ program, text }))
 	}

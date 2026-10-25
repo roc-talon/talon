@@ -1,0 +1,13 @@
+x acme/foo -- a b
+x acme/foo
+x foo
+x acme/foo@1.0.0
+x acme/bar
+x acme/bar@latest
+x acme/bar
+x acme/baz
+x acme/old
+x acme/foo --json
+x nope
+x acme/baz -- boom
+x acme/nobin

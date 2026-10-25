@@ -1,0 +1,7 @@
+R-DI2 R-DI8 R-DI9 R-DI12 R-DI13 R-EV3 R-EV20 R-RG3 R-CC11 R-DA1 R-HF4: Github.releases! and Github.hint! with the fake Fx, in a fixed script (tests/commands/main.roc, entry index).
+acme/fresh: a page younger than 60 s: no request, no write. acme/stale: an older page with an ETag: one request with If-None-Match, the answer 304 keeps the page and writes the meta again (the time of the page). No token and no gh (not in fx/programs).
+acme/two: 2 pages (the Link header with rel="next"), with a token from the environment: both requests have Authorization, no programs call. One write for all 4 files, after the last page.
+acme/limited: a rate limit on page 1 (exit 15, the reset time and the token sources, nothing written). acme/limited2: page 1 is fine and page 2 is limited: nothing is written, also not page 1 (R-DI13).
+acme/gone, acme/slow: no answer (exit 15, the message names --offline). acme/offlinec: offline, 3 cached pages with the times 1792030000, 1792000000 and 1792050000 (the chain is the `next` line of each meta): no request, the oldest page time of the 3 (R-DI12: not the first, not the last, not the newest). acme/nothing: offline, no page: source missing.
+hints: the raw URL (R-DI8, R-EV20) with no token even when the environment has one (R-DI9). A 404 is no hint. A 500 is exit 15.
+acme/nope (review Q2): a 404 of the release list is a usage failure (exit 2) that names the repository, nothing is written.

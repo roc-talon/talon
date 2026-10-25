@@ -1,0 +1,23 @@
+== tln remove json
+exit 2
+== tln remove json --file apps/a/main.roc
+exit 10
+== tln remove json --file apps/a/main.roc --no-check
+exit 10
+== tln remove json --file apps/a/main.roc
+check: passed
+build: passed
+$PROJECT/apps/a/main.roc
+  - json: acme/json 2.0.0
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln remove json --file apps/b/main.roc --dry-run --json
+{"schema":1,"command":"remove","ok":true,"data":{"probes":2,"dry_run":true,"check":"passed","build":"skipped","removed":[{"alias":"json","kind":"release","name":"acme/json","version":"2.0.0"}],"toml":[{"path":"$PROJECT/talon.toml","table":"dependencies","key":"json"}],"patches":[],"pinned":null,"notes":["ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27."],"written":[]},"error":null}
+exit 0
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln remove json --file apps/b/main.roc
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27, but the header pin is nightly-2026-10-14-38a3029. This command keeps the pin. To change the pin, run tln roc use nightly-2026-10-09-258ab27.
+check: passed
+build: skipped (recorded pass)
+$PROJECT/apps/b/main.roc
+  - json: acme/json 2.0.0
+$PROJECT/talon.toml: - [dependencies] json
+exit 0

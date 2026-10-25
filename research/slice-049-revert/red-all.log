@@ -1,0 +1,190 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+
+Roc application crashed with this message:
+
+	todo: slice 049
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/XCmdTest.roc:78:1
+
+expect {
+    p = XCmd.unchecked_prompt({ via: TakeOver, key: "foo", version: "1.2.0" })
+    r = XCmd.unchecked_prompt({ via: Run, key: "foo", version: "1.2.0" })
+    decide = |prompt, mode, yes, flag| match Prompt.decide(prompt, { mode, yes, flag }) {
+        Ask => "ask"
+        NeedTty => "need-tty"
+        Use(a) => "use ${Str.inspect(a)}"
+        Stop(f) => "stop ${Str.inspect(f.kind)} ${f.message}"
+    }
+    rows = [
+        (p.id, "use-unchecked"),
+        (Prompt.text(p), "foo 1.2.0 is in the cache. It was not checked online for yanks and advisories. Install it? [y/N] "),
+        (Prompt.text(r), "foo 1.2.0 is in the cache. It was not checked online for yanks and advisories. Run it? [y/N] "),
+        (decide(p, NonInteractive, Bool.False, Err(NoFlag)), "stop Consent using the cached foo 1.2.0, which was not checked online needs consent. Pass --allow-unchecked or --yes."),
+        (decide(p, NonInteractive, Bool.True, Err(NoFlag)), "use Yes"),
+        (decide(p, NonInteractive, Bool.False, Ok(Yes)), "use Yes"),
+        (decide(p, Interactive, Bool.False, Err(NoFlag)), "ask"),
+        (decide(p, NeedsTty, Bool.False, Err(NoFlag)), "need-tty"),
+        (Prompt.reply(p, "") |> Str.inspect, "Ok(No)"),
+        (Prompt.reply(p, "y") |> Str.inspect, "Ok(Yes)"),
+        ((p.answer_line)(Yes), "using cached foo 1.2.0, not checked online"),
+        ((p.answer_line)(No), "not using cached foo 1.2.0"),
+        (XCmd.declined({ via: TakeOver, key: "foo", version: "1.2.0" }).line(), "tln: error[consent]: foo 1.2.0 is in the cache, but it was not checked online and you did not accept it. Nothing was installed."),
+        (XCmd.declined({ via: Run, key: "foo", version: "1.2.0" }).line(), "tln: error[consent]: foo 1.2.0 is in the cache, but it was not checked online and you did not accept it. Nothing was run."),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 049
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/XCmdTest.roc:109:1
+
+expect {
+    rows = [
+        (XCmd.offline_no_build("acme/foo").line(), "tln: error[network]: no installed or cached build of acme/foo matches, and --offline is set. Run the command without --offline."),
+        (XCmd.start_failed({ program: "/c/x/d1/foo", text: "permission denied" }).line(), "tln: error[environment]: cannot run /c/x/d1/foo: permission denied"),
+    ]
+    bad = rows.keep_if(|(got, want)| got != want)
+    dbg bad
+    bad == []
+}
+
+Ran 44 tests in 5424.3 ms.:
+    40 passed
+    4 failed
+    0 compiler errors
+tests/unit/l0-8.roc: All (60) tests passed in 5093.0 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+      -@@ -1 +1 @@
+      --old qux
+      -+xbin acme/qux 2.0.0
+      ---- home/.local/bin/ren
+      -+++ home/.local/bin/ren
+      -@@ -0,0 +1 @@
+      -+xbin acme/ren 1.0.0
+      ---- home/.local/bin/yank
+      -+++ home/.local/bin/yank
+      +--- home/.local/bin/foo
+      ++++ home/.local/bin/foo
+       @@ -0,0 +1 @@
+       +fake
+       \ No newline at end of file
+       --- home/.local/share/talon/bin/bar
+       +++ home/.local/share/talon/bin/bar
+       @@ -0,0 +1 @@
+      -+xbin acme/bar 1.0.0
+      ---- home/.local/share/talon/bin/foo
+      -+++ home/.local/share/talon/bin/foo
+      -@@ -0,0 +1 @@
+      -+xbin acme/foo 1.1.0
+      ---- home/.local/share/talon/bin/lat
+      -+++ home/.local/share/talon/bin/lat
+      -@@ -0,0 +1 @@
+       +fake
+       \ No newline at end of file
+      ---- home/.local/share/talon/bin/off
+      -+++ home/.local/share/talon/bin/off
+      -@@ -0,0 +1 @@
+      -+xbin acme/off 1.0.0
+      ---- home/.local/share/talon/bin/qux
+      -+++ home/.local/share/talon/bin/qux
+      -@@ -1 +1 @@
+      --old qux
+      -+xbin acme/qux 2.0.0
+      ---- home/.local/share/talon/bin/ren
+      -+++ home/.local/share/talon/bin/ren
+      -@@ -0,0 +1 @@
+      -+xbin acme/ren 1.0.0
+      ---- home/.local/share/talon/bin/yank
+      -+++ home/.local/share/talon/bin/yank
+      +--- home/.local/share/talon/bin/foo
+      ++++ home/.local/share/talon/bin/foo
+       @@ -0,0 +1 @@
+       +fake
+       \ No newline at end of file
+      @@ -191,4 +159,4 @@
+       +++ home/.local/share/talon/tools.json
+       @@ -1 +1 @@
+       -{"format":1,"tools":{"qux":{"name":"acme/qux","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/qux/releases/download/1.0.0/HprvRU7qoThFhi8fTEu2svJXrNxMHx4fafzHeFJrwQRN.tar.zst"},"build":{"hashes":["6PkDfgqBrpCJGM1GVU6iwDkNTQrMiRUYvaH5otQamWaD"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}
+      -+{"format":1,"tools":{"qux":{"name":"acme/qux","source":{"kind":"release","version":"2.0.0","url":"https://github.com/acme/qux/releases/download/2.0.0/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"77d14481cb6d0f5f6531453666b80204282262ef6e83fe83a2443e89464fdd1a","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"633fc94d79e674fcfc6ec620b3992a7240e268fe13eca16b91cb547566a95e9a","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"013c595d89fe46b1facf8123abea895f1b65f3ac4b0527636b56c8b291df6f70","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"ren":{"name":"acme/ren","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/ren/releases/download/1.0.0/55UDRtdJV5gwjRWj4VFUKzB5KMqShAry6WkdHEQqP8dD.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"accacf4e9f5c7df3eb3ddd4ae3b27065e19d0f8cb549f26ccae0c6b43e2ddfba","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"lat":{"name":"acme/lat","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/lat/releases/download/1.1.0/CVgauG3VURPHkHwGvEXaeqgVK6GhEjgkaU9yQhCuVnca.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"yank":{"name":"acme/yank","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/yank/releases/download/1.0.0/6wuS18gRbQCYUqELJMEFBboyDzcZaEvjrG8hWRgtCmVM.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"off":{"name":"acme/off","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/off/releases/download/1.0.0/BYuNVhzvQhnhTpW8vQz25JRz9sUdzsGchP8MyXbmzXx3.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"82f3b8bd18af5e86c151165581d75133878d88f56c3049e6096a4a7f7707cc45","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+      ++{"format":1,"tools":{"qux":{"name":"acme/qux","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/qux/releases/download/1.0.0/HprvRU7qoThFhi8fTEu2svJXrNxMHx4fafzHeFJrwQRN.tar.zst"},"build":{"hashes":["6PkDfgqBrpCJGM1GVU6iwDkNTQrMiRUYvaH5otQamWaD"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+FAIL x/x1-run
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 049
+FAIL x/x2-offline
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 049
+commands: 126 passed, 8 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+      -+		main! : List(Str) => Try({}, [Exit(I32), ..])
+      -+	}
+      -+	exposes []
+      -+	packages {}
+      -+	provides { "roc_main": main_for_host! }
+      -+	targets: {
+      -+		x64musl: { inputs: ["libhost.a", app] },
+      -+		arm64musl: { inputs: ["libhost.a", app] },
+      -+	}
+      -+
+      -+main_for_host! = |_args| 0
+      ---- home/.cache/roc/talon/index/github/acme/app/1.json
+      -+++ home/.cache/roc/talon/index/github/acme/app/1.json
+      -@@ -0,0 +1 @@
+      -+[{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"}]},{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst"}]}]
+      ---- home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/app
+      -+++ home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/app
+      -@@ -0,0 +1,3 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/app 1.0.0 args: $*"
+      -+exit 3
+      ---- home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/manifest.json
+      -+++ home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/manifest.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"name":"acme/app","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"eeb5463d6135db83fa0d51c627bfe3763c92542e5829bb253a3a959e7f167dbb","libs":[],"bundle":"DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr","last_run":"2026-11-20T12:00:00Z"}
+      ---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+      -@@ -0,0 +1 @@
+      -+2026-11-20T12:00:00Z
+      ---- home/.local/bin/app
+      -+++ home/.local/bin/app
+      -@@ -0,0 +1,3 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/app 1.1.0 args: $*"
+      -+exit 3
+      ---- home/.local/share/talon/bin/app
+      -+++ home/.local/share/talon/bin/app
+      -@@ -0,0 +1,3 @@
+      -+#!/bin/sh
+      -+echo "ran: acme/app 1.1.0 args: $*"
+      -+exit 3
+      ---- home/.local/share/talon/tools.json
+      -+++ home/.local/share/talon/tools.json
+      -@@ -0,0 +1 @@
+      -+{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+    roc calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,2 +0,0 @@
+      -unbundle ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst
+      -unbundle DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst
+    http requests differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +0,0 @@
+      -GET /api/repos/acme/app/releases?per_page=100 200
+      -GET /dl/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst 200
+      -GET /dl/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst 200
+      -GET /api/repos/acme/app/releases?per_page=100 200
+scenarios: 71 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.5      10
+fmt        pass   0.1      5
+l0         FAIL   5.9      10
+l2         FAIL   7.2      30
+l3         FAIL   9.9      60

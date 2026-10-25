@@ -31,10 +31,10 @@ mkdir -p "$LOGS"
 STEPS=("$@")
 [ ${#STEPS[@]} -eq 0 ] && STEPS=(check fmt l0 l2 l3 selftest l1)
 
-# Roc files with a header: the apps and packages of Talon. The unit files (UNIT) are not here: `roc test` in the l0 step fails on every error
+# Roc files with a header: the apps and packages of Talon. The l0 files (UNIT: the drivers of the unit modules in tests/unit, and the tests of the packages, `unit_files` of tests/lib.sh) are not here: `roc test` in the l0 step fails on every error
 # and on every warning that `roc check` reports for them (exit 1 and exit 2, research/check-speed/RESULTS.md), so a second compile in `check` finds nothing new.
 # tests/selftest.sh has the rows that keep this true (slice P1 section 5).
-mapfile -t UNIT < <({ ls tests/unit/*.roc; ls packages/*/tests/*.roc; } 2> /dev/null | sort -u)
+mapfile -t UNIT < <(unit_files | sort -u)
 mapfile -t APPS < <({ echo cli/main.roc; echo cli/fxprobe.roc; echo cli/flowprobe.roc; echo cli/lib/main.roc; echo tests/commands/main.roc
     ls packages/*/main.roc 2> /dev/null; } | sort -u)
 
@@ -75,8 +75,10 @@ step_fmt() { "$ROC" fmt --check $(find cli tests $(ls -d packages 2> /dev/null) 
 # The files run in parallel (at most JOBS). The report is in the order of UNIT.
 # Slice 036b3: xargs starts the files in the order of the last run, the slowest first ($L0_TIMES, "<ms> <file>"), so the last jobs are short and no job runs alone at the end (12 jobs, the times of one run: alphabetical 7.4 s, slowest first 6.7 s). A file that has no time yet goes first. Each roc process gets L0_THREADS compile threads (default 1, `roc test --jobs`): the default of roc is one thread for each CPU, and 12 processes
 # with 24 threads each spend 2 times the CPU time (docs/slices/036b3-module-split.md).
+# Slice P1 5b (research/l0-time/RESULTS.md): the unit files are modules, and 8 drivers import them, so a process compiles the shared modules of the design once for about 10 files, not once for each file (86 processes: 43 s of CPU, 12 processes: 25 s).
+# With about 12 processes, 2 threads for each process are faster than 1.
 L0_TIMES=$WORK/l0-times
-L0_THREADS=${L0_THREADS:-1}
+L0_THREADS=${L0_THREADS:-2}
 l0_order() {
     touch "$L0_TIMES"
     printf '%s\n' "${UNIT[@]}" | awk 'FILENAME == ARGV[1] { t[$2] = $1; next } { print (($0 in t) ? t[$0] : 999999999) " " $0 }' "$L0_TIMES" - | sort -rn -s -k1,1 | cut -d' ' -f2-
@@ -88,6 +90,7 @@ step_l0() {
     local rc=0 f n dir=$LOGS/l0
     rm -rf "$dir"
     mkdir -p "$dir"
+    unit_modules_check tests/unit || rc=1
     export -f run_limited ms_since
     export L0_THREADS
     l0_order | tr '\n' '\0' | xargs -0 -P "$(roc_jobs "$BUILD_RESERVE_MB" "$CHECK_MB")" -I{} bash -c '

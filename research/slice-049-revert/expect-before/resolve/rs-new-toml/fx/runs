@@ -1,0 +1,3 @@
+update json@2.2.0 compiler=nightly-2026-10-14-38a3029
+update json@^2.2 compiler=nightly-2026-10-14-38a3029
+update json@2.2.5 compiler=nightly-2026-10-14-38a3029

@@ -1,0 +1,18 @@
+M1 entry_starts: any bracket after a comma starts an entry (R-IN8): CAUGHT by l0-3
+M2 entry_starts: any word after a comma starts an entry, not `name :` only (R-IN8): CAUGHT by l0-3, l2 init/it2-platform
+M3 stub_of: `()` counts as one argument (R-SM2): CAUGHT by l0-3, l2 init/it2-platform init/it1-app
+M4 tokens: a comment is read as tokens (R-IN8): CAUGHT by l0-3, l2 init/it2-platform
+M5 stub_of: the message names the whole record type, not the field (OP8): CAUGHT by l0-3
+M6 pick: a path entry is seen from the project file, not from its directory (R-PTH1): CAUGHT by l0-7, l2 path/pt1-entry, l3 path
+M7 run!: the project is not recorded (R-PTH4): CAUGHT by l2 path/pt1-entry, l3 path
+M8 init: the default platform also gets the stub (R-IN1, OP8): CAUGHT by l2 init/it2-platform
+M9 init: --offline does not reach the fetch of the platform (R-FE7): CAUGHT by l2 init/it2-platform
+M10 run!: a file in the directory of the entry is read (R-PTH5): CAUGHT by l2 path/pt1-entry
+files that differ from the reference: none
+M1 entry_starts: any bracket after a comma starts an entry (R-IN8): CAUGHT by l0-3
+M3 stub_of: `()` counts as one argument (R-SM2): CAUGHT by l0-3, l2 init/it2-platform init/it1-app
+M8 init: the default platform also gets the stub (R-IN1, OP8): CAUGHT by l2 init/it2-platform
+R1 Q1: path at a workspace root with no current member does not check the member: CAUGHT by l2 path/pt1-entry
+R2 Q4: init does not make the stub again after the platform moved: CAUGHT by l2 init/it3-platform-moved
+R3 Q6: a clause with 2 or more entries gets the stub of its entries: CAUGHT by l0-3
+files that differ from the reference: none

@@ -1,0 +1,18 @@
+M1-cached-target: l0=caught l2=MISSED l3=MISSED
+M2-frozen-range: l0=caught l2=['FAIL ptool/pt2-install'] l3=MISSED
+M3-split-alias-key: does not compile
+M6-held-walk-stop: l0=caught l2=MISSED l3=MISSED
+M7-takeover-copy: l0=MISSED l2=['FAIL tool/tk2-takeover-project'] l3=MISSED
+M8-has-file: does not compile
+M9-gc-package: l0=MISSED l2=['FAIL gc/gc5-project-tools'] l3=MISSED
+M10-header-idle: l0=MISSED l2=['FAIL ptool/pt3-move'] l3=MISSED
+M11-snapshot-cut: l0=caught l2=MISSED l3=MISSED
+M14-key-taken: l0=MISSED l2=['FAIL ptool/pt1-add'] l3=MISSED
+M8-has-file: l0=MISSED l2=['FAIL ptool/pt2-install'] l3=MISSED
+M3-split-alias-key: l0=caught l2=['FAIL ptool/pt3-move'] l3=MISSED
+N1-dry-run-builds: l0=MISSED l2=['FAIL ptool/pt1-add', 'FAIL ptool/pt2-install'] l3=MISSED
+N2-nothing-line: does not compile
+N3-no-project: l0=caught l2=['FAIL ptool/pt1-add'] l3=MISSED
+N4-compiler-stop: l0=caught l2=['FAIL ptool/pt2-install'] l3=MISSED
+N5-allow-env: l0=caught l2=['FAIL ptool/pt2-install'] l3=MISSED
+N2-nothing-line: l0=MISSED l2=['FAIL ptool/pt2-install', 'FAIL ptool/pt3-move'] l3=MISSED

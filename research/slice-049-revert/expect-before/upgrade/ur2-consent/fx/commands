@@ -1,0 +1,9 @@
+upgrade roc --file p1/main.roc
+env:CI=true env:HOME={w}/home2 upgrade roc --file p2/main.roc
+env:CI=true env:HOME={w}/home3 upgrade roc --allow-downloads --file p3/main.roc
+env:HOME={w}/home4 upgrade roc --file p4/main.roc
+env:CI=true env:TALON_AUTO_INSTALL=no env:HOME={w}/home5 upgrade roc --file p5/main.roc
+env:HOME={w}/home6 upgrade roc --file p6/main.roc
+env:HOME={w}/home7 upgrade roc --file p7/main.roc
+env:CI=true env:TALON_AUTO_INSTALL=no env:HOME={w}/home8 upgrade roc --file p8/main.roc
+env:HOME={w}/home9 upgrade roc --file p9/main.roc

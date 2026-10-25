@@ -1,0 +1,16 @@
+== @roc +link-dev version
+exit 0
+== @roc version
+exit 0
+== @roc version env:ROC_TOOLCHAIN=copy-fix-1
+exit 0
+== @roc +link-dev version env:TALON_PROXY=0
+exit 0
+== @roc +link-bad version
+exit 19
+== @roc +link-new version
+exit 19
+== @roc +link-gone version
+exit 18
+== @roc +link-moved version
+exit 18

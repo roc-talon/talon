@@ -1,0 +1,12 @@
+1	CAUGHT	an installed tool and an entry of the same version: the entry wins (R-B1: the installed tool wins a tie)	(expected: L0 XCacheTest choose, L2 x1 run 8 (baz runs from talon/x))	FAIL x/x1-run | commands: 0 passed, 1 failed
+2	CAUGHT	online, the winner needs not be a candidate of the release list (R-B3)	(expected: L0 XCacheTest choose, L2 x1 run 9, tk1 run 6)	FAIL tool/tk1-takeover | FAIL x/x1-run | commands: 0 passed, 2 failed
+3	CAUGHT	a selector matches any version online (R-B2: the selector must mean the version of the build)	(expected: L0 XCacheTest choose, L2 x1 run 4 and 6, tk1 run 5)	FAIL tool/tk1-takeover | FAIL x/x1-run | commands: 0 passed, 2 failed
+4	CAUGHT	versions are compared by the first number only (R-B1: the highest version wins)	(expected: L0 XCacheTest choose, is_older)	3 failed | 0 compiler errors | at XCacheTest.roc:223, XCacheTest.roc:272, XCacheTest.roc:297
+5	CAUGHT	the sha256 of the entry binary is not compared before the move (R-B4, Q-T3)	(expected: L2 tk1 run 10 (exit 16, no move))	FAIL tool/tk1-takeover | commands: 0 passed, 1 failed
+6	CAUGHT	the entry dir is not deleted after a take-over by move (R-B4: one owner)	(expected: L2 tk1 runs 1 to 4 (calls.log: delete) and tree.diff)	FAIL tool/tk1-takeover | commands: 0 passed, 1 failed
+7	CAUGHT	a run of a cached entry does not write the new last_run (R-GC7 needs it)	(expected: L2 x1 run 5 (calls.log: write_atomic, tree.diff: last_run))	FAIL x/x1-run | commands: 0 passed, 1 failed
+8	CAUGHT	gc removes an entry that is exactly as old as the gc age (R-GC7, R-GC9: older than the age)	(expected: L0 XCacheTest expired, L2 gc4 (the boundary entry))	FAIL gc/gc4-x | commands: 0 passed, 1 failed
+9	CAUGHT	offline, a range or `latest` selector matches any build (Q-O2: only an exact version matches)	(expected: L0 XCacheTest choose offline)	1 failed | 0 compiler errors | at XCacheTest.roc:272
+10	CAUGHT	the loser of a race keeps its temp dir (R-CC11)	(expected: L2 x1 run 9 (calls.log: delete of the temp dir))	FAIL x/x1-run | commands: 0 passed, 1 failed
+11	CAUGHT	gc removes an entry dir with no manifest (Q-G1: it stays)	(expected: L0 XCacheTest expired, L2 gc4 (the dir `nomanifest`))	FAIL gc/gc4-x | commands: 0 passed, 1 failed
+12	CAUGHT	an entry with no binary is a match (Q-X3, review)	(expected: L0 XCacheTest 7, L2 x1-run run 13)	l0-5: 72 passed, 1 failed | x1-run: 0 passed, 1 failed
