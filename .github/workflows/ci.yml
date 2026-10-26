@@ -92,20 +92,6 @@ jobs:
           path: .work/cache/roc
           key: roc-pkgs-${{ runner.os }}-${{ steps.pkgs.outputs.hash }}
 
-      # Temporary: what the Windows runner sees (the same roc test call as the l0 step, with the env of scripts/env.sh).
-      - name: Windows diagnostics
-        if: runner.os == 'Windows'
-        continue-on-error: true
-        run: |
-          set +e
-          mkdir -p .work
-          . scripts/env.sh
-          echo "ROC_CACHE_DIR=$ROC_CACHE_DIR XDG_CACHE_HOME=$XDG_CACHE_HOME"
-          "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-d.log 2>&1; echo "test with env.sh rc=$?"; head -n 8 .work/diag-d.log
-          ROC_CACHE_DIR=$(cygpath -w "$ROC_CACHE_DIR") XDG_CACHE_HOME=$(cygpath -w "$XDG_CACHE_HOME") "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-e.log 2>&1; echo "test with windows paths rc=$?"; head -n 8 .work/diag-e.log
-          env -u ROC_CACHE_DIR "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-f.log 2>&1; echo "test without ROC_CACHE_DIR rc=$?"; head -n 8 .work/diag-f.log
-          JOBS=1 bash scripts/te""st.sh l0 > .work/diag-g.log 2>&1; echo "JOBS=1 l0 rc=$?"; tail -n 25 .work/diag-g.log
-
       - name: Test
         shell: bash
         run: scripts/test.sh ${{ matrix.steps }}
