@@ -11,11 +11,11 @@ export XDG_CACHE_HOME=$WORK/cache
 export ROC_CACHE_DIR=$WORK/cache/roc
 mkdir -p "$XDG_CACHE_HOME" "$WORK/bin"
 # Git Bash on Windows: roc.exe is a native program and does not read the MSYS form of a path (`/d/a/talon/talon/.work/cache`) in a variable, and `roc test` fails with no text.
-# `cygpath -m` gives `D:/a/talon/talon/.work/cache`, which both the native and the MSYS tools read. (check, fmt and build read the cache without this.)
+# `cygpath -w` gives `D:\a\talon\talon\.work\cache`, which `roc test` reads (`cygpath -m`, `D:/a/...`, does not: tried on the runner). check and fmt read the cache either way.
 case $(uname -s) in
 MINGW* | MSYS* | CYGWIN*)
-    XDG_CACHE_HOME=$(cygpath -m "$XDG_CACHE_HOME")
-    ROC_CACHE_DIR=$(cygpath -m "$ROC_CACHE_DIR")
+    XDG_CACHE_HOME=$(cygpath -w "$XDG_CACHE_HOME")
+    ROC_CACHE_DIR=$(cygpath -w "$ROC_CACHE_DIR")
     ;;
 esac
 export ROOT ROC ROC_TAG WORK
