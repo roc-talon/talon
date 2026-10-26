@@ -230,7 +230,7 @@ list_one! = |dir| match Path.list!(Path.utf8(dir)) {
 				Err(_) => Bool.False
 			}
 			mtime = match Path.time_modified!(p) {
-				Ok(ns) => (ns // 1_000_000_000).to_u64_wrap()
+				Ok(ns) => RealBase.seconds(ns)
 				Err(_) => 0
 			}
 			$entries = $entries.append({ name, is_dir, mtime })
@@ -279,7 +279,7 @@ tree_files! = |text| {
 # The modification time in seconds. A time that cannot be read is 0.
 seconds_of! : Path => U64
 seconds_of! = |path| match Path.time_modified!(path) {
-	Ok(ns) => (ns // 1_000_000_000).to_u64_wrap()
+	Ok(ns) => RealBase.seconds(ns)
 	Err(_) => 0
 }
 
@@ -360,6 +360,6 @@ runnable_file! = |text, path| match Path.canonicalize!(path) {
 # The size in bytes and the modification time (seconds) of `real`, with the name `text`.
 runnable_facts! : Str, Path => Try({ path : Str, size : U64, mtime : U64 }, [Skip])
 runnable_facts! = |text, real| match (Path.size_in_bytes!(real), Path.time_modified!(real)) {
-	(Ok(size), Ok(ns)) => Ok({ path: text, size, mtime: (ns // 1_000_000_000).to_u64_wrap() })
+	(Ok(size), Ok(ns)) => Ok({ path: text, size, mtime: RealBase.seconds(ns) })
 	_ => Err(Skip)
 }

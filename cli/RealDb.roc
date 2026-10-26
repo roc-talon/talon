@@ -1,11 +1,14 @@
+import pf.Duration
 import pf.Path
 import pf.Sqlite
+import pf.Sqlite.Decoder
 import lib.Db
 import lib.Text
 
 ## The `compat.db` calls of the real `Fx` on basic-cli `Sqlite` (slice 030, R-CC8, R-TF1 to R-TF3). The SQL is here, the decisions are in `Db` and `Facts` (TW4).
 ## The docs of `Fx.db_query!` and `Fx.db_write!` have the steps. The spike `research/compat-db/RESULTS.md` has what `Sqlite` can do:
-## one connection for each path is kept for the process, so `PRAGMA busy_timeout` and a transaction of several calls hold; a statement with many `VALUES` rows is one write.
+## basic-cli 0.26 gives one connection for each `Sqlite.open!`. Each `query!` and `write!` opens one connection and uses it for all of its statements,
+## so the busy timeout (an open option) and a transaction of several statements hold; a statement with many `VALUES` rows is one write.
 RealDb :: [].{
 
 	query! : Db.Open, Db.Query => Try(Db.Answer, Db.Err)
@@ -14,7 +17,10 @@ RealDb :: [].{
 			Ok(empty_answer(query))
 		} else {
 			match Path.exists!(Path.utf8(open.path)) {
-				Ok(Bool.True) => read_rows!(open, query)
+				Ok(Bool.True) => match open_db!(open) {
+					Err(err) => Err(err)
+					Ok(db) => read_rows!(db, open, query)
+				}
 				Ok(Bool.False) => Ok(empty_answer(query))
 				Err(PathErr(err, _)) => Err(Failed(Str.inspect(err)))
 			}
@@ -28,13 +34,16 @@ RealDb :: [].{
 		} else {
 			match make_parent!(open.path) {
 				Err(err) => Err(err)
-				Ok(_) => match start!(open) {
+				Ok(_) => match open_db!(open) {
 					Err(err) => Err(err)
-					Ok(version) => {
-						made = if version == 0 create!(open) else Ok({})
-						match made {
-							Err(err) => Err(err)
-							Ok(_) => insert!(open, write)
+					Ok(db) => match start!(db, open) {
+						Err(err) => Err(err)
+						Ok(version) => {
+							made = if version == 0 create!(db, open) else Ok({})
+							match made {
+								Err(err) => Err(err)
+								Ok(_) => insert!(db, write)
+							}
 						}
 					}
 				}
@@ -63,18 +72,31 @@ empty_answer = |query| match query {
 
 # R-CC8: `Busy` and `Locked` are a lock that stayed held. Any other error is a failure with its text.
 err_of = |err| match err {
-	SqliteErr(Busy, _) => Busy
-	SqliteErr(Locked, _) => Busy
-	SqliteErr(code, text) => Failed("${Sqlite.errcode_to_str(code)}: ${text}")
+	SqliteErr(found) => sqlite_err(found)
 	other => Failed(Str.inspect(other))
 }
 
-pragma_int! = |path, text, column| Sqlite.query!({ path, query: "PRAGMA ${text}", bindings: [], row: Sqlite.i64(column) })
+sqlite_err : Sqlite.Err -> Db.Err
+sqlite_err = |err| match err {
+	Failed({ code: Busy, extended_code: _, message: _ }) => Busy
+	Failed({ code: Locked, extended_code: _, message: _ }) => Busy
+	Failed({ code, extended_code: _, message }) => Failed("${Str.inspect(code)}: ${message}")
+	_ => Failed(err.to_str())
+}
 
-pragma_str! = |path, text, column| Sqlite.query!({ path, query: "PRAGMA ${text}", bindings: [], row: Sqlite.str(column) })
+# One connection for the whole call. R-CC8: the busy timeout is an option of the connection.
+open_db! : Db.Open => Try(Sqlite.Db, Db.Err)
+open_db! = |open| match Sqlite.open!(Path.utf8(open.path), { busy_timeout: Duration.millis(open.busy_ms) }) {
+	Ok(db) => Ok(db)
+	Err(err) => Err(err_of(err))
+}
 
-exec! : Path.Path, Str, List(Sqlite.Binding) => Try({}, Db.Err)
-exec! = |path, sql, bindings| match Sqlite.execute!({ path, query: sql, bindings }) {
+# SQL that the code makes at run time, with the values of its `?` marks in order.
+sql : Str, List(Sqlite.Value) -> Sqlite.Query
+sql = |text, values| Sqlite.Query.new(text, values)
+
+exec! : Sqlite.Db, Str, List(Sqlite.Value) => Try({}, Db.Err)
+exec! = |db, text, values| match db.execute!(sql(text, values)) {
 	Ok(_) => Ok({})
 	Err(err) => Err(err_of(err))
 }
@@ -93,70 +115,55 @@ make_parent! = |file| {
 	}
 }
 
-# The first calls of each file (D4 of the slice, F1 and F2 of the spike): the busy timeout first, then the version (a newer one stops here, before the WAL switch changes the file header), then WAL.
+# The first calls of each file (D4 of the slice, F1 and F2 of the spike): the busy timeout first (`open_db!`), then the version (a newer one stops here, before the WAL switch changes the file header), then WAL.
 # A failed WAL switch is no error (R-CC8, D9). The result is the version of the file (0 for a new file).
-start! : Db.Open => Try(U64, Db.Err)
-start! = |open| {
-	path = Path.utf8(open.path)
-	match pragma_int!(path, "busy_timeout=${U64.to_str(open.busy_ms)}", "timeout") {
-		Err(err) => Err(err_of(err))
-		Ok(_) => match pragma_int!(path, "user_version", "user_version") {
-			Err(err) => Err(err_of(err))
-			Ok(found) => {
-				version = I64.to_u64_try(found) ?? 0
-				if version > open.format {
-					Err(TooNew(version))
-				} else {
-					_ = pragma_str!(path, "journal_mode=WAL", "journal_mode")
-					Ok(version)
-				}
-			}
+start! : Sqlite.Db, Db.Open => Try(U64, Db.Err)
+start! = |db, open| match db.query_one!(sql("PRAGMA user_version", []), Decoder.i64("user_version")) {
+	Err(err) => Err(err_of(err))
+	Ok(found) => {
+		version = I64.to_u64_try(found) ?? 0
+		if version > open.format {
+			Err(TooNew(version))
+		} else {
+			_ = db.query_one!(sql("PRAGMA journal_mode=WAL", []), Decoder.str("journal_mode"))
+			Ok(version)
 		}
 	}
 }
 
-read_rows! : Db.Open, Db.Query => Try(Db.Answer, Db.Err)
-read_rows! = |open, query| match start!(open) {
+read_rows! : Sqlite.Db, Db.Open, Db.Query => Try(Db.Answer, Db.Err)
+read_rows! = |db, open, query| match start!(db, open) {
 	Err(err) => Err(err)
-	Ok(version) => if version == 0 Ok(empty_answer(query)) else select!(Path.utf8(open.path), query)
+	Ok(version) => if version == 0 Ok(empty_answer(query)) else select!(db, query)
 }
 
 # R-TF2: the columns are named, never `SELECT *`.
 # One query for all keys (R-EF1). The bundled SQLite is 3.49.1 and takes 32766 variables (measured, research/compat-db/RESULTS.md): 10000 fact keys use 30000. No chunks.
-select! : Path.Path, Db.Query => Try(Db.Answer, Db.Err)
-select! = |path, query| match query {
+select! : Sqlite.Db, Db.Query => Try(Db.Answer, Db.Err)
+select! = |db, query| match query {
 	Facts(keys) => {
-		clause = Str.join_with(keys.map_with_index(|_, i| "(hash = :h${U64.to_str(i)} AND nightly = :n${U64.to_str(i)} AND target = :t${U64.to_str(i)})"), " OR ")
-		bindings = keys.map_with_index(|key, i| fact_key_bindings(key, i)).join()
-		sql = "SELECT hash, nightly, target, outcome, modules, closure FROM facts WHERE ${clause}"
-		decoder = pair(Sqlite.str("hash"), pair(Sqlite.str("nightly"), pair(Sqlite.str("target"), pair(Sqlite.str("outcome"), pair(Sqlite.str("modules"), Sqlite.str("closure"))))))
-		match Sqlite.query_many!({ path, query: sql, bindings, rows: decoder }) {
+		clause = Str.join_with(keys.map(|_| "(hash = ? AND nightly = ? AND target = ?)"), " OR ")
+		values = keys.map(|key| [String(key.hash), String(key.nightly), String(key.target)]).join()
+		text = "SELECT hash, nightly, target, outcome, modules, closure FROM facts WHERE ${clause}"
+		decoder = pair(Decoder.str("hash"), pair(Decoder.str("nightly"), pair(Decoder.str("target"), pair(Decoder.str("outcome"), pair(Decoder.str("modules"), Decoder.str("closure"))))))
+		match db.query_all!(sql(text, values), decoder) {
 			Err(err) => Err(err_of(err))
 			Ok(rows) => Ok(Facts(rows.keep_oks(fact_of)))
 		}
 	}
 	Pinned(keys) => {
-		clause = Str.join_with(keys.map_with_index(|_, i| "(tag = :t${U64.to_str(i)} AND target = :g${U64.to_str(i)})"), " OR ")
-		bindings = keys.map_with_index(|key, i| [text(":t${U64.to_str(i)}", key.tag), text(":g${U64.to_str(i)}", key.target)]).join()
-		sql = "SELECT tag, target, sha256, source FROM pinned WHERE ${clause}"
-		decoder = pair(Sqlite.str("tag"), pair(Sqlite.str("target"), pair(Sqlite.str("sha256"), Sqlite.str("source"))))
-		match Sqlite.query_many!({ path, query: sql, bindings, rows: decoder }) {
+		clause = Str.join_with(keys.map(|_| "(tag = ? AND target = ?)"), " OR ")
+		values = keys.map(|key| [String(key.tag), String(key.target)]).join()
+		text = "SELECT tag, target, sha256, source FROM pinned WHERE ${clause}"
+		decoder = pair(Decoder.str("tag"), pair(Decoder.str("target"), pair(Decoder.str("sha256"), Decoder.str("source"))))
+		match db.query_all!(sql(text, values), decoder) {
 			Err(err) => Err(err_of(err))
 			Ok(rows) => Ok(Pinned(rows.keep_oks(pinned_of)))
 		}
 	}
 }
 
-pair = |first, second| Sqlite.decode_record(first, second, |a, b| (a, b))
-
-text : Str, Str -> Sqlite.Binding
-text = |name, value| { name, value: String(value) }
-
-fact_key_bindings : Db.Key, U64 -> List(Sqlite.Binding)
-fact_key_bindings = |key, i| {
-	n = U64.to_str(i)
-	[text(":h${n}", key.hash), text(":n${n}", key.nightly), text(":t${n}", key.target)]
-}
+pair = |first, second| first.map2(second, |a, b| (a, b))
 
 # A row with an outcome word that this Talon does not know is no fact (R-TF2 spirit: the row is ignored).
 fact_of : (Str, (Str, (Str, (Str, (Str, Str))))) -> Try(Db.Fact, [BadWord])
@@ -172,10 +179,9 @@ pinned_of = |(tag, (target, (sha256, source_text)))| match Db.source_of(source_t
 }
 
 # R-CC8, R-TF1: a new file gets the 2 tables of `Db` and the version in one transaction. A second process that does the same at the same time waits for the lock (`IF NOT EXISTS`: both can run it).
-create! : Db.Open => Try({}, Db.Err)
-create! = |open| {
-	path = Path.utf8(open.path)
-	match exec!(path, "BEGIN IMMEDIATE", []) {
+create! : Sqlite.Db, Db.Open => Try({}, Db.Err)
+create! = |db, open| {
+	match exec!(db, "BEGIN IMMEDIATE", []) {
 		Err(err) => Err(err)
 		Ok(_) => {
 			steps = [
@@ -185,9 +191,9 @@ create! = |open| {
 				"COMMIT",
 			]
 			var $failures = []
-			for sql in steps {
+			for step in steps {
 				if $failures.is_empty() {
-					match exec!(path, sql, []) {
+					match exec!(db, step, []) {
 						Ok(_) => {}
 						Err(err) => {
 							$failures = [err]
@@ -198,7 +204,7 @@ create! = |open| {
 			match $failures {
 				[] => Ok({})
 				[err, ..] => {
-					_ = exec!(path, "ROLLBACK", [])
+					_ = exec!(db, "ROLLBACK", [])
 					Err(err)
 				}
 			}
@@ -207,42 +213,30 @@ create! = |open| {
 }
 
 # R-CC8: one `INSERT` with all rows is one transaction. R-TF2: `Replace` is an upsert of the known columns, never a delete and an insert.
-insert! : Db.Open, Db.Write => Try({}, Db.Err)
-insert! = |open, write| {
-	path = Path.utf8(open.path)
-	match write {
-		Facts({ rows, existing }) => {
-			marks = Str.join_with(rows.map_with_index(|_, i| "(:h${U64.to_str(i)}, :n${U64.to_str(i)}, :t${U64.to_str(i)}, :o${U64.to_str(i)}, :m${U64.to_str(i)}, :c${U64.to_str(i)})"), ", ")
-			conflict = match existing {
-				Replace => "ON CONFLICT(hash, nightly, target, closure) DO UPDATE SET outcome = excluded.outcome, modules = excluded.modules"
-				Keep => "ON CONFLICT DO NOTHING"
-			}
-			bindings = rows.map_with_index(|row, i| fact_bindings(row, i)).join()
-			exec!(path, "INSERT INTO facts (hash, nightly, target, outcome, modules, closure) VALUES ${marks} ${conflict}", bindings)
+insert! : Sqlite.Db, Db.Write => Try({}, Db.Err)
+insert! = |db, write| match write {
+	Facts({ rows, existing }) => {
+		marks = Str.join_with(rows.map(|_| "(?, ?, ?, ?, ?, ?)"), ", ")
+		conflict = match existing {
+			Replace => "ON CONFLICT(hash, nightly, target, closure) DO UPDATE SET outcome = excluded.outcome, modules = excluded.modules"
+			Keep => "ON CONFLICT DO NOTHING"
 		}
-		Pinned(rows) => {
-			marks = Str.join_with(rows.map_with_index(|_, i| "(:t${U64.to_str(i)}, :g${U64.to_str(i)}, :s${U64.to_str(i)}, :o${U64.to_str(i)})"), ", ")
-			bindings = rows.map_with_index(|row, i| pinned_bindings(row, i)).join()
-			exec!(path, "INSERT INTO pinned (tag, target, sha256, source) VALUES ${marks} ON CONFLICT DO NOTHING", bindings)
-		}
+		values = rows.map(fact_values).join()
+		exec!(db, "INSERT INTO facts (hash, nightly, target, outcome, modules, closure) VALUES ${marks} ${conflict}", values)
+	}
+	Pinned(rows) => {
+		marks = Str.join_with(rows.map(|_| "(?, ?, ?, ?)"), ", ")
+		values = rows.map(|row| [String(row.tag), String(row.target), String(row.sha256), String(Db.source_word(row.source))]).join()
+		exec!(db, "INSERT INTO pinned (tag, target, sha256, source) VALUES ${marks} ON CONFLICT DO NOTHING", values)
 	}
 }
 
-fact_bindings : Db.Fact, U64 -> List(Sqlite.Binding)
-fact_bindings = |row, i| {
-	n = U64.to_str(i)
-	[
-		text(":h${n}", row.hash),
-		text(":n${n}", row.nightly),
-		text(":t${n}", row.target),
-		text(":o${n}", Db.outcome_word(row.outcome)),
-		text(":m${n}", Db.modules_text(row.modules)),
-		text(":c${n}", row.closure),
-	]
-}
-
-pinned_bindings : Db.Pinned, U64 -> List(Sqlite.Binding)
-pinned_bindings = |row, i| {
-	n = U64.to_str(i)
-	[text(":t${n}", row.tag), text(":g${n}", row.target), text(":s${n}", row.sha256), text(":o${n}", Db.source_word(row.source))]
-}
+fact_values : Db.Fact -> List(Sqlite.Value)
+fact_values = |row| [
+	String(row.hash),
+	String(row.nightly),
+	String(row.target),
+	String(Db.outcome_word(row.outcome)),
+	String(Db.modules_text(row.modules)),
+	String(row.closure),
+]

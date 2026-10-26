@@ -28,7 +28,7 @@ RealLocks :: [].{
 				if $polls % 10 == 0 {
 					RealLocks.heartbeat!(token)
 				}
-				Sleep.millis!(200)
+				_ = Sleep.millis!(200)
 				$polls = $polls + 1
 			}
 			$outcome = attempt!(token, item, mode)
@@ -128,7 +128,7 @@ contended! = |item, mode| {
 
 modified_seconds! : Str => Try(U64, [NotFound, Denied, Other(Str)])
 modified_seconds! = |path| match Path.time_modified!(Path.utf8(path)) {
-	Ok(ns) => Ok((ns // 1_000_000_000).to_u64_wrap())
+	Ok(ns) => Ok(RealBase.seconds(ns))
 	Err(PathErr(err, _)) => Err(RealBase.file_err(err))
 }
 

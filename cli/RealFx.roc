@@ -5,6 +5,7 @@ import pf.Path
 import pf.Stderr
 import pf.Stdin
 import pf.Stdout
+import pf.System
 import http.Request
 import http.Response
 import lib.Fx
@@ -72,10 +73,10 @@ real_fx = |args, token| Fx.{
 	windows!: windows!,
 }
 
-## Slice 050c, R-ST10: is this machine Windows (basic-cli `Env.platform!`).
+## Slice 050c, R-ST10: is this machine Windows (basic-cli `System.target!`).
 windows! : () => Bool
-windows! = || match Env.platform!().os {
-	WINDOWS => Bool.True
+windows! = || match System.target!().os() {
+	Windows(_) => Bool.True
 	_ => Bool.False
 }
 
@@ -92,13 +93,13 @@ exec! : { argv : List(Str), env : List((Str, Str)) } => Try(I32, [NotStarted(Str
 exec! = |run| match run.argv {
 	[] => Err(NotStarted("no program"))
 	[program, .. as rest] => {
-		cmd = Cmd.new_str(program).args_str(rest).envs_str(run.env).stdin(Inherit).stdout(Inherit).stderr(Inherit)
+		cmd = RealBase.command(program, rest, run.env).stdin(Inherit).stdout(Inherit).stderr(Inherit)
 		match cmd.run!() {
 			Ok(out) => match out.status {
 				Exited(code) => Ok(code)
 				Signaled(signal) => Ok(128 + signal)
 			}
-			Err(err) => Err(NotStarted(Str.inspect(err)))
+			Err(err) => Err(NotStarted(RealBase.run_err(err)))
 		}
 	}
 }
@@ -108,13 +109,13 @@ exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [
 exec_in! = |run| match run.argv {
 	[] => Err(NotStarted("no program"))
 	[program, .. as rest] => {
-		cmd = Cmd.new_str(program).args_str(rest).envs_str(run.env).cwd(Path.utf8(run.cwd)).stdin(Inherit).stdout(Inherit).stderr(Inherit)
+		cmd = RealBase.command(program, rest, run.env).cwd(Path.utf8(run.cwd)).stdin(Inherit).stdout(Inherit).stderr(Inherit)
 		match cmd.run!() {
 			Ok(out) => match out.status {
 				Exited(code) => Ok(code)
 				Signaled(signal) => Ok(128 + signal)
 			}
-			Err(err) => Err(NotStarted(Str.inspect(err)))
+			Err(err) => Err(NotStarted(RealBase.run_err(err)))
 		}
 	}
 }
@@ -124,20 +125,20 @@ spawn_detached! : { argv : List(Str), env : List((Str, Str)) } => Try({}, [NotSt
 spawn_detached! = |run| match run.argv {
 	[] => Err(NotStarted("no program"))
 	argv => {
-		launcher = match Env.platform!().os {
-			WINDOWS => ["cmd.exe", "/d", "/c", "start", "", "/b"].concat(argv)
+		launcher = match System.target!().os() {
+			Windows(_) => ["cmd.exe", "/d", "/c", "start", "", "/b"].concat(argv)
 			_ => ["sh", "-c", "command -v \"\$1\" >/dev/null 2>&1 || exit 127; \"\$@\" </dev/null >/dev/null 2>&1 &", "sh"].concat(argv)
 		}
 		match launcher {
 			[program, .. as rest] => {
-				cmd = Cmd.new_str(program).args_str(rest).envs_str(run.env).stdin(Null).stdout(Capture).stderr(Capture)
+				cmd = RealBase.command(program, rest, run.env).stdin(Null).stdout(Capture).stderr(Capture)
 				match cmd.run!() {
 					Ok(out) => match out.status {
 						Exited(0) => Ok({})
 						Exited(127) => Err(NotStarted("${argv.first() ?? ""}: no such program"))
 						other => Err(NotStarted("the launcher ended with ${Str.inspect(other)}"))
 					}
-					Err(err) => Err(NotStarted(Str.inspect(err)))
+					Err(err) => Err(NotStarted(RealBase.run_err(err)))
 				}
 			}
 			[] => Err(NotStarted("no program"))
@@ -156,11 +157,10 @@ cwd! = || match Env.cwd!() {
 ## On Windows Talon takes both as a terminal (R-HF1, CLI 4, R-NR1).
 tty! : () => { stdin : Bool, stderr : Bool }
 tty! = || {
-	match Env.platform!().os {
-		WINDOWS => { stdin: Bool.True, stderr: Bool.True }
+	match System.target!().os() {
+		Windows(_) => { stdin: Bool.True, stderr: Bool.True }
 		_ => {
-			cmd = Cmd.new_str("sh")
-				.args_str(["-c", "test -t 0; i=$?; test -t 2; echo $i $?"])
+			cmd = RealBase.command("sh", ["-c", "test -t 0; i=$?; test -t 2; echo $i $?"], [])
 				.stdin(Inherit)
 				.stderr(Inherit)
 				.stdout(Capture)
@@ -190,7 +190,7 @@ http_get! : { url : Str, headers : List((Str, Str)) } => Try({ status : U16, hea
 http_get! = |req| {
 	base = Request.from_method(GET).with_uri(req.url).with_timeout(TimeoutMilliseconds(20000))
 	request = req.headers.fold(base, |r, (name, value)| r.add_header(name, value))
-	match Http.send!(request) {
+	match Http.send!(request, {}) {
 		Ok(response) => match Str.from_utf8(Response.body(response)) {
 			Ok(body) => Ok({
 				status: Response.status(response),
@@ -204,6 +204,8 @@ http_get! = |req| {
 		Err(HttpErr(NetworkError)) => Err(Failed("network error"))
 		Err(HttpErr(BadBody)) => Err(Failed("bad body"))
 		Err(HttpErr(Other(bytes))) => Err(Failed(Str.from_utf8_lossy(bytes)))
+		Err(HttpErr(other)) => Err(Failed(Str.inspect(other)))
+		Err(Interrupted) => Err(Failed("interrupted"))
 	}
 }
 
@@ -243,23 +245,19 @@ make_dirs! = |dirs| {
 	$failure
 }
 
-# R-CV8: the system of this machine, with the names of `Fx` (`X86` and `ARM` have no compiler asset: `Other`).
+# R-CV8: the system of this machine, with the names of `Fx`. basic-cli 0.26 runs only on x64 and arm64 of Linux, macOS and Windows, so it never gives `Other`.
 platform! : () => { os : [Linux, Macos, Windows, Other(Str)], arch : [X64, Arm64, Other(Str)] }
 platform! = || {
-	found = Env.platform!()
+	found = System.target!()
 	{
-		os: match found.os {
-			LINUX => Linux
-			MACOS => Macos
-			WINDOWS => Windows
-			OTHER(name) => Other(name)
+		os: match found.os() {
+			Linux(_) => Linux
+			MacOS(_) => Macos
+			Windows(_) => Windows
 		},
-		arch: match found.arch {
+		arch: match found.arch() {
 			X64 => X64
-			AARCH64 => Arm64
-			X86 => Other("x86")
-			ARM => Other("arm")
-			OTHER(name) => Other(name)
+			Arm64 => Arm64
 		},
 	}
 }

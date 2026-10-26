@@ -2,10 +2,11 @@ import pf.Cmd
 import pf.Path
 import pf.Sleep
 import pf.Utc
+import RealBase
 import lib.Probe
 import RealLocks
 
-## Slice 003, R-DA5, R-HF4, R-CC12: runs the children of the jobs, at most `limit` at the same time, and polls them with `try_wait!`.
+## Slice 003, R-DA5, R-HF4, R-CC12: runs the children of the jobs, at most `limit` at the same time, and polls them with `poll!`.
 ## The poll loop writes the heartbeat of the locks that the process holds, as `lock!` does (R-CC12 point 3).
 RealJobs :: [].{
 
@@ -34,8 +35,8 @@ RealJobs :: [].{
 			}
 			var $still = no_running
 			for entry in $running {
-				match entry.child.try_wait!() {
-					Ok([out]) => {
+				match entry.child.poll!() {
+					Ok(Finished(out)) => {
 						entry.child.close!() |> ignore
 						$done = $done.append((entry.index, job_result(out)))
 					}
@@ -54,7 +55,7 @@ RealJobs :: [].{
 				if $polls % 100 == 0 {
 					RealLocks.heartbeat!(token)
 				}
-				Sleep.millis!(20)
+				_ = Sleep.millis!(20)
 				$polls = $polls + 1
 			}
 		}
@@ -93,7 +94,7 @@ RealJobs :: [].{
 							match start_probe!(spec) {
 								Ok(child) => {
 									$used = $used + need
-									$running = $running.append({ index: $next, child, deadline: Utc.now!() + spec.timeout.to_u128() * 1_000_000_000, need })
+									$running = $running.append({ index: $next, child, deadline: Utc.now!().to_nanos_since_epoch() + spec.timeout.to_i128() * 1_000_000_000, need })
 								}
 								Err(text) => {
 									$done = $done.append(($next, { ended: NotStarted(text), stdout: "", stderr: "" }))
@@ -108,10 +109,10 @@ RealJobs :: [].{
 				}
 			}
 			var $still = no_probing
-			now = Utc.now!()
+			now = Utc.now!().to_nanos_since_epoch()
 			for entry in $running {
-				match entry.child.try_wait!() {
-					Ok([out]) => {
+				match entry.child.poll!() {
+					Ok(Finished(out)) => {
 						entry.child.close!() |> ignore
 						$used = $used - entry.need
 						$done = $done.append((entry.index, probe_output(out)))
@@ -137,7 +138,7 @@ RealJobs :: [].{
 				if $polls % 100 == 0 {
 					RealLocks.heartbeat!(token)
 				}
-				Sleep.millis!(20)
+				_ = Sleep.millis!(20)
 				$polls = $polls + 1
 			}
 		}
@@ -174,19 +175,19 @@ start_job! : Job => Try(Cmd.Child, Str)
 start_job! = |job| match job.argv {
 	[] => Err("empty command")
 	[program, .. as rest] => {
-		base = Cmd.new_str(program).args_str(rest).stdin(Null).stdout(Capture).stderr(Capture)
+		base = RealBase.command(program, rest, []).stdin(Null).stdout(Capture).stderr(Capture)
 		cmd = match job.cwd {
 			Ok(dir) => base.cwd(Path.utf8(dir))
 			Err(Inherit) => base
 		}
 		match cmd.spawn!() {
 			Ok(child) => Ok(child)
-			Err(err) => Err(Str.inspect(err))
+			Err(err) => Err(RealBase.start_err(err))
 		}
 	}
 }
 
-job_result : Cmd.RunOutput -> JobResult
+job_result : Cmd.Output -> JobResult
 job_result = |out| {
 	lines = Str.from_utf8_lossy(out.stderr_bytes).split_on("\n").map(|line| line.trim()).keep_if(|line| !line.is_empty())
 	{
@@ -199,7 +200,7 @@ job_result = |out| {
 	}
 }
 
-Probing : { index : U64, child : Cmd.Child, deadline : U128, need : U64 }
+Probing : { index : U64, child : Cmd.Child, deadline : I128, need : U64 }
 
 # R-PP6, D10: the slots of a probe, at least 1 and at most the pool (a weight above the pool takes the whole pool).
 slots_of : Probe.Spec, U64 -> U64
@@ -214,9 +215,7 @@ no_outputs = []
 # `roc` on PATH (R-PH6) in the dir of the probe. `manage_tree`: a kill also ends the children of roc (the linker).
 start_probe! : Probe.Spec => Try(Cmd.Child, Str)
 start_probe! = |spec| {
-	cmd = Cmd.new_str(spec.program)
-		.args_str(spec.args)
-		.envs_str(spec.env)
+	cmd = RealBase.command(spec.program, spec.args, spec.env)
 		.cwd(Path.utf8(spec.dir))
 		.stdin(Null)
 		.stdout(Capture)
@@ -224,11 +223,11 @@ start_probe! = |spec| {
 		.manage_tree(Bool.True)
 	match cmd.spawn!() {
 		Ok(child) => Ok(child)
-		Err(err) => Err(Str.inspect(err))
+		Err(err) => Err(RealBase.start_err(err))
 	}
 }
 
-probe_output : Cmd.RunOutput -> Probe.Output
+probe_output : Cmd.Output -> Probe.Output
 probe_output = |out| {
 	ended: match out.status {
 		Exited(code) => Exited(code)
