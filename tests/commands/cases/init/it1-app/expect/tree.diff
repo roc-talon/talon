@@ -70,7 +70,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -122,7 +122,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -160,7 +160,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -212,7 +212,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -250,7 +250,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -288,7 +288,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -321,7 +321,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -349,7 +349,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check
@@ -387,7 +387,7 @@
 +    steps:
 +      - uses: actions/checkout@v4
 +      - name: Install Talon
-+        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.0/install.sh | sh -s -- --yes --version 0.0.0
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
 +      - name: Install packages
 +        run: tln install --frozen
 +      - name: Check

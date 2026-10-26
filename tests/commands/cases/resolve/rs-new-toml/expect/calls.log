@@ -5,7 +5,7 @@ read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 random
 list_dirs $HOME/.cache/roc/packages

@@ -5,7 +5,7 @@ platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 http_get https://api.github.com/repos/acme/empty/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/share/talon/bin/empty
@@ -26,7 +26,7 @@ platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 http_get https://api.github.com/repos/acme/gapp/commits/nosuch
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 args
 env_all
@@ -41,7 +41,7 @@ platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 http_get https://api.github.com/repos/acme/gapp/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/gapp
@@ -62,7 +62,7 @@ platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 http_get https://api.github.com/repos/acme/fe/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/fe

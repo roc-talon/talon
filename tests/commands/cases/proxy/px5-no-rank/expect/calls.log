@@ -21,7 +21,7 @@ list_dirs $WORK/h1/.cache/roc/toolchains
 list_dirs $WORK/h1/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
@@ -80,7 +80,7 @@ list_dirs $WORK/h2/.cache/roc/toolchains
 list_dirs $WORK/h2/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
@@ -147,7 +147,7 @@ list_dirs $WORK/h3/.cache/roc/toolchains
 list_dirs $WORK/h3/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
@@ -175,7 +175,7 @@ list_dirs $WORK/h4/.cache/roc/toolchains
 list_dirs $WORK/h4/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h4/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h4/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h4/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h4/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
@@ -245,7 +245,7 @@ list_dirs $WORK/h5/.cache/roc/toolchains
 list_dirs $WORK/h5/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h5/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h5/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
@@ -294,7 +294,7 @@ list_dirs $WORK/h7/.cache/roc/toolchains
 list_dirs $WORK/h7/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h7/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4

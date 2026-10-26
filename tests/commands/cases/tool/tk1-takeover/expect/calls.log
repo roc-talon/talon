@@ -6,7 +6,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 http_get https://api.github.com/repos/acme/foo/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/1.json $HOME/.cache/roc/talon/index/github/acme/foo/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json $HOME/.cache/roc/talon/x/2465c81fd37d63dfe64b7fb10405cb4e2288e7d896bf7b1f7764c036cb4d9d79/manifest.json $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60/manifest.json $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
@@ -36,7 +36,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
 http_get https://api.github.com/repos/acme/bar/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/bar/1.json $HOME/.cache/roc/talon/index/github/acme/bar/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/2465c81fd37d63dfe64b7fb10405cb4e2288e7d896bf7b1f7764c036cb4d9d79/manifest.json $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60/manifest.json $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
@@ -66,7 +66,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/qux
 http_get https://api.github.com/repos/acme/qux/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/qux/1.json $HOME/.cache/roc/talon/index/github/acme/qux/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/2465c81fd37d63dfe64b7fb10405cb4e2288e7d896bf7b1f7764c036cb4d9d79/manifest.json $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60/manifest.json $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
@@ -98,7 +98,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/ren
 http_get https://api.github.com/repos/acme/ren/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/ren/1.json $HOME/.cache/roc/talon/index/github/acme/ren/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/2465c81fd37d63dfe64b7fb10405cb4e2288e7d896bf7b1f7764c036cb4d9d79/manifest.json $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
@@ -129,7 +129,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/lat
 http_get https://api.github.com/repos/acme/lat/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/lat/1.json $HOME/.cache/roc/talon/index/github/acme/lat/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
@@ -191,7 +191,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/yank
 http_get https://api.github.com/repos/acme/yank/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/yank/1.json $HOME/.cache/roc/talon/index/github/acme/yank/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
@@ -287,7 +287,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bad
 http_get https://api.github.com/repos/acme/bad/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/bad/1.json $HOME/.cache/roc/talon/index/github/acme/bad/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json

@@ -6,7 +6,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 http_get https://api.github.com/repos/acme/foo/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/1.json $HOME/.cache/roc/talon/index/github/acme/foo/1.meta
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/foo
@@ -37,10 +37,10 @@ delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.01
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
 http_get https://api.github.com/repos/acme/bar/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/bar/1.json $HOME/.cache/roc/talon/index/github/acme/bar/1.meta
 http_get https://api.github.com/repos/acme/gm/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/gm
@@ -58,7 +58,7 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 http_get https://api.github.com/repos/acme/gs/commits/stable
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
@@ -84,7 +84,7 @@ read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkb
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
 read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/talon/index/github/acme/bar/1.json
 http_get https://api.github.com/repos/acme/gm/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/gm
@@ -102,7 +102,7 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 http_get https://api.github.com/repos/acme/gs/commits/stable
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
@@ -114,7 +114,7 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
@@ -147,7 +147,7 @@ read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkb
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
 read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/talon/index/github/acme/bar/1.json
 http_get https://api.github.com/repos/acme/gm/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/gm
@@ -165,7 +165,7 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 http_get https://api.github.com/repos/acme/gs/commits/stable
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
@@ -294,10 +294,10 @@ read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
 read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/talon/index/github/acme/bar/1.json
 http_get https://api.github.com/repos/acme/gm/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 http_get https://api.github.com/repos/acme/gs/commits/stable
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 args
 env_all

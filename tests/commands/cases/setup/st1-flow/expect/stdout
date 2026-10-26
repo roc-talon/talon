@@ -1,5 +1,5 @@
 == setup
-recorded talon 0.0.0 in $HOME/.local/share/talon/tools.json
+recorded talon 0.0.1 in $HOME/.local/share/talon/tools.json
 made $HOME/.local/bin/tln (hard link)
 made $HOME/.local/bin/baz (hard link)
 completions: $HOME/.local/share/bash-completion/completions/tln

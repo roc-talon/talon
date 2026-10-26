@@ -24,7 +24,7 @@ read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/a
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -32,12 +32,12 @@ read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZt
 list_dirs $HOME/.cache/roc/talon/index/github/acme/yaml
 programs gh
 http_get https://api.github.com/repos/acme/yaml/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/yaml/1.json $HOME/.cache/roc/talon/index/github/acme/yaml/1.meta
 list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains

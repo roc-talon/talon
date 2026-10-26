@@ -135,7 +135,7 @@ read_files $HOME/.cache/roc/talon/x/06a0be3e2b5af82e4d39a35577e7737898d342569d5e
 list_dirs $HOME/.cache/roc/talon/x/06a0be3e2b5af82e4d39a35577e7737898d342569d5eb70957793cfd102041d4 $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/b69826fe9f53629caae5e8cb936bf6b0cc169b0199c29937b6602f27c7027b88 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
 list_dirs $HOME/.cache/roc/talon/index/github/acme/net
 http_get https://api.github.com/repos/acme/net/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/x/06a0be3e2b5af82e4d39a35577e7737898d342569d5eb70957793cfd102041d4/manifest.json
 exec $HOME/.cache/roc/talon/x/06a0be3e2b5af82e4d39a35577e7737898d342569d5eb70957793cfd102041d4/net
 args
@@ -153,4 +153,4 @@ read_files $HOME/.cache/roc/talon/x/06a0be3e2b5af82e4d39a35577e7737898d342569d5e
 list_dirs $HOME/.cache/roc/talon/x/06a0be3e2b5af82e4d39a35577e7737898d342569d5eb70957793cfd102041d4 $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/b69826fe9f53629caae5e8cb936bf6b0cc169b0199c29937b6602f27c7027b88 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
 list_dirs $HOME/.cache/roc/talon/index/github/acme/net2
 http_get https://api.github.com/repos/acme/net2/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1

@@ -6,7 +6,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/z
 http_get https://api.github.com/repos/acme/z/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/z/1.json $HOME/.cache/roc/talon/index/github/acme/z/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 list_dirs $HOME/.local/bin
@@ -68,7 +68,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/qux
 http_get https://api.github.com/repos/acme/qux/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/qux/1.json $HOME/.cache/roc/talon/index/github/acme/qux/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 list_dirs $HOME/.local/bin

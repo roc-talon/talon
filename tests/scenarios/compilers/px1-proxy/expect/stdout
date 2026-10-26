@@ -53,5 +53,5 @@ exit 13
 2
 == R-ST8: a program named tln is not the proxy.
 == tln --version
-tln 0.0.0
+tln 0.0.1
 exit 0

@@ -6,7 +6,7 @@ read_files $PROJECT/t7/main.roc
 list_dirs $HOME/.cache/roc/talon/index/github/acme/mov
 programs gh
 http_get https://api.github.com/repos/acme/mov/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/mov/1.json $HOME/.cache/roc/talon/index/github/acme/mov/1.meta
 read_files $HOME/.config/talon/config.toml
 random
@@ -38,7 +38,7 @@ platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6

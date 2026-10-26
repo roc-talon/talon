@@ -48,7 +48,7 @@ list_dirs $HOME/.cache/roc/packages/3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 args
 env_all
@@ -121,7 +121,7 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -160,7 +160,7 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 args
 env_all

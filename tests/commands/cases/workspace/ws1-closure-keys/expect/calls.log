@@ -24,7 +24,7 @@ read_files $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc $PROJECT/w3/a
 list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -75,7 +75,7 @@ read_files $PROJECT/w3/apps/a/main.roc $PROJECT/w3/apps/b/main.roc $PROJECT/w3/a
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
 read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
@@ -108,7 +108,7 @@ read_files $PROJECT/w4/apps/a/main.roc $PROJECT/w4/apps/b/main.roc $PROJECT/w4/a
 list_dirs $HOME/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/core/1.json $HOME/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
 read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
@@ -141,7 +141,7 @@ read_files $PROJECT/w5/apps/a/main.roc $PROJECT/w5/apps/b/main.roc $PROJECT/w5/a
 list_dirs $HOME/.cache/roc/talon/index/github/acme/util
 programs gh
 http_get https://api.github.com/repos/acme/util/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/util/1.json $HOME/.cache/roc/talon/index/github/acme/util/1.meta
 random
 list_dirs $HOME/.cache/roc/packages

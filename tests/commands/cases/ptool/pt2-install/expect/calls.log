@@ -28,7 +28,7 @@ read_files $HOME/.cache/roc/talon/x/0dd3b674090c571b3804c69cd719808268aaa26206eb
 list_dirs $HOME/.cache/roc/talon/x/0dd3b674090c571b3804c69cd719808268aaa26206ebe90dbaedbea7680c9459 $HOME/.cache/roc/talon/x/ae645a1c3018adbcc602beb6dd791491ed06efabecac1e43febfe4f70c110527 $HOME/.cache/roc/talon/x/cc0d3942b485cad9290cbe66614da353b532b28751eb9bea6f5ae83b4031a993
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 http_get https://api.github.com/repos/acme/foo/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/1.json $HOME/.cache/roc/talon/index/github/acme/foo/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -545,7 +545,7 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 args
 env_all
 clock

@@ -8,7 +8,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 http_get https://api.github.com/repos/acme/foo/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/1.json $HOME/.cache/roc/talon/index/github/acme/foo/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/345310d5a93db2926433c1d508f8c1ad2d2d98130850c38ccc15099344fd364d/manifest.json $HOME/.cache/roc/talon/x/68d522795fdd89258898ba25e57254128ab3dfb691e83a41c38a396bf3f72c75/manifest.json $HOME/.cache/roc/talon/x/949d9533214948219e880444aa448b23804cd32272b27df9aabafdf67751d888/manifest.json
@@ -40,7 +40,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/zed
 http_get https://api.github.com/repos/acme/zed/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/zed/1.json $HOME/.cache/roc/talon/index/github/acme/zed/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/345310d5a93db2926433c1d508f8c1ad2d2d98130850c38ccc15099344fd364d/manifest.json $HOME/.cache/roc/talon/x/68d522795fdd89258898ba25e57254128ab3dfb691e83a41c38a396bf3f72c75/manifest.json
@@ -69,7 +69,7 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/qux
 http_get https://api.github.com/repos/acme/qux/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/qux/1.json $HOME/.cache/roc/talon/index/github/acme/qux/1.meta
 list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/345310d5a93db2926433c1d508f8c1ad2d2d98130850c38ccc15099344fd364d/manifest.json $HOME/.cache/roc/talon/x/68d522795fdd89258898ba25e57254128ab3dfb691e83a41c38a396bf3f72c75/manifest.json

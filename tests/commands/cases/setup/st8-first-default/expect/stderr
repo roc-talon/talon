@@ -1,5 +1,5 @@
 note: no default compiler was set, because the list of compilers cannot be read (no cached list of compilers and --offline is set). The first command that needs a compiler picks one.
-recorded talon 0.0.0 in $HOME/.local/share/talon/tools.json
+recorded talon 0.0.1 in $HOME/.local/share/talon/tools.json
 made $HOME/.local/bin/tln (hard link)
 made $HOME/.local/bin/roc (hard link)
 note: no default compiler was set, because the list of compilers cannot be read (GitHub API rate limit reached. It resets at 2026-10-15T13:13:20Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login).). The first command that needs a compiler picks one.

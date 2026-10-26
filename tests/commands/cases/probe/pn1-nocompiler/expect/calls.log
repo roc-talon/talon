@@ -53,7 +53,7 @@ list_dirs $WORK/h3/.cache/roc/toolchains
 list_dirs $WORK/h3/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $WORK/h3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $WORK/h3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $WORK/h3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $WORK/h3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4

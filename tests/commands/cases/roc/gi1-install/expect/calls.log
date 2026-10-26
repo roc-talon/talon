@@ -4,14 +4,14 @@ clock
 platform
 programs gh
 http_get https://api.github.com/repos/Karakatiza666/roc/commits/my-branch
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 programs curl wget
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
@@ -53,7 +53,7 @@ clock
 platform
 programs gh
 http_get https://api.github.com/repos/Karakatiza666/roc/commits/my-branch
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 args
@@ -62,7 +62,7 @@ clock
 platform
 programs gh
 http_get https://api.github.com/repos/roc-lang/roc/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 programs curl wget
@@ -106,7 +106,7 @@ env_all
 clock
 platform
 http_get http://127.0.0.1:9/api/repos/roc-lang/roc/commits/dd03c09e
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 programs curl wget
@@ -155,7 +155,7 @@ clock
 platform
 programs gh
 http_get https://api.github.com/repos/roc-lang/roc/commits/nosuch
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 args
 env_all
@@ -163,7 +163,7 @@ clock
 platform
 programs gh
 http_get https://api.github.com/repos/Karakatiza666/roc/commits/wip
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 programs curl wget
@@ -199,7 +199,7 @@ env_all
 clock
 platform
 http_get https://api.github.com/repos/roc-lang/roc/commits/main
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Authorization: Bearer ghp_fake
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains

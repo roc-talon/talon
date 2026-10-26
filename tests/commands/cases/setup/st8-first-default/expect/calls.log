@@ -41,7 +41,7 @@ clock
 platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 http_get http://127.0.0.1:1/api/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 args
 env_all
 platform
@@ -58,7 +58,7 @@ platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
@@ -107,7 +107,7 @@ platform
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
@@ -146,7 +146,7 @@ platform
 list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3

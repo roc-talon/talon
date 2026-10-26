@@ -29,4 +29,4 @@
 --- home/.local/share/talon/tools.json
 +++ home/.local/share/talon/tools.json
 @@ -0,0 +1 @@
-+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.0","url":"https://github.com/roc-talon/talon/releases/download/v0.0.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af","libs":[],"installed_at":"2026-10-22T12:00:00Z","bin":{"tln":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af","roc":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af"}}}}
++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.1","url":"https://github.com/roc-talon/talon/releases/download/v0.0.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af","libs":[],"installed_at":"2026-10-22T12:00:00Z","bin":{"tln":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af","roc":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af"}}}}

@@ -1,5 +1,5 @@
 == tln --version
-tln 0.0.0
+tln 0.0.1
 exit 0
 == tln tool list
 no tool is installed. Run: tln tool install owner/app

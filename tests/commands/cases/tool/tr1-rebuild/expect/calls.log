@@ -105,7 +105,7 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10

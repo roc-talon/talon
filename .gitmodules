@@ -1,3 +1,3 @@
 [submodule "cloudflare-workers"]
 	path = cloudflare-workers
-	url = /home/george/dev/Karakatiza666/cloudflare-workers
+	url = https://github.com/Karakatiza666/roc-cloudflare-workers.git

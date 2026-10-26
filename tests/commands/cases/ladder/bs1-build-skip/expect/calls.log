@@ -8,7 +8,7 @@ read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/confi
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -59,7 +59,7 @@ read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/confi
 list_dirs $HOME/.cache/roc/talon/index/github/acme/parser
 programs gh
 http_get https://api.github.com/repos/acme/parser/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/parser/1.json $HOME/.cache/roc/talon/index/github/acme/parser/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -107,7 +107,7 @@ platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
 canonical $HOME/.cache $HOME/.cache/roc

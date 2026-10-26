@@ -3,7 +3,7 @@ Help :: [].{
 
 	## The version of `tln`. The design gives no source for it yet (question in the slice file).
 	version : Str
-	version = "0.0.0"
+	version = "0.0.1"
 
 	## What a command line asks for before it is parsed: `Help` for `--help` or `help` as the first word,
 	## `Version` for `--version`. Words after a bare `--` belong to a child program (R-CM12).

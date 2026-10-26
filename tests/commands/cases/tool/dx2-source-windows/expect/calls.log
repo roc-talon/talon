@@ -8,10 +8,10 @@ read_files $HOME/u1/.local/share/talon/tools.json
 read_files $HOME/u1/.config/talon/config.toml
 list_dirs $HOME/u1/.cache/roc/talon/index/github/roc-talon/talon
 http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/u1/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/u1/.cache/roc/talon/index/github/roc-talon/talon/1.meta
 http_get https://api.github.com/repos/roc-talon/talon/commits/v0.3.4
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/u1\.local\bin
 sha256_file $HOME/u1/.local/share/talon/bin/tln.exe
@@ -86,10 +86,10 @@ read_files $HOME/u2/.local/share/talon/tools.json
 read_files $HOME/u2/.config/talon/config.toml
 list_dirs $HOME/u2/.cache/roc/talon/index/github/roc-talon/talon
 http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/u2/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/u2/.cache/roc/talon/index/github/roc-talon/talon/1.meta
 http_get https://api.github.com/repos/roc-talon/talon/commits/v0.3.4
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 list_dirs $HOME/u2\.local\bin
 sha256_file $HOME/u2/.local/share/talon/bin/tln.exe

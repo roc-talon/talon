@@ -21,7 +21,7 @@ read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME1/.config/talon/conf
 list_dirs $HOME1/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME1/.cache/roc/talon/index/github/acme/jb/1.json $HOME1/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME1/.cache/roc/packages
@@ -40,23 +40,23 @@ read_files $HOME1/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME1/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME1/.cache/roc/talon/index/github/acme/lib/1.json $HOME1/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME1/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME1/.cache/roc/talon/index/github/acme/core/1.json $HOME1/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME1/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME1/.cache/roc/talon/index/github/acme/pfx/1.json $HOME1/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -131,7 +131,7 @@ read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME2/.config/talon/conf
 list_dirs $HOME2/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/acme/jb/1.json $HOME2/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME2/.cache/roc/packages
@@ -150,23 +150,23 @@ read_files $HOME2/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME2/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/acme/lib/1.json $HOME2/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME2/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/acme/core/1.json $HOME2/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME2/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/acme/pfx/1.json $HOME2/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -243,7 +243,7 @@ read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME3/.config/talon/conf
 list_dirs $HOME3/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/acme/jb/1.json $HOME3/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME3/.cache/roc/packages
@@ -262,23 +262,23 @@ read_files $HOME3/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME3/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/acme/lib/1.json $HOME3/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME3/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/acme/core/1.json $HOME3/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME3/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/acme/pfx/1.json $HOME3/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -355,7 +355,7 @@ read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME4/.config/talon/conf
 list_dirs $HOME4/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME4/.cache/roc/talon/index/github/acme/jb/1.json $HOME4/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME4/.cache/roc/packages
@@ -374,23 +374,23 @@ read_files $HOME4/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME4/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME4/.cache/roc/talon/index/github/acme/lib/1.json $HOME4/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME4/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME4/.cache/roc/talon/index/github/acme/core/1.json $HOME4/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME4/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME4/.cache/roc/talon/index/github/acme/pfx/1.json $HOME4/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME4/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME4/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -469,7 +469,7 @@ read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME5/.config/talon/conf
 list_dirs $HOME5/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/acme/jb/1.json $HOME5/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME5/.cache/roc/packages
@@ -488,23 +488,23 @@ read_files $HOME5/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME5/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/acme/lib/1.json $HOME5/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME5/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/acme/core/1.json $HOME5/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME5/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/acme/pfx/1.json $HOME5/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -579,7 +579,7 @@ read_files $PROJECT/p6/main.roc $PROJECT/p6/talon.toml $HOME6/.config/talon/conf
 list_dirs $HOME6/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME6/.cache/roc/talon/index/github/acme/jb/1.json $HOME6/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME6/.cache/roc/packages
@@ -598,23 +598,23 @@ read_files $HOME6/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME6/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME6/.cache/roc/talon/index/github/acme/lib/1.json $HOME6/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME6/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME6/.cache/roc/talon/index/github/acme/core/1.json $HOME6/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME6/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME6/.cache/roc/talon/index/github/acme/pfx/1.json $HOME6/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -689,7 +689,7 @@ read_files $PROJECT/p7/main.roc $PROJECT/p7/talon.toml $HOME7/.config/talon/conf
 list_dirs $HOME7/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME7/.cache/roc/talon/index/github/acme/jb/1.json $HOME7/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME7/.cache/roc/packages
@@ -708,17 +708,17 @@ read_files $HOME7/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME7/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME7/.cache/roc/talon/index/github/acme/lib/1.json $HOME7/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME7/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME7/.cache/roc/talon/index/github/acme/core/1.json $HOME7/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME7/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME7/.cache/roc/talon/index/github/acme/pfx/1.json $HOME7/.cache/roc/talon/index/github/acme/pfx/1.meta
 random
 list_dirs $HOME7/.cache/roc/packages
@@ -733,7 +733,7 @@ platform
 list_dirs $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -762,7 +762,7 @@ platform
 list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -770,7 +770,7 @@ list_dirs $HOME8/.cache/roc/toolchains
 list_dirs $HOME8/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME8/.cache/roc/talon/index/github/acme/jb/1.json $HOME8/.cache/roc/talon/index/github/acme/jb/1.meta
 platform
 list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies
@@ -783,17 +783,17 @@ read_files $HOME8/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg
 list_dirs $HOME8/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME8/.cache/roc/talon/index/github/acme/lib/1.json $HOME8/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME8/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME8/.cache/roc/talon/index/github/acme/core/1.json $HOME8/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME8/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME8/.cache/roc/talon/index/github/acme/pfx/1.json $HOME8/.cache/roc/talon/index/github/acme/pfx/1.meta
 random
 list_dirs $HOME8/.cache/roc/packages
@@ -864,7 +864,7 @@ read_files $PROJECT/p9/main.roc $PROJECT/p9/talon.toml $HOME9/.config/talon/conf
 list_dirs $HOME9/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME9/.cache/roc/talon/index/github/acme/jb/1.json $HOME9/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME9/.cache/roc/packages
@@ -883,23 +883,23 @@ read_files $HOME9/.cache/roc/packages/89Pjo4YqWb3bUFuvq7Eo2zHoKp8KYAv5PZmqA8mVey
 list_dirs $HOME9/.cache/roc/talon/index/github/acme/libd
 programs gh
 http_get https://api.github.com/repos/acme/libd/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME9/.cache/roc/talon/index/github/acme/libd/1.json $HOME9/.cache/roc/talon/index/github/acme/libd/1.meta
 list_dirs $HOME9/.cache/roc/talon/index/github/acme/cored
 programs gh
 http_get https://api.github.com/repos/acme/cored/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME9/.cache/roc/talon/index/github/acme/cored/1.json $HOME9/.cache/roc/talon/index/github/acme/cored/1.meta
 list_dirs $HOME9/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME9/.cache/roc/talon/index/github/acme/pfx/1.json $HOME9/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -976,7 +976,7 @@ read_files $PROJECT/p10/apps/a/main.roc $PROJECT/p10/apps/b/main.roc $PROJECT/p1
 list_dirs $HOME10/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME10/.cache/roc/talon/index/github/acme/jb/1.json $HOME10/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME10/.cache/roc/packages
@@ -995,23 +995,23 @@ read_files $HOME10/.cache/roc/packages/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjc
 list_dirs $HOME10/.cache/roc/talon/index/github/acme/lib
 programs gh
 http_get https://api.github.com/repos/acme/lib/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME10/.cache/roc/talon/index/github/acme/lib/1.json $HOME10/.cache/roc/talon/index/github/acme/lib/1.meta
 list_dirs $HOME10/.cache/roc/talon/index/github/acme/core
 programs gh
 http_get https://api.github.com/repos/acme/core/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME10/.cache/roc/talon/index/github/acme/core/1.json $HOME10/.cache/roc/talon/index/github/acme/core/1.meta
 list_dirs $HOME10/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME10/.cache/roc/talon/index/github/acme/pfx/1.json $HOME10/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -1106,7 +1106,7 @@ read_files $PROJECT/p11/main.roc $PROJECT/p11/talon.toml $HOME11/.config/talon/c
 list_dirs $HOME11/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME11/.cache/roc/talon/index/github/acme/jb/1.json $HOME11/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME11/.cache/roc/packages
@@ -1176,7 +1176,7 @@ read_files $PROJECT/p12/main.roc $PROJECT/p12/talon.toml $HOME12/.config/talon/c
 list_dirs $HOME12/.cache/roc/talon/index/github/acme/jb
 programs gh
 http_get https://api.github.com/repos/acme/jb/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME12/.cache/roc/talon/index/github/acme/jb/1.json $HOME12/.cache/roc/talon/index/github/acme/jb/1.meta
 random
 list_dirs $HOME12/.cache/roc/packages
@@ -1195,23 +1195,23 @@ read_files $HOME12/.cache/roc/packages/HKMFtTvfYzZ32igvv6TV7YmZ6pha8hLrvjY2QR3pF
 list_dirs $HOME12/.cache/roc/talon/index/github/acme/libp
 programs gh
 http_get https://api.github.com/repos/acme/libp/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME12/.cache/roc/talon/index/github/acme/libp/1.json $HOME12/.cache/roc/talon/index/github/acme/libp/1.meta
 list_dirs $HOME12/.cache/roc/talon/index/github/acme/corep
 programs gh
 http_get https://api.github.com/repos/acme/corep/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME12/.cache/roc/talon/index/github/acme/corep/1.json $HOME12/.cache/roc/talon/index/github/acme/corep/1.meta
 list_dirs $HOME12/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME12/.cache/roc/talon/index/github/acme/pfx/1.json $HOME12/.cache/roc/talon/index/github/acme/pfx/1.meta
 platform
 list_dirs $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -1277,7 +1277,7 @@ platform
 list_dirs $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -1344,7 +1344,7 @@ platform
 list_dirs $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -1411,7 +1411,7 @@ platform
 list_dirs $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6

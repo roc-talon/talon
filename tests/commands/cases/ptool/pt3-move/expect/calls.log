@@ -19,7 +19,7 @@ platform
 list_dirs $HOME/.cache/roc/talon/x
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 http_get https://api.github.com/repos/acme/foo/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/1.json $HOME/.cache/roc/talon/index/github/acme/foo/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -54,11 +54,11 @@ rename $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c283586552
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
 http_get https://api.github.com/repos/acme/bar/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/bar/1.json $HOME/.cache/roc/talon/index/github/acme/bar/1.meta
 list_dirs $HOME/.cache/roc/talon/index/github/acme/baz
 http_get https://api.github.com/repos/acme/baz/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/baz/1.json $HOME/.cache/roc/talon/index/github/acme/baz/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -277,7 +277,7 @@ read_files $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c28358
 list_dirs $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/b4d3b7017c51d96b0b0e0fcfc3468190d41e13daf34746e21ad3fbf722d4fb1c $HOME/.cache/roc/talon/x/b9cfa067f2773abc10a07b1ae82978681875fd9de6ea8977746a5226688032b5 $HOME/.cache/roc/talon/x/fc45f4fad9d7cffe062d7f0c74d005042a53e80cdeadb5366cc826b38bb1a3a8
 list_dirs $HOME/.cache/roc/talon/index/github/acme/fmt
 http_get https://api.github.com/repos/acme/fmt/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/fmt/1.json $HOME/.cache/roc/talon/index/github/acme/fmt/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -330,7 +330,7 @@ read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/basic-cli
 http_get https://api.github.com/repos/roc-lang/basic-cli/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/basic-cli/1.json $HOME/.cache/roc/talon/index/github/roc-lang/basic-cli/1.meta
 random
 list_dirs $HOME/.cache/roc/packages
@@ -381,7 +381,7 @@ read_files $HOME/.cache/roc/talon/x/0008dcd2870a2f842d456061e8e6e970c32107db3277
 list_dirs $HOME/.cache/roc/talon/x/0008dcd2870a2f842d456061e8e6e970c32107db32777054ef24edecab639b4c $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/b4d3b7017c51d96b0b0e0fcfc3468190d41e13daf34746e21ad3fbf722d4fb1c $HOME/.cache/roc/talon/x/b9cfa067f2773abc10a07b1ae82978681875fd9de6ea8977746a5226688032b5 $HOME/.cache/roc/talon/x/fc45f4fad9d7cffe062d7f0c74d005042a53e80cdeadb5366cc826b38bb1a3a8
 list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
 random
 list_dirs $HOME/.cache/roc/packages

@@ -1,6 +1,6 @@
 == 1: R-ST13 R-ST14 R-ST15 R-ST7 R-LY8 R-ST4 R-NI14 R-ST5: the first setup. tln, roc and the tool foo are hard links of the files in the data bin dir (the same inode). The bin dir is not on PATH: the default answer is Yes, so the profile of bash gets the marker line. The completion is written.
 == tln setup
-recorded talon 0.0.0 in $WORK/data/talon/tools.json
+recorded talon 0.0.1 in $WORK/data/talon/tools.json
 made $HOME/.local/bin/tln (hard link)
 made $HOME/.local/bin/roc (hard link)
 made $HOME/.local/bin/foo (hard link)
@@ -8,7 +8,7 @@ PATH: added $HOME/.local/bin to $HOME/.bashrc
 completions: $HOME/.local/share/bash-completion/completions/tln
 exit 0
 == 1b: R-IS6 R-S2 R-T4 R-CC1 (slice 052): the entry talon is written when it is missing: the kind prebuilt, the version of this tln and the release URL of its asset, the target of this machine (musl on Linux), the real sha256 of the file tln in the data bin dir, the time TALON_NOW. The tool foo stays. No temp file is left.
-{"format":1,"tools":{"foo":{"bin":{"foo":"<sha256>"}},"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.0","url":"https://github.com/roc-talon/talon/releases/download/v0.0.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"<sha256>","libs":[],"installed_at":"2026-10-22T12:00:00Z","bin":{"tln":"<sha256>","roc":"<sha256>"}}}}
+{"format":1,"tools":{"foo":{"bin":{"foo":"<sha256>"}},"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.1","url":"https://github.com/roc-talon/talon/releases/download/v0.0.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"<sha256>","libs":[],"installed_at":"2026-10-22T12:00:00Z","bin":{"tln":"<sha256>","roc":"<sha256>"}}}}
 the sha256 is the one of the file tln
 bin of talon has the sha256 of the file tln for tln and roc
 bin of foo has the sha256 of the file foo
@@ -31,7 +31,7 @@ ran nightly-2026-10-14-38a3029: version
 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 exit 0
 == $HOME/.local/bin/tln --version
-tln 0.0.0
+tln 0.0.1
 exit 0
 == $HOME/.local/bin/foo a b
 tool foo ran as $HOME/.local/bin/foo: a b

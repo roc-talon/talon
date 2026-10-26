@@ -6,7 +6,7 @@ read_files $PROJECT/t1/main.roc
 list_dirs $HOME/.cache/roc/talon/index/github/acme/wpf
 programs gh
 http_get https://api.github.com/repos/acme/wpf/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/wpf/1.json $HOME/.cache/roc/talon/index/github/acme/wpf/1.meta
 read_files $HOME/.config/talon/config.toml
 random
@@ -37,7 +37,7 @@ platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -94,7 +94,7 @@ read_files $PROJECT/t2/main.roc
 list_dirs $HOME2/.cache/roc/talon/index/github/acme/mpf
 programs gh
 http_get https://api.github.com/repos/acme/mpf/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/acme/mpf/1.json $HOME2/.cache/roc/talon/index/github/acme/mpf/1.meta
 read_files $HOME2/.config/talon/config.toml
 random
@@ -125,7 +125,7 @@ platform
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -182,7 +182,7 @@ read_files $PROJECT/t3/main.roc
 list_dirs $HOME3/.cache/roc/talon/index/github/acme/web
 programs gh
 http_get https://api.github.com/repos/acme/web/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/acme/web/1.json $HOME3/.cache/roc/talon/index/github/acme/web/1.meta
 read_files $HOME3/.config/talon/config.toml
 random
@@ -213,7 +213,7 @@ platform
 list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
@@ -270,7 +270,7 @@ read_files $PROJECT/t4/main.roc
 list_dirs $HOME4/.cache/roc/talon/index/github/acme/cnst
 programs gh
 http_get https://api.github.com/repos/acme/cnst/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME4/.cache/roc/talon/index/github/acme/cnst/1.json $HOME4/.cache/roc/talon/index/github/acme/cnst/1.meta
 read_files $HOME4/.config/talon/config.toml
 random
@@ -284,7 +284,7 @@ read_files $PROJECT/t5/main.roc
 list_dirs $HOME5/.cache/roc/talon/index/github/roc-lang/basic-cli
 programs gh
 http_get https://api.github.com/repos/roc-lang/basic-cli/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/roc-lang/basic-cli/1.json $HOME5/.cache/roc/talon/index/github/roc-lang/basic-cli/1.meta
 read_files $HOME5/.config/talon/config.toml
 write_atomic $PROJECT/t5/main.roc
@@ -312,7 +312,7 @@ platform
 list_dirs $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.0
+  User-Agent: tln/0.0.1
 write_atomic $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
