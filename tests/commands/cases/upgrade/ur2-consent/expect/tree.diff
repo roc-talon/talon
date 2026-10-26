@@ -30,13 +30,17 @@
 +++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-09-9d9d9d9","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-9d9d9d9/roc_nightly-linux_x86_64-2026-10-09-9d9d9d9.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-09-9d9d9d9","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-09T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -45,21 +49,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-09-9d9d9d9","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-9d9d9d9/roc_nightly-linux_x86_64-2026-10-09-9d9d9d9.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-09-9d9d9d9","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-09T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-12-2a2a2a2","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2a2a2a2/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-12-2a2a2a2","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -68,10 +72,6 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-12-2a2a2a2","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2a2a2a2/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-12-2a2a2a2","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
 --- home/.config/talon/config.toml
 +++ home/.config/talon/config.toml
 @@ -1,2 +1,4 @@

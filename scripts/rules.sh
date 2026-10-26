@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Lists the rule ids of the design (R-H3, R-NI5, ...) and how many test files name each one.
 # A rule id is the first cell of a table row (`| R-H3 |`) or the start of a paragraph (`R-SL14: ...`).
 # Usage: scripts/rules.sh [GROUP ...]   GROUP: an id prefix, for example R-H R-NI R-C (or H NI C). Default: all groups.

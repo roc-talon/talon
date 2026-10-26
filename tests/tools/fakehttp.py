@@ -8,6 +8,8 @@ It serves the files of `<routes dir>` (the `given/http/` dir of a case). Each re
 The highest number of requests in flight at one time is in `<state dir>/http.maxconn`.
 
 Routes. A request `GET /<path>?<query>` is the file `<routes dir>/<path>?<query>`, else `<routes dir>/<path>`.
+File names: the runner decodes the names of `given/` before the server starts (tests/lib.sh decode_names), so the file of `GET /x?page=2` is named `x%3Fpage=2` in the repo
+(`%3F` is `?`, `%3A` is `:`, `%5C` is `\\`, `%25` is `%`: Windows refuses the characters `? : * < > | "` in a name) and `x?page=2` in the work dir. This file only sees the decoded names.
 No file: 404 with the body `{"message":"Not Found"}`. In a body and in a header value, `$PORT` is the port of the server.
 
 | File | Gives |

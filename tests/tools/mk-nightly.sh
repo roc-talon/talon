@@ -2,7 +2,7 @@
 # Makes the fake release list of roc-lang/nightlies and the fake compiler archives for the fake HTTP server (PLAN-P1 3.2, slices 020 and 021).
 # Usage: tests/tools/mk-nightly.sh <http dir> <spec>...
 #   <http dir>  the `given/http/` dir of a case. The script writes under it:
-#                 api/repos/roc-lang/nightlies/releases?per_page=100   the list, one release for each spec, in the order of the specs
+#                 api/repos/roc-lang/nightlies/releases%3Fper_page=100   the list, one release for each spec, in the order of the specs
 #                 dl/<tag>/roc_nightly-<target>-<date>-<sha>.tar.gz    one fake archive for each target of $TARGETS
 #   <spec>      <tag>[@<published_at>][+baddigest|+nodigest|+noasset]
 #                 <tag>           a nightly tag in one of the two forms (nightly-2026-10-14-38a3029, nightly-2026-July-31-123c5d7)
@@ -115,4 +115,4 @@ FAKE
     body=${body:+$body,
 }$release
 done
-printf '[\n%s\n]\n' "$body" > "$list/releases?per_page=100"
+printf '[\n%s\n]\n' "$body" > "$list/releases%3Fper_page=100"

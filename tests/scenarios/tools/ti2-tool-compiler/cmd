@@ -36,4 +36,3 @@ log
 echo "-- 6: acme/bar with a person and --roc installed: the flag answers the try only (R-NM10). Both checks fail, so the prompt shows with the list and the options 1 and 3 (R-T20). The typed answer is 3: exit 13."
 st tln tool install acme/bar --roc installed
 log
-tty

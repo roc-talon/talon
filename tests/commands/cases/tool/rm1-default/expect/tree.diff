@@ -22,34 +22,34 @@
 +++ home/.cache/roc/talon/x/0123abcd/xapp
 @@ -1 +0,0 @@
 -x app binary
---- home/.cache/roc/toolchains/git-ab12cd34/roc
-+++ home/.cache/roc/toolchains/git-ab12cd34/roc
-@@ -1 +0,0 @@
--fake roc
 --- home/.cache/roc/toolchains/git-ab12cd34/.talon.json
 +++ home/.cache/roc/toolchains/git-ab12cd34/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"git-ab12cd34","url":"http://127.0.0.1:1/dl/git-ab12cd34","sha256":"00","sha256_source":"github-digest","typed":"git-ab12cd34","compat":null,"installed_at":"2026-10-20T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/git-ab12cd34/roc
++++ home/.cache/roc/toolchains/git-ab12cd34/roc
+@@ -1 +0,0 @@
+-fake roc
 --- home/.cache/roc/toolchains/link-mine/.talon.json
 +++ home/.cache/roc/toolchains/link-mine/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"link-mine","kind":"link","path":"$HOME/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
---- home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
-+++ home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
-@@ -1 +0,0 @@
--fake roc
 --- home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 +++ home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"nightly-2026-09-01-abcdef0","url":"http://127.0.0.1:1/dl/nightly-2026-09-01-abcdef0","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-09-01-abcdef0","compat":"c2","installed_at":"2026-10-20T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
-+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+--- home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
++++ home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
 @@ -1 +0,0 @@
 -fake roc
 --- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 +++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"nightly-2026-10-14-38a3029","url":"http://127.0.0.1:1/dl/nightly-2026-10-14-38a3029","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-10-14-38a3029","compat":"c1","installed_at":"2026-10-20T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+@@ -1 +0,0 @@
+-fake roc
 --- home/.cache/roc/toolchains/zig-0.17.0/zig
 +++ home/.cache/roc/toolchains/zig-0.17.0/zig
 @@ -1 +0,0 @@

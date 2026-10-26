@@ -1,22 +1,22 @@
+--- home/.cache/roc/toolchains/copy-fix-1/.talon.json
++++ home/.cache/roc/toolchains/copy-fix-1/.talon.json
+@@ -1 +1 @@
+-{"format":1,"id":"copy-fix-1","source":"$PROJECT/roc-src/old/roc","installed_at":"2026-10-20T08:00:00Z"}
++{"format":1,"id":"copy-fix-1","source":"$PROJECT/roc-src/other/roc","installed_at":"2026-10-22T12:00:00Z"}
 --- home/.cache/roc/toolchains/copy-fix-1/roc
 +++ home/.cache/roc/toolchains/copy-fix-1/roc
 @@ -1 +1 @@
 -old copy
 \ No newline at end of file
 +other build
---- home/.cache/roc/toolchains/copy-fix-1/.talon.json
-+++ home/.cache/roc/toolchains/copy-fix-1/.talon.json
-@@ -1 +1 @@
--{"format":1,"id":"copy-fix-1","source":"$PROJECT/roc-src/old/roc","installed_at":"2026-10-20T08:00:00Z"}
-+{"format":1,"id":"copy-fix-1","source":"$PROJECT/roc-src/other/roc","installed_at":"2026-10-22T12:00:00Z"}
---- home/.cache/roc/toolchains/copy-fix-2/roc
-+++ home/.cache/roc/toolchains/copy-fix-2/roc
-@@ -0,0 +1 @@
-+new build
 --- home/.cache/roc/toolchains/copy-fix-2/.talon.json
 +++ home/.cache/roc/toolchains/copy-fix-2/.talon.json
 @@ -0,0 +1 @@
 +{"format":1,"id":"copy-fix-2","source":"$PROJECT/roc-src/zig-out/bin/roc","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/copy-fix-2/roc
++++ home/.cache/roc/toolchains/copy-fix-2/roc
+@@ -0,0 +1 @@
++new build
 --- home/.cache/roc/toolchains/link-dev/.talon.json
 +++ home/.cache/roc/toolchains/link-dev/.talon.json
 @@ -0,0 +1 @@

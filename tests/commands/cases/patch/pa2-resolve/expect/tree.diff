@@ -36,16 +36,6 @@
  }
  
  main! = |_args| Ok({})
---- project/p2/main.roc
-+++ project/p2/main.roc
-@@ -1,6 +1,6 @@
- app [main!] {
- 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb.tar.zst",
--	json: "https://github.com/acme/json/releases/download/2.1.0/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW.tar.zst",
-+	json: "https://github.com/acme/json/releases/download/2.2.0/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC.tar.zst",
- 	roc: "nightly-2026-10-14-38a3029",
- }
- 
 --- project/p2/.talon/patches/json/Extra.roc
 +++ project/p2/.talon/patches/json/Extra.roc
 @@ -0,0 +1 @@
@@ -59,6 +49,16 @@
  j01
  j02
  j03 patched
+--- project/p2/main.roc
++++ project/p2/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.1.0/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.2.0/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
 --- project/p2/talon.toml
 +++ project/p2/talon.toml
 @@ -1,2 +1,2 @@
@@ -84,16 +84,6 @@
  [patch]
 -json = { path = "./.talon/patches/json/main.roc", base = "XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW" }
 +json = { path = "./.talon/patches/json/main.roc", base = "J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC" }
---- project/p7/main.roc
-+++ project/p7/main.roc
-@@ -1,6 +1,6 @@
- app [main!] {
- 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb.tar.zst",
--	json: "https://github.com/acme/json/releases/download/2.1.0/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW.tar.zst",
-+	json: "https://github.com/acme/json/releases/download/2.2.0/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC.tar.zst",
- 	roc: "nightly-2026-10-14-38a3029",
- }
- 
 --- project/p7/.talon/patches/json/Extra.roc
 +++ project/p7/.talon/patches/json/Extra.roc
 @@ -0,0 +1 @@
@@ -107,6 +97,16 @@
  j01
  j02
  j03 patched
+--- project/p7/main.roc
++++ project/p7/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.1.0/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.2.0/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
 --- project/p7/talon.toml
 +++ project/p7/talon.toml
 @@ -1,2 +1,2 @@
@@ -119,16 +119,6 @@
  [patch]
 -json = { path = "./.talon/patches/json/main.roc", base = "XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW" }
 +json = { path = "./.talon/patches/json/main.roc", base = "3MhvPgLXMbxZm1m2xbkkM53X3VuP7YgFdxXW3ZUP6cZH" }
---- project/p9/main.roc
-+++ project/p9/main.roc
-@@ -1,6 +1,6 @@
- app [main!] {
- 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb.tar.zst",
--	json: "https://github.com/acme/json/releases/download/2.1.0/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW.tar.zst",
-+	json: "https://github.com/acme/json/releases/download/2.2.0/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC.tar.zst",
- 	roc: "nightly-2026-10-14-38a3029",
- }
- 
 --- project/p9/.talon/patches/json/Extra.roc
 +++ project/p9/.talon/patches/json/Extra.roc
 @@ -0,0 +1 @@
@@ -142,6 +132,16 @@
  j01
  j02
  j03 patched
+--- project/p9/main.roc
++++ project/p9/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/A5mjBMEmXUyopxCqK98hNFTSoqxDvgHuGKrWQCoRodEb.tar.zst",
+-	json: "https://github.com/acme/json/releases/download/2.1.0/XGFCReCSJKdhrGKuNGpLhKKKMjCm8S7GaDcrM8rW3EW.tar.zst",
++	json: "https://github.com/acme/json/releases/download/2.2.0/J1pJmacv3P79Py8xTHLsMK7XUm21vAZJ3F5mWhqw1skC.tar.zst",
+ 	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
 --- project/p9/talon.toml
 +++ project/p9/talon.toml
 @@ -1,3 +1,3 @@

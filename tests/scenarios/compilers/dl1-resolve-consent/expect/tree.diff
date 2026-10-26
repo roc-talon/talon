@@ -30,14 +30,18 @@
 +++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/.talon.json
 @@ -0,0 +1 @@
-+fake legal details of nightly-2026-10-11-1b2c3d4
++{"format":1,"id":"nightly-2026-10-11-1b2c3d4","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-11-1b2c3d4/roc_nightly-linux_x86_64-2026-10-11-1b2c3d4.tar.gz","sha256":"759b32f4fef0c9cd99a97d4bc23bde0ae0f22a855a2975e8e4ca821987c58cc3","sha256_source":"github-digest","typed":"nightly-2026-10-11-1b2c3d4","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-11T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/LICENSE
 +++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/LICENSE
 @@ -0,0 +1 @@
 +fake license of nightly-2026-10-11-1b2c3d4
+--- home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/legal_details
+@@ -0,0 +1 @@
++fake legal details of nightly-2026-10-11-1b2c3d4
 --- home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/roc
 +++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/roc
 @@ -0,0 +1,10 @@
@@ -51,22 +55,22 @@
 +version) echo "Roc compiler version $id" ;;
 +esac
 +exit 0
---- home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-11-1b2c3d4/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-11-1b2c3d4","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-11-1b2c3d4/roc_nightly-linux_x86_64-2026-10-11-1b2c3d4.tar.gz","sha256":"759b32f4fef0c9cd99a97d4bc23bde0ae0f22a855a2975e8e4ca821987c58cc3","sha256_source":"github-digest","typed":"nightly-2026-10-11-1b2c3d4","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-11T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/.talon.json
 @@ -0,0 +1 @@
-+fake legal details of nightly-2026-10-12-0a1b2c3
++{"format":1,"id":"nightly-2026-10-12-0a1b2c3","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-12-0a1b2c3/roc_nightly-linux_x86_64-2026-10-12-0a1b2c3.tar.gz","sha256":"4fd7a95cc19e7a71356dd998de9e563bb61bfc695e59d86a3276dccd26ccde57","sha256_source":"github-digest","typed":"nightly-2026-10-12-0a1b2c3","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/LICENSE
 +++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/LICENSE
 @@ -0,0 +1 @@
 +fake license of nightly-2026-10-12-0a1b2c3
+--- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/legal_details
+@@ -0,0 +1 @@
++fake legal details of nightly-2026-10-12-0a1b2c3
 --- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/roc
 +++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/roc
 @@ -0,0 +1,10 @@
@@ -80,22 +84,22 @@
 +version) echo "Roc compiler version $id" ;;
 +esac
 +exit 0
---- home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-0a1b2c3/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-12-0a1b2c3","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-12-0a1b2c3/roc_nightly-linux_x86_64-2026-10-12-0a1b2c3.tar.gz","sha256":"4fd7a95cc19e7a71356dd998de9e563bb61bfc695e59d86a3276dccd26ccde57","sha256_source":"github-digest","typed":"nightly-2026-10-12-0a1b2c3","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/.talon.json
 @@ -0,0 +1 @@
-+fake legal details of nightly-2026-10-13-5349569
++{"format":1,"id":"nightly-2026-10-13-5349569","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-13-5349569/roc_nightly-linux_x86_64-2026-10-13-5349569.tar.gz","sha256":"80538e1da42fcf106a1399a12e899ddc918f72709a8cea17a1b0e89bd45664d4","sha256_source":"github-digest","typed":"nightly-2026-10-13-5349569","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-13T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/LICENSE
 +++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/LICENSE
 @@ -0,0 +1 @@
 +fake license of nightly-2026-10-13-5349569
+--- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/legal_details
+@@ -0,0 +1 @@
++fake legal details of nightly-2026-10-13-5349569
 --- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/roc
 +++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/roc
 @@ -0,0 +1,10 @@
@@ -109,10 +113,6 @@
 +version) echo "Roc compiler version $id" ;;
 +esac
 +exit 0
---- home/.cache/roc/toolchains/nightly-2026-10-13-5349569/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-13-5349569/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-13-5349569","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-13-5349569/roc_nightly-linux_x86_64-2026-10-13-5349569.tar.gz","sha256":"80538e1da42fcf106a1399a12e899ddc918f72709a8cea17a1b0e89bd45664d4","sha256_source":"github-digest","typed":"nightly-2026-10-13-5349569","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-13T15:00:00Z"}
 --- home/.config/talon/config.toml
 +++ home/.config/talon/config.toml
 @@ -0,0 +1 @@

@@ -154,6 +154,17 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
   tags               optional: real-roc, slow, net, tty, windows, exdev
 ```
 
+File names in a case dir (`given/`, and `fx/` of L2) follow one rule, so that a clone on Windows works (TW29). The runners decode the names when they copy the case into the work dir (`decode_names` in `tests/lib.sh`: the one place of the rule). The fake `Fx`, the fake HTTP server and the command then see the real names.
+
+| In the repo | In the work dir | Why |
+| --- | --- | --- |
+| `%3F` | `?` | Windows refuses `? * : < > \| "` in a name. The route of a URL with a query is `releases%3Fper_page=100` |
+| `%3A` | `:` | The host dir `127.0.0.1%3A9` |
+| `%5C` | `\` | git refuses a `\` in a name. The Windows home `u%5C.local%5Cbin` |
+| `%25` | `%` | The escape character itself |
+
+A name has no other `%XX` with upper case hex digits. A tool that makes fixtures (`tests/tools/mk-*.sh`) writes the encoded names. The order of a tree diff is the order of `LC_ALL=C` (`tree_diff`), so it is the same on each machine (TW30).
+
 | Tag | Meaning | In the fast set |
 | --- | --- | --- |
 | `slow` | The case takes more than 2 s with small limits (TW27) | Skipped. `SLOW=1` runs it. |
@@ -332,6 +343,8 @@ R-H3, R-H5, R-C2 (Design 4.2, Resolution 2)
 | TW26 | `scripts/test.sh` prints the budget of each step. With `OPT=dev` (the default) it prints a `WARN` line for a step over its budget and for a run over 180 s. With `OPT=speed` it prints no `WARN` line (the LLVM build is slow on purpose). A warning does not fail the run. The budgets (seconds): check 10, fmt 5, l0 10, l1 60, l2 30, l3 60, selftest 20. `BUDGET_<STEP>=<s>` and `BUDGET_TOTAL=<s>` change them for one run. After a warning, the slice removes the cause before the hand-off (a slow case gets the tag `slow`, TW27), or the human changes a budget in this file. |
 | TW27 | An L3 case with a real wait sets small limits (for example `probe.timeout = 1` in `config.toml`). A case that still takes more than 2 s has the tag `slow`. The fast set skips it. `SLOW=1` runs it. The merge run and the nightly run set `SLOW=1`. |
 | TW28 | CI is in `.github/workflows/`. `ci.yml` runs the fast set (`scripts/test.sh`) on Linux, macOS and Windows for each push and pull request. The Windows job runs `check fmt l0` until a slice adds more. `nightly.yml` runs `OPT=speed SLOW=1 NET=1 REAL_ROC=1 scripts/test.sh` each night and on request (the merge run). The nightly tag of the compiler is `ROC_TAG` of `scripts/env.sh` and nowhere else. A workflow gets the compiler with `scripts/get-roc.sh` and never uses a path of `cloudflare-workers/`. A selftest row reads the workflow files (no runner can run them in the test run). |
+| TW29 | A tracked path must be valid on Windows: no `? * : < > \| "` and no `\` in a name, no trailing dot or space, no name such as `CON`. A fixture name encodes the characters with `%XX` (3.1). `tests/selftest.sh` checks `git ls-files`. |
+| TW30 | A runner never depends on the locale: the order of a file list in an expected file is made with `LC_ALL=C` (`diff -r` in `tree_diff`), so a machine with `en_US.UTF-8` and a runner with `C.UTF-8` give the same expected files. |
 
 ### 7.4 First scope, by phase (draft)
 

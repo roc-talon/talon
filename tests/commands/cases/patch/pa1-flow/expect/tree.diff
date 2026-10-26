@@ -1,10 +1,10 @@
---- home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/main.roc
-+++ home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/main.roc
+--- home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/Parse.roc
++++ home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/Parse.roc
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/Parse.roc
-+++ home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/Parse.roc
+--- home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/main.roc
++++ home/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/main.roc
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -17,7 +17,6 @@
 +++ home/.cache/roc/talon/projects.json
 @@ -0,0 +1 @@
 +{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p3/main.roc","last_use":1792065600},{"path":"$PROJECT/p4/main.roc","last_use":1792065600},{"path":"$PROJECT/p5/main.roc","last_use":1792065600},{"path":"$PROJECT/p6/main.roc","last_use":1792065600},{"path":"$PROJECT/p7/main.roc","last_use":1792065600}]}
-Binary files orig/project/p1/.talon/patches/json/data.bin and project/p1/.talon/patches/json/data.bin differ
 --- project/p1/.talon/patches/json/Inner/Deep.roc
 +++ project/p1/.talon/patches/json/Inner/Deep.roc
 @@ -0,0 +1,2 @@
@@ -60,6 +59,12 @@ Binary files orig/project/p1/.talon/patches/json/data.bin and project/p1/.talon/
 +j28
 +j29
 +j30
+--- project/p1/.talon/patches/json/Old.roc
++++ project/p1/.talon/patches/json/Old.roc
+@@ -0,0 +1,2 @@
++# old
++old = 1
+Binary files orig/project/p1/.talon/patches/json/data.bin and project/p1/.talon/patches/json/data.bin differ
 --- project/p1/.talon/patches/json/keep.bin
 +++ project/p1/.talon/patches/json/keep.bin
 @@ -0,0 +1 @@
@@ -74,11 +79,6 @@ Binary files orig/project/p1/.talon/patches/json/data.bin and project/p1/.talon/
 @@ -0,0 +1 @@
 +last line
 \ No newline at end of file
---- project/p1/.talon/patches/json/Old.roc
-+++ project/p1/.talon/patches/json/Old.roc
-@@ -0,0 +1,2 @@
-+# old
-+old = 1
 --- project/p1/.talon/patches/json/shrink.txt
 +++ project/p1/.talon/patches/json/shrink.txt
 @@ -0,0 +1,2 @@
@@ -96,7 +96,6 @@ Binary files orig/project/p1/.talon/patches/json/data.bin and project/p1/.talon/
 @@ -0,0 +1,2 @@
 +[patch]
 +json = { path = "./.talon/patches/json/main.roc", base = "3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm" }
-Binary files orig/project/p2/.talon/patches/json/data.bin and project/p2/.talon/patches/json/data.bin differ
 --- project/p2/.talon/patches/json/Inner/Deep.roc
 +++ project/p2/.talon/patches/json/Inner/Deep.roc
 @@ -0,0 +1,2 @@
@@ -139,6 +138,12 @@ Binary files orig/project/p2/.talon/patches/json/data.bin and project/p2/.talon/
 +j28
 +j29
 +j30
+--- project/p2/.talon/patches/json/Old.roc
++++ project/p2/.talon/patches/json/Old.roc
+@@ -0,0 +1,2 @@
++# old
++old = 1
+Binary files orig/project/p2/.talon/patches/json/data.bin and project/p2/.talon/patches/json/data.bin differ
 --- project/p2/.talon/patches/json/keep.bin
 +++ project/p2/.talon/patches/json/keep.bin
 @@ -0,0 +1 @@
@@ -153,11 +158,6 @@ Binary files orig/project/p2/.talon/patches/json/data.bin and project/p2/.talon/
 @@ -0,0 +1 @@
 +last line
 \ No newline at end of file
---- project/p2/.talon/patches/json/Old.roc
-+++ project/p2/.talon/patches/json/Old.roc
-@@ -0,0 +1,2 @@
-+# old
-+old = 1
 --- project/p2/.talon/patches/json/shrink.txt
 +++ project/p2/.talon/patches/json/shrink.txt
 @@ -0,0 +1,2 @@
@@ -170,13 +170,13 @@ Binary files orig/project/p2/.talon/patches/json/data.bin and project/p2/.talon/
 +b
 +c
 \ No newline at end of file
---- project/p2/.talon/patches/parser/main.roc
-+++ project/p2/.talon/patches/parser/main.roc
+--- project/p2/.talon/patches/parser/Parse.roc
++++ project/p2/.talon/patches/parser/Parse.roc
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- project/p2/.talon/patches/parser/Parse.roc
-+++ project/p2/.talon/patches/parser/Parse.roc
+--- project/p2/.talon/patches/parser/main.roc
++++ project/p2/.talon/patches/parser/main.roc
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -190,7 +190,6 @@ Binary files orig/project/p2/.talon/patches/json/data.bin and project/p2/.talon/
 +[patch]
 +parser = { path = "./.talon/patches/parser/main.roc", base = "PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG" }
 +json = { path = "./.talon/patches/json/main.roc", base = "3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm" }
-Binary files orig/project/p4/.talon/patches/json/data.bin and project/p4/.talon/patches/json/data.bin differ
 --- project/p4/.talon/patches/json/Inner/Deep.roc
 +++ project/p4/.talon/patches/json/Inner/Deep.roc
 @@ -0,0 +1,2 @@
@@ -233,6 +232,12 @@ Binary files orig/project/p4/.talon/patches/json/data.bin and project/p4/.talon/
 +j28
 +j29
 +j30
+--- project/p4/.talon/patches/json/Old.roc
++++ project/p4/.talon/patches/json/Old.roc
+@@ -0,0 +1,2 @@
++# old
++old = 1
+Binary files orig/project/p4/.talon/patches/json/data.bin and project/p4/.talon/patches/json/data.bin differ
 --- project/p4/.talon/patches/json/keep.bin
 +++ project/p4/.talon/patches/json/keep.bin
 @@ -0,0 +1 @@
@@ -247,11 +252,6 @@ Binary files orig/project/p4/.talon/patches/json/data.bin and project/p4/.talon/
 @@ -0,0 +1 @@
 +last line
 \ No newline at end of file
---- project/p4/.talon/patches/json/Old.roc
-+++ project/p4/.talon/patches/json/Old.roc
-@@ -0,0 +1,2 @@
-+# old
-+old = 1
 --- project/p4/.talon/patches/json/shrink.txt
 +++ project/p4/.talon/patches/json/shrink.txt
 @@ -0,0 +1,2 @@

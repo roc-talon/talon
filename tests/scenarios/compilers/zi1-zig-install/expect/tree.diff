@@ -1,3 +1,11 @@
+--- home/.cache/roc/toolchains/zig-0.17.0/.talon.json
++++ home/.cache/roc/toolchains/zig-0.17.0/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"zig-0.17.0","url":"http://127.0.0.1:$PORT/zig/dl/0.17.0/zig-x86_64-linux-0.17.0.tar.xz","sha256":"9022625a4e807de3006fac0e8c4990b1cdb8f67a7a21bd09de42d14b1c0adce2","sha256_source":"zig-index","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/zig-0.17.0/LICENSE
++++ home/.cache/roc/toolchains/zig-0.17.0/LICENSE
+@@ -0,0 +1 @@
++fake license of zig 0.17.0
 --- home/.cache/roc/toolchains/zig-0.17.0/doc/langref.html
 +++ home/.cache/roc/toolchains/zig-0.17.0/doc/langref.html
 @@ -0,0 +1 @@
@@ -6,14 +14,6 @@
 +++ home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
 @@ -0,0 +1 @@
 +// fake std 0.17.0
---- home/.cache/roc/toolchains/zig-0.17.0/LICENSE
-+++ home/.cache/roc/toolchains/zig-0.17.0/LICENSE
-@@ -0,0 +1 @@
-+fake license of zig 0.17.0
---- home/.cache/roc/toolchains/zig-0.17.0/.talon.json
-+++ home/.cache/roc/toolchains/zig-0.17.0/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"zig-0.17.0","url":"http://127.0.0.1:$PORT/zig/dl/0.17.0/zig-x86_64-linux-0.17.0.tar.xz","sha256":"9022625a4e807de3006fac0e8c4990b1cdb8f67a7a21bd09de42d14b1c0adce2","sha256_source":"zig-index","installed_at":"2026-10-22T12:00:00Z"}
 --- home/.cache/roc/toolchains/zig-0.17.0/zig
 +++ home/.cache/roc/toolchains/zig-0.17.0/zig
 @@ -0,0 +1,2 @@

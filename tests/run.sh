@@ -34,8 +34,11 @@ set -u
 SELF=$(cd "$(dirname "$0")" && pwd)
 . "$SELF/../scripts/env.sh"
 . "$SELF/lib.sh"
+# The GNU timeout by its full path: the case runs under `env -i` with a PATH of its own (macOS: gtimeout, or a timeout in a gnubin dir that is not on that PATH).
+for TIMEOUT_CMD in gnutimeout gtimeout timeout; do TIMEOUT_CMD=$(command -v "$TIMEOUT_CMD") && break; done
 SCENARIOS=${SCENARIOS:-$SELF/scenarios}
-CASEROOT=${TMPDIR:-/tmp}/talon-test
+# The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
+CASEROOT=$(cd "${TMPDIR:-/tmp}" && pwd -P)/talon-test
 
 # run_case <case dir>: run one case. Prints nothing on a pass. Prints the reasons on a failure.
 # The exit code is 0 (pass), 1 (fail) or 2 (skipped).
@@ -59,6 +62,7 @@ run_case() {
     rm -rf "$W"
     mkdir -p "$W/home" "$W/project" "$W/out" "$W/bin"
     [ -d "$dir/given" ] && cp -a "$dir/given/." "$W/"
+    decode_names "$W" # %3F, %3A, %5C: the names that Windows refuses (tests/lib.sh)
     mkdir -p "$W/home" "$W/project" "$W/orig"
     cp -a "$W/home" "$W/orig/home"
     cp -a "$W/project" "$W/orig/project"
@@ -98,9 +102,9 @@ run_case() {
         [ -d "$W/http" ] && run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
     else
         # A case that hangs (a lock that waits for ever, slice 002) fails after CASE_TIMEOUT s with exit code 124.
-        run=(timeout "${CASE_TIMEOUT:-120}" sh -e "$cmdfile")
+        run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" sh -e "$cmdfile")
         # A case with routes gets the fake HTTP server (slice 003). It runs inside the namespace of the case.
-        [ -d "$W/http" ] && run=(timeout "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
+        [ -d "$W/http" ] && run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
     fi
     (cd "$W/project" && $cut env -i "${envs[@]}" "${run[@]}" > "$W/out/stdout.raw" 2> "$W/out/stderr.raw" < /dev/null)
     echo $? > "$W/out/exit"

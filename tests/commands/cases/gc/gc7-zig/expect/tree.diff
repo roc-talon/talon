@@ -2,14 +2,14 @@
 +++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
 @@ -1 +0,0 @@
 -2026-08-02T10:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
-+++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
-@@ -1 +0,0 @@
--roc
 --- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
 +++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"nightly-2026-08-01-aaaaaaa","url":"http://127.0.0.1:1/dl/nightly-2026-08-01-aaaaaaa","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-08-01-aaaaaaa","installed_at":"2026-07-01T00:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
++++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
+@@ -1 +0,0 @@
+-roc
 --- home/.cache/roc/toolchains/zig-0.14.0/.last-use
 +++ home/.cache/roc/toolchains/zig-0.14.0/.last-use
 @@ -1 +0,0 @@
@@ -22,14 +22,14 @@
 +++ home/.cache/roc/toolchains/zig-0.14.0/zig
 @@ -1 +0,0 @@
 -zig 0.14.0 fake program
---- home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
-+++ home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
-@@ -1 +0,0 @@
--const std = 1;
 --- home/.cache/roc/toolchains/zig-0.17.0/.talon.json
 +++ home/.cache/roc/toolchains/zig-0.17.0/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"zig-0.17.0","url":"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz","sha256":"0000000000000000000000000000000000000000000000000000000000000001","sha256_source":"zig-index","installed_at":"2026-06-01T00:00:00Z"}
+--- home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
++++ home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
+@@ -1 +0,0 @@
+-const std = 1;
 --- home/.cache/roc/toolchains/zig-0.17.0/zig
 +++ home/.cache/roc/toolchains/zig-0.17.0/zig
 @@ -1 +0,0 @@

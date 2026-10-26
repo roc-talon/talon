@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Makes the fake release server routes of a tool app whose platform is a release URL (slice 047: the evidence of a build has the hash of the platform, so the platform must have one).
 # Usage: tests/tools/mk-tool-pf.sh <http dir> <owner/repo> <spec>...   (the same form as tests/tools/mk-tool.sh)
 #   <http dir>    the `given/http/` dir of a case. Under it the script writes the release list and the real app bundle of each spec (as mk-tool.sh), and once the platform release
@@ -49,4 +49,4 @@ for spec in "$@"; do
     if [ -z "$list" ]; then list=$item; else list="$list,$item"; fi
     echo "$repo $version $hash"
 done
-printf '[%s]\n' "$list" > "$out/api/repos/$repo/releases?per_page=100"
+printf '[%s]\n' "$list" > "$out/api/repos/$repo/releases%3Fper_page=100"

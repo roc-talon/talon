@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Self-test of the two case runners (TESTING.md 8, items 3 and 4): a case that must fail makes the runner
 # report a failure. A case that must pass passes. Usage: tests/selftest.sh
 # It builds its cases in $TMPDIR/talon-selftest. It does not build tln: a dummy `tln` is on PATH.
@@ -9,7 +9,8 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 # The L2 app of a standalone run is built with the same OPT rule as the runners (default dev, TW25).
 SELFTEST_OPT=${OPT:-dev}
 unset OPT SLOW NET JOBS VERBOSE TAIL REAL_ROC TLN L2BIN BUILD_THREADS L0_THREADS ${!BUDGET_@}
-T=${TMPDIR:-/tmp}/talon-selftest
+# The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
+T=$(cd "${TMPDIR:-/tmp}" && pwd -P)/talon-selftest
 rm -rf "$T"
 mkdir -p "$T/bin"
 printf '#!/bin/sh\necho dummy tln\n' > "$T/bin/tln"
@@ -80,12 +81,13 @@ mk $P runner/tty $'test -t 0 && test -t 2 && echo tty\nread line\necho "got $lin
 put $P runner/tty tags $'tty\n'
 put $P runner/tty given/answers $'yes\n'
 put $P runner/tty expect/stdout $'tty\ngot yes\n'
-# The fake HTTP server (slice 003): a route file with $PORT, a route with a query, no route (404), a status and a header from
+# The fake HTTP server (slice 003): a route file with $PORT, a route with a query (the file `q%3Fpage=2`: `%3F` is `?`, and `c%3Ad` is `c:d`, tests/lib.sh decode_names), no route (404), a status and a header from
 # .meta, ETag and If-None-Match (304), a body from the fixtures, the requests in http.log, the most requests at one time.
 H=given/http
-mk $P runner/http $'curl -s "$TALON_HTTP/hello"; echo\ncurl -s "$TALON_HTTP/q?page=2"; echo\ncurl -s "$TALON_HTTP/q?page=3"; echo\ncurl -s -o /dev/null -w \'%{http_code}\\n\' "$TALON_HTTP/missing"\ncurl -s -i "$TALON_HTTP/teapot" | sed -n -e 1p -e \'/^X-Test/p\' | tr -d \'\\r\'\ncurl -s -o /dev/null -w \'%{http_code}\\n\' -H \'If-None-Match: "v1"\' "$TALON_HTTP/tagged"\ncurl -s -o /dev/null -w \'%{http_code}\\n\' -H \'Authorization: Bearer x\' "$TALON_HTTP/tagged"\ncurl -s "$TALON_HTTP/fixture" | cmp - "$TALON_TEST_FIXTURES/pkgs/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst" && echo same\necho "$TALON_GITHUB_API $TALON_GITHUB_RAW"\ncurl -s "$TALON_HTTP/slow" > /dev/null &\ncurl -s "$TALON_HTTP/slow" > /dev/null &\nwait\ncat "$TALON_TEST_DIR/http.maxconn"'
+mk $P runner/http $'curl -s "$TALON_HTTP/hello"; echo\ncurl -s "$TALON_HTTP/q?page=2"; echo\ncurl -s "$TALON_HTTP/q?page=3"; echo\ncurl -s "$TALON_HTTP/c:d"; echo\ncurl -s -o /dev/null -w \'%{http_code}\\n\' "$TALON_HTTP/missing"\ncurl -s -i "$TALON_HTTP/teapot" | sed -n -e 1p -e \'/^X-Test/p\' | tr -d \'\\r\'\ncurl -s -o /dev/null -w \'%{http_code}\\n\' -H \'If-None-Match: "v1"\' "$TALON_HTTP/tagged"\ncurl -s -o /dev/null -w \'%{http_code}\\n\' -H \'Authorization: Bearer x\' "$TALON_HTTP/tagged"\ncurl -s "$TALON_HTTP/fixture" | cmp - "$TALON_TEST_FIXTURES/pkgs/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst" && echo same\necho "$TALON_GITHUB_API $TALON_GITHUB_RAW"\ncurl -s "$TALON_HTTP/slow" > /dev/null &\ncurl -s "$TALON_HTTP/slow" > /dev/null &\nwait\ncat "$TALON_TEST_DIR/http.maxconn"'
 put $P runner/http $H/hello $'say http://127.0.0.1:$PORT/x'
-put $P runner/http "$H/q?page=2" $'page two'
+put $P runner/http "$H/q%3Fpage=2" $'page two'
+put $P runner/http "$H/c%3Ad" $'colon'
 put $P runner/http $H/q $'page any'
 put $P runner/http $H/teapot.meta $'status 418\nheader X-Test: http://127.0.0.1:$PORT/n\n'
 put $P runner/http $H/tagged.meta $'header ETag: "v1"\n'
@@ -93,8 +95,8 @@ put $P runner/http $H/tagged $'body'
 put $P runner/http $H/fixture.meta $'body @pkgs/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst\n'
 put $P runner/http $H/slow.meta $'slow 400\n'
 put $P runner/http $H/slow $'0123456789abcdef'
-put $P runner/http expect/stdout $'say http://127.0.0.1:$PORT/x\npage two\npage any\n404\nHTTP/1.1 418 I\'m a Teapot\nX-Test: http://127.0.0.1:$PORT/n\n304\n200\nsame\nhttp://127.0.0.1:$PORT/api http://127.0.0.1:$PORT/raw\n2\n'
-put $P runner/http expect/http.log $'GET /hello 200\nGET /q?page=2 200\nGET /q?page=3 200\nGET /missing 404\nGET /teapot 418\nGET /tagged 304 if-none-match="v1"\nGET /tagged 200 authorization\nGET /fixture 200\nGET /slow 200\nGET /slow 200\n'
+put $P runner/http expect/stdout $'say http://127.0.0.1:$PORT/x\npage two\npage any\ncolon\n404\nHTTP/1.1 418 I\'m a Teapot\nX-Test: http://127.0.0.1:$PORT/n\n304\n200\nsame\nhttp://127.0.0.1:$PORT/api http://127.0.0.1:$PORT/raw\n2\n'
+put $P runner/http expect/http.log $'GET /hello 200\nGET /q?page=2 200\nGET /q?page=3 200\nGET /c:d 200\nGET /missing 404\nGET /teapot 418\nGET /tagged 304 if-none-match="v1"\nGET /tagged 200 authorization\nGET /fixture 200\nGET /slow 200\nGET /slow 200\n'
 # The fake roc with the rule `real` (slice 003): `roc unbundle` runs the pinned roc. Other calls stay fake.
 G=9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17
 mk $P runner/roc-real "cp $SELF/fixtures/pkgs/$G.tar.zst .
@@ -850,6 +852,26 @@ wait
 if ! grep -q ' 0 failed$' $I/*.out || grep -q '^FAIL' $I/*.out; then bad "install: install/test.sh fails (shells: ${shells[*]})"; grep -h '^FAIL' $I/*.out; else ok; fi
 }
 sec install s_install
+
+# TW29: a path of the repo must be valid on Windows, or `actions/checkout` fails there (`error: invalid path`). The row reads the files that git has or would add (a deleted path is left out).
+s_winpaths() {
+out=$(cd "$ROOT" && git ls-files -z --cached --others --exclude-standard 2> /dev/null | python3 -I -c '
+import os, re, sys
+bad = []
+for p in sys.stdin.read().split("\0"):
+    if not p or not os.path.lexists(p):
+        continue
+    for part in p.split("/"):
+        if re.search(r"[\\?*:<>|\"\x00-\x1f]", part) or part.endswith((".", " ")) or re.match(r"^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])(\..*)?$", part, re.I):
+            bad.append(p)
+            break
+print("\n".join(bad[:20]))
+print("%d paths" % len(bad), file=sys.stderr)
+' 2>&1)
+if [ "${out##*$'\n'}" = "0 paths" ] || [ "$out" = "0 paths" ]; then ok
+else bad "windows paths (TW29): a path that Windows refuses (encode the name with %XX, TESTING.md 3.1)"; echo "$out"; fi
+}
+sec winpaths s_winpaths
 
 wait
 pass=$(cat "$RES"/*.ok 2> /dev/null | wc -l | tr -d ' ')

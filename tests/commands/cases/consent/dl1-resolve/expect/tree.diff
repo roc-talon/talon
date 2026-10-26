@@ -86,13 +86,17 @@
 +++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-07-3f4e5d6","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-07-3f4e5d6/roc_nightly-linux_x86_64-2026-10-07-3f4e5d6.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-07-3f4e5d6","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-07T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -101,21 +105,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-07-3f4e5d6/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-07-3f4e5d6","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-07-3f4e5d6/roc_nightly-linux_x86_64-2026-10-07-3f4e5d6.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-07-3f4e5d6","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-07T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-08-0a1b2c3","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-08-0a1b2c3/roc_nightly-linux_x86_64-2026-10-08-0a1b2c3.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-08-0a1b2c3","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-08T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -124,21 +128,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-08-0a1b2c3/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-08-0a1b2c3","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-08-0a1b2c3/roc_nightly-linux_x86_64-2026-10-08-0a1b2c3.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-08-0a1b2c3","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-08T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-09-258ab27","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-09-258ab27","compat":"258ab27","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-09T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -147,21 +151,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-09-258ab27","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-09-258ab27","compat":"258ab27","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-09T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-10-abcdef0","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-10-abcdef0/roc_nightly-linux_x86_64-2026-10-10-abcdef0.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-10-abcdef0","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-10T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -170,21 +174,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-10-abcdef0/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-10-abcdef0","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-10-abcdef0/roc_nightly-linux_x86_64-2026-10-10-abcdef0.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-10-abcdef0","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-10T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-11-1a2b3c4","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-11-1a2b3c4/roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-11-1a2b3c4","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-11T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -193,21 +197,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-11-1a2b3c4","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-11-1a2b3c4/roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-11-1a2b3c4","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-11T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-12-2664a27","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-12-2664a27","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -216,21 +220,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-12-2664a27/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-12-2664a27","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-12-2664a27","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-13-91fa0c2","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-13-91fa0c2/roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-13-91fa0c2","compat":"91fa0c2","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-13T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -239,21 +243,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-13-91fa0c2","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-13-91fa0c2/roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-13-91fa0c2","compat":"91fa0c2","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-13T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-14-38a3029","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-14-38a3029","compat":"38a3029","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -262,21 +266,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-14-38a3029","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-14-38a3029","compat":"38a3029","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-15-38e6c42","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-15-38e6c42/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-15-38e6c42","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-15T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -285,21 +289,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-15-38e6c42/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-15-38e6c42","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-15-38e6c42/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-15-38e6c42","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-15T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-16-1df370f","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-16-1df370f/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-16-1df370f","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-16T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -308,21 +312,21 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-16-1df370f/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-16-1df370f","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-16-1df370f/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-16-1df370f","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-16T15:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/.last-use
 @@ -0,0 +1 @@
 +2026-10-22T12:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/legal_details
-+++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/legal_details
+--- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-18-5349569","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-18-5349569/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-18-5349569","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-18T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/LICENSE
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/LICENSE
-+++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/LICENSE
+--- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/legal_details
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -331,10 +335,6 @@
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-10-18-5349569/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-10-18-5349569/.talon.json
-@@ -0,0 +1 @@
-+{"format":1,"id":"nightly-2026-10-18-5349569","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-18-5349569/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"nightly-2026-10-18-5349569","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-18T15:00:00Z"}
 --- home/.config/talon/config.toml
 +++ home/.config/talon/config.toml
 @@ -0,0 +1 @@

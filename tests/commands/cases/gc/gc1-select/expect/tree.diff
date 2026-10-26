@@ -13,43 +13,38 @@
 @@ -1 +1 @@
 -{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pb/main.roc","last_use":1792281600},{"path":"$PROJECT/pgone/main.roc","last_use":1792454400},{"path":"$PROJECT/pold/main.roc","last_use":1785542400},{"path":"$PROJECT/pplain/main.roc","last_use":1792454400}]}
 +{"format":1,"projects":[{"path":"$PROJECT/pa/main.roc","last_use":1792540800},{"path":"$PROJECT/pb/main.roc","last_use":1792281600}]}
+--- home/.cache/roc/toolchains/git-dd03c09e/.talon.json
++++ home/.cache/roc/toolchains/git-dd03c09e/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"git-dd03c09e","installed_at":"2026-06-01T00:00:00Z","compat":null}
 --- home/.cache/roc/toolchains/git-dd03c09e/roc
 +++ home/.cache/roc/toolchains/git-dd03c09e/roc
 @@ -1 +0,0 @@
 -fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/git-dd03c09e/.talon.json
-+++ home/.cache/roc/toolchains/git-dd03c09e/.talon.json
-@@ -1 +0,0 @@
--{"format":1,"id":"git-dd03c09e","installed_at":"2026-06-01T00:00:00Z","compat":null}
 --- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use
 @@ -1 +0,0 @@
 -2026-08-02T10:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"nightly-2026-08-01-aaaaaaa","url":"http://127.0.0.1:1/dl/nightly-2026-08-01-aaaaaaa","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-08-01-aaaaaaa","compat":"aaaaaaa","installed_at":"2026-08-01T00:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
 +++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/roc
 @@ -1 +0,0 @@
 -fake
 \ No newline at end of file
---- home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
-+++ home/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json
-@@ -1 +0,0 @@
--{"format":1,"id":"nightly-2026-08-01-aaaaaaa","url":"http://127.0.0.1:1/dl/nightly-2026-08-01-aaaaaaa","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-08-01-aaaaaaa","compat":"aaaaaaa","installed_at":"2026-08-01T00:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use
 @@ -1 +0,0 @@
 -2026-08-20T00:00:00Z
---- home/.cache/roc/toolchains/nightly-2026-08-12-5555555/roc
-+++ home/.cache/roc/toolchains/nightly-2026-08-12-5555555/roc
-@@ -1 +0,0 @@
--fake
-\ No newline at end of file
 --- home/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json
 +++ home/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"nightly-2026-08-12-5555555","url":"http://127.0.0.1:1/dl/nightly-2026-08-12-5555555","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-08-12-5555555","compat":"5555555","installed_at":"2026-08-12T00:00:00Z"}
---- home/.cache/roc/toolchains/nightly-2026-09-01-9999999/roc
-+++ home/.cache/roc/toolchains/nightly-2026-09-01-9999999/roc
+--- home/.cache/roc/toolchains/nightly-2026-08-12-5555555/roc
++++ home/.cache/roc/toolchains/nightly-2026-08-12-5555555/roc
 @@ -1 +0,0 @@
 -fake
 \ No newline at end of file
@@ -57,6 +52,11 @@
 +++ home/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json
 @@ -1 +0,0 @@
 -{"format":1,"id":"nightly-2026-09-01-9999999","url":"http://127.0.0.1:1/dl/nightly-2026-09-01-9999999","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-09-01-9999999","compat":null,"installed_at":"2026-09-01T00:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-09-01-9999999/roc
++++ home/.cache/roc/toolchains/nightly-2026-09-01-9999999/roc
+@@ -1 +0,0 @@
+-fake
+\ No newline at end of file
 --- home/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash/roc
 +++ home/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash/roc
 @@ -1 +0,0 @@

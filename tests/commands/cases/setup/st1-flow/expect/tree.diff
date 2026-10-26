@@ -22,10 +22,6 @@
 +++ home/.config/fish/conf.d/talon.fish
 @@ -0,0 +1 @@
 +fish_add_path "$HOME/.local/bin" # talon: added by tln setup
---- home/gh/path
-+++ home/gh/path
-@@ -0,0 +1 @@
-+$HOME/.local/bin
 --- home/.local/bin/baz
 +++ home/.local/bin/baz
 @@ -0,0 +1 @@
@@ -86,3 +82,7 @@
 +	fi
 +}
 +_tln "$@"
+--- home/gh/path
++++ home/gh/path
+@@ -0,0 +1 @@
++$HOME/.local/bin

@@ -4,6 +4,35 @@
 #   orig/home orig/project   the start state, for the tree diff
 #   out/             what the case wrote (stdout, stderr, exit, calls.log, roc.log)
 
+# --- File names of the fixtures (Windows clones) ---
+# A name in a case dir (`given/`, `fx/`) is percent-encoded when Windows refuses the character: `?` is `%3F`, `:` is `%3A`, `\` is `%5C`, and `%` is `%25`
+# (Windows refuses `? : * < > | "` in a name, git refuses a `\`, and a clone fails with `invalid path`). A fake HTTP route that has a query is the file
+# `releases%3Fper_page=100`, the host dir of `127.0.0.1:9` is `127.0.0.1%3A9`, and the dir of a Windows home `u\.local\bin` is `u%5C.local%5Cbin`.
+# This is the one place of the rule: the runners call decode_names after they copy the case into the work dir. So the fake Fx (tests/commands/FakeJobs.roc), the fake HTTP server
+# (tests/tools/fakehttp.py) and the case see the real names (`?`, `:`, `\`). A test or a tool that writes a fixture name makes the encoded name (tests/tools/mk-*.sh).
+# pct_decode <name>: the name with each `%XX` (two upper case hex digits) changed to its byte. The result is in the variable DECODED.
+pct_decode() {
+    local rest=$1 out= h c
+    DECODED=
+    while [[ $rest =~ ^([^%]*)%([0-9A-F][0-9A-F])(.*)$ ]]; do
+        printf -v h '\\x%s' "${BASH_REMATCH[2]}"
+        printf -v c "$h"
+        out+=${BASH_REMATCH[1]}$c
+        rest=${BASH_REMATCH[3]}
+    done
+    DECODED=$out$rest
+}
+# decode_names <dir>: rename each file and dir under <dir> whose name has a `%`, with pct_decode. The deepest names go first. A symbolic link is renamed, never followed.
+decode_names() {
+    local p d b
+    while IFS= read -r -d '' p; do
+        d=${p%/*}
+        b=${p##*/}
+        pct_decode "$b"
+        [ "$DECODED" = "$b" ] || mv -- "$p" "$d/$DECODED"
+    done < <(find "$1" -depth -name '*%*' -print0)
+}
+
 # normalize <W>: read stdin, write stdout. Paths of the work dir become $HOME, $PROJECT and $WORK,
 # so expected files do not hold a machine path (TESTING.md 3.1).
 # Slice 003: the port of the fake HTTP server (`<W>/http.port`) is `$PORT`, so an expected file has no port.
@@ -21,8 +50,9 @@ hexnorm() { sed -e 's#/talon/tmp/[0-9a-f]\{16\}#/talon/tmp/$HEX#g'; }
 # Left out: compat.db and its WAL files compat.db-wal and compat.db-shm (slice 030: a process that ends leaves them, the rows are in `expect/facts.tsv`), path-roc.json (slice 022b: it holds the size and the mtime of files of the machine), a dir or file named tmp, and files that end in .tmp (TESTING.md 3.1).
 # The paths of the work dir in the file content are `$HOME`, `$PROJECT` and `$WORK` (slice 002: `projects.json` has paths).
 tree_diff() {
-    (cd "$1" && diff -rNu -x 'compat.db*' -x path-roc.json -x tmp -x '*.tmp' orig/home home
-        diff -rNu -x 'compat.db*' -x path-roc.json -x tmp -x '*.tmp' orig/project project) |
+    # LC_ALL=C: diff -r orders the names of a dir with the collation of the locale (en_US puts `.talon.json` after `LICENSE`, C and C.UTF-8 before it). The expected files have the order of C.
+    (cd "$1" && LC_ALL=C diff -rNu -x 'compat.db*' -x path-roc.json -x tmp -x '*.tmp' orig/home home
+        LC_ALL=C diff -rNu -x 'compat.db*' -x path-roc.json -x tmp -x '*.tmp' orig/project project) |
         sed -e 's#^\(---\|+++\) orig/#\1 #' -e 's#^\(---\|+++\) \([^	]*\)	.*$#\1 \2#' \
             -e '/^diff -rNu /d' | normalize "$1"
 }

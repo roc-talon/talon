@@ -13,17 +13,12 @@
 +{"tag_name":"nightly-2026-10-14-38a3029","draft":false,"prerelease":false,"published_at":"2026-10-14T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","size":73000001,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz"}]},
 +{"tag_name":"nightly-2026-10-09-258ab27","draft":false,"prerelease":false,"published_at":"2026-10-09T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","size":73000001,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz"}]}
 +]
---- home/.cache/roc/toolchains/git-3b9f7c1d/roc
-+++ home/.cache/roc/toolchains/git-3b9f7c1d/roc
-@@ -0,0 +1 @@
-+fake
-\ No newline at end of file
 --- home/.cache/roc/toolchains/git-3b9f7c1d/.talon.json
 +++ home/.cache/roc/toolchains/git-3b9f7c1d/.talon.json
 @@ -0,0 +1 @@
 +{"format":1,"id":"git-3b9f7c1d","repo":"https://github.com/Karakatiza666/roc","sha":"3b9f7c1d5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"my-branch","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"computed","compat":"3b9f7c1d","installed_at":"2026-10-22T12:00:00Z"}
---- home/.cache/roc/toolchains/git-5349569a/roc
-+++ home/.cache/roc/toolchains/git-5349569a/roc
+--- home/.cache/roc/toolchains/git-3b9f7c1d/roc
++++ home/.cache/roc/toolchains/git-3b9f7c1d/roc
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -31,8 +26,8 @@
 +++ home/.cache/roc/toolchains/git-5349569a/.talon.json
 @@ -0,0 +1 @@
 +{"format":1,"id":"git-5349569a","repo":"https://github.com/roc-lang/roc","sha":"5349569a1b2c3d4e5f60718293a4b5c6d7e8f901","ref":"main","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"computed","compat":"5349569a","installed_at":"2026-10-22T12:00:00Z"}
---- home/.cache/roc/toolchains/git-dd03c09e/roc
-+++ home/.cache/roc/toolchains/git-dd03c09e/roc
+--- home/.cache/roc/toolchains/git-5349569a/roc
++++ home/.cache/roc/toolchains/git-5349569a/roc
 @@ -0,0 +1 @@
 +fake
 \ No newline at end of file
@@ -40,6 +35,11 @@
 +++ home/.cache/roc/toolchains/git-dd03c09e/.talon.json
 @@ -0,0 +1 @@
 +{"format":1,"id":"git-dd03c09e","repo":"https://github.com/roc-lang/roc","sha":"dd03c09e5f0a3b6c7d8e9f001122334455667788","ref":"dd03c09e","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"computed","compat":"dd03c09e","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/git-dd03c09e/roc
++++ home/.cache/roc/toolchains/git-dd03c09e/roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
 --- home/.config/talon/config.toml
 +++ home/.config/talon/config.toml
 @@ -1 +1 @@

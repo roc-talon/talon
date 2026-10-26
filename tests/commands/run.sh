@@ -17,7 +17,8 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 . "$SELF/../../scripts/env.sh"
 . "$SELF/../lib.sh"
 CASES=${CASES:-$SELF/cases}
-CASEROOT=${TMPDIR:-/tmp}/talon-l2
+# The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
+CASEROOT=$(cd "${TMPDIR:-/tmp}" && pwd -P)/talon-l2
 
 run_case() {
     local dir=$1 bin=$2 name W entry
@@ -28,6 +29,7 @@ run_case() {
     ln -s "$SELF/../fixtures" "$W/fixtures" # the real roc outputs of tests/fixtures/check/out, for the answers of the fake probes! (slice 006)
     [ -d "$dir/given" ] && cp -a "$dir/given/." "$W/"
     [ -d "$dir/fx" ] && cp -a "$dir/fx/." "$W/fx/"
+    decode_names "$W" # %3F, %3A, %5C: the names that Windows refuses (tests/lib.sh)
     # Slice 024: in a `.json` file of the given home and project (`projects.json`, a `.talon.json` with a path), `{w}` is the case dir, as in `fx/env`. The path of a project must be a real path.
     find "$W/home" "$W/project" -name '*.json' -type f -exec sed -i "s#{w}#$W#g" {} + 2> /dev/null
     mkdir -p "$W/orig" && cp -a "$W/home" "$W/orig/home" && cp -a "$W/project" "$W/orig/project"

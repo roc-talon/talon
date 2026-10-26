@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Makes the fake release server routes of a tool app for the L3 runner (slice 046, `tln tool install`).
 # Usage: tests/tools/mk-tool.sh <http dir> <owner/repo> <spec>...
 #   <http dir>    the `given/http/` dir of a case. The script writes under it (the API base of the fake server is `<http>/api`, R-EV19):
-#                   api/repos/<owner>/<repo>/releases?per_page=100    the release list (one release for each spec, newest first as given)
+#                   api/repos/<owner>/<repo>/releases%3Fper_page=100    the release list (one release for each spec, newest first as given)
 #                   dl/<owner>/<repo>/releases/download/<version>/<hash>.tar.zst   the real app bundle of the release (made by the pinned `roc bundle`)
 #   <spec>        <version>@<published_at>   for example `1.1.0@2026-09-01T12:00:00Z`
 # The bundle has one file, `main.roc`: an app header with the platform `pf/main.roc` (a path entry: the platform is in the bundle) and the pin `roc: "nightly-2026-10-14-38a3029"`, and a comment line with the repo and the version, so each release has its own hash. `roc bundle`
@@ -40,4 +40,4 @@ for spec in "$@"; do
     if [ -z "$list" ]; then list=$item; else list="$list,$item"; fi
     echo "$repo $version $hash"
 done
-printf '[%s]\n' "$list" > "$out/api/repos/$repo/releases?per_page=100"
+printf '[%s]\n' "$list" > "$out/api/repos/$repo/releases%3Fper_page=100"
