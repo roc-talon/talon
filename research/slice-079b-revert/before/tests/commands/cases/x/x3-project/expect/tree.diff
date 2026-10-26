@@ -1,0 +1,27 @@
+--- home/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc
++++ home/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p10/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/p6/main.roc","last_use":1792065600},{"path":"$PROJECT/p7/main.roc","last_use":1792065600},{"path":"$PROJECT/p9/talon.toml","last_use":1792065600},{"path":"$PROJECT/w/m1/main.roc","last_use":1792065600},{"path":"$PROJECT/w/m2/main.roc","last_use":1792065600},{"path":"$PROJECT/w/s/main.roc","last_use":1792065600}]}
+--- home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen
++++ home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/gen
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json
++++ home/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3/manifest.json
+@@ -0,0 +1 @@
++{"format":1,"name":"acme/gen","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/gen/releases/download/1.0.0/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"bundle":"kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD","last_run":"2026-10-15T12:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z

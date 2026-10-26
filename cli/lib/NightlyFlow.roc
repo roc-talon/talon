@@ -107,8 +107,10 @@ known! = |fx, request, ctx, run| {
 	}
 	new_offers = offers!(fx, request, if missing(newest) [newest] else [])?
 	base_offers = offers!(fx, request, baselines)?
-	all = new_offers.concat(base_offers)
-	asked!(fx, request, { new: new_offers, base: base_offers, held: run.held })?
+	# R-UP6, R-SO14, R-SO15 (slice 072e, Q-E2): `request.selected` is empty when no compiler was selected before the pick. H is then the pick: it is first in the prompt, and it becomes `default-roc` after its download.
+	no_rank = request.selected == ""
+	all = if no_rank base_offers.concat(new_offers) else new_offers.concat(base_offers)
+	asked!(fx, request, { new: new_offers, base: base_offers, held: run.held, picked: no_rank })?
 	var $installed = 0
 	for offer in all {
 		match offer {
@@ -145,16 +147,18 @@ no_offers : List(RocInstall.Offer)
 no_offers = []
 
 # Step 4: the prompt of the table in the doc of `NightlyFlow`. With no baseline to download, the compiler that the command names is asked alone (`Consent.roc_install`, no flag: R-DL4).
-asked! : Fx, ResolveBase.Request, { new : List(RocInstall.Offer), base : List(RocInstall.Offer), held : Str } => Try({}, Fail)
+asked! : Fx, ResolveBase.Request, { new : List(RocInstall.Offer), base : List(RocInstall.Offer), held : Str, picked : Bool } => Try({}, Fail)
 asked! = |fx, request, run| {
 	ctx = { auto: request.downloads.auto, mode: request.prompt.mode, yes: request.prompt.yes, quiet: request.prompt.quiet, flag: request.downloads.allow }
 	if !run.base.is_empty() {
-		DownloadAsk.required!(fx, ctx, { all: run.new.concat(run.base), first: run.held })
+		DownloadAsk.required!(fx, ctx, { all: if run.picked run.base.concat(run.new) else run.new.concat(run.base), first: run.held })
 	} else {
 		match DownloadAsk.totals(run.new).ids {
 			[id] => {
 				size = DownloadAsk.totals(run.new).size
-				asked = Prompt.ask!(fx, Consent.roc_install({ id, size }), { mode: ctx.mode, yes: ctx.yes, quiet: ctx.quiet, flag: Err(NoFlag) })?
+				# Q-E2: the compiler that the command names is also the pick. The question says that it becomes the default.
+				question = if run.picked and Pin.same_id(id, run.held) Consent.roc_install_default({ id, size }) else Consent.roc_install({ id, size })
+				asked = Prompt.ask!(fx, question, { mode: ctx.mode, yes: ctx.yes, quiet: ctx.quiet, flag: Err(NoFlag) })?
 				if asked.answer == Yes Ok({}) else Err(Consent.roc_install_declined(id))
 			}
 			_ => Ok({})

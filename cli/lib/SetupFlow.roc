@@ -1,7 +1,10 @@
 import Args
+import BinRecord
 import BuildSkip
 import Clock
 import Common
+import Compiler
+import ConfigToml
 import Consent
 import Fail
 import Fx
@@ -37,6 +40,7 @@ import ToolsJson
 ## | 8 | The completions, only when `SHELL` is bash, zsh or fish: `read_files!` of `Setup.completion_path`, then `Setup.completion` (`Keep` when the file has the same text). | R-ST5 |
 ## | 9 | The prompts, before any write and before any lock (R-CC3 point 5): R-NI13 when the `roc` entry is foreign (`Consent.setup_replace_roc`, the flag `--replace-roc` is `Ok(Yes)`), then R-NI14 when step 7 has a `Write` (`Consent.setup_modify_path`, the flag `--no-modify-path` is `Ok(No)`). The answer `No` to R-NI13 prints the note of R-ST2 on stderr (section 6 of the slice file). | R-NI13, R-NI14, R-ST2 |
 ## | 10a | The entry `talon` (slices 052 and 063), first write of step 10, only when `BuildSkip.target` knows the machine. First `TalonUpdate.setup_entry` decides on the facts of step 3 (no clock needed): `Keep` (the entry has the version and the sha256 of the running `tln`) gives no call and no line. `Put` (missing, or it differs): `Clock.now!`, then `Fx.locked!` on `Roots.item(ToolsJson)`: `read_files!` again, `setup_entry` again on that text (the sha256 is the one of step 5), one `write_atomic!` of `ToolsJson.put_talon`. | R-IS6, R-S4, R-CC1, R-CC6 |
+## | 10b | Slice 078 (R-T4, R-ST11, R-ST9), after the last entry and the move of `roc`, when at least one entry was made: `Fx.locked!` on `tools.json`: `read_files!`, `BinRecord.record_all` (the name of each made entry, the sha256 of its source), one `write_atomic!` only when the text changes. | R-T4, R-ST11, R-CC6 |
 ## | 10 | The writes. `make_dirs!` of `<bin>` when an entry is made. `Yes` for R-NI13: `rename!` of `<bin>/roc` to `<bin>/roc.old`, then `link-system` (step 11). Each entry to make, in the order of `Setup.names`: `random!`, `hard_link!` to the temp name `<bin>/<entry>.<hex>.tmp`, else `copy_file!` to it, then `rename!` to `<bin>/<entry>` (R-CC1, R-ST7). The `PATH` target: `write_atomic!`. The completion: `write_atomic!`. | R-ST7, R-ST2, R-ST4, R-ST5 |
 ## | 11 | `link-system` (R-ST2, R-LK4): `Clock.now!`, then `Fx.locked!` on the item `<cache>/toolchains/link-system`, in the lock `Launch.toolchains!` (one `list_dirs!`). An item that exists is kept. Else `random!`, `write_atomic!` of `<item>.<hex>.tmp/.talon.json` (`Link.meta` with the path `<bin>/roc.old`), `rename!` of the temp dir. | R-ST2, R-LK4 |
 ## | 12 | The output: first the line `TalonUpdate.recorded_text` when step 10a wrote the entry, then the lines of the slice file section 6 on stdout (`Common.shown_fx`), or with `--json` the envelope with `data` on stdout and the lines on stderr. | R-OUT2, R-J3 |
@@ -57,7 +61,7 @@ SetupFlow :: [].{
 }
 
 # One entry with the verdict of `Setup.judge` (step 5).
-Row : { entry : Setup.Entry, verdict : [NoSource, Make, Keep, Foreign], source_sha : Str }
+Row : { entry : Setup.Entry, verdict : [NoSource, Make, Keep, Repair, Foreign], source_sha : Str }
 
 # What steps 2 to 5 found.
 Facts : { env : List((Str, Str)), os : Setup.Os, roots : Roots, bin : Str, data_bin : Str, home : Str, rows : List(Row), bin_names : List(Str), talon : Try(ToolsJson.Talon, [None]), target : Try(Str, [Unknown]) }
@@ -80,6 +84,7 @@ flow! = |fx, args, plan| {
 	answers = ask!(fx, args, plan, { facts, path })?
 	lead = record_talon!(fx, facts)?
 	forms = write_entries!(fx, facts, answers.replace)?
+	record_bin!(fx, facts, forms)?
 	if answers.modify {
 		match path {
 			Pending(pending) => write_path!(fx, facts, pending)?
@@ -118,24 +123,51 @@ flow! = |fx, args, plan| {
 # | # | Does | Rule |
 # | --- | --- | --- |
 # | 13a | `RocInstall.read_config!`: one `read_files!` of `config.toml` (a missing file is the empty text). `default-roc` is set: `Kept(id)`, no more call, no line. | R-ST16 |
-# | 13b | Not set: `RocInstall.latest!` with `args.offline` (the calls of its doc). `Unread(why)`: one line on stderr, `SetupText.unread_note(why)` (no `--quiet` hides it), the result is `Unread(why)`, setup does not fail. | R-ST16, R-CV1 |
+# | 13a2 | Not set (slice 080, R-ST16, R-SO24): `Launch.toolchains!` (one `list_dirs!`) and `Compiler.newest_installed`. `Ok(id)`: `RocInstall.first_default!`, the result is `Repaired(id)`. No download. `Err(None)`: step 13b. | R-ST16 |
+# | 13b | Not set and nothing installed: `RocInstall.latest!` with `args.offline` (the calls of its doc). `Unread(why)`: one line on stderr, `SetupText.unread_note(why)` (no `--quiet` hides it), the result is `Unread(why)`, setup does not fail. | R-ST16, R-CV1 |
 # | 13c | `Ok(id)`: `RocInstall.first_default!` (the lock of `config.toml`, two reads, `write_atomic!`, unlock: as `tln roc install`). The result is `Set(id)`. No download, no `spawn_all!`, no toolchains dir. | R-ST16, R-SO15 |
 default_step! : Fx, Args, Facts => Try(SetupText.Default, Fail)
 default_step! = |fx, args, facts| {
 	config = RocInstall.read_config!(fx, facts.roots)?
 	match config.default_roc {
 		Ok(id) => Ok(Kept(id))
-		Err(Unset) => match RocInstall.latest!(fx, { env: facts.env, offline: args.offline, config })? {
-			Err(Unread(why)) => {
-				fx.err!(SetupText.unread_note(why))
-				Ok(Unread(why))
+		Err(Unset) => match Compiler.newest_installed({ installed: Launch.toolchains!(fx, facts.roots), times: [] }) {
+			Ok(id) => {
+				_ = RocInstall.first_default!(fx, facts.roots, id)?
+				Ok(Repaired(id))
 			}
-			Ok(id) => match RocInstall.first_default!(fx, facts.roots, id)? {
-				Set => Ok(Set(id))
-				Kept => Ok(Kept(id))
-			}
+			Err(None) => latest_default!(fx, args, facts, config)
 		}
 	}
+}
+
+# Step 13b and 13c: nothing is installed, so the latest compiler of the channel is the first default (no download).
+latest_default! : Fx, Args, Facts, ConfigToml.Config => Try(SetupText.Default, Fail)
+latest_default! = |fx, args, facts, config| match RocInstall.latest!(fx, { env: facts.env, offline: args.offline, config })? {
+	Err(Unread(why)) => {
+		fx.err!(SetupText.unread_note(why))
+		Ok(Unread(why))
+	}
+	Ok(id) => match RocInstall.first_default!(fx, facts.roots, id)? {
+		Set => Ok(Set(id))
+		Kept => Ok(Kept(id))
+	}
+}
+
+# Step 10b (slice 078): the record of the entries that were made, in the lock of `tools.json`. The file is read again (R-CC6). A missing file or the same text gives no write.
+record_bin! : Fx, Facts, List((Str, [HardLink, Copy])) => Try({}, Fail)
+record_bin! = |fx, facts, forms| {
+	made = facts.rows.keep_if(|row| forms.any(|(name, _)| name == row.entry.entry)).map(|row| { entry: row.entry.entry, sha256: row.source_sha })
+	if made.is_empty() return Ok({})
+	path = Roots.item(facts.roots, ToolsJson)
+	fx.locked!(
+		path,
+		|| {
+			text = SetupIo.read_text!(fx, path)?
+			after = BinRecord.record_all({ path, text, made })?
+			if text == Ok(after) or text == Err(NotFound) Ok({}) else SetupIo.write_file!(fx, path, after)
+		},
+	)
 }
 
 # Step 10a (R-IS6, R-S4): the entry `talon`, when it is missing or differs from the running `tln`. The result is the line of the output (none when the entry stays). A machine that `BuildSkip.target` does not know gets no entry (D11, and a differing entry stays: slice 063 Q-1).
@@ -209,7 +241,8 @@ gather! = |fx| {
 	talon = ToolsJson.talon({ path: tools_file, text })?
 	names = Setup.names({ os: machine.os, tools })
 	listed = SetupIo.listings!(fx, { data_bin, bin })?
-	rows = judged!(fx, { names, bin, data_bin, listed })?
+	recorded = BinRecord.read({ path: tools_file, text })?
+	rows = judged!(fx, { names, bin, data_bin, listed, recorded })?
 	match rows.first() {
 		Ok(first) => if first.verdict == NoSource {
 			return Err(Fail.new(Environment, "${Text.join(data_bin, first.entry.source)} is missing. Install Talon with its install script."))
@@ -220,7 +253,7 @@ gather! = |fx| {
 }
 
 # Step 5: the sha256 of each source (once for each distinct one), then of each entry in `<bin>` that is a file. `Setup.judge` for each entry.
-judged! : Fx, { names : List(Setup.Entry), bin : Str, data_bin : Str, listed : SetupIo.Listed } => Try(List(Row), Fail)
+judged! : Fx, { names : List(Setup.Entry), bin : Str, data_bin : Str, listed : SetupIo.Listed, recorded : List((Str, Str)) } => Try(List(Row), Fail)
 judged! = |fx, run| {
 	var $shas = []
 	for entry in run.names {
@@ -246,7 +279,11 @@ judged! = |fx, run| {
 			Sha(sha) => sha
 			Missing => ""
 		}
-		$rows = $rows.append({ entry, verdict: Setup.judge({ source, have }), source_sha })
+		recorded = match run.recorded.find_first(|(name, _)| name == entry.entry.drop_suffix(".exe")) {
+			Ok((_, sha)) => Ok(sha)
+			Err(_) => Err(None)
+		}
+		$rows = $rows.append({ entry, verdict: Setup.judge_bin({ source, recorded, have }), source_sha })
 	}
 	Ok($rows)
 }
@@ -352,7 +389,7 @@ ask! = |fx, args, plan, run| {
 write_entries! : Fx, Facts, Bool => Try(List((Str, [HardLink, Copy])), Fail)
 write_entries! = |fx, facts, replace| {
 	roc = exe_name(facts.os, "roc")
-	todo = facts.rows.keep_if(|row| row.verdict == Make or (replace and row.entry.entry == roc))
+	todo = facts.rows.keep_if(|row| row.verdict == Make or row.verdict == Repair or (replace and row.entry.entry == roc))
 	if !todo.is_empty() {
 		match fx.make_dirs!([facts.bin]) {
 			Ok(_) => {}

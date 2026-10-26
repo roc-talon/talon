@@ -14,10 +14,10 @@ exit 0
 exit 0
 == @roc version
 exit 0
-== @roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg
+== @roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:XDG_CACHE_HOME={w}/nocache
 exit 0
-== @roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:TALON_IN_PROXY=1
-exit 18
+== @roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:XDG_CACHE_HOME={w}/nocache env:TALON_IN_PROXY=1
+exit 13
 == @roc check p9/main.roc
 exit 13
 == @roc check p9/main.roc env:TALON_AUTO_INSTALL=no

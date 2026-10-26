@@ -1,0 +1,14 @@
+Slice 048, `tln tool install --git` (entry `commands`). One home with the compiler `nightly-2026-10-14-38a3029` (the pin of each app), `TALON_NOW=2026-10-15T12:00:00Z`. `tools.json` has `gapp` (acme/gapp 1.0.0, a release; the binary and the entry are Talon's).
+The fake API gives the commit of each ref (`fx/http/.../commits/<ref>`): acme/gapp main is aaaaaaaa, acme/gapp v2 is bbbbbbbb, acme/sub dd03c09e is dd03c09e. The fake tar writes `main.roc` (an app), `apps/cli/main.roc` (an app with no dependency) and `pkg/main.roc` (a package). The builds are the 3 rows of `fx/probes`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install --git acme/gapp@main` | the commit (media type, no token), the entry check, curl, the archive by the full sha, tar in `<tmp>/src`, `main.roc` read, the platform, the build with the pin, the install under the lock. A git install replaces the release tool. The scratch dir is deleted. `tools.json` has the commit and the ref | R-T23, R-T27, R-T2, R-T3, R-T4, R-R3, R-R7, R-SE12, R-CC2, R-CC6 |
+| 2 | the same | the head is the installed commit: `Present`, no download, no build, no lock | R-T26 |
+| 3 | `tool install acme/sub@dd03c09e --path apps/cli` | a sha selector needs no `--git` (R-SL10): the repo name `sub` is the binary name; the app is `apps/cli/main.roc`, `tools.json` has the `path` | R-T23, R-SL10, R-T28, R-SE12 |
+| 4 | `tool install --git acme/gapp@v2 --json` | another ref with another commit: built and replaced (`replaced gapp git main with git v2@bbbbbbbb`). The envelope | R-T23, R-T26, R-T27, R-J1 to R-J4 |
+| 5 | `tool install --git acme/gapp@main --as other` | `gapp` is installed as `gapp` already: exit 2 before any request | R-T27, R-T28 |
+| 6 | `tool install --git acme/gapp@main --path pkg` | `pkg/main.roc` is a package: exit 2, no build, the scratch dir is deleted | R-T23, R-T10 |
+| 7 | `tool install --git acme/gapp@main --path nodir` | no `main.roc` in `nodir`: exit 2, the scratch dir is deleted | R-T23, R-SE12 |
+
+Slice 079b (R-T30, R-SO10, Q3 of slice 079): the selected compiler of a tool command is also the `roc` on `PATH` when ranks 2 (`ROC_TOOLCHAIN`) and 6 (`default-roc`) give nothing and its id is a nightly or a release (rank 7). It is looked up only then, so each run with no default and no `ROC_TOOLCHAIN` that chooses a compiler has the call `path_roc` (and the calls of slice 022b the first time) before the choice. The `PATH` has no `roc`: one `path_roc` call in each run that builds.

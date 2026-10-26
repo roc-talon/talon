@@ -1,4 +1,4 @@
-# R-R12, R-LK4: a link. The path is made absolute from the current directory. No copy and no link of the file system: the dir has only .talon.json, made in a temp dir and renamed (R-CC1, R-CC4 step 6).
+# R-R12, R-LK4, R-SO24: a link. The path is made absolute from the current directory. No copy and no link of the file system: the dir has only .talon.json, made in a temp dir and renamed (R-CC1, R-CC4 step 6). R-SO24: a local build is not a compiler that Talon selects (R-NS6), so `roc link` sets no default: the home has no `config.toml` before, and the tree diff has none after.
 roc link dev roc-src/zig-out/bin/roc
 # R-LK2: the name exists: exit 2, nothing is written. For a link there is no --force (R-FL12 names --force for roc link --copy, question Q1).
 roc link dev roc-src/zig-out/bin/roc

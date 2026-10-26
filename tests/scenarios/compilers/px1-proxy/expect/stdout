@@ -42,14 +42,14 @@ last use of A2: 2026-10-22T12:00:00Z
 == R-DL8 R-SO12: the pin of p9 is not installed. No TTY: exit 13, the compiler does not run.
 == $WORK/launch/roc check p9/main.roc
 exit 13
-== R-EV17 R-SO9: rank 7. a/roc is a copy of tln (the launcher, skipped). b/roc stands for an old copy of a launcher: it prints its id for version, and any other call runs a/roc again.
-== The proxy sets TALON_IN_PROXY=1 for b/roc, so a/roc (a proxy) does not look at PATH: exit 18, and b/roc runs once. Without the variable it would loop (b/roc stops at 3 runs with exit 77).
-== env PATH=$WORK/a:$WORK/b:/usr/bin:/bin $WORK/launch/roc check p7/main.roc
-exit 18
+== R-EV17 R-SO9 R-SO24: rank 7 is reached only when no nightly or release is installed, so these runs use an empty cache dir (XDG_CACHE_HOME and ROC_CACHE_DIR). a/roc is a copy of tln (the launcher, skipped). b/roc stands for an old copy of a launcher: it prints its id for version, and any other call runs a/roc again.
+== The proxy sets TALON_IN_PROXY=1 for b/roc, so a/roc (a proxy) does not look at PATH: no compiler is selected, so the proxy picks the latest in the channel (R-SO14, slice 072e), which needs a download that no person agrees to: exit 13. b/roc runs once. Without the variable it would loop (b/roc stops at 3 runs with exit 77).
+== env XDG_CACHE_HOME=$WORK/nocache ROC_CACHE_DIR=$WORK/nocache/roc PATH=$WORK/a:$WORK/b:/usr/bin:/bin $WORK/launch/roc check p7/main.roc
+exit 13
 b/roc runs: TALON_IN_PROXY=1 check p7/main.roc
 == The same again: path-roc.json has the id of b/roc, so no roc version runs, and the proxy still runs b/roc by its path (the line count of b.log is 2).
-== env PATH=$WORK/a:$WORK/b:/usr/bin:/bin $WORK/launch/roc check p7/main.roc
-exit 18
+== env XDG_CACHE_HOME=$WORK/nocache ROC_CACHE_DIR=$WORK/nocache/roc PATH=$WORK/a:$WORK/b:/usr/bin:/bin $WORK/launch/roc check p7/main.roc
+exit 13
 2
 == R-ST8: a program named tln is not the proxy.
 == tln --version

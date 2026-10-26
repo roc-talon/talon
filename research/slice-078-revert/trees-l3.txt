@@ -1,0 +1,5 @@
+tests/scenarios/ptools/pt2-x/expect/tree.diff
+tests/scenarios/tools/ti1-tool-install/expect/tree.diff
+tests/scenarios/tools/ti2-tool-compiler/expect/tree.diff
+tests/scenarios/tools/ts1-update-talon/expect/tree.diff
+tests/scenarios/tools/tx1-x-run/expect/tree.diff

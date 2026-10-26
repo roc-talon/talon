@@ -1,0 +1,18 @@
+== env:HOME={w}/h1 env:TALON_INTERACTIVE=1 roc use nightly-2026-10-14-38a3029 --file n1/main.roc
+check: passed
+build: passed
+$PROJECT/n1/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:HOME={w}/h2 env:CI=true env:TALON_AUTO_INSTALL=yes roc use nightly-2026-10-14-38a3029 --file n2/main.roc
+check: passed
+build: passed
+$PROJECT/n2/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== env:HOME={w}/h3 env:CI=true env:TALON_AUTO_INSTALL=no roc use nightly-2026-10-14-38a3029 --file n3/main.roc
+exit 13
+== env:HOME={w}/h4 env:CI=true roc use nightly-2026-10-14-38a3029 --file n4/main.roc
+exit 13

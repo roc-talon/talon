@@ -164,6 +164,15 @@ expect {
 		("a release of the same day is newer than a nightly (R-NS1)", Compiler.select({ ..base, req: all, installed: [a4, "0.1.0"], times: [{ id: "0.1.0", published_at: t("2026-10-14T20:00:00Z") }] }), Ok(("0.1.0", Range, Installed))),
 		("a release of an earlier day is older", Compiler.select({ ..base, req: all, installed: [a4, "0.1.0"], times: [{ id: "0.1.0", published_at: t("2026-10-13T20:00:00Z") }] }), Ok((a4, Range, Installed))),
 		("an older nightly (a1) and a newer one", Compiler.select({ ..base, req: all, installed: [a1, a3] }), Ok((a3, Range, Installed))),
+		("R-SO24 case 3: no default, compilers installed: the newest installed one (rank 6)", Compiler.select({ ..base, installed: [a2, a4, a3] }), Ok((a4, Newest, Installed))),
+		("R-SO24 case 3: rank 6 comes before rank 7 (R-SO6): the newest installed, not the roc on PATH", Compiler.select({ ..base, installed: [a2], path: Ok(a4) }), Ok((a2, Newest, Installed))),
+		("R-SO24 case 3: a git, a link and a copy build are never the newest (R-NS6)", Compiler.select({ ..base, installed: [g1, "link-dev", "copy-x"] }), Err(NoCompiler)),
+		("R-SO24 case 3: only builds installed, a roc on PATH: rank 7", Compiler.select({ ..base, installed: [g1], path: Ok(a4) }), Ok((a4, Path, Installed))),
+		("R-SO24 case 3: a release of a later day is newer than a nightly (R-NS1)", Compiler.select({ ..base, installed: [a4, "0.1.0"], times: [{ id: "0.1.0", published_at: t("2026-10-14T20:00:00Z") }] }), Ok(("0.1.0", Newest, Installed))),
+		("R-SO24 case 3: a build is skipped, the newest nightly or release is used", Compiler.select({ ..base, installed: [g1, a2, a3] }), Ok((a3, Newest, Installed))),
+		("R-SO24 case 4: default-roc names an id that is not installed: Missing, never the newest (R-SO12)", Compiler.select({ ..base, default: Ok(a3), installed: [a2, a4] }), Ok((a3, Default, Missing))),
+		("R-SO24: rank 5 over the newest installed", Compiler.select({ ..base, version_file: Ok(a2), installed: [a2, a4] }), Ok((a2, VersionFile, Installed))),
+		("R-SO24: rank 4 over the newest installed, and no fall through when none is in the range", Compiler.select({ ..base, req: Ok(AtLeast(a3)), installed: [a2] }), Err(NoneInRange)),
 	]
 	bad = rows.keep_if(|(_, got, want)| shown(got) != want).map(|(label, got, want)| (label, want, shown(got)))
 	dbg bad
@@ -299,4 +308,24 @@ expect {
 	bad = rows.keep_if(|(got, want)| got != want).map(|(got, want)| (want, got))
 	dbg bad
 	bad == []
+}
+
+# R-SO6 R-SO24 R-ST16 (slice 080): the newest installed nightly or release, for a run with no `default-roc` (case 3) and for `tln setup` (the repair). The order is `Pin.order` with `times` (as rank 4, R-NS1). A `git-`, `link-` and `copy-` build is never chosen (R-NS6).
+# The note of the run (a proposal, TW24) names the compiler and the two ways to write the default (R-ST16, `tln roc default`).
+expect {
+	t = |text| Clock.parse_utc(text) ?? 0
+	newest = |installed, times| Compiler.newest_installed({ installed, times })
+	rows = [
+		("one nightly", newest([a2], []), Ok(a2)),
+		("the newest of 3 by the tag text", newest([a3, a2, a4], []), Ok(a4)),
+		("no compiler", newest([], []), Err(None)),
+		("only builds", newest([g1, "link-dev", "copy-x"], []), Err(None)),
+		("a build is skipped", newest([g1, a2], []), Ok(a2)),
+		("a release is older than every nightly with no times (R-NS1)", newest(["0.1.0", a1], []), Ok(a1)),
+		("a release with a later `published_at` wins", newest([a4, "0.1.0"], [{ id: "0.1.0", published_at: t("2026-10-15T00:00:00Z") }]), Ok("0.1.0")),
+		("2 nightlies of one date: `published_at`", newest([a4, a5], [{ id: a4, published_at: t("2026-10-14T09:00:00Z") }, { id: a5, published_at: t("2026-10-14T13:00:00Z") }]), Ok(a5)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, _)| (label, got))
+	dbg bad
+	bad == [] and Compiler.newest_note(a4) == "default-roc is not set, so ${a4}, the newest installed compiler, is used. Run: tln setup, or tln roc default ${a4}"
 }

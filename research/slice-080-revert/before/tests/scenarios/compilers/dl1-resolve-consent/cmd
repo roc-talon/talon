@@ -1,0 +1,58 @@
+# R-DL1 R-DL3 R-DL4 R-DL5 R-DL9 R-DL10 R-NI5 R-EV6 R-FL12 R-SO22 R-BL3 R-CC4 R-CC9 R-SO15 R-NM6 R-J1 R-NM10 (slice 025): `tln verify` needs a compiler that is not installed (ROC_TOOLCHAIN, rank 2, over the pin: R-SO21). The real binary, the real curl and tar,
+# and the fake release server (given/http was made by `ARCHIVE=probe tests/tools/mk-nightly.sh given/http nightly-2026-10-13-5349569 nightly-2026-10-12-0a1b2c3 nightly-2026-10-11-1b2c3d4 nightly-2026-10-10-2c3d4e5`). The fake roc of each
+# archive passes `check` and `build`, and writes one line for each run to prog.log (its id, the command and the variables that tln set). The project is the one of compilers/pb1-probes-by-path. The runner has CI=true: no run has a person.
+# TALON_NOW=2026-10-15T12:00:00Z.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+T=$HOME/.cache/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+# slice 062 (R-SO15): a download for a probe, a pin or the proxy writes no default, so config.toml does not exist. The line says so.
+default_roc() { if [ -e $C ]; then cat $C; else echo "no default-roc (no config.toml)"; fi; }
+A=nightly-2026-10-13-5349569
+B=nightly-2026-10-12-0a1b2c3
+Y=nightly-2026-10-11-1b2c3d4
+J=nightly-2026-10-10-2c3d4e5
+requests() { if [ -f $D/http.log ]; then grep -c "$1" $D/http.log; else echo 0; fi; }
+show() {
+    echo "-- compiler runs"
+    if [ -f $D/prog.log ]; then sort $D/prog.log; fi
+    rm -f $D/prog.log
+}
+store() { if [ -d $T ]; then ls $T | tr '\n' ' '; fi; echo; }
+echo "== R-DL4 R-NI5 R-DL1: no person (CI=true) and no flag: exit 13 with the count and the size of the download. The text names --allow-downloads and TALON_AUTO_INSTALL=yes. No compiler runs, the store is empty. The run asks for the list of compilers once (the text has the size of the download, R-DL1)."
+st env ROC_TOOLCHAIN=$A tln verify
+show
+store
+echo "requests for compilers: $(requests nightlies)"
+echo "== R-EV6: another value of TALON_AUTO_INSTALL counts as not set (ask): the same stop."
+st env TALON_AUTO_INSTALL=maybe ROC_TOOLCHAIN=$A tln verify
+echo "== R-DL5 R-DL10: TALON_AUTO_INSTALL=no refuses: exit 13, the text of Compiler.require (no flag in it). No new request (the list is cached)."
+st env TALON_AUTO_INSTALL=no ROC_TOOLCHAIN=$A tln verify
+store
+echo "requests for compilers: $(requests nightlies)"
+echo "== R-DL5 R-FL12 R-NI5 R-NM6 R-SO22 R-BL3 R-CC4 R-CC9 R-SO15: --allow-downloads is the answer of the prompt. One answer line on stderr, one download, the install under the lock, then the 3 probes (the 2 checks and the build) run the new compiler with the cache variables. No default is written (R-SO15)."
+st env ROC_TOOLCHAIN=$A tln verify --allow-downloads
+show
+store
+echo "last use of A: $(cat $T/$A/.last-use)"
+default_roc
+echo "downloads of A: $(requests "GET /dl/$A")"
+echo "== R-CC4 step 1: A is installed now: no prompt, no list, no download. The same 3 probes."
+st env ROC_TOOLCHAIN=$A tln verify
+show
+echo "requests for compilers: $(requests nightlies), downloads of A: $(requests "GET /dl/$A")"
+echo "== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still no default (R-SO15)."
+st env ROC_TOOLCHAIN=$B tln verify --yes
+show
+store
+default_roc
+echo "== R-DL5 R-EV6 R-J1 R-DL9: TALON_AUTO_INSTALL=yes, with --json: stdout is only the envelope, the answer line is on stderr."
+# R-DL1 (answer Q7 of the review): `data.downloads` is the count of compilers that this command downloaded: 1 here.
+st env TALON_AUTO_INSTALL=yes ROC_TOOLCHAIN=$Y tln verify --json
+show
+store
+echo "== R-DL5: --yes with --dry-run style runs that need no compiler (--no-check) ask nothing and download nothing (R-SO22): the store is the same."
+st env ROC_TOOLCHAIN=$J tln verify --no-check
+store
+echo "requests for compilers: $(requests nightlies)"
+find $HOME/.cache/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '

@@ -1,0 +1,11 @@
+tests/scenarios/compilers/px1-proxy/given/http
+tests/commands/cases/roc/so9-hash-fails/given/home
+tests/commands/cases/roc/so9-no-roc/given/home
+tests/commands/cases/roc/bs2-no-pin/fx/jobs
+tests/commands/cases/roc/bs2-no-pin/given/home3
+tests/commands/cases/proxy/px1-flow/fx/http
+tests/commands/cases/verify/vn2-step-b-project
+tests/commands/cases/install/in2-nocompiler
+tests/commands/cases/roc/us5-both-missing
+tests/commands/cases/proxy/px5-no-rank
+tests/commands/cases/upgrade/ur7-nocompiler

@@ -1,4 +1,4 @@
-# R-PX4 R-DL8 R-NI5 R-DL3: the pin is not installed, a person is there (tty), the answer is Enter (the default is Yes). One prompt, then the install under the lock, .last-use, and the run. The rank 3 pin gives the compiler, so no default is written (R-SO15). stdout stays empty.
+# R-PX4 R-DL8 R-NI5 R-DL3 R-SO24 R-SO15: the pin is not installed, a person is there (tty), the answer is Enter (the default is Yes). One prompt, then the install under the lock, .last-use, and the run. The rank 3 pin gives the compiler, and the install sets the default because none is set (R-SO24). stdout stays empty.
 @roc check p1/main.roc
 # R-CC4 step 1: now it is installed. No list, no tty, no prompt, no lock.
 @roc check p1/main.roc

@@ -1,0 +1,116 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=10
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+tty
+ask "Download 1 compiler, 74.2 MB: nightly-2026-10-12-2a2a2a2? It becomes the default compiler. [Y/n] "
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2a2a2a2/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz
+sha256_file $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz -C $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/FvurZfqoaDrU88tV2HLaPJ6LiLcGRxed3fBFg7twMRYR/main.roc $HOME/.cache/roc/packages/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p2/main.roc
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+read_files $PROJECT/p2/main.roc
+canonical $PROJECT/p2/main.roc
+lock $HOME2/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME2/.cache/roc/talon
+read_files $HOME2/.cache/roc/talon/projects.json
+write_atomic $HOME2/.cache/roc/talon/projects.json
+unlock $HOME2/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+clock
+platform
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=10
+platform
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME2/.cache/roc/toolchains
+clock
+platform
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+tty
+ask "Download 1 compiler, 74.2 MB: nightly-2026-10-12-2a2a2a2? It becomes the default compiler. [Y/n] "

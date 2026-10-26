@@ -1,0 +1,58 @@
+# R-SL7 R-PD16 R-PD7 R-SO2 R-SO3 R-SO4 R-SO5 R-SO6 R-SO14 R-NS1 R-TF5 R-CS2 (slice 026): the base of a relative step (@-1, @+1) with the real binary and the real Fx. The base is the compiler that Resolution 13 selects for main.roc of the current directory.
+# The fake release server (tests/tools/mk-nightly.sh with ARCHIVE=real made given/http: `ARCHIVE=real mk-nightly.sh given/http nightly-2026-10-15-38e6c42 nightly-2026-10-14-38a3029 nightly-2026-10-13-91fa0c2 nightly-2026-10-12-2664a27 nightly-2026-10-09-258ab27`) has 5 nightlies, all older than 2 days.
+# Each `@` run installs the compiler that the step names (the first install is the default, R-SO15). The runner has CI=true, so a download that the command names starts at once (R-DL4).
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+T=$XDG_CACHE_HOME/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+S=$PWD
+
+echo "== 1: pin/ has the pin 2026-10-14 (rank 3). @-1 is 2026-10-13 and @+1 is 2026-10-15. The pin itself is not installed: a base is a place in the list. The first install is the default."
+cd pin
+st tln roc install @-1
+st tln roc install @+1
+cat $C
+
+echo "== 2: plain/ has no pin, no talon.toml and no .roc-version, so the base is the global default (rank 6), 2026-10-13. @-1 is 2026-10-12."
+cd ../plain
+st tln roc install @-1
+
+echo "== 3: ver/ has .roc-version 2026-10-15 and no talon.toml (rank 5). @-1 is 2026-10-14. The default (2026-10-13) is not the base."
+cd ../ver
+st tln roc install @-1
+
+echo "== 3b: vt/ has .roc-version 2026-10-12 and a talon.toml with no range. Rank 5 is only for a project with no talon.toml (R-SO5, R-PD6), so the base is the default (2026-10-13): @-1 is 2026-10-12. With rank 5 the base would be 2026-10-12 and @-1 would be 2026-10-09."
+cd ../vt
+st tln roc install @-1
+
+echo "== 4: range/ has [toolchain] roc = >=nightly-2026-10-13-91fa0c2 (rank 4): the newest installed compiler in the range is 2026-10-15, so @-1 is 2026-10-14 (installed already)."
+cd ../range
+st tln roc install @-1
+
+echo "== 5: ROC_TOOLCHAIN is rank 2, above the pin of pin/: the base is 2026-10-12, so @+1 is 2026-10-13."
+cd ../pin
+st env ROC_TOOLCHAIN=nightly-2026-10-12-2664a27 tln roc install @+1
+
+echo "== 6: the base also serves roc default (R-CS2). The base is the pin of pin/ (2026-10-14), so @+1 is 2026-10-15, and the default moves to it."
+st tln roc default @+1
+cat $C
+
+echo "== 7: bad/ has a header that does not parse. It is no target file (R-TF5), so the base is the default (2026-10-15) and @-1 is 2026-10-14. none/ has no main.roc: the same."
+cd ../bad
+st tln roc install @-1
+cd ../none
+st tln roc install @-2
+
+echo "== 8: a step past the oldest compiler of the list is a usage error (exit 2) that names the base."
+cd ../pin
+st tln roc install @-99
+
+echo "== 9: no pin, no default, no other compiler (a new store): the step has no start (R-SO14, exit 18). A full id still works."
+export ROC_CACHE_DIR=$S/c2/roc XDG_CACHE_HOME=$S/c2 XDG_CONFIG_HOME=$S/cfg2
+cd ../none
+st tln roc install @-1
+st tln roc install nightly-2026-10-09-258ab27
+
+echo "== the first store has the 4 compilers that the steps named, no temp dir and no lock"
+ls $HOME/.cache/roc/toolchains
+find $HOME $S/c2 -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '

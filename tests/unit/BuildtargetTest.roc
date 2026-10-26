@@ -302,6 +302,7 @@ expect {
 	fail.kind.code() == 10 and fail.again.is_err() and fail.message == "no tuple works: pf has no platform release with the build target wasm32 (R-C10). Change [build] target in talon.toml, or use a platform that has it."
 }
 
+# R-LD8 (slice 077): `--no-cache` stays after `--output`, also with a target.
 # R-TG2 R-LD5 (slice 054): the build probe gets `--target=<t>` after `build` and before the file, the form of R-LD5. The `--replace-dep` pairs of the patches stay at the end (R-PA10), the weight and the other fields do not change.
 # `Unlisted` (Q1) gives the spec as it is. The check probes have no target (R-LD2, R-LD4: only the build step is for a target).
 expect {
@@ -316,11 +317,12 @@ expect {
 	with_patch = spec_of(patched)
 	named = |s, t| LadderPlan.with_target({ spec: s, target: Named(t) })
 	out_arg = "--output=${copy}/tln-probe.out"
+	no_cache = "--no-cache"
 	rows = [
-		("a named target", named(spec, "wasm32").args, ["build", "--target=wasm32", "main.roc", out_arg]),
-		("another name", named(spec, "x64glibc").args, ["build", "--target=x64glibc", "main.roc", out_arg]),
-		("the pairs of the patches stay at the end", named(with_patch, "wasm32").args, ["build", "--target=wasm32", "main.roc", out_arg, "--replace-dep", "https://x/old", "/p/copy/main.roc"]),
-		("unlisted: no flag", LadderPlan.with_target({ spec, target: Unlisted }).args, ["build", "main.roc", out_arg]),
+		("a named target", named(spec, "wasm32").args, ["build", "--target=wasm32", "main.roc", out_arg, no_cache]),
+		("another name", named(spec, "x64glibc").args, ["build", "--target=x64glibc", "main.roc", out_arg, no_cache]),
+		("the pairs of the patches stay at the end", named(with_patch, "wasm32").args, ["build", "--target=wasm32", "main.roc", out_arg, no_cache, "--replace-dep", "https://x/old", "/p/copy/main.roc"]),
+		("unlisted: no flag", LadderPlan.with_target({ spec, target: Unlisted }).args, ["build", "main.roc", out_arg, no_cache]),
 	]
 	same_fields = { ..named(spec, "wasm32"), args: spec.args } == spec
 	bad = rows.keep_if(|(_, got, want)| got != want)

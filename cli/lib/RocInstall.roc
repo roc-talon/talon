@@ -38,7 +38,7 @@ import Toolchain
 ## | 9 | One `list_dirs!` of `<cache>/toolchains`. The id is a dir now: `Present`, no more calls. Else `Temp.of_item` gives the stale temps, and one `delete!` removes them (no call when there are none). | R-CC4 steps 4, 5 |
 ## | 10 | One `random!`. `programs!(["curl", "wget"])` and `Download.choose` (the downloader of `Net.Settings`). `make_dirs!([temp])`. One `spawn_all!` (limit 8): `Download.command` with `dest: archive`, `cwd: Err(Inherit)`. A failure: `Toolchain.download_failed`. | R-DA2, R-DA3, R-DA4, R-HF4 |
 ## | 11 | `sha256_file!(archive)`, `Toolchain.check_download`. A failure deletes the temp dir. Then one `spawn_all!` (limit 1): `Toolchain.tar_command`, `cwd: Err(Inherit)`. Then `delete!([archive])`. Then one `spawn_all!` with `Toolchain.chmod_command` (no call for `Err(NotNeeded)`). Then the compat check: `list_dirs!([Roots.build])`, `write_atomic!([probe_file ""])`, one `spawn_all!` of `<roc> check <probe_file>` with `cwd: Ok(probe_dir)` (the exit code is not read), `list_dirs!([Roots.build])`, `delete!([probe_dir])`, `Toolchain.learn_compat`. Then `write_atomic!([meta])` (last, with the `published_at` of the picked release: slice 022, Q5), then `rename!({ from: temp, to: item })`. `Err(Exists)` is `Installed` (the other process won, drop the temp, as R-FE3). Each failure after step 10 deletes the temp dir and the probe dir. | R-CV4, R-HF2, R-HF5, R-SE9, R-GC10, R-CV5, R-CC4 step 6 |
-## | 12 | The unlock is done by `with_lock!` (R-CC4 step 7). Then, in `flow!` only (`tln roc install` is a user act, R-SO15; `install_offer!` never does this): `Fx.with_lock!` on the item `Roots.item(Config)` with `Wait`: `read_files!([config])` (a missing file is the empty text), `Toolchain.default_edit`. `Set(text)`: a second `read_files!`, the bytes must be the first bytes, else `default_edit` runs on the new bytes (R-CC7), then `write_atomic!([config])`. | R-SO15, R-CC6, R-CC7 |
+## | 12 | The unlock is done by `with_lock!` (R-CC4 step 7). Slice 080 (R-SO24): `install_offer!` does the same edit inside steps 9 to 11, before the rename, for every install. Then, in `flow!` only for `Present` (`tln roc install` is a user act, R-SO15): `Fx.with_lock!` on the item `Roots.item(Config)` with `Wait`: `read_files!([config])` (a missing file is the empty text), `Toolchain.default_edit`. `Set(text)`: a second `read_files!`, the bytes must be the first bytes, else `default_edit` runs on the new bytes (R-CC7), then `write_atomic!([config])`. | R-SO15, R-CC6, R-CC7 |
 ## | 13 | The output: `Toolchain.report`. With `--json`: the human text goes to stderr and stdout is only `Out.json_ok({ command: args.typed, data: Toolchain.data(...) })`. `--quiet` hides the stdout lines (R-FL4, as `Common.shown_fx`). | R-J1 to R-J4, R-FL4 |
 ##
 ## The exit code is `Exit.choose` of the failure, as in `Install.run!`. A failure writes no file in the toolchains dir: no `<id>` dir, no temp, no download (R-CC2).
@@ -50,7 +50,7 @@ import Toolchain
 ## | Part | Steps of the table above | Result |
 ## | --- | --- | --- |
 ## | `offer!` | 2 to 6: `env_all!` is not called (the caller gives `env`), then `Roots.from_env`, `clock!`, `platform!`, `config.toml`, the early `Present`, the list, the pick, the digest, the `--offline` check | `Present` (the pick is a dir in `toolchains/`), or `Download` with the asset size |
-## | `install_offer!` | 8 to 12: the lock, the install. No default (R-SO15): `default` is always `Kept` | `Done`: the id, the item, `how` (`Installed` or `Present`: the other process won), `default`, `compat` |
+## | `install_offer!` | 8 to 12: the lock, the install. R-SO24: the default is set under the lock of the item, before the rename, when none is set: `default` is `Set` or `Kept` | `Done`: the id, the item, `how` (`Installed` or `Present`: the other process won), `default`, `compat` |
 RocInstall :: [].{
 
 	## What `offer!` found. `Present`: the id is a dir in `toolchains/` already (no request was needed or the pick is an installed id): `id` is that id. `Download`: the pick is not installed. `id` is the id of the list (not the text that the
@@ -73,14 +73,20 @@ RocInstall :: [].{
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
 		if RocInstall.has_dir(entries, run.id) return Ok(Present({ id: run.id }))
-		base = if Toolchain.needs_base(run.id) {
+		basis = if Toolchain.needs_base(run.id) {
 			Base.selected!(fx, { env: run.env, roots, installed: Compiler.installed(entries), config })?
 		} else {
-			Err(None)
+			{ base: Err(None), hashes: [], range: Err(None) }
 		}
 		found = Nightlies.list!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system })?
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
 		lists = Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly })
+		# R-SL7, R-SO23 (slice 072e): with no compiler selected the base is a pick as an id (no download), else the base of `selected!`.
+		base = if Toolchain.needs_base(run.id) {
+			Base.listed!(fx, { roots, basis, releases: found.releases, auto: lists.auto, now, min_age, nightly: switch.nightly })?
+		} else {
+			Err(None)
+		}
 		auto = Nightlies.auto_with_base({ releases: found.releases, dropped: found.dropped, auto: lists.auto, base })
 		id = match Nightlies.pick({ text: run.id, named: lists.named, auto, base }) {
 			Ok(picked) => {
@@ -156,13 +162,13 @@ RocInstall :: [].{
 		}
 	}
 
-	## Steps 8 to 12 of the table, for the `Download` of `offer!`: the lock of the item (`Wait`), the checks under the lock, the download, the extract and the rename. It never sets the default compiler: only a user act does (R-SO15).
+	## Steps 8 to 12 of the table, for the `Download` of `offer!`: the lock of the item (`Wait`), the checks under the lock, the download, the extract and the rename. R-SO24: it sets the default when none is set, under the lock of `config.toml` and before the rename (steps 9 to 11 of the table).
 	## The unlock is done by the lock helper. A failure deletes the temp dir and the probe dir (D14 of slice 021). The kind of the failure gives the exit code.
 	install_offer! : Fx, { id : Str, size : U64, ctx : Ctx } => Try({ id : Str, item : Str, how : [Installed, Present], default : [Set, Kept], compat : Compat }, Fail)
 	install_offer! = |fx, offer| {
 		ctx = offer.ctx
 		locked = fx.locked!(ctx.item, || install!(fx, ctx, Text.join(ctx.roots.cache, "toolchains")))?
-		Ok({ id: ctx.id, item: ctx.item, how: locked.how, default: Kept, compat: locked.compat })
+		Ok({ id: ctx.id, item: ctx.item, how: locked.how, default: locked.default, compat: locked.compat })
 	}
 
 	## Slice 037c and 039b (R-NI4, R-DL5, R-DL6): the fetch of one optional compiler of a probe search. `offer!`, then the answer line `Consent.optional_line` on stderr, then `install_offer!`.
@@ -279,9 +285,7 @@ flow! = |fx, args, typed| {
 		}
 		Download(offer) => {
 			RocInstall.ask_download!(fx, args, env, { id: offer.id, size: offer.size })?
-			done = RocInstall.install_offer!(fx, offer)?
-			default = set_default!(fx, offer.ctx.roots, done.id)?
-			Ok({ ..done, default })
+			RocInstall.install_offer!(fx, offer)
 		}
 	}
 }
@@ -296,10 +300,10 @@ warn_changed! = |fx, changed| for change in changed {
 }
 
 # Steps 9 to 11, inside the lock of the item.
-install! : Fx, Ctx, Str => Try({ how : [Installed, Present], compat : Compat }, Fail)
+install! : Fx, Ctx, Str => Try({ how : [Installed, Present], compat : Compat, default : [Set, Kept] }, Fail)
 install! = |fx, ctx, dir| {
 	entries = RocInstall.toolchain_entries!(fx, dir)
-	if RocInstall.has_dir(entries, ctx.id) return Ok({ how: Present, compat: Err(Unknown) })
+	if RocInstall.has_dir(entries, ctx.id) return Ok({ how: Present, compat: Err(Unknown), default: Kept })
 	stale = Temp.of_item({ item: ctx.item, entries })
 	if !stale.is_empty() {
 		_ = fx.delete!(stale)
@@ -319,15 +323,25 @@ install! = |fx, ctx, dir| {
 			_ = fx.delete!([p.temp, p.probe_dir])
 			Err(fail)
 		}
-		Ok(compat) => match fx.rename!({ from: p.temp, to: ctx.item }) {
-			Ok(_) => Ok({ how: Installed, compat })
-			Err(Exists) => {
-				_ = fx.delete!([p.temp])
-				Ok({ how: Installed, compat })
+		Ok(compat) => {
+			# R-SO24: the default is set under the lock of the item, before the final rename.
+			default = match set_default!(fx, ctx.roots, ctx.id) {
+				Ok(kind) => kind
+				Err(fail) => {
+					_ = fx.delete!([p.temp, p.probe_dir])
+					return Err(fail)
+				}
 			}
-			Err(err) => {
-				_ = fx.delete!([p.temp, p.probe_dir])
-				Err(Fail.new(Environment, "cannot move ${p.temp} to ${ctx.item}: ${Str.inspect(err)}"))
+			match fx.rename!({ from: p.temp, to: ctx.item }) {
+				Ok(_) => Ok({ how: Installed, compat, default })
+				Err(Exists) => {
+					_ = fx.delete!([p.temp])
+					Ok({ how: Installed, compat, default })
+				}
+				Err(err) => {
+					_ = fx.delete!([p.temp, p.probe_dir])
+					Err(Fail.new(Environment, "cannot move ${p.temp} to ${ctx.item}: ${Str.inspect(err)}"))
+				}
 			}
 		}
 	}

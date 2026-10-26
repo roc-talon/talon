@@ -1,0 +1,4 @@
+downloading nightly-2026-10-16-1df370f (73.0 MB)
+downloading nightly-2026-10-19-0badf00 (73.0 MB)
+tln: error[consent]: the compiler nightly-2026-10-19-0badf00 (no compiler is selected) is not installed. Run: tln roc install nightly-2026-10-19-0badf00, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: the compiler nightly-2026-10-19-0badf00 (no compiler is selected) is not installed. Run: tln roc install nightly-2026-10-19-0badf00, or set TALON_AUTO_INSTALL=yes.

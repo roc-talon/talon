@@ -1,0 +1,24 @@
+== env:HOME={w}/h1 list --file p1/main.roc
+$PROJECT/p1/main.roc
+  json  acme/json 2.2.0  direct
+exit 0
+== env:HOME={w}/h2 why json --file p1/main.roc
+$PROJECT/p1/main.roc
+  acme/json 2.2.0 (direct)
+    json
+    evidence on nightly-2026-10-16-1df370f:
+      * 1 local: pass
+exit 0
+== env:HOME={w}/h3 path json --file p1/main.roc
+$WORK/h3/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit
+exit 0
+== env:HOME={w}/h4 patch json --file p1/main.roc
+copied: $PROJECT/p1/.talon/patches/json/ (acme/json 2.2.0)
+$PROJECT/p1/talon.toml: + [patch] json (new file)
+edit the copy, then commit it and talon.toml. Review it with: tln patch json --diff
+exit 0
+== env:HOME={w}/h5 outdated --file p1/main.roc
+$PROJECT/p1/main.roc
+  package  current  wanted  latest  nightly range
+  json     2.2.0    2.3.0   2.3.0   nightly-2026-10-14-38a3029 .. nightly-2026-10-16-1df370f
+exit 0

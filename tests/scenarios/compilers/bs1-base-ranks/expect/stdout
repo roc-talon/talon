@@ -31,10 +31,11 @@ nightly-2026-10-13-91fa0c2 is already installed
 exit 0
 == 8: a step past the oldest compiler of the list is a usage error (exit 2) that names the base.
 exit 2
-== 9: no pin, no default, no other compiler (a new store): the step has no start (R-SO14, exit 18). A full id still works.
-exit 18
+== 9: no pin, no default, no other compiler (a new store): the base is the pick of R-SO14 as an id, the latest in the channel (2026-10-15), so @-1 is 2026-10-14 (slice 072e, R-SL7). The first install is the default. A full id still works.
+installed nightly-2026-10-14-38a3029
+nightly-2026-10-14-38a3029 is now the default compiler
+exit 0
 installed nightly-2026-10-09-258ab27
-nightly-2026-10-09-258ab27 is now the default compiler
 exit 0
 == the first store has the 4 compilers that the steps named, no temp dir and no lock
 nightly-2026-10-12-2664a27

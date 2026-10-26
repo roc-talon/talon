@@ -1,0 +1,2 @@
+probe json --file p1/main.roc
+probe pf --file p1/main.roc

@@ -1,2 +1,2 @@
-after-probes	4	home/.local/bin/z	old z	foreign z
-after-probes	3	home/.local/share/talon/tools.json	"tools":{	"tools":{"q":{"name":"acme-other/q","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme-other/q/releases/download/1.0.0/x.tar.zst"}},
+after-probes	5	home/.local/bin/z	old z	foreign z
+after-probes	4	home/.local/share/talon/tools.json	"tools":{	"tools":{"q":{"name":"acme-other/q","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme-other/q/releases/download/1.0.0/x.tar.zst"}},

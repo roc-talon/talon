@@ -10,6 +10,7 @@ import Item
 import Mode
 import Net
 import Nightlies
+import NoRankPure
 import Pin
 import Prompt
 import RocInstall
@@ -21,17 +22,19 @@ import Toolchain
 ## R-SO14 (slice 072b, Resolution 13): no rank selects a compiler (no installed compiler, no `roc` on `PATH`, no `default-roc`, no pin, no range, no `.roc-version`). Talon does not stop with exit code 18. It picks one compiler,
 ## downloads it under the consent rules R-DL1 to R-DL6, and sets it as `default-roc` when none is set (R-SO15). Exit code 18 stays in P0 only (R-PH6, R-EC18).
 ##
-## Slice 072b wires only the fetch (`Fetch.program_of!`, R-FE4, R-LF1) of the flows of `InstallFlow.install_with!` (`install`, `add`, `update`, `upgrade`, `install --frozen`). Every other flow passes `Stop` (the old exit code 18)
-## until slice 072c. The pure decisions are `pick`, `keys`, `gate` and `prompt`. The command code is `offer!` and `ensure!`.
+## Slice 072b wired the fetch (`Fetch.program_of!`, R-FE4, R-LF1) of the flows of `InstallFlow.install_with!` (`install`, `add`, `update`, `upgrade`, `install --frozen`). Slice 072c wires the other fetch flows that reach the fetch with no compiler:
+## `list`, `why` (`Ls.walk_full!`), `outdated`, `patch`, `verify`, `remove` (their `ResolveBase.no_rank`), `path` (`PathFlow.fetch!`) and `init` (`Init`, scope `Outside`). `roc use`, `probe`, the proxy and `ResolveBase.check_pin` are slice 072d. A flow that does not run a probe gives `probe: Skip`.
+## The pure decisions are `pick`, `keys`, `gate` and `prompt`. The command code is `offer!` and `ensure!`.
+## Slice 080 (R-SO24): the steps (a) and (b) of slice 072c (an installed compiler that resolves, a probe of the installed compilers) are removed. `ensure!` is called only when nothing is installed: it is the download of the steps (c) and (d) of R-SO14.
 NoRank :: [].{
 
 	## Where the command runs (CLI 1, R-PD1 to R-PD8). `Project` has the hashes of the release entries of the headers of the project (the decision of the case: R-SO14 (1)). `Outside` is no project (R-SO14 (2)).
 	Scope : [Outside, Project(List(Str))]
 
-	## What the download needs: the scope and the facts of the consent rules (`Start.Downloads`: `auto` is `TALON_AUTO_INSTALL`, `allow` is `--allow-downloads`, `yes`, `mode`, `quiet`, `offline`, `env`).
+	## What the download needs: the scope, the facts of the consent rules (`Start.Downloads`: `auto` is `TALON_AUTO_INSTALL`, `allow` is `--allow-downloads`, `yes`, `mode`, `quiet`, `offline`, `env`). Slice 080 (R-SO24): there is no step (a) and no step (b), so no probe.
 	Run : { scope : NoRank.Scope, downloads : Start.Downloads }
 
-	## `Stop`: this flow does not apply R-SO14 yet (slice 072c): the failure `Compiler.failure(NoCompiler)`, exit code 18. `Download`: R-SO14.
+	## `Stop`: this flow does not apply R-SO14 yet (slice 072d, or a flow that has no fetch): the failure `Compiler.failure(NoCompiler)`, exit code 18. `Download`: R-SO14.
 	Fallback : [Stop, Download(NoRank.Run)]
 
 	## The result of `ensure!`: the compiler that Talon uses, and the installed list with it (the list that the caller read, and the id of a download).
@@ -49,24 +52,12 @@ NoRank :: [].{
 	##
 	## A project with no known hash (no fact at all, or no release entry): every compiler suits, so the result is row 2. No other source counts in P1 (R-EF1 rank 2 is the registry, P2). The reading of "a recorded pass for each hash of the header entries that has a fact" is question Q1 of slice 072b.
 	pick : { auto : List(Str), scope : NoRank.Scope, facts : List(Db.Fact) } -> Try(Str, [Empty])
-	pick = |run| match run.auto.last() {
-		Err(_) => Err(Empty)
-		Ok(latest) => match run.scope {
-			Outside => Ok(latest)
-			Project(hashes) => {
-				checks = run.facts.keep_if(|f| f.target == "any")
-				known = hashes.keep_if(|hash| checks.any(|f| f.hash == hash))
-				passes = |hash, id| checks.any(|f| f.hash == hash and f.outcome == Pass and Pin.same_id(f.nightly, id))
-				suits = run.auto.keep_if(|id| known.all(|hash| passes(hash, id)))
-				Ok(suits.last() ?? latest)
-			}
-		}
-	}
+	pick = |run| NoRankPure.pick(run)
 
 	## R-EF1, R-CC8: the keys of the one `db_query!` of the pick. One key for each hash and each id of `auto`: `{ hash, nightly: <id>, target: "any" }`. The hashes are sorted and have no repeat (`Text.sorted_unique`); for each hash the ids are in the order of `auto`.
 	## No hash gives no key, and then no call (`Facts.load!`).
 	keys : { hashes : List(Str), auto : List(Str) } -> List(Db.Key)
-	keys = |run| Text.sorted_unique(run.hashes).join_map(|hash| run.auto.map(|id| { hash, nightly: id, target: "any" }))
+	keys = |run| NoRankPure.keys(run)
 
 	## R-SO14, R-DL5, R-DL10 (the refusals that need no list): the first row that holds wins. Both are kind `Consent` (exit code 13), and no request is made (no list, no `tty!`):
 	##
@@ -78,13 +69,7 @@ NoRank :: [].{
 	##
 	## The texts are proposals (TW24).
 	gate : { auto : [Ask, Yes, No], yes : Bool, flag : Try(Answer, [NoFlag]), offline : Bool } -> [Go, Stop(Fail)]
-	gate = |run| if run.offline {
-		Stop(Fail.new(Consent, "no compiler is selected, and --offline stops the download. Run: tln roc install @latest when you are online, then tln roc default <id>."))
-	} else if Consent.auto_refuses({ auto: run.auto, yes: run.yes, flag: run.flag }) {
-		Stop(Fail.new(Consent, "no compiler is selected. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install @latest, then tln roc default <id>, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes."))
-	} else {
-		Go
-	}
+	gate = |run| NoRankPure.gate(run)
 
 	## R-NI5, R-DL1, R-DL3, R-SO14 (the prompt, a proposal, TW24): kind `Required(["--allow-downloads", "TALON_AUTO_INSTALL=yes"])` (`Prompt.decide` adds `--yes`), yes/no, the interactive default is No (R-DL3: the command does not name the
 	## download; the table of R-NI5 has `No`). It names the compiler and says that it becomes the default.
@@ -96,24 +81,10 @@ NoRank :: [].{
 	## | `subject` | `the download of <id>` |
 	## | `answer_line` | `Yes`: `downloading <id> (<size>), the default compiler`. `No`: `no download of <id>` |
 	prompt : { id : Str, size : U64 } -> Prompt
-	prompt = |facts| {
-		name = facts.id
-		size = Toolchain.size_text(facts.size)
-		yes_line = "downloading ${name} (${size}), the default compiler"
-		no_line = "no download of ${name}"
-		Prompt.{
-			id: "no-rank-download",
-			kind: Required(["--allow-downloads", "TALON_AUTO_INSTALL=yes"]),
-			shape: YesNo,
-			default: No,
-			question: "No compiler is selected. Download ${name}, ${size}? It becomes the default compiler.",
-			subject: "the download of ${name}",
-			answer_line: |answer| if answer == Yes yes_line else no_line,
-		}
-	}
+	prompt = |facts| NoRankPure.prompt(facts)
 
 	## The steps 2 to 6 of `RocInstall.offer!`, with the pick of `pick` in place of `Nightlies.pick`. The calls, in order: `clock!`, `platform!`, `RocInstall.read_config!` (one `read_files!` of `config.toml`), one `list_dirs!` of
-	## `<cache>/toolchains`, then the calls of `Nightlies.list!` (the cache of the list, `compat.db`: slice 030b), then for `Project` with a key: `Facts.load!` (one `db_query!` with `facts=<n>`, `n` is the number of keys). The failures:
+	## `<cache>/toolchains`, then the calls of `Nightlies.list!` (the cache of the list, `compat.db`: slice 030b), then for `Project` with a key: `Facts.load!` (one `db_query!` with `facts=<n>`, `n` is the number of keys). Slice 072c (R-CV6): when `Nightlies.list!` gives `changed` tags (the sha256 of a tag changed) and the command names no tag, `offer!` prints one line `warning: <Toolchain.changed_warning>` on `stderr` for each (also before the failure `pick_failed`). The failures:
 	##
 	## | Case | Failure |
 	## | --- | --- |
@@ -137,6 +108,9 @@ NoRank :: [].{
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
 		found = Nightlies.list!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system })?
+		for change in found.changed {
+			fx.err!("warning: ${Toolchain.changed_warning(change)}\n")
+		}
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
 		auto = Toolchain.domain({ releases: found.releases, now, min_age: config.min_release_age ?? 172800, nightly: switch.nightly }).auto
 		facts = match run.scope {
@@ -161,15 +135,16 @@ NoRank :: [].{
 	##
 	## | Step | Does | Rule |
 	## | --- | --- | --- |
-	## | 1 | `gate`. `Stop(fail)`: that failure (exit 13), no call | R-DL5, R-DL10 |
-	## | 2 | `offer!`. A failure is returned | R-SO14, R-CV1 |
-	## | 3 | `Present(found)`: `RocInstall.first_default!` (the lock of `config.toml`, a read, and when none is set a second read and `write_atomic!`), then the result. No download | R-SO14, R-SO15 |
-	## | 4 | `Download(offer)`: `Consent.required_want` with the id of the offer and the consent facts. `NeedTty`: one `tty!` call, `Mode.with_tty`, then again. `NeedsConsent`: `Consent.download_stop({ count: 1, size })` (exit 13). The list was read before the question, and no lock is held at that time (R-CC3 point 5) | R-DL4, R-DL5, R-HF1 |
-	## | 5 | `Prompt.ask!` with `prompt` (the flag is `Ok(Yes)` when step 4 gave `Install`, else `Err(NoFlag)`). `No`: `Consent.command_declined` (exit 13) | R-DL1, R-NI5 |
-	## | 6 | `RocInstall.install_offer!` (the lock of the item, the download, the extract: no default) | R-CC4 |
-	## | 7 | `RocInstall.first_default!`: the downloaded compiler becomes `default-roc` when none is set. A default that is set stays | R-SO15 |
+	## | 1 | `scope` is `Project(hashes)`: one `Facts.load!` (one `db_query!`) with `keys({ hashes, auto: <the ids of listed that are compiler ids> })` (no call when there is no hash or no id). `scope` is `Outside`: step 1 and step 2 are skipped (R-SO14 (2): no project, no fact) | R-SO14 (1) (a), R-CC8 |
+	## | 2 | (slice 080: the old step 2, the installed compilers and their probe, is removed: R-SO24) | |
+	## | 3 | `gate`. `Stop(fail)`: that failure (exit 13), no call. The gate is after steps 1 and 2: a refusal of a download never stops a command that needs none (this revises D1 of slice 072b) | R-DL5, R-DL10 |
+	## | 4 | `offer!`. A failure is returned. One warning line on `stderr` for each tag that the list dropped (R-CV6, only when the command names no tag): `warning: ` and `Toolchain.changed_warning` of the change | R-SO14, R-CV1, R-CV6 |
+	## | 5 | `Present(found)`: the result. No download, no default (R-SO24: the process that installed it set the default) | R-SO14, R-SO15 |
+	## | 6 | `Download(offer)`: `Consent.required_want` with the id of the offer and the consent facts. `NeedTty`: one `tty!` call, `Mode.with_tty`, then again. `NeedsConsent`: `Consent.download_stop({ count: 1, size })` (exit 13). The list was read before the question, and no lock is held at that time (R-CC3 point 5) | R-DL4, R-DL5, R-HF1 |
+	## | 7 | `Prompt.ask!` with `prompt` (the flag is `Ok(Yes)` when step 6 gave `Install`, else `Err(NoFlag)`). `No`: `Consent.command_declined` (exit 13) | R-DL1, R-NI5 |
+	## | 8 | `RocInstall.install_offer!` (the lock of the item, the download, the extract, the default when none is set, the rename). A default that is set stays | R-CC4, R-SO24 |
 	##
-	## The compiler is never a `git-`, `link-` or `copy-` build (the channel is nightlies, R-NS6).
+	## The compiler is never a `git-`, `link-` or `copy-` build (the channel is nightlies, R-NS6). The L2 cases `norank/nr1-order`, `fetch/fe-flows` and `init/it4-nocompiler` fix the calls. Slice 080 (R-SO24): step 8 sets the default under the lock of `config.toml` before the rename (inside `RocInstall.install_offer!`), so steps 5 and 9 do not call `first_default!`.
 	ensure! : Fx, { roots : Roots, run : NoRank.Run, listed : List(Str) } => Try(NoRank.Got, Fail)
 	ensure! = |fx, facts| {
 		consent = facts.run.downloads
@@ -179,10 +154,7 @@ NoRank :: [].{
 		}
 		offer = NoRank.offer!(fx, { env: consent.env, offline: consent.offline, scope: facts.run.scope })?
 		match offer {
-			Present(found) => {
-				_ = RocInstall.first_default!(fx, facts.roots, found.id)?
-				Ok({ id: found.id, installed: facts.listed.append(found.id) })
-			}
+			Present(found) => Ok({ id: found.id, installed: facts.listed.append(found.id) })
 			Download(download) => {
 				mode = consented!(fx, consent, { id: download.id, size: download.size })?
 				question = NoRank.prompt({ id: download.id, size: download.size })
@@ -190,14 +162,21 @@ NoRank :: [].{
 				asked = Prompt.ask!(fx, question, { mode: mode.mode, yes: consent.yes, quiet: consent.quiet, flag })?
 				if asked.answer != Yes return Err(Consent.command_declined(download.id))
 				done = RocInstall.install_offer!(fx, download)?
-				_ = RocInstall.first_default!(fx, facts.roots, done.id)?
 				Ok({ id: done.id, installed: facts.listed.append(done.id) })
 			}
 		}
 	}
+
+	## R-SO19, R-SO23, R-SL7 (slice 072e): the compiler of a command as an id, with no gate, no prompt, no download and no default. A command that runs a probe, and the proxy, use it when no compiler is selected: the download is at the first probe (R-SO22) or at the consent rules of the proxy.
+	## `listed` is the list of `<cache>/toolchains` that the caller read (empty by R-SO24: no compiler is selected only when nothing is installed). Slice 080: there is no installed-first step, so the only calls are those of `offer!` (the id of `Present` or of `Download`).
+	pick_id! : Fx, { roots : Roots, env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, listed : List(Str) } => Try(Str, Fail)
+	pick_id! = |fx, facts| match NoRank.offer!(fx, { env: facts.env, offline: facts.offline, scope: facts.scope })? {
+		Present(found) => Ok(found.id)
+		Download(offer) => Ok(offer.id)
+	}
 }
 
-# Step 4 of `ensure!`: `Consent.required_want` for the compiler of the offer. `NeedTty` makes one `tty!` call and asks again. `NeedsConsent` is the failure `Consent.download_stop` (exit 13).
+# Step 6 of `ensure!`: `Consent.required_want` for the compiler of the offer. `NeedTty` makes one `tty!` call and asks again. `NeedsConsent` is the failure `Consent.download_stop` (exit 13).
 consented! : Fx, Start.Downloads, { id : Str, size : U64 } => Try({ decided : [Refuse, AutoNo, NeedsConsent, Install, Ask, NeedTty], mode : Mode }, Fail)
 consented! = |fx, consent, offer| {
 	want = |mode| Consent.required_want({ id: offer.id, auto: consent.auto, mode, yes: consent.yes, flag: consent.allow })

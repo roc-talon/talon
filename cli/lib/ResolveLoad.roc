@@ -126,10 +126,17 @@ ResolveLoad :: [].{
 		if role == Lock and request.command == Install {
 			Vars.check_keys(built.wants)?
 		}
+		decision = ResolveLoad.decide(request, loaded, role)?
+		Ok({ loaded, built, decision })
+	}
+
+	## `Pin.decide` for the files of the run (R-SO19 to R-SO21). `prepared!` calls it, and `InstallFlow.install_with!` calls it again with `with_pick` when the run picked a compiler.
+	decide : ResolveBase.Request, ResolveBase.Loaded, [Lock, Verify] -> Try(Pin.Decision, Fail)
+	decide = |request, loaded, role| {
 		settings = ResolveBase.settings_of(request, loaded)
 		# Slice 039 (Q3): the members of a free nightly can have different pins.
 		unified = NightlyPlan.unify({ members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: Bool.False }), free: request.command == Upgrade and NightlyPlan.scope(request.names).nightly == Free })
-		decision = Pin.decide({
+		Pin.decide({
 			members: unified.members,
 			compiler: loaded.selected.id,
 			compiler_from: loaded.selected.from,
@@ -138,9 +145,12 @@ ResolveLoad :: [].{
 			req: loaded.intent.toolchain.roc,
 			nightly: settings.nightly,
 			no_check: request.no_check,
-		})?
-		Ok({ loaded, built, decision })
+		})
 	}
+
+	## R-SO19, R-SO23, R-SO24 (slice 072e): the files of the run with the picked compiler (`HeldRoc.picked!`) as the selected one. The rank is `Default`: the pick is the default compiler of the run, as the download sets it (R-SO15).
+	with_pick : ResolveBase.Loaded, Str -> ResolveBase.Loaded
+	with_pick = |loaded, id| { ..loaded, selected: { id: Ok(id), from: Default } }
 }
 
 # R-NS10, R-C7: `config.toml` is read in the same `read_files!` call as the headers. A file that is not there gives no setting.

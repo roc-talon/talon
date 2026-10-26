@@ -53,7 +53,7 @@ flow! = |fx, args, opts| {
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 	asked = Ls.request_of(args, start)
 	loaded = ResolveLoad.load!(fx, asked)?
-	request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }) }
+	request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }
 	facts = facts_of!(fx, request, loaded, opts.name)?
 	if opts.diff review!(fx, args, facts) else copy!(fx, args, facts)
 }

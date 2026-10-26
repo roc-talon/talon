@@ -242,11 +242,11 @@ ToolInstall :: [].{
 		}
 	}
 
-	## R-T11, R-T8, R-T5: the probe of the build. `program` and `env` are those of `Launch.program!` and `Launch.child_env!` for the compiler `id` (R-PX6). The arguments are `build main.roc --opt=speed --output=<output>` and never
+	## R-T11, R-T8, R-T5: the probe of the build. `program` and `env` are those of `Launch.program!` and `Launch.child_env!` for the compiler `id` (R-PX6). The arguments are `build main.roc --opt=speed --output=<output> --no-cache` (R-LD8) and never
 	## `--target` (R-T8: roc then uses the musl target of the platform, else its glibc target). `dir` is the extracted app bundle (`Layout.dir`). The timeout is 3600 s and the weight is `Probe.weight` of a build (question Q6: R-RC3 gives 30 s to a probe and a tool build is long).
 	build_spec : { id : Str, program : Str, env : List((Str, Str)), dir : Str, output : Str } -> Probe.Spec
 	build_spec = |facts| {
-		args: ["build", "main.roc", "--opt=speed", "--output=${facts.output}"],
+		args: Probe.build_args({ file: "main.roc", options: ["--opt=speed"], output: facts.output }),
 		compiler: facts.id,
 		program: facts.program,
 		dir: facts.dir,
@@ -291,6 +291,16 @@ ToolInstall :: [].{
 			Ok(old) => if old == have Make else Foreign
 			Err(NotFound) => Foreign
 		}
+	}
+
+	## Slice 078 (R-ST11, R-ST9, R-T4): `verdict` with the record of `tools.json` (`BinRecord.read`). `recorded` is the sha256 that `bin.<name>` has for this entry, or `Err(None)`. The entry is Talon's when its sha256 is the one of the data file `old` (R-ST11 (1)) or the recorded one (R-ST11 (2): a stale
+	## entry that a step left on the old file, R-ST9). So `Make` for `Sha(h)` when `old` is `Ok(h)` or `recorded` is `Ok(h)`, also when the data file is gone (`old` is `Err(NotFound)`). `Absent` is `Make`. `Dir` and `Unreadable` are `Foreign` (the record does not count). Any other file is `Foreign`.
+	## The flows use this function. `verdict` stays with the same results as before (`recorded: Err(None)`).
+	verdict_bin : { old : Try(Str, [NotFound]), recorded : Try(Str, [None]), have : [Absent, Dir, Unreadable, Sha(Str)] } -> [Make, Foreign]
+	verdict_bin = |facts| match facts.have {
+		Absent => Make
+		Dir | Unreadable => Foreign
+		Sha(have) => if facts.old == Ok(have) or facts.recorded == Ok(have) Make else Foreign
 	}
 
 	## R-T28, R-NM11, R-CC6: the failure of a binary name that another tool has. Kind `Usage` (exit 2). It names the flag: `<key> is the binary name of <taken> already. Use --as <name> to install <name> under another binary name.` (`<taken>` is the full name of the other tool.)

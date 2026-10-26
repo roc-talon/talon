@@ -417,7 +417,7 @@ expect {
 	bad == []
 }
 
-# R-D2 R-SE9 (slice 076, Q3): the archive name of the index is the last segment of the tarball URL, and it is a file name in the temp dir of the install. A name that is not a safe path part (`..`, `.`, empty, a backslash or a NUL byte in it)
+# R-D2 R-SE18 R-SE9 (slice 076, Q3): the archive name of the index is the last segment of the tarball URL, and it is a file name in the temp dir of the install. A name that is not a safe path part (`..`, `.`, empty, a backslash or a NUL byte in it)
 # is not an archive: the failure of the row "no archive" (`Environment`, exit 18, nothing is written). A dot inside a name is safe.
 expect {
 	with_url = |url| "{ \"0.17.0\": { \"x86_64-linux\": { \"tarball\": \"${url}\", \"shasum\": \"${sha_of("x86_64-linux")}\", \"size\": \"1\" } } }"

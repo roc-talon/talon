@@ -1,0 +1,3 @@
+GET /api/repos/acme/app/releases?per_page=100 200
+GET /dl/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst 200
+GET /dl/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst 200

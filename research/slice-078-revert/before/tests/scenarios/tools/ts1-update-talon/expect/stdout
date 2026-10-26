@@ -1,0 +1,69 @@
+-- 1: v0.3.4 is the newest release that is old enough (R-T9). The binary and sha256sums.txt are downloaded (R-DA3), the sha256 is checked (R-S1), chmod 0755 (R-HF2), the new file runs with --version (R-S3), then it is renamed over the old file and the entries tln and roc are made again (R-ST9):
+-- they are one file with the new binary (a hard link of the old file would still run 0.3.1). tools.json has the new entry. No temp file stays (R-CC2).
+== tln tool update talon
+updated talon 0.3.1 to 0.3.4 (roc-talon/talon)
+exit 0
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.local/bin:
+roc
+tln
+
+$HOME/.local/share/talon/bin:
+tln
+$HOME/.local/bin/tln and $HOME/.local/share/talon/bin/tln are one file
+$HOME/.local/bin/roc and $HOME/.local/share/talon/bin/tln are one file
+$HOME/.local/share/talon/bin/tln can run
+tln 0.3.4
+tln 0.3.4
+tln 0.3.4
+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+downloads: 2
+-- slice 074 (R-S2, R-IS3): the fake gh (given/bin/gh) is there and not logged in: tln asked for 'gh auth status' only, printed the note on stderr, and went on.
+gh calls so far (the random part of the temp name is <hex>):
+auth status
+-- 2: the same line again: the entry says 0.3.4, so tln is up to date. No download (R-S2).
+== tln tool update talon
+talon 0.3.4 is up to date
+exit 0
+downloads: 2
+-- 3: later (v0.3.5 is old enough): the sha256 of the download is not the one of sha256sums.txt (R-S1, R-SE13). Exit 16. The old file, the entries and tools.json stay, no temp file stays.
+== tln tool update talon
+exit 16
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.local/bin:
+roc
+tln
+
+$HOME/.local/share/talon/bin:
+tln
+tln 0.3.4
+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+downloads: 4
+-- 4: later still (v0.3.6): the sha256 is right, and now gh is logged in and the attestation is good (R-IS3, R-SE13): gh checked the temp file in the data bin dir for roc-talon/talon, and the line 'attestation ok' came before the use of the file, so the new file runs with --version and exits with 3. Exit 1, the old file stays (R-S3), no temp file stays.
+== tln tool update talon
+attestation ok
+exit 1
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.local/bin:
+roc
+tln
+
+$HOME/.local/share/talon/bin:
+tln
+tln 0.3.4
+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"67c8fb9ec27ba71b8226c8f755a1ef4799a22bac2a5eb7449c5e8e010871b888","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+downloads: 6
+gh calls so far (the random part of the temp name is <hex>):
+auth status
+auth status
+attestation verify $HOME/.local/share/talon/bin/tln.<hex>.tmp --repo roc-talon/talon
+-- 5: the entry talon is not a tool of the list (question Q-S2): the real binary reads the file and the list is empty.
+== tln tool ls
+no tool is installed. Run: tln tool install owner/app
+exit 0
+== tln tool update
+no tool is installed. Run: tln tool install owner/app
+exit 0

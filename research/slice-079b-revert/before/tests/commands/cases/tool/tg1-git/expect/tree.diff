@@ -1,0 +1,47 @@
+--- home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
++++ home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64mac: { inputs: ["libhost.a", app] },
++		arm64mac: { inputs: ["libhost.a", app] },
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z
+--- home/.local/bin/gapp
++++ home/.local/bin/gapp
+@@ -1 +1 @@
+-old gapp
++fake
+\ No newline at end of file
+--- home/.local/bin/sub
++++ home/.local/bin/sub
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.local/share/talon/bin/gapp
++++ home/.local/share/talon/bin/gapp
+@@ -1 +1 @@
+-old gapp
++fake
+\ No newline at end of file
+--- home/.local/share/talon/bin/sub
++++ home/.local/share/talon/bin/sub
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"gapp":{"name":"acme/gapp","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/gapp/releases/download/1.0.0/4LxvDLjPJkjkxgEJQ77HK8PussvLVCBVDvyBoL3GU2YU.tar.zst"},"build":{"hashes":["6Ywuj3Uc8KmzUk3rRWjGKNpRqBsQRzAxvBz48YTew4qE"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}
++{"format":1,"tools":{"gapp":{"name":"acme/gapp","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v2"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gapp":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78"}},"sub":{"name":"acme/sub","source":{"kind":"git","commit":"dd03c09e5f0a3b6c7d8e9f001122334455667788","ref":"dd03c09e","path":"apps/cli"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"sub":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78"}}}}

@@ -6,3 +6,5 @@ Slice 048, gap tests of `tln tool update` (entry `commands`). One home with the 
 | 1 | `tool update np` | the new header has no pin: exit 2 (D11, 046 D3) before the platform step (no platform fetch, no build) | R-T24, R-T11 |
 | 2 | `tool update gm --offline` | a branch tool needs the commit now: exit 15 before any commit request (no `http_get`) | R-T24, R-DI12 |
 | 3 | `tool update mo` (`env:TALON_INTERACTIVE=1`) | the pin is not an installed id by its text, so a download is counted and the offer is read (the nightly list), but the offer is `Present` (the other tag form is installed): no prompt (no `ask`), no download. The build runs and `mo` is updated | R-T25, R-DL1 |
+
+Slice 079 (R-T30 step 2, R-NI17): `tool update` reads the facts for the tools that it builds with a pin that is not installed (one `db_query`, and one more `list_dirs` of the toolchains before the consent). No installed release has a recorded pass for these closures, so the downloads are as before. `tu3-evidence` has a case with a pass.

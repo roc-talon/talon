@@ -1,0 +1,2 @@
+# <bundle hash> <TAB> code <TAB> stdout <TAB> stderr. A check with no row passes. Slice 079 (R-T30): the try of the installed compilers runs before the consent rules, so the app whose pin is not installed fails its check with each installed compiler: the case keeps its consent rules.
+EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F	1	-	../fixtures/check/out/syntax.stderr

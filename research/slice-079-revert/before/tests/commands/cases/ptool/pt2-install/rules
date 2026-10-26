@@ -1,0 +1,29 @@
+Slice 056, `tln install` and `tln install --frozen` with `[tools]` (entry `commands`): R-PT5 to R-PT7, R-PT9, R-PT12, R-PT15, R-PT16, R-LF1, R-SO14, R-SO22, R-DL7, R-FL13, R-I5, G1, G2, R-CC7. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache,
+`TALON_NOW=2026-10-15T12:00:00Z`. The headers of the projects have only the platform, so the header flow has nothing to change. `acme/cc` 1.0.0 has an `x` entry (a build), the other tools have none.
+Projects: `p1` has `a` (a `ref`, no `url`), `b` (a `ref` and the `url` of acme/bar 1.0.0, no binary) and `c` (a `url` and its binary). `p2` has an entry with no `url`. `p3` has a `url` of 1.1.0 and the `ref` `^2`. `p4` has an entry with the `url` of another app than its `ref`.
+`p5` has a `url` with no binary (acme/qq). `p6` has a `url` with its binary (acme/cc). `p7` has a `url` whose bundle is not in the cache. `p8` has 2 entries whose `x` entry has no binary (a directory with the name of the binary, and another file). `p9` has an app with a wasm platform. `p10` has a tool whose app pins a compiler that is not installed.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `install --file p1/main.roc` | the header: nothing to change. `a`: the newest release of acme/foo in `^1` (1.1.0) is chosen, built, and its `url` is written (`locked tool a`). `b`: the `url` has no binary: the bundle is fetched, the build runs (`built tool b`), no release list is read. `c`: its binary is there, nothing. One write of `talon.toml` | R-PT5, R-PT6, R-PT4, R-I5, G1, R-PT9 |
+| 2 | `install --file p1/main.roc` | every tool has its `url` and its binary: no fetch, no build, no write: `nothing to change` | R-PT6, R-PT9 |
+| 3 | `install --frozen --file p2/main.roc` | an entry has no `url`: exit 14, the message names the entry and the file. Nothing is fetched or built | R-PT7, R-LF1 |
+| 4 | `install --frozen --file p3/main.roc` | the version of the `url` (1.1.0) is not in the range of the `ref` (`^2`): exit 14 | R-PT7 |
+| 5 | `install --frozen --file p4/main.roc` | the app of the `url` is not the app of the `ref`: exit 14 | R-PT7 |
+| 6 | `install --frozen --file p5/main.roc` | the `url` is locked and has no binary: the bundle is fetched, built (a compiler is needed for this build only), the `x` entry is made. No index call, no write of `talon.toml` | R-PT6, R-PT7, R-LF1, R-SO22 |
+| 7 | `install --frozen --file p6/main.roc` | the binary is there: no fetch, no build, no compiler call | R-SO14, R-SO22, R-PT9 |
+| 8 | `install --frozen --offline --file p7/main.roc` | the bundle is not in the cache and `--offline`: exit 15 | R-PT15, R-FL3 |
+| 9 | `install --frozen --file p8/main.roc` | an `x` entry whose dir has a directory with the name of the binary, and an entry whose dir has another file: neither has the binary (follow-up of slice 049): both are built, the old dir is deleted before the new dir is made | R-PT6, R-B9, R-X2 |
+| 10 | `install --frozen --file p9/main.roc` | the platform has only wasm32: exit 2 before the build | R-PT16, R-T2 |
+| 11 | `install --file p1/main.roc --offline` | all tools have a binary: with `--offline` no network is needed | R-PT15, R-FL3 |
+| 12 | `install --frozen --file p10/main.roc` | the build needs the compiler `nightly-2026-10-12-2664a27` (the pin of the app of the tool), which is not installed. The download is a required download (R-DL2): no person and no `TALON_AUTO_INSTALL`, so exit 13 (the text names `--allow-downloads` and `TALON_AUTO_INSTALL=yes`, the ways that the command takes, Q-A of the review) | R-DL7, R-DL2, R-SO22, R-DL4 |
+| 13 | `install --dry-run --file p11/main.roc` | the entry `d` has no `url` and the exact selector 1.0.0, which has no `x` entry. `--dry-run` builds nothing and writes nothing: `locked tool d 1.0.0`, `would build tool d 1.0.0`, the file line, `dry run: nothing was written`. No `nothing to change` (the tools change, D16 of the review) | R-PT4, R-PT6, R-PT5, R-LF4 |
+| 14 | `install --frozen --allow-downloads --file p10/main.roc` | the flag answers the required download of the compiler (R-DL5): no exit 13. The run goes on to the download (the fake nightly list has no such release: the failure is the last line of `stderr`) | R-DL5, R-DL7, R-SO22 |
+
+Slice 064 (R-FE4, R-SO6): the home has `config.toml` with `default-roc = nightly-2026-10-14-38a3029` and a newer compiler `nightly-2026-10-16-9e9e9e9` (so 2 lines `db_query ... facts=` show 2 facts in place of 1). Each `roc unbundle` of the tools step of `install` and `install --frozen` runs with the compiler that the run selects (`38a3029`: the default, no pin in the headers), not with the newest installed compiler: the tools step takes `request.selected` of `InstallFlow`.
+
+Slice 073 (R-PT5, R-OUT4): run 15 `install --json --file p11/main.roc`: the entry `d` has no `url` and the exact selector 1.0.0 (run 13 only planned it). The run locks it (`locked tool d`) and builds it. The envelope has the keys of the header flow and then `data.tools`, one row (`action` `locked`, `built` true, `previous` null). The human text goes to stderr. One more build row in `fx/probes`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 15 | `install --json --file p11/main.roc` | stdout is one envelope with `data.tools`. `talon.toml` of p11 has the `url` | R-PT5, R-OUT4, R-I5 |

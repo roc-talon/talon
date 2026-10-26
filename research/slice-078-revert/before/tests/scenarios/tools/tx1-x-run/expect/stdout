@@ -1,0 +1,61 @@
+-- 1: the first run builds the newest release (R-X1), puts the build in the x cache (R-X2) and runs it with the words after -- (R-CM12). The exit code of the app is the exit code of tln (R-X4). No tools.json and no bin dir entry (R-X3). The temp dir of the build is removed (R-CC2).
+== tln x acme/app -- a b c
+ran: acme/app 1.1.0 args: a b c
+exit 3
+$HOME/.cache/roc/talon/x:
+3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa
+
+$HOME/.cache/roc/talon/x/3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa:
+app
+manifest.json
+cannot access '$HOME/.local/share/talon': No such file or directory
+cannot access '$HOME/.local/bin': No such file or directory
+{"format":1,"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"bundle":"ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw","last_run":"2026-10-15T12:00:00Z"}
+$HOME/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/app --no-cache
+downloads: 1
+-- 2: the same line again matches the entry (R-B1): no download, no build. The app runs again.
+== tln x acme/app
+ran: acme/app 1.1.0 args: 
+exit 3
+downloads: 1, builds: 1
+-- 3: --json is refused (R-FL1): exit 2, the JSON error line, and no request.
+== tln x acme/app --json
+{"schema":1,"command":"x","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"flag '--json' is not for 'x'"}}
+exit 2
+downloads: 1, builds: 1
+-- 4: tln tool install takes the entry (R-B4): no download, no build. The binary moves to the data bin dir (the entry dir is deleted), the bin dir entry is a hard link, tools.json has the tool.
+== tln tool install acme/app
+installed app 1.1.0 (acme/app)
+exit 0
+x: 0 entries
+$HOME/.local/bin:
+app
+
+$HOME/.local/share/talon/bin:
+app
+== $HOME/.local/bin/app c
+ran: acme/app 1.1.0 args: c
+exit 3
+{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+downloads: 1, builds: 1
+-- 5: an exact version that the installed tool does not have is a build in the x cache (R-B2, R-B5): the installed tool is not changed.
+== tln x acme/app@1.0.0 -- d
+ran: acme/app 1.0.0 args: d
+exit 3
+50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269
+{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+downloads: 2, builds: 2
+-- 6: 36 days later the entry was not run for more than the gc age (R-GC7): tln cache gc removes it. The gc removes the old fake compiler too (not used for 36 days), so the case keeps a copy of the store and puts it back for step 7.
+== tln cache gc
+removed toolchain nightly-2026-10-14-38a3029 (1.7 KB)
+removed $HOME/.cache/roc/compat-bbbbbbb
+removed $HOME/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269 (499 B)
+freed 2.2 KB
+exit 0
+x: 0 entries
+-- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download.
+== tln x acme/app@1.0.0 -- e
+ran: acme/app 1.0.0 args: e
+exit 3
+50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269
+downloads: 2, builds: 3

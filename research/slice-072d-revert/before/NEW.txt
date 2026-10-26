@@ -1,0 +1,5 @@
+tests/commands/cases/verify/vn1-nocompiler
+tests/commands/cases/probe/pn1-nocompiler
+tests/commands/cases/roc/us4-nocompiler
+tests/commands/cases/remove/rm3-nocompiler
+docs/slices/072d-no-rank-stops.md

@@ -17,7 +17,8 @@ SetupText :: [].{
 	Completion : [Written(Str), Present, None]
 
 	## Slice 072a (R-ST16): the default compiler step. `Set(id)`: setup wrote `default-roc`. `Kept(id)`: `config.toml` had one, it is not changed. `Unread(why)`: the list of compilers cannot be read (`why` is the text of the failure), setup wrote none.
-	Default : [Set(Str), Kept(Str), Unread(Str)]
+	## Slice 080 (R-ST16, R-SO24 case 3): `Repaired(id)`: `config.toml` had no `default-roc` and a nightly or a release was installed, so setup writes the newest installed one (no list read, no download).
+	Default : [Set(Str), Kept(Str), Repaired(Str), Unread(Str)]
 
 	## What a run did. `roc` and `old` are the full paths of the launcher entry and of `roc.old`.
 	Done : {
@@ -88,6 +89,7 @@ SetupText :: [].{
 		}
 		chosen = match done.default {
 			Set(id) => ["default compiler: ${id} (downloaded when a command needs it)\n"]
+			Repaired(id) => ["default compiler: ${id} (the newest installed compiler)\n"]
 			_ => []
 		}
 		lines = made.concat(moved).concat(path).concat(files).concat(chosen)
@@ -144,6 +146,7 @@ SetupText :: [].{
 	default_data = |chosen| match chosen {
 		Set(id) => JsonDoc.Obj([("action", JsonDoc.Text("set")), ("id", JsonDoc.Text(id))])
 		Kept(id) => JsonDoc.Obj([("action", JsonDoc.Text("kept")), ("id", JsonDoc.Text(id))])
+		Repaired(id) => JsonDoc.Obj([("action", JsonDoc.Text("repaired")), ("id", JsonDoc.Text(id))])
 		Unread(_) => JsonDoc.Obj([("action", JsonDoc.Text("unread")), ("id", JsonDoc.Null)])
 	}
 

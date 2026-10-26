@@ -8,8 +8,10 @@ PATH: added $HOME/.local/bin to $HOME/.bashrc
 completions: $HOME/.local/share/bash-completion/completions/tln
 exit 0
 == 1b: R-IS6 R-S2 R-T4 R-CC1 (slice 052): the entry talon is written when it is missing: the kind prebuilt, the version of this tln and the release URL of its asset, the target of this machine (musl on Linux), the real sha256 of the file tln in the data bin dir, the time TALON_NOW. The tool foo stays. No temp file is left.
-{"format":1,"tools":{"foo":{},"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.0","url":"https://github.com/roc-talon/talon/releases/download/v0.0.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"<sha256>","libs":[],"installed_at":"2026-10-22T12:00:00Z"}}}
+{"format":1,"tools":{"foo":{"bin":{"foo":"<sha256>"}},"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.0","url":"https://github.com/roc-talon/talon/releases/download/v0.0.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"<sha256>","libs":[],"installed_at":"2026-10-22T12:00:00Z","bin":{"tln":"<sha256>","roc":"<sha256>"}}}}
 the sha256 is the one of the file tln
+bin of talon has the sha256 of the file tln for tln and roc
+bin of foo has the sha256 of the file foo
 bin
 tools.json
 same file: tln

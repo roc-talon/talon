@@ -78,13 +78,14 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/toolchains
 random
 list_dirs $HOME/.cache/roc/toolchains
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/gen timeout=3600
+  probe $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/gen --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 random
 copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/gen $HOME/.cache/roc/talon/x/07fde7f786965f6aa3d660bde659ef5c2f8a4bca7ab2a35e8dd345dbda2ac6b3.0123456789abcdef.tmp/gen

@@ -10,8 +10,8 @@ gtool
 $HOME/.local/share/talon/bin:
 gtool
 ran: acme/gtool aaaaaaa
-{"format":1,"tools":{"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"main"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"c3b402f2f56dff115fb42239b11fa1318332f39e386a9c9866316d6e59439844","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
-$HOME/.cache/roc/talon/tmp/$HEX/src build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/gtool
+{"format":1,"tools":{"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"main"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"c3b402f2f56dff115fb42239b11fa1318332f39e386a9c9866316d6e59439844","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gtool":"c3b402f2f56dff115fb42239b11fa1318332f39e386a9c9866316d6e59439844"}}}}
+$HOME/.cache/roc/talon/tmp/$HEX/src build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/gtool --no-cache
 -- 2: a release tool next to it, and the list of both tools (R-T4, R-T5: the compiler of the build).
 == tln tool install acme/foo
 installed foo 1.1.0 (acme/foo)
@@ -40,7 +40,7 @@ builds: 2
 updated gtool git main@aaaaaaaa to git main@bbbbbbbb (acme/gtool)
 exit 0
 ran: acme/gtool bbbbbbb
-{"format":1,"tools":{"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"main"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"4f6afb76a7d1c30117b82840788b5920ccee48212f367561ecb831e761b6c2cc","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+{"format":1,"tools":{"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"main"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"4f6afb76a7d1c30117b82840788b5920ccee48212f367561ecb831e761b6c2cc","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gtool":"4f6afb76a7d1c30117b82840788b5920ccee48212f367561ecb831e761b6c2cc"}},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"foo":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af"}}}}
 builds: 3
 -- 6: rebuild of all tools (R-T7): the same sources and the compiler of tools.json. foo comes from the package cache, gtool from the recorded commit (no commit request, R-T5).
 == tln tool rebuild
@@ -64,7 +64,7 @@ foo
 installed gtool git bbbbbbbb@bbbbbbbb (acme/gtool)
 exit 0
 ran: acme/gtool bbbbbbb cli
-{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"bbbbbbbb","path":"apps/cli"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"3b8b7821995f52c675f36741552f76bc993ff47163ab1fa741512d669b92cc69","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"foo":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af"}},"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"bbbbbbbb","path":"apps/cli"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"3b8b7821995f52c675f36741552f76bc993ff47163ab1fa741512d669b92cc69","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gtool":"3b8b7821995f52c675f36741552f76bc993ff47163ab1fa741512d669b92cc69"}}}}
 == tln tool update gtool
 gtool: pinned to commit bbbbbbbb
 exit 0

@@ -1,6 +1,7 @@
 import Args
 import Closure
 import Common
+import Consent
 import Exit
 import Fail
 import Fetch
@@ -64,7 +65,7 @@ Ls :: [].{
 		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 		asked = Ls.request_of(args, start)
 		loaded = ResolveLoad.load!(fx, asked)?
-		request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }) }
+		request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }
 		# R-SO18: `ls` warns when `.roc-version` and the header pin differ (`why` does not: `notes` is false).
 		if notes {
 			for line in ResolveBase.roc_version_warnings(loaded) {
@@ -113,7 +114,7 @@ Ls :: [].{
 		dry_run: Bool.False,
 		add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },
 		prompt: { mode: Mode.from_env({ env: Dict.from_list(start.env), json: args.json }), yes: args.yes, quiet: args.quiet, rename_keys: Err(NoFlag), allow_moves: Err(NoFlag) },
-		downloads: { auto: Ask, allow: Err(NoFlag), probe: Err(NoFlag), env: start.env },
+		downloads: { auto: Consent.auto_install(start.env), allow: Err(NoFlag), probe: Err(NoFlag), env: start.env },
 		probe: { no_probe: Bool.False, slots: Err(Unset) },
 	}
 }

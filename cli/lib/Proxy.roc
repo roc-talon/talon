@@ -14,6 +14,7 @@ import Launch
 import Locked
 import Mode
 import Net
+import NoRank
 import Out
 import Patched
 import Pin
@@ -191,7 +192,9 @@ source_text = |run| match run.rank {
 	Range => "the compiler range"
 	VersionFile => ".roc-version"
 	Default => "the global default"
+	Newest => "the newest installed compiler"
 	Path => "the roc on PATH"
+	Picked => "no compiler is selected"
 }
 
 # The steps 1 to 12 of the table in the doc of `Proxy`.
@@ -217,21 +220,26 @@ go! = |fx| {
 	if !off and !loaded.patch.stale.is_empty() {
 		return Err(Patched.stale_fail({ entries: loaded.patch.stale, by: Proxy }))
 	}
-	lists = early or loaded.pin.is_ok() or loaded.req.is_ok() or (loaded.version_file.is_ok() and !loaded.has_toml) or loaded.default.is_ok()
-	installed = if lists Launch.toolchains!(fx, roots) else []
+	# R-SO24 case 3: the list is always read, as rank 6 can take the newest installed compiler.
+	installed = Launch.toolchains!(fx, roots)
 	times = if loaded.req.is_ok() and !installed.is_empty() Base.times!(fx, roots, installed) else []
 	facts = Base.facts({ argument: split.argument, toolchain, loaded, env_nightly: Common.nightly_of(env), installed, times })
 	picked = Base.choose!(fx, { roots, env, pin: loaded.pin, facts })
 	on_path = picked.on_path
 	selected = picked.selected
+	known = installed
 	chosen = match selected {
 		Ok(sel) => sel
-		Err(NoCompiler) => return Err(Compiler.failure(NoCompiler))
+		Err(NoCompiler) => picked!(fx, { loaded, roots, env, known })?
 		Err(NoneInRange) => ranged!(fx, { loaded, roots, env, now, off })?
+	}
+	# R-SO24 case 3: the note goes to stderr. No file is written (R-PX3: stdout is the output of `roc`).
+	if chosen.rank == Newest {
+		fx.err!("note: ${Compiler.newest_note(chosen.id)}\n")
 	}
 	missing = chosen.state == Missing
 	id = if missing install_missing!(fx, { id: chosen.id, rank: chosen.rank, env })? else chosen.id
-	have = if missing installed.append(id) else installed
+	have = if missing known.append(id) else known
 	program = Launch.program!(fx, { roots, id, installed: have, path: on_path })?
 	if !off and have.contains(id) {
 		Launch.touch!(fx, roots, { id, now })
@@ -273,6 +281,14 @@ offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, en
 			Err(Consent.roc_install_declined(offer.id))
 		}
 	}
+}
+
+# R-SO14, R-SO23, R-PX4 (slice 072e): no compiler is selected. The pick is an id (`NoRank.pick_id!`): the newest compiler in the channel with a recorded pass for each hash of the header of the target file that has a fact,
+# else the latest. The proxy runs no probe (R-PX2). A pick that is not installed is `Missing`, and `install_missing!` applies the consent rules of the proxy.
+picked! : Fx, { loaded : Base.Loaded, roots : Roots, env : List((Str, Str)), known : List(Str) } => Try(Base.Selected, Fail)
+picked! = |fx, run| {
+	id = NoRank.pick_id!(fx, { roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), listed: run.known })?
+	Ok({ id, rank: Picked, state: if run.known.contains(id) Installed else Missing })
 }
 
 # R-SO13, R-DL5, R-DL8 (slice 025b): no installed compiler is in the range. `TALON_AUTO_INSTALL=no` refuses (the proxy has no flag). Else the newest compiler that the range allows is the missing compiler of rank 4.

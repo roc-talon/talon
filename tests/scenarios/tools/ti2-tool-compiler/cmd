@@ -1,4 +1,4 @@
-# R-T13 R-T14 R-T16 R-T17 R-T18 R-T19 R-T20 R-T21 R-NI8 R-PP2 R-PP3 R-NM6 R-HF1 (slice 047): the compiler choice of `tln tool install` end to end with the real Fx: a person (a pseudo terminal, given/answers is `2`), the real probes with 2 fake
+# R-T13 R-T14 R-T16 R-T17 R-T18 R-T19 R-T20 R-T21 R-T30 R-NI8 R-PP2 R-PP3 R-NM6 R-HF1 (slice 047, slice 079): the compiler choice of `tln tool install` end to end with the real Fx: a person (a pseudo terminal, given/answers is `3` twice, read by the runs 5 and 6), the real probes with 2 fake
 # compilers (given/home/.cache/roc/toolchains/<id>/roc: the newer one fails the check of acme/foo, both fail the check of acme/bar), the real compat.db (expect/facts.tsv), the fake release server (tests/tools/mk-tool-pf.sh made given/http:
 # acme/foo and acme/bar, 1.0.0, with the platform acme/pf as a release URL, so the build has the key of the platform hash) and the real `roc unbundle`. The apps pin nightly-2026-10-11-1a2b3c4: it is not installed, and it is never downloaded here.
 # TALON_NOW=2026-10-15T12:00:00Z. stdout and stderr are one stream (the prompt shows in expect/stdout, the typed answer does not).
@@ -12,7 +12,7 @@ J=$XDG_DATA_HOME/talon/tools.json
 chmod +x $T/*/roc
 log() { sort $D/compiler.log; : > $D/compiler.log; }
 : > $D/compiler.log
-echo "-- 1: acme/foo, the pin is not installed, 2 releases are installed, no evidence: the prompt (R-NI8: the answer is 2). Option 2 runs both checks at the same time (R-PP2: each fake check waits for the other one to start), the newer compiler fails, the older one passes (R-T18). The build runs with the older one only (R-T19), and the tool is installed (R-T21 records the 2 checks and the build)."
+echo "-- 1: acme/foo, the pin is not installed, 2 releases are installed, no evidence: the try runs with no prompt (R-T30, R-T14), also with a person. It runs both checks at the same time (R-PP2: each fake check waits for the other one to start), the newer compiler fails, the older one passes (R-T18). The build runs with the older one only (R-T19), and the tool is installed (R-T21 records the 2 checks and the build)."
 touch $D/check-barrier
 st tln tool install acme/foo
 rm $D/check-barrier
@@ -27,6 +27,13 @@ echo "-- 3: acme/bar with --roc installed and no person (R-T16): both checks fai
 st env TALON_INTERACTIVE=0 tln tool install acme/bar --roc installed
 log
 ls -A $B $DB
-echo "-- 4: acme/bar with no flag and no person: exit 13 that names the flags (R-T16), no check (no probe)."
+echo "-- 4: acme/bar with no flag and no person: the try runs first (R-T30), both checks fail, then exit 13 that lists the failed releases and names the flags (R-T16, R-T20)."
 st env TALON_INTERACTIVE=0 tln tool install acme/bar
 log
+echo "-- 5: acme/bar with a person: the try fails again, then the prompt with the list of the failed releases and the options 1 and 3 (R-T14, R-T20). The typed answer is 3: exit 13, nothing is downloaded."
+st tln tool install acme/bar
+log
+echo "-- 6: acme/bar with a person and --roc installed: the flag answers the try only (R-NM10). Both checks fail, so the prompt shows with the list and the options 1 and 3 (R-T20). The typed answer is 3: exit 13."
+st tln tool install acme/bar --roc installed
+log
+tty

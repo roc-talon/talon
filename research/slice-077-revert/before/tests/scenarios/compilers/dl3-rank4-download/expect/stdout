@@ -1,0 +1,62 @@
+== R-SO13 R-DL1 R-DL2 R-DL4 R-NI5 R-C7: no person and no flag. The list is read once, the newest nightly that min-release-age allows (B, not the 2 newer ones) is the required download, and the run stops with exit 13 and the size of B. The store is empty.
+== tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 13
+-- compiler runs
+
+requests for compilers: 1
+== R-DL5 R-DL10: TALON_AUTO_INSTALL=no refuses before any request (the id is not known): exit 13, the text names the range and the 3 ways to get a compiler. No new request.
+== env TALON_AUTO_INSTALL=no tln verify
+exit 13
+
+requests for compilers: 1
+== R-SO13 R-DL5 R-NI5 R-NM6 R-SO22 R-CC4 R-CC9 R-SO15: --allow-downloads answers the prompt for B. One answer line on stderr, one download of B only, the install under the lock, then the 3 probes run B. No default is written (R-SO15).
+== tln verify --allow-downloads
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+-- compiler runs
+nightly-2026-10-12-1b2c3d4 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 cwd=project build main.roc n=12 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 
+last use of B: 2026-10-15T12:00:00Z
+no default-roc (no config.toml)
+downloads of B: 1, downloads of A: 0
+== R-SO4 R-SO13: B is installed and in the range now. No list request, no download, the same 3 probes.
+== tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+-- compiler runs
+nightly-2026-10-12-1b2c3d4 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-1b2c3d4 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+requests for compilers: 1, downloads of B: 1
+== R-NS2 R-NS3 R-SO13: the switch is off (TALON_NIGHTLY=0). The installed B is a nightly, so rank 4 has none, and the list has no release: exit 10, the text names the range, the switch and its source. No download, even with the flag.
+== env TALON_NIGHTLY=0 tln verify --allow-downloads
+exit 10
+nightly-2026-10-12-1b2c3d4 
+requests for compilers: 1
+== R-PX4 R-DL9 R-SO13 R-C7: the proxy, in p2 (no pin, range >=nightly-2026-10-13-0000000). B is below it. At the time 2026-10-15T20:00:00Z min-release-age hides A (10-14, 29 hours old), so the newest allowed nightly is N (10-13): the answer line, the install of N only, the run of the fake roc. stdout is only the output of the compiler.
+== env TALON_NOW=2026-10-15T20:00:00Z TALON_AUTO_INSTALL=yes $WORK/launch/roc check p2/main.roc
+No errors found in 1ms for p2/main.roc
+exit 0
+nightly-2026-10-12-1b2c3d4 nightly-2026-10-13-0a1b2c3 
+downloads of N: 1, downloads of A: 0, requests for compilers: 1
+== no temp dir and no lock is left.
+0

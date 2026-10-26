@@ -17,7 +17,12 @@ rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
 random
 hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 clock
 platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
@@ -31,6 +36,7 @@ sha256_file $HOME/.local/bin/tln
 sha256_file $HOME/.local/bin/roc
 path_roc
 read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 clock
 platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
@@ -46,6 +52,7 @@ sha256_file $HOME/.local/bin/tln
 sha256_file $HOME/.local/bin/roc
 path_roc
 read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 clock
 platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
@@ -89,7 +96,12 @@ rename $HOME2/.local/bin/tln.0123456789abcdef.tmp $HOME2/.local/bin/tln
 random
 hard_link $HOME2/.local/share/talon/bin/tln $HOME2/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME2/.local/bin/roc.0123456789abcdef.tmp $HOME2/.local/bin/roc
+lock $HOME2/.local/share/talon/tools.json nowait: held
+read_files $HOME2/.local/share/talon/tools.json
+write_atomic $HOME2/.local/share/talon/tools.json
+unlock $HOME2/.local/share/talon/tools.json
 read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
 clock
 platform
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
@@ -123,7 +135,12 @@ rename $HOME3/.local/bin/tln.0123456789abcdef.tmp $HOME3/.local/bin/tln
 random
 hard_link $HOME3/.local/share/talon/bin/tln $HOME3/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME3/.local/bin/roc.0123456789abcdef.tmp $HOME3/.local/bin/roc
+lock $HOME3/.local/share/talon/tools.json nowait: held
+read_files $HOME3/.local/share/talon/tools.json
+write_atomic $HOME3/.local/share/talon/tools.json
+unlock $HOME3/.local/share/talon/tools.json
 read_files $HOME3/.config/talon/config.toml
+list_dirs $HOME3/.cache/roc/toolchains
 clock
 platform
 list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
@@ -152,6 +169,35 @@ rename $HOME4/.local/bin/tln.0123456789abcdef.tmp $HOME4/.local/bin/tln
 random
 hard_link $HOME4/.local/share/talon/bin/tln $HOME4/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME4/.local/bin/roc.0123456789abcdef.tmp $HOME4/.local/bin/roc
+lock $HOME4/.local/share/talon/tools.json nowait: held
+read_files $HOME4/.local/share/talon/tools.json
+write_atomic $HOME4/.local/share/talon/tools.json
+unlock $HOME4/.local/share/talon/tools.json
 read_files $HOME4/.config/talon/config.toml
+list_dirs $HOME4/.cache/roc/toolchains
 clock
 platform
+args
+env_all
+platform
+read_files $HOME5/.local/share/talon/tools.json
+list_dirs $HOME5/.local/share/talon/bin $HOME5/.local/bin
+sha256_file $HOME5/.local/share/talon/bin/tln
+path_roc
+make_dirs $HOME5/.local/bin
+random
+hard_link $HOME5/.local/share/talon/bin/tln $HOME5/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME5/.local/bin/tln.0123456789abcdef.tmp $HOME5/.local/bin/tln
+random
+hard_link $HOME5/.local/share/talon/bin/tln $HOME5/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME5/.local/bin/roc.0123456789abcdef.tmp $HOME5/.local/bin/roc
+lock $HOME5/.local/share/talon/tools.json nowait: held
+read_files $HOME5/.local/share/talon/tools.json
+unlock $HOME5/.local/share/talon/tools.json
+read_files $HOME5/.config/talon/config.toml
+list_dirs $HOME5/.cache/roc/toolchains
+lock $HOME5/.config/talon/config.toml nowait: held
+read_files $HOME5/.config/talon/config.toml
+read_files $HOME5/.config/talon/config.toml
+write_atomic $HOME5/.config/talon/config.toml
+unlock $HOME5/.config/talon/config.toml

@@ -1,0 +1,70 @@
+-- 1: the newest release (R-T9: both are old enough, R-T10: one app bundle each). The real roc unbundle checks the hash, the build runs in the package dir with --opt=speed and no --target (R-T8), the binary is copied to the data bin dir (R-T3), the bin dir entry is a hard link (R-ST7). The temp dir of the build is removed (R-CC2).
+== tln tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.local/bin:
+foo
+
+$HOME/.local/share/talon/bin:
+foo
+$HOME/.local/bin/foo and $HOME/.local/share/talon/bin/foo are one file
+ran: acme/foo 1.1.0
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+$HOME/.cache/roc/packages/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/foo --no-cache
+downloads: 1
+-- 2: the same line again: foo 1.1.0 is there (R-T26). No download, no build.
+== tln tool install acme/foo
+foo 1.1.0 is installed
+exit 0
+downloads: 1, builds: 1
+-- 3: a named older version is a build (R-T26, R-B2): the entry is replaced (R-T27, R-CC1). The bin dir entry follows the new binary: it is one file with it.
+== tln tool install acme/foo@1.0.0
+replaced foo 1.1.0 with 1.0.0 (acme/foo)
+exit 0
+$HOME/.local/bin/foo and $HOME/.local/share/talon/bin/foo are one file
+ran: acme/foo 1.0.0
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/8toSm7CnoHHbbe3qNrwFvMKKZQ7esH2oVsjXHh5qW1Xs.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"8a432ceb7400131c5e769ae1d4079e645b4ba0d760501917abf7ba7625ebf9b6","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+$HOME/.local/bin:
+foo
+
+$HOME/.local/share/talon/bin:
+foo
+-- 4: two installs at the same time (R-CC6). foo 1.1.0 and bar 1.0.0 build together: the fake compiler of each waits for the other one (bar starts after the build of foo has started, so the logs have one order). tools.json has both after the runs, and no lock is left.
+foo: exit 0
+bar: exit 0
+platform pf/main.roc
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029
+replaced foo 1.0.0 with 1.1.0 (acme/foo)
+platform pf/main.roc
+building acme/bar 1.0.0 with nightly-2026-10-14-38a3029
+installed bar 1.0.0 (acme/bar)
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/ACTN2PbnqZiVb3HXH4ghbrF1jNnCud8DAZAjHLasYsyy.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"6471f60a4f14cce754e935f3d73d976f4d70c1e536f8a5bc79a0d2869817aac9","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+$HOME/.local/bin:
+bar
+foo
+
+$HOME/.local/share/talon/bin:
+bar
+foo
+ran: acme/foo 1.1.0
+ran: acme/bar 1.0.0
+-- 5: the binary name of acme/foo is taken (R-T28, R-NM11): exit 2, no request for the list, no build. --as gives another binary name: other/foo is installed as ofoo.
+== tln tool install other/foo
+exit 2
+requests for other/foo so far: 0
+== tln tool install other/foo --as ofoo
+installed ofoo 2.0.0 (other/foo)
+exit 0
+$HOME/.local/bin:
+bar
+foo
+ofoo
+
+$HOME/.local/share/talon/bin:
+bar
+foo
+ofoo
+ran: other/foo 2.0.0
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/ACTN2PbnqZiVb3HXH4ghbrF1jNnCud8DAZAjHLasYsyy.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"6471f60a4f14cce754e935f3d73d976f4d70c1e536f8a5bc79a0d2869817aac9","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"ofoo":{"name":"other/foo","source":{"kind":"release","version":"2.0.0","url":"https://github.com/other/foo/releases/download/2.0.0/DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2ec41b1674fe74a6f2d0ce539b01d16a7dfd41f463f1ff0564d447c70eddb9f1","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}

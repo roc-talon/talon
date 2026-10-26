@@ -12,3 +12,5 @@ setup env:HOME={w}/home2 env:PATH={w}/home2/.local/bin:/usr/bin
 setup env:HOME={w}/home3 env:PATH={w}/home3/.local/bin:/usr/bin env:TALON_NIGHTLY=false
 # R-ST16 (manager answer Q2 of slice 072a): the host has no compiler asset (the 13th row of `fx/platform`: the second `platform!` call of this run says freebsd). Setup does not fail: the note has the text of `Toolchain.host` (`no compiler asset exists for freebsd x64`), exit 0, no default, and no request for the list.
 setup env:HOME={w}/home4 env:PATH={w}/home4/.local/bin:/usr/bin
+# R-ST16 R-SO24 (slice 080, case 3): another home with 2 installed compilers, no config.toml, so no default-roc. Setup writes the newest installed one (`nightly-2026-10-16-1df370f`) under the lock, with no list read, no request and no download. The line says so, and `--json` has the action `repaired`.
+setup --json env:HOME={w}/home5 env:PATH={w}/home5/.local/bin:/usr/bin

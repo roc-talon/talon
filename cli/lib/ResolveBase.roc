@@ -190,17 +190,23 @@ ResolveBase :: [].{
 
 	# R-RP2, R-NS2, R-NS4, R-NS5, R-SO13, R-SO19, G5: a pin that stops the command, then the gate of a held compiler that no pin gave.
 	# A pin has no gate (the pin compiler is checked at the first probe). `Verify` runs the `ROC_TOOLCHAIN` compiler without a gate (R-NS4).
-	check_pin : Loaded, Settings, Pin.Decision, [Lock, Verify] -> Try({}, Fail)
+	# Slice 072d (R-SO22, R-BL6, R-SO21): no held compiler stops only a `Lock` run (exit 18). Slice 072e: an install-family run that will probe has picked a compiler before (`HeldRoc.picked!`), so it has a held compiler here. A run that runs no probe
+	# (`--no-check`, `--frozen`, a plain `install` with nothing to change) has the role `LockNoCheck` and needs no compiler. `Verify` picks its own compiler (`HeldRoc.held!`).
+	check_pin : Loaded, Settings, Pin.Decision, [Lock, LockNoCheck, Verify] -> Try({}, Fail)
 	check_pin = |loaded, settings, decision, role| match decision.outside {
 		Ok(pin) => Err(Pin.outside_failure({ pin, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from }))
 		Err(None) => match decision.held {
-			Err(NoCompiler) => Err(Compiler.failure(NoCompiler))
+			Err(NoCompiler) => match role {
+				Lock => Err(Compiler.failure(NoCompiler))
+				_ => Ok({})
+			}
 			Ok(id) => {
 				gate = |held_from| Pin.gate({ compiler: id, held_from, req: loaded.intent.toolchain.roc, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly, source: settings.nightly_from })
 				match (decision.held_from, role) {
 					(Pin, _) => Ok({})
 					(Env, Verify) => Ok({})
 					(Env, Lock) => gate(Env)
+					(Env, LockNoCheck) => gate(Env)
 					(Range, _) => gate(Range)
 					(VersionFile, _) => gate(VersionFile)
 					(Default, _) => gate(Default)

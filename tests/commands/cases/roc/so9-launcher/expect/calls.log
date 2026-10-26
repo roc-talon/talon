@@ -21,6 +21,7 @@ spawn_all limit=1
   job - $WORK/old/roc version
 write_atomic $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p/main.roc $PROJECT/p/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 args
 env_all
 clock
@@ -37,3 +38,4 @@ unlock $HOME/.cache/roc/talon/projects.json
 path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p/main.roc $PROJECT/p/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains

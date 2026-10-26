@@ -1,4 +1,4 @@
-# R-CM15 R-CM19 R-CS2 R-RR1 R-RR2 R-RR3 R-RM2 R-R5 R-SC9 R-SC10 R-SC13 R-NS3 R-GC3 R-CC1 R-CC6 R-CC10 R-J3 R-LY1 (slice 024): `tln roc ls`, `default` and `rm` on the real binary, with the real Fx (list, read, lock, rename, delete, write).
+# R-CM15 R-CM19 R-CS2 R-RR1 R-SO24 R-RR2 R-RR3 R-RM2 R-R5 R-SC9 R-SC10 R-SC13 R-NS3 R-GC3 R-CC1 R-CC6 R-CC10 R-J3 R-LY1 (slice 024): `tln roc ls`, `default` and `rm` on the real binary, with the real Fx (list, read, lock, rename, delete, write).
 # The store: 3 nightlies, a git build, a link, a copy, and the compat dirs of 2 of them. The default is the nightly of 2026-10-14. No network (the commands need none).
 export TALON_NOW=2026-10-22T12:00:00Z
 st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
@@ -37,7 +37,7 @@ st tln roc rm link-dev
 ls roc-src
 ls $T
 
-echo "== 7: rm of the default again, with the nightly switch off (R-NS3): no compiler can take the default, so the line goes."
+echo "== 7: rm of the default again, with the nightly switch off (R-NS3): the switch admits no compiler that is left, so the default moves to the newest installed nightly of any kind (R-RR1, R-SO24: the default stays set), and a note says that the next use gives exit code 10 (R-SO19). Before slice 080 the line went."
 st env TALON_NIGHTLY=0 tln roc rm nightly-2026-10-14-38a3029
 cat $C
 st tln roc ls

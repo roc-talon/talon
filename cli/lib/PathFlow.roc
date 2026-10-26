@@ -1,16 +1,19 @@
 import Args
 import Common
+import Consent
 import Fail
 import Fetch
 import Fx
 import Install
 import Known
 import Locked
+import Mode
 import Net
 import Out
 import PathCmd
 import RocInstall
 import Roots
+import Start
 
 ## The command `tln path <alias>` (slice 055, R-CM25, R-PTH1 to R-PTH5, R-PD14, R-PD9): in direct style over `Fx` (TESTING.md 2.2, part C). `PathCmd` has the decisions. `Run.run!` calls it for the command `path`.
 ##
@@ -60,7 +63,7 @@ flow! = |fx, args, alias| {
 		Release(url) => {
 			config = RocInstall.read_config!(fx, start.roots)?
 			selected = Fetch.selected({ held: "", default: config.default_roc ?? "" })
-			fetch!(fx, { roots: start.roots, net: start.net, offline: args.offline, url, selected })?
+			fetch!(fx, { roots: start.roots, net: start.net, url, selected, hashes: release_hashes(rows), downloads: downloads_of(args, start.env) })?
 		}
 	}
 	Ok(entry)
@@ -74,9 +77,30 @@ rows_of! = |fx, file| match fx.read_files!([file]) {
 }
 
 # Step 6, R-PTH2: the release is fetched when its directory is missing. The result is not read.
-fetch! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, url : Str, selected : Str } => Try({}, Fail)
-fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.offline, unbundler: Choose({ selected: facts.selected, none: Stop }), downloader: facts.net.downloader }) {
+fetch! : Fx, { roots : Roots, net : Net.Settings, url : Str, selected : Str, hashes : List(Str), downloads : Start.Downloads } => Try({}, Fail)
+fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.downloads.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Project(facts.hashes), downloads: facts.downloads }) }), downloader: facts.net.downloader }) {
 	[Ok(_)] => Ok({})
 	[Err(fail)] => Err(fail)
 	_ => Err(Fail.new(Internal, "the fetch of ${facts.url} gave no answer"))
+}
+
+# R-SO23: the hashes of the release entries of the project file (the facts of the fetch with no compiler, R-SO14 (1)).
+release_hashes : List(Locked.Row) -> List(Str)
+release_hashes = |rows| rows.keep_oks(
+	|row| match row.what {
+		Release(ident) => Ok(ident.hash)
+		_ => Err(NotRelease)
+	},
+)
+
+# R-DL1 to R-DL6: the consent facts. `path` has no `--allow-downloads`.
+downloads_of : Args, List((Str, Str)) -> Start.Downloads
+downloads_of = |args, env| {
+	auto: Consent.auto_install(env),
+	allow: Err(NoFlag),
+	yes: args.yes,
+	mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }),
+	quiet: args.quiet,
+	offline: args.offline,
+	env,
 }

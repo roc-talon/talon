@@ -1,6 +1,7 @@
 import Args
 import Clock
 import Common
+import Consent
 import Fail
 import Fetch
 import Fx
@@ -11,11 +12,13 @@ import Index
 import InitStub
 import InitText
 import Locked
+import Mode
 import Item
 import Net
 import Opts
 import RocInstall
 import Roots
+import Start
 import Text
 import Update
 
@@ -130,7 +133,7 @@ make! = |fx, args, plan| {
 				InitText.app_file({ name, url })
 			} else {
 				selected = Fetch.selected({ held: "", default: started.default_roc })
-				header = platform_header!(fx, { net, roots, offline: args.offline, url, selected })?
+				header = platform_header!(fx, { net, roots, url, selected, downloads: downloads_of(args, env) })?
 				InitStub.app_text({ name, url, text: header })?
 			}
 		}
@@ -139,7 +142,7 @@ make! = |fx, args, plan| {
 		Ok(_) => {}
 		Err(failed) => return Err(Fail.new(Environment, "cannot write ${failed.path}"))
 	}
-	match after_first!(fx, args, plan, { cwd, main_path, roots, net }) {
+	match after_first!(fx, args, plan, { cwd, main_path, roots, net, env }) {
 		Ok({}) => Ok({})
 		Err(fail) => {
 			_ = fx.delete!([main_path])
@@ -172,13 +175,13 @@ start_url! = |fx, facts| {
 }
 
 # Step 4b (R-IN8): the header text of the platform release that the template starts at. The release is fetched when its dir is missing, as `tln path` and `tln install --frozen` fetch (R-FE2, R-FE3, R-FE7: `--offline` and a missing dir is exit 15).
-platform_header! : Fx, { net : Net.Settings, roots : Roots, offline : Bool, url : Str, selected : Str } => Try(Str, Fail)
+platform_header! : Fx, { net : Net.Settings, roots : Roots, url : Str, selected : Str, downloads : Start.Downloads } => Try(Str, Fail)
 platform_header! = |fx, facts| {
 	hash = match Ident.of_url(facts.url) {
 		Ok(ident) => ident.hash
 		Err(Foreign) => return Err(Fail.new(Usage, "${facts.url} is not a package release URL"))
 	}
-	match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.offline, unbundler: Choose({ selected: facts.selected, none: Stop }), downloader: facts.net.downloader }) {
+	match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.downloads.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Outside, downloads: facts.downloads }) }), downloader: facts.net.downloader }) {
 		[Ok(_)] => {}
 		[Err(fail)] => return Err(fail)
 		_ => return Err(Fail.new(Internal, "the fetch of ${facts.url} gave no answer"))
@@ -191,16 +194,16 @@ platform_header! = |fx, facts| {
 }
 
 # Steps 6 to 8: the flow of `tln upgrade` on the new file, the CI file, the output.
-after_first! : Fx, Args, Init.Plan, { cwd : Str, main_path : Str, roots : Roots, net : Net.Settings } => Try({}, Fail)
+after_first! : Fx, Args, Init.Plan, { cwd : Str, main_path : Str, roots : Roots, net : Net.Settings, env : List((Str, Str)) } => Try({}, Fail)
 after_first! = |fx, args, plan, here| {
 	shown = Common.shown_fx(fx, args)
 	consent = args.options.keep_if(|(name, _)| name == "--allow-downloads" or name == "--probe-downloads")
 	given = { ..args, operands: [], options: consent, file: Ok(here.main_path) }
 	opts = Opts.read(given)?
 	begun = Update.begin!(shown, given)?
-	done = Update.resolve!(shown, given, opts, begun, { command: Upgrade, names: [] })?
+	done = Update.resolve!(shown, given, opts, begun, { command: Upgrade, names: [], fresh: Bool.True })?
 	outcome = done.outcome
-	remake!(fx, args, plan, { main_path: here.main_path, roots: here.roots, net: here.net, moved: outcome.moved })?
+	remake!(fx, args, plan, { main_path: here.main_path, roots: here.roots, net: here.net, env: here.env, moved: outcome.moved })?
 	ci_path = Text.join(here.cwd, ".github/workflows/ci.yml")
 	ci = match plan.ci {
 		NoCi => Skipped
@@ -230,7 +233,7 @@ after_first! = |fx, args, plan, here| {
 }
 
 # Step 6b (slice 055, question Q4): the resolve moved the platform, so the release is not the start release. The stub is made again from the header of the chosen release, and the `roc:` pin that the resolve wrote is put back.
-remake! : Fx, Args, Init.Plan, { main_path : Str, roots : Roots, net : Net.Settings, moved : List({ alias : Str, from : { name : Str, version : Str }, to : { name : Str, version : Str } }) } => Try({}, Fail)
+remake! : Fx, Args, Init.Plan, { main_path : Str, roots : Roots, net : Net.Settings, env : List((Str, Str)), moved : List({ alias : Str, from : { name : Str, version : Str }, to : { name : Str, version : Str } }) } => Try({}, Fail)
 remake! = |fx, args, plan, here| {
 	name = plan.named ?? InitText.default_platform
 	if plan.template == Package or name == InitText.default_platform or !here.moved.any(|m| m.alias == "pf") {
@@ -245,7 +248,7 @@ remake! = |fx, args, plan, here| {
 		Ok(row) => row.value
 		Err(_) => return Err(Fail.new(Internal, "${here.main_path} has no pf entry"))
 	}
-	header = platform_header!(fx, { net: here.net, roots: here.roots, offline: args.offline, url, selected: "" })?
+	header = platform_header!(fx, { net: here.net, roots: here.roots, url, selected: "", downloads: downloads_of(args, here.env) })?
 	stub = InitStub.app_text({ name, url, text: header })?
 	pins = match locked.roc {
 		Ok(id) => [Pin(id)]
@@ -256,6 +259,18 @@ remake! = |fx, args, plan, here| {
 		Ok(_) => Ok({})
 		Err(failed) => Err(Fail.new(Environment, "cannot write ${failed.path}"))
 	}
+}
+
+# R-SO14 (2), R-DL1 to R-DL6: the consent facts of the download of a compiler, when `init` fetches a platform with no compiler installed (`--allow-downloads` answers the question, R-NI5).
+downloads_of : Args, List((Str, Str)) -> Start.Downloads
+downloads_of = |args, env| {
+	auto: Consent.auto_install(env),
+	allow: if args.options.any(|(name, _)| name == "--allow-downloads") Ok(Yes) else Err(NoFlag),
+	yes: args.yes,
+	mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }),
+	quiet: args.quiet,
+	offline: args.offline,
+	env,
 }
 
 # The value of a flag that has one.

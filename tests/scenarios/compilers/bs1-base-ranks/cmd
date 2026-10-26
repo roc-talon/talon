@@ -47,7 +47,7 @@ echo "== 8: a step past the oldest compiler of the list is a usage error (exit 2
 cd ../pin
 st tln roc install @-99
 
-echo "== 9: no pin, no default, no other compiler (a new store): the step has no start (R-SO14, exit 18). A full id still works."
+echo "== 9: no pin, no default, no other compiler (a new store): the base is the pick of R-SO14 as an id, the latest in the channel (2026-10-15), so @-1 is 2026-10-14 (slice 072e, R-SL7). The first install is the default. A full id still works."
 export ROC_CACHE_DIR=$S/c2/roc XDG_CACHE_HOME=$S/c2 XDG_CONFIG_HOME=$S/cfg2
 cd ../none
 st tln roc install @-1

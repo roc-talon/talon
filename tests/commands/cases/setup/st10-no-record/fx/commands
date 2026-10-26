@@ -1,0 +1,4 @@
+# R-ST11 (last sentence), R-ST6, R-NI13, R-T4 (slice 078): tools.json has no field `bin` (an older Talon wrote it, or the entries are from before the field existed). The entries tln, roc and foo are old files (v1) with other content than the data files (v2), and no record names their sha256: only R-ST11 (1) counts, and it does not hold. So the 3 entries are foreign: setup keeps them with a warning (tln and foo) and a note for roc (no prompt in CI, the default of R-NI13 is No). Nothing is made, so tools.json has no change, and there is no lock for the entries.
+setup
+# R-ST12 (slice 078): the same again: the same warnings and the note, no write.
+setup

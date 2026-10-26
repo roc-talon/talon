@@ -7,6 +7,7 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/fe
 sha256_file $HOME/.local/share/talon/bin/fe
+read_files $HOME/.local/share/talon/tools.json
 args
 env_all
 clock
@@ -55,6 +56,7 @@ read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkb
 list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/bin/fe
 sha256_file $HOME/.local/share/talon/bin/fe
+read_files $HOME/.local/share/talon/tools.json
 args
 env_all
 clock

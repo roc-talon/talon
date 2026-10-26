@@ -36,6 +36,7 @@ out = |ended, stdout, stderr| { ended, stdout, stderr }
 errs = |text, dir| Probe.errors({ text, dir, pkgs })
 
 # R-SE4 R-P1: a probe is `check` or `build` and nothing else. The compiler arguments of each (R-LD4, R-LD5).
+# R-LD8 (slice 077): each build has `--no-cache` after `--output=<output>`, a check has no flag. `Probe.build_args` is the one function that makes the arguments of a build: the options of the caller (`--opt=speed` of a tool build) come before `--output`.
 # R-RC1 to R-RC4 R-P2 R-P3: the class of a result. The outputs are the real outputs of the roc on the pinned nightly:
 # a check that passes (exit 0), warnings only (exit 2: the exit code is not the class, R-P2), errors (exit 1), a build that works, a build that has
 # type errors (the program is still made, and the summary is on stdout), and a target error that has no summary line. A hang, a fault signal, a signal from
@@ -43,7 +44,9 @@ errs = |text, dir| Probe.errors({ text, dir, pkgs })
 expect {
 	args = [
 		(Probe.args({ command: Check, file: "main.roc" }), ["check", "main.roc"]),
-		(Probe.args({ command: Build({ output: "/c/tln-probe.out" }), file: "main.roc" }), ["build", "main.roc", "--output=/c/tln-probe.out"]),
+		(Probe.args({ command: Build({ output: "/c/tln-probe.out" }), file: "main.roc" }), ["build", "main.roc", "--output=/c/tln-probe.out", "--no-cache"]),
+		(Probe.build_args({ file: "main.roc", options: [], output: "/c/o" }), ["build", "main.roc", "--output=/c/o", "--no-cache"]),
+		(Probe.build_args({ file: "app.roc", options: ["--opt=speed"], output: "/c/o" }), ["build", "app.roc", "--opt=speed", "--output=/c/o", "--no-cache"]),
 	]
 	bad_args = args.keep_if(|(got, want)| got != want)
 	dbg bad_args

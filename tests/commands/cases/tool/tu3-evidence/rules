@@ -1,0 +1,5 @@
+Slice 079 (R-T30 step 2, R-NI17, R-T25, Q1 of the review): `tln tool update foo` where the new release of foo (1.2.0) has a pin that is not installed (`nightly-2026-10-11-1a2b3c4`), and the installed compiler `nightly-2026-10-14-38a3029` has a recorded pass for the closure of the new bundle (`given/.../compat.tsv`: the key is the platform hash, the compiler and `x64musl`; the digest is the SHA-256 of the sorted hashes of the bundle and of its header, each with a line end). Same home as `tu1-update` otherwise (`TALON_NOW=2026-10-15T12:00:00Z`).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update foo` (`env:TALON_INTERACTIVE=0`) | the plan reads the facts (one `db_query`): the installed compiler has a pass for the closure, so no download is counted. No prompt, no stop (no person and no flag: without the evidence this run is exit 13). `built with nightly-2026-10-14-38a3029 (pin: nightly-2026-10-11-1a2b3c4)` on stderr, the build uses the installed compiler, `foo` is updated to 1.2.0. `tool update` reads facts and builds nothing in the plan | R-T30, R-T13, R-NI17, R-T25 |

@@ -1,0 +1,3 @@
+note: default-roc is not set, so nightly-2026-10-18-5349569, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-18-5349569
+downloading nightly-2026-10-19-0badf00 (73.0 MB), the default compiler
+tln: error[consent]: no compiler is selected. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install @latest, then tln roc default <id>, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.

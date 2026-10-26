@@ -53,3 +53,6 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+lock $HOME2/.config/talon/config.toml nowait: held
+read_files $HOME2/.config/talon/config.toml
+unlock $HOME2/.config/talon/config.toml

@@ -1,0 +1,4 @@
+env:HOME={w}/h1 verify --file n1/main.roc
+env:HOME={w}/h3 env:TALON_AUTO_INSTALL=yes verify --file n1/main.roc
+env:HOME={w}/h4 env:TALON_AUTO_INSTALL=no verify --file n1/main.roc
+env:HOME={w}/h5 verify --no-check --file n1/main.roc

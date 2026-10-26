@@ -1,0 +1,210 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/gapp/tarball/aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+programs curl wget
+make_dirs $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=8
+  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+random
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef/src nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/gapp timeout=3600
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+make_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/gapp $HOME/.local/share/talon/bin/gapp.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/bin/gapp.0123456789abcdef.tmp $HOME/.local/share/talon/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+hard_link $HOME/.local/share/talon/bin/gapp $HOME/.local/bin/gapp.0123456789abcdef.tmp
+rename $HOME/.local/bin/gapp.0123456789abcdef.tmp $HOME/.local/bin/gapp
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/sub/commits/dd03c09e
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/sub
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/sub/tarball/dd03c09e5f0a3b6c7d8e9f001122334455667788
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/apps/cli/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+random
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/apps/cli nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/sub timeout=3600
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/sub
+make_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/sub $HOME/.local/share/talon/bin/sub.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/bin/sub.0123456789abcdef.tmp $HOME/.local/share/talon/bin/sub
+sha256_file $HOME/.local/share/talon/bin/sub
+hard_link $HOME/.local/share/talon/bin/sub $HOME/.local/bin/sub.0123456789abcdef.tmp
+rename $HOME/.local/bin/sub.0123456789abcdef.tmp $HOME/.local/bin/sub
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/v2
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/gapp/tarball/bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+random
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef/src nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/gapp timeout=3600
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+make_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/gapp $HOME/.local/share/talon/bin/gapp.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/bin/gapp.0123456789abcdef.tmp $HOME/.local/share/talon/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+hard_link $HOME/.local/share/talon/bin/gapp $HOME/.local/bin/gapp.0123456789abcdef.tmp
+rename $HOME/.local/bin/gapp.0123456789abcdef.tmp $HOME/.local/bin/gapp
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/gapp/tarball/aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/pkg/main.roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/gapp/commits/main
+  User-Agent: tln/0.0.0
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gapp
+sha256_file $HOME/.local/share/talon/bin/gapp
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/gapp/tarball/aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/nodir/main.roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef

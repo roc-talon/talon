@@ -1,0 +1,5 @@
+# Slice 072c (R-SO14, R-FE4): the unbundle of the one package that the projects need, the download of a package (.tar.zst: the file is {out}), of a compiler (.tar.gz), its extract, its chmod. The compat check of a new compiler (roc check) has no rule: it exits with 99, and its code is not read (R-GC10).
+.tar.zst	0	-	-	file:{out}
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

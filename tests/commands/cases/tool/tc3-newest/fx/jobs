@@ -1,0 +1,11 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-HF5 the extract, R-HF2 the chmod, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+version	0	Roc compiler version nightly-2026-10-05-aaaaaaa	-	-
+unbundle 4twpCGuT3exMfoM14WfkZEh7vP976csuzgq5cJiGuD6d.tar.zst	0	-	-	dir:{cwd}/4twpCGuT3exMfoM14WfkZEh7vP976csuzgq5cJiGuD6d;copy:{cwd}/4twpCGuT3exMfoM14WfkZEh7vP976csuzgq5cJiGuD6d/main.roc={w}/fx/src/two-1.0.0.src
+unbundle Qvo1hhn2s2AjTeVZGsRwHQ2uUR86QtTzT8zjSSBVpwa.tar.zst	0	-	-	dir:{cwd}/Qvo1hhn2s2AjTeVZGsRwHQ2uUR86QtTzT8zjSSBVpwa;copy:{cwd}/Qvo1hhn2s2AjTeVZGsRwHQ2uUR86QtTzT8zjSSBVpwa/main.roc={w}/fx/src/three-1.0.0.src
+unbundle 7MCdeb81pu5YTECX7CEShdmnjvuCLn3bASwre1G6tFpY.tar.zst	0	-	-	dir:{cwd}/7MCdeb81pu5YTECX7CEShdmnjvuCLn3bASwre1G6tFpY;copy:{cwd}/7MCdeb81pu5YTECX7CEShdmnjvuCLn3bASwre1G6tFpY/main.roc={w}/fx/src/dl-1.0.0.src
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+curl --fail	0	-	-	file:{out}
+.zip -C	0	-	-	file:{dir}/roc.exe;file:{dir}/LICENSE;file:{dir}/legal_details
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+nightly-2026-10-11-1a2b3c4.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-1a2b3c4

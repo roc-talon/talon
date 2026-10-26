@@ -1,0 +1,33 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/qux
+http_get https://api.github.com/repos/acme/qux/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/qux/1.json $HOME/.cache/roc/talon/index/github/acme/qux/1.meta
+list_dirs $HOME/.cache/roc/talon/x
+read_files $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60/manifest.json
+list_dirs $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/qux
+sha256_file $HOME/.local/share/talon/bin/qux
+read_files $HOME/.local/share/talon/tools.json
+random
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/qux
+sha256_file $HOME/.local/share/talon/bin/qux
+sha256_file $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60/qux
+read_files $HOME/.cache/roc/talon/projects.json
+make_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+rename $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60/qux $HOME/.local/share/talon/bin/qux.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/bin/qux.0123456789abcdef.tmp $HOME/.local/share/talon/bin/qux
+hard_link $HOME/.local/share/talon/bin/qux $HOME/.local/bin/qux.0123456789abcdef.tmp
+rename $HOME/.local/bin/qux.0123456789abcdef.tmp $HOME/.local/bin/qux
+write_atomic $HOME/.local/share/talon/tools.json
+delete $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9e7af7d4f3d56fa60
+unlock $HOME/.local/share/talon/tools.json

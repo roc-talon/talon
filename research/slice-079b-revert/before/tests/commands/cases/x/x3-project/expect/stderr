@@ -1,0 +1,11 @@
+project tool fmt 1.0.0 (talon.toml)
+note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/gen 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[frozen]: the [tools] of $PROJECT/p6/talon.toml are not locked: tools.lz has no url. Run tln install to lock them.
+tln: error[input]: $PROJECT/p8/talon.toml:2: tools.fmt: must be a table with ref and url
+warning: $PROJECT/p7/talon.toml:2: unknown key tools.fmt.note
+note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.
+tln: error[usage]: acme/fmt is the app of 2 entries of [tools]: fmt, fmt2. Use tln x <key>.
+tln: error[usage]: --roc and --allow-unchecked have no effect on the project tool fmt: its pin and its url are the lock. Remove the flags.
+note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.

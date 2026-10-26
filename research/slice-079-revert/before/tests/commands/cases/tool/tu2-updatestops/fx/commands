@@ -1,0 +1,3 @@
+tool update np
+tool update gm --offline
+tool update mo env:TALON_INTERACTIVE=1

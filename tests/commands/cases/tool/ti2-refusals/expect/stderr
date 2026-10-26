@@ -2,8 +2,12 @@ tln: error[usage]: foo is the binary name of acme/foo already. Use --as <name> t
 tln: error[usage]: acme/lib has no release with an app bundle. tln does not build from source by itself. Run: tln tool install --git acme/lib@1.0.0
 tln: error[usage]: acme/none has no release. tln does not build from source by itself. Run: tln tool install --git acme/none@trunk
 tln: error[usage]: no release of acme/fresh is old enough for min-release-age
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
 tln: error[usage]: acme/nopin 1.0.0 has no roc: pin in its app header, so tln cannot tell which compiler to build with
-tln: error[consent]: the compiler nightly-2026-10-11-1a2b3c4 is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes. (--roc installed tries the installed compilers.)
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
+trying 1 installed compiler release
+tln: error[consent]: no installed compiler release built acme/old 1.0.0 (nightly-2026-10-14-38a3029: check failed: expected list separator), and the compiler nightly-2026-10-11-1a2b3c4 is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes. (--roc installed tries the installed compilers.)
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
 downloading nightly-2026-10-11-1a2b3c4 (73.7 MB)
 platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
 building acme/old 1.0.0 with nightly-2026-10-11-1a2b3c4

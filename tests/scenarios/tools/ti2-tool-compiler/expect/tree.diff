@@ -72,4 +72,4 @@
 --- home/.local/share/talon/tools.json
 +++ home/.local/share/talon/tools.json
 @@ -0,0 +1 @@
-+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/A9Jom7Hh9YnkX25Vzx9btMDHPUgsJ1tFrMNmW7jB8rhs.tar.zst"},"build":{"hashes":["68wa5igvPEMRMJPhKnB39imSjE6jbjtYVu7ZRjtNjt4r"],"nightly":"nightly-2026-10-12-2664a27","target":"x64musl"},"sha256":"2d8bc7a12d54e796f0f8cba0963617446e497f0e133d0b1fbf85fd62caf79966","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
++{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/A9Jom7Hh9YnkX25Vzx9btMDHPUgsJ1tFrMNmW7jB8rhs.tar.zst"},"build":{"hashes":["68wa5igvPEMRMJPhKnB39imSjE6jbjtYVu7ZRjtNjt4r"],"nightly":"nightly-2026-10-12-2664a27","target":"x64musl"},"sha256":"2d8bc7a12d54e796f0f8cba0963617446e497f0e133d0b1fbf85fd62caf79966","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"foo":"2d8bc7a12d54e796f0f8cba0963617446e497f0e133d0b1fbf85fd62caf79966"}}}}

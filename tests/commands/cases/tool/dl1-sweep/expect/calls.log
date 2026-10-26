@@ -20,7 +20,7 @@ args
 env_all
 clock
 cwd
-read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 path_roc
 env_all
 list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin

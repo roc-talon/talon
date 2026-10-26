@@ -1,0 +1,153 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+cwd
+canonical $PROJECT/main.roc
+list_dirs $PROJECT
+list_dirs $WORK
+list_dirs /tmp/talon-l2
+list_dirs /tmp
+list_dirs /
+read_files $PROJECT/main.roc
+read_files $PROJECT/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+cwd
+canonical $PROJECT/main.roc
+list_dirs $PROJECT
+list_dirs $WORK
+list_dirs /tmp/talon-l2
+list_dirs /tmp
+list_dirs /
+read_files $PROJECT/main.roc
+read_files $PROJECT/main.roc
+path_roc
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
+tty
+ask "Download 1 compiler, 73.2 MB: nightly-2026-10-16-1df370f? [Y/n] "
+lock $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f nowait: held
+list_dirs $HOME2/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-16-1df370f/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz
+sha256_file $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz -C $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp --strip-components=1
+delete $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/roc
+list_dirs $HOME2/.cache/roc
+write_atomic $HOME2/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME2/.cache/roc/talon/tmp/0123456789abcdef $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/roc check $HOME2/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME2/.cache/roc
+delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/.talon.json
+rename $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f
+unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-16-1df370f
+lock $HOME2/.config/talon/config.toml nowait: held
+read_files $HOME2/.config/talon/config.toml
+read_files $HOME2/.config/talon/config.toml
+write_atomic $HOME2/.config/talon/config.toml
+unlock $HOME2/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+path_roc
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+args
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+clock
+platform
+read_files $HOME3/.config/talon/config.toml
+list_dirs $HOME3/.cache/roc/toolchains
+cwd
+canonical $PROJECT/main.roc
+list_dirs $PROJECT
+list_dirs $WORK
+list_dirs /tmp/talon-l2
+list_dirs /tmp
+list_dirs /
+read_files $PROJECT/main.roc
+read_files $PROJECT/main.roc
+path_roc
+list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
+tty
+ask "Download 1 compiler, 73.3 MB: nightly-2026-10-15-38e6c42? [Y/n] "
+lock $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42 nowait: held
+list_dirs $HOME3/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-15-38e6c42/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz
+sha256_file $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz -C $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp --strip-components=1
+delete $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/roc
+list_dirs $HOME3/.cache/roc
+write_atomic $HOME3/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME3/.cache/roc/talon/tmp/0123456789abcdef $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/roc check $HOME3/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME3/.cache/roc
+delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp/.talon.json
+rename $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42
+unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-15-38e6c42
+lock $HOME3/.config/talon/config.toml nowait: held
+read_files $HOME3/.config/talon/config.toml
+read_files $HOME3/.config/talon/config.toml
+write_atomic $HOME3/.config/talon/config.toml
+unlock $HOME3/.config/talon/config.toml

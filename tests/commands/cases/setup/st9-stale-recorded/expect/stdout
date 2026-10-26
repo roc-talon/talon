@@ -1,0 +1,8 @@
+== setup
+made $HOME/.local/bin/tln (hard link)
+made $HOME/.local/bin/roc (hard link)
+made $HOME/.local/bin/foo (hard link)
+exit 0
+== setup --json
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"kept","form":null},{"name":"foo","action":"kept","form":null},{"name":"baz","action":"skipped","form":null},{"name":"qux","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null}],"roc_old":false,"path":"on-path","completion":"none","default_roc":{"action":"kept","id":"nightly-2026-10-14-38a3029"}},"error":null}
+exit 0

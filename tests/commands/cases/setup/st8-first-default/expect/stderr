@@ -5,3 +5,6 @@ made $HOME/.local/bin/roc (hard link)
 note: no default compiler was set, because the list of compilers cannot be read (GitHub API rate limit reached. It resets at 2026-10-15T13:13:20Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login).). The first command that needs a compiler picks one.
 note: no default compiler was set, because the list of compilers cannot be read (no compiler release is allowed by the nightly switch and min-release-age). The first command that needs a compiler picks one.
 note: no default compiler was set, because the list of compilers cannot be read (no compiler asset exists for freebsd x64). The first command that needs a compiler picks one.
+made $HOME5/.local/bin/tln (hard link)
+made $HOME5/.local/bin/roc (hard link)
+default compiler: nightly-2026-10-16-1df370f (the newest installed compiler)

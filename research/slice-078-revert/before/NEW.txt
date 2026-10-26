@@ -1,0 +1,4 @@
+tests/commands/cases/setup/st9-stale-recorded/
+tests/commands/cases/setup/st10-no-record/
+tests/unit/BinrecordTest.roc
+cli/lib/BinRecord.roc

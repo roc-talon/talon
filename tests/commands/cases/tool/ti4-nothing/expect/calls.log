@@ -43,6 +43,9 @@ rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.01
 delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/toolchains
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+list_dirs $HOME/.cache/roc/toolchains
 tty
 clock
 platform
@@ -84,6 +87,9 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/toolchains
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+list_dirs $HOME/.cache/roc/toolchains
 args
 env_all
 clock
@@ -101,4 +107,7 @@ read_files $HOME/.cache/roc/packages/EfCkL57GXxK7AgV8RMbFNBWQ3NFMqSj7WkT2nkCkUJr
 random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+list_dirs $HOME/.cache/roc/toolchains
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
 list_dirs $HOME/.cache/roc/toolchains

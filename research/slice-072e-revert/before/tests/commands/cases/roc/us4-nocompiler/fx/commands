@@ -1,0 +1,2 @@
+env:HOME={w}/h1 roc use nightly-2026-10-14-38a3029 --file n1/main.roc
+env:HOME={w}/h2 roc use nightly-2026-10-14-38a3029 --file n2/main.roc

@@ -1,0 +1,99 @@
+== R-DL4 R-NI5 R-DL1: no person (CI=true) and no flag: exit 13 with the count and the size of the download. The text names --allow-downloads and TALON_AUTO_INSTALL=yes. No compiler runs, the store is empty. The run asks for the list of compilers once (the text has the size of the download, R-DL1).
+== env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 13
+-- compiler runs
+
+requests for compilers: 1
+== R-EV6: another value of TALON_AUTO_INSTALL counts as not set (ask): the same stop.
+== env TALON_AUTO_INSTALL=maybe ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 13
+== R-DL5 R-DL10: TALON_AUTO_INSTALL=no refuses: exit 13, the text of Compiler.require (no flag in it). No new request (the list is cached).
+== env TALON_AUTO_INSTALL=no ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+exit 13
+
+requests for compilers: 1
+== R-DL5 R-FL12 R-NI5 R-NM6 R-SO22 R-BL3 R-CC4 R-CC9 R-SO15: --allow-downloads is the answer of the prompt. One answer line on stderr, one download, the install under the lock, then the 3 probes (the 2 checks and the build) run the new compiler with the cache variables. No default is written (R-SO15).
+== env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify --allow-downloads
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+-- compiler runs
+nightly-2026-10-13-5349569 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=project build main.roc n=13 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 
+last use of A: 2026-10-15T12:00:00Z
+no default-roc (no config.toml)
+downloads of A: 1
+== R-CC4 step 1: A is installed now: no prompt, no list, no download. The same 3 probes.
+== env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: skipped (recorded pass)
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+-- compiler runs
+nightly-2026-10-13-5349569 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+requests for compilers: 1, downloads of A: 1
+== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still no default (R-SO15).
+== env ROC_TOOLCHAIN=nightly-2026-10-12-0a1b2c3 tln verify --yes
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+-- compiler runs
+nightly-2026-10-12-0a1b2c3 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 cwd=project build main.roc n=13 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 nightly-2026-10-13-5349569 
+no default-roc (no config.toml)
+== R-DL5 R-EV6 R-J1 R-DL9: TALON_AUTO_INSTALL=yes, with --json: stdout is only the envelope, the answer line is on stderr.
+== env TALON_AUTO_INSTALL=yes ROC_TOOLCHAIN=nightly-2026-10-11-1b2c3d4 tln verify --json
+{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":6,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+exit 0
+-- compiler runs
+nightly-2026-10-11-1b2c3d4 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 cwd=project build main.roc n=13 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 nightly-2026-10-12-0a1b2c3 nightly-2026-10-13-5349569 
+== R-DL5: --yes with --dry-run style runs that need no compiler (--no-check) ask nothing and download nothing (R-SO22): the store is the same.
+== env ROC_TOOLCHAIN=nightly-2026-10-10-2c3d4e5 tln verify --no-check
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+nightly-2026-10-11-1b2c3d4 nightly-2026-10-12-0a1b2c3 nightly-2026-10-13-5349569 
+requests for compilers: 1
+0

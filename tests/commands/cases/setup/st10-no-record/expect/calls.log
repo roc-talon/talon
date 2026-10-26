@@ -1,0 +1,24 @@
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/share/talon/bin/foo
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+sha256_file $HOME/.local/bin/foo
+path_roc
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/share/talon/bin/foo
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+sha256_file $HOME/.local/bin/foo
+path_roc
+read_files $HOME/.config/talon/config.toml

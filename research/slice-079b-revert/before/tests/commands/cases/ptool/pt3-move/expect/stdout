@@ -1,0 +1,55 @@
+== update --tool --file p1/main.roc
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+moved tool baz 1.0.0 to 1.2.0 (acme/baz)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+$PROJECT/p1/talon.toml: tools.baz = { ref = "acme/baz@>=1.0, <1.5", url = "https://github.com/acme/baz/releases/download/1.2.0/9Ef6ztwqT4Q9yBbRkAugdX8hWtUW4jMaJqfwyqZQFXML.tar.zst" }
+exit 0
+== update --tool --file p1/main.roc
+nothing to change
+exit 0
+== upgrade --tool foo bar --file p1/main.roc
+moved tool foo 1.1.0 to 2.0.0 (acme/foo)
+moved tool bar 1.0.0 to 2.0.0 (acme/bar)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^2", url = "https://github.com/acme/foo/releases/download/2.0.0/Gjd7Us4DTdcWjQgC2FQUo4eXgXbJ7xCiTYUFdUajzWvq.tar.zst" }
+$PROJECT/p1/talon.toml: tools.bar = { ref = "acme/bar@2.0.0", url = "https://github.com/acme/bar/releases/download/2.0.0/FtbE8BA8DgLZtspqA4Tu8nhjrL2yjpEE3yGRVgQXUbBZ.tar.zst" }
+exit 0
+== upgrade --tool --file p1/main.roc
+nothing to change
+exit 0
+== update --tool zed --file p1/main.roc
+exit 2
+== update --tool acme/foo --file p1/main.roc
+exit 2
+== update fmt --file p2/main.roc
+moved tool fmt 1.0.0 to 1.1.0 (acme/fmt)
+$PROJECT/p2/talon.toml: tools.fmt = { ref = "acme/fmt@^1", url = "https://github.com/acme/fmt/releases/download/1.1.0/6TFK1qt5cNPhj9Vw6X98ZJfaD91wUNE82UsTYcj199bZ.tar.zst" }
+exit 0
+== update --file p2/main.roc
+nothing to change
+exit 0
+== update pf --file p3/main.roc
+exit 2
+== upgrade --tool pf --file p3/main.roc
+moved tool pf 1.0.0 to 1.1.0 (acme/pfx)
+$PROJECT/p3/talon.toml: tools.pf = { ref = "acme/pfx@^1", url = "https://github.com/acme/pfx/releases/download/1.1.0/GfTcxVACFDYckWHoPqVDdqDA4zz3whjKuGTfS7THxaU5.tar.zst" }
+exit 0
+== update --tool --file w/m1/main.roc
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+$PROJECT/w/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0
+== install --file w2/m1/main.roc
+exit 19
+== update fmt --file p2/main.roc
+nothing to change
+exit 0
+== update pf --file p2/main.roc
+nothing to change
+exit 0
+== update fmt@^2 --file p2/main.roc
+exit 2
+== update --json --file p4/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"tools":[{"key":"fmt","name":"acme/fmt","action":"moved","ref":"acme/fmt@^1","url":"https://github.com/acme/fmt/releases/download/1.1.0/6TFK1qt5cNPhj9Vw6X98ZJfaD91wUNE82UsTYcj199bZ.tar.zst","version":"1.1.0","previous":"1.0.0","file":"$PROJECT/p4/talon.toml","built":false,"would_build":false}]},"error":null}
+exit 0
+== upgrade --json foo --file w/m1/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"tools":[{"key":"foo","name":"acme/foo","action":"moved","ref":"acme/foo@^2","url":"https://github.com/acme/foo/releases/download/2.0.0/Gjd7Us4DTdcWjQgC2FQUo4eXgXbJ7xCiTYUFdUajzWvq.tar.zst","version":"2.0.0","previous":"1.1.0","file":"$PROJECT/w/talon.toml","built":false,"would_build":false}]},"error":null}
+exit 0

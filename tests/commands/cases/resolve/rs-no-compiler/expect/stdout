@@ -1,5 +1,6 @@
 == install
-exit 18
+nothing to change
+exit 0
 == install frozen
 the header satisfies talon.toml
 exit 0

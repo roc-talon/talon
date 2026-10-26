@@ -1,0 +1,99 @@
+--- home/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J/main.roc
++++ home/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-October-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD/main.roc
++++ home/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD/main.roc
+@@ -0,0 +1,6 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
++++ home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64mac: { inputs: ["libhost.a", app] },
++		arm64mac: { inputs: ["libhost.a", app] },
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,11 @@
++format	1
++pinned	nightly-2026-10-09-258ab27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-10-abcdef0	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-11-1a2b3c4	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-12-2664a27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-13-91fa0c2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-14-38a3029	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-15-38e6c42	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-16-1df370f	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
++pinned	nightly-2026-10-17-601b54c	linux_x86_64	2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881	github-digest
++pinned	nightly-2026-10-18-5349569	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+--- home/.cache/roc/talon/index/github/acme/mo/1.json
++++ home/.cache/roc/talon/index/github/acme/mo/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/mo/releases/download/1.1.0/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst"}]},
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"DW81pDMpCYEPDeFrtHB3JhrtFwmSfUzfNF43Q89RjUED.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/mo/releases/download/1.0.0/DW81pDMpCYEPDeFrtHB3JhrtFwmSfUzfNF43Q89RjUED.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/acme/np/1.json
++++ home/.cache/roc/talon/index/github/acme/np/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/np/releases/download/1.1.0/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst"}]},
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/np/releases/download/1.0.0/AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
++++ home/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+@@ -0,0 +1,12 @@
++[
++{"tag_name":"nightly-2026-10-18-5349569","draft":false,"prerelease":false,"published_at":"2026-10-18T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz","size":73000001,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-18-5349569/roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-18-5349569.zip","size":60000001,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-18-5349569/roc_nightly-windows_x86_64-2026-10-18-5349569.zip"}]},
++{"tag_name":"nightly-2026-10-17-601b54c","draft":false,"prerelease":false,"published_at":"2026-10-17T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-17-601b54c.tar.gz","size":73100000,"digest":"sha256:2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-17-601b54c/roc_nightly-linux_x86_64-2026-10-17-601b54c.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-17-601b54c.zip","size":60100000,"digest":"sha256:2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-17-601b54c/roc_nightly-windows_x86_64-2026-10-17-601b54c.zip"}]},
++{"tag_name":"nightly-2026-10-16-1df370f","draft":false,"prerelease":false,"published_at":"2026-10-16T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz","size":73200000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-16-1df370f/roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-16-1df370f.zip","size":60200000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-16-1df370f/roc_nightly-windows_x86_64-2026-10-16-1df370f.zip"}]},
++{"tag_name":"nightly-2026-10-15-38e6c42","draft":false,"prerelease":false,"published_at":"2026-10-15T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz","size":73300000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-15-38e6c42/roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-15-38e6c42.zip","size":60300000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-15-38e6c42/roc_nightly-windows_x86_64-2026-10-15-38e6c42.zip"}]},
++{"tag_name":"nightly-2026-10-14-38a3029","draft":false,"prerelease":false,"published_at":"2026-10-14T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-14-38a3029.zip","size":60400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-14-38a3029/roc_nightly-windows_x86_64-2026-10-14-38a3029.zip"}]},
++{"tag_name":"nightly-2026-10-13-91fa0c2","draft":false,"prerelease":false,"published_at":"2026-10-13T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","size":73500000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-13-91fa0c2/roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-13-91fa0c2.zip","size":60500000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-13-91fa0c2/roc_nightly-windows_x86_64-2026-10-13-91fa0c2.zip"}]},
++{"tag_name":"nightly-2026-10-12-2664a27","draft":false,"prerelease":false,"published_at":"2026-10-12T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","size":73600000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2664a27/roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-12-2664a27.zip","size":60600000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2664a27/roc_nightly-windows_x86_64-2026-10-12-2664a27.zip"}]},
++{"tag_name":"nightly-2026-10-11-1a2b3c4","draft":false,"prerelease":false,"published_at":"2026-10-11T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz","size":73700000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-11-1a2b3c4/roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-11-1a2b3c4.zip","size":61234567,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-11-1a2b3c4/roc_nightly-windows_x86_64-2026-10-11-1a2b3c4.zip"}]},
++{"tag_name":"nightly-2026-10-10-abcdef0","draft":false,"prerelease":false,"published_at":"2026-10-10T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-10-abcdef0.tar.gz","size":73800000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-10-abcdef0/roc_nightly-linux_x86_64-2026-10-10-abcdef0.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-10-abcdef0.zip","size":60800000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-10-abcdef0/roc_nightly-windows_x86_64-2026-10-10-abcdef0.zip"}]},
++{"tag_name":"nightly-2026-10-09-258ab27","draft":false,"prerelease":false,"published_at":"2026-10-09T15:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","size":73861067,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-258ab27/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz"},{"name":"roc_nightly-windows_x86_64-2026-10-09-258ab27.zip","size":60900000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-09-258ab27/roc_nightly-windows_x86_64-2026-10-09-258ab27.zip"}]}
++]
+--- home/.cache/roc/toolchains/nightly-2026-October-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-October-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z
+--- home/.local/bin/mo
++++ home/.local/bin/mo
+@@ -1 +1 @@
+-old mo
++fake
+\ No newline at end of file
+--- home/.local/share/talon/bin/mo
++++ home/.local/share/talon/bin/mo
+@@ -1 +1 @@
+-old mo
++fake
+\ No newline at end of file
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"np":{"name":"acme/np","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/np/releases/download/1.0.0/AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx.tar.zst"},"build":{"hashes":["7fc7kSMVms3cwANfZbDhwSsZ8tQwpBQcPiENEvBmyDJL"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"mo":{"name":"acme/mo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/mo/releases/download/1.0.0/DW81pDMpCYEPDeFrtHB3JhrtFwmSfUzfNF43Q89RjUED.tar.zst"},"build":{"hashes":["26KWqiTvCzXqhDnZojEmkYPDSudD4mWFXJ3pj4FBpxKu"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gm":{"name":"acme/gm","source":{"kind":"git","commit":"1111111111111111111111111111111111111111","ref":"main"},"build":{"hashes":["8LE3rL9ujpuFWeGZkE3dwxyrEZg9BdVU4Gf2gqVfeMzs"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}
++{"format":1,"tools":{"np":{"name":"acme/np","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/np/releases/download/1.0.0/AGQtXK1fs255S2x6YVUDNojQM89A1LZoREWQMRMh63Dx.tar.zst"},"build":{"hashes":["7fc7kSMVms3cwANfZbDhwSsZ8tQwpBQcPiENEvBmyDJL"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"mo":{"name":"acme/mo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/mo/releases/download/1.1.0/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-October-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"mo":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78"}},"gm":{"name":"acme/gm","source":{"kind":"git","commit":"1111111111111111111111111111111111111111","ref":"main"},"build":{"hashes":["8LE3rL9ujpuFWeGZkE3dwxyrEZg9BdVU4Gf2gqVfeMzs"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}

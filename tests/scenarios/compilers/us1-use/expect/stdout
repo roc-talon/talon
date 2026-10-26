@@ -21,7 +21,7 @@ exit 0
 nightly-2026-10-09-258ab27 nightly-2026-10-14-38a3029 
 -- compiler runs
 nightly-2026-10-09-258ab27 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
-nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=3 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=4 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-14-38a3029 cwd=<copy> check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 app [main!] {
 	# the platform
@@ -39,7 +39,7 @@ requests for compilers: 1, downloads: 2
 exit 0
 -- compiler runs
 nightly-2026-10-09-258ab27 cwd=p2 check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
-nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=3 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=4 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-14-38a3029 cwd=<copy> check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 	roc: "nightly-2026-10-14-38a3029",
 requests for compilers: 1, downloads: 2
@@ -54,7 +54,7 @@ note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27. It has a higher priority than
 exit 0
 -- compiler runs
 nightly-2026-10-09-258ab27 cwd=p3 check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
-nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=3 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=4 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-14-38a3029 cwd=<copy> check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 == R-U1: a link build is no pin (exit 2). R-U4: --no-check is an error (exit 2). No compiler runs, no file changes.
 == tln roc use link-dev --file p4/main.roc

@@ -317,7 +317,7 @@ probe_ended = |code| if code == "timeout" {
 
 default_probe : Probe.Spec -> Probe.Output
 default_probe = |spec| match spec.args {
-	["build", _, output] => { ended: Exited(0), stdout: "0 errors and 0 warnings found in 0ms while successfully building:\n\n    ${output.drop_prefix("--output=")}\n", stderr: "" }
+	["build", _, output, "--no-cache"] => { ended: Exited(0), stdout: "0 errors and 0 warnings found in 0ms while successfully building:\n\n    ${output.drop_prefix("--output=")}\n", stderr: "" }
 	[_, file, ..] => { ended: Exited(0), stdout: "No errors found in 0ms for ${file}\n", stderr: "" }
 	_ => { ended: Exited(0), stdout: "", stderr: "" }
 }

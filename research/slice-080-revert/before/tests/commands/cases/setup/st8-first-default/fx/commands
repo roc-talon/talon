@@ -1,0 +1,14 @@
+# R-ST16 R-SO15 R-CV1 R-OUT4 R-J3 (slice 072a): config.toml has `min-release-age = "1d"` and no default-roc. `--offline` and no cached list: the list cannot be read. Setup does not fail (exit 0): it writes no default, prints the note on stderr (--json: data.default_roc has the action unread and id null). The entries are made as in slice 052 (the first run of a machine). No compiler is downloaded.
+setup --offline --json
+# R-ST16 R-DI13: the list call gets a rate limit answer (status 403, X-RateLimit-Remaining 0): the list cannot be read. The same note (the text of the failure), exit 0, config.toml is not changed.
+setup env:TALON_GITHUB_API=http://127.0.0.1:1/api
+# R-ST16 R-RU1 R-C7 R-NS3 R-SO15 R-LY4: the list is read once. The latest compiler that min-release-age of config.toml (1 day) allows: TALON_NOW is 2026-10-22T12:00:00Z, so nightly-2026-10-21-601b54c (36 hours old) is visible and is the latest. Setup adds default-roc to config.toml under the lock (the key min-release-age stays) and downloads nothing (no spawn, no toolchains dir). The line `default compiler:` is on stdout.
+setup
+# R-ST16 R-SO15: default-roc is set now, so setup is not asked to choose: one read of config.toml, no list, no write, no line.
+setup
+# R-ST16 R-RU1 R-C7: another home with no config.toml, so min-release-age is 2 days: the 36 hours old nightly-2026-10-21-601b54c is hidden, and the latest is nightly-2026-10-19-5349569 (the tree diff shows the home dir only, so the default is in the stdout line).
+setup env:HOME={w}/home2 env:PATH={w}/home2/.local/bin:/usr/bin
+# R-ST16 R-NS3 (manager answer Q1 of slice 072a): the switch is off (`TALON_NIGHTLY=false`), and the newest release of the list is a nightly. No release is allowed, so the list is read (one `http_get`) and the result is the same as for an unreadable list: the note (its text names the switch and min-release-age), exit 0, no default written, no download. A flow that ignores the switch would write the default.
+setup env:HOME={w}/home3 env:PATH={w}/home3/.local/bin:/usr/bin env:TALON_NIGHTLY=false
+# R-ST16 (manager answer Q2 of slice 072a): the host has no compiler asset (the 13th row of `fx/platform`: the second `platform!` call of this run says freebsd). Setup does not fail: the note has the text of `Toolchain.host` (`no compiler asset exists for freebsd x64`), exit 0, no default, and no request for the list.
+setup env:HOME={w}/home4 env:PATH={w}/home4/.local/bin:/usr/bin

@@ -250,6 +250,7 @@ expect {
 	bad == []
 }
 
+# R-LD8 (slice 077): the build has `--no-cache` before the pairs of the patches.
 # R-PA10 R-PX5 R-BL1 R-BL2 R-CM11 (slice 043): the probes of the ladder have the `--replace-dep` pairs of the patches (`LadderPlan.with_patches`). `base` goes to the baseline check (the current header: the copies), `candidate` goes to the candidate check
 # and to the build (the new header: the temp copy of a patch that moves). The pairs are at the end of the arguments, after the pairs of `plan_replace` (R-CM11, `tln verify`) and after `--output=` of the build. Empty lists give the same plan. The unit probes
 # are not part of the plan (question Q3).
@@ -269,7 +270,7 @@ expect {
 	rows = [
 		row("baseline: the pairs of the base", patched.first.first().map_ok(|s| s.args), Ok(["check", "main.roc"].concat(flags(base)))),
 		row("candidate check: the pairs of the candidate", patched.first.last().map_ok(|s| s.args), Ok(["check", "main.roc"].concat(flags(candidate)))),
-		row("build: the pairs of the candidate, after --output", patched.build.map_ok(|s| s.args), Ok(["build", "main.roc", "--output=${copy}/tln-probe.out"].concat(flags(candidate)))),
+		row("build: the pairs of the candidate, after --output", patched.build.map_ok(|s| s.args), Ok(["build", "main.roc", "--output=${copy}/tln-probe.out", "--no-cache"].concat(flags(candidate)))),
 		row("the other fields of a probe do not change", patched.first.map(|s| { ..s, args: [] }), plain.first.map(|s| { ..s, args: [] })),
 		row("a package has no build and keeps its 2 checks", (for_package.build, for_package.first.map(|s| s.args)), (Err(None), [["check", "main.roc"].concat(flags(base)), ["check", "main.roc"].concat(flags(candidate))])),
 		row("empty lists: the same plan", LadderPlan.with_patches({ plan: plain, base: [], candidate: [] }), plain),
@@ -279,7 +280,7 @@ expect {
 			(verify_patched.first.map(|s| s.args), verify_patched.build.map_ok(|s| s.args)),
 			(
 				[["check", "main.roc"].concat(flags(base)), ["check", "main.roc", "--replace-dep", "A", "B"].concat(flags(base))],
-				Ok(["build", "main.roc", "--output=${tmp}/tln-probe.out", "--replace-dep", "A", "B"].concat(flags(base))),
+				Ok(["build", "main.roc", "--output=${tmp}/tln-probe.out", "--no-cache", "--replace-dep", "A", "B"].concat(flags(base))),
 			),
 		),
 	]
@@ -332,7 +333,7 @@ expect {
 	bad == []
 }
 
-# R-PA12 R-PA9 R-RUN8 R-EC19 (slice 076, Q2): the copy dir of a `[patch]` entry is deleted and written by a rebase (`tln install`, `tln update`), so it must be inside the repository, as the `in` dir of a script (R-RUN8, exit 19), and
+# R-PA12 R-PA9 R-PA16 R-RUN8 R-EC19 (slice 076, Q2): the copy dir of a `[patch]` entry is deleted and written by a rebase (`tln install`, `tln update`), so it must be inside the repository, as the `in` dir of a script (R-RUN8, exit 19), and
 # it is checked before any read, delete or write. The repository is the stop dir: the workspace root for a workspace, else the dir of the `talon.toml` (`Patched.stop`, decision D6 of the slice file). Strictly inside: the copy dir
 # that is the stop dir itself (`path = "./main.roc"`) is refused too, because a rebase would delete the repository. A dir with the same start (`/p2` for the stop `/p`) is outside. An absolute path counts like any other. The first bad entry is the failure.
 expect {

@@ -1,0 +1,2 @@
+env:HOME={w}/home/h1 tool rm talon --remove-tools --json
+env:HOME={w}/home/h2 tool rm talon --keep-all

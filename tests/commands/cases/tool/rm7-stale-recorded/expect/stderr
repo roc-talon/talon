@@ -1,0 +1,9 @@
+removing Talon, the compilers, the data and the tools
+warning: $HOME/h1/.local/bin/baz is not a file that tln wrote, so tln keeps it
+Talon        tln, roc, the talon entry of tools.json          10 B   removed
+tools        3 (foo, bar, baz)                                33 B   removed
+compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+Talon data   index, x cache, compat.db, config               164 B   removed
+moved $HOME/h1/.local/bin/roc.old back to $HOME/h1/.local/bin/roc
+removed the PATH line from $HOME/h1/.bashrc
+removing Talon only

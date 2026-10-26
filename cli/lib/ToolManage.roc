@@ -115,6 +115,15 @@ ToolManage :: [].{
 		Dir | Unreadable => Keep
 	}
 
+	## Slice 078 (R-ST11, R-RM6, R-RM11 (3), R-ST6, R-B6): `entry_fate` with the record of `tools.json` (`BinRecord.read`). `recorded` is the sha256 that `bin.<name>` has for this entry, or `Err(None)`. `Remove` for `Sha(h)` when `old` is `Ok(h)` or `recorded` is `Ok(h)` (a stale entry is Talon's, R-ST9).
+	## `Gone` for `Absent`. `Keep` for any other file, for `Dir` and for `Unreadable` (the record does not count). The flows use this function. `entry_fate` stays with the same results as before (`recorded: Err(None)`).
+	fate_bin : { old : Try(Str, [NotFound]), recorded : Try(Str, [None]), have : [Absent, Dir, Unreadable, Sha(Str)] } -> [Remove, Gone, Keep]
+	fate_bin = |facts| match facts.have {
+		Absent => Gone
+		Sha(sha) => if facts.old == Ok(sha) or facts.recorded == Ok(sha) Remove else Keep
+		Dir | Unreadable => Keep
+	}
+
 	## R-ST6, R-OUT2 (proposal): the warning on stderr for a bin dir entry that `remove` keeps: `warning: <path> is not a file that tln wrote, so tln keeps it`.
 	kept_warning : Str -> Str
 	kept_warning = |path| "warning: ${path} is not a file that tln wrote, so tln keeps it"

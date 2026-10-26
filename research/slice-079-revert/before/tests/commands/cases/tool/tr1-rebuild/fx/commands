@@ -1,0 +1,5 @@
+tool rebuild foo
+tool rebuild g env:TALON_INTERACTIVE=0
+tool rebuild g --yes env:TALON_INTERACTIVE=0
+tool rebuild --json
+tool rebuild foo

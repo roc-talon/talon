@@ -2,5 +2,5 @@
 --version env:HOME=
 --version
 tool list
-@roc --version
+@roc +nightly-2026-10-14-38a3029 --version env:CI=true
 no-such-command

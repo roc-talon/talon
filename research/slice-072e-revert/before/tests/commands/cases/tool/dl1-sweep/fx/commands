@@ -1,0 +1,6 @@
+--version env:USERPROFILE={w}/nowhere
+--version env:HOME=
+--version
+tool list
+@roc --version
+no-such-command

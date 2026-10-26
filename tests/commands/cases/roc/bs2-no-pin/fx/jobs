@@ -1,0 +1,4 @@
+# 072e (Q-D3, R-SL7): run 2 installs the compiler of the step (R-DA3 the download, R-HF5 the extract, R-HF2 the chmod). The compat check of a new compiler (roc check) has no rule: it exits with 99, and its code is not read (R-GC10).
+curl --fail	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

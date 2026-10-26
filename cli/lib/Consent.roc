@@ -183,6 +183,15 @@ Consent :: [].{
 		}
 	}
 
+	## R-UP6, R-NI12, R-SO24 (slice 072e, Q-E2, a proposal, TW24): `roc_install` for the pick of a run with no compiler selected, which the command names too (`upgrade`, the nightly is free). The question has the line `It becomes the default compiler.`
+	## and the answer line ends with `, the default compiler`.
+	roc_install_default : { id : Str, size : U64 } -> Prompt
+	roc_install_default = |facts| {
+		plain = Consent.roc_install(facts)
+		size = Toolchain.size_text(facts.size)
+		{ ..plain, question: "${plain.question} It becomes the default compiler.", answer_line: |answer| if answer == Yes "downloading ${facts.id} (${size}), the default compiler" else "no download of ${facts.id}" }
+	}
+
 	## R-CC4 step 2: the failure when the person answers No to `roc_install`. Kind `Consent` (exit 13), `<id> is not installed. Nothing was downloaded.`
 	roc_install_declined : Str -> Fail
 	roc_install_declined = |id| Fail.new(Consent, "${id} is not installed. Nothing was downloaded.")

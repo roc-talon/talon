@@ -1,2 +1,4 @@
-tln: error[environment]: no compiler is selected, so a relative step has no start. Run: tln roc install @latest and tln roc default <id>
+warning: the compat id of nightly-2026-10-16-1df370f is not known: roc check touched no compat dir
 tln: error[usage]: git-dd03c09e is not in the list of compilers, so a relative step has no start
+downloading nightly-2026-10-15-38e6c42 (73.3 MB)
+warning: the compat id of nightly-2026-10-15-38e6c42 is not known: roc check touched no compat dir

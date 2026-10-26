@@ -3,6 +3,8 @@ import BuildSkip
 import BuildTarget
 import Clock
 import Common
+import Compiler
+import Consent
 import Fail
 import Fetch
 import Fx
@@ -12,13 +14,16 @@ import Index
 import Item
 import Launch
 import Lookup
+import Mode
 import Net
+import OnPath
 import Out
 import RocInstall
 import Roots
 import Scope
 import Setup
 import SetupIo
+import Start
 import Temp
 import Text
 import ToolBuild
@@ -72,6 +77,15 @@ ToolFlow :: [].{
 
 	choose_for! : Fx, Args, { roc : [Auto, Pinned, Installed] }, ToolBuild.Facts, ToolBuild.Bundle => Try(ToolCompilerFlow.Chosen, Fail)
 	choose_for! = |fx, args, plan, facts, bundle| choose!(fx, args, plan, facts, bundle)
+
+	## R-T30, R-SO2, R-SO6, R-SO7, R-SO10 (slices 079, 079b): the compiler that a tool command selects: `ROC_TOOLCHAIN`, else `default-roc` (`facts.selected`), else (slice 080, R-SO24 case 3) the newest installed nightly or release (one `list_dirs!`, a note on stderr), else the `roc` on `PATH` (rank 7). The lookup of `PATH` is lazy: a rank above 7 decides with no call (R-SO7), so only the commands with nothing installed make the calls of `OnPath.file!`.
+	selected_for! : Fx, ToolBuild.Facts => Str
+	selected_for! = |fx, facts| {
+		env = toolchain_env(facts.env)
+		newest = if env.is_empty() and facts.selected.is_empty() newest_of!(fx, facts) else ""
+		path = if env.is_empty() and facts.selected.is_empty() and newest.is_empty() OnPath.file!(fx, facts.roots).map_ok(|found| found.id) else Err(NoCompiler)
+		ToolCompiler.selected_of({ env, default: if newest.is_empty() facts.selected else newest, path })
+	}
 
 	gather_for! : Fx, ToolInstall.Plan => Try(ToolBuild.Facts, Fail)
 	gather_for! = |fx, plan| gather!(fx, plan)
@@ -131,7 +145,7 @@ flow! = |fx, args, plan| {
 		Err(NoMatch) => {}
 	}
 	notes!(fx, facts, picked, newest)
-	ToolBuild.entry_verdict!(fx, facts)?
+	ToolBuild.entry_verdict!(fx, facts, Fresh)?
 	bundle = first_app!(fx, args, facts, picked.order)?
 	check_platform!(fx, args, facts, bundle)?
 	compile!(fx, args, plan, facts, bundle)
@@ -289,7 +303,7 @@ read_bundle! = |fx, args, facts, rel| {
 # The text of the `main.roc` of a package that is fetched when its dir is missing (R-FE2, R-FE7).
 package_text! : Fx, Args, ToolBuild.Facts, { url : Str, hash : Str } => Try(Str, Fail)
 package_text! = |fx, args, facts, pkg| {
-	match Fetch.packages!(fx, { roots: facts.roots, urls: [pkg.url], offline: args.offline, unbundler: Choose({ selected: facts.selected, none: Stop }), downloader: facts.net.downloader }) {
+	match Fetch.packages!(fx, { roots: facts.roots, urls: [pkg.url], offline: args.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Outside, downloads: downloads_of(args, facts) }) }), downloader: facts.net.downloader }) {
 		[Ok(_)] => {}
 		[Err(fail)] => return Err(fail)
 		_ => return Err(Fail.new(Internal, "the fetch of ${pkg.url} gave no answer"))
@@ -299,6 +313,18 @@ package_text! = |fx, args, facts, pkg| {
 		[Ok(text)] => Ok(text)
 		_ => Err(Fail.new(Environment, "cannot read ${path}"))
 	}
+}
+
+# R-FE4, R-SO14 (2), R-DL1 to R-DL6: the consent facts of the download of a compiler that the unpack of a bundle needs. `tool install` has no `--allow-downloads`.
+downloads_of : Args, ToolBuild.Facts -> Start.Downloads
+downloads_of = |args, facts| {
+	auto: Consent.auto_install(facts.env),
+	allow: Err(NoFlag),
+	yes: args.yes,
+	mode: Mode.from_env({ env: Dict.from_list(facts.env), json: args.json }),
+	quiet: args.quiet,
+	offline: args.offline,
+	env: facts.env,
 }
 
 # Step 8b (R-T2): the platform of the app must make a native executable. A path entry and a header with no `targets` are admitted.
@@ -340,8 +366,26 @@ choose! = |fx, args, plan, facts, bundle| {
 		hashes: bundle.hashes,
 		roc: plan.roc,
 		timeout: facts.probe_timeout,
+		selected: ToolFlow.selected_for!(fx, facts),
 	}
 	ToolCompilerFlow.choose!(fx, args, run, { build: |req| ToolBuild.attempt!(fx, args, facts, bundle, req) })
+}
+
+# R-SO6, R-SO24 case 3: rank 6 with no `default-roc` is the newest installed nightly or release. One `list_dirs!`, and the note on stderr when a compiler is found. `""` when none is installed.
+newest_of! : Fx, ToolBuild.Facts => Str
+newest_of! = |fx, facts| match Compiler.newest_installed({ installed: Launch.toolchains!(fx, facts.roots), times: [] }) {
+	Ok(id) => {
+		fx.err!("note: ${Compiler.newest_note(id)}\n")
+		id
+	}
+	Err(None) => ""
+}
+
+# R-SO2: `ROC_TOOLCHAIN` (rank 2), `""` when it is not set.
+toolchain_env : List((Str, Str)) -> Str
+toolchain_env = |env| match env.find_first(|(name, _)| name == "ROC_TOOLCHAIN") {
+	Ok((_, text)) => text
+	Err(_) => ""
 }
 
 # Step 13: the line on stdout (`--quiet` hides it), or with `--json` the line on stderr and the envelope on stdout.

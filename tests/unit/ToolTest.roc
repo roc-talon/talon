@@ -208,6 +208,7 @@ expect {
 	bad == [] and compilers.all(|(got, want_row)| got == want_row)
 }
 
+# R-LD8 (slice 077): the build of a tool has `--no-cache` after `--output`.
 # R-T3 R-T5 R-T8 R-T11 R-LY2 R-CC1 R-CC2 R-ST15 R-ST7: the paths of one install, and the probe of the build. The app bundle is in the package cache (`<cache>/packages/<hash>`); the build writes into `<cache>/talon/tmp/<hex>/<file>`; the binary is in `<data>/bin/<file>` and the
 # bin dir entry in the bin dir, each with a temp name `<file>.<hex>.tmp` for the rename. `.exe` on Windows. The build is `roc build main.roc --opt=speed --output=<out>` with no `--target` (R-T8), in the bundle dir, with the long timeout of a build (question Q6).
 expect {
@@ -229,7 +230,7 @@ expect {
 		(windows.output, "/c/roc/talon/tmp/0123456789abcdef/foo.exe"),
 		(windows.data_file, "/d/talon/bin/foo.exe"),
 		(windows.entry, "/h/.local/bin/foo.exe"),
-		(Str.join_with(spec.args, " "), "build main.roc --opt=speed --output=/c/roc/talon/tmp/0123456789abcdef/foo"),
+		(Str.join_with(spec.args, " "), "build main.roc --opt=speed --output=/c/roc/talon/tmp/0123456789abcdef/foo --no-cache"),
 		(spec.dir, "/c/roc/packages/${h1}"),
 		(spec.compiler, "nightly-2026-10-14-38a3029"),
 		(spec.program, "/c/roc/toolchains/nightly-2026-10-14-38a3029/roc"),

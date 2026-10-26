@@ -44,7 +44,7 @@ expect {
 			"http://10.0.0.1/pkg/1.0.0/${hash}.tar.zst",
 			Err((2, "http://10.0.0.1/pkg/1.0.0/${hash}.tar.zst: a package URL must be https://, or http:// to 127.0.0.1, [::1] or localhost")),
 		),
-		# R-ID5 R-H4 R-DI1 (slice 076): a hash that is not a safe path part is no hash, so the URL is no release URL (exit 2): `<pkgs>/..` and `<pkgs>/.` are the cache dirs, not a package
+		# R-SE18 R-ID5 R-H4 R-DI1 (slice 076): a hash that is not a safe path part is no hash, so the URL is no release URL (exit 2): `<pkgs>/..` and `<pkgs>/.` are the cache dirs, not a package
 		(
 			"a hash that is ..",
 			"https://github.com/acme/json/releases/download/2.1.0/...tar.zst",

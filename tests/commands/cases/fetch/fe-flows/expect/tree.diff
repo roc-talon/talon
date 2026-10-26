@@ -1,0 +1,9 @@
+--- project/p1/.talon/patches/json/main.roc
++++ project/p1/.talon/patches/json/main.roc
+@@ -0,0 +1 @@
++package [Json] {}
+--- project/p1/talon.toml
++++ project/p1/talon.toml
+@@ -0,0 +1,2 @@
++[patch]
++json = { path = "./.talon/patches/json/main.roc", base = "6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit" }

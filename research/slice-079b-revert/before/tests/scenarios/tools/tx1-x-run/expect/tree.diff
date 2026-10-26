@@ -1,0 +1,86 @@
+--- home/.cache/roc/packages/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr/main.roc
++++ home/.cache/roc/packages/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "pf/main.roc",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++# acme/app 1.0.0
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr/pf/main.roc
++++ home/.cache/roc/packages/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr/pf/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}
++
++main_for_host! = |_args| 0
+--- home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/main.roc
++++ home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "pf/main.roc",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++# acme/app 1.1.0
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/pf/main.roc
++++ home/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw/pf/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}
++
++main_for_host! = |_args| 0
+--- home/.cache/roc/talon/index/github/acme/app/1.json
++++ home/.cache/roc/talon/index/github/acme/app/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"}]},{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst"}]}]
+--- home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/app
++++ home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/app
+@@ -0,0 +1,3 @@
++#!/bin/sh
++echo "ran: acme/app 1.0.0 args: $*"
++exit 3
+--- home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/manifest.json
++++ home/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269/manifest.json
+@@ -0,0 +1 @@
++{"format":1,"name":"acme/app","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"eeb5463d6135db83fa0d51c627bfe3763c92542e5829bb253a3a959e7f167dbb","libs":[],"bundle":"DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr","last_run":"2026-11-20T12:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-11-20T12:00:00Z
+--- home/.local/bin/app
++++ home/.local/bin/app
+@@ -0,0 +1,3 @@
++#!/bin/sh
++echo "ran: acme/app 1.1.0 args: $*"
++exit 3
+--- home/.local/share/talon/bin/app
++++ home/.local/share/talon/bin/app
+@@ -0,0 +1,3 @@
++#!/bin/sh
++echo "ran: acme/app 1.1.0 args: $*"
++exit 3
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -0,0 +1 @@
++{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"app":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9"}}}}

@@ -1,0 +1,29 @@
+== tln probe json
+unit check of acme/json 2.0.0 on nightly-2026-10-14-38a3029: pass
+exit 0
+== tln probe pf
+unit check of the platform acme/pfx 0.1.0 on nightly-2026-10-14-38a3029: pass
+exit 0
+== tln probe
+$PROJECT/main.roc on nightly-2026-10-14-38a3029
+check: passed
+build: passed
+exit 0
+== tln probe --json json
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"unit","hash":"7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21","label":"acme/json 2.0.0","compiler":"nightly-2026-10-14-38a3029","outcome":"pass","modules":[],"probes":1},"error":null}
+exit 0
+== tln probe yaml
+exit 2
+== tln probe json parser
+exit 2
+== tln probe --share json
+exit 2
+== tln probe --range
+exit 2
+== the roc calls
+version
+check main.roc
+check main.roc
+check main.roc
+build main.roc --output=$HOME/.cache/roc/talon/tmp/HEX/tln-probe.out
+check main.roc

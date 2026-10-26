@@ -1,0 +1,4 @@
+tests/commands/L2NoRank.roc
+tests/commands/cases/norank
+tests/commands/cases/fetch/fe-flows
+tests/commands/cases/init/it4-nocompiler

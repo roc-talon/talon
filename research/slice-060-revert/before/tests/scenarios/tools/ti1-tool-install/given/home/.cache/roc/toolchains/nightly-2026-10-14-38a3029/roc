@@ -1,0 +1,21 @@
+#!/bin/sh
+# The fake compiler of the case ti1-tool-install: `roc build main.roc --opt=speed --output=<file>`.
+# It logs the directory (the package dir of the app bundle) and the arguments, writes a shell script to <file> that prints the repo and the version of the bundle (the comment line of main.roc),
+# and prints the summary of a build with no error. When the file `barrier` exists in $TALON_TEST_DIR, the build waits until the builds of `foo` and `bar` have both started (R-CC6: the lock of tools.json
+# is not held during a build, so two installs build at the same time; a lock around the build would block the second install, and the wait would end after 10 s with exit 1).
+for a in "$@"; do case $a in --output=*) out=${a#--output=} ;; esac; done
+echo "$PWD $*" >> "$TALON_TEST_DIR/build.log"
+name=$(basename "$out")
+touch "$TALON_TEST_DIR/started.$name"
+if [ -f "$TALON_TEST_DIR/barrier" ]; then
+    n=0
+    while [ ! -f "$TALON_TEST_DIR/started.foo" ] || [ ! -f "$TALON_TEST_DIR/started.bar" ]; do
+        n=$((n + 1))
+        [ $n -gt 100 ] && { echo "fake roc: the other build did not start" >&2; exit 1; }
+        sleep 0.1
+    done
+fi
+what=$(sed -n 's/^# //p' main.roc)
+printf '#!/bin/sh\necho "ran: %s"\n' "$what" > "$out"
+chmod +x "$out"
+printf '0 errors and 0 warnings found in 12ms while successfully building:\n\n    %s\n' "$out"

@@ -1,0 +1,5 @@
+# <bundle hash>:<compiler id> <TAB> code <TAB> stdout <TAB> stderr. A check with no row passes. `two` (4twp...) fails the check with A only. `three` (Qvo1...) fails it with A, C and D.
+4twpCGuT3exMfoM14WfkZEh7vP976csuzgq5cJiGuD6d:nightly-2026-10-14-38a3029	1	-	../fixtures/check/out/syntax.stderr
+Qvo1hhn2s2AjTeVZGsRwHQ2uUR86QtTzT8zjSSBVpwa:nightly-2026-10-14-38a3029	1	-	../fixtures/check/out/syntax.stderr
+Qvo1hhn2s2AjTeVZGsRwHQ2uUR86QtTzT8zjSSBVpwa:nightly-2026-10-05-aaaaaaa	1	-	../fixtures/check/out/app-errors.stderr
+Qvo1hhn2s2AjTeVZGsRwHQ2uUR86QtTzT8zjSSBVpwa:nightly-2026-10-01-bbbbbbb	1	-	../fixtures/check/out/app-errors.stderr

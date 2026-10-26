@@ -1,0 +1,7 @@
+== env:HOME={w}/h1 roc use nightly-2026-10-14-38a3029 --file n1/main.roc
+check: passed
+build: passed
+$PROJECT/n1/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0

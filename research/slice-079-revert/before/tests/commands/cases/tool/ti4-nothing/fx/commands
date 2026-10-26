@@ -1,0 +1,3 @@
+tool install acme/x
+tool install acme/x --roc installed env:TALON_INTERACTIVE=0
+tool install acme/x env:TALON_INTERACTIVE=0

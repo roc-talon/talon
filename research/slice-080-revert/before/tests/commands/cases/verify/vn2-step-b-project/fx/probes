@@ -1,0 +1,14 @@
+# One row for each probe that is not a unit check, in order. The units all pass (no row in fx/units). Run 1 (h1): the check of the project file fails with N3 (the newest installed), so N3 is skipped; N2 passes the check and the build; then the 3 probes of the ladder of verify. Run 2 (h2): N3 passes the check and fails the build, so N3 is skipped; N2 passes both; then the 3 probes of the ladder.
+1	../fixtures/check/out/app-errors.stdout	../fixtures/check/out/app-errors.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/build-errors.stdout	../fixtures/check/out/build-errors.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

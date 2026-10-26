@@ -1,4 +1,5 @@
 import Args
+import BinRecord
 import Clock
 import Del
 import DelFlow
@@ -90,7 +91,7 @@ XTake :: [].{
 # Step 4: the check of the bin dir entry, then the steps under the lock of `tools.json`.
 take! : Fx, ToolBuild.Facts, XCache.Found => Try(ToolBuild.Done, Fail)
 take! = |fx, facts, hit| {
-	ToolBuild.entry_verdict!(fx, facts)?
+	ToolBuild.entry_verdict!(fx, facts, Fresh)?
 	hex = Temp.hex(fx.random!())
 	layout = ToolInstall.layout({ roots: facts.roots, bin: facts.bin, os: facts.os, key: facts.key, hash: hit.entry.bundle, hex })
 	fx.locked!(Roots.item(facts.roots, Item.ToolsJson), || taken!(fx, { facts, hit, layout }))
@@ -110,7 +111,7 @@ taken! = |fx, run| {
 		Same(old) => Replaced(ToolsJson.source_text(old.source))
 		Free => Installed
 	}
-	read = ToolBuild.entry_read!(fx, facts)?
+	read = ToolBuild.entry_read!(fx, facts, Text(text))?
 	match read.verdict {
 		Make => {}
 		Foreign => return Err(ToolInstall.foreign_failure(Text.join(facts.bin, facts.file)))
@@ -139,7 +140,10 @@ taken! = |fx, run| {
 		libs: entry.libs,
 		installed_at: Clock.format_utc(facts.now),
 	}
-	SetupIo.write_file!(fx, tools_file, ToolsJson.put({ path: tools_file, text, tool })?)?
+	put = ToolsJson.put({ path: tools_file, text, tool })?
+	# Slice 078 (R-T4, R-B4): the record of the bin dir entry, in the same single write.
+	updated = BinRecord.set({ path: tools_file, text: Ok(put), key: facts.key, bin: [(facts.file.drop_suffix(".exe"), entry.sha256)] })?
+	SetupIo.write_file!(fx, tools_file, updated)?
 	match how_to {
 		Move => {
 			_ = fx.delete!([run.hit.dir])

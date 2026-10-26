@@ -1,0 +1,1 @@
+a file that makes copy_tree fail with Exists

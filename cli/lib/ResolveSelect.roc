@@ -16,9 +16,9 @@ ResolveSelect :: [].{
 	## | Step | Does |
 	## | --- | --- |
 	## | 1 | `request.frozen`, a header pin in a member, or `request.toolchain` set: no call. `loaded` stays (the pin and rank 2 are decisions of `Pin.decide`, and `--frozen` needs no compiler, R-SO22). |
-	## | 2 | `req`, `loaded.version_file` or `config.default_roc` set: one `list_dirs!` of `<cache>/toolchains` (a missing dir is empty), `Compiler.installed`. Else no call. |
+	## | 2 | One `list_dirs!` of `<cache>/toolchains` (a missing dir is empty), `Compiler.installed`. Always (R-SO24 case 3: rank 6 can take the newest installed compiler). |
 	## | 3 | `req` set (rank 4): one `read_files!` of `<cache>/toolchains/<id>/.talon.json` for each installed id, `Compiler.times`. Else no call. |
-	## | 4 | `Compiler.select` with `argument` and `env` unset (a `tln` command has no rank 1, R-SO19), `has_toml` true when `request.project.toml` is `Ok`, the switch of `settings_of`. `Ok(sel)`: `selected` is `sel.id` and its rank (`Range`, `VersionFile`, `Default`, `Path`). `Err(NoCompiler)`: `selected.id` is `Err(NoCompiler)` (`check_pin` fails with `Compiler.failure(NoCompiler)`, R-SO14). `Err(NoneInRange)`: the failure `Compiler.failure(NoneInRange(<range text>))` (R-SO13, exit 13). |
+	## | 4 | `Compiler.select` with `argument` and `env` unset (a `tln` command has no rank 1, R-SO19), `has_toml` true when `request.project.toml` is `Ok`, the switch of `settings_of`. `Ok(sel)`: `selected` is `sel.id` and its rank (`Range`, `VersionFile`, `Default`, `Path`). Rank `Newest` (no `default-roc`): one line `note: <Compiler.newest_note>` on stderr, no file write. `Err(NoCompiler)`: `selected.id` is `Err(NoCompiler)` (`check_pin` fails with `Compiler.failure(NoCompiler)`, R-SO14). `Err(NoneInRange)`: the failure `Compiler.failure(NoneInRange(<range text>))` (R-SO13, exit 13). |
 	select! : Fx, ResolveBase.Request, ResolveBase.Loaded => Try(ResolveBase.Loaded, Fail)
 	select! = |fx, request, loaded| {
 		pinned = loaded.members.any(|m| m.locked.roc.is_ok())
@@ -60,7 +60,12 @@ choose! : Fx, ResolveBase.Request, ResolveBase.Loaded => Try(ResolveBase.Loaded,
 choose! = |fx, request, loaded| {
 	settings = ResolveBase.settings_of(request, loaded)
 	match picked!(fx, request, loaded, settings) {
-		Ok(sel) => Ok({ ..loaded, selected: { id: Ok(sel.id), from: rank_from(sel.rank) } })
+		Ok(sel) => {
+			if sel.rank == Newest {
+				fx.err!("note: ${Compiler.newest_note(sel.id)}\n")
+			}
+			Ok({ ..loaded, selected: { id: Ok(sel.id), from: rank_from(sel.rank) } })
+		}
 		Err(NoCompiler) => Ok({ ..loaded, selected: { id: Err(NoCompiler), from: Path } })
 		Err(NoneInRange) => ranged!(fx, request, loaded, settings)
 	}
@@ -72,15 +77,11 @@ picked! = |fx, request, loaded, settings| {
 	req = loaded.intent.toolchain.roc
 	has_toml = request.project.toml.is_ok()
 	default = loaded.config.default_roc
-	lists = req.is_ok() or (loaded.version_file.is_ok() and !has_toml) or default.is_ok()
 	dir = Text.join(request.roots.cache, "toolchains")
-	installed = if lists {
-		match fx.list_dirs!([dir]) {
-			[Ok(found)] => Compiler.installed(found)
-			_ => []
-		}
-	} else {
-		[]
+	# R-SO24 case 3: the list is always read, as rank 6 may take the newest installed compiler.
+	installed = match fx.list_dirs!([dir]) {
+		[Ok(found)] => Compiler.installed(found)
+		_ => []
 	}
 	times = if req.is_ok() and !installed.is_empty() {
 		paths = installed.map(|id| Text.join(Text.join(dir, id), ".talon.json"))
@@ -114,6 +115,7 @@ rank_from = |rank| match rank {
 	Range => Range
 	VersionFile => VersionFile
 	Default => Default
+	Newest => Default
 	_ => Path
 }
 

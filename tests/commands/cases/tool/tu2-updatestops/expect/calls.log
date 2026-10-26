@@ -67,6 +67,8 @@ rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.01
 delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/toolchains
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+list_dirs $HOME/.cache/roc/toolchains
 tty
 clock
 platform
@@ -84,7 +86,7 @@ write_atomic $HOME/.cache/roc/toolchains/nightly-2026-October-14-38a3029/.last-u
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J nightly-2026-October-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-October-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/mo timeout=3600
+  probe $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J nightly-2026-October-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-October-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/mo --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 lock $HOME/.local/share/talon/tools.json nowait: held
 read_files $HOME/.local/share/talon/tools.json

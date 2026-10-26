@@ -1,0 +1,14 @@
+== env:HOME={w}/h1 verify --file n1/main.roc
+check: passed
+build: passed
+$PROJECT/n1/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+verified: the tuple passes. No project file was written.
+exit 0
+== env:HOME={w}/h2 verify --file n1/main.roc
+check: passed
+build: passed
+$PROJECT/n1/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+verified: the tuple passes. No project file was written.
+exit 0

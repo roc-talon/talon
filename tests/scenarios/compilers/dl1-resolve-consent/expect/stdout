@@ -30,12 +30,12 @@ exit 0
 nightly-2026-10-13-5349569 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-13-5349569 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-13-5349569 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
-nightly-2026-10-13-5349569 cwd=project build main.roc n=12 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-13-5349569 cwd=project build main.roc n=13 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-13-5349569 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-13-5349569 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-13-5349569 
 last use of A: 2026-10-15T12:00:00Z
-no default-roc (no config.toml)
+default-roc = "nightly-2026-10-13-5349569"
 downloads of A: 1
 == R-CC4 step 1: A is installed now: no prompt, no list, no download. The same 3 probes.
 == env ROC_TOOLCHAIN=nightly-2026-10-13-5349569 tln verify
@@ -52,7 +52,7 @@ exit 0
 nightly-2026-10-13-5349569 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-13-5349569 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 requests for compilers: 1, downloads of A: 1
-== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still no default (R-SO15).
+== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still the default of the first install (R-SO24: a set default is never changed).
 == env ROC_TOOLCHAIN=nightly-2026-10-12-0a1b2c3 tln verify --yes
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 check: passed
@@ -67,11 +67,11 @@ exit 0
 nightly-2026-10-12-0a1b2c3 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-12-0a1b2c3 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-12-0a1b2c3 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
-nightly-2026-10-12-0a1b2c3 cwd=project build main.roc n=12 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-12-0a1b2c3 cwd=project build main.roc n=13 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-12-0a1b2c3 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-12-0a1b2c3 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-12-0a1b2c3 nightly-2026-10-13-5349569 
-no default-roc (no config.toml)
+default-roc = "nightly-2026-10-13-5349569"
 == R-DL5 R-EV6 R-J1 R-DL9: TALON_AUTO_INSTALL=yes, with --json: stdout is only the envelope, the answer line is on stderr.
 == env TALON_AUTO_INSTALL=yes ROC_TOOLCHAIN=nightly-2026-10-11-1b2c3d4 tln verify --json
 {"schema":1,"command":"verify","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":6,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
@@ -80,7 +80,7 @@ exit 0
 nightly-2026-10-11-1b2c3d4 cwd=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-11-1b2c3d4 cwd=9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-11-1b2c3d4 cwd=EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
-nightly-2026-10-11-1b2c3d4 cwd=project build main.roc n=12 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-11-1b2c3d4 cwd=project build main.roc n=13 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-11-1b2c3d4 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-11-1b2c3d4 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-11-1b2c3d4 nightly-2026-10-12-0a1b2c3 nightly-2026-10-13-5349569 

@@ -1,0 +1,2 @@
+tests/commands/cases/tool/tc3-path-roc
+docs/slices/079b-path-roc-tools.md

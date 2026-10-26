@@ -1,0 +1,15 @@
+# R-SC10: an ambiguous prefix lists the ids, and no match: exit 2. R-CM15: no operand, and 2 operands: exit 2. Nothing is removed.
+roc rm nightly-2026-10-1
+roc rm nightly-2099
+roc rm
+roc remove nightly-2026-10-11-1a2b3c4 nightly-2026-10-12-2664a27
+# R-CM19, R-GC3, R-RR2: `rm` is `remove`. Not the default. The project c pins it: it is listed, no prompt (TALON_INTERACTIVE=1 and no ask call). The compat dir goes with it, the compat dir of another compiler stays.
+roc rm nightly-2026-10-09-258ab27
+# R-RR1, R-RR2, R-CV1: the default (a prefix). config.toml stores it in the other tag form (nightly-2026-October-14-38a3029), and the compiler is the same one (Pin.same_id). The projects a and b pin it (b in the other tag form). The default moves to the newest installed nightly by published_at: 2026-10-12, not 2026-10-11. config.toml: the value changes, the comment stays.
+roc remove nightly-2026-10-14
+# R-RR1, R-NS3: the default again, and the nightly switch is off (the environment beats config.toml): no compiler can take the default, so the line default-roc goes.
+roc rm nightly-2026-10-12-2664a27 env:TALON_NIGHTLY=false
+# R-RR3, R-RM2: a link. The dir of the link goes, the target stays (project/roc-src).
+roc rm link-dev
+# R-J3: --json has the envelope only. A git build is never the next default (R-NS6).
+roc rm git-dd --json

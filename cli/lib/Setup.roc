@@ -90,6 +90,31 @@ Setup :: [].{
 		(Sha(_), _) => Foreign
 	}
 
+	## Slice 078 (R-ST11, R-ST9, R-ST6, R-ST7): `judge` with the record of `tools.json` (`BinRecord.read`). `recorded` is the sha256 that `bin.<name>` has for this entry, or `Err(None)`. The entry is Talon's when its sha256 is the one of its source (R-ST11 (1)) or the recorded one (R-ST11 (2)).
+	## The flows use this function. `judge` stays with the same results as before, so it is `judge_bin` with `recorded: Err(None)` and `Repair` cannot happen.
+	##
+	## | `source` | `have` | `recorded` | Result |
+	## | --- | --- | --- | --- |
+	## | `Missing` | any | any | `NoSource` |
+	## | `Sha(s)` | `Absent` | any | `Make` |
+	## | `Sha(s)` | `Sha(s)` | any | `Keep`: Talon's, up to date (also when the record is another sha256) |
+	## | `Sha(s)` | `Sha(r)`, with `r` not `s` | `Ok(r)` | `Repair`: Talon's, stale (R-ST9): setup makes the entry again, with no prompt, also for `roc` (no R-NI13) |
+	## | `Sha(s)` | `Sha(other)` | `Err(None)` or `Ok(another)` | `Foreign`: R-ST6 keeps it. For `roc` it is the prompt of R-NI13. |
+	## | `Sha(s)` | `Dir`, `Unreadable` | any | `Foreign` (the record does not count) |
+	judge_bin : { source : [Missing, Sha(Str)], recorded : Try(Str, [None]), have : [Absent, Dir, Unreadable, Sha(Str)] } -> [NoSource, Make, Keep, Repair, Foreign]
+	judge_bin = |facts| match (facts.source, facts.have) {
+		(Missing, _) => NoSource
+		(Sha(_), Absent) => Make
+		(Sha(want), Sha(have)) => if want == have {
+			Keep
+		} else if facts.recorded == Ok(have) {
+			Repair
+		} else {
+			Foreign
+		}
+		(Sha(_), _) => Foreign
+	}
+
 	## R-ST4: is `dir` one of the parts of `path` (the value of `PATH`, parts split by `:`, an empty part is left out, a `/` at the end of a part or of `dir` does not count)?
 	on_path : { path : Str, dir : Str } -> Bool
 	on_path = |facts| SetupText.parts_of(facts.path).contains(SetupText.clean_part(facts.dir))

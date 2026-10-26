@@ -1,0 +1,5 @@
+env:HOME={w}/h1 list --file p1/main.roc
+env:HOME={w}/h2 why json --file p1/main.roc
+env:HOME={w}/h3 path json --file p1/main.roc
+env:HOME={w}/h4 patch json --file p1/main.roc
+env:HOME={w}/h5 outdated --file p1/main.roc

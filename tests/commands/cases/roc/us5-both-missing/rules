@@ -1,0 +1,6 @@
+R-U3 R-SO14 R-SO23 R-SO15 R-DL1 R-DL2 R-DL3 R-DL5 R-NI5 R-BL1 R-RP3 R-H6 (slice 072e, Q-D5 of slice 072d): `tln roc use nightly-2026-10-14-38a3029` on a project with no pin, with no compiler selected and nothing installed: the new compiler (N1) and the baseline (the pick of R-SO14: the latest in the channel, N4) are both missing. 4 runs, each on its own home (h1 to h4) and project (n1 to n4, the header of `verify/vn1-nocompiler`).
+R-U3 says: one prompt for both (R-DL1). The pick, which is the baseline, downloads first and becomes the default (R-SO15), the new compiler downloads second. The prompt text lists the pick first.
+Run 1 (h1, a person: the fake tty, the answer is Enter, the default is Yes): one `ask` call that names N4 and then N1. The calls show the download of N4, the write of `default-roc` (one write, with N4), then the download of N1. The ladder runs: the baseline on N4, the candidate on N1. The header gets `+ roc: N1`.
+Run 2 (h2, `CI=true`, `TALON_AUTO_INSTALL=yes`): the same with no prompt: the answer line `downloading 2 compilers (<size>)` on stderr.
+Run 3 (h3, `CI=true`, `TALON_AUTO_INSTALL=no`): exit 13, nothing is downloaded, no default.
+Run 4 (h4, `CI=true`, no answer): exit 13 with the text of the stop of the consent rules, 2 downloads.

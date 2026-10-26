@@ -1,0 +1,5 @@
+# R-DA3 the download, R-HF5 the extract, R-HF2 the chmod (as slice 021). The first rule whose needle is in the arguments answers.
+curl --fail	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+version	0	Roc compiler version nightly-2026-10-08-8c8c8c8	-	-

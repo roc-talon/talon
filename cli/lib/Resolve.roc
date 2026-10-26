@@ -62,6 +62,10 @@ Resolve :: [].{
 	install_with! : Fx, Request, Try(Args, [None]) => Try(InstallFlow.Done, Fail)
 	install_with! = |fx, request, tools| InstallFlow.install_with!(fx, request, tools)
 
+	## Slice 072e (R-IN2, R-IN4): `install_with!` for `init`, whose header is new (`InstallFlow.install_fresh!`).
+	install_fresh! : Fx, Request, Try(Args, [None]) => Try(InstallFlow.Done, Fail)
+	install_fresh! = |fx, request, tools| InstallFlow.install_fresh!(fx, request, tools)
+
 	## Slice 008: the flow of `remove` (`Remove.run!`, also `rm`: R-CM3, R-RV1 to R-RV5, R-WS12). It resolves nothing: no index call, no pick, no fetch, no `Vars.build`. The `Request` is the one that `install!` takes. The fields that `remove` reads are
 	## `project`, `roots`, `now` (not used), `compiler`, `nightly`, `no_check` and `dry_run`. `names` of the `Request` is not used: `facts.names` are the operands of `remove`, `facts.force` is `--force`.
 	## The flow changes the one current member (R-WS12). Other members are read (the key rule of step 3) and never written. The steps, in order (the L2 case `remove/rm1-flow` and the L3 cases `remove/*` fix them):

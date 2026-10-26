@@ -10,7 +10,7 @@ exit 0
 == tool list
 no tool is installed. Run: tln tool install owner/app
 exit 0
-== @roc --version
-exit 18
+== @roc +nightly-2026-10-14-38a3029 --version env:CI=true
+exit 13
 == no-such-command
 exit 2

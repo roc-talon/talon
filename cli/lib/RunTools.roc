@@ -56,9 +56,9 @@ RunTools :: [].{
 	## `Pass --yes or set TALON_AUTO_INSTALL=yes.` (`--yes` is a global flag). Any other failure stays as it is.
 	stop : Fail -> Fail
 	stop = |fail| {
-		head = "the compiler "
 		tail = " is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes."
-		if fail.kind == Consent and fail.message.starts_with(head) and fail.message.ends_with(tail) {
+		# Slice 079 (D5): only the end of the message is checked: after a try the start has the list of the failed releases.
+		if fail.kind == Consent and fail.message.ends_with(tail) {
 			Fail.new(Consent, "${fail.message.drop_suffix(tail)} is not installed. Pass --yes or set TALON_AUTO_INSTALL=yes.")
 		} else {
 			fail

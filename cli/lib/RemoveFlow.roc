@@ -2,6 +2,7 @@ import BuildSkip
 import Fail
 import Fetch
 import Fx
+import HeldRoc
 import IntentEdit
 import Ladder
 import Locked
@@ -16,6 +17,7 @@ import ResolveLoad
 import ResolveSelect
 import Scan
 import Scope
+import Start
 import Text
 import UnitFlow
 import Vars
@@ -46,17 +48,24 @@ RemoveFlow :: [].{
 		forced = !imported.is_empty()
 		skip_check = request.no_check or forced
 		settings = ResolveBase.settings_of(request, loaded)
-		decision = Pin.decide({
-			members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc, changes: m.file == current }),
-			compiler: loaded.selected.id,
-			compiler_from: loaded.selected.from,
+		decide = |files| Pin.decide({
+			members: files.members.map(|m| { file: m.file, pin: m.locked.roc, changes: m.file == current }),
+			compiler: files.selected.id,
+			compiler_from: files.selected.from,
 			toolchain: request.toolchain,
 			role: Lock,
-			req: loaded.intent.toolchain.roc,
+			req: files.intent.toolchain.roc,
 			nightly: settings.nightly,
 			no_check: skip_check,
-		})?
-		ResolveBase.check_pin(loaded, settings, decision, Lock)?
+		})
+		first = decide(loaded)?
+		# R-SO19, R-SO23 (slice 072e): no compiler is selected and the check runs: the compiler is picked as an id, before any write. The first probe downloads it.
+		picked = match first.held {
+			Ok(_) => loaded
+			Err(NoCompiler) => if skip_check loaded else ResolveLoad.with_pick(loaded, HeldRoc.picked!(fx, request, loaded)?)
+		}
+		decision = decide(picked)?
+		ResolveBase.check_pin(picked, settings, decision, if skip_check LockNoCheck else Lock)?
 		pin_notes = ResolveBase.pin_notes(decision)
 		for note in pin_notes {
 			fx.out!("note: ${note}\n")
@@ -72,7 +81,7 @@ RemoveFlow :: [].{
 			if request.no_check fx.out!("check: skipped\n")
 			{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }
 		} else {
-			removal_ladder!(fx, { ..request, selected: Fetch.selected({ held: decision.held ?? "", default: loaded.config.default_roc ?? "" }) }, loaded, member, { aliases, ops, decision })?
+			removal_ladder!(fx, { ..request, selected: Fetch.selected({ held: first.held ?? "", default: loaded.config.default_roc ?? "" }) }, picked, member, { aliases, ops, decision })?
 		}
 		keys = plans.join_map(|p| p.plan.keys)
 		toml = member_toml(loaded, member)
@@ -238,9 +247,13 @@ removal_ladder! = |fx, request, loaded, member, facts| {
 	# R-LD2, R-CM2: the closure of the header without the removed entries gives the packages of the unit probes.
 	entries = ResolveBase.entries_after(member, []).keep_if(|e| !facts.aliases.contains(e.alias))
 	closures = ResolveBase.closure!(fx, request, { members: [{ file: member.file, entries }], known: [] })?
+	held = facts.decision.held ?? ""
+	downloads = ResolveBase.ladder_downloads(request)
+	# R-SO19, R-SO24 (slice 072e): `request.selected` is empty when the compiler is a pick. Its first probe is then the start of the pick (`Start.run_picked!`), which makes it the default.
+	loop = if request.selected == "" and !held.is_empty() { ..Ladder.no_loop, started: Ok(Start.run_picked!(fx, { roots: request.roots, path_roc: request.compiler, held, downloads })?) } else Ladder.no_loop
 	result = Ladder.run!(
 		fx,
-		{ roots: request.roots, now: request.now, path_roc: request.compiler, held: facts.decision.held ?? "", members: [candidate], owners, moved: [], downloads: ResolveBase.ladder_downloads(request), probe: ResolveBase.probe_settings(request, loaded), no_probe: request.probe.no_probe, closures, loop: Ladder.no_loop },
+		{ roots: request.roots, now: request.now, path_roc: request.compiler, held, members: [candidate], owners, moved: [], downloads, probe: ResolveBase.probe_settings(request, loaded), no_probe: request.probe.no_probe, closures, loop },
 	)
 	match result {
 		Ok(done) => Ok({

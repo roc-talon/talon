@@ -1,0 +1,22 @@
+# Run 1: (a), no consent needed
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f,nightly-2026-10-18-5349569 none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr env:TALON_AUTO_INSTALL=no offline
+# Run 2: (b), no consent needed
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f,nightly-2026-10-18-5349569 none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA probe:max=100 pass:nightly-2026-10-16-1df370f env:TALON_AUTO_INSTALL=no offline
+# Run 3: (b), a recorded fail is skipped
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f,nightly-2026-10-18-5349569 none:project:3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K probe:max=100 pass:nightly-2026-10-16-1df370f,nightly-2026-10-14-38a3029 env:TALON_AUTO_INSTALL=no offline
+# Run 4: (b) ends with probe.max spent, then (d)
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f,nightly-2026-10-18-5349569 none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA probe:max=3 cost:2 env:TALON_AUTO_INSTALL=yes
+# Run 5: no step (b), then (d)
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f,nightly-2026-10-18-5349569 none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+# Run 6: (b) finds no pass, then (d)
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA probe:max=10 cost:1 env:TALON_AUTO_INSTALL=yes
+# Run 7: (b) has nothing to probe, then (c)
+norank have:nightly-2026-10-18-5349569 none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr probe:max=10 env:TALON_AUTO_INSTALL=yes
+# Run 8: no project
+norank have:nightly-2026-10-14-38a3029,nightly-2026-10-16-1df370f,nightly-2026-10-18-5349569 none:outside probe:max=10 env:TALON_AUTO_INSTALL=yes
+# Run 9: the consent gate comes after (a) and (b)
+norank have:nightly-2026-10-18-5349569 none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr env:TALON_AUTO_INSTALL=no
+# Run 10: R-CV6, a tag that changed is not offered
+norank home:home2 have:nightly-2026-10-14-38a3029 none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+# Run 11: R-CV6, every tag changed
+norank home:home3 have: none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes

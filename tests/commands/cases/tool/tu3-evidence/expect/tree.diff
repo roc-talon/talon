@@ -1,0 +1,54 @@
+--- home/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc/main.roc
++++ home/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-11-1a2b3c4",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
++++ home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64mac: { inputs: ["libhost.a", app] },
++		arm64mac: { inputs: ["libhost.a", app] },
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}
+--- home/.cache/roc/talon/index/github/acme/foo/1.json
++++ home/.cache/roc/talon/index/github/acme/foo/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.2.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/foo/releases/download/1.2.0/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst"}]},
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"}]}
++]
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z
+--- home/.local/bin/foo
++++ home/.local/bin/foo
+@@ -1 +1 @@
+-old foo
++fake
+\ No newline at end of file
+--- home/.local/share/talon/bin/foo
++++ home/.local/share/talon/bin/foo
+@@ -1 +1 @@
+-old foo
++fake
+\ No newline at end of file
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"},"build":{"hashes":["4uPftcQA1Veb7PYxeGS64BBpy65Tpgt4Tjfpqs9YPSge"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst"},"build":{"hashes":["2Qukd2NzMCSn9h814ynVEKzkQfsEtKxLkxeywRkDUonr"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gm":{"name":"acme/gm","source":{"kind":"git","commit":"1111111111111111111111111111111111111111","ref":"main"},"build":{"hashes":["8LE3rL9ujpuFWeGZkE3dwxyrEZg9BdVU4Gf2gqVfeMzs"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gs":{"name":"acme/gs","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"stable"},"build":{"hashes":["9Kmb85iqm7LWfkXb4gUj9WxCaoYLRt3BfaUu6jAMWMqT"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gp":{"name":"acme/gp","source":{"kind":"git","commit":"dd03c09e5f0a3b6c7d8e9f001122334455667788","ref":"dd03c09e"},"build":{"hashes":["GYSsHBiLMwr55ej1xUPJn141oVjjhaftyqg87fp5i3YM"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}
++{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.2.0","url":"https://github.com/acme/foo/releases/download/1.2.0/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"foo":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78"}},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst"},"build":{"hashes":["2Qukd2NzMCSn9h814ynVEKzkQfsEtKxLkxeywRkDUonr"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gm":{"name":"acme/gm","source":{"kind":"git","commit":"1111111111111111111111111111111111111111","ref":"main"},"build":{"hashes":["8LE3rL9ujpuFWeGZkE3dwxyrEZg9BdVU4Gf2gqVfeMzs"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gs":{"name":"acme/gs","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"stable"},"build":{"hashes":["9Kmb85iqm7LWfkXb4gUj9WxCaoYLRt3BfaUu6jAMWMqT"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"},"gp":{"name":"acme/gp","source":{"kind":"git","commit":"dd03c09e5f0a3b6c7d8e9f001122334455667788","ref":"dd03c09e"},"build":{"hashes":["GYSsHBiLMwr55ej1xUPJn141oVjjhaftyqg87fp5i3YM"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-01T00:00:00Z"}}}

@@ -12,26 +12,26 @@ import ToolCompiler
 import ToolInstall
 import ToolTry
 
-## The compiler choice of `tln tool install` (slice 047, CLI 6.4: R-T11 to R-T16, R-NI8, R-DL1 to R-DL5). Command code, direct style over `Fx`. `ToolCompiler` decides, `ToolTry` is option 2. `ToolFlow.compile!` calls `choose!` in place of the old
-## `compiler_id!` (step 9). The calls, in order (the L2 cases `tool/ti3-compiler`, `ti4-nothing` and the changed `ti2-refusals` fix them):
+## The compiler choice of `tln tool install`, `x`, a project tool build and `tool --git` (slice 047, slice 079: CLI 6.4: R-T11 to R-T16, R-T29, R-T30, R-NI8, R-DL1 to R-DL5). Command code, direct style over `Fx`. `ToolCompiler` decides, `ToolTry` is the try of step 3 of R-T30.
+## `ToolFlow.compile!` calls `choose!` (step 9). Slice 079 changes the order: the try of the installed releases runs BEFORE the prompt, with no question (R-T30), and the selected compiler is tried first. The calls, in order (the L2 cases `tool/ti3-compiler`, `ti4-nothing`, `tc1-order`, `tc2-nothing` and `ti2-refusals` fix them):
 ##
 ## | Step | Does | Rule |
 ## | --- | --- | --- |
-## | 1 | `Launch.toolchains!` (one `list_dirs!`, also for a header with no pin: the calls of slice 046 stay) and `ToolInstall.compiler`. `NoPin`: `ToolInstall.no_pin` (exit 2, D3 of slice 046, question Q-A). `Use(id)`: the result, no more call (R-T12). | R-T11, R-T12 |
-## | 2 | The evidence pass, only when `ToolCompiler.evidence_keys` is not empty: one `Facts.load!` (one `db_query!`) with the keys of `ToolCompiler.candidates`. `ToolCompiler.evidence` gives a release: the line `ToolCompiler.built_line` on stderr, the result is that release (no prompt). | R-T13, R-T17 |
-## | 3 | `Mode.from_env` and `ToolCompiler.decide`. `NeedTty`: one `tty!`, `Mode.with_tty`, `decide` again (at most one `tty!` in the command, R-HF1). | R-T14 to R-T16, R-NM2 |
-## | 4 | `Stop(fail)`: the failure. `Download`: `RocInstall.fetch_optional!` (the line `downloading <id> (<size>)` is printed by it), the result is the pin. `TryInstalled`: the line `ToolCompiler.trying_line` on stderr (no line when no release is installed), then step 6. | R-T6, R-DL1, R-NM6 |
-## | 5 | `Ask`: `RocInstall.offer!` (the size of the pin; `Present`: the pin is the result), then `Prompt.ask!` with `ToolCompiler.prompt` (`installed` is the number of `candidates`, `tried` is empty). `ToolCompiler.allowed` false: ask again. Option 1: `RocInstall.install_offer!`, the result is the pin. Option 2: step 6. Option 3: `ToolCompiler.declined`. | R-NI8, R-T14, R-T15 |
-## | 6 | `ToolTry.installed!`. `Passed`: the line `ToolCompiler.built_line` on stderr, the result is that release and its attempt. `Failed(tried)`: step 7. | R-T17 to R-T19 |
-## | 7 | A mode that is not interactive (one `tty!` call if the mode is still `NeedsTty`): `ToolCompiler.all_failed` (exit 13). Interactive: the prompt again with `installed` 0 and `tried`, `allowed` as in step 5. Option 1: download (`RocInstall.offer!` and `install_offer!`, with the size of the first offer), the result is the pin. Option 3: `ToolCompiler.declined`. | R-T20, R-T16 |
+## | 1 | `Launch.toolchains!` (one `list_dirs!`, also for a header with no pin: the calls of slice 046 stay) and `ToolInstall.compiler`. `NoPin`: `ToolInstall.no_pin` (exit 2, before any try and any prompt: Q-A2). `Use(id)`: the result, no more call (R-T12, R-T30 (1)). | R-T29, R-T11, R-T12, R-T30 |
+## | 2 | The evidence pass, only when `ToolCompiler.evidence_keys` is not empty: one `Facts.load!` (one `db_query!`) with the keys of `ToolCompiler.candidates`. `ToolCompiler.evidence` gives a release: the line `ToolCompiler.built_line` on stderr, the result is that release (no prompt, no try). | R-T13, R-T17, R-T30 (2) |
+## | 3 | The try: `ToolCompiler.try_order` (`run.selected` first when it is installed, then `candidates`; `[]` for `--roc pinned`). With a release in the list: the line `ToolCompiler.trying_line` on stderr, then `ToolTry.installed!` with that order. `Passed`: the line `built_line` on stderr, the result is that release and its attempt (no download, no default). `Failed(tried)`: step 4. An empty list: step 4 with `tried` empty. | R-T30 (3), R-T17 to R-T19, R-T21 |
+## | 4 | `Mode.from_env` and `ToolCompiler.decide` (`NeedTty`: one `tty!`, `Mode.with_tty`, `decide` again: at most one `tty!` in the command, R-HF1). `Stop(fail)`: `ToolCompiler.after_try` (with `tried` empty: `fail` as it is). `Download`: `RocInstall.fetch_optional!` (it prints `downloading <id> (<size>)`), (slice 080: the install sets the default, R-SO24, so no call after it). `TryInstalled` (`--roc installed`): non-interactive: `ToolCompiler.all_failed` (exit 13); interactive: step 5. | R-T30 (4), R-T6, R-T16, R-DL1, R-SO15 |
+## | 5 | `Ask`: `RocInstall.offer!` (the size of the pin; `Present`: the pin is the result), one `RocInstall.read_config!` when no compiler is selected (`becomes_default`), then `Prompt.ask!` with `ToolCompiler.prompt` (options 1 and 3, the list `tried`, the line `It becomes the default compiler.` when `becomes_default`). `ToolCompiler.allowed` false: ask again. Option 1: `RocInstall.install_offer!` (it sets the default when none is set, R-SO24). Option 3: `ToolCompiler.declined`. | R-NI8, R-T14, R-T15, R-T20, R-SO15 |
 ##
+## `first` of `Chosen` is false when an attempt of step 3 built the app (its `platform` line is printed, R-SE8). `ToolFlow.package_text!` (the fetch of the bundle and of the platform) passes `none: Download({ scope: Outside, ... })` in place of `Stop` (R-FE4: a tool has no fact before its bundle is unpacked, so the latest in the channel, and it becomes the default).
 ## The line of the answer of a prompt that a flag answered is printed on stderr (R-NM6): `--roc pinned`, `--yes` and `TALON_AUTO_INSTALL=yes` give the line of `RocInstall.fetch_optional!`, `--roc installed` gives `trying_line`. A person's answer prints no line.
+## A command that is not `tool install` (`install --frozen`, `run`) rewrites the text of a consent stop that follows a try (`ToolsPlan.compiler_stop`, `RunTools.stop`: they must match the end of the message, as the code agent decides).
 ToolCompilerFlow :: [].{
 
 	## What `choose!` gives. `id` is the compiler of the build. `passed` is `Ok(layout)` when option 2 built the app with `id` already (the output is in `layout.output`, the attempt passed): the caller installs it and builds nothing. `Err(None)`: the caller builds with `id`. `first` is false when an attempt of option 2 built the app before (its `building` and `platform` lines are printed already, R-SE8: the platform line once for each command).
 	Chosen : { id : Str, passed : Try(ToolInstall.Layout, [None]), first : Bool }
 
-	## Steps 1 to 7. `build` is the build attempt of the caller (`ToolFlow.attempt!`): it runs `roc build` with the release `req.id`, and gives its class, its errors and its paths. `first` is true for the first attempt of the command.
+	## Steps 1 to 5 of the doc table. `build` is the build attempt of the caller (`ToolFlow.attempt!`): it runs `roc build` with the release `req.id`, and gives its class, its errors and its paths. `first` is true for the first attempt of the command.
 	choose! : Fx, Args, ToolCompiler.Run, { build : { id : Str, first : Bool } => Try(ToolCompiler.Attempt, Fail) } => Try(Chosen, Fail)
 	choose! = |fx, args, run, hooks| {
 		installed = Launch.toolchains!(fx, run.roots)
@@ -49,119 +49,109 @@ ToolCompilerFlow :: [].{
 			}
 			Err(None) => {}
 		}
-		ctx = { args, run, hooks, pin, ids }
-		decided = decide!(fx, ctx)
-		match decided.want {
-			Stop(fail) => Err(fail)
-			Download => {
-				_ = RocInstall.fetch_optional!(fx, { id: pin, env: run.env, offline: args.offline })?
-				Ok(own(pin))
-			}
-			TryInstalled => {
-				if !ids.is_empty() fx.err!("${ToolCompiler.trying_line(ids.len())}\n")
-				tried!(fx, ctx, { mode: decided.mode, offered: Err(None) })
-			}
-			Ask => asked!(fx, ctx)
-			NeedTty => Err(Fail.new(Internal, "the mode of the run is not known"))
+		order = ToolCompiler.try_order({ ids, selected: run.selected, roc: run.roc })
+		list = match tried!(fx, run, hooks, { order, pin })? {
+			Passed(chosen) => return Ok(chosen)
+			Failed(failed) => failed
 		}
+		download!(fx, { args, run, pin, list })
 	}
 }
 
-# What the steps need: the flags, the facts of the run, the build of the caller, the pin, the releases that option 2 can try.
-Ctx : { args : Args, run : ToolCompiler.Run, hooks : { build : { id : Str, first : Bool } => Try(ToolCompiler.Attempt, Fail) }, pin : Str, ids : List(Str) }
+# What the steps need after a failed try: the flags, the facts of the run, the pin, the releases that gave no build.
+Ctx : { args : Args, run : ToolCompiler.Run, pin : Str, list : List(ToolCompiler.Tried) }
 
 # The build uses the release `id` as it is (nothing was built yet).
 own : Str -> ToolCompilerFlow.Chosen
 own = |id| { id, passed: Err(None), first: Bool.True }
 
-# Step 3 (R-HF1: `tty!` only when `decide` says `NeedTty`, and only once).
-decide! : Fx, Ctx => { want : ToolCompiler.Want, mode : Mode }
-decide! = |fx, ctx| {
-	mode = Mode.from_env({ env: Dict.from_list(ctx.run.env), json: ctx.args.json })
-	ask = |at| ToolCompiler.decide({ id: ctx.pin, roc: ctx.run.roc, auto: Consent.auto_install(ctx.run.env), yes: ctx.args.yes, mode: at })
-	match ask(mode) {
-		NeedTty => {
-			with_tty = Mode.with_tty(mode, fx.tty!())
-			{ want: ask(with_tty), mode: with_tty }
+# Step 3 (R-T30): the try of the installed releases, with no prompt. An empty order (`--roc pinned`, no release) makes no call.
+tried! : Fx, ToolCompiler.Run, { build : { id : Str, first : Bool } => Try(ToolCompiler.Attempt, Fail) }, { order : List(Str), pin : Str } => Try([Passed(ToolCompilerFlow.Chosen), Failed(List(ToolCompiler.Tried))], Fail)
+tried! = |fx, run, hooks, step| {
+	if step.order.is_empty() return Ok(Failed([]))
+	fx.err!("${ToolCompiler.trying_line(step.order.len())}\n")
+	match ToolTry.installed!(fx, run, { ids: step.order, build: hooks.build })? {
+		Passed(done) => {
+			fx.err!("${ToolCompiler.built_line({ id: done.id, pin: step.pin })}\n")
+			Ok(Passed({ id: done.id, passed: Ok(done.layout), first: Bool.False }))
 		}
-		want => { want, mode }
+		Failed(list) => Ok(Failed(list))
 	}
 }
 
-# Step 5: the first prompt, with the size of the download.
+# Step 4 (R-HF1: `tty!` only when `decide` says `NeedTty`, and only once).
+download! : Fx, Ctx => Try(ToolCompilerFlow.Chosen, Fail)
+download! = |fx, ctx| {
+	mode = Mode.from_env({ env: Dict.from_list(ctx.run.env), json: ctx.args.json })
+	ask = |at| ToolCompiler.decide({ id: ctx.pin, roc: ctx.run.roc, auto: Consent.auto_install(ctx.run.env), yes: ctx.args.yes, mode: at })
+	(want, known) = match ask(mode) {
+		NeedTty => {
+			with_tty = Mode.with_tty(mode, fx.tty!())
+			(ask(with_tty), with_tty)
+		}
+		decided => (decided, mode)
+	}
+	match want {
+		Stop(fail) => Err(ToolCompiler.after_try({ fail, name: ctx.run.name, version: ctx.run.version, pin: ctx.pin, tried: ctx.list }))
+		Download => {
+			_ = RocInstall.fetch_optional!(fx, { id: ctx.pin, env: ctx.run.env, offline: ctx.args.offline })?
+			Ok(after(ctx))
+		}
+		TryInstalled => match known {
+			NeedsTty => interactive!(fx, ctx, Mode.with_tty(known, fx.tty!()))
+			_ => interactive!(fx, ctx, known)
+		}
+		Ask => asked!(fx, ctx)
+		NeedTty => Err(Fail.new(Internal, "the mode of the run is not known"))
+	}
+}
+
+# `--roc installed` after a failed try: a person gets the prompt of R-T20, no person gets the stop with the list.
+interactive! : Fx, Ctx, Mode => Try(ToolCompilerFlow.Chosen, Fail)
+interactive! = |fx, ctx, mode| match mode {
+	Interactive => asked!(fx, ctx)
+	_ => Err(ToolCompiler.all_failed({ name: ctx.run.name, version: ctx.run.version, pin: ctx.pin, tried: ctx.list }))
+}
+
+# Step 5: the prompt, with the size of the download, the list of the failed releases and the line about the default.
 asked! : Fx, Ctx => Try(ToolCompilerFlow.Chosen, Fail)
 asked! = |fx, ctx| {
 	offer = RocInstall.offer!(fx, { id: ctx.pin, env: ctx.run.env, offline: ctx.args.offline })?
 	match offer {
 		Present(_) => Ok(own(ctx.pin))
 		Download(found) => {
-			prompt = ToolCompiler.prompt({ name: ctx.run.name, version: ctx.run.version, pin: ctx.pin, size: found.size, installed: ctx.ids.len(), tried: [] })
-			match ask!(fx, ctx, { prompt, installed: ctx.ids.len() })? {
-				Option(1) => downloaded!(fx, ctx, offer)
-				Option(2) => tried!(fx, ctx, { mode: Interactive, offered: Ok(offer) })
+			becomes_default = ToolCompiler.sets_default({ selected: ctx.run.selected, default_now: default_now!(fx, ctx)? })
+			prompt = ToolCompiler.prompt({ name: ctx.run.name, version: ctx.run.version, pin: ctx.pin, size: found.size, tried: ctx.list, becomes_default })
+			match ask!(fx, ctx, prompt)? {
+				Option(1) => {
+					_ = RocInstall.install_offer!(fx, found)?
+					Ok(after(ctx))
+				}
 				_ => Err(ToolCompiler.declined(ctx.pin))
 			}
 		}
 	}
 }
 
-# Steps 5 and 7: ask until the answer is one of the options that the prompt shows (D-E4).
-ask! : Fx, Ctx, { prompt : Prompt, installed : U64 } => Try(Answer, Fail)
-ask! = |fx, ctx, shown| {
-	got = Prompt.ask!(fx, shown.prompt, { mode: Interactive, yes: ctx.args.yes, quiet: ctx.args.quiet, flag: Err(NoFlag) })?
-	if ToolCompiler.allowed({ answer: got.answer, installed: shown.installed }) Ok(got.answer) else ask!(fx, ctx, shown)
+# Steps 4 and 5: ask until the answer is one of the options that the prompt shows (D-E4).
+ask! : Fx, Ctx, Prompt => Try(Answer, Fail)
+ask! = |fx, ctx, prompt| {
+	got = Prompt.ask!(fx, prompt, { mode: Interactive, yes: ctx.args.yes, quiet: ctx.args.quiet, flag: Err(NoFlag) })?
+	if ToolCompiler.allowed({ answer: got.answer }) Ok(got.answer) else ask!(fx, ctx, prompt)
 }
 
-# Option 1: the download of the pin (`RocInstall.install_offer!`).
-downloaded! : Fx, Ctx, RocInstall.Offer => Try(ToolCompilerFlow.Chosen, Fail)
-downloaded! = |fx, ctx, offer| match offer {
-	Present(_) => Ok(own(ctx.pin))
-	Download(found) => {
-		_ = RocInstall.install_offer!(fx, found)?
-		Ok(own(ctx.pin))
-	}
+# The `default-roc` of `config.toml` now (the unpack of the bundle can have set it, R-FE4). One read, and only when no compiler is selected: a selected compiler decides without it.
+default_now! : Fx, Ctx => Try(Str, Fail)
+default_now! = |fx, ctx| if ctx.run.selected.is_empty() {
+	config = RocInstall.read_config!(fx, ctx.run.roots)?
+	Ok(config.default_roc ?? "")
+} else {
+	Ok("")
 }
 
-# Step 6, then step 7 when no release built the app.
-tried! : Fx, Ctx, { mode : Mode, offered : Try(RocInstall.Offer, [None]) } => Try(ToolCompilerFlow.Chosen, Fail)
-tried! = |fx, ctx, state| match ToolTry.installed!(fx, ctx.run, { ids: ctx.ids, build: ctx.hooks.build })? {
-	Passed(done) => {
-		fx.err!("${ToolCompiler.built_line({ id: done.id, pin: ctx.pin })}\n")
-		Ok({ id: done.id, passed: Ok(done.layout), first: Bool.False })
-	}
-	Failed(list) => again!(fx, ctx, { mode: state.mode, offered: state.offered, list })
-}
-
-# Step 7 (R-T20): a person gets the prompt again with the list and options 1 and 3. No person: exit 13.
-again! : Fx, Ctx, { mode : Mode, offered : Try(RocInstall.Offer, [None]), list : List(ToolCompiler.Tried) } => Try(ToolCompilerFlow.Chosen, Fail)
-again! = |fx, ctx, state| {
-	mode = match state.mode {
-		NeedsTty => Mode.with_tty(state.mode, fx.tty!())
-		known => known
-	}
-	match mode {
-		Interactive => {
-			offer = match state.offered {
-				Ok(known) => known
-				Err(None) => RocInstall.offer!(fx, { id: ctx.pin, env: ctx.run.env, offline: ctx.args.offline })?
-			}
-			match offer {
-				Present(_) => Ok(own(ctx.pin))
-				Download(found) => {
-					prompt = ToolCompiler.prompt({ name: ctx.run.name, version: ctx.run.version, pin: ctx.pin, size: found.size, installed: 0, tried: state.list })
-					match ask!(fx, ctx, { prompt, installed: 0 })? {
-						Option(1) => {
-							chosen = downloaded!(fx, ctx, offer)?
-							Ok({ ..chosen, first: !state.list.any(|t| built(t)) })
-						}
-						_ => Err(ToolCompiler.declined(ctx.pin))
-					}
-				}
-			}
-		}
-		_ => Err(ToolCompiler.all_failed({ name: ctx.run.name, version: ctx.run.version, pin: ctx.pin, tried: state.list }))
-	}
-}
+# The pin is the result. The platform line is printed already when a try built the app (R-SE8).
+after : Ctx -> ToolCompilerFlow.Chosen
+after = |ctx| { id: ctx.pin, passed: Err(None), first: !ctx.list.any(|t| built(t)) }
 
 # Did the try build the app (a try that failed the check did not start a build)?
 built : ToolCompiler.Tried -> Bool

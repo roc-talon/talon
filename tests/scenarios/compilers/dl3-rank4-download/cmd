@@ -7,7 +7,7 @@ st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 D=$TALON_TEST_DIR
 T=$HOME/.cache/roc/toolchains
 C=$XDG_CONFIG_HOME/talon/config.toml
-# slice 062 (R-SO15): a download for a probe, a pin or the proxy writes no default, so config.toml does not exist. The line says so.
+# slice 062, slice 080 (R-SO15, R-SO24): a download for a probe, a pin or the proxy sets `default-roc` when none is set (under the lock of config.toml, before the rename), and never changes a default that is set. The line shows config.toml, or says that it does not exist.
 default_roc() { if [ -e $C ]; then cat $C; else echo "no default-roc (no config.toml)"; fi; }
 A=nightly-2026-10-14-5349569
 N=nightly-2026-10-13-0a1b2c3

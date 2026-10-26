@@ -13,7 +13,9 @@ building acme/n1 1.0.0 with nightly-2026-10-14-38a3029
 platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
 building acme/n2 1.0.0 with nightly-2026-10-14-38a3029
 tln: error[usage]: acme/wasm 1.0.0 needs the platform DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3, which has no native target (targets: wasm32). tln tool install makes a command line tool, so it needs a native platform.
-tln: error[consent]: the compiler nightly-2026-10-12-2664a27 is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+trying 2 installed compiler releases
+tln: error[consent]: no installed compiler release built acme/yy 1.0.0 (nightly-2026-10-14-38a3029: check failed: expected list separator; nightly-2026-10-16-9e9e9e9: check failed: expected list separator), and the compiler nightly-2026-10-12-2664a27 is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+trying 2 installed compiler releases
 tln: error[usage]: no GitHub repository roc-lang/nightlies (a private repository needs a token)
 platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
 building acme/foo 1.0.0 with nightly-2026-10-14-38a3029

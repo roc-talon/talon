@@ -8,5 +8,5 @@ The sweep is the first thing of each run: `env_all`, one `list_dirs` with the di
 | 2 | `--version` with an empty `HOME` | no data bin dir (the roots need `HOME`): only the bin dir is listed. Its 2 `.del` files go, the 3 other names and the dir stay | R-ST10 |
 | 3 | `--version` | both dirs are listed, nothing is left to delete: no `delete` call | R-ST10 |
 | 4 | `tool list` | the sweep is first, also for a command (no `.del` file: no `delete` call) | R-ST10 |
-| 5 | `@roc --version` | the `roc` proxy is a start of `tln` too (R-ST8): the sweep runs before the proxy | R-ST10, R-ST8 |
+| 5 | `@roc +nightly-2026-10-14-38a3029 --version` with `CI=true` | the `roc` proxy is a start of `tln` too (R-ST8): the sweep runs before the proxy. The compiler of rank 1 is not installed and there is no person, so the proxy stops with exit 13 before any request (R-DL8). Slice 072e: the run was `@roc --version` with no compiler selected, which stopped with exit 18 (R-SO14); now the proxy picks a compiler and reads the list (case `proxy/px5-no-rank`) | R-ST10, R-ST8, R-DL8 |
 | 6 | `no-such-command` | a usage failure (exit 2) is also a start | R-ST10 |

@@ -1,0 +1,2 @@
+env:HOME={w}/h1 verify --file n1/main.roc
+env:HOME={w}/h2 verify --file n1/main.roc

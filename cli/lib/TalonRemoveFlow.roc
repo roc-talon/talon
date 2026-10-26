@@ -1,5 +1,6 @@
 import Answer
 import Args
+import BinRecord
 import Common
 import Compiler
 import Del
@@ -20,6 +21,7 @@ import TalonRemove
 import TalonUpdate
 import Temp
 import Text
+import ToolBuild
 import ToolInstall
 import ToolManage
 import ToolsJson
@@ -65,6 +67,7 @@ Scene : {
 	bin : Str,
 	tools_file : Str,
 	tools : List(ToolsJson.Tool),
+	records : List((Str, Str)),
 	version : Str,
 	listed : List({ name : Str, is_dir : Bool }),
 	ids : List(Str),
@@ -127,6 +130,8 @@ scene! = |fx| {
 	text = SetupIo.read_text!(fx, tools_file)?
 	tools = ToolsJson.manifest({ path: tools_file, text })?
 	talon = ToolsJson.talon({ path: tools_file, text })?
+	# Slice 078b (R-ST11 (2)): the record of the bin dir entries, from the text of step 2 (no new call).
+	records = BinRecord.read({ path: tools_file, text })?
 	toolchains = Text.join(roots.cache, "toolchains")
 	(in_toolchains, listed) = match fx.list_dirs!([toolchains, bin]) {
 		[first, second] => (entries_of(first, toolchains)?, SetupIo.entries_of(second, bin)?)
@@ -146,7 +151,7 @@ scene! = |fx| {
 	keys = tools.map(|tool| tool.key)
 	parts = TalonRemove.parts({ asks, infos: fx.tree_info!(asks.map(|ask| ask.path)), tools: keys, ids, zigs })
 	version = TalonUpdate.current({ entry: talon, running: Help.version })
-	Ok({ env, roots, os: machine.os, bin, tools_file, tools, version, listed, ids, zigs, metas, asks, parts })
+	Ok({ env, roots, os: machine.os, bin, tools_file, tools, records, version, listed, ids, zigs, metas, asks, parts })
 }
 
 # A listing of `toolchains/`. A dir that is not there is empty.
@@ -218,7 +223,7 @@ sha_of! = |fx, path| match fx.sha256_file!(path) {
 }
 
 fate_of! : Fx, Scene, Try(Str, [NotFound]), Str => Fate
-fate_of! = |fx, scene, old, name| ToolManage.entry_fate({ old, have: SetupIo.have_of!(fx, scene.bin, scene.listed, name) })
+fate_of! = |fx, scene, old, name| ToolManage.fate_bin({ old, have: SetupIo.have_of!(fx, scene.bin, scene.listed, name), recorded: ToolBuild.recorded(scene.records, name) })
 
 # Step 8: each compiler in byte order, then each Zig, each in its own lock (R-CC10). The compat dir goes with its compiler (D7).
 remove_compilers! : Fx, Scene => Try({}, Fail)

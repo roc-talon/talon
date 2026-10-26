@@ -4,6 +4,7 @@ import Consent
 import Fail
 import Frozen
 import Fx
+import HeldRoc
 import NightlyFlow
 import NightlyPlan
 import InstallPlan
@@ -44,35 +45,82 @@ InstallFlow :: [].{
 	## Slice 056 (R-PT5 to R-PT7, D2, D16): `install!` with the tools step. `tools` is `Ok(args)` for the commands that run it (`Resolve.install_with!`: `tln install`, `tln update`, `tln upgrade`), `Err(None)` for the other callers. The step runs after the header flow and has
 	## the phase `Install` (no names), `Frozen` (`--frozen`: after the line `the header satisfies talon.toml`). The line `nothing to change` is printed once, at the end, and only when neither the header nor the tools change (D16): while the tools step runs, the header flow gets an `Fx` that drops it.
 	install_with! : Fx, Request, Try(Args, [None]) => Try(InstallFlow.Done, Fail)
-	install_with! = |fx, asked, tools| {
-		start = ResolveLoad.prepared!(fx, asked, Lock)?
-		request = { ..asked, selected: Fetch.selected({ held: start.decision.held ?? "", default: start.loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, start.loaded) }
-		loaded = start.loaded
-		built = start.built
-		decision = start.decision
-		# R-SO18: `install` and `add` (not `update`) warn when `.roc-version` and the header pin differ.
-		if request.command == Install {
-			for line in ResolveBase.roc_version_warnings(loaded) {
-				fx.err!("warning: ${line}\n")
-			}
+	install_with! = |fx, asked, tools| run!(fx, asked, tools, Bool.False)
+
+	## Slice 072e (R-IN2, R-IN4): `install_with!` for `init`. The header is new, so the pin of the held compiler is a change of the run: the ladder checks it, and it is written also when no release moves.
+	install_fresh! : Fx, Request, Try(Args, [None]) => Try(InstallFlow.Done, Fail)
+	install_fresh! = |fx, asked, tools| run!(fx, asked, tools, Bool.True)
+}
+
+# Prepared : the files, the variables and the pin of the compiler (`ResolveLoad.prepared!`).
+Prepared : { loaded : Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision }
+
+# R-SO19, R-SO22, Q-D2, Q-E1 (slice 072e): does the run start a probe? `--no-check` and `--frozen` run none. A plain `install` with no names whose `--frozen` check passes (R-LF1) has nothing to change: no probe, so no pick.
+will_probe : Request, Prepared -> Bool
+will_probe = |request, start| {
+	if request.no_check or request.frozen {
+		Bool.False
+	} else if request.command == Install and request.names.is_empty() {
+		!nothing_to_change(request, start)
+	} else {
+		Bool.True
+	}
+}
+
+# The pure check of `--frozen` (R-LF1). A scope that fails is a run that has something to do.
+nothing_to_change : Request, Prepared -> Bool
+nothing_to_change = |request, start| {
+	settings = ResolveBase.settings_of(request, start.loaded)
+	match Vars.scope({ command: Install, names: [], selectors: [], vars: start.built.vars }) {
+		Ok(scoped) => Frozen.check({ scoped, wants: start.built.wants, outside: start.decision.outside, req_text: start.loaded.intent.toolchain.roc_text, nightly: settings.nightly }).is_ok()
+		Err(_) => Bool.False
+	}
+}
+
+# R-SO19, R-SO23, R-SO24 (slice 072e): no compiler is selected and a probe will run. The compiler is picked as an id (`HeldRoc.picked!`, no download) before the index and before any write, and `Pin.decide` runs again with it.
+# `request.selected` stays empty, so the first probe knows that no compiler was selected (`PickLoop.begin!`).
+picked! : Fx, Request, Prepared => Try(Prepared, Fail)
+picked! = |fx, request, start| match start.decision.held {
+	Ok(_) => Ok(start)
+	Err(NoCompiler) => if will_probe(request, start) {
+		loaded = ResolveLoad.with_pick(start.loaded, HeldRoc.picked!(fx, request, start.loaded)?)
+		Ok({ ..start, loaded, decision: ResolveLoad.decide(request, loaded, Lock)? })
+	} else {
+		Ok(start)
+	}
+}
+
+# `install_with!` and `install_fresh!`. `fresh` is true for `init`.
+run! : Fx, Request, Try(Args, [None]), Bool => Try(InstallFlow.Done, Fail)
+run! = |fx, asked, tools, fresh| {
+	first = ResolveLoad.prepared!(fx, asked, Lock)?
+	request = { ..asked, selected: Fetch.selected({ held: first.decision.held ?? "", default: first.loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, first.loaded) }
+	start = picked!(fx, request, first)?
+	loaded = start.loaded
+	built = start.built
+	decision = start.decision
+	# R-SO18: `install` and `add` (not `update`) warn when `.roc-version` and the header pin differ.
+	if request.command == Install {
+		for line in ResolveBase.roc_version_warnings(loaded) {
+			fx.err!("warning: ${line}\n")
 		}
-		plan = tools_split(request, loaded, tools)?
-		if request.frozen {
-			frozen!(fx, request, loaded, built, decision, plan.phase.is_ok())?
-			step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
-			Ok({ outcome: InstallPlan.idle(request, request.now), tools: step.rows })
-		} else {
-			header = match plan.phase {
-				Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
-				Err(None) => fx
-			}
-			outcome = if plan.header resolve!(header, plan.request, loaded, built, decision)? else InstallPlan.idle(plan.request, request.now)
-			step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
-			if plan.phase.is_ok() and !step.changed and !header_changed(outcome) {
-				fx.out!("nothing to change\n")
-			}
-			Ok({ outcome, tools: step.rows })
+	}
+	plan = tools_split(request, loaded, tools)?
+	if request.frozen {
+		frozen!(fx, request, loaded, built, decision, plan.phase.is_ok())?
+		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
+		Ok({ outcome: InstallPlan.idle(request, request.now), tools: step.rows })
+	} else {
+		header = match plan.phase {
+			Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
+			Err(None) => fx
 		}
+		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh })? else InstallPlan.idle(plan.request, request.now)
+		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
+		if plan.phase.is_ok() and !step.changed and !header_changed(outcome) {
+			fx.out!("nothing to change\n")
+		}
+		Ok({ outcome, tools: step.rows })
 	}
 }
 
@@ -101,6 +149,10 @@ tools_named = |request, loaded, phase| {
 	split = ToolsPlan.split({ command: word, names: request.names, keys: loaded.intent.tools.map(|e| e.key), aliases })?
 	Ok({ request: { ..request, names: split.header }, phase: if split.tools.is_empty() Err(None) else Ok(phase), keys: split.tools, header: !split.header.is_empty() })
 }
+
+# R-IN2, R-IN4: `init` writes the pin of the held compiler for its new header, also when no release moves. It is a move of the pin, so the ladder checks it.
+fresh_pin : Bool, Try(Str, [NoCompiler]) -> Try(Str, [Same])
+fresh_pin = |fresh, held| if fresh held.map_err(|_| Same) else Err(Same)
 
 # Slice 056 (D16): did the header flow change something? A run that wrote a file did. A `--dry-run` writes nothing, so it is the planned changes (the test of `Install.print!` for the line of R-DT5). A kept entry is a line of its own.
 header_changed : Report.Outcome -> Bool
@@ -135,8 +187,9 @@ frozen! = |fx, request, loaded, built, decision, with_tools| {
 }
 
 # `install`, `update` and `add`: the steps of the flow in the slice file.
-resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, Pin.Decision => Try(Report.Outcome, Fail)
-resolve! = |fx, request, loaded, built, decision| {
+resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, { decision : Pin.Decision, fresh : Bool } => Try(Report.Outcome, Fail)
+resolve! = |fx, request, loaded, built, start| {
+	decision = start.decision
 	settings = ResolveBase.settings_of(request, loaded)
 	# Slice 039 (R-UP6, D6): the range and the switch do not stop a free nightly. A run with no compiler does.
 	free_nightly = request.command == Upgrade and NightlyPlan.scope(request.names).nightly == Free
@@ -146,7 +199,8 @@ resolve! = |fx, request, loaded, built, decision| {
 			Ok(_) => {}
 		}
 	} else {
-		ResolveBase.check_pin(loaded, settings, decision, Lock)?
+		# R-SO22, R-SO19: a run with no compiler here picked none, because no probe will run (`will_probe`).
+		ResolveBase.check_pin(loaded, settings, decision, if request.no_check or decision.held.is_err() LockNoCheck else Lock)?
 	}
 	pin_notes = ResolveBase.pin_notes(decision)
 	for note in pin_notes {
@@ -166,17 +220,17 @@ resolve! = |fx, request, loaded, built, decision| {
 	}
 	ready = PickFlow.prepare!(fx, request, loaded, built, settings, snapshot, held, plan.free, plan.newest, plan.optional)?
 	first = PickFlow.search!(fx, request, ready, PickLoop.start(ready.setup, ready.prepared.facts))?
-	outcome = attempts!(fx, request, loaded, ready, { picked: first, first: Err(None), seen: [], downloads: plan.downloads })?
+	outcome = attempts!(fx, request, loaded, ready, { picked: first, first: Err(None), seen: [], downloads: plan.downloads, fresh: start.fresh })?
 	# R-SO20: the note of the pin is the first of `data.notes`.
 	Ok({ ..outcome, notes: pin_notes.concat(notes).concat(outcome.notes) })
 }
 
 # R-AL6, R-PH13 (slice 036b): the ladder runs on the tuple of the pick. A failure of the ladder that is about the tuple (`Fail.again`) goes back to the oracle loop as a conflict, on the releases that the ladder blames (all of the tuple when it names none).
 # The next tuple is picked with the facts that the command has. The line `note: tuple dropped: ...` says it (a proposal, TW24). `seen` are the lines before the ladder that the command printed for the tuples before (Q7: a line prints once). When no other tuple exists, the failure of the command is the first failure of the ladder.
-attempts! : Fx, ResolveBase.Request, Loaded, PickFlow.Ready, { picked : ResolveBase.Picked, first : Try(Fail, [None]), seen : List(Str), downloads : U64 } => Try(Report.Outcome, Fail)
+attempts! : Fx, ResolveBase.Request, Loaded, PickFlow.Ready, { picked : ResolveBase.Picked, first : Try(Fail, [None]), seen : List(Str), downloads : U64, fresh : Bool } => Try(Report.Outcome, Fail)
 attempts! = |fx, request, loaded, ready, run| {
 	picked = run.picked
-	match finish!(fx, request, loaded, picked.facts, picked.chosen, picked.moves, picked.probed, { seen: run.seen, nightly: picked.nightly, downloads: run.downloads }) {
+	match finish!(fx, request, loaded, picked.facts, picked.chosen, picked.moves, picked.probed, { seen: run.seen, nightly: picked.nightly, downloads: run.downloads, fresh: run.fresh }) {
 		Ok(outcome) => Ok(outcome)
 		Err(fail) => match fail.again {
 			Err(None) => Err(fail)
@@ -185,7 +239,7 @@ attempts! = |fx, request, loaded, ready, run| {
 				first = run.first ?? fail
 				probed = { ..picked.probed, count: again.probes, tried: picked.probed.tried.append(InstallPlan.dropped(picked.chosen, again.blamed)) }
 				match PickFlow.search!(fx, request, ready, { facts: picked.facts.known, paths: picked.facts.paths, probed }) {
-					Ok(next) => attempts!(fx, request, loaded, ready, { picked: next, first: Ok(first), seen: run.seen.concat(InstallPlan.pre_lines(request, loaded, picked.facts, picked.chosen)), downloads: run.downloads })
+					Ok(next) => attempts!(fx, request, loaded, ready, { picked: next, first: Ok(first), seen: run.seen.concat(InstallPlan.pre_lines(request, loaded, picked.facts, picked.chosen)), downloads: run.downloads, fresh: run.fresh })
 					Err(other) => if other.kind == NoTuple Err(first) else Err(other)
 				}
 			}
@@ -194,7 +248,7 @@ attempts! = |fx, request, loaded, ready, run| {
 }
 
 # Q7 (slice 036b2): a line before the ladder that an earlier tuple printed (`seen`) is not printed again.
-finish! : Fx, ResolveBase.Request, Loaded, Finish, List(Pick.Chosen), List(Consent.Move), ResolveBase.Probed, { seen : List(Str), nightly : Try(Str, [None]), downloads : U64 } => Try(Report.Outcome, Fail)
+finish! : Fx, ResolveBase.Request, Loaded, Finish, List(Pick.Chosen), List(Consent.Move), ResolveBase.Probed, { seen : List(Str), nightly : Try(Str, [None]), downloads : U64, fresh : Bool } => Try(Report.Outcome, Fail)
 finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	seen = after.seen
 	scoped = facts.scoped
@@ -234,7 +288,10 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	# Slice 039c (R-RP4): a held move of the nightly (the row `roc` of the moves) writes the new pin with the other moves.
 	moved = match moves.find_first(|m| m.alias == "roc") {
 		Ok(held_move) => Ok(held_move.to)
-		Err(_) => NightlyFlow.moved_to(request, unified.differ, decision.held, after.nightly)
+		Err(_) => match NightlyFlow.moved_to(request, unified.differ, decision.held, after.nightly) {
+			Ok(id) => Ok(id)
+			Err(Same) => fresh_pin(after.fresh, decision.held)
+		}
 	}
 	pins = match moved {
 		Ok(id) => loaded.members.keep_oks(|m| NightlyFlow.pin_edit(m, id))

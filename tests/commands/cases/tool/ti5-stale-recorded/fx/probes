@@ -1,0 +1,2 @@
+# One row for each build, in order (the build probes of the case): run 1 builds acme/z.
+0	../fixtures/check/out/build-pass.stdout	-	file:{out}

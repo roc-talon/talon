@@ -53,6 +53,7 @@ fail_view = |r| match r {
 # copy (R-LD6). The build is always in the plan of an app: P0 has no `compat.db`, so it never skips the build (R-BS1, R-BS2, R-PH9). A package or a platform has no app, so it has no build (R-LD7).
 # Each probe is `check` or `build` (R-SE4, R-P1).
 # R-PX2 R-PX6 R-CC9 (slice 023c): each probe of the plan has the `program` and the `env` of the facts, the same for each probe (the selected compiler by its path, the cache variables).
+# R-LD8 (slice 077): the build of the ladder (step 3) has `--no-cache` after `--output`.
 # R-PP6 (slice 031): a check has the weight 1 and the build has the weight 4 (the slots that it takes from the pool).
 expect {
 	copy = "/c/talon/tmp/0123456789abcdef"
@@ -70,10 +71,10 @@ expect {
 		("compiler, program, env, file and timeout are the ones of the facts", slow.first, [{ compiler: "0.1.0", program: "/usr/bin/roc", args: ["check", "app.roc"], dir: "/p/app", env: [], timeout: 7, weight: 1 }, { compiler: "0.1.0", program: "/usr/bin/roc", args: ["check", "app.roc"], dir: copy, env: [], timeout: 7, weight: 1 }]),
 	]
 	build_rows = [
-		("app: the build, in the copy, once", for_app.build, Ok(spec(copy, ["build", "main.roc", "--output=${copy}/tln-probe.out"]))),
+		("app: the build, in the copy, once", for_app.build, Ok(spec(copy, ["build", "main.roc", "--output=${copy}/tln-probe.out", "--no-cache"]))),
 		("package: no build", for_package.build, Err(None)),
 		("platform: no build", for_platform.build, Err(None)),
-		("the build has the program and the env of the facts", slow.build, Ok({ compiler: "0.1.0", program: "/usr/bin/roc", args: ["build", "app.roc", "--output=${copy}/tln-probe.out"], dir: copy, env: [], timeout: 7, weight: 4 })),
+		("the build has the program and the env of the facts", slow.build, Ok({ compiler: "0.1.0", program: "/usr/bin/roc", args: ["build", "app.roc", "--output=${copy}/tln-probe.out", "--no-cache"], dir: copy, env: [], timeout: 7, weight: 4 })),
 	]
 	bad = first_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name).concat(build_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name))
 	dbg bad

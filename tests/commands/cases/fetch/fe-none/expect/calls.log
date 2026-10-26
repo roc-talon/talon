@@ -55,13 +55,13 @@ spawn_all limit=1
 list_dirs $HOME/.cache/roc
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/.talon.json
-rename $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f
-unlock $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f
 lock $HOME/.config/talon/config.toml nowait: held
 read_files $HOME/.config/talon/config.toml
 read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f
 spawn_all limit=8
   job $HOME/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-16-1df370f/roc unbundle 6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst
 rename $HOME/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.0123456789abcdef.tmp/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit $HOME/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit
@@ -104,11 +104,11 @@ spawn_all limit=1
 list_dirs $HOME/.cache/roc
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/.talon.json
-rename $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
-unlock $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
 lock $HOME/.config/talon/config.toml nowait: held
 read_files $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
 spawn_all limit=8
   job $HOME/.cache/roc/packages/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569/roc unbundle 3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst
 rename $HOME/.cache/roc/packages/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.0123456789abcdef.tmp/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K $HOME/.cache/roc/packages/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K

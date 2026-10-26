@@ -1,0 +1,2 @@
+env:HOME={w}/h5 remove json --no-check --file n1/main.roc
+env:HOME={w}/h5 install --no-check --file n2/main.roc

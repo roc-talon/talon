@@ -1,0 +1,6 @@
+== tool rm foo
+removed foo 1.1.0 (acme/foo)
+exit 0
+== tool rm g --json
+{"schema":1,"command":"tool rm","ok":true,"data":{"tool":"g","name":"acme/g","source":"git","version":null,"removed":["$HOME/.local/share/talon/bin/g"],"kept":["$HOME/.local/bin/g"]},"error":null}
+exit 0

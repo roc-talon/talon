@@ -14,10 +14,10 @@
 @roc check p14/main.roc
 # R-SO8: no target file, so no header: rank 6
 @roc version
-# rank 7: the roc on PATH, runs by its path, no .last-use
-@roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg
+# rank 7: the roc on PATH, runs by its path, no .last-use. R-SO24: rank 7 is reached only when no nightly or release is installed, so this run has its own empty cache dir (`XDG_CACHE_HOME`)
+@roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:XDG_CACHE_HOME={w}/nocache
 # R-EV17: TALON_IN_PROXY=1, no rank 7: no compiler, and no path_roc call
-@roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:TALON_IN_PROXY=1
+@roc check p7/main.roc env:XDG_CONFIG_HOME={w}/nocfg env:XDG_CACHE_HOME={w}/nocache env:TALON_IN_PROXY=1
 # R-DL8, R-SO12: the pin is not installed, non-interactive (no TTY): exit 13, nothing runs
 @roc check p9/main.roc
 # R-DL10

@@ -1,0 +1,7 @@
+env:HOME={w}/h1 env:TALON_AUTO_INSTALL=yes update json --file n1/main.roc
+env:HOME={w}/h2 env:TALON_AUTO_INSTALL=no update json --file n2/main.roc
+env:HOME={w}/h3 update json --no-check --file n3/main.roc
+env:HOME={w}/h4 env:TALON_AUTO_INSTALL=yes remove json --file n4/main.roc
+env:HOME={w}/h5 install --frozen --file n5/main.roc
+env:HOME={w}/h6 env:TALON_AUTO_INSTALL=yes update json --file n6/main.roc
+env:HOME={w}/h7 install --file n7/main.roc

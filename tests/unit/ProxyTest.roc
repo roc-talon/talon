@@ -149,7 +149,10 @@ expect {
 		("no pin: rank 5, no talon.toml (R-SO5)", pick(Err(NoPin), { ..base, version_file: Ok(a1), default: Ok(a2), installed: [a1, a2] }), Ok((a1, VersionFile, Installed))),
 		("no pin: rank 6", pick(Err(NoPin), { ..base, default: Ok(a2), installed: [a2] }), Ok((a2, Default, Installed))),
 		("no pin: rank 7, the roc on PATH (R-SO7)", pick(Err(NoPin), { ..base, path: Ok(a3) }), Ok((a3, Path, Installed))),
-		("no pin: rank 7 is off when the caller gives no PATH id (R-EV17)", pick(Err(NoPin), { ..base, installed: [a1] }), Err(NoCompiler)),
+		("no pin: rank 7 is off when the caller gives no PATH id (R-EV17)", pick(Err(NoPin), base), Err(NoCompiler)),
+		("R-SO24 case 3: no pin, no default, a compiler installed: the newest installed one, rank 6 (R-SO6)", pick(Err(NoPin), { ..base, installed: [a1, a2] }), Ok((a2, Newest, Installed))),
+		("R-SO24 case 3: rank 6 before rank 7 (R-SO6): the newest installed, not the roc on PATH", pick(Err(NoPin), { ..base, installed: [a1], path: Ok(a3) }), Ok((a1, Newest, Installed))),
+		("R-SO24 case 4: default-roc names an id that is not installed: Missing, not the newest (R-SO12)", pick(Err(NoPin), { ..base, default: Ok(a2), installed: [a1] }), Ok((a2, Default, Missing))),
 	]
 	bad = rows.keep_if(|(_, got, want)| shown(got) != want).map(|(label, got, want)| (label, want, shown(got)))
 	dbg bad

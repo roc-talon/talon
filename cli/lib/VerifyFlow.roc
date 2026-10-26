@@ -3,6 +3,7 @@ import Clock
 import Fail
 import Fetch
 import Fx
+import HeldRoc
 import Ladder
 import LadderPlan
 import PatchApply
@@ -27,7 +28,7 @@ VerifyFlow :: [].{
 	verify! : Fx, Request => Try(Report.Outcome, Fail)
 	verify! = |fx, asked| {
 		start = ResolveLoad.prepared!(fx, asked, Verify)?
-		request = { ..asked, selected: Fetch.selected({ held: start.decision.held ?? "", default: start.loaded.config.default_roc ?? "" }) }
+		request = { ..asked, selected: Fetch.selected({ held: start.decision.held ?? "", default: start.loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, start.loaded) }
 		settings = ResolveBase.settings_of(request, start.loaded)
 		ResolveBase.check_pin(start.loaded, settings, start.decision, Verify)?
 		snapshot = ResolveSelect.snapshot_of(request, start.loaded.intent)?
@@ -70,13 +71,14 @@ verified! = |fx, request, loaded, picked, decision| {
 		{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }
 	} else {
 		rows = ResolveBase.owner_rows(facts.scoped, [], picked.chosen)
+		held = HeldRoc.held!(fx, request, loaded, decision.held)?
 		done = Ladder.verify!(
 			fx,
 			{
 				roots: request.roots,
 				now: request.now,
 				path_roc: request.compiler,
-				held: decision.held ?? "",
+				held,
 				members: checked,
 				replace,
 				owners: rows.map(|r| r.owner),

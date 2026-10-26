@@ -1,0 +1,39 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/n1/main.roc
+list_dirs $PROJECT/n1
+list_dirs $PROJECT
+read_files $PROJECT/n1/main.roc
+canonical $PROJECT/n1/main.roc
+lock $WORK/h5/.cache/roc/talon/projects.json nowait: held
+list_dirs $WORK/h5/.cache/roc/talon
+read_files $WORK/h5/.cache/roc/talon/projects.json
+write_atomic $WORK/h5/.cache/roc/talon/projects.json
+unlock $WORK/h5/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/n1/main.roc $PROJECT/n1/talon.toml $WORK/h5/.config/talon/config.toml
+list_dirs $WORK/h5/.cache/roc/toolchains
+read_files $PROJECT/n1/main.roc
+write_atomic $PROJECT/n1/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/n2/main.roc
+list_dirs $PROJECT/n2
+list_dirs $PROJECT
+read_files $PROJECT/n2/main.roc
+canonical $PROJECT/n2/main.roc
+lock $WORK/h5/.cache/roc/talon/projects.json nowait: held
+list_dirs $WORK/h5/.cache/roc/talon
+read_files $WORK/h5/.cache/roc/talon/projects.json
+write_atomic $WORK/h5/.cache/roc/talon/projects.json
+unlock $WORK/h5/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/n2/main.roc $PROJECT/n2/talon.toml $WORK/h5/.config/talon/config.toml
+list_dirs $WORK/h5/.cache/roc/toolchains
+random
+list_dirs $WORK/h5/.cache/roc/packages
+read_files $WORK/h5/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $WORK/h5/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc $WORK/h5/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc

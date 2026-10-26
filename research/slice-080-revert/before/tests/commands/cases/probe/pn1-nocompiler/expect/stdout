@@ -1,0 +1,17 @@
+== env:HOME={w}/h1 probe --file n1/main.roc
+$PROJECT/n1/main.roc on nightly-2026-10-16-1df370f
+check: passed
+build: passed
+exit 0
+== env:HOME={w}/h2 probe --file n1/main.roc
+$PROJECT/n1/main.roc on nightly-2026-10-16-1df370f
+check: passed
+build: passed
+exit 0
+== env:HOME={w}/h3 env:TALON_AUTO_INSTALL=yes probe --file n1/main.roc
+$PROJECT/n1/main.roc on nightly-2026-10-19-0badf00
+check: passed
+build: passed
+exit 0
+== env:HOME={w}/h4 env:TALON_AUTO_INSTALL=no probe --file n1/main.roc
+exit 13

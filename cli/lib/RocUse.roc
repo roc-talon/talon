@@ -7,6 +7,7 @@ import Consent
 import DownloadAsk
 import Fail
 import Fx
+import HeldRoc
 import Install
 import Known
 import Ladder
@@ -99,13 +100,13 @@ flow! = |fx, args, text| {
 	}
 	ManageUse.use_pinnable(id)?
 	gate!(fx, request, loaded, { target, id, installed })?
-	rows = ManageUse.use_plan({ id, members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc }), fallback })?
+	rows = ManageUse.use_plan({ id, members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc }), fallback: fallback.id })?
 	changes = rows.keep_if(|r| r.op.is_ok())
 	if changes.is_empty() {
 		return Ok({ id, written: [], probes: 0, downloads: 0, built: Bool.False, notes: [], toolchain })
 	}
 	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler }
-	installs = install_all!(fx, args, ctx, { target, id, rows: changes })?
+	installs = install_all!(fx, args, ctx, { target, id, rows: changes, picked: fallback.picked })?
 	members = changes.map(|r| use_member(loaded, r, id))
 	ran = Ladder.use!(fx, { roots: start.roots, now: start.now, path_roc: compiler, held: id, members, owners: [], downloads: ResolveBase.ladder_downloads(request), probe: { max: 100, timeout: 30, slots: 12, max_toolchains: 10 } })?
 	written = write!(fx, loaded, { id, rows: changes })?
@@ -146,16 +147,26 @@ request_of = |args, start, facts| {
 	probe: { no_probe: Bool.False, slots: Err(Unset) },
 }
 
-# Step 3, R-BL1, R-SO14: the compiler of a member with no pin: `ROC_TOOLCHAIN`, else rank 4 to 7 (`select!` looks at the members with no pin only, R-SO6).
-fallback! : Fx, ResolveBase.Request, ResolveBase.Loaded => Try(Try(Str, [NoCompiler]), Fail)
+# Step 3, R-BL1, R-SO14: the compiler of a member with no pin: `ROC_TOOLCHAIN`, else rank 4 to 7 (`select!` looks at the members with no pin only, R-SO6). Slice 072e (R-SO14, R-SO23, R-U3): when no rank gives a compiler,
+# Talon picks one as an id (`HeldRoc.picked!`, no download). `picked` is that id. It is a baseline that is not installed, so it is in the one prompt of step 7 and it becomes the default after its download.
+fallback! : Fx, ResolveBase.Request, ResolveBase.Loaded => Try({ id : Try(Str, [NoCompiler]), picked : Try(Str, [None]) }, Fail)
 fallback! = |fx, request, loaded| {
 	unpinned = loaded.members.keep_if(|m| m.locked.roc.is_err())
 	if unpinned.is_empty() {
-		Ok(Err(NoCompiler))
+		Ok({ id: Err(NoCompiler), picked: Err(None) })
 	} else {
 		match request.toolchain {
-			Ok(id) => Ok(Ok(id))
-			Err(Unset) => Ok(ResolveSelect.select!(fx, request, { ..loaded, members: unpinned })?.selected.id)
+			Ok(id) => Ok({ id: Ok(id), picked: Err(None) })
+			Err(Unset) => {
+				members = { ..loaded, members: unpinned }
+				match ResolveSelect.select!(fx, request, members)?.selected.id {
+					Ok(id) => Ok({ id: Ok(id), picked: Err(None) })
+					Err(NoCompiler) => {
+						id = HeldRoc.picked!(fx, request, members)?
+						Ok({ id: Ok(id), picked: Ok(id) })
+					}
+				}
+			}
 		}
 	}
 }
@@ -199,7 +210,8 @@ use_member = |loaded, row, id| {
 }
 
 # Steps 7 and 8: the downloads, then the installs, the new compiler first. It gives the number of compilers that this run installed.
-install_all! : Fx, Args, Context, { target : Offered, id : Str, rows : List(ManageUse.UseRow) } => Try(U64, Fail)
+# Slice 072e (R-U3, R-SO15): the pick (`run.picked`) is a baseline. It is first in the prompt and in the installs, and it becomes `default-roc` after its download.
+install_all! : Fx, Args, Context, { target : Offered, id : Str, rows : List(ManageUse.UseRow), picked : Try(Str, [None]) } => Try(U64, Fail)
 install_all! = |fx, args, ctx, run| {
 	baselines = missing_baselines(ctx, run)?
 	var $offers = no_offers
@@ -211,11 +223,17 @@ install_all! = |fx, args, ctx, run| {
 			Present(_) => {}
 		}
 	}
+	is_pick = |offer| match offer {
+		Download(d) => run.picked == Ok(d.id)
+		Present(_) => Bool.False
+	}
+	picks = $offers.keep_if(is_pick)
+	bases = picks.concat($offers.keep_if(|offer| !is_pick(offer)))
 	new = match run.target {
 		Download(offer) => [Download(offer)]
 		Present(_) => []
 	}
-	all = new.concat($offers)
+	all = picks.concat(new).concat(bases.drop_first(picks.len()))
 	sum = DownloadAsk.totals(all)
 	if $offers.is_empty() {
 		match sum.ids {
@@ -223,7 +241,7 @@ install_all! = |fx, args, ctx, run| {
 			_ => {}
 		}
 	} else {
-		DownloadAsk.required!(fx, { auto: ctx.auto, mode: ctx.mode, yes: ctx.yes, quiet: ctx.quiet, flag: ctx.flag }, { all, first: DownloadAsk.totals($offers).ids.first() ?? "" })?
+		DownloadAsk.required!(fx, { auto: ctx.auto, mode: ctx.mode, yes: ctx.yes, quiet: ctx.quiet, flag: ctx.flag }, { all, first: DownloadAsk.totals(bases).ids.first() ?? "" })?
 	}
 	var $installed = 0
 	for offer in all {
@@ -245,7 +263,7 @@ no_offers = []
 
 # R-U3, R-BL1, R-DL2: the baseline compilers that are not installed, in member order with no repeat (the other tag form of one nightly counts as one). The new compiler is not one. A baseline that is not a nightly
 # has no source: the failure of `Compiler.require` (R-NS2).
-missing_baselines : Context, { target : Offered, id : Str, rows : List(ManageUse.UseRow) } -> Try(List(Str), Fail)
+missing_baselines : Context, { target : Offered, id : Str, rows : List(ManageUse.UseRow), picked : Try(Str, [None]) } -> Try(List(Str), Fail)
 missing_baselines = |ctx, run| {
 	distinct = run.rows.map(|r| r.baseline).fold([], |found, id| if found.any(|seen| Pin.same_id(seen, id)) found else found.append(id))
 	missing = distinct.keep_if(|id| !Pin.same_id(id, run.id) and Compiler.find({ id, installed: ctx.installed, path: ctx.path_roc }).is_err())

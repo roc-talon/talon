@@ -87,6 +87,7 @@ read_files $HOME/.cache/roc/talon/path-roc.json
 spawn_all limit=1
   job - /fake/bin/roc version
 write_atomic $HOME/.cache/roc/talon/path-roc.json
+list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 read_files $HOME/.cache/roc/talon/index/github/acme/json/2.0.0.roc-version

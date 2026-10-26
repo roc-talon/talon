@@ -1,0 +1,6 @@
+downloading nightly-2026-10-12-2664a27 (73.6 MB), the default compiler
+note: default-roc is not set, so nightly-2026-10-12-2664a27, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-12-2664a27
+trying 1 installed compiler release
+downloading nightly-2026-10-11-1a2b3c4 (73.7 MB)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/x 1.0.0 with nightly-2026-10-11-1a2b3c4

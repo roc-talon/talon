@@ -1,0 +1,12 @@
+Slice 050c, the sweep of `.del` files at each start of `tln` on Windows (R-ST10). The fake machine is `os=windows arch=x64`. The bin dir of Windows is `<USERPROFILE>\.local\bin` (R-LY8): in the case it is the dir `home/u\.local\bin` (a name with `\`, in `home/`, so the tree diff shows it). The data bin dir is `home/.local/share/talon/bin`. Start state: the bin dir has `tln.exe`, `roc.exe`, 2 `.del` files (`foo.0123456789abcdef.del`, `tln.fedcba9876543210.del`), 3 names that are no `.del` file (`notes.del`, `up.0123456789ABCDEF.del` with upper case, `old.0123456789abcdef.del.tmp`) and a dir `dirdel.0123456789abcdef.del`. The data bin dir has `tln.exe`, `foo.exe` and 2 `.del` files (`tln.1111111111111111.del`, `roc.old.2222222222222222.del`).
+
+The sweep is the first thing of each run: `env_all`, one `list_dirs` with the dirs (the bin dir, then the data bin dir), one `delete` with the files (in the order of the dirs, byte order in each dir), then the `args` of the command. `windows!` is not in `calls.log`. The sweep prints nothing and never changes the exit code.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `--version` with `USERPROFILE={w}/nowhere` | the bin dir is not there (`list_dirs` gives `NotFound`): no failure. The 2 `.del` files of the data bin dir go. Exit 0 | R-ST10 |
+| 2 | `--version` with an empty `HOME` | no data bin dir (the roots need `HOME`): only the bin dir is listed. Its 2 `.del` files go, the 3 other names and the dir stay | R-ST10 |
+| 3 | `--version` | both dirs are listed, nothing is left to delete: no `delete` call | R-ST10 |
+| 4 | `tool list` | the sweep is first, also for a command (no `.del` file: no `delete` call) | R-ST10 |
+| 5 | `@roc --version` | the `roc` proxy is a start of `tln` too (R-ST8): the sweep runs before the proxy | R-ST10, R-ST8 |
+| 6 | `no-such-command` | a usage failure (exit 2) is also a start | R-ST10 |

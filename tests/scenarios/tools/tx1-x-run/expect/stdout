@@ -11,7 +11,7 @@ manifest.json
 cannot access '$HOME/.local/share/talon': No such file or directory
 cannot access '$HOME/.local/bin': No such file or directory
 {"format":1,"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"bundle":"ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw","last_run":"2026-10-15T12:00:00Z"}
-$HOME/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/app
+$HOME/.cache/roc/packages/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/app --no-cache
 downloads: 1
 -- 2: the same line again matches the entry (R-B1): no download, no build. The app runs again.
 == tln x acme/app
@@ -36,14 +36,14 @@ app
 == $HOME/.local/bin/app c
 ran: acme/app 1.1.0 args: c
 exit 3
-{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"app":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9"}}}}
 downloads: 1, builds: 1
 -- 5: an exact version that the installed tool does not have is a build in the x cache (R-B2, R-B5): the installed tool is not changed.
 == tln x acme/app@1.0.0 -- d
 ran: acme/app 1.0.0 args: d
 exit 3
 50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269
-{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
+{"format":1,"tools":{"app":{"name":"acme/app","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"app":"65c86479309561ebf8e035f709e2b9b6e974a42f38c7afad908e8c27736ca9b9"}}}}
 downloads: 2, builds: 2
 -- 6: 36 days later the entry was not run for more than the gc age (R-GC7): tln cache gc removes it. The gc removes the old fake compiler too (not used for 36 days), so the case keeps a copy of the store and puts it back for step 7.
 == tln cache gc

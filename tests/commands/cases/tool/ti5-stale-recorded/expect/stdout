@@ -1,0 +1,5 @@
+== tool install acme/z@2.0.0
+replaced z 1.0.0 with 2.0.0 (acme/z)
+exit 0
+== tool install acme/qux@2.0.0
+exit 2

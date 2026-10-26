@@ -240,7 +240,8 @@ expect {
 					and unset("default-roc = \n").map_err(|f| f.kind.code()) == Err(19)
 }
 
-# R-RR1, R-NS3, R-NS6: the compiler that takes the default. The newest nightly or release by `Pin.order` (with `published_at`), never the removed one, never a `git-`, `link-` or `copy-` build. With the `nightly` switch off: a release only. None: `Err(None)`.
+# R-RR1, R-NS3, R-NS6, R-SO24 (slice 080): the compiler that takes the default. The newest nightly or release by `Pin.order` (with `published_at`), never the removed one, never a `git-`, `link-` or `copy-` build. With the `nightly` switch off: a release first.
+# Only when the switch admits none: the newest installed nightly or release of any kind, so the default stays set (R-SO24). `Err(None)` only when no nightly or release is left.
 expect {
 	times = [
 		{ id: "nightly-2026-10-14-0abcdef", published_at: 1791968400 },
@@ -252,15 +253,32 @@ expect {
 	newer = times.append({ id: "0.1.0", published_at: 1792022400 })
 	older = times.append({ id: "0.1.0", published_at: 1790812800 })
 	dated = |list, at| Manage.next_default({ installed: list, removed: "nightly-2026-10-09-258ab27", nightly: Bool.True, times: at })
-	next("nightly-2026-10-09-258ab27", Bool.True, installed) == Ok("nightly-2026-10-14-38a3029")
-		and next("nightly-2026-10-14-38a3029", Bool.True, installed) == Ok("nightly-2026-10-14-0abcdef")
-			and next("nightly-2026-10-14-0abcdef", Bool.False, installed) == Ok("0.1.0")
-				and next("0.1.0", Bool.False, installed) == Err(None)
-					and next("nightly-2026-10-14-38a3029", Bool.True, ["git-dd03c09e", "link-dev", "copy-fix-1", "nightly-2026-10-14-38a3029"]) == Err(None)
-						and next("nightly-2026-10-09-258ab27", Bool.True, ["nightly-2026-10-09-258ab27"]) == Err(None)
-							and next("link-dev", Bool.True, ["link-dev", "nightly-2026-10-09-258ab27"]) == Ok("nightly-2026-10-09-258ab27")
-								and dated(installed, newer) == Ok("0.1.0")
-									and dated(installed, older) == Ok("nightly-2026-10-14-38a3029")
+	rows = [
+		("the newest nightly by `published_at`", next("nightly-2026-10-09-258ab27", Bool.True, installed), Ok("nightly-2026-10-14-38a3029")),
+		("the removed one is never chosen", next("nightly-2026-10-14-38a3029", Bool.True, installed), Ok("nightly-2026-10-14-0abcdef")),
+		("the switch is off: a release is admitted", next("nightly-2026-10-14-0abcdef", Bool.False, installed), Ok("0.1.0")),
+		("R-SO24: the switch is off and no release is installed: the newest nightly of any kind", next("0.1.0", Bool.False, installed), Ok("nightly-2026-10-14-38a3029")),
+		("R-SO24: the switch is off, only nightlies: the newest nightly, never a build", next("nightly-2026-10-14-38a3029", Bool.False, ["git-dd03c09e", "nightly-2026-10-09-258ab27", "nightly-2026-10-14-38a3029"]), Ok("nightly-2026-10-09-258ab27")),
+		("R-SO24: the switch is off, the other nightlies by `published_at`", next("nightly-2026-10-09-258ab27", Bool.False, ["nightly-2026-10-09-258ab27", "nightly-2026-10-14-0abcdef", "nightly-2026-10-14-38a3029"]), Ok("nightly-2026-10-14-38a3029")),
+		("only builds are left (R-NS6)", next("nightly-2026-10-14-38a3029", Bool.True, ["git-dd03c09e", "link-dev", "copy-fix-1", "nightly-2026-10-14-38a3029"]), Err(None)),
+		("nothing is left", next("nightly-2026-10-09-258ab27", Bool.True, ["nightly-2026-10-09-258ab27"]), Err(None)),
+		("the removed id is a build", next("link-dev", Bool.True, ["link-dev", "nightly-2026-10-09-258ab27"]), Ok("nightly-2026-10-09-258ab27")),
+		("a newer release wins over the nightlies", dated(installed, newer), Ok("0.1.0")),
+		("an older release loses", dated(installed, older), Ok("nightly-2026-10-14-38a3029")),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-RR1, R-SO19, R-NS3 (slice 080, a proposal, TW24): the note of a move of the default to a compiler that the switch does not admit. Only a nightly with the switch off gets it: the next use of the default is exit code 10 (R-SO19).
+expect {
+	note = |next, nightly| Manage.move_note({ next, nightly })
+	text = "nightly-2026-10-14-38a3029 is a nightly and the nightly switch is off, so commands that use the default stop with exit code 10 until you change the switch or install an admitted compiler"
+	note("nightly-2026-10-14-38a3029", Bool.False) == Ok(text)
+		and note("nightly-2026-10-14-38a3029", Bool.True) == Err(None)
+			and note("0.1.0", Bool.False) == Err(None)
+				and note("0.1.0", Bool.True) == Err(None)
 }
 
 # R-RR2, R-PD9: the known projects that pin the compiler. The other tag form of a nightly counts. A missing file, an unreadable file, a header that does not parse and a header with no pin pin nothing. The paths are in byte order.

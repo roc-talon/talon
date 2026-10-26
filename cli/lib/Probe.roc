@@ -71,12 +71,19 @@ Probe :: [].{
 		}
 	}
 
-	## The arguments of `roc`. `Check` is `["check", file]`. `Build({ output })` is `["build", file, "--output=<output>"]` (R-LD5: the host target is the
+	## The arguments of `roc`. `Check` is `["check", file]`. `Build({ output })` is `["build", file, "--output=<output>", "--no-cache"]` (`build_args`, R-LD8; R-LD5: the host target is the
 	## default, so there is no `--target`). `file` is the file name of the project file, as the working directory sees it.
 	args : { command : Command, file : Str } -> List(Str)
 	args = |facts| match facts.command {
 		Check => ["check", facts.file]
-		Build({ output }) => ["build", facts.file, "--output=${output}"]
+		Build({ output }) => Probe.build_args({ file: facts.file, options: [], output })
+	}
+
+	## Slice 077 (R-LD8, R-T8, R-LD5): the arguments of each `roc build` that Talon runs: `["build", file]`, then `options` (for example `["--opt=speed"]` of a tool build), then `--output=<output>`, then `--no-cache`. There is no `--target` here (R-LD5, R-T8):
+	## `LadderPlan.with_target` puts it after `build`, and `replace_args` and `Patched` add their pairs after `--no-cache`. `Probe.args` of `Build` and `ToolInstall.build_spec` use this function, so that no build has the flag missing.
+	build_args : { file : Str, options : List(Str), output : Str } -> List(Str)
+	build_args = |facts| {
+		["build", facts.file].concat(facts.options).concat(["--output=${facts.output}", "--no-cache"])
 	}
 
 	## The arguments of `roc` for `tln verify` (R-CM11, R-LB2): `args` and then `--replace-dep <old> <new>` for each replacement, in order, after the file (the pinned roc reads the flag after the file). `roc check` and `roc build` both have the flag.

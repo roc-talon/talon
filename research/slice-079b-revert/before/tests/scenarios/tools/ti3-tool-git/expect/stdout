@@ -1,0 +1,85 @@
+-- 1: a branch (R-T23). The commit of main, the source archive by the full sha (real curl, real tar, no top dir), main.roc read, the build in the extracted source with no --target (R-T8), the binary in the data bin dir, the entry a hard link (R-ST7). The scratch dir is removed (R-CC2). tools.json has the commit and the ref.
+== tln tool install --git acme/gtool@main
+installed gtool git main@aaaaaaaa (acme/gtool)
+exit 0
+$HOME/.cache/roc/talon/tmp:
+
+$HOME/.local/bin:
+gtool
+
+$HOME/.local/share/talon/bin:
+gtool
+ran: acme/gtool aaaaaaa
+{"format":1,"tools":{"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"main"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"c3b402f2f56dff115fb42239b11fa1318332f39e386a9c9866316d6e59439844","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gtool":"c3b402f2f56dff115fb42239b11fa1318332f39e386a9c9866316d6e59439844"}}}}
+$HOME/.cache/roc/talon/tmp/$HEX/src build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/$HEX/gtool --no-cache
+-- 2: a release tool next to it, and the list of both tools (R-T4, R-T5: the compiler of the build).
+== tln tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+== tln tool ls
+TOOL   NAME        SOURCE             COMPILER                    TARGET   INSTALLED
+gtool  acme/gtool  git main@aaaaaaaa  nightly-2026-10-14-38a3029  x64musl  2026-10-15
+foo    acme/foo    1.1.0              nightly-2026-10-14-38a3029  x64musl  2026-10-15
+exit 0
+== tln tool ls --json
+{"schema":1,"command":"tool ls","ok":true,"data":{"tools":[{"tool":"gtool","name":"acme/gtool","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"main"},"nightly":"nightly-2026-10-14-38a3029","target":"x64musl","sha256":"c3b402f2f56dff115fb42239b11fa1318332f39e386a9c9866316d6e59439844","libs":[],"installed_at":"2026-10-15T12:00:00Z"},{"tool":"foo","name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"nightly":"nightly-2026-10-14-38a3029","target":"x64musl","sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z"}]},"error":null}
+exit 0
+-- 3: the same git install again: the head is the installed commit (R-T26). No build.
+== tln tool install --git acme/gtool@main
+gtool git main@aaaaaaaa is installed
+exit 0
+builds: 2
+-- 4: update with the heads unchanged (R-T24, R-T25): foo is the newest release, gtool has the same commit. No build.
+== tln tool update
+gtool git main@aaaaaaaa is up to date
+foo 1.1.0 is up to date
+exit 0
+builds: 2
+-- 5: the branch moves (the route of main answers with the commit of next): update builds the new head and replaces the files (R-T24).
+== tln tool update gtool
+updated gtool git main@aaaaaaaa to git main@bbbbbbbb (acme/gtool)
+exit 0
+ran: acme/gtool bbbbbbb
+{"format":1,"tools":{"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"main"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"4f6afb76a7d1c30117b82840788b5920ccee48212f367561ecb831e761b6c2cc","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gtool":"4f6afb76a7d1c30117b82840788b5920ccee48212f367561ecb831e761b6c2cc"}},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"foo":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af"}}}}
+builds: 3
+-- 6: rebuild of all tools (R-T7): the same sources and the compiler of tools.json. foo comes from the package cache, gtool from the recorded commit (no commit request, R-T5).
+== tln tool rebuild
+rebuilt gtool git main@bbbbbbbb (acme/gtool) with nightly-2026-10-14-38a3029
+rebuilt foo 1.1.0 (acme/foo) with nightly-2026-10-14-38a3029
+exit 0
+ran: acme/foo 1.1.0
+ran: acme/gtool bbbbbbb
+builds: 5
+4
+-- 7: remove gtool (R-B6): the entry and the binary go, nothing goes to talon/x. A commit as a typed ref and --path (R-SL10, R-SE12): the app is apps/cli/main.roc.
+== tln tool rm gtool
+removed gtool git main@bbbbbbbb (acme/gtool)
+exit 0
+$HOME/.local/bin:
+foo
+
+$HOME/.local/share/talon/bin:
+foo
+== tln tool install acme/gtool@bbbbbbbb --path apps/cli
+installed gtool git bbbbbbbb@bbbbbbbb (acme/gtool)
+exit 0
+ran: acme/gtool bbbbbbb cli
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"foo":"5faaf9502eb730b011276c0ee1fa012f5e8cc810b1f42095145caded640492af"}},"gtool":{"name":"acme/gtool","source":{"kind":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"bbbbbbbb","path":"apps/cli"},"build":{"hashes":[],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"3b8b7821995f52c675f36741552f76bc993ff47163ab1fa741512d669b92cc69","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"gtool":"3b8b7821995f52c675f36741552f76bc993ff47163ab1fa741512d669b92cc69"}}}}
+== tln tool update gtool
+gtool: pinned to commit bbbbbbbb
+exit 0
+builds: 6
+-- 8: remove both tools: tools.json is empty, no file is left.
+== tln tool rm foo
+removed foo 1.1.0 (acme/foo)
+exit 0
+== tln tool rm acme/gtool
+removed gtool git bbbbbbbb@bbbbbbbb (acme/gtool)
+exit 0
+== tln tool ls
+no tool is installed. Run: tln tool install owner/app
+exit 0
+$HOME/.local/bin:
+
+$HOME/.local/share/talon/bin:
+{"format":1,"tools":{}}

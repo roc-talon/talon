@@ -1,0 +1,22 @@
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/baz 1.2.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 2.0.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/bar 2.0.0 with nightly-2026-10-14-38a3029
+note: tools.baz: the range >=1.0, <1.5 does not admit 2.0.0, change it by hand
+tln: error[usage]: no key 'zed' in [tools] of $PROJECT/p1/talon.toml. Keys: foo, bar, baz.
+tln: error[usage]: 'acme/foo' is not a key of [tools]: use lower case letters, digits, '.', '_' and '-', and start with a letter or a digit
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/fmt 1.1.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: 'pf' is a header alias and a key of [tools]. For the tool, run: tln update --tool pf
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/pfx 1.1.0 with nightly-2026-10-14-38a3029
+tln: error[input]: $PROJECT/w2/m1/talon.toml:1: the table [tools] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)
+tln: error[usage]: 'fmt@^2' is a selector on the [tools] key 'fmt'. A selector changes its ref: run tln add --tool owner/app@^2
+moved tool fmt 1.0.0 to 1.1.0 (acme/fmt)
+$PROJECT/p4/talon.toml: tools.fmt = { ref = "acme/fmt@^1", url = "https://github.com/acme/fmt/releases/download/1.1.0/6TFK1qt5cNPhj9Vw6X98ZJfaD91wUNE82UsTYcj199bZ.tar.zst" }
+moved tool foo 1.1.0 to 2.0.0 (acme/foo)
+$PROJECT/w/talon.toml: tools.foo = { ref = "acme/foo@^2", url = "https://github.com/acme/foo/releases/download/2.0.0/Gjd7Us4DTdcWjQgC2FQUo4eXgXbJ7xCiTYUFdUajzWvq.tar.zst" }

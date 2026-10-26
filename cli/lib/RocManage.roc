@@ -166,14 +166,22 @@ default_flow! = |fx, args, text| {
 	installed = Launch.toolchains!(fx, roots)
 	got = fetched!(fx, args, { env, installed, text })?
 	path = Roots.item(roots, Config)
-	edited = edit_config!(fx, path, |current| Manage.default_set({ path, text: current, id: got.id }))?
+	# R-SO24: an install that set the default made the edit already. The output keeps `Set`.
+	edited = if got.defaulted {
+		{ previous: Err(Unset), changed: Bool.True }
+	} else {
+		edit_config!(fx, path, |current| Manage.default_set({ path, text: current, id: got.id }))?
+	}
 	Ok({ id: got.id, installed: got.installed, compat: got.compat, edited })
 }
 
+# What a fetch gives. `defaulted` is true when the install set `default-roc` (R-SO24: under the lock of the item, before the rename).
+Fetched : { id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]), defaulted : Bool }
+
 # Steps 3 and 4: an installed compiler (a unique prefix is expanded), else the download of `roc install`.
-fetched! : Fx, Args, { env : List((Str, Str)), installed : List(Str), text : Str } => Try({ id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
+fetched! : Fx, Args, { env : List((Str, Str)), installed : List(Str), text : Str } => Try(Fetched, Fail)
 fetched! = |fx, args, facts| {
-	present = |id| Ok({ id, installed: Bool.False, compat: Err(Unknown) })
+	present = |id| Ok({ id, installed: Bool.False, compat: Err(Unknown), defaulted: Bool.False })
 	if facts.text.starts_with("@") {
 		download!(fx, args, facts)
 	} else {
@@ -186,13 +194,13 @@ fetched! = |fx, args, facts| {
 }
 
 # Step 4: `roc install` for the text. The consent comes before the lock.
-download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try({ id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
+download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try(Fetched, Fail)
 download! = |fx, args, facts| match RocInstall.offer!(fx, { id: facts.text, env: facts.env, offline: args.offline })? {
-	Present(found) => Ok({ id: found.id, installed: Bool.False, compat: Err(Unknown) })
+	Present(found) => Ok({ id: found.id, installed: Bool.False, compat: Err(Unknown), defaulted: Bool.False })
 	Download(offer) => {
 		RocInstall.ask_download!(fx, args, facts.env, { id: offer.id, size: offer.size })?
 		done = RocInstall.install_offer!(fx, offer)?
-		Ok({ id: done.id, installed: done.how == Installed, compat: done.compat })
+		Ok({ id: done.id, installed: done.how == Installed, compat: done.compat, defaulted: done.default == Set })
 	}
 }
 
@@ -231,7 +239,11 @@ update_flow! = |fx, args| {
 	roots = Roots.from_env(env)?
 	before = RocInstall.read_config!(fx, roots)?.default_roc
 	got = download!(fx, args, { env, text: "@latest", installed: [] })?
-	moved = moved_default!(fx, roots, { id: got.id, before })?
+	moved = if got.defaulted {
+		{ default: Set, previous: Err(Unset), changed: Bool.True }
+	} else {
+		moved_default!(fx, roots, { id: got.id, before })?
+	}
 	Ok({ id: got.id, item: Roots.item(roots, Toolchain(got.id)), installed: got.installed, compat: got.compat, default: moved.default, previous: moved.previous, changed: moved.changed })
 }
 
@@ -321,6 +333,14 @@ remove_flow! = |fx, text| {
 	}
 	if was_default {
 		move_default!(fx, roots, next)?
+		# R-RR1: a note when the switch rejects the new default.
+		match next {
+			Ok(moved_to) => match Manage.move_note({ next: moved_to, nightly: switch.nightly }) {
+				Ok(note) => fx.err!("note: ${note}\n")
+				Err(None) => {}
+			}
+			Err(None) => {}
+		}
 	}
 	after = if was_default next else config.default_roc.map_err(|Unset| None)
 	Ok({ id, item, was_default, default: after, projects })

@@ -1,5 +1,6 @@
 project tool fmt 1.0.0 (talon.toml)
 note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
 platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
 building acme/gen 1.0.0 with nightly-2026-10-14-38a3029
 tln: error[frozen]: the [tools] of $PROJECT/p6/talon.toml are not locked: tools.lz has no url. Run tln install to lock them.

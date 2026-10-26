@@ -438,7 +438,7 @@ expect {
 	bad == [] and Nightlies.failure(Empty).kind.code() == 10 and Nightlies.failure(NoBase).kind.code() == 18
 }
 
-# R-CV2 R-SE9 (slice 076, Q3): the name of the asset is a file name in the temp dir of the install. An asset whose name is not one safe path part (a `/`, a backslash or a NUL byte in it) is not the asset of the host: the release has
+# R-CV2 R-SE18 R-SE9 (slice 076, Q3): the name of the asset is a file name in the temp dir of the install. An asset whose name is not one safe path part (a `/`, a backslash or a NUL byte in it) is not the asset of the host: the release has
 # `NoAsset` (the same failure as a release with no asset for the host), and a good asset of the same release still counts. The names that GitHub gives have no such part: this is a check of the answer, not of a name that exists.
 expect {
 	good = "roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz"

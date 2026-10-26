@@ -1,0 +1,37 @@
+#!/bin/sh
+# Slice 060 (R-FE4): Talon runs the installed compiler for `roc unbundle`. The real unbundle is the one of the fake `roc` on PATH (roc.tsv: `unbundle*  real`), so the roc.log is the same as before.
+[ "$1" = unbundle ] && exec roc "$@"
+# The fake compiler of the case ti2-tool-compiler (the id is the name of the dir of this file). `roc check main.roc` and `roc build main.roc --opt=speed --output=<file>`, run in the package dir of the app bundle.
+# It logs the id and the arguments to $TALON_TEST_DIR/compiler.log. The app is the comment line of main.roc (`# acme/foo 1.0.0`).
+#   check: acme/bar fails on both compilers. acme/foo fails on the newer one (nightly-2026-10-14-38a3029). The other checks pass. When the file `check-barrier` exists in $TALON_TEST_DIR, a check waits until the checks of both
+#   compilers have started (R-PP2: the checks of option 2 run at the same time; a run one by one would wait for 10 s, and then exit with 1).
+#   build: writes a shell script as the binary that prints the id of the compiler and the app, and prints the summary of a build with no error.
+d=${TALON_TEST_DIR:?}
+id=$(basename "$(dirname "$0")")
+echo "$id $*" >> "$d/compiler.log"
+what=$(sed -n 's/^# //p' main.roc)
+repo=${what% *}
+case $1 in
+check)
+    if [ -f "$d/check-barrier" ]; then
+        touch "$d/started.$id"
+        n=0
+        while [ ! -f "$d/started.nightly-2026-10-14-38a3029" ] || [ ! -f "$d/started.nightly-2026-10-12-2664a27" ]; do
+            n=$((n + 1))
+            [ $n -gt 100 ] && { echo "fake roc: the other check did not start" >&2; exit 1; }
+            sleep 0.1
+        done
+    fi
+    if [ "$repo" = acme/bar ] || { [ "$repo" = acme/foo ] && [ "$id" = nightly-2026-10-14-38a3029 ]; }; then
+        printf '── ✗ type mismatch ────────────────────────────────────────────────── main.roc:3:1\n\nfake error of %s\n\n── 1 error and 0 warnings ───────────────────────────────────────────── main.roc\n' "$id" >&2
+        exit 1
+    fi
+    echo "No errors found in 1ms for main.roc"
+    ;;
+build)
+    for a in "$@"; do case $a in --output=*) out=${a#--output=} ;; esac; done
+    printf '#!/bin/sh\necho "ran: %s built with %s"\n' "$what" "$id" > "$out"
+    chmod +x "$out"
+    printf '0 errors and 0 warnings found in 12ms while successfully building:\n\n    %s\n' "$out"
+    ;;
+esac

@@ -1,0 +1,7 @@
+GET /api/repos/acme/foo/releases?per_page=100 200
+GET /dl/acme/foo/releases/download/1.1.0/FmC1Lxgigk5cTAemXQfaApV6KUAW4bziBt3v3JMaMVMu.tar.zst 200
+GET /dl/acme/foo/releases/download/1.0.0/8toSm7CnoHHbbe3qNrwFvMKKZQ7esH2oVsjXHh5qW1Xs.tar.zst 200
+GET /api/repos/acme/bar/releases?per_page=100 200
+GET /dl/acme/bar/releases/download/1.0.0/ACTN2PbnqZiVb3HXH4ghbrF1jNnCud8DAZAjHLasYsyy.tar.zst 200
+GET /api/repos/other/foo/releases?per_page=100 200
+GET /dl/other/foo/releases/download/2.0.0/DPwqQM7NLPmF6wyhmk6ZggxYd9pSJaAEPZjXhLHgZtMZ.tar.zst 200

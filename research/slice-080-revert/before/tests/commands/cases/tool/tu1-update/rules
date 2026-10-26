@@ -1,0 +1,18 @@
+Slice 048, `tln tool update` (entry `commands`). One home with the compiler `nightly-2026-10-14-38a3029` only (`TALON_NOW=2026-10-15T12:00:00Z`, `min-release-age` 2 days). `tools.json` has 5 tools:
+`foo` (acme/foo 1.1.0; the repo has 1.2.0, an app whose pin is `nightly-2026-10-11-1a2b3c4`, not installed), `bar` (acme/bar 1.0.0, the newest), `gm` (acme/gm from main at 1111111, the head is bbbbbbbb; the app pin is `nightly-2026-10-12-2664a27`, not installed),
+`gs` (acme/gs from stable, the head is the installed commit) and `gp` (acme/gp from the ref `dd03c09e`, a commit). Both compilers are in the nightly list. The builds are the 2 rows of `fx/probes`. A fake tty (a person) and the answers of `fx/answers` in order.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update` (`env:TALON_INTERACTIVE=0`) | the plan: the release lists of foo and bar, the heads of gm and gs, the source of gm, the platform. gp: no call. 2 compilers are not installed, no person and no flag: exit 13 that names `--yes`, nothing is built or changed, the scratch dir is deleted | R-T24, R-T25, R-DL1, R-DL4 |
+| 2 | `tool update` (answer `n`) | one prompt for both downloads (the offers read the nightly list first): No is exit 13, no tool is changed | R-T25, R-DL1, R-NM5 |
+| 3 | `tool update` (answer `y`) | the same prompt, Yes: both compilers are downloaded (slice 079, R-NI17, R-SO15: nothing is selected, so the first one that is downloaded, `nightly-2026-10-11-1a2b3c4`, becomes `default-roc`: one write of `config.toml`), then foo is built with the pin of 1.2.0 and gm with its pin. One line for each tool in the order of the file: updated, up to date, updated, up to date, pinned. gp is `gp: pinned to commit dd03c09e` | R-T24, R-T25, R-T9, R-T26, R-DL1, R-NI17, R-SO15 |
+| 4 | `tool update --json` | all tools are current now: no build, no prompt; the envelope has the 5 outcomes | R-T24, R-J1 to R-J4 |
+| 5 | `tool update foo` | one tool: the release list, `foo 1.2.0 is up to date` | R-T24, R-T26 |
+| 6 | `tool update gp` | a commit: `pinned to commit dd03c09e`, no request at all | R-T24 |
+| 7 | `tool update nope` | no installed tool has the short name: exit 2 | R-SC3 |
+| 8 | `tool update --from-source` | the flag is for `tool update talon` (slice 050, R-FL12): exit 2, no call | R-CM16, R-FL12 |
+
+Slice 079 (R-T30 step 2, R-NI17): `tool update` reads the facts for the tools that it builds with a pin that is not installed (one `db_query`, and one more `list_dirs` of the toolchains before the consent). No installed release has a recorded pass for these closures, so the downloads are as before. `tu3-evidence` has a case with a pass.
+
+Slice 079b (R-T30, R-SO10, Q3 of slice 079): the selected compiler of a tool command is also the `roc` on `PATH` when ranks 2 (`ROC_TOOLCHAIN`) and 6 (`default-roc`) give nothing and its id is a nightly or a release (rank 7). It is looked up only then, so each run with no default and no `ROC_TOOLCHAIN` that chooses a compiler has the call `path_roc` (and the calls of slice 022b the first time) before the choice. 

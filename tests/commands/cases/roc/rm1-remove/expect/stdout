@@ -20,11 +20,11 @@ known projects that pin nightly-2026-10-14-38a3029 (the proxy installs it again 
 exit 0
 == roc rm nightly-2026-10-12-2664a27 env:TALON_NIGHTLY=false
 removed nightly-2026-10-12-2664a27
-no default compiler is set now
+the default compiler is now nightly-2026-10-11-1a2b3c4
 exit 0
 == roc rm link-dev
 removed link-dev
 exit 0
 == roc rm git-dd --json
-{"schema":1,"command":"roc rm","ok":true,"data":{"id":"git-dd03c09e","path":"$HOME/.cache/roc/toolchains/git-dd03c09e","was_default":false,"default":null,"projects":[]},"error":null}
+{"schema":1,"command":"roc rm","ok":true,"data":{"id":"git-dd03c09e","path":"$HOME/.cache/roc/toolchains/git-dd03c09e","was_default":false,"default":"nightly-2026-10-11-1a2b3c4","projects":[]},"error":null}
 exit 0

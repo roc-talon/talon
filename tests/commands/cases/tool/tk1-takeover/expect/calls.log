@@ -161,13 +161,14 @@ rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.01
 delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/toolchains
 random
 list_dirs $HOME/.cache/roc/toolchains
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/CVgauG3VURPHkHwGvEXaeqgVK6GhEjgkaU9yQhCuVnca nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/lat timeout=3600
+  probe $HOME/.cache/roc/packages/CVgauG3VURPHkHwGvEXaeqgVK6GhEjgkaU9yQhCuVnca nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/lat --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 lock $HOME/.local/share/talon/tools.json nowait: held
 read_files $HOME/.local/share/talon/tools.json
@@ -213,13 +214,14 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/toolchains
 random
 list_dirs $HOME/.cache/roc/toolchains
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/6wuS18gRbQCYUqELJMEFBboyDzcZaEvjrG8hWRgtCmVM nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/yank timeout=3600
+  probe $HOME/.cache/roc/packages/6wuS18gRbQCYUqELJMEFBboyDzcZaEvjrG8hWRgtCmVM nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/yank --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 lock $HOME/.local/share/talon/tools.json nowait: held
 read_files $HOME/.local/share/talon/tools.json

@@ -1,0 +1,13 @@
+downloading nightly-2026-10-19-0badf00 (73.0 MB), the default compiler
+downloading nightly-2026-10-19-0badf00 (73.0 MB), the default compiler
+downloading nightly-2026-10-19-0badf00 (73.0 MB), the default compiler
+downloading nightly-2026-10-16-1df370f (73.0 MB), the default compiler
+downloading nightly-2026-10-19-0badf00 (73.0 MB), the default compiler
+tln: error[consent]: no compiler is selected. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install @latest, then tln roc default <id>, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+warning: the sha256 of nightly-2026-10-19-0badf00 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+downloading nightly-2026-10-18-5349569 (73.0 MB), the default compiler
+warning: the sha256 of nightly-2026-10-14-38a3029 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-16-1df370f for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-18-5349569 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+warning: the sha256 of nightly-2026-10-19-0badf00 for linux_x86_64 changed: first seen cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc (github-digest), now b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78 (github-digest). Talon does not offer this compiler.
+tln: error[no_tuple]: no compiler release is known

@@ -1,6 +1,8 @@
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
 platform pf/main.roc
 building acme/app 1.1.0 with nightly-2026-10-14-38a3029
 project tool app 1.1.0 (talon.toml)
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
 platform pf/main.roc
 building acme/app 1.0.0 with nightly-2026-10-14-38a3029
 note: no yank and advisory data without a registry

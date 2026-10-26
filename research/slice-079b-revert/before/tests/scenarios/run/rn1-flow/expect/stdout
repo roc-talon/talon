@@ -1,0 +1,108 @@
+-- 1: the list of scripts (R-RUN11, R-CM24): on stdout, each name with its steps. No child runs.
+== tln run
+scripts of $PROJECT/proj/talon.toml
+greet:
+  sh -c "echo script=$TALON_SCRIPT dir=$(basename $TALON_SCRIPT_DIR)"
+args:
+  sh -c "echo $# args; for a in \"$@\"; do echo arg=$a; done" sh
+chain:
+  @greet
+  in sub: @here
+  sh -c "echo last $TALON_SCRIPT"
+fail3:
+  sh -c "echo before"
+  sh -c "exit 3"
+  sh -c "echo never"
+sig:
+  sh -c "kill -TERM $$"
+gone:
+  sh -c "echo first"
+  tln-no-such-program --x
+shell:
+  sh -c "echo first"
+  sh -c "echo a" > made
+t2:
+  app one
+t:
+  app one two
+  sh -c "echo after"
+penv:
+  sh -c "case $PATH in */talon/x/*) echo path-has-x ;; *) echo path-clean ;; esac"
+rb:
+  roc build main.roc --output=made
+mark:
+  sh -c "touch marker"
+exit 0
+-- 2: a script with a step that is one command: the 2 variables of R-RUN9 (the name of the script, the directory of the step), no other change of the environment (R-RUN3).
+== tln run greet
+script=greet dir=proj
+exit 0
+-- 3: the words after -- go to the last step as they are (R-RUN10). An argument with a space is one argument.
+== tln run args -- one two words --flag
+3 args
+arg=one
+arg=two words
+arg=--flag
+exit 0
+-- 4: @name and in steps (R-RUN4, R-RUN8). The step in sub runs @here from sub/talon.toml with its own directory. TALON_SCRIPT stays the name that the user typed.
+== tln run chain
+script=chain dir=proj
+here script=chain dir=sub
+last chain
+exit 0
+-- 5: the first step that fails stops the run and its exit code is the exit code of tln (R-RUN5, R-RUN7). The step after it does not start.
+== tln run fail3
+before
+exit 3
+-- 6: a child that ends by a signal: 128 + the number (R-RUN7).
+== tln run sig
+exit 143
+-- 7: a program that is not on PATH: exit 18 (environment), the 1st step ran (R-RUN7, R-EC18).
+== tln run gone
+first
+exit 18
+-- 8: a step with a shell word is exit 19 before the first step: no step runs, and no file is made (R-RUN2).
+== tln run shell
+exit 19
+cannot access 'made': No such file or directory
+-- 9: a name that no talon.toml has is exit 2 (R-RUN12). tln build is no script call (R-RUN17).
+== tln run nosuch
+exit 2
+== tln build
+exit 2
+-- 10: a step with a key of [tools] (R-RUN3 point 2). There is no build yet: the bundle of the url is fetched and built (R-PT9), with no release list (R-PT8). The binary exits 3, as the fake compiler writes it. The tools.json, the bin dir and PATH are not touched (R-PT12, R-PT10).
+== tln run t
+ran: acme/app 1.1.0 args: one two
+exit 3
+api: 0, downloads: 1, builds: 1
+1
+cannot access '$HOME/.local/share/talon': No such file or directory
+cannot access '$HOME/.local/bin': No such file or directory
+== tln run penv
+path-clean
+exit 0
+-- 11: the second run uses the build: no download, no build (R-PT9). The args of -- go to the last step, and when that is a tool, to the tool.
+== tln run t2 -- extra two words
+ran: acme/app 1.1.0 args: one extra two words
+exit 3
+api: 0, downloads: 1, builds: 1
+-- 12: the word roc runs the compiler that the proxy of this tln selects (R-RUN3 point 1: the pin of main.roc), in the directory of the step. The fake compiler logs its call and writes the output file.
+== tln run rb
+0 errors and 0 warnings found in 12ms while successfully building:
+
+    made
+exit 0
+made
+$PROJECT/proj build main.roc --output=made
+-- 13: hooks: tln install --frozen and tln list never run a script (R-HK1, R-RUN15, R-SE17). Only tln run does.
+== tln install --frozen --file main.roc
+the header satisfies talon.toml
+exit 0
+== tln list --file main.roc
+$PROJECT/proj/main.roc
+  pf  pf/main.roc  direct; foreign
+exit 0
+cannot access 'marker': No such file or directory
+== tln run mark
+exit 0
+marker

@@ -235,7 +235,7 @@ expect {
 	bad == [] and bad_back == []
 }
 
-# R-DI2 R-ID3 R-DI1 (slice 076): the cache dir of a repository, `<index>/github/<owner>/<repo>`, is made only from parts that are safe (`Ident.safe_part`). `owner` and `repo` come from a release URL in a header
+# R-SE18 R-DI2 R-ID3 R-DI1 (slice 076): the cache dir of a repository, `<index>/github/<owner>/<repo>`, is made only from parts that are safe (`Ident.safe_part`). `owner` and `repo` come from a release URL in a header
 # or from a typed name (`tln add ../..`), so a part that is empty, `.`, `..`, or has a `/`, a backslash or a NUL byte gives no path: `Err(BadPart)`. Without the guard, `releases!` writes `1.json` and `1.meta`
 # in `talon/index/` (owner `..`), in `talon/index/github/` (repo `..`) or in `talon/` (both). The failure of `releases!` for it is a usage failure (exit 2, R-EC2 bad ref), and the text names `owner/repo`.
 expect {

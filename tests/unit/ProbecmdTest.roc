@@ -154,7 +154,7 @@ expect {
 	bad == []
 }
 
-# R-PB4 R-EC12 R-UP7 (slice 037, question S4 of the slice file): `ProbeCmd.stop`, the failure with exit 12 (kind budget) or none. The first row that fits wins: a cut of the budget, then an end that is not a real fact, then no pass with releases that have no fact.
+# R-PB4 R-PB8 R-E7 R-EC12 R-UP7 (slice 037, question S4 of the slice file): `ProbeCmd.stop`, the failure with exit 12 (kind budget) or none. The first row that fits wins: a cut of the budget, then an end that is not a real fact, then no pass with releases that have no fact.
 expect {
 	cut = Fail.new(Budget, "the probe budget is spent: probe.max is 4")
 	real_end = |id| { id, real: Bool.True }

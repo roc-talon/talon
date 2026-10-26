@@ -1,0 +1,2 @@
+# <hash>:<compiler> <TAB> code <TAB> stdout <TAB> stderr. A unit check with no row passes. Run 2 (h2, step (b)): the platform fails its unit check with N3 (the newest installed), so N3 is skipped after one probe; N2 passes the 3 unit checks.
+9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK:nightly-2026-10-18-5349569	1	-	../fixtures/check/out/unit-fail.stderr

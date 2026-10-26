@@ -1,0 +1,5 @@
+[tools]
+old = { ref = "acme/yy@^1", url = "https://github.com/acme/yy/releases/download/1.0.0/EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F.tar.zst" }
+
+[scripts]
+nc = ["old --x", "tool-after"]

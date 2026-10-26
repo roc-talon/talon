@@ -1,0 +1,6 @@
+Slice 078b (entry `commands`): the take-over of an `x` cache entry by `tln tool install` with the `bin` record of slice 078 (R-B4, R-ST11 (2)). Same home as `tk1-takeover` with one cache entry (acme/qux 2.0.0), the compiler installed, `CI=true`.
+`tools.json` has `qux` 1.0.0 with `bin.qux`. The data bin file is `old qux`, the bin dir entry is `stale qux` (a link of an older file that a stopped step left, R-ST9), and `bin.qux` records the sha256 of `stale qux`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/qux@2.0.0` | The early check (`ToolBuild.entry_verdict!`) finds an entry that is not the data file, reads `tools.json` (one `read_files`) and finds the record: the entry is Talon's. Under the lock the text is in hand (no new read): the entry is taken, `replaced qux 1.0.0 with 2.0.0`. `bin.qux` has the sha256 of the new file | R-B4, R-ST11, R-ST9, R-T4, R-CC6 |

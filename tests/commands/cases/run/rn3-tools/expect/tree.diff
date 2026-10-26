@@ -28,6 +28,12 @@
 +}
 +
 +main! = |_args| Ok({})
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,3 @@
++format	1
++fact	EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F	nightly-2026-10-14-38a3029	any	fail	main.roc	
++fact	EJCeQcXqj5B5aSyHaEQgZdQPmczYGTRM2TD3idqDyR4F	nightly-2026-10-16-9e9e9e9	any	fail	main.roc	
 --- home/.cache/roc/talon/projects.json
 +++ home/.cache/roc/talon/projects.json
 @@ -0,0 +1 @@
@@ -43,5 +49,9 @@
 +{"format":1,"name":"acme/gen","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/gen/releases/download/1.0.0/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"bundle":"kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD","last_run":"2026-10-15T12:00:00Z"}
 --- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 +++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z

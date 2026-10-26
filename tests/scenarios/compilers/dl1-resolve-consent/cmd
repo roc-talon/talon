@@ -6,7 +6,7 @@ st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 D=$TALON_TEST_DIR
 T=$HOME/.cache/roc/toolchains
 C=$XDG_CONFIG_HOME/talon/config.toml
-# slice 062 (R-SO15): a download for a probe, a pin or the proxy writes no default, so config.toml does not exist. The line says so.
+# slice 062, slice 080 (R-SO15, R-SO24): a download for a probe, a pin or the proxy sets `default-roc` when none is set (under the lock of config.toml, before the rename), and never changes a default that is set. The line shows config.toml, or says that it does not exist.
 default_roc() { if [ -e $C ]; then cat $C; else echo "no default-roc (no config.toml)"; fi; }
 A=nightly-2026-10-13-5349569
 B=nightly-2026-10-12-0a1b2c3
@@ -41,7 +41,7 @@ echo "== R-CC4 step 1: A is installed now: no prompt, no list, no download. The 
 st env ROC_TOOLCHAIN=$A tln verify
 show
 echo "requests for compilers: $(requests nightlies), downloads of A: $(requests "GET /dl/$A")"
-echo "== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still no default (R-SO15)."
+echo "== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still the default of the first install (R-SO24: a set default is never changed)."
 st env ROC_TOOLCHAIN=$B tln verify --yes
 show
 store

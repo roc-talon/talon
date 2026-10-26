@@ -1,0 +1,7 @@
+Slice 078b, `tln tool update talon` with the `bin` record of slice 078 (R-ST9, R-ST11 (2)). The entry `talon` of `tools.json` is 0.3.1 and has `bin.tln` and `bin.roc`. The data file `tln` is `old tln`. The entries in the bin dir are `stale tln` and `stale roc`: files of an older `tln` that a stopped step left (R-ST9), both recorded.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | Step 6 reads `tools.json` (one `read_files`) because the entries are not the data file: both have the recorded sha256, so both are Talon's. v0.3.4 works, the entries `tln` and `roc` are made again (no warning, no `--replace-roc`). `tools.json` has the new sha256 in `bin.tln` and `bin.roc`. Under the lock the text is in hand (no new read). In `ts3b-foreign` and `ts4-rocforeign` the same entries are foreign (no record) | R-ST9, R-ST11, R-ST6, R-S3, R-T4 |
+
+Slice 074 (R-S2, R-IS3): `fx/programs` has no `gh`, so the run prints `note: attestation not checked (needs gh, logged in)`.

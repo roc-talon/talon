@@ -1,0 +1,3 @@
+== tool install acme/qux@2.0.0
+replaced qux 1.0.0 with 2.0.0 (acme/qux)
+exit 0

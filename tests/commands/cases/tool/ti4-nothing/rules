@@ -2,6 +2,6 @@ Slice 047, the compiler choice when no compiler release is installed (entry `com
 
 | Run | Words | Result | Rules |
 | --- | --- | --- | --- |
-| 1 | `tool install acme/x` (answers `2`, `3`) | the prompt has no option 2 (no release is installed): `2` is not offered, so the command asks again; `3` is exit 13. No `db_query` (no key), no probe | R-T15, R-NI8, R-T13 |
+| 1 | `tool install acme/x` (answers `2`, `3`) | the prompt has no option 2 (no release is installed): `2` is not offered, so the command asks again; `3` is exit 13. No `db_query` (no key), no probe, nothing is tried (R-T15). Slice 079b (R-T30, R-SO10, Q3 of slice 079): the `roc` on `PATH` (`fx/path-roc`, `fx/jobs` `version`: `nightly-2026-10-14-38a3029`) is the selected compiler (rank 7), so the pin that is downloaded becomes no default: the question has no line `It becomes the default compiler.`, and `config.toml` is not read before the prompt. One `path_roc` lookup (the calls of slice 022b the first time) comes before the prompt | R-T15, R-NI8, R-T13, R-T30, R-SO15 |
 | 2 | `tool install acme/x --roc installed` (`env:TALON_INTERACTIVE=0`) | option 2 has no release: exit 13 `no compiler release is installed to try`, no line `trying`, no probe | R-T16, R-T20 |
 | 3 | `tool install acme/x` (`env:TALON_INTERACTIVE=0`) | no person and no flag: exit 13 that names `--roc pinned`, `--yes` and `TALON_AUTO_INSTALL=yes` (no query, no download) | R-T15, R-T16, R-NM5 |

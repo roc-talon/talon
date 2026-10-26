@@ -45,7 +45,7 @@ write_atomic $HOME/u1/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/u1/.cache $HOME/u1/.cache/roc
 make_dirs $HOME/u1/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/u1/.cache/roc/talon/tmp/0123456789abcdef/src/cli nightly-2026-10-14-38a3029 $HOME/u1/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/u1/.cache/roc/talon/tmp/0123456789abcdef/tln.exe timeout=3600
+  probe $HOME/u1/.cache/roc/talon/tmp/0123456789abcdef/src/cli nightly-2026-10-14-38a3029 $HOME/u1/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/u1/.cache/roc/talon/tmp/0123456789abcdef/tln.exe --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/u1/.cache ROC_CACHE_DIR=$HOME/u1/.cache/roc TALON_IN_PROXY=1
 spawn_all limit=1
   job - $HOME/u1/.cache/roc/talon/tmp/0123456789abcdef/tln.exe --version
@@ -71,6 +71,10 @@ random
 rename $HOME/u1\.local\bin/roc.exe $HOME/u1\.local\bin/roc.0123456789abcdef.del
 hard_link $HOME/u1/.local/share/talon/bin/tln.exe $HOME/u1\.local\bin/roc.exe.0123456789abcdef.tmp
 rename $HOME/u1\.local\bin/roc.exe.0123456789abcdef.tmp $HOME/u1\.local\bin/roc.exe
+lock $HOME/u1/.local/share/talon/tools.json nowait: held
+read_files $HOME/u1/.local/share/talon/tools.json
+write_atomic $HOME/u1/.local/share/talon/tools.json
+unlock $HOME/u1/.local/share/talon/tools.json
 delete $HOME/u1/.cache/roc/talon/tmp/0123456789abcdef
 env_all
 list_dirs $HOME/u2\.local\bin $HOME/u2/.local/share/talon/bin
@@ -118,7 +122,7 @@ write_atomic $HOME/u2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/u2/.cache $HOME/u2/.cache/roc
 make_dirs $HOME/u2/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/u2/.cache/roc/talon/tmp/0123456789abcdef/src/cli nightly-2026-10-14-38a3029 $HOME/u2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/u2/.cache/roc/talon/tmp/0123456789abcdef/tln.exe timeout=3600
+  probe $HOME/u2/.cache/roc/talon/tmp/0123456789abcdef/src/cli nightly-2026-10-14-38a3029 $HOME/u2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/u2/.cache/roc/talon/tmp/0123456789abcdef/tln.exe --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/u2/.cache ROC_CACHE_DIR=$HOME/u2/.cache/roc TALON_IN_PROXY=1
 spawn_all limit=1
   job - $HOME/u2/.cache/roc/talon/tmp/0123456789abcdef/tln.exe --version
@@ -142,4 +146,8 @@ delete $HOME/u2/.cache/roc/talon/tmp/0123456789abcdef
 random
 hard_link $HOME/u2/.local/share/talon/bin/tln.exe $HOME/u2\.local\bin/roc.exe.0123456789abcdef.tmp
 rename $HOME/u2\.local\bin/roc.exe.0123456789abcdef.tmp $HOME/u2\.local\bin/roc.exe
+lock $HOME/u2/.local/share/talon/tools.json nowait: held
+read_files $HOME/u2/.local/share/talon/tools.json
+write_atomic $HOME/u2/.local/share/talon/tools.json
+unlock $HOME/u2/.local/share/talon/tools.json
 delete $HOME/u2/.cache/roc/talon/tmp/0123456789abcdef

@@ -3,5 +3,5 @@ downloading nightly-2026-10-15-38e6c42 (453 B)
 downloading nightly-2026-10-12-2664a27 (454 B)
 downloading nightly-2026-10-14-38a3029 (454 B)
 tln: error[usage]: no compiler is 99 steps older than nightly-2026-10-14-38a3029
-tln: error[environment]: no compiler is selected, so a relative step has no start. Run: tln roc install @latest and tln roc default <id>
+downloading nightly-2026-10-14-38a3029 (454 B)
 downloading nightly-2026-10-09-258ab27 (453 B)

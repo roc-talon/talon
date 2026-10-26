@@ -1,0 +1,3 @@
+tool install acme/two
+tool install acme/three env:ROC_TOOLCHAIN=nightly-2026-10-12-2664a27
+tool install acme/dl --roc pinned

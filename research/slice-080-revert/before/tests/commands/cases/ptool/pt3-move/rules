@@ -1,0 +1,31 @@
+Slice 056, `tln update`, `tln upgrade`, `update --tool` and `upgrade --tool` with `[tools]` (entry `commands`): R-PT4, R-PT5, R-PT12, R-UP5, R-WS5, R-PT2, R-CC7, R-FL12. One home with the compiler installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`.
+The headers have only the platform (alias `pf`), so the header flow has nothing to change. acme/foo has 2.0.0, 1.1.0 and 1.0.0, acme/bar has 2.0.0 and 1.0.0, acme/baz has 2.0.0, 1.2.0 and 1.0.0, acme/fmt has 1.1.0 and 1.0.0, acme/pfx has 1.1.0 and 1.0.0.
+Project `p1` has `foo` (`acme/foo@^1`, the `url` of 1.0.0), `bar` (`acme/bar@1.0.0`, the `url` of 1.0.0) and `baz` (`acme/baz@>=1.0, <1.5`, the `url` of 1.0.0). Project `p2` has `fmt` (`acme/fmt@^1`, 1.0.0). Project `p3` has `pf` (`acme/pfx@^1`): the key is also the alias of its platform entry.
+Workspace `w` has `[workspace]` and `[tools]` (`foo`, 1.0.0) in its root file, and the member `w/m1`. Workspace `w2` has a `[tools]` table in the file of a member.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `update --tool --file p1/main.roc` | each tool moves inside its `ref`: `foo` to 1.1.0 (built, new `url`), `bar` has an exact version: it stays (no build), `baz` to 1.2.0. No header entry is read (the header is not resolved). One write | R-PT5, R-PT4, R-PT12 |
+| 2 | `update --tool --file p1/main.roc` | nothing is newer inside the ranges: no build, no write: `nothing to change` | R-PT5 |
+| 3 | `upgrade --tool foo bar --file p1/main.roc` | the newest release: `foo` to 2.0.0 with the `ref` `^2` (R-UP5), `bar` to 2.0.0 with the exact `ref` `acme/bar@2.0.0`. `baz` is not named | R-PT5, R-UP5 |
+| 4 | `upgrade --tool --file p1/main.roc` | `baz` has a range with no form (`>=1.0, <1.5`): the note on stderr, it does not move. `foo` and `bar` are the newest already | R-PT5, R-UP5 |
+| 5 | `update --tool zed --file p1/main.roc` | exit 2: the key is not in `[tools]`, the message lists the keys | R-PT5, R-FL12 |
+| 6 | `update --tool acme/foo --file p1/main.roc` | exit 2: an operand of `--tool` is a key, not a ref | R-PT5, R-FL12 |
+| 7 | `update fmt --file p2/main.roc` | the only name is a key of `[tools]` and no alias: the tool moves to 1.1.0, the header flow does not run (no pick, no closure) | R-PT5 |
+| 8 | `update --file p2/main.roc` | no names: the header (nothing to change) and each tool (`fmt` is at 1.1.0 already) | R-PT5 |
+| 9 | `update pf --file p3/main.roc` | `pf` is the alias of the platform and a key of `[tools]`: exit 2, the message names `--tool` | R-PT5 |
+| 10 | `upgrade --tool pf --file p3/main.roc` | with `--tool` the name is a key: the tool moves to 1.1.0 (the `ref` `^1` admits it) | R-PT5 |
+| 11 | `update --tool --file w/m1/main.roc` | a member of a workspace: the `[tools]` of the root file `w/talon.toml` is read and written (R-PT2). `foo` moves to 1.1.0 | R-PT2, R-WS5, R-PT5 |
+| 12 | `install --file w2/m1/main.roc` | the member file has `[tools]`: exit 19, the message names the file, the line and the table | R-PT2, R-WS5 |
+| 13 | `update fmt --file p2/main.roc` | the only name is a key and `fmt` is at 1.1.0 already (run 7): the header flow does not run and no tool changes. The line `nothing to change` is printed once (D16 of the review) | R-PT5 |
+| 14 | `update pf --file p2/main.roc` | gap test (decision C7 of 056c): the name `pf` is a header entry (the platform alias) and no key of `[tools]`, and `p2` has `[tools]`. The header flow runs for `pf` and the tools step does not run: no read of the index of acme/fmt, no call for a tool | R-PT5 |
+
+Slice 073 (R-PT5, R-OUT4). Project `p4` is a copy of `p2` at the start (`fmt` is at 1.0.0, `^1`, and its 1.1.0 build is in the `x` cache after run 7).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 15 | `update fmt@^2 --file p2/main.roc` | 056 Q2: `fmt` is a key of `[tools]`, and a selector on it is exit 2. The text names `tln add --tool owner/app@^2`. Nothing is read after the header and `talon.toml` | R-PT5 |
+| 16 | `update --json --file p4/main.roc` | the header flow runs (nothing to change) and the tools step moves `fmt` to 1.1.0 (the build is in the cache: no build). The envelope has `data.tools` with one row `moved` (`previous` 1.0.0, `built` false) after the keys of the header flow | R-PT5, R-OUT4 |
+| 17 | `upgrade --json foo --file w/m1/main.roc` | the only name is a key, so the header flow does not run (the idle outcome). `foo` of the root file `w` moves to 2.0.0 with the `ref` `^2` (R-UP5, the 2.0.0 build is in the cache). `data.tools` has one row `moved` (`previous` 1.1.0) | R-PT5, R-UP5, R-OUT4 |
+
+Slice 079b (R-T30, R-SO10, Q3 of slice 079): the selected compiler of a tool command is also the `roc` on `PATH` when ranks 2 (`ROC_TOOLCHAIN`) and 6 (`default-roc`) give nothing and its id is a nightly or a release (rank 7). It is looked up only then, so each run with no default and no `ROC_TOOLCHAIN` that chooses a compiler has the call `path_roc` (and the calls of slice 022b the first time) before the choice. 

@@ -1,0 +1,87 @@
+== 1: the list (R-LY1, R-CM19: ls). The lock, the temp dir and the files of toolchains/ are no compiler.
+== tln roc ls
+  ID                          KIND     INSTALLED   LAST USE
+  copy-fix-1                  copy     -           -
+  git-dd03c09e                git      -           -
+  link-dev                    link     2026-10-21  -
+  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22
+  nightly-2026-10-11-1a2b3c4  nightly  2026-10-20  -
+* nightly-2026-10-14-38a3029  nightly  2026-10-20  -
+exit 0
+== tln roc list --json
+{"schema":1,"command":"roc list","ok":true,"data":{"default":"nightly-2026-10-14-38a3029","compilers":[{"id":"copy-fix-1","kind":"copy","installed_at":null,"last_use":null,"default":false},{"id":"git-dd03c09e","kind":"git","installed_at":null,"last_use":null,"default":false,"repo":null,"ref":null},{"id":"link-dev","kind":"link","installed_at":"2026-10-21T09:30:00Z","last_use":null,"default":false},{"id":"nightly-2026-10-09-258ab27","kind":"nightly","installed_at":"2026-10-20T12:00:00Z","last_use":"2026-10-22T08:30:00Z","default":false},{"id":"nightly-2026-10-11-1a2b3c4","kind":"nightly","installed_at":"2026-10-20T12:00:00Z","last_use":null,"default":false},{"id":"nightly-2026-10-14-38a3029","kind":"nightly","installed_at":"2026-10-20T12:00:00Z","last_use":null,"default":true}]},"error":null}
+exit 0
+== 2: a unique prefix gives the full id (R-SC13, R-SC10). The value is replaced, the comments and the other lines stay (R-CC6).
+== tln roc default nightly-2026-10-11
+nightly-2026-10-11-1a2b3c4 is now the default compiler
+exit 0
+# my settings
+nightly = true   # keep
+default-roc = "nightly-2026-10-11-1a2b3c4"   # tln roc default writes it
+min-release-age = "2d"
+== tln roc default nightly-2026-10-11-1a2b3c4
+nightly-2026-10-11-1a2b3c4 is already the default compiler
+exit 0
+== 3: a prefix of a git build (R-R5, R-SC9). R-CM15: a wrong number of operands.
+== tln roc default git-dd
+git-dd03c09e is now the default compiler
+exit 0
+== tln roc default
+exit 2
+== tln roc default nightly-2026-10-1
+exit 2
+# my settings
+nightly = true   # keep
+default-roc = "git-dd03c09e"   # tln roc default writes it
+min-release-age = "2d"
+== 4: rm with a prefix. The projects pa and pb pin it (R-RR2): listed, no prompt. Its compat dir goes, the other stays (R-GC3).
+== tln roc rm nightly-2026-10-09
+removed nightly-2026-10-09-258ab27
+known projects that pin nightly-2026-10-09-258ab27 (the proxy installs it again when one runs):
+  $PROJECT/pa/main.roc
+  $PROJECT/pb/main.roc
+exit 0
+copy-fix-1
+git-dd03c09e
+link-dev
+nightly-2026-10-11-1a2b3c4
+nightly-2026-10-14-38a3029
+compat-other
+== 5: rm of the default (R-RR1): the default moves to the newest nightly by published_at, 2026-10-14 (a git build, a link and a copy are never the default, R-NS6). The value changes, the comments stay.
+== tln roc rm git-dd03c09e
+removed git-dd03c09e
+the default compiler is now nightly-2026-10-14-38a3029
+exit 0
+# my settings
+nightly = true   # keep
+default-roc = "nightly-2026-10-14-38a3029"   # tln roc default writes it
+min-release-age = "2d"
+== 6: rm of a link (R-RR3, R-RM2): the dir of the link goes, the target stays.
+== tln roc rm link-dev
+removed link-dev
+exit 0
+roc
+copy-fix-1
+nightly-2026-10-11-1a2b3c4
+nightly-2026-10-14-38a3029
+== 7: rm of the default again, with the nightly switch off (R-NS3): no compiler can take the default, so the line goes.
+== env TALON_NIGHTLY=0 tln roc rm nightly-2026-10-14-38a3029
+removed nightly-2026-10-14-38a3029
+no default compiler is set now
+exit 0
+# my settings
+nightly = true   # keep
+min-release-age = "2d"
+== tln roc ls
+  ID                          KIND     INSTALLED   LAST USE
+  copy-fix-1                  copy     -           -
+  nightly-2026-10-11-1a2b3c4  nightly  2026-10-20  -
+exit 0
+== tln roc rm nightly-2099
+exit 2
+== tln roc rm
+exit 2
+== the store has no trash dir, no temp, no lock (R-CC1, R-CC10)
+0
+copy-fix-1
+nightly-2026-10-11-1a2b3c4

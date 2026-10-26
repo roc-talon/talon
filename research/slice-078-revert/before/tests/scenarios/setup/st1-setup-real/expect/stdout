@@ -1,0 +1,96 @@
+== 1: R-ST13 R-ST14 R-ST15 R-ST7 R-LY8 R-ST4 R-NI14 R-ST5: the first setup. tln, roc and the tool foo are hard links of the files in the data bin dir (the same inode). The bin dir is not on PATH: the default answer is Yes, so the profile of bash gets the marker line. The completion is written.
+== tln setup
+recorded talon 0.0.0 in $WORK/data/talon/tools.json
+made $HOME/.local/bin/tln (hard link)
+made $HOME/.local/bin/roc (hard link)
+made $HOME/.local/bin/foo (hard link)
+PATH: added $HOME/.local/bin to $HOME/.bashrc
+completions: $HOME/.local/share/bash-completion/completions/tln
+exit 0
+== 1b: R-IS6 R-S2 R-T4 R-CC1 (slice 052): the entry talon is written when it is missing: the kind prebuilt, the version of this tln and the release URL of its asset, the target of this machine (musl on Linux), the real sha256 of the file tln in the data bin dir, the time TALON_NOW. The tool foo stays. No temp file is left.
+{"format":1,"tools":{"foo":{},"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.0","url":"https://github.com/roc-talon/talon/releases/download/v0.0.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"<sha256>","libs":[],"installed_at":"2026-10-22T12:00:00Z"}}}
+the sha256 is the one of the file tln
+bin
+tools.json
+same file: tln
+same file: roc is the file tln
+same file: foo
+foo
+roc
+tln
+export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+== R-ST5: the bash completion is valid bash and completes the commands and the subcommands of roc
+bash syntax ok
+roc
+install link use list remove default update
+== 2: R-ST8 R-ST14: the entry roc is the launcher: the program name is roc, so tln runs as the proxy (the compiler by +id). The entry tln runs as tln. The tool entry runs the tool.
+== $HOME/.local/bin/roc +nightly-2026-10-14-38a3029 version
+ran nightly-2026-10-14-38a3029: version
+XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+exit 0
+== $HOME/.local/bin/tln --version
+tln 0.0.0
+exit 0
+== $HOME/.local/bin/foo a b
+tool foo ran as $HOME/.local/bin/foo: a b
+exit 0
+== 3: R-ST12 R-IS6: setup again changes nothing. The profile has one marker line. The entry talon is there, so tools.json is the same file as after step 1.
+== tln setup
+nothing to do: the entries, the PATH line and the completions are in place
+exit 0
+tools.json is unchanged
+1
+== 4: R-ST11 R-ST6 R-NI13 R-ST2: roc is a file that Talon did not write (other content). The default answer is No: the file stays, no launcher, the note names --replace-roc.
+== tln setup
+exit 0
+the old roc: version
+== 5: R-NI13 R-ST2: --replace-roc is the answer Yes. roc goes to roc.old, the compiler link-system records its path, the launcher is made. roc +link-system runs the old roc.
+== tln setup --replace-roc
+made $HOME/.local/bin/roc (hard link)
+moved $HOME/.local/bin/roc to $HOME/.local/bin/roc.old, linked as link-system
+exit 0
+same file: roc is the file tln again
+the old roc: version
+{"format":1,"id":"link-system","path":"$HOME/.local/bin/roc.old","installed_at":"2026-10-22T12:00:00Z"}
+== $HOME/.local/bin/roc +link-system version
+the old roc: version
+exit 0
+== 6: R-NM8 R-ST2: --yes is the answer Yes for the prompt with the default No. The link-system that exists stays as it is (its installed_at is still the time of step 5, also with a later TALON_NOW).
+== env TALON_NOW=2026-10-25T00:00:00Z tln setup --yes
+made $HOME/.local/bin/roc (hard link)
+moved $HOME/.local/bin/roc to $HOME/.local/bin/roc.old, linked as link-system
+exit 0
+another old roc: version
+same file: roc is the file tln again
+== 7: R-ST6: a file that is not Talon's is never overwritten. The tool entry foo has other content: the warning, no change.
+== tln setup
+exit 0
+not the tool
+== 8: R-ST4: GITHUB_PATH is set: the bin dir is appended to that file, in place of a profile line. A second run changes nothing.
+== env GITHUB_PATH=$WORK/gh_path tln setup
+PATH: added $HOME/.local/bin to $WORK/gh_path
+exit 0
+$HOME/.local/bin
+== env GITHUB_PATH=$WORK/gh_path tln setup
+exit 0
+1
+== 9: R-NI14 R-ST4 R-LY8 R-LY9 R-ST3: a second HOME. --no-modify-path: no profile is written, the line is printed. The entries are made there.
+== env HOME=$WORK/h2 tln setup --no-modify-path
+made $WORK/h2/.local/bin/tln (hard link)
+made $WORK/h2/.local/bin/roc (hard link)
+made $WORK/h2/.local/bin/foo (hard link)
+PATH: not changed. To add $WORK/h2/.local/bin, put this line in $WORK/h2/.bashrc: export PATH="$WORK/h2/.local/bin:$PATH" # talon: added by tln setup
+completions: $WORK/h2/.local/share/bash-completion/completions/tln
+exit 0
+no profile in h2
+foo
+roc
+tln
+== R-ST3: the bin dir of h2 is on PATH, and a roc comes before it (the fake roc of the runner): the warning, nothing else. No PATH step.
+== env HOME=h2 PATH=<fake roc>:<h2 bin>:... tln setup
+nothing to do: the entries, the PATH line and the completions are in place
+exit 0
+== 10: R-CM18: no operand, exit 2. R-HF7 R-ST7: no symbolic link was made.
+== tln setup now
+exit 2
+0

@@ -1,4 +1,4 @@
 # R-SL7 R-SO4 R-NS1 R-PD16: talon.toml has the range >=nightly-2026-10-13-91fa0c2 (rank 4). Two installed nightlies of one day: 14-38a3029 (published 13:00) and 14-ffffff0 (published 09:00). The tag text puts ffffff0 first, the time puts 38a3029 first (R-NS1: the time wins). So the base is 38a3029 and @-1 is 2026-10-13-91fa0c2 (installed). Without the times the base would be ffffff0, that is not in the list of compilers: exit 2.
 roc install @-1
-# R-SL7 R-SO4 R-SO14 (answer Q3): HOME is home2. Its only compiler (2026-10-12) is below the range, so rank 4 has no installed compiler (NoneInRange) and the step has no start: exit 18, as for no compiler.
-env:HOME={w}/home2 roc install @-1
+# R-SL7 R-SO13 R-SO4 (slice 072e, Q-E3): HOME is home2. Its only compiler (2026-10-12, the default) is below the range, so rank 4 has no installed compiler (NoneInRange). The base is the newest release in the range (R-SO13), as an id and with no download: 2026-10-18. A fact says pass for the header hash on 2026-10-16: it is not the base (the pick of R-SO14 does not apply to a project with a range). @-6 is 2026-10-12, installed, so nothing downloads.
+env:HOME={w}/home2 roc install @-6

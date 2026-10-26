@@ -1,0 +1,28 @@
+--- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
++++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]}]
+--- home/.local/bin/roc
++++ home/.local/bin/roc
+@@ -1 +1 @@
+-stale roc
+\ No newline at end of file
++fake tln 0.3.4
+--- home/.local/bin/tln
++++ home/.local/bin/tln
+@@ -1 +1 @@
+-stale tln
+\ No newline at end of file
++fake tln 0.3.4
+--- home/.local/share/talon/bin/tln
++++ home/.local/share/talon/bin/tln
+@@ -1 +1 @@
+-old tln
+\ No newline at end of file
++fake tln 0.3.4
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z","bin":{"tln":"1c58f6bc3a5939b9545112d44f21badb5a5f7da58cc338bf5f05df0fea1d83b9","roc":"c1d8be6014fcb140b76d04eaf6b4ee809353edf80db03ef595d42040897f54c9"}}}}
+\ No newline at end of file
++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.4","url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"tln":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361","roc":"5dd537f82693740ba68205728e58b9e96532816b2f99d1694193718029f8c361"}}}}

@@ -32,6 +32,7 @@ spawn_all limit=1
   job - /fake/bin/roc version
 write_atomic $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/t1/main.roc $PROJECT/t1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
@@ -77,7 +78,7 @@ read_files $HOME/.cache/roc/packages/51HeDQidRsFTBFE1KL1pezhBmPRfNwegYPmcLMwArsv
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 probes 1
-  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build --target=wasm32 main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build --target=wasm32 main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
@@ -119,6 +120,7 @@ spawn_all limit=1
   job - /fake/bin/roc version
 write_atomic $HOME2/.cache/roc/talon/path-roc.json
 read_files $PROJECT/t2/main.roc $PROJECT/t2/talon.toml $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
 platform
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
@@ -164,7 +166,7 @@ read_files $HOME2/.cache/roc/packages/2U9LEQSTc2dyx3AKV5sBMbQ7873QE5sjM4TKstpWqY
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 probes 1
-  probe $HOME2/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build --target=x64musl main.roc --output=$HOME2/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME2/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build --target=x64musl main.roc --output=$HOME2/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME2/.cache ROC_CACHE_DIR=$HOME2/.cache/roc TALON_IN_PROXY=1
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
@@ -206,6 +208,7 @@ spawn_all limit=1
   job - /fake/bin/roc version
 write_atomic $HOME3/.cache/roc/talon/path-roc.json
 read_files $PROJECT/t3/main.roc $PROJECT/t3/talon.toml $HOME3/.config/talon/config.toml
+list_dirs $HOME3/.cache/roc/toolchains
 platform
 list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
@@ -251,7 +254,7 @@ read_files $HOME3/.cache/roc/packages/CQJHfzEhdQeAwEQuyNiFn4gjWnF9jEthmNWcbmtLCU
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 probes 1
-  probe $HOME3/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME3/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME3/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME3/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
@@ -304,6 +307,7 @@ spawn_all limit=1
   job - /fake/bin/roc version
 write_atomic $HOME5/.cache/roc/talon/path-roc.json
 read_files $PROJECT/t5/main.roc $PROJECT/t5/talon.toml $HOME5/.config/talon/config.toml
+list_dirs $HOME5/.cache/roc/toolchains
 platform
 list_dirs $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies
 programs gh
@@ -350,7 +354,7 @@ read_files $HOME5/.cache/roc/packages/2U9cRZfcATbXWVW8U3Avg5cdcChcJuD7fWYTL4rYAZ
 db_query $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 probes 1
-  probe $HOME5/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME5/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME5/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME5/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME5/.cache ROC_CACHE_DIR=$HOME5/.cache/roc TALON_IN_PROXY=1
 db_write $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME5/.cache/roc/talon/tmp/0123456789abcdef
@@ -455,7 +459,7 @@ db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 write_atomic $HOME8/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/.last-use
 probes 1
-  probe $HOME8/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build --target=wasm32 main.roc --output=$HOME8/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME8/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build --target=wasm32 main.roc --output=$HOME8/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME8/.cache ROC_CACHE_DIR=$HOME8/.cache/roc TALON_IN_PROXY=1
 db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME8/.cache/roc/talon/tmp/0123456789abcdef

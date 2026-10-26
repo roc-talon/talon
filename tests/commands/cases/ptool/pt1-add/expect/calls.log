@@ -42,7 +42,7 @@ write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/foo timeout=3600
+  probe $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/foo --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 random
 copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/foo $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7.0123456789abcdef.tmp/foo
@@ -98,7 +98,7 @@ write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3 nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/bar timeout=3600
+  probe $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3 nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/bar --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 random
 copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/bar $HOME/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468.0123456789abcdef.tmp/bar
@@ -240,7 +240,7 @@ write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/snap timeout=3600
+  probe $HOME/.cache/roc/packages/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/snap --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 random
 copy_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/snap $HOME/.cache/roc/talon/x/fe71495eb000771b1849909eb3a6d9a2d2ae1b1a34820d83ad012bf4a1c5b431.0123456789abcdef.tmp/snap
@@ -352,7 +352,7 @@ write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 canonical $HOME/.cache $HOME/.cache/roc
 make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
 probes 1
-  probe $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/bad timeout=3600
+  probe $HOME/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc build main.roc --opt=speed --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/bad --no-cache timeout=3600
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args

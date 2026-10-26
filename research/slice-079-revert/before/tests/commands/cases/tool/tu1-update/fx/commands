@@ -1,0 +1,8 @@
+tool update env:TALON_INTERACTIVE=0
+tool update
+tool update
+tool update --json
+tool update foo
+tool update gp
+tool update nope
+tool update --from-source

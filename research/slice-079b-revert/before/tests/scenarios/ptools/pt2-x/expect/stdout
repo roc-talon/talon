@@ -1,0 +1,34 @@
+-- 1: tln x with the key of [tools] (R-PT11). There is no build yet: the bundle of the url is fetched and built (R-PT9), with no release list and no yank check (R-PT8). The words after -- go to the app, its exit code is the exit code of tln (R-X4). The tools.json and the bin dir are not made (R-X3, R-PT12).
+== tln x app -- one two words
+ran: acme/app 1.1.0 args: one two words
+exit 3
+api: 0, downloads: 1, builds: 1
+1
+cannot access '$HOME/.local/share/talon': No such file or directory
+cannot access '$HOME/.local/bin': No such file or directory
+-- 2: the full name with no selector, when an entry has the same app: the note on stderr, and the same build (R-PT11, R-PT9). No request, no build.
+== tln x acme/app
+ran: acme/app 1.1.0 args: 
+exit 3
+api: 0, downloads: 1, builds: 1
+-- 3: a global tool of the same app and an older release (tln tool install, R-T26).
+== tln tool install acme/app@1.0.0
+installed app 1.0.0 (acme/app)
+exit 0
+api: 1, downloads: 2, builds: 2
+app
+-- 4: the project version wins over a global tool (R-PT12): the key runs 1.1.0 and the global 1.0.0 is not used. No request, no build.
+== tln x app -- p
+ran: acme/app 1.1.0 args: p
+exit 3
+api: 1, downloads: 2, builds: 2
+-- 5: a selector means that the user asked for a version (R-PT11): the rules of R-X1 to R-X5 apply, the installed tool 1.0.0 runs in place (R-B5).
+== tln x acme/app@1.0.0 -- g
+ran: acme/app 1.0.0 args: g
+exit 3
+downloads: 2, builds: 2
+-- 6: outside the project the key is no project tool: tln x is as before (R-PT11). The short name app is the installed tool, or an x entry of the app (R-B1: the newest version wins, so the 1.1.0 build of the project tool also matches).
+== tln x app -- o
+ran: acme/app 1.1.0 args: o
+exit 3
+downloads: 2, builds: 2

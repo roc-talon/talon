@@ -1,0 +1,6 @@
+== roc install @-1
+nightly-2026-10-13-91fa0c2 is already installed
+nightly-2026-10-13-91fa0c2 is now the default compiler
+exit 0
+== env:HOME={w}/home2 roc install @-1
+exit 18

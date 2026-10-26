@@ -1,0 +1,12 @@
+run ck cwd:p1
+run all cwd:p1
+run mk cwd:p2
+run mk cwd:p2
+run nc cwd:p3
+run off --offline cwd:p4
+run mc cwd:w/m1
+run so cwd:w/s
+run cwd:p1
+run bd cwd:p5
+run nu cwd:p6
+run w cwd:p7

@@ -1,0 +1,2 @@
+etag "o1"
+next https://api.github.com/repos/acme/offlinec/releases?per_page=100&page=2

@@ -1,0 +1,5 @@
+version
+check main.roc
+check main.roc
+check main.roc
+build --target=wasm32 main.roc --output=$HOME/.cache/roc/talon/tmp/$HEX/tln-probe.out

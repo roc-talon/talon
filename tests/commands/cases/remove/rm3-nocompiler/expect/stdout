@@ -1,0 +1,8 @@
+== env:HOME={w}/h5 remove json --no-check --file n1/main.roc
+check: skipped
+$PROJECT/n1/main.roc
+  - json: acme/json 2.1.0
+exit 0
+== env:HOME={w}/h5 install --no-check --file n2/main.roc
+nothing to change
+exit 0

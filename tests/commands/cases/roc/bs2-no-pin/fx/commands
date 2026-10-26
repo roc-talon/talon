@@ -1,8 +1,10 @@
 # R-SL7 R-SO6 R-PD16: main.roc has no pin and there is no talon.toml and no .roc-version, so the base is the global default (rank 6), nightly-2026-10-14-38a3029. One step older is 2026-10-13-91fa0c2 (installed).
 roc install @-1
-# R-SL7 R-SO14: no pin, no default (home2), no roc on PATH: no compiler is selected, so a step has no start. Exit 18. A full id still works with no base.
-env:HOME={w}/home2 roc install @-1
+# R-SL7 R-SO14 R-SO23 (slice 072e, Q-D3): no pin, no default (home2), no roc on PATH, nothing installed: no compiler is selected, so the base is the pick of R-SO14 as an id only (no download, no default, no probe): the latest in the channel (2026-10-18). @-2 is 2026-10-16 (@-1 is 2026-10-17, whose fake archive has another digest: the run avoids it). The command installs 2026-10-16, which is the first install, so it is the default.
+env:HOME={w}/home2 roc install @-2
 # R-SL7 R-SO2 R-NS6: ROC_TOOLCHAIN names a git build. It is the base (rank 2), but it is not in the list of compilers (R-NS6: it is chosen by name only), so the step has no start. Exit 2.
 env:ROC_TOOLCHAIN=git-dd03c09e roc install @+1
 # R-SL7 R-SO2: an installed id as ROC_TOOLCHAIN is the base.
 env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 roc install @-1
+# R-SL7 R-SO14 R-SO23 (slice 072e, Q-D3): no compiler is selected and nothing is installed (home3: no default, no pin, no PATH roc). A fact says pass for the platform hash on 2026-10-16, which is not the newest: it is the newest with a pass in the channel (step (c)), so the base is 2026-10-16 as an id (no download, no default, no probe) and @-1 is 2026-10-15. Without the fact the base would be the latest in the channel (2026-10-18).
+env:HOME={w}/home3 roc install @-1

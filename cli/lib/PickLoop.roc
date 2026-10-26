@@ -348,7 +348,9 @@ begin! = |fx, request, setup, probed| match probed.started {
 	Ok(started) => Ok({ started, probed })
 	Err(None) => {
 		held = setup.held ?? ""
-		started = Start.run!(fx, { roots: request.roots, path_roc: request.compiler, held, downloads: ResolveBase.ladder_downloads(request) })?
+		run = { roots: request.roots, path_roc: request.compiler, held, downloads: ResolveBase.ladder_downloads(request) }
+		# R-SO14, R-SO19: `request.selected` is empty when no compiler was selected before the pick. The held compiler is then the pick (`HeldRoc.picked!`).
+		started = if request.selected == "" and !held.is_empty() Start.run_picked!(fx, run)? else Start.run!(fx, run)?
 		Ok({ started, probed: rekey({ ..probed, started: Ok(started) }, held, started.id) })
 	}
 }

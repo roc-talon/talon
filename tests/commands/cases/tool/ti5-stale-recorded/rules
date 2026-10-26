@@ -1,0 +1,9 @@
+Slice 078b (entry `commands`): the tool install and `tools.json` with a `bin` record (slice 078). The home is the one of `ti2-refusals` with the compiler `nightly-2026-10-14-38a3029` installed (the pin of each app) and selected (`default-roc` in `config.toml`, so no lookup of the `roc` on `PATH` happens: slice 079b), `TALON_NOW=2026-10-15T12:00:00Z`.
+`tools.json` has 2 tools. `z` (acme/z 1.0.0): the data file is `old z`, the bin dir entry is `stale z` (an old link that a stopped step left, R-ST9) and `bin.z` records the sha256 of `stale z`. `qux` (acme/qux 1.0.0): the data file is `old qux`, the bin dir entry is `not from tln`, and `bin.qux` records the sha256 of another file (`older qux`).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/z@2.0.0` | The entry is not Talon's by the data file (`old z`), so the early check reads `tools.json` (one `read_files`, R-ST11 (2)): the recorded sha256 is the one of the entry, so it is Talon's. The build runs, the check under the lock has the text of `tools.json` already (no new read), and the entry is made again. `tools.json` has the new sha256 in `bin.z` (the old record is replaced in its place) | R-ST11, R-ST9, R-T4, R-T28, R-CC6 |
+| 2 | `tool install acme/qux@2.0.0` | The entry is not Talon's by the data file, and `bin.qux` records another sha256: it is foreign (a record is for one file). The early check reads `tools.json` and stops: exit 2 `is not a file that tln wrote`, before the download and the build. No lock, no change | R-ST6, R-ST11 |
+
+The same check is `ToolBuild.entry_read!`, so `tool update`, `tool rebuild`, `--git` and the take-over of `tln x` (`tk1-takeover`) use it too. `tool update talon` is `ts9-stale-recorded`, `tool remove` is `tm2-remove-stale` and `rm7-stale-recorded`.

@@ -54,6 +54,9 @@ spawn_all limit=1
 list_dirs $HOME1/.cache/roc
 delete $HOME1/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME1/.config/talon/config.toml nowait: held
+read_files $HOME1/.config/talon/config.toml
+unlock $HOME1/.config/talon/config.toml
 rename $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 platform
@@ -130,6 +133,9 @@ spawn_all limit=1
 list_dirs $HOME2/.cache/roc
 delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME2/.config/talon/config.toml nowait: held
+read_files $HOME2/.config/talon/config.toml
+unlock $HOME2/.config/talon/config.toml
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 platform
@@ -177,6 +183,9 @@ spawn_all limit=1
 list_dirs $HOME2/.cache/roc
 delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
+lock $HOME2/.config/talon/config.toml nowait: held
+read_files $HOME2/.config/talon/config.toml
+unlock $HOME2/.config/talon/config.toml
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
@@ -209,7 +218,7 @@ db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME2/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME2/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME2/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME2/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME2/.cache ROC_CACHE_DIR=$HOME2/.cache/roc TALON_IN_PROXY=1
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
@@ -271,6 +280,9 @@ spawn_all limit=1
 list_dirs $HOME3/.cache/roc
 delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME3/.config/talon/config.toml nowait: held
+read_files $HOME3/.config/talon/config.toml
+unlock $HOME3/.config/talon/config.toml
 rename $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 platform
@@ -318,6 +330,9 @@ spawn_all limit=1
 list_dirs $HOME3/.cache/roc
 delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
+lock $HOME3/.config/talon/config.toml nowait: held
+read_files $HOME3/.config/talon/config.toml
+unlock $HOME3/.config/talon/config.toml
 rename $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
@@ -350,7 +365,7 @@ db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME3/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME3/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME3/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME3/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
@@ -412,6 +427,9 @@ spawn_all limit=1
 list_dirs $HOME4/.cache/roc
 delete $HOME4/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME4/.config/talon/config.toml nowait: held
+read_files $HOME4/.config/talon/config.toml
+unlock $HOME4/.config/talon/config.toml
 rename $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 platform
@@ -489,6 +507,9 @@ spawn_all limit=1
 list_dirs $HOME5/.cache/roc
 delete $HOME5/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME5/.config/talon/config.toml nowait: held
+read_files $HOME5/.config/talon/config.toml
+unlock $HOME5/.config/talon/config.toml
 rename $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 platform
@@ -584,6 +605,9 @@ spawn_all limit=1
 list_dirs $HOME6/.cache/roc
 delete $HOME6/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
+lock $HOME6/.config/talon/config.toml nowait: held
+read_files $HOME6/.config/talon/config.toml
+unlock $HOME6/.config/talon/config.toml
 rename $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 write_atomic $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
@@ -858,6 +882,9 @@ spawn_all limit=1
 list_dirs $HOME10/.cache/roc
 delete $HOME10/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
+lock $HOME10/.config/talon/config.toml nowait: held
+read_files $HOME10/.config/talon/config.toml
+unlock $HOME10/.config/talon/config.toml
 rename $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
@@ -890,7 +917,7 @@ db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME10/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME10/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME10/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME10/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME10/.cache ROC_CACHE_DIR=$HOME10/.cache/roc TALON_IN_PROXY=1
 db_write $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME10/.cache/roc/talon/tmp/0123456789abcdef
@@ -961,6 +988,11 @@ spawn_all limit=1
 list_dirs $HOME11/.cache/roc
 delete $HOME11/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME11/.config/talon/config.toml nowait: held
+read_files $HOME11/.config/talon/config.toml
+read_files $HOME11/.config/talon/config.toml
+write_atomic $HOME11/.config/talon/config.toml
+unlock $HOME11/.config/talon/config.toml
 rename $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 lock $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9 nowait: held
@@ -983,6 +1015,9 @@ spawn_all limit=1
 list_dirs $HOME11/.cache/roc
 delete $HOME11/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp/.talon.json
+lock $HOME11/.config/talon/config.toml nowait: held
+read_files $HOME11/.config/talon/config.toml
+unlock $HOME11/.config/talon/config.toml
 rename $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 unlock $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 platform
@@ -1068,6 +1103,11 @@ spawn_all limit=1
 list_dirs $HOME12/.cache/roc
 delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
+lock $HOME12/.config/talon/config.toml nowait: held
+read_files $HOME12/.config/talon/config.toml
+read_files $HOME12/.config/talon/config.toml
+write_atomic $HOME12/.config/talon/config.toml
+unlock $HOME12/.config/talon/config.toml
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 lock $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9 nowait: held
@@ -1090,6 +1130,9 @@ spawn_all limit=1
 list_dirs $HOME12/.cache/roc
 delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp/.talon.json
+lock $HOME12/.config/talon/config.toml nowait: held
+read_files $HOME12/.config/talon/config.toml
+unlock $HOME12/.config/talon/config.toml
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 platform
@@ -1137,6 +1180,9 @@ spawn_all limit=1
 list_dirs $HOME12/.cache/roc
 delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
+lock $HOME12/.config/talon/config.toml nowait: held
+read_files $HOME12/.config/talon/config.toml
+unlock $HOME12/.config/talon/config.toml
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
@@ -1169,7 +1215,7 @@ db_query $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME12/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME12/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME12/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME12/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME12/.cache ROC_CACHE_DIR=$HOME12/.cache/roc TALON_IN_PROXY=1
 db_write $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
@@ -1292,7 +1338,7 @@ db_query $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME14/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 write_atomic $HOME14/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME14/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME14/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME14/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME14/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME14/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME14/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME14/.cache ROC_CACHE_DIR=$HOME14/.cache/roc TALON_IN_PROXY=1
 db_write $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME14/.cache/roc/talon/tmp/0123456789abcdef
@@ -1367,7 +1413,7 @@ db_query $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME15/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
 write_atomic $HOME15/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME15/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME15/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME15/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME15/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME15/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME15/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME15/.cache ROC_CACHE_DIR=$HOME15/.cache/roc TALON_IN_PROXY=1
 db_write $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME15/.cache/roc/talon/tmp/0123456789abcdef
@@ -1447,6 +1493,9 @@ spawn_all limit=1
 list_dirs $HOME16/.cache/roc
 delete $HOME16/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
+lock $HOME16/.config/talon/config.toml nowait: held
+read_files $HOME16/.config/talon/config.toml
+unlock $HOME16/.config/talon/config.toml
 rename $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
@@ -1484,6 +1533,9 @@ spawn_all limit=1
 list_dirs $HOME16/.cache/roc
 delete $HOME16/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/.talon.json
+lock $HOME16/.config/talon/config.toml nowait: held
+read_files $HOME16/.config/talon/config.toml
+unlock $HOME16/.config/talon/config.toml
 rename $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
 unlock $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/.last-use
@@ -1516,7 +1568,7 @@ db_query $HOME16/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/.last-use
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 1
-  probe $HOME16/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-0e0e0e0 $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/roc build main.roc --output=$HOME16/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out timeout=9
+  probe $HOME16/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-10-0e0e0e0 $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/roc build main.roc --output=$HOME16/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
     env XDG_CACHE_HOME=$HOME16/.cache ROC_CACHE_DIR=$HOME16/.cache/roc TALON_IN_PROXY=1
 db_write $HOME16/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME16/.cache/roc/talon/tmp/0123456789abcdef

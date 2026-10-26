@@ -59,7 +59,7 @@ expect {
 	bad == []
 }
 
-# R-ID3 R-H4 R-DI1 (slice 076): the one guard for a path part that comes from outside. A safe part is not empty, not `.` or `..`, and has no `/`, no backslash and no NUL
+# R-SE18 R-ID3 R-H4 R-DI1 (slice 076): the one guard for a path part that comes from outside. A safe part is not empty, not `.` or `..`, and has no `/`, no backslash and no NUL
 # byte. A dot inside a name is safe (`v1..2`, `a.b`, `.hidden`, `...`). A part with a `/` anywhere is not safe, also when it does not climb (`a/b`, `/a`, `a/`).
 expect {
 	rows = [
@@ -90,7 +90,7 @@ expect {
 	bad == []
 }
 
-# R-ID3 R-H4 R-ID5 R-DI1 (slice 076): the path parts of a release URL. The hash is the name of `packages/<hash>` (R-LY1): a hash that is not a safe part makes the URL foreign (R-H4: a URL that
+# R-SE18 R-ID3 R-H4 R-ID5 R-DI1 (slice 076): the path parts of a release URL. The hash is the name of `packages/<hash>` (R-LY1): a hash that is not a safe part makes the URL foreign (R-H4: a URL that
 # has no hash in the form of 4.1), so no command makes a path from it. `owner` and `repo` are the name `owner/repo` and the dir of the index (`talon/index/github/<owner>/<repo>`): an unsafe one gives
 # no name (R-ID3, as the other hosts: `Err(NoName)`, so no index call), and the URL keeps its hash, version and group. A dot inside a part is safe.
 expect {

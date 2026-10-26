@@ -111,7 +111,7 @@ flow! = |fx, args, plan| {
 		Keep(version) => return Ok({ commit: sha, done: { how: Present, key: facts.key, name: facts.name, version, bin: Text.join(facts.bin, facts.file), built: Err(None) } })
 		Build => {}
 	}
-	ToolBuild.entry_verdict!(fx, facts)?
+	ToolBuild.entry_verdict!(fx, facts, Fresh)?
 	ToolGitFlow.check_curl!(fx, facts.net)?
 	made = ToolGitFlow.source!(fx, facts, { source: plan.source, sha, path: plan.path })?
 	result = build!(fx, args, plan, facts, made.bundle)

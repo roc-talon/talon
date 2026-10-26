@@ -1,0 +1,54 @@
+# R-PX1 R-PX2 R-PX3 R-PX6 R-PX7 R-ST8 R-HF6 R-HF9 R-E1 R-SO1 R-SO3 R-SO7 R-SO9 R-SO12 R-EV7 R-EV17 R-CC9 R-DL8 R-PD10 (slice 023): the `roc` proxy on the real binary. The launcher is a copy of tln with the name roc (or roc.exe).
+# The compilers are 2 fake scripts in toolchains/: each prints its id, its arguments and the variables that the proxy sets, writes a line on stderr, and acts on its first argument (exit7, kill9).
+# TALON_NOW=2026-10-22T12:00:00Z. The runner has CI=true, so no run has a prompt.
+TLN=$(command -v tln)
+D=$TALON_TEST_DIR
+A1=nightly-2026-10-09-258ab27
+A2=nightly-2026-10-14-38a3029
+T=$HOME/.cache/roc/toolchains
+chmod +x $T/$A1/roc $T/$A2/roc
+mkdir -p $D/launch $D/a $D/b
+cp "$TLN" $D/launch/roc
+cp "$TLN" $D/launch/roc.exe
+cp "$TLN" $D/a/roc
+L=$D/launch/roc
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+echo "== R-PX2 R-SO3 R-CC9: rank 3, the pin of p3 names A1. The compiler runs by its path in toolchains/, .last-use has the time of Talon (TALON_NOW)."
+st $L check p3/main.roc
+echo "last use of A1: $(cat $T/$A1/.last-use)"
+echo "== R-SO1 R-SO8: roc +<id> is rank 1 and is not an argument of the compiler. version has no target file."
+st $L +$A2 version
+echo "== R-ST8 R-HF9: the name roc.exe is the proxy too."
+st $D/launch/roc.exe +$A2 version
+echo "== R-E1 R-HF6: the exit code of the compiler passes through. A signal gives 128 + the number."
+st $L +$A1 exit7
+st $L +$A1 kill9
+echo "== R-PX3: the arguments go to the compiler as they are (also an option and a Talon-like flag)."
+st $L +$A1 check --opt=speed --file x/main.roc --yes
+echo "== R-PX6: XDG_CACHE_HOME is a link, ROC_CACHE_DIR has a ..: the compiler gets canonical paths."
+ln -s $HOME/.cache $D/linkcache
+st env XDG_CACHE_HOME=$D/linkcache ROC_CACHE_DIR=$HOME/.cache/roc/../roc $L +$A2 version
+echo "== R-PX7 R-EV7: TALON_PROXY=0 runs the compiler with no extra work (no .last-use, the cache variables as they are). TALON_IN_PROXY is set (Q1)."
+st env TALON_PROXY=0 TALON_NOW=2026-10-25T00:00:00Z XDG_CACHE_HOME=$HOME/.cache/../.cache $L +$A2 version
+echo "last use of A2: $(cat $T/$A2/.last-use)"
+echo "== R-DL8 R-SO12: the pin of p9 is not installed. No TTY: exit 13, the compiler does not run."
+st $L check p9/main.roc
+echo "== R-EV17 R-SO9: rank 7. a/roc is a copy of tln (the launcher, skipped). b/roc stands for an old copy of a launcher: it prints its id for version, and any other call runs a/roc again."
+echo "== The proxy sets TALON_IN_PROXY=1 for b/roc, so a/roc (a proxy) does not look at PATH: exit 18, and b/roc runs once. Without the variable it would loop (b/roc stops at 3 runs with exit 77)."
+cat > $D/b/roc <<'SCRIPT'
+#!/bin/sh
+case "$1" in version) echo "Roc compiler version nightly-2026-10-13-91fa0c2"; exit 0 ;; esac
+echo "b/roc runs: TALON_IN_PROXY=$TALON_IN_PROXY $*" >> "$TALON_TEST_DIR/b.log"
+n=$(wc -l < "$TALON_TEST_DIR/b.log" | tr -d ' ')
+[ "$n" -ge 3 ] && exit 77
+exec "$TALON_TEST_DIR/a/roc" "$@"
+SCRIPT
+chmod +x $D/b/roc
+st env PATH=$D/a:$D/b:/usr/bin:/bin $L check p7/main.roc
+cat $D/b.log
+echo "== The same again: path-roc.json has the id of b/roc, so no roc version runs, and the proxy still runs b/roc by its path (the line count of b.log is 2)."
+st env PATH=$D/a:$D/b:/usr/bin:/bin $L check p7/main.roc
+wc -l < $D/b.log | tr -d ' '
+echo "== R-ST8: a program named tln is not the proxy."
+st tln --version

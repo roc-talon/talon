@@ -1,0 +1,7 @@
+tests/commands/cases/tool/tc1-order
+tests/commands/cases/tool/tc2-nothing
+tests/commands/cases/tool/tr2-selected
+tests/commands/cases/ptool/pt2-install/fx/units
+tests/commands/cases/run/rn3-tools/fx/units
+tests/commands/cases/tool/ti2-refusals/fx/units
+tests/commands/cases/tool/tu3-evidence

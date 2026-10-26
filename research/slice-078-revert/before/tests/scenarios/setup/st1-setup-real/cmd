@@ -1,0 +1,91 @@
+# R-IS6 R-S2 R-T4 R-CM18 R-ST16 R-ST1 R-ST2 R-ST3 R-ST4 R-ST5 R-ST6 R-ST7 R-ST8 R-ST11 R-ST12 R-ST13 R-ST14 R-ST15 R-NI13 R-NI14 R-LY8 R-LY9 R-HF7 (slice 027): `tln setup` on the real binary and the real Fx, in a temp HOME (the runner sets HOME to the work dir). The case never touches a real user file:
+# HOME is the work dir, the second HOME is $TALON_TEST_DIR/h2, the data dir is $TALON_TEST_DIR/data, and each command line of this file runs with these variables.
+# Slice 072a (R-ST16): the given home has a config.toml with default-roc, so setup reads the list of compilers in no run (the case has no fake HTTP server and no network). The first default with a list is the L2 case setup/st8-first-default.
+# The runner has CI=true, so no run has a prompt: the answer is the default (R-NM4). SHELL=/bin/bash. TALON_NOW=2026-10-22T12:00:00Z. The compiler of the case is a script (a fake nightly).
+export TALON_NOW=2026-10-22T12:00:00Z
+export SHELL=/bin/bash
+D=$TALON_TEST_DIR
+export XDG_DATA_HOME=$D/data
+TLN=$(command -v tln)
+B=$HOME/.local/bin
+DATA=$XDG_DATA_HOME/talon/bin
+A1=nightly-2026-10-14-38a3029
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# `run <label> <command>...`: the same, with a label (a command line that has the paths of this machine in it)
+run() { echo "== $1"; shift; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+same() { if [ "$1" -ef "$2" ]; then echo "same file: $3"; else echo "other file: $3"; fi; }
+chmod +x $HOME/.cache/roc/toolchains/$A1/roc
+mkdir -p $DATA
+cp "$TLN" $DATA/tln
+printf '#!/bin/sh\necho "tool foo ran as $0: $*"\n' > $DATA/foo
+chmod +x $DATA/foo
+printf '{"format":1,"tools":{"foo":{}}}\n' > $XDG_DATA_HOME/talon/tools.json
+J=$XDG_DATA_HOME/talon/tools.json
+# the sha256 of the file tln changes with each build of tln: the case prints it as <sha256> and compares it with the real one
+shown() { sed -e 's/"sha256":"[0-9a-f]\{64\}"/"sha256":"<sha256>"/' "$J"; }
+
+echo "== 1: R-ST13 R-ST14 R-ST15 R-ST7 R-LY8 R-ST4 R-NI14 R-ST5: the first setup. tln, roc and the tool foo are hard links of the files in the data bin dir (the same inode). The bin dir is not on PATH: the default answer is Yes, so the profile of bash gets the marker line. The completion is written."
+st tln setup
+echo "== 1b: R-IS6 R-S2 R-T4 R-CC1 (slice 052): the entry talon is written when it is missing: the kind prebuilt, the version of this tln and the release URL of its asset, the target of this machine (musl on Linux), the real sha256 of the file tln in the data bin dir, the time TALON_NOW. The tool foo stays. No temp file is left."
+shown
+want=$(sha256sum $DATA/tln | cut -d' ' -f1)
+if grep -q "\"sha256\":\"$want\"" $J; then echo "the sha256 is the one of the file tln"; else echo "the sha256 is not the one of the file tln"; fi
+ls -A $XDG_DATA_HOME/talon
+cp $J $D/tools.json.1
+same $B/tln $DATA/tln "tln"
+same $B/roc $DATA/tln "roc is the file tln"
+same $B/foo $DATA/foo "foo"
+ls -A $B
+cat $HOME/.bashrc
+echo "== R-ST5: the bash completion is valid bash and completes the commands and the subcommands of roc"
+C=$HOME/.local/share/bash-completion/completions/tln
+bash -n $C && echo "bash syntax ok"
+bash -c ". $C; COMP_WORDS=(tln ro); COMP_CWORD=1; _tln; echo \"\${COMPREPLY[@]}\""
+bash -c ". $C; COMP_WORDS=(tln roc ''); COMP_CWORD=2; _tln; echo \"\${COMPREPLY[@]}\""
+echo "== 2: R-ST8 R-ST14: the entry roc is the launcher: the program name is roc, so tln runs as the proxy (the compiler by +id). The entry tln runs as tln. The tool entry runs the tool."
+st $B/roc +$A1 version
+st $B/tln --version
+st $B/foo a b
+echo "== 3: R-ST12 R-IS6: setup again changes nothing. The profile has one marker line. The entry talon is there, so tools.json is the same file as after step 1."
+st tln setup
+cmp $J $D/tools.json.1 && echo "tools.json is unchanged"
+grep -c 'talon: added by tln setup' $HOME/.bashrc
+echo "== 4: R-ST11 R-ST6 R-NI13 R-ST2: roc is a file that Talon did not write (other content). The default answer is No: the file stays, no launcher, the note names --replace-roc."
+rm $B/roc
+printf '#!/bin/sh\necho "the old roc: $*"\n' > $B/roc
+chmod +x $B/roc
+st tln setup
+$B/roc version
+echo "== 5: R-NI13 R-ST2: --replace-roc is the answer Yes. roc goes to roc.old, the compiler link-system records its path, the launcher is made. roc +link-system runs the old roc."
+st tln setup --replace-roc
+same $B/roc $DATA/tln "roc is the file tln again"
+$B/roc.old version
+cat $HOME/.cache/roc/toolchains/link-system/.talon.json
+st $B/roc +link-system version
+echo "== 6: R-NM8 R-ST2: --yes is the answer Yes for the prompt with the default No. The link-system that exists stays as it is (its installed_at is still the time of step 5, also with a later TALON_NOW)."
+rm $B/roc $B/roc.old
+printf '#!/bin/sh\necho "another old roc: $*"\n' > $B/roc
+chmod +x $B/roc
+st env TALON_NOW=2026-10-25T00:00:00Z tln setup --yes
+$B/roc.old version
+same $B/roc $DATA/tln "roc is the file tln again"
+echo "== 7: R-ST6: a file that is not Talon's is never overwritten. The tool entry foo has other content: the warning, no change."
+rm $B/foo
+printf 'not the tool\n' > $B/foo
+st tln setup
+cat $B/foo
+echo "== 8: R-ST4: GITHUB_PATH is set: the bin dir is appended to that file, in place of a profile line. A second run changes nothing."
+st env GITHUB_PATH=$D/gh_path tln setup
+cat $D/gh_path
+st env GITHUB_PATH=$D/gh_path tln setup
+grep -c 'talon: added by tln setup' $HOME/.bashrc
+echo "== 9: R-NI14 R-ST4 R-LY8 R-LY9 R-ST3: a second HOME. --no-modify-path: no profile is written, the line is printed. The entries are made there."
+mkdir -p $D/h2
+st env HOME=$D/h2 tln setup --no-modify-path
+test ! -e $D/h2/.bashrc && echo "no profile in h2"
+ls -A $D/h2/.local/bin
+echo "== R-ST3: the bin dir of h2 is on PATH, and a roc comes before it (the fake roc of the runner): the warning, nothing else. No PATH step."
+run "env HOME=h2 PATH=<fake roc>:<h2 bin>:... tln setup" env HOME=$D/h2 PATH=$D/bin:$D/h2/.local/bin:$PATH tln setup
+echo "== 10: R-CM18: no operand, exit 2. R-HF7 R-ST7: no symbolic link was made."
+st tln setup now
+find $HOME $D/h2 -type l | wc -l | tr -d ' '

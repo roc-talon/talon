@@ -1,0 +1,9 @@
+== cwd:t9 env:HOME={w}/home9 env:TALON_AUTO_INSTALL=yes init --platform acme/wpf
+check: passed
+build: passed
+$PROJECT/t9/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0

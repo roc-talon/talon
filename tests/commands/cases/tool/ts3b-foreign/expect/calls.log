@@ -12,3 +12,4 @@ list_dirs $HOME/.local/bin
 sha256_file $HOME/.local/share/talon/bin/tln
 sha256_file $HOME/.local/bin/tln
 sha256_file $HOME/.local/bin/roc
+read_files $HOME/.local/share/talon/tools.json

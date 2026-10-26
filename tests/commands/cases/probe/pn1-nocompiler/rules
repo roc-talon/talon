@@ -1,0 +1,4 @@
+R-SO14 R-SO24 R-SO23 R-SO6 R-SO15 R-DL2 R-DL5 R-PB2 R-PB1 R-PP4 (slices 072d, 080): `tln probe` with no compiler selected by ranks 1 to 5 (no `roc` on `PATH`, no `default-roc`, no `ROC_TOOLCHAIN`, the project header has no `roc:` pin), 3 runs on 3 homes (h1, h3, h4). The project and the fixtures are those of `verify/vn1-nocompiler`.
+Run 1 (h1, R-SO24 case 3, R-SO6): 3 toolchains are installed and `config.toml` has no `default-roc`. Rank 6 gives the newest installed one, one note on stderr, no download, no write of `config.toml`. Run 2 (h3, step (d)): nothing is installed, `TALON_AUTO_INSTALL=yes`: the latest nightly is downloaded and becomes the default under the lock of `config.toml` before the rename, the probe runs on it.
+Run 3 (h4): nothing is installed, `TALON_AUTO_INSTALL=no`: exit 13, no probe. The old step (b) run (h2) is removed by slice 080.
+The first line of stdout names the compiler of the probe (`on <id>`, the existing text of `tln probe`).

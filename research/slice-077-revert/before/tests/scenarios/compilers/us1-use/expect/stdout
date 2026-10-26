@@ -1,0 +1,75 @@
+== R-DL1 R-NI5 R-DL4 R-EC13 (question Q4): N (new) and O (the baseline, the old pin) are both missing, no person and no flag: one stop for the 2 downloads, with the count and the size, exit 13. Nothing is installed, no compiler runs, the header is as it was.
+== tln roc use nightly-2026-10-14-38a3029
+exit 13
+
+-- compiler runs
+app [main!] {
+	# the platform
+	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+	roc: "nightly-2026-10-09-258ab27", # the compiler
+}
+requests for compilers: 1, downloads: 0
+== R-U3 R-DL5 R-NI5 R-CC4 R-CC9 R-H1 R-RP1 R-PH8: --allow-downloads answers the prompt. One answer line on stderr, 2 downloads, then the baseline check on O in the project dir, the candidate check and the build on N in a temp copy. The pin is written with a span edit: the comments stay.
+== tln roc use nightly-2026-10-14-38a3029 --allow-downloads
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+nightly-2026-10-09-258ab27 nightly-2026-10-14-38a3029 
+-- compiler runs
+nightly-2026-10-09-258ab27 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=3 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+app [main!] {
+	# the platform
+	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+	roc: "nightly-2026-10-14-38a3029", # the compiler
+}
+
+main! = |_args| Ok({})
+last use of N: 2026-10-22T12:00:00Z, last use of O: 2026-10-22T12:00:00Z
+requests for compilers: 1, downloads: 2
+== R-J3 R-OUT4 R-U3: --json, both compilers are installed now (no download, no list request). The human text is on stderr, stdout is only the envelope.
+== tln roc use nightly-2026-10-14-38a3029 --file p2/main.roc --json
+{"schema":1,"command":"roc use","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","files":[{"path":"$PROJECT/p2/main.roc","previous":"nightly-2026-10-09-258ab27"}],"probes":3,"downloads":0,"check":"passed","build":"passed","notes":[]},"error":null}
+exit 0
+-- compiler runs
+nightly-2026-10-09-258ab27 cwd=p2 check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=3 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+	roc: "nightly-2026-10-14-38a3029",
+requests for compilers: 1, downloads: 2
+== R-U6: ROC_TOOLCHAIN is set: the pin is written after the check, and the note says that ROC_TOOLCHAIN has a higher priority.
+== env ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 tln roc use nightly-2026-10-14-38a3029 --file p3/main.roc
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ roc: nightly-2026-10-09-258ab27 -> nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27. It has a higher priority than the new pin nightly-2026-10-14-38a3029, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set.
+exit 0
+-- compiler runs
+nightly-2026-10-09-258ab27 cwd=p3 check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> build main.roc n=3 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+nightly-2026-10-14-38a3029 cwd=<copy> check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+== R-U1: a link build is no pin (exit 2). R-U4: --no-check is an error (exit 2). No compiler runs, no file changes.
+== tln roc use link-dev --file p4/main.roc
+exit 2
+== tln roc use nightly-2026-10-14-38a3029 --file p4/main.roc --no-check
+exit 2
+-- compiler runs
+	roc: "nightly-2026-10-09-258ab27",
+== R-U5: [toolchain] roc of talon.toml does not admit the operand (the range is >=nightly-2026-10-12-2664a27): exit 10, the text names the range. R-U5: the nightly switch is off: exit 10, the text names the switch. talon.toml is not edited.
+== tln roc use nightly-2026-10-09-258ab27 --file rng/main.roc
+exit 10
+[toolchain]
+roc = ">=nightly-2026-10-12-2664a27"
+== env TALON_NIGHTLY=0 tln roc use nightly-2026-10-14-38a3029 --file sw/main.roc
+exit 10
+-- compiler runs
+== the store has no temp dir and no lock (R-CC1, R-CC4)
+0

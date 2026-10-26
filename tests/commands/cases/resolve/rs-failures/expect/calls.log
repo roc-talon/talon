@@ -3,12 +3,14 @@ list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/main.roc
 read_files $PROJECT/main.roc $PROJECT/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/hi/main.roc
 list_dirs $PROJECT/hi
 list_dirs $PROJECT
 read_files $PROJECT/hi/talon.toml $PROJECT/talon.toml
 read_files $PROJECT/hi/main.roc
 read_files $PROJECT/hi/main.roc $PROJECT/hi/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 programs gh
 http_get https://api.github.com/repos/acme/json/releases?per_page=100
@@ -20,6 +22,7 @@ list_dirs $PROJECT
 read_files $PROJECT/ok/talon.toml $PROJECT/talon.toml
 read_files $PROJECT/ok/main.roc
 read_files $PROJECT/ok/main.roc $PROJECT/ok/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 canonical $PROJECT/ok/main.roc
@@ -28,6 +31,7 @@ list_dirs $PROJECT
 read_files $PROJECT/ok/talon.toml $PROJECT/talon.toml
 read_files $PROJECT/ok/main.roc
 read_files $PROJECT/ok/main.roc $PROJECT/ok/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 canonical $PROJECT/short/main.roc
@@ -36,6 +40,7 @@ list_dirs $PROJECT
 read_files $PROJECT/short/talon.toml $PROJECT/talon.toml
 read_files $PROJECT/short/main.roc
 read_files $PROJECT/short/main.roc $PROJECT/short/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/pin/main.roc
 list_dirs $PROJECT/pin
 list_dirs $PROJECT
@@ -48,6 +53,7 @@ list_dirs $PROJECT
 read_files $PROJECT/snap/talon.toml $PROJECT/talon.toml
 read_files $PROJECT/snap/main.roc
 read_files $PROJECT/snap/main.roc $PROJECT/snap/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/ws/apps/a/main.roc
 list_dirs $PROJECT/ws/apps/a
 list_dirs $PROJECT/ws/apps
@@ -57,6 +63,7 @@ read_files $PROJECT/ws/talon.toml $PROJECT/talon.toml
 list_dirs $PROJECT/ws/apps/b
 read_files $PROJECT/ws/apps/a/main.roc
 read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/apps/a/talon.toml $PROJECT/ws/apps/talon.toml $PROJECT/ws/talon.toml $PROJECT/ws/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/pins/apps/a/main.roc
 list_dirs $PROJECT/pins/apps/a
 list_dirs $PROJECT/pins/apps
@@ -81,30 +88,35 @@ read_files $PROJECT/walias/talon.toml $PROJECT/talon.toml
 list_dirs $PROJECT/walias/apps/b
 read_files $PROJECT/walias/apps/a/main.roc
 read_files $PROJECT/walias/apps/a/main.roc $PROJECT/walias/apps/b/main.roc $PROJECT/walias/apps/a/talon.toml $PROJECT/walias/apps/talon.toml $PROJECT/walias/talon.toml $PROJECT/walias/apps/b/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/names/main.roc
 list_dirs $PROJECT/names
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/names/main.roc
 read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/names/main.roc
 list_dirs $PROJECT/names
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/names/main.roc
 read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/names/main.roc
 list_dirs $PROJECT/names
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/names/main.roc
 read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 canonical $PROJECT/names/main.roc
 list_dirs $PROJECT/names
 list_dirs $PROJECT
 read_files $PROJECT/talon.toml
 read_files $PROJECT/names/main.roc
 read_files $PROJECT/names/main.roc $PROJECT/names/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/http
 programs gh
 http_get https://api.github.com/repos/roc-lang/http/releases?per_page=100

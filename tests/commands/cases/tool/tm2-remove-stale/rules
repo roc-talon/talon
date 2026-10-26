@@ -1,0 +1,8 @@
+Slice 078b (entry `commands`): `tln tool remove` with the `bin` record of slice 078. One home, no network, no compiler. `tools.json` has 2 tools. `foo` (acme/foo 1.1.0): the data file is `foo bin`, the bin dir entry is `stale foo` (a link of an older file that a stopped step left, R-ST9) and `bin.foo` records the sha256 of `stale foo`. `g` (acme/g, built from main): the data file is `g bin`, the bin dir entry is `not from tln`, and `bin.g` records the sha256 of another file (`older g`).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool rm foo` | Under the lock of `tools.json` (the text is read already: no new call): the entry has the recorded sha256, so it is Talon's (R-ST11 (2)): the entry and the binary are deleted, no warning, then `tools.json` is written without `foo` | R-B6, R-RM6, R-ST11, R-ST9, R-CC6 |
+| 2 | `tool rm g --json` | The record is for another file, so the entry is not Talon's: it is kept with the warning, the binary is deleted. The envelope has `kept` | R-B6, R-ST6, R-ST11, R-J3 |
+
+`tool remove talon` has the same rule: `rm7-stale-recorded`.

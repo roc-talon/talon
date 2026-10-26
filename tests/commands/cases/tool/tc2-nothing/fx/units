@@ -1,0 +1,2 @@
+# <bundle hash>:<compiler id> <TAB> code <TAB> stdout <TAB> stderr. A check with no row passes. `x` (EfCkL...) fails the check with each compiler.
+EfCkL57GXxK7AgV8RMbFNBWQ3NFMqSj7WkT2nkCkUJrU	1	-	../fixtures/check/out/syntax.stderr

@@ -1,0 +1,8 @@
+# R-SL7 R-SO6 R-PD16: main.roc has no pin and there is no talon.toml and no .roc-version, so the base is the global default (rank 6), nightly-2026-10-14-38a3029. One step older is 2026-10-13-91fa0c2 (installed).
+roc install @-1
+# R-SL7 R-SO14: no pin, no default (home2), no roc on PATH: no compiler is selected, so a step has no start. Exit 18. A full id still works with no base.
+env:HOME={w}/home2 roc install @-1
+# R-SL7 R-SO2 R-NS6: ROC_TOOLCHAIN names a git build. It is the base (rank 2), but it is not in the list of compilers (R-NS6: it is chosen by name only), so the step has no start. Exit 2.
+env:ROC_TOOLCHAIN=git-dd03c09e roc install @+1
+# R-SL7 R-SO2: an installed id as ROC_TOOLCHAIN is the base.
+env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 roc install @-1

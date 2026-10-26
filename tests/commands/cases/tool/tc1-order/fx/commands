@@ -1,0 +1,3 @@
+tool install acme/two
+tool install acme/three
+tool install acme/dl --roc pinned

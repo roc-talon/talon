@@ -1,0 +1,3 @@
+downloading 2 compilers (146.0 MB)
+tln: error[consent]: the compiler nightly-2026-10-19-0badf00 is not installed. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install nightly-2026-10-19-0badf00, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: 2 compiler downloads (146.0 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.

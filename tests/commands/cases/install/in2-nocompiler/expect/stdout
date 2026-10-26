@@ -1,0 +1,37 @@
+== env:HOME={w}/h1 env:TALON_AUTO_INSTALL=yes update json --file n1/main.roc
+check: passed
+build: passed
+$PROJECT/n1/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+  + roc: nightly-2026-10-19-0badf00
+resolved at 2026-10-22T12:00:00Z, 6 probes
+exit 0
+== env:HOME={w}/h2 env:TALON_AUTO_INSTALL=no update json --file n2/main.roc
+exit 13
+== env:HOME={w}/h3 update json --no-check --file n3/main.roc
+check: skipped
+$PROJECT/n3/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+resolved at 2026-10-22T12:00:00Z, 0 probes
+exit 0
+== env:HOME={w}/h4 env:TALON_AUTO_INSTALL=yes remove json --file n4/main.roc
+check: passed
+build: passed
+$PROJECT/n4/main.roc
+  - json: acme/json 2.1.0
+  + roc: nightly-2026-10-19-0badf00
+exit 0
+== env:HOME={w}/h5 install --frozen --file n5/main.roc
+the header satisfies talon.toml
+exit 0
+== env:HOME={w}/h6 env:TALON_AUTO_INSTALL=yes update json --file n6/main.roc
+check: passed
+build: passed
+$PROJECT/n6/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+  + roc: nightly-2026-10-16-1df370f
+resolved at 2026-10-22T12:00:00Z, 4 probes
+exit 0
+== env:HOME={w}/h7 install --file n7/main.roc
+nothing to change
+exit 0

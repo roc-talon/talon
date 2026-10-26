@@ -1,0 +1,3 @@
+== tool install acme/x env:TALON_AUTO_INSTALL=yes
+installed x 1.0.0 (acme/x)
+exit 0

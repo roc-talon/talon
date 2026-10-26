@@ -1,0 +1,5 @@
+@roc check p1/main.roc env:HOME={w}/h1 env:CI=true env:TALON_AUTO_INSTALL=yes
+@roc version env:HOME={w}/h2 env:CI=true env:TALON_AUTO_INSTALL=yes
+@roc check p3/main.roc env:HOME={w}/h3 env:TALON_AUTO_INSTALL=no
+@roc check p4/main.roc env:HOME={w}/h4
+@roc check p5/main.roc env:HOME={w}/h5 env:CI=true

@@ -2,6 +2,7 @@ import Args
 import Common
 import Consent
 import DownloadAsk
+import Facts
 import Fail
 import Fx
 import GitRef
@@ -13,6 +14,7 @@ import RocInstall
 import Selector
 import Text
 import ToolBuild
+import ToolCompiler
 import ToolFlow
 import ToolGitFlow
 import ToolInstall
@@ -85,7 +87,14 @@ run! = |fx, args, cmd, kind| {
 		}
 		return Ok([])
 	}
-	items = plan!(fx, args, machine.facts, tools, kind)?
+	planned = plan!(fx, args, machine.facts, tools, kind)?
+	items = match evidenced!(fx, kind, machine.facts, planned) {
+		Ok(known) => known
+		Err(fail) => {
+			clean!(fx, jobs_of(planned))
+			return Err(fail)
+		}
+	}
 	jobs = jobs_of(items)
 	result = match consent!(fx, args, machine.facts, jobs.map(|j| j.id)) {
 		Ok(_) => build_all!(fx, args, items, kind)
@@ -102,6 +111,38 @@ jobs_of = |items| items.keep_oks(
 		Skip(_) => Err(NoJob)
 	},
 )
+
+# Step 2c (R-T30 step 2, Q1 of the review): `tool update` reads the facts for the jobs whose pin is not installed (one `Launch.toolchains!`, one `Facts.load!`). A job with an installed release that has a recorded pass for its closure is built with that
+# release (the line `built with ...` on stderr), so its pin is not downloaded. `rebuild` has no evidence step (R-T7: the recorded compiler).
+evidenced! : Fx, Kind, ToolBuild.Facts, List(Item) => Try(List(Item), Fail)
+evidenced! = |fx, kind, base, items| {
+	jobs = jobs_of(items)
+	if kind == Rebuild or jobs.is_empty() return Ok(items)
+	installed = Launch.toolchains!(fx, base.roots)
+	ids = ToolCompiler.candidates(installed)
+	missing = |job| !ToolUpdate.downloads({ pins: [job.id], installed }).is_empty()
+	closure = |job| { pf: ToolBuild.pf_hash(job.bundle), target: job.facts.target }
+	pending = jobs.keep_if(missing)
+	if pending.is_empty() return Ok(items)
+	keys = pending.join_map(|job| ToolCompiler.evidence_keys({ pf: closure(job).pf, target: closure(job).target, ids }))
+	facts = Facts.load!(fx, { roots: base.roots, keys })?
+	var $known = []
+	for item in items {
+		$known = $known.append(
+			match item {
+				Build(job) if missing(job) => match ToolCompiler.evidence({ ids, pf: closure(job).pf, target: closure(job).target, digest: ToolCompiler.digest({ bundle: job.bundle.hash, hashes: job.bundle.hashes }), facts }) {
+					Ok(id) => {
+						fx.err!("${ToolCompiler.built_line({ id, pin: job.id })}\n")
+						Build({ ..job, id })
+					}
+					Err(None) => item
+				}
+				_ => item
+			},
+		)
+	}
+	Ok($known)
+}
 
 # Step 2: each tool in order, with no build yet (D8). A failure deletes the scratch dirs that are made.
 plan! : Fx, Args, ToolBuild.Facts, List(ToolsJson.Tool), Kind => Try(List(Item), Fail)
@@ -223,7 +264,7 @@ pin_of = |tool, bundle| match bundle.pin {
 
 # R-ST6, R-ST11: the bin dir entry must be a file that tln wrote. The text has no `--as` (Q-U3).
 entry_check! : Fx, ToolBuild.Facts => Try({}, Fail)
-entry_check! = |fx, facts| match ToolBuild.entry_state!(fx, facts)? {
+entry_check! = |fx, facts| match ToolBuild.entry_state!(fx, facts, Fresh)? {
 	Make => Ok({})
 	Foreign => Err(ToolUpdate.foreign_failure(Text.join(facts.bin, facts.file)))
 }

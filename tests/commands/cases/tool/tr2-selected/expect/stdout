@@ -1,0 +1,3 @@
+== tool rebuild g --yes env:TALON_INTERACTIVE=0
+rebuilt g git main@aaaaaaaa (acme/g) with nightly-2026-10-11-1a2b3c4
+exit 0

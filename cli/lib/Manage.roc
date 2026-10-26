@@ -197,16 +197,27 @@ Manage :: [].{
 	## (the `nightly` switch) is true. Review (G2): the order is `Pin.order` with `times`, as rank 4: a release with a date in `times` is ordered by its date, so a release newer than every nightly wins. A `git-`, `link-` or `copy-` id is never chosen (R-NS6: chosen by name only). None: `Err(None)` and the default is not set.
 	next_default : { installed : List(Str), removed : Str, nightly : Bool, times : List({ id : Str, published_at : U64 }) } -> Try(Str, [None])
 	next_default = |facts| {
-		allowed = |id| id != facts.removed and match Manage.kind_of(id) {
-			Nightly => facts.nightly
-			Release => Bool.True
-			_ => Bool.False
-		}
+		other = |id| id != facts.removed and Pin.is_id(id)
+		admitted = |id| other(id) and (facts.nightly or Manage.kind_of(id) != Nightly)
 		newest = |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best
-		match facts.installed.keep_if(allowed) {
+		# R-RR1: no admitted compiler is left, so the newest of any kind takes the default (a note tells that the switch rejects it).
+		match facts.installed.keep_if(admitted) {
 			[first, .. as rest] => Ok(rest.fold(first, newest))
-			[] => Err(None)
+			[] => match facts.installed.keep_if(other) {
+				[first, .. as rest] => Ok(rest.fold(first, newest))
+				[] => Err(None)
+			}
 		}
+	}
+
+	## R-RR1, R-SO19, R-NS3 (slice 080, a proposal, TW24): the note of a move of the default to a compiler that the `nightly` switch does not admit. `next` is the new default. The text has no `note: ` and no line end.
+	## A nightly with the switch off gives `<next> is a nightly and the nightly switch is off, so commands that use the default stop with exit code 10 until you change the switch or install an admitted compiler`. A release, and a nightly with the switch on, give `Err(None)`.
+	## `remove_flow!` of `RocManage` prints it on stderr as `note: <text>` after the move.
+	move_note : { next : Str, nightly : Bool } -> Try(Str, [None])
+	move_note = |facts| if !facts.nightly and Manage.kind_of(facts.next) == Nightly {
+		Ok("${facts.next} is a nightly and the nightly switch is off, so commands that use the default stop with exit code 10 until you change the switch or install an admitted compiler")
+	} else {
+		Err(None)
 	}
 
 	## R-RR2, R-PD9, R-PD13: the known projects that pin the compiler `id`. `projects` are the paths of `projects.json` and the text that `Fx.read_files!` gave for each. A project pins `id` when the `roc:` entry of its header is `Pin.same_id` with `id`

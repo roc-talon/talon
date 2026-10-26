@@ -26,3 +26,6 @@ recorded talon 0.0.0 in $HOME4/.local/share/talon/tools.json
 made $HOME4/.local/bin/tln (hard link)
 made $HOME4/.local/bin/roc (hard link)
 exit 0
+== setup --json env:HOME={w}/home5 env:PATH={w}/home5/.local/bin:/usr/bin
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME5/.local/bin","entries":[{"name":"tln","action":"made","form":"hard-link"},{"name":"roc","action":"made","form":"hard-link"}],"roc_old":false,"path":"on-path","completion":"none","default_roc":{"action":"repaired","id":"nightly-2026-10-16-1df370f"}},"error":null}
+exit 0

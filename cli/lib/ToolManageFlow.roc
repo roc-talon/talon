@@ -1,4 +1,5 @@
 import Args
+import BinRecord
 import BuildSkip
 import Clock
 import Common
@@ -174,7 +175,9 @@ remove_locked! = |fx, tool, paths| {
 		Err(NotFound) => Err(NotFound)
 		Err(err) => return Err(Fail.new(Environment, "cannot read ${paths.data_file}: ${Str.inspect(err)}"))
 	}
-	fate = ToolManage.entry_fate({ old, have })
+	# Slice 078b (R-ST11 (2), R-RM6): the text is in hand, so the record costs no call.
+	pairs = BinRecord.read({ path: paths.tools_file, text })?
+	fate = ToolManage.fate_bin({ old, have, recorded: ToolBuild.recorded(pairs, paths.file) })
 	updated = ToolsJson.drop({ path: paths.tools_file, text, key: still.key })?
 	(gone, removed, kept) = match fate {
 		Remove => ([paths.entry, paths.data_file], [paths.entry, paths.data_file], [])

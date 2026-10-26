@@ -2,5 +2,6 @@ tln: error[usage]: nightly-2026-10-1 matches 3 compilers: nightly-2026-10-11-1a2
 tln: error[usage]: no compiler matches nightly-2099
 tln: error[usage]: tln roc remove needs one compiler: a full id or a prefix of an installed compiler
 tln: error[usage]: tln roc remove takes one compiler, got 2
+note: nightly-2026-10-11-1a2b3c4 is a nightly and the nightly switch is off, so commands that use the default stop with exit code 10 until you change the switch or install an admitted compiler
 waiting for another tln: link-dev
 removed git-dd03c09e

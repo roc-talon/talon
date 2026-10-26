@@ -1,0 +1,6 @@
+Slice 079 (R-T30, R-FE4, R-SO14, R-SO15, Q-B1), `tln tool install` on a machine with no compiler, no `default-roc` and no `roc` on `PATH` (entry `commands`). `TALON_NOW=2026-10-15T12:00:00Z`, `min-release-age` 2 days, so the latest compiler in the channel is
+nightly-2026-10-12-2664a27 (B). The pin of the app is nightly-2026-10-11-1a2b3c4 (P, in the nightly list, not installed). The app `x` fails its check with each compiler (`fx/units`). `TALON_AUTO_INSTALL=yes` answers each download.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/x env:TALON_AUTO_INSTALL=yes` | the fetch of the app bundle needs a compiler to unpack it. Nothing is installed and nothing is selected, so R-FE4 downloads the latest in the channel (B, not the pin: a tool has no fact before the bundle is unpacked) and sets it as `default-roc` (one write of `config.toml`, R-SO15). The bundle and the platform are unpacked with B. Then step 3 of R-T30: B is installed, so it is tried (`trying 1 installed compiler release`), and it fails the check. Step 4: the pin P is downloaded (`TALON_AUTO_INSTALL=yes`) and the app is built with it. `config.toml` is read again before step 4 and is not written again: the default is set, so P does not become the default | R-T30, R-FE4, R-SO14, R-SO15, R-SO23, R-T6, R-DL1 |

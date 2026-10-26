@@ -1,6 +1,7 @@
 import Opts
 import Args
 import Fx
+import HeldRoc
 import Roots
 import Common
 import Compiler
@@ -116,7 +117,8 @@ single! = |fx, request, target| {
 	prepared = ResolveLoad.prepared!(fx, request, Verify)?
 	settings = ResolveBase.settings_of(request, prepared.loaded)
 	ResolveBase.check_pin(prepared.loaded, settings, prepared.decision, Verify)?
-	started = Start.run!(fx, { roots: request.roots, path_roc: request.compiler, held: prepared.decision.held ?? "", downloads: ResolveBase.ladder_downloads(request) })?
+	held = HeldRoc.held!(fx, request, prepared.loaded, prepared.decision.held)?
+	started = Start.run!(fx, { roots: request.roots, path_roc: request.compiler, held, downloads: ResolveBase.ladder_downloads(request) })?
 	run = { roots: request.roots, now: request.now, started, probe: ResolveBase.probe_settings(request, prepared.loaded) }
 	rows = rows_of(prepared.loaded, request.project)
 	match target {

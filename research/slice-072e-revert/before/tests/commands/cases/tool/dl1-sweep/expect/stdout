@@ -1,0 +1,16 @@
+== --version env:USERPROFILE={w}/nowhere
+tln 0.0.0
+exit 0
+== --version env:HOME=
+tln 0.0.0
+exit 0
+== --version
+tln 0.0.0
+exit 0
+== tool list
+no tool is installed. Run: tln tool install owner/app
+exit 0
+== @roc --version
+exit 18
+== no-such-command
+exit 2

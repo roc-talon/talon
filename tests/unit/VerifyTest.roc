@@ -13,6 +13,7 @@ old_pf = "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpz
 
 new_pf = "https://github.com/acme/pf/releases/download/0.1.1/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG.tar.zst"
 
+# R-LD8 (slice 077): a build of `tln verify` has `--no-cache` before the `--replace-dep` pairs.
 # R-CM11 R-LB2 R-P1 R-SE4: the command line of a probe of `tln verify`. `--replace-dep <old> <new>` for each replacement, in order, after the file. No replacement gives the arguments of `Probe.args`.
 expect {
 	json = { old: old_json, new: new_json }
@@ -21,7 +22,7 @@ expect {
 		(Probe.replace_args({ command: Check, file: "main.roc", replace: [] }), ["check", "main.roc"]),
 		(Probe.replace_args({ command: Check, file: "main.roc", replace: [json] }), ["check", "main.roc", "--replace-dep", old_json, new_json]),
 		(Probe.replace_args({ command: Check, file: "app.roc", replace: [json, pf] }), ["check", "app.roc", "--replace-dep", old_json, new_json, "--replace-dep", old_pf, new_pf]),
-		(Probe.replace_args({ command: Build({ output: "/t/o" }), file: "main.roc", replace: [pf] }), ["build", "main.roc", "--output=/t/o", "--replace-dep", old_pf, new_pf]),
+		(Probe.replace_args({ command: Build({ output: "/t/o" }), file: "main.roc", replace: [pf] }), ["build", "main.roc", "--output=/t/o", "--no-cache", "--replace-dep", old_pf, new_pf]),
 		(Probe.replace_args({ command: Build({ output: "/t/o" }), file: "main.roc", replace: [] }), Probe.args({ command: Build({ output: "/t/o" }), file: "main.roc" })),
 	]
 	bad = rows.keep_if(|(got, want)| got != want).map(|(got, _)| got)
@@ -44,7 +45,7 @@ expect {
 		spec("/p/app", ["check", "main.roc"]),
 		spec("/p/app", ["check", "main.roc", "--replace-dep", old_json, new_json, "--replace-dep", old_pf, new_pf]),
 	]
-	app_build = Ok(spec("/p/app", ["build", "main.roc", "--output=${tmp}/tln-probe.out", "--replace-dep", old_json, new_json, "--replace-dep", old_pf, new_pf]))
+	app_build = Ok(spec("/p/app", ["build", "main.roc", "--output=${tmp}/tln-probe.out", "--no-cache", "--replace-dep", old_json, new_json, "--replace-dep", old_pf, new_pf]))
 	nothing = plan(App, [])
 	first_rows = [
 		("app: first round", for_app.first, app_first),
@@ -55,12 +56,12 @@ expect {
 		("app: the build in the project dir", for_app.build, app_build),
 		("package: no build", plan(Package, [json]).build, Err(None)),
 		("platform: no build", plan(Platform, [json]).build, Err(None)),
-		("no replacement: the build", nothing.build, Ok(spec("/p/app", ["build", "main.roc", "--output=${tmp}/tln-probe.out"]))),
+		("no replacement: the build", nothing.build, Ok(spec("/p/app", ["build", "main.roc", "--output=${tmp}/tln-probe.out", "--no-cache"]))),
 	]
 	bad = first_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name).concat(build_rows.keep_if(|(_, got, want)| got != want).map(|(name, _, _)| name))
 	dbg bad
 	slow = Ladder.plan_replace({ compiler: "0.1.0", program: "/usr/bin/roc", env: [], kind: App, dir: "/q", file: "x.roc", tmp, replace: [json], timeout: 7 })
 	only_check_and_build = for_app.first.concat([for_app.build.ok_or(spec("/", []))]).all(|s| s.args.first() == Ok("check") or s.args.first() == Ok("build"))
 	slow_spec = |args| { compiler: "0.1.0", program: "/usr/bin/roc", args, dir: "/q", env: [], timeout: 7, weight: if args.first() == Ok("build") 4 else 1 }
-	slow.first == [slow_spec(["check", "x.roc"]), slow_spec(["check", "x.roc", "--replace-dep", old_json, new_json])] and slow.build == Ok(slow_spec(["build", "x.roc", "--output=${tmp}/tln-probe.out", "--replace-dep", old_json, new_json])) and bad == [] and only_check_and_build
+	slow.first == [slow_spec(["check", "x.roc"]), slow_spec(["check", "x.roc", "--replace-dep", old_json, new_json])] and slow.build == Ok(slow_spec(["build", "x.roc", "--output=${tmp}/tln-probe.out", "--no-cache", "--replace-dep", old_json, new_json])) and bad == [] and only_check_and_build
 }

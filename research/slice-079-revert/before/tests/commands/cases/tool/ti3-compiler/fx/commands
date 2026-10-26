@@ -1,0 +1,8 @@
+tool install acme/ev
+tool install acme/two
+tool install acme/three --roc installed env:TALON_INTERACTIVE=0
+tool install acme/again
+tool install acme/cancel
+tool install acme/evp --roc pinned
+tool install acme/redo
+tool install acme/dl

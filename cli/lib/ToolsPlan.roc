@@ -179,11 +179,10 @@ ToolsPlan :: [].{
 	## R-DL4, R-DL7 (Q-A of the review): the stop of a build that needs a compiler download that nobody answered. `ToolInstall.consent_stop` names `--roc pinned`, a flag that `install`, `update` and `upgrade` do not take. For a project tool the text names the flags that the command takes: `the compiler <id> is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.` Any other failure stays as it is.
 	compiler_stop : Fail -> Fail
 	compiler_stop = |fail| {
-		head = "the compiler "
 		tail = " is not installed. Pass --roc pinned or --yes, or set TALON_AUTO_INSTALL=yes. (--roc installed tries the installed compilers.)"
-		if fail.kind == Consent and fail.message.starts_with(head) and fail.message.ends_with(tail) {
-			id = fail.message.drop_prefix(head).drop_suffix(tail)
-			Fail.new(Consent, "the compiler ${id} is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.")
+		# Slice 079 (D5): the start stays. After a try it is `no installed compiler release built <name> <version> (<list>), and the compiler <id>`: only the end is rewritten.
+		if fail.kind == Consent and fail.message.ends_with(tail) {
+			{ ..fail, message: "${fail.message.drop_suffix(tail)} is not installed. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes." }
 		} else {
 			fail
 		}

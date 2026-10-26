@@ -1,0 +1,3 @@
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/z 2.0.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: $HOME/.local/bin/qux is not a file that tln wrote, so tln does not replace it. Use --as <name> to install under another binary name.

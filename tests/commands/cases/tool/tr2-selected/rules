@@ -1,0 +1,6 @@
+Slice 079 (R-NI17, R-SO15, R-T30), `tln tool rebuild` when a compiler is selected (entry `commands`). Same home as `tr1-rebuild` with `config.toml` that has `default-roc = nightly-2026-10-14-38a3029` (the selected compiler). `g` (acme/g from main at aaaaaaaa) was built with
+`nightly-2026-10-11-1a2b3c4`, which is not installed. `TALON_NOW=2026-10-15T12:00:00Z`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool rebuild g --yes env:TALON_INTERACTIVE=0` | the recorded compiler is downloaded again (R-T5) and the tool is built with it. A compiler is selected, so the download sets no `default-roc`: `config.toml` is read and not written (compare `tr1-rebuild` run 3, where nothing is selected and the download becomes the default) | R-NI17, R-SO15, R-T30, R-T5, R-DL1 |

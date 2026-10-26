@@ -1,17 +1,21 @@
 import Common
 import Compiler
 import ConfigToml
+import Facts
 import Fail
 import Fx
 import Intent
 import LadderPlan
 import Locked
+import Nightlies
+import NoRankPure
 import OnPath
 import Patched
 import Pin
 import Project
 import Roots
 import Text
+import Toolchain
 
 ## The compiler that Resolution 13 selects for a target file (R-SO1 to R-SO14), for the `roc` proxy (`Proxy.go!`) and for the base of a relative step (slice 026, R-SL7, R-PD16, R-PD7, R-NS3).
 ## A leaf module: `Proxy` imports `RocInstall`, and `RocInstall.offer!` needs the base, so the code that both use is here (as `Common` and `Start` were made in slice 025).
@@ -25,8 +29,8 @@ import Text
 ## | `selected!` | C, the base | `RocInstall.offer!` |
 Base :: [].{
 
-	## The rank that selected the compiler: `Compiler.Rank` with the header pin (rank 3) between `Env` and `Range`.
-	Rank : [Argument, Env, Pin, Range, VersionFile, Default, Path]
+	## The rank that selected the compiler: `Compiler.Rank` with the header pin (rank 3) between `Env` and `Range`. `Picked` (slice 072e, R-SO14, R-PX4) is no rank: no rank selected a compiler, and the proxy picked one.
+	Rank : [Argument, Env, Pin, Range, VersionFile, Default, Newest, Path, Picked]
 
 	## A compiler that a rank selected. `Missing` is an id that is not installed.
 	Selected : { id : Str, rank : Base.Rank, state : [Installed, Missing] }
@@ -34,14 +38,17 @@ Base :: [].{
 	## The project of the target file and the result of its header.
 	Found : { project : Project, header : Try({}, Fail) }
 
+	## Slice 072e (R-SL7): what `selected!` found. `base` is the selected compiler. With none, `range` is the range of `talon.toml` when no installed compiler is in it (rank 4, `NoneInRange`), and `hashes` are the hashes of the header of `main.roc`.
+	Basis : { base : Try(Str, [None]), hashes : List(Str), range : Try(Pin.Req, [None]) }
+
 	## What the ranks 3 to 6 read (step 6 of the table of `Proxy`). `req_text` is the text of the range, for the failure of `NoneInRange`.
 	## Slice 043 (R-PX5, R-PA6, R-PA10): `patch` has the patches of the header of the target file (`Patched.entries`: its rows and the `[patch]` table of the `talon.toml` that the step reads): `replace` are the `--replace-dep` pairs, `stale` are the entries whose `base` is not the hash of the header entry.
 	## A target with no header, no `talon.toml` or no patch has both lists empty.
-	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
+	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
 
 	## What `load!` reads when there is nothing to read (`ROC_TOOLCHAIN` or `roc +<id>` is used: no file counts).
 	no_facts : Base.Loaded
-	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, has_toml: Bool.False, version_file: Err(None), default: Err(Unset), patch: { replace: [], stale: [] } }
+	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
 
 	## R-EV17, R-SO9: `TALON_IN_PROXY=1` is set. Any other value, and no variable, is false. A proxy that sees it does not look at `PATH` (rank 7).
 	in_proxy : List((Str, Str)) -> Bool
@@ -98,7 +105,7 @@ Base :: [].{
 	## R-SL7, R-PD16, R-PD7, R-NS3: the base of a relative step, the compiler that Resolution 13 selects for the target file `main.roc` of the current directory, as the proxy selects it for `roc` with no argument
 	## (`Proxy.go!`), with these differences: no download, no `.last-use`, no record in `projects.json` (a `tln roc` command uses no project, R-PD16), no `exec!`.
 	## `env` is the environment, `roots` the cache dirs, `installed` the ids of `<cache>/toolchains` (`Compiler.installed`), `config` is `config.toml` (`default-roc`, `nightly`).
-	## The result is the id of the selected compiler, also when it is not installed (the base is a position in the list, not a compiler to run). `Err(None)` is no base (R-SO14).
+	## The result is the id of the selected compiler, also when it is not installed (the base is a position in the list, not a compiler to run). `Err(None)` is no base: slice 072e (R-SL7, R-SO23) `Base.listed!` gives the base then.
 	##
 	## | Rank | Source | Base |
 	## | --- | --- | --- |
@@ -108,7 +115,8 @@ Base :: [].{
 	## | 5 | `.roc-version`, when there is no `talon.toml` | the id |
 	## | 6 | `default-roc` of `config.toml` | the id |
 	## | 7 | The `roc` on `PATH` (`OnPath.file!`) | its id |
-	## | none | | `Err(None)` |
+	## | 4 (none installed in the range) | | `Err(None)`, `range` is the range (R-SO13) |
+	## | none | | `Err(None)`, `range` is `Err(None)`: nothing is installed and no rank selects (R-SO24) |
 	##
 	## | Step | Does | Rule |
 	## | --- | --- | --- |
@@ -117,8 +125,8 @@ Base :: [].{
 	## | 3 | One `read_files!` of the project file, the `talon.toml` and the `.roc-version`, those that exist (`load!` with `Given`) | R-SO3 to R-SO5 |
 	## | 4 | A range and a non-empty `installed`: one `read_files!` of the `.talon.json` of each (`times!`) | R-NS1 |
 	## | 5 | `choose!` | R-SO7, R-SO9, R-SO10 |
-	## | 6 | `Ok(id)` is the base. `NoCompiler` and `NoneInRange` are `Err(None)` (question Q3 of the slice file). | R-SO14 |
-	selected! : Fx, { env : List((Str, Str)), roots : Roots, installed : List(Str), config : ConfigToml.Config } => Try(Try(Str, [None]), Fail)
+	## | 6 | `Ok(id)` is the base. `NoCompiler` and `NoneInRange` are `Err(None)`, with the range and the hashes of the header for `listed!` (slice 072e). | R-SO14 |
+	selected! : Fx, { env : List((Str, Str)), roots : Roots, installed : List(Str), config : ConfigToml.Config } => Try(Base.Basis, Fail)
 	selected! = |fx, run| {
 		toolchain = Compiler.toolchain_of(run.env)?
 		found = if toolchain.is_ok() Err(NoProject) else Base.find!(fx, { target: Main, skip: Bool.False, cwd: fx.cwd!(), env: run.env })
@@ -127,8 +135,23 @@ Base :: [].{
 		times = if loaded.req.is_ok() and !run.installed.is_empty() Base.times!(fx, run.roots, run.installed) else []
 		compiler = Base.facts({ argument: Err(Unset), toolchain, loaded, env_nightly: Common.nightly_of(run.env), installed: run.installed, times })
 		match Base.choose!(fx, { roots: run.roots, env: run.env, pin: loaded.pin, facts: compiler }).selected {
-			Ok(sel) => Ok(Ok(sel.id))
-			Err(NoCompiler) | Err(NoneInRange) => Ok(Err(None))
+			Ok(sel) => Ok({ base: Ok(sel.id), hashes: loaded.hashes, range: Err(None) })
+			Err(NoCompiler) => Ok({ base: Err(None), hashes: loaded.hashes, range: Err(None) })
+			Err(NoneInRange) => Ok({ base: Err(None), hashes: loaded.hashes, range: loaded.req.map_err(|_| None) })
+		}
+	}
+
+	## R-SL7, R-SO13, R-SO14, R-SO23 (slice 072e): the base of a relative step when `selected!` gave none, as an id only (no download, no default, no probe). `releases` is the list of the host and `auto` its channel ids (`Toolchain.domain`).
+	## With a range and no installed compiler in it (`basis.range`): the newest release in the range (`Toolchain.range_pick`, R-SO13), and no fact is read. With no range: the pick of R-SO14 over the recorded passes of the hashes of the header
+	## (one `Facts.load!`, no call when there is no hash; `NoRankPure.pick`). `Err(None)` when the channel has no release.
+	listed! : Fx, { roots : Roots, basis : Base.Basis, releases : List(Nightlies.Release), auto : List(Str), now : U64, min_age : U64, nightly : Bool } => Try(Try(Str, [None]), Fail)
+	listed! = |fx, run| match (run.basis.base, run.basis.range) {
+		(Ok(id), _) => Ok(Ok(id))
+		(Err(None), Ok(req)) => Ok(Toolchain.range_pick({ releases: run.releases, req, now: run.now, min_age: run.min_age, snapshot: Err(None), nightly: run.nightly }).map_err(|_| None))
+		(Err(None), Err(None)) => {
+			hashes = run.basis.hashes
+			rows = Facts.load!(fx, { roots: run.roots, keys: NoRankPure.keys({ hashes, auto: run.auto }) })?
+			Ok(NoRankPure.pick({ auto: run.auto, scope: Project(hashes), facts: rows }).map_err(|_| None))
 		}
 	}
 
@@ -256,7 +279,7 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc, patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
+		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
 	}
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
@@ -265,6 +288,18 @@ Base :: [].{
 		paths = installed.map(|id| Roots.item(roots, ToolchainMeta(id)))
 		Compiler.times(installed.map2(fx.read_files!(paths), |id, text| { id, text }))
 	}
+}
+
+# R-SL7, R-SO23, R-PX4: the hashes of the release entries of the header, in the order of its rows.
+header_hashes : Try(Locked, [NoPin]) -> List(Str)
+header_hashes = |locked| match locked {
+	Ok(l) => l.rows.keep_oks(
+		|row| match row.what {
+			Release(ident) => Ok(ident.hash)
+			_ => Err(NotRelease)
+		},
+	)
+	Err(NoPin) => []
 }
 
 # R-SO3, R-SO10, R-SO12, R-CV1: the pin is rank 3. It is installed under its own id, or the other tag form of it, or the id of the `roc` on `PATH`. Else it is `Missing`.
@@ -284,6 +319,7 @@ rank_of = |rank| match rank {
 	Range => Range
 	VersionFile => VersionFile
 	Default => Default
+	Newest => Newest
 	Path => Path
 }
 

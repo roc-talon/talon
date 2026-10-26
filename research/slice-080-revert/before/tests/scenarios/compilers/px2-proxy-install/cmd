@@ -1,0 +1,55 @@
+# R-PX4 R-DL1 R-DL8 R-DL9 R-DL10 R-EV6 R-NI5 R-CC3 R-CC4 R-CC9 R-SO15 R-CV4 R-E1 (slice 023b): the `roc` proxy installs a missing compiler. The real binary, the real curl and tar, and the fake release server
+# (given/http was made by `ARCHIVE=real tests/tools/mk-nightly.sh given/http nightly-2026-10-17-601b54c+baddigest nightly-2026-10-15-38e6c42 nightly-2026-10-13-91fa0c2 nightly-2026-10-12-2664a27`, and the body
+# of the asset of 2026-10-13 is slow, so 3 runs at the same time meet at the lock). The fake roc of each archive prints `Roc compiler version <id>`, and for `check` it makes a compat dir and exits 1.
+# The runner has CI=true: no run has a prompt. TALON_NOW=2026-10-22T12:00:00Z. The first run also fills path-roc.json (the walk of rank 7 runs `roc version` of the fake on PATH once), so no later run does.
+TLN=$(command -v tln)
+D=$TALON_TEST_DIR
+export TALON_NOW=2026-10-22T12:00:00Z
+T=$HOME/.cache/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+# slice 062 (R-SO15): a download for a probe, a pin or the proxy writes no default, so config.toml does not exist. The line says so.
+default_roc() { if [ -e $C ]; then cat $C; else echo "no default-roc (no config.toml)"; fi; }
+PIN=nightly-2026-10-15-38e6c42
+BAD=nightly-2026-10-17-601b54c
+A=nightly-2026-10-13-91fa0c2
+REF=nightly-2026-10-12-2664a27
+mkdir -p $D/launch
+cp "$TLN" $D/launch/roc
+L=$D/launch/roc
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+requests() { if [ -f $D/http.log ]; then grep -c "$1" $D/http.log; else echo 0; fi; }
+
+echo "== R-DL8: TALON_AUTO_INSTALL is not set (ask) and no person is there (CI=true): exit 13 before the compiler runs. No request, nothing in the store."
+st $L +$REF version
+ls -A $T 2> /dev/null | wc -l | tr -d ' '
+requests .
+echo "== R-DL10: no: the same."
+st env TALON_AUTO_INSTALL=no $L +$REF version
+echo "== R-EV6: another value counts as not set (ask): the same refusal as the first part, exit 13."
+st env TALON_AUTO_INSTALL=maybe $L +$REF version
+echo "== R-CV4 R-CC4: yes, and the digest of the asset is wrong: exit 16, the compiler does not run. The download is deleted, no temp dir, no lock, and the id is not installed."
+st env TALON_AUTO_INSTALL=yes $L +$BAD version
+ls -A $T 2> /dev/null | wc -l | tr -d ' '
+find $HOME/.cache/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '
+echo "== R-DL9 R-PX4 R-SO15 R-CC9: yes, the pin of p1 is not installed. The proxy installs it and runs it. The pin gives the compiler, so no default is written (R-SO15). stdout has only the output of the compiler."
+st env TALON_AUTO_INSTALL=yes $L build p1/main.roc
+echo "last use of the pin: $(cat $T/$PIN/.last-use)"
+default_roc
+echo "== R-CC3 R-CC4: 3 runs at the same time need one compiler that is not installed: one download. Each run answers yes (3 answer lines), one of them holds the lock, and each runs the compiler."
+for n in 1 2 3; do
+    env TALON_AUTO_INSTALL=yes $L +$A version > run$n.out 2> run$n.err &
+    eval pid$n=\$!
+done
+for n in 1 2 3; do
+    if wait $(eval echo \$pid$n); then echo "run $n exit 0"; else echo "run $n exit $?"; fi
+done
+cat run1.out run2.out run3.out
+echo "answer lines: $(cat run1.err run2.err run3.err | grep -c '^downloading')"
+echo "downloads of the asset: $(requests "GET /dl/$A")"
+echo "last use: $(cat $T/$A/.last-use)"
+rm -f run1.out run2.out run3.out run1.err run2.err run3.err
+echo "== the store has the 2 installed compilers only, no temp dir and no lock. Still no default (R-SO15)."
+ls $T
+find $HOME/.cache/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '
+ls $HOME/.cache/roc/talon/tmp 2> /dev/null | wc -l | tr -d ' '
+default_roc

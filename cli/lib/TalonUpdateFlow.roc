@@ -1,4 +1,5 @@
 import Args
+import BinRecord
 import Common
 import Del
 import DelFlow
@@ -134,7 +135,7 @@ prebuilt! = |fx, args, ctx, release| {
 		Err(NoAsset) => return Err(Fail.new(Internal, "${TalonUpdate.name} ${release.tag} has no ${ctx.asset}"))
 	}
 	facts = ctx.facts
-	first = states!(fx, facts)?
+	first = states!(fx, facts, Fresh)?
 	_ = TalonUpdate.entries({ os: facts.os, bin: facts.bin, tln: first.tln, roc: first.roc })?
 	hex = Temp.hex(fx.random!())
 	lay = layout_of(facts, hex)
@@ -271,7 +272,7 @@ installed! = |fx, ctx, job, sha| {
 	facts = ctx.facts
 	tools_file = Roots.item(facts.roots, Item.ToolsJson)
 	text = SetupIo.read_text!(fx, tools_file)?
-	now = states!(fx, facts)?
+	now = states!(fx, facts, Text(text))?
 	made = TalonUpdate.entries({ os: facts.os, bin: facts.bin, tln: now.tln, roc: now.roc })?
 	data = match now.old {
 		Ok(_) => [job.lay.data_file]
@@ -286,7 +287,10 @@ installed! = |fx, ctx, job, sha| {
 		_ = ToolBuild.link_entry!(fx, entry_layout(job.lay, facts.bin, name, job.hex))?
 	}
 	talon = TalonUpdate.prebuilt_entry({ release: job.release, url: job.bin_url, sha256: sha, target: facts.target, now: facts.now })
-	SetupIo.write_file!(fx, tools_file, ToolsJson.put_talon({ path: tools_file, text, talon })?)?
+	put = ToolsJson.put_talon({ path: tools_file, text, talon })?
+	# Slice 078 (R-T4, R-S6): the record of the entries `tln` and `roc` that were made, in the same single write.
+	bin = made.make.map(|name| (name.drop_suffix(".exe"), sha))
+	SetupIo.write_file!(fx, tools_file, BinRecord.set({ path: tools_file, text: Ok(put), key: "talon", bin })?)?
 	Ok(made.warnings)
 }
 
@@ -307,8 +311,8 @@ exists = |now, name| {
 }
 
 # Step 6 (R-ST6, R-ST11): the bin dir, the file `tln` of the data bin dir, then the entries `tln` and `roc`.
-states! : Fx, ToolBuild.Facts => Try(States, Fail)
-states! = |fx, facts| {
+states! : Fx, ToolBuild.Facts, ToolBuild.Known => Try(States, Fail)
+states! = |fx, facts, known| {
 	tln = ToolInstall.file_name({ os: facts.os, key: "tln" })
 	roc = ToolInstall.file_name({ os: facts.os, key: "roc" })
 	listed = match fx.list_dirs!([facts.bin]) {
@@ -323,7 +327,37 @@ states! = |fx, facts| {
 	}
 	tln_have = SetupIo.have_of!(fx, facts.bin, listed, tln)
 	roc_have = SetupIo.have_of!(fx, facts.bin, listed, roc)
-	Ok({ tln: ToolInstall.verdict({ old, have: tln_have }), roc: ToolInstall.verdict({ old, have: roc_have }), old, tln_have, roc_have })
+	# Slice 078b (R-ST11 (2), R-ST9): `tools.json` is read (once, for both entries) only when an entry is a file that is not Talon's by the data file.
+	first = { tln: ToolInstall.verdict({ old, have: tln_have }), roc: ToolInstall.verdict({ old, have: roc_have }) }
+	pairs = if foreign_file(first.tln, tln_have) or foreign_file(first.roc, roc_have) ToolBuild.bin_pairs!(fx, facts.roots, known)? else []
+	Ok({
+		tln: ToolBuild.verdict_in(pairs, { name: tln, old, have: tln_have }),
+		roc: ToolBuild.verdict_in(pairs, { name: roc, old, have: roc_have }),
+		old,
+		tln_have,
+		roc_have,
+	})
+}
+
+# Is the entry a file that the data file does not vouch for? Only then the record can change the verdict.
+foreign_file : [Make, Foreign], Del.Have -> Bool
+foreign_file = |verdict, have| match (verdict, have) {
+	(Foreign, Sha(_)) => Bool.True
+	_ => Bool.False
+}
+
+# Slice 078 (D5): the record of the entry `roc` of a source build, in one more lock of `tools.json`. The entry `roc` has the sha256 of the data file `tln` (`sha`, from the install of `tln`). No change gives no write.
+record_roc! : Fx, ToolBuild.Facts, { roc : Str, sha : Str } => Try({}, Fail)
+record_roc! = |fx, facts, run| {
+	tools_file = Roots.item(facts.roots, Item.ToolsJson)
+	fx.locked!(
+		tools_file,
+		|| {
+			text = SetupIo.read_text!(fx, tools_file)?
+			after = BinRecord.set({ path: tools_file, text, key: "talon", bin: [(run.roc.drop_suffix(".exe"), run.sha)] })?
+			if text == Ok(after) or text == Err(NotFound) Ok({}) else SetupIo.write_file!(fx, tools_file, after)
+		},
+	)
 }
 
 # The paths of the file `tln` (the data file, the temp names) for one hex.
@@ -362,7 +396,7 @@ built_from_source! = |fx, args, ctx, release| {
 		}
 		Err(None) => {}
 	}
-	first = states!(fx, facts)?
+	first = states!(fx, facts, Fresh)?
 	made = TalonUpdate.entries({ os: facts.os, bin: facts.bin, tln: first.tln, roc: first.roc })?
 	ToolGitFlow.check_curl!(fx, facts.net)?
 	source_facts = { ..facts, name: TalonUpdate.name, key: "talon", file: ToolInstall.file_name({ os: facts.os, key: "tln" }) }
@@ -404,6 +438,10 @@ installed_from! = |fx, args, facts, bundle, again| {
 		layout = entry_layout(layout_of(facts, hex), facts.bin, roc, hex)
 		_ = DelFlow.rename_away!(fx, { os: facts.os, files: Del.replaced({ data_file: layout.data_file, entry: layout.entry, old: Err(NotFound), have: again.roc_have }) })?
 		_ = ToolBuild.link_entry!(fx, layout)?
+		match done.built {
+			Ok(built) => record_roc!(fx, facts, { roc, sha: built.sha256 })?
+			Err(None) => {}
+		}
 	}
 	Ok(done.version)
 }

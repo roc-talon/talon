@@ -1,0 +1,6 @@
+Slice 078b (entry `commands`): `tln tool remove talon` with the `bin` record of slice 078 (R-RM6, R-ST11 (2)). One home for each run (`HOME={w}/home/h<n>`), all in CI (no prompt). The homes are `h1` and `h2` of `rm2-options`, with these changes.
+
+| Run | Home | Words | Result | Rules |
+| --- | --- | --- | --- | --- |
+| 1 | h1 | `tool rm talon --remove-tools --json` | Option 2. The checks of step 7 use the record that step 2 read (no new call). The entry `tln` is `stale tln` and `bin.tln` records its sha256: it is Talon's, so it is deleted (in `rm2-options` it would be kept). The entry of `foo` is `stale foo`, recorded: deleted, no warning. `baz` has another file than its record (`older baz`): kept with the warning. `bar` and `roc` are Talon's by the data file, as before. `kept_entries` has only `baz` | R-RM6, R-ST11, R-ST9, R-ST6, R-RM7 |
+| 2 | h2 | `tool rm talon --keep-all` | Option 3. The entry `tln` is `stale tln`, recorded: it is deleted with no warning (in `rm2-options` it stays). `roc.old` goes back to `roc` | R-RM6, R-ST11, R-ST9, R-RM3 |

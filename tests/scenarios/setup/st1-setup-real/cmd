@@ -22,7 +22,7 @@ chmod +x $DATA/foo
 printf '{"format":1,"tools":{"foo":{}}}\n' > $XDG_DATA_HOME/talon/tools.json
 J=$XDG_DATA_HOME/talon/tools.json
 # the sha256 of the file tln changes with each build of tln: the case prints it as <sha256> and compares it with the real one
-shown() { sed -e 's/"sha256":"[0-9a-f]\{64\}"/"sha256":"<sha256>"/' "$J"; }
+shown() { sed -e 's/"sha256":"[0-9a-f]\{64\}"/"sha256":"<sha256>"/' -e 's/"\(tln\|roc\|foo\)":"[0-9a-f]\{64\}"/"\1":"<sha256>"/g' "$J"; }
 
 echo "== 1: R-ST13 R-ST14 R-ST15 R-ST7 R-LY8 R-ST4 R-NI14 R-ST5: the first setup. tln, roc and the tool foo are hard links of the files in the data bin dir (the same inode). The bin dir is not on PATH: the default answer is Yes, so the profile of bash gets the marker line. The completion is written."
 st tln setup
@@ -30,6 +30,10 @@ echo "== 1b: R-IS6 R-S2 R-T4 R-CC1 (slice 052): the entry talon is written when 
 shown
 want=$(sha256sum $DATA/tln | cut -d' ' -f1)
 if grep -q "\"sha256\":\"$want\"" $J; then echo "the sha256 is the one of the file tln"; else echo "the sha256 is not the one of the file tln"; fi
+# R-T4 R-ST11 (slice 078): setup records the sha256 of each bin dir entry that it made: `bin` of the entry talon has tln and roc (the file tln), the entry foo has foo (the file foo).
+if grep -q "\"bin\":{\"tln\":\"$want\",\"roc\":\"$want\"}" $J; then echo "bin of talon has the sha256 of the file tln for tln and roc"; else echo "bin of talon is wrong"; fi
+wantfoo=$(sha256sum $DATA/foo | cut -d' ' -f1)
+if grep -q "\"foo\":{\"bin\":{\"foo\":\"$wantfoo\"}}" $J; then echo "bin of foo has the sha256 of the file foo"; else echo "bin of foo is wrong"; fi
 ls -A $XDG_DATA_HOME/talon
 cp $J $D/tools.json.1
 same $B/tln $DATA/tln "tln"

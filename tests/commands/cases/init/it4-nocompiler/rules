@@ -1,0 +1,9 @@
+R-SO14 R-SO15 R-SO23 R-FE4 R-IN8 R-NI5 R-DL1 R-DL5 (slice 072c, `tln init --platform` with no compiler): 1 run. Home `home9` has no compiler, no `default-roc`, and no `roc` on `PATH` (`fx/path-roc` is empty). The files are those of `init/it2-platform` (the platform `acme/wpf` is not in the cache of this home).
+`TALON_AUTO_INSTALL=yes` is the consent. The channel (the list route) has the latest compiler `nightly-2026-10-12-2a2a2a2`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `init --platform acme/wpf` (in `t9`) | the fetch of the platform header needs `roc unbundle`. Nothing is installed and nothing is selected, and the command has no project (scope `Outside`): R-SO14 (2) downloads the latest in the channel (`downloading nightly-2026-10-12-2a2a2a2 (74.2 MB), the default compiler`) and sets it as `default-roc`. The exit code was 18 before slice 072c | R-SO14, R-SO15, R-SO23, R-FE4, R-DL1 |
+
+Slice 072e (question Q-D6 of slice 072d): the output after the download is the output of `it2-platform` run 1: the ladder runs on the template (`check: passed`, `build: passed`), the header gets `+ roc: <id>` (R-IN2, R-IN4), `resolved at ..., 4 probes`. Cause of the old output (`nothing to change`): the downloaded compiler is the default and also the newest nightly, and the start platform release is the newest, so the resolve of `upgrade` has no change. R-RP3 writes the pin only for another change, so the old code ran no ladder and wrote no pin. `init` must write the pin of the new header and check the template (R-IN2, R-IN4), also when nothing moves.
+What 072c fixes here: the exit code 0, the stderr line of the download, the files that `init` makes, and the write of `config.toml` with the new default (`calls.log`: `lock`, `write_atomic`, `unlock` of `config.toml`; the tree of `home9` is not in `tree.diff`).

@@ -36,7 +36,7 @@
 +++ home/u1/.local/share/talon/tools.json
 @@ -1 +1 @@
 -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64win.exe"},"build":{"hashes":[],"nightly":"","target":"x64win"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
-+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"git","commit":"d0d0d0d05e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v0.3.4","path":"cli"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64win"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"git","commit":"d0d0d0d05e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v0.3.4","path":"cli"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64win"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"tln":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","roc":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78"}}}}
 --- home/u1\.local\bin/roc.0123456789abcdef.del
 +++ home/u1\.local\bin/roc.0123456789abcdef.del
 @@ -0,0 +1 @@
@@ -95,7 +95,7 @@
 +++ home/u2/.local/share/talon/tools.json
 @@ -1 +1 @@
 -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64win.exe"},"build":{"hashes":[],"nightly":"","target":"x64win"},"sha256":"1cbf36014adbb023cc0d20cbd82b77c3fc35e6497a3653ee80478c07bf43a126","libs":[],"installed_at":"2026-09-01T12:00:00Z"}}}
-+{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"git","commit":"d0d0d0d05e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v0.3.4","path":"cli"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64win"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z"}}}
++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"git","commit":"d0d0d0d05e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v0.3.4","path":"cli"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64win"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"installed_at":"2026-10-15T12:00:00Z","bin":{"tln":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","roc":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78"}}}}
 --- home/u2\.local\bin/roc.exe
 +++ home/u2\.local\bin/roc.exe
 @@ -0,0 +1 @@

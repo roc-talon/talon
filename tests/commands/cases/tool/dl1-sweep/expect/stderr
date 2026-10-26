@@ -1,2 +1,2 @@
-tln: error[environment]: no compiler is selected. Run: tln roc install @latest, then tln roc default <id>
+tln: error[consent]: the compiler nightly-2026-10-14-38a3029 (roc +nightly-2026-10-14-38a3029) is not installed. Run: tln roc install nightly-2026-10-14-38a3029, or set TALON_AUTO_INSTALL=yes.
 tln: error[usage]: unknown command 'no-such-command'

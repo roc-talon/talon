@@ -1,0 +1,9 @@
+== tool install acme/two
+installed two 1.0.0 (acme/two)
+exit 0
+== tool install acme/three env:ROC_TOOLCHAIN=nightly-2026-10-12-2664a27
+installed three 1.0.0 (acme/three)
+exit 0
+== tool install acme/dl --roc pinned
+installed dl 1.0.0 (acme/dl)
+exit 0

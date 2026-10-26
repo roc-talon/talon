@@ -22,6 +22,10 @@ rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
 random
 hard_link $HOME/.local/share/talon/bin/baz $HOME/.local/bin/baz.0123456789abcdef.tmp
 rename $HOME/.local/bin/baz.0123456789abcdef.tmp $HOME/.local/bin/baz
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
 write_atomic $HOME/.local/share/bash-completion/completions/tln
 read_files $HOME/.config/talon/config.toml
 args
@@ -50,6 +54,10 @@ unlock $HOME/.cache/roc/toolchains/link-system
 random
 hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 args
 env_all

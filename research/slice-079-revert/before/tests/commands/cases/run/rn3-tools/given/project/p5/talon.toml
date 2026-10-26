@@ -1,0 +1,5 @@
+[tools]
+bd = { ref = "acme/bad@^1", url = "https://github.com/acme/bad/releases/download/1.0.0/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst" }
+
+[scripts]
+bd = ["bd --x", "tool-after"]

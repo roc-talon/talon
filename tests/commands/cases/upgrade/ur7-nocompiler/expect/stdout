@@ -1,0 +1,5 @@
+== upgrade roc --file p1/main.roc
+nothing to change
+exit 0
+== env:HOME={w}/home2 upgrade roc --file p2/main.roc
+exit 13

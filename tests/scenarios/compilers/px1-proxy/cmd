@@ -34,8 +34,8 @@ st env TALON_PROXY=0 TALON_NOW=2026-10-25T00:00:00Z XDG_CACHE_HOME=$HOME/.cache/
 echo "last use of A2: $(cat $T/$A2/.last-use)"
 echo "== R-DL8 R-SO12: the pin of p9 is not installed. No TTY: exit 13, the compiler does not run."
 st $L check p9/main.roc
-echo "== R-EV17 R-SO9: rank 7. a/roc is a copy of tln (the launcher, skipped). b/roc stands for an old copy of a launcher: it prints its id for version, and any other call runs a/roc again."
-echo "== The proxy sets TALON_IN_PROXY=1 for b/roc, so a/roc (a proxy) does not look at PATH: exit 18, and b/roc runs once. Without the variable it would loop (b/roc stops at 3 runs with exit 77)."
+echo "== R-EV17 R-SO9 R-SO24: rank 7 is reached only when no nightly or release is installed, so these runs use an empty cache dir (XDG_CACHE_HOME and ROC_CACHE_DIR). a/roc is a copy of tln (the launcher, skipped). b/roc stands for an old copy of a launcher: it prints its id for version, and any other call runs a/roc again."
+echo "== The proxy sets TALON_IN_PROXY=1 for b/roc, so a/roc (a proxy) does not look at PATH: no compiler is selected, so the proxy picks the latest in the channel (R-SO14, slice 072e), which needs a download that no person agrees to: exit 13. b/roc runs once. Without the variable it would loop (b/roc stops at 3 runs with exit 77)."
 cat > $D/b/roc <<'SCRIPT'
 #!/bin/sh
 case "$1" in version) echo "Roc compiler version nightly-2026-10-13-91fa0c2"; exit 0 ;; esac
@@ -45,10 +45,10 @@ n=$(wc -l < "$TALON_TEST_DIR/b.log" | tr -d ' ')
 exec "$TALON_TEST_DIR/a/roc" "$@"
 SCRIPT
 chmod +x $D/b/roc
-st env PATH=$D/a:$D/b:/usr/bin:/bin $L check p7/main.roc
+st env XDG_CACHE_HOME=$D/nocache ROC_CACHE_DIR=$D/nocache/roc PATH=$D/a:$D/b:/usr/bin:/bin $L check p7/main.roc
 cat $D/b.log
 echo "== The same again: path-roc.json has the id of b/roc, so no roc version runs, and the proxy still runs b/roc by its path (the line count of b.log is 2)."
-st env PATH=$D/a:$D/b:/usr/bin:/bin $L check p7/main.roc
+st env XDG_CACHE_HOME=$D/nocache ROC_CACHE_DIR=$D/nocache/roc PATH=$D/a:$D/b:/usr/bin:/bin $L check p7/main.roc
 wc -l < $D/b.log | tr -d ' '
 echo "== R-ST8: a program named tln is not the proxy."
 st tln --version

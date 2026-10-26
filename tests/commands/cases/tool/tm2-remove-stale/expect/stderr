@@ -1,0 +1,2 @@
+warning: $HOME/.local/bin/g is not a file that tln wrote, so tln keeps it
+removed g git main@aaaaaaaa (acme/g)

@@ -94,11 +94,13 @@ Update :: [].{
 	}
 
 	## Steps 8 and 9 (shared with `Upgrade.run!`): the compiler and `Resolve.install!` with `which.command` and the names.
-	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str) } => Try(InstallFlow.Done, Fail)
+	## Slice 072e (R-IN2, R-IN4): `fresh` is true for `init`: the header is new, so the pin of the held compiler is a change of the run (`InstallFlow.install_fresh!`).
+	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str), fresh : Bool } => Try(InstallFlow.Done, Fail)
 	resolve! = |fx, args, opts, start, which| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
-		Resolve.install_with!(fx, request_of(args, opts, start, { command: which.command, names: which.names, compiler, toolchain }), Ok(args))
+		request = request_of(args, opts, start, { command: which.command, names: which.names, compiler, toolchain })
+		if which.fresh Resolve.install_fresh!(fx, request, Ok(args)) else Resolve.install_with!(fx, request, Ok(args))
 	}
 
 	## Step 10 (shared with `Upgrade.run!`): the lines after the flow, or the envelope (as `Install.run!`).
@@ -135,7 +137,7 @@ flow! = |fx, args, opts, pick| {
 	if pick and names.is_empty() {
 		Ok(NothingPicked)
 	} else {
-		Ok(Moved(Update.resolve!(fx, args, opts, start, { command: Update, names })?))
+		Ok(Moved(Update.resolve!(fx, args, opts, start, { command: Update, names, fresh: Bool.False })?))
 	}
 }
 

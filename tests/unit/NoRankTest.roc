@@ -6,6 +6,7 @@ import lib.Prompt
 NoRankTest :: [].{}
 
 # The expected value of each row is the design text or the slice file text, not the code (docs/slices/072b-no-rank-download.md). A wrong row prints with `dbg`.
+# Slice 080 (R-SO24): "no compiler is selected" means that nothing is installed, so the rows of the old steps (a) and (b) (`NoRank.first`: the installed compilers with a pass, the installed compilers to probe) are removed.
 # Texts that the design does not give are the proposals of the slice file (TW24).
 
 n1 = "nightly-2026-10-14-38a3029"

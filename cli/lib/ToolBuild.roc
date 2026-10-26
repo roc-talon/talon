@@ -1,4 +1,5 @@
 import Args
+import BinRecord
 import Clock
 import ConfigToml
 import Del
@@ -104,20 +105,23 @@ ToolBuild :: [].{
 		}
 	}
 
+	# Slice 078b: where the text of `tools.json` comes from. `Fresh`: the check before the download has no text, so it reads the file when it needs the record. `Text`: the step under the lock read the text already, so there is no new call.
+	Known : [Fresh, Text(Try(Str, [NotFound]))]
+
 	# Steps 7b and 12 (R-ST6, R-ST11): may the bin dir entry be written? The same check runs before the download and again under the lock.
-	entry_verdict! : Fx, Facts => Try({}, Fail)
-	entry_verdict! = |fx, facts| match ToolBuild.entry_state!(fx, facts)? {
+	entry_verdict! : Fx, Facts, ToolBuild.Known => Try({}, Fail)
+	entry_verdict! = |fx, facts, known| match ToolBuild.entry_state!(fx, facts, known)? {
 		Make => Ok({})
 		Foreign => Err(ToolInstall.foreign_failure(Text.join(facts.bin, facts.file)))
 	}
 
 	# The calls of `entry_verdict!` without the failure text. Slice 048: `tool rebuild` and `tool update` have a text of their own for `Foreign` (no `--as`).
-	entry_state! : Fx, Facts => Try([Make, Foreign], Fail)
-	entry_state! = |fx, facts| Ok(ToolBuild.entry_read!(fx, facts)?.verdict)
+	entry_state! : Fx, Facts, ToolBuild.Known => Try([Make, Foreign], Fail)
+	entry_state! = |fx, facts, known| Ok(ToolBuild.entry_read!(fx, facts, known)?.verdict)
 
 	# The reads of `entry_state!` (the same calls), with what they read: the sha256 of the data file, and the bin dir entry. Slice 050c: `install!` gives `old` and `have` to `Del.replaced`.
-	entry_read! : Fx, Facts => Try({ old : Try(Str, [NotFound]), have : Del.Have, verdict : [Make, Foreign] }, Fail)
-	entry_read! = |fx, facts| {
+	entry_read! : Fx, Facts, ToolBuild.Known => Try({ old : Try(Str, [NotFound]), have : Del.Have, verdict : [Make, Foreign] }, Fail)
+	entry_read! = |fx, facts, known| {
 		data_file = Text.join(Roots.item(facts.roots, Item.Bin), facts.file)
 		listed = match fx.list_dirs!([facts.bin]) {
 			[one] => SetupIo.entries_of(one, facts.bin)?
@@ -129,7 +133,39 @@ ToolBuild :: [].{
 			Err(NotFound) => Err(NotFound)
 			Err(err) => return Err(Fail.new(Environment, "cannot read ${data_file}: ${Str.inspect(err)}"))
 		}
-		Ok({ old, have, verdict: ToolInstall.verdict({ old, have }) })
+		verdict = match ToolInstall.verdict({ old, have }) {
+			Make => Make
+			Foreign => match have {
+				Sha(_) => {
+					pairs = ToolBuild.bin_pairs!(fx, facts.roots, known)?
+					ToolBuild.verdict_in(pairs, { name: facts.file, old, have })
+				}
+				_ => Foreign
+			}
+		}
+		Ok({ old, have, verdict })
+	}
+
+	# Slice 078b (R-ST11 (2), R-ST9): the record `bin` of `tools.json`, as the pairs of `BinRecord.read`. The text is the one of `known`, else one `read_files!` call.
+	bin_pairs! : Fx, Roots, ToolBuild.Known => Try(List((Str, Str)), Fail)
+	bin_pairs! = |fx, roots, known| {
+		path = Roots.item(roots, Item.ToolsJson)
+		read = match known {
+			Text(given) => given
+			Fresh => SetupIo.read_text!(fx, path)?
+		}
+		BinRecord.read({ path, text: read })
+	}
+
+	# Slice 078b: `ToolInstall.verdict_bin` for the entry `name` (a file name, with `.exe` on Windows: the record has no `.exe`).
+	verdict_in : List((Str, Str)), { name : Str, old : Try(Str, [NotFound]), have : Del.Have } -> [Make, Foreign]
+	verdict_in = |pairs, facts| ToolInstall.verdict_bin({ old: facts.old, have: facts.have, recorded: ToolBuild.recorded(pairs, facts.name) })
+
+	# The sha256 that the record has for the bin dir entry `name`.
+	recorded : List((Str, Str)), Str -> Try(Str, [None])
+	recorded = |pairs, name| match pairs.find_first(|(key, _)| key == name.drop_suffix(".exe")) {
+		Ok((_, sha)) => Ok(sha)
+		Err(_) => Err(None)
 	}
 
 	# R-T1, R-T10: the header of a `main.roc` that was read. An app gives its `roc:` pin, its platform entry and the hashes of its release URL entries (D13). A package or a platform is `NotApp`. A bad header is the failure of `Release.read` or `Locked.read`.
@@ -208,7 +244,7 @@ install! = |fx, ctx| {
 		Same(old) => Replaced(ToolsJson.source_text(old.source))
 		Free => Installed
 	}
-	read = ToolBuild.entry_read!(fx, facts)?
+	read = ToolBuild.entry_read!(fx, facts, Text(text))?
 	match read.verdict {
 		Make => {}
 		Foreign => return Err(ToolInstall.foreign_failure(Text.join(facts.bin, facts.file)))
@@ -229,7 +265,9 @@ install! = |fx, ctx| {
 		libs: [],
 		installed_at: Clock.format_utc(facts.now),
 	}
-	updated = ToolsJson.put({ path: tools_file, text, tool })?
+	put = ToolsJson.put({ path: tools_file, text, tool })?
+	# Slice 078 (R-T4): the record of the bin dir entry, in the same single write.
+	updated = BinRecord.set({ path: tools_file, text: Ok(put), key: facts.key, bin: [(facts.file.drop_suffix(".exe"), sha)] })?
 	SetupIo.write_file!(fx, tools_file, updated)?
 	Ok({
 		how,

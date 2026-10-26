@@ -1,2 +1,3 @@
 == install --file p/main.roc
-exit 18
+nothing to change
+exit 0

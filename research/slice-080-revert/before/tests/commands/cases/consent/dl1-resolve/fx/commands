@@ -1,0 +1,34 @@
+# R-NM8 R-DL5: --offline reaches the offer (this run is the first, so the cache of the list is empty): exit 15 with the offline text, even with --allow-downloads (`remove` needs no index, so the run reaches the ladder). No lock, no download.
+env:CI=true remove json --file u13/main.roc --offline --allow-downloads
+# R-DL1 R-DL3 R-NI5 R-SO22 R-BL3 R-SO15 R-CC4: the pin of u1 is not installed. A person is there (the fake tty): one prompt, the answer is y (the default is No for a command that does not name the download). The list, the prompt, the install under the lock (no default is written: a download for a probe is no user act, R-SO15), then the probes run the new compiler.
+update json --file u1/main.roc
+# R-DL3 R-NM8: the same, and the answer is Enter: the default is No. Exit 13, nothing is downloaded, no lock, no write.
+update json --file u2/main.roc
+# R-DL4 R-NI5: no person (CI) and no flag: exit 13 before any request. The text names --allow-downloads and TALON_AUTO_INSTALL=yes. No tty call, no prompt.
+env:CI=true update json --file u3/main.roc
+# R-DL5 R-FL12: --allow-downloads is the answer of the prompt: no prompt, the answer line on stderr, the install and the probes.
+env:CI=true update json --file u4/main.roc --allow-downloads
+# R-DL5 R-EV6 R-NI5: TALON_AUTO_INSTALL=yes in `remove` (the ladder runs after the edit).
+env:CI=true env:TALON_AUTO_INSTALL=yes remove json --file r5/main.roc
+# R-DL5 R-DL10 R-EV6: TALON_AUTO_INSTALL=no refuses with no prompt, also with a person there: no tty call. The text of Compiler.require.
+env:TALON_AUTO_INSTALL=no update json --file u6/main.roc
+# R-DL5 R-NM10: --yes accepts the download too.
+env:CI=true update json --file u7/main.roc --yes
+# R-EV6: another value of TALON_AUTO_INSTALL counts as not set (ask): no person, so the stop of run 3.
+env:CI=true env:TALON_AUTO_INSTALL=maybe update json --file u8/main.roc
+# R-NS2 (the rule of the proxy, Q2 of slice 023b): a release version is never downloaded, also with yes: the text of Compiler.require, no request.
+env:CI=true env:TALON_AUTO_INSTALL=yes update json --file u11/main.roc
+# FD of slice 013 (R-SO22, R-RP3, R-SO19): no pin, ROC_TOOLCHAIN names a compiler that is a download. After the download the probes pass, and the header gets that compiler as its roc: pin (the held nightly of finish!, not the roc on PATH).
+env:CI=true env:ROC_TOOLCHAIN=nightly-2026-10-18-5349569 update json --file f1/main.roc --allow-downloads
+# R-NI5 R-FL12 R-DL7: the same flag for add (install and add are one command, one rule set for each command that downloads).
+env:CI=true add acme/json@^2.1 --file u12/main.roc --allow-downloads
+# R-NI5 R-FL12 R-DL7: `remove` takes the flag too (the other `remove` run of this case uses the variable).
+env:CI=true remove json --file r14/main.roc --allow-downloads
+# R-DL5 (answer Q1 of the review: a flag over the variable): TALON_AUTO_INSTALL=no does not refuse when --allow-downloads is on the command line. No person, no prompt, the answer line, the install.
+env:CI=true env:TALON_AUTO_INSTALL=no update json --file u15/main.roc --allow-downloads
+# R-DL5 (the same for --yes).
+env:CI=true env:TALON_AUTO_INSTALL=no update json --file u16/main.roc --yes
+# R-DL1 (answer Q7 of the review): `data.downloads` is the count of compilers that this command downloaded (1 here, through `update`).
+env:CI=true update json --file u17/main.roc --allow-downloads --json
+# R-EV6 R-DL5 R-DL7 (gap I02 of the code review): `add` with `TALON_AUTO_INSTALL=yes` and no person downloads the compiler of a new pin (`install` and `add` are one command).
+env:CI=true env:TALON_AUTO_INSTALL=yes add acme/json@^2.1 --file u18/main.roc

@@ -54,8 +54,9 @@ Compiler :: [].{
 	## | `Range` | 4 | `[toolchain] roc` of `talon.toml`: the newest installed compiler in the range | R-SO4 |
 	## | `VersionFile` | 5 | `.roc-version`, only for a project with no `talon.toml` | R-SO5 |
 	## | `Default` | 6 | `default-roc` of `config.toml` | R-SO6 |
+	## | `Newest` | 6 | Slice 080 (R-SO6, R-SO24 case 3): `default-roc` is not set and a nightly or a release is installed: the newest installed one | R-SO6, R-SO24 |
 	## | `Path` | 7 | The `roc` on `PATH` | R-SO7 |
-	Rank : [Argument, Env, Range, VersionFile, Default, Path]
+	Rank : [Argument, Env, Range, VersionFile, Default, Newest, Path]
 
 	## The facts of `select`. A rank that has no value is `Err(Unset)`, `Err(None)` or `Err(NoCompiler)`.
 	##
@@ -92,6 +93,7 @@ Compiler :: [].{
 	## | 4 | `req` is set. The candidates are the ids of `installed` and the id of `path` that are a nightly or a release (not `git-`, `link-`, `copy-`: R-NS6, they are chosen by name only), that `Pin.admits` with `times`, and, with `nightly` false, that are no nightly (R-NS3). The newest by `Pin.order` wins. | `state` is `Installed`. No candidate: `Err(NoneInRange)` (R-SO13: slice 025 downloads the newest in range). It does not go on to rank 5. |
 	## | 5 | `has_toml` is false and `version_file` is set | The id, as ranks 1 and 2 |
 	## | 6 | `default` is set | The id, as ranks 1 and 2. A `git-` id is allowed (the user named it). |
+	## | 6 | `default` is not set and a nightly or a release is installed (R-SO24 case 3) | The newest one (`newest_installed`), rank `Newest`. A build is never chosen |
 	## | 7 | `path` is `Ok(id)` | `state` is `Installed` |
 	## | none | | `Err(NoCompiler)` (R-SO14) |
 	select : Compiler.Facts -> Try({ id : Str, rank : Compiler.Rank, state : [Installed, Missing] }, [NoCompiler, NoneInRange])
@@ -103,11 +105,28 @@ Compiler :: [].{
 			Err(Unset) => match (facts.version_file, facts.default, facts.path) {
 				(Ok(id), _, _) if !facts.has_toml => Ok(chosen(id, VersionFile, facts))
 				(_, Ok(id), _) => Ok(chosen(id, Default, facts))
-				(_, _, Ok(id)) => Ok({ id, rank: Path, state: Installed })
-				_ => Err(NoCompiler)
+				_ => match Compiler.newest_installed({ installed: facts.installed, times: facts.times }) {
+					Ok(id) => Ok({ id, rank: Newest, state: Installed })
+					Err(None) => match facts.path {
+						Ok(id) => Ok({ id, rank: Path, state: Installed })
+						Err(NoCompiler) => Err(NoCompiler)
+					}
+				}
 			}
 		}
 	}
+
+	## R-SO6, R-SO24 case 3, R-ST16 (slice 080): the newest installed nightly or release, for a run with no `default-roc` and for `tln setup` (the repair). `installed` are the ids of `<cache>/toolchains` (`installed`). A `git-`, `link-` or `copy-` build is never chosen (R-NS6).
+	## The order is `Pin.order` with `times`, as rank 4 and `Manage.next_default`: a release with a date in `times` is ordered by its date. No nightly and no release: `Err(None)`. `select` calls it for rank 6 when `default` is not set, before rank 7.
+	newest_installed : { installed : List(Str), times : List({ id : Str, published_at : U64 }) } -> Try(Str, [None])
+	newest_installed = |facts| match facts.installed.keep_if(Pin.is_id) {
+		[first, .. as rest] => Ok(rest.fold(first, |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best))
+		[] => Err(None)
+	}
+
+	## R-SO24 case 3 (slice 080, a proposal, TW24): the note of a run that used rank 6 with no `default-roc`. No `note: ` and no line end (the command adds them). The text is `default-roc is not set, so <id>, the newest installed compiler, is used. Run: tln setup, or tln roc default <id>`.
+	newest_note : Str -> Str
+	newest_note = |id| "default-roc is not set, so ${id}, the newest installed compiler, is used. Run: tln setup, or tln roc default ${id}"
 
 	## R-LY1, R-NS6 (slice 022): the compilers in the listing of `<cache>/toolchains` (`Fx.list_dirs!`). A compiler is a directory whose name is a nightly tag, a release version, or starts with `git-`, `link-` or `copy-`.
 	## Not a file, not `<id>.lock`, not a temp dir `<id>.<hex>.tmp`, not `zig-<version>`. The ids are sorted (`Text.sorted`: the listing has no order, TW2).

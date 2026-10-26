@@ -1,0 +1,1 @@
+cwd:t9 env:HOME={w}/home9 env:TALON_AUTO_INSTALL=yes init --platform acme/wpf

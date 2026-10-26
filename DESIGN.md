@@ -138,9 +138,9 @@ flowchart LR
 | --- | --- | --- | --- |
 | R-ID1 | Series | The major of a version. Below 1.0, `0.minor`. The design files use this one term for the version part of a group. | `4.2.0` is in series `4`. `0.25.1` is in series `0.25`. |
 | R-ID2 | Group | Roc rule from section 2: URL minus version and hash, plus the series | `github.com/roc-lang/unicode/releases/download/{v}/` + series `4` |
-| R-ID3 | Name | `owner/repo` for GitHub URLs. Display and search only. | `roc-lang/unicode` |
+| R-ID3 | Name | `owner/repo` for GitHub URLs. Display and search only. An owner or a repo that is not a safe path part (Design 8, R-SE18) gives no name. | `roc-lang/unicode` |
 | R-ID4 | Label | group + version | `roc-lang/unicode@4.2.0` |
-| R-ID5 | Content id | Hash in the URL | `4W8SHzvwet9h...` |
+| R-ID5 | Content id | Hash in the URL. A hash that is not a safe path part (Design 8, R-SE18) makes the URL foreign (R-H4). | `4W8SHzvwet9h...` |
 | R-ID6 | Build id | (resolved hashes, nightly, target) | |
 
 R-ID7: Talon keeps facts per content id, and labels as pointers to it. So Talon can read a header that a human wrote by hand: it asks the registry for the hash, and gets back all labels for it.
@@ -304,11 +304,11 @@ Ids, and where each group is:
 | R-NS1 to R-NS12 | The `nightly` switch | Resolution 1 |
 | R-C1 to R-C10 | Constraints | Resolution 2 |
 | R-EF1 to R-EF3 | Compatibility evidence | Resolution 3 |
-| R-LD1 to R-LD7, R-BL1 to R-BL6, R-BS1, R-BS2, R-SM1 to R-SM7, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, smoke build, result classes, used modules | Resolution 4 |
+| R-LD1 to R-LD8, R-BL1 to R-BL6, R-BS1, R-BS2, R-SM1 to R-SM7, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, smoke build, result classes, used modules | Resolution 4 |
 | R-TG1 to R-TG6 | The build target of a project file | Resolution 4 |
 | R-P1 to R-P8 | Probe rules | Resolution 4 |
 | R-PP1 to R-PP7 | Parallel probes | Resolution 4 |
-| R-PB1 to R-PB7 | `tln probe` | Resolution 4 |
+| R-PB1 to R-PB8 | `tln probe` | Resolution 4 |
 | R-AL1 to R-AL9 | Algorithm steps, header facts, the closure rule | Resolution 5 |
 | R-OV1, R-OV2 | Overrides | Resolution 6 |
 | R-LB1 to R-LB4 | Libraries | Resolution 8 |
@@ -317,7 +317,7 @@ Ids, and where each group is:
 | R-UP1 to R-UP13 | Upgrade and new series | Resolution 10 |
 | R-DT1 to R-DT6 | Determinism, snapshots | Resolution 11 |
 | R-LF1 to R-LF5 | Lock and frozen modes | Resolution 12 |
-| R-SO1 to R-SO22 | Compiler selection order, the held nightly | Resolution 13 |
+| R-SO1 to R-SO24 | Compiler selection order, the held nightly | Resolution 13 |
 | R-CM1 to R-CM25, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
 | R-RUN1 to R-RUN17, R-EA1 to R-EA8, R-HK1 | `tln run`, `[scripts]`, the order of `tln run --each`, no hooks | CLI 1 |
 | R-PTH1 to R-PTH5 | `tln path` | CLI 1 |
@@ -327,18 +327,18 @@ Ids, and where each group is:
 | R-EV1 to R-EV26 | Environment variables, test hooks | CLI 1 |
 | R-SL1 to R-SL15, R-SC1 to R-SC16 | Selectors, scopes and name forms | CLI 2 |
 | R-AD1 to R-AD38, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
-| R-E1 to R-E6, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
+| R-E1 to R-E7, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
 | R-NM1 to R-NM12, R-NI1 to R-NI16, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
 | R-IN1 to R-IN8 | `tln init` | CLI 5 |
 | R-LY1 to R-LY9 | Directory layout | CLI 6.1 |
 | R-PX1 to R-PX7 | The `roc` proxy | CLI 6.2 |
 | R-DL1 to R-DL10 | Download consent | CLI 6.2 |
 | R-GC1 to R-GC14 | Garbage collection, `tln cache clean` | CLI 6.3 |
-| R-T1 to R-T28, R-X1 to R-X5, R-B1 to R-B10 | Global tools, `tln x`, build reuse | CLI 6.4 |
+| R-T1 to R-T30, R-X1 to R-X5, R-B1 to R-B10 | Global tools, `tln x`, build reuse | CLI 6.4 |
 | R-PT1 to R-PT16 | Project tools, `[tools]` | CLI 6.4 |
 | R-S1 to R-S5, R-IS1 to R-IS8, R-RM1 to R-RM10 | Talon as a tool, install scripts, remove Talon | CLI 6.5 |
 | R-R1 to R-R13, R-LK1 to R-LK4, R-CS1 to R-CS3, R-U1 to R-U6, R-RU1 to R-RU4, R-RR1 to R-RR3, R-D1 to R-D4 | Compilers from source, links and copies, compiler commands, `tln roc use`, `tln roc update`, `tln roc remove`, Zig | CLI 6.6 |
-| R-ST1 to R-ST15 | Setup, bin dir entries and launchers | CLI 6.7 |
+| R-ST1 to R-ST16 | Setup, bin dir entries and launchers | CLI 6.7 |
 | R-FE1 to R-FE10 | Fetch pipeline, cache contract | CLI 7.1, 7.2 |
 | R-TF1 to R-TF6 | Talon files: formats and errors | CLI 6.1 |
 | R-HF1 to R-HF12 | Effects that basic-cli does not have | 6.2 |
@@ -348,7 +348,7 @@ Ids, and where each group is:
 | R-DI1 to R-DI15 | Index with no registry (`direct`) | CLI 7.3 |
 | R-WS1 to R-WS14 | Workspaces | 4.4 |
 | R-EP1 to R-EP14 | Epochs and inferred facts | Resolution 4 |
-| R-PA1 to R-PA14 | Patches | Resolution 7 |
+| R-PA1 to R-PA16 | Patches | Resolution 7 |
 | R-PD1 to R-PD17 | Project discovery, known projects | CLI 1 |
 | R-OUT1 to R-OUT5 | Who decides the output | CLI 3 |
 | R-GP1 to R-GP7 | Generic packages | 6.1 |
@@ -356,7 +356,7 @@ Ids, and where each group is:
 | R-GA1 to R-GA7 | Gaps to build | 6.2 |
 | R-CF1 | Conformance suite | 6.3 |
 | R-PH1 to R-PH13 | Phase rules, P0 limits | 7 |
-| R-SE1 to R-SE17 | Security | 8 |
+| R-SE1 to R-SE18 | Security | 8 |
 | R-RL1 to R-RL4 | Registry role | Registry 1 |
 | R-SG1 to R-SG7 | Registry storage, Merkle log | Registry 3 |
 | R-AP1 to R-AP47 | Registry HTTP API | Registry 4 |
@@ -570,6 +570,19 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | R-SE15 | The contributor id of a user leaks (CLI 1, R-SH5) | Who has the id can send hints in its name, which count for its account after a login (Registry 6.1, R-CT8), and can delete the rows that it sent before a login (R-CT7). Accepted: the totals are for display only, and no rule reads them as evidence. The id is not in `config.toml`, Talon prints only 8 characters of it, and `tln share forget` makes a new one. The id cannot read anything: the tracker of the registry needs the JWT of a GitHub login (R-CT10). |
 | R-SE16 | A party that has a GitHub token of a user, from any app (or a registry that the user ran `tln share login` against), gets a JWT of that user (Registry 6.1, R-CT8 row 2) | Accepted: a login proves the account, and any token of the account proves it. With the JWT, the party can read the totals of the account and delete its rows (R-CT7). It cannot write evidence: a hint is rank 6, and the totals are for display only. |
 | R-SE17 | `tln run` runs the commands of `[scripts]` of a cloned repository, and project tools that `[tools]` locks | The same trust as `make` or `cargo build` in that repository. Talon runs a script only in `tln run`, only when the user names it, and only from the `talon.toml` files of the current project or workspace (CLI 1, R-HK1). No code runs on `git clone`, `tln install` or `tln add`: there are no hooks, and a package cannot declare a command. A step has no shell, so `-- <args>` cannot inject shell code (R-RUN2). A project tool runs the locked `url` only, with its hash (CLI 6.4, R-PT8). |
+| R-SE18 | A text from a URL, a header, `talon.toml`, a typed name or an answer of a server becomes a part of a path in the cache or the project, and climbs out of its dir (`..`, a `/`, a `\`) | One rule for each such part: a safe path part is not empty, is not `.`, is not `..`, and has no `/`, no `\` and no NUL byte. No other character is checked: a space, a leading dot and `v1..2` are safe. Talon makes no path from a part that is not safe. The result depends on the part (table below). The parts that Talon computes (a sha256, a random id) and the names that a directory listing gives are safe by construction. |
+
+| Part | Where it comes from | Not safe gives |
+| --- | --- | --- |
+| `owner`, `repo` | A release URL in a header or in `[tools]`, or a typed name (CLI R-DI2) | In a URL: no name (R-ID3). The entry has no release list, no cache page and no registry call. A typed name (`tln add`, `tool install`, `x`, `init --platform`): exit code 2 (R-EC2), `'<owner>/<repo>' is not a GitHub repository name`, with no call. |
+| `tag` | A release URL in a header (the hint cache, CLI R-DI8) | The entry has no hint: no cache file and no request. |
+| `hash` | The last segment of a release URL, without `.tar.zst` (R-ID5) | The URL is foreign (R-H4). A `[tools]` url: exit code 19. A fetch of a URL that is typed or in a header: exit code 2, `<url> is not a package release URL`. |
+| `base` of a `[patch]` entry | `talon.toml` (Resolution 7, R-PA15) | Exit code 19, before any read |
+| `path` of a `[patch]` entry | `talon.toml` (Resolution 7, R-PA16) | Not a part but a dir: it must be strictly inside the repository, else exit code 19 |
+| Zig archive name | The tarball URL of the Zig index (CLI R-D2) | Exit code 18: `the Zig index has no archive of zig <version> for <target>` |
+| Nightly asset name | The GitHub answer for `roc-lang/nightlies` (CLI R-CV2) | The asset does not count: the release has no asset for the host, so it is not a candidate (R-CV2). A command that names it gets exit code 2: `<id> has no asset for <target>`. |
+
+Archive members are not in this rule: `roc unbundle` and `tar` check them (R-SE9). Windows file names (reserved names, `:`, a trailing dot) are not in this rule.
 
 ## 9. Questions
 

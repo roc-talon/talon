@@ -4,3 +4,11 @@
 llvm-build/
 roc-object-vache/
 .cache/
+# Build caches
+__pycache__/
+*.pyc
+.zig-cache/
+zig-cache/
+
+# The revert copies of test fixtures hold fake cache dirs (given/home/.cache), as tests/ does.
+!research/slice-*-revert/**/.cache/

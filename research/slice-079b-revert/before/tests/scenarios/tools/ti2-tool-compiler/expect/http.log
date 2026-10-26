@@ -1,0 +1,6 @@
+GET /api/repos/acme/foo/releases?per_page=100 200
+GET /dl/acme/foo/releases/download/1.0.0/A9Jom7Hh9YnkX25Vzx9btMDHPUgsJ1tFrMNmW7jB8rhs.tar.zst 200
+GET /dl/acme/pf/releases/download/1.0.0/68wa5igvPEMRMJPhKnB39imSjE6jbjtYVu7ZRjtNjt4r.tar.zst 200
+GET /api/repos/acme/bar/releases?per_page=100 200
+GET /dl/acme/bar/releases/download/1.0.0/892ee4YRzHLoZPe7BsUXP1x2Xb6f2zRmNX9MEvWkW12K.tar.zst 200
+GET /api/repos/roc-lang/nightlies/releases?per_page=100 200

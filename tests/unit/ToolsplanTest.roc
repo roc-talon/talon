@@ -68,7 +68,7 @@ expect {
 		("[tools]\nfoo = { ref = \"acme/foo@dd03c09e\" }\n", "19 talon.toml:2: tools.foo.ref: 'dd03c09e' is not a release selector (a version, a range or latest)"),
 		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://example.com/x.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://example.com/x.tar.zst' is not a release URL with a version and a hash"),
 		("[tools]\nfoo = { ref = \"acme/foo\", url = 3 }\n", "19 talon.toml:2: tools.foo.url: must be a string"),
-		# R-ID5 R-H4 (slice 076): a hash that is not a safe path part is no hash, so the `url` is not a release URL (the key of a cloned repository must not name a path outside `packages/`)
+		# R-SE18 R-ID5 R-H4 (slice 076): a hash that is not a safe path part is no hash, so the `url` is not a release URL (the key of a cloned repository must not name a path outside `packages/`)
 		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/...tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/...tar.zst' is not a release URL with a version and a hash"),
 		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/a\\\\b.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/a\\b.tar.zst' is not a release URL with a version and a hash"),
 		("tools = 1\n", "19 talon.toml:1: tools: must be a table"),

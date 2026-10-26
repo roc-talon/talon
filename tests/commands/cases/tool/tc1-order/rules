@@ -1,0 +1,9 @@
+Slice 079 (R-T30, Q-A1), the order of the try of the installed compilers when a compiler is selected (entry `commands`). One home with 4 installed compilers (A = nightly-2026-10-14-38a3029, B = nightly-2026-10-12-2664a27, C = nightly-2026-10-05-aaaaaaa, D = nightly-2026-10-01-bbbbbbb) and `config.toml` with
+`default-roc = C` (the selected compiler: not the newest one) and `[probe] timeout = 20`. The pin of each app is `nightly-2026-10-11-1a2b3c4` (not installed, in the nightly list), a fake tty, `TALON_NOW=2026-10-15T12:00:00Z`. `fx/answers` is empty: no run may ask a question.
+The checks of an app are the rows of `fx/units`: `two` fails the check with A only, `three` fails it with A, C and D. The builds are the rows of `fx/probes` (all pass).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool install acme/two` | no evidence. The try runs with no prompt (R-T14), and the selected compiler is first: the round of 4 checks is C, A, B, D (not A, B, C, D). C passes, so the build runs with C only. `built with C (pin: P)`, no download, no `tty`, no `default-roc` change | R-T30, R-T14, R-T17, R-T18, R-T19, R-T21 |
+| 2 | `tool install acme/three` | the selected compiler fails its check, then A fails, B passes, D fails (the order of the checks is C, A, B, D). One build, with B. `built with B (pin: P)`. The facts of the 4 checks are written | R-T30, R-T17, R-T19, R-T21 |
+| 3 | `tool install acme/dl --roc pinned` | `--roc pinned` skips the try: no check and no probe before the download. The pin is downloaded (the flag is the consent), then the build runs with it. A compiler is selected, so the download sets no `default-roc`: `config.toml` is not written | R-T30, R-T16, R-T6, R-SO15 |

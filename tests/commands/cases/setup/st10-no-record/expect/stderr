@@ -1,0 +1,8 @@
+warning: $HOME/.local/bin/tln is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+keeping $HOME/.local/bin/roc
+note: $HOME/.local/bin/roc is not a Talon file, so no roc launcher was installed. To replace it, run: tln setup --replace-roc
+warning: $HOME/.local/bin/tln is not a Talon file, so tln setup left it as it is.
+warning: $HOME/.local/bin/foo is not a Talon file, so tln setup left it as it is.
+keeping $HOME/.local/bin/roc
+note: $HOME/.local/bin/roc is not a Talon file, so no roc launcher was installed. To replace it, run: tln setup --replace-roc

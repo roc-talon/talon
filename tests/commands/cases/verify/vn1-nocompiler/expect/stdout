@@ -1,0 +1,23 @@
+== env:HOME={w}/h1 verify --file n1/main.roc
+check: passed
+build: passed
+note: module Yaml fails on nightly-2026-10-18-5349569. Your app does not import it.
+$PROJECT/n1/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+verified: the tuple passes. No project file was written.
+exit 0
+== env:HOME={w}/h3 env:TALON_AUTO_INSTALL=yes verify --file n1/main.roc
+check: passed
+build: passed
+$PROJECT/n1/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+verified: the tuple passes. No project file was written.
+exit 0
+== env:HOME={w}/h4 env:TALON_AUTO_INSTALL=no verify --file n1/main.roc
+exit 13
+== env:HOME={w}/h5 verify --no-check --file n1/main.roc
+check: skipped
+$PROJECT/n1/main.roc
+  ~ json: acme/json 2.1.0 -> 2.2.0
+verified: the tuple passes. No project file was written.
+exit 0
