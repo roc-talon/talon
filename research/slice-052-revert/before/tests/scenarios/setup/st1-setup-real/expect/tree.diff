@@ -1,0 +1,46 @@
+--- home/.bashrc
++++ home/.bashrc
+@@ -0,0 +1 @@
++export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+--- home/.cache/roc/toolchains/link-system/.last-use
++++ home/.cache/roc/toolchains/link-system/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/link-system/.talon.json
++++ home/.cache/roc/toolchains/link-system/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"link-system","path":"$HOME/.local/bin/roc.old","installed_at":"2026-10-22T12:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.local/bin/foo
++++ home/.local/bin/foo
+@@ -0,0 +1 @@
++not the tool
+Binary files orig/home/.local/bin/roc and home/.local/bin/roc differ
+--- home/.local/bin/roc.old
++++ home/.local/bin/roc.old
+@@ -0,0 +1,2 @@
++#!/bin/sh
++echo "another old roc: $*"
+Binary files orig/home/.local/bin/tln and home/.local/bin/tln differ
+--- home/.local/share/bash-completion/completions/tln
++++ home/.local/share/bash-completion/completions/tln
+@@ -0,0 +1,16 @@
++# bash completion for tln. Made by tln setup.
++_tln() {
++	local cur="${COMP_WORDS[COMP_CWORD]}"
++	local words=""
++	if [ "$COMP_CWORD" -eq 1 ]; then
++		words="init install remove update upgrade outdated why probe list patch verify x publish audit roc tool cache setup yank move share"
++	elif [ "$COMP_CWORD" -eq 2 ]; then
++		case "${COMP_WORDS[1]}" in
++			roc) words="install link use list remove default update" ;;
++			tool) words="install list update rebuild remove" ;;
++			cache) words="gc clean list dir" ;;
++		esac
++	fi
++	COMPREPLY=($(compgen -W "$words" -- "$cur"))
++}
++complete -F _tln tln

@@ -1,0 +1,5 @@
+tests/commands/L2Util.roc
+tests/commands/L2Prompt.roc
+tests/commands/L2Harness.roc
+tests/commands/L2Resolve.roc
+tests/commands/L2Db.roc

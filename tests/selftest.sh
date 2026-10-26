@@ -716,6 +716,46 @@ else bad "net tag: skipped in the fast set and with SLOW=1 REAL_ROC=1, run with 
 }
 sec net s_net
 
+# Slice 053: a case with the tag net gets GITHUB_TOKEN and GH_TOKEN of the caller (R-RG3) and TALON_TEST_REAL_CACHE (REAL_CACHE, else ~/.cache/roc). A case with no such tag gets none of them.
+# The network cut of a net case is not tested here: a machine with no network cannot show the difference.
+s_net_env() {
+N=$T/l3-netenv
+mk $N net/tok $'echo "token=${GITHUB_TOKEN-unset} gh=${GH_TOKEN-unset} cache=${TALON_TEST_REAL_CACHE-unset}"'
+put $N net/tok tags $'net\n'
+put $N net/tok expect/stdout $'token=abc gh=def cache=/real/cache\n'
+mk $N net/plain $'echo "token=${GITHUB_TOKEN-unset} gh=${GH_TOKEN-unset} cache=${TALON_TEST_REAL_CACHE-unset}"'
+put $N net/plain expect/stdout $'token=unset gh=unset cache=unset\n'
+mk $N net/real $'echo "token=${GITHUB_TOKEN-unset} cache=${TALON_TEST_REAL_CACHE-unset}"'
+put $N net/real tags $'real-roc\n'
+put $N net/real expect/stdout $'token=unset cache=/real/cache\n'
+mk $N net/home $'echo "cache=${TALON_TEST_REAL_CACHE-unset}"'
+put $N net/home tags $'real-roc\n'
+put $N net/home expect/stdout $'cache=/my/home/.cache/roc\n'
+out=$(GITHUB_TOKEN=abc GH_TOKEN=def REAL_CACHE=/real/cache NET=1 REAL_ROC=1 l3 $N net/tok net/plain net/real)
+rc=$?
+out2=$(HOME=/my/home REAL_ROC=1 l3 $N net/home)
+if [ $rc = 0 ] && echo "$out" | grep -q 'scenarios: 3 passed, 0 failed, 0 skipped' && echo "$out2" | grep -q 'scenarios: 1 passed, 0 failed, 0 skipped'; then ok
+else bad "net env: a net case gets GITHUB_TOKEN, GH_TOKEN and TALON_TEST_REAL_CACHE (REAL_CACHE, else ~/.cache/roc), a plain case gets none"; echo "$out"; echo "$out2"; fi
+}
+sec net_env s_net_env
+
+# Slice 053: a case with the file `needs-real-cache` is skipped, with a reason, when the real cache dir does not exist. When it exists, the case runs.
+s_net_cache() {
+N=$T/l3-netcache
+mk $N net/c1 'echo ran'
+put $N net/c1 needs-real-cache ''
+put $N net/c1 expect/stdout $'ran\n'
+mkdir -p $T/fake-cache
+out=$(REAL_CACHE=$T/no-such-dir l3 $N)
+rc=$?
+out2=$(REAL_CACHE=$T/fake-cache l3 $N)
+rc2=$?
+if [ $rc = 0 ] && echo "$out" | grep -q 'SKIP net/c1: no real roc cache' && echo "$out" | grep -q 'scenarios: 0 passed, 0 failed, 1 skipped' &&
+    [ $rc2 = 0 ] && echo "$out2" | grep -q 'scenarios: 1 passed, 0 failed, 0 skipped'; then ok
+else bad "needs-real-cache: skipped with a reason when the cache dir is missing, runs when it exists"; echo "$out"; echo "$out2"; fi
+}
+sec net_cache s_net_cache
+
 # Slice 034 (R-GP3, R-GP6): a Talon package lives in `packages/` of this repository, and the headers of Talon (`cli/`, `worker/`, `packages/*/`) never name a generic package (`semver`, `base58`, `toml`, `header`) by a path.
 # `gen_paths <file>...` prints each header line that gives a generic package a path (a value that starts with `.` or `/`). The row checks the function on 2 fake headers, then the real headers.
 gen_paths() { grep -nE '^[[:space:]]*(semver|base58|toml|header)[[:space:]]*:[[:space:]]*"[./]' "$@" 2> /dev/null; }
@@ -739,6 +779,77 @@ if grep -q 'Oracle\.step_\(probed\|free\)(' "$ROOT/cli/lib/PickLoop.roc" && ! gr
 else bad "oracle: cli/lib/PickLoop.roc calls Oracle.step_probed and not Pick.step, and cli/lib/main.roc has the path entry resolve: \"../../packages/resolve/main.roc\""; fi
 }
 sec oracle s_oracle
+
+# Slice 052 (docs/slices/052-release-install.md): the release workflow and the install scripts.
+# The release workflow cannot run here (no remote, no runner, and a release is never made from a test): ciscan.py `release` reads .github/workflows/release.yml (R-IS1, R-IS2, R-S1, R-HF10, R-SE13).
+# The control rows keep the scanner true: the fixture tests/fixtures/ci/release-good.yml passes, and each of 7 edits of it fails with its own message.
+s_release() {
+CI_SCAN="$SELF/tools/ciscan.py"
+out=$(python3 -I "$CI_SCAN" release "$ROOT" 2>&1) && ok || { bad "ci/release: .github/workflows/release.yml: a tag push builds the 5 targets (x64musl, arm64musl, x64mac, arm64mac, x64win.exe; no arm64win) on the systems that link them, then one job with the write rights makes sha256sums.txt, the attestation and the release with the 5 binaries, sha256sums.txt, install.sh and install.ps1"; echo "$out"; }
+GOOD="$SELF/fixtures/ci/release-good.yml"
+out=$(python3 -I "$CI_SCAN" release "$ROOT" "$GOOD" 2>&1) && ok || { bad "ciscan release: the fixture tests/fixtures/ci/release-good.yml must pass"; echo "$out"; }
+D=$T/release-edits
+mkdir -p $D
+edit() { # <name> <old text> <new text> <message that the scanner must print>
+    python3 -I - "$GOOD" "$D/$1.yml" "$2" "$3" <<'PYEOF'
+import sys
+src, dst, old, new = sys.argv[1:5]
+t = open(src).read()
+assert old in t, "the fixture has no text: " + old
+open(dst, "w").write(t.replace(old, new, 1))
+PYEOF
+    local o
+    o=$(python3 -I "$CI_SCAN" release "$ROOT" "$D/$1.yml" 2>&1)
+    local rc=$?
+    if [ $rc = 1 ] && echo "$o" | grep -q -e "$4"; then return 0; else echo "edit $1 (rc $rc, wanted: $4):"; echo "$o"; return 1; fi
+}
+fails=""
+edit arm64win "          - os: windows-latest
+            target: x64win" "          - os: windows-latest
+            target: arm64win
+            asset: tln-arm64win.exe
+          - os: windows-latest
+            target: x64win" "arm64win" || fails="$fails arm64win"
+edit top-perm "permissions:
+  contents: read
+
+jobs:" "permissions:
+  contents: write
+
+jobs:" "top-level permissions" || fails="$fails top-perm"
+edit no-attest "actions/attest-build-provenance@v2" "actions/cache@v4" "no step for actions/attest-build-provenance" || fails="$fails no-attest"
+edit branches "tags: ['v[0-9]+.[0-9]+.[0-9]+']" "branches: [main]" "\`on\` must be" || fails="$fails branches"
+edit mac-on-linux "          - os: macos-latest
+            target: x64mac" "          - os: ubuntu-latest
+            target: x64mac" "target x64mac must build on macos" || fails="$fails mac-on-linux"
+edit no-ps1 " install/install.ps1" "" "must name install/install.ps1" || fails="$fails no-ps1"
+edit no-guard "exit 1; }" "exit 0; }" "needs a guard step" || fails="$fails no-guard"
+if [ -z "$fails" ]; then ok
+else bad "ciscan release: these edits of the good fixture were not rejected as expected:$fails"; fi
+}
+sec release s_release
+
+# The install scripts (R-S1, R-S4, R-IS1 to R-IS8, R-NI15, R-EV10): install/test.sh runs the real scripts against a fake release on file:// URLs, with a fake curl and a fake gh (no network). The shells run at the same time
+# (dash, bash and busybox sh as R-IS1 says, the ones that the machine has), and install.ps1 runs when there is a pwsh. A shell that is not installed is not run (macOS has no dash and no busybox).
+s_install() {
+shells=(bash)
+command -v dash > /dev/null 2>&1 && shells+=(dash)
+command -v busybox > /dev/null 2>&1 && shells+=("busybox sh")
+I=$T/install-out
+mkdir -p $I
+n=0
+for s in "${shells[@]}"; do
+    n=$((n + 1))
+    "$ROOT/install/test.sh" "$s" > "$I/$n.out" 2>&1 &
+done
+if command -v pwsh > /dev/null 2>&1; then
+    n=$((n + 1))
+    PWSH=$(command -v pwsh) "$ROOT/install/test.sh" bash > "$I/$n.out" 2>&1 &
+fi
+wait
+if ! grep -q ' 0 failed$' $I/*.out || grep -q '^FAIL' $I/*.out; then bad "install: install/test.sh fails (shells: ${shells[*]})"; grep -h '^FAIL' $I/*.out; else ok; fi
+}
+sec install s_install
 
 wait
 pass=$(cat "$RES"/*.ok 2> /dev/null | wc -l | tr -d ' ')

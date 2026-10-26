@@ -1,0 +1,13 @@
+# R-D2, R-GC5, R-CC10, R-CC9 (slice 061, Q2): a dry run. The store has a compiler that stays (nightly 38a3029: no pin, used 10 days ago, so used in the GC age), a compiler that goes (nightly aaaaaaa: no pin, used 80 days ago), and these Zig entries in `toolchains/`:
+#   The Zig installs (a dir `zig-<release version>`, `.talon.json` from 2026-06-01). No `git-*` toolchain exists and no project is known. A source build writes the `.last-use` of its Zig when it starts, and TALON_NOW is 2026-10-22T12:00:00Z:
+#     zig-0.15.1: last use 12 hours ago (the last day): stays (R-CC10, "a running build wrote it when it started").
+#     zig-0.14.0: last use 2 days ago: goes. zig-0.17.0: no `.last-use`: goes. zig-0.16.1: last use 21 days ago: goes, but its lock is held in the real runs.
+#   zig-0.18.0-dev.31+abc1234 (a dev version: Talon never installs one), zig-0.15.2 (a file), zig-0.17.0.0123456789abcdef.tmp (a temp of a crashed install, older than 1 day): these are not a Zig install. The temp goes by its age as a stale temp (R-CC2), not as a Zig.
+# A dry run takes no lock, so zig-0.16.1 is listed. A Zig is listed after the compilers, with its size (R-GC11). The compilers have 2 reads. The Zig installs have one read, of their `.last-use`, after the reads of the compilers.
+cache gc --dry-run
+# R-J3, R-CC10: the real run with --json (the text goes to stderr). A Zig gets the same lock as a compiler, with `nowait`: the lock of zig-0.16.1 is busy (an install holds it), so it is skipped and stays. zig-0.14.0 and zig-0.17.0 are renamed to .trash and deleted. The stale temp is deleted with the other stale paths.
+cache gc --json
+# R-CC10: the second run. zig-0.14.0 and zig-0.17.0 are gone. zig-0.15.1 stays (last day). zig-0.16.1 is skipped again.
+cache gc
+# R-D2 (a store with no compiler): the listing has no compiler, so no `.talon.json` is read, and the Zig install (last use 21 days ago) still goes. The decision does not depend on the compilers.
+env:HOME={w}/home2 cache gc

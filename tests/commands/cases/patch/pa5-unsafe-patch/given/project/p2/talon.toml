@@ -1,0 +1,2 @@
+[patch]
+json = { path = "../outside/main.roc", base = "55X6eHan7Y8pdMGGK3UKXA5Ui37wDB3uqZP5mFBhN6Mb" }

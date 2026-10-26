@@ -1,0 +1,1 @@
+R-TG6 R-PX3 R-PX7 (slice 054): the proxy does not use the build target. The project has `[build] target = "wasm32"`, and `roc build p1/main.roc` and `roc check p1/main.roc --opt=speed` pass the arguments with no change: no `--target`. The build of a tool (CLI 6.4, R-T8) and `tln init --platform` are in slices 046 and 055.

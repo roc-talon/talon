@@ -1,0 +1,16 @@
+add --tool acme/foo --file p1/main.roc
+add --tool acme/bar@^1.0 --as b --file p1/main.roc
+add --tool acme/foo --file p1/main.roc
+add --tool acme/bar --as foo --file p1/main.roc
+add --tool acme/wasm --file p1/main.roc
+add --tool acme/snap --snapshot 2026-08-15T00:00:00Z --file p1/main.roc
+add --tool acme/foo --as dry --dry-run --json --file p1/main.roc
+remove --tool b --file p1/main.roc
+remove --tool nope --file p1/main.roc
+add --tool acme/bad --file p1/main.roc
+add --tool acme/young --file p1/main.roc
+add --tool acme/bar --file p2/main.roc
+add --tool acme/foo@dd03c09e --file p1/main.roc
+add --tool acme/foo --no-pin --file p1/main.roc
+add --tool acme/foo@1.0.0 --as old --dry-run --file p1/main.roc
+add --tool acme/foo --as nf

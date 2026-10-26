@@ -19,3 +19,11 @@ Workspace `w` has `[workspace]` and `[tools]` (`foo`, 1.0.0) in its root file, a
 | 12 | `install --file w2/m1/main.roc` | the member file has `[tools]`: exit 19, the message names the file, the line and the table | R-PT2, R-WS5 |
 | 13 | `update fmt --file p2/main.roc` | the only name is a key and `fmt` is at 1.1.0 already (run 7): the header flow does not run and no tool changes. The line `nothing to change` is printed once (D16 of the review) | R-PT5 |
 | 14 | `update pf --file p2/main.roc` | gap test (decision C7 of 056c): the name `pf` is a header entry (the platform alias) and no key of `[tools]`, and `p2` has `[tools]`. The header flow runs for `pf` and the tools step does not run: no read of the index of acme/fmt, no call for a tool | R-PT5 |
+
+Slice 073 (R-PT5, R-OUT4). Project `p4` is a copy of `p2` at the start (`fmt` is at 1.0.0, `^1`, and its 1.1.0 build is in the `x` cache after run 7).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 15 | `update fmt@^2 --file p2/main.roc` | 056 Q2: `fmt` is a key of `[tools]`, and a selector on it is exit 2. The text names `tln add --tool owner/app@^2`. Nothing is read after the header and `talon.toml` | R-PT5 |
+| 16 | `update --json --file p4/main.roc` | the header flow runs (nothing to change) and the tools step moves `fmt` to 1.1.0 (the build is in the cache: no build). The envelope has `data.tools` with one row `moved` (`previous` 1.0.0, `built` false) after the keys of the header flow | R-PT5, R-OUT4 |
+| 17 | `upgrade --json foo --file w/m1/main.roc` | the only name is a key, so the header flow does not run (the idle outcome). `foo` of the root file `w` moves to 2.0.0 with the `ref` `^2` (R-UP5, the 2.0.0 build is in the cache). `data.tools` has one row `moved` (`previous` 1.1.0) | R-PT5, R-UP5, R-OUT4 |

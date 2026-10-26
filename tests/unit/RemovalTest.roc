@@ -106,7 +106,7 @@ expect {
 	bad == []
 }
 
-# R-NI5 R-FL12 R-DL5 (slice 025): `remove` runs the ladder, so it can need a compiler download. `--allow-downloads` is `Ok(Yes)` when set. `--probe-downloads` is read and changes nothing (R-NI4 does not list `remove`: it has no optional probe).
+# R-NI5 R-FL12 R-DL5 (slice 025): `remove` runs the ladder, so it can need a compiler download. `--allow-downloads` is `Ok(Yes)` when set. `--probe-downloads` is exit 2 (slice 069, R-NI4 does not list `remove`: it has no optional probe).
 expect {
 	flag = |words| match Args.parse(words) {
 		Err(stop) => Err(Fail.line(stop.fail))
@@ -118,8 +118,9 @@ expect {
 	rows = [
 		(["remove", "json"], Ok(Err(NoFlag))),
 		(["remove", "json", "--allow-downloads"], Ok(Ok(Yes))),
-		(["rm", "json", "--probe-downloads"], Ok(Err(NoFlag))),
-		(["rm", "json", "--allow-downloads", "--probe-downloads", "--yes"], Ok(Ok(Yes))),
+		(["rm", "json", "--probe-downloads"], Err("tln: error[usage]: flag '--probe-downloads' is not for 'remove'")),
+		(["rm", "json", "--allow-downloads", "--probe-downloads", "--yes"], Err("tln: error[usage]: flag '--probe-downloads' is not for 'remove'")),
+		(["rm", "json", "--allow-downloads", "--yes"], Ok(Ok(Yes))),
 	]
 	bad = rows.keep_if(|(words, want)| flag(words) != want).map(|(words, _)| (words, flag(words)))
 	dbg bad

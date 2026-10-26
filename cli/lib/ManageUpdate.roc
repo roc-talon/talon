@@ -14,7 +14,7 @@ ManageUpdate :: [].{
 	}
 
 	## R-RU1, R-RU2, R-OUT2 (slice 026, a proposal, answer Q1 of the review): the lines of `roc update`. `installed` is true when this run downloaded `id`. `default` is what the command did to the global default:
-	## `Set` (no default was set: `install_offer!` made `id` the default for a new compiler (R-SO15), or `update` set it for a compiler that was there), `Moved(old)`, `Stay(default)` (a local build is the default: R-RU2) or `Same` (the default is `id` already).
+	## `Set` (no default was set: `update` set it, R-SO15), `Moved(old)`, `Stay(default)` (a local build is the default: R-RU2) or `Same` (the default is `id` already).
 	## `compat` is the answer of the compat check of the install (`Toolchain.report`). It is shown only when `installed` is true (no install, no check). Each element is one line with its `\n`. The first line is `installed <id>` or `<id> is the newest`, then the lines of `default`:
 	##
 	## | `default` | Line or lines after the first line |

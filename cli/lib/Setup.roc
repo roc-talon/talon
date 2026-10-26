@@ -126,6 +126,19 @@ Setup :: [].{
 		Fish => Text.join(facts.home, ".config/fish/conf.d/talon.fish")
 	}
 
+	## R-RM8, R-ST4: the 3 profiles that `profile` can give, one for each shell, for `tln tool remove talon --remove-tools` (the shell of the day of `tln setup` is not known): `<home>/.bashrc`, `<home>/.zshrc`, `<home>/.config/fish/conf.d/talon.fish`.
+	profiles : { home : Str } -> List(Str)
+	profiles = |facts| [Bash, Zsh, Fish].map(|shell| Setup.profile({ home: facts.home, shell }))
+
+	## R-RM8, R-ST4: the text of a profile after the lines with the marker (`path_line`) are removed. No line has the marker: `Keep`. Else `Write`: the other lines in their order, each with its line end as before (a file that had only that line is the empty text).
+	profile_strip : Str -> [Keep, Write(Str)]
+	profile_strip = |text| if text.contains(marker) {
+		# The text splits at each line end, so the last part is empty when the text ends with one.
+		Write(Str.join_with(text.split_on("\n").keep_if(|line| !line.contains(marker)), "\n"))
+	} else {
+		Keep
+	}
+
 	## R-ST4: the one line that puts `dir` on `PATH`. It ends with the marker comment `# talon: added by tln setup`, so `tln tool rm talon` finds it (CLI 6.5). The form is a proposal (TW24):
 	##
 	## | Shell | Line |

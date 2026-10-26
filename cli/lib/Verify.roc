@@ -99,6 +99,8 @@ flow! = |fx, args, opts| {
 			strategy: opts.strategy,
 			nightly: Common.nightly_of(start.env),
 			compiler,
+			selected: "",
+			none: Stop,
 			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: Bool.False,

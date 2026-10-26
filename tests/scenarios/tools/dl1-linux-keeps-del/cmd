@@ -1,0 +1,13 @@
+# R-ST10 (slice 050c): on Linux and macOS there is no `.del` file, and no start of `tln` deletes one. A `.del` file in the bin dir and in the data bin dir is a normal file there: it stays after a command.
+# The sweep is for Windows only (`Fx.windows!`, the real `Fx` with no Talon logic). The L2 cases `tool/dl1-sweep` and `tool/dl1b-denied` test the sweep with the fake machine `os=windows`.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+B=$HOME/.local/bin
+DB=$XDG_DATA_HOME/talon/bin
+mkdir -p $B $DB
+echo stale > $B/tln.0123456789abcdef.del
+echo stale > $DB/foo.fedcba9876543210.del
+st tln --version
+st tln tool list
+echo "bin dir:"; ls -A $B
+echo "data bin dir:"; ls -A $DB

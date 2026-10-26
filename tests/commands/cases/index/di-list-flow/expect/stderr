@@ -5,3 +5,7 @@ tln: error[network]: cannot reach https://api.github.com/repos/acme/slow/release
 index: cached at 2026-10-14T17:46:40Z
 tln: error[network]: GitHub answered 500 for https://raw.githubusercontent.com/acme/lib/4.0.0/.roc-version
 tln: error[usage]: no GitHub repository acme/nope (a private repository needs a token)
+tln: error[network]: GitHub answered 500 for https://raw.githubusercontent.com/acme/lib/4.0.0/.roc-version
+tln: error[usage]: '../acme' is not a GitHub repository name
+tln: error[usage]: 'acme/..' is not a GitHub repository name
+tln: error[usage]: '../..' is not a GitHub repository name

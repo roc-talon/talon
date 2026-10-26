@@ -1,0 +1,14 @@
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+installed cached 1.0.0 (1.1.0 is available: tln tool install bar@latest)
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+installed cached 1.0.0 (1.1.0 is available: tln tool install ren@latest)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/lat 1.1.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/yank 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[consent]: using the cached off 1.0.0, which was not checked online needs consent. Pass --allow-unchecked or --yes.
+using cached off 1.0.0, not checked online
+note: no yank and advisory data without a registry
+tln: error[integrity]: $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/bad does not match the sha256 of its manifest (96e1f26e322b2f4dac143d6821056a3bb73e2f0390ded9fa83da38ef7998b1b5). tln did not install it.

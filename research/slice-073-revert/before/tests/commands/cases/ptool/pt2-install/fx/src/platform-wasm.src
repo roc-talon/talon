@@ -1,0 +1,10 @@
+platform ""
+	requires {
+		main! : List(Str) => Try({}, [Exit(I32), ..])
+	}
+	exposes []
+	packages {}
+	provides { "roc_main": main_for_host! }
+	targets: {
+		wasm32: { inputs: ["host.wasm", app] },
+	}

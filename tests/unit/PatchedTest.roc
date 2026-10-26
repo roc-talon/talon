@@ -1,3 +1,4 @@
+import lib.Ident
 import lib.Intent
 import lib.LadderPlan
 import lib.Locked
@@ -283,6 +284,84 @@ expect {
 		),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-PA13 (slice 070): the release of the group of an entry that has the hash `base`. The group is the URL form and the series of the header URL of the entry. A release of another series, of
+# another repository, a URL that is no release, an empty list and a hash that no URL has give `NoRelease`. The first URL in the order of the list wins when 2 releases of the group have the hash.
+expect {
+	group = match Ident.of_url(json1) {
+		Ok(ident) => ident.group
+		Err(Foreign) => crash "json1 is a release URL"
+	}
+	h_other = "4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w"
+	json3 = gh("someone", "roc-json", "3.0.0", h_other)
+	same_hash_next = gh("someone", "roc-json", "2.1.1", h_json1)
+	elsewhere = gh("someone", "roc-json2", "2.0.0", h_other)
+	list = [json0, json1, json2]
+	rows_checked = [
+		row("the oldest release of the group", Patched.base_release({ urls: list, group, base: h_json0 }), Ok(json0)),
+		row("the header release itself", Patched.base_release({ urls: list, group, base: h_json1 }), Ok(json1)),
+		row("a hash that no release has", Patched.base_release({ urls: list, group, base: h_other }), Err(NoRelease)),
+		row("a release of another series has the hash", Patched.base_release({ urls: list.append(json3), group, base: h_other }), Err(NoRelease)),
+		row("a release of another repository has the hash", Patched.base_release({ urls: list.append(elsewhere), group, base: h_other }), Err(NoRelease)),
+		row("no URL", Patched.base_release({ urls: [], group, base: h_json0 }), Err(NoRelease)),
+		row("a URL that is no release is skipped", Patched.base_release({ urls: ["./util/main.roc", foreign, json0], group, base: h_json0 }), Ok(json0)),
+		row("2 releases have the hash: the first in the list", Patched.base_release({ urls: [same_hash_next, json1], group, base: h_json1 }), Ok(same_hash_next)),
+	]
+	bad = rows_checked.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-PA13 R-PA5 R-EC14 (slice 070): the failure for a base that no release has. Kind `Frozen` (exit 14, `frozen`). The text names the base, the alias, the repository and the 2 fixes of R-PA5 (the copy dir has no `/` in
+# the entry and one at the end in the text). A proposal (TW24).
+expect {
+	fail = Patched.base_missing({ alias: "json", name: "someone/roc-json", base: h_json0, dir: "/p/.talon/patches/json" })
+	rows_checked = [
+		row(
+			"the line",
+			fail.line(),
+			"tln: error[frozen]: the patch of json has the base ${h_json0}, and no release of someone/roc-json has that hash, so Talon cannot take the diff of the copy. Edit the copy /p/.talon/patches/json/, or remove the [patch] entry json.",
+		),
+		row("the exit code is 14 (R-EC14)", fail.kind.code(), 14.I32),
+	]
+	bad = rows_checked.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-PA12 R-PA9 R-RUN8 R-EC19 (slice 076, Q2): the copy dir of a `[patch]` entry is deleted and written by a rebase (`tln install`, `tln update`), so it must be inside the repository, as the `in` dir of a script (R-RUN8, exit 19), and
+# it is checked before any read, delete or write. The repository is the stop dir: the workspace root for a workspace, else the dir of the `talon.toml` (`Patched.stop`, decision D6 of the slice file). Strictly inside: the copy dir
+# that is the stop dir itself (`path = "./main.roc"`) is refused too, because a rebase would delete the repository. A dir with the same start (`/p2` for the stop `/p`) is outside. An absolute path counts like any other. The first bad entry is the failure.
+expect {
+	rows = rows_of(header_text)
+	check = |path, stop| {
+		entries = Patched.entries({ rows, patches: patches_of("[patch]\n${entry_text("json", path, h_json1)}"), toml: "/p/talon.toml" })
+		Patched.check_inside({ entries, stop }).map_err(|e| e.line())
+	}
+	outside = |path| Err("tln: error[input]: patch.json.path: '${path}' is outside the repository (/p)")
+	two = Patched.check_inside({
+		entries: Patched.entries({ rows, patches: patches_of("[patch]\n${default_entry("parser", h_parser)}${entry_text("json", "../x/main.roc", h_json1)}"), toml: "/p/talon.toml" }),
+		stop: "/p",
+	}).map_err(|e| e.line())
+	checks = [
+		row("the default copy dir", check("./.talon/patches/json/main.roc", "/p"), Ok({})),
+		row("a copy dir below the stop dir, with ..", check("./a/../b/main.roc", "/p"), Ok({})),
+		row("an absolute path inside the repository", check("/p/sub/main.roc", "/p"), Ok({})),
+		row("a path that climbs out", check("../outside/main.roc", "/p"), outside("../outside/main.roc")),
+		row("a path that climbs out below the stop dir", check("./.talon/../../x/main.roc", "/p"), outside("./.talon/../../x/main.roc")),
+		row("an absolute path outside", check("/x/shared/main.roc", "/p"), outside("/x/shared/main.roc")),
+		row("a dir with the same start as the stop dir", check("../p2/main.roc", "/p"), outside("../p2/main.roc")),
+		row("the stop dir itself", check("./main.roc", "/p"), outside("./main.roc")),
+		row("a stop dir that is the file system root", check("/x/main.roc", "/"), Ok({})),
+		row("no entry", Patched.check_inside({ entries: [], stop: "/p" }).map_err(|e| e.line()), Ok({})),
+		row("the first bad entry is the failure", two, Err("tln: error[input]: patch.json.path: '../x/main.roc' is outside the repository (/p)")),
+		row("the stop dir of a workspace is its root", Patched.stop({ workspace: Ok({ root: "/ws", members: ["/ws/a/main.roc"] }), toml: "/ws/a/talon.toml" }), "/ws"),
+		row("the stop dir of a standalone project is the dir of its talon.toml", Patched.stop({ workspace: Err(Standalone), toml: "/p/sub/talon.toml" }), "/p/sub"),
+	]
+	bad = checks.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
 }

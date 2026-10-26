@@ -1,4 +1,6 @@
 #!/bin/sh
+# Slice 060 (R-FE4): Talon runs the installed compiler for `roc unbundle`. The real unbundle is the one of the fake `roc` on PATH (roc.tsv: `unbundle*  real`), so the roc.log is the same as before.
+[ "$1" = unbundle ] && exec roc "$@"
 # The fake compiler of the case ti2-tool-compiler (the id is the name of the dir of this file). `roc check main.roc` and `roc build main.roc --opt=speed --output=<file>`, run in the package dir of the app bundle.
 # It logs the id and the arguments to $TALON_TEST_DIR/compiler.log. The app is the comment line of main.roc (`# acme/foo 1.0.0`).
 #   check: acme/bar fails on both compilers. acme/foo fails on the newer one (nightly-2026-10-14-38a3029). The other checks pass. When the file `check-barrier` exists in $TALON_TEST_DIR, a check waits until the checks of both

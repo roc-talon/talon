@@ -8,6 +8,7 @@ import GitBuild
 import GitRef
 import Github
 import Item
+import Launch
 import Net
 import Nightlies
 import Out
@@ -35,8 +36,9 @@ import ZigInstall
 ## | 8 | R-D4 | `GitRef.header_line`, a blank line, to stderr (hidden by `--quiet`). |
 ## | 9 | R-R3, R-R7 | scratch dir, curl job to the archive (limit 8) with the full sha, `sha256_file!`, tar job (limit 1), delete the archive. |
 ## | 10 | R-D1 to R-D4 | `Zig.minimum` of `build.zig.zon`, `ZigInstall.ensure!` (may ask before the lock). |
+## | 10b | R-CC9 | `Launch.touch!` of a Zig of Talon (061), before the lock. |
 ## | 11 | R-SE12 | `locked!`: check again, `zig build` (`GitBuild.build_command`), move the binary, compat check, `.talon.json` (`GitBuild.meta`), rename to the id. |
-## | 12 | R-SO15 | the first compiler becomes the default (`RocInstall.first_default!`). |
+## | 12 | R-SO15 | a user act: the default is set when none is set, also for `Present` (`RocInstall.first_default!`). |
 ## | 13 | R-R6 | delete the scratch dir (and the temp dir after a failure). |
 GitInstall :: [].{
 
@@ -175,12 +177,17 @@ build! = |fx, run| {
 			llvm: { target: GitRef.llvm_target(run.host), size: Err(Unknown) },
 		},
 	)?
+	mark_zig!(fx, run, zig)
 	locked = fx.locked!(p.item, || install!(fx, run, { zig: zig.path, sha256 }))?
-	default = match locked.how {
-		Installed => RocInstall.first_default!(fx, run.roots, run.id)?
-		Present => Kept
-	}
+	default = RocInstall.first_default!(fx, run.roots, run.id)?
 	Ok({ id: run.id, item: p.item, how: locked.how, default, compat: locked.compat })
+}
+
+# Step 10b, R-CC9, R-CC10: a Zig of Talon (a dir of `toolchains/`) gets a `.last-use`, so that `tln cache gc` keeps it while this build runs. A Zig from `ZIG` or `PATH` has no dir there.
+mark_zig! : Fx, Run, ZigInstall.Done => {}
+mark_zig! = |fx, run, zig| match zig.how {
+	Found(Env) | Found(Path) => {}
+	_ => Launch.touch!(fx, run.roots, { id: "zig-${zig.version}", now: run.now })
 }
 
 # Step 9, R-R3, R-R7: curl, the sha256 of the archive, tar into `src`. A failure is the failure of `Toolchain`.

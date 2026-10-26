@@ -3,3 +3,5 @@ Slice 050, `tln tool update talon` with a new file that does not start (R-S3). O
 | Run | Words | Result | Rules |
 | --- | --- | --- | --- |
 | 1 | `tool update talon` | exit 1 `the new tln 0.3.4 does not start (exit 1). The old tln stays.` No rename, no entry, no write of `tools.json`. The temp file and the scratch dir are deleted | R-S3, R-CC2 |
+
+Slice 074 (R-S2, R-IS3): a run that gets to the use of the downloaded file also calls `programs gh` after the sha256 check. `fx/programs` has no `gh`, so the run prints `note: attestation not checked (needs gh, logged in)` on stderr and goes on. The cases of `ts8-attest` have `gh`.

@@ -1,0 +1,17 @@
+docs/slices/053-p1-exit.md
+tests/scenarios/exit/ex1-parser-basic-cli/cmd
+tests/scenarios/exit/ex1-parser-basic-cli/tags
+tests/scenarios/exit/ex1-parser-basic-cli/given/project/main.roc
+tests/scenarios/exit/ex1-parser-basic-cli/given/project/talon.toml
+tests/scenarios/exit/ex1-parser-basic-cli/expect/exit
+tests/scenarios/exit/ex1-parser-basic-cli/expect/stderr
+tests/scenarios/exit/ex1-parser-basic-cli/expect/stdout
+tests/scenarios/exit/ex1-parser-basic-cli/expect/tree.diff
+tests/scenarios/exit/ex2-gc-real-cache/
+tests/scenarios/exit/ex3-no-tuple-yaml/
+research/slice-053-revert/mk-ex3.py
+research/slice-053-revert/mutate.py
+research/slice-053-revert/mutate.sh
+docs/slices/053-p1-exit.md (section 10, mutations)
+tests/scenarios/exit/ex2-gc-real-cache/needs-real-cache
+research/slice-053-revert/f1-repro/repro.sh

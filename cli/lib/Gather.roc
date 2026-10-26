@@ -4,6 +4,7 @@ import Fx
 import Ident
 import Item
 import Net
+import NoRank
 import Roots
 
 ## The one fetch of header facts (R-AL8, R-FE1, R-DI7). The pick (`PickLoop.run!`) and the closure walk (`Walk.level!`) both call `get!` for a list of ids.
@@ -20,11 +21,11 @@ Gather :: [].{
 	## `id` is a release URL, or the absolute file of a path node. `path` is the file that was read.
 	Got : { id : Str, path : Str, text : Str }
 
-	get! : Fx, { roots : Roots, net : Net.Settings, offline : Bool }, List(Str) => Try(List(Got), Fail)
+	get! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback }, List(Str) => Try(List(Got), Fail)
 	get! = |fx, facts, ids| {
 		urls = ids.keep_if(|id| Ident.of_url(id).is_ok())
 		if !urls.is_empty() {
-			results = Fetch.packages!(fx, { roots: facts.roots, urls, offline: facts.offline, roc: "roc", downloader: facts.net.downloader })
+			results = Fetch.packages!(fx, { roots: facts.roots, urls, offline: facts.offline, unbundler: Choose({ selected: facts.selected, none: facts.none }), downloader: facts.net.downloader })
 			for result in results {
 				match result {
 					Ok(_) => {}

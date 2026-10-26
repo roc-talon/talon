@@ -1,0 +1,16 @@
+== tool update talon
+updated talon 0.3.1 to 0.3.4 (roc-talon/talon)
+exit 0
+== tool update talon
+talon 0.3.4 is up to date
+exit 0
+== tool update roc-talon/talon --json
+{"schema":1,"command":"tool update","ok":true,"data":{"tools":[{"tool":"talon","name":"roc-talon/talon","how":"up_to_date","from":null,"to":"0.3.4"}]},"error":null}
+exit 0
+== tool list
+TOOL  NAME     SOURCE                 COMPILER                    TARGET   INSTALLED
+gp    acme/gp  git dd03c09e@dd03c09e  nightly-2026-10-14-38a3029  x64musl  2026-09-01
+exit 0
+== tool update
+gp: pinned to commit dd03c09e
+exit 0

@@ -1,0 +1,15 @@
+patch json --file p1/main.roc
+patch json --file p1/main.roc
+patch pf --file p1/main.roc
+patch util --file p1/main.roc
+patch src --file p1/main.roc
+list --file p1/main.roc
+patch parser --file p2/main.roc
+patch json --file p2/main.roc
+patch parser --diff --file p2/main.roc
+patch json --diff --file p3/main.roc
+patch json --diff --json --file p3/main.roc
+patch json --json --file p4/main.roc
+patch json --diff --file p5/main.roc
+patch json --diff --file p6/main.roc
+patch json --diff --file p7/main.roc

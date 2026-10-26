@@ -7,6 +7,8 @@ st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 D=$TALON_TEST_DIR
 T=$HOME/.cache/roc/toolchains
 C=$XDG_CONFIG_HOME/talon/config.toml
+# slice 062 (R-SO15): a download for a probe, a pin or the proxy writes no default, so config.toml does not exist. The line says so.
+default_roc() { if [ -e $C ]; then cat $C; else echo "no default-roc (no config.toml)"; fi; }
 A=nightly-2026-10-14-5349569
 N=nightly-2026-10-13-0a1b2c3
 B=nightly-2026-10-12-1b2c3d4
@@ -26,12 +28,12 @@ echo "== R-DL5 R-DL10: TALON_AUTO_INSTALL=no refuses before any request (the id 
 st env TALON_AUTO_INSTALL=no tln verify
 store
 echo "requests for compilers: $(requests nightlies)"
-echo "== R-SO13 R-DL5 R-NI5 R-NM6 R-SO22 R-CC4 R-CC9 R-SO15: --allow-downloads answers the prompt for B. One answer line on stderr, one download of B only, the install under the lock, then the 3 probes run B. The first install is the default."
+echo "== R-SO13 R-DL5 R-NI5 R-NM6 R-SO22 R-CC4 R-CC9 R-SO15: --allow-downloads answers the prompt for B. One answer line on stderr, one download of B only, the install under the lock, then the 3 probes run B. No default is written (R-SO15)."
 st tln verify --allow-downloads
 show
 store
 echo "last use of B: $(cat $T/$B/.last-use)"
-cat $C
+default_roc
 echo "downloads of B: $(requests "GET /dl/$B"), downloads of A: $(requests "GET /dl/$A")"
 echo "== R-SO4 R-SO13: B is installed and in the range now. No list request, no download, the same 3 probes."
 st tln verify

@@ -1,0 +1,3 @@
+scripts/real-cache.sh
+docs/slices/067-nightly-real-cache.md
+research/slice-067-revert/code-final.sha256

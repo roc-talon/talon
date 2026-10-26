@@ -1,0 +1,157 @@
+--- home/.cache/roc/packages/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf/main.roc
++++ home/.cache/roc/packages/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc
++++ home/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6/main.roc
++++ home/.cache/roc/packages/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/acme/wasmpf/releases/download/0.1.0/DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3/main.roc
++++ home/.cache/roc/packages/DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3/main.roc
+@@ -0,0 +1,10 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		wasm32: { inputs: ["host.wasm", app] },
++	}
+--- home/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc
++++ home/.cache/roc/packages/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3/main.roc
++++ home/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/talon/index/github/acme/bad/1.json
++++ home/.cache/roc/talon/index/github/acme/bad/1.json
+@@ -0,0 +1,3 @@
++[
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/bad/releases/download/1.0.0/EwqFXru422xEYXC15oC83q5XoN71v7VVHRVcKKBxuHa.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/acme/bar/1.json
++++ home/.cache/roc/talon/index/github/acme/bar/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst"}]},
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/bar/releases/download/1.0.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/acme/foo/1.json
++++ home/.cache/roc/talon/index/github/acme/foo/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"}]},
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/acme/snap/1.json
++++ home/.cache/roc/talon/index/github/acme/snap/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name":"FdvbJ4YLq4KBhNdCktwDRdWJwnCs1tpVY4922pEJjGcZ.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/snap/releases/download/1.1.0/FdvbJ4YLq4KBhNdCktwDRdWJwnCs1tpVY4922pEJjGcZ.tar.zst"}]},
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/snap/releases/download/1.0.0/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/acme/wasm/1.json
++++ home/.cache/roc/talon/index/github/acme/wasm/1.json
+@@ -0,0 +1,3 @@
++[
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/wasm/releases/download/1.0.0/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6.tar.zst"}]}
++]
+--- home/.cache/roc/talon/index/github/acme/young/1.json
++++ home/.cache/roc/talon/index/github/acme/young/1.json
+@@ -0,0 +1,3 @@
++[
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"AQmLxpDyCQjrkJWNY4WyvAtW6tJXq4EWYi41GwswnV8Z.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/young/releases/download/1.0.0/AQmLxpDyCQjrkJWNY4WyvAtW6tJXq4EWYi41GwswnV8Z.tar.zst"}]}
++]
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p2/main.roc","last_use":1792065600},{"path":"$PROJECT/talon.toml","last_use":1792065600}]}
+--- home/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/foo
++++ home/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/foo
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json
++++ home/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json
+@@ -0,0 +1 @@
++{"format":1,"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"bundle":"AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY","last_run":"2026-10-15T12:00:00Z"}
+--- home/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/bar
++++ home/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/bar
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/manifest.json
++++ home/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/manifest.json
+@@ -0,0 +1 @@
++{"format":1,"name":"acme/bar","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"bundle":"ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3","last_run":"2026-10-15T12:00:00Z"}
+--- home/.cache/roc/talon/x/fe71495eb000771b1849909eb3a6d9a2d2ae1b1a34820d83ad012bf4a1c5b431/manifest.json
++++ home/.cache/roc/talon/x/fe71495eb000771b1849909eb3a6d9a2d2ae1b1a34820d83ad012bf4a1c5b431/manifest.json
+@@ -0,0 +1 @@
++{"format":1,"name":"acme/snap","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/snap/releases/download/1.0.0/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst"},"build":{"hashes":["CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA","3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","libs":[],"bundle":"3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf","last_run":"2026-10-15T12:00:00Z"}
+--- home/.cache/roc/talon/x/fe71495eb000771b1849909eb3a6d9a2d2ae1b1a34820d83ad012bf4a1c5b431/snap
++++ home/.cache/roc/talon/x/fe71495eb000771b1849909eb3a6d9a2d2ae1b1a34820d83ad012bf4a1c5b431/snap
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z
+--- project/p1/talon.toml
++++ project/p1/talon.toml
+@@ -0,0 +1,3 @@
++[tools]
++foo = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
++snap = { ref = "acme/snap@^1.0.0", url = "https://github.com/acme/snap/releases/download/1.0.0/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst" }
+--- project/p2/talon.toml
++++ project/p2/talon.toml
+@@ -3,3 +3,6 @@
+ json = "^1"  # the parser
+ 
+ # end
++
++[tools]
++bar = { ref = "acme/bar@^1.1.0", url = "https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst" }
+--- project/talon.toml
++++ project/talon.toml
+@@ -0,0 +1,2 @@
++[tools]
++nf = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }

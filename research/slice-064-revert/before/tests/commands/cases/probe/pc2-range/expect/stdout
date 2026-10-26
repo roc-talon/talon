@@ -1,0 +1,39 @@
+== probe parser --range --file p2/main.roc
+acme/parser 1.0.0 passes on nightly-2026-10-08-8c8c8c8 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-08-8c8c8c8 (unknown)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 12
+== probe parser --range --file p1/main.roc
+acme/parser 1.0.0 passes on nightly-2026-10-06-6a6a6a6 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-06-6a6a6a6 (real)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 0
+== probe json --range --file p1/main.roc
+acme/json 2.1.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-07-7b7b7b7 (real)
+exit 12
+== probe pf --range --file p1/main.roc
+the platform acme/pf 0.1.0 passes on nightly-2026-10-05-5f5f5f5 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-05-5f5f5f5 (unknown)
+  upper end: nightly-2026-10-07-7b7b7b7 (unknown)
+exit 12
+== probe json --range --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":false,"data":null,"error":{"kind":"budget","code":12,"message":"the range has 1 end that is not a real fact (unknown): no installed compiler can show it. Run tln roc install for more compilers.","details":{"kind":"range","hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","label":"acme/json 2.1.0","range":{"from":{"id":"nightly-2026-10-05-5f5f5f5","real":false},"to":{"id":"nightly-2026-10-07-7b7b7b7","real":true}},"probes":0,"downloads":0}}}
+exit 12
+== probe --range {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
+8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f passes on nightly-2026-10-01-1b1b1b1 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-01-1b1b1b1 (real)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 0
+== probe {w}/project/bundles/AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq.tar.zst --file p5/main.roc
+unit check of AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq on nightly-2026-10-03-3d3d3d3: pass
+exit 0
+== probe parser2 --range --file p4/main.roc
+acme/parser 1.2.0: no release of the compiler list has a real pass
+exit 12
+== probe parser2 --range --file p3/main.roc
+acme/parser 1.2.0 passes on nightly-2026-10-01-1b1b1b1 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-01-1b1b1b1 (real)
+  upper end: nightly-2026-10-07-7b7b7b7 (unknown)
+exit 12

@@ -1,0 +1,6 @@
+== upgrade --file q1h/main.roc
+core: anchor, held
+exit 12
+== upgrade --offline --file q1o/main.roc
+core: anchor, held
+exit 12

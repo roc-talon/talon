@@ -60,7 +60,7 @@ Oracle :: [].{
 
 	## The step of slice 036: `step_probed` with no compiler.
 	step : OracleBase.Input -> [Need(List(Str)), Done(List(Pick.Chosen)), Fail(Fail)]
-	step = |input| match Oracle.step_probed(input, { compiler: Err(None), checks: [], looked: [], probes: Off, conflicts: [], used: [], domain: Err(NotRead), inferred: [] }) {
+	step = |input| match Oracle.step_probed(input, { compiler: Err(None), checks: [], looked: [], probes: Off, conflicts: [], used: [], domain: Err(NotRead), inferred: [], failed: Other }) {
 		Need(ids) => Need(ids)
 		Done(chosen) => Done(chosen)
 		Fail(fail) => Fail(fail)

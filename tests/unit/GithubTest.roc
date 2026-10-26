@@ -1,4 +1,5 @@
 import lib.Clock
+import lib.Fail
 import lib.Github
 import lib.Roots
 
@@ -9,7 +10,7 @@ GithubTest :: [].{}
 # `talon/index/github/<owner>/<repo>/`, a body `<n>.json` and a meta `<n>.meta` for each page (the form of the cache is a proposal).
 expect {
 	roots = Roots.{ cache: "/c/roc", pkgs: "/c/roc/packages", build: "/c/roc", config: "/c/cfg/talon", data: "/c/data/talon" }
-	dir = Github.repo_dir({ roots, owner: "acme", repo: "json" })
+	dir = Github.index_dir({ roots, owner: "acme", repo: "json" }) ?? ""
 	urls = (
 		Github.list_url({ api: "https://api.github.com", owner: "acme", repo: "json" }),
 		Github.list_url({ api: "http://127.0.0.1:41234/api", owner: "o", repo: "r" }),
@@ -160,4 +161,107 @@ expect {
 	bad = rows.keep_if(|(_, facts, want)| Github.hint(facts) != want).map(|(label, facts, want)| (label, want, Github.hint(facts)))
 	dbg bad
 	bad == []
+}
+
+# R-DI8 (slice 068): the cache file of a hint is `<index>/github/<owner>/<repo>/<tag>.roc-version`, next to the pages of the release list. The
+# repository and the tag of a header entry come from its release URL: only the form `https://github.com/<owner>/<repo>/releases/download/<tag>/<asset>`
+# has a hint. A tag with dots and a `v` is kept as it is. Another host, `http://`, a path, a URL with 2 tag segments or an empty part has none.
+# Manager answer (2026-10-25): an owner, a repo or a tag that is empty, `.`, `..`, or has a `/`, a backslash or a NUL byte gives no path (`hint_file` is `Err(BadPart)`) and no ref: no cache path outside the repo dir.
+expect {
+	roots = Roots.{ cache: "/c/roc", pkgs: "/c/roc/packages", build: "/c/roc", config: "/c/cfg/talon", data: "/c/data/talon" }
+	file = |owner, repo, tag| Github.hint_file({ roots, owner, repo, tag })
+	files = [
+		("the index dir", file("acme", "json", "2.1.0"), Ok("/c/roc/talon/index/github/acme/json/2.1.0.roc-version")),
+		("a tag with v and a pre-release part", file("o", "r", "v1.0.0-rc1"), Ok("/c/roc/talon/index/github/o/r/v1.0.0-rc1.roc-version")),
+		("dots inside a tag are safe", file("o", "r", "v1..2"), Ok("/c/roc/talon/index/github/o/r/v1..2.roc-version")),
+		("a tag that is ..", file("acme", "json", ".."), Err(BadPart)),
+		("a tag that is .", file("acme", "json", "."), Err(BadPart)),
+		("a tag with /..", file("acme", "json", "a/../../x"), Err(BadPart)),
+		("a tag with a /", file("acme", "json", "a/b"), Err(BadPart)),
+		("a tag with a backslash", file("acme", "json", "a\\b"), Err(BadPart)),
+		("a tag with a NUL byte", file("acme", "json", "a\u(0)b"), Err(BadPart)),
+		("an empty tag", file("acme", "json", ""), Err(BadPart)),
+		("an owner that is ..", file("..", "json", "2.1.0"), Err(BadPart)),
+		("a repo that is ..", file("acme", "..", "2.1.0"), Err(BadPart)),
+		("an owner with a /", file("a/b", "json", "2.1.0"), Err(BadPart)),
+		("an empty repo", file("acme", "", "2.1.0"), Err(BadPart)),
+	]
+	bad_files = files.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad_files
+	asset = "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst"
+	refs = [
+		("a release URL", "https://github.com/acme/json/releases/download/2.1.0/${asset}", Ok({ owner: "acme", repo: "json", tag: "2.1.0" })),
+		("a tag with v and a pre-release part", "https://github.com/o/r/releases/download/v1.0.0-rc1/${asset}", Ok({ owner: "o", repo: "r", tag: "v1.0.0-rc1" })),
+		("another host", "https://example.com/acme/json/releases/download/2.1.0/${asset}", Err(NoRef)),
+		("http", "http://github.com/acme/json/releases/download/2.1.0/${asset}", Err(NoRef)),
+		("2 tag segments", "https://github.com/acme/json/releases/download/a/2.1.0/${asset}", Err(NoRef)),
+		("no asset", "https://github.com/acme/json/releases/download/2.1.0", Err(NoRef)),
+		("an empty tag", "https://github.com/acme/json/releases/download//${asset}", Err(NoRef)),
+		("an empty owner", "https://github.com//json/releases/download/2.1.0/${asset}", Err(NoRef)),
+		("not a download", "https://github.com/acme/json/archive/2.1.0/${asset}", Err(NoRef)),
+		("a path", "./util/main.roc", Err(NoRef)),
+		("empty", "", Err(NoRef)),
+		("a tag that is ..", "https://github.com/acme/json/releases/download/../${asset}", Err(NoRef)),
+		("an owner that is ..", "https://github.com/../json/releases/download/2.1.0/${asset}", Err(NoRef)),
+		("a repo that is .", "https://github.com/acme/./releases/download/2.1.0/${asset}", Err(NoRef)),
+		("a tag with a backslash", "https://github.com/acme/json/releases/download/a\\b/${asset}", Err(NoRef)),
+		("a tag with a NUL byte", "https://github.com/acme/json/releases/download/a\u(0)b/${asset}", Err(NoRef)),
+	]
+	bad = refs.keep_if(|(_, url, want)| Github.hint_ref(url) != want).map(|(label, url, want)| (label, want, Github.hint_ref(url)))
+	dbg bad
+	bad_files == [] and bad == []
+}
+
+# R-DI8 (slice 068): what `hint!` writes for an answer. A 200 keeps the body as it came, also when it has no hint line (a tag is fixed, so the answer stays).
+# A 404 keeps the empty text. Any other status is a failure of the request: nothing is kept, the next run asks again. `hint` reads the kept text back as a 200.
+expect {
+	rows = [
+		("200 with an id", { status: 200, body: "nightly-2026-10-09-258ab27\n" }, Ok("nightly-2026-10-09-258ab27\n")),
+		("200 with white space only", { status: 200, body: "  \n" }, Ok("  \n")),
+		("200 empty", { status: 200, body: "" }, Ok("")),
+		("404", { status: 404, body: "404: Not Found" }, Ok("")),
+		("500", { status: 500, body: "x" }, Err(NotKept)),
+		("403", { status: 403, body: "x" }, Err(NotKept)),
+		("304", { status: 304, body: "" }, Err(NotKept)),
+	]
+	bad = rows.keep_if(|(_, facts, want)| Github.hint_keep(facts) != want).map(|(label, facts, want)| (label, want, Github.hint_keep(facts)))
+	dbg bad
+	back = [
+		("an id comes back", Github.hint_keep({ status: 200, body: "nightly-x\n" }).map_ok(|text| Github.hint({ status: 200, body: text })), Ok(Ok("nightly-x"))),
+		("the 404 file is no hint", Github.hint_keep({ status: 404, body: "gone" }).map_ok(|text| Github.hint({ status: 200, body: text })), Ok(Err(NoHint))),
+	]
+	bad_back = back.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad_back
+	bad == [] and bad_back == []
+}
+
+# R-DI2 R-ID3 R-DI1 (slice 076): the cache dir of a repository, `<index>/github/<owner>/<repo>`, is made only from parts that are safe (`Ident.safe_part`). `owner` and `repo` come from a release URL in a header
+# or from a typed name (`tln add ../..`), so a part that is empty, `.`, `..`, or has a `/`, a backslash or a NUL byte gives no path: `Err(BadPart)`. Without the guard, `releases!` writes `1.json` and `1.meta`
+# in `talon/index/` (owner `..`), in `talon/index/github/` (repo `..`) or in `talon/` (both). The failure of `releases!` for it is a usage failure (exit 2, R-EC2 bad ref), and the text names `owner/repo`.
+expect {
+	roots = Roots.{ cache: "/c/roc", pkgs: "/c/roc/packages", build: "/c/roc", config: "/c/cfg/talon", data: "/c/data/talon" }
+	dir = |owner, repo| Github.index_dir({ roots, owner, repo })
+	rows = [
+		("a repository", dir("acme", "json"), Ok("/c/roc/talon/index/github/acme/json")),
+		("dots and hyphens inside", dir("a-b.c", "r_x..y"), Ok("/c/roc/talon/index/github/a-b.c/r_x..y")),
+		("an owner that is ..", dir("..", "json"), Err(BadPart)),
+		("an owner that is .", dir(".", "json"), Err(BadPart)),
+		("a repo that is ..", dir("acme", ".."), Err(BadPart)),
+		("a repo that is .", dir("acme", "."), Err(BadPart)),
+		("both are ..", dir("..", ".."), Err(BadPart)),
+		("an empty owner", dir("", "json"), Err(BadPart)),
+		("an empty repo", dir("acme", ""), Err(BadPart)),
+		("an owner with a /", dir("a/b", "json"), Err(BadPart)),
+		("a repo with a /", dir("acme", "a/b"), Err(BadPart)),
+		("an owner that climbs", dir("../x", "json"), Err(BadPart)),
+		("a repo that climbs", dir("acme", "x/.."), Err(BadPart)),
+		("an owner with a backslash", dir("a\\b", "json"), Err(BadPart)),
+		("a repo with a backslash", dir("acme", "..\\x"), Err(BadPart)),
+		("an owner with a NUL byte", dir("a\u(0)b", "json"), Err(BadPart)),
+		("a repo with a NUL byte", dir("acme", "a\u(0)b"), Err(BadPart)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	failure = Github.bad_repo({ owner: "..", repo: "x" })
+	bad == [] and failure == Fail.new(Usage, "'../x' is not a GitHub repository name") and failure.kind.code() == 2
 }

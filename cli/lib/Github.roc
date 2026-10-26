@@ -1,6 +1,7 @@
 import Clock
 import Fail
 import Fx
+import Ident
 import Item
 import JsonDoc
 import Net
@@ -35,9 +36,46 @@ Github :: [].{
 		other => Err(Failed(other))
 	}
 
-	## The directory of the cache pages of a repository: `<index>/github/<owner>/<repo>` (R-DI2, CLI 6.1), with `<index>` the path of `Item.Index`.
-	repo_dir : { roots : Roots, owner : Str, repo : Str } -> Str
-	repo_dir = |facts| Text.join(Roots.item(facts.roots, Item.Index), "github/${facts.owner}/${facts.repo}")
+	## Slice 068, R-DI8: the cache file of the hint of one tag: `<index>/github/<owner>/<repo>/<tag>.roc-version` (the dir of `index_dir`, so the same dir as the pages of the release list). `tln cache clean` removes it
+	## with the rest of `talon/index/` (R-GC12). It has no end of life: a tag is fixed.
+	## Manager answer (2026-10-25): `owner`, `repo` and `tag` come from a URL in a header that anyone can write, so a part that is not a safe path part gives no path: `Err(BadPart)`. An unsafe part is the empty text, `.`, `..`, a text with
+	## `/`, `\` or a NUL byte. A tag such as `v1..2` or `a.b` is safe (only the whole text `.` or `..` is not).
+	hint_file : { roots : Roots, owner : Str, repo : Str, tag : Str } -> Try(Str, [BadPart])
+	hint_file = |facts| match Github.index_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo }) {
+		Ok(dir) => if Ident.safe_part(facts.tag) Ok(Text.join(dir, "${facts.tag}.roc-version")) else Err(BadPart)
+		Err(BadPart) => Err(BadPart)
+	}
+
+	## Slice 068, R-DI8, R-ID3: the repository and the tag of a release URL, for the cache file of the hint of a header entry. The form is `https://github.com/<owner>/<repo>/releases/download/<tag>/<asset>`: one tag
+	## segment and one asset segment, no empty part, and `owner`, `repo` and `tag` are safe path parts (see `hint_file`: `Err(NoRef)` for an unsafe one). Any other URL (another host, a path, a foreign form, `http://`) is `Err(NoRef)`: it has no hint (the raw base of R-DI8 is the host of GitHub).
+	hint_ref : Str -> Try({ owner : Str, repo : Str, tag : Str }, [NoRef])
+	hint_ref = |url| match url.drop_prefix("https://github.com/").split_on("/") {
+		[owner, repo, "releases", "download", tag, asset] if url.starts_with("https://github.com/") and !asset.is_empty() and Ident.safe_part(owner) and Ident.safe_part(repo) and Ident.safe_part(tag) => Ok({ owner, repo, tag })
+		_ => Err(NoRef)
+	}
+
+	## Slice 068, R-DI8: the text that `hint!` writes to the cache file for an answer. Status 200: the body as it came (the first line that is not empty is the hint, `hint` reads it back). Status 404: the empty text
+	## (an empty file is the cached `404`). Any other status is `Err(NotKept)`: it is a failure of the request, not an answer about the tag, so nothing is written and the next run asks again.
+	hint_keep : { status : U16, body : Str } -> Try(Str, [NotKept])
+	hint_keep = |facts| match facts.status {
+		200 => Ok(facts.body)
+		404 => Ok("")
+		_ => Err(NotKept)
+	}
+
+	## The directory of the cache pages of a repository: `<index>/github/<owner>/<repo>` (R-DI2, CLI 6.1), with `<index>` the path of `Item.Index`. It is the only way to make this dir.
+	## `owner` and `repo` come from a URL in a header or from a typed name, so a part that is not a safe path part (`Ident.safe_part`) gives no path: `Err(BadPart)` (slice 076, R-ID3).
+	index_dir : { roots : Roots, owner : Str, repo : Str } -> Try(Str, [BadPart])
+	index_dir = |facts| if Ident.safe_part(facts.owner) and Ident.safe_part(facts.repo) {
+		Ok(Text.join(Roots.item(facts.roots, Item.Index), "github/${facts.owner}/${facts.repo}"))
+	} else {
+		Err(BadPart)
+	}
+
+	## Slice 076, R-EC2 (bad ref), R-RG6: the failure of `releases!` for an `owner` or a `repo` that `index_dir` refuses (an owner `..`, a repo with `/`, an empty part). No call is made before it. Kind `Usage` (exit 2), the text is a proposal (TW24):
+	## `'<owner>/<repo>' is not a GitHub repository name`.
+	bad_repo : { owner : Str, repo : Str } -> Fail
+	bad_repo = |facts| Fail.new(Usage, "'${facts.owner}/${facts.repo}' is not a GitHub repository name")
 
 	## The two files of page `n` (1-based) in `dir` (a proposal for the form of the cache, R-OUT2): `<dir>/<n>.json` holds the body of the answer as it came,
 	## `<dir>/<n>.meta` holds `meta_text`. Talon writes the body first, then the meta, so a page has an ETag only with its body.
@@ -178,7 +216,7 @@ Github :: [].{
 	##
 	## | Step | Call |
 	## | --- | --- |
-	## | 1 | One `list_dirs!` of `repo_dir`. `NotFound` is an empty list. The `mtime` of page `n` is that of the entry `<n>.meta`. |
+	## | 1 | One `list_dirs!` of `index_dir`. `NotFound` is an empty list. The `mtime` of page `n` is that of the entry `<n>.meta`. |
 	## | 2 | Page 1 has the URL `list_url`. A later page has the `next` of the meta of the page before it. For each page: when the listing has its `meta` entry, one `read_files!` of `[meta, body]` (a `body` that is missing is a page that is not cached). Then `plan`. |
 	## | 3 | `Use`: the cached body. `Fetch` and `Revalidate`: one `http_get!` with `Net.headers` (the token is resolved before the first request, below) and the `ETag` of the cache for `Revalidate`. 200: the new body, `meta_text` with the new ETag (the header `ETag`, any case) and the `Link` next. 304 (only after `Revalidate`): the cached body and its `next`. A rate limit (`rate_limit`): `rate_limit_failure`. An error of the call: `network_failure`. Any other status: `status_failure`. |
 	## | 4 | After the last page (no `next`), with no failure: one `write_atomic!` for all pages that changed: for each page the body (200 only, and only when the body is a JSON array: G3) and then the meta (200 with such a body, and 304: the same text, to renew the time of the page). No call when no page changed. A failure at any step writes nothing (R-DI13). |
@@ -186,7 +224,10 @@ Github :: [].{
 	## The token (R-RG3): before the first `http_get!`, and only then, `Net.token`. For `AskGh`: one `programs!(["gh"])`, and when `gh` is there one `spawn_all!({ jobs: [{ argv: ["gh", "auth", "token"], cwd: Err(Inherit) }], limit: 1 })`, read by `Net.token_from_gh`. `Test` and `Env` make no call. The token is for the list requests only (R-DI9: not for `.roc-version`, not for an archive).
 	releases! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64, offline : Bool } => Try({ pages : List(Str), source : [Live, Cached(U64), Missing] }, Fail)
 	releases! = |fx, facts| {
-		dir = Github.repo_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo })
+		dir = match Github.index_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo }) {
+			Ok(d) => d
+			Err(BadPart) => return Err(Github.bad_repo({ owner: facts.owner, repo: facts.repo }))
+		}
 		listing = match fx.list_dirs!([dir]) {
 			[Ok(entries)] => entries
 			_ => []
@@ -208,18 +249,23 @@ Github :: [].{
 		Ok({ pages: state.pages, source })
 	}
 
-	## The `.roc-version` hint of a tag (R-DI8). One `http_get!` of `hint_url` with `Net.headers` and no token and no ETag. `Err(NoHint)` for a 404. A transport error
-	## is `network_failure`, any other status is `status_failure`.
-	hint! : Fx, { net : Net.Settings, owner : Str, repo : Str, tag : Str } => Try(Try(Str, [NoHint]), Fail)
-	hint! = |fx, facts| {
-		url = Github.hint_url({ raw: facts.net.raw, owner: facts.owner, repo: facts.repo, tag: facts.tag })
-		match fx.http_get!({ url, headers: Net.headers({ token: Err(None), etag: Err(None) }) }) {
-			Err(why) => Err(Github.network_failure({ url, why }))
-			Ok(answer) => match Github.hint({ status: answer.status, body: answer.body }) {
-				Ok(text) => Ok(Ok(text))
-				Err(NoHint) => Ok(Err(NoHint))
-				Err(Failed(status)) => Err(Github.status_failure({ url, status }))
-			}
+	## The `.roc-version` hint of a tag (R-DI8, slice 068). It keeps each answer in the cache file `hint_file` and never asks again for a tag that has one. The calls, in order (the L2 case `index/di-list-flow` fixes them):
+	##
+	## | Step | Call |
+	## | --- | --- |
+	## | 0 | `hint_file` is `Err(BadPart)`: `Ok(Err(NoHint))`, no call at all (no read, no request, no write) |
+	## | 1 | One `read_files!` of `[hint_file]`. The file is there (any text, also the empty text; an unreadable file is no file): the answer is `hint` of status 200 and that text, and there is no more call. `Ok(Err(NoHint))` for an empty text |
+	## | 2 | No file and `offline`: `Ok(Err(NoHint))`, no more call (R-DI8: with no file there is no hint, R-DI12) |
+	## | 3 | No file and not offline: one `http_get!` of `hint_url` with `Net.headers` and no token and no ETag (R-DI9). A transport error is `network_failure`, a status that `hint_keep` does not keep is `status_failure`, and nothing is written |
+	## | 4 | Status 200 or 404: one `write_atomic!` of `[{ path: hint_file, content: hint_keep }]`, then the answer of `hint` (`Err(NoHint)` for a 404). A failed write is a failure of kind `Environment`, `cannot write <path>`, as in `releases!` |
+	##
+	## `roots` has the index dir. `offline` is `--offline` (R-DI12).
+	hint! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, tag : Str, offline : Bool } => Try(Try(Str, [NoHint]), Fail)
+	hint! = |fx, facts| match Github.hint_file({ roots: facts.roots, owner: facts.owner, repo: facts.repo, tag: facts.tag }) {
+		Err(BadPart) => Ok(Err(NoHint))
+		Ok(path) => match fx.read_files!([path]) {
+			[Ok(text)] => Ok(kept_hint(text))
+			_ => if facts.offline Ok(Err(NoHint)) else ask_hint!(fx, facts, path)
 		}
 	}
 
@@ -253,6 +299,31 @@ is_list : Str -> Bool
 is_list = |body| match JsonDoc.parse(body) {
 	Ok(Arr(_)) => Bool.True
 	_ => Bool.False
+}
+
+# The answer of a cache file: the text is the body of a 200.
+kept_hint : Str -> Try(Str, [NoHint])
+kept_hint = |text| match Github.hint({ status: 200, body: text }) {
+	Ok(id) => Ok(id)
+	Err(_) => Err(NoHint)
+}
+
+# Steps 3 and 4 of `hint!`: ask once (no token, no ETag: R-DI9), keep a 200 or a 404.
+ask_hint! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, tag : Str, offline : Bool }, Str => Try(Try(Str, [NoHint]), Fail)
+ask_hint! = |fx, facts, path| {
+	url = Github.hint_url({ raw: facts.net.raw, owner: facts.owner, repo: facts.repo, tag: facts.tag })
+	answer = match fx.http_get!({ url, headers: Net.headers({ token: Err(None), etag: Err(None) }) }) {
+		Ok(a) => a
+		Err(why) => return Err(Github.network_failure({ url, why }))
+	}
+	content = match Github.hint_keep({ status: answer.status, body: answer.body }) {
+		Ok(text) => text
+		Err(NotKept) => return Err(Github.status_failure({ url, status: answer.status }))
+	}
+	match fx.write_atomic!([{ path, content }]) {
+		Ok(_) => Ok(kept_hint(content))
+		Err(failed) => Err(Fail.new(Environment, "cannot write ${failed.path}"))
+	}
 }
 
 # The value of a header, with the name in any case.

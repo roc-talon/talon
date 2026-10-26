@@ -1,0 +1,2 @@
+note: attestation not checked (needs gh, logged in)
+tln: error[integrity]: attestation check failed for tln-x64musl of roc-talon/talon v0.3.2: gh exit 1: Error: no attestations found for the file. tln is not changed.

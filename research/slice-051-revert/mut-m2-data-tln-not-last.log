@@ -1,0 +1,52 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.9      10
+
+=== l2 exit 1
+FAIL tool/rm1-default
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -105,7 +105,7 @@
+       delete $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+       delete $HOME/.local/bin/roc
+       rename $HOME/.local/bin/roc.old $HOME/.local/bin/roc
+      -delete $HOME/.local/bin/tln $HOME/.local/share/talon/bin/tln
+      +delete $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln
+       args
+       env_all
+       platform
+FAIL tool/rm2-options
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -48,7 +48,7 @@
+       delete $HOME/h1/.cache/roc/talon $HOME/h1/.config/talon/config.toml $HOME/h1/.local/share/talon/share.json
+       delete $HOME/h1/.local/bin/roc
+       rename $HOME/h1/.local/bin/roc.old $HOME/h1/.local/bin/roc
+      -delete $HOME/h1/.local/bin/tln $HOME/h1/.local/share/talon/bin/tln
+      +delete $HOME/h1/.local/share/talon/bin/tln $HOME/h1/.local/bin/tln
+       args
+       env_all
+       platform
+      @@ -107,7 +107,7 @@
+       write_atomic $HOME/h4/.local/share/talon/tools.json
+       unlock $HOME/h4/.local/share/talon/tools.json
+       delete $HOME/h4/.cache/roc/talon $HOME/h4/.config/talon/config.toml $HOME/h4/.local/share/talon/share.json
+      -delete $HOME/h4/.local/bin/tln $HOME/h4/.local/share/talon/bin/tln
+      +delete $HOME/h4/.local/share/talon/bin/tln $HOME/h4/.local/bin/tln
+       args
+       env_all
+       platform
+      @@ -128,4 +128,4 @@
+       read_files $HOME/h5/.bashrc $HOME/h5/.zshrc $HOME/h5/.config/fish/conf.d/talon.fish
+       delete $HOME/h5/.cache/roc/talon $HOME/h5/.config/talon/config.toml $HOME/h5/.local/share/talon/share.json
+       delete $HOME/h5/.local/bin/roc
+      -delete $HOME/h5/.local/bin/tln $HOME/h5/.local/share/talon/bin/tln
+      +delete $HOME/h5/.local/share/talon/bin/tln $HOME/h5/.local/bin/tln
+commands: 2 passed, 2 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

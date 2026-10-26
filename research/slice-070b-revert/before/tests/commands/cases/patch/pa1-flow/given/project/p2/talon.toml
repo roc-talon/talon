@@ -1,0 +1,7 @@
+# our intent
+[dependencies]
+pf = "0.1.*"
+parser = "^1"   # the parser
+
+[resolution]
+strategy = "lowest"

@@ -1,0 +1,7 @@
+# Slice 072b (R-SO14): the unbundle of the 2 packages that a run reaches (the first rule whose needle is in the arguments answers, so these come first), the download of a package (.tar.zst: the file is {out}), of a compiler (.tar.gz), its extract, its chmod. The compat check of a new compiler (roc check) has no rule: it exits with 99, and its code is not read (R-GC10).
+unbundle 6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst	0	-	-	dir:{cwd}/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit;file:{cwd}/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit/main.roc
+unbundle 3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst	0	-	-	dir:{cwd}/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K;file:{cwd}/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K/main.roc
+.tar.zst	0	-	-	file:{out}
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

@@ -182,7 +182,7 @@ operand_ref = |name, operand| {
 		Ok(_) => return Err(usage("tln tool ${name} takes a tool name, not a version: '${operand}'"))
 		Err(None) => {}
 	}
-	if name != "update" and is_talon(Ok(ref)) {
+	if name == "rebuild" and is_talon(Ok(ref)) {
 		Err(usage("tln tool ${name} talon is not built yet"))
 	} else {
 		Ok(ref)
@@ -193,7 +193,7 @@ operand_ref = |name, operand| {
 flag_check : Args, Str, Bool -> Try({}, Fail)
 flag_check = |args, name, talon| {
 	only = match name {
-		"remove" => ["--dry-run", "--remove-tools", "--keep-all"]
+		"remove" => if talon [] else ["--dry-run", "--remove-tools", "--keep-all"]
 		"update" => if talon [] else ["--from-source"]
 		_ => []
 	}

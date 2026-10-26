@@ -7,7 +7,7 @@ Slice 048, `tln tool list` (`ls`) and `tln tool remove` (`rm`) (entry `commands`
 | 2 | `tool ls --json` | the envelope with `tools` (the 3 objects) | R-J1 to R-J4, R-OUT4 |
 | 3 | `tool rm nope` | no installed tool has the short name: exit 2, the lookup failure | R-SC3, R-AD6 |
 | 4 | `tool rm acme/zzz` | a full name that no tool has: exit 2 `is not an installed tool`, no lock | R-SC3 |
-| 5 | `tool rm talon` | `talon` is slices 050 and 051: exit 2 `is not built yet`, no call | R-CM16 |
+| 5 | `tool rm talon foo` | 2 operands: exit 2 `takes one tool, got 2`, no call. (`tool rm talon` is slice 051: `rm1-default`) | R-CM16 |
 | 6 | `tool rm foo --dry-run` | the flag is for `tool rm talon`: exit 2, no call | R-FL12 |
 | 7 | `tool rm foo` | under the lock of `tools.json`: the entry is Talon's (same sha256): the entry and the binary are deleted, then `tools.json` is written without `foo`. Nothing is written in `talon/x/` | R-B6, R-ST11, R-CC6, R-PT12 |
 | 8 | `tool rm g --json` | the entry is not Talon's: kept, the warning on stderr, the binary is deleted, `tools.json` has no `g`. The envelope has `kept` | R-B6, R-ST6, R-J3 |

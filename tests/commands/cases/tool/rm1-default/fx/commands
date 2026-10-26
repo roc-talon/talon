@@ -1,0 +1,5 @@
+tool remove talon --dry-run
+tool rm talon --remove-tools --dry-run --json
+env:CI=false tool remove talon
+env:CI=false tool remove talon
+tool remove talon

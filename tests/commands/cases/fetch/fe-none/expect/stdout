@@ -1,0 +1,14 @@
+== fetch have: path:none env:TALON_AUTO_INSTALL=yes env:TALON_GITHUB_API=http://127.0.0.1:1/api https://github.com/acme/json/releases/download/2.2.5/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst
+https://github.com/acme/json/releases/download/2.2.5/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst: exit 15
+== fetch have: path:none none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr env:TALON_AUTO_INSTALL=yes https://github.com/acme/json/releases/download/2.2.0/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst
+https://github.com/acme/json/releases/download/2.2.0/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst: fetched
+== fetch have: path:none none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_INTERACTIVE=1 https://github.com/acme/json/releases/download/2.2.1/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst
+https://github.com/acme/json/releases/download/2.2.1/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst: fetched
+== fetch have: path:none none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr env:TALON_AUTO_INSTALL=no https://github.com/acme/json/releases/download/2.2.2/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst
+https://github.com/acme/json/releases/download/2.2.2/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst: exit 13
+== fetch have: path:none env:TALON_INTERACTIVE=1 https://github.com/acme/json/releases/download/2.2.3/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst
+https://github.com/acme/json/releases/download/2.2.3/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst: exit 13
+== fetch have: path:none env:CI=true https://github.com/acme/json/releases/download/2.2.4/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst
+https://github.com/acme/json/releases/download/2.2.4/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst: exit 13
+== fetch have: path:none env:TALON_AUTO_INSTALL=yes env:TALON_NIGHTLY=false https://github.com/acme/json/releases/download/2.2.6/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst
+https://github.com/acme/json/releases/download/2.2.6/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst: exit 10

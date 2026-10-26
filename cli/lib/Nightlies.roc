@@ -4,6 +4,7 @@ import Facts
 import Fx
 import Clock
 import Github
+import Ident
 import JsonDoc
 import Net
 import Roots
@@ -339,7 +340,7 @@ read_asset : Str, Str, JsonDoc -> Try(Nightlies.Asset, [NotAsset])
 read_asset = |prefix, extension, doc| match doc {
 	Obj(pairs) => {
 		name = text_field(pairs, "name")
-		if name.starts_with(prefix) and name.ends_with(extension) {
+		if name.starts_with(prefix) and name.ends_with(extension) and Ident.safe_part(name) {
 			size = match field(pairs, "size") {
 				Ok(Num(n)) => if n >= 0 n.to_u64_wrap() else 0
 				_ => 0

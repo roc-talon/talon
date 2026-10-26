@@ -1,0 +1,24 @@
+warning: $HOME/.cache/roc/talon/x/garbage/manifest.json: the content does not parse. Talon deletes it and makes it again.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.0.0 with nightly-2026-10-14-38a3029
+note: no yank and advisory data without a registry
+using cached bar 1.0.0 (1.1.0 is available: tln x acme/bar@latest)
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/bar 1.1.0 with nightly-2026-10-14-38a3029
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/old 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: flag '--json' is not for 'x'
+tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo).
+note: no yank and advisory data without a registry
+tln: error[environment]: cannot run $HOME/.local/share/talon/bin/baz: permission denied
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/nobin 1.0.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/nofile 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[internal]: the build of acme/nofile 1.0.0 with nightly-2026-10-14-38a3029 made no file $HOME/.cache/roc/talon/tmp/0123456789abcdef/nofile

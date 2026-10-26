@@ -29,7 +29,7 @@ import RealFx
 ## | Call | Does | Prints |
 ## | --- | --- | --- |
 ## | `releases [--offline] [--known <url>]... <owner>/<repo>` | `Github.releases!`, then `Index.candidates` | stderr: `index: cached at <time>` (offline, from the cache), `warning: <text>` for each warning. stdout: `candidate <version> <published_at> <size> <url>` for each candidate, in the order of the pages, or `no cached page` (offline, no page 1). |
-## | `hint <owner>/<repo> <tag>` | `Github.hint!` | `hint <text>` or `no hint` |
+## | `hint [--offline] <owner>/<repo> <tag>` | `Github.hint!` (slice 068: it keeps the answer in `talon/index/github/<owner>/<repo>/<tag>.roc-version`, R-DI8) | `hint <text>` or `no hint` |
 ## | `fetch [--offline] <url>...` | `Fetch.packages!` with `roc` on `PATH` | `present <url>` or `fetched <url>` for each URL. A failure prints its line to stderr. The exit code is the lowest code of the failures (`Exit.choose`). |
 ## | In all | The roots come from `Roots.from_env`, the settings from `Net.from_env`, the real clock from `Fx.clock!` | |
 ##
@@ -60,7 +60,7 @@ main! = |args| {
 			}
 		}
 		["releases", .. as rest] => finish!(fx, releases!(fx, rest))
-		["hint", name, tag] => finish!(fx, hint!(fx, name, tag))
+		["hint", .. as rest] => finish!(fx, hint!(fx, rest))
 		["fetch", .. as rest] => fetch!(fx, rest)
 		["nightlies", .. as rest] => finish!(fx, nightlies!(fx, rest))
 		["compiler", .. as rest] => finish!(fx, compiler!(fx, rest))
@@ -141,14 +141,20 @@ show_candidates! = |fx, owner, repo, pages, known| {
 known_urls : List(Str) -> List(Str)
 known_urls = |words| words.map2(words.drop_first(1), |a, b| (a, b)).keep_if(|(a, _)| a == "--known").map(|(_, b)| b)
 
-hint! : Fx, Str, Str => Try({}, Fail)
-hint! = |fx, name, tag| {
-	net = Net.from_env(fx.env_all!())
+hint! : Fx, List(Str) => Try({}, Fail)
+hint! = |fx, words| {
+	env = fx.env_all!()
+	roots = Roots.from_env(env)?
+	net = Net.from_env(env)
+	(name, tag) = match words.keep_if(|w| w != "--offline") {
+		[n, t] => (n, t)
+		_ => return Err(Fail.new(Usage, "hint needs <owner>/<repo> <tag>"))
+	}
 	(owner, repo) = match name.split_on("/") {
 		[o, r] => (o, r)
 		_ => return Err(Fail.new(Usage, "hint needs <owner>/<repo>"))
 	}
-	match Github.hint!(fx, { net, owner, repo, tag })? {
+	match Github.hint!(fx, { net, roots, owner, repo, tag, offline: words.contains("--offline") })? {
 		Ok(text) => fx.out!("hint ${text}\n")
 		Err(NoHint) => fx.out!("no hint\n")
 	}
@@ -163,7 +169,7 @@ fetch! = |fx, words| {
 		Err(fail) => return finish!(fx, Err(fail))
 	}
 	urls = words.keep_if(|w| w != "--offline")
-	results = Fetch.packages!(fx, { roots, urls, offline: words.contains("--offline"), roc: "roc", downloader: Net.from_env(env).downloader })
+	results = Fetch.packages!(fx, { roots, urls, offline: words.contains("--offline"), unbundler: Choose({ selected: "", none: Stop }), downloader: Net.from_env(env).downloader })
 	var $failures = []
 	for (url, result) in urls.map2(results, |u, r| (u, r)) {
 		match result {

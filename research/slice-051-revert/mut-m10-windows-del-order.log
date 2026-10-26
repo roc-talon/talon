@@ -1,0 +1,55 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.9      10
+
+=== l2 exit 1
+FAIL tool/rm3-windows
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,4 @@
+       removing Talon, the compilers, the data and the tools
+       removing Talon only
+       warning: $HOME/u2\.local\bin/roc.exe is not a file that tln wrote, so tln keeps it
+      -warning: tln could not start the cleanup of 2 renamed files, so they stay: $HOME/u2\.local\bin/tln.0123456789abcdef.del, $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del. A later install of Talon deletes them
+      +warning: tln could not start the cleanup of 2 renamed files, so they stay: $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del, $HOME/u2\.local\bin/tln.0123456789abcdef.del. A later install of Talon deletes them
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -54,14 +54,14 @@
+         env TALON_BIN_DIR=$HOME/u1\.local\bin
+       delete $HOME/u1/.cache/roc/talon $HOME/u1/.config/talon/config.toml $HOME/u1/.local/share/talon/share.json
+       random
+      +rename $HOME/u1/.local/share/talon/bin/tln.exe $HOME/u1/.local/share/talon/bin/tln.0123456789abcdef.del
+       rename $HOME/u1\.local\bin/roc.exe $HOME/u1\.local\bin/roc.0123456789abcdef.del
+       rename $HOME/u1\.local\bin/tln.exe $HOME/u1\.local\bin/tln.0123456789abcdef.del
+      -rename $HOME/u1/.local/share/talon/bin/tln.exe $HOME/u1/.local/share/talon/bin/tln.0123456789abcdef.del
+       rename $HOME/u1\.local\bin/roc.old.exe $HOME/u1\.local\bin/roc.exe
+       spawn_detached cmd.exe /d /c for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q "%TALON_DEL_1%" "%TALON_DEL_2%" "%TALON_DEL_3%" >nul 2>&1 & if not exist "%TALON_DEL_1%" if not exist "%TALON_DEL_2%" if not exist "%TALON_DEL_3%" exit /b 0)
+      -  env TALON_DEL_1=$HOME/u1\.local\bin/roc.0123456789abcdef.del
+      -  env TALON_DEL_2=$HOME/u1\.local\bin/tln.0123456789abcdef.del
+      -  env TALON_DEL_3=$HOME/u1/.local/share/talon/bin/tln.0123456789abcdef.del
+      +  env TALON_DEL_1=$HOME/u1/.local/share/talon/bin/tln.0123456789abcdef.del
+      +  env TALON_DEL_2=$HOME/u1\.local\bin/roc.0123456789abcdef.del
+      +  env TALON_DEL_3=$HOME/u1\.local\bin/tln.0123456789abcdef.del
+       args
+       env_all
+       platform
+      @@ -77,8 +77,8 @@
+       write_atomic $HOME/u2/.local/share/talon/tools.json
+       unlock $HOME/u2/.local/share/talon/tools.json
+       random
+      -rename $HOME/u2\.local\bin/tln.exe $HOME/u2\.local\bin/tln.0123456789abcdef.del
+       rename $HOME/u2/.local/share/talon/bin/tln.exe $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+      +rename $HOME/u2\.local\bin/tln.exe $HOME/u2\.local\bin/tln.0123456789abcdef.del
+       spawn_detached cmd.exe /d /c for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q "%TALON_DEL_1%" "%TALON_DEL_2%" >nul 2>&1 & if not exist "%TALON_DEL_1%" if not exist "%TALON_DEL_2%" exit /b 0)
+      -  env TALON_DEL_1=$HOME/u2\.local\bin/tln.0123456789abcdef.del
+      -  env TALON_DEL_2=$HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+      +  env TALON_DEL_1=$HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+      +  env TALON_DEL_2=$HOME/u2\.local\bin/tln.0123456789abcdef.del
+commands: 3 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

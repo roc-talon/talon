@@ -1,0 +1,3 @@
+# R-ST10 TW4 (slice 050c): windows! of the real Fx, with `fxprobe` (no Talon logic in it). On this machine (the fast set runs on Linux and macOS) the answer is false. The answer for Windows is tested by the L2 cases with the fake machine `os=windows`.
+FX=$(command -v fxprobe)
+$FX windows

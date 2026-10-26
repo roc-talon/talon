@@ -1,0 +1,6 @@
+tln: error[network]: cannot reach http://127.0.0.1:1/api/repos/roc-lang/nightlies/releases?per_page=100: connection refused. Use --offline to work with the cached index.
+downloading nightly-2026-10-16-1df370f (73.0 MB), the default compiler
+tln: error[consent]: no compiler is selected. TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install @latest, then tln roc default <id>, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: nightly-2026-10-18-5349569 is not installed. Nothing was downloaded. Run: tln roc install nightly-2026-10-18-5349569, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.
+tln: error[consent]: 1 compiler download (73.0 MB) needs consent. Pass --allow-downloads or set TALON_AUTO_INSTALL=yes.
+tln: error[no_tuple]: no compiler release is known, and nightly is false (set by TALON_NIGHTLY)

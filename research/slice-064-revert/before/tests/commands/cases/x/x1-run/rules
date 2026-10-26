@@ -1,0 +1,20 @@
+Slice 049, `tln x` online (entry `commands`). One home with the compiler `nightly-2026-10-14-38a3029` installed (the pin of each app), `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`min-release-age` is 2 days), no tty. The fake `roc build` writes the output file. The fake `exec!` runs nothing: the rules of `fx/exec` give the exit code of the app.
+acme/foo has 2 releases (1.1.0, 1.0.0), acme/bar has 1.1.0 and 1.0.0 (an `x` entry of 1.0.0 is in the cache), acme/baz has 1.0.0 (installed, and an `x` entry of the same version is in the cache), acme/old has 1.0.0 (an `x` entry of 0.9.0 is in the cache), acme/nobin has 1.0.0 (an `x` entry of 1.0.0 is in the cache, with a manifest and no binary).
+`talon/x/` also has a dir with a manifest that does not parse (`garbage`) and a dir with a manifest of format 2 (`future`).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `x acme/foo -- a b` | the garbage manifest: a warning and its dir is deleted (the format 2 dir stays). No match: the newest release 1.1.0 is built (the platform line and the build line on stderr, no `--target`), the entry `talon/x/<digest>/` has the binary and the manifest, the temp dir of the build is deleted. No lock, no `tools.json`, no bin dir. The app runs with `a b` and its exit code 3 is the exit code | R-CM12, R-X1, R-X2, R-X3, R-X4, R-E1, R-B9, R-CC11, R-TF3, R-TF6 |
+| 2 | `x acme/foo` | the entry matches (no selector, R-B1): no build, no download. The note of R-C6. The manifest is written again with the `last_run` of the run, the app runs | R-B1, R-B3, R-C6, R-X2 |
+| 3 | `x foo` | the short name finds the entry (R-SC4, R-AD7), the same as run 2 | R-SC4, R-AD7 |
+| 4 | `x acme/foo@1.0.0` | the selector is an exact version that the entry (1.1.0) does not have: 1.0.0 is built, a second entry | R-B2 |
+| 5 | `x acme/bar` | the entry 1.0.0 matches (no selector), 1.1.0 is newer: the note and the line `using cached bar 1.0.0 (1.1.0 is available: tln x acme/bar@latest)`, no build | R-B1, R-B3 |
+| 6 | `x acme/bar@latest` | `latest` is 1.1.0: the entry 1.0.0 is not enough, 1.1.0 is built | R-B2 |
+| 7 | `x acme/bar` | two entries now (1.0.0, 1.1.0): the newest version wins, no `is available` line | R-B1 |
+| 8 | `x acme/baz` | an installed tool and an entry with the same version: the installed tool runs in place (`<data>/bin/baz`), no write in `talon/x/` | R-B1, R-B5, R-X3 |
+| 9 | `x acme/old` | the entry 0.9.0 is not a candidate of the release list (R-B3: yanked or deleted): it is not used, 1.0.0 is built. The `rename` of the new entry says `Exists` (another run made it first, R-CC11): the temp dir is deleted and the run goes on | R-B3, R-CC11 |
+| 10 | `x acme/foo --json` | exit 2 (R-FL1): the JSON error line on stdout (the flag is not for `x`). No call after `args` | R-FL1, R-EC2 |
+| 11 | `x nope` | a short name that no tool and no entry has: exit 2, no request (R-AD7, R-NM11) | R-AD7, R-NM11, R-SC4 |
+| 12 | `x acme/baz -- boom` | the app does not start (`exec!` says `NotStarted`): exit 18 | R-X4, R-HF6 |
+| 13 | `x acme/nobin` | an entry whose manifest is there but whose binary is not (question Q-X3): it is no match. The newest release is built, the old entry dir is deleted (before the `rename`), the new entry is in the same dir, the app runs | R-B1, R-X2 |
+| 14 | `x acme/nofile` | (gap test, slice 049 verify) the build passes but makes no file: no entry is written, nothing runs, the failure of the build, the temp dir of the build is deleted | R-X2, R-CC2 |

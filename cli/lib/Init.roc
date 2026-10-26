@@ -124,11 +124,13 @@ make! = |fx, args, plan| {
 		Package => InitText.package_file
 		App => {
 			name = plan.named ?? InitText.default_platform
-			url = start_url!(fx, { net, roots, now, offline: args.offline, name })?
+			started = start_url!(fx, { net, roots, now, offline: args.offline, name })?
+			url = started.url
 			if name == InitText.default_platform {
 				InitText.app_file({ name, url })
 			} else {
-				header = platform_header!(fx, { net, roots, offline: args.offline, url })?
+				selected = Fetch.selected({ held: "", default: started.default_roc })
+				header = platform_header!(fx, { net, roots, offline: args.offline, url, selected })?
 				InitStub.app_text({ name, url, text: header })?
 			}
 		}
@@ -147,7 +149,7 @@ make! = |fx, args, plan| {
 }
 
 # Steps 4 (app): the release that the template starts at, as a URL.
-start_url! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str } => Try(Str, Fail)
+start_url! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str } => Try({ url : Str, default_roc : Str }, Fail)
 start_url! = |fx, facts| {
 	(owner, repo) = match facts.name.split_on("/") {
 		[o, r] => (o, r)
@@ -164,19 +166,19 @@ start_url! = |fx, facts| {
 	}
 	config = RocInstall.read_config!(fx, facts.roots)?
 	match Init.start({ name: facts.name, list: listed.list, now: facts.now, min_age: config.min_release_age ?? 172800 }) {
-		Ok(candidate) => Ok(candidate.url)
+		Ok(candidate) => Ok({ url: candidate.url, default_roc: config.default_roc ?? "" })
 		Err(NoRelease) => Err(Fail.new(Usage, "no release of ${facts.name} is old enough for min-release-age"))
 	}
 }
 
 # Step 4b (R-IN8): the header text of the platform release that the template starts at. The release is fetched when its dir is missing, as `tln path` and `tln install --frozen` fetch (R-FE2, R-FE3, R-FE7: `--offline` and a missing dir is exit 15).
-platform_header! : Fx, { net : Net.Settings, roots : Roots, offline : Bool, url : Str } => Try(Str, Fail)
+platform_header! : Fx, { net : Net.Settings, roots : Roots, offline : Bool, url : Str, selected : Str } => Try(Str, Fail)
 platform_header! = |fx, facts| {
 	hash = match Ident.of_url(facts.url) {
 		Ok(ident) => ident.hash
 		Err(Foreign) => return Err(Fail.new(Usage, "${facts.url} is not a package release URL"))
 	}
-	match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.offline, roc: "roc", downloader: facts.net.downloader }) {
+	match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.offline, unbundler: Choose({ selected: facts.selected, none: Stop }), downloader: facts.net.downloader }) {
 		[Ok(_)] => {}
 		[Err(fail)] => return Err(fail)
 		_ => return Err(Fail.new(Internal, "the fetch of ${facts.url} gave no answer"))
@@ -196,7 +198,8 @@ after_first! = |fx, args, plan, here| {
 	given = { ..args, operands: [], options: consent, file: Ok(here.main_path) }
 	opts = Opts.read(given)?
 	begun = Update.begin!(shown, given)?
-	outcome = Update.resolve!(shown, given, opts, begun, { command: Upgrade, names: [] })?
+	done = Update.resolve!(shown, given, opts, begun, { command: Upgrade, names: [] })?
+	outcome = done.outcome
 	remake!(fx, args, plan, { main_path: here.main_path, roots: here.roots, net: here.net, moved: outcome.moved })?
 	ci_path = Text.join(here.cwd, ".github/workflows/ci.yml")
 	ci = match plan.ci {
@@ -216,7 +219,7 @@ after_first! = |fx, args, plan, here| {
 		Written => outcome.written.append(ci_path)
 		_ => outcome.written
 	}
-	Update.print!(fx, shown, args, opts, { ..outcome, written })
+	Update.print!(fx, shown, args, opts, { ..done, outcome: { ..outcome, written } })
 	shown.out!("created main.roc\n")
 	match ci {
 		Written => shown.out!("created .github/workflows/ci.yml\n")
@@ -242,7 +245,7 @@ remake! = |fx, args, plan, here| {
 		Ok(row) => row.value
 		Err(_) => return Err(Fail.new(Internal, "${here.main_path} has no pf entry"))
 	}
-	header = platform_header!(fx, { net: here.net, roots: here.roots, offline: args.offline, url })?
+	header = platform_header!(fx, { net: here.net, roots: here.roots, offline: args.offline, url, selected: "" })?
 	stub = InitStub.app_text({ name, url, text: header })?
 	pins = match locked.roc {
 		Ok(id) => [Pin(id)]

@@ -10,3 +10,5 @@ Each failed run leaves no file: the bin dir, the data bin dir and `talon/tmp` ar
 | 5 | `tool update talon --offline` | the cached page, v0.3.4: exit 15 (the download is needed), no entry check, no download | R-DI12 |
 | 6 | `tool update talon` | v0.3.4 works: the first run that changes a file | R-S2, R-S3 |
 | 7 | `tool update talon` | up to date (the entry says 0.3.4) | R-S2 |
+
+Slice 074 (R-S2, R-IS3): a run that gets to the use of the downloaded file also calls `programs gh` after the sha256 check. `fx/programs` has no `gh`, so the run prints `note: attestation not checked (needs gh, logged in)` on stderr and goes on. The cases of `ts8-attest` have `gh`.

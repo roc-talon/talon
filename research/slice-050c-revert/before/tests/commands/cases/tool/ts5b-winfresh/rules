@@ -1,0 +1,5 @@
+Slice 050 gap step, `tln tool update talon` on Windows with nothing installed (R-ST10). The fake machine is `os=windows arch=x64`. The home has no `tools.json`, no `<data>/bin/tln.exe` and no bin dir entry: no file is replaced, so tln renames nothing to `.del` (a `rename` of a file that is not there would fail).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | the download, the checks, no `chmod`, no `.del` rename, the rename of the temp file to `<data>/bin/tln.exe`, the entries `tln.exe` and `roc.exe` made (hard link to a temp name, rename), `tools.json` is made with the entry `talon`. `updated talon 0.0.0 to 0.3.4 (roc-talon/talon)` | R-ST10, R-ST9, R-S3, R-HF2, Q-M1 |

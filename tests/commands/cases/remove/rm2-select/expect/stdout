@@ -1,0 +1,2 @@
+== remove parser --file r2/main.roc
+exit 10

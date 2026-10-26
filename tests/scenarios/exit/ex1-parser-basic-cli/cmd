@@ -1,0 +1,21 @@
+# R-AL1 R-AL5 R-AL7 R-SP6 R-SP12 R-UP6 R-UP7 R-DT1 R-DT2 R-DT4 R-NI12 R-DL4 R-DI1 R-DA1 R-LD1 R-RC1 R-PH10 R-FL9 (slice 053, the P1 exit criterion of Design 7): "Talon finds a working tuple for parser 2.0.0 + basic-cli without help".
+# L4 (tags real-roc and net): the real tln, the real pinned roc, the real network (the GitHub API, the nightly list, the basic-cli and roc-parser release assets, one compiler download). OPT=speed: the dev build crashes on a real GitHub answer (slice 053, finding F1).
+# The project is an app that uses basic-cli 0.24.0 and roc-parser 2.0.0 (main.roc imports parser.Utf8, not parser.Yaml). talon.toml holds the anchor `parser = "=2.0.0"` (Design 4.3). No `roc:` pin: the roc on PATH is the pinned nightly-2026-10-14-38a3029 (rank 7).
+# `--snapshot 2026-10-13T00:00:00Z` (R-FL9, R-DT4) hides every release and nightly that was published after that time: basic-cli 0.26.0-rc2 and 0.26.0, parser 2.1.0 and later, and the nightlies after 2026-10-12. So the result is fixed. The times of roc are made stable with sed.
+# TALON_NOW is fixed (R-EV22): the project record `projects.json` and the age rules (min-release-age) do not depend on the day of the run.
+export TALON_NOW=2026-10-25T12:00:00Z
+# The roc cache (packages, build caches, the compiler download, compat.db) is outside home/ and project/, so the tree diff has the files of the user and not 100 MB of cache. The case dir is deleted by the next run.
+export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
+trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+t() { sed -e 's/in [0-9]*ms/in <n>ms/g'; }
+echo "== 1: the start state is broken: basic-cli 0.24.0 does not check on the pinned compiler (the real roc)"
+if roc check main.roc > /dev/null 2>&1; then echo "exit 0"; else echo "exit $?"; fi
+echo "== 2: the command with no help: no hint, no pin, no talon.toml edit"
+st tln upgrade --snapshot 2026-10-13T00:00:00Z
+echo "== 3: the result is a working tuple: the real roc checks the new header, and the anchor is the same"
+roc check main.roc 2>&1 | t
+head -1 main.roc | tr ',' '\n' | sed -e 's#^app \[main!\] { ##' -e 's# }$##' -e 's#^ ##'
+cat talon.toml
+echo "== 4: nothing more to move: the same command again (the compiler and the packages are in the cache)"
+st tln upgrade --snapshot 2026-10-13T00:00:00Z

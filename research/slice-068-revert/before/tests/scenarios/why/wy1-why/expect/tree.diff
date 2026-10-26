@@ -1,0 +1,4 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/conflict/main.roc","last_use":1792065600},{"path":"$PROJECT/main.roc","last_use":1792065600},{"path":"$PROJECT/tie/main.roc","last_use":1792065600}]}

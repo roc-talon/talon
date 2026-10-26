@@ -2,7 +2,7 @@
 """Static checks of the CI workflow files (slice 018b, TW28). No third-party module.
 
 Usage: python3 -I ciscan.py <check> <repo root>
-Checks: yaml fast nightly pin portable. Prints one line `FAIL: <reason>` for each problem.
+Checks: yaml fast nightly pin portable release (slice 052). Prints one line `FAIL: <reason>` for each problem.
 Exit code 0 when there is no problem, else 1.
 
 The workflows cannot run in the test run (no remote, no runner). So these checks read the files.
@@ -494,15 +494,154 @@ def check_portable(root, fails):
         fails.append("ci.yml: the macOS step must put the gnubin dirs and brew bash first on PATH (GITHUB_PATH)")
 
 
-CHECKS = {"yaml": check_yaml, "fast": check_fast, "nightly": check_nightly, "pin": check_pin, "portable": check_portable}
+TARGETS = {"x64musl": "tln-x64musl", "arm64musl": "tln-arm64musl", "x64mac": "tln-x64mac", "arm64mac": "tln-arm64mac", "x64win": "tln-x64win.exe"}
+OS_OF = {"x64musl": "ubuntu", "arm64musl": "ubuntu", "x64mac": "macos", "arm64mac": "macos", "x64win": "windows"}
+
+
+def check_release(root, fails, path=None):
+    """The release workflow (slice 052, R-IS1, R-IS2, R-S1, R-HF10, R-SE13). `path` is another file (the control rows of the self-test)."""
+    name = "release.yml"
+    if path is None:
+        doc = workflow(root, name, fails)
+        text_path = os.path.join(root, ".github", "workflows", name)
+    else:
+        text_path = path
+        try:
+            doc = load(path)
+        except (OSError, YamlError) as e:
+            fails.append("%s: %s" % (os.path.basename(path), e))
+            return
+    if doc is None:
+        return
+    text = open(text_path, encoding="utf-8").read()
+    # Trigger: the push of a tag `v...` only. No branch, no pull request, no dispatch (a run by hand has no tag), no schedule.
+    on = doc.get("on")
+    push = on.get("push") if isinstance(on, dict) else None
+    if not (isinstance(on, dict) and set(on) == {"push"} and isinstance(push, dict) and set(push) == {"tags"}):
+        fails.append("%s: `on` must be `push` with `tags` only (no branches, no pull_request, no schedule, no workflow_dispatch)" % name)
+    else:
+        tags = push["tags"]
+        if not (isinstance(tags, list) and tags and all(isinstance(x, str) and x.startswith("v") for x in tags)):
+            fails.append("%s: `on.push.tags` must be a list of patterns that start with `v` (a release tag is v<X.Y.Z>)" % name)
+    perm = doc.get("permissions")
+    if not (isinstance(perm, dict) and perm == {"contents": "read"}):
+        fails.append("%s: the top-level permissions must be `contents: read` only" % name)
+    # No other target, no arm64win (R-HF10), no literal nightly tag, no local path of the platform repository (TW28).
+    if "arm64win" in text:
+        fails.append("%s: names arm64win: Talon ships the 5 targets of basic-cli, and basic-cli has no arm64win (R-HF10, R-IS2)" % name)
+    if re.search(r"nightly-\d{4}-", text):
+        fails.append("%s: a literal nightly tag: the tag comes from scripts/env.sh only (TW28)" % name)
+    if "cloudflare-workers" in text or ".cache/nightlies" in text:
+        fails.append("%s: uses a local path (cloudflare-workers, .cache/nightlies) that CI does not have (TW28)" % name)
+    js = jobs(doc)
+    if set(js) != {"build", "publish"}:
+        fails.append("%s: the jobs must be `build` and `publish` (found %s)" % (name, sorted(js)))
+        return
+    # build: one entry for each of the 5 targets, on the system that can link it (research/release-targets/linux-cross.txt: Linux links the musl targets only; macOS and Windows need their own linker libraries)
+    b = js["build"]
+    if str(b.get("runs-on", "")).replace(" ", "") != "${{matrix.os}}":
+        fails.append("%s: job build must run on `${{ matrix.os }}`" % name)
+    bperm = b.get("permissions")
+    if bperm not in (None, {"contents": "read"}):
+        fails.append("%s: job build must not have more than `contents: read` (it runs the build, it does not publish)" % name)
+    inc = matrix_include(b)
+    got = {}
+    for e in inc:
+        got[str(e.get("target"))] = e
+    if sorted(got) != sorted(TARGETS) or len(inc) != len(TARGETS):
+        fails.append("%s: the build matrix must have one entry for each of %s (found %s)" % (name, sorted(TARGETS), sorted(got)))
+    for tg, asset in TARGETS.items():
+        e = got.get(tg)
+        if e is None:
+            continue
+        if e.get("asset") != asset:
+            fails.append("%s: target %s must have `asset: %s` (R-IS2), found %s" % (name, tg, asset, e.get("asset")))
+        if not str(e.get("os", "")).startswith(OS_OF[tg]):
+            fails.append("%s: target %s must build on %s-* (found %s)" % (name, tg, OS_OF[tg], e.get("os")))
+    d = b.get("defaults")
+    d = d.get("run") if isinstance(d, dict) else None
+    if not (isinstance(d, dict) and d.get("shell") == "bash"):
+        fails.append("%s: job build needs `defaults.run.shell: bash` (the default shell on Windows is PowerShell)" % name)
+    bs = steps(b)
+    runs = [str(s.get("run", "")) for s in bs]
+    if not any("actions/checkout" in str(s.get("uses", "")) for s in bs):
+        fails.append("%s: job build has no actions/checkout step" % name)
+    get = [n for n, r in enumerate(runs) if "scripts/get-roc.sh" in r]
+    tag = [n for n, r in enumerate(runs) if "ROC_TAG" in r and "GITHUB_ENV" in r]
+    if not get or not tag:
+        fails.append("%s: job build must write ROC_TAG to $GITHUB_ENV (from scripts/env.sh) and run scripts/get-roc.sh, as ci.yml does (TW28)" % name)
+    guard = [n for n, r in enumerate(runs) if "cli/lib/Help.roc" in r and "GITHUB_REF_NAME" in r]
+    if not guard or "exit 1" not in runs[guard[0]]:
+        fails.append("%s: job build needs a guard step that reads Help.version from cli/lib/Help.roc, compares it with $GITHUB_REF_NAME (v<version>) and stops with `exit 1` (Q-V)" % name)
+    build = [n for n, r in enumerate(runs) if re.search(r"\bbuild\b", r) and "cli/main.roc" in r]
+    if not build:
+        fails.append("%s: job build has no `roc build ... cli/main.roc` step" % name)
+    else:
+        r = runs[build[0]]
+        for need in ("--target=${{ matrix.target }}", "--output=${{ matrix.asset }}", "--opt=speed"):
+            if need not in r:
+                fails.append("%s: the build step must have %s" % (name, need))
+        if guard and build[0] < guard[0]:
+            fails.append("%s: the guard step must run before the build step" % name)
+        if get and build[0] < max(get + tag):
+            fails.append("%s: the build step runs before the compiler is installed" % name)
+    up = [s for s in bs if str(s.get("uses", "")).startswith("actions/upload-artifact@")]
+    if not up or "matrix.asset" not in str((up[0].get("with") or {}).get("path", "")) or "matrix.target" not in str((up[0].get("with") or {}).get("name", "")):
+        fails.append("%s: job build must upload the asset (`actions/upload-artifact@v<N>` with name `${{ matrix.target }}` and path `${{ matrix.asset }}`)" % name)
+    # publish: the one job with write rights. It sums, attests and releases the 5 binaries and the 2 scripts (R-IS1, R-IS2, R-S1).
+    p = js["publish"]
+    need = p.get("needs")
+    if need != "build" and need != ["build"]:
+        fails.append("%s: job publish must need build" % name)
+    if not str(p.get("runs-on", "")).startswith("ubuntu"):
+        fails.append("%s: job publish must run on ubuntu (sha256sum, gh)" % name)
+    if p.get("permissions") != {"contents": "write", "id-token": "write", "attestations": "write"}:
+        fails.append("%s: job publish needs exactly `contents: write`, `id-token: write` and `attestations: write` (the release and the attestation)" % name)
+    ps = steps(p)
+    pr = [str(s.get("run", "")) for s in ps]
+    use = [str(s.get("uses", "")) for s in ps]
+    def at(pred):
+        for n, s in enumerate(ps):
+            if pred(s, str(s.get("run", "")), str(s.get("uses", ""))):
+                return n
+        return None
+    i_co = at(lambda s, r, u: u.startswith("actions/checkout@"))
+    i_dl = at(lambda s, r, u: u.startswith("actions/download-artifact@"))
+    i_test = at(lambda s, r, u: "install/test.sh" in r)
+    i_sum = at(lambda s, r, u: "sha256sum" in r and "sha256sums.txt" in r)
+    i_att = at(lambda s, r, u: u.startswith("actions/attest-build-provenance@"))
+    i_rel = at(lambda s, r, u: "gh release create" in r)
+    for label, i in (("actions/checkout", i_co), ("actions/download-artifact", i_dl), ("a run of install/test.sh (the scripts are tested before they are released)", i_test),
+                     ("a step that writes sha256sums.txt with sha256sum", i_sum), ("actions/attest-build-provenance", i_att), ("`gh release create`", i_rel)):
+        if i is None:
+            fails.append("%s: job publish has no step for %s" % (name, label))
+    if None not in (i_co, i_dl, i_test, i_sum, i_att, i_rel) and not (i_co < i_dl and i_dl < i_sum and i_sum < i_att and i_att < i_rel and i_test < i_rel):
+        fails.append("%s: job publish must go in this order: checkout, download, sha256sums.txt, attestation, release (and install/test.sh before the release)" % name)
+    if i_att is not None and "tln-" not in str((ps[i_att].get("with") or {}).get("subject-path", "")):
+        fails.append("%s: the attestation `subject-path` must name the tln-* binaries (`gh attestation verify` of install.sh checks the binary, R-S1)" % name)
+    if i_rel is not None:
+        r = pr[i_rel]
+        for word in ("sha256sums.txt", "install/install.sh", "install/install.ps1", "tln-", "--verify-tag"):
+            if word not in r:
+                fails.append("%s: the `gh release create` step must name %s (the assets are the 5 binaries, sha256sums.txt, install.sh and install.ps1: R-IS1, R-IS2)" % (name, word))
+        if "GH_TOKEN" not in str((ps[i_rel].get("env") or {})) and "GH_TOKEN" not in r:
+            fails.append("%s: the `gh release create` step needs GH_TOKEN in its env" % name)
+    if i_sum is not None and "tln-" not in pr[i_sum]:
+        fails.append("%s: the sha256sums.txt step must sum the tln-* files" % name)
+
+
+CHECKS = {"yaml": check_yaml, "fast": check_fast, "nightly": check_nightly, "pin": check_pin, "portable": check_portable, "release": check_release}
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3 or sys.argv[1] not in CHECKS:
-        print("usage: ciscan.py <%s> <repo root>" % "|".join(CHECKS))
+    if len(sys.argv) not in (3, 4) or sys.argv[1] not in CHECKS or (len(sys.argv) == 4 and sys.argv[1] != "release"):
+        print("usage: ciscan.py <%s> <repo root> [file: only for `release`, a workflow file to check in place of .github/workflows/release.yml]" % "|".join(CHECKS))
         sys.exit(2)
     fails = []
     try:
-        CHECKS[sys.argv[1]](sys.argv[2], fails)
+        if len(sys.argv) == 4:
+            check_release(sys.argv[2], fails, sys.argv[3])
+        else:
+            CHECKS[sys.argv[1]](sys.argv[2], fails)
     except (OSError, YamlError) as e:
         fails.append("%s" % e)
     for x in fails:

@@ -1,0 +1,8 @@
+== install --frozen --file p1/main.roc env:TALON_AUTO_INSTALL=no
+exit 13
+== install --frozen --file p1/main.roc --allow-downloads
+the header satisfies talon.toml
+exit 0
+== install --frozen --file p2/main.roc
+the header satisfies talon.toml
+exit 0

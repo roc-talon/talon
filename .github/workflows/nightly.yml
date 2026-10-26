@@ -40,6 +40,16 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
 
+      # Slice 067 (053 Q2): a real roc cache for the case exit/ex2-gc-real-cache. The runner has none, so the case would skip.
+      # The script runs 4 nightlies from before 2026-10-05 (legacy dirs) and 4 from 2026-10-11 on (compat dirs) on one app (packages).
+      # It writes only in .work/real-cache. The next step reads REAL_CACHE (tests/run.sh).
+      - name: Real roc cache
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cache=$(scripts/real-cache.sh)
+          echo "REAL_CACHE=$cache" >> "$GITHUB_ENV"
+
       - name: Test
         env:
           OPT: speed

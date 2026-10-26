@@ -1,0 +1,8 @@
+tln: error[network]: GitHub API rate limit reached. It resets at 2026-10-16T12:00:00Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login).
+tln: error[network]: GitHub API rate limit reached. It resets at 2026-10-16T12:00:00Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login).
+tln: error[network]: cannot reach https://api.github.com/repos/acme/gone/releases?per_page=100: network error. Use --offline to work with the cached index.
+tln: error[network]: cannot reach https://api.github.com/repos/acme/slow/releases?per_page=100: no answer in 20 s. Use --offline to work with the cached index.
+index: cached at 2026-10-14T17:46:40Z
+tln: error[network]: GitHub answered 500 for https://raw.githubusercontent.com/acme/lib/4.0.0/.roc-version
+tln: error[usage]: no GitHub repository acme/nope (a private repository needs a token)
+tln: error[network]: GitHub answered 500 for https://raw.githubusercontent.com/acme/lib/4.0.0/.roc-version

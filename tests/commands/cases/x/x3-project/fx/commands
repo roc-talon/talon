@@ -12,3 +12,5 @@ x fmt cwd:p7
 x acme/fmt cwd:free --offline
 x acme/fmt cwd:p10
 x fmt2 cwd:p10
+x fmt cwd:p1 --roc installed --allow-unchecked
+x acme/fmt@1.0.0 cwd:p1 --offline --roc installed --allow-unchecked

@@ -4,9 +4,11 @@ app [main!] { lib: "../../cli/lib/main.roc" }
 
 import ArgsTest
 import CompilerTest
+import DelTest
 import FactsTest
 import IndexTest
 import LinkTest
+import NoRankTest
 import PickclosureTest
 import ProbecmdTest
 import PromptTest

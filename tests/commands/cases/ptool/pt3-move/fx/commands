@@ -12,3 +12,6 @@ update --tool --file w/m1/main.roc
 install --file w2/m1/main.roc
 update fmt --file p2/main.roc
 update pf --file p2/main.roc
+update fmt@^2 --file p2/main.roc
+update --json --file p4/main.roc
+upgrade --json foo --file w/m1/main.roc

@@ -3,6 +3,7 @@ import Fail
 import Fx
 import Gather
 import Net
+import NoRank
 import Release
 import Roots
 
@@ -22,11 +23,11 @@ Walk :: [].{
 
 	## `file` and `entries` are the project file (absolute) and its header entries (`Locked.rows` without the `roc` entry, as `Closure.Entry`). `known` are nodes that the command read already (the facts of the pick), or `[]`.
 	## The result has `nodes`: `known` and every node that this call read, so a second member does not read them again.
-	run! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) } => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
+	run! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) } => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
 	run! = |fx, facts| walk!(fx, facts, facts.known)
 }
 
-Facts : { roots : Roots, net : Net.Settings, offline : Bool, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) }
+Facts : { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) }
 
 # Steps 1 to 4: `Closure.step`, then the levels that it asks for, until it is done.
 walk! : Fx, Facts, List(Closure.Node) => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
@@ -42,7 +43,7 @@ walk! = |fx, facts, nodes| match Closure.step({ file: facts.file, entries: facts
 # One level: `Gather.get!` for the ids, then the entries of each header.
 level! : Fx, Facts, List(Str) => Try(List(Closure.Node), Fail)
 level! = |fx, facts, ids| {
-	got = Gather.get!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline }, ids)?
+	got = Gather.get!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none }, ids)?
 	var $nodes = no_nodes
 	for g in got {
 		$nodes = $nodes.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })

@@ -1,0 +1,110 @@
+env_all
+list_dirs $HOME/u3\.local\bin $HOME/u3/.local/share/talon/bin
+args
+env_all
+platform
+read_files $HOME/u3/.local/share/talon/tools.json
+list_dirs $HOME/u3/.cache/roc/toolchains $HOME/u3\.local\bin
+read_files $HOME/u3/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/u3/.cache/roc/toolchains/link-mine/.talon.json $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tree_info $HOME/u3/.local/share/talon/bin/tln.exe $HOME/u3/.local/share/talon/bin/foo.exe $HOME/u3/.cache/roc/toolchains/git-ab12cd34 $HOME/u3/.cache/roc/toolchains/link-mine $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/u3/.cache/roc/compat-c2 $HOME/u3/.cache/roc/compat-c1 $HOME/u3/.cache/roc/toolchains/zig-0.17.0 $HOME/u3/.cache/roc/talon $HOME/u3/.config/talon/config.toml $HOME/u3/.local/share/talon/share.json
+sha256_file $HOME/u3/.local/share/talon/bin/tln.exe
+sha256_file $HOME/u3\.local\bin/tln.exe
+sha256_file $HOME/u3\.local\bin/roc.exe
+lock $HOME/u3/.cache/roc/toolchains/git-ab12cd34 nowait: held
+random
+rename $HOME/u3/.cache/roc/toolchains/git-ab12cd34 $HOME/u3/.cache/roc/toolchains/git-ab12cd34.0123456789abcdef.trash
+delete $HOME/u3/.cache/roc/toolchains/git-ab12cd34.0123456789abcdef.trash
+unlock $HOME/u3/.cache/roc/toolchains/git-ab12cd34
+lock $HOME/u3/.cache/roc/toolchains/link-mine nowait: held
+random
+rename $HOME/u3/.cache/roc/toolchains/link-mine $HOME/u3/.cache/roc/toolchains/link-mine.0123456789abcdef.trash
+delete $HOME/u3/.cache/roc/toolchains/link-mine.0123456789abcdef.trash
+unlock $HOME/u3/.cache/roc/toolchains/link-mine
+lock $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 nowait: held
+random
+rename $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0.0123456789abcdef.trash
+delete $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0.0123456789abcdef.trash $HOME/u3/.cache/roc/compat-c2
+unlock $HOME/u3/.cache/roc/toolchains/nightly-2026-09-01-abcdef0
+lock $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+random
+rename $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+delete $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash $HOME/u3/.cache/roc/compat-c1
+unlock $HOME/u3/.cache/roc/toolchains/nightly-2026-10-14-38a3029
+lock $HOME/u3/.cache/roc/toolchains/zig-0.17.0 nowait: held
+random
+rename $HOME/u3/.cache/roc/toolchains/zig-0.17.0 $HOME/u3/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+delete $HOME/u3/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+unlock $HOME/u3/.cache/roc/toolchains/zig-0.17.0
+lock $HOME/u3/.local/share/talon/tools.json nowait: held
+read_files $HOME/u3/.local/share/talon/tools.json
+write_atomic $HOME/u3/.local/share/talon/tools.json
+unlock $HOME/u3/.local/share/talon/tools.json
+delete $HOME/u3/.cache/roc/talon $HOME/u3/.config/talon/config.toml $HOME/u3/.local/share/talon/share.json
+random
+rename $HOME/u3\.local\bin/roc.exe $HOME/u3\.local\bin/roc.0123456789abcdef.del
+rename $HOME/u3\.local\bin/tln.exe $HOME/u3\.local\bin/tln.0123456789abcdef.del
+rename $HOME/u3/.local/share/talon/bin/tln.exe $HOME/u3/.local/share/talon/bin/tln.0123456789abcdef.del
+rename $HOME/u3\.local\bin/roc.old.exe $HOME/u3\.local\bin/roc.exe
+spawn_detached cmd.exe /d /c for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q "%TALON_DEL_1%" "%TALON_DEL_2%" "%TALON_DEL_3%" >nul 2>&1 & if not exist "%TALON_DEL_1%" if not exist "%TALON_DEL_2%" if not exist "%TALON_DEL_3%" exit /b 0)
+  env TALON_DEL_1=$HOME/u3\.local\bin/roc.0123456789abcdef.del
+  env TALON_DEL_2=$HOME/u3\.local\bin/tln.0123456789abcdef.del
+  env TALON_DEL_3=$HOME/u3/.local/share/talon/bin/tln.0123456789abcdef.del
+env_all
+list_dirs $HOME/u4\.local\bin $HOME/u4/.local/share/talon/bin
+args
+env_all
+platform
+read_files $HOME/u4/.local/share/talon/tools.json
+list_dirs $HOME/u4/.cache/roc/toolchains $HOME/u4\.local\bin
+read_files $HOME/u4/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/u4/.cache/roc/toolchains/link-mine/.talon.json $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tree_info $HOME/u4/.local/share/talon/bin/tln.exe $HOME/u4/.local/share/talon/bin/foo.exe $HOME/u4/.cache/roc/toolchains/git-ab12cd34 $HOME/u4/.cache/roc/toolchains/link-mine $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/u4/.cache/roc/compat-c2 $HOME/u4/.cache/roc/compat-c1 $HOME/u4/.cache/roc/toolchains/zig-0.17.0 $HOME/u4/.cache/roc/talon $HOME/u4/.config/talon/config.toml $HOME/u4/.local/share/talon/share.json
+sha256_file $HOME/u4/.local/share/talon/bin/tln.exe
+sha256_file $HOME/u4\.local\bin/tln.exe
+sha256_file $HOME/u4\.local\bin/roc.exe
+sha256_file $HOME/u4/.local/share/talon/bin/foo.exe
+sha256_file $HOME/u4\.local\bin/foo.exe
+lock $HOME/u4/.cache/roc/toolchains/git-ab12cd34 nowait: held
+random
+rename $HOME/u4/.cache/roc/toolchains/git-ab12cd34 $HOME/u4/.cache/roc/toolchains/git-ab12cd34.0123456789abcdef.trash
+delete $HOME/u4/.cache/roc/toolchains/git-ab12cd34.0123456789abcdef.trash
+unlock $HOME/u4/.cache/roc/toolchains/git-ab12cd34
+lock $HOME/u4/.cache/roc/toolchains/link-mine nowait: held
+random
+rename $HOME/u4/.cache/roc/toolchains/link-mine $HOME/u4/.cache/roc/toolchains/link-mine.0123456789abcdef.trash
+delete $HOME/u4/.cache/roc/toolchains/link-mine.0123456789abcdef.trash
+unlock $HOME/u4/.cache/roc/toolchains/link-mine
+lock $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 nowait: held
+random
+rename $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0.0123456789abcdef.trash
+delete $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0.0123456789abcdef.trash $HOME/u4/.cache/roc/compat-c2
+unlock $HOME/u4/.cache/roc/toolchains/nightly-2026-09-01-abcdef0
+lock $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+random
+rename $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+delete $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash $HOME/u4/.cache/roc/compat-c1
+unlock $HOME/u4/.cache/roc/toolchains/nightly-2026-10-14-38a3029
+lock $HOME/u4/.cache/roc/toolchains/zig-0.17.0 nowait: held
+random
+rename $HOME/u4/.cache/roc/toolchains/zig-0.17.0 $HOME/u4/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+delete $HOME/u4/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+unlock $HOME/u4/.cache/roc/toolchains/zig-0.17.0
+lock $HOME/u4/.local/share/talon/tools.json nowait: held
+read_files $HOME/u4/.local/share/talon/tools.json
+random
+rename $HOME/u4\.local\bin/foo.exe $HOME/u4\.local\bin/foo.0123456789abcdef.del
+rename $HOME/u4/.local/share/talon/bin/foo.exe $HOME/u4/.local/share/talon/bin/foo.0123456789abcdef.del
+delete $HOME/u4/.local/share/talon/tools.json
+unlock $HOME/u4/.local/share/talon/tools.json
+exec powershell -NoProfile -NonInteractive -Command $dir = $env:TALON_BIN_DIR
+$key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $true)
+$old = $key.GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+$parts = @($old -split ';' | Where-Object { $_ -ne '' })
+$parts = @($parts | Where-Object { $_ -ne $dir })
+$key.SetValue('Path', ($parts -join ';'), [Microsoft.Win32.RegistryValueKind]::ExpandString)
+$key.Close()
+Add-Type -Namespace Talon -Name Win32 -MemberDefinition '[DllImport("user32.dll", CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint flags, uint timeout, out UIntPtr result);'
+$result = [UIntPtr]::Zero
+# WM_SETTINGCHANGE (0x1A) tells the open windows that the environment changed.
+[void][Talon.Win32]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 5000, [ref]$result)
+
+  env TALON_BIN_DIR=$HOME/u4\.local\bin

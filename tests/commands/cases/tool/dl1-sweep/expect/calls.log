@@ -1,0 +1,27 @@
+env_all
+list_dirs $WORK/nowhere\.local\bin $HOME/.local/share/talon/bin
+delete $HOME/.local/share/talon/bin/roc.old.2222222222222222.del $HOME/.local/share/talon/bin/tln.1111111111111111.del
+args
+env_all
+list_dirs $HOME/u\.local\bin
+delete $HOME/u\.local\bin/foo.0123456789abcdef.del $HOME/u\.local\bin/tln.fedcba9876543210.del
+args
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+args
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+args
+env_all
+read_files $HOME/.local/share/talon/tools.json
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+args
+env_all
+clock
+cwd
+read_files $HOME/.config/talon/config.toml
+path_roc
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+args

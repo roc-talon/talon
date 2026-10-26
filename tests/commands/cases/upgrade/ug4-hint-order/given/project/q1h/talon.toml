@@ -1,0 +1,5 @@
+[dependencies]
+core = "=1.0.0"
+
+[resolution]
+probe = { max = 2 }

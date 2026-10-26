@@ -1,0 +1,21 @@
+--- home/.local/bin/foo
++++ home/.local/bin/foo
+@@ -1 +0,0 @@
+-foo bin
+--- home/.local/share/talon/bin/foo
++++ home/.local/share/talon/bin/foo
+@@ -1 +0,0 @@
+-foo bin
+--- home/.local/share/talon/bin/g
++++ home/.local/share/talon/bin/g
+@@ -1 +0,0 @@
+-g bin
+--- home/.local/share/talon/bin/z
++++ home/.local/share/talon/bin/z
+@@ -1 +0,0 @@
+-z bin
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.1.0","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"},"build":{"hashes":["4uPftcQA1Veb7PYxeGS64BBpy65Tpgt4Tjfpqs9YPSge"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":["libm.so.6"],"installed_at":"2026-10-01T10:00:00Z"},"g":{"name":"acme/g","source":{"kind":"git","commit":"aaaaaaaa5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"main","path":"apps/cli"},"build":{"hashes":["4pjoWQnu4Ngc8CHibQgq1U2rHXxFx46HWg2j2kEXYHMD"],"nightly":"nightly-2026-10-11-1a2b3c4","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"z":{"name":"acme/z","source":{"kind":"release","version":"2.0.0","url":"https://github.com/acme/z/releases/download/2.0.0/BqqXzLarZCK7BStmPqJBFA5mSKhYxcVMmo2CepVZJtEp.tar.zst"},"build":{"hashes":["ETBbg3Fun7qsd64atmKWVccfYZkZ3jXhAdc8imHnVvLN"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-09-03T08:00:00Z"}}}
++{"format":1,"tools":{}}

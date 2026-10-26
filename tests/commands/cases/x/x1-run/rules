@@ -18,3 +18,5 @@ acme/foo has 2 releases (1.1.0, 1.0.0), acme/bar has 1.1.0 and 1.0.0 (an `x` ent
 | 12 | `x acme/baz -- boom` | the app does not start (`exec!` says `NotStarted`): exit 18 | R-X4, R-HF6 |
 | 13 | `x acme/nobin` | an entry whose manifest is there but whose binary is not (question Q-X3): it is no match. The newest release is built, the old entry dir is deleted (before the `rename`), the new entry is in the same dir, the app runs | R-B1, R-X2 |
 | 14 | `x acme/nofile` | (gap test, slice 049 verify) the build passes but makes no file: no entry is written, nothing runs, the failure of the build, the temp dir of the build is deleted | R-X2, R-CC2 |
+
+Slice 064 (R-FE4, R-SO6): the home has `config.toml` with `default-roc = nightly-2026-10-14-38a3029` and a newer compiler `nightly-2026-10-16-9e9e9e9`. Each `roc unbundle` runs with the default (`38a3029`), not with the newest installed compiler: `XFlow` gives the default of the machine to the fetch of the bundle and of the platform.

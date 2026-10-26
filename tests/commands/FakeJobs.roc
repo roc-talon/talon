@@ -71,9 +71,18 @@ FakeJobs :: [].{
 					}
 				} ${text}",
 			)
+			# Slice 074: a needle `@<n>|<text>` is for the n-th run of the case only (a run starts with the call `args`), so one case can answer the same job in another way in each run.
+			run_no = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(|l| l == "args").len().to_str()
 			rule = rules.find_first(
 				|fields| match fields {
-					[needle, ..] => text.contains(needle)
+					[needle, ..] => if needle.starts_with("@") {
+						match needle.drop_prefix("@").split_first("|") {
+							Ok({ before, after }) => before == run_no and text.contains(after)
+							Err(_) => Bool.False
+						}
+					} else {
+						text.contains(needle)
+					}
 					_ => Bool.False
 				},
 			)
@@ -173,6 +182,21 @@ FakeJobs :: [].{
 				Ok(I32.from_str(code) ?? 99)
 			}
 			_ => Ok(0)
+		}
+	}
+
+	## Slice 051: `spawn_detached!`. The log line is `spawn_detached <arguments>` and then the `  env` lines, as for `exec!`. The fake starts nothing. The rules are those of `fx/exec`: a rule with the code `notstarted:<text>` gives `Err(NotStarted(text))`, any other result is `Ok({})`.
+	spawn_detached! : Str, { argv : List(Str), env : List((Str, Str)) } => Try({}, [NotStarted(Str)])
+	spawn_detached! = |w, run| {
+		joined = Str.join_with(run.argv, " ")
+		FakeBase.log!(w, "spawn_detached ${joined}")
+		for (name, value) in run.env {
+			FakeBase.log!(w, "  env ${name}=${value}")
+		}
+		rules = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/exec")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
+		match rules.find_first(|row| joined.contains(row.first() ?? "")) {
+			Ok([_, code, ..]) => if code.starts_with("notstarted:") Err(NotStarted(code.drop_prefix("notstarted:"))) else Ok({})
+			_ => Ok({})
 		}
 	}
 }

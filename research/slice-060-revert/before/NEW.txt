@@ -1,0 +1,11 @@
+tests/commands/cases/fetch/fe-flow/given/home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tests/commands/cases/patch/pa1-flow/given/home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tests/commands/cases/path/pt1-entry/given/home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tests/commands/cases/probe/lp2-fetch/given/home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tests/commands/cases/tool/ti4-nothing/fx/path-roc
+tests/scenarios/fetch/fe1-loopback-fetch/given/version.stdout
+tests/commands/cases/init/it2-platform/given/home8 (a copy of given/home6)
+tests/commands/cases/closure/cl2-chain/given/home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tests/commands/cases/closure/cl2-chain/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/patch/pa1-flow/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/patch/pa1-flow/given/home/.config/talon/config.toml

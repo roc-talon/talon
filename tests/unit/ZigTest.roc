@@ -1,5 +1,7 @@
+import lib.Clock
 import lib.Consent
 import lib.Fail
+import lib.Gc
 import lib.Nightlies
 import lib.Prompt
 import lib.Roots
@@ -339,4 +341,98 @@ expect {
 																and decide(NeedsTty, Bool.False, Err(NoFlag)) == NeedTty
 																	and declined == Fail.new(Consent, "zig 0.17.0 is not installed. Nothing was downloaded.")
 																		and declined.kind.code() == 13
+}
+
+# Slice 061, R-D2, R-D1: the Zig installs in the store. `Gc.zig_dirs` takes the listing of `<cache>/toolchains` and gives the ids `zig-<X.Y.Z>` of the Zig installs that Talon makes (R-D2: a dir `zig-<version>`
+# with a release version, as `Zig.installed` finds them), in byte order. The name decides (Q4 of the slice file): the time and the `.talon.json` are not read, and a `git-*` entry changes nothing (Q1).
+# Not in the answer: a file, a dev version, a version with 2 numbers or 4, a temp, a lock dir, a trash dir (R-CC2 removes the temps and trash dirs by age), a compiler (a nightly, a release, `git-`, `link-`, `copy-`), a name that only has `zig` in it.
+expect {
+	dir = |name, mtime| { name, is_dir: Bool.True, mtime }
+	file = |name| { name, is_dir: Bool.False, mtime: 5 }
+	odd = [
+		file("zig-0.17.1"),
+		dir("zig-0.18.0-dev.31+abc1234", 5),
+		dir("zig-0.17", 5),
+		dir("zig-0.17.0.1", 5),
+		dir("zig-0.17.0.0123456789abcdef.tmp", 5),
+		dir("zig-0.17.0.lock", 5),
+		dir("zig-0.17.0.0123456789abcdef.trash", 5),
+		dir("zig-", 5),
+		dir("zig-a.b.c", 5),
+		dir("zig", 5),
+		dir("zigzag-0.17.0", 5),
+		dir("link-zig-0.17.0", 5),
+		dir("git-0123abcd", 5),
+		dir("copy-fix-1", 5),
+		dir("nightly-2026-10-14-38a3029", 5),
+		dir("0.1.0", 5),
+	]
+	rows = [
+		([], []),
+		([dir("zig-0.17.0", 5)], ["zig-0.17.0"]),
+		# The time of an entry is not read.
+		([dir("zig-0.16.1", 0), dir("zig-0.17.0", 99999999999)], ["zig-0.16.1", "zig-0.17.0"]),
+		# Byte order of the names: 0.17.10 comes before 0.17.9. The order of the listing does not matter.
+		([dir("zig-0.17.9", 5), dir("zig-0.17.10", 5), dir("zig-0.16.0", 5)], ["zig-0.16.0", "zig-0.17.10", "zig-0.17.9"]),
+		([dir("zig-0.16.0", 5), dir("zig-0.17.10", 5), dir("zig-0.17.9", 5)], ["zig-0.16.0", "zig-0.17.10", "zig-0.17.9"]),
+		(odd, []),
+		(odd.concat([dir("zig-0.17.0", 5)]), ["zig-0.17.0"]),
+		([dir("zig-0.17.0", 5)].concat(odd).concat([dir("zig-0.15.2", 5)]), ["zig-0.15.2", "zig-0.17.0"]),
+	]
+	bad = rows.keep_if(|(entries, want)| Gc.zig_dirs(entries) != want).map(|(entries, want)| (entries.len(), want, Gc.zig_dirs(entries)))
+	dbg bad
+	bad == []
+}
+
+# Slice 061, R-D2, R-GC5, R-CC10, R-CC9 (Q2 of the slice file): the Zig installs that GC removes. A source build writes `.last-use` of its Zig before it starts (the UTC time and a line end, `Launch.last_use`). GC keeps a Zig with a last use in the last day (R-CC10:
+# "a running build wrote it when it started"): not more than 86400 s before `now`, so exactly one day stays, and a time in the future stays. There is no GC age for a Zig (Q3), so a Zig with an older last use goes, and a Zig with no `.last-use` goes.
+# A file that GC cannot read (`Denied`, `Other`) or a text that is no UTC time is not judged: the Zig stays (as an unreadable project file, D4 of slice 028). The result is in the order of `ids`.
+expect {
+	now : U64
+	now = 1792670400
+	at = |back| Ok("${Clock.format_utc(now - back)}\n")
+	rows = [
+		# ids, reads, the ids that go
+		([], [], []),
+		(["zig-0.17.0"], [at(3600)], []),
+		(["zig-0.17.0"], [at(43200)], []),
+		(["zig-0.17.0"], [at(86400)], []),
+		(["zig-0.17.0"], [at(86401)], ["zig-0.17.0"]),
+		(["zig-0.17.0"], [at(172800)], ["zig-0.17.0"]),
+		(["zig-0.17.0"], [Ok(Clock.format_utc(now - 172800))], ["zig-0.17.0"]),
+		(["zig-0.17.0"], [Ok("${Clock.format_utc(now + 5000)}\n")], []),
+		(["zig-0.17.0"], [Err(NotFound)], ["zig-0.17.0"]),
+		(["zig-0.17.0"], [Err(Denied)], []),
+		(["zig-0.17.0"], [Err(Other("io"))], []),
+		(["zig-0.17.0"], [Ok("yesterday\n")], []),
+		(["zig-0.17.0"], [Ok("")], []),
+		(
+			["zig-0.14.0", "zig-0.15.1", "zig-0.16.1", "zig-0.17.0", "zig-0.18.0"],
+			[at(172800), at(43200), Err(NotFound), Err(Denied), at(90000)],
+			["zig-0.14.0", "zig-0.16.1", "zig-0.18.0"],
+		),
+	]
+	bad = rows.keep_if(|(ids, reads, want)| Gc.zigs({ ids, reads, now }) != want).map(|(ids, reads, want)| (ids, reads, want, Gc.zigs({ ids, reads, now })))
+	dbg bad
+	bad == []
+}
+
+# R-D2 R-SE9 (slice 076, Q3): the archive name of the index is the last segment of the tarball URL, and it is a file name in the temp dir of the install. A name that is not a safe path part (`..`, `.`, empty, a backslash or a NUL byte in it)
+# is not an archive: the failure of the row "no archive" (`Environment`, exit 18, nothing is written). A dot inside a name is safe.
+expect {
+	with_url = |url| "{ \"0.17.0\": { \"x86_64-linux\": { \"tarball\": \"${url}\", \"shasum\": \"${sha_of("x86_64-linux")}\", \"size\": \"1\" } } }"
+	archive = |url| Zig.pick({ index: with_url(url), need: "0.17.0", host: LinuxX64 }).map_ok(|e| e.archive).map_err(|f| (f.kind.code(), f.message))
+	none = Err((18, "the Zig index has no archive of zig 0.17.0 for x86_64-linux"))
+	rows = [
+		("a name", archive("https://z/zig-x86_64-linux-0.17.0.tar.xz"), Ok("zig-x86_64-linux-0.17.0.tar.xz")),
+		("dots inside a name", archive("https://z/..a.tar.xz"), Ok("..a.tar.xz")),
+		("a name that is ..", archive("https://z/.."), none),
+		("a name that is .", archive("https://z/."), none),
+		("an empty name (the URL ends with a /)", archive("https://z/dl/"), none),
+		("a backslash in the name", archive("https://z/a\\\\..\\\\b.tar.xz"), none),
+		("a NUL byte in the name", archive("https://z/a\\u0000b.tar.xz"), none),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
 }

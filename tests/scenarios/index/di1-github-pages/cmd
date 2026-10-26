@@ -35,3 +35,12 @@ TALON_GITHUB_API=http://127.0.0.1:1/api st flowprobe releases acme/json
 # The .roc-version hint comes from the raw base URL (R-DI8, R-EV20, R-EV15). A 404 is no hint.
 st flowprobe hint acme/json 2.1.0
 st flowprobe hint acme/json 2.0.5
+
+# Slice 068 (R-DI8): each answer is kept in `<index>/github/<owner>/<repo>/<tag>.roc-version`: the text of a 200, the empty file of a 404 (the tree diff shows both). A tag that
+# has a file is never asked again: the raw base below is a dead address, so a request would be exit 15. Offline, a tag with no file has no hint and no request is made (R-DI12).
+cat "$D/2.1.0.roc-version"
+test -f "$D/2.0.5.roc-version" && test ! -s "$D/2.0.5.roc-version" && echo "the 404 is kept as an empty file"
+TALON_GITHUB_RAW=http://127.0.0.1:1/raw st flowprobe hint acme/json 2.1.0
+TALON_GITHUB_RAW=http://127.0.0.1:1/raw st flowprobe hint acme/json 2.0.5
+TALON_GITHUB_RAW=http://127.0.0.1:1/raw st flowprobe hint --offline acme/json 9.9.9
+test ! -e "$D/9.9.9.roc-version" && echo "offline wrote nothing"

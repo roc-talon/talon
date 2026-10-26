@@ -27,7 +27,7 @@ import XCmd
 ## | 2 | `env_all!`, `Roots.from_env`, `Clock.now!`, `cwd!`, `Project.scan!` (as step 2 and 3 of `RunFlow`). | R-PD2, R-PD3 |
 ## | 3 | The nearest `talon.toml` of the walk (`RunFind.find` with a file that always holds the name; a `Need` is one `read_files!`). No `talon.toml`: `Miss`. | R-PT11, R-RUN12, NC2, NC5 |
 ## | 4 | `RunTools.table` of the file of `[tools]` (`Found.tools_dir`). A failure is exit 19. `choose`: no hit is `Miss`. | R-PT11, R-PT1, OP4 |
-## | 5 | A hit: R-PD9 (`RunSteps.record_files!`, `Known.record!`), the warnings of the table on stderr, the `url` of the entry (none: exit 14, no more call), the note for the form `owner/app`, `RunTools.load!`, `RunTools.bin!`, then `exec!` of `[<binary>] ++ <the words after -->`. | R-PD9, R-PT9, R-X4, R-E1 |
+## | 5 | A hit: `flags_stop` (slice 073: `--roc` or `--allow-unchecked` is exit 2, before the record, R-PT11), R-PD9 (`RunSteps.record_files!`, `Known.record!`), the warnings of the table on stderr, the `url` of the entry (none: exit 14, no more call), the note for the form `owner/app`, `RunTools.load!`, `RunTools.bin!`, then `exec!` of `[<binary>] ++ <the words after -->`. | R-PD9, R-PT9, R-X4, R-E1 |
 XProject :: [].{
 
 	## The entry that `tln x` runs, and how it was named: `Key` (the operand is the key) or `App` (the operand is the app of the entry).
@@ -63,6 +63,22 @@ XProject :: [].{
 	## R-PT11, review Q1: the failure for `Many`: kind `Usage` (exit 2), nothing is recorded, no child. The text is a proposal (TW24): `<name> is the app of <n> entries of [tools]: <key>, <key>. Use tln x <key>.`
 	many : { name : Str, keys : List(Str) } -> Fail
 	many = |facts| Fail.new(Usage, "${facts.name} is the app of ${facts.keys.len().to_str()} entries of [tools]: ${Str.join_with(facts.keys, ", ")}. Use tln x <key>.")
+
+	## Slice 073, R-PT11, 059 Q2: `--roc` and `--allow-unchecked` have no effect on a project tool (its pin and its `url` are the lock, R-PT8), so a run that has a hit and one of them stops. `roc` and `unchecked` are the fields of `XCmd.Plan` (`--roc` is `Pinned` or `Installed`
+	## when it was given, `Auto` when not). No flag: `Ok({})`. Else a failure of kind `Usage` (exit 2, the text is a proposal, TW24): `--roc has no effect on the project tool <key>: its pin and its url are the lock. Remove the flag.`, the same with `--allow-unchecked`, and with both
+	## `--roc and --allow-unchecked have no effect on the project tool <key>: its pin and its url are the lock. Remove the flags.` The run that stops records no project file and starts no child (as `many`).
+	flags_stop : { key : Str, roc : [Auto, Pinned, Installed], unchecked : Bool } -> Try({}, Fail)
+	flags_stop = |facts| {
+		roc = facts.roc != Auto
+		flags = match (roc, facts.unchecked) {
+			(Bool.False, Bool.False) => return Ok({})
+			(Bool.True, Bool.False) => "--roc has"
+			(Bool.False, Bool.True) => "--allow-unchecked has"
+			(Bool.True, Bool.True) => "--roc and --allow-unchecked have"
+		}
+		plural = if roc and facts.unchecked "flags" else "flag"
+		Err(Fail.new(Usage, "${flags} no effect on the project tool ${facts.key}: its pin and its url are the lock. Remove the ${plural}."))
+	}
 
 	## R-PT11: the note for the form `owner/app` (the text of the design, on stderr): `project tool <key> <version> (talon.toml)`.
 	note : { key : Str, version : Str } -> Str
@@ -120,6 +136,7 @@ table! = |fx, args, plan, seen| {
 		Err(None) => Ok(Err(Miss))
 		Err(Many(keys)) => Err(XProject.many({ name: plan.ref.name, keys }))
 		Ok(hit) => {
+			XProject.flags_stop({ key: hit.entry.key, roc: plan.roc, unchecked: plan.unchecked })?
 			Known.record!(fx, { roots: seen.roots, files: RunSteps.record_files!(fx, seen.scan, seen.found), now: seen.now })?
 			for w in table.warnings {
 				fx.err!("warning: ${w}\n")

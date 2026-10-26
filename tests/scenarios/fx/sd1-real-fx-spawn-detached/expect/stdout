@@ -1,0 +1,6 @@
+== the call returns at once, the child is still running (its file is not there). The child gets the variables of env and its arguments. Its stdout and stderr are not the ones of the process.
+spawn-detached ok
+the file is not there yet
+child done: PX_A=1, argument: two words
+== a child that cannot start (no such file) is an error, not an exit code
+spawn-detached err (text of the platform)

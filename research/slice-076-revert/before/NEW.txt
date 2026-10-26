@@ -1,0 +1,5 @@
+docs/slices/076-safe-cache-paths.md
+tests/commands/cases/index/di-list-flow/fx/http/api.github.com/acme/releases?per_page=100
+tests/commands/cases/index/di-list-flow/fx/http/api.github.com/repos/releases?per_page=100
+tests/commands/cases/index/di-list-flow/fx/http/releases?per_page=100
+tests/commands/cases/patch/pa5-unsafe-patch/

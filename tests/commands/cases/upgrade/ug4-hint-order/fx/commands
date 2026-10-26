@@ -1,0 +1,2 @@
+upgrade --file q1h/main.roc
+upgrade --offline --file q1o/main.roc

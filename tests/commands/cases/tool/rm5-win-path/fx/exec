@@ -1,0 +1,2 @@
+# R-EC18: powershell is not on PATH. The needle is the program of the first word of the exec of the user Path (the detached cmd.exe of run 1 has no such word).
+powershell	notstarted:no powershell

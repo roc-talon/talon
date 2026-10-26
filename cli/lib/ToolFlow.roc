@@ -51,7 +51,7 @@ import XTake
 ToolFlow :: [].{
 
 	## What steps 2 and 3 found (slice 049, `tln x`): the machine, `tools.json` with all fields of each tool, `config.toml`. `ToolBuild.Facts` is this and the name of the app.
-	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, probe_timeout : U64 }
+	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, probe_timeout : U64, default_roc : Str }
 
 	## Steps 1 to 13.
 	run! : Fx, Args => I32
@@ -155,7 +155,7 @@ gather! = |fx, plan| {
 		Elsewhere(other) => return Err(ToolInstall.elsewhere_failure({ key: other.key, name }))
 		_ => {}
 	}
-	Ok({ env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }) })
+	Ok({ env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) })
 }
 
 # Slice 049 (R-B7): a release list that fails with the kind `Network` (no network, and no `--offline`) is the offline case: a matching `x` entry is offered. No match, or another kind: the failure of the list.
@@ -184,7 +184,7 @@ machine! = |fx| {
 	tools_file = Roots.item(roots, Item.ToolsJson)
 	tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
 	config = RocInstall.read_config!(fx, roots)?
-	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, probe_timeout: ToolBuild.probe_timeout(config) })
+	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "" })
 }
 
 # Step 4 (R-SC3, R-AD7): an installed tool by its name or short name, else the name as typed. A failure prints its block first.
@@ -289,7 +289,7 @@ read_bundle! = |fx, args, facts, rel| {
 # The text of the `main.roc` of a package that is fetched when its dir is missing (R-FE2, R-FE7).
 package_text! : Fx, Args, ToolBuild.Facts, { url : Str, hash : Str } => Try(Str, Fail)
 package_text! = |fx, args, facts, pkg| {
-	match Fetch.packages!(fx, { roots: facts.roots, urls: [pkg.url], offline: args.offline, roc: "roc", downloader: facts.net.downloader }) {
+	match Fetch.packages!(fx, { roots: facts.roots, urls: [pkg.url], offline: args.offline, unbundler: Choose({ selected: facts.selected, none: Stop }), downloader: facts.net.downloader }) {
 		[Ok(_)] => {}
 		[Err(fail)] => return Err(fail)
 		_ => return Err(Fail.new(Internal, "the fetch of ${pkg.url} gave no answer"))

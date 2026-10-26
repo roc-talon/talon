@@ -1,0 +1,5 @@
+# R-ST7, R-ST13, R-ST14, R-HF7: the hard link fails (fx/hardlink: another file system), so each entry is a copy of the file (copy_file keeps the permission bits, so no chmod). The temp name and the rename are the same (R-CC1). No tools.json: only tln and roc.
+# R-NI13, R-ST2: roc is foreign. In a terminal the prompt is asked (default No) and the answer is y: roc goes to roc.old, link-system is made, and the launcher is a copy of tln (the same file as the entry tln, R-ST14). The bin dir is on PATH (no PATH step). The bash completion is written.
+setup
+# R-ST11, R-ST12: the copies have the same sha256 as their source: they are Talon's. Nothing is written, and no prompt: roc is Talon's now.
+setup

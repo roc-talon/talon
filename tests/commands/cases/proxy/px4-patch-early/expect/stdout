@@ -1,0 +1,16 @@
+== @roc +nightly-2026-10-14-38a3029 check p1/main.roc
+exit 0
+== @roc check p1/main.roc env:ROC_TOOLCHAIN=nightly-2026-10-14-38a3029
+exit 0
+== @roc +nightly-2026-10-14-38a3029 check p3/main.roc
+exit 14
+== @roc +nightly-2026-10-14-38a3029 check p2/main.roc
+exit 0
+== @roc check w/apps/a/main.roc
+exit 0
+== @roc +nightly-2026-10-14-38a3029 check w/apps/a/main.roc
+exit 0
+== @roc +nightly-2026-10-14-38a3029 check w/apps/b/main.roc
+exit 0
+== @roc +nightly-2026-10-14-38a3029 check p1/main.roc env:TALON_PROXY=0
+exit 0

@@ -1,0 +1,19 @@
+fetched http://127.0.0.1:$PORT/pkg/greet-1.0.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+exit 0
+9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 
+Greet.roc main.roc 
+present http://127.0.0.1:$PORT/pkg/greet-1.0.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+exit 0
+fetched http://127.0.0.1:$PORT/pkg/greet-1.0.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+exit 0
+9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 
+exit 16
+9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 
+exit 15
+exit 15
+9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 
+exit 2
+exit 15
+present http://127.0.0.1:$PORT/pkg/greet-1.0.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+exit 15
+exit 18

@@ -17,8 +17,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.0123456789abcdef.tmp/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst https://github.com/acme/foo/releases/download/1.2.0/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.0123456789abcdef.tmp roc unbundle AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst
+  job $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst
 rename $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.0123456789abcdef.tmp/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc
 delete $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc/main.roc
@@ -28,8 +29,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.0123456789abcdef.tmp/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.0123456789abcdef.tmp roc unbundle AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst
+  job $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst
 rename $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.0123456789abcdef.tmp/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY
 delete $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc
@@ -39,8 +41,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
 rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
 delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
@@ -92,8 +95,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.0123456789abcdef.tmp/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.0123456789abcdef.tmp roc unbundle GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst
+  job $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst
 rename $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.0123456789abcdef.tmp/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW
 delete $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW/main.roc
@@ -141,8 +145,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.0123456789abcdef.tmp/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.tar.zst https://github.com/acme/foo/releases/download/1.3.0/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.0123456789abcdef.tmp roc unbundle GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.tar.zst
+  job $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.tar.zst
 rename $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.0123456789abcdef.tmp/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R
 delete $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R/main.roc
@@ -192,8 +197,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.0123456789abcdef.tmp/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.tar.zst https://github.com/acme/baz/releases/download/1.0.0/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.0123456789abcdef.tmp roc unbundle 4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.tar.zst
+  job $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle 4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.tar.zst
 rename $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.0123456789abcdef.tmp/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu
 delete $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu/main.roc
@@ -243,8 +249,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.0123456789abcdef.tmp/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst https://github.com/acme/qux/releases/download/2.0.0/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.0123456789abcdef.tmp roc unbundle BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst
+  job $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.tar.zst
 rename $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.0123456789abcdef.tmp/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy
 delete $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/BS1t7F2NzCnftJYorVoADdyAoJcBpffWnLwdPWbWDZiy/main.roc

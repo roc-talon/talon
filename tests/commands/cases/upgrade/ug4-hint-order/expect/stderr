@@ -1,0 +1,3 @@
+tln: error[budget]: the probe budget is spent: probe.max is 2 and 2 unit checks did not run. Run the command again to go on (the facts are saved), or set probe.max higher.
+index: cached at 2026-10-15T11:50:00Z
+tln: error[budget]: the probe budget is spent: probe.max is 1 and 1 unit check did not run. Run the command again to go on (the facts are saved), or set probe.max higher.

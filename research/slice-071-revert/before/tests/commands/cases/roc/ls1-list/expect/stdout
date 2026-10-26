@@ -1,0 +1,18 @@
+== roc ls
+  ID                          KIND     INSTALLED   LAST USE
+  copy-fix-1                  copy     -           2026-10-19
+  git-dd03c09e                git      -           -
+  link-dev                    link     2026-10-21  2026-10-21
+  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22
+* nightly-2026-10-14-38a3029  nightly  2026-10-21  -
+exit 0
+== roc list --json
+{"schema":1,"command":"roc list","ok":true,"data":{"default":"nightly-2026-10-14-38a3029","compilers":[{"id":"copy-fix-1","kind":"copy","installed_at":null,"last_use":"2026-10-19T00:00:00Z","default":false},{"id":"git-dd03c09e","kind":"git","installed_at":null,"last_use":null,"default":false},{"id":"link-dev","kind":"link","installed_at":"2026-10-21T09:30:00Z","last_use":"2026-10-21T10:00:00Z","default":false},{"id":"nightly-2026-10-09-258ab27","kind":"nightly","installed_at":"2026-10-20T12:00:00Z","last_use":"2026-10-22T08:30:00Z","default":false},{"id":"nightly-2026-10-14-38a3029","kind":"nightly","installed_at":"2026-10-21T09:00:00Z","last_use":null,"default":true}]},"error":null}
+exit 0
+== roc ls env:HOME={w}/home2
+  ID                          KIND     INSTALLED   LAST USE
+  nightly-2026-10-09-258ab27  nightly  2026-10-20  -
+exit 0
+== roc ls env:HOME={w}/home3
+no compiler is installed. Run: tln roc install @latest
+exit 0

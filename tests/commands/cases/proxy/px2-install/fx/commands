@@ -1,10 +1,10 @@
-# R-PX4 R-DL8 R-NI5 R-DL3: the pin is not installed, a person is there (tty), the answer is Enter (the default is Yes). One prompt, then the install under the lock, the default compiler (R-SO15), .last-use, and the run. stdout stays empty.
+# R-PX4 R-DL8 R-NI5 R-DL3: the pin is not installed, a person is there (tty), the answer is Enter (the default is Yes). One prompt, then the install under the lock, .last-use, and the run. The rank 3 pin gives the compiler, so no default is written (R-SO15). stdout stays empty.
 @roc check p1/main.roc
 # R-CC4 step 1: now it is installed. No list, no tty, no prompt, no lock.
 @roc check p1/main.roc
 # R-NI5 R-CC4 step 2: the answer is n. Exit 13, nothing is installed, no lock, the compiler does not run.
 @roc +nightly-2026-10-12-2664a27 version
-# R-DL9: TALON_AUTO_INSTALL=yes in a non-interactive run (CI): no prompt, no tty call. The answer line is on stderr (R-NM6). The default stays (R-SO15: the first install only).
+# R-DL9: TALON_AUTO_INSTALL=yes in a non-interactive run (CI): no prompt, no tty call. The answer line is on stderr (R-NM6). No default is written (R-SO15).
 @roc +nightly-2026-10-14-38a3029 version env:TALON_AUTO_INSTALL=yes env:CI=true
 # R-DL8: ask (the default) in a non-interactive run: no prompt, no request, exit 13 with the text that names TALON_AUTO_INSTALL=yes and tln roc install
 @roc +nightly-2026-10-12-2664a27 version env:CI=true

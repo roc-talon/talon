@@ -20,6 +20,7 @@ import LadderJudge
 import Locked
 import Mode
 import Net
+import NoRank
 import Nightlies
 import Pick
 import Pin
@@ -42,6 +43,8 @@ ResolveBase :: [].{
 	## `strategy` is `--strategy`. `nightly` is `TALON_NIGHTLY` (R-NS8). `compiler` is the id and the file of the `roc` on `PATH` (R-PH8; the file is new in slice 023c: a probe runs it by its path, R-PX2). `now` is `Clock.now`.
 	## Slice 025 (R-NI4, R-NI5, R-DL5, R-EV6): `downloads` has the facts of the consent rules. `auto` is `TALON_AUTO_INSTALL` (`Consent.auto_install`). `allow` is `--allow-downloads` and `probe` is `--probe-downloads`
 	## (`Ok(Yes)` when the flag is set). `env` is the environment of the process: the offer of a compiler (`RocInstall.offer!`) reads `TALON_NOW`, the cache dirs, the net settings and `TALON_NIGHTLY` from it.
+	## Slice 060 (R-FE4, question Q1): `selected` is the compiler that the fetches of the run call selected (`Fetch.selected`: the held compiler of a flow with a decision, else the `default-roc` of `config.toml` when the flow knows it, else `""`). Every constructor gives `""`; a flow sets it with `{ ..request, selected: ... }` after it has loaded the files.
+	## Slice 072b (R-SO14, R-LF1): `none` is what a fetch does when no compiler is installed and none is on `PATH` (`Fetch.Unbundler`): `Stop` (exit code 18) or `Download`. Every constructor gives `Stop`; `InstallFlow.install_with!` sets `no_rank(request, loaded)` with `selected`.
 	## `toolchain` is `ROC_TOOLCHAIN` (rank 2, R-SO2), a full compiler id (`Compiler.toolchain_of`), `Err(Unset)` when it is not set (slice 013: R-SO19 to R-SO22). It goes to `Pin.decide`.
 	Request : {
 		command : [Install, Update, Upgrade],
@@ -56,6 +59,8 @@ ResolveBase :: [].{
 		strategy : Try([Highest, Lowest], [Unset]),
 		nightly : Try(Bool, [Unset]),
 		compiler : Try({ id : Str, path : Str }, [NoCompiler]),
+		selected : Str,
+		none : NoRank.Fallback,
 		toolchain : Try(Str, [Unset]),
 		snapshot : Try(Str, [Unset]),
 		dry_run : Bool,
@@ -80,6 +85,21 @@ ResolveBase :: [].{
 		quiet: request.prompt.quiet,
 		offline: request.offline,
 		env: request.downloads.env,
+	}
+
+	## R-SO14, R-FE4, R-LF1 (slice 072b): what a fetch does when no compiler is installed and none is on `PATH`. `Download` with the scope `Project` and the hashes of the release entries of the headers of the members
+	## (`m.locked.rows` whose `what` is `Release`, in the order of the members and the rows, the repeats stay: `NoRank.keys` drops them), because `install`, `update`, `upgrade` and `add` run in a project (R-PD1 to R-PD8).
+	## The consent facts are those of the ladder (`ladder_downloads`). Only `InstallFlow.install_with!` calls it in this slice; the other flows keep `Stop` (slice 072c).
+	no_rank : ResolveBase.Request, ResolveBase.Loaded -> NoRank.Fallback
+	no_rank = |request, loaded| {
+		rows = loaded.members.join_map(|m| m.locked.rows)
+		hashes = rows.keep_oks(
+			|row| match row.what {
+				Release(ident) => Ok(ident.hash)
+				_ => Err(NotRelease)
+			},
+		)
+		Download({ scope: Project(hashes), downloads: ResolveBase.ladder_downloads(request) })
 	}
 
 	Fact : { url : Str, release : Release }
@@ -227,7 +247,7 @@ ResolveBase :: [].{
 	# The header facts of release URLs (R-AL8, R-DI7): `Gather.get!`, then `Release.read` of each text.
 	read_releases! : Fx, ResolveBase.Request, List(Str) => Try(List(Fact), Fail)
 	read_releases! = |fx, request, urls| {
-		got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, urls)?
+		got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none }, urls)?
 		var $facts = ResolveBase.no_facts
 		for g in got {
 			release = Release.read({ path: g.path, text: g.text })?
@@ -323,7 +343,7 @@ ResolveBase :: [].{
 		var $nodes = facts.known
 		var $done = no_closures
 		for m in facts.members {
-			run = Walk.run!(fx, { roots: request.roots, net: request.net, offline: request.offline, file: m.file, entries: m.entries, known: $nodes })?
+			run = Walk.run!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none, file: m.file, entries: m.entries, known: $nodes })?
 			$nodes = run.nodes
 			$done = $done.append({ file: m.file, walked: run.walked })
 		}

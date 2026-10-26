@@ -7,3 +7,5 @@ removed $HOME/.cache/roc-builds/debug-9999999 (10 B)
 removed $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (12 B)
 removed $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc (17 B)
 freed 49 B
+removed toolchain zig-0.16.1 (32 B)
+freed 32 B

@@ -1,0 +1,7 @@
+Talon        tln, roc, the talon entry of tools.json          10 B   remove
+tools        3 (foo, bar, baz)                                33 B   remove
+compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   remove
+Talon data   index, x cache, compat.db, config               164 B   remove
+dry run: nothing was removed
+removing Talon, the compilers and the data, keeping the tools
+warning: $HOME/.local/bin/roc is not a file that tln wrote, so tln keeps it

@@ -1,0 +1,5 @@
+Slice 075, `tln tool update talon --from-source` with a build that does not start (R-S3). One run. The installed Talon is the prebuilt 0.3.1. The tag v0.3.4 builds (one row of `fx/probes`, as in `ts6-source`), and `<scratch dir>/tln --version` exits with 1.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon --from-source` | the steps of `ts6-source` run 1 up to the build, then one `spawn_all!` of `<scratch dir>/tln --version` (exit 1). Exit 1 `the new tln 0.3.4 does not start (exit 1). The old tln stays.` (the text of the prebuilt file, `TalonUpdate.version_check` with the version of the tag). No lock, no copy, no rename, no entry, no write of `tools.json`: the files of the old tln stay. The scratch dir of the build and the scratch dir of the source are deleted | R-S3, R-S2, R-T22, R-CC2 |

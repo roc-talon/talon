@@ -1,0 +1,6 @@
+GET /pkg/greet-1.0.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst 200
+GET /pkg/greet-1.0.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst 200
+GET /pkg/bad-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst 200
+GET /pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst 404
+GET /pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst 404
+GET /pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst 404

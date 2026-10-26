@@ -67,10 +67,6 @@
 +++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 @@ -0,0 +1 @@
 +{"format":1,"id":"nightly-2026-10-14-38a3029","url":"http://127.0.0.1:$PORT/dl/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"4693ae12293e49d2412392528a48964ff2d45e23883808496ba15034f47825ed","sha256_source":"github-digest","typed":"nightly-2026-10-14-38a3029","compat":null,"installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
---- home/.config/talon/config.toml
-+++ home/.config/talon/config.toml
-@@ -0,0 +1 @@
-+default-roc = "nightly-2026-10-14-38a3029"
 --- project/main.roc
 +++ project/main.roc
 @@ -2,7 +2,7 @@

@@ -1,0 +1,30 @@
+== 1: the start state is broken: basic-cli 0.24.0 does not check on the pinned compiler (the real roc)
+exit 1
+== 2: the command with no help: no hint, no pin, no talon.toml edit
+== tln upgrade --snapshot 2026-10-13T00:00:00Z
+parser: anchor, held
+note: platform changes: roc-lang/basic-cli 0.24.0 -> roc-lang/basic-cli 0.25.0
+check: passed
+note: removed error: AEjfyaMFFbh8FJrkkHJy68riVNPr3Qp6c6PawWQjBwMH Locale.roc: type mismatch
+note: removed error: AEjfyaMFFbh8FJrkkHJy68riVNPr3Qp6c6PawWQjBwMH OsStr.roc: type mismatch
+note: removed error: AEjfyaMFFbh8FJrkkHJy68riVNPr3Qp6c6PawWQjBwMH Path.roc: type mismatch
+note: removed error: AEjfyaMFFbh8FJrkkHJy68riVNPr3Qp6c6PawWQjBwMH Url.roc: type mismatch
+build: passed
+note: module Yaml fails on nightly-2026-10-14-38a3029. Your app does not import it.
+$PROJECT/main.roc
+  ~ pf: roc-lang/basic-cli 0.24.0 -> 0.25.0 new series
+  + roc: nightly-2026-10-14-38a3029
+resolved at 2026-10-13T00:00:00Z, 7 probes
+exit 0
+== 3: the result is a working tuple: the real roc checks the new header, and the anchor is the same
+No errors found in <n>ms for main.roc
+pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst"
+parser: "https://github.com/lukewilliamboswell/roc-parser/releases/download/2.0.0/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst"
+roc: "nightly-2026-10-14-38a3029"
+[dependencies]
+parser = "=2.0.0"
+== 4: nothing more to move: the same command again (the compiler and the packages are in the cache)
+== tln upgrade --snapshot 2026-10-13T00:00:00Z
+parser: anchor, held
+nothing to change
+exit 0

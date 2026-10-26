@@ -8,4 +8,4 @@ $PROJECT/p4/talon.toml: + [patch] json
 edit the copy, then commit it and talon.toml. Review it with: tln patch json --diff
 tln: error[usage]: json has no patch. Run tln patch json first.
 tln: error[usage]: $PROJECT/p6/.talon/patches/json/ is missing. Restore the copy, or remove the entry from [patch].
-tln: error[environment]: cannot read $HOME/.cache/roc/packages/5ARuaVcDBLCvdGSxpt3tqEmRV5fLaaqjQLcFjt2jJWgq
+tln: error[frozen]: the patch of json has the base 5ARuaVcDBLCvdGSxpt3tqEmRV5fLaaqjQLcFjt2jJWgq, and no release of acme/json has that hash, so Talon cannot take the diff of the copy. Edit the copy $PROJECT/p7/.talon/patches/json/, or remove the [patch] entry json.

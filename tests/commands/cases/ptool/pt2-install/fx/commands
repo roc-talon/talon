@@ -12,3 +12,4 @@ install --file p1/main.roc --offline
 install --frozen --file p10/main.roc
 install --dry-run --file p11/main.roc
 install --frozen --allow-downloads --file p10/main.roc
+install --json --file p11/main.roc

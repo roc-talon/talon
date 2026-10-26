@@ -1,0 +1,11 @@
+Slice 051, `tln tool remove talon` (entry `commands`). One home (Linux): Talon 0.3.1 (the entry `talon` of `tools.json`), the tools foo and bar (their bin dir entries are Talon's) and baz (its bin dir entry is another file), 2 nightlies and a git build and a link (`link-mine`, its target is a file of the user) and Zig 0.17.0,
+the build caches `compat-c1` and `compat-c2` of the 2 nightlies and `compat-other` (a compiler that Talon did not install), a package, the Talon data (`talon/` in the cache, `config.toml`, `share.json`), `roc.old` (`tln setup` moved a `roc` there). `~/.bashrc` has the line of `tln setup`.
+The bin dir entries `tln` and `roc` and the file `tln` of the data bin dir have the same text (Talon's, R-ST11).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool remove talon --dry-run` | the 4 groups with their sizes, nothing is removed (no prompt, no lock, no write): Talon, tools, compilers, Talon data, each `remove` or `keep` of option 1 | R-RM4, R-RM3, R-RM7 to R-RM10 |
+| 2 | `tool rm talon --remove-tools --dry-run --json` | the same for option 2 (`--remove-tools`): the verbs change, the text is on stderr and the envelope is on stdout | R-RM4, R-RM3, R-J3, R-OUT4 |
+| 3 | `tool remove talon` in a terminal, the answer `4` | the screen of the design, the question on stderr, Cancel: `cancelled: nothing was removed`, exit 0, no lock and no change | R-NI10, R-NR2, R-S5 |
+| 4 | `tool remove talon` in a terminal, the answers `x` and then Enter | an answer that is no option is asked again, Enter is option 1: the removal. Order of the calls: the compilers and the Zig (each under its lock, renamed to a trash name, the trash dir and the compat dir deleted), `tools.json` without the entry `talon` (under its lock), the Talon data (one delete), the entry `roc`, `roc.old` back to `roc`, the entry `tln` and the file `tln` (the last path). foo, bar, baz, their entries and the packages stay. The link target stays | R-S5, R-RM1, R-RM2, R-RM3, R-RM5, R-RM6, R-RM7, R-RM9, R-RM10, R-NI10, R-ST11 |
+| 5 | `tool remove talon` (CI) | Talon is gone already: no compiler, no entry, no data. Each path is gone, the run does not fail. The answer line of option 1 (no person) | R-RM3, R-NM6, R-ST11 |

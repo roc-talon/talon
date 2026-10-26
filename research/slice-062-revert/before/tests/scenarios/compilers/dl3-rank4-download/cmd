@@ -1,0 +1,52 @@
+# R-SO13 R-DL1 R-DL2 R-DL4 R-DL5 R-DL10 R-NI5 R-NS2 R-NS3 R-C7 R-SO15 R-SO22 R-PX4 R-DL9 R-EC13 (slice 025b): rank 4 with a range and no installed compiler in it, on the real binary, the real curl and tar, and the fake release server
+# (given/http was made by `ARCHIVE=probe tests/tools/mk-nightly.sh given/http nightly-2026-10-14-5349569 nightly-2026-10-13-0a1b2c3 nightly-2026-10-12-1b2c3d4 nightly-2026-10-10-2c3d4e5`; the packages of the project are those of the case
+# compilers/dl1-resolve-consent). The fake roc on PATH is nightly-2026-09-01-abcdef0, below every range here. TALON_NOW=2026-10-15T12:00:00Z, so min-release-age (2 days) hides the nightlies of 10-14 and 10-13, and the newest nightly in
+# the range `>=nightly-2026-10-10-0000000` is nightly-2026-10-12-1b2c3d4 (B). A is nightly-2026-10-14-5349569 and N is nightly-2026-10-13-0a1b2c3. The runner has CI=true: no run has a person. The store is empty at the start.
+TLN=$(command -v tln)
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+T=$HOME/.cache/roc/toolchains
+C=$XDG_CONFIG_HOME/talon/config.toml
+A=nightly-2026-10-14-5349569
+N=nightly-2026-10-13-0a1b2c3
+B=nightly-2026-10-12-1b2c3d4
+requests() { if [ -f $D/http.log ]; then grep -c "$1" $D/http.log; else echo 0; fi; }
+show() {
+    echo "-- compiler runs"
+    if [ -f $D/prog.log ]; then sort $D/prog.log; fi
+    rm -f $D/prog.log
+}
+store() { if [ -d $T ]; then ls $T | tr '\n' ' '; fi; echo; }
+echo "== R-SO13 R-DL1 R-DL2 R-DL4 R-NI5 R-C7: no person and no flag. The list is read once, the newest nightly that min-release-age allows (B, not the 2 newer ones) is the required download, and the run stops with exit 13 and the size of B. The store is empty."
+st tln verify
+show
+store
+echo "requests for compilers: $(requests nightlies)"
+echo "== R-DL5 R-DL10: TALON_AUTO_INSTALL=no refuses before any request (the id is not known): exit 13, the text names the range and the 3 ways to get a compiler. No new request."
+st env TALON_AUTO_INSTALL=no tln verify
+store
+echo "requests for compilers: $(requests nightlies)"
+echo "== R-SO13 R-DL5 R-NI5 R-NM6 R-SO22 R-CC4 R-CC9 R-SO15: --allow-downloads answers the prompt for B. One answer line on stderr, one download of B only, the install under the lock, then the 3 probes run B. The first install is the default."
+st tln verify --allow-downloads
+show
+store
+echo "last use of B: $(cat $T/$B/.last-use)"
+cat $C
+echo "downloads of B: $(requests "GET /dl/$B"), downloads of A: $(requests "GET /dl/$A")"
+echo "== R-SO4 R-SO13: B is installed and in the range now. No list request, no download, the same 3 probes."
+st tln verify
+show
+echo "requests for compilers: $(requests nightlies), downloads of B: $(requests "GET /dl/$B")"
+echo "== R-NS2 R-NS3 R-SO13: the switch is off (TALON_NIGHTLY=0). The installed B is a nightly, so rank 4 has none, and the list has no release: exit 10, the text names the range, the switch and its source. No download, even with the flag."
+st env TALON_NIGHTLY=0 tln verify --allow-downloads
+store
+echo "requests for compilers: $(requests nightlies)"
+echo "== R-PX4 R-DL9 R-SO13 R-C7: the proxy, in p2 (no pin, range >=nightly-2026-10-13-0000000). B is below it. At the time 2026-10-15T20:00:00Z min-release-age hides A (10-14, 29 hours old), so the newest allowed nightly is N (10-13): the answer line, the install of N only, the run of the fake roc. stdout is only the output of the compiler."
+mkdir -p $D/launch
+cp "$TLN" $D/launch/roc
+L=$D/launch/roc
+st env TALON_NOW=2026-10-15T20:00:00Z TALON_AUTO_INSTALL=yes $L check p2/main.roc
+store
+echo "downloads of N: $(requests "GET /dl/$N"), downloads of A: $(requests "GET /dl/$A"), requests for compilers: $(requests nightlies)"
+echo "== no temp dir and no lock is left."
+find $HOME/.cache/roc -name '*.tmp' -o -name '*.lock' -o -name '*.lock.*' | wc -l | tr -d ' '

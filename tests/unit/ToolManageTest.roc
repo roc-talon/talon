@@ -32,7 +32,7 @@ sp : U64 -> Str
 sp = |n| Str.repeat(" ", n)
 
 # R-CM16 R-CM19 R-FL12 R-T7 R-T25 R-B6 R-SC3: the line of `tool list`, `tool update`, `tool rebuild` and `tool remove` (the texts of the failures use the long form of the command, R-CM19). `ls` and `rm` are the same commands as `list` and `remove`. `list` takes no name. `remove` takes exactly one tool. `update` and `rebuild` take
-# one tool, or none for all tools (R-T25, the rule for `rebuild` with no name is the choice of the slice file, D1). A version is no part of a tool name. `update talon` is slice 050 (the same line as for any tool, `TalonUpdate.is_target` tells it apart); `rebuild talon` and `remove talon` are `is not built yet` (slice 051 for `remove`, question Q-R1 of slice 050 for `rebuild`). `--dry-run`, `--remove-tools` and `--keep-all` are for `tool remove talon` (R-FL12), `--from-source` is for `tool update talon` (slice 050: it is a failure for any other `update` line).
+# one tool, or none for all tools (R-T25, the rule for `rebuild` with no name is the choice of the slice file, D1). A version is no part of a tool name. `update talon` is slice 050 (the same line as for any tool, `TalonUpdate.is_target` tells it apart); `remove talon` is slice 051 (the same line as for any tool, `TalonRemove.is_target` tells it apart); `rebuild talon` is `is not built yet` (question Q-R1 of slice 050). `--dry-run`, `--remove-tools` and `--keep-all` are for `tool remove talon` (R-FL12), `--from-source` is for `tool update talon` (slice 050: it is a failure for any other `update` line).
 expect {
 	cmd = |words| match Args.parse(words) {
 		Ok(args) => match ToolManage.read(args) {
@@ -71,7 +71,12 @@ expect {
 		(cmd(["tool", "update", "foo@1.2.0"]), line("tln tool update takes a tool name, not a version: 'foo@1.2.0'")),
 		(cmd(["tool", "rm", "foo@latest"]), line("tln tool remove takes a tool name, not a version: 'foo@latest'")),
 		(cmd(["tool", "rebuild", "acme/foo@dd03c09e"]), line("tln tool rebuild takes a tool name, not a version: 'acme/foo@dd03c09e'")),
-		(cmd(["tool", "rm", "talon"]), line("tln tool remove talon is not built yet")),
+		(cmd(["tool", "rm", "talon"]), "remove talon"),
+		(cmd(["tool", "rm", "roc-talon/talon"]), "remove roc-talon/talon"),
+		(cmd(["tool", "rm", "talon", "--dry-run"]), "remove talon"),
+		(cmd(["tool", "rm", "talon", "--keep-all"]), "remove talon"),
+		(cmd(["tool", "remove", "talon", "--remove-tools"]), "remove talon"),
+		(cmd(["tool", "rm", "talon", "foo"]), line("tln tool remove takes one tool, got 2")),
 		(cmd(["tool", "update", "talon"]), "update talon"),
 		(cmd(["tool", "update", "roc-talon/talon"]), "update roc-talon/talon"),
 		(cmd(["tool", "update", "talon", "--from-source"]), "update talon"),

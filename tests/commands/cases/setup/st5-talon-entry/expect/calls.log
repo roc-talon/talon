@@ -1,0 +1,44 @@
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+path_roc
+read_files $HOME/.local/share/bash-completion/completions/tln
+clock
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+make_dirs $HOME/.local/bin
+random
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+random
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+write_atomic $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml

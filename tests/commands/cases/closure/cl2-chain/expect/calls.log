@@ -42,8 +42,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst https://github.com/acme/text/releases/download/1.1.0/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp roc unbundle HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst
+  job $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst
 rename $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm
 delete $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
@@ -104,6 +105,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
 read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/core/1.1.0.roc-version
 args
 env_all
 clock
@@ -126,6 +128,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
 read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/text/1.1.0.roc-version
 args
 env_all
 clock

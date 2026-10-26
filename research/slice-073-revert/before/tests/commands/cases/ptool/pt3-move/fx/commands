@@ -1,0 +1,14 @@
+update --tool --file p1/main.roc
+update --tool --file p1/main.roc
+upgrade --tool foo bar --file p1/main.roc
+upgrade --tool --file p1/main.roc
+update --tool zed --file p1/main.roc
+update --tool acme/foo --file p1/main.roc
+update fmt --file p2/main.roc
+update --file p2/main.roc
+update pf --file p3/main.roc
+upgrade --tool pf --file p3/main.roc
+update --tool --file w/m1/main.roc
+install --file w2/m1/main.roc
+update fmt --file p2/main.roc
+update pf --file p2/main.roc

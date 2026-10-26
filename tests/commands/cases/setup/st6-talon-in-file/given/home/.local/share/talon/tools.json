@@ -1,0 +1,1 @@
+{"format":1,"note":"keep","tools":{"foo":{"name":"o/foo","source":{"kind":"git","commit":"c0c0c0c0","ref":"v1.0.0"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"1111111111111111111111111111111111111111111111111111111111111111","libs":[],"installed_at":"2026-10-14T12:00:00Z"}}}

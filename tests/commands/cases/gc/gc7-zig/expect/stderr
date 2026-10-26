@@ -1,0 +1,6 @@
+removed toolchain nightly-2026-08-01-aaaaaaa (250 B)
+removed toolchain zig-0.14.0 (293 B)
+removed toolchain zig-0.17.0 (287 B)
+skipped toolchain zig-0.16.1: an install holds it
+removed $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp (8 B)
+freed 838 B

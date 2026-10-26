@@ -16,7 +16,7 @@ import Fail
 ## | `rename_keys` | `--rename-keys`: `Ok(Yes)` when set (R-NI1 answer flag) |
 ## | `allow_moves` | `--allow-moves`: `Ok(Yes)` when set (R-NI3 answer flag) |
 ## | `allow_downloads` | `--allow-downloads`: `Ok(Yes)` when set (R-NI5 answer flag, slice 025) |
-## | `probe_downloads` | `--probe-downloads`: `Ok(Yes)` when set (R-NI4 answer flag, slice 025) |
+## | `probe_downloads` | `--probe-downloads`: `Ok(Yes)` when set and the command is `upgrade`, `probe` or `init` (R-NI4, R-FL12, slice 069). Else `Err(NoFlag)` |
 Opts := {
 	names : List(Str),
 	frozen : Bool,
@@ -76,11 +76,15 @@ Opts := {
 			rename_keys: if given("--rename-keys") Ok(Yes) else Err(NoFlag),
 			allow_moves: if given("--allow-moves") Ok(Yes) else Err(NoFlag),
 			allow_downloads: if given("--allow-downloads") Ok(Yes) else Err(NoFlag),
-			probe_downloads: if given("--probe-downloads") Ok(Yes) else Err(NoFlag),
+			probe_downloads: if given("--probe-downloads") and probe_command(args.command) Ok(Yes) else Err(NoFlag),
 			slots,
 		})
 	}
 }
+
+# R-NI4, R-FL12 (slice 069): the commands that take `--probe-downloads`. `Args.parse` stops the other lines first.
+probe_command : List(Str) -> Bool
+probe_command = |command| command == ["upgrade"] or command == ["probe"] or command == ["init"]
 
 # The value of a flag that has one, or `Unset`.
 value_of : Args, Str -> Try(Str, [Unset])

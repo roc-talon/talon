@@ -238,13 +238,6 @@
 +++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 @@ -0,0 +1 @@
 +2026-10-15T12:00:00Z
---- home/.config/talon/config.toml
-+++ home/.config/talon/config.toml
-@@ -1,2 +1,4 @@
-+default-roc = "nightly-2026-10-11-1a2b3c4"
-+
- [probe]
- timeout = 20
 --- home/.local/bin/dl
 +++ home/.local/bin/dl
 @@ -0,0 +1 @@

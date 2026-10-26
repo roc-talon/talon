@@ -1,0 +1,9 @@
+--- home/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS/main.roc
++++ home/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p5/main.roc","last_use":1792065600}]}

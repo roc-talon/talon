@@ -1,0 +1,100 @@
+# The release (slice 052, R-S1, R-IS1, R-IS2, R-HF10): the push of a tag v<X.Y.Z> builds the 5 targets, tests the install scripts,
+# and makes one release with the 5 binaries, sha256sums.txt, install.sh and install.ps1, and the attestation of the binaries.
+# The compiler tag is ROC_TAG of scripts/env.sh. scripts/get-roc.sh installs it. The guard step stops a tag that is not v + Help.version.
+name: release
+
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: true
+      matrix:
+        include:
+          - os: ubuntu-latest
+            target: x64musl
+            asset: tln-x64musl
+          - os: ubuntu-latest
+            target: arm64musl
+            asset: tln-arm64musl
+          - os: macos-latest
+            target: x64mac
+            asset: tln-x64mac
+          - os: macos-latest
+            target: arm64mac
+            asset: tln-arm64mac
+          - os: windows-latest
+            target: x64win
+            asset: tln-x64win.exe
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+
+      # Q-V (slice 052): Help.version is a constant in the source. A release is a commit that sets it, then a tag.
+      - name: The tag is v plus Help.version
+        run: |
+          version=$(sed -n 's/^[[:space:]]*version = "\(.*\)"$/\1/p' cli/lib/Help.roc | head -n 1)
+          [ "$GITHUB_REF_NAME" = "v$version" ] || { echo "tag $GITHUB_REF_NAME is not v$version (Help.version)"; exit 1; }
+
+      - name: Pinned compiler tag
+        run: |
+          . scripts/env.sh
+          echo "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"
+
+      - name: Install the compiler
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
+
+      - name: Build
+        run: '"$ROC" build cli/main.roc --opt=speed --target=${{ matrix.target }} --output=${{ matrix.asset }}'
+
+      - name: Upload
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.target }}
+          path: ${{ matrix.asset }}
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download
+        uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+
+      - name: Check the install scripts
+        run: install/test.sh dash bash
+
+      - name: Checksums
+        run: |
+          cd dist
+          sha256sum tln-* > sha256sums.txt
+
+      - name: Attest
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/tln-*
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes dist/tln-* dist/sha256sums.txt install/install.sh install/install.ps1

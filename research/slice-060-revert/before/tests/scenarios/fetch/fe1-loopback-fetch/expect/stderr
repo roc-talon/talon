@@ -1,0 +1,7 @@
+tln: error[integrity]: roc unbundle rejected 127.0.0.1:$PORT/pkg/bad-1.0.0 (http://127.0.0.1:$PORT/pkg/bad-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst): Error: Hash mismatch for J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst - file may be corrupted
+tln: error[network]: download of 127.0.0.1:$PORT/pkg/missing-1.0.0 failed: 404 (http://127.0.0.1:$PORT/pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst). Run tln audit to see why.
+tln: error[network]: download of 127.0.0.1:$PORT/pkg/missing-1.0.0 failed: HTTP error (http://127.0.0.1:$PORT/pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst). Run tln audit to see why.
+tln: error[usage]: http://10.0.0.1/pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst: a package URL must be https://, or http:// to 127.0.0.1, [::1] or localhost
+tln: error[network]: 127.0.0.1:$PORT/pkg/missing-1.0.0 is not in the package cache and --offline is set (http://127.0.0.1:$PORT/pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst)
+tln: error[network]: download of 127.0.0.1:$PORT/pkg/missing-1.0.0 failed: 404 (http://127.0.0.1:$PORT/pkg/missing-1.0.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst). Run tln audit to see why.
+tln: error[environment]: no download program: curl and wget are not on PATH

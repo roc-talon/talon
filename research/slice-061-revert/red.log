@@ -1,0 +1,192 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    rows = [
+        ([], []),
+        ([dir("zig-0.17.0", 5)], ["zig-0.17.0"]),
+        # The time of an entry is not read.
+        ([dir("zig-0.16.1", 0), dir("zig-0.17.0", 99999999999)], ["zig-0.16.1", "zig-0.17.0"]),
+        # Byte order of the names: 0.17.10 comes before 0.17.9. The order of the listing does not matter.
+        ([dir("zig-0.17.9", 5), dir("zig-0.17.10", 5), dir("zig-0.16.0", 5)], ["zig-0.16.0", "zig-0.17.10", "zig-0.17.9"]),
+        ([dir("zig-0.16.0", 5), dir("zig-0.17.10", 5), dir("zig-0.17.9", 5)], ["zig-0.16.0", "zig-0.17.10", "zig-0.17.9"]),
+        (odd, []),
+        (odd.concat([dir("zig-0.17.0", 5)]), ["zig-0.17.0"]),
+        ([dir("zig-0.17.0", 5)].concat(odd).concat([dir("zig-0.15.2", 5)]), ["zig-0.15.2", "zig-0.17.0"]),
+    ]
+    bad = rows.keep_if(|(entries, want)| Gc.zig_dirs(entries) != want).map(|(entries, want)| (entries.len(), want, Gc.zig_dirs(entries)))
+    dbg bad
+    bad == []
+}
+
+Roc application crashed with this message:
+
+	todo: slice 061
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/ZigTest.roc:390:1
+
+expect {
+    now : U64
+    now = 1792670400
+    at = |back| Ok("${Clock.format_utc(now - back)}\n")
+    rows = [
+        # ids, reads, the ids that go
+        ([], [], []),
+        (["zig-0.17.0"], [at(3600)], []),
+        (["zig-0.17.0"], [at(43200)], []),
+        (["zig-0.17.0"], [at(86400)], []),
+        (["zig-0.17.0"], [at(86401)], ["zig-0.17.0"]),
+        (["zig-0.17.0"], [at(172800)], ["zig-0.17.0"]),
+        (["zig-0.17.0"], [Ok(Clock.format_utc(now - 172800))], ["zig-0.17.0"]),
+        (["zig-0.17.0"], [Ok("${Clock.format_utc(now + 5000)}\n")], []),
+        (["zig-0.17.0"], [Err(NotFound)], ["zig-0.17.0"]),
+        (["zig-0.17.0"], [Err(Denied)], []),
+        (["zig-0.17.0"], [Err(Other("io"))], []),
+        (["zig-0.17.0"], [Ok("yesterday\n")], []),
+        (["zig-0.17.0"], [Ok("")], []),
+        (
+            ["zig-0.14.0", "zig-0.15.1", "zig-0.16.1", "zig-0.17.0", "zig-0.18.0"],
+            [at(172800), at(43200), Err(NotFound), Err(Denied), at(90000)],
+            ["zig-0.14.0", "zig-0.16.1", "zig-0.18.0"],
+        ),
+    ]
+    bad = rows.keep_if(|(ids, reads, want)| Gc.zigs({ ids, reads, now }) != want).map(|(ids, reads, want)| (ids, reads, want, Gc.zigs({ ids, reads, now })))
+    dbg bad
+    bad == []
+}
+
+Ran 65 tests in 6485.8 ms.:
+    63 passed
+    2 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (64) tests passed in 7593.0 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 7223.5 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+      --{"format":1,"id":"zig-0.14.0","url":"https://ziglang.org/download/0.14.0/zig-x86_64-linux-0.14.0.tar.xz","sha256":"0000000000000000000000000000000000000000000000000000000000000001","sha256_source":"zig-index","installed_at":"2026-06-01T00:00:00Z"}
+      ---- home/.cache/roc/toolchains/zig-0.14.0/zig
+      -+++ home/.cache/roc/toolchains/zig-0.14.0/zig
+      -@@ -1 +0,0 @@
+      --zig 0.14.0 fake program
+      ---- home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/lib/std/std.zig
+      -@@ -1 +0,0 @@
+      --const std = 1;
+      ---- home/.cache/roc/toolchains/zig-0.17.0/.talon.json
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/.talon.json
+      -@@ -1 +0,0 @@
+      --{"format":1,"id":"zig-0.17.0","url":"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz","sha256":"0000000000000000000000000000000000000000000000000000000000000001","sha256_source":"zig-index","installed_at":"2026-06-01T00:00:00Z"}
+      ---- home/.cache/roc/toolchains/zig-0.17.0/zig
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/zig
+      -@@ -1 +0,0 @@
+      --zig 0.17.0 fake program
+FAIL roc/gi2-zig
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -77,7 +77,6 @@
+       write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json
+       rename $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/zig-0.17.0
+       unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+      -write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
+       lock $HOME/.cache/roc/toolchains/git-3b9f7c1d nowait: held
+       list_dirs $HOME/.cache/roc/toolchains
+       make_dirs $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp
+      @@ -123,7 +122,6 @@
+       platform
+       programs zig
+       list_dirs $HOME/.cache/roc/toolchains
+      -write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
+       lock $HOME/.cache/roc/toolchains/git-5349569a nowait: held
+       list_dirs $HOME/.cache/roc/toolchains
+       make_dirs $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp
+      @@ -156,7 +154,6 @@
+       platform
+       programs zig
+       list_dirs $HOME/.cache/roc/toolchains
+      -write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
+       lock $HOME/.cache/roc/toolchains/git-9d9d9d9d nowait: busy
+       lock $HOME/.cache/roc/toolchains/git-9d9d9d9d wait: held
+       list_dirs $HOME/.cache/roc/toolchains
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -22,10 +22,6 @@
+       +++ home/.cache/roc/toolchains/git-3b9f7c1d/.talon.json
+       @@ -0,0 +1 @@
+       +{"format":1,"id":"git-3b9f7c1d","repo":"https://github.com/Karakatiza666/roc","sha":"3b9f7c1d5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1b","ref":"my-branch","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"computed","compat":"3b9f7c1d","installed_at":"2026-10-22T12:00:00Z"}
+      ---- home/.cache/roc/toolchains/zig-0.17.0/.last-use
+      -+++ home/.cache/roc/toolchains/zig-0.17.0/.last-use
+      -@@ -0,0 +1 @@
+      -+2026-10-22T12:00:00Z
+       --- home/.cache/roc/toolchains/zig-0.17.0/LICENSE
+       +++ home/.cache/roc/toolchains/zig-0.17.0/LICENSE
+       @@ -0,0 +1 @@
+commands: 168 passed, 2 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+       == 9b: the real run. zig-0.16.1 is skipped (the lock of an install is held). zig-0.17.0 goes. zig-0.15.1, the dev dir and the file stay.
+       == tln cache gc
+      -removed toolchain zig-0.17.0 (26 B)
+      -skipped toolchain zig-0.16.1: an install holds it
+      -freed 26 B
+      +nothing to remove
+       exit 0
+       zig-0.15.1
+       zig-0.15.2
+       zig-0.16.1
+       zig-0.16.1.lock
+      +zig-0.17.0
+       zig-0.18.0-dev.31+abc1234
+       == 9c: the install is done: --json removes zig-0.16.1 too. The text goes to stderr. zig-0.15.1 still stays.
+       == tln cache gc --json
+      -{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":["zig-0.16.1"],"skipped":[],"compat":[],"stale":[],"builds":[],"packages":[],"projects":[],"sizes":[{"item":"zig-0.16.1","bytes":32}],"freed":32},"error":null}
+      +{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":[],"skipped":[],"compat":[],"stale":[],"builds":[],"packages":[],"projects":[],"sizes":[],"freed":0},"error":null}
+       exit 0
+       zig-0.15.1
+       zig-0.15.2
+      +zig-0.16.1
+      +zig-0.17.0
+       zig-0.18.0-dev.31+abc1234
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,5 +7,4 @@
+       removed $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (12 B)
+       removed $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc (17 B)
+       freed 49 B
+      -removed toolchain zig-0.16.1 (32 B)
+      -freed 32 B
+      +nothing to remove
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -87,6 +87,22 @@
+       +++ home/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json
+       @@ -1 +0,0 @@
+       -{"format":1,"id":"nightly-2026-09-10-ddddddd","url":"http://127.0.0.1:1/dl/nightly-2026-09-10-ddddddd","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-09-10-ddddddd","compat":"ddddddd","installed_at":"2026-09-10T00:00:00Z"}
+      +--- home/.cache/roc/toolchains/zig-0.16.1/.last-use
+      ++++ home/.cache/roc/toolchains/zig-0.16.1/.last-use
+      +@@ -0,0 +1 @@
+      ++2026-10-01T00:00:00Z
+      +--- home/.cache/roc/toolchains/zig-0.16.1/zig
+      ++++ home/.cache/roc/toolchains/zig-0.16.1/zig
+      +@@ -0,0 +1 @@
+      ++zig 0.16.1
+      +--- home/.cache/roc/toolchains/zig-0.17.0/lib/std.zig
+      ++++ home/.cache/roc/toolchains/zig-0.17.0/lib/std.zig
+      +@@ -0,0 +1 @@
+      ++const std = 1;
+      +--- home/.cache/roc/toolchains/zig-0.17.0/zig
+      ++++ home/.cache/roc/toolchains/zig-0.17.0/zig
+      +@@ -0,0 +1 @@
+      ++zig 0.17.0
+       --- home/.cache/roc-builds/compat-mixed/deep/new.bin
+       +++ home/.cache/roc-builds/compat-mixed/deep/new.bin
+       @@ -0,0 +1 @@
+scenarios: 82 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   1.9      10
+fmt        pass   0.2      5
+l0         FAIL   7.8      10
+l2         FAIL   10.1     30
+l3         FAIL   10.0     60
+selftest   pass   3.3      20
+l1         pass   36.7     60

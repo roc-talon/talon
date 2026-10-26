@@ -7,3 +7,6 @@ tln rm json --tree || echo "exit=$?"
 tln --registry || echo "exit=$?"
 # R-LF5: there is no --locked (cargo and uv give that name another meaning), so it is a flag that no command takes.
 tln install --locked || echo "exit=$?"
+# R-NI4 R-FL12 (slice 069): `--probe-downloads` is for upgrade, probe and init only. The other commands that resolve hold the nightly, so they have no optional download.
+tln install --probe-downloads || echo "exit=$?"
+tln verify --allow-downloads --probe-downloads || echo "exit=$?"

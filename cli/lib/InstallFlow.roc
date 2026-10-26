@@ -16,6 +16,7 @@ import PickFlow
 import PickLoop
 import Pin
 import Args
+import Fetch
 import Report
 import ResolveBase
 import ResolveLoad
@@ -35,13 +36,17 @@ InstallFlow :: [].{
 
 	## The flow of `Resolve.install!`. The steps are in the doc of `Resolve.install!`.
 	install! : Fx, Request => Try(Report.Outcome, Fail)
-	install! = |fx, request| InstallFlow.install_with!(fx, request, Err(None))
+	install! = |fx, request| Ok(InstallFlow.install_with!(fx, request, Err(None))?.outcome)
+
+	## Slice 073: what `install_with!` gives. `tools` are the rows of the tools step (`[]` for no step or no entry): `--json` puts them in `data.tools` (`ToolsPlan.with_tools`). `Report.Outcome` does not hold them.
+	Done : { outcome : Report.Outcome, tools : List(ToolsStep.JsonRow) }
 
 	## Slice 056 (R-PT5 to R-PT7, D2, D16): `install!` with the tools step. `tools` is `Ok(args)` for the commands that run it (`Resolve.install_with!`: `tln install`, `tln update`, `tln upgrade`), `Err(None)` for the other callers. The step runs after the header flow and has
 	## the phase `Install` (no names), `Frozen` (`--frozen`: after the line `the header satisfies talon.toml`). The line `nothing to change` is printed once, at the end, and only when neither the header nor the tools change (D16): while the tools step runs, the header flow gets an `Fx` that drops it.
-	install_with! : Fx, Request, Try(Args, [None]) => Try(Report.Outcome, Fail)
-	install_with! = |fx, request, tools| {
-		start = ResolveLoad.prepared!(fx, request, Lock)?
+	install_with! : Fx, Request, Try(Args, [None]) => Try(InstallFlow.Done, Fail)
+	install_with! = |fx, asked, tools| {
+		start = ResolveLoad.prepared!(fx, asked, Lock)?
+		request = { ..asked, selected: Fetch.selected({ held: start.decision.held ?? "", default: start.loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, start.loaded) }
 		loaded = start.loaded
 		built = start.built
 		decision = start.decision
@@ -54,8 +59,8 @@ InstallFlow :: [].{
 		plan = tools_split(request, loaded, tools)?
 		if request.frozen {
 			frozen!(fx, request, loaded, built, decision, plan.phase.is_ok())?
-			_ = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
-			Ok(InstallPlan.idle(request, request.now))
+			step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
+			Ok({ outcome: InstallPlan.idle(request, request.now), tools: step.rows })
 		} else {
 			header = match plan.phase {
 				Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
@@ -66,7 +71,7 @@ InstallFlow :: [].{
 			if plan.phase.is_ok() and !step.changed and !header_changed(outcome) {
 				fx.out!("nothing to change\n")
 			}
-			Ok(outcome)
+			Ok({ outcome, tools: step.rows })
 		}
 	}
 }
@@ -102,10 +107,10 @@ header_changed : Report.Outcome -> Bool
 header_changed = |outcome| !outcome.written.is_empty() or !outcome.kept.is_empty() or !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
 
 # Slice 056: the tools step, or no call. `changed` is true when it printed a line.
-tools_after! : Fx, Try(Args, [None]), { request : Request, loaded : Loaded, phase : Try(ToolsPlan.Phase, [None]), keys : List(Str) } => Try({ changed : Bool }, Fail)
+tools_after! : Fx, Try(Args, [None]), { request : Request, loaded : Loaded, phase : Try(ToolsPlan.Phase, [None]), keys : List(Str) } => Try({ changed : Bool, rows : List(ToolsStep.JsonRow) }, Fail)
 tools_after! = |fx, tools, run| match (tools, run.phase) {
 	(Ok(args), Ok(phase)) => ToolsStep.after!(fx, args, { request: run.request, loaded: run.loaded, phase, keys: run.keys })
-	_ => Ok({ changed: Bool.False })
+	_ => Ok({ changed: Bool.False, rows: [] })
 }
 
 # `--frozen` (R-LF1): the pure check, then the hash check of the packages of the header. No index call, no write.

@@ -26,3 +26,7 @@ exit 0
 exit 2
 == x fmt2 cwd:p10
 exit 0
+== x fmt cwd:p1 --roc installed --allow-unchecked
+exit 2
+== x acme/fmt@1.0.0 cwd:p1 --offline --roc installed --allow-unchecked
+exit 0

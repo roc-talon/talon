@@ -1,0 +1,7 @@
+Slice 050c, a `.del` file that cannot be deleted (R-ST10: "A delete fails while the file runs, and the next start tries again"). The fake machine is `os=windows arch=x64`. `fx/delete` says `denied tln.0123456789abcdef.del`: the delete of that file gives `Denied`, as Windows does for a running `.exe`. The bin dir has `tln.exe` and the file `tln.0123456789abcdef.del`, the data bin dir has `tln.exe` and `ok.1111111111111111.del`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `--version` | the sweep deletes both files in one `delete` call. `ok.1111111111111111.del` goes, the other stays (`Denied`). No text on stderr, exit 0: a failed delete is no failure | R-ST10 |
+| 2 | `--version` | the next start tries again: one `delete` call with the file that stays, again `Denied`, again no text and exit 0 | R-ST10 |
+| 3 | `tool list` | the same for a command: the command runs as usual (exit 0) | R-ST10 |

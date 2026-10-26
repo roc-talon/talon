@@ -1,0 +1,6 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-T23 the source archive (`source.tar.gz`, before the generic `tar -xf`). The first rule whose needle is in the arguments answers.
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+source.tar.gz -C	0	-	-	dir:{dir}/cli;copy:{dir}/cli/main.roc={w}/fx/src/gapp.src
+curl --fail	0	-	-	file:{out}
+# R-S3 the new binary is run with `--version` before it replaces the old one, also a source build (slice 075). Only the exit code counts.
+--version	0	-	-	-

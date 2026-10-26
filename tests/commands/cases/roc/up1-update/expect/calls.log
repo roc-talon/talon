@@ -38,9 +38,6 @@ rename $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.t
 unlock $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
 lock $HOME/.config/talon/config.toml nowait: held
 read_files $HOME/.config/talon/config.toml
-unlock $HOME/.config/talon/config.toml
-lock $HOME/.config/talon/config.toml nowait: held
-read_files $HOME/.config/talon/config.toml
 read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
@@ -100,9 +97,6 @@ delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/.talon.json
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569
-lock $HOME2/.config/talon/config.toml nowait: held
-read_files $HOME2/.config/talon/config.toml
-unlock $HOME2/.config/talon/config.toml
 args
 env_all
 read_files $HOME3/.config/talon/config.toml
@@ -180,9 +174,6 @@ delete $HOME4/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME4/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp/.talon.json
 rename $HOME4/.cache/roc/toolchains/nightly-2026-10-16-1df370f.0123456789abcdef.tmp $HOME4/.cache/roc/toolchains/nightly-2026-10-16-1df370f
 unlock $HOME4/.cache/roc/toolchains/nightly-2026-10-16-1df370f
-lock $HOME4/.config/talon/config.toml nowait: held
-read_files $HOME4/.config/talon/config.toml
-unlock $HOME4/.config/talon/config.toml
 lock $HOME4/.config/talon/config.toml nowait: held
 read_files $HOME4/.config/talon/config.toml
 read_files $HOME4/.config/talon/config.toml
@@ -315,9 +306,6 @@ delete $HOME11/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME11/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/.talon.json
 rename $HOME11/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME11/.cache/roc/toolchains/nightly-2026-10-18-5349569
 unlock $HOME11/.cache/roc/toolchains/nightly-2026-10-18-5349569
-lock $HOME11/.config/talon/config.toml nowait: held
-read_files $HOME11/.config/talon/config.toml
-unlock $HOME11/.config/talon/config.toml
 lock $HOME11/.config/talon/config.toml nowait: held
 read_files $HOME11/.config/talon/config.toml
 read_files $HOME11/.config/talon/config.toml

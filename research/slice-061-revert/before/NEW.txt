@@ -1,0 +1,6 @@
+tests/commands/cases/gc/gc7-zig/
+docs/slices/061-zig-gc.md
+research/slice-061-revert/stubs/
+research/slice-061-revert/red.log
+research/slice-061-revert/green.log
+research/slice-061-revert/mutate.log

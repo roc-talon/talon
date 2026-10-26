@@ -1,12 +1,15 @@
 import Diff
 import Fail
+import Fetch
 import Fx
+import Github
 import Ident
 import IntentEdit
 import LadderPlan
 import Patched
 import PatchTree
 import Pick
+import PickIndex
 import ResolveBase
 import Roots
 import Temp
@@ -23,6 +26,7 @@ import Vars
 ## | Step | Work | Calls and notes |
 ## | --- | --- | --- |
 ## | 1 | `run!`: for each member, `Patched.entries` of its header and the `[patch]` table of its `talon.toml`. No entry in any member: `PatchApply.none`, no call. The URL of each entry after the command is the URL that the pick chose for its variable, else the header URL. `Patched.need` | no call |
+## | 2a | Slice 070 (R-PA13), for each entry that needs a rebase, before step 2: one `list_dirs!` of `[packages/<base>]`. The dir is there: step 2. Missing: the group of the header URL of the entry (`Ident.of_url(entry.url)`: `name` and `group`) gives the repository, and `PickIndex.index!` reads its release list (the calls of `Github.releases!`, with the warnings and the line `index: cached at <time>` on stderr). A list that is `missing` (`--offline` with no cached page): `Github.no_page_failure(<name>)` (exit 15). Else `Patched.base_release` of the URLs of the candidates: `Err(NoRelease)` is `Patched.base_missing` (exit 14, not a `NoTuple`: no other release helps). A release that has the hash: slice 070b, the fetch of that release by hash (`PatchApply.base!`: `Fetch.packages!` of its URL; `--offline` with the archive not in the cache is exit 15, R-FE7), then step 2. An entry with no GitHub name (a release URL of another host: no list can exist, R-DI11) and a missing base: `Patched.base_missing` with the URL form of the group (`group.form`) as the name, exit 14, online and offline, no index call (manager answer Q1 of slice 070b). A URL that is no release is no `[patch]` entry (R-PA14): `Ok` | R-PA13, R-DI12 |
 ## | 2 | For each entry that needs a rebase, in the order of the members and of the `[patch]` lines: `PatchTree.read!` of 3 dirs in this order: `packages/<base>`, the copy, `packages/<new hash>` (R-PA13: a package is in the cache after the pick; a `packages/<base>` that is not in the cache is a failure `cannot read <dir>`, question Q2). Then `Patched.rebase`. A failure of one entry: `Patched.not_applied` for that entry (the first one), kind `NoTuple` with `again`: `InstallFlow.attempts!` drops the release and tries another tuple. No file is made yet | `list_dirs`, `read_files`, `sha256_file` |
 ## | 3 | All entries applied: `random!`, then the temp root `Roots.item(roots, TalonTmp(<hex>))`. For each entry: `copy_tree!` of `packages/<new hash>` to `<root>/<alias>`, one `write_atomic!` with the `Write` files, one `delete!` with the `Remove` paths (each call only when it has a path), one `make_dirs!` with the parent dirs of the `FromCopy` files, and one `copy_file!` for each `FromCopy` file (from the copy). | `random`, `copy_tree`, `write_atomic`, `delete`, `make_dirs`, `copy_file` |
 ## | 4 | The ladder gets `PatchApply.member(done, file)` for each member (`Ladder.Member.patch`): `base` are the pairs of `Patched.replaces` (the copies), `candidate` are the same, except that an entry that is rebased has the new header URL and the main file in its temp dir (R-PA10) | |
@@ -64,6 +68,7 @@ PatchApply :: [].{
 	run! = |fx, request, loaded, x| {
 		wanted = loaded.members.map(|m| { member: m, entries: PatchApply.entries(m) }).keep_if(|w| !w.entries.is_empty())
 		if wanted.is_empty() return Ok(PatchApply.none)
+		check_all(request, wanted)?
 		install = request.command == Install and request.names.is_empty()
 		needs = wanted.join_map(
 			|w| Patched.need({ entries: w.entries, chosen: chosen_of(w.member, x), install }).map(|n| { toml: toml_of(w.member), file: w.member.file, entry: n.entry, url: n.url, hash: n.hash }),
@@ -78,6 +83,23 @@ PatchApply :: [].{
 		moved = applied.map2(rebased, |a, r| { found: a.found, temp: r.temp })
 		members = wanted.map(|w| member_of(w.member.file, w.entries, moved))
 		Ok({ members, rebased, root: Ok(root) })
+	}
+
+	## Slice 070b (R-PA13, R-PA3, R-PA5): the base package of a patch is in the cache, or Talon fetches it by hash. `entry` has the alias, the header URL of the entry (its group gives the release list), the `base` hash and the copy dir (for the failure text).
+	## Steps, as the doc of step 2a says, and after step 2a-3 (a release has the hash): one `Fetch.packages!` of the URL of that release (`Patched.base_release`) with `offline`, the unbundler `Choose` of the request and the downloader of `request.net` (the calls of `fetch/fe-flow`). A failed fetch is the failure of the fetch (`--offline`: exit 15, R-FE7).
+	## `rebase_one!` (step 2a) and `PatchFlow.review!` (`tln patch --diff`, when the `base` of the entry is not the hash of the header entry) call it.
+	base! : Fx, ResolveBase.Request, { alias : Str, url : Str, base : Str, dir : Str } => Try({}, Fail)
+	base! = |fx, request, entry| {
+		# Slice 076: the base is a part of a path. `Intent` has checked it already, so this guard stops no entry that the commands pass.
+		if !Ident.safe_part(entry.base) return Err(Fail.new(Usage, "the base ${entry.base} of the patch ${entry.alias} is not a hash"))
+		match fx.list_dirs!([Roots.item(request.roots, Package(entry.base))]) {
+			[Ok(_)] => Ok({})
+			_ => match Ident.of_url(entry.url) {
+				Ok({ name: Ok(name), group, .. }) => fetch_base!(fx, request, { name, group, entry })
+				Ok({ name: Err(_), group, .. }) => Err(Patched.base_missing({ alias: entry.alias, name: group.form, base: entry.base, dir: entry.dir }))
+				Err(_) => Ok({})
+			}
+		}
 	}
 
 	## Step 5. It gives the paths of the `talon.toml` files that have a rebased entry.
@@ -109,6 +131,16 @@ PatchApply :: [].{
 		}
 		Err(None) => {}
 	}
+}
+
+# R-PA9, R-RUN8, R-EC19 (slice 076, Q2): the copy dir of each entry is inside the repository, before the first read, delete or write.
+check_all : ResolveBase.Request, List({ member : Vars.Member, entries : List(Patched.Entry) }) -> Try({}, Fail)
+check_all = |request, wanted| {
+	for w in wanted {
+		stop = Patched.stop({ workspace: request.project.workspace, toml: toml_of(w.member) })
+		Patched.check_inside({ entries: w.entries, stop })?
+	}
+	Ok({})
 }
 
 # A patch that moves: the member, its `talon.toml`, the entry and the new release.
@@ -146,6 +178,7 @@ rebase_one! : Fx, ResolveBase.Request, Found => Try(List(Diff.Applied), Fail)
 rebase_one! = |fx, request, found| {
 	cached = |hash| Roots.item(request.roots, Package(hash))
 	entry = found.entry
+	PatchApply.base!(fx, request, { alias: entry.alias, url: entry.url, base: entry.base, dir: entry.dir })?
 	trees = PatchTree.read!(fx, { dirs: [cached(entry.base), entry.dir, cached(found.hash)], copy: entry.dir })?
 	match trees {
 		[base, copy, target] => match Patched.rebase({ base, copy, target }) {
@@ -156,6 +189,26 @@ rebase_one! = |fx, request, found| {
 			}
 		}
 		_ => Err(Fail.new(Internal, "PatchTree.read! gave a wrong number of trees"))
+	}
+}
+
+# Steps 2 to 4 of `base!`: the release list of the group gives the release that has the hash, then the fetch of that release (R-PA13). No release: exit 14. A failed fetch is the failure of the fetch (`--offline`: exit 15, R-FE7).
+fetch_base! : Fx, ResolveBase.Request, { name : Str, group : { form : Str, series : Str }, entry : { alias : Str, url : Str, base : Str, dir : Str } } => Try({}, Fail)
+fetch_base! = |fx, request, x| {
+	found = PickIndex.index!(fx, request, [x.name], [])?
+	match found {
+		[candidates] => if candidates.missing {
+			Err(Github.no_page_failure(x.name))
+		} else {
+			match Patched.base_release({ urls: candidates.list.map(|c| c.url), group: x.group, base: x.entry.base }) {
+				Err(NoRelease) => Err(Patched.base_missing({ alias: x.entry.alias, name: x.name, base: x.entry.base, dir: x.entry.dir }))
+				Ok(url) => match Fetch.packages!(fx, { roots: request.roots, urls: [url], offline: request.offline, unbundler: Choose({ selected: request.selected, none: request.none }), downloader: request.net.downloader }) {
+					[Err(fail)] => Err(fail)
+					_ => Ok({})
+				}
+			}
+		}
+		_ => Ok({})
 	}
 }
 

@@ -19,3 +19,11 @@ Projects: `p1` has `a` (a `ref`, no `url`), `b` (a `ref` and the `url` of acme/b
 | 12 | `install --frozen --file p10/main.roc` | the build needs the compiler `nightly-2026-10-12-2664a27` (the pin of the app of the tool), which is not installed. The download is a required download (R-DL2): no person and no `TALON_AUTO_INSTALL`, so exit 13 (the text names `--allow-downloads` and `TALON_AUTO_INSTALL=yes`, the ways that the command takes, Q-A of the review) | R-DL7, R-DL2, R-SO22, R-DL4 |
 | 13 | `install --dry-run --file p11/main.roc` | the entry `d` has no `url` and the exact selector 1.0.0, which has no `x` entry. `--dry-run` builds nothing and writes nothing: `locked tool d 1.0.0`, `would build tool d 1.0.0`, the file line, `dry run: nothing was written`. No `nothing to change` (the tools change, D16 of the review) | R-PT4, R-PT6, R-PT5, R-LF4 |
 | 14 | `install --frozen --allow-downloads --file p10/main.roc` | the flag answers the required download of the compiler (R-DL5): no exit 13. The run goes on to the download (the fake nightly list has no such release: the failure is the last line of `stderr`) | R-DL5, R-DL7, R-SO22 |
+
+Slice 064 (R-FE4, R-SO6): the home has `config.toml` with `default-roc = nightly-2026-10-14-38a3029` and a newer compiler `nightly-2026-10-16-9e9e9e9` (so 2 lines `db_query ... facts=` show 2 facts in place of 1). Each `roc unbundle` of the tools step of `install` and `install --frozen` runs with the compiler that the run selects (`38a3029`: the default, no pin in the headers), not with the newest installed compiler: the tools step takes `request.selected` of `InstallFlow`.
+
+Slice 073 (R-PT5, R-OUT4): run 15 `install --json --file p11/main.roc`: the entry `d` has no `url` and the exact selector 1.0.0 (run 13 only planned it). The run locks it (`locked tool d`) and builds it. The envelope has the keys of the header flow and then `data.tools`, one row (`action` `locked`, `built` true, `previous` null). The human text goes to stderr. One more build row in `fx/probes`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 15 | `install --json --file p11/main.roc` | stdout is one envelope with `data.tools`. `talon.toml` of p11 has the `url` | R-PT5, R-OUT4, R-I5 |

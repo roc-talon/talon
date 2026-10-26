@@ -66,10 +66,10 @@ R-NS12: Evidence and probes (sections 3 and 4) work the same for a release: a fa
 | R-C4 | Alias kind: a `platform` entry resolves only to a `platform` release, and a package entry resolves only to a `package` release. An `app` release is never a candidate. The kind is the first keyword of the release header (CLI 7.3, R-DI7). | Hard |
 | R-C5 | Compatibility: every hash in the closure checks on the chosen nightly (sections 3 to 5) | Hard |
 | R-C6 | Yanked releases are not chosen for a new resolution. Yank and advisory data come from the registry (Registry 5, Registry 7.2, advisories in Design 7, P3). A withdrawn release (Registry 7, R-PU17) is not a candidate. With `direct`, GitHub has no yank: a deleted release, a draft and a prerelease are not candidates (CLI 7.3, R-DI3), and there is no advisory data. Then each command that checks yanks or advisories (`tln audit`, R-B3 in CLI 6.4) prints one note: `no yank and advisory data without a registry`. | Hard |
-| R-C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, R-DI10). Both also apply where Talon selects a compiler by itself (R-NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` does not hide a version or a compiler that the user names (R-NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
+| R-C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, R-DI10). Both also apply where Talon selects a compiler by itself (R-NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` and the time form of `snapshot` do not hide a version or a compiler that the user names (R-NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
 | R-C8 | Two series of one package (two groups, Design 4.1) in the closure | Warning (type identity) |
 | R-C9 | R-C6, R-C7 and a snapshot never hide the value that a header entry or the `roc:` pin has now. That value stays in the domain of its variable, so a hold, the implied range (Design 4.3) and `tln update` still work, for example after `tln add X@1.2.3` of a release that is 1 day old. They hide only the other candidates. `tln audit` reports a yanked value (R-C6). | Hard |
-| R-C10 | Build target: the `targets` of the platform release have the build target of the app project file (section 4, R-TG1). A release with no such target is not a candidate. Reason: the release cannot build the app, and Talon knows it from the header with no probe. When the platform is held (section 9) and its release does not have the build target, no tuple exists: exit code 10 (`no_tuple`). | Hard |
+| R-C10 | Build target: the `targets` of the platform release have the build target of the app project file (section 4, R-TG1). A release with no such target is not a candidate. A release with no readable `targets` is a candidate (R-TG7). Reason: the release cannot build the app, and Talon knows it from the header with no probe. When the platform is held (section 9) and its release does not have the build target, no tuple exists: exit code 10 (`no_tuple`). | Hard |
 
 ## 3. Compatibility evidence
 
@@ -114,6 +114,7 @@ Ladder step 3 builds the app for one target: the build target. A platform with n
 | R-TG3 | `[build] target` is one Roc target name (Registry R-IK7 list). Another value gives exit code 19. The constraint on platform releases is section 2, R-C10. |
 | R-TG4 | A package or platform project file has no build (R-LD7). `[build]` in its `talon.toml` has no effect. |
 | R-TG5 | In a workspace, each member has its own build target (R-TG1 with the member `talon.toml`). A Worker member builds `wasm32` and a script member on basic-cli builds the host target. `[build]` is allowed where `[dependencies]` is allowed (Design 4.4, R-WS5). |
+| R-TG7 | A platform whose header has no readable `targets` list (an old platform, a header that does not parse, or a platform that is not in the package cache) gives no target to pick from. With no `[build] target`, Talon runs `roc build` with no `--target`, and the key of R-TG2 has the host target. R-C10 admits such a release, because the header cannot show a missing target. A `[build] target` (rule 1) still passes `--target`. |
 | R-TG6 | The proxy does not use the build target: roc flags pass with no change (CLI 6.2, R-PX3). The build of a tool (CLI 6.4, R-T8) does not use it. `tln init --platform` uses R-TG1 rules 2 and 3 for the ladder of CLI 5, R-IN2, because there is no `talon.toml` yet (CLI R-IN5). |
 
 For `cloudflare-workers`, rule 3 selects `wasm32` with no `talon.toml` key. The `--no-cache` flag of the platform build (a warm build cache gave other code) does not matter for step 3: Talon does not use the output.
@@ -173,8 +174,9 @@ R-SM2: The app gives the platform each value of its `requires` clause (Design 2)
 | A record type | A record with a value for each field, by this table |
 | `[Alias : var] for name : ...` | `Alias : {}` for each alias, and the app exposes each alias and `name` |
 | Any other type | No smoke build: a top-level constant runs when roc compiles it, so a constant that crashes stops the build |
+| A clause with 2 or more entries (the old form `requires {} { ... }` has 2 groups, and the entries are in the second) | Like "Any other type": no smoke build, and no stub for `tln init --platform` (CLI R-IN8) |
 
-The app is a function of the platform header only. So the key (platform hash, nightly, target) fixes the result, and the Talon version (Registry 6.1, R-CT12) names the generator. Talon writes the app in a temp dir (CLI 7.4, R-CC2), with the URL of the platform from the header of the project.
+Talon reads the clause at the depth 0 of the platform header, with no token inside a comment or a string. An entry is `name : <type>` or `[Alias : var, ...] for name : <type>`. A comma at the depth 0 that is followed by the start of another entry (`name :` or `[`) ends an entry. A comma in an argument list does not: `respond! : Request, context => R` is one entry. The app exposes the aliases first, then the names, in the order of the source. The app is a function of the platform header only. So the key (platform hash, nightly, target) fixes the result, and the Talon version (Registry 6.1, R-CT12) names the generator. Talon writes the app in a temp dir (CLI 7.4, R-CC2), with the URL of the platform from the header of the project.
 
 R-SM3: When Talon runs a smoke build: only when sharing is on (CLI 1, R-SH2), after the command did its work and before it sends the queue (CLI 1, R-SH4). One build for each key (platform hash, nightly, target) that the command built (ladder step 3, also when it used the build skip of R-BS1, and the build of a tool, CLI 6.4) when all of these are true:
 
@@ -216,7 +218,7 @@ Rules:
 | R-P1 | `check` and `build` only. Talon never runs the output, so no host code runs. |
 | R-P2 | Warnings do not fail a probe. |
 | R-P3 | A download error gives no fact. A signal from outside the compiler gives no fact too: SIGKILL (also the OOM killer), SIGTERM, SIGINT and SIGHUP, and on Windows `0xC000013A` (Ctrl-C). Reason: up to 12 probes run at once (R-AL4), and a build takes 150 to 220 MB (R-SM1), so a small machine can kill one, and a fact never expires (R-P4). A hang or crash is a fact of its own class (compiler fault). |
-| R-P4 | Results are stored per (hash, nightly, target) and never expire. `check` results use the target `any`. A fail stores the set of failing modules. A `build` pass also stores the used-closure digest (see "Build skip"). |
+| R-P4 | Results are stored per (hash, nightly, target) and never expire. `check` results use the target `any`. A fail stores the set of failing modules. A `build` result (pass, fail, hang or crash) also stores the used-closure digest (see "Build skip"), and the digest is part of its key: a build fact is one row for each (hash, nightly, target, digest). So 2 apps with one platform give 2 rows when their closures differ. A `check` result has no digest. |
 | R-P5 | Budget: `probe.max` (default 100) checks, `probe.timeout` (default 30 s), and `probe.max-toolchains` (default 10) new compiler downloads. One nightly is about 70 MB packed and 228 MB unpacked. Installed nightlies are tried first, because they cost nothing to fetch. A new download needs consent (R-DL1 to R-DL6, CLI 6.2). The cap limits the downloads after consent. |
 | R-P6 | Talon blames only new errors (see "Baseline check"). A candidate with no new errors passes step 2, also when the app has errors. |
 | R-P7 | If the baseline is a hang or crash, Talon has no error set. It stops and tells the user to fix the compiler fault or to use `--no-check`. |
@@ -301,13 +303,14 @@ Conclusions for the search. The rules R-EP1 to R-EP9 below state them as a funct
 R-EP10: The solver needs facts for pairs (hash, compiler release) that no probe has run on. It infers them from epochs. The epoch function is pure: the same inputs give the same epochs (G3).
 
 ```text
-epochs : List(Release), Facts -> { epochs : List(Interval), inferred : Facts }
+epochs : List(Release), Facts, Matrix -> { epochs : List(Interval), inferred : Facts }
 ```
 
 | # | Input or output | Value |
 | --- | --- | --- |
 | R-EP11 | `List(Release)` | The domain D: every compiler release in the compiler list (CLI 6.2), in R-NS1 order. The `nightly` switch and the `[toolchain] roc` range select candidates in D. They do not remove releases from D, so they do not change the epochs. |
 | R-EP12 | `Facts` | Real facts only: rank 1 (local `compat.db`) and rank 2 (registry matrix, `bot` and `author` rows) of section 3. When two sources have a fact for one pair, the precedence of R-EF3 selects one. Hints (ranks 3 to 6) are not inputs. They only order the search. The rank 2 facts are the `runs` and `nearest` of the closure answer (Registry 4, R-AP17): each fact in E, and outside E only the nearest code result on each side. That is all that R-EP6 reads for a compiler in W. A learned interval of R-EP7 and a range in a message end at the ends of E. |
+| R-EP15 | `Matrix` | The registry data that R-EP2 to R-EP4 read: the `epochs` of the closure answer (Registry 4, R-AP17), and the `sweeps` and `transitions` rows (Registry 5). It has no real fact, so `Facts` does not carry it. With no registry it is empty, and R-EP4 gives each release an epoch of its own. |
 | R-EP13 | `epochs` | A partition of D into intervals of adjacent releases |
 | R-EP14 | `inferred` | Facts for pairs with no real fact. Each one is marked `inferred` and names the real fact it comes from. |
 
@@ -319,9 +322,9 @@ epochs : List(Release), Facts -> { epochs : List(Interval), inferred : Facts }
 | R-EP4 | An epoch is a maximal interval of D in which each transition is flat. A boundary or a transition that is not covered ends an epoch. So with no matrix (registry off, or a release that the bot did not sweep), each release is an epoch of its own. |
 | R-EP5 | A fault fact marks one release bad for one hash. It is never part of a boundary, it never ends an epoch, and it never gives an inferred fact. |
 | R-EP6 | A pair (h, r) with no real fact gets an inferred result X in one of two cases. (a) Same epoch: h has a real code result X on a release in the epoch of r. (b) Between: the nearest real code result of h before r and the nearest after r are both X. If one case gives `pass` and a case gives `fail`, the pair stays unknown. An unknown pair between a `pass` and a `fail` of one hash stays unknown: it is the place to probe. An inferred `fail` copies the set of failing modules of its source. |
-| R-EP7 | A learned incompatibility is a hash and an interval of D: `not (h and roc in [a, b])`. [a, b] is the maximal interval around the failing release r in which each release of D has a `fail` for h (real or inferred) that touches a module the app uses. A fault gives the interval [r, r]. |
-| R-EP8 | An inferred fact never decides, except as R-EP9 states. The solver step (TESTING.md 2.2) returns `Done` only when each pair (hash, nightly) of the tuple has a real fact. It returns `Fail` only when the explanation uses real facts only. Else it returns `Need` with probes for the inferred facts that the tuple or the explanation uses. This is the second pass: it probes the inferred facts that blocked the best tuples, inside the budget (R-P5). |
-| R-EP9 | With `--no-probe` (no new unit probes), the step can return `Done` or `Fail` on inferred facts. When the budget is spent, the explanation can use inferred facts. Talon marks each one as `inferred` in the output and in `--json`. A spent budget gives exit code 12 (R-UP7). The final ladder (steps 2 and 3) still runs on real probes, so Talon never writes a header on an inferred fact alone, unless `--no-check` also skips that ladder. |
+| R-EP7 | A learned incompatibility is a hash and an interval of D: `not (h and roc in [a, b])`. [a, b] is the maximal interval around the failing release r in which each release of D has a `fail` for h (real or inferred) that touches a module the app uses. A fault gives the interval [r, r]. A run of inferred fails with no real fail also gives an incompatibility. It is inferred, so by R-EP8 it never decides alone: the step asks for a probe. |
+| R-EP8 | An inferred fact never decides, except as R-EP9 states. The solver step (TESTING.md 2.2) returns `Done` only when each pair (hash, nightly) of the tuple has a real fact. It returns `Fail` only when the explanation uses real facts only. Else it returns `Need` with probes for the inferred facts that the tuple or the explanation uses. This is the second pass: it probes the inferred facts that blocked the best tuples, inside the budget (R-P5). The form: let A be the best tuple when inferred facts count, and B the best tuple when only real facts count (B is never worse than A). `Fail`: B does not exist. `Done`: A and B are equal and each pair of A has a real fact. Else `Need`: for the missing facts of A, or of B when A does not exist or B is better than A. |
+| R-EP9 | With `--no-probe` (no new unit probes), the step runs in probe mode `Off`: it can return `Done` or `Fail` on inferred facts, it never asks for a probe (it can still ask for a header, R-AL8), and a pair with no fact at all is fit. Talon marks each inferred fact as `inferred` in the output and in `--json`. When the budget is spent, Talon saves the facts of the probes that ran (R-PP4) and stops at once with exit code 12 (R-UP7). It prints no explanation: the next run starts with the saved facts. The final ladder (steps 2 and 3) still runs on real probes, so Talon never writes a header on an inferred fact alone, unless `--no-check` also skips that ladder. |
 
 With no bot data (registry off), each hash starts with the release date and `roc:` pin as hints (section 3). R-EP4 then gives one epoch per release, and only the "between" case of R-EP6 infers facts.
 
@@ -361,7 +364,7 @@ flowchart TD
 | --- | --- | --- |
 | R-AL1 | 1 | Collect variables, ranges and anchors (section 1). For a command that runs step 6, run the baseline check on the current header (section 4). |
 | R-AL2 | 2 | With a registry, send one closure query (Registry 4.1). The second search of a held move can send one more (Resolution 9, R-SP24). An answer gives the header facts (R-AL8) of each candidate and of their closures, and the shared matrix for these hashes. With direct, this step sends nothing: steps 3 to 6 get each fact when they need it (R-AL8, source 4). |
-| R-AL3 | 3 | PubGrub picks the best tuple by `priority`, under R-C1 to R-C4, R-C6, R-C7, R-C9 and R-C10. |
+| R-AL3 | 3 | PubGrub picks the best tuple by `priority`, under R-C1 to R-C4, R-C6, R-C7, R-C9 and R-C10. R-C2 and R-C3 also read the closure (R-AL9). The step checks the part between the slots, and the closure walk of the chosen tuple checks the rest (R-AL15). |
 | R-AL4 | 4 | For each pair (hash, roc) with no fact, run a unit probe. Order: installed nightly first, then the strongest hint. Up to 12 checks run at the same time (section 4, "Parallel probes"). |
 | R-AL5 | 5 | A fail in a module that the app uses, or a fault, adds an incompatibility for the hash and an interval of compiler releases (R-EP7). Go back to step 3. Inferred facts (R-EP6) order and prune the search, but the step needs real facts to finish (R-EP8). |
 | R-AL6 | 6 | When all unit facts pass, run the whole-app check, then the build (ladder steps 2 and 3). Step 2 blames only errors that are new against the baseline (section 4). Step 3 is skipped when a recorded pass allows it (section 4). `--no-check` skips both. These catch errors that come from the combination (for example a raised transitive version) and from the target. In P0, steps 4 and 5 do not run (Design 7, P0 limits). |
@@ -380,18 +383,38 @@ A closure of depth d takes at most d lists. The registry makes it 1 request (ste
 
 R-AL9: The closure of a tuple is the closure that roc builds (Design 2): the header entries, the path entries and their entries (R-H7), and the deps of the winner of each group, to the end. The winner of a group is the highest version that an edge names. Talon never asks for the facts of a version that does not win, also when the registry answer has them. Each user of a closure applies this one rule: the solver for R-C2 and R-C3, `tln list`, `tln why`, and the walk before the ladder. A problem of the rule (a cycle, one label with two hashes, a header pin lower than a dep needs, two platforms) is a conflict of the tuple in steps 3 to 5: the solver tries the next tuple (P0: R-PH10). When no variable is free (`install --frozen`, `list`, `why`), it stops with exit code 10 (`no_tuple`) and names the problem.
 
-Example failure output, with measured ranges, for an app that imports `parser.Yaml`. It needs phase P1 (unit probes):
+### The solver step
+
+The solver step is a pure function of its request (R-DT2): the same request gives the same answer, whatever the order of the lists in it. The request holds all the state. A step starts from the start each time, and what the search learns comes back in the next request as conflicts.
+
+| # | Item | Rule |
+| --- | --- | --- |
+| R-AL13 | Variable and value | A variable is a slot: a free direct dep, the platform, or the compiler (`roc`). A transitive group is no variable (R-AL9). The values of a slot are the candidates that the rules of section 2 allow (R-C1, R-C6, R-C7, R-C9, and a named version, R-C7), best first: by semver, the highest first with `highest`, the lowest first with `lowest`. Two ids of one version are in the byte order of the ids. A version that does not parse is not a value. A range still excludes the value of a header entry (R-C9). The values of the compiler slot are the releases of the domain D (R-EP11), in the order of D. |
+| R-AL14 | Request | The slots, the rules (`now`, `min-release-age`, `snapshot`, `strategy`), the header facts (R-AL8) that the command has, the conflicts of the caller (sets of choices that cannot all hold, for example 2 slots of one group, R-WS2), and the compatibility record: D, the unit checks (real or inferred, with the failing modules), the modules that the app uses, and the probe mode (`Allowed` or `Off`, R-EP9). |
+| R-AL15 | Answer | `Need(List(Ask))`: an ask is `Header(id)` (R-AL8) or `Probe(id, nightly)` (R-AL4). The asks are for the best tuple only, headers before probes (a release with no header may be of a wrong kind, R-C4). `Done(List(Chosen))`: the best tuple, when each release of it has its facts (R-EP8). `Fail(Why)`: no tuple. A release with no fact is taken as fit until its fact comes. R-C3 is checked when the request has exactly one platform slot. R-C2 and R-C3 are checked only between the slots. The caller walks the closure of the chosen tuple (R-AL9) and gives a problem back as a conflict in the next request. |
+| R-AL16 | Search | PubGrub with unit propagation and conflict learning (R-AL3). A learned incompatibility (R-EP7) and a conflict of the caller have one form: a set of terms that cannot all be true. |
+| R-AL17 | Why | The explanation of a `Fail` is a graph of steps. Each step has terms (the slots, in the order of the slots, with their ids best first; a term with all values of its slot is left out) and a cause: `Probe` (a fail or a fault of a release on the compilers `from` to `to`, the failing modules that the app uses, and the compilers whose fail is inferred), `Dep` (a release needs a group at a version), `Pf` (a release names a platform), `Given` (a conflict of the caller), `NoValue` (a slot has no value), or `Derived` (the join of 2 earlier steps). The explanation is the part of the graph that the last step needs, in the order of the steps of the search. The text and `error.details` come from the `Probe` causes (R-AL10 to R-AL12). |
+
+Example failure output, with measured ranges, for an app that imports `parser.Yaml`. It needs phase P1 (unit probes). The text is the output of the L3 case `exit/ex3-no-tuple-yaml` (TW16), which runs `tln upgrade roc` on the real facts of `conformance/compat-sweep`. The pin is `nightly-2026-09-30-4c37850`, and the compiler list is the real list of that sweep:
 
 ```text
-error: no tuple works
-
-  lukewilliamboswell/roc-parser 2.0.0 (module Yaml)   checks on nightly 09-24 .. 10-01
-  roc-lang/basic-cli 0.25.0                           checks on nightly 10-09 .. 10-12
-  no nightly is in both ranges
-
-  fix: relax pf to "0.24.*" (checks on 09-26 .. 10-06, overlap 09-26 .. 10-01)
-       or stop using parser.Yaml (parser.Parser checks on 10-09)
+$ tln upgrade roc
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-09-30-4c37850 fails for lukewilliamboswell/roc-parser 2.0.0 (Yaml.roc); the platform roc-lang/basic-cli 0.25.0 (no module is named)
+  lukewilliamboswell/roc-parser 2.0.0 fails on nightly-2026-10-02-bba1acc .. nightly-2026-10-12-2664a27
+  the platform roc-lang/basic-cli 0.25.0 fails on nightly-2026-09-15-fe09c42 .. nightly-2026-10-06-c34079d
+  fix: tln roc use <id>
+       or stop using parser.Yaml
 ```
+
+The lines follow this form. A range is a fail run (R-EP7), not a pass run. Talon prints the runs that it knows.
+
+| # | Line | Text |
+| --- | --- | --- |
+| R-AL10 | First line | `tln: error[no_tuple]: no tuple works: ` and the reason of the solver: the unit check on the held nightly fails for each release that the proof blames, with the failing modules that the app uses (`(Yaml.roc)`), or `(no module is named)` when the fail has no module (a platform fail, a fault). |
+| R-AL11 | Cause lines | One line for each blamed release: `  <label> fails on <from> .. <to>`, the fail run of R-EP7 around the held nightly. `hangs` and `crashes` replace `fails` for a hang and a crash. A run of one compiler has `on <id>` and no range, and no line when it is the held nightly alone (the first line has it). An inferred compiler in the run gives the mark `(inferred on <id>, ...)` (R-EP9). |
+| R-AL12 | Fix block | `  fix: <option>`, and `       or <option>` for each next option (7 spaces). Option 1: `tln roc use <id>`, with the oldest nightly that works when a probe or the matrix knows it, as `tln roc use <id> (the oldest nightly that works)` (R-RP2). Option 2: `tln upgrade roc` (R-RP2). It is left out when the failed command is `tln upgrade roc` (R-SP8), because that command just failed. One option for each module that a blamed release fails and the app imports: `stop using <alias>.<Module>` (R-UM1), with no repeat. A platform has no such option. |
+
+The `--json` form of the same failure is `error.details` (R-J5): `compiler`, `causes[]` (`release`, `kind`, `modules`, `from`, `to`, `inferred`) and `hint`.
 
 ## 6. Overrides of transitive versions
 
@@ -413,13 +436,13 @@ R-PA9: `tln patch json` copies the cached package of the header entry `json` to 
 json = { path = "./.talon/patches/json/main.roc", base = "4W8SHzvwet9h..." }
 ```
 
-R-PA10: The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-dep <header URL> <path>` to each command. Probes and the whole-app check use the same flag.
+R-PA10: The header does not change. The `roc` proxy (CLI 6.2) adds `--replace-dep <header URL> <path>` to each command. Probes and the whole-app check use the same flag. A unit probe (section 4) tests the release as it is, with no flag: its fact is about the hash, not about the copy. The copy is tested by the whole-app check and the build.
 
 | # | Item | Where | In VCS |
 | --- | --- | --- | --- |
 | R-PA11 | The patch: the edited copy | `.talon/patches/<alias>/` | Yes |
 | R-PA12 | The `[patch]` entry: path and base hash | `talon.toml` | Yes |
-| R-PA13 | The original package | `packages/<base>/` in the roc cache | No. Talon fetches it by hash when it needs a diff (R-PA3, R-PA5). |
+| R-PA13 | The original package | `packages/<base>/` in the roc cache | No. Talon fetches it by hash when it needs a diff (R-PA3, R-PA5). It finds the URL in the release list of the group of the entry (the asset is `<hash>.tar.zst`, CLI R-DI4). When no release of that group has the hash, the diff is not possible: Talon stops with exit code 14 and names the `base`, the alias and the two fixes of R-PA5. With `--offline` and no cached list, it stops with exit code 15 (CLI R-DI12). |
 
 | # | Rule |
 | --- | --- |
@@ -569,10 +592,10 @@ These are resolve flags (CLI 1). They apply to commands that resolve.
 
 | # | Flag | Meaning |
 | --- | --- | --- |
-| R-LF1 | `--frozen` | Do not resolve. Fetch the closure, check each hash, and fail if the header does not satisfy `talon.toml`, or `talon.toml` has a key that the header does not have (Design 4.3, R-I5), or a `[tools]` entry fails CLI 6.4, R-PT7. Build each project tool that has no built binary (CLI R-PT6): only then does it need a compiler (R-SO14, R-SO22). Write nothing. For CI. Same idea as Bun `--frozen-lockfile`. It does not imply `--offline` (Cargo `--frozen` does). |
+| R-LF1 | `--frozen` | Do not resolve. Fetch the closure, check each hash, and fail if the header does not satisfy `talon.toml`, or `talon.toml` has a key that the header does not have (Design 4.3, R-I5), or a `[tools]` entry fails CLI 6.4, R-PT7. The fetch runs `roc unbundle` (CLI 7.1, R-FE2), so it uses the compiler of CLI R-FE4 (R-SO14 when nothing is installed). It runs no probe. Build each project tool that has no built binary (CLI R-PT6): that build selects its compiler as `tln x` does (R-SO22). Write nothing. For CI. Same idea as Bun `--frozen-lockfile`. It does not imply `--offline` (Cargo `--frozen` does). |
 | R-LF2 | `--no-probe` | Run no new unit probes (ladder step 1). Use known evidence only. The final ladder (steps 2 and 3 of section 4) still runs. |
 | R-LF3 | `--no-check` | Skip the baseline check and the final ladder: the whole-app check and the build (section 4, and section 5 step 6). Talon still writes the header, with no local proof for the tuple. R-H6 keeps the old `roc:` pin. |
-| R-LF4 | `--dry-run` | Print the header diff and the `talon.toml` diff. Write no project file. Probe results still go in `compat.db`, because they are facts (section 3). Talon answers No to optional downloads (R-NI4). A required download follows the consent rules (R-DL1 to R-DL6). |
+| R-LF4 | `--dry-run` | Print the header diff and the `talon.toml` diff. Write no project file. Probe results still go in `compat.db`, because they are facts (section 3). Talon answers No to optional downloads (R-NI4), and prints the `skipped` line of R-DL4 when a search needs one. A required download follows the consent rules (R-DL1 to R-DL6). |
 
 R-LF5: There is no `--locked`. Cargo and uv give that name a different meaning, so Talon does not use it.
 
@@ -609,9 +632,19 @@ R-SO9: Rank 7 is the first `roc` on `PATH` that is not the Talon launcher (CLI 6
 | --- | --- | --- |
 | R-SO12 | A rank selects a nightly that is not installed | A required download (R-DL2, prompt R-NI5) |
 | R-SO13 | Rank 4 has a range, and no installed compiler is in it | The newest compiler release in the range that the `nightly` switch allows is a required download (R-NI5) |
-| R-SO14 | No rank selects a compiler | Error with exit code 18 (`environment`, CLI 3, R-EC18): the fix is on the machine, not in the command. The message names `tln roc install @latest` and `tln roc default`. In P0 (Design 7, R-PH6) it says that no `roc` is on `PATH`. Talon does not guess. A command that needs no compiler (`install --frozen`, section 12, R-LF1) does not stop. `install --frozen` needs a compiler only when it builds a project tool that has no built binary (CLI 6.4, R-PT6): then this row applies to that build. |
+| R-SO14 | No rank selects a compiler (the user removed every compiler, and no `roc` is on `PATH`, and `default-roc` is not set, and the project, if there is one, has no pin, no range and no `.roc-version`) | Talon does not stop and does not guess a wrong compiler. It picks one to download (R-DL2), by the first case that fits. (1) The command runs in a project (CLI 1, R-PD1 to R-PD8): Talon picks the compiler that suits that project. It is the newest compiler in the channel (R-SO15) that has a recorded `pass` (rank 1 or 2 of R-EF1) for each hash of the header entries that has a fact, and else the latest in the channel. It downloads that one and sets it as `default-roc` (R-SO15), so the only compiler on the machine is usable with no manual step, as `rustup` does. (2) The command runs outside a project: Talon downloads the latest compiler in the channel, which is the newest release that the `nightly` switch and `min-release-age` allow (CLI 6.6, R-RU1, R-NS3), and sets it as `default-roc` (R-SO15). When that compiler is already installed, Talon only sets the default. The download follows the consent rules R-DL1 to R-DL6 (prompt R-NI5, which names the compiler and that it becomes the default). The exit codes of a refusal are the codes of those rules: exit code 13 when the user refuses or no prompt is possible, `--offline` or `TALON_AUTO_INSTALL=no` included (R-DL5, CLI R-DI12); exit code 15 when no compiler list can be read; exit code 10 when the switch is off and no release exists (R-NS2). In P0 (Design 7, R-PH6) there is no download, so exit code 18 (`environment`, CLI 3, R-EC18) says that no `roc` is on `PATH`. A fetch of packages needs a compiler to unpack them (`roc unbundle`, CLI 7.1, R-FE2, R-FE4), so `install --frozen` also uses this rule when nothing is installed. A command with no fetch, no probe and no build (section 12, R-LF1) needs no compiler. |
 
-R-SO15: The first compiler that Talon installs becomes the global default when none is set, as in rustup. So "no rank selects a compiler" happens only before the first install, when no `roc` is on `PATH`.
+R-SO15: Only a user act sets the global default (`default-roc`, rank 6). An act names a compiler for the machine, so the user chose it. A download that a command makes for its own work installs the compiler and never sets the default: a probe, `tln upgrade`, `tln init`, `tln roc use`, a tool pin (CLI 6.4), a project tool, `tln x`, and the `roc` proxy when a rank gives the compiler. So a compiler that Talon fetched for a build is not a choice of the user, and it never replaces a default that is set. Two cases set a default with no typed compiler. (1) `tln setup` on a machine with no default (the first install): Talon takes the latest compiler in the channel (the newest release that the `nightly` switch and `min-release-age` allow, as `tln roc update`, R-RU1). (2) R-SO14, when no rank selects a compiler: the compiler that Talon downloads becomes the default, in a project (the compiler that suits it) and outside a project (the latest in the channel). Both set a default only when none is set. The channel is the `nightly` switch (R-NS8 to R-NS11): with the default `true`, it is the newest nightly. Talon never takes any other installed compiler as the default by itself.
+
+| Act | Effect on `default-roc` |
+| --- | --- |
+| `tln roc default <ref>` | Sets it, also when one is set (CLI 6.6, R-CS2). |
+| `tln roc install <ref>`, also `--git` and `@<sha>` | Sets it when none is set, as `rustup toolchain install` does. It does so also when the compiler is already installed, because the user named it. It never changes a default that is set. |
+| `tln roc update` | Moves or sets it (CLI 6.6, R-RU2). |
+| `tln roc remove` of the default | Moves it (CLI 6.6, R-RR1). |
+| `tln setup`, first install (CLI 6.7, R-ST16) | Sets the latest compiler in the channel when none is set. It downloads nothing: the compiler is downloaded when a command needs it (R-DL2). |
+| A command with no compiler selected at all (R-SO14) | Sets the compiler that it downloads: in a project the one that suits it, outside a project the latest in the channel. It sets it only when no default is set. |
+| Every other command | Never. |
 
 R-SO16: Talon reads `.roc-version` but never writes it (G1: no second lock). `tln init` writes the nightly as the `roc:` entry of the header (CLI 1).
 
@@ -627,5 +660,5 @@ Sections 9 and 13 answer two questions. The held nightly (R-SP1) is what a comma
 | R-SO19 | A command holds the nightly (R-RP2) | The held nightly is the `roc:` pin (rank 3). With no pin, it is the compiler that ranks 2, 4, 5, 6 and 7 select (a `tln` command has no rank 1). Before the index and before any write, Talon checks it against the `[toolchain] roc` range and the `nightly` switch (R-NS7). A pin that fails: R-RP2. No pin, and rank 4 finds no installed compiler in the range: R-SO13. No pin, and another rank selects a compiler that the switch or the range does not admit: exit code 10 (`no_tuple`, R-NS2). The error names the compiler, the rank that selected it (`ROC_TOOLCHAIN`, `.roc-version`, the global default or the `roc` on `PATH`), and the range or the switch and its source. A local build (R-SO11, R-NS6) is not checked: Talon never writes it. |
 | R-SO20 | A command holds the nightly, the header has a pin, and `ROC_TOOLCHAIN` names another compiler | The held nightly stays the pin, and the probes run on it (R-BL1). Talon prints one note that names both ids and `tln roc use <id>`. `ROC_TOOLCHAIN` still selects the compiler of the proxy (R-U6). |
 | R-SO21 | `tln verify` | It writes nothing, so its probes run on the run compiler: rank 2, then the held nightly of R-SO19. R-RP2 still checks the pin, because the pin is part of the header. Use: `ROC_TOOLCHAIN=<id> tln verify` tests the header on another compiler. |
-| R-SO22 | The held nightly or the run compiler is not installed | It is a required download (R-DL2) at the first probe, not before. `--no-check` and `--frozen` run no probe, so they need no compiler for the project, and `ROC_TOOLCHAIN` does not stop them. One exception: `install --frozen` builds each project tool that has no built binary (CLI 6.4, R-PT6). That build selects its compiler as `tln x` does (CLI R-X1), and a missing compiler is a required download (R-DL2). |
+| R-SO22 | The held nightly or the run compiler is not installed | It is a required download (R-DL2) at the first probe, not before. `--no-check` and `--frozen` run no probe, so they need no compiler for the project, and `ROC_TOOLCHAIN` does not stop them. One exception: `install --frozen` builds each project tool that has no built binary (CLI 6.4, R-PT6). That build selects its compiler as `tln x` does (CLI R-X1), and a missing compiler is a required download (R-DL2). The fetch of `--frozen` still runs `roc unbundle` with the compiler of CLI R-FE4. |
 

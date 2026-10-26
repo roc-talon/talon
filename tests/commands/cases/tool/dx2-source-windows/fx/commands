@@ -1,0 +1,2 @@
+env:HOME={w}/home/u1 env:USERPROFILE={w}/home/u1 tool update talon --from-source
+env:HOME={w}/home/u2 env:USERPROFILE={w}/home/u2 tool update talon --from-source

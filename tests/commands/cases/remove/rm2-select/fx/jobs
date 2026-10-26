@@ -1,0 +1,3 @@
+# R-FE2 the fetch of the json release that is not in the cache: the download, then roc unbundle (the program is in the calls.log). The unbundle makes the dir of the hash with the header of acme/json 2.1.0 (fx/pkgs).
+unbundle 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst	0	-	-	dir:{cwd}/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq;copy:{cwd}/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc={w}/fx/pkgs/acme_json_2.1.0.roc
+4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.0123456789abcdef.tmp/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst

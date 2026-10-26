@@ -3,15 +3,18 @@ import BuildTarget
 import Closure
 import Db
 import Epochs
+import Explain
 import Facts
 import Fail
 import Fx
 import Gather
+import Github
 import Ident
 import Launch
 import Nightlies
 import Oracle
 import OracleBase
+import PairOrder
 import Pin
 import Pick
 import PickOptional
@@ -70,7 +73,7 @@ PickLoop :: [].{
 	run! : Fx, ResolveBase.Request, PickLoop.Input, PickLoop.Setup, PickLoop.State => Try(PickLoop.Looped, PickLoop.Stuck)
 	run! = |fx, request, input, setup, state| {
 		probed = state.probed
-		compat = { compiler: probed.compiler, checks: probed.checks, looked: probed.looked, probes: setup.probes, conflicts: probed.tried, used: probed.used, domain: probed.domain, inferred: probed.inferred }
+		compat = { compiler: probed.compiler, checks: probed.checks, looked: probed.looked, probes: setup.probes, conflicts: probed.tried, used: probed.used, domain: probed.domain, inferred: probed.inferred, failed: Explain.failed_command({ command: request.command, names: request.names }) }
 		if wants_domain(setup, probed) return match wide!(fx, request, input, probed) {
 			Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 			Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
@@ -156,7 +159,7 @@ hash_of = |url| match Ident.of_url(url) {
 # One `Gather.get!` for the ids of a `Need`: a release URL gives a fact, a path file gives a node of the closure.
 read_all! : Fx, ResolveBase.Request, List(Str), List(ResolveBase.Fact), List(Closure.Node) => Try({ facts : List(ResolveBase.Fact), paths : List(Closure.Node), seen : List(BuildTarget.Seen) }, Fail)
 read_all! = |fx, request, ids, facts, paths| {
-	got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline }, ids)?
+	got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none }, ids)?
 	var $facts = facts
 	var $paths = paths
 	var $seen = no_seen
@@ -264,7 +267,9 @@ probe_round! = |fx, request, setup, probed, pairs| {
 	}
 	if budget.run == 0 return Err(Units.spent({ max, left: 0 }))
 	# Slice 039b (R-P5): a download is for a probe that can start, so the step runs after the budget and before the compiler starts.
-	stepped = PickOptional.step!(fx, request, { settings: setup.settings, sizes: setup.optional.sizes, pairs: pairs.take_first(budget.run) }, probed.optional)?
+	# Slice 068b (R-AL4, R-DI8): a cut round asks for the `.roc-version` hints and runs the hinted pairs first. A round that the budget does not cut asks for none: all its pairs run.
+	ordered = if budget.cut hinted!(fx, request, pairs) else pairs
+	stepped = PickOptional.step!(fx, request, { settings: setup.settings, sizes: setup.optional.sizes, pairs: ordered.take_first(budget.run) }, probed.optional)?
 	if stepped.pairs.is_empty() return Ok({ ..probed, optional: stepped.state })
 	begun = begin!(fx, request, setup, { ..probed, optional: stepped.state })?
 	started = { ..begun.started, installed: begun.started.installed.concat(stepped.state.got) }
@@ -305,6 +310,22 @@ probe_round! = |fx, request, setup, probed, pairs| {
 			Ok({ ..begun.probed, checks: begun.probed.checks.concat($facts), count: begun.probed.count + run.len() })
 		}
 	}
+}
+
+# Slice 068b, D3: a hint that fails is no hint (R-EF2: a hint only orders the search).
+hinted! : Fx, ResolveBase.Request, List(OracleBase.Pair) => List(OracleBase.Pair)
+hinted! = |fx, request, pairs| {
+	var $hints = []
+	for ask in PairOrder.asks(pairs) {
+		answer = Github.hint!(fx, { net: request.net, roots: request.roots, owner: ask.owner, repo: ask.repo, tag: ask.tag, offline: request.offline })
+		match answer {
+			Ok(Ok(compiler)) => {
+				$hints = $hints.append({ id: ask.id, hint: Ok(compiler) })
+			}
+			_ => {}
+		}
+	}
+	PairOrder.order({ pairs, hints: $hints })
 }
 
 no_groups : List({ id : Str, nodes : List(Units.Node) })

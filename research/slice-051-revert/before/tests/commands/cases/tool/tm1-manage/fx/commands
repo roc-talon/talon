@@ -1,0 +1,15 @@
+tool ls
+tool ls --json
+tool rm nope
+tool rm acme/zzz
+tool rm talon
+tool rm foo --dry-run
+tool rm foo
+tool rm g --json
+tool rm acme/z
+tool ls
+tool rm foo
+tool update
+tool rebuild
+tool update --json
+tool rebuild --json

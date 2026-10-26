@@ -1,0 +1,12 @@
+why json --file pa/main.roc
+why json --file pa/main.roc --json
+why json --file pb/main.roc
+why json --file pc/main.roc
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 why json --file pc/main.roc
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 why json --file pa/main.roc
+why parser --file pd/main.roc --json
+why util --file pe/main.roc --json
+why parser --file pa/main.roc
+why json --file pa/main.roc
+why json --file pa/main.roc
+why pf --file pa/main.roc

@@ -7,3 +7,5 @@ tln: error[input]: $PROJECT/p8/talon.toml:2: tools.fmt: must be a table with ref
 warning: $PROJECT/p7/talon.toml:2: unknown key tools.fmt.note
 note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.
 tln: error[usage]: acme/fmt is the app of 2 entries of [tools]: fmt, fmt2. Use tln x <key>.
+tln: error[usage]: --roc and --allow-unchecked have no effect on the project tool fmt: its pin and its url are the lock. Remove the flags.
+note: fmt 1.0.0 is installed. tln did not check it online for yanks and advisories.

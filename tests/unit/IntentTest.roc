@@ -127,6 +127,11 @@ expect {
 		("[toolchain] in a member file", "[toolchain]\nroc = \"*\"\n", Member, "tln: error[input]: /p/talon.toml:1: the table [toolchain] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
 		("[audit] in a member file", "[audit]\nignore = []\n", Member, "tln: error[input]: /p/talon.toml:1: the table [audit] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
 		("[workspace] in a member file", "[workspace]\nmembers = []\n", Member, "tln: error[input]: /p/talon.toml:1: the table [workspace] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
+		# R-EC19 R-PA12 (slice 076, Q1): a `[patch]` `base` is a hash, which names `packages/<base>`: a text that is not a safe path part is a value of the wrong form (exit 19, before any read)
+		("a [patch] base that is ..", "[patch]\njson = { path = \"./x/main.roc\", base = \"..\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: '..' is not a hash"),
+		("a [patch] base with a /", "[patch]\njson = { path = \"./x/main.roc\", base = \"a/../b\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: 'a/../b' is not a hash"),
+		("a [patch] base with a backslash", "[patch]\nx = 1\njson = { path = \"./x/main.roc\", base = \"a\\\\b\" }\n", Standalone, "tln: error[input]: /p/talon.toml:3: patch.json.base: 'a\\b' is not a hash"),
+		("an empty [patch] base", "[patch]\njson = { path = \"./x/main.roc\", base = \"\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: '' is not a hash"),
 		("the first one in file order", "[dependencies]\njson = \"latest\"\n\n[resolution]\nstrategy = \"x\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: 'latest' is not a version range"),
 	]
 	bad_failures = failures.keep_if(|(_, text, role, want)| fails(text, role) != want).map(|(label, text, role, want)| (label, want, fails(text, role)))

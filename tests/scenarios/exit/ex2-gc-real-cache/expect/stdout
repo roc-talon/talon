@@ -1,0 +1,22 @@
+== 0: the copy, and the ages: the first dir of each kind is mixed, the second is 3 days old, the dirs between are old, the last one is young (the real clock).
+== 1: a dry run (R-GC11): the old legacy dirs, the old compat dirs and the old packages are listed with their sizes. The total is the sum of the file sizes. Nothing is removed.
+exit 0
+dry: the json answer is ok: yes
+dry: build dirs: the listed ones are the old ones: yes
+dry: packages: the listed ones are the old ones: yes
+dry: each listed item has a size: yes
+dry: freed is the sum of the file sizes of the listed items: yes
+dry run: the tree is the same: yes
+== 2: the real run (R-GC2, R-GC3, R-GC4): the same sets go, with the sidecars of the packages. Nothing else changes: the mixed dir (one young file), the dir of 3 days (for builds) and the young dir of each kind stay whole (R-GC1: GC does not look inside a kept build cache).
+exit 0
+gc: the json answer is ok: yes
+gc: build dirs: the listed ones are the old ones: yes
+gc: packages: the listed ones are the old ones: yes
+gc: each listed item has a size: yes
+gc: freed is the number of the dry run: yes
+real run: the tree lost exactly the listed dirs and sidecars: yes
+== 3: the legacy dirs are gone, except the mixed one, the one of 3 days and the young one (the first, the second and the last by name)
+legacy dirs left: 3
+== 4: a second run has nothing to remove (R-GC11)
+exit 0
+nothing to remove

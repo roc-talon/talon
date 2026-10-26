@@ -1,0 +1,26 @@
+== install --offline --file p1/main.roc
+exit 15
+== install --file p1/main.roc
+exit 14
+== install --offline --file p1/main.roc
+exit 14
+== install --offline --file p2/main.roc
+exit 15
+== patch json --diff --file p2/main.roc
+--- a/Json.roc
++++ b/Json.roc
+@@ -1,1 +1,1 @@
+-fake
+\ No newline at end of file
++top patched
+--- a/main.roc
++++ b/main.roc
+@@ -1,1 +1,1 @@
+-fake
+\ No newline at end of file
++package [Json] {}
+exit 0
+== patch json --diff --file p1/main.roc
+exit 14
+== install --offline --file p3/main.roc
+exit 14

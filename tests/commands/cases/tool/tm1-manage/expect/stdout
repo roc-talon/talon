@@ -11,7 +11,7 @@ exit 0
 exit 2
 == tool rm acme/zzz
 exit 2
-== tool rm talon
+== tool rm talon foo
 exit 2
 == tool rm foo --dry-run
 exit 2

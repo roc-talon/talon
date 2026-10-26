@@ -44,6 +44,22 @@ expect {
 			"http://10.0.0.1/pkg/1.0.0/${hash}.tar.zst",
 			Err((2, "http://10.0.0.1/pkg/1.0.0/${hash}.tar.zst: a package URL must be https://, or http:// to 127.0.0.1, [::1] or localhost")),
 		),
+		# R-ID5 R-H4 R-DI1 (slice 076): a hash that is not a safe path part is no hash, so the URL is no release URL (exit 2): `<pkgs>/..` and `<pkgs>/.` are the cache dirs, not a package
+		(
+			"a hash that is ..",
+			"https://github.com/acme/json/releases/download/2.1.0/...tar.zst",
+			Err((2, "https://github.com/acme/json/releases/download/2.1.0/...tar.zst is not a package release URL")),
+		),
+		(
+			"a hash that is .",
+			"https://github.com/acme/json/releases/download/2.1.0/..tar.zst",
+			Err((2, "https://github.com/acme/json/releases/download/2.1.0/..tar.zst is not a package release URL")),
+		),
+		(
+			"a hash with a backslash",
+			"https://github.com/acme/json/releases/download/2.1.0/a\\..\\b.tar.zst",
+			Err((2, "https://github.com/acme/json/releases/download/2.1.0/a\\..\\b.tar.zst is not a package release URL")),
+		),
 		(
 			"ftp",
 			"ftp://example.com/pkg/1.0.0/${hash}.tar.zst",
@@ -128,4 +144,55 @@ expect {
 	offline = view(Fetch.offline_missing(plan))
 	dbg offline
 	bad_download == [] and bad_unbundle == [] and offline == (15, "acme/json 2.1.0 is not in the package cache and --offline is set (${gh_url})")
+}
+
+# R-FE4 R-FE2 R-NS6 R-PB1 R-LB3 (slice 060, moved from `ProbecmdTest`, slice 037, with 9 new rows): `Fetch.unbundler`, the one choice of the compiler that runs `roc unbundle` for all fetches, as an id.
+# The selected compiler when it is installed, else the newest installed nightly or release, else the `roc` on PATH (rank 7), else a required download. A `git-`, `link-` or `copy-` build is
+# selected by name only (R-NS6): it is never the "newest". The program of the id is `Launch.program!` (the L2 case `fetch/fe-flow` run 16 reads a link).
+expect {
+	path = Ok({ id: "nightly-2026-10-14-38a3029", path: "/bin/roc" })
+	three = ["nightly-2026-10-03-3d3d3d3", "nightly-2026-10-10-0e0e0e0", "nightly-2026-10-05-5f5f5f5"]
+	view = |selected, installed, on_path| match Fetch.unbundler({ selected, installed, path: on_path }) {
+		Ok(id) => id
+		Err(NoCompiler) => "none"
+	}
+	rows = [
+		("the selected compiler is installed (rule 1): not the newest", view("nightly-2026-10-03-3d3d3d3", three, path), "nightly-2026-10-03-3d3d3d3"),
+		("the selected compiler is not installed: the newest installed (rule 2)", view("nightly-2026-10-02-2c2c2c2", three, path), "nightly-2026-10-10-0e0e0e0"),
+		("no compiler is selected: the newest installed", view("", three, path), "nightly-2026-10-10-0e0e0e0"),
+		("the selected compiler is the roc on PATH and is not installed: an installed one wins", view("nightly-2026-10-14-38a3029", three, path), "nightly-2026-10-10-0e0e0e0"),
+		("the order is by the day of the tag, the other tag form too", view("", ["nightly-2026-10-10-0e0e0e0", "nightly-2026-October-13-91fa0c2", "nightly-2026-10-12-1a1a1a1"], path), "nightly-2026-October-13-91fa0c2"),
+		("nothing installed: the roc on PATH (rule 3)", view("nightly-2026-10-14-38a3029", [], path), "nightly-2026-10-14-38a3029"),
+		("nothing installed and no roc on PATH: a required download (rule 4)", view("nightly-2026-10-14-38a3029", [], Err(NoCompiler)), "none"),
+		("the selected id is installed and is also the one on PATH", view("nightly-2026-10-14-38a3029", ["nightly-2026-10-14-38a3029"], path), "nightly-2026-10-14-38a3029"),
+		("one installed compiler", view("", ["nightly-2026-10-03-3d3d3d3"], Err(NoCompiler)), "nightly-2026-10-03-3d3d3d3"),
+		("two nightlies of one day: the tag text decides", view("", ["nightly-2026-10-10-aaaaaaa", "nightly-2026-10-10-bbbbbbb"], path), "nightly-2026-10-10-bbbbbbb"),
+		("a release with no time is older than a nightly (it has no day)", view("", ["0.2.0", "nightly-2026-10-03-3d3d3d3"], path), "nightly-2026-10-03-3d3d3d3"),
+		("two releases with no time: the version decides", view("", ["0.10.0", "0.9.0"], path), "0.10.0"),
+		("a named build is selected by name (R-NS6)", view("git-dev", ["git-dev", "nightly-2026-10-10-0e0e0e0"], path), "git-dev"),
+		("a link is selected by name (its program is read by Launch.program!)", view("link-mine", ["link-mine", "nightly-2026-10-10-0e0e0e0"], path), "link-mine"),
+		("a named build is not the newest, in any list order (R-NS6)", view("", ["link-mine", "nightly-2026-10-03-3d3d3d3", "git-dev", "copy-x"], path), "nightly-2026-10-03-3d3d3d3"),
+		("only named builds installed: the roc on PATH (R-NS6)", view("", ["copy-x", "git-dev", "link-mine"], path), "nightly-2026-10-14-38a3029"),
+		("only named builds installed and no roc on PATH: a required download (R-NS6)", view("", ["git-dev"], Err(NoCompiler)), "none"),
+		("a selected id that only looks like a named build and is not installed: the newest", view("git-other", ["git-dev", "nightly-2026-10-03-3d3d3d3"], path), "nightly-2026-10-03-3d3d3d3"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-FE4 R-SO6 (slice 060, question Q1 (a)): `Fetch.selected`, the compiler that a fetch calls "selected". The held compiler of a flow with a decision wins over the `default-roc` of `config.toml`.
+# A flow with no decision gives the default (when it knows it), else no compiler (`""`). The held compiler is not checked here: it can be a compiler that is not installed (the choice then goes on to the newest).
+expect {
+	rows = [
+		("a held compiler wins over the default", Fetch.selected({ held: "nightly-2026-10-03-3d3d3d3", default: "nightly-2026-10-10-0e0e0e0" }), "nightly-2026-10-03-3d3d3d3"),
+		("no decision: the default", Fetch.selected({ held: "", default: "nightly-2026-10-10-0e0e0e0" }), "nightly-2026-10-10-0e0e0e0"),
+		("a held compiler and no default", Fetch.selected({ held: "nightly-2026-10-03-3d3d3d3", default: "" }), "nightly-2026-10-03-3d3d3d3"),
+		("a held named build wins", Fetch.selected({ held: "git-dev", default: "nightly-2026-10-10-0e0e0e0" }), "git-dev"),
+		("a default that is a link", Fetch.selected({ held: "", default: "link-mine" }), "link-mine"),
+		("nothing: no selected compiler", Fetch.selected({ held: "", default: "" }), ""),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
 }

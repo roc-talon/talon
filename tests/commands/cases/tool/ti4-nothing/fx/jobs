@@ -1,4 +1,5 @@
 # R-DA3 the download, R-FE2 `roc unbundle`, R-HF5 the extract, R-HF2 the chmod, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
 unbundle EfCkL57GXxK7AgV8RMbFNBWQ3NFMqSj7WkT2nkCkUJrU.tar.zst	0	-	-	dir:{cwd}/EfCkL57GXxK7AgV8RMbFNBWQ3NFMqSj7WkT2nkCkUJrU;copy:{cwd}/EfCkL57GXxK7AgV8RMbFNBWQ3NFMqSj7WkT2nkCkUJrU/main.roc={w}/fx/src/x-1.0.0.src
 unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
 curl --fail	0	-	-	file:{out}

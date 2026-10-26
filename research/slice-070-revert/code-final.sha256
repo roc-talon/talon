@@ -1,0 +1,4 @@
+abd8d33628052c39905bf09330bff5c005ff13a816ce01d127390fecb201b356  cli/lib/Base.roc
+fc4fe5cf7fca5de56af21f1f8b00ccc946b6eace5b92a54b60ea083ce2674847  cli/lib/Patched.roc
+277efb37a1806350193276b678ade07ef40963a356aa94bf8ebddf74d32505b4  cli/lib/Proxy.roc
+dc4f81d5854dd6a57a0e13425ddd925e6bd6a431d95f28a2e701dbaf4f88a16e  cli/lib/PatchApply.roc

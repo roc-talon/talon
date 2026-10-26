@@ -4,3 +4,5 @@ tln: error[usage]: flag '--strategy' is not for 'list'
 tln: error[usage]: flag '--tree' is not for 'remove'
 tln: error[usage]: flag '--registry' needs a value
 tln: error[usage]: flag '--locked' is not for 'install'
+tln: error[usage]: flag '--probe-downloads' is not for 'install'
+tln: error[usage]: flag '--probe-downloads' is not for 'verify'

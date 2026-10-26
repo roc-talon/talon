@@ -1,0 +1,8 @@
+Slice 051, `tln tool remove talon` on Windows (R-RM5, R-ST10, R-HF11). The fake machine is `os=windows arch=x64`. The bin dir of Windows is `<USERPROFILE>\.local\bin`: the dir `u1\.local\bin` (a name with `\`) in the home. The files have `.exe`. One home for each run (`HOME` and `USERPROFILE` are `{w}/home/u<n>` dirs).
+
+| Run | Home | Words | Result | Rules |
+| --- | --- | --- | --- | --- |
+| 1 | u1 | `tool rm talon --remove-tools` | option 2: the compilers, the tools (files, entries, `tools.json`), the user `Path` (one `exec!` of `powershell` with the script of `Setup.windows_path` `Remove`), the Talon data. Then Talon: one `random!`, each running file is renamed to `<name>.<hex>.del` (`roc.exe`, `tln.exe`, then `<data bin>/tln.exe`), `roc.old.exe` goes back to `roc.exe`, and one detached `cmd.exe /d /c` waits and deletes the 3 `.del` files (`spawn_detached`, the files are in `TALON_DEL_1` to `TALON_DEL_3`). The `.del` files are in the tree: no delete call for them | R-RM5, R-RM6, R-RM8, R-ST10, R-HF11, R-ST4 |
+| 2 | u2 | `tool rm talon --keep-all` | the entry `roc.exe` is another file (the user put it there): it stays with the warning, and `roc.old.exe` stays. Only 2 files are renamed (`tln.exe` and the data file), so the cleanup has 2 files. It does not start (`fx/exec`: `notstarted`): the renamed files stay, the warning on stderr names them, exit 0. Option 3: no PATH change (no `exec` call) | R-RM5, R-RM3, R-RM6, R-ST6, R-ST10 |
+
+Slice 050c (R-ST10): each run on the fake Windows starts with the sweep of the `.del` files: `env_all` and one `list_dirs` of the bin dir and the data bin dir (no `.del` file here, so no `delete`). `calls.log` has these 2 lines before `args`.

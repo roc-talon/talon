@@ -1,0 +1,7 @@
+Slice 073, R-B10 (entry `commands`): an `x` cache entry has the binary when its dir holds the file that the manifest names: the repo of the full name, with `.exe` on Windows only (R-X2). One home with the compiler `nightly-2026-10-14-38a3029`, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`.
+Each run is `install --frozen` of a project with one tool whose `url` is locked. The `x` cache has the entry of that tool, but its dir holds the file with the name of the other system (the dir is the real digest of the build, so the new build replaces it: the old dir is deleted, then the temp dir is renamed to it). The fake `platform` has one row for each run: run 1 is Linux, run 2 is Windows.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `install --frozen --json --file p12/main.roc` | Linux. The entry of acme/foo 1.0.0 has `foo.exe` and `manifest.json`: `foo.exe` is not the file of Linux, so the entry has no binary. The tool is built (`built tool f`), the old dir is deleted, the new dir has `foo`. With `--json`: `data.tools` has one row `built` (the human text goes to stderr) | R-B10, R-X2, R-PT6, R-PT5, R-OUT4 |
+| 2 | `install --frozen --file p13/main.roc` | Windows. The entry of acme/bar 1.0.0 (target `x64win`) has `bar` and `manifest.json`: `bar` is not the file of Windows, so it has no binary. The tool is built, the new dir has `bar.exe` | R-B10, R-X2, R-PT6 |

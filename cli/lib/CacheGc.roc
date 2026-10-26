@@ -31,6 +31,7 @@ import XCache
 ## | 6 | One `read_files!` of `talon/projects.json` (a missing file is no project), `Projects.entries` (a failure is exit 19, R-TF6, and nothing is removed). With one entry or more, one `read_files!` of the project files, in the order of the entries. | R-PD12 |
 ## | 6b | (028b) The walk of `Gc.protected` over the live projects (`known.live`), only when the listing of `roots.pkgs` has a package dir (`Gc.candidates` with no protected hash has a package). Each `Need(ids)` is one `read_files!` of `Gather.file_of(roots, id)` for the ids, in the order of the ids, and its answers are the new `Gc.Node`s. Never a fetch. No call when no package dir exists or `Need` is empty. | R-GC4 |
 ## | 7 | With one compiler or more, one `read_files!` with 2 paths for each id, in the order of the ids: `.talon.json`, then `.last-use` (as `roc list`). | R-CC9 |
+## | 7b | (061) With one Zig dir or more in the first listing (`Gc.zig_dirs`), one `read_files!` of the `.last-use` of each Zig, in the order of the ids. `Gc.zigs` gives the Zig installs that go. They join `going` after the compilers. | R-D2, R-CC9, R-CC10 |
 ## | 8 | The decisions: `Gc.projects`, `Manage.rows`, `Gc.toolchains`, `Temp.old` of `Gc.entries` (with the real time), `Manage.compat_of`. Then (028b) `Gc.candidates`, `Gc.asks` and one `tree_info!` with all the asks (no call when `asks` is empty; a dry run calls it too), `Gc.expired` (builds: span `gc-age`, packages: span 86400, both with the real time) and `Gc.sizes`. A dry run stops here and prints. | R-GC5, R-GC6, R-GC3, R-GC2, R-GC4, R-GC11 |
 ## | 9 | For each toolchain to remove, in the order of the ids: `Fx.with_lock!` on `Roots.item(roots, Toolchain(id))` with `NoWait`. `Busy`: the id is skipped and nothing else is done for it. Held: `random!`, `rename!` of the dir to `Manage.trash_name`, then one `delete!` of the trash dir and the compat dir of the compiler (`Roots.item(roots, Compat(<compat id>))`, none when `compat_of` is `Err`). | R-CC10, R-GC3 |
 ## | 8b | (049, R-GC7) The `x` entries: `XCache.dirs_of` of the entries of step 5, one `read_files!` of `XCache.manifest_of` of each dir (no call for no dir), `XCache.expired` with the time of Talon, `gc-age` and `kept: []` (the `[tools]` hashes are slice 056). The expired dirs are builds: they join `builds` (the report and `data.builds`) and the one `tree_info!` call. | R-GC7, R-GC9 |
@@ -106,7 +107,13 @@ work! = |fx, roots, clocks, plan| {
 	found = Manage.found_of(ids, reads)
 	rows = Manage.rows({ found, default: config.default_roc })
 	choices = Gc.toolchains({ rows, projects: known.live, now: clocks.now, age })
-	going = choices.keep_if(|choice| choice.verdict == Remove).map(|choice| choice.id)
+	zig_ids = match listed {
+		[Ok(found_dirs), ..] => Gc.zig_dirs(found_dirs)
+		_ => []
+	}
+	zig_reads = if zig_ids.is_empty() [] else fx.read_files!(zig_ids.map(|id| Roots.item(roots, ToolchainLastUse(id))))
+	zigs = Gc.zigs({ ids: zig_ids, reads: zig_reads, now: clocks.now })
+	going = choices.keep_if(|choice| choice.verdict == Remove).map(|choice| choice.id).concat(zigs)
 	compat_of = |id| match found.find_first(|each| each.id == id) {
 		Ok(each) => Manage.compat_of(each.meta)
 		Err(_) => Err(None)

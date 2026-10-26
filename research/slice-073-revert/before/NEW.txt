@@ -1,0 +1,2 @@
+tests/commands/cases/ptool/pt4-bin-file/
+tests/commands/cases/ptool/pt3-move/given/project/p4/

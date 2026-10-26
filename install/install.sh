@@ -30,7 +30,7 @@ Usage: install.sh [--version <v>] [--yes] [--no-modify-path]
   --yes               Do not ask for confirmation
   --no-modify-path    Do not add the bin dir to PATH (passed to tln setup)
 
-Environment: TALON_REPO, TALON_DOWNLOAD_BASE, and the non-interactive
+Environment: TALON_REPO, TALON_DOWNLOAD_BASE, TALON_YES=1 (the same as --yes), and the non-interactive
 variables of tln (CI, DEBIAN_FRONTEND, NONINTERACTIVE, TALON_INTERACTIVE).
 EOF
 }
@@ -45,6 +45,9 @@ while [ $# -gt 0 ]; do
         *) usage; die "unknown argument: $1" 2 ;;
     esac
 done
+
+# TALON_YES=1 is the same as --yes (R-EV10, R-NI15).
+if [ "${TALON_YES:-}" = 1 ] && [ -z "$YES" ]; then YES=1; SETUP_ARGS="$SETUP_ARGS --yes"; fi
 
 # Roc target name of this machine (R-IS2). Linux binaries are static musl, so they run on any distro.
 detect_target() {

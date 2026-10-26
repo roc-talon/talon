@@ -1,0 +1,2 @@
+tln: error[usage]: cannot make the stub app for acme/cnst: the value main! of its requires clause has the type U16, and R-SM2 has no stub for that type (R-IN8). Nothing was written.
+tln: error[network]: acme/wpf 0.1.0 is not in the package cache and --offline is set (https://github.com/acme/wpf/releases/download/0.1.0/51HeDQidRsFTBFE1KL1pezhBmPRfNwegYPmcLMwArsvv.tar.zst)

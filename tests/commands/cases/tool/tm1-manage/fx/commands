@@ -2,7 +2,7 @@ tool ls
 tool ls --json
 tool rm nope
 tool rm acme/zzz
-tool rm talon
+tool rm talon foo
 tool rm foo --dry-run
 tool rm foo
 tool rm g --json

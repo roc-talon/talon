@@ -1,14 +1,11 @@
-import Roots
 import Ident
 import Args
 import Db
 import Fail
 import JsonDoc
-import Launch
 import Locked
 import Lookup
 import Opts
-import Pin
 import Probe
 import ProbeRange
 import ProbeShow
@@ -101,31 +98,6 @@ ProbeCmd :: [].{
 			Ok(hash)
 		} else {
 			Err(Fail.new(Usage, "'${path}' is not a package archive: the file name must be <hash>.tar.zst"))
-		}
-	}
-
-	## R-FE4: the program that runs `roc unbundle` for a bundle file. The format of an archive does not depend on the nightly, so the rows, first match wins (the order of the installed compilers is `Pin.order` with no times: the day of the tag, then the tag text; the newest first):
-	##
-	## | # | Case | Program |
-	## | --- | --- | --- |
-	## | 1 | `selected` is in `installed` | the file of that compiler (`Launch.program`) |
-	## | 2 | `installed` is not empty | the file of the newest installed compiler |
-	## | 3 | `path` is `Ok` | the file of the `roc` on `PATH` (rank 7) |
-	## | 4 | none | `Err(NoCompiler)`: the selected compiler is a required download (R-DL2, not tested here: `Start.run!` does it) |
-	##
-	## `selected` is `""` when the run selects no compiler (`--range`).
-	unbundler : { selected : Str, installed : List(Str), path : Try({ id : Str, path : Str }, [NoCompiler]), roots : Roots } -> Try(Str, [NoCompiler])
-	unbundler = |x| {
-		file = |id| Launch.program({ roots: x.roots, id, installed: x.installed, path: x.path })
-		newest = x.installed.sort_with(|a, b| Pin.order({ a, b, times: [] })).last()
-		if x.installed.contains(x.selected) {
-			Ok(file(x.selected))
-		} else {
-			match (newest, x.path) {
-				(Ok(id), _) => Ok(file(id))
-				(Err(_), Ok(found)) => Ok(file(found.id))
-				(Err(_), Err(NoCompiler)) => Err(NoCompiler)
-			}
 		}
 	}
 

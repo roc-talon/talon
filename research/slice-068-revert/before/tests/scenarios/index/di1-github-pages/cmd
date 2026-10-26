@@ -1,0 +1,37 @@
+# R-DI2 R-DI3 R-DI4 R-DI5 R-DI8 R-DI9 R-DI10 R-DI12 R-DI13 R-DI15 R-EV3 R-EV14 R-EV15 R-EV19 R-EV20 R-DA6 R-CC11 R-DA1: the GitHub release list as the index, with the real
+# Http.send! against the fake API (given/http). The environment has a token, but TALON_GITHUB_API is set, so no token is read or sent (R-EV19): http.log has no
+# `authorization`. The cache pages are in `talon/index/github/<owner>/<repo>/` (the tree diff shows the 2 pages and their ETags and links).
+export GITHUB_TOKEN=ghp_secret
+D=$XDG_CACHE_HOME/roc/talon/index/github/acme/json
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+H2=J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr
+
+# The first run: no cache. 2 requests (the Link header names page 2). A draft, a prerelease, `docs.tar.gz` and the `.intoto.jsonl` file are no candidates (R-DI3,
+# R-DI4). The release 1.9.0 has 2 package assets: a warning, no candidate. The time and the size come from the answer (R-DI10, R-DA6).
+st flowprobe releases acme/json
+
+# A page younger than 60 s is used with no request (R-DI2): the log gets no new line.
+st flowprobe releases acme/json
+
+# Old pages (the time of the last answer, 2026-10-01): a request with If-None-Match for each page, and the 304 answers keep the pages. The time of the pages is new.
+touch -d '2026-10-01 12:00:00 UTC' "$D/1.meta" "$D/2.meta"
+st flowprobe releases acme/json
+find "$D" -name '*.meta' -mmin -1 | wc -l
+
+# Offline: no request, the cached pages (R-DI12). The line `index: cached at <time>` has the time of the oldest page. A known URL with the label of 2.0.5 and another
+# hash makes 2.0.5 a re-release: no candidate and a warning (R-DI15).
+touch -d '2026-10-01 12:00:00 UTC' "$D/1.meta" "$D/2.meta"
+st flowprobe releases --offline --known "https://github.com/acme/json/releases/download/2.0.5/$H2.tar.zst" acme/json
+st flowprobe releases --offline --known "https://github.com/acme/json/releases/download/2.0.5/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst" acme/json
+st flowprobe releases --offline acme/nothing
+
+# A rate limit: exit 15, the reset time and the token sources, and nothing is written (R-DI13).
+st flowprobe releases acme/limited
+test ! -e "$XDG_CACHE_HOME/roc/talon/index/github/acme/limited" && echo "nothing written"
+
+# No answer: exit 15, and the message names --offline (R-DI12).
+TALON_GITHUB_API=http://127.0.0.1:1/api st flowprobe releases acme/json
+
+# The .roc-version hint comes from the raw base URL (R-DI8, R-EV20, R-EV15). A 404 is no hint.
+st flowprobe hint acme/json 2.1.0
+st flowprobe hint acme/json 2.0.5

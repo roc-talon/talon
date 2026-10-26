@@ -1,0 +1,11 @@
+tln: error[network]: nightly-2026-10-10-abcdef0 is not installed and --offline is set
+tln: error[consent]: nightly-2026-10-12-2664a27 is not installed. Nothing was downloaded.
+waiting for another tln: nightly-2026-10-13-91fa0c2
+downloading nightly-2026-10-14-38a3029 (73.4 MB)
+downloading nightly-2026-10-15-38e6c42 (73.3 MB)
+installed nightly-2026-10-15-38e6c42
+downloading nightly-2026-10-16-1df370f (73.2 MB)
+warning: the compat id of nightly-2026-10-16-1df370f is not known: roc check touched 2 compat dirs (1df370f1, 1df370f2)
+downloading nightly-2026-10-17-601b54c (73.1 MB)
+tln: error[integrity]: sha256 of nightly-2026-10-17-601b54c differs: expected 2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881, got b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78. Talon deleted the download.
+tln: error[environment]: no compiler asset exists for freebsd x64

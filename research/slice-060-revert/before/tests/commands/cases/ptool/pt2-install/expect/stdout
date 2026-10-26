@@ -1,0 +1,47 @@
+== install --file p1/main.roc
+locked tool a 1.1.0 (acme/foo)
+built tool b 1.0.0 (acme/bar)
+$PROJECT/p1/talon.toml: tools.a = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0
+== install --file p1/main.roc
+nothing to change
+exit 0
+== install --frozen --file p2/main.roc
+exit 14
+== install --frozen --file p3/main.roc
+exit 14
+== install --frozen --file p4/main.roc
+exit 14
+== install --frozen --file p5/main.roc
+the header satisfies talon.toml
+built tool q 1.0.0 (acme/qq)
+exit 0
+== install --frozen --file p6/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --offline --file p7/main.roc
+the header satisfies talon.toml
+exit 15
+== install --frozen --file p8/main.roc
+the header satisfies talon.toml
+built tool n1 1.0.0 (acme/n1)
+built tool n2 1.0.0 (acme/n2)
+exit 0
+== install --frozen --file p9/main.roc
+the header satisfies talon.toml
+exit 2
+== install --file p1/main.roc --offline
+nothing to change
+exit 0
+== install --frozen --file p10/main.roc
+the header satisfies talon.toml
+exit 13
+== install --dry-run --file p11/main.roc
+locked tool d 1.0.0 (acme/foo)
+would build tool d 1.0.0 (acme/foo)
+$PROJECT/p11/talon.toml: tools.d = { ref = "acme/foo@1.0.0", url = "https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst" }
+dry run: nothing was written
+exit 0
+== install --frozen --allow-downloads --file p10/main.roc
+the header satisfies talon.toml
+exit 2

@@ -44,7 +44,7 @@ OracleCause :: [].{
 		if causes.is_empty() {
 			Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(input.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)")
 		} else if assume {
-			{ ..Fail.new(NoTuple, "${first}\n${Str.join_with(Explain.lines({ causes, hint }), "\n")}"), details: Ok(Explain.details({ held: nightly, causes, hint })) }
+			{ ..Fail.new(NoTuple, "${first}\n${Str.join_with(Explain.lines({ causes, hint, failed: compat.failed }), "\n")}"), details: Ok(Explain.details({ held: nightly, causes, hint })) }
 		} else {
 			Fail.new(NoTuple, first)
 		}

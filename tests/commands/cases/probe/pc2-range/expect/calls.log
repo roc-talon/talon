@@ -242,7 +242,7 @@ random
 make_dirs $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp
 copy_file $PROJECT/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
 spawn_all limit=1
-  job $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/roc unbundle 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
+  job $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-07-7b7b7b7/roc unbundle 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
 rename $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f
 delete $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.0123456789abcdef.tmp
 platform

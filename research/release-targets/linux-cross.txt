@@ -1,0 +1,6 @@
+2026-10-25, Linux x86-64, nightly-2026-10-14-38a3029, --opt=speed, 5 builds at the same time, cli/main.roc
+x64musl rc=0 346 s (ELF x86-64 static)
+arm64musl rc=0 359 s (ELF aarch64 static)
+x64mac rc=1 350 s: ld64.lld: library not found for -lSystem (LinkFailed)
+arm64mac rc=1 373 s: same
+x64win rc=1 349 s: lld-link: undefined symbol mainCRTStartup, memcpy, __chkstk (no MSVC libs; LinkFailed)

@@ -4,3 +4,7 @@ tln: error[network]: acme/json 2.1.4 is not in the package cache and --offline i
 tln: error[usage]: TALON_DOWNLOADER must be curl or wget, not 'bogus'
 tln: error[usage]: http://10.0.0.1/pkg/1.0.0/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst: a package URL must be https://, or http:// to 127.0.0.1, [::1] or localhost
 tln: error[environment]: cannot run roc: no such file
+downloading nightly-2026-10-18-5349569 (73.0 MB), the default compiler
+tln: error[network]: download of acme/json 2.1.1 failed: 404 (https://github.com/acme/json/releases/download/2.1.1/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst). Run tln audit to see why.
+tln: error[usage]: https://github.com/acme/json/releases/download/2.1.7/...tar.zst is not a package release URL
+tln: error[usage]: https://github.com/acme/json/releases/download/2.1.8/a\b.tar.zst is not a package release URL

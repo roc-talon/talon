@@ -1,4 +1,5 @@
 # R-CM15, R-CM19: `ls` is `list`. The table: the default has a star, a time is a date, `-` is no time (a missing file, a bad file). Not listed (R-LY1): a lock, a temp dir, zig, a file.
+# R-R15 (slice 071): a `git-*` id has its repo and typed ref: the column SOURCE (`owner/repo@ref`, `-` when `.talon.json` has none), and `repo` and `ref` in `--json`.
 roc ls
 # R-J3: --json has the envelope only. The same data.
 roc list --json

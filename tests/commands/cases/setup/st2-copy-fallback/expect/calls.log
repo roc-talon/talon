@@ -27,6 +27,7 @@ hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef
 copy_file $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
 write_atomic $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -37,3 +38,4 @@ sha256_file $HOME/.local/bin/tln
 sha256_file $HOME/.local/bin/roc
 path_roc
 read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml

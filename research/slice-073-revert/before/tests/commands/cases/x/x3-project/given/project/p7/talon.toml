@@ -1,0 +1,2 @@
+[tools]
+fmt = { ref = "acme/fmt@^1", url = "https://github.com/acme/fmt/releases/download/1.0.0/HUhnMnhZM81eHg9NRfEG9pEAF7nB6oFTRCvpt5oTUAdS.tar.zst", note = "x" }

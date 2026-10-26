@@ -1,0 +1,45 @@
+# red run of slice 051 (stubs state): scripts/test.sh check fmt l0 l2 l3 selftest
+step       result seconds  budget
+check      pass   1.6      10
+fmt        pass   0.2      5
+l0         FAIL   6.4      10
+l2         FAIL   7.3      30
+l3         FAIL   10.0     60
+selftest   pass   2.7      20
+
+# l0: the failed expects (file:line)
+tests/unit/SetupTest.roc:242:1
+tests/unit/TalonRemoveTest.roc:121:1
+tests/unit/TalonRemoveTest.roc:158:1
+tests/unit/TalonRemoveTest.roc:224:1
+tests/unit/TalonRemoveTest.roc:255:1
+tests/unit/TalonRemoveTest.roc:28:1
+tests/unit/TalonRemoveTest.roc:282:1
+tests/unit/TalonRemoveTest.roc:64:1
+tests/unit/TalonRemoveTest.roc:97:1
+tests/unit/ToolManageTest.roc:36:1
+      9 todo: slice 051a
+ToolManageTest rows get the old text:
+[dbg] [("tln: error[usage]: tln tool remove talon is not built yet", "remove talon"), ("tln: error[usage]: tln tool remove talon is not built yet", "remove roc-talon/talon"), ("tln: error[usage]: tln tool remove talon is not built yet", "remove talon"), ("tln: error[usage]: tln tool remove talon is not built yet", "remove talon"), ("tln: error[usage]: tln tool remove talon is not built yet", "remo
+
+# l2
+FAIL tool/rm1-default
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 051b
+FAIL tool/rm2-options
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 051b
+FAIL tool/rm3-windows
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 051b
+FAIL tool/rm4-stops
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 051b
+commands: 154 passed, 4 failed
+
+# l3
+FAIL fx/sd1-real-fx-spawn-detached
+FAIL tools/rm1-remove-talon
+FAIL tools/rm2-remove-all
+crash lines: 4
+scenarios: 78 passed, 3 failed, 1 skipped

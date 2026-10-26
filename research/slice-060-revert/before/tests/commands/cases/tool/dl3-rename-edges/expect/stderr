@@ -1,0 +1,5 @@
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/bar 1.1.0 with nightly-2026-10-12-2664a27
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-12-2664a27
+tln: error[environment]: cannot move $HOME/.local/share/talon/bin/foo.exe to $HOME/.local/share/talon/bin/foo.0123456789abcdef.del: Exists

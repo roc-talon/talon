@@ -1,0 +1,5 @@
+Slice 050, `tln tool update talon` with a new file that does not start (R-S3). One run. The release v0.3.4 downloads and has the right sha256, `chmod` works, and `<temp> --version` exits with 1.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | exit 1 `the new tln 0.3.4 does not start (exit 1). The old tln stays.` No rename, no entry, no write of `tools.json`. The temp file and the scratch dir are deleted | R-S3, R-CC2 |

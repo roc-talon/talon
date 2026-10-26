@@ -1,0 +1,9 @@
+#!/bin/sh
+# The `gh` of the case (slice 074, R-IS3): no real `gh`, no network. Each call is written to `$TALON_TEST_DIR/gh.log`. `GH_FAKE` says what `gh` does:
+# unset or `out`: not logged in (`gh auth status` exits with 1). `ok`: logged in, and `gh attestation verify` exits with 0.
+echo "$*" >> "$TALON_TEST_DIR/gh.log"
+case "$1 $2" in
+    "auth status") [ "${GH_FAKE:-out}" = ok ] ;;
+    "attestation verify") [ "${GH_FAKE:-out}" = ok ] ;;
+    *) exit 2 ;;
+esac

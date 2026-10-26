@@ -1,0 +1,31 @@
+-- 1: option 2 with a flag. The tools go (the data files and the entries that are Talon's), baz stays with a warning, tools.json is gone, the PATH line is gone from .bashrc, the other lines stay.
+== tln tool remove talon --remove-tools
+Talon        tln, roc, the talon entry of tools.json    27 B   removed
+tools        3 (foo, bar, baz)                          81 B   removed
+compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   removed
+Talon data   index, x cache, compat.db, config         124 B   removed
+moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+removed the PATH line from $HOME/.bashrc
+exit 0
+bin dir:
+baz
+roc
+data bin dir:
+compilers:
+cache of roc:
+compat-other
+packages
+toolchains
+config: talon 
+#!/bin/sh
+echo 'the roc that was here before tln setup'
+talon
+$HOME/.cache/roc/compat-other:
+keep.bin
+
+$HOME/.cache/roc/packages:
+4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN
+# my bashrc
+alias ll='ls -l'
+#!/bin/sh
+echo 'another baz'

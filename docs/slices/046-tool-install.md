@@ -1,6 +1,6 @@
 # 046 Tool install
 
-Phase: P1. Status: code
+Phase: P1. Status: done
 
 Slice 046 is `tln tool install owner/app` for a release (CLI 6.4: R-CM16, R-T1 to R-T6, R-T8 to R-T12, R-T26 to R-T28; R-SE8, R-ST15, R-LY2, R-LY3, R-CC6): Talon reads the release list of a GitHub repo, takes the newest release that `min-release-age` allows and that has an app bundle, checks and extracts the bundle, reads the `roc:` pin of the app header, builds the app with that compiler (no `--target`), puts the binary in `<data>/bin/`, makes a hard link (else a copy) in the bin dir, and records the tool in `tools.json`. Only the last step runs under the lock of `tools.json` (R-CC6).
 

@@ -1,0 +1,14 @@
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+delete $HOME/u\.local\bin/tln.0123456789abcdef.del $HOME/.local/share/talon/bin/ok.1111111111111111.del
+args
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+delete $HOME/u\.local\bin/tln.0123456789abcdef.del
+args
+env_all
+list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+delete $HOME/u\.local\bin/tln.0123456789abcdef.del
+args
+env_all
+read_files $HOME/.local/share/talon/tools.json

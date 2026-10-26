@@ -1,0 +1,7 @@
+app [main!] {
+	pf: platform "https://github.com/acme/wasmpf/releases/download/0.1.0/DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3.tar.zst",
+	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
+	roc: "nightly-2026-10-14-38a3029",
+}
+
+main! = |_args| Ok({})

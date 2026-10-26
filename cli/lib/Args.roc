@@ -253,7 +253,7 @@ allows = |cmd, flag| {
 		"--copy" => cmd == "roc link"
 		"--rename-keys" => cmd == "install"
 		"--allow-moves" => one_of(["install", "update", "upgrade"])
-		"--probe-downloads" => resolving or one_of(["probe", "init"])
+		"--probe-downloads" => one_of(["upgrade", "probe", "init"])
 		"--allow-downloads" => resolving or one_of(["probe", "roc use", "init"])
 		"--roc" | "--allow-unchecked" | "--resolve" => one_of(["tool install", "x"])
 		"--remove-tools" | "--keep-all" => cmd == "tool remove"

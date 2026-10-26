@@ -31,7 +31,8 @@ ToolsPlan :: [].{
 	}
 
 	## R-PT5: the names of `update` and `upgrade` with no `--tool`. `command` is `update` or `upgrade` (for the message), `names` are the operands as typed, `keys` the keys of `[tools]`, `aliases` the aliases of the headers of the members.
-	## A name is the text before the first `@`. A name with an `@` is never a tool (a selector is for a header entry, R-CM4: question Q2). Else:
+	## A name is the text before the first `@`. Slice 073: a name with an `@` whose name is a key of `[tools]` is a failure of kind `Usage` (exit 2): `'<name>' is a selector on the [tools] key '<key>'. A selector changes its ref: run tln add --tool owner/app@<sel>` (a key and an alias: the alias failure first).
+	## A name with an `@` whose name is no key goes to the header (a selector is for a header entry, R-CM4). Else:
 	##
 	## | The name is | Result |
 	## | --- | --- |
@@ -45,19 +46,22 @@ ToolsPlan :: [].{
 		var $header = []
 		var $tools = []
 		for name in facts.names {
-			if name.contains("@") {
-				$header = $header.append(name)
+			base = match name.split_first("@") {
+				Ok({ before, .. }) => before
+				Err(_) => name
+			}
+			is_key = facts.keys.contains(base)
+			if is_key and facts.aliases.contains(base) {
+				return Err(Fail.new(Usage, "'${base}' is a header alias and a key of [tools]. For the tool, run: tln ${facts.command} --tool ${base}"))
+			}
+			if is_key and name != base {
+				sel = name.drop_prefix("${base}@")
+				return Err(Fail.new(Usage, "'${name}' is a selector on the [tools] key '${base}'. A selector changes its ref: run tln add --tool owner/app@${sel}"))
+			}
+			if is_key {
+				$tools = $tools.append(name)
 			} else {
-				is_key = facts.keys.contains(name)
-				is_alias = facts.aliases.contains(name)
-				if is_key and is_alias {
-					return Err(Fail.new(Usage, "'${name}' is a header alias and a key of [tools]. For the tool, run: tln ${facts.command} --tool ${name}"))
-				}
-				if is_key {
-					$tools = $tools.append(name)
-				} else {
-					$header = $header.append(name)
-				}
+				$header = $header.append(name)
 			}
 		}
 		Ok({ header: $header, tools: $tools })
@@ -205,6 +209,18 @@ ToolsPlan :: [].{
 			Err(None) => Null
 		}
 		Obj([("tools", Arr(rows.map(|r| Obj([("key", Text(r.key)), ("name", Text(r.name)), ("action", Text(r.action)), ("ref", text(r.ref)), ("url", text(r.url)), ("version", text(r.version)), ("previous", text(r.previous)), ("file", Text(r.file)), ("built", Flag(r.built)), ("would_build", Flag(r.would_build))]))))])
+	}
+
+	## Slice 073, R-PT5, R-OUT4, R-J3 (a proposal, TW24): the `data` of `--json` of `install`, `update` and `upgrade` when the tools step handled at least one entry of `[tools]`. `base` is `Report.data(outcome)` (an object). The result is `base` with one more key at its end, `tools`: the array of the rows of `data`, one for each entry that the step handled
+	## (an entry that did not change has the action `kept`). With no row (no `[tools]`, or no step) the result is `base` as it is: no `tools` key. A `base` that is not an object stays as it is.
+	with_tools : { base : JsonDoc, rows : List({ key : Str, name : Str, action : Str, ref : Try(Str, [None]), url : Try(Str, [None]), version : Try(Str, [None]), previous : Try(Str, [None]), file : Str, built : Bool, would_build : Bool }) } -> JsonDoc
+	with_tools = |facts| match (facts.base, facts.rows) {
+		(_, []) => facts.base
+		(Obj(pairs), rows) => match data(rows) {
+			Obj(extra) => Obj(pairs.concat(extra))
+			other => other
+		}
+		_ => facts.base
 	}
 }
 

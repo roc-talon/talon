@@ -11,10 +11,10 @@ import Probe
 ## | --- | --- | --- | --- |
 ## | 1 | `Local` | the row of `compat.db` for (hash, compiler, target `any`) (slice 030, 031) | `pass`, `fail` (with the failing modules), `hang`, `crash` |
 ## | 3 | `Pin` | the `roc:` entry of the header of the release (`packages/<hash>/main.roc`), when it is the compiler (`Pin.same_id`) | `pass` (a hint: the author says it passed) |
-## | 4 | `Hint` | the `.roc-version` of the release tag, from the cache of an earlier `Github.hint!` call, when it is the compiler | `pass` (a hint) |
+## | 4 | `Hint` | the `.roc-version` of the release tag, from the cache file of an earlier `Github.hint!` call (R-DI8), when it is the compiler | `pass` (a hint) |
 ##
 ## R-EF3: the lines are in rank order, and the first line is the fact that Talon uses (the winner, marked `*` in the text). A source with no value for the pair has no line. A rank 3 pin for another compiler is no value for this pair.
-## Rank 4 has no cache today (`Github.hint!` keeps none): the command passes `Err(None)` until a slice writes the cache (question Q1 of slice 032b). The pure code is ready for it.
+## Rank 4 (slice 068, R-DI8): the cache file of `Github.hint!` (`talon/index/github/<owner>/<repo>/<tag>.roc-version`), read by `EvidenceFlow.blocks!` (step 5). A tag with no file, or an empty file, has no rank 4 line.
 ##
 ## The text of `tln why` for one package (a proposal, TW24, R-OUT2). `Why.show` puts it after the path lines. Nothing is printed when there is no compiler, or no source has a value:
 ##

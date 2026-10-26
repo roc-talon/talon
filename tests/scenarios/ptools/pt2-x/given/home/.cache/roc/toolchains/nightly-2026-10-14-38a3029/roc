@@ -1,4 +1,6 @@
 #!/bin/sh
+# Slice 060 (R-FE4): Talon runs the installed compiler for `roc unbundle`. The real unbundle is the one of the fake `roc` on PATH (roc.tsv: `unbundle*  real`), so the roc.log is the same as before.
+[ "$1" = unbundle ] && exec roc "$@"
 # The fake compiler of the case tx1-x-run: `roc build main.roc --opt=speed --output=<file>`.
 # It logs the directory (the package dir of the app bundle) and the arguments, writes a shell script to <file> that prints the repo and the version of the bundle (the comment line of main.roc),
 # and prints the summary of a build with no error. When the file `barrier` exists in $TALON_TEST_DIR, the build waits until the builds of `foo` and `bar` have both started (R-CC6: the lock of tools.json

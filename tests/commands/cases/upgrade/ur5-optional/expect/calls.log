@@ -56,9 +56,6 @@ delete $HOME1/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME1/.config/talon/config.toml nowait: held
-read_files $HOME1/.config/talon/config.toml
-unlock $HOME1/.config/talon/config.toml
 platform
 list_dirs $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -135,9 +132,6 @@ delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME2/.config/talon/config.toml nowait: held
-read_files $HOME2/.config/talon/config.toml
-unlock $HOME2/.config/talon/config.toml
 platform
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -185,9 +179,6 @@ delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
-lock $HOME2/.config/talon/config.toml nowait: held
-read_files $HOME2/.config/talon/config.toml
-unlock $HOME2/.config/talon/config.toml
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2
@@ -282,9 +273,6 @@ delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME3/.config/talon/config.toml nowait: held
-read_files $HOME3/.config/talon/config.toml
-unlock $HOME3/.config/talon/config.toml
 platform
 list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -332,9 +320,6 @@ delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
 rename $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
-lock $HOME3/.config/talon/config.toml nowait: held
-read_files $HOME3/.config/talon/config.toml
-unlock $HOME3/.config/talon/config.toml
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2
@@ -429,9 +414,6 @@ delete $HOME4/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME4/.config/talon/config.toml nowait: held
-read_files $HOME4/.config/talon/config.toml
-unlock $HOME4/.config/talon/config.toml
 platform
 list_dirs $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -509,9 +491,6 @@ delete $HOME5/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME5/.config/talon/config.toml nowait: held
-read_files $HOME5/.config/talon/config.toml
-unlock $HOME5/.config/talon/config.toml
 platform
 list_dirs $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -607,9 +586,6 @@ delete $HOME6/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
 rename $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
-lock $HOME6/.config/talon/config.toml nowait: held
-read_files $HOME6/.config/talon/config.toml
-unlock $HOME6/.config/talon/config.toml
 write_atomic $HOME6/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME6/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2
@@ -884,9 +860,6 @@ delete $HOME10/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
 rename $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
-lock $HOME10/.config/talon/config.toml nowait: held
-read_files $HOME10/.config/talon/config.toml
-unlock $HOME10/.config/talon/config.toml
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME10/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2
@@ -990,11 +963,6 @@ delete $HOME11/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME11/.config/talon/config.toml nowait: held
-read_files $HOME11/.config/talon/config.toml
-read_files $HOME11/.config/talon/config.toml
-write_atomic $HOME11/.config/talon/config.toml
-unlock $HOME11/.config/talon/config.toml
 lock $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9 nowait: held
 list_dirs $HOME11/.cache/roc/toolchains
 random
@@ -1017,9 +985,6 @@ delete $HOME11/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp/.talon.json
 rename $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 unlock $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
-lock $HOME11/.config/talon/config.toml nowait: held
-read_files $HOME11/.config/talon/config.toml
-unlock $HOME11/.config/talon/config.toml
 platform
 list_dirs $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -1105,11 +1070,6 @@ delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp/.talon.json
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-lock $HOME12/.config/talon/config.toml nowait: held
-read_files $HOME12/.config/talon/config.toml
-read_files $HOME12/.config/talon/config.toml
-write_atomic $HOME12/.config/talon/config.toml
-unlock $HOME12/.config/talon/config.toml
 lock $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9 nowait: held
 list_dirs $HOME12/.cache/roc/toolchains
 random
@@ -1132,9 +1092,6 @@ delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp/.talon.json
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
-lock $HOME12/.config/talon/config.toml nowait: held
-read_files $HOME12/.config/talon/config.toml
-unlock $HOME12/.config/talon/config.toml
 platform
 list_dirs $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
@@ -1182,9 +1139,6 @@ delete $HOME12/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
-lock $HOME12/.config/talon/config.toml nowait: held
-read_files $HOME12/.config/talon/config.toml
-unlock $HOME12/.config/talon/config.toml
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2
@@ -1495,9 +1449,6 @@ delete $HOME16/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp/.talon.json
 rename $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.tmp $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 unlock $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
-lock $HOME16/.config/talon/config.toml nowait: held
-read_files $HOME16/.config/talon/config.toml
-unlock $HOME16/.config/talon/config.toml
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2
@@ -1535,9 +1486,6 @@ delete $HOME16/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/.talon.json
 rename $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
 unlock $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
-lock $HOME16/.config/talon/config.toml nowait: held
-read_files $HOME16/.config/talon/config.toml
-unlock $HOME16/.config/talon/config.toml
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/.last-use
 write_atomic $HOME16/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9/.last-use
 probes 2

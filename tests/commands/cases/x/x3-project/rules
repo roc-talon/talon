@@ -19,3 +19,10 @@ The workspace `w` has the members `m1` and `m2` and the tool `foo` (acme/foo) in
 | 12 | `x acme/fmt cwd:free --offline` | no talon.toml on the walk: as before (the installed tool runs, no record) | R-PT11, R-PD16, R-B8 |
 | 13 | `x acme/fmt cwd:p10` | 2 entries have the app acme/fmt: exit 2 that names both keys and says `tln x <key>` (review Q1). Nothing is recorded, no child, no `x` cache read. The key form of the same file still works (not run here: L0) | R-PT11 |
 | 14 | `x fmt2 cwd:p10` | the key of one of the 2 entries runs it (the same binary: both urls are one bundle) | R-PT11 |
+
+Slice 073 (059 Q2, R-PT11): `--roc` and `--allow-unchecked` have no effect on a project tool (its pin and its `url` are the lock, R-PT8).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 15 | `x fmt cwd:p1 --roc installed --allow-unchecked` | the key is a project tool and 2 of these flags are given: exit 2, the text names both flags and the key. Nothing is recorded, no `platform` call, no `x` cache read, no child | R-PT11, R-PT12 |
+| 16 | `x acme/fmt@1.0.0 cwd:p1 --offline --roc installed --allow-unchecked` | a selector: no project tool, so the flags are as before (R-X1, R-B7). The result is the result of run 3: the installed tool runs in place | R-PT11, R-X1, R-B5 |

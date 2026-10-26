@@ -1,0 +1,5 @@
+Slice 050, `tln tool update talon` when `~/.local/bin/tln` is a file that tln did not write (R-ST6, R-ST11). One run: exit 2 before any download. The check reads the bin dir and the hashes only.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | exit 2 `<path> is not a file that tln wrote, so tln does not replace it. ...`, no download, no change | R-ST6, R-ST11, R-ST9 |

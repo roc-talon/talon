@@ -29,3 +29,17 @@ no hint
 exit 15
 == releases acme/nope
 exit 2
+== hint acme/lib 2.1.0
+hint: nightly-2026-10-09-258ab27
+== hint acme/lib 3.0.0 offline
+no hint
+== hint acme/lib 4.0.0
+exit 15
+== hint acme/lib 5.0.0 offline
+no hint
+== releases ../acme
+exit 2
+== releases acme/..
+exit 2
+== releases ../..
+exit 2

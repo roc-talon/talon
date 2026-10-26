@@ -1,0 +1,12 @@
+== tool rebuild fe
+exit 2
+== tool rebuild zz
+exit 19
+== tool rebuild gh
+exit 19
+== tool rebuild
+exit 2
+== tool rebuild nope
+exit 2
+== tool rebuild talon
+exit 2

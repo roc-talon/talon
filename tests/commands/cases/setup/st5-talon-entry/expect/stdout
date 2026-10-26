@@ -1,0 +1,12 @@
+== setup
+recorded talon 0.0.0 in $HOME/.local/share/talon/tools.json
+made $HOME/.local/bin/tln (hard link)
+made $HOME/.local/bin/roc (hard link)
+completions: $HOME/.local/share/bash-completion/completions/tln
+exit 0
+== setup
+nothing to do: the entries, the PATH line and the completions are in place
+exit 0
+== setup --json
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"kept","form":null}],"roc_old":false,"path":"on-path","completion":"present","default_roc":{"action":"kept","id":"nightly-2026-10-14-38a3029"}},"error":null}
+exit 0

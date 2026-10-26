@@ -1,0 +1,3 @@
+[dependencies]
+parser = "=2.0.0"
+pf = "0.25.*"

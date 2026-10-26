@@ -1,0 +1,6 @@
+# Q1 (slice 076): a [patch] base that is not a safe path part: exit 19 on the line of the entry, before any read of a package
+install --file p1/main.roc
+# Q2: a [patch] path that climbs out of the repository (the dir of the talon.toml): exit 19, before any read, delete or write; the dir `outside` stays as it is
+install --file p2/main.roc
+# Q2: an absolute path outside the repository: exit 19
+install --file p3/main.roc

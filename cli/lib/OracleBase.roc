@@ -25,7 +25,7 @@ OracleBase :: [].{
 	## `probes` is `Off` for `--no-probe`, and `conflicts` are the tuples that the ladder dropped (a list of (place of a slot, release URL) for each).
 	## Slice 036b2: `used` are the scan results: for a release URL (`id`), the modules of that release that the app uses (`path` relative to the package dir, `Yaml.roc`). A row with `modules: []` is a scan that found no module.
 	## Slice 036c: `domain` is D (the table above), `inferred` are the inferred facts of `Epochs.epochs` over D and the rows (`[]` when D is not read). `checks` can have the rows of any compiler of D (the command loaded them with D).
-	Compat : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), probes : [Allowed, Off], conflicts : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred) }
+	Compat : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), probes : [Allowed, Off], conflicts : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), failed : [UpgradeRoc, Other] }
 
 	## A pair that the step wants facts for: a release URL on a compiler. `is_platform` marks the platform (R-LD3: it has a text of its own).
 	Pair : { id : Str, nightly : Str, is_platform : Bool }

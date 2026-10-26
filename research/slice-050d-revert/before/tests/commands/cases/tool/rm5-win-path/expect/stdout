@@ -1,0 +1,9 @@
+== env:HOME={w}/home/u3 env:USERPROFILE={w}/home/u3 tool rm talon
+Talon        tln, roc, the talon entry of tools.json          10 B   removed
+tools        1 (foo)                                          11 B   kept
+compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+Talon data   index, x cache, compat.db, config               164 B   removed
+moved $HOME/u3\.local\bin/roc.old.exe back to $HOME/u3\.local\bin/roc.exe
+exit 0
+== env:HOME={w}/home/u4 env:USERPROFILE={w}/home/u4 tool rm talon --remove-tools
+exit 18

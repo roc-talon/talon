@@ -1,0 +1,11 @@
+tln: error[usage]: $PROJECT/p1/.talon/patches/json/ exists already. Edit the copy, or remove it to start again.
+tln: error[usage]: pf is the platform of the app. tln patch does not copy a platform: its archive holds host binaries. Use a fork and its release, or a path entry.
+tln: error[usage]: util is a path entry. It is local code: edit its file.
+tln: error[usage]: src is a foreign URL. It has no release, so tln patch cannot copy it.
+parser: no changes against PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG
+copied: $PROJECT/p4/.talon/patches/json/ (acme/json 2.1.0)
+$PROJECT/p4/talon.toml: + [patch] json
+edit the copy, then commit it and talon.toml. Review it with: tln patch json --diff
+tln: error[usage]: json has no patch. Run tln patch json first.
+tln: error[usage]: $PROJECT/p6/.talon/patches/json/ is missing. Restore the copy, or remove the entry from [patch].
+tln: error[environment]: cannot read $HOME/.cache/roc/packages/5ARuaVcDBLCvdGSxpt3tqEmRV5fLaaqjQLcFjt2jJWgq

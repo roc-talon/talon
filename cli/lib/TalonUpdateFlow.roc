@@ -1,5 +1,7 @@
 import Args
 import Common
+import Del
+import DelFlow
 import Download
 import Fail
 import Fx
@@ -37,12 +39,13 @@ import Toolchain
 ## | 4c | The entries (step 6): `Foreign` `tln` is exit 2 before the download. | R-ST6, R-ST11 |
 ## | 4d | `ToolGitFlow.check_curl!` and `ToolGitFlow.source!` (the source archive of the commit, `main.roc` of the dir `cli`: the app). `ToolFlow.platform_for!` (R-T2). | R-S2, R-T23, R-R3, R-R7 |
 ## | 4e | `ToolUpdateFlow.consent_for!` (one decision for the compiler of the pin of the app: R-DL1 to R-DL5, as step 3 of `tool update`). An app with no pin: `ToolInstall.no_pin`. | R-DL1, R-T11 |
-## | 4f | `ToolBuild.finish!` with the key `talon`, the file `tln` and the name `roc-talon/talon`: the build in the source, the install under the lock of `tools.json` (the entry `talon` is a git tool with the `path` `cli`), the entry `tln`. The build has no `--version` check: it is the build of `tool install` (R-T22 names the check for the prebuilt file only; question Q-F2). | R-S2, R-T4, R-T5 |
-## | 4g | The entry `roc` again (if `entries` makes it, `ToolBuild.link_entry!`). `delete!` of the scratch dir of the source (also after a failure, R-CC2). The line `TalonUpdate.updated_text` with `TalonUpdate.source_text` of the new entry. | R-ST9, R-CC2 |
+## | 4f | `ToolBuild.finish!` with the key `talon`, the file `tln` and the name `roc-talon/talon`: the build in the source, the install under the lock of `tools.json` (the entry `talon` is a git tool with the `path` `cli`), the entry `tln`. Slice 075 (R-S3): `ToolBuild.finish_checked!` runs `<build output> --version` (`file_started!`) after the build and before the lock. A failed check deletes the build dir and ends the command. | R-S2, R-T4, R-T5 |
+## | 4g | The entry `roc` again (if `entries` makes it): on Windows, when the entry `roc` was there before the build (`first.roc_have`), one `random!` and one `rename!` of it to its `.del` name (`DelFlow.rename_away!`, R-ST10), then `ToolBuild.link_entry!`. `delete!` of the scratch dir of the source (also after a failure, R-CC2). The line `TalonUpdate.updated_text` with `TalonUpdate.source_text` of the new entry. | R-ST9, R-CC2 |
 ## | 5 | `--offline`: `TalonUpdate.offline_failure` (exit 15, no call). A release with no `sha256sums.txt`: `TalonUpdate.missing` (exit 16, no call). | R-DI12, R-S1 |
 ## | 6 | The entries (`states!`, `TalonUpdate.entries`): `list_dirs!` of the bin dir, `sha256_file!` of the file `tln` in the data bin dir, then `SetupIo.have_of!` for `tln` and for `roc` (one `sha256_file!` for each entry that is there), `ToolInstall.verdict` for each. `Foreign` `tln`: exit 2, before the download. | R-ST6, R-ST11, R-ST9 |
 ## | 7 | One `random!` (the hex of the temp names and of the `.del` names). `programs!(["curl", "wget"])` and `Download.choose`. `make_dirs!` of the data bin dir and of `<cache>/talon/tmp/<hex>`. One `spawn_all!` (limit 8) with 2 jobs: `Download.command` for the binary to `<data bin>/tln.<hex>.tmp` (`Temp.name`), then for `sha256sums.txt` to `<cache>/talon/tmp/<hex>/sha256sums.txt`. A failed job: `Toolchain.download_failed` with the id `talon <version>`. | R-DA2 to R-DA4, R-HF4 |
 ## | 8 | `sha256_file!` of the temp file, one `read_files!` of `sha256sums.txt`, `TalonUpdate.expected_sha` (`NotListed`: `TalonUpdate.unlisted`), `TalonUpdate.check_download` (exit 16). | R-S1, R-SE13 |
+## | 8b | Slice 074 (R-S2, R-IS3, R-SE13): `programs!(["gh"])`. A `gh` that is there: one `spawn_all!` (limit 1) of `gh auth status`. Logged in (exit 0): one `spawn_all!` (limit 1) of `gh attestation verify <temp> --repo roc-talon/talon`, a failure is exit 16 (`TalonUpdate.attestation_check`), a good check is the line `attestation ok`. Else the note on stderr and no more call. | R-S2, R-IS3, R-SE13 |
 ## | 9 | `TalonUpdate.chmod_command`: one `spawn_all!` (limit 1) of `chmod 0755 <temp>` (none on Windows). One `spawn_all!` (limit 1) of `<temp> --version`, `TalonUpdate.version_check`. | R-HF2, R-S3 |
 ## | 10 | `Fx.locked!` on `Roots.item(ToolsJson)` (`Wait`, R-CC3) for the last step only (R-CC6): one `read_files!` of `tools.json`, step 6 again (the entries can change during the download), `TalonUpdate.del_moves` (Windows: one `rename!` of each existing file to its `.del` name), one `rename!` of the temp file over the file `tln` of the data bin dir, then for each name of `make` (`tln`, `roc`): `ToolBuild.link_entry!` (`hard_link!` to a temp name, else `copy_file!`, then `rename!`, R-ST7), then one `write_atomic!` of `tools.json` (`ToolsJson.put_talon`). | R-S3, R-ST9, R-ST10, R-CC1, R-CC6 |
 ## | 11 | One `delete!` of the temp file and of `<cache>/talon/tmp/<hex>`, after a success and after a failure (R-CC2). | R-CC2 |
@@ -73,7 +76,7 @@ Ctx : { facts : ToolBuild.Facts, talon : Try(ToolsJson.Talon, [None]), asset : S
 States : { tln : [Make, Foreign], roc : [Make, Foreign], old : Try(Str, [NotFound]), tln_have : [Absent, Dir, Unreadable, Sha(Str)], roc_have : [Absent, Dir, Unreadable, Sha(Str)] }
 
 # The facts of the prebuilt path after the entries are checked (steps 7 to 11).
-Job : { release : TalonUpdate.Release, bin_url : Str, sums_url : Str, sums_path : Str, lay : ToolInstall.Layout, program : Download.Program, hex : Str }
+Job : { release : TalonUpdate.Release, bin_url : Str, sums_url : Str, sums_path : Str, lay : ToolInstall.Layout, program : Download.Program, hex : Str, shown : Fx }
 
 # Steps 1 to 4: the release list, the pick, the way.
 run! : Fx, Args => Try(ToolUpdate.Outcome, Fail)
@@ -140,7 +143,7 @@ prebuilt! = |fx, args, ctx, release| {
 		Ok(_) => {}
 		Err(err) => return Err(Fail.new(Environment, "cannot make ${lay.temp}: ${Str.inspect(err)}"))
 	}
-	job = { release, bin_url, sums_url, sums_path: Text.join(lay.temp, "sha256sums.txt"), lay, program, hex }
+	job = { release, bin_url, sums_url, sums_path: Text.join(lay.temp, "sha256sums.txt"), lay, program, hex, shown: Common.shown_fx(fx, args) }
 	staged = staged!(fx, ctx, job)
 	_ = fx.delete!([lay.data_tmp, lay.temp])
 	warnings = staged?
@@ -152,7 +155,7 @@ prebuilt! = |fx, args, ctx, release| {
 	Ok(TalonUpdate.outcome({ old: ctx.current, new: entry, how: Updated }))
 }
 
-# Steps 7 to 10: download, check, chmod, `--version`, then the install under the lock.
+# Steps 7 to 10: download, check, attestation, chmod, `--version`, then the install under the lock.
 staged! : Fx, Ctx, Job => Try(List(Str), Fail)
 staged! = |fx, ctx, job| {
 	downloaded!(fx, job)?
@@ -169,9 +172,46 @@ staged! = |fx, ctx, job| {
 		Err(NotListed) => return Err(TalonUpdate.unlisted({ tag: job.release.tag, name: ctx.asset }))
 	}
 	TalonUpdate.check_download({ tag: job.release.tag, name: ctx.asset, want, got })?
+	attested!(fx, ctx, job)?
 	made_executable!(fx, ctx.facts, job)?
 	started!(fx, job)?
 	fx.locked!(Roots.item(ctx.facts.roots, Item.ToolsJson), || installed!(fx, ctx, job, got))
+}
+
+# Step 8b (R-S2, R-IS3, R-SE13): the attestation of the temp file, before its first use. `gh` must be on `PATH` and logged in (`gh auth status`), else the note and no failure. A failed `gh attestation verify` is exit 16.
+attested! : Fx, Ctx, Job => Try({}, Fail)
+attested! = |fx, ctx, job| {
+	found = match fx.programs!(["gh"]) {
+		[there] => there
+		_ => Bool.False
+	}
+	auth = if found {
+		match gh!(fx, TalonUpdate.gh_auth_argv) {
+			Ok(done) => Ok(done.ended)
+			Err(fail) => return Err(fail)
+		}
+	} else {
+		Err(NotAsked)
+	}
+	match TalonUpdate.gh_state({ found, auth }) {
+		Ready => {
+			done = gh!(fx, TalonUpdate.attest_argv({ file: job.lay.data_tmp }))?
+			TalonUpdate.attestation_check({ tag: job.release.tag, asset: ctx.asset, ended: done.ended, last_line: done.stderr_last })?
+			job.shown.out!("${TalonUpdate.attestation_ok}\n")
+			Ok({})
+		}
+		_ => {
+			fx.err!("${TalonUpdate.attestation_note}\n")
+			Ok({})
+		}
+	}
+}
+
+# One `gh` run: one `spawn_all!` with limit 1.
+gh! : Fx, List(Str) => Try({ ended : [Exited(I32), Signaled(I32), NotStarted(Str)], stdout : Str, stderr_last : Str }, Fail)
+gh! = |fx, argv| match fx.spawn_all!({ jobs: [{ argv, cwd: Err(Inherit) }], limit: 1 }) {
+	[done] => Ok(done)
+	_ => Err(Fail.new(Internal, "spawn_all! gave no result"))
 }
 
 # Step 7 (R-DA2 to R-DA4): one `spawn_all!` with the binary and `sha256sums.txt`. The binary is checked first.
@@ -216,8 +256,12 @@ made_executable! = |fx, facts, job| match TalonUpdate.chmod_command({ os: facts.
 
 # Step 9 (R-S3, R-T22): `<temp> --version`. Only the end of the child counts.
 started! : Fx, Job => Try({}, Fail)
-started! = |fx, job| match fx.spawn_all!({ jobs: [{ argv: [job.lay.data_tmp, "--version"], cwd: Err(Inherit) }], limit: 1 }) {
-	[done] => TalonUpdate.version_check({ version: job.release.version, ended: done.ended })
+started! = |fx, job| file_started!(fx, job.lay.data_tmp, job.release.version)
+
+# Step 9 and step 4f (R-S3): `<file> --version` of a prebuilt file, and of a source build before its install.
+file_started! : Fx, Str, Str => Try({}, Fail)
+file_started! = |fx, file, version| match fx.spawn_all!({ jobs: [{ argv: [file, "--version"], cwd: Err(Inherit) }], limit: 1 }) {
+	[done] => TalonUpdate.version_check({ version, ended: done.ended })
 	_ => Err(Fail.new(Internal, "spawn_all! gave no result"))
 }
 
@@ -303,7 +347,7 @@ downloader! = |fx, facts| {
 	Download.choose({ want: facts.net.downloader, curl: found.curl, wget: found.wget })
 }
 
-# Steps 4 and 4b to 4g (R-S2, Q-F1, Q-F2): the source archive of the tag, built as `tool install --git`. No `--version` run. The scratch dir of the source is deleted after a success and after a failure (R-CC2).
+# Steps 4 and 4b to 4g (R-S2, Q-F1, R-S3): the source archive of the tag, built as `tool install --git`, then `--version` of the build output. The scratch dir of the source is deleted after a success and after a failure (R-CC2).
 built_from_source! : Fx, Args, Ctx, TalonUpdate.Release => Try(ToolUpdate.Outcome, Fail)
 built_from_source! = |fx, args, ctx, release| {
 	plan = TalonUpdate.source_of(release)
@@ -323,7 +367,7 @@ built_from_source! = |fx, args, ctx, release| {
 	ToolGitFlow.check_curl!(fx, facts.net)?
 	source_facts = { ..facts, name: TalonUpdate.name, key: "talon", file: ToolInstall.file_name({ os: facts.os, key: "tln" }) }
 	src = ToolGitFlow.source!(fx, source_facts, { source: plan.source, sha, path: plan.path })?
-	built = installed_from!(fx, args, source_facts, src.bundle, made.make)
+	built = installed_from!(fx, args, source_facts, src.bundle, { make: made.make, roc_have: first.roc_have, version: release.version })
 	_ = fx.delete!([src.temp])
 	version = built?
 	for line in made.warnings {
@@ -343,20 +387,23 @@ same_commit = |talon, sha| match talon {
 	Err(None) => Err(None)
 }
 
-# Steps 4d to 4g: the platform, the compiler, the build and the install under the lock (the entry `tln`), then the entry `roc` again. The result is the version text of the new entry.
-installed_from! : Fx, Args, ToolBuild.Facts, ToolBuild.Bundle, List(Str) => Try(Str, Fail)
-installed_from! = |fx, args, facts, bundle, make| {
+# Steps 4d to 4g: the platform, the compiler, the build and the install under the lock (the entry `tln`), then the entry `roc` again. `again.roc_have` is the entry `roc` that `states!` read before the build. The result is the version text of the new entry.
+installed_from! : Fx, Args, ToolBuild.Facts, ToolBuild.Bundle, { make : List(Str), roc_have : Del.Have, version : Str } => Try(Str, Fail)
+installed_from! = |fx, args, facts, bundle, again| {
 	ToolFlow.platform_for!(fx, args, facts, bundle)?
 	id = match bundle.pin {
 		Ok(pin) => pin
 		Err(NoPin) => return Err(ToolInstall.no_pin({ name: facts.name, version: bundle.version }))
 	}
 	ToolUpdateFlow.consent_for!(fx, args, facts, [id])?
-	done = ToolBuild.finish!(fx, args, facts, bundle, { id, passed: Err(None), first: Bool.True })?
+	done = ToolBuild.finish_checked!(fx, args, facts, bundle, { id, passed: Err(None), first: Bool.True }, |file| file_started!(fx, file, again.version))?
 	roc = ToolInstall.file_name({ os: facts.os, key: "roc" })
-	if make.contains(roc) {
+	if again.make.contains(roc) {
 		hex = Temp.hex(fx.random!())
-		_ = ToolBuild.link_entry!(fx, entry_layout(layout_of(facts, hex), facts.bin, roc, hex))?
+		# Slice 050d (R-ST10): on Windows an entry `roc` that exists goes to a `.del` name first. The data file was done by `ToolBuild.finish!`.
+		layout = entry_layout(layout_of(facts, hex), facts.bin, roc, hex)
+		_ = DelFlow.rename_away!(fx, { os: facts.os, files: Del.replaced({ data_file: layout.data_file, entry: layout.entry, old: Err(NotFound), have: again.roc_have }) })?
+		_ = ToolBuild.link_entry!(fx, layout)?
 	}
 	Ok(done.version)
 }

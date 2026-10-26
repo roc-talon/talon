@@ -1,5 +1,6 @@
 import BuildSkip
 import Fail
+import Fetch
 import Fx
 import IntentEdit
 import Ladder
@@ -71,7 +72,7 @@ RemoveFlow :: [].{
 			if request.no_check fx.out!("check: skipped\n")
 			{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }
 		} else {
-			removal_ladder!(fx, request, loaded, member, { aliases, ops, decision })?
+			removal_ladder!(fx, { ..request, selected: Fetch.selected({ held: decision.held ?? "", default: loaded.config.default_roc ?? "" }) }, loaded, member, { aliases, ops, decision })?
 		}
 		keys = plans.join_map(|p| p.plan.keys)
 		toml = member_toml(loaded, member)

@@ -623,3 +623,17 @@ expect {
 	dbg bad
 	bad == [] and XProject.note({ key: "fmt", version: "1.1.0" }) == "project tool fmt 1.1.0 (talon.toml)" and XProject.many({ name: "acme/fmt", keys: ["fmt", "fmt2"] }).line() == "tln: error[usage]: acme/fmt is the app of 2 entries of [tools]: fmt, fmt2. Use tln x <key>."
 }
+
+# R-PT11 (slice 073, 059 Q2): `--roc` and `--allow-unchecked` have no effect on a project tool (its pin and its `url` are the lock, R-PT8), so a run with a hit and one of them is exit code 2 (kind `Usage`). The text names the flags that were given (in the order `--roc`, `--allow-unchecked`) and the key, and says to remove them. No flag is no failure.
+# The texts are proposals (TW24). The run that stops records no project file and starts no child (L2 `x3-project`).
+expect {
+	stop = |roc, unchecked| match XProject.flags_stop({ key: "fmt", roc, unchecked }) {
+		Ok({}) => "ok"
+		Err(fail) => fail.line()
+	}
+	stop(Auto, Bool.False) == "ok"
+		and stop(Pinned, Bool.False) == "tln: error[usage]: --roc has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
+			and stop(Installed, Bool.False) == "tln: error[usage]: --roc has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
+				and stop(Auto, Bool.True) == "tln: error[usage]: --allow-unchecked has no effect on the project tool fmt: its pin and its url are the lock. Remove the flag."
+					and stop(Installed, Bool.True) == "tln: error[usage]: --roc and --allow-unchecked have no effect on the project tool fmt: its pin and its url are the lock. Remove the flags."
+}

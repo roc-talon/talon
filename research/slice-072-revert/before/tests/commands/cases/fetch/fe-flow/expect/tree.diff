@@ -1,0 +1,49 @@
+--- home/.cache/roc/packages/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ/main.roc
++++ home/.cache/roc/packages/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K/main.roc
++++ home/.cache/roc/packages/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue/main.roc
++++ home/.cache/roc/packages/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn/main.roc
++++ home/.cache/roc/packages/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit/main.roc
++++ home/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS/main.roc
++++ home/.cache/roc/packages/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt/main.roc
++++ home/.cache/roc/packages/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/main.roc
++++ home/.cache/roc/packages/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/main.roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/link-mine/.talon.json
++++ home/.cache/roc/toolchains/link-mine/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"link-mine","path":"/fake/bin/link-mine-roc","installed_at":"2026-10-21T09:30:00Z"}
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"nightly-2026-10-14-38a3029","compat":"bbbbbbb"}

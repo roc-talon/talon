@@ -135,6 +135,8 @@ request_of = |args, start, facts| {
 	strategy: Err(Unset),
 	nightly: Common.nightly_of(start.env),
 	compiler: facts.compiler,
+	selected: "",
+	none: Stop,
 	toolchain: facts.toolchain,
 	snapshot: Err(Unset),
 	dry_run: Bool.False,

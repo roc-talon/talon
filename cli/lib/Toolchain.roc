@@ -91,6 +91,14 @@ Toolchain :: [].{
 		{ named: found.map(|r| r.id), auto: if facts.nightly shown.map(|r| r.id) else [] }
 	}
 
+	## R-ST16, R-RU1, R-SO14 (slice 072a): the latest compiler in the channel: the newest release that the `nightly` switch and `min-release-age` allow. It is the last id of `auto` of `domain`.
+	## `Err(Empty)` when `auto` is empty (no release, all too new, or the switch is off). `tln setup` (R-ST16) and R-SO14 outside a project (slice 072b) use it.
+	latest : { releases : List(Nightlies.Release), now : U64, min_age : U64, nightly : Bool } -> Try(Str, [Empty])
+	latest = |facts| match Toolchain.domain(facts).auto.last() {
+		Ok(id) => Ok(id)
+		Err(_) => Err(Empty)
+	}
+
 	## R-SO13, R-NS1, R-NS3, R-NS7, R-C7 (slice 025b): the compiler that rank 4 downloads when no installed compiler is in the range of `[toolchain] roc`: the newest compiler of the list that the range, the
 	## `nightly` switch, `min-release-age` and the snapshot allow. `releases` is the list of the host (`Nightlies.list!`). `now` and `min_age` are in seconds. `snapshot` is the time form of `--snapshot` (`Err(None)` when
 	## it is not set). The candidates are the releases with one asset for the host (`Nightlies.candidates`), then:

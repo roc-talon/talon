@@ -1,0 +1,10 @@
+Slice 050, `tln tool update talon` (entry `commands`). One home: `tools.json` has the entry `talon` (prebuilt 0.3.1) and the tool `gp` (a commit ref: no request). `<data>/bin/tln` and the entries `~/.local/bin/tln` and `roc` have the text `old tln` (the same sha256: the entries are Talon's, R-ST11).
+`TALON_NOW=2026-10-15T12:00:00Z`, `min-release-age` 2 days. The release list of roc-talon/talon: v0.3.5 (1 day old, too young), v0.3.4 (the answer), a draft, a prerelease and a tag that is no version (all left out), v0.3.1.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | the list (one request), v0.3.4 picked (R-T9: v0.3.5 is too young), the entries (checked before the download), one download job for the binary and one for sha256sums.txt, the sha256 check, `chmod 0755`, `--version`, then under the lock: `tools.json` read again, the check again, the rename over `<data>/bin/tln`, the entries `tln` and `roc` again (hard link to a temp name, rename), `tools.json` written. `updated talon 0.3.1 to 0.3.4 (roc-talon/talon)`. The temp file and the scratch dir are deleted | R-S2, R-S3, R-T22, R-T9, R-ST9, R-SE13, R-DA3, R-DA4, R-HF2, R-CC1, R-CC2, R-CC6, R-T4 |
+| 2 | `tool update talon` | the entry says 0.3.4: `talon 0.3.4 is up to date`, no download, no write. The page is cached (no request) | R-S2, R-S4 |
+| 3 | `tool update roc-talon/talon --json` | the full name is the same operand. The envelope has the outcome `up_to_date` | R-J1 to R-J4, R-CM16 |
+| 4 | `tool list` | `tools.json` has the entry `talon`: it is read, and it is not a row of the list. Only `gp` | R-T4, Q-S2 |
+| 5 | `tool update` | no name: all tools. `gp` is pinned to a commit (no request). `talon` is not one of them | R-T25, Q-S2 |

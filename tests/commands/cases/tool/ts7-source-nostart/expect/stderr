@@ -1,0 +1,3 @@
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building roc-talon/talon git v0.3.4@d0d0d0d0 with nightly-2026-10-14-38a3029
+tln: error[internal]: the new tln 0.3.4 does not start (exit 1). The old tln stays.

@@ -27,7 +27,7 @@ import Trash
 ## | 2 | `env_all!`, `Roots.from_env`, then one `read_files!` of `config.toml` (a missing file is the empty text), `Intent.read_config` (the warnings go to stderr, one line each, `warning: <text>`). No `clock!`, no `platform!`. | R-LY1 |
 ## | 3 | `Launch.toolchains!`: one `list_dirs!` of `<cache>/toolchains` | R-LY1 |
 ## | 4 | One `read_files!` with 2 paths for each installed id, in the order of the ids: `.talon.json`, then `.last-use`. No call when no compiler is installed. | R-CC9 |
-## | 5 | `Manage.rows`, then the table on stdout and the warning on stderr (`Manage.ls_report`). With `--json` stdout is only the envelope (`Manage.ls_data`) and no table is printed. The table is the answer of the command: `--quiet` does not hide it. | R-OUT2, R-J3 |
+## | 5 | `Manage.rows` and `Manage.origins` (slice 071, R-R15: the repo and the typed ref of a `git-*` id, from the same `.talon.json` text: no new `Fx` call), then the table on stdout and the warning on stderr (`Manage.ls_report`). With `--json` stdout is only the envelope (`Manage.ls_data`) and no table is printed. The table is the answer of the command: `--quiet` does not hide it. | R-OUT2, R-J3 |
 ##
 ## `roc default`:
 ##
@@ -60,8 +60,8 @@ import Trash
 ## | 1 | `ManageUpdate.read_update(args)`. A failure is printed with `Common.failed!` (no `Fx` call). | R-CM15 |
 ## | 2 | `env_all!`, `Roots.from_env`, `RocInstall.read_config!` (one `read_files!` of `config.toml`): `default-roc` is the default before the command. | R-RU2 |
 ## | 3 | `RocInstall.offer!` with the text `@latest` (the steps 2 to 6 of `roc install`: the list, and `Nightlies.pick` over the compilers that the `nightly` switch and `min-release-age` allow). `Present`: the newest compiler is installed already, so nothing is downloaded and the first line is `<id> is the newest` (answer Q1 of the review). The default is still decided in step 5. A failure is the failure of `roc install @latest` (exit 10 for the switch, exit 15 for `--offline` with no cached list). | R-RU1, R-NS2, R-NS3, R-C7, R-DI12 |
-## | 4 | `Download(offer)`: `RocInstall.ask_download!` (the prompt of `roc install`: interactive, the default is yes; non-interactive: no prompt, the answer line on stderr), then `RocInstall.install_offer!` (lock, download, extract, the first default of R-SO15). A No is `Consent.roc_install_declined` (exit 13). | R-NI6, R-DL3, R-DL4, R-CC4 |
-## | 5 | The default. `install_offer!` made the first default (`default: Set`): done. The default text is the id already: `Same`, no call, `changed` is false. Else `Manage.update_move({ default: <step 2> })`: `Stay` makes no call. `Move`: under the lock of `config.toml` (`Wait`), `Manage.default_set` as `roc default` does (two reads, `write_atomic!`: R-CC6, R-CC7). | R-RU2, R-SO15 |
+## | 4 | `Download(offer)`: `RocInstall.ask_download!` (the prompt of `roc install`: interactive, the default is yes; non-interactive: no prompt, the answer line on stderr), then `RocInstall.install_offer!` (lock, download, extract: no default, R-SO15). A No is `Consent.roc_install_declined` (exit 13). | R-NI6, R-DL3, R-DL4, R-CC4 |
+## | 5 | The default (a user act, R-SO15). The default text is the id already: `Same`, no call, `changed` is false. Else `Manage.update_move({ default: <step 2> })`: `Stay` makes no call. `Move` (also when no default is set): under the lock of `config.toml` (`Wait`), `Manage.default_set` as `roc default` does (two reads, `write_atomic!`: R-CC6, R-CC7). | R-RU2, R-SO15 |
 ## | 6 | The output: `ManageUpdate.update_report` (stdout, and the compat warnings on stderr), or with `--json` the envelope with `ManageUpdate.update_data` on stdout and the human text on stderr. No project file is read or written, and no known project is recorded (R-RU3). | R-OUT2, R-J3, R-RU3 |
 RocManage :: [].{
 
@@ -139,7 +139,8 @@ list_flow! = |fx, args| {
 	ids = Launch.toolchains!(fx, roots)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
 	reads = if ids.is_empty() [] else fx.read_files!(paths)
-	facts = { rows: Manage.rows({ found: Manage.found_of(ids, reads), default: config.default_roc }), default: config.default_roc }
+	found = Manage.found_of(ids, reads)
+	facts = { rows: Manage.rows({ found, default: config.default_roc }), origins: Manage.origins(found), default: config.default_roc }
 	report = Manage.ls_report(facts)
 	if args.json {
 		fx.out!(Out.json_ok({ command: args.typed, data: Manage.ls_data(facts) }))
@@ -166,17 +167,13 @@ default_flow! = |fx, args, text| {
 	got = fetched!(fx, args, { env, installed, text })?
 	path = Roots.item(roots, Config)
 	edited = edit_config!(fx, path, |current| Manage.default_set({ path, text: current, id: got.id }))?
-	# `install_offer!` wrote the first default (R-SO15): for the whole command the default was not set before and is changed now.
-	whole = if got.first_default {
-		{ previous: Err(Unset), changed: Bool.True }
-	} else edited
-	Ok({ id: got.id, installed: got.installed, compat: got.compat, edited: whole })
+	Ok({ id: got.id, installed: got.installed, compat: got.compat, edited })
 }
 
 # Steps 3 and 4: an installed compiler (a unique prefix is expanded), else the download of `roc install`.
-fetched! : Fx, Args, { env : List((Str, Str)), installed : List(Str), text : Str } => Try({ id : Str, installed : Bool, first_default : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
+fetched! : Fx, Args, { env : List((Str, Str)), installed : List(Str), text : Str } => Try({ id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
 fetched! = |fx, args, facts| {
-	present = |id| Ok({ id, installed: Bool.False, first_default: Bool.False, compat: Err(Unknown) })
+	present = |id| Ok({ id, installed: Bool.False, compat: Err(Unknown) })
 	if facts.text.starts_with("@") {
 		download!(fx, args, facts)
 	} else {
@@ -189,13 +186,13 @@ fetched! = |fx, args, facts| {
 }
 
 # Step 4: `roc install` for the text. The consent comes before the lock.
-download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try({ id : Str, installed : Bool, first_default : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
+download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try({ id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]) }, Fail)
 download! = |fx, args, facts| match RocInstall.offer!(fx, { id: facts.text, env: facts.env, offline: args.offline })? {
-	Present(found) => Ok({ id: found.id, installed: Bool.False, first_default: Bool.False, compat: Err(Unknown) })
+	Present(found) => Ok({ id: found.id, installed: Bool.False, compat: Err(Unknown) })
 	Download(offer) => {
 		RocInstall.ask_download!(fx, args, facts.env, { id: offer.id, size: offer.size })?
 		done = RocInstall.install_offer!(fx, offer)?
-		Ok({ id: done.id, installed: done.how == Installed, first_default: done.default == Set, compat: done.compat })
+		Ok({ id: done.id, installed: done.how == Installed, compat: done.compat })
 	}
 }
 
@@ -234,11 +231,7 @@ update_flow! = |fx, args| {
 	roots = Roots.from_env(env)?
 	before = RocInstall.read_config!(fx, roots)?.default_roc
 	got = download!(fx, args, { env, text: "@latest", installed: [] })?
-	moved = if got.first_default {
-		{ default: Set, previous: before, changed: Bool.True }
-	} else {
-		moved_default!(fx, roots, { id: got.id, before })?
-	}
+	moved = moved_default!(fx, roots, { id: got.id, before })?
 	Ok({ id: got.id, item: Roots.item(roots, Toolchain(got.id)), installed: got.installed, compat: got.compat, default: moved.default, previous: moved.previous, changed: moved.changed })
 }
 

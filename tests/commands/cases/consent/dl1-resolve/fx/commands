@@ -1,6 +1,6 @@
 # R-NM8 R-DL5: --offline reaches the offer (this run is the first, so the cache of the list is empty): exit 15 with the offline text, even with --allow-downloads (`remove` needs no index, so the run reaches the ladder). No lock, no download.
 env:CI=true remove json --file u13/main.roc --offline --allow-downloads
-# R-DL1 R-DL3 R-NI5 R-SO22 R-BL3 R-SO15 R-CC4: the pin of u1 is not installed. A person is there (the fake tty): one prompt, the answer is y (the default is No for a command that does not name the download). The list, the prompt, the install under the lock, the default compiler, then the probes run the new compiler.
+# R-DL1 R-DL3 R-NI5 R-SO22 R-BL3 R-SO15 R-CC4: the pin of u1 is not installed. A person is there (the fake tty): one prompt, the answer is y (the default is No for a command that does not name the download). The list, the prompt, the install under the lock (no default is written: a download for a probe is no user act, R-SO15), then the probes run the new compiler.
 update json --file u1/main.roc
 # R-DL3 R-NM8: the same, and the answer is Enter: the default is No. Exit 13, nothing is downloaded, no lock, no write.
 update json --file u2/main.roc

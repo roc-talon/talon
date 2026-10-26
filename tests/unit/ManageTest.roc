@@ -96,10 +96,10 @@ expect {
 	a = { id: "nightly-2026-10-09-258ab27", kind: Nightly, installed_at: Ok(1792497600), last_use: Ok(1792657800), is_default: Bool.False }
 	b = { id: "nightly-2026-10-14-38a3029", kind: Nightly, installed_at: Ok(1792497600), last_use: Err(Unknown), is_default: Bool.True }
 	c = { id: "link-dev", kind: Link, installed_at: Err(Unknown), last_use: Err(Unknown), is_default: Bool.False }
-	full = Manage.ls_report({ rows: [a, b, c], default: Ok("nightly-2026-10-14-38a3029") })
-	missing = Manage.ls_report({ rows: [a], default: Ok("nightly-2026-10-01-aaaaaaa") })
-	empty = Manage.ls_report({ rows: [], default: Err(Unset) })
-	empty_warn = Manage.ls_report({ rows: [], default: Ok("nightly-2026-10-01-aaaaaaa") })
+	full = Manage.ls_report({ rows: [a, b, c], origins: [], default: Ok("nightly-2026-10-14-38a3029") })
+	missing = Manage.ls_report({ rows: [a], origins: [], default: Ok("nightly-2026-10-01-aaaaaaa") })
+	empty = Manage.ls_report({ rows: [], origins: [], default: Err(Unset) })
+	empty_warn = Manage.ls_report({ rows: [], origins: [], default: Ok("nightly-2026-10-01-aaaaaaa") })
 	full.stdout
 		== [
 			"  ID                          KIND     INSTALLED   LAST USE\n",
@@ -123,11 +123,90 @@ expect {
 expect {
 	a = { id: "nightly-2026-10-09-258ab27", kind: Nightly, installed_at: Ok(1792497600), last_use: Ok(1792657800), is_default: Bool.True }
 	c = { id: "link-dev", kind: Link, installed_at: Err(Unknown), last_use: Err(Unknown), is_default: Bool.False }
-	shown = Manage.ls_data({ rows: [a, c], default: Ok("nightly-2026-10-09-258ab27") }).render()
-	none = Manage.ls_data({ rows: [], default: Err(Unset) }).render()
+	shown = Manage.ls_data({ rows: [a, c], origins: [], default: Ok("nightly-2026-10-09-258ab27") }).render()
+	none = Manage.ls_data({ rows: [], origins: [], default: Err(Unset) }).render()
 	shown
 		== "{\"default\":\"nightly-2026-10-09-258ab27\",\"compilers\":[{\"id\":\"nightly-2026-10-09-258ab27\",\"kind\":\"nightly\",\"installed_at\":\"2026-10-20T12:00:00Z\",\"last_use\":\"2026-10-22T08:30:00Z\",\"default\":true},{\"id\":\"link-dev\",\"kind\":\"link\",\"installed_at\":null,\"last_use\":null,\"default\":false}]}"
 		and none == "{\"default\":null,\"compilers\":[]}"
+}
+
+# R-R15 R-R1 (slice 071): the origins of the `git-*` ids, from their `.talon.json`: `repo` (the URL, as it is) and `ref` (the text that the user typed). One `Origin` with the id for each item that has both, in the order of the items. The list is shorter for the others:
+# only the kind `Git` has an origin. A text that is not JSON, a missing file, a field that is missing or not a text: nothing.
+expect {
+	git_meta = |fields| "{\"format\":1,\"id\":\"git-dd03c09e\",${fields},\"installed_at\":\"2026-10-20T12:00:00Z\"}"
+	item = |id, text| { id, meta: text, last_use: Err(NotFound) }
+	found = [
+		item("git-dd03c09e", Ok(git_meta("\"repo\":\"https://github.com/roc-lang/roc\",\"sha\":\"dd03c09e00000000000000000000000000000000\",\"ref\":\"main\""))),
+		item("git-5a5a5a5a", Ok(git_meta("\"ref\":\"my-branch\",\"repo\":\"https://github.com/Karakatiza666/roc\""))),
+		item("git-7e7e7e7e", Ok(git_meta("\"repo\":\"https://github.com/roc-lang/roc\",\"ref\":\"7e7e7e7\""))),
+		item("git-0a1b2c3d", Ok(git_meta("\"repo\":\"https://example.com/a/b\",\"ref\":\"v1\""))),
+		item("git-11111111", Ok(git_meta("\"repo\":\"https://github.com/roc-lang/roc\""))),
+		item("git-22222222", Ok(git_meta("\"ref\":\"main\""))),
+		item("git-33333333", Ok(git_meta("\"repo\":\"https://github.com/roc-lang/roc\",\"ref\":5"))),
+		item("git-44444444", Ok("not json")),
+		item("git-55555555", Err(NotFound)),
+		item("nightly-2026-10-09-258ab27", Ok(git_meta("\"repo\":\"https://github.com/roc-lang/roc\",\"ref\":\"main\""))),
+		item("link-dev", Ok(git_meta("\"repo\":\"https://github.com/roc-lang/roc\",\"ref\":\"main\""))),
+	]
+	Manage.origins(found)
+		== [
+			{ id: "git-dd03c09e", repo: "https://github.com/roc-lang/roc", ref: "main" },
+			{ id: "git-5a5a5a5a", repo: "https://github.com/Karakatiza666/roc", ref: "my-branch" },
+			{ id: "git-7e7e7e7e", repo: "https://github.com/roc-lang/roc", ref: "7e7e7e7" },
+			{ id: "git-0a1b2c3d", repo: "https://example.com/a/b", ref: "v1" },
+		]
+}
+
+# R-R15 R-OUT2 (slice 071, proposal): `roc list` shows the repo and the typed ref of a `git-*` id. A row takes its origin by id (the list is in another order than the rows, and has an id that is no row). When a row has an origin, the table has a column `SOURCE`
+# (`owner/repo@ref`; a `repo` that is not `https://github.com/<owner>/<repo>` shows in full; `-` for the other rows) and `LAST USE` is padded. With no row that has an origin the table has no such column, so the table of a store with no `git-*` build is as before.
+expect {
+	a = { id: "nightly-2026-10-09-258ab27", kind: Nightly, installed_at: Ok(1792497600), last_use: Ok(1792657800), is_default: Bool.False }
+	g1 = { id: "git-dd03c09e", kind: Git, installed_at: Ok(1792497600), last_use: Err(Unknown), is_default: Bool.True }
+	g2 = { id: "git-5a5a5a5a", kind: Git, installed_at: Err(Unknown), last_use: Ok(1792411200), is_default: Bool.False }
+	g3 = { id: "git-7e7e7e7e", kind: Git, installed_at: Err(Unknown), last_use: Err(Unknown), is_default: Bool.False }
+	g4 = { id: "git-0a1b2c3d", kind: Git, installed_at: Err(Unknown), last_use: Err(Unknown), is_default: Bool.False }
+	c = { id: "link-dev", kind: Link, installed_at: Err(Unknown), last_use: Err(Unknown), is_default: Bool.False }
+	o1 = { id: "git-dd03c09e", repo: "https://github.com/roc-lang/roc", ref: "main" }
+	o2 = { id: "git-5a5a5a5a", repo: "https://github.com/Karakatiza666/roc", ref: "my-branch" }
+	o4 = { id: "git-0a1b2c3d", repo: "https://example.com/a/b", ref: "v1" }
+	o5 = { id: "git-99999999", repo: "https://github.com/roc-lang/roc", ref: "gone" }
+	o6 = { id: "git-7e7e7e7e", repo: "https://github.com/roc-lang/roc/tree/x", ref: "deep" }
+	shown = Manage.ls_report({ rows: [a, g1, g2, g3, g4, c], origins: [o4, o5, o2, o1], default: Ok("git-dd03c09e") })
+	deep = Manage.ls_report({ rows: [g3], origins: [o6], default: Err(Unset) })
+	plain = Manage.ls_report({ rows: [a, g3, c], origins: [], default: Err(Unset) })
+	unmatched = Manage.ls_report({ rows: [a, g3, c], origins: [o5], default: Err(Unset) })
+	shown.stdout
+		== [
+			"  ID                          KIND     INSTALLED   LAST USE    SOURCE\n",
+			"  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22  -\n",
+			"* git-dd03c09e                git      2026-10-20  -           roc-lang/roc@main\n",
+			"  git-5a5a5a5a                git      -           2026-10-19  Karakatiza666/roc@my-branch\n",
+			"  git-7e7e7e7e                git      -           -           -\n",
+			"  git-0a1b2c3d                git      -           -           https://example.com/a/b@v1\n",
+			"  link-dev                    link     -           -           -\n",
+		]
+		and shown.stderr == []
+			and deep.stdout == ["  ID            KIND  INSTALLED  LAST USE  SOURCE\n", "  git-7e7e7e7e  git   -          -         https://github.com/roc-lang/roc/tree/x@deep\n"]
+				and plain.stdout
+					== [
+						"  ID                          KIND     INSTALLED   LAST USE\n",
+						"  nightly-2026-10-09-258ab27  nightly  2026-10-20  2026-10-22\n",
+						"  git-7e7e7e7e                git      -           -\n",
+						"  link-dev                    link     -           -\n",
+					]
+					and unmatched.stdout == plain.stdout
+}
+
+# R-R15 R-J3 R-OUT4 (slice 071, proposal): the `data` of `roc list --json`. A row of the kind `git` has the keys `repo` and `ref` after `default`: the origin of its id as it is (the stored URL, raw), or `null` for both. A row of another kind has no such key, also when an origin has its id.
+expect {
+	a = { id: "nightly-2026-10-09-258ab27", kind: Nightly, installed_at: Ok(1792497600), last_use: Err(Unknown), is_default: Bool.False }
+	g1 = { id: "git-dd03c09e", kind: Git, installed_at: Ok(1792497600), last_use: Err(Unknown), is_default: Bool.True }
+	g2 = { id: "git-7e7e7e7e", kind: Git, installed_at: Err(Unknown), last_use: Err(Unknown), is_default: Bool.False }
+	o1 = { id: "git-dd03c09e", repo: "https://github.com/roc-lang/roc", ref: "main" }
+	oa = { id: "nightly-2026-10-09-258ab27", repo: "https://github.com/roc-lang/roc", ref: "main" }
+	shown = Manage.ls_data({ rows: [a, g1, g2], origins: [oa, o1], default: Ok("git-dd03c09e") }).render()
+	shown
+		== "{\"default\":\"git-dd03c09e\",\"compilers\":[{\"id\":\"nightly-2026-10-09-258ab27\",\"kind\":\"nightly\",\"installed_at\":\"2026-10-20T12:00:00Z\",\"last_use\":null,\"default\":false},{\"id\":\"git-dd03c09e\",\"kind\":\"git\",\"installed_at\":\"2026-10-20T12:00:00Z\",\"last_use\":null,\"default\":true,\"repo\":\"https://github.com/roc-lang/roc\",\"ref\":\"main\"},{\"id\":\"git-7e7e7e7e\",\"kind\":\"git\",\"installed_at\":null,\"last_use\":null,\"default\":false,\"repo\":null,\"ref\":null}]}"
 }
 
 # R-CS2, R-CC6, R-LY4: the edit that makes `id` the default. The same value is `Same`. Another value is replaced in place and every other byte stays (comments, order, the quote style of other lines). A missing key is added at the end of the

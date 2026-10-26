@@ -1,0 +1,11 @@
+# R-AL5 R-UM1 R-EP7 R-EP10 R-EP11 R-SP8 R-SP12 R-UP6 R-DL4 R-J5 R-OUT4 R-DT2 (slice 053, TW16): the failure output of the example of Resolution 5, on the real binary with the fake roc and the fake release server.
+# The world is real data: the app (main.roc) imports parser.Yaml, and uses basic-cli 0.25.0 and roc-parser 2.0.0 (given/home/.cache/roc/packages has their real headers and stub modules). The pin is nightly-2026-09-30-4c37850.
+# compat.db has the real results of conformance/compat-sweep (22 nightlies): roc-parser 2.0.0 fails in Yaml.roc on 10-02 .. 10-12 and basic-cli 0.25.0 fails on 09-15 .. 10-06, so on no nightly do both pass. The list of nightlies is the real list of the sweep.
+# `tln upgrade roc` holds every package and frees the nightly (R-SP8): the 2 askable compilers are the pin and the newest nightly (n12, a fake archive that the command names, R-DL4), and the pin fails for both.
+# The case has the text of the code (slices 035, 036c: the proposals of TW24). The example in DESIGN-RESOLUTION.md 5 has other text: see the slice file `docs/slices/053-p1-exit.md`, finding F2.
+# given/mkdb.py makes the db from given/facts.tsv. given/http was made by `research/slice-053-revert/mk-ex3.py`.
+mkdir -p $HOME/.cache/roc/talon
+python3 -I $TALON_TEST_DIR/mkdb.py $HOME/.cache/roc/talon/compat.db $TALON_TEST_DIR/facts.tsv
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st tln upgrade roc
+st tln upgrade roc --json

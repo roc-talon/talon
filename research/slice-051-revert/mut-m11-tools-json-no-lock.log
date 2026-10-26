@@ -1,0 +1,122 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.8      10
+
+=== l2 exit 1
+FAIL tool/rm1-default
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -98,10 +98,8 @@
+       rename $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+       read_files $HOME/.local/share/talon/tools.json
+       write_atomic $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+       delete $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+       delete $HOME/.local/bin/roc
+       rename $HOME/.local/bin/roc.old $HOME/.local/bin/roc
+      @@ -114,8 +112,6 @@
+       tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+       sha256_file $HOME/.local/share/talon/bin/tln
+       sha256_file $HOME/.local/bin/roc
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+       read_files $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+       delete $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+       delete $HOME/.local/share/talon/bin/tln
+FAIL tool/rm2-options
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -39,10 +39,8 @@
+       rename $HOME/h1/.cache/roc/toolchains/zig-0.17.0 $HOME/h1/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       delete $HOME/h1/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       unlock $HOME/h1/.cache/roc/toolchains/zig-0.17.0
+      -lock $HOME/h1/.local/share/talon/tools.json nowait: held
+       read_files $HOME/h1/.local/share/talon/tools.json
+       delete $HOME/h1/.local/bin/foo $HOME/h1/.local/share/talon/bin/foo $HOME/h1/.local/bin/bar $HOME/h1/.local/share/talon/bin/bar $HOME/h1/.local/share/talon/bin/baz $HOME/h1/.local/share/talon/tools.json
+      -unlock $HOME/h1/.local/share/talon/tools.json
+       read_files $HOME/h1/.bashrc $HOME/h1/.zshrc $HOME/h1/.config/fish/conf.d/talon.fish
+       write_atomic $HOME/h1/.bashrc
+       delete $HOME/h1/.cache/roc/talon $HOME/h1/.config/talon/config.toml $HOME/h1/.local/share/talon/share.json
+      @@ -59,10 +57,8 @@
+       sha256_file $HOME/h2/.local/share/talon/bin/tln
+       sha256_file $HOME/h2/.local/bin/tln
+       sha256_file $HOME/h2/.local/bin/roc
+      -lock $HOME/h2/.local/share/talon/tools.json nowait: held
+       read_files $HOME/h2/.local/share/talon/tools.json
+       write_atomic $HOME/h2/.local/share/talon/tools.json
+      -unlock $HOME/h2/.local/share/talon/tools.json
+       delete $HOME/h2/.local/bin/roc
+       rename $HOME/h2/.local/bin/roc.old $HOME/h2/.local/bin/roc
+       delete $HOME/h2/.local/share/talon/bin/tln
+      @@ -102,10 +98,8 @@
+       rename $HOME/h4/.cache/roc/toolchains/zig-0.17.0 $HOME/h4/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       delete $HOME/h4/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       unlock $HOME/h4/.cache/roc/toolchains/zig-0.17.0
+      -lock $HOME/h4/.local/share/talon/tools.json nowait: held
+       read_files $HOME/h4/.local/share/talon/tools.json
+       write_atomic $HOME/h4/.local/share/talon/tools.json
+      -unlock $HOME/h4/.local/share/talon/tools.json
+       delete $HOME/h4/.cache/roc/talon $HOME/h4/.config/talon/config.toml $HOME/h4/.local/share/talon/share.json
+       delete $HOME/h4/.local/bin/tln $HOME/h4/.local/share/talon/bin/tln
+       args
+      @@ -121,10 +115,8 @@
+       sha256_file $HOME/h5/.local/bin/foo
+       sha256_file $HOME/h5/.local/share/talon/bin/bar
+       sha256_file $HOME/h5/.local/bin/bar
+      -lock $HOME/h5/.local/share/talon/tools.json nowait: held
+       read_files $HOME/h5/.local/share/talon/tools.json
+       delete $HOME/h5/.local/bin/foo $HOME/h5/.local/share/talon/bin/foo $HOME/h5/.local/bin/bar $HOME/h5/.local/share/talon/bin/bar $HOME/h5/.local/share/talon/tools.json
+      -unlock $HOME/h5/.local/share/talon/tools.json
+       read_files $HOME/h5/.bashrc $HOME/h5/.zshrc $HOME/h5/.config/fish/conf.d/talon.fish
+       delete $HOME/h5/.cache/roc/talon $HOME/h5/.config/talon/config.toml $HOME/h5/.local/share/talon/share.json
+       delete $HOME/h5/.local/bin/roc
+FAIL tool/rm3-windows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -35,10 +35,8 @@
+       rename $HOME/u1/.cache/roc/toolchains/zig-0.17.0 $HOME/u1/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       delete $HOME/u1/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       unlock $HOME/u1/.cache/roc/toolchains/zig-0.17.0
+      -lock $HOME/u1/.local/share/talon/tools.json nowait: held
+       read_files $HOME/u1/.local/share/talon/tools.json
+       delete $HOME/u1\.local\bin/foo.exe $HOME/u1/.local/share/talon/bin/foo.exe $HOME/u1/.local/share/talon/tools.json
+      -unlock $HOME/u1/.local/share/talon/tools.json
+       exec powershell -NoProfile -NonInteractive -Command $dir = $env:TALON_BIN_DIR
+       $key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $true)
+       $old = $key.GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+      @@ -72,10 +70,8 @@
+       sha256_file $HOME/u2/.local/share/talon/bin/tln.exe
+       sha256_file $HOME/u2\.local\bin/tln.exe
+       sha256_file $HOME/u2\.local\bin/roc.exe
+      -lock $HOME/u2/.local/share/talon/tools.json nowait: held
+       read_files $HOME/u2/.local/share/talon/tools.json
+       write_atomic $HOME/u2/.local/share/talon/tools.json
+      -unlock $HOME/u2/.local/share/talon/tools.json
+       random
+       rename $HOME/u2\.local\bin/tln.exe $HOME/u2\.local\bin/tln.0123456789abcdef.del
+       rename $HOME/u2/.local/share/talon/bin/tln.exe $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+FAIL tool/rm4-stops
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -33,8 +33,6 @@
+       rename $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+       unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+      -lock $HOME/.local/share/talon/tools.json nowait: held
+       read_files $HOME/.local/share/talon/tools.json
+       write_atomic $HOME/.local/share/talon/tools.json
+      -unlock $HOME/.local/share/talon/tools.json
+       delete $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+commands: 0 passed, 4 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

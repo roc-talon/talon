@@ -1,0 +1,5 @@
+== tln upgrade roc
+exit 10
+== tln upgrade roc --json
+{"schema":1,"command":"upgrade","ok":false,"data":null,"error":{"kind":"no_tuple","code":10,"message":"no tuple works: the unit check on nightly-2026-09-30-4c37850 fails for lukewilliamboswell/roc-parser 2.0.0 (Yaml.roc); the platform roc-lang/basic-cli 0.25.0 (no module is named)\n  lukewilliamboswell/roc-parser 2.0.0 fails on nightly-2026-10-02-bba1acc .. nightly-2026-10-12-2664a27\n  the platform roc-lang/basic-cli 0.25.0 fails on nightly-2026-09-15-fe09c42 .. nightly-2026-10-06-c34079d\n  fix: tln roc use <id>\n       or tln upgrade roc\n       or stop using parser.Yaml","details":{"compiler":"nightly-2026-09-30-4c37850","causes":[{"release":"lukewilliamboswell/roc-parser 2.0.0","kind":"fail","modules":["Yaml.roc"],"from":"nightly-2026-10-02-bba1acc","to":"nightly-2026-10-12-2664a27","inferred":[]},{"release":"the platform roc-lang/basic-cli 0.25.0","kind":"fail","modules":[],"from":"nightly-2026-09-15-fe09c42","to":"nightly-2026-10-06-c34079d","inferred":[]}],"hint":null}}}
+exit 10

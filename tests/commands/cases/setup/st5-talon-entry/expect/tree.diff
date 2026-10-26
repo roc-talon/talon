@@ -1,0 +1,31 @@
+--- home/.local/bin/roc
++++ home/.local/bin/roc
+@@ -0,0 +1 @@
++tln binary v1
+--- home/.local/bin/tln
++++ home/.local/bin/tln
+@@ -0,0 +1 @@
++tln binary v1
+--- home/.local/share/bash-completion/completions/tln
++++ home/.local/share/bash-completion/completions/tln
+@@ -0,0 +1,16 @@
++# bash completion for tln. Made by tln setup.
++_tln() {
++	local cur="${COMP_WORDS[COMP_CWORD]}"
++	local words=""
++	if [ "$COMP_CWORD" -eq 1 ]; then
++		words="init install remove update upgrade outdated why probe list patch verify x publish audit roc tool cache setup yank move share"
++	elif [ "$COMP_CWORD" -eq 2 ]; then
++		case "${COMP_WORDS[1]}" in
++			roc) words="install link use list remove default update" ;;
++			tool) words="install list update rebuild remove" ;;
++			cache) words="gc clean list dir" ;;
++		esac
++	fi
++	COMPREPLY=($(compgen -W "$words" -- "$cur"))
++}
++complete -F _tln tln
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -0,0 +1 @@
++{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.0.0","url":"https://github.com/roc-talon/talon/releases/download/v0.0.0/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"cfee709bc714554e995bd38abebf44f0900bad3d710a6f7d29038d81f9b4b9af","libs":[],"installed_at":"2026-10-22T12:00:00Z"}}}

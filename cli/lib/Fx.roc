@@ -45,6 +45,8 @@ import Probe
 ## | `db_query!` | The rows of `compat.db` for some keys (slice 030, R-EF1, R-CC8, R-TF1, R-TF3) |
 ## | `db_write!` | Writes rows to `compat.db` in one transaction (slice 030, R-CC8, R-P4, R-CV6, R-TF2) |
 ## | `exec_in!` | `exec!` in a given working directory (slice 057, R-RUN5, R-RUN8, R-RUN9: the steps of `tln run`) |
+## | `spawn_detached!` | Starts a child that goes on after `tln` ends (slice 051, R-RM5: the cleanup of `tln tool remove talon` on Windows) |
+## | `windows!` | Is this machine Windows (slice 050c, R-ST10: the sweep of `.del` files at each start of `tln` runs on Windows only) |
 Fx := {
 	args! : () => List(Str),
 	env_all! : () => List((Str, Str)),
@@ -80,6 +82,8 @@ Fx := {
 	db_query! : Db.Open, Db.Query => Try(Db.Answer, Db.Err),
 	db_write! : Db.Open, Db.Write => Try({}, Db.Err),
 	exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)]),
+	spawn_detached! : { argv : List(Str), env : List((Str, Str)) } => Try({}, [NotStarted(Str)]),
+	windows! : () => Bool,
 }.{
 	args! : Fx => List(Str)
 	args! = |Fx.{ args!: f, .. }| f()
@@ -256,6 +260,15 @@ Fx := {
 	## on `PATH` as `exec!` does, it kills no child and has no timeout.
 	exec_in! : Fx, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
 	exec_in! = |Fx.{ exec_in!: f, .. }, run| f(run)
+
+	## Slice 051, R-RM5: starts the child `argv` (the program and its arguments, the program as a path or as a name for `PATH`) and does not wait. The child has no stdin, no stdout and no stderr (they are closed or null), and it goes on after `tln` has ended. The real `Fx` needs a launcher for this (`Cmd.spawn!` ends the child when its handle is released).
+	## `env` are variables that are set for the child in addition to the environment of this process (a name that is in both takes the value of `env`). `Ok({})` means that the system started the child. A child that could not start is `NotStarted(text)`. The real `Fx` never waits, never reads the child and has no Talon logic (TW4).
+	spawn_detached! : Fx, { argv : List(Str), env : List((Str, Str)) } => Try({}, [NotStarted(Str)])
+	spawn_detached! = |Fx.{ spawn_detached!: f, .. }, run| f(run)
+
+	## Slice 050c, R-ST10: true when the operating system is Windows. `Run.run!` calls it first in each start of `tln`, before any other call, to decide the sweep of the `.del` files. So the fake `Fx` does not write this call to `calls.log` (as `program_name!`): a start on Linux or macOS shows no new line. The same answer as `platform!` gives for `os`, in one call that has no `arch`. The real `Fx` has no Talon logic (TW4).
+	windows! : Fx => Bool
+	windows! = |Fx.{ windows!: f, .. }| f()
 
 	## R-CC3, R-CC5: `with_lock!` with `Wait` for a body that fails with a `Fail`. `Wait` never gives `Busy`, so `Busy` is a fault of Talon (kind `Internal`: `the lock of <item> was not taken`). The result is the result of `body!`.
 	locked! : Fx, Str, (() => Try(ok, Fail)) => Try(ok, Fail)

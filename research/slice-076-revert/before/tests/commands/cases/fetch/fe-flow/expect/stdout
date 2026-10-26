@@ -1,0 +1,34 @@
+== fetch https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst: fetched
+== fetch https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst: present
+== fetch https://github.com/acme/json/releases/download/2.1.1/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst https://github.com/acme/json/releases/download/2.1.2/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst https://github.com/acme/json/releases/download/2.1.3/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst
+https://github.com/acme/json/releases/download/2.1.1/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst: exit 15
+https://github.com/acme/json/releases/download/2.1.2/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst: exit 16
+https://github.com/acme/json/releases/download/2.1.3/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst: fetched
+== fetch offline https://github.com/acme/json/releases/download/2.1.4/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst
+https://github.com/acme/json/releases/download/2.1.4/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst: exit 15
+== fetch env:TALON_DOWNLOADER=wget https://github.com/acme/json/releases/download/2.1.4/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst
+https://github.com/acme/json/releases/download/2.1.4/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst: fetched
+== fetch env:TALON_DOWNLOADER=bogus https://github.com/acme/json/releases/download/2.1.5/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst
+https://github.com/acme/json/releases/download/2.1.5/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst: exit 2
+== fetch http://10.0.0.1/pkg/1.0.0/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst
+http://10.0.0.1/pkg/1.0.0/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst: exit 2
+== fetch https://github.com/acme/json/releases/download/2.1.6/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst
+https://github.com/acme/json/releases/download/2.1.6/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst: exit 18
+== fetch have:nightly-2026-10-03-3d3d3d3,nightly-2026-10-10-0e0e0e0,nightly-2026-10-05-5f5f5f5 select:nightly-2026-10-03-3d3d3d3 https://github.com/acme/json/releases/download/2.2.0/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst
+https://github.com/acme/json/releases/download/2.2.0/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst: fetched
+== fetch select:nightly-2026-10-02-2c2c2c2 https://github.com/acme/json/releases/download/2.2.1/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst
+https://github.com/acme/json/releases/download/2.2.1/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst: fetched
+== fetch have:git-dev,link-mine path:/fake/bin/roc https://github.com/acme/json/releases/download/2.2.2/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst
+https://github.com/acme/json/releases/download/2.2.2/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst: fetched
+== fetch have:nightly-2026-10-10-0e0e0e0 path:/fake/bin/roc https://github.com/acme/json/releases/download/2.2.3/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst
+https://github.com/acme/json/releases/download/2.2.3/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst: fetched
+== fetch have: path:none env:TALON_AUTO_INSTALL=yes https://github.com/acme/json/releases/download/2.2.4/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst
+https://github.com/acme/json/releases/download/2.2.4/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst: fetched
+== fetch have:nightly-2026-10-10-0e0e0e0 https://github.com/acme/json/releases/download/2.1.1/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst
+https://github.com/acme/json/releases/download/2.1.1/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst: exit 15
+== fetch have:git-dev,nightly-2026-10-10-0e0e0e0 select:git-dev https://github.com/acme/json/releases/download/2.2.5/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst
+https://github.com/acme/json/releases/download/2.2.5/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst: fetched
+== fetch have:link-mine,nightly-2026-10-10-0e0e0e0 select:link-mine https://github.com/acme/json/releases/download/2.2.6/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst
+https://github.com/acme/json/releases/download/2.2.6/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst: fetched

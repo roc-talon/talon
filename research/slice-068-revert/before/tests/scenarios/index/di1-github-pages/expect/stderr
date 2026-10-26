@@ -1,0 +1,10 @@
+warning: acme/json 1.9.0: the release has 2 package assets (4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w, 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS). It is not a candidate.
+warning: acme/json 1.9.0: the release has 2 package assets (4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w, 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS). It is not a candidate.
+warning: acme/json 1.9.0: the release has 2 package assets (4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w, 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS). It is not a candidate.
+index: cached at 2026-10-01T12:00:00Z
+warning: acme/json 1.9.0: the release has 2 package assets (4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w, 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS). It is not a candidate.
+index: cached at 2026-10-01T12:00:00Z
+warning: acme/json 2.0.5: the release has the hash J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr, but Talon knows https://github.com/acme/json/releases/download/2.0.5/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst with the hash 9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17. It is not a candidate.
+warning: acme/json 1.9.0: the release has 2 package assets (4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w, 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS). It is not a candidate.
+tln: error[network]: GitHub API rate limit reached. It resets at 2026-10-16T12:00:00Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login).
+tln: error[network]: cannot reach http://127.0.0.1:1/api/repos/acme/json/releases?per_page=100: client error (Connect). Use --offline to work with the cached index.

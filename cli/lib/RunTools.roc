@@ -1,5 +1,6 @@
 import Args
 import Fail
+import Fetch
 import Fx
 import Ident
 import Net
@@ -74,7 +75,7 @@ RunTools :: [].{
 	load! : Fx, Roots => Try(RunTools.Know, Fail)
 	load! = |fx, roots| {
 		machine = ToolsStep.machine!(fx)?
-		found = XCacheIo.entries!(fx, roots)?
+		found = XCacheIo.entries!(fx, roots, machine.os)?
 		Ok({ os: machine.os, target: machine.target, found })
 	}
 
@@ -115,6 +116,7 @@ build! = |fx, args, run, know, what| {
 		home: run.path,
 		home_text: run.text,
 		tools: run.tools,
+		selected: Fetch.selected({ held: "", default: config.default_roc ?? "" }),
 	}
 	facts = ToolsStep.facts_of(ctx, { os: know.os, target: know.target }, ToolsToml.app_of(what.entry.ref))
 	rel = { version: what.ident.version, url: what.url, hash: what.ident.hash }

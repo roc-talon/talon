@@ -1,0 +1,70 @@
+-- 1: --dry-run prints the 4 groups with the sizes and removes nothing (R-RM4). The state after it is the state before it.
+== tln tool remove talon --dry-run
+Talon        tln, roc, the talon entry of tools.json    27 B   remove
+tools        3 (foo, bar, baz)                          81 B   keep
+compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   remove
+Talon data   index, x cache, compat.db, config         124 B   remove
+dry run: nothing was removed
+exit 0
+bin dir:
+bar
+baz
+foo
+roc
+roc.old
+tln
+data bin dir:
+bar
+baz
+foo
+tln
+compilers:
+git-ab12cd34
+nightly-2026-09-01-abcdef0
+nightly-2026-10-14-38a3029
+zig-0.17.0
+cache of roc:
+compat-c1
+compat-c2
+compat-other
+packages
+talon
+toolchains
+config: talon 
+-- 2: with no terminal the answer is option 1 (R-RM3): Talon, the compilers and the Talon data go, the tools stay. The entries tln and roc and the data file tln are gone, roc.old is roc again (R-RM6, R-RM5).
+-- The packages and the build cache of the compiler that Talon did not install stay (R-RM1). The entry talon is not in tools.json, the other entries are (R-RM7). The profile line stays (R-RM8).
+== tln tool remove talon
+Talon        tln, roc, the talon entry of tools.json    27 B   removed
+tools        3 (foo, bar, baz)                          81 B   kept
+compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   removed
+Talon data   index, x cache, compat.db, config         124 B   removed
+moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+exit 0
+bin dir:
+bar
+baz
+foo
+roc
+data bin dir:
+bar
+baz
+foo
+compilers:
+cache of roc:
+compat-other
+packages
+toolchains
+config: talon 
+#!/bin/sh
+echo 'the roc that was here before tln setup'
+$HOME/.cache/roc/compat-other:
+keep.bin
+
+$HOME/.cache/roc/packages:
+4DQvwn8UDgjnLQbitjpB7euqpnQKzr4amMFM6oThgRyN
+$HOME/.local/share/talon/bin/foo and $HOME/.local/bin/foo are one file
+$HOME/.local/share/talon/bin/bar and $HOME/.local/bin/bar are one file
+{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"baz":{"name":"acme/baz","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/baz/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"baa5a0964d3320fbc0c6a922140453c8513ea24ab8fd0577034804a967248096","libs":[],"installed_at":"2026-09-02T08:00:00Z"}}}
+1
+foo 1.0.0
+another baz

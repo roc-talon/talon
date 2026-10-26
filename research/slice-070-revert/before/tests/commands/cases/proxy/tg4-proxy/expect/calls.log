@@ -1,0 +1,43 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc build p1/main.roc
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/roc check p1/main.roc --opt=speed
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1

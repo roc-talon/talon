@@ -1,0 +1,206 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/mid
+programs gh
+http_get https://api.github.com/repos/acme/mid/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/mid/1.json $HOME/.cache/roc/talon/index/github/acme/mid/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/core
+programs gh
+http_get https://api.github.com/repos/acme/core/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/core/1.json $HOME/.cache/roc/talon/index/github/acme/core/1.meta
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+programs gh
+http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pfx/1.json $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/5oo1arXY7EXbrxT5DxfxyZ4WYxzoRmneT2gsChjwSgGi/main.roc $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+programs curl wget
+make_dirs $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst https://github.com/acme/text/releases/download/1.1.0/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
+spawn_all limit=8
+  job $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.tar.zst
+rename $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm
+delete $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+read_files $PROJECT/p1/main.roc
+write_atomic $PROJECT/p1/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p2/main.roc
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+canonical $PROJECT/p2/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/mid
+read_files $HOME/.cache/roc/talon/index/github/acme/mid/1.meta $HOME/.cache/roc/talon/index/github/acme/mid/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/core
+read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/5oo1arXY7EXbrxT5DxfxyZ4WYxzoRmneT2gsChjwSgGi/main.roc $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/5oo1arXY7EXbrxT5DxfxyZ4WYxzoRmneT2gsChjwSgGi/main.roc $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/5oo1arXY7EXbrxT5DxfxyZ4WYxzoRmneT2gsChjwSgGi/main.roc $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+read_files $HOME/.cache/roc/packages/HEG5xNs69thgVmqan8u7odZNyn1r8hiuGuYjNo7emYHm/main.roc
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p4/main.roc
+list_dirs $PROJECT/p4
+list_dirs $PROJECT
+read_files $PROJECT/p4/main.roc
+canonical $PROJECT/p4/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/core
+read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $PROJECT/p4/util/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
+read_files $PROJECT/p4/main.roc
+write_atomic $PROJECT/p4/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p5/main.roc
+list_dirs $PROJECT/p5
+list_dirs $PROJECT
+read_files $PROJECT/p5/talon.toml
+read_files $PROJECT/p5/main.roc
+canonical $PROJECT/p5/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/core
+read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $PROJECT/p5/util/main.roc
+args
+env_all
+clock
+cwd
+canonical $PROJECT/p4/main.roc
+list_dirs $PROJECT/p4
+list_dirs $PROJECT
+read_files $PROJECT/p4/main.roc
+canonical $PROJECT/p4/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/core
+read_files $HOME/.cache/roc/talon/index/github/acme/core/1.meta $HOME/.cache/roc/talon/index/github/acme/core/1.json
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME/.cache/roc/talon/index/github/acme/pfx/1.json
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $PROJECT/p4/util/main.roc

@@ -1,0 +1,4 @@
+tests/commands/cases/evidence/ev1-why/given/home/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
+tests/commands/cases/evidence/ev1-why/given/home/.cache/roc/talon/index/github/acme/parser/1.0.0.roc-version
+tests/commands/cases/evidence/ev1-why/given/home/.cache/roc/talon/index/github/acme/pfx/0.1.1.roc-version
+docs/slices/068-hint-cache.md

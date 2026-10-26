@@ -46,6 +46,9 @@ clock
 platform
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
 args
 env_all
 clock
@@ -55,6 +58,8 @@ list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+env_all
+list_dirs $HOME/.local/share/talon/bin
 args
 env_all
 clock
@@ -116,6 +121,9 @@ lock $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2 nowait: busy
 lock $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2 wait: held
 list_dirs $HOME/.cache/roc/toolchains
 unlock $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
 args
 env_all
 clock

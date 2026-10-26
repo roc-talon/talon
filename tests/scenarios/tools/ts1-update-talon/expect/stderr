@@ -1,2 +1,3 @@
+note: attestation not checked (needs gh, logged in)
 tln: error[integrity]: tln-x64musl of roc-talon/talon v0.3.5: the sha256 is e414d23b4d5eea671801e718c3aed14528219e9ca6fe74abaddd8e515be8c9d8, but sha256sums.txt says 0000000000000000000000000000000000000000000000000000000000000000. tln is not changed.
 tln: error[internal]: the new tln 0.3.6 does not start (exit 3). The old tln stays.

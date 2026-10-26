@@ -77,6 +77,7 @@ spawn_all limit=1
 write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json
 rename $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/zig-0.17.0
 unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
 lock $HOME/.cache/roc/toolchains/git-3b9f7c1d nowait: held
 list_dirs $HOME/.cache/roc/toolchains
 make_dirs $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp
@@ -122,6 +123,7 @@ read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/build.zig.zon
 platform
 programs zig
 list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
 lock $HOME/.cache/roc/toolchains/git-5349569a nowait: held
 list_dirs $HOME/.cache/roc/toolchains
 make_dirs $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp
@@ -154,8 +156,12 @@ read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/build.zig.zon
 platform
 programs zig
 list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
 lock $HOME/.cache/roc/toolchains/git-9d9d9d9d nowait: busy
 lock $HOME/.cache/roc/toolchains/git-9d9d9d9d wait: held
 list_dirs $HOME/.cache/roc/toolchains
 unlock $HOME/.cache/roc/toolchains/git-9d9d9d9d
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef

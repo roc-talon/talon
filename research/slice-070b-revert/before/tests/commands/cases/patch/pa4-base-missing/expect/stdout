@@ -1,0 +1,6 @@
+== install --offline --file p1/main.roc
+exit 15
+== install --file p1/main.roc
+exit 14
+== install --offline --file p1/main.roc
+exit 14

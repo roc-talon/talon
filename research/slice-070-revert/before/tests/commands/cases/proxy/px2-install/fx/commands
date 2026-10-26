@@ -1,0 +1,42 @@
+# R-PX4 R-DL8 R-NI5 R-DL3: the pin is not installed, a person is there (tty), the answer is Enter (the default is Yes). One prompt, then the install under the lock, .last-use, and the run. The rank 3 pin gives the compiler, so no default is written (R-SO15). stdout stays empty.
+@roc check p1/main.roc
+# R-CC4 step 1: now it is installed. No list, no tty, no prompt, no lock.
+@roc check p1/main.roc
+# R-NI5 R-CC4 step 2: the answer is n. Exit 13, nothing is installed, no lock, the compiler does not run.
+@roc +nightly-2026-10-12-2664a27 version
+# R-DL9: TALON_AUTO_INSTALL=yes in a non-interactive run (CI): no prompt, no tty call. The answer line is on stderr (R-NM6). No default is written (R-SO15).
+@roc +nightly-2026-10-14-38a3029 version env:TALON_AUTO_INSTALL=yes env:CI=true
+# R-DL8: ask (the default) in a non-interactive run: no prompt, no request, exit 13 with the text that names TALON_AUTO_INSTALL=yes and tln roc install
+@roc +nightly-2026-10-12-2664a27 version env:CI=true
+# R-DL10: no, with a person there: no prompt and no tty call, exit 13
+@roc +nightly-2026-10-12-2664a27 version env:TALON_AUTO_INSTALL=no
+# R-DL9: yes, with a person there (rank 2, ROC_TOOLCHAIN): no prompt, no tty call
+@roc version env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 env:TALON_AUTO_INSTALL=yes
+# R-CV4 R-CC4: the digest of the asset is wrong. Exit 16 (integrity), the compiler does not run, the temp dir is deleted, the id is not installed
+@roc +nightly-2026-10-17-601b54c version env:TALON_AUTO_INSTALL=yes
+# Q3: the compat id is not known (2 compat dirs). The proxy prints no warning. Exit 0.
+@roc +nightly-2026-10-16-1df370f version env:TALON_AUTO_INSTALL=yes
+# Q2: a text that is not a full nightly id is never downloaded, also with yes. The text of the refusal of slice 023.
+@roc +nightly-2026-10 version env:TALON_AUTO_INSTALL=yes
+# Q1: another value of TALON_AUTO_INSTALL counts as not set (ask). No person (CI): the refusal of run 5, exit 13, no tty call
+@roc +nightly-2026-10-12-2664a27 version env:TALON_AUTO_INSTALL=true env:CI=true
+# R-SO13 R-DL1 R-DL3 R-DL8 R-NI5 (slice 025b): rank 4. p2 has no pin and the range >=nightly-2026-10-17: no installed compiler is in it (the installed ones are older, or failed). A person is there and the answer is Enter (the default is Yes for the proxy): the list, one prompt that names the newest release in the range (2026-10-18) with the size, the install under the lock, and the run.
+@roc check p2/main.roc
+# R-DL10 R-SO13: TALON_AUTO_INSTALL=no refuses a download before any request, with the text of Compiler.failure(NoneInRange): the range p3 (>=nightly-2026-10-19) is above the installed compilers. No tty call, no list.
+@roc check p3/main.roc env:TALON_AUTO_INSTALL=no
+# R-DL8 R-SO13: the range is exact (p4, =nightly-2026-10-12-2664a27, not installed) and the run has no person and no answer: the list is read, then the refusal that names the id and the source (the compiler range). Exit 13, nothing is installed.
+@roc check p4/main.roc env:CI=true
+# R-NS7 R-SO13: the list has no release in the range (p5, >=nightly-2026-10-19): exit 10, the text names the range, also with TALON_AUTO_INSTALL=yes. The compiler does not run.
+@roc check p5/main.roc env:CI=true env:TALON_AUTO_INSTALL=yes
+# R-NS2 R-NS3 R-SO13: the switch is off (TALON_NIGHTLY=0) and the range is * (p6): the installed nightlies are no candidates, and the list has no release. Exit 10, the text names the range, the switch and its source. Nothing is installed, also with TALON_AUTO_INSTALL=yes.
+@roc check p6/main.roc env:CI=true env:TALON_AUTO_INSTALL=yes env:TALON_NIGHTLY=0
+# R-C7 R-SO13 R-PX7: TALON_PROXY=0 (no record, no .last-use, no cache variables) does not change the selection: the time is the clock of Talon (TALON_NOW), so the exact range of p7 (=nightly-2026-10-10-abcdef0, 12 days old) is visible and is the download.
+@roc check p7/main.roc env:TALON_PROXY=0 env:CI=true env:TALON_AUTO_INSTALL=yes
+# R-C7 R-LY4 R-SO13: min-release-age of config.toml (0d, in the config dir cfg2) limits the compiler of the proxy too. The exact range of p8 (=nightly-2026-10-15-38e6c42) was published 1 hour before TALON_NOW, so the default of 2 days would hide it. It is the download.
+@roc check p8/main.roc env:XDG_CONFIG_HOME={w}/cfg2 env:TALON_NOW=2026-10-15T16:00:00Z env:CI=true env:TALON_AUTO_INSTALL=yes
+# R-NS2 R-NS3 R-NS9 R-SO13 (gap P8): the switch is off in talon.toml (p9, [toolchain] nightly = false), the range is *. Exit 10, the text names the range and the source `[toolchain] nightly in talon.toml`. Nothing is installed, also with TALON_AUTO_INSTALL=yes.
+@roc check p9/main.roc env:CI=true env:TALON_AUTO_INSTALL=yes
+# R-NS2 R-NS3 R-NS10 R-SO13 (gap P9): the switch is off in config.toml (cfg3, nightly = false), the range is * (p10). Exit 10, the text names the source `nightly in config.toml`. Nothing is installed.
+@roc check p10/main.roc env:XDG_CONFIG_HOME={w}/cfg3 env:CI=true env:TALON_AUTO_INSTALL=yes
+# R-PX4 R-SO13 (gap P11): the proxy reads the list online. HOME is a new dir (home2): no installed compiler, no cached list. The exact range of p4 is not installed, the list is read (one request), then the refusal of run 9 (no person). Exit 13.
+@roc check p4/main.roc env:HOME={w}/home2 env:CI=true

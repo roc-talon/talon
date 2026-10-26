@@ -1,0 +1,4 @@
+tests/commands/cases/roc/ls1-list/given/home/.cache/roc/toolchains/git-5a5a5a5a/roc
+tests/commands/cases/roc/ls1-list/given/home/.cache/roc/toolchains/git-5a5a5a5a/.talon.json
+tests/commands/cases/roc/ls1-list/given/home/.cache/roc/toolchains/git-7e7e7e7e/roc
+tests/commands/cases/roc/ls1-list/given/home/.cache/roc/toolchains/git-7e7e7e7e/.talon.json

@@ -1,0 +1,13 @@
+update --file p1/main.roc
+upgrade --file p1/main.roc
+install --file p1/main.roc
+update json --file p2/main.roc
+update json@^2.3 --file p3/main.roc
+update json --dry-run --file p4/main.roc
+install --frozen --file p5/main.roc
+install --file p6/main.roc
+verify --file p1/main.roc
+update json --no-check --file p7/main.roc
+update json --file p8/main.roc
+update json --file p9/main.roc
+add acme/util --no-check --file p10/main.roc

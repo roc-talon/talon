@@ -343,7 +343,7 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-read_files $PROJECT/pw/apps/a/main.roc $PROJECT/pw/talon.toml $HOME/.config/talon/config.toml
+read_files $PROJECT/pw/apps/a/main.roc $PROJECT/pw/talon.toml $PROJECT/pw/apps/a/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-0abcdef/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 path_roc

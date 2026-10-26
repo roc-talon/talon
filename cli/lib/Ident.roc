@@ -30,7 +30,7 @@ Ident := {
 	of_url : Str -> Try(Ident, [Foreign])
 	of_url = |url| match PackageUrl.parse(url) {
 		Err(_) => Err(Foreign)
-		Ok(parsed) => {
+		Ok(parsed) => if !Ident.safe_part(parsed.hash()) Err(Foreign) else {
 			v = parsed.version()
 			version = "${v.major.to_str()}.${v.minor.to_str()}.${v.patch.to_str()}"
 			name = github_name(parsed.url_form())
@@ -46,6 +46,12 @@ Ident := {
 		}
 	}
 
+	## Slice 076 (R-ID3, R-H4, R-DI1): the one guard for a part of a path that comes from outside (a part of a URL, a header, a typed name). True when the text is a safe path part: not empty, not `.` or `..`, and with no `/`, no backslash
+	## and no NUL byte. So `v1..2`, `a.b` and `.hidden` are safe, and `a/b`, `..` and `a<backslash>b` are not. Every module that joins a text from outside into a path calls this function first (the audit table of the slice file).
+	## `of_url` uses it for the hash (an unsafe hash makes the URL foreign, R-H4) and for `owner` and `repo` (an unsafe one gives no name, R-ID3).
+	safe_part : Str -> Bool
+	safe_part = |part| !part.is_empty() and part != "." and part != ".." and !part.contains("/") and !part.contains("\\") and !part.contains("\u(0)")
+
 	## The series of a version text (R-ID1): `4.2.0` gives `4`, `0.25.1` gives `0.25`.
 	## A text that is not `X.Y.Z` is `Err(BadVersion)`. A pre-release part is not tested (question Q10).
 	series_of : Str -> Try(Str, [BadVersion])
@@ -58,6 +64,6 @@ Ident := {
 # R-ID3: `owner/repo` of the URL form `github.com/<owner>/<repo>/releases/download/<tag>/`.
 github_name : Str -> Try(Str, [NoName])
 github_name = |form| match form.split_on("/") {
-	["github.com", owner, repo, "releases", "download", tag, ""] if !owner.is_empty() and !repo.is_empty() and !tag.is_empty() => Ok("${owner}/${repo}")
+	["github.com", owner, repo, "releases", "download", tag, ""] if Ident.safe_part(owner) and Ident.safe_part(repo) and !tag.is_empty() => Ok("${owner}/${repo}")
 	_ => Err(NoName)
 }

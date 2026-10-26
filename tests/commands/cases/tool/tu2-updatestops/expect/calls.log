@@ -17,8 +17,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst https://github.com/acme/np/releases/download/1.1.0/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp roc unbundle AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst
+  job $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.tar.zst
 rename $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD
 delete $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD/main.roc
@@ -47,8 +48,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst https://github.com/acme/mo/releases/download/1.1.0/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp roc unbundle 3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst
+  job $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle 3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.tar.zst
 rename $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J
 delete $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/3zKujR99jRpuUXpP6U8GtCjpm7dCCAjMFtV8c3SpN93J/main.roc
@@ -58,8 +60,9 @@ programs curl wget
 make_dirs $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
+  job $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst
 rename $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
 delete $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc

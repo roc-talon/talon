@@ -1,6 +1,7 @@
 import BuildSkip
 import Clock
 import Fail
+import Fetch
 import Fx
 import Ladder
 import LadderPlan
@@ -24,8 +25,9 @@ VerifyFlow :: [].{
 
 	## The flow of `Resolve.verify!`. The differences from `install!` are in the doc of `Resolve.verify!`.
 	verify! : Fx, Request => Try(Report.Outcome, Fail)
-	verify! = |fx, request| {
-		start = ResolveLoad.prepared!(fx, request, Verify)?
+	verify! = |fx, asked| {
+		start = ResolveLoad.prepared!(fx, asked, Verify)?
+		request = { ..asked, selected: Fetch.selected({ held: start.decision.held ?? "", default: start.loaded.config.default_roc ?? "" }) }
 		settings = ResolveBase.settings_of(request, start.loaded)
 		ResolveBase.check_pin(start.loaded, settings, start.decision, Verify)?
 		snapshot = ResolveSelect.snapshot_of(request, start.loaded.intent)?

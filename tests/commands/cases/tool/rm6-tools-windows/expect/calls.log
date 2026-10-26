@@ -1,0 +1,74 @@
+env_all
+list_dirs $HOME/u1\.local\bin $HOME/u1/.local/share/talon/bin
+args
+env_all
+platform
+read_files $HOME/u1/.local/share/talon/tools.json
+list_dirs $HOME/u1/.cache/roc/toolchains $HOME/u1\.local\bin
+tree_info $HOME/u1/.local/share/talon/bin/tln.exe $HOME/u1/.local/share/talon/bin/foo.exe $HOME/u1/.local/share/talon/bin/bar.exe $HOME/u1/.local/share/talon/bin/baz.exe $HOME/u1/.local/share/talon/bin/qux.exe $HOME/u1/.cache/roc/talon $HOME/u1/.config/talon/config.toml $HOME/u1/.local/share/talon/share.json
+sha256_file $HOME/u1/.local/share/talon/bin/tln.exe
+sha256_file $HOME/u1\.local\bin/tln.exe
+sha256_file $HOME/u1\.local\bin/roc.exe
+sha256_file $HOME/u1/.local/share/talon/bin/foo.exe
+sha256_file $HOME/u1\.local\bin/foo.exe
+sha256_file $HOME/u1/.local/share/talon/bin/bar.exe
+sha256_file $HOME/u1\.local\bin/bar.exe
+sha256_file $HOME/u1/.local/share/talon/bin/baz.exe
+sha256_file $HOME/u1/.local/share/talon/bin/qux.exe
+lock $HOME/u1/.local/share/talon/tools.json nowait: held
+read_files $HOME/u1/.local/share/talon/tools.json
+random
+rename $HOME/u1\.local\bin/foo.exe $HOME/u1\.local\bin/foo.0123456789abcdef.del
+rename $HOME/u1/.local/share/talon/bin/foo.exe $HOME/u1/.local/share/talon/bin/foo.0123456789abcdef.del
+rename $HOME/u1/.local/share/talon/bin/bar.exe $HOME/u1/.local/share/talon/bin/bar.0123456789abcdef.del
+rename $HOME/u1/.local/share/talon/bin/baz.exe $HOME/u1/.local/share/talon/bin/baz.0123456789abcdef.del
+delete $HOME/u1/.local/share/talon/tools.json
+unlock $HOME/u1/.local/share/talon/tools.json
+exec powershell -NoProfile -NonInteractive -Command $dir = $env:TALON_BIN_DIR
+$key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $true)
+$old = $key.GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+$parts = @($old -split ';' | Where-Object { $_ -ne '' })
+$parts = @($parts | Where-Object { $_ -ne $dir })
+$key.SetValue('Path', ($parts -join ';'), [Microsoft.Win32.RegistryValueKind]::ExpandString)
+$key.Close()
+Add-Type -Namespace Talon -Name Win32 -MemberDefinition '[DllImport("user32.dll", CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint flags, uint timeout, out UIntPtr result);'
+$result = [UIntPtr]::Zero
+# WM_SETTINGCHANGE (0x1A) tells the open windows that the environment changed.
+[void][Talon.Win32]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 5000, [ref]$result)
+
+  env TALON_BIN_DIR=$HOME/u1\.local\bin
+delete $HOME/u1/.cache/roc/talon $HOME/u1/.config/talon/config.toml $HOME/u1/.local/share/talon/share.json
+random
+rename $HOME/u1\.local\bin/roc.exe $HOME/u1\.local\bin/roc.0123456789abcdef.del
+rename $HOME/u1\.local\bin/tln.exe $HOME/u1\.local\bin/tln.0123456789abcdef.del
+rename $HOME/u1/.local/share/talon/bin/tln.exe $HOME/u1/.local/share/talon/bin/tln.0123456789abcdef.del
+spawn_detached cmd.exe /d /c for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q "%TALON_DEL_1%" "%TALON_DEL_2%" "%TALON_DEL_3%" "%TALON_DEL_4%" "%TALON_DEL_5%" "%TALON_DEL_6%" "%TALON_DEL_7%" >nul 2>&1 & if not exist "%TALON_DEL_1%" if not exist "%TALON_DEL_2%" if not exist "%TALON_DEL_3%" if not exist "%TALON_DEL_4%" if not exist "%TALON_DEL_5%" if not exist "%TALON_DEL_6%" if not exist "%TALON_DEL_7%" exit /b 0)
+  env TALON_DEL_1=$HOME/u1\.local\bin/foo.0123456789abcdef.del
+  env TALON_DEL_2=$HOME/u1/.local/share/talon/bin/foo.0123456789abcdef.del
+  env TALON_DEL_3=$HOME/u1/.local/share/talon/bin/bar.0123456789abcdef.del
+  env TALON_DEL_4=$HOME/u1/.local/share/talon/bin/baz.0123456789abcdef.del
+  env TALON_DEL_5=$HOME/u1\.local\bin/roc.0123456789abcdef.del
+  env TALON_DEL_6=$HOME/u1\.local\bin/tln.0123456789abcdef.del
+  env TALON_DEL_7=$HOME/u1/.local/share/talon/bin/tln.0123456789abcdef.del
+env_all
+list_dirs $HOME/u2\.local\bin $HOME/u2/.local/share/talon/bin
+args
+env_all
+platform
+read_files $HOME/u2/.local/share/talon/tools.json
+list_dirs $HOME/u2/.cache/roc/toolchains $HOME/u2\.local\bin
+tree_info $HOME/u2/.local/share/talon/bin/tln.exe $HOME/u2/.local/share/talon/bin/foo.exe $HOME/u2/.local/share/talon/bin/bar.exe $HOME/u2/.local/share/talon/bin/baz.exe $HOME/u2/.local/share/talon/bin/qux.exe $HOME/u2/.cache/roc/talon $HOME/u2/.config/talon/config.toml $HOME/u2/.local/share/talon/share.json
+sha256_file $HOME/u2/.local/share/talon/bin/tln.exe
+sha256_file $HOME/u2\.local\bin/tln.exe
+sha256_file $HOME/u2\.local\bin/roc.exe
+sha256_file $HOME/u2/.local/share/talon/bin/foo.exe
+sha256_file $HOME/u2\.local\bin/foo.exe
+sha256_file $HOME/u2/.local/share/talon/bin/bar.exe
+sha256_file $HOME/u2\.local\bin/bar.exe
+sha256_file $HOME/u2/.local/share/talon/bin/baz.exe
+sha256_file $HOME/u2/.local/share/talon/bin/qux.exe
+lock $HOME/u2/.local/share/talon/tools.json nowait: held
+read_files $HOME/u2/.local/share/talon/tools.json
+random
+rename $HOME/u2\.local\bin/foo.exe $HOME/u2\.local\bin/foo.0123456789abcdef.del
+unlock $HOME/u2/.local/share/talon/tools.json

@@ -6,6 +6,8 @@ st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 D=$TALON_TEST_DIR
 T=$HOME/.cache/roc/toolchains
 C=$XDG_CONFIG_HOME/talon/config.toml
+# slice 062 (R-SO15): a download for a probe, a pin or the proxy writes no default, so config.toml does not exist. The line says so.
+default_roc() { if [ -e $C ]; then cat $C; else echo "no default-roc (no config.toml)"; fi; }
 A=nightly-2026-10-13-5349569
 B=nightly-2026-10-12-0a1b2c3
 Y=nightly-2026-10-11-1b2c3d4
@@ -28,22 +30,22 @@ echo "== R-DL5 R-DL10: TALON_AUTO_INSTALL=no refuses: exit 13, the text of Compi
 st env TALON_AUTO_INSTALL=no ROC_TOOLCHAIN=$A tln verify
 store
 echo "requests for compilers: $(requests nightlies)"
-echo "== R-DL5 R-FL12 R-NI5 R-NM6 R-SO22 R-BL3 R-CC4 R-CC9 R-SO15: --allow-downloads is the answer of the prompt. One answer line on stderr, one download, the install under the lock, then the 3 probes (the 2 checks and the build) run the new compiler with the cache variables. The first install is the default compiler."
+echo "== R-DL5 R-FL12 R-NI5 R-NM6 R-SO22 R-BL3 R-CC4 R-CC9 R-SO15: --allow-downloads is the answer of the prompt. One answer line on stderr, one download, the install under the lock, then the 3 probes (the 2 checks and the build) run the new compiler with the cache variables. No default is written (R-SO15)."
 st env ROC_TOOLCHAIN=$A tln verify --allow-downloads
 show
 store
 echo "last use of A: $(cat $T/$A/.last-use)"
-cat $C
+default_roc
 echo "downloads of A: $(requests "GET /dl/$A")"
 echo "== R-CC4 step 1: A is installed now: no prompt, no list, no download. The same 3 probes."
 st env ROC_TOOLCHAIN=$A tln verify
 show
 echo "requests for compilers: $(requests nightlies), downloads of A: $(requests "GET /dl/$A")"
-echo "== R-DL5 R-NM10: --yes accepts the download too (another compiler). The default stays the first one."
+echo "== R-DL5 R-NM10: --yes accepts the download too (another compiler). Still no default (R-SO15)."
 st env ROC_TOOLCHAIN=$B tln verify --yes
 show
 store
-cat $C
+default_roc
 echo "== R-DL5 R-EV6 R-J1 R-DL9: TALON_AUTO_INSTALL=yes, with --json: stdout is only the envelope, the answer line is on stderr."
 # R-DL1 (answer Q7 of the review): `data.downloads` is the count of compilers that this command downloaded: 1 here.
 st env TALON_AUTO_INSTALL=yes ROC_TOOLCHAIN=$Y tln verify --json

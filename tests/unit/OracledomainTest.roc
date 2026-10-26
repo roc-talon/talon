@@ -54,7 +54,7 @@ release = |id| { id, published_at: 0, asset: Err(NoAsset) }
 # The inferred facts of the real `Epochs.epochs` over D and the rows: the command gives them to the step (R-EP10).
 inferred_of = |rows| Epochs.epochs(d5.map(release), rows).inferred
 
-compat = |checks, probes, domain| { compiler: Ok(held), checks, looked: [], probes, conflicts: [], used: [], domain, inferred: [] }
+compat = |checks, probes, domain| { compiler: Ok(held), checks, looked: [], probes, conflicts: [], used: [], domain, inferred: [], failed: Other }
 
 view = |r| match r {
 	Need(urls) => "need ${Str.join_with(urls.map(|url| url.drop_prefix("https://github.com/acme/")), " ")}"

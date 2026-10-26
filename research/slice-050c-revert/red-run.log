@@ -1,0 +1,96 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ["run", "need-tty", "stop Usage"]
+[dbg] (["Do it? [Y/n] ", "Do it? [y/N] ", "Do it? [1-3, default 2] "], [Ok(Yes), Ok(Yes), Ok(No), Ok(No), Ok(No), Ok(No), Err(Invalid), Err(Invalid), Ok(Option(1)), Ok(Option(3)), Ok(Option(2)), Err(Invalid), Err(Invalid), Err(Invalid)])
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ alias: "pf", role: Platform, what: Release({ name: "roc-lang/basic-webserver", series: "0.1", version: "0.1.0" }) }, { alias: "web_utils", role: Direct, what: Release({ name: "acme/web-utils", series: "1", version: "1.0.0" }) }, { alias: "", role: Via("web_utils"), what: Release({ name: "someone/basic-webserver", series: "1", version: "1.0.0" }) }, { alias: "parser", role: Direct, what: Release({ name: "lukewilliamboswell/roc-parser", series: "0.9", version: "0.9.0" }) }, { alias: "util", role: Direct, what: Unmanaged }, { alias: "", role: Via("util"), what: Unmanaged }]
+[dbg] []
+[dbg] []
+[dbg] [[{ alias: "a", id: "A", kind: Release }, { alias: "b", id: "B", kind: Release }, { alias: "c2", id: "C", kind: Release }], [{ alias: "c", id: "C", kind: Release }]]
+[dbg] []
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"package\":{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false},\"paths\":[[{\"alias\":\"json\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}],[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"j\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}],[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"k\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}]]}]}"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"package\":{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false},\"paths\":[[{\"alias\":\"json\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}],[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"j\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}],[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"k\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}]]},{\"file\":\"/q/main.roc\",\"package\":{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false},\"paths\":[[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"inner\",\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\"}]]}]}"
+[dbg] "{\"members\":[{\"file\":\"/p/main.roc\",\"package\":{\"alias\":\"json\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\",\"direct\":true,\"via\":null,\"raised\":\"2.0.0\",\"foreign\":false,\"platform\":false},\"paths\":[[{\"alias\":\"json\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}],[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"j\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}],[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"k\",\"kind\":\"release\",\"id\":\"https://github.com/acme/json/releases/download/2.1.0/jsonhash.tar.zst\"}]]},{\"file\":\"/q/main.roc\",\"package\":{\"alias\":\"inner\",\"name\":\"./in/main.roc\",\"version\":null,\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\",\"direct\":false,\"via\":\"util\",\"raised\":null,\"foreign\":true,\"platform\":false},\"paths\":[[{\"alias\":\"util\",\"kind\":\"path\",\"id\":\"/p/util/main.roc\"},{\"alias\":\"inner\",\"kind\":\"path\",\"id\":\"/p/util/in/main.roc\"}]]},{\"file\":\"/r/main.roc\",\"package\":{\"alias\":\"ext\",\"name\":\"https://x.org/e.zst\",\"version\":null,\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\",\"direct\":true,\"via\":null,\"raised\":null,\"foreign\":true,\"platform\":false},\"paths\":[[{\"alias\":\"ext\",\"kind\":\"foreign\",\"id\":\"https://x.org/e.zst\"}]]}]}"
+[dbg] []
+[dbg] ["aac106cefe172ddf0dfa6ac6b5f0eb3b7a772418be08a96a3daa623eecd7ea2a", "bc2831c8ca40595c942de3074b7dd02e7052a486f583878868542779c103799d", "0f1937ef770d5bc058f43b5fe765349817e6733e4d338ed264b1e329da28f671", "156e3d23407b8943a5d1f05901d405daaa181d22333b025300115fb40d29fc04", "791cce15bd90332535e71bf29eda8ec0f1a356c26625fe5cc1452e03d51204a8", "5e113b46f3df3544bfe9ff15f2d444f44cf3182d384bc536cc4ee1284e1b4376"]
+[dbg] "{\"format\":1,\"name\":\"acme/foo\",\"source\":{\"kind\":\"release\",\"version\":\"1.1.0\",\"url\":\"https://github.com/acme/foo/releases/download/1.1.0/B1.1.0.tar.zst\"},\"build\":{\"hashes\":[\"H1\",\"H2\"],\"nightly\":\"nightly-2026-10-14-38a3029\",\"target\":\"x64musl\"},\"sha256\":\"S1.1.0\",\"libs\":[],\"bundle\":\"B1.1.0\",\"last_run\":\"2026-10-15T12:00:00Z\"}
+"
+[dbg] "{\"format\":1,\"name\":\"acme/foo\",\"source\":{\"kind\":\"git\",\"commit\":\"dd03c09e5f1a2b3c4d5e6f708192a3b4c5d6e7f8\",\"ref\":\"main\"},\"build\":{\"hashes\":[\"H1\",\"H2\"],\"nightly\":\"nightly-2026-10-14-38a3029\",\"target\":\"x64musl\"},\"sha256\":\"S1.1.0\",\"libs\":[\"libm.so.6\"],\"bundle\":\"dd03c09e5f1a2b3c4d5e6f708192a3b4c5d6e7f8\",\"last_run\":\"2026-10-15T12:00:00Z\"}
+"
+[dbg] []
+[dbg] ["/c/roc/talon/x/a:acme/foo", "/c/roc/talon/x/e:acme/bar"]
+[dbg] ["/c/roc/talon/x/b/manifest.json: the content does not parse. Talon deletes it and makes it again."]
+[dbg] ["q|acme/qux||", "g|acme/gee||", "|acme/foo||", "|other/roc-bar||"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ["/x/old", "/x/ancient"]
+Ran 77 tests in 6888.4 ms.:
+    73 passed
+    4 failed
+    0 compiler errors
+tests/unit/l0-6.roc: All (61) tests passed in 6798.1 ms.
+tests/unit/l0-7.roc: All (64) tests passed in 7512.7 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 7068.8 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+FAIL roc/ri1-flow
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/dl1b-denied
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/dl1-sweep
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/dl2-tool-windows
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/rm3-windows
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/rm5-win-path
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/ts5b-winfresh
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+FAIL tool/ts5-windows
+    the test app wrote no exit file (exit 1):
+      [ROC CRASHED] todo: slice 050c
+commands: 154 passed, 8 failed
+
+step       result seconds  budget
+check      pass   1.6      10
+fmt        pass   0.2      5
+l0         FAIL   7.7      10
+l2         FAIL   8.6      30
+l3         pass   10.0     60
+selftest   pass   2.9      20
+l1         pass   34.4     60

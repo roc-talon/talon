@@ -1,0 +1,85 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+expect {
+    path = |id, link| TalonRemove.kept_path({ id, roc: "/c/toolchains/${id}/roc", link, moved: Err(None) })
+    after = |id, link, from| TalonRemove.kept_path({ id, roc: "/c/toolchains/${id}/roc", link, moved: Ok({ from, to: "/h/bin/roc" }) })
+    restores = |old, roc| TalonRemove.restores({ old, roc })
+    three = TalonRemove.cleanup_command(["/a/roc.1.del", "/a/tln.1.del", "/d/tln.1.del"])
+    one = TalonRemove.cleanup_command(["C:\\u\\tln.1.del"])
+    rows = [
+        ("a nightly", path("nightly-2026-10-14-38a3029", Err(None)), "/c/toolchains/nightly-2026-10-14-38a3029/roc"),
+        ("a git build", path("git-ab12cd34", Err(None)), "/c/toolchains/git-ab12cd34/roc"),
+        ("a copy", path("copy-fix", Err(None)), "/c/toolchains/copy-fix/roc"),
+        ("a link with a target", path("link-mine", Ok("/h/src/roc")), "/h/src/roc"),
+        ("a link with no readable target", path("link-mine", Err(None)), "/c/toolchains/link-mine/roc"),
+        ("only a link has a target", path("git-ab12cd34", Ok("/h/src/roc")), "/c/toolchains/git-ab12cd34/roc"),
+        ("R-RM6: link-system after roc.old moved back is at roc", after("link-system", Ok("/h/bin/roc.old"), "/h/bin/roc.old"), "/h/bin/roc"),
+        ("a link of another target stays at its target", after("link-mine", Ok("/h/src/roc"), "/h/bin/roc.old"), "/h/src/roc"),
+        ("a link with no move stays at its target", path("link-system", Ok("/h/bin/roc.old")), "/h/bin/roc.old"),
+        ("only a link is moved with roc.old", after("git-ab12cd34", Ok("/h/bin/roc.old"), "/h/bin/roc.old"), "/c/toolchains/git-ab12cd34/roc"),
+        ("restores: old and roc removed", Str.inspect(restores(Bool.True, Remove)), "True"),
+        ("restores: old and roc gone", Str.inspect(restores(Bool.True, Gone)), "True"),
+        ("restores: old and a roc of the user", Str.inspect(restores(Bool.True, Keep)), "False"),
+        ("restores: no roc.old", Str.inspect(restores(Bool.False, Remove)), "False"),
+        ("restores: no roc.old, no roc", Str.inspect(restores(Bool.False, Gone)), "False"),
+        ("the file of Linux", TalonRemove.file(Linux), "tln"),
+        ("the file of macOS", TalonRemove.file(Macos), "tln"),
+        ("the file of Windows", TalonRemove.file(Windows), "tln.exe"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want)
+    dbg bad
+    script_three = "for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q \"%TALON_DEL_1%\" \"%TALON_DEL_2%\" \"%TALON_DEL_3%\" >nul 2>&1 & if not exist \"%TALON_DEL_1%\" if not exist \"%TALON_DEL_2%\" if not exist \"%TALON_DEL_3%\" exit /b 0)"
+    script_one = "for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q \"%TALON_DEL_1%\" >nul 2>&1 & if not exist \"%TALON_DEL_1%\" exit /b 0)"
+    bad == []
+        and three.argv == ["cmd.exe", "/d", "/c", script_three]
+            and three.env == [("TALON_DEL_1", "/a/roc.1.del"), ("TALON_DEL_2", "/a/tln.1.del"), ("TALON_DEL_3", "/d/tln.1.del")]
+                and one.argv == ["cmd.exe", "/d", "/c", script_one]
+                    and one.env == [("TALON_DEL_1", "C:\\u\\tln.1.del")]
+}
+
+[dbg] []
+[dbg] []
+[dbg] "http://127.0.0.1:8080/zig/index.json"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ path: "/c/roc/toolchains/zig-0.16.2/zig", source: Installed, version: Ok("0.16.2") }, { path: "/c/roc/toolchains/zig-0.17.0/zig", source: Installed, version: Ok("0.17.0") }]
+[dbg] []
+[dbg] Err({ again: Err(None), details: Err(NoDetails), kind: Network, message: "the Zig index is not a JSON object" })
+[dbg] { archive: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz", item: "/c/roc/toolchains/zig-0.17.0", meta: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json", temp: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp", version: "0.17.0", zig: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig" }
+[dbg] "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] "Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+"
+[dbg] "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+Ran 61 tests in 4900.9 ms.:
+    60 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (64) tests passed in 5732.2 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5177.5 ms.
+
+step       result seconds  budget
+l0         FAIL   5.9      10
+
+=== l2 exit 1
+FAIL tool/rm2-options
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -8,7 +8,7 @@
+       Talon data   index, x cache, compat.db, config                164 B   kept
+       kept git-ab12cd34: $HOME/h2/.cache/roc/toolchains/git-ab12cd34/roc
+       kept link-mine: $HOME/h2/src/roc/zig-out/bin/roc
+      -kept link-system: $HOME/h2/.local/bin/roc
+      +kept link-system: $HOME/h2/.local/bin/roc.old
+       kept nightly-2026-09-01-abcdef0: $HOME/h2/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
+       kept nightly-2026-10-14-38a3029: $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+       moved $HOME/h2/.local/bin/roc.old back to $HOME/h2/.local/bin/roc
+commands: 3 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

@@ -1,0 +1,11 @@
+== tool update talon --from-source
+updated talon 0.3.1 to git v0.3.4@d0d0d0d0 (roc-talon/talon)
+exit 0
+== tool update talon --from-source
+talon git v0.3.4@d0d0d0d0 is up to date
+exit 0
+== tool update talon
+talon 0.3.4 is up to date
+exit 0
+== tool update talon --from-source --offline
+exit 15

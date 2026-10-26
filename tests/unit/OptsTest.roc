@@ -70,13 +70,45 @@ expect {
 	rows = [
 		(["install"], Ok([Err(NoFlag), Err(NoFlag)])),
 		(["install", "--allow-downloads"], Ok([Ok(Yes), Err(NoFlag)])),
-		(["install", "--probe-downloads"], Ok([Err(NoFlag), Ok(Yes)])),
-		(["add", "json", "--allow-downloads", "--probe-downloads"], Ok([Ok(Yes), Ok(Yes)])),
+		(["add", "json", "--allow-downloads"], Ok([Ok(Yes), Err(NoFlag)])),
 		(["update", "json", "--allow-downloads"], Ok([Ok(Yes), Err(NoFlag)])),
-		(["verify", "--probe-downloads", "--allow-downloads"], Ok([Ok(Yes), Ok(Yes)])),
+		(["verify", "--allow-downloads"], Ok([Ok(Yes), Err(NoFlag)])),
 		(["install", "--yes"], Ok([Err(NoFlag), Err(NoFlag)])),
+		# R-NI4 R-FL12 (slice 069): `--probe-downloads` is read for `upgrade`, `probe` and `init` only. The other commands stop in `Args.parse`.
+		(["upgrade", "--probe-downloads"], Ok([Err(NoFlag), Ok(Yes)])),
+		(["upgrade", "roc", "--allow-downloads", "--probe-downloads"], Ok([Ok(Yes), Ok(Yes)])),
+		(["probe", "--probe-downloads"], Ok([Err(NoFlag), Ok(Yes)])),
+		(["init", "--probe-downloads", "--allow-downloads"], Ok([Ok(Yes), Ok(Yes)])),
+		(["install", "--probe-downloads"], Err("tln: error[usage]: flag '--probe-downloads' is not for 'install'")),
+		(["add", "json", "--allow-downloads", "--probe-downloads"], Err("tln: error[usage]: flag '--probe-downloads' is not for 'install'")),
+		(["verify", "--probe-downloads", "--allow-downloads"], Err("tln: error[usage]: flag '--probe-downloads' is not for 'verify'")),
 	]
 	bad = rows.keep_if(|(words, want)| flags(words) != want).map(|(words, _)| (words, flags(words)))
+	dbg bad
+	bad == []
+}
+
+# R-NI4 R-FL12 (slice 069): `Opts.read` does not read `--probe-downloads` for a command that the flag table does not name. `Args.parse` stops that line first (the rows above), so this row is a second guard:
+# the parsed line of `upgrade` gets the command words of another command, and the flag is not read. A line of `upgrade`, `probe` or `init` with the same flag is read.
+expect {
+	read_as = |words, command| match Args.parse(words) {
+		Err(stop) => Err(Fail.line(stop.fail))
+		Ok(args) => match Opts.read({ ..args, command: command }) {
+			Ok(o) => Ok(o.probe_downloads)
+			Err(f) => Err(Fail.line(f))
+		}
+	}
+	line = ["upgrade", "--probe-downloads"]
+	rows = [
+		(["upgrade"], Ok(Ok(Yes))),
+		(["probe"], Ok(Ok(Yes))),
+		(["init"], Ok(Ok(Yes))),
+		(["install"], Ok(Err(NoFlag))),
+		(["update"], Ok(Err(NoFlag))),
+		(["verify"], Ok(Err(NoFlag))),
+		(["remove"], Ok(Err(NoFlag))),
+	]
+	bad = rows.keep_if(|(command, want)| read_as(line, command) != want).map(|(command, _)| (command, read_as(line, command)))
 	dbg bad
 	bad == []
 }

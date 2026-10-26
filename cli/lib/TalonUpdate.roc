@@ -122,6 +122,51 @@ TalonUpdate :: [].{
 		NotStarted(why) => Err(not_started(facts.version, "not started: ${why}"))
 	}
 
+	## Slice 074, R-S2, R-IS3, R-SE13: the attestation of the download, as `install/install.sh` does it (the same `gh` commands and the same repository). The command `gh auth status` says if `gh` is logged in. The flow asks `programs!` for `gh` first
+	## and runs the auth command only for a `gh` that is there. `Ready` is a `gh` that is there and logged in (`auth` is `Exited(0)`). `LoggedOut` is a `gh` that is there with any other result of the auth command (an exit code, a signal, a start that failed).
+	## `Missing` is no `gh` on `PATH` (`auth` is not read). `auth` is `Err(NotAsked)` when the flow did not run the command.
+	gh_state : { found : Bool, auth : Try([Exited(I32), Signaled(I32), NotStarted(Str)], [NotAsked]) } -> [Ready, LoggedOut, Missing]
+	gh_state = |facts| if !facts.found {
+		Missing
+	} else {
+		match facts.auth {
+			Ok(Exited(0)) => Ready
+			_ => LoggedOut
+		}
+	}
+
+	## Slice 074, R-IS3: the argument list of the auth command: `gh auth status`.
+	gh_auth_argv : List(Str)
+	gh_auth_argv = ["gh", "auth", "status"]
+
+	## Slice 074, R-S2, R-IS3: the argument list of the check of the download `file` (the temp file in the data bin dir, before its first use): `gh attestation verify <file> --repo roc-talon/talon`.
+	attest_argv : { file : Str } -> List(Str)
+	attest_argv = |facts| ["gh", "attestation", "verify", facts.file, "--repo", TalonUpdate.name]
+
+	## Slice 074, R-S2, R-IS3, R-SE13: the result of `gh attestation verify`. `ended` is how the child ended, `last_line` the last line of its stderr (`spawn_all!`). `Exited(0)` is `Ok`. Any other end is a failure of kind `Integrity` (exit 16, the old tln stays):
+	## `attestation check failed for <asset> of roc-talon/talon <tag>: gh <why>. tln is not changed.` with `<why>` `exit <n>`, `signal <n>` or `not started: <text>`, and `: <last_line>` after it when `last_line` is not empty (a proposal, TW24).
+	attestation_check : { tag : Str, asset : Str, ended : [Exited(I32), Signaled(I32), NotStarted(Str)], last_line : Str } -> Try({}, Fail)
+	attestation_check = |facts| match facts.ended {
+		Exited(0) => Ok({})
+		other => {
+			why = match other {
+				Exited(n) => "exit ${n.to_str()}"
+				Signaled(n) => "signal ${n.to_str()}"
+				NotStarted(text) => "not started: ${text}"
+			}
+			last = if facts.last_line.is_empty() "" else ": ${facts.last_line}"
+			Err(Fail.new(Integrity, "attestation check failed for ${facts.asset} of ${TalonUpdate.name} ${facts.tag}: gh ${why}${last}. tln is not changed."))
+		}
+	}
+
+	## Slice 074, R-S2, R-IS3: the note when the attestation was not checked (no `gh`, or `gh` that is not logged in), the text of `install.sh` (a proposal for tln, TW24): `note: attestation not checked (needs gh, logged in)`. The flow prints it on stderr.
+	attestation_note : Str
+	attestation_note = "note: attestation not checked (needs gh, logged in)"
+
+	## Slice 074, R-S2, R-IS3: the line after a good check, the text of `install.sh` (a proposal for tln, TW24): `attestation ok`. The flow prints it on stdout (not with `--quiet`; with `--json` on stderr).
+	attestation_ok : Str
+	attestation_ok = "attestation ok"
+
 	## R-HF2: the command line that sets the executable bit of the temp file: `chmod 0755 <file>`. Windows needs none: `Err(NotNeeded)`.
 	chmod_command : { os : Setup.Os, file : Str } -> Try(List(Str), [NotNeeded])
 	chmod_command = |facts| if facts.os == Windows Err(NotNeeded) else Ok(["chmod", "0755", facts.file])
@@ -169,7 +214,7 @@ TalonUpdate :: [].{
 		Bool.False
 	}
 
-	## R-ST10: the `.del` files of a directory (`list_dirs!`): the full paths, in byte order, of the entries that are files and have a `.del` name. (Each start of `tln` deletes them: the call of this choice is not in this slice, question Q-W1.) `dir` is the dir that was listed.
+	## R-ST10: the `.del` files of a directory (`list_dirs!`): the full paths, in byte order, of the entries that are files and have a `.del` name. (Each start of `tln` on Windows deletes them: `Del.found` uses this, `DelFlow.sweep!` calls it, slice 050c.) `dir` is the dir that was listed.
 	stale : { dir : Str, entries : List({ name : Str, is_dir : Bool, mtime : U64 }) } -> List(Str)
 	stale = |facts| Text.sorted(facts.entries.keep_if(|e| !e.is_dir and TalonUpdate.is_del(e.name)).map(|e| "${facts.dir}/${e.name}"))
 
@@ -203,6 +248,33 @@ TalonUpdate :: [].{
 		installed_at: Clock.format_utc(facts.now),
 	}
 
+	## Slice 052 (R-IS6, R-S2): the URL of the release asset that the install script downloads for `version`: `https://github.com/roc-talon/talon/releases/download/v<version>/<asset>` (the `latest/download` form has no version). `asset` is `asset_name`.
+	## The same form as `browser_download_url` of the release list (`prebuilt_entry` stores it as `url`). A mirror (`TALON_DOWNLOAD_BASE` of the script) is not known to `tln setup`, so the entry always names the release page of Talon (proposal, 052 Q-U1).
+	release_url : { version : Str, asset : Str } -> Str
+	release_url = |facts| "https://github.com/roc-talon/talon/releases/download/v${facts.version}/${facts.asset}"
+
+	## Slices 052 and 063 (R-IS6, R-S4, R-S6, R-T4): what `tln setup` does with the entry `talon` of `tools.json`. `have` is `ToolsJson.talon` (`Err(None)`: no entry).
+	## The entry matches the running `tln` when its installed version (`current`: the `version` of a prebuilt entry, or the version of the tag ref of a git entry) is `version` and its `sha256` is `sha256` (exact text). A matching entry stays (`Keep`, also a git entry: it keeps its commit). No other field is compared.
+	## No entry, or an entry that differs (after `install.sh --version <v>`, R-S4: older or newer; a git entry with another tag or sha256; a git ref that is not a tag): `Put` the `prebuilt` entry of the running binary: the source is `Prebuilt({ version, url: release_url(version, asset_name(os, target)) })`, `hashes` `[]`, `nightly` `""`, `target` and `sha256` as given, `libs` `[]`, `installed_at` is `Clock.format_utc(now)`. `sha256` is the one of `<data bin>/tln`.
+	setup_entry : { have : Try(ToolsJson.Talon, [None]), version : Str, os : Setup.Os, target : Str, sha256 : Str, now : U64 } -> [Keep, Put(ToolsJson.Talon)]
+	setup_entry = |facts| if matches_running({ have: facts.have, version: facts.version, sha256: facts.sha256 }) {
+		Keep
+	} else {
+		Put({
+			source: Prebuilt({ version: facts.version, url: TalonUpdate.release_url({ version: facts.version, asset: TalonUpdate.asset_name({ os: facts.os, target: facts.target }) }) }),
+			hashes: [],
+			nightly: "",
+			target: facts.target,
+			sha256: facts.sha256,
+			libs: [],
+			installed_at: Clock.format_utc(facts.now),
+		})
+	}
+
+	## Slices 052 and 063 (R-OUT2, TW24 proposal): the line of `tln setup` when it writes the entry (a first write, or a rewrite of a differing entry): `recorded talon <version> in <tools.json path>`. It comes first in the output, before the `made` lines. A run that keeps the entry prints no such line.
+	recorded_text : { version : Str, path : Str } -> Str
+	recorded_text = |facts| "recorded talon ${facts.version} in ${facts.path}"
+
 	## R-S2 (question Q-F1): what `--from-source` builds: the source archive of the tag of the release, `roc-talon/talon` at `v<version>`, in the dir `cli` (the app `cli/main.roc`).
 	source_of : Release -> { source : GitRef.Source, path : Try(Str, [None]) }
 	source_of = |release| { source: { owner: "roc-talon", repo: "talon", ref: release.tag }, path: Ok("cli") }
@@ -213,6 +285,13 @@ TalonUpdate :: [].{
 		Prebuilt(pre) => pre.version
 		Git(git) => ToolGit.source_text({ ref: git.ref, sha: git.commit })
 	}
+}
+
+# R-IS6: does the entry have the version and the sha256 of the running `tln`? `current` with no running version gives "" for a git ref that is not a tag, so that entry differs (it is written again).
+matches_running : { have : Try(ToolsJson.Talon, [None]), version : Str, sha256 : Str } -> Bool
+matches_running = |facts| match facts.have {
+	Ok(talon) => TalonUpdate.current({ entry: facts.have, running: "" }) == facts.version and talon.sha256 == facts.sha256
+	Err(None) => Bool.False
 }
 
 # R-S3: the failure for a new file that does not start.

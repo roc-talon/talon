@@ -1,0 +1,6 @@
+tln: error[usage]: $HOME/.local/bin/fe is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again.
+tln: error[input]: zz: the source url https://x/zz.tar.zst is not a release url
+tln: error[input]: gh: the name host/a/b is not owner/repo, so the source archive is not known
+tln: error[usage]: $HOME/.local/bin/fe is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again.
+tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo).
+tln: error[usage]: tln tool rebuild talon is not built yet

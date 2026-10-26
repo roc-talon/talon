@@ -1,0 +1,6 @@
+# R-IS6, R-S2, R-T4, R-CC6, R-CC1 (slice 052): no tools.json. `tln setup` writes the entry talon in the form of Q-S1 of slice 050: the kind prebuilt with the version of this tln and the release URL of its asset, the target of this machine (platform! says Linux X64: x64musl), the sha256 of the file tln in the data bin dir (already read for R-ST11), the time TALON_NOW. The write is one atomic write of a new tools.json, under the lock of tools.json (Wait), after the prompts. The first output line says that the entry is recorded. The bin dir is on PATH (no PATH step). The entry tln is made.
+setup
+# R-IS6, R-ST12: the entry is there: nothing is written for it (no clock, no lock, no write) and the output has no line for it.
+setup
+# R-IS6, R-J3: --json: the human lines go to stderr, the data has no field for the entry (proposal, slice 052 section 5). The entry is kept, so no line.
+setup --json

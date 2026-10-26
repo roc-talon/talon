@@ -1,4 +1,4 @@
-# R-S2 R-S3 R-T22 R-T9 R-ST9 R-ST10 R-SE13 R-S1 R-DA3 R-DA4 R-HF2 R-CC1 R-CC2 R-CC6 R-T4 (slice 050): `tln tool update talon` end to end with the real Fx: the real curl (the wrapper of given/bin/curl sends `https://github.com/...` to the fake server), the real sha256, the real `chmod`,
+# R-S2 R-IS3 R-S3 R-T22 R-T9 R-ST9 R-ST10 R-SE13 R-S1 R-DA3 R-DA4 R-HF2 R-CC1 R-CC2 R-CC6 R-T4 (slice 050): `tln tool update talon` end to end with the real Fx: the real curl (the wrapper of given/bin/curl sends `https://github.com/...` to the fake server), the real sha256, the real `chmod`,
 # the real run of `<file> --version`, the real `rename` and hard links. The fake GitHub server (given/http) has the release list of roc-talon/talon and the files of v0.3.4 (works), v0.3.5 (the sha256 in sha256sums.txt is wrong) and v0.3.6 (a file that exits with 3).
 # `<data>/bin/tln`, `~/.local/bin/tln` and `roc` are 3 files with the same shell script (tln 0.3.1): the entries are Talon's (R-ST11). The entry `talon` of tools.json says 0.3.1. The default clock is 2026-10-15T12:00:00Z (min-release-age 2 days): v0.3.5 and v0.3.6 are in the future.
 export TALON_NOW=2026-10-15T12:00:00Z
@@ -11,6 +11,7 @@ TMP=$XDG_CACHE_HOME/roc/talon/tmp
 downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
 linked() { if [ "$1" -ef "$2" ]; then echo "$1 and $2 are one file"; else echo "$1 and $2 are two files"; fi; }
 mode() { if [ -x "$1" ]; then echo "$1 can run"; else echo "$1 cannot run"; fi; }
+gh_calls() { echo "gh calls so far (the random part of the temp name is <hex>):"; if [ -f $D/gh.log ]; then sed 's/tln\.[0-9a-f]*\.tmp/tln.<hex>.tmp/' $D/gh.log; else echo none; fi; }
 
 echo "-- 1: v0.3.4 is the newest release that is old enough (R-T9). The binary and sha256sums.txt are downloaded (R-DA3), the sha256 is checked (R-S1), chmod 0755 (R-HF2), the new file runs with --version (R-S3), then it is renamed over the old file and the entries tln and roc are made again (R-ST9):"
 echo "-- they are one file with the new binary (a hard link of the old file would still run 0.3.1). tools.json has the new entry. No temp file stays (R-CC2)."
@@ -24,6 +25,8 @@ $B/roc --version
 $DB/tln --version
 cat $J
 echo "downloads: $(downloads)"
+echo "-- slice 074 (R-S2, R-IS3): the fake gh (given/bin/gh) is there and not logged in: tln asked for 'gh auth status' only, printed the note on stderr, and went on."
+gh_calls
 
 echo "-- 2: the same line again: the entry says 0.3.4, so tln is up to date. No download (R-S2)."
 st tln tool update talon
@@ -37,13 +40,15 @@ $B/tln --version
 cat $J
 echo "downloads: $(downloads)"
 
-echo "-- 4: later still (v0.3.6): the sha256 is right, but the new file exits with 3 for --version. Exit 1, the old file stays (R-S3), no temp file stays."
+echo "-- 4: later still (v0.3.6): the sha256 is right, and now gh is logged in and the attestation is good (R-IS3, R-SE13): gh checked the temp file in the data bin dir for roc-talon/talon, and the line 'attestation ok' came before the use of the file, so the new file runs with --version and exits with 3. Exit 1, the old file stays (R-S3), no temp file stays."
+export GH_FAKE=ok
 export TALON_NOW=2026-11-10T12:00:00Z
 st tln tool update talon
 ls -A $B $DB $TMP
 $B/tln --version
 cat $J
 echo "downloads: $(downloads)"
+gh_calls
 
 echo "-- 5: the entry talon is not a tool of the list (question Q-S2): the real binary reads the file and the list is empty."
 st tln tool ls

@@ -1,0 +1,8 @@
+Slice 051 gap step, `tln tool remove talon` on Windows: the user `Path` (R-RM8, R-ST4, R-HF11, R-EC18). The fake machine is `os=windows arch=x64`. One home for each run (`HOME` and `USERPROFILE` are `{w}/home/u<n>` dirs), the same tree as `rm3-windows` (one tool `foo`).
+
+| Run | Home | Words | Result | Rules |
+| --- | --- | --- | --- | --- |
+| 1 | u3 | `tool rm talon` (CI, option 1) | The tools stay, so the `PATH` entry stays: no `exec` of `powershell` in `calls.log` and no line `removed ... from the user Path`. The compilers and the Talon data go, the files of Talon are renamed and the cleanup is started as in `rm3-windows` | R-RM8, R-ST4, R-RM3 |
+| 2 | u4 | `tool rm talon --remove-tools` with a `powershell` that is not on `PATH` (`fx/exec`: `notstarted`) | R-EC18: exit 18, the text names `powershell`. Option 2 stops at the `Path` step: no Talon data delete, no rename of a `.exe`, no `spawn_detached`. Talon is last, so `tln` and `roc` are still there and the command can run again | R-EC18, R-HF11, R-ST4, R-RM5 |
+
+Slice 050c (R-ST10): each run on the fake Windows starts with the sweep of the `.del` files: `env_all` and one `list_dirs` of the bin dir and the data bin dir (no `.del` file here, so no `delete`). `calls.log` has these 2 lines before `args`.

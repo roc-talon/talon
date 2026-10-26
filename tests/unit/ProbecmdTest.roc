@@ -3,7 +3,6 @@ import lib.Fail
 import lib.Db
 import lib.Ident
 import lib.JsonDoc
-import lib.Roots
 import lib.ProbeCmd
 
 ProbecmdTest :: [].{}
@@ -237,34 +236,6 @@ expect {
 		# R-NI4 R-DL1 (slice 037c): the number of compilers that the search downloaded, as `data.downloads` of slice 025.
 		("range: 2 downloads", render(Range({ node: json, found: Range({ from: { id: "n2", real: Bool.True }, to: { id: "n5", real: Bool.True } }), probes: 7, downloads: 2 })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":{\"from\":{\"id\":\"n2\",\"real\":true},\"to\":{\"id\":\"n5\",\"real\":true}},\"probes\":7,\"downloads\":2}"),
 		("range: no pass", render(Range({ node: json, found: NoPass, probes: 0, downloads: 0 })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":null,\"probes\":0,\"downloads\":0}"),
-	]
-	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
-	dbg bad
-	bad == []
-}
-
-# R-FE4 R-FE2 R-PB1 R-LB3 (slice 037): `ProbeCmd.unbundler`, the program that runs `roc unbundle` for a bundle file: the selected compiler when it is installed, else the newest installed compiler, else the `roc` on PATH (rank 7), else a required download.
-expect {
-	roots = match Roots.from_env([("HOME", "/h"), ("XDG_CACHE_HOME", "/c")]) {
-		Ok(r) => r
-		Err(_) => crash "roots"
-	}
-	path = Ok({ id: "nightly-2026-10-14-38a3029", path: "/bin/roc" })
-	three = ["nightly-2026-10-03-3d3d3d3", "nightly-2026-10-10-0e0e0e0", "nightly-2026-10-05-5f5f5f5"]
-	view = |selected, installed, on_path| match ProbeCmd.unbundler({ selected, installed, path: on_path, roots }) {
-		Ok(program) => program
-		Err(NoCompiler) => "none"
-	}
-	file = |id| "/c/roc/toolchains/${id}/roc"
-	rows = [
-		("the selected compiler is installed (rule 1): not the newest", view("nightly-2026-10-03-3d3d3d3", three, path), file("nightly-2026-10-03-3d3d3d3")),
-		("the selected compiler is not installed: the newest installed (rule 2)", view("nightly-2026-10-02-2c2c2c2", three, path), file("nightly-2026-10-10-0e0e0e0")),
-		("no compiler is selected (--range): the newest installed", view("", three, path), file("nightly-2026-10-10-0e0e0e0")),
-		("the selected compiler is the roc on PATH and is not installed: an installed one wins", view("nightly-2026-10-14-38a3029", three, path), file("nightly-2026-10-10-0e0e0e0")),
-		("the order is by the day of the tag, the other tag form too", view("", ["nightly-2026-10-10-0e0e0e0", "nightly-2026-October-13-91fa0c2", "nightly-2026-10-12-1a1a1a1"], path), file("nightly-2026-October-13-91fa0c2")),
-		("nothing installed: the roc on PATH (rule 3)", view("nightly-2026-10-14-38a3029", [], path), "/bin/roc"),
-		("nothing installed and no roc on PATH: a required download (rule 4)", view("nightly-2026-10-14-38a3029", [], Err(NoCompiler)), "none"),
-		("the selected id is installed and is also the one on PATH: the managed copy", view("nightly-2026-10-14-38a3029", ["nightly-2026-10-14-38a3029"], path), file("nightly-2026-10-14-38a3029")),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad

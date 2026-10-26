@@ -11,6 +11,10 @@
 @@ -0,0 +1,2 @@
 +etag "page1"
 +next http://127.0.0.1:$PORT/api/repos/acme/json/releases?per_page=100&page=2
+--- home/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
++++ home/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
+@@ -0,0 +1 @@
++nightly-2026-10-09-258ab27
 --- home/.cache/roc/talon/index/github/acme/json/2.json
 +++ home/.cache/roc/talon/index/github/acme/json/2.json
 @@ -0,0 +1,4 @@

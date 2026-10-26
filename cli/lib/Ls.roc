@@ -3,6 +3,7 @@ import Closure
 import Common
 import Exit
 import Fail
+import Fetch
 import Fx
 import Install
 import Known
@@ -61,8 +62,9 @@ Ls :: [].{
 	walk_full! = |fx, args, notes| {
 		start = Install.begin!(fx, args)?
 		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-		request = Ls.request_of(args, start)
-		loaded = ResolveLoad.load!(fx, request)?
+		asked = Ls.request_of(args, start)
+		loaded = ResolveLoad.load!(fx, asked)?
+		request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }) }
 		# R-SO18: `ls` warns when `.roc-version` and the header pin differ (`why` does not: `notes` is false).
 		if notes {
 			for line in ResolveBase.roc_version_warnings(loaded) {
@@ -104,6 +106,8 @@ Ls :: [].{
 		strategy: Err(Unset),
 		nightly: Common.nightly_of(start.env),
 		compiler: Err(NoCompiler),
+		selected: "",
+		none: Stop,
 		toolchain: Err(Unset),
 		snapshot: Err(Unset),
 		dry_run: Bool.False,

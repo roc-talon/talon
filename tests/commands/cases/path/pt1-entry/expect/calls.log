@@ -12,6 +12,7 @@ read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/main.roc
+read_files $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
 args
@@ -27,6 +28,7 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/main.roc
+read_files $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
 args
@@ -42,14 +44,16 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/main.roc
+read_files $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
 programs curl wget
 make_dirs $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.0123456789abcdef.tmp
 spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.0123456789abcdef.tmp/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst https://github.com/acme/json/releases/download/2.1.0/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst
+list_dirs $HOME/.cache/roc/toolchains
 spawn_all limit=8
-  job $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.0123456789abcdef.tmp roc unbundle 76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst
+  job $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle 76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.tar.zst
 rename $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.0123456789abcdef.tmp/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS
 delete $HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS.0123456789abcdef.tmp
 args
@@ -66,6 +70,7 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/main.roc
+read_files $HOME/.config/talon/config.toml
 random
 list_dirs $HOME/.cache/roc/packages
 args

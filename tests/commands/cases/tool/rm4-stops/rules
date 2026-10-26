@@ -1,0 +1,5 @@
+Slice 051, `tln tool remove talon`: a stop in the middle (entry `commands`). One home (Linux), the same tree as `rm1-default`. `fx/delete` refuses `share.json` (`Denied`).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool rm talon` | option 1 (CI). The compilers and `tools.json` go as in `rm1-default`, then the one `delete!` of the Talon data fails for `share.json` (the other 2 paths are deleted): exit 18 `cannot delete <path>: Denied`. Talon is last: the entries `tln` and `roc`, `roc.old` and the file `tln` of the data bin dir are all still there, so `tln tool remove talon` can run again. No report on stdout | R-RM5, R-RM10, R-ST6 |

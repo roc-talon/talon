@@ -1,0 +1,157 @@
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+path_roc
+clock
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+make_dirs $HOME/.local/bin
+random
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+random
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+http_get http://127.0.0.1:1/api/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+path_roc
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+platform
+read_files $HOME2/.local/share/talon/tools.json
+list_dirs $HOME2/.local/share/talon/bin $HOME2/.local/bin
+sha256_file $HOME2/.local/share/talon/bin/tln
+path_roc
+clock
+lock $HOME2/.local/share/talon/tools.json nowait: held
+read_files $HOME2/.local/share/talon/tools.json
+write_atomic $HOME2/.local/share/talon/tools.json
+unlock $HOME2/.local/share/talon/tools.json
+make_dirs $HOME2/.local/bin
+random
+hard_link $HOME2/.local/share/talon/bin/tln $HOME2/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME2/.local/bin/tln.0123456789abcdef.tmp $HOME2/.local/bin/tln
+random
+hard_link $HOME2/.local/share/talon/bin/tln $HOME2/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME2/.local/bin/roc.0123456789abcdef.tmp $HOME2/.local/bin/roc
+read_files $HOME2/.config/talon/config.toml
+clock
+platform
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+lock $HOME2/.config/talon/config.toml nowait: held
+read_files $HOME2/.config/talon/config.toml
+read_files $HOME2/.config/talon/config.toml
+write_atomic $HOME2/.config/talon/config.toml
+unlock $HOME2/.config/talon/config.toml
+args
+env_all
+platform
+read_files $HOME3/.local/share/talon/tools.json
+list_dirs $HOME3/.local/share/talon/bin $HOME3/.local/bin
+sha256_file $HOME3/.local/share/talon/bin/tln
+path_roc
+clock
+lock $HOME3/.local/share/talon/tools.json nowait: held
+read_files $HOME3/.local/share/talon/tools.json
+write_atomic $HOME3/.local/share/talon/tools.json
+unlock $HOME3/.local/share/talon/tools.json
+make_dirs $HOME3/.local/bin
+random
+hard_link $HOME3/.local/share/talon/bin/tln $HOME3/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME3/.local/bin/tln.0123456789abcdef.tmp $HOME3/.local/bin/tln
+random
+hard_link $HOME3/.local/share/talon/bin/tln $HOME3/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME3/.local/bin/roc.0123456789abcdef.tmp $HOME3/.local/bin/roc
+read_files $HOME3/.config/talon/config.toml
+clock
+platform
+list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.0
+write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+args
+env_all
+platform
+read_files $HOME4/.local/share/talon/tools.json
+list_dirs $HOME4/.local/share/talon/bin $HOME4/.local/bin
+sha256_file $HOME4/.local/share/talon/bin/tln
+path_roc
+clock
+lock $HOME4/.local/share/talon/tools.json nowait: held
+read_files $HOME4/.local/share/talon/tools.json
+write_atomic $HOME4/.local/share/talon/tools.json
+unlock $HOME4/.local/share/talon/tools.json
+make_dirs $HOME4/.local/bin
+random
+hard_link $HOME4/.local/share/talon/bin/tln $HOME4/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME4/.local/bin/tln.0123456789abcdef.tmp $HOME4/.local/bin/tln
+random
+hard_link $HOME4/.local/share/talon/bin/tln $HOME4/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME4/.local/bin/roc.0123456789abcdef.tmp $HOME4/.local/bin/roc
+read_files $HOME4/.config/talon/config.toml
+clock
+platform

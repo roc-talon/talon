@@ -1,0 +1,2 @@
+removing Talon, the compilers, the data and the tools
+warning: $HOME/.local/bin/baz is not a file that tln wrote, so tln keeps it

@@ -15,6 +15,7 @@ import JsonDoc
 ## | Fix block | Always (R-RP2). The first line is `  fix: <option>`, each other option is a line `       or <option>` (7 spaces: it lines up with the first option, as the example of Resolution 5) | R-RP2, 035 Q1 |
 ## | Option 1 | `tln roc use <n> (the oldest nightly that works)` when `hint` is `Ok(n)`, else `tln roc use <id>` (the text of R-RP2) | R-RP2 |
 ## | Option 2 | `tln upgrade roc` | R-RP2 |
+## | Option 2 left out | When `failed` is `UpgradeRoc` (`failed_command` of the request: `tln upgrade roc`), option 2 is not a line of the fix block (R-AL12: that command just failed). Slice 065. The options are data (a list) before they are rendered, so the filter works on the option, not on the text. The other options keep their order, and option 1 is the `fix:` line. With `Other`, option 2 is there | R-AL12, R-SP8 |
 ## | Options 3 | For each cause in the order given, for each of its modules in its order, but not `main.roc`: `stop using <alias>.<Module>` (`<Module>` is the module without `.roc`). A cause with an empty alias gives none. No repeat (the first stays). Here the app can avoid the fail (R-UM1), as the second `fix:` of the example of Resolution 5 | R-UM1, Resolution 5 |
 ##
 ## `details` is the `error.details` of the failure (R-J5, R-OUT2: a proposal): `{"compiler": <held>, "causes": [{"release": <label>, "kind": "fail" or "hang" or "crash", "modules": [<module>, ...], "from": <id>, "to": <id>, "inferred": [<id>, ...]}], "hint": <id> or null}`, the keys in this order, one object for each cause (also those that `lines` leaves out).
@@ -24,8 +25,17 @@ Explain :: [].{
 	Cause : { label : Str, alias : Str, kind : [Fail, Hang, Crash], modules : List(Str), from : Str, to : Str, inferred : List(Str) }
 
 	## The lines that follow the first line of the message (the table above).
-	lines : { causes : List(Explain.Cause), hint : Try(Str, [None]) } -> List(Str)
-	lines = |x| x.causes.keep_if(|c| c.from != c.to or !c.inferred.is_empty()).map(cause_line).concat(fix_lines(x.hint, x.causes))
+	## Slice 065: `failed` is the failed command (`failed_command`). The caller is `OracleCause.failure`, with `compat.failed`.
+	lines : { causes : List(Explain.Cause), hint : Try(Str, [None]), failed : [UpgradeRoc, Other] } -> List(Str)
+	lines = |x| x.causes.keep_if(|c| c.from != c.to or !c.inferred.is_empty()).map(cause_line).concat(fix_lines(x.hint, x.causes, x.failed))
+
+	## Slice 065 (R-AL12, R-SP8): the command that failed. `UpgradeRoc` for `tln upgrade roc` (`command` is `Upgrade` and `names` is `["roc"]`), `Other` for each other command, also `tln upgrade` and `tln upgrade roc <name>` (manager answer Q1 of `docs/slices/065-fix-line.md`). Flags do not matter (they are not in the input).
+	failed_command : { command : [Install, Update, Upgrade], names : List(Str) } -> [UpgradeRoc, Other]
+	failed_command = |x| match x.command {
+		Upgrade => if x.names == ["roc"] UpgradeRoc else Other
+		Install => Other
+		Update => Other
+	}
 
 	## The `error.details` of the failure (the table above). `held` is the id of H.
 	details : { held : Str, causes : List(Explain.Cause), hint : Try(Str, [None]) } -> JsonDoc
@@ -58,13 +68,18 @@ cause_line = |c| {
 }
 
 # R-RP2: the first option is the nightly that works, else a placeholder. Then the upgrade, then the modules that the app can stop using (R-UM1).
-fix_lines : Try(Str, [None]), List(Explain.Cause) -> List(Str)
-fix_lines = |hint, causes| {
+# R-AL12, R-SP8: the upgrade is not an option when `tln upgrade roc` is the command that failed (slice 065).
+fix_lines : Try(Str, [None]), List(Explain.Cause), [UpgradeRoc, Other] -> List(Str)
+fix_lines = |hint, causes, failed| {
 	first = match hint {
 		Ok(id) => "tln roc use ${id} (the oldest nightly that works)"
 		Err(None) => "tln roc use <id>"
 	}
-	options = ["fix: ${first}", "or tln upgrade roc"].concat(stops(causes).map(|s| "or ${s}"))
+	upgrade = match failed {
+		UpgradeRoc => []
+		Other => ["or tln upgrade roc"]
+	}
+	options = ["fix: ${first}"].concat(upgrade).concat(stops(causes).map(|s| "or ${s}"))
 	options.map_with_index(|text, i| if i == 0 "  ${text}" else "       ${text}")
 }
 

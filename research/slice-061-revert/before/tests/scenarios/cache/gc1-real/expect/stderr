@@ -1,0 +1,9 @@
+removed toolchain nightly-2026-05-01-6666666 (269 B)
+removed $HOME/.cache/roc/compat-6666666 (11 B)
+freed 280 B
+tln: error[usage]: tln cache gc takes no operand, got 1
+removed $HOME/.cache/roc-builds/compat-old (10 B)
+removed $HOME/.cache/roc-builds/debug-9999999 (10 B)
+removed $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 (12 B)
+removed $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc (17 B)
+freed 49 B

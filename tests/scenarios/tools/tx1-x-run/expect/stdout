@@ -47,10 +47,10 @@ exit 3
 downloads: 2, builds: 2
 -- 6: 36 days later the entry was not run for more than the gc age (R-GC7): tln cache gc removes it. The gc removes the old fake compiler too (not used for 36 days), so the case keeps a copy of the store and puts it back for step 7.
 == tln cache gc
-removed toolchain nightly-2026-10-14-38a3029 (1.4 KB)
+removed toolchain nightly-2026-10-14-38a3029 (1.7 KB)
 removed $HOME/.cache/roc/compat-bbbbbbb
 removed $HOME/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269 (499 B)
-freed 1.9 KB
+freed 2.2 KB
 exit 0
 x: 0 entries
 -- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download.

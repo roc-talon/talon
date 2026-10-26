@@ -1,0 +1,19 @@
+Slice 057, `tln run` with project tools `[tools]` (entry `commands`): R-RUN3 (point 2 and 3), R-RUN8, R-RUN11, R-PT8, R-PT9, R-PT10, R-PT12, R-PT15, R-DL7, R-DL2, R-RUN16, R-PD9, OP4, NC2, Q-S15. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache,
+`TALON_NOW=2026-10-15T12:00:00Z`, no `TALON_AUTO_INSTALL`, no terminal (non-interactive). The fake runs no child (default exit 0). The fake `roc build` writes the output file. A global tool `fmt` is in `tools.json` with a binary in the bin dir: a project tool never runs it (R-PT12).
+Projects: `p1` has the tool `fmt` (acme/fmt 1.0.0, its `x` entry has the binary) and the scripts `ck`, `all` (an `in` step). `p2` has `gen` (acme/gen 1.0.0, no `x` entry: the first run builds it). `p3` has `old` (its app pins a compiler that is not installed). `p4` has `off` (acme/zz: its bundle is not in the cache).
+`p5` has `bd` (acme/bad: its build fails). `p6` has `nu` (a `[tools]` key `lz` with no `url`). `p7` has `w` (a `[tools]` entry with an unknown key, a step with no tool). The workspace `w` has `[tools]` with `foo` in its root file, a member `w/m1` with a script `mc`, and `w/s`, a standalone project in a workspace directory with its own `[tools]` (`own`) and no `foo`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `run ck` in `p1` | the first word `fmt` is a key: the binary of its `x` entry runs (`<home>/.cache/roc/talon/x/<digest>/fmt`, not the global binary), in `p1`, with the 2 variables of R-RUN9 only (no `PATH`). No request, no read of `tools.json`, no write (R-PT8, R-PT12). The next step (`tool-after`) is a program of `PATH` | R-RUN3, R-PT9, R-PT8, R-PT10, R-PT12, R-RUN16 |
+| 2 | `run all` in `p1` | an `in` step uses the same table: `fmt` is the project tool, the working directory is `p1/sub`. No more `x` read than run 1 for the table | R-RUN8, R-RUN3, OP4 |
+| 3 | `run mk` in `p2` | no `x` entry for the bundle of the `url`: the bundle is fetched and built (the platform line and the build line on stderr), the entry is written, the new binary runs. The compiler is the pin of the app, which is installed. No release list (R-PT8) | R-PT9, R-PT6, R-RUN16 |
+| 4 | `run mk` in `p2` | the entry of run 3 is there: no build, the binary runs | R-PT9 |
+| 5 | `run nc` in `p3` | the build needs a compiler that is not installed: a required download (R-DL2), non-interactive, no consent: exit 13 (the text names `--yes` and `TALON_AUTO_INSTALL=yes`, not `--allow-downloads`, which `run` refuses: Q6 of the review), no child | R-PT9, R-DL7, R-DL2 |
+| 6 | `run off --offline` in `p4` | no binary, no bundle in the cache, `--offline`: exit 15 | R-PT15, R-FL3 |
+| 7 | `run mc` in `w/m1` | the script is in the member file; the table is the `[tools]` of the root file `w/talon.toml` (OP4): `foo` is its tool, the binary runs in `w/m1` | R-RUN3, OP4, R-PT2 |
+| 8 | `run so` in `w/s` | the standalone project in a workspace directory has its own table (NC2): `own` is its tool. The step `foo go` is not a key of that table: it is a program of `PATH` (the root `[tools]` has no effect on it) | R-RUN3, NC2, R-PT2 |
+| 9 | `run` in `p1` | the list, and the note on stderr for the key `fmt` that is also a program on `PATH` (`fx/programs`) | R-RUN11, Q-S15 |
+| 10 | `run bd` in `p5` | the build fails: exit 11 (as `tln x`), the step after it does not start | R-PT9, R-PT6, R-RUN5 |
+| 11 | `run nu` in `p6` | the key `lz` has no `url`: exit 14, the text names `tln install` (Q2 of the review), no child, no request | R-PT7, R-PT9, R-RUN3 |
+| 12 | `run w` in `p7` | the `[tools]` table has an unknown key (`note`): the warning goes on stderr as `warning: <file>:<line>: <message>` before the step, which does not use a tool and runs (C8 of the verify results) | R-RUN3, R-PT1 |

@@ -1,15 +1,16 @@
 == setup
+recorded talon 0.0.0 in $HOME/.local/share/talon/tools.json
 made $HOME/.local/bin/tln (hard link)
 made $HOME/.local/bin/baz (hard link)
 completions: $HOME/.local/share/bash-completion/completions/tln
 exit 0
 == setup --replace-roc --json
-{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"made","form":"hard-link"},{"name":"foo","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null},{"name":"baz","action":"kept","form":null}],"roc_old":true,"path":"on-path","completion":"present"},"error":null}
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"made","form":"hard-link"},{"name":"foo","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null},{"name":"baz","action":"kept","form":null}],"roc_old":true,"path":"on-path","completion":"present","default_roc":{"action":"kept","id":"nightly-2026-10-14-38a3029"}},"error":null}
 exit 0
 == setup
 exit 0
 == setup --json
-{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"kept","form":null},{"name":"foo","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null},{"name":"baz","action":"kept","form":null}],"roc_old":false,"path":"on-path","completion":"present"},"error":null}
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"kept","form":null},{"name":"roc","action":"kept","form":null},{"name":"foo","action":"skipped","form":null},{"name":"bar","action":"skipped","form":null},{"name":"baz","action":"kept","form":null}],"roc_old":false,"path":"on-path","completion":"present","default_roc":{"action":"kept","id":"nightly-2026-10-14-38a3029"}},"error":null}
 exit 0
 == setup env:PATH=/usr/bin env:CI=false
 PATH: not changed. To add $HOME/.local/bin, put this line in $HOME/.bashrc: export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup

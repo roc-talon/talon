@@ -1,3 +1,4 @@
+import lib.Base
 import lib.Fail
 import lib.Proxy
 
@@ -203,4 +204,28 @@ expect {
 	dbg bad_nightly
 	dbg bad_other
 	bad_nightly == [] and bad_other == []
+}
+
+# R-PX5 R-PD6 R-PD7 R-WS5 R-SO3 R-SO4 R-SO5 (slice 070): the files that `Base.load!` reads. `Patches` is for `roc +<id>` and `ROC_TOOLCHAIN`: only the project file and the nearest `talon.toml` of the target file (the `[patch]`
+# table is in it), and no call at all when there is no `talon.toml` or no project file. The other sources keep the order file, root `talon.toml`, nearest `talon.toml` (only when it is another file: a member with a `talon.toml` of its own),
+# `config.toml`, `.roc-version`. `Given` has no `config.toml`.
+expect {
+	row = |label, got, want| (label, Str.inspect(got), Str.inspect(want))
+	paths = |source, files, root, nearest, versions| Base.load_paths({ source, files, root, nearest, config: "/h/config.toml", versions })
+	rows = [
+		row("Read, a standalone project", paths(Read, ["/p/main.roc"], ["/p/talon.toml"], Ok("/p/talon.toml"), ["/p/.roc-version"]), ["/p/main.roc", "/p/talon.toml", "/h/config.toml", "/p/.roc-version"]),
+		row("Read, a member with no talon.toml of its own: the root file is the nearest", paths(Read, ["/w/a/main.roc"], ["/w/talon.toml"], Ok("/w/talon.toml"), []), ["/w/a/main.roc", "/w/talon.toml", "/h/config.toml"]),
+		row("Read, a member with a talon.toml of its own: both, root first", paths(Read, ["/w/a/main.roc"], ["/w/talon.toml"], Ok("/w/a/talon.toml"), []), ["/w/a/main.roc", "/w/talon.toml", "/w/a/talon.toml", "/h/config.toml"]),
+		row("Read, no talon.toml", paths(Read, ["/p/main.roc"], [], Err(NoToml), []), ["/p/main.roc", "/h/config.toml"]),
+		row("Read, no project", paths(Read, [], [], Err(NoToml), []), ["/h/config.toml"]),
+		row("Given: no config.toml", paths(Given, ["/w/a/main.roc"], ["/w/talon.toml"], Ok("/w/a/talon.toml"), ["/w/a/.roc-version"]), ["/w/a/main.roc", "/w/talon.toml", "/w/a/talon.toml", "/w/a/.roc-version"]),
+		row("Patches, a standalone project: the file and the talon.toml only", paths(Patches, ["/p/main.roc"], ["/p/talon.toml"], Ok("/p/talon.toml"), ["/p/.roc-version"]), ["/p/main.roc", "/p/talon.toml"]),
+		row("Patches, a member with a talon.toml of its own: only its file, not the root", paths(Patches, ["/w/a/main.roc"], ["/w/talon.toml"], Ok("/w/a/talon.toml"), []), ["/w/a/main.roc", "/w/a/talon.toml"]),
+		row("Patches, a member of the root file", paths(Patches, ["/w/b/main.roc"], ["/w/talon.toml"], Ok("/w/talon.toml"), []), ["/w/b/main.roc", "/w/talon.toml"]),
+		row("Patches, no talon.toml: no read", paths(Patches, ["/p/main.roc"], [], Err(NoToml), []), []),
+		row("Patches, no project file: no read", paths(Patches, [], ["/p/talon.toml"], Ok("/p/talon.toml"), []), []),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
 }

@@ -1,0 +1,3 @@
+# the running tln has 5000 bytes. The roc on PATH has 1000 bytes: it cannot be the launcher, so no file is hashed.
+exe {w}/bin/tln 5000 1700000000
+file {w}/bin/roc 1000 1700000100

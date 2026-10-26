@@ -1,0 +1,26 @@
+--- home/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc
++++ home/.cache/roc/packages/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc
+@@ -0,0 +1,7 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst",
++	dep0: "https://github.com/acme/json/releases/download/2.1.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
++}
++
++main! = |_args| Ok({})
+--- home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
++++ home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64mac: { inputs: ["libhost.a", app] },
++		arm64mac: { inputs: ["libhost.a", app] },
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}

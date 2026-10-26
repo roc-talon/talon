@@ -1,0 +1,2 @@
+# R-IS6, R-TF3, Q-B1 (slice 052): the entry talon is there but Talon cannot read it (the old form {"source":"install script"}: no object source, so no source that tln knows). It is not missing, so setup does not replace it. It is a bad tools.json: exit 19 (kind input), the text names the file and the entry. Nothing is written: the reads of step 3 end the run, so there are no make_dirs, no clock, no lock, no entry.
+setup

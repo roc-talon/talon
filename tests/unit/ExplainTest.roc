@@ -22,7 +22,7 @@ json = |from, to| cause("acme/json 2.1.0", "json", Fail, [], from, to, [])
 
 parser = |from, to| cause("acme/parser 1.2.0", "parser", Fail, [], from, to, [])
 
-text = |causes, hint| Str.join_with(Explain.lines({ causes, hint }), "\n")
+text = |causes, hint| Str.join_with(Explain.lines({ causes, hint, failed: Other }), "\n")
 
 no_hint = Err(None)
 
@@ -64,6 +64,39 @@ expect {
 		("no cause, no hint", render([], no_hint), "{\"compiler\":\"${n3}\",\"causes\":[],\"hint\":null}"),
 		("a cause with a module, an interval, inferred compilers, and a hint", render([cause("acme/json 2.1.0", "json", Fail, ["Yaml.roc"], n2, n4, [n3])], Ok(n1)), "{\"compiler\":\"${n3}\",\"causes\":[{\"release\":\"acme/json 2.1.0\",\"kind\":\"fail\",\"modules\":[\"Yaml.roc\"],\"from\":\"${n2}\",\"to\":\"${n4}\",\"inferred\":[\"${n3}\"]}],\"hint\":\"${n1}\"}"),
 		("a fail on the held compiler alone is a cause too, and the words of the kinds", render([json(n3, n3), cause("the platform acme/pf 0.1.0", "", Hang, [], n3, n3, []), cause("acme/parser 1.2.0", "parser", Crash, [], n3, n3, [])], no_hint), "{\"compiler\":\"${n3}\",\"causes\":[{\"release\":\"acme/json 2.1.0\",\"kind\":\"fail\",\"modules\":[],\"from\":\"${n3}\",\"to\":\"${n3}\",\"inferred\":[]},{\"release\":\"the platform acme/pf 0.1.0\",\"kind\":\"hang\",\"modules\":[],\"from\":\"${n3}\",\"to\":\"${n3}\",\"inferred\":[]},{\"release\":\"acme/parser 1.2.0\",\"kind\":\"crash\",\"modules\":[],\"from\":\"${n3}\",\"to\":\"${n3}\",\"inferred\":[]}],\"hint\":null}"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-AL12 R-SP8 (slice 065): the failed command is `tln upgrade roc` only for `Upgrade` with the names `["roc"]`. A command that holds the nightly (`install`, `update`, a named `upgrade`) did not fail on the command that the fix block names, so it stays `Other`.
+expect {
+	rows = [
+		("upgrade roc", Explain.failed_command({ command: Upgrade, names: ["roc"] }), UpgradeRoc),
+		("upgrade of a package", Explain.failed_command({ command: Upgrade, names: ["json"] }), Other),
+		("install", Explain.failed_command({ command: Install, names: [] }), Other),
+		("update", Explain.failed_command({ command: Update, names: [] }), Other),
+		("update with the name roc is not the upgrade", Explain.failed_command({ command: Update, names: ["roc"] }), Other),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-AL12 R-RP2 R-UM1 (slice 065): the lines for the failed command `tln upgrade roc`. Option 2 (`or tln upgrade roc`) is not in the fix block, and each other line stays: the cause lines, option 1 with or without the hint, and the `stop using` options (they come after option 2 in the other form, so the first of them keeps the `       or` prefix).
+# The row with `Other` is the same input: the form that all other commands print (the rows of the first `expect`).
+expect {
+	lines = |causes, hint, failed| Str.join_with(Explain.lines({ causes, hint, failed }), "\n")
+	yaml = cause("acme/json 2.1.0", "json", Fail, ["Yaml.roc"], n2, n4, [])
+	two = [yaml, cause("acme/parser 1.2.0", "parser", Fail, ["Yaml.roc", "Wire.roc"], n3, n3, [])]
+	rows = [
+		("no cause, no hint: option 1 only", lines([], no_hint, UpgradeRoc), "  fix: tln roc use <id>"),
+		("a hint: option 1 names the nightly", lines([], Ok(n1), UpgradeRoc), "  fix: tln roc use ${n1} (the oldest nightly that works)"),
+		("a cause line and a stop option stay", lines([yaml], no_hint, UpgradeRoc), "  acme/json 2.1.0 fails on ${n2} .. ${n4}\n  fix: tln roc use <id>\n       or stop using json.Yaml"),
+		("the same with a hint", lines([yaml], Ok(n1), UpgradeRoc), "  acme/json 2.1.0 fails on ${n2} .. ${n4}\n  fix: tln roc use ${n1} (the oldest nightly that works)\n       or stop using json.Yaml"),
+		("2 causes: all stop options stay, in order", lines(two, no_hint, UpgradeRoc), "  acme/json 2.1.0 fails on ${n2} .. ${n4}\n  fix: tln roc use <id>\n       or stop using json.Yaml\n       or stop using parser.Yaml\n       or stop using parser.Wire"),
+		("other command, same input: option 2 is there", lines([yaml], no_hint, Other), "  acme/json 2.1.0 fails on ${n2} .. ${n4}\n  fix: tln roc use <id>\n       or tln upgrade roc\n       or stop using json.Yaml"),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad

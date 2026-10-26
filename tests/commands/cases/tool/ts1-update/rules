@@ -8,3 +8,5 @@ Slice 050, `tln tool update talon` (entry `commands`). One home: `tools.json` ha
 | 3 | `tool update roc-talon/talon --json` | the full name is the same operand. The envelope has the outcome `up_to_date` | R-J1 to R-J4, R-CM16 |
 | 4 | `tool list` | `tools.json` has the entry `talon`: it is read, and it is not a row of the list. Only `gp` | R-T4, Q-S2 |
 | 5 | `tool update` | no name: all tools. `gp` is pinned to a commit (no request). `talon` is not one of them | R-T25, Q-S2 |
+
+Slice 074 (R-S2, R-IS3): a run that gets to the use of the downloaded file also calls `programs gh` after the sha256 check. `fx/programs` has no `gh`, so the run prints `note: attestation not checked (needs gh, logged in)` on stderr and goes on. The cases of `ts8-attest` have `gh`.

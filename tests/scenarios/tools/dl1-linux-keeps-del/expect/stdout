@@ -1,0 +1,10 @@
+== tln --version
+tln 0.0.0
+exit 0
+== tln tool list
+no tool is installed. Run: tln tool install owner/app
+exit 0
+bin dir:
+tln.0123456789abcdef.del
+data bin dir:
+foo.fedcba9876543210.del

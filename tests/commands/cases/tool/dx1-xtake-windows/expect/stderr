@@ -1,0 +1,4 @@
+note: no yank and advisory data without a registry
+note: no yank and advisory data without a registry
+tln: error[environment]: cannot move $HOME/.local/share/talon/bin/zed.exe to $HOME/.local/share/talon/bin/zed.0123456789abcdef.del: Exists
+note: no yank and advisory data without a registry

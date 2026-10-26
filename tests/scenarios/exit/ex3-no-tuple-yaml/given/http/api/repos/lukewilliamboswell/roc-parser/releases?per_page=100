@@ -1,0 +1,15 @@
+[
+ {
+  "tag_name": "2.0.0",
+  "draft": false,
+  "prerelease": false,
+  "published_at": "2026-10-05T12:00:00Z",
+  "assets": [
+   {
+    "name": "7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst",
+    "size": 1000,
+    "browser_download_url": "https://github.com/lukewilliamboswell/roc-parser/releases/download/2.0.0/7CLzCK6qUz7zmj6nvBxMEFu11HPwQTnCovKiyWzDSLTW.tar.zst"
+   }
+  ]
+ }
+]

@@ -437,3 +437,29 @@ expect {
 	dbg bad
 	bad == [] and Nightlies.failure(Empty).kind.code() == 10 and Nightlies.failure(NoBase).kind.code() == 18
 }
+
+# R-CV2 R-SE9 (slice 076, Q3): the name of the asset is a file name in the temp dir of the install. An asset whose name is not one safe path part (a `/`, a backslash or a NUL byte in it) is not the asset of the host: the release has
+# `NoAsset` (the same failure as a release with no asset for the host), and a good asset of the same release still counts. The names that GitHub gives have no such part: this is a check of the answer, not of a name that exists.
+expect {
+	good = "roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz"
+	bad_names = [
+		"roc_nightly-linux_x86_64-../../x.tar.gz",
+		"roc_nightly-linux_x86_64-a/b.tar.gz",
+		"roc_nightly-linux_x86_64-a\\\\b.tar.gz",
+		"roc_nightly-linux_x86_64-a\\u0000b.tar.gz",
+	]
+	one = |name| plain({ tag: "nightly-2026-10-21-5349569", published: "2026-10-21T15:01:06Z", assets: [asset({ name, size: 1, digest: "\"sha256:${hex64}\"" })] })
+	view = |pages| match Nightlies.releases({ host: LinuxX64, pages }) {
+		Ok(list) => list.map(|r| (r.id, r.asset.map_ok(|a| a.size)))
+		Err(_) => []
+	}
+	alone = bad_names.map(|name| (name, view([page([one(name)])])))
+	want_alone = bad_names.map(|name| (name, [("nightly-2026-10-21-5349569", Err(NoAsset))]))
+	both = plain({
+		tag: "nightly-2026-10-21-5349569",
+		published: "2026-10-21T15:01:06Z",
+		assets: [asset({ name: "roc_nightly-linux_x86_64-../../x.tar.gz", size: 1, digest: "\"sha256:${hex64}\"" }), asset({ name: good, size: 2, digest: "\"sha256:${hex64}\"" })],
+	})
+	dbg alone
+	alone == want_alone and view([page([both])]) == [("nightly-2026-10-21-5349569", Ok(2))] and view([page([one(good)])]) == [("nightly-2026-10-21-5349569", Ok(1))]
+}

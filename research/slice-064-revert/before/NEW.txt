@@ -1,0 +1,16 @@
+tests/commands/cases/tool/ti1-install/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/tool/ti1-install/given/home/.config/talon/config.toml
+tests/commands/cases/x/x1-run/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/x/x1-run/given/home/.config/talon/config.toml
+tests/commands/cases/ptool/pt2-install/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/ptool/pt2-install/given/home/.config/talon/config.toml
+tests/commands/cases/ptool/pt1-add/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/ptool/pt1-add/given/home/.config/talon/config.toml
+tests/commands/cases/run/rn3-tools/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/run/rn3-tools/given/home/.config/talon/config.toml
+tests/commands/cases/path/pt1-entry/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/path/pt1-entry/given/home/.config/talon/config.toml
+tests/commands/cases/tool/tr2-rebuildstops/given/home/.cache/roc/toolchains/nightly-2026-10-16-9e9e9e9/.talon.json
+tests/commands/cases/tool/tr2-rebuildstops/given/home/.config/talon/config.toml
+tests/commands/cases/remove/rm2-select (a new case dir: all files)
+docs/slices/064-selected-fetch.md

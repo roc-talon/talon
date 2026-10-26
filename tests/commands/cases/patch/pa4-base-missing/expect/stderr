@@ -1,0 +1,8 @@
+tln: error[network]: the index of acme/json has no cached page and --offline is set. Run the command without --offline.
+tln: error[frozen]: the patch of json has the base 3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3, and no release of acme/json has that hash, so Talon cannot take the diff of the copy. Edit the copy $PROJECT/p1/.talon/patches/json/, or remove the [patch] entry json.
+index: cached at 2026-10-15T11:50:00Z
+tln: error[frozen]: the patch of json has the base 3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3, and no release of acme/json has that hash, so Talon cannot take the diff of the copy. Edit the copy $PROJECT/p1/.talon/patches/json/, or remove the [patch] entry json.
+index: cached at 2026-10-15T11:50:00Z
+tln: error[network]: acme/json 2.1.0 is not in the package cache and --offline is set (https://github.com/acme/json/releases/download/2.1.0/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4.tar.zst)
+tln: error[frozen]: the patch of json has the base 3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3, and no release of acme/json has that hash, so Talon cannot take the diff of the copy. Edit the copy $PROJECT/p1/.talon/patches/json/, or remove the [patch] entry json.
+tln: error[frozen]: the patch of json has the base 3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3, and no release of example.org/acme/json/releases/download/{v}/ has that hash, so Talon cannot take the diff of the copy. Edit the copy $PROJECT/p3/.talon/patches/json/, or remove the [patch] entry json.

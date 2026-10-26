@@ -59,8 +59,8 @@ Upgrade :: [].{
 				Err(fail) => Err(fail)
 			}
 			match result {
-				Ok(outcome) => {
-					Update.print!(fx, shown, args, opts, outcome)
+				Ok(done) => {
+					Update.print!(fx, shown, args, opts, done)
 					0
 				}
 				Err(fail) => Common.failed!(fx, args, fail)

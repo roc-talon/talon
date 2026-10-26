@@ -354,5 +354,94 @@ expect {
 	bad == []
 }
 
+# R-IS6 R-IS2 R-S2 R-S4 (slice 052 and 063, docs/slices/052-release-install.md): the URL that `tln setup` records for the running binary, the entry that it writes when `talon` is missing, and its line. The URL is the one of the install script for an exact version
+# (`<releases>/download/v<version>/<asset>`, CLI 6.5 R-IS3: no API call). The entry has the form of Q-S1 of slice 050: the kind `prebuilt` with `version` and `url`, no compiler (`hashes` `[]`, `nightly` `""`), the target of this machine, the sha256 of the file `tln`, `libs` `[]` and the time of
+# the run. Slice 063 (docs/slices/063-talon-entry-repair.md, R-IS6, R-S4): an entry that exists stays only when its version and its sha256 are those of the running tln (the version of a prebuilt entry, or of the tag ref of a git entry, R-S6). Any other field (the URL, the target, the time, the kind) does
+# not count. An entry that differs is written again as a prebuilt entry of the running tln, whether it is older or newer (the repair `install.sh --version <older>`, R-S4, goes back). The asset of Windows has `.exe` and Windows on ARM64 has the target `x64win` (R-IS2, R-HF10).
+expect {
+	url = |version, os, target| TalonUpdate.release_url({ version, asset: TalonUpdate.asset_name({ os, target }) })
+	now = pub("2026-10-22T12:00:00Z")
+	entry = |have, version, os, target| TalonUpdate.setup_entry({ have, version, os, target, sha256: "S0", now })
+	pre = |version, os, target| {
+		source: Prebuilt({ version, url: url(version, os, target) }),
+		hashes: [],
+		nightly: "",
+		target,
+		sha256: "S0",
+		libs: [],
+		installed_at: "2026-10-22T12:00:00Z",
+	}
+	old = { source: Prebuilt({ version: "0.3.1", url: "https://h/v0.3.1/tln-x64musl" }), hashes: [], nightly: "", target: "x64musl", sha256: "S1", libs: [], installed_at: "2026-10-15T12:00:00Z" }
+	src = { source: Git({ commit: "d0d0d0d0", ref: "v0.3.4", path: Ok("cli") }), hashes: ["H1"], nightly: "nightly-2026-10-14-38a3029", target: "x64musl", sha256: "S2", libs: [], installed_at: "2026-10-16T08:00:00Z" }
+	# the entries of the running tln (version 0.3.4, sha256 S0) in each form; `mirror` and `git_same` differ in every other field
+	same = pre("0.3.4", Linux, "x64musl")
+	mirror = { ..same, source: Prebuilt({ version: "0.3.4", url: "https://mirror/v0.3.4/tln" }), hashes: ["H1"], target: "arm64musl", installed_at: "2026-10-01T00:00:00Z" }
+	git_same = { ..src, sha256: "S0" }
+	with_version = |version| { ..same, source: Prebuilt({ version, url: url(version, Linux, "x64musl") }) }
+	rows = [
+		(url("0.3.4", Linux, "x64musl"), "https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"),
+		(url("0.3.4", Linux, "arm64musl"), "https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"),
+		(url("0.3.4", Macos, "x64mac"), "https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64mac"),
+		(url("0.3.4", Macos, "arm64mac"), "https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64mac"),
+		(url("0.3.4", Windows, "x64win"), "https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64win.exe"),
+		(Str.inspect(entry(Err(None), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Err(None), "0.3.4", Macos, "arm64mac")), Str.inspect(Put(pre("0.3.4", Macos, "arm64mac")))),
+		(Str.inspect(entry(Err(None), "0.3.4", Windows, "x64win")), Str.inspect(Put(pre("0.3.4", Windows, "x64win")))),
+		(Str.inspect(entry(Ok(old), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok(src), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok(same), "0.3.4", Linux, "x64musl")), Str.inspect(Keep)),
+		(Str.inspect(entry(Ok(mirror), "0.3.4", Linux, "x64musl")), Str.inspect(Keep)),
+		(Str.inspect(entry(Ok(git_same), "0.3.4", Linux, "x64musl")), Str.inspect(Keep)),
+		(Str.inspect(entry(Ok({ ..same, sha256: "S9" }), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok(with_version("0.3.1")), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok(with_version("0.3.9")), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok(with_version("0.3.9")), "0.3.1", Linux, "x64musl")), Str.inspect(Put(pre("0.3.1", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok({ ..git_same, sha256: "S9" }), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(Str.inspect(entry(Ok({ ..git_same, source: Git({ commit: "d0d0d0d0", ref: "v0.3.1", path: Ok("cli") }) }), "0.3.4", Linux, "x64musl")), Str.inspect(Put(pre("0.3.4", Linux, "x64musl")))),
+		(TalonUpdate.recorded_text({ version: "0.3.4", path: "/h/.local/share/talon/tools.json" }), "recorded talon 0.3.4 in /h/.local/share/talon/tools.json"),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
 odd_doc : Str
 odd_doc = "{\"name\":\"roc-talon/talon\",\"source\":{\"kind\":\"install\"}}"
+
+# R-S2 R-IS3 R-SE13 (slice 074): the attestation of the download, as `install/install.sh` does it: `gh attestation verify <file> --repo roc-talon/talon`, only when `gh` is on `PATH` and `gh auth status` exits with 0. A `gh` that is there with any other result of the auth command is logged out. No `gh` is `Missing`, whatever the auth result is.
+# The check: exit 0 is ok. Any other end is exit code 16 (kind integrity), with the cause and the last line of stderr when there is one. The note and the line of success are the texts of `install.sh` (proposals for tln, TW24).
+expect {
+	state = |found, auth| match TalonUpdate.gh_state({ found, auth }) {
+		Ready => "ready"
+		LoggedOut => "logged out"
+		Missing => "missing"
+	}
+	check = |ended, last_line| match TalonUpdate.attestation_check({ tag: "v0.3.2", asset: "tln-x64musl", ended, last_line }) {
+		Ok({}) => "ok"
+		Err(fail) => "${fail.kind.code().to_str()} ${fail.message}"
+	}
+	head = "attestation check failed for tln-x64musl of roc-talon/talon v0.3.2: gh"
+	tail = ". tln is not changed."
+	rows = [
+		(state(Bool.True, Ok(Exited(0))), "ready"),
+		(state(Bool.True, Ok(Exited(1))), "logged out"),
+		(state(Bool.True, Ok(Signaled(9))), "logged out"),
+		(state(Bool.True, Ok(NotStarted("NotFound"))), "logged out"),
+		(state(Bool.True, Err(NotAsked)), "logged out"),
+		(state(Bool.False, Err(NotAsked)), "missing"),
+		(state(Bool.False, Ok(Exited(0))), "missing"),
+		(Str.join_with(TalonUpdate.gh_auth_argv, " "), "gh auth status"),
+		(Str.join_with(TalonUpdate.attest_argv({ file: "/h/.local/share/talon/bin/tln.0123456789abcdef.tmp" }), " "), "gh attestation verify /h/.local/share/talon/bin/tln.0123456789abcdef.tmp --repo roc-talon/talon"),
+		(TalonUpdate.attestation_note, "note: attestation not checked (needs gh, logged in)"),
+		(TalonUpdate.attestation_ok, "attestation ok"),
+		(check(Exited(0), ""), "ok"),
+		(check(Exited(0), "Loaded 1 attestation"), "ok"),
+		(check(Exited(1), "no attestations found"), "16 ${head} exit 1: no attestations found${tail}"),
+		(check(Exited(1), ""), "16 ${head} exit 1${tail}"),
+		(check(Signaled(9), ""), "16 ${head} signal 9${tail}"),
+		(check(NotStarted("NotFound"), ""), "16 ${head} not started: NotFound${tail}"),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}

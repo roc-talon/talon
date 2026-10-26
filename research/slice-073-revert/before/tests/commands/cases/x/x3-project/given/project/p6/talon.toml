@@ -1,0 +1,2 @@
+[tools]
+lz = { ref = "acme/lz@^1" }

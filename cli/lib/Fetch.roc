@@ -1,8 +1,13 @@
+import Compiler
 import Download
 import Fail
 import Fx
 import Ident
 import Item
+import Launch
+import NoRank
+import OnPath
+import Pin
 import Roots
 import Temp
 import Text
@@ -45,6 +50,41 @@ Fetch :: [].{
 			extracted: "${temp}/${ident.hash}",
 		})
 	}
+
+	## R-FE4: how `packages!` gets the program for `roc unbundle`. `Program` is a program that the command has already chosen. `Choose` makes `packages!` choose it (`Fetch.unbundler`), after the downloads, and only when a download ended with `Done`.
+	## `selected` is the compiler that the run selects (Resolution 13), `""` for none (slice 060, question Q1). Slice 072b (R-SO14, R-LF1): `none` is what to do when no compiler is installed and none is on `PATH` (`Fetch.unbundler` gives `Err(NoCompiler)`):
+	## `Stop` is the failure `Compiler.failure(NoCompiler)` (exit code 18: the flows of slice 072c), `Download` is `NoRank.ensure!` (the download and the default), then `Launch.program!` with the id and the installed list of its result.
+	Unbundler : [Program(Str), Choose({ selected : Str, none : NoRank.Fallback })]
+
+	## R-FE4, R-NS6 (slice 060, moved from `ProbeCmd.unbundler`, slice 037): the compiler that runs `roc unbundle`, as an id. The format of an archive does not depend on the nightly, so the rows, first match wins.
+	## Only a nightly or a release counts as installed for row 2 (R-NS6: `git-`, `link-` and `copy-` builds are selected only by name). The newest is by `Pin.order` with no times: the day of the tag, then the tag text.
+	##
+	## | # | Case | Id |
+	## | --- | --- | --- |
+	## | 1 | `selected` is in `installed` (any kind of id) | `selected` |
+	## | 2 | `installed` has a nightly or a release | the newest one |
+	## | 3 | `path` is `Ok` | the id of the `roc` on `PATH` (rank 7) |
+	## | 4 | none | `Err(NoCompiler)`: `program_of!` applies `none` of `Choose` (R-SO14, slice 072b: R-DL2, a required download) |
+	##
+	## `selected` is `""` when the run selects no compiler. The program of the id is `Launch.program!` (a `link-` build reads its `.talon.json`, R-LK4).
+	unbundler : { selected : Str, installed : List(Str), path : Try({ id : Str, path : Str }, [NoCompiler]) } -> Try(Str, [NoCompiler])
+	unbundler = |x| {
+		newest = x.installed.keep_if(Pin.is_id).sort_with(|a, b| Pin.order({ a, b, times: [] })).last()
+		if x.installed.contains(x.selected) {
+			Ok(x.selected)
+		} else {
+			match (newest, x.path) {
+				(Ok(id), _) => Ok(id)
+				(Err(_), Ok(found)) => Ok(found.id)
+				(Err(_), Err(NoCompiler)) => Err(NoCompiler)
+			}
+		}
+	}
+
+	## R-FE4, Resolution 13 (slice 060, question Q1): the compiler that a fetch calls "selected". `held` is the compiler that the command holds (`Pin.Decision.held`), `""` when the flow has no decision. `default` is `default-roc` of `config.toml`
+	## (rank 6), `""` when it is not set or the flow does not know it. The held compiler wins. Else the default. Else `""`: no selected compiler.
+	selected : { held : Str, default : Str } -> Str
+	selected = |x| if x.held.is_empty() x.default else x.held
 
 	## The failure of a download that ended with an error (R-DA7, R-FE6, R-FE10). `outcome` is `Download.outcome`. In P0 there is
 	## no mirror (R-FE6), so an HTTP error answer is a failure of kind `Network` (exit 15):
@@ -95,7 +135,7 @@ Fetch :: [].{
 
 	## Fetches the packages of the URLs into `<pkgs>/<hash>/` (R-FE1 to R-FE3). The result has one entry for each URL, in the order
 	## of the list: `Present` (the item was there, no call but the listing), `Fetched` (this call put it there, also when another
-	## process won the rename: R-FE3, R-CC11). `roc` is the program for `roc unbundle` (P0: `roc` on `PATH`, R-FE4). `downloader` is `Settings.downloader` of `Net` (R-EV12).
+	## process won the rename: R-FE3, R-CC11). `unbundler` gives the program for `roc unbundle` (R-FE4, slice 060). `downloader` is `Settings.downloader` of `Net` (R-EV12).
 	##
 	## The calls, in order (the L2 case `fetch/fe-flow` fixes them):
 	##
@@ -106,12 +146,12 @@ Fetch :: [].{
 	## | 3 | The URLs that are left, with `offline`: each is `offline_missing`, and nothing else runs. |
 	## | 4 | One `programs!(["curl", "wget"])`, then `Download.choose` with `want: downloader`. A failure is the result of each URL that is left. |
 	## | 5 | For each URL that is left: `make_dirs!` of `temp` (one call). Then one `spawn_all!` with `limit: 8` (R-DA5) and one job for each URL: `Download.command` with `dest: archive`, `cwd: Err(Inherit)`. |
-	## | 6 | For each URL whose download ended with `Done` (`Download.outcome`): one `spawn_all!` with `limit: 8` and one job for each: `[roc, "unbundle", "<hash>.tar.zst"]` with `cwd: Ok(temp)`. `Exited(0)` is a success. |
+	## | 6 | Only when a download ended with `Done` (a run with no download, or with all downloads failed, makes none of the calls of this row). The program (`program_of!`, R-FE4, slice 060): `Program(p)` is `p`, no call. `Choose`: one `list_dirs!` of `<cache>/toolchains` (`Launch.toolchains!`), then `OnPath.file!` (the calls of slice 022b) only when the list has no nightly or release, then `Fetch.unbundler` (the id), then `Launch.program!` (a `link-` id: one `read_files!` of its `.talon.json`). `Err(NoCompiler)` is `Compiler.failure(NoCompiler)` (kind `Environment`, exit 18) for each URL that was downloaded: nothing is spawned, step 8 still deletes the temp dirs. Then one `spawn_all!` with `limit: 8` and one job for each URL that was downloaded: `[<program>, "unbundle", "<hash>.tar.zst"]` with `cwd: Ok(temp)`. `Exited(0)` is a success. Slice 072b (R-SO14): when `Fetch.unbundler` gives `Err(NoCompiler)` and `none` is `Download`, the calls of `NoRank.ensure!` come after the calls above, then `Launch.program!` (no call for a nightly id) with the id of its result. |
 	## | 7 | For each unbundled URL: `rename!({ from: extracted, to: item })`. `Ok` is `Fetched`. `Err(Exists)` is `Fetched`: another process won, Talon drops its copy (R-FE3). Any other error is a failure of kind `Environment`, `cannot move <extracted> to <item>: <err>`. |
 	## | 8 | One `delete!` of the `temp` of each URL that got a `temp` (success or failure, question Q10). |
 	##
 	## An index page or a package needs no lock (R-CC11). There is no `ask!`. A failed URL does not stop the others.
-	packages! : Fx, { roots : Roots, urls : List(Str), offline : Bool, roc : Str, downloader : [Auto, Curl, Wget, Bad(Str)] } => List(Try([Present, Fetched], Fail))
+	packages! : Fx, { roots : Roots, urls : List(Str), offline : Bool, unbundler : Fetch.Unbundler, downloader : [Auto, Curl, Wget, Bad(Str)] } => List(Try([Present, Fetched], Fail))
 	packages! = |fx, facts| {
 		hex = Temp.hex(fx.random!())
 		listing = match fx.list_dirs!([facts.roots.pkgs]) {
@@ -198,7 +238,7 @@ fail_pending = |states, fail| states.map(
 )
 
 # Steps 4 to 8 of `packages!`: the program, the temp dirs, the downloads, the unbundles, the renames, the cleanup.
-run! : Fx, { roots : Roots, urls : List(Str), offline : Bool, roc : Str, downloader : [Auto, Curl, Wget, Bad(Str)] }, List(State) => List(State)
+run! : Fx, { roots : Roots, urls : List(Str), offline : Bool, unbundler : Fetch.Unbundler, downloader : [Auto, Curl, Wget, Bad(Str)] }, List(State) => List(State)
 run! = |fx, facts, states| {
 	found = match fx.programs!(["curl", "wget"]) {
 		[curl, wget] => { curl, wget }
@@ -210,7 +250,7 @@ run! = |fx, facts, states| {
 			plans = pending_plans(states)
 			result = match fx.make_dirs!(plans.map(|p| p.temp)) {
 				Err(err) => fail_pending(states, Fail.new(Environment, "cannot make the temp dirs in ${facts.roots.pkgs}: ${Str.inspect(err)}"))
-				Ok(_) => states |> download!(fx, program, plans) |> unbundle!(fx, facts.roc) |> rename!(fx)
+				Ok(_) => states |> download!(fx, program, plans) |> unbundle!(fx, { roots: facts.roots, unbundler: facts.unbundler }) |> rename!(fx)
 			}
 			_ = fx.delete!(plans.map(|p| p.temp))
 			result
@@ -234,23 +274,49 @@ download! = |states, fx, program, plans| {
 	fill(states, news)
 }
 
-# Step 6: one `spawn_all!` with `roc unbundle` for each URL that was downloaded.
-unbundle! : List(State), Fx, Str => List(State)
-unbundle! = |states, fx, roc| {
+# Step 6: the program (`Choose`: `Launch.toolchains!`, and only with no installed nightly or release `OnPath.file!`), then one `spawn_all!` with `roc unbundle` for each URL that was downloaded.
+unbundle! : List(State), Fx, { roots : Roots, unbundler : Fetch.Unbundler } => List(State)
+unbundle! = |states, fx, facts| {
 	plans = pending_plans(states)
 	if plans.is_empty() {
 		states
 	} else {
-		jobs = plans.map(|p| { argv: [roc, "unbundle", "${p.hash}.tar.zst"], cwd: Ok(p.temp) })
-		results = fx.spawn_all!({ jobs, limit: 8 })
-		news = plans.map2(
-			results,
-			|p, r| match r.ended {
-				Exited(0) => Pending(p)
-				ended => Failed(Fetch.unbundle_failed({ plan: p, ended, last_line: r.stderr_last }))
-			},
-		)
-		fill(states, news)
+		match program_of!(fx, facts) {
+			Err(fail) => fail_pending(states, fail)
+			Ok(roc) => {
+				jobs = plans.map(|p| { argv: [roc, "unbundle", "${p.hash}.tar.zst"], cwd: Ok(p.temp) })
+				results = fx.spawn_all!({ jobs, limit: 8 })
+				news = plans.map2(
+					results,
+					|p, r| match r.ended {
+						Exited(0) => Pending(p)
+						ended => Failed(Fetch.unbundle_failed({ plan: p, ended, last_line: r.stderr_last }))
+					},
+				)
+				fill(states, news)
+			}
+		}
+	}
+}
+
+# R-FE4 (slice 060): the program for `roc unbundle`. `Program` is the program as it is. `Choose` lists the installed compilers, looks at `PATH` only when no nightly or release is installed,
+# chooses the id (`Fetch.unbundler`) and gives its program (`Launch.program!`: a `link-` id reads its `.talon.json`).
+program_of! : Fx, { roots : Roots, unbundler : Fetch.Unbundler } => Try(Str, Fail)
+program_of! = |fx, facts| match facts.unbundler {
+	Program(roc) => Ok(roc)
+	Choose({ selected, none }) => {
+		installed = Launch.toolchains!(fx, facts.roots)
+		path = if installed.any(Pin.is_id) Err(NoCompiler) else OnPath.file!(fx, facts.roots)
+		match Fetch.unbundler({ selected, installed, path }) {
+			Ok(id) => Launch.program!(fx, { roots: facts.roots, id, installed, path })
+			Err(NoCompiler) => match none {
+				Stop => Err(Compiler.failure(NoCompiler))
+				Download(run) => {
+					got = NoRank.ensure!(fx, { roots: facts.roots, run, listed: installed })?
+					Launch.program!(fx, { roots: facts.roots, id: got.id, installed: got.installed, path })
+				}
+			}
+		}
 	}
 }
 

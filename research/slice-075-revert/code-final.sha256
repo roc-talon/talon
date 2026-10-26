@@ -1,0 +1,4 @@
+c71dc40502addb5e92265aa08850a41e0de73319abff67a3d6b19bce2ebc8cc4  cli/lib/ToolBuild.roc
+21d746bfcb48f88ab9b82c09abbef72569ab6d4e84e8f422b8d6c75150428c4e  cli/lib/TalonUpdateFlow.roc
+060ff39b87f25ea387154374802717346974e5e96329d5511a33c13d70a5c0df  tests/commands/cases/tool/dx2-source-windows/fx/jobs
+541395c1054ff23fefb6351ad73d334141103a896676c362d5621dc9498731a2  tests/commands/cases/tool/dx2-source-windows/expect/calls.log

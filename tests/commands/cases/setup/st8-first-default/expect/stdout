@@ -1,0 +1,28 @@
+== setup --offline --json
+{"schema":1,"command":"setup","ok":true,"data":{"bin_dir":"$HOME/.local/bin","entries":[{"name":"tln","action":"made","form":"hard-link"},{"name":"roc","action":"made","form":"hard-link"}],"roc_old":false,"path":"on-path","completion":"none","default_roc":{"action":"unread","id":null}},"error":null}
+exit 0
+== setup env:TALON_GITHUB_API=http://127.0.0.1:1/api
+nothing to do: the entries, the PATH line and the completions are in place
+exit 0
+== setup
+default compiler: nightly-2026-10-21-601b54c (downloaded when a command needs it)
+exit 0
+== setup
+nothing to do: the entries, the PATH line and the completions are in place
+exit 0
+== setup env:HOME={w}/home2 env:PATH={w}/home2/.local/bin:/usr/bin
+recorded talon 0.0.0 in $HOME2/.local/share/talon/tools.json
+made $HOME2/.local/bin/tln (hard link)
+made $HOME2/.local/bin/roc (hard link)
+default compiler: nightly-2026-10-19-5349569 (downloaded when a command needs it)
+exit 0
+== setup env:HOME={w}/home3 env:PATH={w}/home3/.local/bin:/usr/bin env:TALON_NIGHTLY=false
+recorded talon 0.0.0 in $HOME3/.local/share/talon/tools.json
+made $HOME3/.local/bin/tln (hard link)
+made $HOME3/.local/bin/roc (hard link)
+exit 0
+== setup env:HOME={w}/home4 env:PATH={w}/home4/.local/bin:/usr/bin
+recorded talon 0.0.0 in $HOME4/.local/share/talon/tools.json
+made $HOME4/.local/bin/tln (hard link)
+made $HOME4/.local/bin/roc (hard link)
+exit 0

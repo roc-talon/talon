@@ -1,0 +1,9 @@
+== env:HOME={w}/home/u1 env:USERPROFILE={w}/home/u1 tool rm talon --remove-tools
+Talon        tln, roc, the talon entry of tools.json   11 B   removed
+tools        4 (foo, bar, baz, qux)                    33 B   removed
+compilers    none                                       0 B   removed
+Talon data   index, x cache, compat.db, config          0 B   removed
+removed $HOME/u1\.local\bin from the user Path
+exit 0
+== env:HOME={w}/home/u2 env:USERPROFILE={w}/home/u2 tool rm talon --remove-tools
+exit 18

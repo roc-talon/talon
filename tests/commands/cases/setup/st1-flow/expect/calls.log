@@ -10,6 +10,11 @@ sha256_file $HOME/.local/bin/roc
 sha256_file $HOME/.local/bin/foo
 path_roc
 read_files $HOME/.local/share/bash-completion/completions/tln
+clock
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
 make_dirs $HOME/.local/bin
 random
 hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
@@ -18,6 +23,7 @@ random
 hard_link $HOME/.local/share/talon/bin/baz $HOME/.local/bin/baz.0123456789abcdef.tmp
 rename $HOME/.local/bin/baz.0123456789abcdef.tmp $HOME/.local/bin/baz
 write_atomic $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -44,6 +50,7 @@ unlock $HOME/.cache/roc/toolchains/link-system
 random
 hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
 rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -58,6 +65,7 @@ sha256_file $HOME/.local/bin/foo
 sha256_file $HOME/.local/bin/baz
 path_roc
 read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -72,6 +80,7 @@ sha256_file $HOME/.local/bin/foo
 sha256_file $HOME/.local/bin/baz
 path_roc
 read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -89,6 +98,7 @@ read_files $HOME/.bashrc
 read_files $HOME/.local/share/bash-completion/completions/tln
 tty
 ask "Add $HOME/.local/bin to PATH in $HOME/.bashrc? [Y/n] "
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -107,6 +117,7 @@ read_files $HOME/.local/share/bash-completion/completions/tln
 tty
 ask "Add $HOME/.local/bin to PATH in $HOME/.bashrc? [Y/n] "
 write_atomic $HOME/.bashrc
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -122,6 +133,7 @@ sha256_file $HOME/.local/bin/baz
 path_roc
 read_files $HOME/.bashrc
 read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -138,6 +150,7 @@ path_roc
 read_files $HOME/gh/path
 read_files $HOME/.local/share/bash-completion/completions/tln
 write_atomic $HOME/gh/path
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -153,6 +166,7 @@ sha256_file $HOME/.local/bin/baz
 path_roc
 read_files $HOME/gh/path
 read_files $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -170,6 +184,7 @@ read_files $HOME/.config/fish/conf.d/talon.fish
 read_files $HOME/.config/fish/completions/tln.fish
 write_atomic $HOME/.config/fish/conf.d/talon.fish
 write_atomic $HOME/.config/fish/completions/tln.fish
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -183,6 +198,7 @@ sha256_file $HOME/.local/bin/roc
 sha256_file $HOME/.local/bin/foo
 sha256_file $HOME/.local/bin/baz
 path_roc
+read_files $HOME/.config/talon/config.toml
 args
 env_all
 platform
@@ -199,4 +215,5 @@ path_roc
 read_files $HOME/.zshrc
 read_files $HOME/.local/share/zsh/site-functions/_tln
 write_atomic $HOME/.local/share/zsh/site-functions/_tln
+read_files $HOME/.config/talon/config.toml
 args

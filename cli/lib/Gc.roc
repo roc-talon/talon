@@ -1,4 +1,5 @@
 import Args
+import Clock
 import Fail
 import Ident
 import JsonDoc
@@ -8,6 +9,7 @@ import Release
 import Roots
 import Text
 import Toolchain
+import Zig
 
 ## The pure decisions of `tln cache gc` (slice 028, CLI 6.3, R-GC5, R-GC6, R-GC9, R-GC11, R-CC2, R-CC10, R-PD12, R-PD13). The command code is `CacheGc`. Texts and `data` fields are a proposal (R-OUT2, TW24).
 ## Slice 028 is part 1 (toolchains, temps, trash, locks, known projects, `--dry-run`). Slice 028b is part 2 (CLI 6.3, R-GC1, R-GC2, R-GC3 second sentence, R-GC4, R-GC11): the build-cache dirs, `packages/`, and the sizes. The slice file `docs/slices/028b-gc-caches.md` has the rules and the decisions.
@@ -20,6 +22,7 @@ import Toolchain
 ## | Which toolchains go | `toolchains` | R-GC5, R-CC10, R-EV22 |
 ## | Where stale temps can be, and their full paths | `scan_dirs`, `entries` | R-CC2, R-GC6 |
 ## | The text and the `data` | `report`, `data` | R-OUT2, R-J3 |
+## | The Zig installs in the store, and the ones that go (061) | `zig_dirs`, `zigs` | R-D2, R-GC5, R-CC10 |
 ## | The packages that a live project uses (028b) | `protected` | R-GC4 |
 ## | The package dirs and the build-cache dirs that the age rule can remove (028b) | `candidates` | R-GC2, R-GC3, R-GC4 |
 ## | What `Fx.tree_info!` is asked, and what its answer means (028b) | `asks`, `expired`, `sizes`, `freed` | R-GC1, R-GC3, R-GC4, R-GC11 |
@@ -97,6 +100,30 @@ Gc :: [].{
 	## | 7 | All other toolchains: a `git-*` build, a nightly, a release | `Remove` |
 	toolchains : { rows : List(Manage.Row), projects : List(Gc.Project), now : U64, age : U64 } -> List(Gc.Choice)
 	toolchains = |facts| facts.rows.map(|row| { id: row.id, verdict: verdict_of(row, facts) })
+
+	## R-D2, R-D1 (slice 061): the Zig installs in the store. `entries` is the listing of `<cache>/toolchains` (`Fx.list_dirs!`, the first result of the 6 dirs of `scan_dirs`, as `Compiler.installed` gets it).
+	## The result is the ids `zig-<X.Y.Z>` of the entries that are a directory with a name `zig-` and a release version of 3 numbers (the dirs that `Zig.installed` finds), in byte order of the names, each once.
+	## A file, a dev version (`zig-0.18.0-dev.31+abc1234`), a version with 2 numbers, a temp (`zig-0.17.0.<16hex>.tmp`), a lock dir, a trash dir, and a compiler are not in it. The time of an entry is not read.
+	## The name decides (Q4 of the slice file): a dir `zig-<X.Y.Z>` that a person made by hand is a Zig install too.
+	zig_dirs : List({ name : Str, is_dir : Bool, mtime : U64 }) -> List(Str)
+	zig_dirs = |entries| Text.sorted_unique(
+		entries
+			.keep_if(|e| e.is_dir and e.name.starts_with("zig-") and Zig.is_release_version(e.name.drop_prefix("zig-")))
+			.map(|e| e.name),
+	)
+
+	## R-D2, R-GC5, R-CC10, R-CC9 (slice 061): the Zig installs that GC removes. `ids` are the ids of `zig_dirs`, `reads` has the result of `Fx.read_files!` for `Roots.item(roots, ToolchainLastUse(<id>))` of each id, in the same order (one read for each id). `now` is the time of Talon (`TALON_NOW`).
+	## A source build writes the `.last-use` of the Zig that it uses before it starts (R-CC9, R-CC10: "a running build wrote it when it started"; `Launch.last_use`: the UTC time and a line end). A source build "needs" a Zig only while it runs (R-D2): the last-use rule is the only rule. There is no GC age for a Zig (no project pins one) and no `git-*` toolchain keeps one.
+	## The result is the ids that go, in the order of `ids`:
+	##
+	## | `reads` of an id | Result |
+	## | --- | --- |
+	## | `Ok(text)` with a UTC time (`Clock.parse_utc` of the trimmed text) that is not more than 86400 s before `now` (exactly one day stays, a time in the future stays) | Stays: used in the last day |
+	## | `Ok(text)` with a UTC time more than 86400 s before `now` | Goes |
+	## | `Err(NotFound)`: no `.last-use`, so no source build used this Zig since this slice | Goes |
+	## | `Err(Denied)`, `Err(Other(_))`, or `Ok(text)` that is no UTC time | Stays: GC does not judge what it cannot read (the same as an unreadable project file, D4 of slice 028) |
+	zigs : { ids : List(Str), reads : List(Manage.Read), now : U64 } -> List(Str)
+	zigs = |facts| facts.ids.map2(facts.reads, |id, got| { id, goes: unused_zig(got, facts.now) }).keep_if(|row| row.goes).map(|row| row.id)
 
 	## R-CC2, R-GC6: the directories that GC lists for stale temps, `.trash` dirs, stale lock dirs and `talon/tmp/` items, in this order: `<cache>/toolchains`, `<cache>/packages`, `<cache>/talon`, `<cache>/talon/tmp`, `<cache>/talon/index`, `<cache>/talon/x`.
 	## The config and data dirs are not in the list (question Q3). The first entry is also the listing of the installed compilers.
@@ -288,6 +315,17 @@ verdict_of = |row, facts| if row.kind == Link or row.kind == Copy {
 		} else {
 			Remove
 		}
+	}
+}
+
+# R-CC10, D8 of slice 061: true when the `.last-use` of a Zig is missing, or is a UTC time more than a day ago. An unreadable file, and a text that is no time, keep the Zig.
+unused_zig : Manage.Read, U64 -> Bool
+unused_zig = |got, now| match got {
+	Err(NotFound) => Bool.True
+	Err(_) => Bool.False
+	Ok(text) => match Clock.parse_utc(text.trim()) {
+		Ok(time) => is_over(time, now, 86400)
+		Err(_) => Bool.False
 	}
 }
 

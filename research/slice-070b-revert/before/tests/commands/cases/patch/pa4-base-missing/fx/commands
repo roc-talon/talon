@@ -1,0 +1,6 @@
+# R-PA13, R-DI12: the base is not in the cache and the release list has no cached page: exit 15
+install --offline --file p1/main.roc
+# R-PA13: the list is read (live, and cached), no release of the group has the base: exit 14
+install --file p1/main.roc
+# R-PA13: the cached list, the same exit 14, with the line `index: cached at <time>`
+install --offline --file p1/main.roc

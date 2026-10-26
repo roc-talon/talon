@@ -1,6 +1,6 @@
 tln: error[usage]: 'nope' matches no installed tool or cached app. Use the full name (owner/repo).
 tln: error[usage]: 'acme/zzz' is not an installed tool. tln tool list shows the installed tools.
-tln: error[usage]: tln tool remove talon is not built yet
+tln: error[usage]: tln tool remove takes one tool, got 2
 tln: error[usage]: tln tool remove --dry-run works only for tln tool remove talon
 warning: $HOME/.local/bin/g is not a file that tln wrote, so tln keeps it
 removed g git main@aaaaaaaa (acme/g)

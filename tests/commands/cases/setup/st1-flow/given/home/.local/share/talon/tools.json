@@ -1,1 +1,1 @@
-{"format":1,"tools":{"foo":{},"talon":{"source":"install script"},"bar":{},"baz":{}}}
+{"format":1,"tools":{"foo":{},"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"0000000000000000000000000000000000000000000000000000000000000000","libs":[],"installed_at":"2026-10-15T12:00:00Z"},"bar":{},"baz":{}}}

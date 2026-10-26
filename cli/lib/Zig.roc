@@ -1,5 +1,6 @@
 import Clock
 import Fail
+import Ident
 import Item
 import JsonDoc
 import Nightlies
@@ -108,6 +109,10 @@ Zig :: [].{
 		Ok(have) => "${have.major.to_str()}.${have.minor.to_str()}.x"
 		Err(_) => need
 	}
+
+	## R-D1, R-D2 (slice 061): true for a release version `X.Y.Z` (3 numbers, only digits). `Gc.zig_dirs` uses it.
+	is_release_version : Str -> Bool
+	is_release_version = |text| is_release(text)
 
 	## R-D1: the dirs of Talon that hold a Zig, as candidates with `source` `Installed`. `entries` is the list of `<cache>/toolchains` (`Fx.list_dirs!`). An entry counts when it is a dir and its name is `zig-<version>`
 	## with a release version `X.Y.Z` (3 numbers). So a file `zig-0.17.1`, a temp dir `zig-0.17.0.<16hex>.tmp`, a lock dir `zig-0.17.0.lock`, a trash dir and any compiler dir are not Zig. `path` is `<item>/zig`
@@ -230,11 +235,13 @@ Zig :: [].{
 			Ok(Text(text)) => text
 			_ => return Err(no_archive)
 		}
+		archive = Text.last_segment(url)
+		if !Ident.safe_part(archive) return Err(no_archive)
 		sha256 = match member(target_pairs, "shasum") {
 			Ok(Text(text)) if is_sha256(text) => text
 			_ => return Err(Fail.new(Integrity, "the Zig index has no sha256 for zig ${release.version} (${key}). Talon does not install it."))
 		}
-		Ok({ version: release.version, url, sha256, size: size_of(member(target_pairs, "size")), archive: Text.last_segment(url) })
+		Ok({ version: release.version, url, sha256, size: size_of(member(target_pairs, "size")), archive })
 	}
 
 	## The program of an installed Zig: `zig`, or `zig.exe` for a Windows host.

@@ -5,8 +5,10 @@ import Evidence
 import Facts
 import Fail
 import Fx
+import Github
 import Ident
 import Install
+import Roots
 import ResolveBase
 import ResolveSelect
 import Text
@@ -21,7 +23,7 @@ import UnitFlow
 ## | 2 | A member whose package is not a `Release` row (a path file, a foreign URL) has no hash: it has a compiler in the block, no line and no further call | R-H4 |
 ## | 3 | One `read_files!` of `<pkgs>/<hash>/main.roc` for each package that is shown with a compiler (none when there is none): `Evidence.pin_of`. An unreadable file is no pin | E3, R-EF1 rank 3 |
 ## | 4 | One `Facts.load!` (one `db_query!` with `Facts(keys)`) for the keys (hash, compiler, `any`) of the packages that are shown with a compiler (none when there is none). A busy or failing db: the warning of R-CC8 on stderr and no local row. `TooNew` is the failure (exit 19) | E2, R-CC8, R-TF3 |
-## | 5 | Rank 4: `Err(None)` for every package (`Github.hint!` keeps no cache today: question Q1 of slice 032b). No call | E3 |
+## | 5 | Slice 068, rank 4 (R-DI8, R-EF1): one `read_files!` of `Github.hint_file` for each package that is shown with a compiler and has a `Github.hint_ref` and a `Github.hint_file` that is `Ok` (the paths in the order of the packages, the same file once). No such package: no call. The text of a file that is there is `Github.hint` of status 200 and that text, so `hint` is `Ok(id)`; a missing, unreadable or empty file, and a text with no id, is `Err(None)`. No request, never: `why` makes no index call (R-DI1, E3) | E3, R-DI8 |
 ## | 6 | A package with a `Local` fail that has modules: the scan of the used modules of its member (`UnitFlow.scan_in!`: one `read_files!` for each level. The text of the member is the one that the load read, so the member file is not read again) and `Evidence.ignored` with the empty baseline. Each entry is a note (`Evidence.note`). No fail row: no call | E5, R-UM1 |
 ## | 7 | `Evidence.of_pair` for each package, the block | R-EF3 |
 ##
@@ -56,7 +58,8 @@ EvidenceFlow :: [].{
 		pins = pins_of!(fx, ctx.request.roots.pkgs, unique(active.map(|a| a.hash)))
 		keys = active.map(|a| { hash: a.hash, nightly: a.compiler, target: "any" }).fold([], |found, key| if found.contains(key) found else found.append(key))
 		facts = Facts.load!(fx, { roots: ctx.request.roots, keys })?
-		lines_of = |a| Evidence.of_pair({ hash: a.hash, compiler: a.compiler, facts, pin: pins.find_first(|(h, _)| h == a.hash).map_ok(|(_, pin)| pin) ?? Err(NoPin), hint: Err(None) })
+		hints = hints_of!(fx, ctx.request.roots, active)
+		lines_of = |a| Evidence.of_pair({ hash: a.hash, compiler: a.compiler, facts, pin: pins.find_first(|(h, _)| h == a.hash).map_ok(|(_, pin)| pin) ?? Err(NoPin), hint: hints.find_first(|(h, _)| h == a.hash).map_ok(|(_, hint)| hint) ?? Err(None) })
 		failing = active.keep_if(|a| lines_of(a).any(|l| l.source == Local and l.result == Fail and !l.modules.is_empty()))
 		scans = scans_of!(fx, ctx, { failing, shown })
 		Ok(
@@ -79,11 +82,11 @@ EvidenceFlow :: [].{
 }
 
 # A package that `why` shows with a compiler and a hash (steps 2 to 7).
-Active : { file : Str, hash : Str, compiler : Str }
+Active : { file : Str, hash : Str, compiler : Str, url : Str }
 
 active_of : { shown : EvidenceFlow.Shown, compiler : Try(Str, [None]), hash : Try(Str, [NoHash]) } -> Try(Active, [Skip])
 active_of = |item| match (item.compiler, item.hash) {
-	(Ok(compiler), Ok(hash)) => Ok({ file: item.shown.file, hash, compiler })
+	(Ok(compiler), Ok(hash)) => Ok({ file: item.shown.file, hash, compiler, url: item.shown.target.id })
 	_ => Err(Skip)
 }
 
@@ -137,6 +140,35 @@ pins_of! = |fx, pkgs, hashes| if hashes.is_empty() {
 			},
 		),
 	)
+}
+
+# Step 5: the cached `.roc-version` of each package that has a GitHub release URL (one `read_files!`, the same path once, none for no path). No request, never (R-DI1).
+hints_of! : Fx, Roots, List(Active) => List((Str, Try(Str, [None])))
+hints_of! = |fx, roots, active| {
+	refs = active.keep_oks(
+		|a| match Github.hint_ref(a.url) {
+			Ok(found) => Github.hint_file({ roots, owner: found.owner, repo: found.repo, tag: found.tag }).map_ok(|path| (a.hash, path)).map_err(|_| Skip)
+			Err(_) => Err(Skip)
+		},
+	)
+	paths = unique(refs.map(|(_, path)| path))
+	if paths.is_empty() {
+		[]
+	} else {
+		reads = paths.map2(fx.read_files!(paths), |path, read| (path, read))
+		refs.map(
+			|(hash, path)| (
+				hash,
+				match reads.find_first(|(p, _)| p == path) {
+					Ok((_, Ok(text))) => match Github.hint({ status: 200, body: text }) {
+						Ok(id) => Ok(id)
+						Err(_) => Err(None)
+					}
+					_ => Err(None)
+				},
+			),
+		)
+	}
 }
 
 # Step 6: the used modules of each member that has a package with a fail that names modules (one scan for each member file).

@@ -1,0 +1,4 @@
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json

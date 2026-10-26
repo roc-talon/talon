@@ -1,5 +1,6 @@
 # R-FE2 R-EV23 R-EV24 R-FE3 R-FE5 R-FE8 R-FE10 R-DA2 R-DA3 R-DA4 R-DA7 R-HF4 R-HF5 R-HF12 R-EV12 R-EV25 R-CC11 R-FE4 R-SE1 R-SE9 (slice 012: the bad hash below is R-SE1, the real `roc unbundle` is the only unpacker, R-SE9): the store and the fetch with the real download
 # programs, the real roc unbundle (the fake roc passes `unbundle` to the pinned roc, given/roc.tsv) and the fake HTTP server on a loopback URL.
+# Slice 060 (R-FE4, R-NS6): no compiler is installed in this home, so the program for `roc unbundle` is the `roc` on PATH (the fake): the first lookup runs `roc version` (the first line of roc.log, `given/version.stdout`) and the real Fx gives the file of PATH. The other 7 cases that fetch (ptools/*, run/rn1-flow, tools/*) have an installed fake compiler that passes `unbundle` to the roc on PATH (row 1 and 2 with the real Fx).
 H1=9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17 # the fixture package `greet` (tests/fixtures/pkgs)
 H2=J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr  # the fixture package `shout`
 P=$XDG_CACHE_HOME/roc/packages

@@ -12,7 +12,7 @@ import toml.Toml
 Removal :: [].{
 
 	## The flags of `tln remove` (also `rm`): `Args.parse` has checked that each flag is allowed (R-FL12). `names` are the operands.
-	## `allow_downloads` is `--allow-downloads` (slice 025, R-NI5: `remove` runs the ladder, which can need a compiler download): `Ok(Yes)` when set. `--probe-downloads` is read and changes nothing (R-NI4 does not list `remove`).
+	## `allow_downloads` is `--allow-downloads` (slice 025, R-NI5: `remove` runs the ladder, which can need a compiler download): `Ok(Yes)` when set. `--probe-downloads` is not for `remove` (R-NI4, R-FL12): `Args.parse` stops that line.
 	Opts : { names : List(Str), force : Bool, dry_run : Bool, no_check : Bool, allow_downloads : Try(Answer, [NoFlag]), no_probe : Bool, slots : Try(U64, [Unset]) }
 
 	## Reads the options of a `remove` line. Each failure has the kind `Usage` (exit 2). The texts are a proposal (TW24). The checks, in this order:
@@ -24,7 +24,7 @@ Removal :: [].{
 	## | 3 | `--frozen` (`remove` changes the header) | `flag '--frozen' works only for tln install with no names` | R-FL13, R-EC2 |
 	## | 4 | No operand (question Q2) | `tln remove needs one name or more` | |
 	##
-	## `--snapshot` and `--probe-downloads` are resolve flags (R-FL7): they are read and change nothing. `--allow-downloads` is `Opts.allow_downloads` (slice 025). Slice 031: `--no-probe` and `--slots` are `Opts.no_probe` and `Opts.slots`
+	## `--snapshot` is a resolve flag (R-FL7): it is read and changes nothing. `--probe-downloads` is not for `remove` (slice 069). `--allow-downloads` is `Opts.allow_downloads` (slice 025). Slice 031: `--no-probe` and `--slots` are `Opts.no_probe` and `Opts.slots`
 	## (the same values as `Opts.read` gives: R-FL11, R-LF2). `--force`, `--dry-run`, `--no-check` are the fields of `Opts`.
 	opts : Args -> Try(Opts, Fail)
 	opts = |args| {

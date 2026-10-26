@@ -1,0 +1,3 @@
+removing Talon, the compilers and the data, keeping the tools
+removing Talon, the compilers, the data and the tools
+tln: error[environment]: cannot start powershell: no powershell

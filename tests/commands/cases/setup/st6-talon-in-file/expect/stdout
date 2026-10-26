@@ -1,0 +1,7 @@
+== setup
+recorded talon 0.0.0 in $HOME/.local/share/talon/tools.json
+made $HOME/.local/bin/tln (hard link)
+made $HOME/.local/bin/roc (hard link)
+made $HOME/.local/bin/foo (hard link)
+completions: $HOME/.local/share/bash-completion/completions/tln
+exit 0

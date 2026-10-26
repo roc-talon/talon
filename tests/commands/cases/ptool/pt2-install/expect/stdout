@@ -45,3 +45,6 @@ exit 0
 == install --frozen --allow-downloads --file p10/main.roc
 the header satisfies talon.toml
 exit 2
+== install --json --file p11/main.roc
+{"schema":1,"command":"install","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"tools":[{"key":"d","name":"acme/foo","action":"locked","ref":"acme/foo@1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst","version":"1.0.0","previous":null,"file":"$PROJECT/p11/talon.toml","built":true,"would_build":false}]},"error":null}
+exit 0

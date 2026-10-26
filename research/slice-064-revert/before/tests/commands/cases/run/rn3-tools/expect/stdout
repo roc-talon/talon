@@ -1,0 +1,30 @@
+== run ck cwd:p1
+exit 0
+== run all cwd:p1
+exit 0
+== run mk cwd:p2
+exit 0
+== run mk cwd:p2
+exit 0
+== run nc cwd:p3
+exit 13
+== run off --offline cwd:p4
+exit 15
+== run mc cwd:w/m1
+exit 0
+== run so cwd:w/s
+exit 0
+== run cwd:p1
+scripts of $PROJECT/p1/talon.toml
+ck:
+  fmt --check src
+  tool-after
+all:
+  in sub: fmt --in-sub
+exit 0
+== run bd cwd:p5
+exit 11
+== run nu cwd:p6
+exit 14
+== run w cwd:p7
+exit 0

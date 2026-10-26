@@ -38,7 +38,7 @@ import Toolchain
 ## | 9 | One `list_dirs!` of `<cache>/toolchains`. The id is a dir now: `Present`, no more calls. Else `Temp.of_item` gives the stale temps, and one `delete!` removes them (no call when there are none). | R-CC4 steps 4, 5 |
 ## | 10 | One `random!`. `programs!(["curl", "wget"])` and `Download.choose` (the downloader of `Net.Settings`). `make_dirs!([temp])`. One `spawn_all!` (limit 8): `Download.command` with `dest: archive`, `cwd: Err(Inherit)`. A failure: `Toolchain.download_failed`. | R-DA2, R-DA3, R-DA4, R-HF4 |
 ## | 11 | `sha256_file!(archive)`, `Toolchain.check_download`. A failure deletes the temp dir. Then one `spawn_all!` (limit 1): `Toolchain.tar_command`, `cwd: Err(Inherit)`. Then `delete!([archive])`. Then one `spawn_all!` with `Toolchain.chmod_command` (no call for `Err(NotNeeded)`). Then the compat check: `list_dirs!([Roots.build])`, `write_atomic!([probe_file ""])`, one `spawn_all!` of `<roc> check <probe_file>` with `cwd: Ok(probe_dir)` (the exit code is not read), `list_dirs!([Roots.build])`, `delete!([probe_dir])`, `Toolchain.learn_compat`. Then `write_atomic!([meta])` (last, with the `published_at` of the picked release: slice 022, Q5), then `rename!({ from: temp, to: item })`. `Err(Exists)` is `Installed` (the other process won, drop the temp, as R-FE3). Each failure after step 10 deletes the temp dir and the probe dir. | R-CV4, R-HF2, R-HF5, R-SE9, R-GC10, R-CV5, R-CC4 step 6 |
-## | 12 | The unlock is done by `with_lock!` (R-CC4 step 7). Then the default (R-SO15, only for `Installed`, question Q4): `Fx.with_lock!` on the item `Roots.item(Config)` with `Wait`: `read_files!([config])` (a missing file is the empty text), `Toolchain.default_edit`. `Set(text)`: a second `read_files!`, the bytes must be the first bytes, else `default_edit` runs on the new bytes (R-CC7), then `write_atomic!([config])`. | R-SO15, R-CC6, R-CC7 |
+## | 12 | The unlock is done by `with_lock!` (R-CC4 step 7). Then, in `flow!` only (`tln roc install` is a user act, R-SO15; `install_offer!` never does this): `Fx.with_lock!` on the item `Roots.item(Config)` with `Wait`: `read_files!([config])` (a missing file is the empty text), `Toolchain.default_edit`. `Set(text)`: a second `read_files!`, the bytes must be the first bytes, else `default_edit` runs on the new bytes (R-CC7), then `write_atomic!([config])`. | R-SO15, R-CC6, R-CC7 |
 ## | 13 | The output: `Toolchain.report`. With `--json`: the human text goes to stderr and stdout is only `Out.json_ok({ command: args.typed, data: Toolchain.data(...) })`. `--quiet` hides the stdout lines (R-FL4, as `Common.shown_fx`). | R-J1 to R-J4, R-FL4 |
 ##
 ## The exit code is `Exit.choose` of the failure, as in `Install.run!`. A failure writes no file in the toolchains dir: no `<id>` dir, no temp, no download (R-CC2).
@@ -50,7 +50,7 @@ import Toolchain
 ## | Part | Steps of the table above | Result |
 ## | --- | --- | --- |
 ## | `offer!` | 2 to 6: `env_all!` is not called (the caller gives `env`), then `Roots.from_env`, `clock!`, `platform!`, `config.toml`, the early `Present`, the list, the pick, the digest, the `--offline` check | `Present` (the pick is a dir in `toolchains/`), or `Download` with the asset size |
-## | `install_offer!` | 8 to 12: the lock, the install, the default (R-SO15) | `Done`: the id, the item, `how` (`Installed` or `Present`: the other process won), `default`, `compat` |
+## | `install_offer!` | 8 to 12: the lock, the install. No default (R-SO15): `default` is always `Kept` | `Done`: the id, the item, `how` (`Installed` or `Present`: the other process won), `default`, `compat` |
 RocInstall :: [].{
 
 	## What `offer!` found. `Present`: the id is a dir in `toolchains/` already (no request was needed or the pick is an installed id): `id` is that id. `Download`: the pick is not installed. `id` is the id of the list (not the text that the
@@ -63,7 +63,7 @@ RocInstall :: [].{
 	offer! = |fx, run| {
 		roots = Roots.from_env(run.env)?
 		real = fx.clock!()
-		now = match Clock.now({ talon_now: env_var(run.env, "TALON_NOW"), real }) {
+		now = match Clock.now({ talon_now: RocInstall.env_var(run.env, "TALON_NOW"), real }) {
 			Ok(t) => t
 			Err(BadTime(text)) => return Err(Fail.new(Usage, "TALON_NOW is not a UTC time: ${text}"))
 		}
@@ -71,8 +71,8 @@ RocInstall :: [].{
 		config = RocInstall.read_config!(fx, roots)?
 		min_age = config.min_release_age ?? 172800
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
-		entries = toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
-		if has_dir(entries, run.id) return Ok(Present({ id: run.id }))
+		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
+		if RocInstall.has_dir(entries, run.id) return Ok(Present({ id: run.id }))
 		base = if Toolchain.needs_base(run.id) {
 			Base.selected!(fx, { env: run.env, roots, installed: Compiler.installed(entries), config })?
 		} else {
@@ -95,12 +95,12 @@ RocInstall :: [].{
 				return Err(Toolchain.pick_failed({ error, releases: found.releases, host: system, switch }))
 			}
 		}
-		if has_dir(entries, id) return Ok(Present({ id: id }))
-		asset = asset_of(found.releases, id)?
+		if RocInstall.has_dir(entries, id) return Ok(Present({ id: id }))
+		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
 		if run.offline return Err(Toolchain.offline_missing(id))
 		item = Roots.item(roots, Item.Toolchain(id))
-		ctx = { roots, net: Net.from_env(run.env), now, published_at: published_of(found.releases, id), typed: run.id, id, item, asset, sha, system }
+		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system }
 		Ok(Download({ id, size: asset.size, ctx }))
 	}
 
@@ -124,17 +124,45 @@ RocInstall :: [].{
 		picked.map_err(|_| Toolchain.range_failed({ req_text: run.req_text, switch: run.switch }))
 	}
 
-	## Steps 8 to 12 of the table, for the `Download` of `offer!`: the lock of the item (`Wait`), the checks under the lock, the download, the extract and the rename, then the default compiler (only for `Installed`, R-SO15).
+	## R-ST16, R-RU1 (slice 072a): the latest compiler in the channel, for `tln setup`. It downloads nothing and writes only the list cache (`Nightlies.list!`). The calls, in order: `clock!` (one call: `Clock.now` of `TALON_NOW` and the real
+	## clock for the cache), `platform!`, then the calls of `Nightlies.list!` (the list cache, `compat.db`: slice 030b). Then `Toolchain.latest` over `found.releases` with `min-release-age` of `config` (default 2 days) and the switch
+	## (`Pin.switch` with `TALON_NIGHTLY` and the `nightly` of `config`, as `offer!`). The result is `Ok(Err(Unread(text)))`, and no failure, for a list that cannot be read: a failure of `Nightlies.list!` (the text is its message), the list
+	## `Missing` (`--offline` and no cached page: the text of `Toolchain.offline_no_list`), and (question Q1 of slice 072a) a list with no release that the switch and `min-release-age` allow (manager answer Q1 of slice 072a), and a host that has no asset (`Toolchain.host`:
+	## the text is its message, `no compiler asset exists for <os> <arch>`; manager answer Q2 of slice 072a: setup does not fail for the first default, and `Nightlies.list!` is not called). The outer failure is a bad `TALON_NOW` (kind
+	## `Usage`) and a missing home dir (`Roots.from_env`).
+	latest! : Fx, { env : List((Str, Str)), offline : Bool, config : ConfigToml.Config } => Try(Try(Str, [Unread(Str)]), Fail)
+	latest! = |fx, run| {
+		roots = Roots.from_env(run.env)?
+		real = fx.clock!()
+		now = match Clock.now({ talon_now: RocInstall.env_var(run.env, "TALON_NOW"), real }) {
+			Ok(t) => t
+			Err(BadTime(text)) => return Err(Fail.new(Usage, "TALON_NOW is not a UTC time: ${text}"))
+		}
+		match Toolchain.host(fx.platform!()) {
+			Err(fail) => Ok(Err(Unread(fail.message)))
+			Ok(system) => match Nightlies.list!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system }) {
+				Err(fail) => Ok(Err(Unread(fail.message)))
+				Ok(found) => if found.source == Missing {
+					Ok(Err(Unread(Toolchain.offline_no_list({}).message)))
+				} else {
+					switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: run.config.nightly })
+					latest = Toolchain.latest({ releases: found.releases, now, min_age: run.config.min_release_age ?? 172800, nightly: switch.nightly })
+					match latest {
+						Ok(id) => Ok(Ok(id))
+						Err(Empty) => Ok(Err(Unread("no compiler release is allowed by the nightly switch and min-release-age")))
+					}
+				}
+			}
+		}
+	}
+
+	## Steps 8 to 12 of the table, for the `Download` of `offer!`: the lock of the item (`Wait`), the checks under the lock, the download, the extract and the rename. It never sets the default compiler: only a user act does (R-SO15).
 	## The unlock is done by the lock helper. A failure deletes the temp dir and the probe dir (D14 of slice 021). The kind of the failure gives the exit code.
 	install_offer! : Fx, { id : Str, size : U64, ctx : Ctx } => Try({ id : Str, item : Str, how : [Installed, Present], default : [Set, Kept], compat : Compat }, Fail)
 	install_offer! = |fx, offer| {
 		ctx = offer.ctx
 		locked = fx.locked!(ctx.item, || install!(fx, ctx, Text.join(ctx.roots.cache, "toolchains")))?
-		default = match locked.how {
-			Installed => set_default!(fx, ctx.roots, ctx.id)?
-			Present => Kept
-		}
-		Ok({ id: ctx.id, item: ctx.item, how: locked.how, default, compat: locked.compat })
+		Ok({ id: ctx.id, item: ctx.item, how: locked.how, default: Kept, compat: locked.compat })
 	}
 
 	## Slice 037c and 039b (R-NI4, R-DL5, R-DL6): the fetch of one optional compiler of a probe search. `offer!`, then the answer line `Consent.optional_line` on stderr, then `install_offer!`.
@@ -149,9 +177,38 @@ RocInstall :: [].{
 		}
 	}
 
-	## Slice 045 (R-SO15): the default of the first compiler for the install of a git build.
+	## Slice 045 and 062 (R-SO15): the default of the first compiler for the install of a git build (a user act).
 	first_default! : Fx, Roots, Str => Try([Set, Kept], Fail)
 	first_default! = |fx, roots, id| set_default!(fx, roots, id)
+
+	## Shared helpers of `offer!` (slice 072b: `NoRank.offer!` uses them too): the environment variable, the entries of a dir, an installed dir, the asset and the date of a release.
+	env_var : List((Str, Str)), Str -> Try(Str, [NotSet])
+	env_var = |env, name| match env.find_first(|(key, _)| key == name) {
+		Ok((_, value)) => Ok(value)
+		Err(_) => Err(NotSet)
+	}
+
+	toolchain_entries! : Fx, Str => Entries
+	toolchain_entries! = |fx, dir| match fx.list_dirs!([dir]) {
+		[Ok(entries)] => entries
+		_ => []
+	}
+
+	has_dir : Entries, Str -> Bool
+	has_dir = |entries, name| entries.any(|e| e.is_dir and e.name == name)
+
+	asset_of : List(Nightlies.Release), Str -> Try(Nightlies.Asset, Fail)
+	asset_of = |releases, id| match releases.find_first(|r| r.id == id) {
+		Ok(release) => release.asset.map_err(|_| Fail.new(Internal, "${id} has no asset for this host"))
+		Err(NotFound) => Err(Fail.new(Internal, "${id} is not in the list"))
+	}
+
+	# Q5 of slice 022: the GitHub `published_at` of the picked release, for `.talon.json`.
+	published_of : List(Nightlies.Release), Str -> U64
+	published_of = |releases, id| match releases.find_first(|r| r.id == id) {
+		Ok(release) => release.published_at
+		Err(NotFound) => 0
+	}
 
 	## One child process (slice 045: shared with `GitInstall`). The result is `NotStarted` when the call gives none.
 	spawn_one! : Fx, { argv : List(Str), cwd : Try(Str, [Inherit]) }, U64 => { ended : Download.Ended, stdout : Str, stderr_last : Str }
@@ -210,33 +267,27 @@ Done : { id : Str, item : Str, how : [Installed, Present], default : [Set, Kept]
 # What the steps after the pick need.
 Ctx : { roots : Roots, net : Net.Settings, now : U64, published_at : U64, typed : Str, id : Str, item : Str, asset : Nightlies.Asset, sha : Str, system : Nightlies.Host }
 
-# Steps 2 to 12: `offer!`, the consent, `install_offer!`.
+# Steps 2 to 12: `offer!`, the consent, `install_offer!`. `roc install` is a user act: it sets the default when none is set (R-SO15).
 flow! : Fx, Args, Str => Try(Done, Fail)
 flow! = |fx, args, typed| {
 	env = fx.env_all!()
 	match RocInstall.offer!(fx, { id: typed, env, offline: args.offline })? {
-		Present(found) => Ok(present(Roots.from_env(env)?, found.id))
+		Present(found) => {
+			roots = Roots.from_env(env)?
+			default = set_default!(fx, roots, found.id)?
+			Ok({ ..present(roots, found.id), default })
+		}
 		Download(offer) => {
 			RocInstall.ask_download!(fx, args, env, { id: offer.id, size: offer.size })?
-			RocInstall.install_offer!(fx, offer)
+			done = RocInstall.install_offer!(fx, offer)?
+			default = set_default!(fx, offer.ctx.roots, done.id)?
+			Ok({ ..done, default })
 		}
 	}
 }
 
-env_var : List((Str, Str)), Str -> Try(Str, [NotSet])
-env_var = |env, name| match env.find_first(|(key, _)| key == name) {
-	Ok((_, value)) => Ok(value)
-	Err(_) => Err(NotSet)
-}
-
 present : Roots, Str -> Done
 present = |roots, id| { id, item: Roots.item(roots, Item.Toolchain(id)), how: Present, default: Kept, compat: Err(Unknown) }
-
-toolchain_entries! : Fx, Str => Entries
-toolchain_entries! = |fx, dir| match fx.list_dirs!([dir]) {
-	[Ok(entries)] => entries
-	_ => []
-}
 
 # R-CV6: one warning for each tag that the list dropped (the command did not name it).
 warn_changed! : Fx, List(Facts.Change) => {}
@@ -244,27 +295,11 @@ warn_changed! = |fx, changed| for change in changed {
 	fx.err!("warning: ${Toolchain.changed_warning(change)}\n")
 }
 
-has_dir : Entries, Str -> Bool
-has_dir = |entries, name| entries.any(|e| e.is_dir and e.name == name)
-
-asset_of : List(Nightlies.Release), Str -> Try(Nightlies.Asset, Fail)
-asset_of = |releases, id| match releases.find_first(|r| r.id == id) {
-	Ok(release) => release.asset.map_err(|_| Fail.new(Internal, "${id} has no asset for this host"))
-	Err(NotFound) => Err(Fail.new(Internal, "${id} is not in the list"))
-}
-
-# Q5 of slice 022: the GitHub `published_at` of the picked release, for `.talon.json`.
-published_of : List(Nightlies.Release), Str -> U64
-published_of = |releases, id| match releases.find_first(|r| r.id == id) {
-	Ok(release) => release.published_at
-	Err(NotFound) => 0
-}
-
 # Steps 9 to 11, inside the lock of the item.
 install! : Fx, Ctx, Str => Try({ how : [Installed, Present], compat : Compat }, Fail)
 install! = |fx, ctx, dir| {
-	entries = toolchain_entries!(fx, dir)
-	if has_dir(entries, ctx.id) return Ok({ how: Present, compat: Err(Unknown) })
+	entries = RocInstall.toolchain_entries!(fx, dir)
+	if RocInstall.has_dir(entries, ctx.id) return Ok({ how: Present, compat: Err(Unknown) })
 	stale = Temp.of_item({ item: ctx.item, entries })
 	if !stale.is_empty() {
 		_ = fx.delete!(stale)
@@ -366,9 +401,9 @@ learn_compat! = |fx, ctx, p| {
 }
 
 build_entries! : Fx, Roots => Entries
-build_entries! = |fx, roots| toolchain_entries!(fx, roots.build)
+build_entries! = |fx, roots| RocInstall.toolchain_entries!(fx, roots.build)
 
-# Step 12, R-SO15, R-CC6: the first compiler is the default, under the lock of `config.toml`.
+# Step 12, R-SO15, R-CC6: the first compiler of a user act is the default, under the lock of `config.toml`.
 set_default! : Fx, Roots, Str => Try([Set, Kept], Fail)
 set_default! = |fx, roots, id| {
 	path = Roots.item(roots, Item.Config)

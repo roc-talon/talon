@@ -1,0 +1,11 @@
+== roc install --git Karakatiza666/roc@my-branch
+exit 13
+== roc install --git Karakatiza666/roc@my-branch
+installed git-3b9f7c1d
+git-3b9f7c1d is now the default compiler
+exit 0
+== roc install --git @main
+exit 1
+== roc install --git Karakatiza666/roc@wip
+git-9d9d9d9d is already installed
+exit 0

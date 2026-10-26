@@ -1,0 +1,5 @@
+docs/slices/050d-windows-del-other.md
+tests/commands/cases/tool/dx1-xtake-windows
+tests/commands/cases/tool/dx2-source-windows
+tests/commands/cases/tool/rm6-tools-windows
+research/slice-050d-revert

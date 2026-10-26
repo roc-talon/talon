@@ -1,0 +1,10 @@
+cli/lib/Del.roc
+cli/lib/DelFlow.roc
+docs/slices/050c-windows-del.md
+tests/unit/DelTest.roc
+tests/commands/cases/tool/dl1-sweep
+tests/commands/cases/tool/dl1b-denied
+tests/commands/cases/tool/dl2-tool-windows
+tests/scenarios/tools/dl1-linux-keeps-del
+tests/scenarios/fx/wi1-real-fx-windows
+research/slice-050c-revert

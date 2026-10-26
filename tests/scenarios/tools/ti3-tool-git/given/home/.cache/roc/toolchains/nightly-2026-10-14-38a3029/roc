@@ -1,4 +1,6 @@
 #!/bin/sh
+# Slice 060 (R-FE4): Talon runs the installed compiler for `roc unbundle`. The real unbundle is the one of the fake `roc` on PATH (roc.tsv: `unbundle*  real`), so the roc.log is the same as before.
+[ "$1" = unbundle ] && exec roc "$@"
 # The fake compiler of the case ti3-tool-git: `roc build main.roc --opt=speed --output=<file>`.
 # It logs the directory of the build and the arguments, writes a shell script to <file> that prints the repo and the commit of the source (the comment line of main.roc),
 # and prints the summary of a build with no error.

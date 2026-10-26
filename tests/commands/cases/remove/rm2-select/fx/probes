@@ -1,0 +1,3 @@
+# the candidate has a new error in the files of acme/json 2.1.0: exit 10 (as rm1-flow run 2)
+1	../fixtures/check/out/pkg-base.stdout	../fixtures/check/out/pkg-base.stderr
+1	../fixtures/check/out/pkg-new.stdout	../fixtures/check/out/pkg-new.stderr

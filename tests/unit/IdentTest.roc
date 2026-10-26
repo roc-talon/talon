@@ -58,3 +58,67 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-ID3 R-H4 R-DI1 (slice 076): the one guard for a path part that comes from outside. A safe part is not empty, not `.` or `..`, and has no `/`, no backslash and no NUL
+# byte. A dot inside a name is safe (`v1..2`, `a.b`, `.hidden`, `...`). A part with a `/` anywhere is not safe, also when it does not climb (`a/b`, `/a`, `a/`).
+expect {
+	rows = [
+		("a name", "acme", Bool.True),
+		("a hash", "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17", Bool.True),
+		("2 dots inside", "v1..2", Bool.True),
+		("a dot inside", "a.b", Bool.True),
+		("a hidden name", ".hidden", Bool.True),
+		("3 dots", "...", Bool.True),
+		("a hyphen first", "-x", Bool.True),
+		("a space", "a b", Bool.True),
+		("empty", "", Bool.False),
+		("one dot", ".", Bool.False),
+		("2 dots", "..", Bool.False),
+		("a slash inside", "a/b", Bool.False),
+		("a slash first", "/a", Bool.False),
+		("a slash last", "a/", Bool.False),
+		("a climb", "../x", Bool.False),
+		("a climb last", "x/..", Bool.False),
+		("a backslash inside", "a\\b", Bool.False),
+		("a backslash only", "\\", Bool.False),
+		("a climb with backslashes", "..\\x", Bool.False),
+		("a NUL byte inside", "a\u(0)b", Bool.False),
+		("a NUL byte only", "\u(0)", Bool.False),
+	]
+	bad = rows.keep_if(|(_, text, want)| Ident.safe_part(text) != want).map(|(label, text, want)| (label, text, want))
+	dbg bad
+	bad == []
+}
+
+# R-ID3 R-H4 R-ID5 R-DI1 (slice 076): the path parts of a release URL. The hash is the name of `packages/<hash>` (R-LY1): a hash that is not a safe part makes the URL foreign (R-H4: a URL that
+# has no hash in the form of 4.1), so no command makes a path from it. `owner` and `repo` are the name `owner/repo` and the dir of the index (`talon/index/github/<owner>/<repo>`): an unsafe one gives
+# no name (R-ID3, as the other hosts: `Err(NoName)`, so no index call), and the URL keeps its hash, version and group. A dot inside a part is safe.
+expect {
+	h = "9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17"
+	gh = |owner, repo, hash| "https://github.com/${owner}/${repo}/releases/download/2.1.0/${hash}.tar.zst"
+	view = |url| match Ident.of_url(url) {
+		Ok(i) => Ok((i.name, i.label, i.hash, i.version))
+		Err(e) => Err(e)
+	}
+	no_name = |hash| Ok((Err(NoName), Err(NoName), hash, "2.1.0"))
+	rows = [
+		("a safe URL", gh("acme", "json", h), Ok((Ok("acme/json"), Ok("acme/json@2.1.0"), h, "2.1.0"))),
+		("dots inside owner, repo and hash", gh("a..b", "j.s", "x..y"), Ok((Ok("a..b/j.s"), Ok("a..b/j.s@2.1.0"), "x..y", "2.1.0"))),
+		("an owner that is ..", gh("..", "json", h), no_name(h)),
+		("an owner that is .", gh(".", "json", h), no_name(h)),
+		("a repo that is ..", gh("acme", "..", h), no_name(h)),
+		("a repo that is .", gh("acme", ".", h), no_name(h)),
+		("owner and repo that are ..", gh("..", "..", h), no_name(h)),
+		("an owner with a backslash", gh("a\\b", "json", h), no_name(h)),
+		("a repo with a backslash", gh("acme", "a\\..\\b", h), no_name(h)),
+		("an owner with a NUL byte", gh("a\u(0)b", "json", h), no_name(h)),
+		("a hash that is ..", gh("acme", "json", ".."), Err(Foreign)),
+		("a hash that is .", gh("acme", "json", "."), Err(Foreign)),
+		("a hash with a backslash", gh("acme", "json", "a\\b"), Err(Foreign)),
+		("a hash with a NUL byte", gh("acme", "json", "a\u(0)b"), Err(Foreign)),
+		("a hash that is .. on another host", "https://example.com/pkgs/json/2.1.0/...tar.zst", Err(Foreign)),
+	]
+	bad = rows.keep_if(|(_, url, want)| view(url) != want).map(|(label, url, want)| (label, want, view(url)))
+	dbg bad
+	bad == []
+}

@@ -1,0 +1,2 @@
+removing Talon, the compilers and the data, keeping the tools
+tln: error[environment]: cannot delete $HOME/.local/share/talon/share.json: Denied

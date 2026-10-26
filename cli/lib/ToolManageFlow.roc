@@ -2,7 +2,10 @@ import Args
 import BuildSkip
 import Clock
 import Common
+import Del
+import DelFlow
 import Fail
+import Fetch
 import Fx
 import Item
 import Lookup
@@ -30,7 +33,7 @@ import ToolsJson
 ## | 3 | list | The table (`ToolManage.ls_report`) on stdout, or with `--json` the envelope with `ToolManage.ls_data`. `--quiet` hides nothing (the table is the answer). | R-T8, R-J1 to R-J4 |
 ## | 4 | remove | `env_all!`, `Roots.from_env`, `platform!` (`Setup.bin_dir`, the file name), one `read_files!` of `tools.json`, `ToolsJson.manifest`, `Lookup.find` (scope `Tool`) and `ToolManage.pick`. A failure prints its block, then the failure. No request, no `clock!`, no project file (R-PT12). | R-SC3, R-PT12 |
 ## | 5 | remove | The lock of `tools.json` (`Fx.locked!` on `Roots.item(ToolsJson)`, `Wait`, R-CC3) for all the changes (R-CC6): `read_files!` and `ToolsJson.manifest` again (the tool must still be there), `list_dirs!` of the bin dir, `SetupIo.have_of!` (one `sha256_file!` of the entry), `sha256_file!` of the binary of the data bin dir, `ToolManage.entry_fate`. | R-CC6, R-ST11 |
-## | 6 | remove | Still under the lock: one `delete!` of `[<bin dir entry>, <data bin file>]` for `Remove`, or of `[<data bin file>]` for `Gone` and `Keep` (a path that is not there is no failure). Then `write_atomic!` of `tools.json` (`ToolsJson.drop`). The files go first and the manifest last (a stop between gives a tool in `tools.json` with no files, and `tool remove` can run again). Nothing is written in `talon/x/` (R-B6). | R-B6, R-ST6, R-CC1 |
+## | 6 | remove | Still under the lock: one `delete!` of `[<bin dir entry>, <data bin file>]` for `Remove`, or of `[<data bin file>]` for `Gone` and `Keep` (a path that is not there is no failure). Then `write_atomic!` of `tools.json` (`ToolsJson.drop`). The files go first and the manifest last (a stop between gives a tool in `tools.json` with no files, and `tool remove` can run again). Windows (slice 050c, R-ST10): `DelFlow.rename_away!` of `Del.removed` (the entry when `Remove`, then the data file: `random!`, then one `rename!` each), then one `delete!` of the `.del` files (no call for no file). A failed delete is no failure: the sweep of the next start deletes the file. Nothing is written in `talon/x/` (R-B6). | R-B6, R-ST6, R-ST10, R-CC1 |
 ## | 7 | remove | `Keep`: the line of `ToolManage.kept_warning` on stderr. The answer `ToolManage.remove_report` on stdout (`--quiet` hides it), or with `--json` the text on stderr and the envelope with `ToolManage.remove_data` on stdout. | R-OUT2, R-J1 to R-J4 |
 ToolManageFlow :: [].{
 
@@ -106,6 +109,7 @@ ToolManageFlow :: [].{
 			name: "",
 			key: "",
 			file: "",
+			selected: Fetch.selected({ held: "", default: config.default_roc ?? "" }),
 		}
 		Ok({ facts, tools, talon })
 	}
@@ -150,12 +154,12 @@ removal! = |fx, ref| {
 	tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
 	tool = ToolManageFlow.find!(fx, { ref, tools })?
 	file = ToolInstall.file_name({ os: machine.os, key: tool.key })
-	paths = { tools_file, file, entry: Text.join(bin, file), bin, data_file: Text.join(Roots.item(roots, Item.Bin), file) }
+	paths = { tools_file, file, os: machine.os, entry: Text.join(bin, file), bin, data_file: Text.join(Roots.item(roots, Item.Bin), file) }
 	fx.locked!(tools_file, || remove_locked!(fx, tool, paths))
 }
 
 # Steps 5 and 6, under the lock (R-CC6): the files first, `tools.json` last (D12).
-remove_locked! : Fx, ToolsJson.Tool, { tools_file : Str, file : Str, entry : Str, bin : Str, data_file : Str } => Try(Done, Fail)
+remove_locked! : Fx, ToolsJson.Tool, { tools_file : Str, file : Str, os : Setup.Os, entry : Str, bin : Str, data_file : Str } => Try(Done, Fail)
 remove_locked! = |fx, tool, paths| {
 	text = SetupIo.read_text!(fx, paths.tools_file)?
 	tools = ToolsJson.manifest({ path: paths.tools_file, text })?
@@ -177,10 +181,18 @@ remove_locked! = |fx, tool, paths| {
 		Gone => ([paths.data_file], [paths.data_file], [])
 		Keep => ([paths.data_file], [paths.data_file], [paths.entry])
 	}
-	for result in fx.delete!(gone) {
-		match result {
-			Ok(_) | Err(NotFound) => {}
-			Err(err) => return Err(Fail.new(Environment, "cannot delete a file of ${tool.key}: ${Str.inspect(err)}"))
+	if paths.os == Windows {
+		# Slice 050c (R-ST10): a running `.exe` cannot be deleted, but it can be renamed. A `.del` file that stays is deleted by the sweep of the next start.
+		moved = DelFlow.rename_away!(fx, { os: paths.os, files: Del.removed({ data_file: paths.data_file, entry: paths.entry, old, fate }) })?
+		if !moved.is_empty() {
+			_ = fx.delete!(moved)
+		}
+	} else {
+		for result in fx.delete!(gone) {
+			match result {
+				Ok(_) | Err(NotFound) => {}
+				Err(err) => return Err(Fail.new(Environment, "cannot delete a file of ${tool.key}: ${Str.inspect(err)}"))
+			}
 		}
 	}
 	SetupIo.write_file!(fx, paths.tools_file, updated)?

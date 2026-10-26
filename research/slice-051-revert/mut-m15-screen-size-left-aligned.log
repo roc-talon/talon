@@ -1,0 +1,112 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+    rows = [
+        ("the screen of the design", Prompt.text(prompt), screen),
+        ("R-RM3: no person: option 1", decide(NonInteractive, Bool.False, Err(NoFlag)), "use Option(1)"),
+        ("R-RM3: --yes is option 1", decide(Interactive, Bool.True, Err(NoFlag)), "use Option(1)"),
+        ("--yes with no terminal", decide(NeedsTty, Bool.True, Err(NoFlag)), "use Option(1)"),
+        ("R-RM3: --remove-tools in CI", decide(NonInteractive, Bool.False, Ok(Option(2))), "use Option(2)"),
+        ("R-RM3: --keep-all in CI", decide(NonInteractive, Bool.False, Ok(Option(3))), "use Option(3)"),
+        ("R-NM10: the flag wins over --yes", decide(Interactive, Bool.True, Ok(Option(3))), "use Option(3)"),
+        ("a person is asked", decide(Interactive, Bool.False, Err(NoFlag)), "ask"),
+        ("the terminal is tested", decide(NeedsTty, Bool.False, Err(NoFlag)), "need-tty"),
+        ("the reply Enter", reply(""), "Option(1)"),
+        ("the reply 1", reply("1"), "Option(1)"),
+        ("the reply 2 with spaces", reply(" 2 "), "Option(2)"),
+        ("the reply 3", reply("3"), "Option(3)"),
+        ("the reply 4 is the cancel", reply("4"), "Option(4)"),
+        ("the reply 0", reply("0"), "invalid"),
+        ("the reply 5", reply("5"), "invalid"),
+        ("the reply yes", reply("yes"), "invalid"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want)
+    dbg bad
+    bad_says = says.keep_if(|(got, want)| got != want)
+    dbg bad_says
+    bad == [] and bad_says == []
+}
+
+Mentioned values:
+screen_parts = [
+	part(Talon, "tln, roc, the talon entry of tools.json", 9_000_000),
+	part(Tools, "3 (foo, bar, baz)", 42_000_000),
+	part(Compilers, "4 nightlies, 1 git build, zig 0.17.0", 1_200_000_000),
+	part(Data, "index, x cache, compat.db, config", 310_000_000),
+]
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "http://127.0.0.1:8080/zig/index.json"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ path: "/c/roc/toolchains/zig-0.16.2/zig", source: Installed, version: Ok("0.16.2") }, { path: "/c/roc/toolchains/zig-0.17.0/zig", source: Installed, version: Ok("0.17.0") }]
+[dbg] []
+[dbg] Err({ again: Err(None), details: Err(NoDetails), kind: Network, message: "the Zig index is not a JSON object" })
+[dbg] { archive: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz", item: "/c/roc/toolchains/zig-0.17.0", meta: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json", temp: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp", version: "0.17.0", zig: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig" }
+[dbg] "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] "Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+"
+[dbg] "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+Ran 61 tests in 5039.4 ms.:
+    60 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (64) tests passed in 5735.8 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5306.5 ms.
+
+step       result seconds  budget
+l0         FAIL   5.9      10
+
+=== l2 exit 1
+FAIL tool/rm1-default
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -23,9 +23,9 @@
+       ask "Remove Talon 0.3.1 (tln and the roc proxy)?
+       
+       Talon also manages:
+      -  tools        3 (foo, bar, baz)                                33 B   they run without Talon
+      +  tools        3 (foo, bar, baz)                              33 B     they run without Talon
+         compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB
+      -  Talon data   index, x cache, compat.db, config               164 B
+      +  Talon data   index, x cache, compat.db, config              164 B
+       
+       The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
+       
+      @@ -45,9 +45,9 @@
+       ask "Remove Talon 0.3.1 (tln and the roc proxy)?
+       
+       Talon also manages:
+      -  tools        3 (foo, bar, baz)                                33 B   they run without Talon
+      +  tools        3 (foo, bar, baz)                              33 B     they run without Talon
+         compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB
+      -  Talon data   index, x cache, compat.db, config               164 B
+      +  Talon data   index, x cache, compat.db, config              164 B
+       
+       The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
+       
+      @@ -59,9 +59,9 @@
+       ask "Remove Talon 0.3.1 (tln and the roc proxy)?
+       
+       Talon also manages:
+      -  tools        3 (foo, bar, baz)                                33 B   they run without Talon
+      +  tools        3 (foo, bar, baz)                              33 B     they run without Talon
+         compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB
+      -  Talon data   index, x cache, compat.db, config               164 B
+      +  Talon data   index, x cache, compat.db, config              164 B
+       
+       The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
+       
+commands: 3 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

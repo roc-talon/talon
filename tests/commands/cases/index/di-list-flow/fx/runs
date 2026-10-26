@@ -11,3 +11,10 @@ hint acme/lib 2.1.0 env:GITHUB_TOKEN=tok123
 hint acme/lib 3.0.0
 hint acme/lib 4.0.0
 releases acme/nope
+hint acme/lib 2.1.0
+hint acme/lib 3.0.0 offline
+hint acme/lib 4.0.0
+hint acme/lib 5.0.0 offline
+releases ../acme
+releases acme/..
+releases ../..

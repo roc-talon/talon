@@ -3,6 +3,7 @@ import Args
 import CacheClean
 import CacheGc
 import CacheShow
+import DelFlow
 import Exit
 import Fail
 import Fx
@@ -28,6 +29,8 @@ import RocUse
 import RunFlow
 import Scope
 import SetupFlow
+import TalonRemove
+import TalonRemoveFlow
 import TalonUpdate
 import TalonUpdateFlow
 import ToolGitFlow
@@ -49,8 +52,13 @@ Run :: [].{
 	## (proposal: `command '<name>' is not built yet`). A parse failure prints with `Out.fail`.
 	## `--help`, `help` and `--version` print on stdout with code 0. No command prints the usage on stderr
 	## with code 2 (Q7).
+	## Slice 050c (R-ST10): on Windows (`Fx.windows!`, not in `calls.log`) `DelFlow.sweep!` runs first, before `args!`, in each start: the help, the version, a parse failure, each command and the `roc` proxy.
 	run! : Fx => I32
-	run! = |fx| if Proxy.is_proxy(fx.program_name!()) Proxy.run!(fx) else Run.tln!(fx)
+	run! = |fx| {
+		# Slice 050c (R-ST10): each start of `tln` first tries to delete the `.del` files of Windows. `Fx.windows!` is not in `calls.log`, so Linux and macOS start as before.
+		if fx.windows!() DelFlow.sweep!(fx)
+		if Proxy.is_proxy(fx.program_name!()) Proxy.run!(fx) else Run.tln!(fx)
+	}
 
 	## The commands of `tln` (the program name is not `roc`, R-ST8).
 	tln! : Fx => I32
@@ -134,7 +142,7 @@ Run :: [].{
 						} else if args.command == ["tool", "list"] {
 							ToolManageFlow.list!(fx, args)
 						} else if args.command == ["tool", "remove"] {
-							ToolManageFlow.remove!(fx, args)
+							if TalonRemove.is_target(args) TalonRemoveFlow.remove!(fx, args) else ToolManageFlow.remove!(fx, args)
 						} else if args.command == ["tool", "update"] {
 							if TalonUpdate.is_target(args) TalonUpdateFlow.update!(fx, args) else ToolUpdateFlow.update!(fx, args)
 						} else if args.command == ["tool", "rebuild"] {

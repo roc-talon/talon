@@ -96,6 +96,33 @@ expect {
 						and off == { named: all_named, auto: [] }
 }
 
+# R-ST16, R-RU1, R-NS3, R-C7, R-SO14 (slice 072): `latest`, the compiler that `tln setup` writes as `default-roc` and that R-SO14 downloads outside a project: the newest release that the `nightly` switch and `min-release-age`
+# allow. A release that is too new is hidden (exactly the age is visible). A release with no asset, or with 2 assets, for the host is no candidate (it cannot be installed). The order is the order of `Nightlies.candidates`
+# (the list order: the oldest first, as `domain`), so the answer is the last visible id. No release, all too new, and the switch off: `Err(Empty)` (the caller says why: R-NS2).
+expect {
+	now = 1_000_000
+	day = 86400
+	list = [
+		rel({ id: "nightly-2026-10-09-258ab27", at: now - 9 * day, asset: Ok(one_asset("nightly-2026-10-09-258ab27")) }),
+		rel({ id: "nightly-2026-10-12-2664a27", at: now - 2 * day, asset: Ok(one_asset("nightly-2026-10-12-2664a27")) }),
+		rel({ id: "nightly-2026-10-13-91fa0c2", at: now - 2 * day + 1, asset: Ok(one_asset("nightly-2026-10-13-91fa0c2")) }),
+		rel({ id: "nightly-2026-10-14-38a3029", at: now - 10, asset: Err(NoAsset) }),
+		rel({ id: "nightly-2026-10-15-38e6c42", at: now - 5, asset: Err(Several(2)) }),
+	]
+	young = [rel({ id: "nightly-2026-10-16-1df370f", at: now - 10, asset: Ok(one_asset("nightly-2026-10-16-1df370f")) })]
+	latest = |releases, min_age, nightly| Toolchain.latest({ releases, now, min_age, nightly })
+	two_days = latest(list, 2 * day, Bool.True)
+	none = latest(list, 0, Bool.True)
+	dbg two_days
+	dbg none
+	two_days == Ok("nightly-2026-10-12-2664a27")
+		and none == Ok("nightly-2026-10-13-91fa0c2")
+			and latest(list, 9 * day, Bool.True) == Ok("nightly-2026-10-09-258ab27")
+				and latest(young, 2 * day, Bool.True) == Err(Empty)
+					and latest([], 0, Bool.True) == Err(Empty)
+						and latest(list, 0, Bool.False) == Err(Empty)
+}
+
 # R-CV2, R-SC10, R-NS2 (review of slice 021, Q6): why `pick` found no compiler. The exact id of a nightly that has no asset for the host names the host: `<id> has no asset for <target>` (kind `Usage`, exit 2).
 # A prefix of that id, an id that is not in the list, an id with an asset, and every other error keep the text of `Nightlies.failure`.
 # Slice 022 (Q5 of slice 020, R-NS2): `Empty` with the switch off names the switch and its source (exit 10). With the switch on it is the text of `Nightlies.failure`.

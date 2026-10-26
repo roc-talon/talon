@@ -65,6 +65,16 @@ import RealFx
 ## | Call | Does | Prints |
 ## | --- | --- | --- |
 ## | `exec-in <dir> [<NAME>=<value>]... -- <argv words>` | `exec_in!` with this directory and these variables | `exec-in ok <code>` or `exec-in err <text>` |
+## Slice 051 adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `spawn-detached [<NAME>=<value>]... -- <argv words>` | `spawn_detached!` with these variables. The probe ends at once, the child goes on | `spawn-detached ok` or `spawn-detached err <text>` |
+## Slice 050c adds one call:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `windows` | `windows!` | `windows true` or `windows false` |
 ## Slice 024b adds one call:
 ##
 ## | Call | Does | Prints |
@@ -240,6 +250,7 @@ probe! = |fx, call, rest| match (call, rest) {
 		Ok(_) => say!(fx, "linked")
 		Err(err) => say!(fx, "err ${Str.inspect(err)}")
 	}
+	("windows", _) => say!(fx, "windows ${if fx.windows!() "true" else "false"}")
 	("platform", _) => {
 		found = fx.platform!()
 		say!(
@@ -297,6 +308,24 @@ probe! = |fx, call, rest| match (call, rest) {
 				}
 			}
 			Err(_) => fx.err!("usage: fxprobe exec [NAME=value]... -- <argv words>\n")
+		}
+	}
+	("spawn-detached", words) => {
+		sep = words.map_with_index(|w, i| (w, i)).find_first(|(w, _)| w == "--")
+		match sep {
+			Ok((_, at)) => {
+				env = words.take_first(at).keep_oks(
+					|w| match w.split_first("=") {
+						Ok({ before, after }) => Ok((before, after))
+						Err(_) => Err(NoEquals)
+					},
+				)
+				match fx.spawn_detached!({ argv: words.drop_first(at + 1), env }) {
+					Ok(_) => say!(fx, "spawn-detached ok")
+					Err(NotStarted(text)) => say!(fx, "spawn-detached err ${text}")
+				}
+			}
+			Err(_) => fx.err!("usage: fxprobe spawn-detached [NAME=value]... -- <argv words>\n")
 		}
 	}
 	("exec-in", [dir, .. as words]) => {

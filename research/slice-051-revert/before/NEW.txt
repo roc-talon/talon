@@ -1,0 +1,13 @@
+cli/lib/TalonRemove.roc
+cli/lib/TalonRemoveFlow.roc
+tests/unit/TalonRemoveTest.roc
+tests/commands/cases/tool/rm1-default/
+tests/commands/cases/tool/rm2-options/
+tests/commands/cases/tool/rm3-windows/
+tests/commands/cases/tool/rm4-stops/
+tests/scenarios/fx/sd1-real-fx-spawn-detached/
+tests/scenarios/tools/rm1-remove-talon/
+tests/scenarios/tools/rm2-remove-all/
+docs/slices/051-tool-rm-talon.md
+research/slice-051-revert/
+tests/commands/cases/tool/rm5-win-path/

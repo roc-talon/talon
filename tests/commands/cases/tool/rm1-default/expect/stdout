@@ -1,0 +1,26 @@
+== tool remove talon --dry-run
+Talon        tln, roc, the talon entry of tools.json          10 B   remove
+tools        3 (foo, bar, baz)                                33 B   keep
+compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   remove
+Talon data   index, x cache, compat.db, config               164 B   remove
+dry run: nothing was removed
+exit 0
+== tool rm talon --remove-tools --dry-run --json
+{"schema":1,"command":"tool rm","ok":true,"data":{"outcome":"dry_run","version":"0.3.1","option":2,"groups":[{"group":"talon","action":"remove","detail":"tln, roc, the talon entry of tools.json","bytes":10},{"group":"tools","action":"remove","detail":"3 (foo, bar, baz)","bytes":33},{"group":"compilers","action":"remove","detail":"2 nightlies, 1 git build, 1 link, zig 0.17.0","bytes":1012},{"group":"data","action":"remove","detail":"index, x cache, compat.db, config","bytes":164}],"compilers_kept":[],"roc_restored":null,"path":[],"kept_entries":[],"stuck":[]},"error":null}
+exit 0
+== env:CI=false tool remove talon
+cancelled: nothing was removed
+exit 0
+== env:CI=false tool remove talon
+Talon        tln, roc, the talon entry of tools.json          10 B   removed
+tools        3 (foo, bar, baz)                                33 B   kept
+compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+Talon data   index, x cache, compat.db, config               164 B   removed
+moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+exit 0
+== tool remove talon
+Talon        tln, roc, the talon entry of tools.json    0 B   removed
+tools        3 (foo, bar, baz)                         33 B   kept
+compilers    none                                       0 B   removed
+Talon data   index, x cache, compat.db, config          0 B   removed
+exit 0

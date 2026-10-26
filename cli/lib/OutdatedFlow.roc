@@ -2,6 +2,7 @@ import Args
 import Common
 import Facts
 import Fail
+import Fetch
 import Fx
 import Ident
 import Install
@@ -63,8 +64,9 @@ flow! : Fx, Args => Try(List(Outdated.Member), Fail)
 flow! = |fx, args| {
 	start = Install.begin!(fx, args)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-	request = { ..Ls.request_of(args, start), command: Update }
-	loaded = ResolveLoad.load!(fx, request)?
+	asked = { ..Ls.request_of(args, start), command: Update }
+	loaded = ResolveLoad.load!(fx, asked)?
+	request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }) }
 	# R-WS7: one `Vars.build` over all members, as `ResolveLoad.prepared!`, so a key of one member limits the group for every member.
 	built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
 	settings = ResolveBase.settings_of(request, loaded)

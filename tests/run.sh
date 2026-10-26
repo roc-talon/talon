@@ -5,7 +5,9 @@
 #   UPDATE=1  write the actual output to expect/ (TW21: only for outputs that the slice changes)
 #   SLOW=1      also run the cases with the tag slow (TW27)
 #   OPT=dev|speed    build mode of tln, fxprobe and flowprobe (default dev, TW25). Another value: exit 2
-#   NET=1       also run the cases with the tag net (real network; the nightly run only, TW28)
+#   NET=1       also run the cases with the tag net (real network; the nightly run only, TW28). A net case has no network cut, and gets GITHUB_TOKEN and GH_TOKEN (slice 053)
+#   REAL_CACHE=<dir>  the real roc cache that a case with the tag net or real-roc may copy (default ~/.cache/roc). The cases only copy it (slice 053).
+#                     A case with the file `needs-real-cache` is skipped, with a SKIP line, when that dir does not exist.
 #   REAL_ROC=1  also run the cases with the tag real-roc, with the pinned roc in place of the fake (L4)
 #   SCENARIOS=<dir>  another case tree (the self-test of the runner uses it)
 #   TLN=<file>       use this binary, do not build one
@@ -47,6 +49,11 @@ run_case() {
     case " $tags " in *" slow "*) [ "${SLOW:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" real-roc "*) [ "${REAL_ROC:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" net "*) [ "${NET:-0}" = 1 ] || return 2 ;; esac
+    # Slice 053: a case with the file `needs-real-cache` copies the real roc cache. When that dir does not exist (the runner of the nightly run has none), the case is skipped with a reason.
+    if [ -f "$dir/needs-real-cache" ] && [ ! -d "${REAL_CACHE:-$HOME/.cache/roc}" ]; then
+        echo "no real roc cache: ${REAL_CACHE:-$HOME/.cache/roc} does not exist (set REAL_CACHE)"
+        return 2
+    fi
 
     W=$CASEROOT/$(echo "$name" | tr / _)
     rm -rf "$W"
@@ -69,6 +76,17 @@ run_case() {
         "TALON_REGISTRY=direct" "TALON_TEST_REAL_ROC=$ROC"
     )
     case " $tags " in *" tty "*) envs+=("TALON_INTERACTIVE=1") ;; esac
+    # Slice 053: the tag net is the one tag that needs the real network, so the case is not cut off (netoff), and it gets the token of the caller
+    # (R-RG3: 60 requests an hour with no token). A case with the tag net or real-roc can copy a real roc cache (TALON_TEST_REAL_CACHE:
+    # REAL_CACHE, else ~/.cache/roc of the caller). The case must only copy it, and work in the copy.
+    local cut=netoff v
+    case " $tags " in
+    *" net "*)
+        cut=env
+        for v in GITHUB_TOKEN GH_TOKEN; do [ -n "${!v:-}" ] && envs+=("$v=${!v}"); done
+        ;;
+    esac
+    case " $tags " in *" net "* | *" real-roc "*) envs+=("TALON_TEST_REAL_CACHE=${REAL_CACHE:-$HOME/.cache/roc}") ;; esac
     if [ -f "$W/env" ]; then
         while IFS= read -r line; do [ -n "$line" ] && envs+=("$line"); done < "$W/env"
     fi
@@ -84,7 +102,7 @@ run_case() {
         # A case with routes gets the fake HTTP server (slice 003). It runs inside the namespace of the case.
         [ -d "$W/http" ] && run=(timeout "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
     fi
-    (cd "$W/project" && netoff env -i "${envs[@]}" "${run[@]}" > "$W/out/stdout.raw" 2> "$W/out/stderr.raw" < /dev/null)
+    (cd "$W/project" && $cut env -i "${envs[@]}" "${run[@]}" > "$W/out/stdout.raw" 2> "$W/out/stderr.raw" < /dev/null)
     echo $? > "$W/out/exit"
     normalize "$W" < "$W/out/stdout.raw" | hexnorm > "$W/out/stdout"
     normalize "$W" < "$W/out/stderr.raw" | hexnorm > "$W/out/stderr"
@@ -171,7 +189,7 @@ for c in "${CASES[@]}"; do
     rc=$(cat "$RESULTS/$n.rc")
     case $rc in
     0) pass=$((pass + 1)) ;;
-    2) skipped=$((skipped + 1)) ;;
+    2) skipped=$((skipped + 1)); [ -s "$RESULTS/$n.out" ] && echo "SKIP $rel: $(head -n 1 "$RESULTS/$n.out")" ;;
     *) failed=$((failed + 1)); echo "FAIL $rel"; sed -e 's/^/  /' "$RESULTS/$n.out" ;;
     esac
 done

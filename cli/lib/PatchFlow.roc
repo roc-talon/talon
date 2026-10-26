@@ -9,6 +9,7 @@ import IntentEdit
 import Known
 import Ls
 import Out
+import PatchApply
 import PatchCmd
 import PatchTree
 import ResolveBase
@@ -50,8 +51,9 @@ flow! = |fx, args, opts| {
 	start = Install.begin!(fx, args)?
 	Install.check_member(Bool.True, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-	request = Ls.request_of(args, start)
-	loaded = ResolveLoad.load!(fx, request)?
+	asked = Ls.request_of(args, start)
+	loaded = ResolveLoad.load!(fx, asked)?
+	request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }) }
 	facts = facts_of!(fx, request, loaded, opts.name)?
 	if opts.diff review!(fx, args, facts) else copy!(fx, args, facts)
 }
@@ -125,6 +127,9 @@ review! = |fx, args, facts| {
 	}
 	copy = PatchCmd.copy_dir({ toml: facts.toml.path, path: entry.path })
 	fetch!(fx, facts)?
+	if entry.base != facts.target.hash {
+		PatchApply.base!(fx, facts.request, { alias, url: facts.target.url, base: entry.base, dir: copy.drop_suffix("/") })?
+	}
 	trees = read_trees!(fx, package_dir(facts, entry.base), copy.drop_suffix("/"))?
 	shown = PatchCmd.shown({ alias, base: entry.base, dir: copy, changes: Diff.make(trees) })
 	if args.json {
@@ -141,7 +146,7 @@ package_dir = |facts, hash| Roots.item(facts.request.roots, Package(hash))
 
 # R-PA13: the release of the header entry is fetched by its hash (a package that is in the cache is not fetched again).
 fetch! : Fx, Facts => Try({}, Fail)
-fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.request.roots, urls: [facts.target.url], offline: facts.request.offline, roc: "roc", downloader: facts.request.net.downloader }) {
+fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.request.roots, urls: [facts.target.url], offline: facts.request.offline, unbundler: Choose({ selected: facts.request.selected, none: facts.request.none }), downloader: facts.request.net.downloader }) {
 	[Err(fail)] => Err(fail)
 	_ => Ok({})
 }

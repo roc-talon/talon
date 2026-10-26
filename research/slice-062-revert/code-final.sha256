@@ -1,0 +1,6 @@
+c9a1286a8f06eabfcb12a3436356bd98ec8c482cf15ce84b2ce88aa7573c4fb1  cli/lib/RocInstall.roc
+7b78a90c9b13a5d83038b97388cf4217301b512302c4f2838b36bef2dbbc6383  cli/lib/GitInstall.roc
+81a6a39ea88f30edcc17e38bf6c20fe7b75000ca5432767898093f5c7f99713e  cli/lib/RocManage.roc
+52596421a2c97e36177a6b4566ff0bc62e4cfe69589612cfa354eedc9864b0a3  cli/lib/Proxy.roc
+dfd1ca1f806d21ea4462d626d70a70a487573fa1932728cdd87d94195cb233ad  cli/lib/ManageUpdate.roc
+87a9ed985207e1c7e696b129a7c528e472414cc826cfbae5d544f4621a1bf0ef  docs/slices/062-default-by-user-act.md

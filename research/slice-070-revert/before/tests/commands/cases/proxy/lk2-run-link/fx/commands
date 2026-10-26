@@ -1,0 +1,16 @@
+# R-LK4, R-R5, R-PX2: rank 1. link-dev is a link: its .talon.json is read (one read_files), the program is the target path, not toolchains/link-dev/roc. .last-use is written for link-dev (R-CC9).
+@roc +link-dev version
+# R-R5: rank 6, the global default is a link. The same program.
+@roc version
+# R-R5, R-LK3, R-LK2: rank 2, a copy. No read of .talon.json: the copy is toolchains/copy-fix-1/roc, as for a nightly.
+@roc version env:ROC_TOOLCHAIN=copy-fix-1
+# R-PX7, R-LK4: TALON_PROXY=0 still finds the target (it is the program), and sets only TALON_IN_PROXY. No clock, no .last-use.
+@roc +link-dev version env:TALON_PROXY=0
+# R-TF1, R-TF6, R-EC19: .talon.json has no path: exit 19, the file is named. No .last-use, no canonical, no exec.
+@roc +link-bad version
+# R-TF3: a format that this tln does not know: exit 19
+@roc +link-new version
+# R-LK4, R-EC18: the dir of the link has no .talon.json: exit 18, the text says how to link again
+@roc +link-gone version
+# R-LK4, R-E1: the target was deleted. The proxy does not look at the file: the start fails (exit 18), the text names the path.
+@roc +link-moved version

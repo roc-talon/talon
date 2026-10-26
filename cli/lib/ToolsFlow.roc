@@ -2,6 +2,7 @@ import Args
 import Clock
 import Common
 import Fail
+import Fetch
 import Fx
 import Install
 import Intent
@@ -107,6 +108,7 @@ context! = |fx, args, cmd| {
 		home,
 		home_text: text,
 		tools: read.intent.tools,
+		selected: Fetch.selected({ held: "", default: config.default_roc ?? "" }),
 	})
 }
 
@@ -153,7 +155,7 @@ add! = |fx, ctx, cmd| {
 fresh! : Fx, ToolsStep.Ctx, { key : Str, name : Str, selector : Try(Selector, [None]) } => Try(ToolsStep.Done, Fail)
 fresh! = |fx, ctx, run| {
 	machine = ToolsStep.machine!(fx)?
-	found = XCacheIo.entries!(fx, ctx.roots)?
+	found = XCacheIo.entries!(fx, ctx.roots, machine.os)?
 	picked = ToolsStep.pick!(fx, ctx, { machine, name: run.name, selector: run.selector })?
 	chosen = ToolsStep.chosen!(fx, ctx, { pick: picked, found })?
 	ensured = ToolsStep.ensure!(fx, ctx, { facts: picked.facts, rel: chosen.rel, bundle: chosen.bundle, found })?

@@ -1,0 +1,2 @@
+[tools]
+a = { ref = "acme/foo@^2", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }

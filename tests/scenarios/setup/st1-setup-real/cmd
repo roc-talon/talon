@@ -1,5 +1,6 @@
-# R-CM18 R-ST1 R-ST2 R-ST3 R-ST4 R-ST5 R-ST6 R-ST7 R-ST8 R-ST11 R-ST12 R-ST13 R-ST14 R-ST15 R-NI13 R-NI14 R-LY8 R-LY9 R-HF7 (slice 027): `tln setup` on the real binary and the real Fx, in a temp HOME (the runner sets HOME to the work dir). The case never touches a real user file:
+# R-IS6 R-S2 R-T4 R-CM18 R-ST16 R-ST1 R-ST2 R-ST3 R-ST4 R-ST5 R-ST6 R-ST7 R-ST8 R-ST11 R-ST12 R-ST13 R-ST14 R-ST15 R-NI13 R-NI14 R-LY8 R-LY9 R-HF7 (slice 027): `tln setup` on the real binary and the real Fx, in a temp HOME (the runner sets HOME to the work dir). The case never touches a real user file:
 # HOME is the work dir, the second HOME is $TALON_TEST_DIR/h2, the data dir is $TALON_TEST_DIR/data, and each command line of this file runs with these variables.
+# Slice 072a (R-ST16): the given home has a config.toml with default-roc, so setup reads the list of compilers in no run (the case has no fake HTTP server and no network). The first default with a list is the L2 case setup/st8-first-default.
 # The runner has CI=true, so no run has a prompt: the answer is the default (R-NM4). SHELL=/bin/bash. TALON_NOW=2026-10-22T12:00:00Z. The compiler of the case is a script (a fake nightly).
 export TALON_NOW=2026-10-22T12:00:00Z
 export SHELL=/bin/bash
@@ -18,10 +19,19 @@ mkdir -p $DATA
 cp "$TLN" $DATA/tln
 printf '#!/bin/sh\necho "tool foo ran as $0: $*"\n' > $DATA/foo
 chmod +x $DATA/foo
-printf '{"format":1,"tools":{"foo":{},"talon":{}}}\n' > $XDG_DATA_HOME/talon/tools.json
+printf '{"format":1,"tools":{"foo":{}}}\n' > $XDG_DATA_HOME/talon/tools.json
+J=$XDG_DATA_HOME/talon/tools.json
+# the sha256 of the file tln changes with each build of tln: the case prints it as <sha256> and compares it with the real one
+shown() { sed -e 's/"sha256":"[0-9a-f]\{64\}"/"sha256":"<sha256>"/' "$J"; }
 
 echo "== 1: R-ST13 R-ST14 R-ST15 R-ST7 R-LY8 R-ST4 R-NI14 R-ST5: the first setup. tln, roc and the tool foo are hard links of the files in the data bin dir (the same inode). The bin dir is not on PATH: the default answer is Yes, so the profile of bash gets the marker line. The completion is written."
 st tln setup
+echo "== 1b: R-IS6 R-S2 R-T4 R-CC1 (slice 052): the entry talon is written when it is missing: the kind prebuilt, the version of this tln and the release URL of its asset, the target of this machine (musl on Linux), the real sha256 of the file tln in the data bin dir, the time TALON_NOW. The tool foo stays. No temp file is left."
+shown
+want=$(sha256sum $DATA/tln | cut -d' ' -f1)
+if grep -q "\"sha256\":\"$want\"" $J; then echo "the sha256 is the one of the file tln"; else echo "the sha256 is not the one of the file tln"; fi
+ls -A $XDG_DATA_HOME/talon
+cp $J $D/tools.json.1
 same $B/tln $DATA/tln "tln"
 same $B/roc $DATA/tln "roc is the file tln"
 same $B/foo $DATA/foo "foo"
@@ -36,8 +46,9 @@ echo "== 2: R-ST8 R-ST14: the entry roc is the launcher: the program name is roc
 st $B/roc +$A1 version
 st $B/tln --version
 st $B/foo a b
-echo "== 3: R-ST12: setup again changes nothing. The profile has one marker line."
+echo "== 3: R-ST12 R-IS6: setup again changes nothing. The profile has one marker line. The entry talon is there, so tools.json is the same file as after step 1."
 st tln setup
+cmp $J $D/tools.json.1 && echo "tools.json is unchanged"
 grep -c 'talon: added by tln setup' $HOME/.bashrc
 echo "== 4: R-ST11 R-ST6 R-NI13 R-ST2: roc is a file that Talon did not write (other content). The default answer is No: the file stays, no launcher, the note names --replace-roc."
 rm $B/roc

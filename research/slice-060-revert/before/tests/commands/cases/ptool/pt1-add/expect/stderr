@@ -1,0 +1,18 @@
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/bar 1.1.0 with nightly-2026-10-14-38a3029
+tln: error[usage]: foo is a tool of acme/foo in $PROJECT/p1/talon.toml. Pass --as <key> for another key, or run: tln remove --tool foo
+tln: error[usage]: acme/wasm 1.0.0 needs the platform DfA7i7y2oS7c325x27pWcwZDUAfaaiqvBudWHak7XtU3, which has no native target (targets: wasm32). tln tool install makes a command line tool, so it needs a native platform.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/snap 1.0.0 with nightly-2026-10-14-38a3029
+added tool dry 1.1.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.dry = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+dry run: nothing was written
+tln: error[usage]: no key 'nope' in [tools] of $PROJECT/p1/talon.toml. Keys: foo, snap.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/bad 1.0.0 with nightly-2026-10-14-38a3029
+tln: error[app_error]: the build of acme/bad 1.0.0 with nightly-2026-10-14-38a3029 failed: 5 errors: type mismatch
+tln: error[usage]: no release of acme/young is old enough for min-release-age
+tln: error[usage]: 'dd03c09e' in 'acme/foo@dd03c09e' is not a release selector (a version, a range or latest)
+tln: error[usage]: flag '--no-pin' is not for tln add --tool. It takes only --as, --snapshot, --dry-run and --allow-downloads

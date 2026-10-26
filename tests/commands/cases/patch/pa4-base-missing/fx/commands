@@ -1,0 +1,14 @@
+# R-PA13, R-DI12: the base is not in the cache and the release list has no cached page: exit 15
+install --offline --file p1/main.roc
+# R-PA13: the list is read (live, and cached), no release of the group has the base: exit 14
+install --file p1/main.roc
+# R-PA13: the cached list, the same exit 14, with the line `index: cached at <time>`
+install --offline --file p1/main.roc
+# slice 070b, R-PA13, R-FE7: p2 has the base of json 2.1.0, a release of the cached list that is not in the cache: --offline stops in the fetch (exit 15)
+install --offline --file p2/main.roc
+# slice 070b, R-PA3, R-PA13: the same base, online: Talon fetches it by hash and prints the diff of the copy against it
+patch json --diff --file p2/main.roc
+# slice 070b, R-PA3, R-PA13: p1 has a base that no release has: the same exit 14 as install (it was exit 18)
+patch json --diff --file p1/main.roc
+# slice 070b, R-PA13, R-DI11: p3 has a release URL of another host (no owner/repo, no list can exist) and a base that is not in the cache: exit 14, also with --offline (it is not exit 15 and not exit 18)
+install --offline --file p3/main.roc

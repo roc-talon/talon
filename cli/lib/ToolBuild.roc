@@ -1,6 +1,8 @@
 import Args
 import Clock
 import ConfigToml
+import Del
+import DelFlow
 import Fail
 import Fx
 import Ident
@@ -28,7 +30,7 @@ ToolBuild :: [].{
 	Done : { how : ToolInstall.How, key : Str, name : Str, version : Str, bin : Str, built : Try({ url : Str, nightly : Str, target : Str, sha256 : Str, entry : [HardLink, Copy] }, [None]) }
 
 	# What steps 2 to 5 found. `file` is the name of the binary file and of the bin dir entry (R-ST15).
-	Facts : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, entries : List(ToolsJson.Entry), min_age : U64, probe_timeout : U64, name : Str, key : Str, file : Str }
+	Facts : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, entries : List(ToolsJson.Entry), min_age : U64, probe_timeout : U64, name : Str, key : Str, file : Str, selected : Str }
 
 	# The app that step 8 chose (slice 048: a release bundle or a git source). `version` is the text of the reports (`1.1.0`, `git main@dd03c09e`), `url` the bundle (for a git source the archive), `hash` the closure of the evidence (the hash of the bundle, or the commit),
 	# `dir` the dir that the build runs in, `source` and `path` what `tools.json` records, then the `roc:` pin, the platform entry and the hashes of the release URL entries of the header (D13).
@@ -63,14 +65,24 @@ ToolBuild :: [].{
 
 	# Steps 11 to 13: the attempt that option 2 passed, else one build with the chosen compiler. Then the install under the lock for the last step only (R-CC6). The temp dir goes also after a failure (R-CC2).
 	finish! : Fx, Args, Facts, Bundle, ToolCompilerFlow.Chosen => Try(Done, Fail)
-	finish! = |fx, args, facts, bundle, chosen| {
+	finish! = |fx, args, facts, bundle, chosen| finish_checked!(fx, args, facts, bundle, chosen, |_| Ok({}))
+
+	# Slice 075 (R-S3): as `finish!`, and `check!` runs on the output file of a passed build, before the lock and before any write. A failed check deletes the temp dir (R-CC2) and ends the command: the old files stay.
+	finish_checked! : Fx, Args, Facts, Bundle, ToolCompilerFlow.Chosen, (Str => Try({}, Fail)) => Try(Done, Fail)
+	finish_checked! = |fx, args, facts, bundle, chosen, check!| {
 		attempt = built!(fx, args, facts, bundle, chosen)?
 		ctx = { facts, bundle, id: chosen.id, layout: attempt.layout }
 		match attempt.class {
-			Pass => {
-				result = fx.locked!(Roots.item(facts.roots, Item.ToolsJson), || install!(fx, ctx))
-				_ = fx.delete!([attempt.layout.temp])
-				result
+			Pass => match check!(attempt.layout.output) {
+				Ok(_) => {
+					result = fx.locked!(Roots.item(facts.roots, Item.ToolsJson), || install!(fx, ctx))
+					_ = fx.delete!([attempt.layout.temp])
+					result
+				}
+				Err(fail) => {
+					_ = fx.delete!([attempt.layout.temp])
+					Err(fail)
+				}
 			}
 			class => Err(build_failure(ctx, class, attempt.errors))
 		}
@@ -101,7 +113,11 @@ ToolBuild :: [].{
 
 	# The calls of `entry_verdict!` without the failure text. Slice 048: `tool rebuild` and `tool update` have a text of their own for `Foreign` (no `--as`).
 	entry_state! : Fx, Facts => Try([Make, Foreign], Fail)
-	entry_state! = |fx, facts| {
+	entry_state! = |fx, facts| Ok(ToolBuild.entry_read!(fx, facts)?.verdict)
+
+	# The reads of `entry_state!` (the same calls), with what they read: the sha256 of the data file, and the bin dir entry. Slice 050c: `install!` gives `old` and `have` to `Del.replaced`.
+	entry_read! : Fx, Facts => Try({ old : Try(Str, [NotFound]), have : Del.Have, verdict : [Make, Foreign] }, Fail)
+	entry_read! = |fx, facts| {
 		data_file = Text.join(Roots.item(facts.roots, Item.Bin), facts.file)
 		listed = match fx.list_dirs!([facts.bin]) {
 			[one] => SetupIo.entries_of(one, facts.bin)?
@@ -113,7 +129,7 @@ ToolBuild :: [].{
 			Err(NotFound) => Err(NotFound)
 			Err(err) => return Err(Fail.new(Environment, "cannot read ${data_file}: ${Str.inspect(err)}"))
 		}
-		Ok(ToolInstall.verdict({ old, have }))
+		Ok({ old, have, verdict: ToolInstall.verdict({ old, have }) })
 	}
 
 	# R-T1, R-T10: the header of a `main.roc` that was read. An app gives its `roc:` pin, its platform entry and the hashes of its release URL entries (D13). A package or a platform is `NotApp`. A bad header is the failure of `Release.read` or `Locked.read`.
@@ -192,7 +208,13 @@ install! = |fx, ctx| {
 		Same(old) => Replaced(ToolsJson.source_text(old.source))
 		Free => Installed
 	}
-	ToolBuild.entry_verdict!(fx, facts)?
+	read = ToolBuild.entry_read!(fx, facts)?
+	match read.verdict {
+		Make => {}
+		Foreign => return Err(ToolInstall.foreign_failure(Text.join(facts.bin, facts.file)))
+	}
+	# Slice 050c (R-ST10): on Windows the files that exist go to `.del` names, so the new files can go in.
+	_ = DelFlow.rename_away!(fx, { os: facts.os, files: Del.replaced({ data_file: ctx.layout.data_file, entry: ctx.layout.entry, old: read.old, have: read.have }) })?
 	sha = write_binary!(fx, ctx)?
 	form = ToolBuild.link_entry!(fx, ctx.layout)?
 	tool = {

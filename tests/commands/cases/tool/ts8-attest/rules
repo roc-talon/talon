@@ -1,0 +1,8 @@
+Slice 074, `tln tool update talon` and the attestation (entry `commands`): R-S2, R-IS3, R-SE13. The entry says 0.1.0. Each run sets `TALON_NOW`, so another release is the newest that is old enough (R-T9). The fake `programs` has `gh`. The job rules with `@<n>|` answer in the run n only.
+The attestation is checked after the sha256 and before the first use of the file (`chmod`, `--version`): `gh auth status`, then `gh attestation verify <temp file> --repo roc-talon/talon` (the commands of `install/install.sh`, R-IS3). A `tln` with no `gh` on `PATH` is in the old cases (`ts1-update` and others): the same note, no call of `gh`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` (2026-09-03) | v0.3.1. `gh` is there, but `gh auth status` exits with 1 (not logged in): the note `note: attestation not checked (needs gh, logged in)` on stderr, no `gh attestation verify`. The update goes on and is installed | R-S2, R-IS3 |
+| 2 | `tool update talon` (2026-09-12) | v0.3.2. `gh` is logged in, but `gh attestation verify` exits with 1 (`no attestations found`): exit 16, the text names the asset, the release and the last line of `gh`. No `chmod`, no `--version`, no rename: the old tln stays (0.3.1), the temp file and the scratch dir are deleted | R-S2, R-IS3, R-SE13 |
+| 3 | `tool update talon` | v0.3.4. `gh` is logged in and `gh attestation verify` exits with 0: the line `attestation ok` on stdout, then `chmod`, `--version`, the install | R-S2, R-IS3, R-SE13 |

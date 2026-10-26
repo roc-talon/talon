@@ -1,0 +1,3 @@
+tln: error[input]: $PROJECT/p1/talon.toml:2: patch.json.base: '..' is not a hash
+tln: error[input]: patch.json.path: '../outside/main.roc' is outside the repository ($PROJECT/p2)
+tln: error[input]: patch.json.path: '/elsewhere/main.roc' is outside the repository ($PROJECT/p3)

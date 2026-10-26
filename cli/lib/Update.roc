@@ -5,6 +5,7 @@ import Consent
 import Fail
 import Fx
 import Install
+import InstallFlow
 import Known
 import Mode
 import Net
@@ -15,6 +16,7 @@ import Project
 import Report
 import Resolve
 import Roots
+import ToolsPlan
 
 ## The command `tln update` (also `up`, R-CM4, R-CM19): the wiring of a run, in direct style over `Fx` (TESTING.md 2.2, part C). It owns no decision: `Update.read` reads the flags,
 ## `Resolve.install!` with `command: Update` is the flow of slices 005 to 007, `Picker` and `Consent.picker` decide the picker of `-i`. `Run.run!` calls it for the command `update`, after `Run.check_refs`.
@@ -69,8 +71,8 @@ Update :: [].{
 		Ok({ opts, pick }) => {
 			shown = Common.shown_fx(fx, args)
 			match flow!(shown, args, opts, pick) {
-				Ok(Moved(outcome)) => {
-					Update.print!(fx, shown, args, opts, outcome)
+				Ok(Moved(done)) => {
+					Update.print!(fx, shown, args, opts, done)
 					0
 				}
 				Ok(NothingPicked) => {
@@ -92,7 +94,7 @@ Update :: [].{
 	}
 
 	## Steps 8 and 9 (shared with `Upgrade.run!`): the compiler and `Resolve.install!` with `which.command` and the names.
-	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str) } => Try(Report.Outcome, Fail)
+	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str) } => Try(InstallFlow.Done, Fail)
 	resolve! = |fx, args, opts, start, which| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
@@ -100,8 +102,9 @@ Update :: [].{
 	}
 
 	## Step 10 (shared with `Upgrade.run!`): the lines after the flow, or the envelope (as `Install.run!`).
-	print! : Fx, Fx, Args, Opts, Report.Outcome => {}
-	print! = |fx, shown, args, opts, outcome| {
+	print! : Fx, Fx, Args, Opts, InstallFlow.Done => {}
+	print! = |fx, shown, args, opts, done| {
+		outcome = done.outcome
 		planned = !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
 		if planned {
 			shown.out!("${Report.resolved_line({ at: outcome.at, probes: outcome.probes })}\n")
@@ -110,7 +113,7 @@ Update :: [].{
 			shown.out!("dry run: nothing was written\n")
 		}
 		if args.json {
-			fx.out!(Out.json_ok({ command: args.typed, data: Report.data(outcome) }))
+			fx.out!(Out.json_ok({ command: args.typed, data: ToolsPlan.with_tools({ base: Report.data(outcome), rows: done.tools }) }))
 		}
 	}
 }
@@ -118,7 +121,7 @@ Update :: [].{
 Start : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }
 
 # Steps 2 to 9: the environment, the project, the record, the picker, the compiler, and `Resolve.install!`.
-flow! : Fx, Args, Opts, Bool => Try([Moved(Report.Outcome), NothingPicked], Fail)
+flow! : Fx, Args, Opts, Bool => Try([Moved(InstallFlow.Done), NothingPicked], Fail)
 flow! = |fx, args, opts, pick| {
 	start = Update.begin!(fx, args)?
 	mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
@@ -154,6 +157,8 @@ request_of = |args, opts, start, selected| {
 	strategy: opts.strategy,
 	nightly: Common.nightly_of(start.env),
 	compiler: selected.compiler,
+	selected: "",
+	none: Stop,
 	toolchain: selected.toolchain,
 	snapshot: opts.snapshot,
 	dry_run: opts.dry_run,

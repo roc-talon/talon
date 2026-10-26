@@ -18,6 +18,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
 args
 env_all
@@ -38,6 +39,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
 args
 env_all
@@ -59,6 +61,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Yaml.roc
 read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
 args
@@ -86,6 +89,7 @@ spawn_all limit=1
 write_atomic $HOME/.cache/roc/talon/path-roc.json
 read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.0.0.roc-version
 args
 env_all
 clock
@@ -105,6 +109,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
 read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.0.0.roc-version
 args
 env_all
 clock
@@ -124,6 +129,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/Std.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/Wire.roc
 args
 env_all
@@ -145,6 +151,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.0.0.roc-version
 args
 env_all
 clock
@@ -182,6 +189,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/parser/1.0.0.roc-version
 args
 env_all
 clock
@@ -201,6 +209,7 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/json/2.1.0.roc-version
 args
 env_all
 clock
@@ -239,3 +248,4 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc/main.roc
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/0.1.1.roc-version

@@ -1,0 +1,6 @@
+# R-SO14 R-FE4 R-LF1 R-SO22 R-DL5 R-DL10 R-NI5 R-EF1 R-EC13 (slice 072b): `install --frozen` in a project (p1: no pin, no talon.toml, a platform and the package core) with no compiler installed and no `roc` on PATH. The packages are not in the cache, so the fetch needs `roc unbundle`, so it needs a compiler. `TALON_AUTO_INSTALL=no` refuses the download: exit 13 and the list of compilers is not read. The run writes no file and makes no `default-roc`.
+install --frozen --file p1/main.roc env:TALON_AUTO_INSTALL=no
+# R-SO14 case 1 (a project): `--allow-downloads` answers the prompt. The list has 3 nightlies (14, 16 and 18 of October). compat.db says that the platform passes on all 3 and core passes on the 14th and the 16th and fails on the 18th. So the newest compiler that passes for the 2 hashes of the header is the 16th, not the latest. It is downloaded, it becomes `default-roc`, and `roc unbundle` runs with it. Then the header is checked as `--frozen` does.
+install --frozen --file p1/main.roc --allow-downloads
+# R-SO15 R-FE4: another project (p2: the platform, in the cache now, and lex). The default compiler (the 16th) is installed now, so it is the selected compiler: no list, no prompt, no download of a compiler. `roc unbundle` runs with it.
+install --frozen --file p2/main.roc

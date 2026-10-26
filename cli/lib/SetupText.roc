@@ -16,6 +16,9 @@ SetupText :: [].{
 	## The completion file: written to the path, the same text was there, or no known shell.
 	Completion : [Written(Str), Present, None]
 
+	## Slice 072a (R-ST16): the default compiler step. `Set(id)`: setup wrote `default-roc`. `Kept(id)`: `config.toml` had one, it is not changed. `Unread(why)`: the list of compilers cannot be read (`why` is the text of the failure), setup wrote none.
+	Default : [Set(Str), Kept(Str), Unread(Str)]
+
 	## What a run did. `roc` and `old` are the full paths of the launcher entry and of `roc.old`.
 	Done : {
 		bin : Str,
@@ -25,6 +28,7 @@ SetupText :: [].{
 		moved : Bool,
 		path : SetupText.PathResult,
 		completion : SetupText.Completion,
+		default : SetupText.Default,
 	}
 
 	## The text of the completion file of a shell (R-ST5, question Q6): the 21 commands and the subcommands of `roc`, `tool` and `cache`.
@@ -61,7 +65,8 @@ SetupText :: [].{
 		)
 	}
 
-	## R-OUT2: the lines on stdout, each with a line end. The made entries, the move of `roc`, the `PATH` line, the completion file. No line and no skipped entry: `nothing to do`.
+	## R-OUT2: the lines on stdout, each with a line end. The made entries, the move of `roc`, the `PATH` line, the completion file, and (slice 072a, a proposal, TW24) for `Set(id)` the last line
+	## `default compiler: <id> (downloaded when a command needs it)`. `Kept` and `Unread` give no line. No line and no skipped entry: `nothing to do`.
 	report : SetupText.Done -> List(Str)
 	report = |done| {
 		made = done.entries.keep_oks(
@@ -81,12 +86,17 @@ SetupText :: [].{
 			Written(file) => ["completions: ${file}\n"]
 			_ => []
 		}
-		lines = made.concat(moved).concat(path).concat(files)
+		chosen = match done.default {
+			Set(id) => ["default compiler: ${id} (downloaded when a command needs it)\n"]
+			_ => []
+		}
+		lines = made.concat(moved).concat(path).concat(files).concat(chosen)
 		skipped = done.entries.any(|e| e.act == Skipped)
 		if lines.is_empty() and !skipped ["nothing to do: the entries, the PATH line and the completions are in place\n"] else lines
 	}
 
-	## R-J3, R-OUT4: the `data` of `--json`, the keys in this order: `bin_dir`, `entries` (`name`, `action`, `form`), `roc_old`, `path`, `completion`.
+	## R-J3, R-OUT4: the `data` of `--json`, the keys in this order: `bin_dir`, `entries` (`name`, `action`, `form`), `roc_old`, `path`, `completion`, and (slice 072a, a proposal, TW24) `default_roc`: an object with
+	## `action` (`set`, `kept` or `unread`) and `id` (the id, or null for `unread`).
 	data : SetupText.Done -> JsonDoc
 	data = |done| {
 		entry = |e| {
@@ -120,7 +130,21 @@ SetupText :: [].{
 			("roc_old", JsonDoc.Flag(done.moved)),
 			("path", JsonDoc.Text(path)),
 			("completion", JsonDoc.Text(written)),
+			("default_roc", default_data(done.default)),
 		])
+	}
+
+	## Slice 072a (R-ST16, a proposal, TW24): the note on stderr when the list cannot be read, with its line end. `why` is the text of the failure:
+	## `note: no default compiler was set, because the list of compilers cannot be read (<why>). The first command that needs a compiler picks one.`
+	unread_note : Str -> Str
+	unread_note = |why| "note: no default compiler was set, because the list of compilers cannot be read (${why}). The first command that needs a compiler picks one.\n"
+
+	# The `default_roc` object of `data`.
+	default_data : SetupText.Default -> JsonDoc
+	default_data = |chosen| match chosen {
+		Set(id) => JsonDoc.Obj([("action", JsonDoc.Text("set")), ("id", JsonDoc.Text(id))])
+		Kept(id) => JsonDoc.Obj([("action", JsonDoc.Text("kept")), ("id", JsonDoc.Text(id))])
+		Unread(_) => JsonDoc.Obj([("action", JsonDoc.Text("unread")), ("id", JsonDoc.Null)])
 	}
 
 	# The text without the `ch` at its end (all of them).

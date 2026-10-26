@@ -9,6 +9,7 @@ import Locked
 import Net
 import Out
 import PathCmd
+import RocInstall
 import Roots
 
 ## The command `tln path <alias>` (slice 055, R-CM25, R-PTH1 to R-PTH5, R-PD14, R-PD9): in direct style over `Fx` (TESTING.md 2.2, part C). `PathCmd` has the decisions. `Run.run!` calls it for the command `path`.
@@ -22,7 +23,7 @@ import Roots
 ## | 3 | A workspace root with no current member (answer Q1 of the review): `Install.check_member(Bool.True, project)`, as `add` and `remove`: exit 2 that lists the members. L2 `path/pt1-entry` run 9. | R-PD5, R-WS12 |
 ## | 4 | `canonical!` and `Known.record!` of the member files: the run records the project, also when it fails later | R-PTH4, R-PD9 |
 ## | 5 | One `read_files!` of the project file (`Install.begin!` read it before: the log has 2 reads, decision D1), `Locked.read`, `PathCmd.pick`. No other read: a file in the directory of the entry is never read. | R-PTH1, R-PTH3, R-PTH5 |
-## | 6 | A release entry: `Fetch.packages!` for its URL (nothing is resolved, no project file is written). A failure is the failure of the run (`--offline` and a missing directory: exit 15). A path entry: no fetch. | R-PTH2, R-FE2, R-FE3, R-FE7 |
+## | 6 | A release entry: `RocInstall.read_config!` (one `read_files!` of `config.toml`: `default-roc` is the selected compiler of the fetch, R-FE4, R-SO6, decision D1 of slice 064), then `Fetch.packages!` for its URL (nothing is resolved, no project file is written). A failure is the failure of the run (`--offline` and a missing directory: exit 15). A path entry: no fetch. | R-PTH2, R-FE2, R-FE3, R-FE7 |
 ## | 7 | The output | R-PTH1, R-J1 to R-J6 |
 ##
 ## The output: stdout is the line of `PathCmd.text`, nothing else (also with `--quiet`: it is the answer, R-FL4). With `--json` stdout is the envelope `Out.json_ok({ command: args.typed, data: PathCmd.data(entry) })`. A failure is printed with `Common.failed!`.
@@ -56,7 +57,11 @@ flow! = |fx, args, alias| {
 	entry = PathCmd.pick({ alias, rows, file, roots: start.roots })?
 	match entry.source {
 		Dir => {}
-		Release(url) => fetch!(fx, { roots: start.roots, net: start.net, offline: args.offline, url })?
+		Release(url) => {
+			config = RocInstall.read_config!(fx, start.roots)?
+			selected = Fetch.selected({ held: "", default: config.default_roc ?? "" })
+			fetch!(fx, { roots: start.roots, net: start.net, offline: args.offline, url, selected })?
+		}
 	}
 	Ok(entry)
 }
@@ -69,8 +74,8 @@ rows_of! = |fx, file| match fx.read_files!([file]) {
 }
 
 # Step 6, R-PTH2: the release is fetched when its directory is missing. The result is not read.
-fetch! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, url : Str } => Try({}, Fail)
-fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.offline, roc: "roc", downloader: facts.net.downloader }) {
+fetch! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, url : Str, selected : Str } => Try({}, Fail)
+fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.offline, unbundler: Choose({ selected: facts.selected, none: Stop }), downloader: facts.net.downloader }) {
 	[Ok(_)] => Ok({})
 	[Err(fail)] => Err(fail)
 	_ => Err(Fail.new(Internal, "the fetch of ${facts.url} gave no answer"))

@@ -1,0 +1,1 @@
+tln: error[usage]: $HOME/.local/bin/tln is not a file that tln wrote, so tln does not replace it. Move or remove that file, then run the command again.

@@ -236,3 +236,30 @@ expect {
 	dbg bad
 	bad == []
 }
+
+# R-RM8 R-ST4 (slice 051): `tln tool remove talon --remove-tools` takes the line of `tln setup` out of the profile. `profiles` are the 3 files that `profile` can give (the shell of the day of `tln setup` is not known). `profile_strip` removes each line that has the marker (`# talon: added by tln setup`,
+# whatever the dir in it) and keeps all other lines and their order. No such line: `Keep` (nothing is written). A file that has only that line is the empty text. The text of the last line does not change (a final line end stays, a missing one stays missing).
+expect {
+	line = Setup.path_line({ shell: Bash, dir: "/h/.local/bin" })
+	fish_line = Setup.path_line({ shell: Fish, dir: "/h/.local/bin" })
+	strip = |text| match Setup.profile_strip(text) {
+		Keep => "keep"
+		Write(new) => "write ${Str.inspect(new)}"
+	}
+	rows = [
+		("R-RM8: the 3 profiles", Str.join_with(Setup.profiles({ home: "/h" }), " "), "/h/.bashrc /h/.zshrc /h/.config/fish/conf.d/talon.fish"),
+		("no marker: keep", strip("# mine\nalias ll='ls -l'\n"), "keep"),
+		("the empty text: keep", strip(""), "keep"),
+		("the line in the middle", strip("# mine\n${line}\nalias ll='ls -l'\n"), "write ${Str.inspect("# mine\nalias ll='ls -l'\n")}"),
+		("the line is the last, with a line end", strip("# mine\n${line}\n"), "write ${Str.inspect("# mine\n")}"),
+		("the line is the last, with no line end", strip("# mine\n${line}"), "write ${Str.inspect("# mine")}"),
+		("only the line", strip("${line}\n"), "write \"\""),
+		("the fish line", strip("# fish\n${fish_line}\n"), "write ${Str.inspect("# fish\n")}"),
+		("2 lines with the marker, each goes", strip("${line}\nx\n${fish_line}\ny\n"), "write ${Str.inspect("x\ny\n")}"),
+		("the marker with another dir", strip("export PATH=\"/other:\$PATH\" # talon: added by tln setup\n"), "write \"\""),
+		("a line that only names talon stays", strip("# talon is nice\nexport T=1\n"), "keep"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want)
+	dbg bad
+	bad == []
+}

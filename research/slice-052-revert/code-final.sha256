@@ -1,0 +1,4 @@
+91214f02b9a228ccd30c46e599bc5d25000a25aa28bd526ee66fe30448cb786a  cli/lib/SetupFlow.roc
+ebc31f62f37f9900713394fc3182acec72e24ff6470a25e9f78bb73b898e6828  cli/lib/TalonUpdate.roc
+1d7736e50eaf68dcb1f8584bc391e679e27e1b8d01b30f7f58c174191197c056  install/install.sh
+3173ab9439a9fa69af98ec3701d405bbb13fa78ad7aae37e4fe2644fbde65bf1  .github/workflows/release.yml

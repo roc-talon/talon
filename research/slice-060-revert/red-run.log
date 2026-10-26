@@ -1,0 +1,142 @@
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+[dbg] [{ alias: "pf", name: "roc-lang/basic-cli", note: "platform (pf)", series: "0.25", version: Ok("0.25.0") }, { alias: "json", name: "acme/json", note: "direct (json)", series: "2", version: Ok("2.1.0") }, { alias: "util", name: "", note: "direct (util)", series: "", version: Err(None) }, { alias: "", name: "acme/text", note: "via web", series: "1", version: Ok("1.1.0") }, { alias: "", name: "acme/text", note: "via util", series: "2", version: Ok("2.0.0") }, { alias: "pf", name: "roc-lang/basic-webserver", note: "platform (pf)", series: "0.12", version: Ok("0.12.0") }, { alias: "", name: "", note: "via util", series: "", version: Err(None) }, { alias: "", name: "acme/text", note: "via web", series: "1", version: Ok("1.1.0") }]
+[dbg] ["roc-lang/basic-cli", "acme/json", "util", "acme/text@1", "acme/text@2", "roc-lang/basic-webserver", "", "acme/text@1"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ["null", "-5", "[]", "{}", "\"café \\\"q\\\" back\\\\slash\\nnew\\ttab\"", "{\"a\":1,\"b\":[true,false,null],\"c\":{\"d\":\"x\"}}"]
+[dbg] [True, True, True, False, True, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ["Talon /h/.local/share/talon/bin/tln", "Tools /h/.local/share/talon/bin/foo", "Tools /h/.local/share/talon/bin/bar", "Compilers /h/.cache/roc/toolchains/nightly-2026-10-14-38a3029", "Compilers /h/.cache/roc/toolchains/git-ab12cd34", "Compilers /h/.cache/roc/compat-c1", "Compilers /h/.cache/roc/toolchains/zig-0.17.0", "Data /h/.cache/roc/talon", "Data /h/.config/talon/config.toml", "Data /h/.local/share/talon/share.json"]
+[dbg] ["Talon: tln, roc, the talon entry of tools.json: 10", "Tools: 2 (foo, bar): 11", "Compilers: 1 nightly, 1 git build, zig 0.17.0: 420", "Data: index, x cache, compat.db, config: 1005"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "http://127.0.0.1:8080/zig/index.json"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ path: "/c/roc/toolchains/zig-0.16.2/zig", source: Installed, version: Ok("0.16.2") }, { path: "/c/roc/toolchains/zig-0.17.0/zig", source: Installed, version: Ok("0.17.0") }]
+[dbg] []
+[dbg] Err({ again: Err(None), details: Err(NoDetails), kind: Network, message: "the Zig index is not a JSON object" })
+[dbg] { archive: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz", item: "/c/roc/toolchains/zig-0.17.0", meta: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json", temp: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp", version: "0.17.0", zig: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig" }
+[dbg] "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] "Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+"
+[dbg] "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+Ran 63 tests in 6521.3 ms.:
+    61 passed
+    2 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (64) tests passed in 7755.4 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 7086.1 ms.
+== l2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l2.log)
+      @@ -168,9 +165,8 @@
+       make_dirs $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.0123456789abcdef.tmp
+       spawn_all limit=8
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.0123456789abcdef.tmp/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst
+      -list_dirs $HOME/.cache/roc/toolchains
+       spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst
+      +  job $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.0123456789abcdef.tmp roc unbundle ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst
+       rename $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.0123456789abcdef.tmp/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3 $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3
+       delete $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/packages/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3/main.roc
+      @@ -251,9 +247,8 @@
+       make_dirs $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.0123456789abcdef.tmp
+       spawn_all limit=8
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.0123456789abcdef.tmp/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.tar.zst https://github.com/acme/old/releases/download/1.0.0/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.tar.zst
+      -list_dirs $HOME/.cache/roc/toolchains
+       spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.tar.zst
+      +  job $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.0123456789abcdef.tmp roc unbundle G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.tar.zst
+       rename $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.0123456789abcdef.tmp/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg
+       delete $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/packages/G9krQxhCwJuo97N83pQ6bfXrULLK52efFfCzqEJ7DiNg/main.roc
+      @@ -330,9 +325,8 @@
+       make_dirs $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.0123456789abcdef.tmp
+       spawn_all limit=8
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.0123456789abcdef.tmp/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.tar.zst https://github.com/acme/nobin/releases/download/1.0.0/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.tar.zst
+      -list_dirs $HOME/.cache/roc/toolchains
+       spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.tar.zst
+      +  job $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.0123456789abcdef.tmp roc unbundle Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.tar.zst
+       rename $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.0123456789abcdef.tmp/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ
+       delete $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/packages/Hwz8pucDBbNYsuhYpuHNHrTcsHqdg9mFqebSrsyPz3tQ/main.roc
+      @@ -379,9 +373,8 @@
+       make_dirs $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.0123456789abcdef.tmp
+       spawn_all limit=8
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.0123456789abcdef.tmp/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.tar.zst https://github.com/acme/nofile/releases/download/1.0.0/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.tar.zst
+      -list_dirs $HOME/.cache/roc/toolchains
+       spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.tar.zst
+      +  job $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.0123456789abcdef.tmp roc unbundle BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.tar.zst
+       rename $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.0123456789abcdef.tmp/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2 $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2
+       delete $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/packages/BtSua8vd9TVPwqCVX6xHcG1LRcTyEGAidQdTbATu9Sc2/main.roc
+FAIL x/x3-project
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -68,9 +68,8 @@
+       make_dirs $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp
+       spawn_all limit=8
+         job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst https://github.com/acme/gen/releases/download/1.0.0/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst
+      -list_dirs $HOME/.cache/roc/toolchains
+       spawn_all limit=8
+      -  job $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc unbundle kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst
+      +  job $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp roc unbundle kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.tar.zst
+       rename $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD
+       delete $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD.0123456789abcdef.tmp
+       read_files $HOME/.cache/roc/packages/kLr6hRCJDWbAZeDRzHGqu8AmF72m52j9acNNDus4YpD/main.roc
+commands: 142 passed, 27 failed
+== l3: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l3.log)
+FAIL fetch/fe1-loopback-fetch
+    roc calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,3 @@
+      -version
+       unbundle 9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+       unbundle 9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+       unbundle J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst
+scenarios: 82 passed, 1 failed, 1 skipped
+
+step       result seconds  budget
+check      pass   2.4      10
+fmt        pass   0.3      5
+l0         FAIL   8.0      10
+l2         FAIL   9.7      30
+l3         FAIL   10.0     60
+selftest   pass   3.2      20
+l1         pass   34.7     60

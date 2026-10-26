@@ -1,0 +1,16 @@
+# R-PX5: roc +<id> (rank 1) reads the [patch] table of the talon.toml of the target file: the flag is added. Only the project file and the talon.toml are read (no config.toml, no .roc-version)
+@roc +nightly-2026-10-14-38a3029 check p1/main.roc
+# ROC_TOOLCHAIN (rank 2): the same
+@roc check p1/main.roc env:ROC_TOOLCHAIN=nightly-2026-10-14-38a3029
+# R-PA6: a stale patch stops the proxy for rank 1 as for the other ranks: exit 14, no compiler, no .last-use
+@roc +nightly-2026-10-14-38a3029 check p3/main.roc
+# no talon.toml: no patch, so no read at all (the calls are the calls of an early run before the slice) and the arguments are as they are (R-PX3)
+@roc +nightly-2026-10-14-38a3029 check p2/main.roc
+# a member that has a talon.toml of its own (apps/a): the nearest file (R-PD6) holds the patch that counts, for the header pin (rank 3), which reads the root file too ([toolchain]) and the nearest file
+@roc check w/apps/a/main.roc
+# the same member with roc +<id>: only the file and its own talon.toml are read, the root file is not (R-WS5: no merge)
+@roc +nightly-2026-10-14-38a3029 check w/apps/a/main.roc
+# a member with no talon.toml of its own (apps/b): the nearest file is the root file, and its patch is used
+@roc +nightly-2026-10-14-38a3029 check w/apps/b/main.roc
+# R-PX7: TALON_PROXY=0 does no extra work, also for rank 1: no project, no read, no flag
+@roc +nightly-2026-10-14-38a3029 check p1/main.roc env:TALON_PROXY=0

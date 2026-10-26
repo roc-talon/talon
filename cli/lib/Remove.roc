@@ -74,6 +74,8 @@ flow! = |fx, args, opts| {
 			strategy: Err(Unset),
 			nightly: Common.nightly_of(start.env),
 			compiler,
+			selected: "",
+			none: Stop,
 			toolchain,
 			snapshot: Err(Unset),
 			dry_run: opts.dry_run,

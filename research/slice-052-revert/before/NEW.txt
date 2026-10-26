@@ -1,0 +1,9 @@
+docs/slices/052-release-install.md
+tests/commands/cases/setup/st5-talon-entry
+tests/commands/cases/setup/st6-talon-in-file
+tests/commands/cases/setup/st2-copy-fallback/given/home/.local/share/talon/tools.json
+tests/commands/cases/setup/st3-gaps/given/home/.local/share/talon/tools.json
+tests/fixtures/ci/release-good.yml
+research/release-targets
+research/slice-052-revert/reference
+tests/commands/cases/setup/st7-talon-bad

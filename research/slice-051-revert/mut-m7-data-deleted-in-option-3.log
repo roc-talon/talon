@@ -1,0 +1,117 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   6.8      10
+
+=== l2 exit 1
+FAIL tool/rm2-options
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -63,6 +63,7 @@
+       read_files $HOME/h2/.local/share/talon/tools.json
+       write_atomic $HOME/h2/.local/share/talon/tools.json
+       unlock $HOME/h2/.local/share/talon/tools.json
+      +delete $HOME/h2/.cache/roc/talon $HOME/h2/.config/talon/config.toml $HOME/h2/.local/share/talon/share.json
+       delete $HOME/h2/.local/bin/roc
+       rename $HOME/h2/.local/bin/roc.old $HOME/h2/.local/bin/roc
+       delete $HOME/h2/.local/share/talon/bin/tln
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -109,6 +109,26 @@
+       +++ home/h1/.local/share/talon/tools.json
+       @@ -1 +0,0 @@
+       -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"42b078872402f782f223b98618c617467768bdbd031f1005d1f506acfb6d3c88","libs":[],"installed_at":"2026-09-01T12:00:00Z"},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"baz":{"name":"acme/baz","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/baz/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"baa5a0964d3320fbc0c6a922140453c8513ea24ab8fd0577034804a967248096","libs":[],"installed_at":"2026-09-02T08:00:00Z"}}}
+      +--- home/h2/.cache/roc/talon/index/nightlies.json
+      ++++ home/h2/.cache/roc/talon/index/nightlies.json
+      +@@ -1 +0,0 @@
+      +-[]
+      +--- home/h2/.cache/roc/talon/projects.json
+      ++++ home/h2/.cache/roc/talon/projects.json
+      +@@ -1 +0,0 @@
+      +-{"format":1,"projects":[]}
+      +--- home/h2/.cache/roc/talon/x/0123abcd/manifest.json
+      ++++ home/h2/.cache/roc/talon/x/0123abcd/manifest.json
+      +@@ -1 +0,0 @@
+      +-{"format":1}
+      +--- home/h2/.cache/roc/talon/x/0123abcd/xapp
+      ++++ home/h2/.cache/roc/talon/x/0123abcd/xapp
+      +@@ -1 +0,0 @@
+      +-x app binary
+      +--- home/h2/.config/talon/config.toml
+      ++++ home/h2/.config/talon/config.toml
+      +@@ -1 +0,0 @@
+      +-default-roc = "nightly-2026-10-14-38a3029"
+       --- home/h2/.local/bin/roc
+       +++ home/h2/.local/bin/roc
+       @@ -1 +1 @@
+      @@ -122,6 +142,10 @@
+       +++ home/h2/.local/share/talon/bin/tln
+       @@ -1 +0,0 @@
+       -tln 0.3.1
+      +--- home/h2/.local/share/talon/share.json
+      ++++ home/h2/.local/share/talon/share.json
+      +@@ -1 +0,0 @@
+      +-{"format":1,"contributor":"0123456789abcdef0123456789abcdef"}
+       --- home/h2/.local/share/talon/tools.json
+       +++ home/h2/.local/share/talon/tools.json
+       @@ -1 +1 @@
+FAIL tool/rm3-windows
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -76,6 +76,7 @@
+       read_files $HOME/u2/.local/share/talon/tools.json
+       write_atomic $HOME/u2/.local/share/talon/tools.json
+       unlock $HOME/u2/.local/share/talon/tools.json
+      +delete $HOME/u2/.cache/roc/talon $HOME/u2/.config/talon/config.toml $HOME/u2/.local/share/talon/share.json
+       random
+       rename $HOME/u2\.local\bin/tln.exe $HOME/u2\.local\bin/tln.0123456789abcdef.del
+       rename $HOME/u2/.local/share/talon/bin/tln.exe $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -103,6 +103,26 @@
+       +++ home/u1\.local\bin/tln.exe
+       @@ -1 +0,0 @@
+       -tln 0.3.1
+      +--- home/u2/.cache/roc/talon/index/nightlies.json
+      ++++ home/u2/.cache/roc/talon/index/nightlies.json
+      +@@ -1 +0,0 @@
+      +-[]
+      +--- home/u2/.cache/roc/talon/projects.json
+      ++++ home/u2/.cache/roc/talon/projects.json
+      +@@ -1 +0,0 @@
+      +-{"format":1,"projects":[]}
+      +--- home/u2/.cache/roc/talon/x/0123abcd/manifest.json
+      ++++ home/u2/.cache/roc/talon/x/0123abcd/manifest.json
+      +@@ -1 +0,0 @@
+      +-{"format":1}
+      +--- home/u2/.cache/roc/talon/x/0123abcd/xapp
+      ++++ home/u2/.cache/roc/talon/x/0123abcd/xapp
+      +@@ -1 +0,0 @@
+      +-x app binary
+      +--- home/u2/.config/talon/config.toml
+      ++++ home/u2/.config/talon/config.toml
+      +@@ -1 +0,0 @@
+      +-default-roc = "nightly-2026-10-14-38a3029"
+       --- home/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+       +++ home/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+       @@ -0,0 +1 @@
+      @@ -111,6 +131,10 @@
+       +++ home/u2/.local/share/talon/bin/tln.exe
+       @@ -1 +0,0 @@
+       -tln 0.3.1
+      +--- home/u2/.local/share/talon/share.json
+      ++++ home/u2/.local/share/talon/share.json
+      +@@ -1 +0,0 @@
+      +-{"format":1,"contributor":"0123456789abcdef0123456789abcdef"}
+       --- home/u2/.local/share/talon/tools.json
+       +++ home/u2/.local/share/talon/tools.json
+       @@ -1 +1 @@
+commands: 2 passed, 2 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

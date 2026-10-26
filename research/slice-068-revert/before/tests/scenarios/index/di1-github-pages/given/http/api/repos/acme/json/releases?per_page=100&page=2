@@ -1,0 +1,4 @@
+[
+{"id":100,"tag_name":"2.0.5","draft":false,"prerelease":false,"published_at":"2026-09-01T09:30:00Z","assets":[{"id":1,"name":"J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst","size":2000,"download_count":4,"browser_download_url":"https://github.com/acme/json/releases/download/2.0.5/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst"}]},
+{"id":99,"tag_name":"1.9.0","draft":false,"prerelease":false,"published_at":"2026-08-01T08:00:00Z","assets":[{"id":1,"name":"4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst","size":10,"download_count":4,"browser_download_url":"https://github.com/acme/json/releases/download/1.9.0/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst"},{"id":1,"name":"6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst","size":20,"download_count":4,"browser_download_url":"https://github.com/acme/json/releases/download/1.9.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst"}]}
+]

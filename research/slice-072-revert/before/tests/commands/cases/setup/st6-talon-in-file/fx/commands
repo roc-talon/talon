@@ -1,0 +1,2 @@
+# R-IS6, R-TF2, R-CC6 (slice 052): tools.json has a tool foo and a top-level field note that Talon does not know, and no entry talon. Setup adds talon as the last tool. foo and note stay as they are (R-TF2). The entries tln and foo are made (R-ST15), and the entry talon makes no bin dir entry (its binary is tln).
+setup

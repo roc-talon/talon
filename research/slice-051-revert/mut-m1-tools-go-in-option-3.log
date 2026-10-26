@@ -1,0 +1,162 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+        ("no warning", warns(done(Removed, Default)), ""),
+        ("R-ST6 R-RM5: the warnings", warns(option2), "warning: /h/.local/bin/baz is not a file that tln wrote, so tln keeps it\nwarning: /h/.local/bin/roc is not a file that tln wrote, so tln keeps it\nwarning: tln could not start the cleanup of 2 renamed files, so they stay: /h/.local/bin/tln.0123456789abcdef.del, /h/.local/share/talon/bin/tln.0123456789abcdef.del. A later install of Talon deletes them\n"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, _)| (label, got))
+    dbg bad
+    bad == []
+}
+
+[dbg] [("option 3 with all the lists", "{\"outcome\":\"removed\",\"version\":\"0.3.1\",\"option\":3,\"groups\":[{\"group\":\"talon\",\"action\":\"remove\",\"detail\":\"t\",\"bytes\":1},{\"group\":\"tools\",\"action\":\"remove\",\"detail\":\"x\",\"bytes\":2},{\"group\":\"compilers\",\"action\":\"keep\",\"detail\":\"c\",\"bytes\":3},{\"group\":\"data\",\"action\":\"keep\",\"detail\":\"d\",\"bytes\":4}],\"compilers_kept\":[{\"id\":\"link-mine\",\"path\":\"/h/r\"}],\"roc_restored\":\"/h/b/roc\",\"path\":[\"/h/.bashrc\",\"the user Path\"],\"kept_entries\":[\"/h/b/baz\"],\"stuck\":[\"/h/b/tln.1.del\"]}")]
+
+── ✗ fail ───────────────────────────────── tests/unit/TalonRemoveTest.roc:255:1
+
+expect {
+    render = |d| TalonRemove.data(d).render()
+    small = [part(Talon, "t", 1), part(Tools, "x", 2), part(Compilers, "c", 3), part(Data, "d", 4)]
+    groups = |a, b, c, d| "[{\"group\":\"talon\",\"action\":\"${a}\",\"detail\":\"t\",\"bytes\":1},{\"group\":\"tools\",\"action\":\"${b}\",\"detail\":\"x\",\"bytes\":2},{\"group\":\"compilers\",\"action\":\"${c}\",\"detail\":\"c\",\"bytes\":3},{\"group\":\"data\",\"action\":\"${d}\",\"detail\":\"d\",\"bytes\":4}]"
+    option3 = {
+        ..done(Removed, TalonOnly),
+        parts: small,
+        stays: [{ id: "link-mine", path: "/h/r" }],
+        back: Ok({ from: "/h/b/roc.old", to: "/h/b/roc" }),
+        path: [Profile("/h/.bashrc"), UserPath("C:\\bin")],
+        kept: ["/h/b/baz"],
+        stuck: ["/h/b/tln.1.del"],
+    }
+    rows = [
+        ("a dry run, option 1", render({ ..done(DryRun, Default), parts: small }), "{\"outcome\":\"dry_run\",\"version\":\"0.3.1\",\"option\":1,\"groups\":${groups("remove", "keep", "remove", "remove")},\"compilers_kept\":[],\"roc_restored\":null,\"path\":[],\"kept_entries\":[],\"stuck\":[]}"),
+        ("a real run, option 2", render({ ..done(Removed, WithTools), parts: small }), "{\"outcome\":\"removed\",\"version\":\"0.3.1\",\"option\":2,\"groups\":${groups("remove", "remove", "remove", "remove")},\"compilers_kept\":[],\"roc_restored\":null,\"path\":[],\"kept_entries\":[],\"stuck\":[]}"),
+        ("option 3 with all the lists", render(option3), "{\"outcome\":\"removed\",\"version\":\"0.3.1\",\"option\":3,\"groups\":${groups("remove", "keep", "keep", "keep")},\"compilers_kept\":[{\"id\":\"link-mine\",\"path\":\"/h/r\"}],\"roc_restored\":\"/h/b/roc\",\"path\":[\"/h/.bashrc\",\"the user Path\"],\"kept_entries\":[\"/h/b/baz\"],\"stuck\":[\"/h/b/tln.1.del\"]}"),
+        ("a cancel", render(done(Cancelled, Default)), "{\"outcome\":\"cancelled\",\"version\":\"0.3.1\",\"option\":null,\"groups\":[],\"compilers_kept\":[],\"roc_restored\":null,\"path\":[],\"kept_entries\":[],\"stuck\":[]}"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, _)| (label, got))
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "http://127.0.0.1:8080/zig/index.json"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ path: "/c/roc/toolchains/zig-0.16.2/zig", source: Installed, version: Ok("0.16.2") }, { path: "/c/roc/toolchains/zig-0.17.0/zig", source: Installed, version: Ok("0.17.0") }]
+[dbg] []
+[dbg] Err({ again: Err(None), details: Err(NoDetails), kind: Network, message: "the Zig index is not a JSON object" })
+[dbg] { archive: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz", item: "/c/roc/toolchains/zig-0.17.0", meta: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json", temp: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp", version: "0.17.0", zig: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig" }
+[dbg] "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] "Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+"
+[dbg] "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+Ran 61 tests in 5511.4 ms.:
+    58 passed
+    3 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (64) tests passed in 6347.5 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 6047.2 ms.
+
+step       result seconds  budget
+l0         FAIL   6.5      10
+
+=== l2 exit 1
+FAIL tool/rm2-options
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,7 +3,7 @@
+       exit 0
+       == env:HOME={w}/home/h2 tool rm talon --keep-all
+       Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      -tools        3 (foo, bar, baz)                              33 B     kept
+      +tools        3 (foo, bar, baz)                              33 B     removed
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   kept
+       Talon data   index, x cache, compat.db, config              164 B    kept
+       kept git-ab12cd34: $HOME/h2/.cache/roc/toolchains/git-ab12cd34/roc
+      @@ -11,6 +11,7 @@
+       kept nightly-2026-09-01-abcdef0: $HOME/h2/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
+       kept nightly-2026-10-14-38a3029: $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+       moved $HOME/h2/.local/bin/roc.old back to $HOME/h2/.local/bin/roc
+      +removed the PATH line from $HOME/h2/.bashrc
+       exit 0
+       == env:HOME={w}/home/h3 tool rm talon --remove-tools --keep-all
+       exit 2
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -63,6 +63,8 @@
+       read_files $HOME/h2/.local/share/talon/tools.json
+       write_atomic $HOME/h2/.local/share/talon/tools.json
+       unlock $HOME/h2/.local/share/talon/tools.json
+      +read_files $HOME/h2/.bashrc $HOME/h2/.zshrc $HOME/h2/.config/fish/conf.d/talon.fish
+      +write_atomic $HOME/h2/.bashrc
+       delete $HOME/h2/.local/bin/roc
+       rename $HOME/h2/.local/bin/roc.old $HOME/h2/.local/bin/roc
+       delete $HOME/h2/.local/share/talon/bin/tln
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -109,6 +109,12 @@
+       +++ home/h1/.local/share/talon/tools.json
+       @@ -1 +0,0 @@
+       -{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"42b078872402f782f223b98618c617467768bdbd031f1005d1f506acfb6d3c88","libs":[],"installed_at":"2026-09-01T12:00:00Z"},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"baz":{"name":"acme/baz","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/baz/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"baa5a0964d3320fbc0c6a922140453c8513ea24ab8fd0577034804a967248096","libs":[],"installed_at":"2026-09-02T08:00:00Z"}}}
+      +--- home/h2/.bashrc
+      ++++ home/h2/.bashrc
+      +@@ -1,3 +1,2 @@
+      + # my bashrc
+      +-export PATH="$HOME/.local/bin:$PATH" # talon: added by tln setup
+      + alias ll='ls -l'
+       --- home/h2/.local/bin/roc
+       +++ home/h2/.local/bin/roc
+       @@ -1 +1 @@
+FAIL tool/rm3-windows
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -8,11 +8,12 @@
+       exit 0
+       == env:HOME={w}/home/u2 env:USERPROFILE={w}/home/u2 tool rm talon --keep-all
+       Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      -tools        1 (foo)                                        11 B     kept
+      +tools        1 (foo)                                        11 B     removed
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   kept
+       Talon data   index, x cache, compat.db, config              164 B    kept
+       kept git-ab12cd34: $HOME/u2/.cache/roc/toolchains/git-ab12cd34/roc
+       kept link-mine: $HOME/u2/src/roc/zig-out/bin/roc
+       kept nightly-2026-09-01-abcdef0: $HOME/u2/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
+       kept nightly-2026-10-14-38a3029: $HOME/u2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+      +removed $HOME/u2\.local\bin from the user Path
+       exit 0
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -76,6 +76,19 @@
+       read_files $HOME/u2/.local/share/talon/tools.json
+       write_atomic $HOME/u2/.local/share/talon/tools.json
+       unlock $HOME/u2/.local/share/talon/tools.json
+      +exec powershell -NoProfile -NonInteractive -Command $dir = $env:TALON_BIN_DIR
+      +$key = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment', $true)
+      +$old = $key.GetValue('Path', '', 'DoNotExpandEnvironmentNames')
+      +$parts = @($old -split ';' | Where-Object { $_ -ne '' })
+      +$parts = @($parts | Where-Object { $_ -ne $dir })
+      +$key.SetValue('Path', ($parts -join ';'), [Microsoft.Win32.RegistryValueKind]::ExpandString)
+      +$key.Close()
+      +Add-Type -Namespace Talon -Name Win32 -MemberDefinition '[DllImport("user32.dll", CharSet = CharSet.Auto)] public static extern IntPtr SendMessageTimeout(IntPtr hWnd, uint Msg, UIntPtr wParam, string lParam, uint flags, uint timeout, out UIntPtr result);'
+      +$result = [UIntPtr]::Zero
+      +# WM_SETTINGCHANGE (0x1A) tells the open windows that the environment changed.
+      +[void][Talon.Win32]::SendMessageTimeout([IntPtr]0xffff, 0x1A, [UIntPtr]::Zero, 'Environment', 2, 5000, [ref]$result)
+      +
+      +  env TALON_BIN_DIR=$HOME/u2\.local\bin
+       random
+       rename $HOME/u2\.local\bin/tln.exe $HOME/u2\.local\bin/tln.0123456789abcdef.del
+       rename $HOME/u2/.local/share/talon/bin/tln.exe $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del
+commands: 2 passed, 2 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

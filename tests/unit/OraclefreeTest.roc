@@ -42,7 +42,7 @@ input = |slots, facts| { slots, strategy: Highest, now, min_age: 2 * day, snapsh
 
 row = |url, id, outcome| { hash: hash(url), nightly: id, target: "any", outcome, modules: [], closure: "" }
 
-compat = |checks| { compiler: Ok(held), checks, looked: [], probes: Allowed, conflicts: [], used: [], domain: Ok(d5), inferred: [] }
+compat = |checks| { compiler: Ok(held), checks, looked: [], probes: Allowed, conflicts: [], used: [], domain: Ok(d5), inferred: [], failed: Other }
 
 short = |url| url.drop_prefix("https://github.com/acme/")
 

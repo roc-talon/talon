@@ -1,0 +1,65 @@
+--- home/.cache/roc/compat-c1/cache.bin
++++ home/.cache/roc/compat-c1/cache.bin
+@@ -1 +0,0 @@
+-build cache of c1
+--- home/.cache/roc/compat-c2/cache.bin
++++ home/.cache/roc/compat-c2/cache.bin
+@@ -1 +0,0 @@
+-build cache of c2
+--- home/.cache/roc/talon/index/nightlies.json
++++ home/.cache/roc/talon/index/nightlies.json
+@@ -1 +0,0 @@
+-[]
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -1 +0,0 @@
+-{"format":1,"projects":[]}
+--- home/.cache/roc/talon/x/0123abcd/manifest.json
++++ home/.cache/roc/talon/x/0123abcd/manifest.json
+@@ -1 +0,0 @@
+-{"format":1}
+--- home/.cache/roc/talon/x/0123abcd/xapp
++++ home/.cache/roc/talon/x/0123abcd/xapp
+@@ -1 +0,0 @@
+-x app binary
+--- home/.cache/roc/toolchains/git-ab12cd34/roc
++++ home/.cache/roc/toolchains/git-ab12cd34/roc
+@@ -1 +0,0 @@
+-fake roc
+--- home/.cache/roc/toolchains/git-ab12cd34/.talon.json
++++ home/.cache/roc/toolchains/git-ab12cd34/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"git-ab12cd34","url":"http://127.0.0.1:1/dl/git-ab12cd34","sha256":"00","sha256_source":"github-digest","typed":"git-ab12cd34","compat":null,"installed_at":"2026-10-20T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/link-mine/.talon.json
++++ home/.cache/roc/toolchains/link-mine/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"link-mine","kind":"link","path":"$HOME/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
++++ home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
+@@ -1 +0,0 @@
+-fake roc
+--- home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"nightly-2026-09-01-abcdef0","url":"http://127.0.0.1:1/dl/nightly-2026-09-01-abcdef0","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-09-01-abcdef0","compat":"c2","installed_at":"2026-10-20T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+@@ -1 +0,0 @@
+-fake roc
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"nightly-2026-10-14-38a3029","url":"http://127.0.0.1:1/dl/nightly-2026-10-14-38a3029","sha256":"00","sha256_source":"github-digest","typed":"nightly-2026-10-14-38a3029","compat":"c1","installed_at":"2026-10-20T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/zig-0.17.0/zig
++++ home/.cache/roc/toolchains/zig-0.17.0/zig
+@@ -1 +0,0 @@
+-fake zig
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1 +0,0 @@
+-default-roc = "nightly-2026-10-14-38a3029"
+--- home/.local/share/talon/tools.json
++++ home/.local/share/talon/tools.json
+@@ -1 +1 @@
+-{"format":1,"tools":{"talon":{"name":"roc-talon/talon","source":{"kind":"prebuilt","version":"0.3.1","url":"https://github.com/roc-talon/talon/releases/download/v0.3.1/tln-x64musl"},"build":{"hashes":[],"nightly":"","target":"x64musl"},"sha256":"42b078872402f782f223b98618c617467768bdbd031f1005d1f506acfb6d3c88","libs":[],"installed_at":"2026-09-01T12:00:00Z"},"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"baz":{"name":"acme/baz","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/baz/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"baa5a0964d3320fbc0c6a922140453c8513ea24ab8fd0577034804a967248096","libs":[],"installed_at":"2026-09-02T08:00:00Z"}}}
++{"format":1,"tools":{"foo":{"name":"acme/foo","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/foo/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"bar":{"name":"acme/bar","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/bar/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"fcde2b2edba56bf408601fb721fe9b5c338d10ee429ea04fae5511b68fbf8fb9","libs":[],"installed_at":"2026-09-02T08:00:00Z"},"baz":{"name":"acme/baz","source":{"kind":"release","version":"1.0.0","url":"https://github.com/acme/baz/releases/download/1.0.0/H.tar.zst"},"build":{"hashes":["H1"],"nightly":"nightly-2026-10-14-38a3029","target":"x64musl"},"sha256":"baa5a0964d3320fbc0c6a922140453c8513ea24ab8fd0577034804a967248096","libs":[],"installed_at":"2026-09-02T08:00:00Z"}}}

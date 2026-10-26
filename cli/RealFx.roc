@@ -68,6 +68,15 @@ real_fx = |args, token| Fx.{
 	db_query!: RealDb.query!,
 	db_write!: RealDb.write!,
 	exec_in!: exec_in!,
+	spawn_detached!: spawn_detached!,
+	windows!: windows!,
+}
+
+## Slice 050c, R-ST10: is this machine Windows (basic-cli `Env.platform!`).
+windows! : () => Bool
+windows! = || match Env.platform!().os {
+	WINDOWS => Bool.True
+	_ => Bool.False
 }
 
 ## Slice 023, R-HF9: the program name as typed (basic-cli `Env.program_name!`). The empty text when the system does not tell.
@@ -106,6 +115,32 @@ exec_in! = |run| match run.argv {
 				Signaled(signal) => Ok(128 + signal)
 			}
 			Err(err) => Err(NotStarted(Str.inspect(err)))
+		}
+	}
+}
+
+## Slice 051, R-RM5: one child that goes on after `tln` ends. `Cmd.spawn!` of basic-cli ends the child when its handle is released, so the real call needs a launcher (`sh -c` and `&`, `cmd.exe /d /c start "" /b`): see Q-RM1 of the slice file. Unix: `sh` tests the program, then starts it in the background with no stdio, and ends at once (exit 127: the program is missing). Windows: `cmd.exe /d /c start "" /b`.
+spawn_detached! : { argv : List(Str), env : List((Str, Str)) } => Try({}, [NotStarted(Str)])
+spawn_detached! = |run| match run.argv {
+	[] => Err(NotStarted("no program"))
+	argv => {
+		launcher = match Env.platform!().os {
+			WINDOWS => ["cmd.exe", "/d", "/c", "start", "", "/b"].concat(argv)
+			_ => ["sh", "-c", "command -v \"\$1\" >/dev/null 2>&1 || exit 127; \"\$@\" </dev/null >/dev/null 2>&1 &", "sh"].concat(argv)
+		}
+		match launcher {
+			[program, .. as rest] => {
+				cmd = Cmd.new_str(program).args_str(rest).envs_str(run.env).stdin(Null).stdout(Capture).stderr(Capture)
+				match cmd.run!() {
+					Ok(out) => match out.status {
+						Exited(0) => Ok({})
+						Exited(127) => Err(NotStarted("${argv.first() ?? ""}: no such program"))
+						other => Err(NotStarted("the launcher ended with ${Str.inspect(other)}"))
+					}
+					Err(err) => Err(NotStarted(Str.inspect(err)))
+				}
+			}
+			[] => Err(NotStarted("no program"))
 		}
 	}
 }

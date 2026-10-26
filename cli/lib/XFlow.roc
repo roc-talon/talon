@@ -3,6 +3,7 @@ import Answer
 import Clock
 import Common
 import Fail
+import Fetch
 import Fx
 import Index
 import Item
@@ -57,7 +58,7 @@ XFlow :: [].{
 flow! : Fx, Args, XCmd.Plan => Try(I32, Fail)
 flow! = |fx, args, plan| {
 	machine = ToolFlow.machine_for!(fx)?
-	found = XCacheIo.entries!(fx, machine.roots)?
+	found = XCacheIo.entries!(fx, machine.roots, machine.os)?
 	name = full_name!(fx, plan, machine, found)?
 	key = Text.last_segment(name)
 	facts = {
@@ -74,6 +75,7 @@ flow! = |fx, args, plan| {
 		name,
 		key,
 		file: ToolInstall.file_name({ os: machine.os, key }),
+		selected: Fetch.selected({ held: "", default: machine.default_roc }),
 	}
 	installed = match machine.tools.find_first(|t| t.name == name) {
 		Ok(tool) => Ok(tool)

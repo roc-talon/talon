@@ -1,4 +1,13 @@
 unbundle 9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst	0	-	-	dir:{cwd}/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17;file:{cwd}/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17/main.roc
+# Slice 060: `roc version` of the `roc` on PATH (the first lookup), and the package of each new run.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle 6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst	0	-	-	dir:{cwd}/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit;file:{cwd}/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit/main.roc
+unbundle 3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst	0	-	-	dir:{cwd}/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K;file:{cwd}/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K/main.roc
+unbundle 3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst	0	-	-	dir:{cwd}/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ;file:{cwd}/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ/main.roc
+unbundle 4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst	0	-	-	dir:{cwd}/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue;file:{cwd}/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue/main.roc
+unbundle J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst	0	-	-	dir:{cwd}/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x;file:{cwd}/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x/main.roc
+unbundle 7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst	0	-	-	dir:{cwd}/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt;file:{cwd}/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt/main.roc
+unbundle 52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst	0	-	-	dir:{cwd}/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn;file:{cwd}/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn/main.roc
 unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	1	-	Error: Hash mismatch	-
 unbundle 4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst	0	-	-	dir:{cwd}/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w;file:{cwd}/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w/main.roc
 unbundle 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst	0	-	-	dir:{cwd}/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS;file:{cwd}/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS/main.roc
@@ -9,3 +18,14 @@ CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	file:{w}/home/.cache/
 4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.0123456789abcdef.tmp/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst
 6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.0123456789abcdef.tmp/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst
 2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.0123456789abcdef.tmp/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst
+6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.0123456789abcdef.tmp/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.tar.zst
+3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.0123456789abcdef.tmp/3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K.tar.zst
+3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.0123456789abcdef.tmp/3CgvJux4KPadArNiZGrZh8R518zuRsj9Zv4MJy4DaQRZ.tar.zst
+4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.0123456789abcdef.tmp/4265qZjQbmigKX3zCAYmGWheDjGPmqVfh2RBwPdxeGue.tar.zst
+J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.0123456789abcdef.tmp/J4ffHU5jBcwncMaoigaq9GD5vxM2JqSaMGU2b6UfYt3x.tar.zst
+7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.0123456789abcdef.tmp/7STLYvTuBZWZ4pKt4gWFd3b5tQPv4Morgqt7W1MVoZbt.tar.zst
+52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.0123456789abcdef.tmp/52DaeWZpHDRKvQVusG7stG6M1TH8z4g1wbxiEHGFwJCn.tar.zst
+# Slice 072b (R-SO14, run 13): the download of a compiler (.tar.gz: the file is {out}), its extract, its chmod. The compat check (roc check) has no rule: it exits with 99, and its code is not read.
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

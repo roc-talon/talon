@@ -2,6 +2,7 @@ import BuildTarget
 import Clock
 import ConfigToml
 import Fail
+import Ident
 import IntentEdit
 import Pin
 import Probe
@@ -184,7 +185,7 @@ read_tables = |doc, role, text| {
 			build: build.value,
 			resolution: resolution.value,
 		},
-		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues).concat(tools.issues),
+		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues).concat(tools.issues).concat(patch_issues(doc)),
 		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings).concat(unknown_keys(doc, "run", ["after"])),
 	}
 }
@@ -217,6 +218,18 @@ read_patches = |doc| keys_of(doc, "patch").keep_oks(
 			_ => Err(NotPatch)
 		}
 		_ => Err(NotPatch)
+	},
+)
+
+# R-EC19, R-PA12 (slice 076, Q1): a `[patch]` `base` is a hash, so it is one safe path part (`Ident.safe_part`). A string `base` that is not one is an issue on the line of the key.
+patch_issues : Toml -> List(Note)
+patch_issues = |doc| keys_of(doc, "patch").keep_oks(
+	|k| match k.value {
+		Value.Table(t) => match t.get("base") {
+			Ok(Value.String(base)) if !Ident.safe_part(base) => Ok({ line: k.line, message: "patch.${k.key}.base: '${base}' is not a hash" })
+			_ => Err(Fine)
+		}
+		_ => Err(Fine)
 	},
 )
 

@@ -1,0 +1,29 @@
+== env:HOME={w}/home/h1 tool rm talon --remove-tools --json
+{"schema":1,"command":"tool rm","ok":true,"data":{"outcome":"removed","version":"0.3.1","option":2,"groups":[{"group":"talon","action":"remove","detail":"tln, roc, the talon entry of tools.json","bytes":10},{"group":"tools","action":"remove","detail":"3 (foo, bar, baz)","bytes":33},{"group":"compilers","action":"remove","detail":"2 nightlies, 1 git build, 1 link, zig 0.17.0","bytes":1015},{"group":"data","action":"remove","detail":"index, x cache, compat.db, config","bytes":164}],"compilers_kept":[],"roc_restored":"$HOME/h1/.local/bin/roc","path":["$HOME/h1/.bashrc"],"kept_entries":["$HOME/h1/.local/bin/baz"],"stuck":[]},"error":null}
+exit 0
+== env:HOME={w}/home/h2 tool rm talon --keep-all
+Talon        tln, roc, the talon entry of tools.json           10 B   removed
+tools        3 (foo, bar, baz)                                 33 B   kept
+compilers    2 nightlies, 1 git build, 2 links, zig 0.17.0   1.2 KB   kept
+Talon data   index, x cache, compat.db, config                164 B   kept
+kept git-ab12cd34: $HOME/h2/.cache/roc/toolchains/git-ab12cd34/roc
+kept link-mine: $HOME/h2/src/roc/zig-out/bin/roc
+kept link-system: $HOME/h2/.local/bin/roc
+kept nightly-2026-09-01-abcdef0: $HOME/h2/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
+kept nightly-2026-10-14-38a3029: $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+moved $HOME/h2/.local/bin/roc.old back to $HOME/h2/.local/bin/roc
+exit 0
+== env:HOME={w}/home/h3 tool rm talon --remove-tools --keep-all
+exit 2
+== env:HOME={w}/home/h4 env:CI=false tool rm talon --yes
+Talon        tln, roc, the talon entry of tools.json          10 B   removed
+tools        3 (foo, bar, baz)                                33 B   kept
+compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+Talon data   index, x cache, compat.db, config               164 B   removed
+exit 0
+== env:HOME={w}/home/h5 env:CI=false tool rm talon --remove-tools --yes
+Talon        tln, roc, the talon entry of tools.json    10 B   removed
+tools        2 (foo, bar)                               22 B   removed
+compilers    none                                        0 B   removed
+Talon data   index, x cache, compat.db, config         164 B   removed
+exit 0

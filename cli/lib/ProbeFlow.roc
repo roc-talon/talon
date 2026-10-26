@@ -92,6 +92,8 @@ request_of = |args, opts, start, picked| {
 	strategy: Err(Unset),
 	nightly: Common.nightly_of(start.env),
 	compiler: picked.compiler,
+	selected: "",
+	none: Stop,
 	toolchain: picked.toolchain,
 	snapshot: Err(Unset),
 	dry_run: Bool.False,
@@ -127,7 +129,7 @@ single! = |fx, request, target| {
 		_ => {
 			node = node_of!(fx, target, rows)?
 			program = match target {
-				Bundle(_) => unbundle_program(request, { selected: started.id, installed: started.installed })?
+				Bundle(_) => unbundle_program!(fx, request, { selected: started.id, installed: started.installed })?
 				_ => started.program
 			}
 			materialise!(fx, request, { target, rows, node, program })?
@@ -145,7 +147,7 @@ ranged! = |fx, request, target| {
 	rows = rows_of(loaded, request.project)
 	node = node_of!(fx, target, rows)?
 	installed = Launch.toolchains!(fx, request.roots)
-	program = unbundle_program(request, { selected: "", installed })?
+	program = unbundle_program!(fx, request, { selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), installed })?
 	materialise!(fx, request, { target, rows, node, program })?
 	found = ProbeSearch.run!(
 		fx,
@@ -192,8 +194,11 @@ node_of! = |fx, target, rows| match target {
 }
 
 # R-FE4: the program that runs `roc unbundle`. No installed compiler and no `roc` on `PATH` is a required download that this command does not ask for (the failure of `Compiler.failure`).
-unbundle_program : ResolveBase.Request, { selected : Str, installed : List(Str) } -> Try(Str, Fail)
-unbundle_program = |request, chosen| ProbeCmd.unbundler({ selected: chosen.selected, installed: chosen.installed, path: request.compiler, roots: request.roots }).map_err(|_| Compiler.failure(NoCompiler))
+unbundle_program! : Fx, ResolveBase.Request, { selected : Str, installed : List(Str) } => Try(Str, Fail)
+unbundle_program! = |fx, request, chosen| match Fetch.unbundler({ selected: chosen.selected, installed: chosen.installed, path: request.compiler }) {
+	Ok(id) => Launch.program!(fx, { roots: request.roots, id, installed: chosen.installed, path: request.compiler })
+	Err(NoCompiler) => Err(Compiler.failure(NoCompiler))
+}
 
 # R-FE1, R-FE2: the package of the target is in `packages/<hash>/`: fetched for an alias, unbundled for a bundle file.
 materialise! : Fx, ResolveBase.Request, { target : ProbeCmd.Target, rows : List(Locked.Row), node : Units.Node, program : Str } => Try({}, Fail)
@@ -206,7 +211,7 @@ materialise! = |fx, request, what| match what.target {
 				_ => Err(NotThis)
 			},
 		)
-		match Fetch.packages!(fx, { roots: request.roots, urls: urls.take_first(1), offline: request.offline, roc: what.program, downloader: request.net.downloader }) {
+		match Fetch.packages!(fx, { roots: request.roots, urls: urls.take_first(1), offline: request.offline, unbundler: Program(what.program), downloader: request.net.downloader }) {
 			[Err(fail)] => Err(fail)
 			_ => Ok({})
 		}

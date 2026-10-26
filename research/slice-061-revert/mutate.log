@@ -1,0 +1,9 @@
+M1: CAUGHT by L0 (tests/unit/l0-6.roc) - a file zig-<v> counts
+M2: CAUGHT by L0 (tests/unit/l0-6.roc) - every zig-* dir counts (dev, temp, lock, trash)
+M3: CAUGHT by L0 (tests/unit/l0-6.roc) - a name with more parts counts (zig-0.17.0.<hex>.tmp, zig-0.17.0.lock)
+M4: CAUGHT by L2 gc, roc/gi - the Zig ids come before the compilers
+M5: CAUGHT by L2 gc, roc/gi - a store with no compiler: no Zig goes
+M6: CAUGHT by L0 (tests/unit/l0-6.roc) - the last-day rule is dropped: a Zig used 12 hours ago goes
+M7: CAUGHT by L2 gc, roc/gi - the .last-use of a Zig is not read
+M8: CAUGHT by L2 gc, roc/gi - no .last-use is written before a source build
+M9: CAUGHT by L2 gc, roc/gi - a Zig on PATH or in $ZIG gets a .last-use too

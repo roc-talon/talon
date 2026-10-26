@@ -2,6 +2,7 @@ import lib.Db
 import lib.Ident
 import lib.Index
 import lib.Oracle
+import lib.PairOrder
 import lib.Pick
 
 OracleprobeTest :: [].{}
@@ -38,7 +39,7 @@ row = |url, id, outcome, modules| { hash: hash(url), nightly: id, target: "any",
 
 key = |url, id| { hash: hash(url), nightly: id, target: "any" }
 
-compat = |checks, looked, probes| { compiler: Ok(nightly), checks, looked, probes, conflicts: [], used: [], domain: Ok([nightly]), inferred: [] }
+compat = |checks, looked, probes| { compiler: Ok(nightly), checks, looked, probes, conflicts: [], used: [], domain: Ok([nightly]), inferred: [], failed: Other }
 
 view = |r| match r {
 	Need(urls) => "need ${Str.join_with(urls.map(|url| url.drop_prefix("https://github.com/acme/")), " ")}"
@@ -130,7 +131,7 @@ expect {
 expect {
 	slots = [json_slot]
 	hard3 = row(json("3.0.0"), nightly, Fail, [])
-	none = { compiler: Err(None), checks: [hard3], looked: [], probes: Allowed, conflicts: [], used: [], domain: Ok([nightly]), inferred: [] }
+	none = { compiler: Err(None), checks: [hard3], looked: [], probes: Allowed, conflicts: [], used: [], domain: Ok([nightly]), inferred: [], failed: Other }
 	plain = |facts| view(Oracle.step_probed(input(slots, facts), none))
 	same = |facts| match Oracle.step(input(slots, facts)) {
 		Need(urls) => "need ${Str.join_with(urls.map(|url| url.drop_prefix("https://github.com/acme/")), " ")}"
@@ -156,7 +157,7 @@ expect {
 expect {
 	core_slot = slot("core", [], u("core", "1.0.0"), Held, [])
 	facts = json_facts.concat([fact(u("core", "1.0.0"), [])])
-	run = |slots, conflicts, checks| view(Oracle.step_probed(input(slots, facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts, used: [], domain: Ok([nightly]), inferred: [] }))
+	run = |slots, conflicts, checks| view(Oracle.step_probed(input(slots, facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts, used: [], domain: Ok([nightly]), inferred: [], failed: Other }))
 	pass = |ver| row(json(ver), nightly, Pass, [])
 	deep = [fact(json("1.0.0"), []), fact(json("2.0.0"), []), fact(json("3.0.0"), [u("mid", "1.0.0")]), fact(u("mid", "1.0.0"), [u("core", "1.1.0")]), fact(u("core", "1.0.0"), [])]
 	rows = [
@@ -221,14 +222,14 @@ expect {
 	facts = json_facts.concat([fact(u("a", "1.0.0"), []), fact(u("a", "2.0.0"), [])])
 	yaml = |ver| row(json(ver), nightly, Fail, ["Yaml.roc"])
 	use = |ver, modules| { id: json(ver), modules }
-	run = |checks, used| view(Oracle.step_probed(input([json_slot], facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts: [], used, domain: Ok([nightly]), inferred: [] }))
-	run2 = |checks, used| view(Oracle.step_probed(input([json_slot, a_slot], facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts: [], used, domain: Ok([nightly]), inferred: [] }))
+	run = |checks, used| view(Oracle.step_probed(input([json_slot], facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts: [], used, domain: Ok([nightly]), inferred: [], failed: Other }))
+	run2 = |checks, used| view(Oracle.step_probed(input([json_slot, a_slot], facts), { compiler: Ok(nightly), checks, looked: [], probes: Allowed, conflicts: [], used, domain: Ok([nightly]), inferred: [], failed: Other }))
 	pass_a = row(u("a", "2.0.0"), nightly, Pass, [])
-	tuple = match Oracle.step_probed(input([json_slot, a_slot], facts), { compiler: Ok(nightly), checks: [yaml("3.0.0"), pass_a], looked: [], probes: Allowed, conflicts: [], used: [], domain: Ok([nightly]), inferred: [] }) {
+	tuple = match Oracle.step_probed(input([json_slot, a_slot], facts), { compiler: Ok(nightly), checks: [yaml("3.0.0"), pass_a], looked: [], probes: Allowed, conflicts: [], used: [], domain: Ok([nightly]), inferred: [], failed: Other }) {
 		Scan(s) => Str.join_with(s.chosen.map(|c| "${c.id}=${c.version}"), " ")
 		_ => "no scan"
 	}
-	off = view(Oracle.step_probed(input([json_slot], facts), { compiler: Ok(nightly), checks: [yaml("3.0.0")], looked: [key(json("3.0.0"), nightly)], probes: Off, conflicts: [], used: [], domain: Ok([nightly]), inferred: [] }))
+	off = view(Oracle.step_probed(input([json_slot], facts), { compiler: Ok(nightly), checks: [yaml("3.0.0")], looked: [key(json("3.0.0"), nightly)], probes: Off, conflicts: [], used: [], domain: Ok([nightly]), inferred: [], failed: Other }))
 	rows = [
 		("a fail with a module, no scan result: scan", run([yaml("3.0.0")], []), "scan ${p("3.0.0")}"),
 		("the scan found Yaml.roc used: 3.0.0 is out, the pair of the next release is asked for", run([yaml("3.0.0")], [use("3.0.0", ["Yaml.roc"])]), "pairs ${p("2.0.0")}@${nightly}"),
@@ -244,6 +245,59 @@ expect {
 		("2 slots: json has a scan result and a fail that touches nothing: only a is scanned", run2([yaml("3.0.0"), row(u("a", "2.0.0"), nightly, Fail, ["Lib.roc"])], [use("3.0.0", [])]), "scan a/releases/download/2.0.0/ax2x0x0.tar.zst"),
 		("the verdict has the whole tuple, one release for each slot", tuple, "json=3.0.0 a=2.0.0"),
 		("`Off`: a row from the db with a module is scanned too", off, "scan ${p("3.0.0")}"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-DI8 R-EF1 (slice 068b): `PairOrder.asks`, the release tags that the loop asks a hint for when the budget cuts a round. A pair has a tag when its release URL is a GitHub release URL (`Github.hint_ref`). Each URL is asked once, in the order of the pairs, also when 2 pairs have the same release on 2 compilers.
+expect {
+	n1 = "nightly-2026-10-14-38a3029"
+	n2 = "nightly-2026-10-13-f2f2f2f"
+	pair = |id, compiler| { id, nightly: compiler, is_platform: Bool.False }
+	jv = u("json", "2.2.0")
+	parser = u("parser", "1.1.0")
+	other = "https://example.org/acme/lib/releases/download/1.0.0/libx1x0x0.tar.zst"
+	ask = |url, repo, tag| { id: url, owner: "acme", repo, tag }
+	rows = [
+		("no pair, no ask", PairOrder.asks([]), []),
+		("a pair gives its owner, repo and tag", PairOrder.asks([pair(jv, n1)]), [ask(jv, "json", "2.2.0")]),
+		("the order of the pairs", PairOrder.asks([pair(parser, n1), pair(jv, n1)]), [ask(parser, "parser", "1.1.0"), ask(jv, "json", "2.2.0")]),
+		("the same release on 2 compilers is asked once", PairOrder.asks([pair(jv, n1), pair(parser, n1), pair(jv, n2)]), [ask(jv, "json", "2.2.0"), ask(parser, "parser", "1.1.0")]),
+		("a release of another host has no tag, no ask", PairOrder.asks([pair(other, n1), pair(jv, n1)]), [ask(jv, "json", "2.2.0")]),
+		("a value that is no release URL has no ask", PairOrder.asks([pair("lib/main.roc", n1)]), []),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-AL4 R-EF1 R-CV1 R-EF2 (slice 068b): `PairOrder.order`, the order of the unit probes of a round that the budget cuts. A pair with the rank 4 hint (the `.roc-version` of its release names its compiler, the 2 tag forms of a nightly are one compiler) comes first. Each group keeps the order of the solver.
+# A failed or missing hint is no hint. A hint for a URL that is not in the pairs changes nothing.
+expect {
+	n1 = "nightly-2026-10-14-38a3029"
+	n1_long = "nightly-2026-October-14-38a3029"
+	n2 = "nightly-2026-10-13-f2f2f2f"
+	pair = |id, compiler| { id, nightly: compiler, is_platform: Bool.False }
+	a = u("a", "1.0.0")
+	b = u("b", "1.0.0")
+	c = u("c", "1.0.0")
+	d = u("d", "1.0.0")
+	order = |pairs, hints| PairOrder.order({ pairs, hints }).map(|x| "${x.id.split_on("/").last() ?? ""}@${x.nightly}")
+	t = |url, id| { id: url, hint: Ok(id) }
+	none = |url| { id: url, hint: Err(None) }
+	all = [pair(a, n1), pair(b, n1), pair(c, n1), pair(d, n1)]
+	rows = [
+		("no pair", order([], [t(a, n1)]), []),
+		("no hint: the order of the solver", order(all, []), ["ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n1}", "cx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}"]),
+		("a hint for the third pair: it is first, the others keep their order", order(all, [t(c, n1)]), ["cx1x0x0.tar.zst@${n1}", "ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}"]),
+		("2 hints: both first, in the order of the pairs (not of the hints)", order(all, [t(d, n1), t(b, n1)]), ["bx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}", "ax1x0x0.tar.zst@${n1}", "cx1x0x0.tar.zst@${n1}"]),
+		("a hint that names another compiler is no hint", order(all, [t(c, n2)]), ["ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n1}", "cx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}"]),
+		("the other tag form of the compiler counts (R-CV1)", order(all, [t(c, n1_long)]), ["cx1x0x0.tar.zst@${n1}", "ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}"]),
+		("a failed or missing hint is no hint", order(all, [none(c), none(d)]), ["ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n1}", "cx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}"]),
+		("a hint for a release that is not in the pairs changes nothing", order(all, [t(u("e", "1.0.0"), n1)]), ["ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n1}", "cx1x0x0.tar.zst@${n1}", "dx1x0x0.tar.zst@${n1}"]),
+		("one release on 2 compilers: the hint names one, only that pair is first", order([pair(a, n1), pair(a, n2), pair(b, n2)], [t(a, n2)]), ["ax1x0x0.tar.zst@${n2}", "ax1x0x0.tar.zst@${n1}", "bx1x0x0.tar.zst@${n2}"]),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad

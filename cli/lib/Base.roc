@@ -163,8 +163,38 @@ Base :: [].{
 		Err(NoProject) => []
 	}
 
+	## Slice 070, R-PX5, R-PD6, R-PD7, R-WS5: the files that `load!` reads in one `read_files!`, in this order (a file that does not exist as a path is not in the lists). `files` is the project file (`project_files`, 0 or 1),
+	## `root` is the `talon.toml` that holds `[toolchain]` (the root file of a workspace, else the file of a standalone project, else none), `nearest` is the `talon.toml` of the target file (`Project.toml`: the nearest one up to
+	## the workspace root, R-PD6), `config` is `config.toml` and `versions` is the `.roc-version` (0 or 1).
+	##
+	## | `source` | Paths |
+	## | --- | --- |
+	## | `Read` | `files`, `root`, `nearest` (when it is not in `root`: a member with a `talon.toml` of its own), `config`, `versions` |
+	## | `Given` | The same with no `config` |
+	## | `Patches` | The ranks 1 and 2 (`roc +<id>`, `ROC_TOOLCHAIN`) read only what R-PX5 needs: `files` and `nearest`. With no `nearest`, or with no `files` (no header: no row can have a patch), nothing: no call at all, as before the slice |
+	##
+	## `[patch]` is read from `nearest` (R-PX5: Talon does not merge two files, R-WS5), `[toolchain]` from `root`.
+	load_paths : { source : [Read, Given, Patches], files : List(Str), root : List(Str), nearest : Try(Str, [NoToml]), config : Str, versions : List(Str) } -> List(Str)
+	load_paths = |x| {
+		own = match x.nearest {
+			Ok(path) if !x.root.contains(path) => [path]
+			_ => []
+		}
+		shared = match x.nearest {
+			Ok(path) => [path]
+			Err(NoToml) => []
+		}
+		match x.source {
+			Read => x.files.concat(x.root).concat(own).concat([x.config]).concat(x.versions)
+			Given => x.files.concat(x.root).concat(own).concat(x.versions)
+			Patches => if x.files.is_empty() or shared.is_empty() [] else x.files.concat(shared)
+		}
+	}
+
 	# Step 6, R-SO3 to R-SO6, R-TF4, R-TF5: one `read_files!`: the project file, the `talon.toml`, `config.toml` (only for `Read`) and the `.roc-version`, those that exist.
-	load! : Fx, Roots, Try(Base.Found, [NoProject]), [Read, Given(ConfigToml.Config)] => Try(Base.Loaded, Fail)
+	# Slice 070 (R-PX5): `Patches` is for the ranks 1 and 2 (`Proxy.go!`, not opted out, a project that has a `talon.toml`): the paths of `load_paths`, and the result is `Base.no_facts` with `patch` only (the pin, the range, the config
+	# and the `.roc-version` do not count there: the compiler is given). The `patch` of every source comes from the `[patch]` table of the nearest `talon.toml` (`Intent.read` with the role `Root` for the root file, `Member` for another file).
+	load! : Fx, Roots, Try(Base.Found, [NoProject]), [Read, Given(ConfigToml.Config), Patches] => Try(Base.Loaded, Fail)
 	load! = |fx, roots, found, source| {
 		config_path = Roots.item(roots, Config)
 		files = project_files(found)
@@ -185,12 +215,17 @@ Base :: [].{
 			}
 			Err(NoProject) => []
 		}
-		own = match source {
-			Read => [config_path]
-			Given(_) => []
+		nearest = match found {
+			Ok(project) => project.project.toml
+			Err(NoProject) => Err(NoToml)
 		}
-		paths = files.concat(tomls).concat(own).concat(versions)
-		read = paths.map2(fx.read_files!(paths), |path, result| (path, result))
+		kind = match source {
+			Read => Read
+			Given(_) => Given
+			Patches => Patches
+		}
+		paths = Base.load_paths({ source: kind, files, root: tomls, nearest, config: config_path, versions })
+		read = if kind == Patches and paths.is_empty() [] else paths.map2(fx.read_files!(paths), |path, result| (path, result))
 		locked = match (found, files) {
 			(Ok(project), [file]) => locked_of(read, file, project.header)
 			_ => Err(NoPin)
@@ -199,11 +234,17 @@ Base :: [].{
 			Ok(l) => l.roc
 			Err(NoPin) => Err(NoPin)
 		}
-		toml = read_toml(read, tomls)?
+		rooted = if kind == Patches Ok(unread) else read_toml(read, tomls)
+		toml = rooted?
+		table = patch_table(read, { nearest, root: tomls, rooted: toml, reuse: kind != Patches })?
+		if kind == Patches {
+			return Ok({ ..Base.no_facts, patch: patch_of(locked, { toolchain: no_toolchain, patches: table.patches, path: table.path }) })
+		}
 		toolchain = toml.toolchain
 		config = match source {
 			Read => read_config(read, config_path)?
 			Given(given) => given
+			Patches => no_config
 		}
 		version_file = read_version(read, versions)?
 		has_toml = match found {
@@ -215,7 +256,7 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc, patch: patch_of(locked, toml) })
+		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc, patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
 	}
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
@@ -283,6 +324,31 @@ read_toml = |read, tomls| match tomls {
 	_ => Ok({ toolchain: no_toolchain, patches: [], path: "" })
 }
 
+unread : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str }
+unread = { toolchain: no_toolchain, patches: [], path: "" }
+
+# R-PX5, R-PD6, R-WS5: the `[patch]` table comes from the nearest `talon.toml` of the target file, and from no other file (no merge). The root file is `reuse`d when it is the nearest one and it was read.
+# Another file is a member file of its own (role `Member`). With `Patches` the root file is the nearest one too, and its role is `Root`.
+patch_table : Reads, { nearest : Try(Str, [NoToml]), root : List(Str), rooted : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str }, reuse : Bool } -> Try({ patches : List(Intent.PatchEntry), path : Str }, Fail)
+patch_table = |read, x| match x.nearest {
+	Err(NoToml) => Ok({ patches: [], path: "" })
+	Ok(path) => {
+		is_root = x.root.contains(path)
+		if is_root and x.reuse {
+			Ok({ patches: x.rooted.patches, path: x.rooted.path })
+		} else {
+			match text_of(read, path) {
+				Ok(text) => {
+					scanned = Intent.read({ path, text, role: if is_root Root else Member })?
+					Ok({ patches: scanned.intent.patches, path })
+				}
+				Err(NotFound) => Ok({ patches: [], path: "" })
+				Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
+			}
+		}
+	}
+}
+
 # R-PX5, R-PA6, R-PA10: the patches of the header of the target file.
 patch_of : Try(Locked, [NoPin]), { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str } -> { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) }
 patch_of = |locked, toml| match locked {
@@ -293,6 +359,9 @@ patch_of = |locked, toml| match locked {
 	Err(NoPin) => { replace: [], stale: [] }
 }
 
+no_config : ConfigToml.Config
+no_config = { nightly: Err(Unset), min_release_age: Err(Unset), default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }
+
 # R-SO6, R-TF4: `default-roc` and the settings of `config.toml`. A missing file gives no setting.
 read_config : Reads, Str -> Try(ConfigToml.Config, Fail)
 read_config = |read, path| match text_of(read, path) {
@@ -300,7 +369,7 @@ read_config = |read, path| match text_of(read, path) {
 		scanned = ConfigToml.read({ path, text })?
 		Ok(scanned.config)
 	}
-	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } })
+	Err(NotFound) => Ok(no_config)
 	Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 }
 

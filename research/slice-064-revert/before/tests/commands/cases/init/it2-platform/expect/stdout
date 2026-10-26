@@ -1,0 +1,49 @@
+== cwd:t1 init --platform acme/wpf
+check: passed
+build: passed
+$PROJECT/t1/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:t2 env:HOME={w}/home2 init --platform acme/mpf
+check: passed
+build: passed
+$PROJECT/t2/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:t3 env:HOME={w}/home3 init --platform acme/web
+check: passed
+build: passed
+$PROJECT/t3/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:t4 env:HOME={w}/home4 init --platform acme/cnst
+exit 2
+== cwd:t5 env:HOME={w}/home5 init --platform roc-lang/basic-cli
+check: passed
+build: passed
+$PROJECT/t5/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:t6 env:HOME={w}/home6 init --platform acme/wpf --offline
+exit 15
+== cwd:t8 env:HOME={w}/home8 init --platform acme/wpf
+check: passed
+build: passed
+$PROJECT/t8/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0

@@ -1,0 +1,37 @@
+# R-S5 R-RM1 R-RM2 R-RM3 R-RM4 R-RM5 R-RM6 R-RM7 R-RM9 R-RM10 R-NI10 R-ST11 R-ST13 (slice 051): `tln tool remove talon` end to end with the real Fx (the real sha256 of the entries, `rename`, `delete`, `tree_info`, the locks). The home has Talon 0.3.1 (the data file `tln`, the entries `tln` and `roc` as hard links of it, `roc.old` that `tln setup` made),
+# the tools foo and bar (entries are hard links of the data files) and baz (its entry is another file), 2 nightlies, a git build and Zig 0.17.0, the build caches of the 2 nightlies and of another compiler, a package, the Talon data and `.bashrc` with the line of `tln setup`.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+B=$HOME/.local/bin
+DB=$XDG_DATA_HOME/talon/bin
+C=$XDG_CACHE_HOME/roc
+J=$XDG_DATA_HOME/talon/tools.json
+linked() { if [ ! -e "$1" ] || [ ! -e "$2" ]; then echo "$1 or $2 is gone"; elif [ "$1" -ef "$2" ]; then echo "$1 and $2 are one file"; else echo "$1 and $2 are two files"; fi; }
+state() {
+  echo "bin dir:"; ls -A $B
+  echo "data bin dir:"; ls -A $DB 2> /dev/null || echo "(gone)"
+  echo "compilers:"; ls -A $C/toolchains 2> /dev/null || echo "(gone)"
+  echo "cache of roc:"; ls -A $C
+  echo "config: $(ls -A $HOME/.config 2> /dev/null | tr '\n' ' ')"
+}
+# the entries of Talon and of the tools foo and bar are hard links of the files in the data bin dir (R-ST13); baz is another file (R-ST6, R-ST11)
+ln -f $DB/tln $B/tln
+ln -f $DB/tln $B/roc
+ln -f $DB/foo $B/foo
+ln -f $DB/bar $B/bar
+
+echo "-- 1: --dry-run prints the 4 groups with the sizes and removes nothing (R-RM4). The state after it is the state before it."
+st tln tool remove talon --dry-run
+state
+echo "-- 2: with no terminal the answer is option 1 (R-RM3): Talon, the compilers and the Talon data go, the tools stay. The entries tln and roc and the data file tln are gone, roc.old is roc again (R-RM6, R-RM5)."
+echo "-- The packages and the build cache of the compiler that Talon did not install stay (R-RM1). The entry talon is not in tools.json, the other entries are (R-RM7). The profile line stays (R-RM8)."
+st tln tool remove talon
+state
+cat $B/roc
+ls $C/packages $C/compat-other
+linked $DB/foo $B/foo
+linked $DB/bar $B/bar
+cat $J
+grep -c 'talon: added by tln setup' $HOME/.bashrc || true
+$B/foo
+$B/baz

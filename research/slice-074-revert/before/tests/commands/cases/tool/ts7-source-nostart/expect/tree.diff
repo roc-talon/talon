@@ -1,0 +1,24 @@
+--- home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
++++ home/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+@@ -0,0 +1,13 @@
++platform ""
++	requires {
++		main! : List(Str) => Try({}, [Exit(I32), ..])
++	}
++	exposes []
++	packages {}
++	provides { "roc_main": main_for_host! }
++	targets: {
++		x64mac: { inputs: ["libhost.a", app] },
++		arm64mac: { inputs: ["libhost.a", app] },
++		x64musl: { inputs: ["libhost.a", app] },
++		arm64musl: { inputs: ["libhost.a", app] },
++	}
+--- home/.cache/roc/talon/index/github/roc-talon/talon/1.json
++++ home/.cache/roc/talon/index/github/roc-talon/talon/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"v0.3.4","draft":false,"prerelease":false,"published_at":"2026-10-01T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt"}]},{"tag_name":"v0.3.5","draft":false,"prerelease":false,"published_at":"2026-10-14T12:00:00Z","assets":[{"name":"tln-x64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl"},{"name":"tln-arm64musl","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-arm64musl"},{"name":"sha256sums.txt","size":1000,"browser_download_url":"https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt"}]}]
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z

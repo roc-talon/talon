@@ -1,0 +1,4 @@
+removing Talon, the compilers, the data and the tools
+removing Talon only
+warning: $HOME/u2\.local\bin/roc.exe is not a file that tln wrote, so tln keeps it
+warning: tln could not start the cleanup of 2 renamed files, so they stay: $HOME/u2\.local\bin/tln.0123456789abcdef.del, $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del. A later install of Talon deletes them

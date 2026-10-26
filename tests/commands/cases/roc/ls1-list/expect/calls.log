@@ -2,12 +2,12 @@ args
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
-read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.last-use $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 args
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
-read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.last-use $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 args
 env_all
 read_files $HOME2/.config/talon/config.toml

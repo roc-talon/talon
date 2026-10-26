@@ -25,6 +25,22 @@ Patched :: [].{
 	entries : { rows : List(Locked.Row), patches : List(Intent.PatchEntry), toml : Str } -> List(Patched.Entry)
 	entries = |x| x.patches.keep_oks(|p| entry_of(x.rows, x.toml, p))
 
+	## Slice 076, Q2 (manager answer, 2026-10-25), R-PA9, R-RUN8, R-EC19: the repository of the patches of one `talon.toml`, as the stop dir for `check_inside`. The root dir of the workspace for a workspace (`workspace` is `Project.workspace`),
+	## else the dir of the `talon.toml` (`toml` is its absolute path). A standalone project is its own repository (R-PD5, R-PD6). The code agent calls it for the `talon.toml` of each member with a patch.
+	stop : { workspace : Try({ root : Str, members : List(Str) }, [Standalone]), toml : Str } -> Str
+	stop = |facts| match facts.workspace {
+		Ok(ws) => ws.root
+		Err(Standalone) => Text.dir_of(facts.toml)
+	}
+
+	## Slice 076, Q2, R-RUN8, R-EC19: the copy dir of each entry (`dir`) must be strictly inside `stop` (`dir` starts with `<stop>/`, or `stop` is `/`). A rebase deletes and writes `dir`, so `PatchApply.run!` calls this before its first read, delete or write.
+	## The first entry that fails gives a failure of kind `Input` (exit 19): `patch.<alias>.path: '<path>' is outside the repository (<stop>)` (a proposal, TW24). The `dir` that is `stop` itself fails too (a rebase would delete the repository). An absolute `path` counts like any other.
+	check_inside : { entries : List(Patched.Entry), stop : Str } -> Try({}, Fail)
+	check_inside = |facts| match facts.entries.find_first(|e| !below(e.dir, facts.stop)) {
+		Ok(e) => Err(Fail.new(Input, "patch.${e.alias}.path: '${e.path}' is outside the repository (${facts.stop})"))
+		Err(_) => Ok({})
+	}
+
 	## R-PA10, R-PX5: the `--replace-dep` pairs of the entries, in the order of the entries: the URL of the header entry and the absolute path of the main file of the copy.
 	replaces : List(Patched.Entry) -> List(LadderPlan.Replace)
 	replaces = |list| list.map(|e| { old: e.url, new: e.file })
@@ -76,6 +92,24 @@ Patched :: [].{
 		}
 	}
 
+	## Slice 070, R-PA13: the release of the group of an entry that has the hash `base`. `urls` are the asset URLs of the candidates of the release list of the repository (`Index.Candidate.url`, any order), `group` is the group
+	## of the header URL of the entry (`Ident.group`: the URL form and the series). A URL is a release of the group when `Ident.of_url` is `Ok` and its group and its `hash` are the ones of the arguments. The first such URL in the
+	## order of `urls` is the answer. A hash that a release of another group (another series) has does not count. No such URL, an empty list and a URL that is no release are `Err(NoRelease)`.
+	base_release : { urls : List(Str), group : { form : Str, series : Str }, base : Str } -> Try(Str, [NoRelease])
+	base_release = |x| match x.urls.find_first(|url| in_group(url, x.group, x.base)) {
+		Ok(url) => Ok(url)
+		Err(_) => Err(NoRelease)
+	}
+
+	## Slice 070, R-PA13, R-PA5, R-EC14: the failure for an entry whose `base` no release of its group has. Kind `Frozen` (exit 14, as the stale patch of R-PA6: the machine is fine, the patch is not). `name` is `owner/repo` of the group,
+	## `dir` is the dir of the copy (`Patched.Entry.dir`). The text names the base, the alias and the 2 fixes of R-PA5 (a proposal, TW24):
+	## `the patch of <alias> has the base <base>, and no release of <name> has that hash, so Talon cannot take the diff of the copy. Edit the copy <dir>/, or remove the [patch] entry <alias>.`
+	base_missing : { alias : Str, name : Str, base : Str, dir : Str } -> Fail
+	base_missing = |x| Fail.new(
+		Frozen,
+		"the patch of ${x.alias} has the base ${x.base}, and no release of ${x.name} has that hash, so Talon cannot take the diff of the copy. Edit the copy ${x.dir}/, or remove the [patch] entry ${x.alias}.",
+	)
+
 	## R-PA4, R-PA5, R-PA6: the patches that a command moves to a release, for the entries of one member. `chosen` has the URL that each header entry of the member has after the command (an entry that is not in the list keeps its URL).
 	## An entry needs a rebase (`need`) when the hash of its URL after the command is not its `base`, and the entry moves (the URL changes), or `install` is true: this is `tln install` with no names, which applies a stale patch to the header release (R-PA6).
 	## A stale patch in another command stays as it is (question Q6). A URL that is no release (`Ident.of_url` fails) needs nothing. `url` and `hash` are the new ones. The order is the order of the entries.
@@ -107,6 +141,17 @@ entry_of = |rows, toml, p| match rows.find_first(|r| r.alias == p.key and !r.is_
 		Ok({ alias: p.key, url: value, hash: ident.hash, base: p.base, path: p.path, file, dir: Text.dir_of(file) })
 	}
 	_ => Err(NotManaged)
+}
+
+# R-PA9, R-RUN8: is `dir` strictly below `stop`? The stop dir `/` has every absolute dir below it.
+below : Str, Str -> Bool
+below = |dir, stop| if stop == "/" or stop == "" dir.starts_with("/") and dir != "/" else dir.starts_with("${stop}/")
+
+# R-PA13: is the URL a release of the group that has the hash?
+in_group : Str, { form : Str, series : Str }, Str -> Bool
+in_group = |url, group, base| match Ident.of_url(url) {
+	Ok(ident) => ident.group == group and ident.hash == base
+	Err(Foreign) => Bool.False
 }
 
 # A first argument that is a flag, a `.roc` file or one of the commands that take `--replace-dep`, or no argument: the form `roc [options] [file]`, or a command with the flag (question Q4).

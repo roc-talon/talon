@@ -121,11 +121,14 @@ expect {
 		["up", "json", "--strategy", "lowest", "--no-pin", "--allow-moves"],
 		["upgrade", "--strategy", "highest", "--allow-moves"],
 		["verify", "--strategy", "lowest", "--slots", "2"],
-		["install", "--allow-downloads", "--probe-downloads"],
+		["install", "--allow-downloads"],
 		["add", "json", "--allow-downloads"],
-		["update", "json", "--allow-downloads", "--probe-downloads"],
+		["update", "json", "--allow-downloads"],
 		["remove", "json", "--allow-downloads"],
-		["verify", "--allow-downloads", "--probe-downloads"],
+		["verify", "--allow-downloads"],
+		# R-FL12 R-NI4 (slice 069): `--probe-downloads` is for `upgrade`, `probe` and `init` only
+		["upgrade", "--probe-downloads", "--allow-downloads", "--yes"],
+		["probe", "--probe-downloads", "--slots", "2"],
 		["list", "--tree", "--file", "main.roc"],
 		["ls", "--tree"],
 		["why", "parser", "--file", "main.roc"],
@@ -187,6 +190,16 @@ expect {
 		msg(["path", "pf", "--frozen"]),
 		msg(["path", "pf", "--dry-run"]),
 		msg(["path", "pf", "--allow-downloads"]),
+		# R-FL12 R-NI4 (slice 069): the commands that resolve hold the nightly, so they have no optional download: `--probe-downloads` is exit 2
+		msg(["install", "--probe-downloads"]),
+		msg(["add", "json", "--probe-downloads"]),
+		msg(["i", "json", "--probe-downloads"]),
+		msg(["remove", "json", "--probe-downloads"]),
+		msg(["update", "json", "--probe-downloads"]),
+		msg(["verify", "--probe-downloads", "--allow-downloads"]),
+		msg(["tool", "install", "acme/app", "--probe-downloads"]),
+		msg(["x", "acme/app", "--probe-downloads"]),
+		msg(["path", "pf", "--probe-downloads"]),
 	]
 	dbg msgs
 	msgs == [
@@ -213,5 +226,14 @@ expect {
 		"flag '--frozen' is not for 'path'",
 		"flag '--dry-run' is not for 'path'",
 		"flag '--allow-downloads' is not for 'path'",
+		"flag '--probe-downloads' is not for 'install'",
+		"flag '--probe-downloads' is not for 'install'",
+		"flag '--probe-downloads' is not for 'install'",
+		"flag '--probe-downloads' is not for 'remove'",
+		"flag '--probe-downloads' is not for 'update'",
+		"flag '--probe-downloads' is not for 'verify'",
+		"flag '--probe-downloads' is not for 'tool install'",
+		"flag '--probe-downloads' is not for 'x'",
+		"flag '--probe-downloads' is not for 'path'",
 	]
 }

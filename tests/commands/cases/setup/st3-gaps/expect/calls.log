@@ -27,3 +27,4 @@ hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef
 rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
 write_atomic $HOME/.bashrc
 write_atomic $HOME/.local/share/bash-completion/completions/tln
+read_files $HOME/.config/talon/config.toml

@@ -1,0 +1,13 @@
+# R-DA3 the download of the binary and of sha256sums.txt, R-HF2 chmod, R-S3 `--version` of the new file, R-IS3 `gh`. The first rule whose needle is in the arguments answers. `{out}` is the file of the `--output` of the curl job. A needle `@<n>|<text>` is for the n-th run only.
+v0.3.1/sha256sums.txt	0	-	-	copy:{out}={w}/fx/src/sums-0.3.1
+v0.3.1/tln-x64musl	0	-	-	copy:{out}={w}/fx/src/bin-0.3.1
+v0.3.2/sha256sums.txt	0	-	-	copy:{out}={w}/fx/src/sums-0.3.2
+v0.3.2/tln-x64musl	0	-	-	copy:{out}={w}/fx/src/bin-0.3.2
+v0.3.4/sha256sums.txt	0	-	-	copy:{out}={w}/fx/src/sums-0.3.4
+v0.3.4/tln-x64musl	0	-	-	copy:{out}={w}/fx/src/bin-0.3.4
+@1|gh auth status	1	-	You are not logged into any GitHub hosts. To log in, run: gh auth login	-
+gh auth status	0	-	-	-
+@2|gh attestation verify	1	-	Error: no attestations found for the file	-
+@3|gh attestation verify	0	-	-	-
+chmod 0755	0	-	-	-
+--version	0	tln 0.3.4	-	-

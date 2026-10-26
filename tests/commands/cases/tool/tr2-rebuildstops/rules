@@ -8,3 +8,5 @@ Slice 048, the stops of `tln tool rebuild` (entry `commands`). One home with the
 | 4 | `tool rebuild` | all tools: `foo` is planned (the bundle is fetched), `fe` stops the plan: exit 2, nothing is built or changed (foo has the old files) | R-T7, R-T25, R-CC6 |
 | 5 | `tool rebuild nope` | no installed tool has the short name: exit 2 | R-SC3 |
 | 6 | `tool rebuild talon` | `talon` is slices 050 and 051: exit 2 `is not built yet`, no call | R-CM16 |
+
+Slice 064 (R-FE4, R-SO6): the home has `config.toml` with `default-roc = nightly-2026-10-14-38a3029` and a newer compiler `nightly-2026-10-16-9e9e9e9`. The `roc unbundle` of `tool rebuild` runs with the default (`38a3029`), not with the newest installed compiler: `ToolManageFlow.machine!` reads the default with `config.toml` (the same read as before).

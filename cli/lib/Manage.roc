@@ -31,6 +31,9 @@ Manage :: [].{
 		is_default : Bool,
 	}
 
+	## Slice 071 (R-R15): where a `git-*` build came from. `id` is the toolchain id, `repo` is the `repo` field of its `.talon.json` as it is (the URL `https://github.com/<owner>/<repo>`, R-R1), `ref` is the `ref` field (the text the user typed: a branch, a tag or a sha).
+	Origin : { id : Str, repo : Str, ref : Str }
+
 	## R-CC9 (shared by `roc list` and `cache gc`): the 2 results of each id (`.talon.json`, then `.last-use`), in one list of `Fx.read_files!` results (2 for each id, in the order of `ids`).
 	found_of : List(Str), List(Manage.Read) -> List({ id : Str, meta : Manage.Read, last_use : Manage.Read })
 	found_of = |ids, reads| ids.map2(
@@ -111,6 +114,11 @@ Manage :: [].{
 		},
 	)
 
+	## Slice 071, R-R15, R-R1: the origins of the items of `found`, in the order of `found`. An item gives one `Origin` only when its id is of the kind `Git` (`Manage.kind_of`) and its `meta` is a JSON object with a text `repo` and a text `ref`. The two texts are as they are in the file (no change; an empty text is a text).
+	## An item of another kind, a `meta` that is not readable, and a `meta` that lacks `repo` or `ref` or has a field that is not a text, gives nothing (the list is shorter). The rows find their origin by `id` (`ls_report`, `ls_data`), never by position.
+	origins : List({ id : Str, meta : Manage.Read, last_use : Manage.Read }) -> List(Manage.Origin)
+	origins = |found| found.keep_oks(origin_of)
+
 	## R-OUT2 (a proposal): the table of `roc list`. The streams:
 	##
 	## | Case | stdout | stderr |
@@ -119,8 +127,12 @@ Manage :: [].{
 	## | Rows | The header and one line for each row, in the order of `rows`. The columns are `ID`, `KIND`, `INSTALLED`, `LAST USE`, each padded to its widest cell and separated by 2 spaces. The first 2 characters are `* ` for the default and 2 spaces for the others. A time is the date (`YYYY-MM-DD`), an unknown time is `-`. No trailing spaces. | |
 	## | A default that is not in `rows` | the table as above | `warning: the default compiler <id> is not installed` |
 	##
+	## Slice 071 (R-R15, proposal): `origins` is the result of `Manage.origins`. A row takes the origin with the same `id` (the first one, if two have it); an origin whose id is not a row is ignored. When at least one row has an origin, the table has a fifth column
+	## `SOURCE` (so `LAST USE` is padded as the other columns): `owner/repo@ref` for a row with an origin, `-` for the other rows. `owner/repo` is the `repo` URL without the start `https://github.com/` when the URL has that start and then exactly 2 non-empty parts
+	## (no more `/`); any other `repo` text shows in full. With no row that has an origin the table is as before (no column). The warning and the empty case do not change.
+	##
 	## Each element is one line with its `\n`.
-	ls_report : { rows : List(Manage.Row), default : Try(Str, [Unset]) } -> { stdout : List(Str), stderr : List(Str) }
+	ls_report : { rows : List(Manage.Row), origins : List(Manage.Origin), default : Try(Str, [Unset]) } -> { stdout : List(Str), stderr : List(Str) }
 	ls_report = |facts| {
 		warning = match facts.default {
 			Ok(id) if !facts.rows.any(|r| r.is_default) => ["warning: the default compiler ${id} is not installed\n"]
@@ -129,16 +141,18 @@ Manage :: [].{
 		if facts.rows.is_empty() {
 			{ stdout: ["no compiler is installed. Run: tln roc install @latest\n"], stderr: warning }
 		} else {
-			{ stdout: table(facts.rows), stderr: warning }
+			{ stdout: table(facts.rows, facts.origins), stderr: warning }
 		}
 	}
 
 	## R-J3, R-J4, R-OUT4 (a proposal): the `data` of `roc list --json`, the keys in this order: `default` (the id of `default` as text, or `null`), `compilers` (an array, one object for each row, in the order of `rows`).
 	## The keys of a row: `id`, `kind`, `installed_at` (`Clock.format_utc` or `null`), `last_use` (the same), `default` (true for the default).
-	ls_data : { rows : List(Manage.Row), default : Try(Str, [Unset]) } -> JsonDoc
+	##
+	## Slice 071 (R-R15, R-OUT4, proposal): the row of a `git` kind has 2 more keys after `default`: `repo` and `ref`, the texts of its `Manage.Origin` as they are (the stored URL, raw), or `null` for both when no origin has its id. A row of another kind has no such key.
+	ls_data : { rows : List(Manage.Row), origins : List(Manage.Origin), default : Try(Str, [Unset]) } -> JsonDoc
 	ls_data = |facts| JsonDoc.Obj([
 		("default", text_or_null(facts.default.map_err(|Unset| None))),
-		("compilers", JsonDoc.Arr(facts.rows.map(row_doc))),
+		("compilers", JsonDoc.Arr(facts.rows.map(|row| row_doc(row, facts.origins)))),
 	])
 
 	## R-CS2, R-CC6, R-LY1, R-CC7: the edit of `config.toml` that makes `id` the global default. `text` is the file (the empty text when it does not exist). `id` is a full id.
@@ -351,14 +365,48 @@ time_json = |time| match time {
 	Err(Unknown) => JsonDoc.Null
 }
 
-row_doc : Manage.Row -> JsonDoc
-row_doc = |row| JsonDoc.Obj([
-	("id", JsonDoc.Text(row.id)),
-	("kind", JsonDoc.Text(Manage.kind_text(row.kind))),
-	("installed_at", time_json(row.installed_at)),
-	("last_use", time_json(row.last_use)),
-	("default", JsonDoc.Flag(row.is_default)),
-])
+row_doc : Manage.Row, List(Manage.Origin) -> JsonDoc
+row_doc = |row, origins| {
+	base = [
+		("id", JsonDoc.Text(row.id)),
+		("kind", JsonDoc.Text(Manage.kind_text(row.kind))),
+		("installed_at", time_json(row.installed_at)),
+		("last_use", time_json(row.last_use)),
+		("default", JsonDoc.Flag(row.is_default)),
+	]
+	if row.kind == Git {
+		source = match origin_for(origins, row.id) {
+			Ok(o) => [("repo", JsonDoc.Text(o.repo)), ("ref", JsonDoc.Text(o.ref))]
+			Err(NotFound) => [("repo", JsonDoc.Null), ("ref", JsonDoc.Null)]
+		}
+		JsonDoc.Obj(base.concat(source))
+	} else {
+		JsonDoc.Obj(base)
+	}
+}
+
+# R-R15, R-R1: an `Origin` of one item: a `git-*` id whose `.talon.json` has a text `repo` and a text `ref`.
+origin_of : { id : Str, meta : Manage.Read, last_use : Manage.Read } -> Try(Manage.Origin, [None])
+origin_of = |item| if Manage.kind_of(item.id) != Git {
+	Err(None)
+} else {
+	match (field_of(item.meta, "repo"), field_of(item.meta, "ref")) {
+		(Ok(JsonDoc.Text(repo)), Ok(JsonDoc.Text(ref))) => Ok({ id: item.id, repo, ref })
+		_ => Err(None)
+	}
+}
+
+# R-R15: the first origin with the id.
+origin_for : List(Manage.Origin), Str -> Try(Manage.Origin, [NotFound])
+origin_for = |origins, id| origins.find_first(|o| o.id == id)
+
+# R-R15, R-OUT2: `owner/repo` for `https://github.com/<owner>/<repo>` (2 non-empty parts), else the URL as it is.
+short_repo : Str -> Str
+short_repo = |repo| {
+	prefix = "https://github.com/"
+	rest = repo.drop_prefix(prefix)
+	if repo.starts_with(prefix) and rest.split_on("/").len() == 2 and !rest.split_on("/").any(|part| part == "") rest else repo
+}
 
 # The date of a time (`YYYY-MM-DD`), `-` for no time.
 date_text : Try(U64, [Unknown]) -> Str
@@ -367,10 +415,16 @@ date_text = |time| match time {
 	Err(Unknown) => "-"
 }
 
-# R-OUT2: the header and one line for each row. Each column is as wide as its widest cell, the last column has no padding.
-table : List(Manage.Row) -> List(Str)
-table = |rows| {
-	head = { mark: "  ", id: "ID", kind: "KIND", installed: "INSTALLED", used: "LAST USE" }
+# R-OUT2, R-R15: the header and one line for each row. Each column is as wide as its widest cell, the last column has no padding.
+# The column `SOURCE` is there when a row has an origin (`-` for the other rows).
+table : List(Manage.Row), List(Manage.Origin) -> List(Str)
+table = |rows, origins| {
+	source_of = |r| match origin_for(origins, r.id) {
+		Ok(o) => Ok("${short_repo(o.repo)}@${o.ref}")
+		Err(NotFound) => Err(NotFound)
+	}
+	has_source = rows.any(|r| source_of(r) != Err(NotFound))
+	head = { mark: "  ", id: "ID", kind: "KIND", installed: "INSTALLED", used: "LAST USE", source: "SOURCE" }
 	body = rows.map(
 		|r| {
 			mark: if r.is_default "* " else "  ",
@@ -378,6 +432,7 @@ table = |rows| {
 			kind: Manage.kind_text(r.kind),
 			installed: date_text(r.installed_at),
 			used: date_text(r.last_use),
+			source: source_of(r) ?? "-",
 		},
 	)
 	all = [head].concat(body)
@@ -385,8 +440,10 @@ table = |rows| {
 	id_w = all.fold(0, |size, c| wide(size, c.id))
 	kind_w = all.fold(0, |size, c| wide(size, c.kind))
 	installed_w = all.fold(0, |size, c| wide(size, c.installed))
+	used_w = all.fold(0, |size, c| wide(size, c.used))
 	pad = |text, size| "${text}${" ".repeat(size - text.count_utf8_bytes())}"
-	all.map(|c| "${c.mark}${pad(c.id, id_w)}  ${pad(c.kind, kind_w)}  ${pad(c.installed, installed_w)}  ${c.used}\n")
+	start = |c| "${c.mark}${pad(c.id, id_w)}  ${pad(c.kind, kind_w)}  ${pad(c.installed, installed_w)}  "
+	all.map(|c| if has_source "${start(c)}${pad(c.used, used_w)}  ${c.source}\n" else "${start(c)}${c.used}\n")
 }
 
 parse_toml : Str, Str -> Try(Toml, Fail)

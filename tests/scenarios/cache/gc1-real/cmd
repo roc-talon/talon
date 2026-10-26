@@ -105,3 +105,27 @@ files_left
 echo "== 8c: nothing is left to remove"
 st env ROC_CACHE_DIR=$BD tln cache gc
 
+
+echo "== 9: R-D2 R-GC5 R-CC10 R-CC9 R-GC11 (slice 061): Zig installs. toolchains/ has 3 Zig installs (a dir zig-<release version>): zig-0.17.0 (no .last-use: no source build used it), zig-0.16.1 (last use 21 days ago, and the lock dir of an install, R-CC4), zig-0.15.1 (last use 12 hours ago: a source build wrote it when it started, so it stays, R-CC10). A dev version zig-0.18.0-dev.31+abc1234 and a file zig-0.15.2 are no Zig install. No git-* toolchain exists and no project uses a Zig. TALON_NOW is 2026-10-22T12:00:00Z."
+for d in zig-0.17.0/lib zig-0.16.1 zig-0.15.1 zig-0.18.0-dev.31+abc1234; do mkdir -p $T/$d; done
+echo "zig 0.17.0" > $T/zig-0.17.0/zig
+echo "const std = 1;" > $T/zig-0.17.0/lib/std.zig
+echo "zig 0.16.1" > $T/zig-0.16.1/zig
+echo "zig 0.15.1" > $T/zig-0.15.1/zig
+echo 2026-10-01T00:00:00Z > $T/zig-0.16.1/.last-use
+echo 2026-10-22T00:00:00Z > $T/zig-0.15.1/.last-use
+echo "made by hand" > $T/zig-0.18.0-dev.31+abc1234/zig
+echo "not a dir" > $T/zig-0.15.2
+mkdir $T/zig-0.16.1.lock; echo other > $T/zig-0.16.1.lock/owner; touch $T/zig-0.16.1.lock/beat
+zigs() { (cd $T && ls | grep '^zig-' | sort); }
+echo "== 9a: a dry run lists zig-0.16.1 and zig-0.17.0 with their sizes, and removes nothing. zig-0.15.1 is not listed (last day)."
+st tln cache gc --dry-run
+zigs
+echo "== 9b: the real run. zig-0.16.1 is skipped (the lock of an install is held). zig-0.17.0 goes. zig-0.15.1, the dev dir and the file stay."
+st tln cache gc
+zigs
+echo "== 9c: the install is done: --json removes zig-0.16.1 too. The text goes to stderr. zig-0.15.1 still stays."
+rm -r $T/zig-0.16.1.lock
+st tln cache gc --json
+zigs
+rm -r $T/zig-0.18.0-dev.31+abc1234 $T/zig-0.15.2 $T/zig-0.15.1

@@ -1,6 +1,6 @@
 # R-CM17, R-GC11, R-GC5, R-GC6, R-GC3, R-GC9, R-EV22, D17: a dry run. Nothing is removed and no lock is taken. TALON_NOW (2026-10-22) is the time for the toolchains and the projects, the clock of the fake (2026-10-15) is the time for the temps.
 # The default age is 30 days. Toolchains that go: git-dd03c09e (no pin, installed 2026-06-01), 6666666 (old, a lock holds it in the next runs), aaaaaaa (old, no pin), 5555555 (last use 2026-08-20, only an old project pins it, so it pins nothing), 9999999 (no .last-use: installed_at, old).
-# Toolchains that stay: bbbbbbb (pinned), ccccccc (pinned by pb, last use 2026-08-11: a pin keeps at any age), ddddddd (no pin, used 10 days ago: used in the age), the default (config.toml has the other tag form), fffffff and 8888888 (used in the last day), 7777777 (no time), link-dev and copy-fix-1 (made by hand), zig-0.17.0 (no compiler).
+# Toolchains that stay: bbbbbbb (pinned), ccccccc (pinned by pb, last use 2026-08-11: a pin keeps at any age), ddddddd (no pin, used 10 days ago: used in the age), the default (config.toml has the other tag form), fffffff and 8888888 (used in the last day), 7777777 (no time), link-dev and copy-fix-1 (made by hand). (Slice 061: the dir `zig-0.17.0` that was here is in the case `gc7-zig`: what GC does with a Zig install next to a `git-*` build and with no `.talon.json` is open, Q1 and Q4 of docs/slices/061-zig-gc.md.)
 cache gc --dry-run
 # R-J3: the same with --json. The text goes to stderr, stdout has only the envelope.
 cache gc --dry-run --json

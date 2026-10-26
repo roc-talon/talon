@@ -1,0 +1,4 @@
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+# run 5 (slice 070b, R-PA13): the fetch of the base of the patch of p2, json 2.1.0 (not in the cache). The first rule whose needle is in the arguments answers.
+unbundle DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4.tar.zst	0	-	-	dir:{cwd}/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4;file:{cwd}/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4/main.roc;file:{cwd}/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4/Json.roc
+DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4.0123456789abcdef.tmp/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4.tar.zst

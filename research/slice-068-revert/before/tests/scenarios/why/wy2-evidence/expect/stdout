@@ -1,0 +1,41 @@
+== tln why parser
+$PROJECT/main.roc
+  acme/parser 1.0.0 (direct)
+    parser
+    evidence on nightly-2026-10-14-38a3029:
+      * 3 pin: pass
+exit 0
+== tln update json --dry-run
+check: passed
+build: passed
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 6 probes
+dry run: nothing was written
+exit 0
+== tln why parser
+$PROJECT/main.roc
+  acme/parser 1.0.0 (direct)
+    parser
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: pass
+        3 pin: pass
+exit 0
+== tln why parser --json
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"parser","name":"acme/parser","version":"1.0.0","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"parser","kind":"release","id":"https://github.com/acme/parser/releases/download/1.0.0/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[{"rank":1,"source":"local","result":"pass","modules":[],"winner":true},{"rank":3,"source":"pin","result":"pass","modules":[],"winner":false}],"notes":[]}]},"error":null}
+exit 0
+== tln why pf
+$PROJECT/main.roc
+  acme/pfx 0.1.0 (direct)
+    pf
+    evidence on nightly-2026-10-14-38a3029:
+      * 1 local: pass
+exit 0
+== tln why json
+$PROJECT/main.roc
+  acme/json 2.0.0 (direct)
+    json
+exit 0
+== tln why json --json
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]],"compiler":"nightly-2026-10-14-38a3029","evidence":[],"notes":[]}]},"error":null}
+exit 0

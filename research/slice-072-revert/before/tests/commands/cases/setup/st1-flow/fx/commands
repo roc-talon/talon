@@ -1,0 +1,27 @@
+# R-IS6, R-S4 (slice 063): the given tools.json has an entry talon of version 0.3.1 with another sha256 (the state after `install.sh --version <v>` put this tln over a newer or older one: the version and the sha256 are not those of the running tln, which says 0.0.0). Setup writes the entry again as a prebuilt entry of the running tln, in its place (foo, bar, baz stay), under the lock, after the prompts (as st5): clock, lock, read, write, unlock, and the first output line says it. Runs 2 and later find an entry that matches: no call for it.
+# R-ST1, R-ST6, R-ST11, R-ST13, R-ST15, R-ST5, R-ST3, R-NI13 (non-interactive: the default No), R-ST7: the first setup. tln and baz are made (hard link, a temp and a rename). roc is foreign (R-ST11: other content): no prompt text in CI, the answer No, no launcher. foo is foreign: a warning, nothing changes (R-ST6). bar has no file in the data bin dir. The bin dir is on PATH (no PATH step), but /usr/local/bin/roc comes before it (R-ST3). The bash completion is written (R-ST5).
+setup
+# R-ST2, R-NI13 (--replace-roc is the answer Yes), R-ST14, R-J3: --json shows the entries in the data (roc_old is true). roc goes to roc.old, link-system records its path (under the lock of the item), the launcher is a hard link of tln. tln and baz are Talon's and up to date (the same sha256): kept. The completion is there.
+setup --replace-roc --json
+# R-ST12: setup again changes nothing: only reads, the same warnings.
+setup
+# R-J3, R-OUT4: --json again: the data of a run with a skipped entry (foo, bar), a kept one, the PATH step done by the current PATH (on-path), and the human lines on stderr.
+setup --json
+# R-ST4, R-NI14, R-LY9: the bin dir is not on PATH. The profile of bash has no line: the prompt is asked in a terminal. The answer n: nothing is written, the line is printed (R-NI14: --no-modify-path prints it too).
+setup env:PATH=/usr/bin env:CI=false
+# R-ST4, R-NI14: the answer Enter is the default Yes. The line is added at the end of .bashrc, after a line end (the old text has none).
+setup env:PATH=/usr/bin env:CI=false
+# R-ST4, R-ST12: the marker line is in the profile: no prompt, nothing to do (the current shell has not read the profile).
+setup env:PATH=/usr/bin
+# R-ST4: GITHUB_PATH is set: the bin dir is appended to that file (it is made), in place of a profile line. CI: the prompt is not shown, the answer is the default Yes.
+setup env:PATH=/usr/bin env:GITHUB_PATH={w}/home/gh/path
+# R-ST4: GITHUB_PATH has the line: nothing is written.
+setup env:PATH=/usr/bin env:GITHUB_PATH={w}/home/gh/path
+# R-ST4, R-ST5: fish: the profile is conf.d/talon.fish (a new file) and the completion is in the fish dir.
+setup env:PATH=/usr/bin env:SHELL=/usr/bin/fish
+# R-ST4, R-ST5: a shell that Talon does not know (question Q5): no profile, no completion. The line is printed.
+setup env:PATH=/usr/bin env:SHELL=/bin/tcsh
+# R-NI14: --no-modify-path is the answer No (zsh has no .zshrc here): the answer line, the line is printed. The zsh completion is written (no prompt, R-ST5).
+setup --no-modify-path env:PATH=/usr/bin env:SHELL=/bin/zsh
+# R-CM18: setup has no operand: exit 2, no Fx call after the args.
+setup now

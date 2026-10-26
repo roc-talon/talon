@@ -1,0 +1,48 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.9      10
+
+=== l2 exit 1
+FAIL tool/rm1-default
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -118,4 +118,4 @@
+       read_files $HOME/.local/share/talon/tools.json
+       unlock $HOME/.local/share/talon/tools.json
+       delete $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+      -delete $HOME/.local/share/talon/bin/tln
+      +delete $HOME/.local/bin/tln $HOME/.local/share/talon/bin/tln
+FAIL tool/rm2-options
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -65,7 +65,7 @@
+       unlock $HOME/h2/.local/share/talon/tools.json
+       delete $HOME/h2/.local/bin/roc
+       rename $HOME/h2/.local/bin/roc.old $HOME/h2/.local/bin/roc
+      -delete $HOME/h2/.local/share/talon/bin/tln
+      +delete $HOME/h2/.local/bin/tln $HOME/h2/.local/share/talon/bin/tln
+       args
+       args
+       env_all
+    file tree differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -118,6 +118,10 @@
+       +++ home/h2/.local/bin/roc.old
+       @@ -1 +0,0 @@
+       -the roc that was here before tln setup
+      +--- home/h2/.local/bin/tln
+      ++++ home/h2/.local/bin/tln
+      +@@ -1 +0,0 @@
+      +-not the tln of Talon
+       --- home/h2/.local/share/talon/bin/tln
+       +++ home/h2/.local/share/talon/bin/tln
+       @@ -1 +0,0 @@
+commands: 2 passed, 2 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

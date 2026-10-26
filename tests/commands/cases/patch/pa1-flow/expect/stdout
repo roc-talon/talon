@@ -120,4 +120,4 @@ exit 2
 == patch json --diff --file p6/main.roc
 exit 2
 == patch json --diff --file p7/main.roc
-exit 18
+exit 14

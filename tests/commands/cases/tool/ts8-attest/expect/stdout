@@ -1,0 +1,9 @@
+== tool update talon env:TALON_NOW=2026-09-03T12:00:00Z
+updated talon 0.1.0 to 0.3.1 (roc-talon/talon)
+exit 0
+== tool update talon env:TALON_NOW=2026-09-12T12:00:00Z
+exit 16
+== tool update talon
+attestation ok
+updated talon 0.3.1 to 0.3.4 (roc-talon/talon)
+exit 0

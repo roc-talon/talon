@@ -1,0 +1,2 @@
+env:HOME={w}/home/u1 env:USERPROFILE={w}/home/u1 tool rm talon --remove-tools
+env:HOME={w}/home/u2 env:USERPROFILE={w}/home/u2 tool rm talon --remove-tools

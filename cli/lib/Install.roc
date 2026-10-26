@@ -14,8 +14,10 @@ import Opts
 import Out
 import Project
 import Report
+import InstallFlow
 import Resolve
 import Roots
+import ToolsPlan
 
 ## The command `tln install` (also `add` and `i`, R-CM2, R-CM19, R-CM20): the wiring of a run, in direct style over `Fx` (TESTING.md 2.2, part C). It owns no decision:
 ## `Opts` reads the flags, `Resolve.install!` is the flow of slice 005 and 006 with the add of names, `Report` makes the line of R-DT5 and the `data` of `--json`.
@@ -56,8 +58,8 @@ Install :: [].{
 		Ok(opts) => {
 			shown = Common.shown_fx(fx, args)
 			match flow!(shown, args, opts) {
-				Ok(outcome) => {
-					print!(fx, shown, args, opts, outcome)
+				Ok(done) => {
+					print!(fx, shown, args, opts, done)
 					0
 				}
 				Err(fail) => Common.failed!(fx, args, fail)
@@ -130,7 +132,7 @@ Install :: [].{
 }
 
 # Steps 2 to 8: the environment, the project, the record, the compiler, and `Resolve.install!`.
-flow! : Fx, Args, Opts => Try(Report.Outcome, Fail)
+flow! : Fx, Args, Opts => Try(InstallFlow.Done, Fail)
 flow! = |fx, args, opts| {
 	start = Install.begin!(fx, args)?
 	env = start.env
@@ -157,6 +159,8 @@ flow! = |fx, args, opts| {
 			strategy: opts.strategy,
 			nightly: Common.nightly_of(env),
 			compiler,
+			selected: "",
+			none: Stop,
 			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: opts.dry_run,
@@ -170,8 +174,9 @@ flow! = |fx, args, opts| {
 }
 
 # Step 9: the lines after the flow, or the envelope.
-print! : Fx, Fx, Args, Opts, Report.Outcome => {}
-print! = |fx, shown, args, opts, outcome| {
+print! : Fx, Fx, Args, Opts, InstallFlow.Done => {}
+print! = |fx, shown, args, opts, done| {
+	outcome = done.outcome
 	planned = !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
 	if planned {
 		shown.out!("${Report.resolved_line({ at: outcome.at, probes: outcome.probes })}\n")
@@ -180,6 +185,6 @@ print! = |fx, shown, args, opts, outcome| {
 		shown.out!("dry run: nothing was written\n")
 	}
 	if args.json {
-		fx.out!(Out.json_ok({ command: args.typed, data: Report.data(outcome) }))
+		fx.out!(Out.json_ok({ command: args.typed, data: ToolsPlan.with_tools({ base: Report.data(outcome), rows: done.tools }) }))
 	}
 }

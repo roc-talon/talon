@@ -1,0 +1,18 @@
+== tool install --git acme/gapp@main
+replaced gapp 1.0.0 with git main@aaaaaaaa (acme/gapp)
+exit 0
+== tool install --git acme/gapp@main
+gapp git main@aaaaaaaa is installed
+exit 0
+== tool install acme/sub@dd03c09e --path apps/cli
+installed sub git dd03c09e@dd03c09e (acme/sub)
+exit 0
+== tool install --git acme/gapp@v2 --json
+{"schema":1,"command":"tool install","ok":true,"data":{"tool":"gapp","name":"acme/gapp","source":"git","commit":"bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c","ref":"v2","how":"replaced","previous":"git main","bin":"$HOME/.local/bin/gapp","nightly":"nightly-2026-10-14-38a3029","target":"x64musl","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","entry":"hard_link"},"error":null}
+exit 0
+== tool install --git acme/gapp@main --as other
+exit 2
+== tool install --git acme/gapp@main --path pkg
+exit 2
+== tool install --git acme/gapp@main --path nodir
+exit 2

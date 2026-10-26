@@ -1,3 +1,5 @@
+env_all
+list_dirs $HOME\.local\bin $HOME/.local/share/talon/bin
 args
 env_all
 clock
@@ -20,6 +22,7 @@ spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.4/sha256sums.txt
 sha256_file $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp
 read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+programs gh
 spawn_all limit=1
   job - $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp --version
 lock $HOME/.local/share/talon/tools.json nowait: held
@@ -39,6 +42,9 @@ rename $HOME\.local\bin/roc.exe.0123456789abcdef.tmp $HOME\.local\bin/roc.exe
 write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.local/share/talon/bin/tln.exe.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
+env_all
+list_dirs $HOME\.local\bin $HOME/.local/share/talon/bin
+delete $HOME\.local\bin/roc.0123456789abcdef.del $HOME\.local\bin/tln.0123456789abcdef.del $HOME/.local/share/talon/bin/tln.0123456789abcdef.del
 args
 env_all
 clock

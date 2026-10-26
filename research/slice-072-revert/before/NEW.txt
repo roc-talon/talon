@@ -1,0 +1,16 @@
+tests/commands/cases/setup/st8-first-default (a whole dir)
+tests/commands/cases/setup/st1-flow/given/home/.config/talon/config.toml
+tests/commands/cases/setup/st2-copy-fallback/given/home/.config/talon/config.toml
+tests/commands/cases/setup/st3-gaps/given/home/.config/talon/config.toml
+tests/commands/cases/setup/st5-talon-entry/given/home/.config/talon/config.toml
+tests/commands/cases/setup/st6-talon-in-file/given/home/.config/talon/config.toml
+tests/scenarios/setup/st1-setup-real/given/home/.config/talon/config.toml
+cli/lib/NoRank.roc
+tests/commands/cases/fetch/fe-flow/fx/env
+tests/commands/cases/fetch/fe-flow/fx/http/api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+tests/commands/cases/fetch/fe-none (a whole dir)
+tests/commands/cases/closure/cl3-frozen-none (a whole dir)
+tests/unit/NoRankTest.roc
+tests/commands/cases/setup/st8-first-default/given/home3
+tests/commands/cases/setup/st8-first-default/given/home4
+tests/commands/cases/setup/st8-first-default/fx/platform

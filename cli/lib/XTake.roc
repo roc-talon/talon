@@ -1,5 +1,7 @@
 import Args
 import Clock
+import Del
+import DelFlow
 import Fail
 import Fx
 import Index
@@ -34,8 +36,8 @@ import XCmd
 ##
 ## | # | Does | Rule |
 ## | --- | --- | --- |
-## | 1 | `read_files!` of `tools.json`, `ToolsJson.read`, `ToolsJson.clash` again (`Taken`, `Elsewhere`: the failures of `ToolInstall`; `Same(old)`: `Replaced`; `Free`: `Installed`), `ToolBuild.entry_verdict!` again. | R-CC6, R-T28, R-ST6 |
-## | 2 | `sha256_file!` of the binary of the entry. It must be the `sha256` of the manifest, else a failure of kind `Integrity` (exit 16, nothing changed; question Q-T3: the design does not say what follows). The check is before the move, so a bad file never replaces an installed binary. | R-B4 |
+## | 1 | `read_files!` of `tools.json`, `ToolsJson.read`, `ToolsJson.clash` again (`Taken`, `Elsewhere`: the failures of `ToolInstall`; `Same(old)`: `Replaced`; `Free`: `Installed`), `ToolBuild.entry_read!` again (the calls of `entry_verdict!`, with the data file and the entry that it read). | R-CC6, R-T28, R-ST6 |
+## | 2 | `sha256_file!` of the binary of the entry. It must be the `sha256` of the manifest, else a failure of kind `Integrity` (exit 16, nothing changed; question Q-T3: the design does not say what follows). The check is before the move, so a bad file never replaces an installed binary. Then `ToolsHeld.all!` and `XCache.take_how`. Windows (slice 050d, R-ST10): `DelFlow.rename_away!` of the files that `Del.replaced` gives for the data file and the entry that exist (one `random!`, one `rename!` of each to its `.del` name; no call for a first install). | R-B4, R-ST10 |
 ## | 3 | `make_dirs!` of the data bin dir and the bin dir. `XCache.take_how` (`project_uses` is `Bool.False` until slice 056). `Move`: `rename!` of the binary to `layout.data_tmp`; when it fails, `copy_file!` to the same name. `Copy`: `copy_file!`. Then `rename!` of `data_tmp` to `layout.data_file`. A failed copy: `SetupIo.dropped!`. | R-B4, R-T3, R-CC1 |
 ## | 4 | `ToolBuild.link_entry!` (the bin dir entry, R-ST7), then `ToolsJson.put` with the tool of the manifest (`installed_at` is the time of Talon) and `write_atomic!` of `tools.json`. | R-ST7, R-ST9, R-T4 |
 ## | 5 | `Move`: one `delete!` of the entry dir (also after a copy that replaced a failed `rename`). `Copy`: nothing (R-PT13). | R-B4 |
@@ -48,7 +50,7 @@ XTake :: [].{
 	online! : Fx, Args, { facts : ToolBuild.Facts, selector : Try(Selector, [None]), list : List(Index.Candidate), newest : Index.Candidate } => Try(Taken, Fail)
 	online! = |fx, _args, run| {
 		facts = run.facts
-		found = XCacheIo.entries!(fx, facts.roots)?
+		found = XCacheIo.entries!(fx, facts.roots, facts.os)?
 		check = Online({ first: run.newest.ident.version, listed: run.list.map(|c| c.ident.version) })
 		match XCache.choose({ name: facts.name, target: facts.target, selector: run.selector, check, installed: Err(None), entries: found }) {
 			Cached(hit) => {
@@ -67,7 +69,7 @@ XTake :: [].{
 	offline! : Fx, Args, { facts : ToolBuild.Facts, selector : Try(Selector, [None]) } => Try(Taken, Fail)
 	offline! = |fx, args, run| {
 		facts = run.facts
-		found = XCacheIo.entries!(fx, facts.roots)?
+		found = XCacheIo.entries!(fx, facts.roots, facts.os)?
 		match XCache.choose({ name: facts.name, target: facts.target, selector: run.selector, check: Offline, installed: Err(None), entries: found }) {
 			Cached(hit) => {
 				version = ToolsJson.source_text(hit.entry.source)
@@ -108,7 +110,11 @@ taken! = |fx, run| {
 		Same(old) => Replaced(ToolsJson.source_text(old.source))
 		Free => Installed
 	}
-	ToolBuild.entry_verdict!(fx, facts)?
+	read = ToolBuild.entry_read!(fx, facts)?
+	match read.verdict {
+		Make => {}
+		Foreign => return Err(ToolInstall.foreign_failure(Text.join(facts.bin, facts.file)))
+	}
 	binary = XCacheIo.bin_of({ found: run.hit, os: facts.os })
 	match fx.sha256_file!(binary) {
 		Ok(sha) if sha == entry.sha256 => {}
@@ -117,6 +123,8 @@ taken! = |fx, run| {
 	}
 	held = ToolsHeld.all!(fx, facts.roots)?
 	how_to = XCache.take_how({ project_uses: held.contains(entry.bundle) })
+	# Slice 050d (R-ST10): on Windows the files of an installed tool of the same name go to `.del` names, so the new files can go in.
+	_ = DelFlow.rename_away!(fx, { os: facts.os, files: Del.replaced({ data_file: run.layout.data_file, entry: run.layout.entry, old: read.old, have: read.have }) })?
 	place!(fx, run.layout, { binary, how: how_to })?
 	_ = ToolBuild.link_entry!(fx, run.layout)?
 	tool = {

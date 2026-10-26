@@ -1,0 +1,2 @@
+tests/commands/cases/tool/ts8-attest/
+tests/scenarios/tools/ts1-update-talon/given/bin/gh

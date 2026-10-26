@@ -1,4 +1,4 @@
-# Q4 (accepted default), R-ST2, R-ST6: roc is foreign and roc.old exists. The answer Yes (--replace-roc): exit 17, the text names roc.old and --replace-roc. Nothing is written: no make_dirs, rename, link-system or entry (the case tree has no change).
+# Q4 (accepted default), R-ST2, R-ST6: roc is foreign and roc.old exists. The answer Yes (--replace-roc): exit 17, the text names roc.old and --replace-roc. Nothing is written: no make_dirs, rename, link-system or entry (the case tree has no change). The entry talon in the given tools.json matches the running tln (R-IS6, slice 063): no write for it, also in a failed run.
 setup --replace-roc
 # R-HF1, R-NI13, R-NI14: a terminal, no flag. Both prompts are asked (the profile has no line): the answer n to R-NI13 (roc stays, no conflict), the answer y to R-NI14 (the line is added to .bashrc). One tty call for the run: the second prompt uses the mode of the first.
 setup

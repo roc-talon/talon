@@ -1,0 +1,40 @@
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.cache/roc/toolchains $HOME/.local/bin
+read_files $HOME/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/.cache/roc/toolchains/link-mine/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/compat-c2 $HOME/.cache/roc/compat-c1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+lock $HOME/.cache/roc/toolchains/git-ab12cd34 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/git-ab12cd34.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/git-ab12cd34.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/git-ab12cd34
+lock $HOME/.cache/roc/toolchains/link-mine nowait: held
+random
+rename $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/link-mine.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/link-mine.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/link-mine
+lock $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0.0123456789abcdef.trash $HOME/.cache/roc/compat-c2
+unlock $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash $HOME/.cache/roc/compat-c1
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029
+lock $HOME/.cache/roc/toolchains/zig-0.17.0 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+delete $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json

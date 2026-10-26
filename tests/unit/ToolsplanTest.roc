@@ -10,6 +10,7 @@ import lib.ToolsCmd
 import lib.ToolsPlan
 import lib.ToolsToml
 import lib.XCache
+import lib.XCacheIo
 
 ToolsplanTest :: [].{}
 
@@ -67,6 +68,9 @@ expect {
 		("[tools]\nfoo = { ref = \"acme/foo@dd03c09e\" }\n", "19 talon.toml:2: tools.foo.ref: 'dd03c09e' is not a release selector (a version, a range or latest)"),
 		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://example.com/x.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://example.com/x.tar.zst' is not a release URL with a version and a hash"),
 		("[tools]\nfoo = { ref = \"acme/foo\", url = 3 }\n", "19 talon.toml:2: tools.foo.url: must be a string"),
+		# R-ID5 R-H4 (slice 076): a hash that is not a safe path part is no hash, so the `url` is not a release URL (the key of a cloned repository must not name a path outside `packages/`)
+		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/...tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/...tar.zst' is not a release URL with a version and a hash"),
+		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/a\\\\b.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/a\\b.tar.zst' is not a release URL with a version and a hash"),
 		("tools = 1\n", "19 talon.toml:1: tools: must be a table"),
 	]
 	rows.all(|(text, want)| read_tools(text, Standalone) == Err(want))
@@ -123,13 +127,13 @@ expect {
 	)
 }
 
-# R-PT5: the names of `update` and `upgrade` with no `--tool`. A name with an `@` is for the header (a selector, question Q2). A key of `[tools]` that is no alias is a tool. An alias that is also a key is exit code 2 and names `--tool`.
+# R-PT5: the names of `update` and `upgrade` with no `--tool`. A name with an `@` whose first part is no key is for the header (a selector, R-CM4; slice 073 changed the row `foo@^2`: a selector on a key is exit code 2, expect 18). A key of `[tools]` that is no alias is a tool. An alias that is also a key is exit code 2 and names `--tool`.
 expect {
 	split = |names, keys, aliases| match ToolsPlan.split({ command: "update", names, keys, aliases }) {
 		Ok(s) => Ok((s.header, s.tools))
 		Err(e) => Err("${e.kind.code().to_str()} ${e.message}")
 	}
-	split(["fmt", "json", "foo@^2", "fmt2"], ["fmt", "foo"], ["json", "foo"]) == Ok((["json", "foo@^2", "fmt2"], ["fmt"])) and split([], ["fmt"], ["json"]) == Ok(([], [])) and split(["foo"], ["foo"], ["foo"]) == Err("2 'foo' is a header alias and a key of [tools]. For the tool, run: tln update --tool foo")
+	split(["fmt", "json", "json@^2", "fmt2"], ["fmt", "foo"], ["json", "foo"]) == Ok((["json", "json@^2", "fmt2"], ["fmt"])) and split([], ["fmt"], ["json"]) == Ok(([], [])) and split(["foo"], ["foo"], ["foo"]) == Err("2 'foo' is a header alias and a key of [tools]. For the tool, run: tln update --tool foo")
 }
 
 # R-PT7, R-LF1: the check of `install --frozen` for the entries, in the order of the entries, one finding for an entry: no `url`, a version that the `ref` does not admit (a range, an exact version, `latest` and no selector admit what they admit), another app. Exit code 14.
@@ -302,4 +306,50 @@ expect {
 		Ok(_) => 0
 	}
 	ToolsPlan.held_hashes({ files: ["/g/talon.toml"], reads }) == [h_foo11, h_foo10] and refused == 19
+}
+
+# R-PT5 (slice 073, 056 Q2): a selector on a key of `[tools]` (`update foo@^2`, `upgrade foo@latest`) is exit code 2 and names `tln add --tool owner/app@<sel>`, which changes the `ref` (R-PT3). The selector is the text after the first `@`. A name that is no key keeps its old way: a header alias with a selector, an unknown
+# name, and a full name `owner/app@sel` (a full name is no key) go to the header. The first name that fails gives the failure, also after names that are good. The failure is the same for `update` and `upgrade`. The text is a proposal (TW24). A name that is an alias and a key with a selector is also exit code 2 (the text of the alias rule or this one: not pinned).
+expect {
+	split = |command, names| match ToolsPlan.split({ command, names, keys: ["fmt", "foo"], aliases: ["json"] }) {
+		Ok(s) => Ok((s.header, s.tools))
+		Err(e) => Err(e.line())
+	}
+	stop = |name, sel| Err("tln: error[usage]: '${name}' is a selector on the [tools] key '${name.drop_suffix("@${sel}")}'. A selector changes its ref: run tln add --tool owner/app@${sel}")
+	split("update", ["fmt@^2"]) == stop("fmt@^2", "^2")
+		and split("upgrade", ["foo@latest"]) == stop("foo@latest", "latest")
+			and split("update", ["json@^2", "fmt", "foo@1.0.0", "fmt@^2"]) == stop("foo@1.0.0", "1.0.0")
+				and split("update", ["json@^2", "acme/fmt@^2", "zed@1", "fmt"]) == Ok((["json@^2", "acme/fmt@^2", "zed@1"], ["fmt"]))
+					and split("upgrade", ["fmt", "foo"]) == Ok(([], ["fmt", "foo"]))
+}
+
+# R-PT5, R-OUT4, R-J3 (slice 073): the `data` of `--json` of `install`, `update` and `upgrade` has the key `tools` after the keys of the header flow, with one row for each entry that the tools step handled (the rows of `--tool`, an entry that did not change has the action `kept`). With no row the `data` has no `tools` key.
+expect {
+	base = Obj([("snapshot", Text("2026-10-15T12:00:00Z")), ("written", Arr([Text("/p/talon.toml")]))])
+	moved = { key: "foo", name: "acme/foo", action: "moved", ref: Ok("acme/foo@^2"), url: Ok(foo20), version: Ok("2.0.0"), previous: Ok("1.1.0"), file: "/p/talon.toml", built: Bool.False, would_build: Bool.False }
+	kept = { key: "bar", name: "acme/bar", action: "kept", ref: Ok("acme/bar@1.0.0"), url: Ok(foo10), version: Ok("1.0.0"), previous: Err(None), file: "/p/talon.toml", built: Bool.False, would_build: Bool.False }
+	head = "{\"snapshot\":\"2026-10-15T12:00:00Z\",\"written\":[\"/p/talon.toml\"]"
+	rows = ToolsPlan.with_tools({ base, rows: [moved, kept] }).render()
+	one = ToolsPlan.with_tools({ base, rows: [kept] }).render()
+	none = ToolsPlan.with_tools({ base, rows: [] }).render()
+	rows == "${head},\"tools\":[{\"key\":\"foo\",\"name\":\"acme/foo\",\"action\":\"moved\",\"ref\":\"acme/foo@^2\",\"url\":\"${foo20}\",\"version\":\"2.0.0\",\"previous\":\"1.1.0\",\"file\":\"/p/talon.toml\",\"built\":false,\"would_build\":false},{\"key\":\"bar\",\"name\":\"acme/bar\",\"action\":\"kept\",\"ref\":\"acme/bar@1.0.0\",\"url\":\"${foo10}\",\"version\":\"1.0.0\",\"previous\":null,\"file\":\"/p/talon.toml\",\"built\":false,\"would_build\":false}]}"
+		and one == "${head},\"tools\":[{\"key\":\"bar\",\"name\":\"acme/bar\",\"action\":\"kept\",\"ref\":\"acme/bar@1.0.0\",\"url\":\"${foo10}\",\"version\":\"1.0.0\",\"previous\":null,\"file\":\"/p/talon.toml\",\"built\":false,\"would_build\":false}]}"
+			and none == "${head}}"
+}
+
+# R-B10, R-X2 (slice 073): an entry dir has the binary when it holds the file that the manifest names: a file, not a directory, with exactly the name that `XCache.layout` gives (the repo of the full name, `.exe` on Windows only). The file `manifest.json`, another file, a directory with the name, the name with the wrong suffix for the system, and a dir that cannot be listed are no binary.
+expect {
+	file = |name| { name, is_dir: Bool.False, mtime: 1 }
+	dir = |name| { name, is_dir: Bool.True, mtime: 1 }
+	holds = |names, want| XCacheIo.has_file(Ok(names), want)
+	holds([file("manifest.json"), file("fmt")], "fmt")
+		and holds([file("fmt.exe"), file("manifest.json")], "fmt.exe")
+			and !holds([file("manifest.json")], "fmt")
+				and !holds([file("manifest.json"), file("other")], "fmt")
+					and !holds([file("manifest.json"), dir("fmt")], "fmt")
+						and !holds([file("manifest.json"), file("fmt.exe")], "fmt")
+							and !holds([file("manifest.json"), file("fmt")], "fmt.exe")
+								and !holds([], "fmt")
+									and !XCacheIo.has_file(Err(NotFound), "fmt")
+										and !XCacheIo.has_file(Err(Denied), "fmt")
 }

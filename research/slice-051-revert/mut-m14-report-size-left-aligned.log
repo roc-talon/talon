@@ -1,0 +1,245 @@
+=== l0 exit 1
+== l0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/l0.log)
+removed the PATH line from /h/.bashrc
+removed C:\\Users\\a\\.local\\bin from the user Path
+")]
+
+── ✗ fail ───────────────────────────────── tests/unit/TalonRemoveTest.roc:224:1
+
+expect {
+    lines = |d| Str.join_with(TalonRemove.report(d), "")
+    warns = |d| Str.join_with(TalonRemove.warnings(d), "")
+    option3 = {
+        ..done(Removed, TalonOnly),
+        stays: [{ id: "link-mine", path: "/h/src/roc/zig-out/bin/roc" }, { id: "nightly-2026-10-14-38a3029", path: "/h/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc" }],
+        back: Ok({ from: "/h/.local/bin/roc.old", to: "/h/.local/bin/roc" }),
+    }
+    option2 = {
+        ..done(Removed, WithTools),
+        path: [Profile("/h/.bashrc"), UserPath("C:\\Users\\a\\.local\\bin")],
+        kept: ["/h/.local/bin/baz", "/h/.local/bin/roc"],
+        stuck: ["/h/.local/bin/tln.0123456789abcdef.del", "/h/.local/share/talon/bin/tln.0123456789abcdef.del"],
+    }
+    rows = [
+        ("a real run, option 1", lines(done(Removed, Default)), "Talon        tln, roc, the talon entry of tools.json     9.0 MB   removed\ntools        3 (foo, bar, baz)                          42.0 MB   kept\ncompilers    4 nightlies, 1 git build, zig 0.17.0        1.2 GB   removed\nTalon data   index, x cache, compat.db, config         310.0 MB   removed\n"),
+        ("a dry run, option 1", lines(done(DryRun, Default)), "Talon        tln, roc, the talon entry of tools.json     9.0 MB   remove\ntools        3 (foo, bar, baz)                          42.0 MB   keep\ncompilers    4 nightlies, 1 git build, zig 0.17.0        1.2 GB   remove\nTalon data   index, x cache, compat.db, config         310.0 MB   remove\ndry run: nothing was removed\n"),
+        ("a dry run, option 2", lines(done(DryRun, WithTools)), "Talon        tln, roc, the talon entry of tools.json     9.0 MB   remove\ntools        3 (foo, bar, baz)                          42.0 MB   remove\ncompilers    4 nightlies, 1 git build, zig 0.17.0        1.2 GB   remove\nTalon data   index, x cache, compat.db, config         310.0 MB   remove\ndry run: nothing was removed\n"),
+        ("R-RM6: option 3 names each compiler that stays and moves roc.old back", lines(option3), "Talon        tln, roc, the talon entry of tools.json     9.0 MB   removed\ntools        3 (foo, bar, baz)                          42.0 MB   kept\ncompilers    4 nightlies, 1 git build, zig 0.17.0        1.2 GB   kept\nTalon data   index, x cache, compat.db, config         310.0 MB   kept\nkept link-mine: /h/src/roc/zig-out/bin/roc\nkept nightly-2026-10-14-38a3029: /h/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc\nmoved /h/.local/bin/roc.old back to /h/.local/bin/roc\n"),
+        ("option 2: the PATH entries", lines(option2), "Talon        tln, roc, the talon entry of tools.json     9.0 MB   removed\ntools        3 (foo, bar, baz)                          42.0 MB   removed\ncompilers    4 nightlies, 1 git build, zig 0.17.0        1.2 GB   removed\nTalon data   index, x cache, compat.db, config         310.0 MB   removed\nremoved the PATH line from /h/.bashrc\nremoved C:\\Users\\a\\.local\\bin from the user Path\n"),
+        ("a cancel", lines(done(Cancelled, Default)), "cancelled: nothing was removed\n"),
+        ("no warning", warns(done(Removed, Default)), ""),
+        ("R-ST6 R-RM5: the warnings", warns(option2), "warning: /h/.local/bin/baz is not a file that tln wrote, so tln keeps it\nwarning: /h/.local/bin/roc is not a file that tln wrote, so tln keeps it\nwarning: tln could not start the cleanup of 2 renamed files, so they stay: /h/.local/bin/tln.0123456789abcdef.del, /h/.local/share/talon/bin/tln.0123456789abcdef.del. A later install of Talon deletes them\n"),
+    ]
+    bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, _)| (label, got))
+    dbg bad
+    bad == []
+}
+
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "http://127.0.0.1:8080/zig/index.json"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ path: "/c/roc/toolchains/zig-0.16.2/zig", source: Installed, version: Ok("0.16.2") }, { path: "/c/roc/toolchains/zig-0.17.0/zig", source: Installed, version: Ok("0.17.0") }]
+[dbg] []
+[dbg] Err({ again: Err(None), details: Err(NoDetails), kind: Network, message: "the Zig index is not a JSON object" })
+[dbg] { archive: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz", item: "/c/roc/toolchains/zig-0.17.0", meta: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json", temp: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp", version: "0.17.0", zig: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig" }
+[dbg] "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] "Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+"
+[dbg] "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+Ran 61 tests in 4666.4 ms.:
+    60 passed
+    1 failed
+    0 compiler errors
+tests/unit/l0-7.roc: All (64) tests passed in 5716.5 ms.
+tests/unit/l0-8.roc: All (77) tests passed in 5287.6 ms.
+
+step       result seconds  budget
+l0         FAIL   5.9      10
+
+=== l2 exit 1
+FAIL tool/rm1-default
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,8 +1,8 @@
+       == tool remove talon --dry-run
+      -Talon        tln, roc, the talon entry of tools.json          10 B   remove
+      -tools        3 (foo, bar, baz)                                33 B   keep
+      +Talon        tln, roc, the talon entry of tools.json        10 B     remove
+      +tools        3 (foo, bar, baz)                              33 B     keep
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   remove
+      -Talon data   index, x cache, compat.db, config               164 B   remove
+      +Talon data   index, x cache, compat.db, config              164 B    remove
+       dry run: nothing was removed
+       exit 0
+       == tool rm talon --remove-tools --dry-run --json
+      @@ -12,15 +12,15 @@
+       cancelled: nothing was removed
+       exit 0
+       == env:CI=false tool remove talon
+      -Talon        tln, roc, the talon entry of tools.json          10 B   removed
+      -tools        3 (foo, bar, baz)                                33 B   kept
+      +Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      +tools        3 (foo, bar, baz)                              33 B     kept
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+      -Talon data   index, x cache, compat.db, config               164 B   removed
+      +Talon data   index, x cache, compat.db, config              164 B    removed
+       moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+       exit 0
+       == tool remove talon
+      -Talon        tln, roc, the talon entry of tools.json    0 B   removed
+      +Talon        tln, roc, the talon entry of tools.json   0 B    removed
+       tools        3 (foo, bar, baz)                         33 B   kept
+      -compilers    none                                       0 B   removed
+      -Talon data   index, x cache, compat.db, config          0 B   removed
+      +compilers    none                                      0 B    removed
+      +Talon data   index, x cache, compat.db, config         0 B    removed
+       exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +1,7 @@
+      -Talon        tln, roc, the talon entry of tools.json          10 B   remove
+      -tools        3 (foo, bar, baz)                                33 B   remove
+      +Talon        tln, roc, the talon entry of tools.json        10 B     remove
+      +tools        3 (foo, bar, baz)                              33 B     remove
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   remove
+      -Talon data   index, x cache, compat.db, config               164 B   remove
+      +Talon data   index, x cache, compat.db, config              164 B    remove
+       dry run: nothing was removed
+       removing Talon, the compilers and the data, keeping the tools
+       warning: $HOME/.local/bin/roc is not a file that tln wrote, so tln keeps it
+FAIL tool/rm2-options
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -2,10 +2,10 @@
+       {"schema":1,"command":"tool rm","ok":true,"data":{"outcome":"removed","version":"0.3.1","option":2,"groups":[{"group":"talon","action":"remove","detail":"tln, roc, the talon entry of tools.json","bytes":10},{"group":"tools","action":"remove","detail":"3 (foo, bar, baz)","bytes":33},{"group":"compilers","action":"remove","detail":"2 nightlies, 1 git build, 1 link, zig 0.17.0","bytes":1015},{"group":"data","action":"remove","detail":"index, x cache, compat.db, config","bytes":164}],"compilers_kept":[],"roc_restored":"$HOME/h1/.local/bin/roc","path":["$HOME/h1/.bashrc"],"kept_entries":["$HOME/h1/.local/bin/baz"],"stuck":[]},"error":null}
+       exit 0
+       == env:HOME={w}/home/h2 tool rm talon --keep-all
+      -Talon        tln, roc, the talon entry of tools.json           10 B   removed
+      -tools        3 (foo, bar, baz)                                 33 B   kept
+      +Talon        tln, roc, the talon entry of tools.json         10 B     removed
+      +tools        3 (foo, bar, baz)                               33 B     kept
+       compilers    2 nightlies, 1 git build, 2 links, zig 0.17.0   1.2 KB   kept
+      -Talon data   index, x cache, compat.db, config                164 B   kept
+      +Talon data   index, x cache, compat.db, config               164 B    kept
+       kept git-ab12cd34: $HOME/h2/.cache/roc/toolchains/git-ab12cd34/roc
+       kept link-mine: $HOME/h2/src/roc/zig-out/bin/roc
+       kept link-system: $HOME/h2/.local/bin/roc
+      @@ -16,14 +16,14 @@
+       == env:HOME={w}/home/h3 tool rm talon --remove-tools --keep-all
+       exit 2
+       == env:HOME={w}/home/h4 env:CI=false tool rm talon --yes
+      -Talon        tln, roc, the talon entry of tools.json          10 B   removed
+      -tools        3 (foo, bar, baz)                                33 B   kept
+      +Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      +tools        3 (foo, bar, baz)                              33 B     kept
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+      -Talon data   index, x cache, compat.db, config               164 B   removed
+      +Talon data   index, x cache, compat.db, config              164 B    removed
+       exit 0
+       == env:HOME={w}/home/h5 env:CI=false tool rm talon --remove-tools --yes
+      -Talon        tln, roc, the talon entry of tools.json    10 B   removed
+      -tools        2 (foo, bar)                               22 B   removed
+      -compilers    none                                        0 B   removed
+      +Talon        tln, roc, the talon entry of tools.json   10 B    removed
+      +tools        2 (foo, bar)                              22 B    removed
+      +compilers    none                                      0 B     removed
+       Talon data   index, x cache, compat.db, config         164 B   removed
+       exit 0
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,9 +1,9 @@
+       removing Talon, the compilers, the data and the tools
+       warning: $HOME/h1/.local/bin/baz is not a file that tln wrote, so tln keeps it
+      -Talon        tln, roc, the talon entry of tools.json          10 B   removed
+      -tools        3 (foo, bar, baz)                                33 B   removed
+      +Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      +tools        3 (foo, bar, baz)                              33 B     removed
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+      -Talon data   index, x cache, compat.db, config               164 B   removed
+      +Talon data   index, x cache, compat.db, config              164 B    removed
+       moved $HOME/h1/.local/bin/roc.old back to $HOME/h1/.local/bin/roc
+       removed the PATH line from $HOME/h1/.bashrc
+       removing Talon only
+FAIL tool/rm3-windows
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,16 +1,16 @@
+       == env:HOME={w}/home/u1 env:USERPROFILE={w}/home/u1 tool rm talon --remove-tools
+      -Talon        tln, roc, the talon entry of tools.json          10 B   removed
+      -tools        1 (foo)                                          11 B   removed
+      +Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      +tools        1 (foo)                                        11 B     removed
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   removed
+      -Talon data   index, x cache, compat.db, config               164 B   removed
+      +Talon data   index, x cache, compat.db, config              164 B    removed
+       moved $HOME/u1\.local\bin/roc.old.exe back to $HOME/u1\.local\bin/roc.exe
+       removed $HOME/u1\.local\bin from the user Path
+       exit 0
+       == env:HOME={w}/home/u2 env:USERPROFILE={w}/home/u2 tool rm talon --keep-all
+      -Talon        tln, roc, the talon entry of tools.json          10 B   removed
+      -tools        1 (foo)                                          11 B   kept
+      +Talon        tln, roc, the talon entry of tools.json        10 B     removed
+      +tools        1 (foo)                                        11 B     kept
+       compilers    2 nightlies, 1 git build, 1 link, zig 0.17.0   1.0 KB   kept
+      -Talon data   index, x cache, compat.db, config               164 B   kept
+      +Talon data   index, x cache, compat.db, config              164 B    kept
+       kept git-ab12cd34: $HOME/u2/.cache/roc/toolchains/git-ab12cd34/roc
+       kept link-mine: $HOME/u2/src/roc/zig-out/bin/roc
+       kept nightly-2026-09-01-abcdef0: $HOME/u2/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/roc
+commands: 1 passed, 3 failed
+
+=== l3 exit 1
+FAIL tools/rm1-remove-talon
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +1,7 @@
+       -- 1: --dry-run prints the 4 groups with the sizes and removes nothing (R-RM4). The state after it is the state before it.
+       == tln tool remove talon --dry-run
+      -Talon        tln, roc, the talon entry of tools.json    27 B   remove
+      -tools        3 (foo, bar, baz)                          81 B   keep
+      +Talon        tln, roc, the talon entry of tools.json   27 B    remove
+      +tools        3 (foo, bar, baz)                         81 B    keep
+       compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   remove
+       Talon data   index, x cache, compat.db, config         124 B   remove
+       dry run: nothing was removed
+      @@ -34,8 +34,8 @@
+       -- 2: with no terminal the answer is option 1 (R-RM3): Talon, the compilers and the Talon data go, the tools stay. The entries tln and roc and the data file tln are gone, roc.old is roc again (R-RM6, R-RM5).
+       -- The packages and the build cache of the compiler that Talon did not install stay (R-RM1). The entry talon is not in tools.json, the other entries are (R-RM7). The profile line stays (R-RM8).
+       == tln tool remove talon
+      -Talon        tln, roc, the talon entry of tools.json    27 B   removed
+      -tools        3 (foo, bar, baz)                          81 B   kept
+      +Talon        tln, roc, the talon entry of tools.json   27 B    removed
+      +tools        3 (foo, bar, baz)                         81 B    kept
+       compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   removed
+       Talon data   index, x cache, compat.db, config         124 B   removed
+       moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+FAIL tools/rm2-remove-all
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,7 +1,7 @@
+       -- 1: option 2 with a flag. The tools go (the data files and the entries that are Talon's), baz stays with a warning, tools.json is gone, the PATH line is gone from .bashrc, the other lines stay.
+       == tln tool remove talon --remove-tools
+      -Talon        tln, roc, the talon entry of tools.json    27 B   removed
+      -tools        3 (foo, bar, baz)                          81 B   removed
+      +Talon        tln, roc, the talon entry of tools.json   27 B    removed
+      +tools        3 (foo, bar, baz)                         81 B    removed
+       compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   removed
+       Talon data   index, x cache, compat.db, config         124 B   removed
+       moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+scenarios: 0 passed, 2 failed, 0 skipped
+

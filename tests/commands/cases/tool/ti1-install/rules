@@ -12,3 +12,5 @@ acme/foo has 4 releases: 1.0.0 (app), 1.1.0 (app), 1.2.0 (a package, not an app)
 | 6 | `tool install acme/qux --as q --json` | the binary name is `q` (`--as`); the envelope has the data | R-T28, R-J1 to R-J4, R-OUT2 |
 | 7 | `tool install acme/qux` | acme/qux is installed under the key `q` (run 6) and the command has no `--as`: it is the same tool (review 2). No build, no download, `q 2.0.0 is installed` | R-T26, R-T28 |
 | 8 | `tool install acme/qux --as other` | `--as` differs from the installed key `q`: exit 2, `acme/qux is installed as q already` (D2), before any request | R-T27, R-T28 |
+
+Slice 064 (R-FE4, R-SO6): the home has `config.toml` with `default-roc = nightly-2026-10-14-38a3029` and a newer compiler `nightly-2026-10-16-9e9e9e9`. Each `roc unbundle` of the case (the bundle, the platform) runs with the default (the pin, `38a3029`), not with the newest installed compiler: `ToolFlow.Machine` has the default from the read of `config.toml` (step 3).

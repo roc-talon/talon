@@ -10,7 +10,7 @@ requests for compilers: 1
 exit 13
 
 requests for compilers: 1
-== R-SO13 R-DL5 R-NI5 R-NM6 R-SO22 R-CC4 R-CC9 R-SO15: --allow-downloads answers the prompt for B. One answer line on stderr, one download of B only, the install under the lock, then the 3 probes run B. The first install is the default.
+== R-SO13 R-DL5 R-NI5 R-NM6 R-SO22 R-CC4 R-CC9 R-SO15: --allow-downloads answers the prompt for B. One answer line on stderr, one download of B only, the install under the lock, then the 3 probes run B. No default is written (R-SO15).
 == tln verify --allow-downloads
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 check: passed
@@ -30,7 +30,7 @@ nightly-2026-10-12-1b2c3d4 cwd=project check main.roc n=11 XDG_CACHE_HOME=$HOME/
 nightly-2026-10-12-1b2c3d4 cwd=project check main.roc n=2 XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 nightly-2026-10-12-1b2c3d4 
 last use of B: 2026-10-15T12:00:00Z
-default-roc = "nightly-2026-10-12-1b2c3d4"
+no default-roc (no config.toml)
 downloads of B: 1, downloads of A: 0
 == R-SO4 R-SO13: B is installed and in the range now. No list request, no download, the same 3 probes.
 == tln verify

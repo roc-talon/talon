@@ -17,3 +17,5 @@ Projects: `p1` has the tool `fmt` (acme/fmt 1.0.0, its `x` entry has the binary)
 | 10 | `run bd` in `p5` | the build fails: exit 11 (as `tln x`), the step after it does not start | R-PT9, R-PT6, R-RUN5 |
 | 11 | `run nu` in `p6` | the key `lz` has no `url`: exit 14, the text names `tln install` (Q2 of the review), no child, no request | R-PT7, R-PT9, R-RUN3 |
 | 12 | `run w` in `p7` | the `[tools]` table has an unknown key (`note`): the warning goes on stderr as `warning: <file>:<line>: <message>` before the step, which does not use a tool and runs (C8 of the verify results) | R-RUN3, R-PT1 |
+
+Slice 064 (R-FE4, R-SO6): the home has `config.toml` with `default-roc = nightly-2026-10-14-38a3029` and a newer compiler `nightly-2026-10-16-9e9e9e9` (one line `db_query ... facts=` shows 2 facts in place of 1). The `roc unbundle` of the build of a project tool in `run` uses the default (`38a3029`), not the newest installed compiler: `RunTools.build!` has the default from its read of `config.toml`.

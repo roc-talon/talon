@@ -1,0 +1,20 @@
+=== l0 exit 0
+
+step       result seconds  budget
+l0         pass   5.8      10
+
+=== l2 exit 1
+FAIL tool/rm3-windows
+    stderr differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,4 +1,3 @@
+       removing Talon, the compilers, the data and the tools
+       removing Talon only
+       warning: $HOME/u2\.local\bin/roc.exe is not a file that tln wrote, so tln keeps it
+      -warning: tln could not start the cleanup of 2 renamed files, so they stay: $HOME/u2\.local\bin/tln.0123456789abcdef.del, $HOME/u2/.local/share/talon/bin/tln.0123456789abcdef.del. A later install of Talon deletes them
+commands: 3 passed, 1 failed
+
+=== l3 exit 0
+scenarios: 2 passed, 0 failed, 0 skipped
+

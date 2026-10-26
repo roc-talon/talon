@@ -41,13 +41,16 @@ import XCacheIo
 ToolsStep :: [].{
 
 	## What a run needs. `home` is the `talon.toml` that holds `[tools]` (`ToolsPlan.home`), `home_text` its text as the command read it (`""` for no file), `tools` the entries of that text.
-	Ctx : { args : Args, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, min_age : U64, probe_timeout : U64, snapshot : Try(U64, [None]), dry_run : Bool, allow : Bool, home : Str, home_text : Str, tools : List(ToolsToml.Entry) }
+	Ctx : { args : Args, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, min_age : U64, probe_timeout : U64, snapshot : Try(U64, [None]), dry_run : Bool, allow : Bool, home : Str, home_text : Str, tools : List(ToolsToml.Entry), selected : Str }
 
 	## One result. `action` is `Added`, `Locked`, `Moved`, `Built`, `Kept` or `Removed`. A `Kept` row has no line. `would_build` is set by `--dry-run` for a release that has no `x` entry: the real run would build it (D8 of the review).
 	Row : { key : Str, name : Str, action : [Added, Locked, Moved, Built, Kept, Removed], ref : Try(Str, [None]), url : Try(Str, [None]), version : Try(Str, [None]), previous : Try(Str, [None]), built : Bool, would_build : Bool }
 
 	## One change of `talon.toml`: the entry `key` gets `ref` and `url`, or the entry `key` goes.
 	Change : [Put({ key : Str, ref : Str, url : Str }), Drop(Str)]
+
+	## Slice 073: a row as `ToolsPlan.data` and `ToolsPlan.with_tools` take it (the row with the file, the action as text).
+	JsonRow : { key : Str, name : Str, action : Str, ref : Try(Str, [None]), url : Try(Str, [None]), version : Try(Str, [None]), previous : Try(Str, [None]), file : Str, built : Bool, would_build : Bool }
 
 	## What a run did: the rows, the changes (written, or planned for `--dry-run`).
 	Done : { rows : List(ToolsStep.Row), changes : List(ToolsStep.Change) }
@@ -79,18 +82,19 @@ ToolsStep :: [].{
 			home,
 			home_text: ResolveBase.loaded_text(loaded, home),
 			tools: loaded.intent.tools,
+			selected: request.selected,
 		})
 	}
 
 	## The tools step of `install`, `update` and `upgrade` (R-PT5, R-PT6): `phase` and the `keys` (`[]` is each entry). Prints the lines. `changed` is true when a line was printed (D16 of the review: `InstallFlow` prints `nothing to change` only when the header and the tools both stay as they are).
-	after! : Fx, Args, { request : ResolveBase.Request, loaded : ResolveBase.Loaded, phase : ToolsPlan.Phase, keys : List(Str) } => Try({ changed : Bool }, Fail)
+	after! : Fx, Args, { request : ResolveBase.Request, loaded : ResolveBase.Loaded, phase : ToolsPlan.Phase, keys : List(Str) } => Try({ changed : Bool, rows : List(ToolsStep.JsonRow) }, Fail)
 	after! = |fx, args, run| {
-		if run.loaded.intent.tools.is_empty() return Ok({ changed: Bool.False })
+		if run.loaded.intent.tools.is_empty() return Ok({ changed: Bool.False, rows: [] })
 		ctx = ToolsStep.ctx_of(args, run.request, run.loaded)?
 		done = ToolsStep.run!(fx, ctx, { phase: run.phase, keys: run.keys })?
 		ToolsStep.write!(fx, ctx, done.changes)?
 		ToolsStep.print!(fx, ctx, done)
-		Ok({ changed: !done.changes.is_empty() or done.rows.any(|row| ToolsStep.line(row).is_ok()) })
+		Ok({ changed: !done.changes.is_empty() or done.rows.any(|row| ToolsStep.line(row).is_ok()), rows: ToolsStep.json_rows(ctx.home, done.rows) })
 	}
 
 	## Steps 1 to 4: the entries `keys` of `ctx.tools` (`[]` is all) in the phase. Nothing is written for `--dry-run`.
@@ -99,7 +103,7 @@ ToolsStep :: [].{
 		chosen = if run.keys.is_empty() ctx.tools else ctx.tools.keep_if(|e| run.keys.contains(e.key))
 		if chosen.is_empty() return Ok({ rows: [], changes: [] })
 		machine = ToolsStep.machine!(fx)?
-		var $found = XCacheIo.entries!(fx, ctx.roots)?
+		var $found = XCacheIo.entries!(fx, ctx.roots, machine.os)?
 		var $rows = []
 		var $changes = []
 		for entry in chosen {
@@ -166,21 +170,23 @@ ToolsStep :: [].{
 
 	## The `data` rows of `--json` (`ToolsPlan.data`).
 	data : Str, List(ToolsStep.Row) -> JsonDoc
-	data = |path, rows| ToolsPlan.data(
-		rows.map(
-			|row| {
-				key: row.key,
-				name: row.name,
-				action: action_text(row.action),
-				ref: row.ref,
-				url: row.url,
-				version: row.version,
-				previous: row.previous,
-				file: path,
-				built: row.built,
-				would_build: row.would_build,
-			},
-		),
+	data = |path, rows| ToolsPlan.data(ToolsStep.json_rows(path, rows))
+
+	## Slice 073: the rows as the `--json` code wants them. `path` is the `talon.toml` of the run.
+	json_rows : Str, List(ToolsStep.Row) -> List(ToolsStep.JsonRow)
+	json_rows = |path, rows| rows.map(
+		|row| {
+			key: row.key,
+			name: row.name,
+			action: action_text(row.action),
+			ref: row.ref,
+			url: row.url,
+			version: row.version,
+			previous: row.previous,
+			file: path,
+			built: row.built,
+			would_build: row.would_build,
+		},
 	)
 
 	## Step 1: the machine facts that the build needs.
@@ -211,6 +217,7 @@ ToolsStep :: [].{
 			name,
 			key,
 			file: ToolInstall.file_name({ os: machine.os, key }),
+			selected: ctx.selected,
 		}
 	}
 

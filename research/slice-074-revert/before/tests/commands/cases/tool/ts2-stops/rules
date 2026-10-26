@@ -1,0 +1,12 @@
+Slice 050, the stops of `tln tool update talon` (entry `commands`). The entry says 0.1.0. Each run sets `TALON_NOW`, so another release is the newest that is old enough (R-T9). The page of the list is read once: the next runs find it younger than the clock.
+Each failed run leaves no file: the bin dir, the data bin dir and `talon/tmp` are as they were (the file `tree.diff` shows only the last run).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` (2026-07-05) | v0.2.5 has no sha256sums.txt: exit 16, no download, no entry check | R-S1, R-SE13 |
+| 2 | `tool update talon` (2026-07-15) | v0.2.6: sha256sums.txt does not list tln-x64musl: exit 16. The download ran, the scratch dir and the temp file are deleted | R-S1, R-SE13, R-CC2 |
+| 3 | `tool update talon` (2026-09-03) | v0.3.1: the download of the binary ends with curl exit 22 (404): exit 15, the temp file and the scratch dir are deleted | R-DA7, R-CC2 |
+| 4 | `tool update talon` (2026-09-12) | v0.3.2: the sha256 differs: exit 16, the old tln stays, nothing is renamed, the temp file is deleted | R-S1, R-SE13, R-S3, R-DA4 |
+| 5 | `tool update talon --offline` | the cached page, v0.3.4: exit 15 (the download is needed), no entry check, no download | R-DI12 |
+| 6 | `tool update talon` | v0.3.4 works: the first run that changes a file | R-S2, R-S3 |
+| 7 | `tool update talon` | up to date (the entry says 0.3.4) | R-S2 |

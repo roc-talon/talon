@@ -1,0 +1,22 @@
+== cwd:p1 path pf
+$HOME/.cache/roc/packages/4utYEGSc7npGGN2p7BZFCDEAaHhPRKNo6K9Z191TRVnw
+exit 0
+== cwd:p1 path json --offline
+exit 15
+== cwd:p1 path json
+$HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS
+exit 0
+== path json --file p1/main.roc --json
+{"schema":1,"command":"path","ok":true,"data":{"alias":"json","kind":"url","dir":"$HOME/.cache/roc/packages/76Vvu267CgMUytVQiAX5vtQrFYw4Y9YBE7hiHM3ZPycS"},"error":null}
+exit 0
+== cwd:p1 path lib
+$PROJECT/shared/lib
+exit 0
+== cwd:p1 path odd
+exit 2
+== cwd:p5 path pf
+exit 2
+== cwd:p1 path
+exit 2
+== cwd:ws path pf
+exit 2

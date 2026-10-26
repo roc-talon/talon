@@ -1,1 +1,2 @@
+note: attestation not checked (needs gh, logged in)
 warning: $HOME/.local/bin/roc is not a file that tln wrote, so tln keeps it. Run: tln setup --replace-roc

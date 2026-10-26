@@ -217,3 +217,35 @@ roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 == env ROC_CACHE_DIR=$HOME/.cache/roc-builds tln cache gc
 nothing to remove
 exit 0
+== 9: R-D2 R-GC5 R-CC10 R-CC9 R-GC11 (slice 061): Zig installs. toolchains/ has 3 Zig installs (a dir zig-<release version>): zig-0.17.0 (no .last-use: no source build used it), zig-0.16.1 (last use 21 days ago, and the lock dir of an install, R-CC4), zig-0.15.1 (last use 12 hours ago: a source build wrote it when it started, so it stays, R-CC10). A dev version zig-0.18.0-dev.31+abc1234 and a file zig-0.15.2 are no Zig install. No git-* toolchain exists and no project uses a Zig. TALON_NOW is 2026-10-22T12:00:00Z.
+== 9a: a dry run lists zig-0.16.1 and zig-0.17.0 with their sizes, and removes nothing. zig-0.15.1 is not listed (last day).
+== tln cache gc --dry-run
+would remove toolchain zig-0.16.1 (32 B)
+would remove toolchain zig-0.17.0 (26 B)
+would free 58 B
+dry run: nothing was removed
+exit 0
+zig-0.15.1
+zig-0.15.2
+zig-0.16.1
+zig-0.16.1.lock
+zig-0.17.0
+zig-0.18.0-dev.31+abc1234
+== 9b: the real run. zig-0.16.1 is skipped (the lock of an install is held). zig-0.17.0 goes. zig-0.15.1, the dev dir and the file stay.
+== tln cache gc
+removed toolchain zig-0.17.0 (26 B)
+skipped toolchain zig-0.16.1: an install holds it
+freed 26 B
+exit 0
+zig-0.15.1
+zig-0.15.2
+zig-0.16.1
+zig-0.16.1.lock
+zig-0.18.0-dev.31+abc1234
+== 9c: the install is done: --json removes zig-0.16.1 too. The text goes to stderr. zig-0.15.1 still stays.
+== tln cache gc --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":["zig-0.16.1"],"skipped":[],"compat":[],"stale":[],"builds":[],"packages":[],"projects":[],"sizes":[{"item":"zig-0.16.1","bytes":32}],"freed":32},"error":null}
+exit 0
+zig-0.15.1
+zig-0.15.2
+zig-0.18.0-dev.31+abc1234

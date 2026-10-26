@@ -1,0 +1,3 @@
+# slice 060: a tln of 5000 bytes and a roc of 1000 bytes (the sizes differ, so no file is hashed): the fetch of a package needs a program for `roc unbundle`, and no compiler is installed here.
+exe /fake/bin/tln 5000 1700000000
+file /fake/bin/roc 1000 1700000000

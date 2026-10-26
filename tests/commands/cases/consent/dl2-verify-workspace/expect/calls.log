@@ -68,11 +68,6 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/.talon.json
 rename $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
 unlock $HOME/.cache/roc/toolchains/nightly-2026-10-18-5349569
-lock $HOME/.config/talon/config.toml nowait: held
-read_files $HOME/.config/talon/config.toml
-read_files $HOME/.config/talon/config.toml
-write_atomic $HOME/.config/talon/config.toml
-unlock $HOME/.config/talon/config.toml
 canonical $HOME/.cache $HOME/.cache/roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=3
 random

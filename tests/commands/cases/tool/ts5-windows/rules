@@ -2,5 +2,7 @@ Slice 050, `tln tool update talon` on Windows (R-ST10, R-S3). The fake machine i
 
 | Run | Words | Result | Rules |
 | --- | --- | --- | --- |
-| 1 | `tool update talon` | no `chmod` job. Under the lock, before the rename over the file: `rename!` of `<data>/bin/tln.exe`, then of the entries `tln.exe` and `roc.exe` to `<name>.<hex>.del` (the hex of the one `random!`), then the rename of the temp file, then the entries again (hard link to a temp name, rename). The 3 `.del` files stay: no later start deletes them in this slice (Q-W1) | R-ST10, R-S3, R-ST9, R-HF2 |
-| 2 | `tool update talon` | up to date | R-S2 |
+| 1 | `tool update talon` | no `chmod` job. Under the lock, before the rename over the file: `rename!` of `<data>/bin/tln.exe`, then of the entries `tln.exe` and `roc.exe` to `<name>.<hex>.del` (the hex of the one `random!`), then the rename of the temp file, then the entries again (hard link to a temp name, rename). The 3 `.del` files stay in this run (the old `tln` runs, so no delete) | R-ST10, R-S3, R-ST9, R-HF2 |
+| 2 | `tool update talon` | up to date. Slice 050c: the sweep at the start of this run deletes the 3 `.del` files (one `delete` call, the bin dir first), so the tree has no `.del` file at the end | R-S2, R-ST10 |
+
+Slice 074 (R-S2, R-IS3): a run that gets to the use of the downloaded file also calls `programs gh` after the sha256 check. `fx/programs` has no `gh`, so the run prints `note: attestation not checked (needs gh, logged in)` on stderr and goes on. The cases of `ts8-attest` have `gh`.
