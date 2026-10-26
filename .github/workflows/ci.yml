@@ -92,6 +92,26 @@ jobs:
           path: .work/cache/roc
           key: roc-pkgs-${{ runner.os }}-${{ steps.pkgs.outputs.hash }}
 
+      # Temporary: which form of the cache paths `roc test` accepts on Windows.
+      - name: Windows diagnostics
+        if: runner.os == 'Windows'
+        continue-on-error: true
+        run: |
+          set +e
+          mkdir -p .work
+          . scripts/env.sh
+          echo "XDG_CACHE_HOME=$XDG_CACHE_HOME ROC_CACHE_DIR=$ROC_CACHE_DIR ROOT=$ROOT WORK=$WORK"
+          t() { "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag.log 2>&1; echo "$1: rc=$?"; head -n 3 .work/diag.log; }
+          t "as in env.sh"
+          X=$XDG_CACHE_HOME R=$ROC_CACHE_DIR
+          XDG_CACHE_HOME=$(cygpath -w "$X") ROC_CACHE_DIR=$(cygpath -w "$R") t "both -w"
+          XDG_CACHE_HOME=$(cygpath -m "$X") ROC_CACHE_DIR=$(cygpath -m "$R") t "both -m"
+          env -u XDG_CACHE_HOME -u ROC_CACHE_DIR "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag.log 2>&1; echo "both unset: rc=$?"; head -n 3 .work/diag.log
+          env -u XDG_CACHE_HOME ROC_CACHE_DIR=$(cygpath -w "$R") "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag.log 2>&1; echo "only ROC_CACHE_DIR -w: rc=$?"; head -n 3 .work/diag.log
+          env -u ROC_CACHE_DIR XDG_CACHE_HOME=$(cygpath -w "$X") "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag.log 2>&1; echo "only XDG_CACHE_HOME -w: rc=$?"; head -n 3 .work/diag.log
+          env | grep -i "^ROC\|^XDG\|^TMP\|^TEMP\|^HOME\|^LOCALAPPDATA" | head -n 12
+          ls -la "$X" "$R" 2>&1 | head -n 12
+
       - name: Test
         shell: bash
         run: scripts/test.sh ${{ matrix.steps }}

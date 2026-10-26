@@ -43,17 +43,16 @@ cat "$TALON_TEST_DIR/http.maxconn"
 
 echo "== a lock stays held while a child runs, and its beat is written again by the poll loop (R-CC12, R-CC3 point 3)"
 p=$PWD
+# The poll loop writes the beat every 100 polls. A poll is 20 ms of sleep, so 2 s on Linux; on the macOS runner a poll took 53 ms and the beat came after 5.3 s. The child lives longer there (the stale age is 30 s, R-CC12).
 dur=6; lim=50
-# TEMPORARY (macOS diagnostics): a longer child and wait, and the time when the beat is written again.
-if [ "$(uname -s)" = Darwin ]; then dur=20; lim=180; fi
+if [ "$(uname -s)" = Darwin ]; then dur=15; lim=120; fi
 fxprobe lockspawn "$p/L" - sleep $dur > lockspawn.out.tmp &
 pid=$!
 n=0; while [ ! -f L.lock/beat ] && [ $n -lt 100 ]; do sleep 0.1; n=$((n + 1)); done
 touch -d '2000-01-01 00:00:00' L.lock/beat
 touch -d '2000-01-02 00:00:00' ref.tmp
-# The poll loop writes the beat every 100 polls of 20 ms: 2 s on Linux, more on a machine with a slow sleep (macOS). Wait for it, at most 5 s of the 6 s of the child.
+# Wait for the beat, not longer than the child lives.
 n=0; while ! test L.lock/beat -nt ref.tmp && [ $n -lt $lim ]; do sleep 0.1; n=$((n + 1)); done
-if [ "$(uname -s)" = Darwin ]; then echo "DEBUG beat after $n x 0.1 s: $(ls -l L.lock | tr '\n' ' ')" >&2; fi
 test L.lock/beat -nt ref.tmp && echo "beat of L was written again while the child runs"
 wait $pid
 cat lockspawn.out.tmp
