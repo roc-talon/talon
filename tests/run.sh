@@ -21,6 +21,7 @@
 #   - tag tty: the cmd runs under a pseudo terminal (tests/tools/ptyrun.py; with given/http/ it runs with the fake HTTP server, slice 025). stdout and stderr are one
 #     stream, so expect/stdout has all the output and expect/stderr must be empty.
 #     given/answers is the text that is typed in.
+#   - the tag no-alias: the case does not change the host names (it names the host of the probe itself: `flowprobe nightlies --host <target>` has the default linux_x86_64, on every system).
 #   - the tag linux-x64 skips the case on a host that is not Linux x86_64. Another host gets the names of its own (tests/lib.sh alias_in, alias_out) and the GNU tools (make_gnu_shim).
 #   - the tags windows, exdev, slow (without SLOW=1), net (without NET=1) and real-roc (without REAL_ROC=1) are not in the fast set.
 #   - expect/facts.tsv (slice 030): the rows of `home/.cache/roc/talon/compat.db` after the cmd (the dump of tests/tools/dumpdb.py, the line form of `Db.file_text`).
@@ -38,6 +39,11 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 # The GNU timeout by its full path: the case runs under `env -i` with a PATH of its own (macOS: gtimeout, or a timeout in a gnubin dir that is not on that PATH).
 for TIMEOUT_CMD in gnutimeout gtimeout timeout; do TIMEOUT_CMD=$(command -v "$TIMEOUT_CMD") && break; done
 SCENARIOS=${SCENARIOS:-$SELF/scenarios}
+# The shell of the cmd files. Ubuntu has dash as sh. The sh of macOS is bash in POSIX mode, where `VAR=x func` keeps VAR after the call, and dash does not: the cases with such a line see a wrong time or downloader.
+# So macOS uses dash (brew install dash) when it is there. Another system keeps its sh.
+CASE_SH=sh
+if [ "$(uname -s)" = Darwin ]; then CASE_SH=$(command -v dash || echo sh); fi
+export CASE_SH
 # The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
 # On macOS the work dir has the length of `/tmp/talon-test/<case>` (tests/lib.sh set_caseroot), as the L2 runner does.
 set_caseroot talon-test
@@ -68,7 +74,9 @@ run_case() {
     [ -d "$dir/given" ] && cp -a "$dir/given/." "$W/"
     decode_names "$W" # %3F, %3A, %5C: the names that Windows refuses (tests/lib.sh)
     # A host that is not Linux x86_64 (macOS arm64): the names of the host in the case (the fake release lists, the targets) are the names of this host. The output gets the Linux names back.
-    if host_alias_on; then
+    local alias=0
+    case " $tags " in *" no-alias "*) ;; *) host_alias_on && alias=1 ;; esac
+    if [ $alias = 1 ]; then
         alias_tree "$W"
         alias_in < "$dir/cmd" > "$W/cmd.aliased"
     fi
@@ -107,19 +115,19 @@ run_case() {
     local cmdfile=$dir/cmd run
     [ -f "$W/cmd.aliased" ] && cmdfile=$W/cmd.aliased
     if [[ " $tags " == *" tty "* ]]; then
-        run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" sh -e "$cmdfile")
+        run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" "$CASE_SH" -e "$cmdfile")
         # Slice 025: a case with the tag tty and routes gets the fake HTTP server too (the pseudo terminal runs the server and the command).
-        [ -d "$W/http" ] && run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
+        [ -d "$W/http" ] && run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" "$CASE_SH" -e "$cmdfile")
     else
         # A case that hangs (a lock that waits for ever, slice 002) fails after CASE_TIMEOUT s with exit code 124.
-        run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" sh -e "$cmdfile")
+        run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$CASE_SH" -e "$cmdfile")
         # A case with routes gets the fake HTTP server (slice 003). It runs inside the namespace of the case.
-        [ -d "$W/http" ] && run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" sh -e "$cmdfile")
+        [ -d "$W/http" ] && run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" "$CASE_SH" -e "$cmdfile")
     fi
     (cd "$W/project" && $cut env -i "${envs[@]}" "${run[@]}" > "$W/out/stdout.raw" 2> "$W/out/stderr.raw" < /dev/null)
     echo $? > "$W/out/exit"
     local back=cat
-    host_alias_on && back=alias_out
+    [ $alias = 1 ] && back=alias_out
     normalize "$W" < "$W/out/stdout.raw" | hexnorm | $back > "$W/out/stdout"
     normalize "$W" < "$W/out/stderr.raw" | hexnorm | $back > "$W/out/stderr"
     tree_diff "$W" | $back > "$W/out/tree.diff"

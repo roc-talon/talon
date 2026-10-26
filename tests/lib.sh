@@ -79,7 +79,7 @@ anc_filter() {
 
 # --- GNU tools in the cases of L3 (macOS) ---
 # A case runs under `env -i` with PATH=<bin>:/usr/bin:/bin, and the cmd files use GNU options (`sed -i`, `touch -d`, `date -d`, `sha256sum`, `ls` error texts, `uniq -c` with no padding) and wget.
-# On macOS /usr/bin has the BSD tools. make_gnu_shim <dir> links the tools of the Homebrew `gnubin` dirs of PATH (coreutils, gnu-sed, findutils, diffutils, gnu-tar) and wget into <dir>,
+# On macOS /usr/bin has the BSD tools. make_gnu_shim <dir> links the tools of the Homebrew `gnubin` dirs of PATH (coreutils, gnu-sed, findutils, diffutils, gnu-tar) wget and xz (GNU tar starts it for a .tar.xz, the BSD tar has the code in itself) into <dir>,
 # and the runner puts <dir> before /usr/bin. Nothing is made on a system with no `gnubin` dir in PATH.
 make_gnu_shim() {
     local d f dirs
@@ -91,7 +91,9 @@ make_gnu_shim() {
         */gnubin) for f in "$d"/*; do [ -e "$f" ] && ln -sf "$f" "$1/${f##*/}"; done ;;
         esac
     done
-    f=$(command -v wget 2> /dev/null) && ln -sf "$f" "$1/wget"
+    for f in wget xz; do
+        d=$(command -v "$f" 2> /dev/null) && ln -sf "$d" "$1/$f"
+    done
     return 0
 }
 
@@ -106,8 +108,9 @@ alias_in() {
         -e 's/x64musl/@A2@/g' -e 's/arm64mac/x64musl/g' -e 's/@A2@/arm64mac/g' \
         -e 's/x86_64-linux-musl/aarch64-macos/g' -e 's/x86_64-linux/aarch64-macos/g'
 }
+# The lines of a platform file in the real bundles of tests/fixtures (`targets: {` ... `x64musl: { inputs: ["libhost.a", app] },`) are text in an archive: alias_in cannot change them, so alias_out leaves them (`/libhost\.a/b`).
 alias_out() {
-    sed -e 's/linux_x86_64/@A1@/g' -e 's/macos_apple_silicon/linux_x86_64/g' -e 's/@A1@/macos_apple_silicon/g' \
+    sed -e '/libhost\.a/b' -e 's/linux_x86_64/@A1@/g' -e 's/macos_apple_silicon/linux_x86_64/g' -e 's/@A1@/macos_apple_silicon/g' \
         -e 's/x64musl/@A2@/g' -e 's/arm64mac/x64musl/g' -e 's/@A2@/arm64mac/g' \
         -e 's/\(LLVM bundle *\)aarch64-macos/\1@A3@/g' -e 's/aarch64-macos/x86_64-linux/g' -e 's/@A3@/x86_64-linux-musl/g'
 }

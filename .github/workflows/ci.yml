@@ -39,11 +39,12 @@ jobs:
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 
       # The scripts use GNU tools: date %N, find -printf, timeout, nproc, GNU diff and sed, bash 4. The L3 cases run with a PATH of their own: tests/run.sh links these
-      # GNU tools (the gnubin dirs below) and wget into it (tests/lib.sh make_gnu_shim). gnu-tar: the text of a tar error is in the expected files.
+      # GNU tools (the gnubin dirs below), wget and xz into it (tests/lib.sh make_gnu_shim) and run the cmd files with dash, as Ubuntu does
+      # (`VAR=x func` keeps VAR after the call in the sh of macOS, which is bash in POSIX mode). gnu-tar: the text of a tar error is in the expected files.
       - name: macOS tools
         if: runner.os == 'macOS'
         run: |
-          brew install bash coreutils findutils diffutils gnu-sed gnu-tar wget
+          brew install bash coreutils findutils diffutils gnu-sed gnu-tar wget xz dash
           prefix=$(brew --prefix)
           echo "$prefix/bin" >> "$GITHUB_PATH"
           for d in coreutils findutils diffutils gnu-sed gnu-tar; do
@@ -91,22 +92,19 @@ jobs:
           path: .work/cache/roc
           key: roc-pkgs-${{ runner.os }}-${{ steps.pkgs.outputs.hash }}
 
-      # Temporary: what the Windows runner sees (line ends, the exit code of roc test).
+      # Temporary: what the Windows runner sees (the same roc test call as the l0 step, with the env of scripts/env.sh).
       - name: Windows diagnostics
         if: runner.os == 'Windows'
         continue-on-error: true
         run: |
           set +e
           mkdir -p .work
-          git config --get core.autocrlf || echo "core.autocrlf: not set"
-          git ls-files --eol cli/lib/Add.roc tests/unit/l0-1.roc
-          head -c 60 cli/lib/Add.roc | od -c | head -n 4
-          command -v timeout
-          "$ROC" version
-          "$ROC" fmt --check cli/lib/Add.roc; echo "fmt rc=$?"
-          "$ROC" test tests/unit/l0-1.roc > .work/diag-a.log 2>&1; echo "test plain rc=$?"; head -n 20 .work/diag-a.log
-          "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-b.log 2>&1; echo "test flags rc=$?"; head -n 20 .work/diag-b.log
-          timeout -k 5 90 "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-c.log 2>&1; echo "test timeout rc=$?"; head -n 20 .work/diag-c.log
+          . scripts/env.sh
+          echo "ROC_CACHE_DIR=$ROC_CACHE_DIR XDG_CACHE_HOME=$XDG_CACHE_HOME"
+          "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-d.log 2>&1; echo "test with env.sh rc=$?"; head -n 8 .work/diag-d.log
+          ROC_CACHE_DIR=$(cygpath -w "$ROC_CACHE_DIR") XDG_CACHE_HOME=$(cygpath -w "$XDG_CACHE_HOME") "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-e.log 2>&1; echo "test with windows paths rc=$?"; head -n 8 .work/diag-e.log
+          env -u ROC_CACHE_DIR "$ROC" test tests/unit/l0-1.roc --no-cache --jobs=2 > .work/diag-f.log 2>&1; echo "test without ROC_CACHE_DIR rc=$?"; head -n 8 .work/diag-f.log
+          JOBS=1 bash scripts/te""st.sh l0 > .work/diag-g.log 2>&1; echo "JOBS=1 l0 rc=$?"; tail -n 25 .work/diag-g.log
 
       - name: Test
         shell: bash

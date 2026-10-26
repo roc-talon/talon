@@ -43,12 +43,13 @@ cat "$TALON_TEST_DIR/http.maxconn"
 
 echo "== a lock stays held while a child runs, and its beat is written again by the poll loop (R-CC12, R-CC3 point 3)"
 p=$PWD
-fxprobe lockspawn "$p/L" - sleep 5 > lockspawn.out.tmp &
+fxprobe lockspawn "$p/L" - sleep 6 > lockspawn.out.tmp &
 pid=$!
 n=0; while [ ! -f L.lock/beat ] && [ $n -lt 100 ]; do sleep 0.1; n=$((n + 1)); done
 touch -d '2000-01-01 00:00:00' L.lock/beat
 touch -d '2000-01-02 00:00:00' ref.tmp
-sleep 3
+# The poll loop writes the beat every 100 polls of 20 ms: 2 s on Linux, more on a machine with a slow sleep (macOS). Wait for it, at most 5 s of the 6 s of the child.
+n=0; while ! test L.lock/beat -nt ref.tmp && [ $n -lt 50 ]; do sleep 0.1; n=$((n + 1)); done
 test L.lock/beat -nt ref.tmp && echo "beat of L was written again while the child runs"
 wait $pid
 cat lockspawn.out.tmp
