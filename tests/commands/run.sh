@@ -18,12 +18,13 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 . "$SELF/../lib.sh"
 CASES=${CASES:-$SELF/cases}
 # The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
-CASEROOT=$(cd "${TMPDIR:-/tmp}" && pwd -P)/talon-l2
+# On macOS the work dir has the length of `/tmp/talon-l2/<case>` (tests/lib.sh set_caseroot), because some expected sizes hold the path.
+set_caseroot talon-l2
 
 run_case() {
     local dir=$1 bin=$2 name W entry
     name=${dir#"$CASES"/}
-    W=$CASEROOT/$(echo "$name" | tr / _)
+    W=$CASEROOT/$CASEPREFIX$(echo "$name" | tr / _)
     rm -rf "$W"
     mkdir -p "$W/home" "$W/project" "$W/out" "$W/fx"
     ln -s "$SELF/../fixtures" "$W/fixtures" # the real roc outputs of tests/fixtures/check/out, for the answers of the fake probes! (slice 006)
@@ -57,7 +58,14 @@ run_case() {
     compare_file "exit code" "$W/out/exit.expected" "$W/out/exit" >> "$report" || fail=1
     compare_file "stdout" "$ex/stdout" "$W/out/stdout.n" >> "$report" || fail=1
     compare_file "stderr" "$ex/stderr" "$W/out/stderr.n" >> "$report" || fail=1
-    compare_file "Fx calls" "$ex/calls.log" "$W/out/calls.log.n" >> "$report" || fail=1
+    if [ "$CASEROOT" = /tmp/talon-l2 ]; then
+        compare_file "Fx calls" "$ex/calls.log" "$W/out/calls.log.n" >> "$report" || fail=1
+    else
+        # The ancestors of the work dir are not /tmp/talon-l2, /tmp and /: the calls on them are left out of both files (tests/lib.sh anc_filter).
+        if [ -f "$ex/calls.log" ]; then anc_filter "$W" < "$ex/calls.log" > "$W/out/calls.expected"; else : > "$W/out/calls.expected"; fi
+        anc_filter "$W" < "$W/out/calls.log.n" > "$W/out/calls.actual"
+        compare_file "Fx calls" "$W/out/calls.expected" "$W/out/calls.actual" >> "$report" || fail=1
+    fi
     compare_file "file tree" "$ex/tree.diff" "$W/out/tree.diff" >> "$report" || fail=1
     if [ $fail = 1 ]; then cat "$report"; return 1; fi
     return 0

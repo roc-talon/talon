@@ -21,6 +21,7 @@
 #   - tag tty: the cmd runs under a pseudo terminal (tests/tools/ptyrun.py; with given/http/ it runs with the fake HTTP server, slice 025). stdout and stderr are one
 #     stream, so expect/stdout has all the output and expect/stderr must be empty.
 #     given/answers is the text that is typed in.
+#   - the tag linux-x64 skips the case on a host that is not Linux x86_64. Another host gets the names of its own (tests/lib.sh alias_in, alias_out) and the GNU tools (make_gnu_shim).
 #   - the tags windows, exdev, slow (without SLOW=1), net (without NET=1) and real-roc (without REAL_ROC=1) are not in the fast set.
 #   - expect/facts.tsv (slice 030): the rows of `home/.cache/roc/talon/compat.db` after the cmd (the dump of tests/tools/dumpdb.py, the line form of `Db.file_text`).
 #     When the file is missing, the db is not compared. An empty file means that there is no db file. UPDATE=1 writes it, and removes it when the db is missing.
@@ -38,7 +39,8 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 for TIMEOUT_CMD in gnutimeout gtimeout timeout; do TIMEOUT_CMD=$(command -v "$TIMEOUT_CMD") && break; done
 SCENARIOS=${SCENARIOS:-$SELF/scenarios}
 # The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
-CASEROOT=$(cd "${TMPDIR:-/tmp}" && pwd -P)/talon-test
+# On macOS the work dir has the length of `/tmp/talon-test/<case>` (tests/lib.sh set_caseroot), as the L2 runner does.
+set_caseroot talon-test
 
 # run_case <case dir>: run one case. Prints nothing on a pass. Prints the reasons on a failure.
 # The exit code is 0 (pass), 1 (fail) or 2 (skipped).
@@ -49,6 +51,8 @@ run_case() {
     for t in windows exdev; do
         case " $tags " in *" $t "*) return 2 ;; esac
     done
+    # The tag linux-x64: the output has a name that holds a hash of the host (the key of `talon/x/<hash>/`) or a size of a file with the target name (`x64musl`, `arm64mac`), so alias_in and alias_out cannot hide the host.
+    case " $tags " in *" linux-x64 "*) [ "$(uname -s)-$(uname -m)" = Linux-x86_64 ] || { echo "the tag linux-x64: the output has a hash or a size of the host"; return 2; } ;; esac
     case " $tags " in *" slow "*) [ "${SLOW:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" real-roc "*) [ "${REAL_ROC:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" net "*) [ "${NET:-0}" = 1 ] || return 2 ;; esac
@@ -58,11 +62,16 @@ run_case() {
         return 2
     fi
 
-    W=$CASEROOT/$(echo "$name" | tr / _)
+    W=$CASEROOT/$CASEPREFIX$(echo "$name" | tr / _)
     rm -rf "$W"
     mkdir -p "$W/home" "$W/project" "$W/out" "$W/bin"
     [ -d "$dir/given" ] && cp -a "$dir/given/." "$W/"
     decode_names "$W" # %3F, %3A, %5C: the names that Windows refuses (tests/lib.sh)
+    # A host that is not Linux x86_64 (macOS arm64): the names of the host in the case (the fake release lists, the targets) are the names of this host. The output gets the Linux names back.
+    if host_alias_on; then
+        alias_tree "$W"
+        alias_in < "$dir/cmd" > "$W/cmd.aliased"
+    fi
     mkdir -p "$W/home" "$W/project" "$W/orig"
     cp -a "$W/home" "$W/orig/home"
     cp -a "$W/project" "$W/orig/project"
@@ -74,7 +83,7 @@ run_case() {
         ln -s "$SELF/fakes/roc" "$W/bin/roc"
     fi
     local envs=(
-        "HOME=$W/home" "PATH=$W/bin:$BIN:/usr/bin:/bin"
+        "HOME=$W/home" "PATH=$W/bin:$BIN:${GNU_SHIM:+$GNU_SHIM:}/usr/bin:/bin"
         "XDG_CACHE_HOME=$W/home/.cache" "XDG_CONFIG_HOME=$W/home/.config" "XDG_DATA_HOME=$W/home/.local/share"
         "ROC_CACHE_DIR=$W/home/.cache/roc" "TALON_TEST_DIR=$W" "TZ=UTC" "LANG=C.UTF-8" "CI=true"
         "TALON_REGISTRY=direct" "TALON_TEST_REAL_ROC=$ROC"
@@ -96,6 +105,7 @@ run_case() {
     fi
 
     local cmdfile=$dir/cmd run
+    [ -f "$W/cmd.aliased" ] && cmdfile=$W/cmd.aliased
     if [[ " $tags " == *" tty "* ]]; then
         run=(python3 -I "$SELF/tools/ptyrun.py" "$W/answers" sh -e "$cmdfile")
         # Slice 025: a case with the tag tty and routes gets the fake HTTP server too (the pseudo terminal runs the server and the command).
@@ -108,12 +118,14 @@ run_case() {
     fi
     (cd "$W/project" && $cut env -i "${envs[@]}" "${run[@]}" > "$W/out/stdout.raw" 2> "$W/out/stderr.raw" < /dev/null)
     echo $? > "$W/out/exit"
-    normalize "$W" < "$W/out/stdout.raw" | hexnorm > "$W/out/stdout"
-    normalize "$W" < "$W/out/stderr.raw" | hexnorm > "$W/out/stderr"
-    tree_diff "$W" > "$W/out/tree.diff"
-    dump_facts "$W" > "$W/out/facts.tsv"
-    if [ -f "$W/roc.log" ]; then normalize "$W" < "$W/roc.log" | hexnorm > "$W/out/roc.log"; else : > "$W/out/roc.log"; fi
-    if [ -f "$W/http.log" ]; then normalize "$W" < "$W/http.log" > "$W/out/http.log"; else : > "$W/out/http.log"; fi
+    local back=cat
+    host_alias_on && back=alias_out
+    normalize "$W" < "$W/out/stdout.raw" | hexnorm | $back > "$W/out/stdout"
+    normalize "$W" < "$W/out/stderr.raw" | hexnorm | $back > "$W/out/stderr"
+    tree_diff "$W" | $back > "$W/out/tree.diff"
+    dump_facts "$W" | $back > "$W/out/facts.tsv"
+    if [ -f "$W/roc.log" ]; then normalize "$W" < "$W/roc.log" | hexnorm | $back > "$W/out/roc.log"; else : > "$W/out/roc.log"; fi
+    if [ -f "$W/http.log" ]; then normalize "$W" < "$W/http.log" | $back > "$W/out/http.log"; else : > "$W/out/http.log"; fi
 
     local ex=$dir/expect
     if [ "${UPDATE:-0}" = 1 ]; then
@@ -179,6 +191,10 @@ done
 if [ ${#CASES[@]} -eq 0 ]; then echo "scenarios: no case matches"; exit 1; fi
 
 mkdir -p "$CASEROOT"
+# macOS: the GNU tools for the cases (tests/lib.sh make_gnu_shim). The cases run in the children of xargs, which get the variable.
+GNU_SHIM=
+if [ "$(uname -s)" = Darwin ]; then GNU_SHIM=$WORK/gnu; make_gnu_shim "$GNU_SHIM"; fi
+export GNU_SHIM
 RESULTS=$(mktemp -d)
 printf '%s\0' "${CASES[@]}" |
     xargs -0 -P "$(parallel_jobs)" -I{} bash -c '

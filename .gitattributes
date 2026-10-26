@@ -1,0 +1,13 @@
+# Text files are LF in every clone (TW28). Git for Windows checks out with CRLF by default (core.autocrlf=true), and `roc fmt --check` and
+# the string tests of l0 fail on a CRLF file. The shell scripts and the fixtures (tests/scenarios, tests/commands/cases) are compared byte for byte.
+* text=auto eol=lf
+*.sh text eol=lf
+*.roc text eol=lf
+# Binary fixtures: archives, packages and databases are never changed by a line end rule.
+*.tar binary
+*.gz binary
+*.zst binary
+*.xz binary
+*.zip binary
+*.db binary
+*.png binary

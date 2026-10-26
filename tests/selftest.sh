@@ -9,6 +9,8 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 # The L2 app of a standalone run is built with the same OPT rule as the runners (default dev, TW25).
 SELFTEST_OPT=${OPT:-dev}
 unset OPT SLOW NET JOBS VERBOSE TAIL REAL_ROC TLN L2BIN BUILD_THREADS L0_THREADS ${!BUDGET_@}
+# The groups have their own TMPDIR, so the runners use it as it is (the short work dir of macOS, tests/lib.sh set_caseroot, is off).
+export CASE_SHORT_ROOT=0
 # The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
 T=$(cd "${TMPDIR:-/tmp}" && pwd -P)/talon-selftest
 rm -rf "$T"

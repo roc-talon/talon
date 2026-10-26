@@ -42,6 +42,90 @@ normalize() {
     sed -e "s#$1/home#\$HOME#g" -e "s#$1/project#\$PROJECT#g" -e "s#$1#\$WORK#g" -e "s#127\.0\.0\.1:$port#127.0.0.1:\$PORT#g"
 }
 
+# --- The work dirs on macOS (the runners of L2 and L3) ---
+# The expected files of L2 are written on Linux with TMPDIR=/tmp. The work dir of a case is `/tmp/talon-l2/<case>`, and three things in the output depend on that path:
+# the ancestors of the work dir (`list_dirs /tmp`, `read_files /tmp/talon.toml`), the size of a file that holds the work dir (`{w}` in a `.talon.json`), and the order of the paths.
+# macOS has TMPDIR=/var/folders/xx/yyyy/T/ (the real path is /private/var/...), which is 60 characters longer, and /tmp is the link /private/tmp.
+# set_caseroot <name>: sets CASEROOT (the parent dir of the work dirs) and CASEPREFIX (the start of the name of each work dir): the work dir is $CASEROOT/$CASEPREFIX<case>.
+# Linux: <real TMPDIR>/<name>, no prefix. macOS: /private/tmp/<first characters of name><case>, which has exactly the length of /tmp/<name>/<case>, so the sizes are the same
+# (CASE_SHORT_ROOT=0 gives the Linux form, the self-test needs it: its groups have their own TMPDIR).
+set_caseroot() {
+    local real pad
+    real=$(cd "${TMPDIR:-/tmp}" && pwd -P)
+    CASEROOT=$real/$1
+    CASEPREFIX=
+    if [ "$(uname -s)" = Darwin ] && [ "${CASE_SHORT_ROOT:-1}" = 1 ] && [ -d /private/tmp ]; then
+        pad=$((${#1} - 7)) # ${#"/private/tmp/"} = 13 = ${#"/tmp/"} + 1 + 7
+        CASEROOT=/private/tmp
+        CASEPREFIX=${1:0:$pad}
+    fi
+}
+
+# anc_filter <W>: read stdin (a calls.log), write stdout. Takes out the calls that name an ancestor dir of the work dir, which is a different path on each machine:
+# the lines `list_dirs <dir>` (not the root `/`) and the words `<dir>/talon.toml` of a `read_files` line. The dirs are the real ancestors of <W> and the ancestors of the Linux
+# work dir (`/tmp/talon-l2`, `/tmp`), so it works for the expected file and for the actual file. Used when the work dir is not `/tmp/talon-l2/<case>`.
+anc_filter() {
+    local d=${1%/*} dirs=() x e script=()
+    dirs=(/tmp/talon-l2 /tmp)
+    while [ -n "$d" ]; do dirs+=("$d"); d=${d%/*}; done
+    dirs+=("") # the root: the word `/talon.toml`, and the line `list_dirs /` stays
+    for x in "${dirs[@]}"; do
+        e=$(printf '%s' "$x" | sed -e 's/[][\\.*^$#+?(){}|]/\\&/g')
+        [ -n "$x" ] && script+=(-e "\\#^list_dirs $e\$#d")
+        script+=(-e "/^read_files /s# $e/talon\\.toml( |\$)#\\1#g")
+    done
+    sed -E "${script[@]}"
+}
+
+# --- GNU tools in the cases of L3 (macOS) ---
+# A case runs under `env -i` with PATH=<bin>:/usr/bin:/bin, and the cmd files use GNU options (`sed -i`, `touch -d`, `date -d`, `sha256sum`, `ls` error texts, `uniq -c` with no padding) and wget.
+# On macOS /usr/bin has the BSD tools. make_gnu_shim <dir> links the tools of the Homebrew `gnubin` dirs of PATH (coreutils, gnu-sed, findutils, diffutils, gnu-tar) and wget into <dir>,
+# and the runner puts <dir> before /usr/bin. Nothing is made on a system with no `gnubin` dir in PATH.
+make_gnu_shim() {
+    local d f dirs
+    rm -rf "$1"
+    mkdir -p "$1"
+    IFS=: read -ra dirs <<< "$PATH"
+    for d in "${dirs[@]}"; do
+        case $d in
+        */gnubin) for f in "$d"/*; do [ -e "$f" ] && ln -sf "$f" "$1/${f##*/}"; done ;;
+        esac
+    done
+    f=$(command -v wget 2> /dev/null) && ln -sf "$f" "$1/wget"
+    return 0
+}
+
+# --- Host names in the cases of L3 (macOS) ---
+# The scenarios are written for Linux x86_64: the fake release lists have `linux_x86_64` assets, the targets are `x64musl`, the Zig index has `x86_64-linux`. On a macOS arm64 host, `tln`
+# looks for the assets of its own host. host_alias_on: this is such a host. alias_in changes the names of the Linux host to the names of this host, for the text of a case (cmd, given/);
+# alias_out changes them back in the output, so the expected files stay the same. The pairs are swaps, so a case that names the other host on purpose (`--host macos_apple_silicon`) still works.
+# The names that hold a hash (the key of `talon/x/<hash>/`) cannot change: a case with such a name has the tag `linux-x64` and is skipped on another host.
+host_alias_on() { [ "${HOST_ALIAS:-$(uname -s)-$(uname -m)}" = Darwin-arm64 ]; }
+alias_in() {
+    sed -e 's/linux_x86_64/@A1@/g' -e 's/macos_apple_silicon/linux_x86_64/g' -e 's/@A1@/macos_apple_silicon/g' \
+        -e 's/x64musl/@A2@/g' -e 's/arm64mac/x64musl/g' -e 's/@A2@/arm64mac/g' \
+        -e 's/x86_64-linux-musl/aarch64-macos/g' -e 's/x86_64-linux/aarch64-macos/g'
+}
+alias_out() {
+    sed -e 's/linux_x86_64/@A1@/g' -e 's/macos_apple_silicon/linux_x86_64/g' -e 's/@A1@/macos_apple_silicon/g' \
+        -e 's/x64musl/@A2@/g' -e 's/arm64mac/x64musl/g' -e 's/@A2@/arm64mac/g' \
+        -e 's/\(LLVM bundle *\)aarch64-macos/\1@A3@/g' -e 's/aarch64-macos/x86_64-linux/g' -e 's/@A3@/x86_64-linux-musl/g'
+}
+# alias_tree <dir>: alias_in for the names and for the text files under <dir>. A binary file (an archive) is not changed.
+alias_tree() {
+    local f g b
+    while IFS= read -r -d '' f; do
+        b=${f##*/}
+        g=${f%/*}/$(printf '%s' "$b" | alias_in)
+        [ "$f" = "$g" ] || mv -- "$f" "$g"
+    done < <(find "$1" -depth \( -name '*linux_x86_64*' -o -name '*macos_apple_silicon*' -o -name '*x64musl*' -o -name '*arm64mac*' -o -name '*x86_64-linux*' \) -print0)
+    while IFS= read -r -d '' f; do
+        grep -qI . "$f" 2> /dev/null || continue
+        grep -q 'linux_x86_64\|macos_apple_silicon\|x64musl\|arm64mac\|x86_64-linux' "$f" || continue
+        alias_in < "$f" > "$f.alias" && cat "$f.alias" > "$f" && rm -f "$f.alias"
+    done < <(find "$1" -type f -print0)
+}
+
 # hexnorm: read stdin, write stdout. The random name of a probe copy (`talon/tmp/<16hex>`, R-CC2) is `talon/tmp/$HEX`, so an expected file of L3 has no random text (slice 007).
 # L2 does not use it: its fake `Fx` makes the same name each time (`fx/random`).
 hexnorm() { sed -e 's#/talon/tmp/[0-9a-f]\{16\}#/talon/tmp/$HEX#g'; }
