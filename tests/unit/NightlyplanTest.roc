@@ -30,7 +30,7 @@ names = [(n1, "n1"), (n2, "n2"), (n3, "n3"), (n4, "n4"), (n5, "n5"), (n6, "n6"),
 
 nm = |id| names.find_first(|(i, _)| i == id).map_ok(|(_, n)| n) ?? id
 
-base = { releases, req: Any, now, min_age: 2 * day, snapshot: Err(None), nightly: Bool.True, held: n3, installed: [] }
+base = { releases, req: Any, now, min_age: 2 * day, snapshot: Err(None), nightly: Bool.True, held: n3, installed: [], exclude: [] }
 
 view = |f| {
 	got = NightlyPlan.pick(f)
@@ -219,4 +219,55 @@ expect {
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
+}
+
+# R-UP6 R-RP4 R-C15 R-C7 R-C9 R-NS3 R-NS7 R-DT4 R-SP12 (slice 084): the list `min-release-age-exclude` in the plan of a free nightly. A pattern that matches `roc-lang/nightlies` (or `roc-lang/*`, decision Q1) lifts the age: n6 (1 day old) is
+# the newest allowed compiler N, so it is the download that the command names (`pick`), the optional compilers are the ones below it (`optional`), and an installed n6 is a value of a held move (`movable`). `roc-lang/roc` and `acme/*`
+# do not match a nightly. The switch, the range and the snapshot still cut. An installed compiler that is not allowed (too new, no pattern) stays not askable and not a value. The world is the one of expect 1: H is n3, now is 2026-10-15.
+expect {
+	sized = |id, days, size| { id, published_at: now - days * day, asset: Ok({ ..asset(id), size }) }
+	rels = [sized(n6, 1, 106), sized(n5, 2, 105), sized(n4, 3, 104), sized(n3, 5, 103), sized(n2, 6, 102), sized(n1, 7, 101)]
+	start = { ..base, releases: rels }
+	nightlies = ["roc-lang/nightlies"]
+	shown_pick = |f| view(f)
+	shown_optional = |f| {
+		got = NightlyPlan.optional(f)
+		(got.ids.map(nm), got.sizes.map(|s| (nm(s.id), s.size)))
+	}
+	view_movable = |f| NightlyPlan.movable(f).map(nm)
+	rows = [
+		("pick, no pattern: N is n5 (n6 is too new)", shown_pick(start), ("n5", ["n5", "n3"], 6)),
+		("pick, roc-lang/nightlies: N is n6", shown_pick({ ..start, exclude: nightlies }), ("n6", ["n6", "n3"], 6)),
+		("pick, roc-lang/*: N is n6 (Q1)", shown_pick({ ..start, exclude: ["roc-lang/*"] }), ("n6", ["n6", "n3"], 6)),
+		("pick, other case: N is n6", shown_pick({ ..start, exclude: ["ROC-LANG/NIGHTLIES"] }), ("n6", ["n6", "n3"], 6)),
+		("pick, roc-lang/roc: a nightly is not in it, N is n5", shown_pick({ ..start, exclude: ["roc-lang/roc"] }), ("n5", ["n5", "n3"], 6)),
+		("pick, acme/*: N is n5", shown_pick({ ..start, exclude: ["acme/*"] }), ("n5", ["n5", "n3"], 6)),
+		("pick, a pattern and n6 installed: n6 and H are askable", shown_pick({ ..start, exclude: nightlies, installed: [n6] }), ("n6", ["n6", "n3"], 6)),
+		("pick, no pattern and n6 installed: not allowed, not askable (R-C9 for H only)", shown_pick({ ..start, installed: [n6] }), ("n5", ["n5", "n3"], 6)),
+		("pick, a pattern and the switch off: no compiler is allowed (R-NS3)", shown_pick({ ..start, exclude: nightlies, nightly: Bool.False }), ("none", ["n3"], 6)),
+		("pick, a pattern and the range `=n4`: N is n4 (R-NS7)", shown_pick({ ..start, exclude: nightlies, req: Exactly(n4) }), ("n4", ["n4", "n3"], 6)),
+		("pick, a pattern and a snapshot at the time of n4: n6 and n5 are hidden (R-DT4)", shown_pick({ ..start, exclude: nightlies, snapshot: Ok(now - 3 * day) }), ("n4", ["n4", "n3"], 6)),
+	]
+	optional_rows = [
+		("optional, a pattern: n6 is N, n5 and n4 are optional, newest first", shown_optional({ ..start, exclude: nightlies }), (["n5", "n4"], [("n5", 105), ("n4", 104)])),
+		("optional, no pattern: n4 only", shown_optional(start), (["n4"], [("n4", 104)])),
+		("optional, a pattern and n5 installed: n4 only", shown_optional({ ..start, exclude: nightlies, installed: [n5] }), (["n4"], [("n4", 104)])),
+		("optional, a pattern and H is n6: none", shown_optional({ ..start, exclude: nightlies, held: n6 }), ([], [])),
+		("optional, roc-lang/roc: n4 only", shown_optional({ ..start, exclude: ["roc-lang/roc"] }), (["n4"], [("n4", 104)])),
+	]
+	movable_rows = [
+		("movable, no pattern, n6 installed: not a value", view_movable({ ..base, installed: [n6, n4] }), ["n4", "n3"]),
+		("movable, a pattern, n6 installed: a value", view_movable({ ..base, exclude: nightlies, installed: [n6, n4] }), ["n6", "n4", "n3"]),
+		("movable, roc-lang/*, n6 installed: a value", view_movable({ ..base, exclude: ["roc-lang/*"], installed: [n6, n4] }), ["n6", "n4", "n3"]),
+		("movable, a pattern, n6 not installed: no download for a held move", view_movable({ ..base, exclude: nightlies, installed: [n4] }), ["n4", "n3"]),
+		("movable, a pattern and the switch off: H alone", view_movable({ ..base, exclude: nightlies, nightly: Bool.False, installed: [n6, n4] }), ["n3"]),
+		("movable, acme/*: n6 is not a value", view_movable({ ..base, exclude: ["acme/*"], installed: [n6, n4] }), ["n4", "n3"]),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	bad_optional = optional_rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	bad_movable = movable_rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	dbg bad_optional
+	dbg bad_movable
+	bad == [] and bad_optional == [] and bad_movable == []
 }

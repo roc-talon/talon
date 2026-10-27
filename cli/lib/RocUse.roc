@@ -93,7 +93,8 @@ flow! = |fx, args, text| {
 	loaded = ResolveLoad.load!(fx, request)?
 	fallback = fallback!(fx, request, loaded)?
 	installed = Launch.toolchains!(fx, start.roots)
-	target = named!(fx, { text, installed, env: start.env, offline: args.offline })?
+	noted = named!(fx, { text, installed, env: start.env, offline: args.offline })?
+	target = noted.offer
 	id = match target {
 		Present({ id: found }) => found
 		Download(offer) => offer.id
@@ -105,6 +106,8 @@ flow! = |fx, args, text| {
 	if changes.is_empty() {
 		return Ok({ id, written: [], probes: 0, downloads: 0, built: Bool.False, notes: [], toolchain })
 	}
+	# R-C16 (slice 084): `roc use` writes a pin, so a young compiler that only a pattern kept is a new choice, also when it is installed. A pin that equals it changes nothing (the return above): no note.
+	RocInstall.print_note!(fx, args.quiet, noted.note)
 	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler }
 	installs = install_all!(fx, args, ctx, { target, id, rows: changes, picked: fallback.picked })?
 	members = changes.map(|r| use_member(loaded, r, id))
@@ -126,6 +129,7 @@ request_of : Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, 
 request_of = |args, start, facts| {
 	command: Update,
 	names: [],
+	fixed: [],
 	frozen: Bool.False,
 	no_check: Bool.False,
 	project: start.project,
@@ -172,15 +176,16 @@ fallback! = |fx, request, loaded| {
 }
 
 # Step 4, R-U2: the operand names an installed compiler (a unique prefix is expanded), else the compiler of `roc install` (`@latest`, a step, a new id).
-named! : Fx, { text : Str, installed : List(Str), env : List((Str, Str)), offline : Bool } => Try(Offered, Fail)
+# R-C16: `note` is the note of `RocInstall.offer_noted!` (a step or `@latest` only).
+named! : Fx, { text : Str, installed : List(Str), env : List((Str, Str)), offline : Bool } => Try({ offer : Offered, note : Try(Str, [None]) }, Fail)
 named! = |fx, run| {
 	offer = { id: run.text, env: run.env, offline: run.offline }
 	if run.text.starts_with("@") {
-		RocInstall.offer!(fx, offer)
+		RocInstall.offer_noted!(fx, offer)
 	} else {
 		match Nightlies.pick({ text: run.text, named: run.installed, auto: run.installed, base: Err(None) }) {
-			Ok(id) => Ok(Present({ id: id }))
-			Err(NoMatch(_)) => RocInstall.offer!(fx, offer)
+			Ok(id) => Ok({ offer: Present({ id: id }), note: Err(None) })
+			Err(NoMatch(_)) => RocInstall.offer_noted!(fx, offer)
 			Err(error) => Err(Nightlies.failure(error))
 		}
 	}

@@ -1,0 +1,1 @@
+R-C13 R-TF4 R-EC19 R-C11 (slice 081): `tln tool install acme/foo` with a bad pattern in `config.toml` (`acme/*/x`, line 2). The config is read before the release list, so the stop is exit 19 with no index call and no `http_get`. A tool command has no project: the list of `config.toml` is the whole list (R-C14).

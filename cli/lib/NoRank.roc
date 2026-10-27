@@ -1,3 +1,4 @@
+import Age
 import Answer
 import Clock
 import Common
@@ -32,7 +33,7 @@ NoRank :: [].{
 	Scope : [Outside, Project(List(Str))]
 
 	## What the download needs: the scope, the facts of the consent rules (`Start.Downloads`: `auto` is `TALON_AUTO_INSTALL`, `allow` is `--allow-downloads`, `yes`, `mode`, `quiet`, `offline`, `env`). Slice 080 (R-SO24): there is no step (a) and no step (b), so no probe.
-	Run : { scope : NoRank.Scope, downloads : Start.Downloads }
+	Run : { scope : NoRank.Scope, exclude : List(Str), downloads : Start.Downloads }
 
 	## `Stop`: this flow does not apply R-SO14 yet (slice 072d, or a flow that has no fetch): the failure `Compiler.failure(NoCompiler)`, exit code 18. `Download`: R-SO14.
 	Fallback : [Stop, Download(NoRank.Run)]
@@ -95,7 +96,7 @@ NoRank :: [].{
 	## | The asset has no digest | `Toolchain.require_digest` (exit 16) |
 	##
 	## The picked id is a dir of `toolchains/`: `Present`. Else `Download` with the size of the asset. `RocInstall.offer!` has the shared steps and private helpers (`toolchain_entries!`, `has_dir`, `asset_of`, `published_of`, `env_var`). `RocInstall.roc` has about 420 lines: the code agent makes the helpers public or moves them into a module that both use (each module at most 490 lines).
-	offer! : Fx, { env : List((Str, Str)), offline : Bool, scope : NoRank.Scope } => Try(RocInstall.Offer, Fail)
+	offer! : Fx, { env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, exclude : List(Str) } => Try(RocInstall.Offer, Fail)
 	offer! = |fx, run| {
 		roots = Roots.from_env(run.env)?
 		real = fx.clock!()
@@ -112,7 +113,10 @@ NoRank :: [].{
 			fx.err!("warning: ${Toolchain.changed_warning(change)}\n")
 		}
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
-		auto = Toolchain.domain({ releases: found.releases, now, min_age: config.min_release_age ?? 172800, nightly: switch.nightly }).auto
+		min_age = config.min_release_age ?? 172800
+		# R-C14: the list of the project (`[]` outside a project) and the list of `config.toml`.
+		exclude = Age.join({ project: run.exclude, user: config.min_release_age_exclude })
+		auto = Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude }).auto
 		facts = match run.scope {
 			Outside => []
 			Project(hashes) => Facts.load!(fx, { roots, keys: NoRank.keys({ hashes, auto }) })?
@@ -125,6 +129,8 @@ NoRank :: [].{
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
 		if run.offline return Err(Toolchain.offline_missing(id))
+		# R-C16 (slice 084): the pick of a young compiler that only a pattern kept gets the note, before the download line.
+		RocInstall.print_note!(fx, Bool.False, Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }))
 		item = Roots.item(roots, Item.Toolchain(id))
 		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: id, id, item, asset, sha, system }
 		Ok(Download({ id, size: asset.size, ctx }))
@@ -152,7 +158,7 @@ NoRank :: [].{
 			Stop(fail) => return Err(fail)
 			Go => {}
 		}
-		offer = NoRank.offer!(fx, { env: consent.env, offline: consent.offline, scope: facts.run.scope })?
+		offer = NoRank.offer!(fx, { env: consent.env, offline: consent.offline, scope: facts.run.scope, exclude: facts.run.exclude })?
 		match offer {
 			Present(found) => Ok({ id: found.id, installed: facts.listed.append(found.id) })
 			Download(download) => {
@@ -169,8 +175,8 @@ NoRank :: [].{
 
 	## R-SO19, R-SO23, R-SL7 (slice 072e): the compiler of a command as an id, with no gate, no prompt, no download and no default. A command that runs a probe, and the proxy, use it when no compiler is selected: the download is at the first probe (R-SO22) or at the consent rules of the proxy.
 	## `listed` is the list of `<cache>/toolchains` that the caller read (empty by R-SO24: no compiler is selected only when nothing is installed). Slice 080: there is no installed-first step, so the only calls are those of `offer!` (the id of `Present` or of `Download`).
-	pick_id! : Fx, { roots : Roots, env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, listed : List(Str) } => Try(Str, Fail)
-	pick_id! = |fx, facts| match NoRank.offer!(fx, { env: facts.env, offline: facts.offline, scope: facts.scope })? {
+	pick_id! : Fx, { roots : Roots, env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, exclude : List(Str), listed : List(Str) } => Try(Str, Fail)
+	pick_id! = |fx, facts| match NoRank.offer!(fx, { env: facts.env, offline: facts.offline, scope: facts.scope, exclude: facts.exclude })? {
 		Present(found) => Ok(found.id)
 		Download(offer) => Ok(offer.id)
 	}

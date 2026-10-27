@@ -1,0 +1,13 @@
+cwd:v1 env:HOME={w}/home1 init --platform acme/pfx@1.2.0
+cwd:v2 env:HOME={w}/home2 init --platform acme/pfy@1.2.0
+cwd:v3 env:HOME={w}/home3 init --platform acme/pfy@1.2.0
+cwd:v4a env:HOME={w}/home1 init --platform acme/pfx@1.2
+cwd:v4b env:HOME={w}/home1 init --platform acme/pfx@^1
+cwd:v4c env:HOME={w}/home1 init --platform acme/pfx@latest
+cwd:v5a env:HOME={w}/home1 init --platform acme/pfx@nightly-2026-10-09-258ab27
+cwd:v5b env:HOME={w}/home1 init --platform acme/pfx@-1
+cwd:v5c env:HOME={w}/home1 init --platform acme/pfx@
+cwd:v6 env:HOME={w}/home1 init --platform acme/pfx@9.9.9
+cwd:v7 env:HOME={w}/home7 init --platform acme/pfz@1.2.0
+cwd:v8 env:HOME={w}/home8 init --platform roc-lang/basic-cli@0.25.0
+cwd:v9 env:HOME={w}/home9 init --json --platform acme/pfy@1.2.0

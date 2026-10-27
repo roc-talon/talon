@@ -1,0 +1,8 @@
+# R-ST16 R-SO14 R-C15 R-C16 R-RU1 (slice 084): config.toml has `min-release-age = "2d"` and `min-release-age-exclude = ["roc-lang/nightlies"]`, no default-roc. TALON_NOW is 2026-10-22T12:00:00Z. The newest nightly of the list is nightly-2026-10-21-601b54c (36 hours old). The pattern lifts the age for it, so it is the latest compiler: setup writes it as default-roc, prints the note on stderr, and downloads nothing.
+setup
+# R-ST16 R-RU1 R-C7 (slice 084): HOME is home2, no config.toml. The age (2 days) hides the 36 hours old nightly, and the latest is nightly-2026-10-19-5349569. No note.
+setup env:HOME={w}/home2 env:PATH={w}/home2/.local/bin:/usr/bin
+# R-ST16 R-C15 R-C12 (slice 084): HOME is home3, the list is `roc-lang/roc` and `acme/*`. A nightly is in neither name, so the age still hides it: the same default as run 2, and no note.
+setup env:HOME={w}/home3 env:PATH={w}/home3/.local/bin:/usr/bin
+# R-ST16 R-NS3 R-C15 (slice 084): HOME is home4, `roc-lang/*` and `nightly = false`. The switch still cuts: no compiler is allowed, so setup writes no default (the note of the unreadable list, as in st8). A pattern does not bring a nightly back.
+setup env:HOME={w}/home4 env:PATH={w}/home4/.local/bin:/usr/bin

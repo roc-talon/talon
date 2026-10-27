@@ -1,0 +1,15 @@
+== norank config:fx/cfg-nightlies.toml none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+ok nightly-2026-10-19-0badf00 installed=nightly-2026-10-19-0badf00
+default-roc: default-roc = "nightly-2026-10-19-0badf00"
+== norank home:home2 none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+ok nightly-2026-10-18-5349569 installed=nightly-2026-10-18-5349569
+default-roc: default-roc = "nightly-2026-10-18-5349569"
+== norank config:fx/cfg-nightlies.toml none:outside env:TALON_AUTO_INSTALL=yes
+ok nightly-2026-10-19-0badf00 installed=nightly-2026-10-19-0badf00
+default-roc: default-roc = "nightly-2026-10-19-0badf00"
+== norank home:home2 config:fx/cfg-other.toml none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+ok nightly-2026-10-18-5349569 installed=nightly-2026-10-18-5349569
+default-roc: default-roc = "nightly-2026-10-18-5349569"
+== norank config:fx/cfg-nightlies.toml none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr env:TALON_AUTO_INSTALL=yes
+ok nightly-2026-10-16-1df370f installed=nightly-2026-10-16-1df370f
+default-roc: default-roc = "nightly-2026-10-16-1df370f"

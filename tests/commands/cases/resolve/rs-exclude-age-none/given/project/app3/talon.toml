@@ -1,0 +1,6 @@
+[resolution]
+min-release-age = "0d"
+min-release-age-exclude = ["acme/*"]
+
+[dependencies]
+parser = "acme/parser@^1"

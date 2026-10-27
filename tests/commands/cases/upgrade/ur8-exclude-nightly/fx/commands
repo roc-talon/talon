@@ -1,0 +1,10 @@
+# R-UP6 R-C14 R-C15 R-C16 R-NI12 (slice 084): a person (Enter). p1 has the pin H (nightly-2026-10-09-9d9d9d9) and a talon.toml with `[resolution] min-release-age-exclude = ["roc-lang/nightlies"]`. TALON_NOW is 2026-10-15T12:00:00Z, so the newest nightly (2026-10-14, 21 hours old) is hidden by min-release-age. The pattern of the project lifts the age: N is the young nightly, the prompt names it (the download that the command names), the note is on stderr, and the ladder passes on it, so the pin moves to it.
+upgrade roc --file p1/main.roc
+# R-UP6 R-C14 R-C15 R-C16 (slice 084): HOME is home2, CI. The list is in config.toml only (`roc-lang/*`, decision Q1), p2 has no talon.toml. The same result: the young nightly is N, the note, the pin moves.
+env:CI=true env:HOME={w}/home2 upgrade roc --file p2/main.roc
+# R-UP6 R-C7 (slice 084): HOME is home3, CI. config.toml has `acme/*` only and p3 has no list: the age hides the young nightly. N is 2026-10-12-2a2a2a2, as in `ur1-roc` run 1. No note.
+env:CI=true env:HOME={w}/home3 upgrade roc --file p3/main.roc
+# R-C14 R-C15 R-C12 (slice 084): HOME is home4, CI. p4 has `roc-lang/roc` and `acme/*` in the project, and config.toml has `acme/*`: the union has no pattern for a nightly. N is 2026-10-12-2a2a2a2, no note.
+env:CI=true env:HOME={w}/home4 upgrade roc --file p4/main.roc
+# R-C16 R-J3 R-OUT4 (slice 084, review C1): HOME is home5 (`roc-lang/*` in config.toml), CI, `--json`. The note is an entry of `data.notes` without the prefix, and stdout is only the envelope.
+env:CI=true env:HOME={w}/home5 upgrade roc --json --file p5/main.roc

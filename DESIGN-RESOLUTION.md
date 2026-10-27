@@ -48,7 +48,7 @@ roc accepts two forms of compiler version in a header: nightly tags, and release
 | --- | --- |
 | R-NS1 | On (the default), the domain of `roc` is all nightlies and all releases. Talon orders them by date: the tag date of a nightly, the GitHub `published_at` of a release. On the same date, the release is newer. Two nightlies of one date (for example `nightly-2026-09-01-24e3995` and `nightly-2026-09-01-db83307`) are in the order of their GitHub `published_at`, then of the tag text. roc gives them the same rank (Design 2), so this order is Talon's own. It is total, so `@-1`, adjacent releases (R-EP1) and "newest" each have one answer (G3). |
 | R-NS2 | Off, the domain is the releases only. Today that domain is empty: Talon knows no source of compiler releases yet (CLI 6.2, R-CV1). Then a command that must select a compiler stops with exit code 10 (`no_tuple`), and the error names the switch and its source. |
-| R-NS3 | The switch applies where Talon selects a compiler by itself: the resolver, `tln upgrade` and `tln init` (section 10, CLI 5), `tln roc update` (R-RU1), the selector `@latest` and the relative selectors `@+N` and `@-N` in the `tln roc` scope (CLI 2), selection rank 4 (section 13), option 2 of R-NI8 (CLI 6.4), and probe searches (section 4). |
+| R-NS3 | The switch applies where Talon selects a compiler by itself: the resolver, `tln upgrade` and `tln init` (section 10, CLI 5), `tln roc update` (R-RU1), the selector `@latest` and the relative selectors `@+N` and `@-N` in the `tln roc` scope (CLI 2), selection rank 4 (section 13), option 2 of R-NI8 (CLI 6.4), and probe searches (section 4). The list `min-release-age-exclude` (R-C15) lifts the age for these compilers too: a pattern compares `roc-lang/nightlies` for a nightly and `roc-lang/roc` for a release. |
 | R-NS4 | The switch does not apply to a compiler that the user names: a command argument, `roc +<id>`, `ROC_TOOLCHAIN`, `tln roc install <id>` and `tln roc default <id>`. A global default that is a nightly (rank 6) stays in use. This is for runs only: a compiler that Talon holds as the nightly or writes as the `roc:` pin is checked against the switch and the range (R-SO19, R-U5). |
 | R-NS5 | A nightly `roc:` pin with the switch off is like a pin outside the `[toolchain] roc` range (R-RP2). The proxy runs it, because the header is the lock (rank 3). The commands of R-RP2 stop with exit code 10, and `--frozen` fails with exit code 14. `tln roc use <nightly>` stops (R-U5). `tln upgrade roc` moves the pin to a release. |
 | R-NS6 | `git-*`, `link-*` and `copy-*` builds (CLI 6.6) are not nightlies and not releases. The switch never removes them, because Talon selects them only by name (R-R5). |
@@ -66,10 +66,77 @@ R-NS12: Evidence and probes (sections 3 and 4) work the same for a release: a fa
 | R-C4 | Alias kind: a `platform` entry resolves only to a `platform` release, and a package entry resolves only to a `package` release. An `app` release is never a candidate. The kind is the first keyword of the release header (CLI 7.3, R-DI7). | Hard |
 | R-C5 | Compatibility: every hash in the closure checks on the chosen nightly (sections 3 to 5) | Hard |
 | R-C6 | Yanked releases are not chosen for a new resolution. Yank and advisory data come from the registry (Registry 5, Registry 7.2, advisories in Design 7, P3). A withdrawn release (Registry 7, R-PU17) is not a candidate. With `direct`, GitHub has no yank: a deleted release, a draft and a prerelease are not candidates (CLI 7.3, R-DI3), and there is no advisory data. Then each command that checks yanks or advisories (`tln audit`, R-B3 in CLI 6.4) prints one note: `no yank and advisory data without a registry`. | Hard |
-| R-C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, R-DI10). Both also apply where Talon selects a compiler by itself (R-NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` and the time form of `snapshot` do not hide a version or a compiler that the user names (R-NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
+| R-C7 | `min-release-age` and `snapshot` (log or time form, section 11) hide new releases. The default `min-release-age` is `2d`. Sources, from high to low: `talon.toml` `[resolution]`, `config.toml` (CLI 6.1), the default. `"0d"` turns it off. `min-release-age-exclude` (R-C11 to R-C16) skips it for chosen owners. The release time is the GitHub `published_at`, from the registry or from GitHub (CLI 7.3, R-DI10). Both also apply where Talon selects a compiler by itself (R-NS3): `min-release-age` and the time form with the `published_at` of the nightly or release, the log form with its compiler log leaves (Registry 3). `min-release-age` and the time form of `snapshot` do not hide a version or a compiler that the user names (R-NS4, or an exact version such as `tln add X@1.2.3`). Then Talon prints a note with its age. | Hard |
 | R-C8 | Two series of one package (two groups, Design 4.1) in the closure | Warning (type identity) |
 | R-C9 | R-C6, R-C7 and a snapshot never hide the value that a header entry or the `roc:` pin has now. That value stays in the domain of its variable, so a hold, the implied range (Design 4.3) and `tln update` still work, for example after `tln add X@1.2.3` of a release that is 1 day old. They hide only the other candidates. `tln audit` reports a yanked value (R-C6). | Hard |
 | R-C10 | Build target: the `targets` of the platform release have the build target of the app project file (section 4, R-TG1). A release with no such target is not a candidate. A release with no readable `targets` is a candidate (R-TG7). Reason: the release cannot build the app, and Talon knows it from the header with no probe. When the platform is held (section 9) and its release does not have the build target, no tuple exists: exit code 10 (`no_tuple`). | Hard |
+
+### The exclude list of `min-release-age`
+
+Use: an owner can release a platform, its helper tool and its packages in lockstep. The owner and its users want the new set at once, not after 2 days. References: pnpm `minimumReleaseAgeExclude`, Bun `minimumReleaseAgeExcludes` (`bunfig.toml`, `[install]`) and uv `exclude-newer-package` name the packages that skip the age or date rule. Talon names owners with patterns, because a lockstep release has many repositories.
+
+R-C11: The key `min-release-age-exclude` is a list of patterns (R-C12). It is a key of `config.toml` (CLI 6.1) and of the table `[resolution]` of `talon.toml` (Design 4.2). Not set: the empty list. A release that a pattern matches is not hidden by `min-release-age` (R-C15). The key has no flag and no environment variable, as `min-release-age` has none. Talon writes the key in no command and in no template. In a workspace, `[resolution]` is a table of the root `talon.toml` only (Design 4.4, R-WS5), so the key is too.
+
+R-C12: A pattern is a text of one of these forms:
+
+| Form | Matches | Example |
+| --- | --- | --- |
+| `owner/repo` | That repository | `acme/platform` |
+| `owner/*` | Each repository of that owner | `acme/*` |
+
+| # | Point | Rule |
+| --- | --- | --- |
+| 1 | Compare | ASCII case-insensitive, on both parts. Reason: GitHub names are case-insensitive, and the registry keeps names in lower case (Registry R-SN1, R-TP5). A pattern compares the name `owner/repo` of the release (Design 4.1, R-ID3). It does not compare the group key of R-ID2: that key is a byte compare of the URL and does not change. |
+| 2 | No name | A release that has no name (R-ID3: a host other than `github.com`, or a part that is not safe, Design 8, R-SE18) matches no pattern. |
+| 3 | Characters | Each part is not empty and has only ASCII letters, digits, `-`, `_` and `.`, and it is not `.` or `..`. The part `*` is allowed as the whole repo part only. |
+| 4 | Bad patterns | `*`, `*/repo`, `*/*`, `ow*/repo`, `owner/re*`, `owner/repo@1.0.0`, `github.com/owner/repo`, an empty text, a text with a space. To skip the age for everything, use `min-release-age = "0d"`. |
+
+R-C13: A bad pattern, or a value that is not a list of texts, is a value of the wrong form: exit code 19 (R-TF4, R-EC19), on the line of the key, before Talon reads any package or release list. The message names the file, the line, the key and the pattern. The text is a proposal (R-OUT2): `<path>:<line>: <key>: '<pattern>' must be owner/repo or owner/*`, with `<key>` as the other keys of the file name it: `min-release-age-exclude` in `config.toml`, `resolution.min-release-age-exclude` in `talon.toml`. The same check runs on both files.
+
+R-C14: The two lists are joined. The list that applies is the union of the list of `config.toml` and the list of `[resolution]` in `talon.toml`. A pattern that is in both counts once. This is different from `min-release-age`, where the value of `talon.toml` replaces the value of `config.toml` (R-C7, CLI R-LY4):
+
+| Key | Two sources | Reason |
+| --- | --- | --- |
+| `min-release-age` | The nearer source replaces the other | One number. Two numbers cannot hold together. |
+| `min-release-age-exclude` | The union | Each source states a trust. The user states the owners that the user trusts, in all projects. A project states its own owners, for example the owners of its lockstep release. A project must not cancel the trust of the user, and the user must not copy the personal list into each project. An empty list in `talon.toml` removes nothing. The references have one list: two levels are Talon's own, so the union is a choice and not a copy. |
+
+A value of `min-release-age` in `talon.toml` does not change the union. `min-release-age = "0d"` hides nothing, so the list has no effect (no warning). A command with no project in scope reads `config.toml` only, as for `min-release-age`.
+
+R-C15: Where the list applies, and what it changes. It applies wherever `min-release-age` applies (R-C7), with the lists of the table. A release that a pattern matches is not hidden by the age:
+
+| Place | Rules | Lists that the place reads | Name that a pattern compares |
+| --- | --- | --- | --- |
+| The resolve and the commands on a project: `install`, `add`, `update`, `upgrade`, `outdated` (the candidates of a variable: a direct package, the platform) | R-C7, R-UP1 | `[resolution]` of the project and `config.toml` | `owner/repo` of the candidate (R-ID3) |
+| `tln init`, `tln init --platform`: the start release of the platform, and the resolve that follows | CLI R-IN1, R-IN2, R-IN9 | `config.toml` for the start, then as the row above | `owner/repo` of the platform |
+| `tln tool install`, `tln x`, `tln tool update` | CLI R-T9 | `config.toml` | `owner/repo` of the tool |
+| `tln tool update talon` | CLI R-T9, R-S2 | `config.toml` | `roc-talon/talon` |
+| The tools of `[tools]` in `install`, `update`, `upgrade` | CLI R-PT4 | `[resolution]` of the root and `config.toml` | `owner/repo` of the tool |
+| The compilers that Talon selects by itself: the resolver, `upgrade`, `init`, `tln roc update` (R-RU1), `@latest`, `@+N` and `@-N`, rank 4, probe searches (R-NS3), the latest in the channel for `tln setup` (R-ST16) and for R-SO14 | R-C7, R-NS3 | The lists that the command has for `min-release-age` | A nightly: `roc-lang/nightlies` (CLI R-CV1). A release: `roc-lang/roc`. |
+
+Compilers (decision of 2026-10-27): the pattern `roc-lang/nightlies`, `roc-lang/roc` or `roc-lang/*` skips the age for compilers. A compiler is not a special case. Reasons: one rule for each place, with no list of exceptions; and the lockstep case needs it. A platform release often needs a compiler that is younger than 2 days. If the platform skipped the age and the compiler did not, no tuple would exist, and the user would get exit code 10 (`no_tuple`). A user who does not want this writes `owner/repo` patterns and not `roc-lang/*` (Design 8, R-SE19).
+
+The list does not change these rules:
+
+| Rule | Why the list does not change it |
+| --- | --- |
+| `snapshot`, the time form and the log form (R-C7, R-DT3, R-DT4) | A snapshot repeats a past state. A release that is after the snapshot stays hidden, also when a pattern matches it. |
+| The `nightly` switch and the `[toolchain] roc` range (R-NS3, R-NS7) | They state which compilers the team can use. They are not about trust in the age. |
+| Yanked, draft and prerelease releases (R-C6, CLI R-DI3) | A pattern states trust in an owner, not in a bad release. |
+| A version or a compiler that the user names, and the value that the header or the `roc:` pin has now (R-C7, R-C9, R-NS4) | The age does not hide them already. |
+| A package that Talon does not choose: a transitive package (Roc MVS sets it from the headers, Design 4.3, R-I6) | It is not a candidate of a variable, so no age applies to it. |
+| `install.sh`, `install.ps1` and `tln install --frozen` | They make no list call and no choice (CLI R-T9, R-LF1). A CI job that runs `--frozen` needs no list. |
+
+R-C16: The note. When Talon newly selects a release that is younger than `min-release-age`, and only a pattern keeps it visible, it prints one note: `note: <id> <version> is <n>d old (min-release-age <m>d), not hidden by min-release-age-exclude: <pattern>`. It goes where the note of R-C7 (a version that the user names) goes for that command, and in the same form: a `note:` line in the human output, and with `--json` an entry of the notes of the envelope, without the prefix. A command that prints its age notes on stderr (the tool commands, R-T9) or its other notes there (the compiler commands, `tln setup`) prints this one there, with the prefix. The text is a proposal (R-OUT2). `<n>` and `<m>` are whole days, as in the R-C7 note. A compiler has no version: the text is `<id> is <n>d old ...`, with the compiler id (the tag of a nightly). `<pattern>` is the first pattern that matches, in the order of the union: `talon.toml` first, then `config.toml`, each in the order of its list.
+
+| Case | Note? |
+| --- | --- |
+| A release newly selected for a header, a pin, a default, an install or a tool build: an entry written or moved by `install`, `add`, `update`, `upgrade`; a tool built or updated; a compiler chosen by `tln roc update`, `tln roc use @latest`, `@+N` or `@-N`, a range pick (a `[toolchain] roc` range with no pin, rank 4), the pick of R-SO14, the default of `tln setup`; the start release of `tln init` | Yes |
+| Nothing changes: the header value that stays (R-C9), a tool that is installed at that version and stays, `tln tool update talon` with the installed version as the newest (`Current`), a `roc:` pin that equals the compiler chosen | No |
+| The release is old enough | No |
+| A version or a compiler that the user names | The note of R-C7 only, also when a pattern matches |
+| A command that only reports (`tln outdated`, the search of `tln probe`) | No: it chooses nothing |
+
+`--json` has no new field: the note is one more entry of the notes that the command has already.
 
 ## 3. Compatibility evidence
 
@@ -521,7 +588,7 @@ R-SP18: `tln install` with no names keeps the lock (G1). With names, it is `tln 
 
 R-SP22: A hold that cannot stay follows the consent rows above. `tln install --frozen` (section 12) runs the same check and resolves nothing: where plain `install` would resolve an entry, `--frozen` fails.
 
-R-SP23: A movable variable is a variable that the command holds only because the user did not name it: R-SP3, R-SP4, R-SP7, R-SP9, R-SP19, and a group of other members (Design 4.4, R-WS12). These are never movable: the nightly outside `tln upgrade` (R-RP2, R-RP4), an anchor (`=`, R-VA5), a patched entry (R-PA4), a fixed anchor (R-DI11). The user frees them by name. An unmanaged entry (Design 4.2, R-H4) is no variable, so it is never movable. A moved variable keeps the constraints of a free variable of the command: R-C1 (its ranges; none in `upgrade`, R-UP1), R-C6, R-C7 and R-C9.
+R-SP23: A movable variable is a variable that the command holds only because the user did not name it: R-SP3, R-SP4, R-SP7, R-SP9, R-SP19, and a group of other members (Design 4.4, R-WS12). These are never movable: the nightly outside `tln upgrade` (R-RP2, R-RP4), an anchor (`=`, R-VA5), a patched entry (R-PA4), a fixed anchor (R-DI11), and the platform that `tln init --platform owner/repo@<version>` names (CLI 5, R-IN10). The user frees them by name. An unmanaged entry (Design 4.2, R-H4) is no variable, so it is never movable. A moved variable keeps the constraints of a free variable of the command: R-C1 (its ranges; none in `upgrade`, R-UP1), R-C6, R-C7 and R-C9.
 
 R-SP24: The second search is the search of section 5 with two changes. The order of the variables: the movable variables first, in `priority` order (section 1), then the free variables in `priority` order. The order of the values of a movable variable: its current value first, then the nearest values. With `strategy = "highest"`: the higher versions from low to high, then the lower versions from high to low. With `"lowest"`: the lower versions from high to low, then the higher versions from low to high. So a movable variable keeps its value when a tuple exists with it and the earlier movable variables, and else moves the smallest step. The moved variables are those whose value differs from the header. The candidates of the movable variables come from the index of the command: with a registry, from a second closure query that Talon sends only for this search (Registry 4.1, R-AP16); with `direct`, from the release lists (CLI 7.3, R-DI1).
 
@@ -546,7 +613,7 @@ A project tool (CLI 6.4, R-PT5) follows the same domains: `update` inside its `r
 
 | # | Rule |
 | --- | --- |
-| R-UP1 | The domain is every release that R-C6 and R-C7 allow (not yanked, older than `min-release-age`, inside the snapshot), and the header value (R-C9). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A fixed anchor (R-DI11, section 1) stays held also when the user names it. A `[toolchain] roc` range and the `nightly` switch (R-NS3) still apply: they state which compilers the team can use. |
+| R-UP1 | The domain is every release that R-C6 and R-C7 allow (not yanked, older than `min-release-age` or kept by `min-release-age-exclude` (R-C15), inside the snapshot), and the header value (R-C9). A package range in `talon.toml` and the implied range (Design 4.3) do not apply. An anchor (`=`) holds its variable unless the user names it. A fixed anchor (R-DI11, section 1) stays held also when the user names it. A `[toolchain] roc` range and the `nightly` switch (R-NS3) still apply: they state which compilers the team can use. |
 | R-UP2 | The goal is the same as for `update`: the newest version of each free variable, in `priority` order (section 1). So a new series of the first variable wins over newer versions of the later ones. Talon prints each variable that did not get its newest release, and why, for example `json 3.0.0 needs pf >= 0.27.0, which checks on no nightly that roc-parser 2.0.0 checks on`. |
 | R-UP3 | A new series is a new group (Design 2, 4.1). Talon replaces the header entry under the same alias. It never adds a second entry. If a package in the closure still needs the old series, both series stay in the closure, and Talon prints warning R-C8. A move to a successor repository (Registry 7.3, R-PU28) uses the same replace. |
 | R-UP4 | Moves of held variables follow section 9 (prompt R-NI3). |

@@ -1,0 +1,22 @@
+== install file=app/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/app/main.roc
+  + parser: acme/parser 1.1.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=app2/main.roc compiler=nightly-2026-10-14-38a3029
+note: parser 1.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/parser
+check: passed
+build: skipped (recorded pass)
+$PROJECT/app2/main.roc
+  + parser: acme/parser 1.2.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=app3/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: skipped (recorded pass)
+$PROJECT/app3/main.roc
+  + parser: acme/parser 1.2.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0

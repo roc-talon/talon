@@ -89,6 +89,7 @@ flow! = |fx, args, opts| {
 		{
 			command: Update,
 			names: [],
+			fixed: [],
 			frozen: Bool.False,
 			no_check: opts.no_check,
 			project: start.project,

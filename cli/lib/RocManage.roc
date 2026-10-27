@@ -195,12 +195,17 @@ fetched! = |fx, args, facts| {
 
 # Step 4: `roc install` for the text. The consent comes before the lock.
 download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try(Fetched, Fail)
-download! = |fx, args, facts| match RocInstall.offer!(fx, { id: facts.text, env: facts.env, offline: args.offline })? {
-	Present(found) => Ok({ id: found.id, installed: Bool.False, compat: Err(Unknown), defaulted: Bool.False })
-	Download(offer) => {
-		RocInstall.ask_download!(fx, args, facts.env, { id: offer.id, size: offer.size })?
-		done = RocInstall.install_offer!(fx, offer)?
-		Ok({ id: done.id, installed: done.how == Installed, compat: done.compat, defaulted: done.default == Set })
+download! = |fx, args, facts| {
+	noted = RocInstall.offer_noted!(fx, { id: facts.text, env: facts.env, offline: args.offline })?
+	match noted.offer {
+		Present(found) => Ok({ id: found.id, installed: Bool.False, compat: Err(Unknown), defaulted: Bool.False })
+		Download(offer) => {
+			# R-C16 (slice 084): the note comes before the download line. An installed compiler changes nothing: no note.
+			RocInstall.print_note!(fx, args.quiet, noted.note)
+			RocInstall.ask_download!(fx, args, facts.env, { id: offer.id, size: offer.size })?
+			done = RocInstall.install_offer!(fx, offer)?
+			Ok({ id: done.id, installed: done.how == Installed, compat: done.compat, defaulted: done.default == Set })
+		}
 	}
 }
 

@@ -287,7 +287,7 @@ offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, en
 # else the latest. The proxy runs no probe (R-PX2). A pick that is not installed is `Missing`, and `install_missing!` applies the consent rules of the proxy.
 picked! : Fx, { loaded : Base.Loaded, roots : Roots, env : List((Str, Str)), known : List(Str) } => Try(Base.Selected, Fail)
 picked! = |fx, run| {
-	id = NoRank.pick_id!(fx, { roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), listed: run.known })?
+	id = NoRank.pick_id!(fx, { roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), exclude: run.loaded.exclude, listed: run.known })?
 	Ok({ id, rank: Picked, state: if run.known.contains(id) Installed else Missing })
 }
 
@@ -305,6 +305,6 @@ ranged! = |fx, run| {
 	}
 	now = if run.off Clock.now!(fx, run.env)? else run.now
 	switch = Pin.switch({ env: Common.nightly_of(run.env), toml: loaded.toml_nightly, config: loaded.config_nightly })
-	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, snapshot: Err(None), switch })?
+	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, exclude: loaded.exclude, snapshot: Err(None), switch })?.id
 	Ok({ id, rank: Range, state: Missing })
 }

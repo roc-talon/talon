@@ -103,6 +103,7 @@ Input : {
 	facts : List({ url : Str, release : Release }),
 	now : U64,
 	min_age : U64,
+	exclude : List(Str),
 	snapshot : Try(U64, [None]),
 	compiler : Try(Str, [None]),
 	checks : List(Db.Fact),
@@ -167,7 +168,7 @@ first_ok = |list| match list {
 # R-UP2: the lag of one slot. Only a free slot has one.
 lag_of : Input, Pick.Slot, Pick.Chosen -> Try(Lags.Lag, [NoLag])
 lag_of = |input, slot, c| match slot.hold {
-	Free => match Pick.newest(slot, { now: input.now, min_age: input.min_age, snapshot: input.snapshot, facts: input.facts }) {
+	Free => match Pick.newest(slot, { now: input.now, min_age: input.min_age, exclude: input.exclude, snapshot: input.snapshot, facts: input.facts }) {
 		Ok(n) => if n.url == c.url {
 			Err(NoLag)
 		} else {

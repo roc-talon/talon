@@ -1,0 +1,6 @@
+# R-PB3 R-NS3 R-C7 (slice 084, control): p3 has `min-release-age = "7d"` and no list. TALON_NOW is 2026-10-15T12:00:00Z. n8, n9 and n10 are younger than 7 days, so they are not asked (as run H of `pc2-range`). The range is n1 .. n7, the upper end is unknown, exit 12.
+probe parser2 --range --file p3/main.roc
+# R-PB3 R-C15 R-C12 (slice 084): p7 is p3 with `min-release-age-exclude = ["roc-lang/roc", "acme/*"]`. A nightly is in neither name, so n8, n9 and n10 stay hidden: the same result as run 1.
+probe parser2 --range --file p7/main.roc
+# R-PB3 R-C15 R-C14 (slice 084): p6 is p3 with `min-release-age-exclude = ["roc-lang/nightlies"]` in `[resolution]`. The pattern lifts the age for n8, n9 and n10, so the search asks about them: it starts at the newest installed candidate n10, and the upper end is the end of the list.
+probe parser2 --range --file p6/main.roc

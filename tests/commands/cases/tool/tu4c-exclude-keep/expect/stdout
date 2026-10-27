@@ -1,0 +1,6 @@
+== tool update app
+app 1.4.0 is up to date
+exit 0
+== tool install acme/app
+app 1.4.0 is installed
+exit 0

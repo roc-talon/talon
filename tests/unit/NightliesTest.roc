@@ -284,7 +284,7 @@ expect {
 	r4 = rel("nightly-2026-10-21-5349569", "2026-10-21T15:01:06Z")
 	r5 = rel("nightly-2026-07-31-f5556d8", "2026-07-31T11:56:54Z")
 	list = [r1, r2, r3, r4, r5]
-	see = |facts| Nightlies.visible({ list, now, min_age: facts.min_age, snapshot: facts.snapshot, keep: facts.keep }).map(|r| r.id)
+	see = |facts| Nightlies.visible({ list, now, min_age: facts.min_age, snapshot: facts.snapshot, keep: facts.keep, exclude: [] }).map(|r| r.id)
 	age2 = see({ min_age: 2 * day, snapshot: Err(None), keep: [] })
 	off = see({ min_age: 0, snapshot: Err(None), keep: [] })
 	snap = see({ min_age: 0, snapshot: Ok(at("2026-10-19T17:08:30Z")), keep: [] })
@@ -462,4 +462,46 @@ expect {
 	})
 	dbg alone
 	alone == want_alone and view([page([both])]) == [("nightly-2026-10-21-5349569", Ok(2))] and view([page([one(good)])]) == [("nightly-2026-10-21-5349569", Ok(1))]
+}
+
+# R-C15 R-C7 R-DT4 R-C9 (slice 084): `Nightlies.visible` with the list `min-release-age-exclude`. A nightly has the name `roc-lang/nightlies` and a release has the name `roc-lang/roc` (`Age.compiler_name`). A pattern that matches
+# the name lifts the age: `roc-lang/nightlies`, `roc-lang/*` (decision Q1) and other case. `roc-lang/roc` and `acme/*` do not match a nightly. A snapshot time still hides a nightly that is after it (R-DT4), also when a pattern matches.
+# `keep` ids still work (R-C9). The order of the list stays. 3 nightlies, 3 days, 1.5 days and 12 hours old, and a release 1 day old. `min_age` is 2 days.
+expect {
+	now = at("2026-10-22T12:00:00Z")
+	day = 86400
+	old = rel("nightly-2026-10-19-601b54c", "2026-10-19T12:00:00Z")
+	mid = rel("nightly-2026-10-20-7a8a800", "2026-10-21T00:00:00Z")
+	new = rel("nightly-2026-10-21-5349569", "2026-10-22T00:00:00Z")
+	rls = rel("0.2.0", "2026-10-21T12:00:00Z")
+	nightlies = [old, mid, new]
+	see = |list, facts| Nightlies.visible({ list, now, min_age: facts.min_age, snapshot: facts.snapshot, keep: facts.keep, exclude: facts.exclude }).map(|r| r.id)
+	aged = |list, exclude| see(list, { min_age: 2 * day, snapshot: Err(None), keep: [], exclude })
+	all3 = [old.id, mid.id, new.id]
+	rows = [
+		("no pattern: the old one only (R-C7)", aged(nightlies, []), [old.id]),
+		("roc-lang/nightlies: all 3", aged(nightlies, ["roc-lang/nightlies"]), all3),
+		("roc-lang/*: all 3 (decision Q1)", aged(nightlies, ["roc-lang/*"]), all3),
+		("ROC-LANG/NIGHTLIES: all 3 (ASCII case-insensitive, R-C12)", aged(nightlies, ["ROC-LANG/NIGHTLIES"]), all3),
+		("another pattern first, then the right one", aged(nightlies, ["acme/*", "roc-lang/nightlies"]), all3),
+		("roc-lang/roc: a nightly is not in it", aged(nightlies, ["roc-lang/roc"]), [old.id]),
+		("acme/*: another owner", aged(nightlies, ["acme/*"]), [old.id]),
+		("roc-lang/night: no prefix match", aged(nightlies, ["roc-lang/night"]), [old.id]),
+		("a bad pattern matches nothing", aged(nightlies, ["*/*"]), [old.id]),
+		("a release, no pattern: hidden", aged([old, rls], []), [old.id]),
+		("a release, roc-lang/roc: visible", aged([old, rls], ["roc-lang/roc"]), [old.id, rls.id]),
+		("a release, roc-lang/*: visible", aged([old, rls], ["roc-lang/*"]), [old.id, rls.id]),
+		("a release, roc-lang/nightlies: hidden", aged([old, rls], ["roc-lang/nightlies"]), [old.id]),
+		("the order of the list stays", aged([new, old, mid], ["roc-lang/*"]), [new.id, old.id, mid.id]),
+		("an empty list", aged([], ["roc-lang/*"]), []),
+		("min_age 0 and a pattern: all 3", see(nightlies, { min_age: 0, snapshot: Err(None), keep: [], exclude: ["acme/*"] }), all3),
+		("the snapshot before mid: the pattern does not show mid or new (R-DT4)", see(nightlies, { min_age: 2 * day, snapshot: Ok(at("2026-10-20T23:59:59Z")), keep: [], exclude: ["roc-lang/*"] }), [old.id]),
+		("the snapshot at the time of mid: mid is visible, new is not", see(nightlies, { min_age: 2 * day, snapshot: Ok(at("2026-10-21T00:00:00Z")), keep: [], exclude: ["roc-lang/nightlies"] }), [old.id, mid.id]),
+		("the snapshot, no pattern: old only", see(nightlies, { min_age: 2 * day, snapshot: Ok(at("2026-10-21T00:00:00Z")), keep: [], exclude: [] }), [old.id]),
+		("keep still works with a pattern that does not match", see(nightlies, { min_age: 2 * day, snapshot: Err(None), keep: [new.id], exclude: ["acme/*"] }), [old.id, new.id]),
+		("keep is not limited by the snapshot (R-C9)", see(nightlies, { min_age: 2 * day, snapshot: Ok(at("2026-10-19T12:00:00Z")), keep: [new.id], exclude: ["roc-lang/*"] }), [old.id, new.id]),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
 }

@@ -200,6 +200,7 @@ http = "roc-lang/http@^1"      # not in the header yet: tln install adds it (R-I
 priority = ["parser", "pf", "roc"]  # what to keep newest first, see Resolution 1
 strategy = "highest"           # or "lowest" for libraries
 min-release-age = "3d"         # the default is "2d" (Resolution 2, R-C7)
+min-release-age-exclude = ["acme/*", "roc-lang/basic-cli"]   # these owners skip the age (Resolution 2, R-C11 to R-C16)
 snapshot = "log:184467"        # registry log size. Or a time: "2026-10-12T00:00:00Z" (see Resolution 11)
 probe = { max = 100, max-toolchains = 10, slots = 12 }
 
@@ -302,7 +303,7 @@ Ids, and where each group is:
 | R-I1 to R-I9 | `talon.toml`: intent, implied ranges, the group check, `talon.toml` of a dependency | 4.3 |
 | R-VA1 to R-VA6 | Variables, anchors, `priority` | Resolution 1 |
 | R-NS1 to R-NS12 | The `nightly` switch | Resolution 1 |
-| R-C1 to R-C10 | Constraints | Resolution 2 |
+| R-C1 to R-C16 | Constraints, the exclude list of `min-release-age` | Resolution 2 |
 | R-EF1 to R-EF3 | Compatibility evidence | Resolution 3 |
 | R-LD1 to R-LD8, R-BL1 to R-BL6, R-BS1, R-BS2, R-SM1 to R-SM7, R-RC1 to R-RC4, R-UM1 | Probe ladder, baseline check, build skip, smoke build, result classes, used modules | Resolution 4 |
 | R-TG1 to R-TG6 | The build target of a project file | Resolution 4 |
@@ -329,7 +330,7 @@ Ids, and where each group is:
 | R-AD1 to R-AD38, R-RV1 to R-RV5 | `tln add`, `tln remove` | CLI 2 |
 | R-E1 to R-E7, R-EC0 to R-EC2 and R-EC10 to R-EC21 (the number is the exit code), R-J1 to R-J7 | Exit codes, `--json` | CLI 3 |
 | R-NM1 to R-NM12, R-NI1 to R-NI16, R-NR1 to R-NR6 | Non-interactive mode, prompts | CLI 4 |
-| R-IN1 to R-IN8 | `tln init` | CLI 5 |
+| R-IN1 to R-IN10 | `tln init` | CLI 5 |
 | R-LY1 to R-LY9 | Directory layout | CLI 6.1 |
 | R-PX1 to R-PX7 | The `roc` proxy | CLI 6.2 |
 | R-DL1 to R-DL10 | Download consent | CLI 6.2 |
@@ -356,7 +357,7 @@ Ids, and where each group is:
 | R-GA1 to R-GA7 | Gaps to build | 6.2 |
 | R-CF1 | Conformance suite | 6.3 |
 | R-PH1 to R-PH13 | Phase rules, P0 limits | 7 |
-| R-SE1 to R-SE18 | Security | 8 |
+| R-SE1 to R-SE19 | Security | 8 |
 | R-RL1 to R-RL4 | Registry role | Registry 1 |
 | R-SG1 to R-SG7 | Registry storage, Merkle log | Registry 3 |
 | R-AP1 to R-AP47 | Registry HTTP API | Registry 4 |
@@ -555,7 +556,7 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | --- | --- | --- |
 | R-SE1 | Tampered package bytes | Hash in the URL. Roc and Talon both check it. |
 | R-SE2 | Registry maps a label to a bad hash for some users | Append-only log with signed checkpoints and inclusion proofs (P3). The header keeps the hash, and later builds do not ask the registry. |
-| R-SE3 | Compromised maintainer pushes a release | `min-release-age` (default 2 days, R-C7 in Resolution 2). It also applies to the compilers that Talon selects by itself, and to the releases that `tln tool install`, `tln x` and `tln tool update` select, Talon included (CLI 6.4, R-T9). Provenance shown in `tln add`. Scanner hook. The CI file of `tln init` installs a fixed Talon version (CLI 5). |
+| R-SE3 | Compromised maintainer pushes a release | `min-release-age` (default 2 days, R-C7 in Resolution 2). The list `min-release-age-exclude` lifts it for chosen owners (R-C11 to R-C16, R-SE19). It also applies to the compilers that Talon selects by itself, and to the releases that `tln tool install`, `tln x` and `tln tool update` select, Talon included (CLI 6.4, R-T9). Provenance shown in `tln add`. Scanner hook. The CI file of `tln init` installs a fixed Talon version (CLI 5). |
 | R-SE4 | Probes run untrusted code | Probes run `roc check` and `roc build` only (R-P1 in Resolution 4). Talon never runs the output. A build links the platform host files, but does not run them. Compile-time evaluation of constants stays a risk, the same as a normal `roc check`. |
 | R-SE5 | Poisoned shared matrix | Only bot and publisher rows are trusted. User rows only order the search, also when `tln` shares by itself (Registry 6.1). A contributor id costs nothing, so many ids can push one result. This costs other users probes, not a wrong header, and it can make the hint audit of the bot check a pair that nobody uses (at most 200 checks a run, Registry 6, R-MX13). The limits are R-CT11 (per IP address) and R-CT13 (per day, for all users), and only a released `talon_version` makes a new row (R-CT12). The final whole-app probe is always local, unless the user passes `--no-check` (Resolution 4). Then Talon keeps the old `roc:` pin (R-H6). |
 | R-SE6 | Release asset deleted | Mirror by hash (P3). The cache keeps old copies. |
@@ -571,6 +572,7 @@ R-PH13: A P0 test of a failed ladder uses a case where no other tuple exists (fo
 | R-SE16 | A party that has a GitHub token of a user, from any app (or a registry that the user ran `tln share login` against), gets a JWT of that user (Registry 6.1, R-CT8 row 2) | Accepted: a login proves the account, and any token of the account proves it. With the JWT, the party can read the totals of the account and delete its rows (R-CT7). It cannot write evidence: a hint is rank 6, and the totals are for display only. |
 | R-SE17 | `tln run` runs the commands of `[scripts]` of a cloned repository, and project tools that `[tools]` locks | The same trust as `make` or `cargo build` in that repository. Talon runs a script only in `tln run`, only when the user names it, and only from the `talon.toml` files of the current project or workspace (CLI 1, R-HK1). No code runs on `git clone`, `tln install` or `tln add`: there are no hooks, and a package cannot declare a command. A step has no shell, so `-- <args>` cannot inject shell code (R-RUN2). A project tool runs the locked `url` only, with its hash (CLI 6.4, R-PT8). |
 | R-SE18 | A text from a URL, a header, `talon.toml`, a typed name or an answer of a server becomes a part of a path in the cache or the project, and climbs out of its dir (`..`, a `/`, a `\`) | One rule for each such part: a safe path part is not empty, is not `.`, is not `..`, and has no `/`, no `\` and no NUL byte. No other character is checked: a space, a leading dot and `v1..2` are safe. Talon makes no path from a part that is not safe. The result depends on the part (table below). The parts that Talon computes (a sha256, a random id) and the names that a directory listing gives are safe by construction. |
+| R-SE19 | A cloned repository, a package or a platform owner uses `min-release-age-exclude` (Resolution 2, R-C11 to R-C16) to make a bad release skip the 2-day wait | Talon reads the key in two files only: the `talon.toml` of the project (the root file in a workspace, R-WS5) and the `config.toml` of the user. It reads no `talon.toml` of a dependency (R-I1), so a publisher cannot put its own name in the list of its users. A publisher can only tell its users to write the pattern, and the user decides. Talon writes the key in no command and in no template (`tln add`, `tln init` and the CI file of `tln init` write none), and a flag or a variable cannot set it. A cloned repository can already set `min-release-age = "0d"` (R-C7), so its list gives no new power: it has the trust of `[scripts]` (R-SE17). What stays: `owner/*` also trusts a repository that the owner creates later, and `roc-lang/*` also trusts the compilers (Resolution 2, R-C15). A taken-over account (R-SE14) then publishes there with no wait. So the advice is `owner/repo` for a few repositories, and `owner/*` only for an owner that the user trusts as much as the compiler. The hash, the whole-app check, a snapshot and the yank (R-C6) still apply. |
 
 | Part | Where it comes from | Not safe gives |
 | --- | --- | --- |

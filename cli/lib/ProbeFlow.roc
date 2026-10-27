@@ -83,6 +83,7 @@ request_of : Args, Opts, Begun, { toolchain : Try(Str, [Unset]), compiler : Try(
 request_of = |args, opts, start, picked| {
 	command: Update,
 	names: [],
+	fixed: [],
 	frozen: Bool.False,
 	no_check: Bool.False,
 	project: start.project,
@@ -163,6 +164,7 @@ ranged! = |fx, request, target| {
 			path: request.compiler,
 			nightly: settings.nightly,
 			min_age: settings.min_age,
+			exclude: settings.exclude,
 			probe: ResolveBase.probe_settings(request, loaded),
 			env: request.downloads.env,
 			flag: request.downloads.probe,

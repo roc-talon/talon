@@ -49,7 +49,7 @@ Outdated :: [].{
 	}
 
 	## The `wanted` and the `latest` version of one group (R-UP10, R-UP12). `current` is the URL of the header. `list` are the candidates of the repository (`Index.candidates`, any URL form and series).
-	## The domain of each value is the one of `Pick.step` (rules 1 to 3): the candidates, and the header value (R-C9); a candidate that `min-release-age` or the snapshot hides is out (R-C7, `now`, `min_age`, `snapshot`); the newest version wins.
+	## The domain of each value is the one of `Pick.step` (rules 1 to 3): the candidates, and the header value (R-C9); a candidate that `min-release-age` or the snapshot hides is out (R-C7, `now`, `min_age`, `snapshot`; a pattern of `exclude` lifts the age, R-C15); the newest version wins.
 	##
 	## | Value | Candidates | Ranges |
 	## | --- | --- | --- |
@@ -57,11 +57,11 @@ Outdated :: [].{
 	## | `latest` | The URL form of `current`, every series | none (R-UP1) |
 	##
 	## `new_series` is true when the group of `latest` is not the group of `current`. A `current` that is no release URL gives `""` for both values. An empty `list` gives the version of `current` for both.
-	versions : { current : Str, ranges : List(Str), list : List(Index.Candidate), now : U64, min_age : U64, snapshot : Try(U64, [None]) } -> { wanted : Str, latest : Str, new_series : Bool }
+	versions : { current : Str, ranges : List(Str), list : List(Index.Candidate), now : U64, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]) } -> { wanted : Str, latest : Str, new_series : Bool }
 	versions = |x| match Ident.of_url(x.current) {
 		Err(Foreign) => { wanted: "", latest: "", new_series: Bool.False }
 		Ok(current) => {
-			ctx = { now: x.now, min_age: x.min_age, snapshot: x.snapshot, facts: [] }
+			ctx = { now: x.now, min_age: x.min_age, exclude: x.exclude, snapshot: x.snapshot, facts: [] }
 			slot = |ranges, candidates| { id: "", is_platform: Bool.False, ranges, current: Ok(x.current), hold: Free, named: Err(None), candidates, files: [] }
 			wanted = Pick.newest_in(slot(x.ranges, Index.in_group({ list: x.list, group: current.group })), ctx)
 			latest = Pick.newest(slot([], x.list.keep_if(|c| c.ident.group.form == current.group.form)), ctx)

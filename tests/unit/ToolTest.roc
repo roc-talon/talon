@@ -130,7 +130,7 @@ expect {
 # (`@1.2.0`) is installed whatever its age: `young` is true when the first release is younger (the command prints the age, R-T9). A release that is exactly `min-release-age` old is visible (`published_at + min_age <= now`).
 # Nothing in the selector: `<name> has no release <v>` or `<name> has no release in <range>`. Nothing visible: `no release of <name> is old enough for min-release-age` (the texts are proposals, TW24).
 expect {
-	pick = |list, selector| match ToolInstall.pick({ name: "acme/foo", list, selector, now, min_age: two_days }) {
+	pick = |list, selector| match ToolInstall.pick({ name: "acme/foo", list, selector, now, min_age: two_days, exclude: [] }) {
 		Ok(picked) => Ok((picked.order.map(|c| c.tag), picked.young))
 		Err(fail) => Err(fail.line())
 	}
@@ -150,6 +150,107 @@ expect {
 		(pick(one("2026-10-13T12:00:01Z"), Ok(Exact("1.0.0"))), Ok((["1.0.0"], Bool.True))),
 	]
 	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
+# Slice 083 (docs/slices/083-exclude-tools.md): the releases of `acme/app`. 1.4.0 is 1 day old at `now` (younger than the 2 days of `min-release-age`), 1.3.0 and 1.2.0 are old.
+app_candidates : List({ tag : Str, hash : Str, published : Str }) -> List(Index.Candidate)
+app_candidates = |rows| match Index.candidates({ owner: "acme", repo: "app", pages: ["[${Str.join_with(rows.map(|r| release(r).replace_each("acme/foo", "acme/app")), ",")}]"], known: [] }) {
+	Ok(found) => found.list
+	Err(_) => []
+}
+
+app_list : List(Index.Candidate)
+app_list = app_candidates([
+	{ tag: "1.2.0", hash: h1, published: "2026-09-01T12:00:00Z" },
+	{ tag: "1.3.0", hash: h2, published: "2026-10-01T12:00:00Z" },
+	{ tag: "1.4.0", hash: h3, published: "2026-10-14T12:00:00Z" },
+])
+
+app_pick = |list, selector, exclude| ToolInstall.pick({ name: "acme/app", list, selector, now, min_age: two_days, exclude })
+
+# R-T9 R-C15 R-C12 R-C7 (slice 083): `min-release-age-exclude` and the pick of `tool install`, `x` and `tool update`. With no selector, `@latest`, a range or a series, a release of a repository that a pattern matches is not hidden by the age.
+# The pattern compares `owner/repo` of the tool (case-insensitive: `ACME/APP`). Another repository of the owner (`acme/other`) and another owner (`other/*`) do not match. A range still limits the releases (R-C1 of the age is the only rule that the list lifts).
+# An exact version is named: the age rule is not applied, with and without a pattern (`young` is true, the order is the same).
+expect {
+	shown = |list, selector, exclude| match app_pick(list, selector, exclude) {
+		Ok(picked) => Ok((picked.order.map(|c| c.tag), picked.young))
+		Err(fail) => Err(fail.line())
+	}
+	old3 = ["1.3.0", "1.2.0"]
+	all3 = ["1.4.0", "1.3.0", "1.2.0"]
+	rows = [
+		("no pattern: 1.3.0 is first", shown(app_list, Err(None), []), Ok((old3, Bool.False))),
+		("owner/repo", shown(app_list, Err(None), ["acme/app"]), Ok((all3, Bool.False))),
+		("owner/*", shown(app_list, Err(None), ["acme/*"]), Ok((all3, Bool.False))),
+		("upper case", shown(app_list, Err(None), ["ACME/APP"]), Ok((all3, Bool.False))),
+		("the second pattern matches", shown(app_list, Err(None), ["other/*", "acme/*"]), Ok((all3, Bool.False))),
+		("another repo of the owner", shown(app_list, Err(None), ["acme/other"]), Ok((old3, Bool.False))),
+		("another owner", shown(app_list, Err(None), ["other/*"]), Ok((old3, Bool.False))),
+		("a prefix of the repo is no match", shown(app_list, Err(None), ["acme/ap"]), Ok((old3, Bool.False))),
+		("a range with a pattern", shown(app_list, Ok(Range("^1.3")), ["acme/*"]), Ok((["1.4.0", "1.3.0"], Bool.False))),
+		("a series with a pattern", shown(app_list, Ok(Range("^1")), ["acme/*"]), Ok((all3, Bool.False))),
+		("a range without a pattern", shown(app_list, Ok(Range("^1.3")), []), Ok((["1.3.0"], Bool.False))),
+		("a range that no release fits, with a pattern", shown(app_list, Ok(Range("^2")), ["acme/*"]), Err("tln: error[usage]: acme/app has no release in ^2")),
+		("@latest with a pattern", shown(app_list, Ok(Latest), ["acme/*"]), Ok((all3, Bool.False))),
+		("@latest without a pattern", shown(app_list, Ok(Latest), []), Ok((old3, Bool.False))),
+		("exact, no pattern: named, so young", shown(app_list, Ok(Exact("1.4.0")), []), Ok((["1.4.0"], Bool.True))),
+		("exact, with a pattern: the same", shown(app_list, Ok(Exact("1.4.0")), ["acme/*"]), Ok((["1.4.0"], Bool.True))),
+		("exact, an old release", shown(app_list, Ok(Exact("1.3.0")), ["acme/*"]), Ok((["1.3.0"], Bool.False))),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-T9 R-C15 R-C7 (slice 083): every release is younger than `min-release-age`. No pattern: `no release of acme/app is old enough for min-release-age`. A pattern: the newest release.
+expect {
+	young_only = app_candidates([{ tag: "1.0.0", hash: h4, published: "2026-10-14T12:00:00Z" }, { tag: "1.1.0", hash: h5, published: "2026-10-15T11:00:00Z" }])
+	shown = |exclude| match app_pick(young_only, Err(None), exclude) {
+		Ok(picked) => Ok(picked.order.map(|c| c.tag))
+		Err(fail) => Err(fail.line())
+	}
+	rows = [
+		("all young, no pattern", shown([]), Err("tln: error[usage]: no release of acme/app is old enough for min-release-age")),
+		("all young, a pattern of another owner", shown(["other/*"]), Err("tln: error[usage]: no release of acme/app is old enough for min-release-age")),
+		("all young, a pattern", shown(["acme/*"]), Ok(["1.1.0", "1.0.0"])),
+		(
+			"min-release-age 0 and a pattern: nothing is hidden",
+			match ToolInstall.pick({ name: "acme/app", list: young_only, selector: Err(None), now, min_age: 0, exclude: ["acme/*"] }) {
+				Ok(picked) => Ok(picked.order.map(|c| c.tag))
+				Err(fail) => Err(fail.line())
+			},
+			Ok(["1.1.0", "1.0.0"]),
+		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-C16 R-C7 R-T9 (slice 083): `Picked.kept` is the note for the first candidate of `order`, when it is younger than `min-release-age` and a pattern kept it. The text is the form of `Age.note`: `<id> <version> is <n>d old (min-release-age <m>d),
+# not hidden by min-release-age-exclude: <pattern>`, with the first pattern that matches, as written. `Err(None)` when the first candidate is old, when no pattern matches, and for an exact version (the R-T9 note is `young`, not this note).
+expect {
+	kept = |list, selector, exclude| match app_pick(list, selector, exclude) {
+		Ok(picked) => picked.kept
+		Err(_) => Err(None)
+	}
+	old_only = app_candidates([{ tag: "1.2.0", hash: h1, published: "2026-09-01T12:00:00Z" }, { tag: "1.3.0", hash: h2, published: "2026-10-01T12:00:00Z" }])
+	note = |pattern| Ok("acme/app 1.4.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: ${pattern}")
+	rows = [
+		("owner/*", kept(app_list, Err(None), ["acme/*"]), note("acme/*")),
+		("the pattern as written", kept(app_list, Err(None), ["ACME/App"]), note("ACME/App")),
+		("the first pattern that matches", kept(app_list, Err(None), ["other/*", "acme/app", "acme/*"]), note("acme/app")),
+		("@latest", kept(app_list, Ok(Latest), ["acme/*"]), note("acme/*")),
+		("a range", kept(app_list, Ok(Range("^1")), ["acme/*"]), note("acme/*")),
+		("no pattern", kept(app_list, Err(None), []), Err(None)),
+		("no pattern matches", kept(app_list, Err(None), ["other/*"]), Err(None)),
+		("the first candidate is old", kept(old_only, Err(None), ["acme/*"]), Err(None)),
+		("exact", kept(app_list, Ok(Exact("1.4.0")), ["acme/*"]), Err(None)),
+		("exact, no pattern", kept(app_list, Ok(Exact("1.4.0")), []), Err(None)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
 }

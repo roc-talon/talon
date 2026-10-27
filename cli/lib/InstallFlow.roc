@@ -53,7 +53,7 @@ InstallFlow :: [].{
 }
 
 # Prepared : the files, the variables and the pin of the compiler (`ResolveLoad.prepared!`).
-Prepared : { loaded : Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision }
+Prepared : { loaded : Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision, range_note : Try(Str, [None]) }
 
 # R-SO19, R-SO22, Q-D2, Q-E1 (slice 072e): does the run start a probe? `--no-check` and `--frozen` run none. A plain `install` with no names whose `--frozen` check passes (R-LF1) has nothing to change: no probe, so no pick.
 will_probe : Request, Prepared -> Bool
@@ -71,7 +71,7 @@ will_probe = |request, start| {
 nothing_to_change : Request, Prepared -> Bool
 nothing_to_change = |request, start| {
 	settings = ResolveBase.settings_of(request, start.loaded)
-	match Vars.scope({ command: Install, names: [], selectors: [], vars: start.built.vars }) {
+	match Vars.scope({ command: Install, names: [], fixed: [], selectors: [], vars: start.built.vars }) {
 		Ok(scoped) => Frozen.check({ scoped, wants: start.built.wants, outside: start.decision.outside, req_text: start.loaded.intent.toolchain.roc_text, nightly: settings.nightly }).is_ok()
 		Err(_) => Bool.False
 	}
@@ -115,7 +115,7 @@ run! = |fx, asked, tools, fresh| {
 			Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
 			Err(None) => fx
 		}
-		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh })? else InstallPlan.idle(plan.request, request.now)
+		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note })? else InstallPlan.idle(plan.request, request.now)
 		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
 		if plan.phase.is_ok() and !step.changed and !header_changed(outcome) {
 			fx.out!("nothing to change\n")
@@ -169,7 +169,7 @@ tools_after! = |fx, tools, run| match (tools, run.phase) {
 frozen! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, Pin.Decision, Bool => Try({}, Fail)
 frozen! = |fx, request, loaded, built, decision, with_tools| {
 	settings = ResolveBase.settings_of(request, loaded)
-	scoped = Vars.scope({ command: Install, names: [], selectors: [], vars: built.vars })?
+	scoped = Vars.scope({ command: Install, names: [], fixed: [], selectors: [], vars: built.vars })?
 	Frozen.check({ scoped, wants: built.wants, outside: decision.outside, req_text: loaded.intent.toolchain.roc_text, nightly: settings.nightly })?
 	# R-PA6: `--frozen` fails with exit 14 for a patch whose base is not the hash of its header entry.
 	stale = loaded.members.join_map(|m| Patched.stale(PatchApply.entries(m)))
@@ -187,7 +187,7 @@ frozen! = |fx, request, loaded, built, decision, with_tools| {
 }
 
 # `install`, `update` and `add`: the steps of the flow in the slice file.
-resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, { decision : Pin.Decision, fresh : Bool } => Try(Report.Outcome, Fail)
+resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, { decision : Pin.Decision, fresh : Bool, range_note : Try(Str, [None]) } => Try(Report.Outcome, Fail)
 resolve! = |fx, request, loaded, built, start| {
 	decision = start.decision
 	settings = ResolveBase.settings_of(request, loaded)
@@ -202,7 +202,8 @@ resolve! = |fx, request, loaded, built, start| {
 		# R-SO22, R-SO19: a run with no compiler here picked none, because no probe will run (`will_probe`).
 		ResolveBase.check_pin(loaded, settings, decision, if request.no_check or decision.held.is_err() LockNoCheck else Lock)?
 	}
-	pin_notes = ResolveBase.pin_notes(decision)
+	# R-C16 (slice 084): the note of a new rank 4 pick that only a pattern kept comes after the note of the pin (R-SO20).
+	pin_notes = ResolveBase.pin_notes(decision).concat(start.range_note.map_ok(|text| [text]) ?? [])
 	for note in pin_notes {
 		fx.out!("note: ${note}\n")
 	}

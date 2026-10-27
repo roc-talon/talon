@@ -133,5 +133,5 @@ OracleSearch :: [].{
 	)
 
 	chosen_of : OracleBase.Input, Pick.Slot, Solver.Chosen -> Pick.Chosen
-	chosen_of = |input, slot, c| Pick.chosen_for({ slot, url: c.id, version: c.version, published_at: slot.candidates.find_first(|x| x.url == c.id).map_ok(|x| x.published_at) ?? 0, now: input.now, min_age: input.min_age })
+	chosen_of = |input, slot, c| Pick.chosen_for({ slot, url: c.id, version: c.version, published_at: slot.candidates.find_first(|x| x.url == c.id).map_ok(|x| x.published_at) ?? 0, now: input.now, min_age: input.min_age, exclude: input.exclude })
 }

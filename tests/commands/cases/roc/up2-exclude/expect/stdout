@@ -1,0 +1,22 @@
+== env:CI=true roc update
+installed nightly-2026-10-17-601b54c
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-17-601b54c
+exit 0
+== env:HOME={w}/home2 roc update
+installed nightly-2026-10-18-5349569
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-18-5349569
+exit 0
+== env:CI=true env:HOME={w}/home3 roc update
+installed nightly-2026-10-17-601b54c
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-17-601b54c
+exit 0
+== env:CI=true env:HOME={w}/home4 roc update
+nightly-2026-10-18-5349569 is the newest
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-18-5349569
+exit 0
+== env:CI=true env:HOME={w}/home5 roc update
+installed nightly-2026-10-18-5349569
+the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-18-5349569
+exit 0
+== env:CI=true env:HOME={w}/home6 roc update --quiet
+exit 0

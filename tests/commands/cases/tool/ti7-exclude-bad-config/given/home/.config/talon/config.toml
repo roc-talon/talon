@@ -1,0 +1,2 @@
+min-release-age = "2d"
+min-release-age-exclude = ["acme/foo", "acme/*/x"]

@@ -1,0 +1,32 @@
+# R-IN9 R-IN10 R-IN7 R-IN6 R-IN1 R-EC2 R-C7 (slice 085): `tln init --platform acme/pfx@<version>` end to end with the real Fx, the fake release server and the fake compilers n12 and n11 (given/home toolchains; each run writes a line to prog.log).
+# The platform acme/pfx has 1.2.0 and 1.3.0, both older than min-release-age; its package dirs are in the cache of the home (a github.com URL is pre-filled, TESTING.md 3.1). TALON_NOW is fixed. The runner has CI=true.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+T=$HOME/.cache/roc/toolchains
+chmod +x $T/*/roc
+
+echo "-- 1: the exact version 1.2.0 (1.3.0 exists and is newer): the entry pf is the URL of 1.2.0 and the platform is not moved. main.roc has the pin, the CI file is written (R-IN9, R-IN10). No talon.toml (R-IN5)."
+mkdir r1 && cd r1
+st tln init --platform acme/pfx@1.2.0
+echo "-- files"
+find . -type f | sort
+echo "-- main.roc"
+cat main.roc
+cd ..
+echo "-- compiler runs"
+sort $D/prog.log
+rm -f $D/prog.log
+
+echo "-- 2: a range is no exact version: exit 2 (R-IN9 (1)), no file, no compiler run"
+mkdir r2 && cd r2
+st tln init --platform acme/pfx@^1
+find . -type f | sort
+cd ..
+test ! -f $D/prog.log && echo "no compiler run"
+
+echo "-- 3: a version that the repository does not have: exit 2 (R-IN9 (2)), no file"
+mkdir r3 && cd r3
+st tln init --platform acme/pfx@9.9.9
+find . -type f | sort
+cd ..

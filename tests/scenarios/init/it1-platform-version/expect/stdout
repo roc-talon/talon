@@ -1,0 +1,34 @@
+-- 1: the exact version 1.2.0 (1.3.0 exists and is newer): the entry pf is the URL of 1.2.0 and the platform is not moved. main.roc has the pin, the CI file is written (R-IN9, R-IN10). No talon.toml (R-IN5).
+== tln init --platform acme/pfx@1.2.0
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: pf 1.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+check: passed
+build: passed
+$PROJECT/r1/main.roc
+  + roc: nightly-2026-10-11-1f1f1f1
+resolved at 2026-10-15T12:00:00Z, 5 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+-- files
+./.github/workflows/ci.yml
+./main.roc
+-- main.roc
+app [main!] {
+	pf: platform "https://github.com/acme/pfx/releases/download/1.2.0/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA.tar.zst",
+	roc: "nightly-2026-10-11-1f1f1f1",
+}
+
+main! = || crash "write the app"
+-- compiler runs
+nightly-2026-10-11-1f1f1f1 build tmp
+nightly-2026-10-11-1f1f1f1 check 539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA
+nightly-2026-10-11-1f1f1f1 check r1
+nightly-2026-10-11-1f1f1f1 check tmp
+nightly-2026-10-12-2a2a2a2 check 539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA
+-- 2: a range is no exact version: exit 2 (R-IN9 (1)), no file, no compiler run
+== tln init --platform acme/pfx@^1
+exit 2
+no compiler run
+-- 3: a version that the repository does not have: exit 2 (R-IN9 (2)), no file
+== tln init --platform acme/pfx@9.9.9
+exit 2

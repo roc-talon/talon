@@ -263,9 +263,9 @@ fetch_entry! = |fx, w| {
 		none = if none_text == "stop" {
 			Stop
 		} else if none_text.starts_with("project:") {
-			Download({ scope: Project(none_text.drop_prefix("project:").split_on(",").keep_if(|hash| !hash.is_empty())), downloads })
+			Download({ scope: Project(none_text.drop_prefix("project:").split_on(",").keep_if(|hash| !hash.is_empty())), exclude: [], downloads })
 		} else {
-			Download({ scope: Outside, downloads })
+			Download({ scope: Outside, exclude: [], downloads })
 		}
 		results = Fetch.packages!(fx, { roots, urls, offline: given.contains("offline"), unbundler: Choose({ selected: selected, none: none }), downloader: net.downloader })
 		for (url, result) in urls.map2(results, |u, r| (u, r)) {

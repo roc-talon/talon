@@ -1,0 +1,32 @@
+== env:CI=true update json --file p1/main.roc --allow-downloads
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-17-601b54c
+resolved at 2026-10-19T15:00:00Z, 6 probes
+exit 0
+== env:CI=true env:HOME={w}/home2 update json --file p2/main.roc --allow-downloads
+note: nightly-2026-10-18-5349569 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-18-5349569
+resolved at 2026-10-19T15:00:00Z, 6 probes
+exit 0
+== env:CI=true env:HOME={w}/home2 update json --file p2/main.roc --allow-downloads
+nothing to change
+exit 0
+== env:CI=true env:HOME={w}/home3 update json --file p3/main.roc --allow-downloads
+note: nightly-2026-10-18-5349569 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/*
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-18-5349569
+resolved at 2026-10-19T15:00:00Z, 6 probes
+exit 0
+== env:CI=true env:HOME={w}/home4 update json --file p4/main.roc --allow-downloads --json
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-19T15:00:00Z","probes":6,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.2.0"}}],"kept":[],"pinned":"nightly-2026-10-18-5349569","toml":[],"renamed":[],"notes":["nightly-2026-10-18-5349569 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies"],"written":["$PROJECT/p4/main.roc"]},"error":null}
+exit 0

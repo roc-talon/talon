@@ -1,3 +1,4 @@
+import Age
 import Common
 import Compiler
 import ConfigToml
@@ -44,11 +45,11 @@ Base :: [].{
 	## What the ranks 3 to 6 read (step 6 of the table of `Proxy`). `req_text` is the text of the range, for the failure of `NoneInRange`.
 	## Slice 043 (R-PX5, R-PA6, R-PA10): `patch` has the patches of the header of the target file (`Patched.entries`: its rows and the `[patch]` table of the `talon.toml` that the step reads): `replace` are the `--replace-dep` pairs, `stale` are the entries whose `base` is not the hash of the header entry.
 	## A target with no header, no `talon.toml` or no patch has both lists empty.
-	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
+	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, exclude : List(Str), has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
 
 	## What `load!` reads when there is nothing to read (`ROC_TOOLCHAIN` or `roc +<id>` is used: no file counts).
 	no_facts : Base.Loaded
-	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
+	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, exclude: [], has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
 
 	## R-EV17, R-SO9: `TALON_IN_PROXY=1` is set. Any other value, and no variable, is false. A proxy that sees it does not look at `PATH` (rank 7).
 	in_proxy : List((Str, Str)) -> Bool
@@ -144,10 +145,10 @@ Base :: [].{
 	## R-SL7, R-SO13, R-SO14, R-SO23 (slice 072e): the base of a relative step when `selected!` gave none, as an id only (no download, no default, no probe). `releases` is the list of the host and `auto` its channel ids (`Toolchain.domain`).
 	## With a range and no installed compiler in it (`basis.range`): the newest release in the range (`Toolchain.range_pick`, R-SO13), and no fact is read. With no range: the pick of R-SO14 over the recorded passes of the hashes of the header
 	## (one `Facts.load!`, no call when there is no hash; `NoRankPure.pick`). `Err(None)` when the channel has no release.
-	listed! : Fx, { roots : Roots, basis : Base.Basis, releases : List(Nightlies.Release), auto : List(Str), now : U64, min_age : U64, nightly : Bool } => Try(Try(Str, [None]), Fail)
+	listed! : Fx, { roots : Roots, basis : Base.Basis, releases : List(Nightlies.Release), auto : List(Str), now : U64, min_age : U64, nightly : Bool, exclude : List(Str) } => Try(Try(Str, [None]), Fail)
 	listed! = |fx, run| match (run.basis.base, run.basis.range) {
 		(Ok(id), _) => Ok(Ok(id))
-		(Err(None), Ok(req)) => Ok(Toolchain.range_pick({ releases: run.releases, req, now: run.now, min_age: run.min_age, snapshot: Err(None), nightly: run.nightly }).map_err(|_| None))
+		(Err(None), Ok(req)) => Ok(Toolchain.range_pick({ releases: run.releases, req, now: run.now, min_age: run.min_age, snapshot: Err(None), nightly: run.nightly, exclude: run.exclude }).map_err(|_| None))
 		(Err(None), Err(None)) => {
 			hashes = run.basis.hashes
 			rows = Facts.load!(fx, { roots: run.roots, keys: NoRankPure.keys({ hashes, auto: run.auto }) })?
@@ -279,7 +280,7 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
+		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
 	}
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
@@ -347,25 +348,25 @@ text_of = |read, path| match read.find_first(|(file, _)| file == path) {
 }
 
 # R-SO4, R-TF4, R-PX5: the `[toolchain]` table and the `[patch]` table of the `talon.toml`. A file that does not parse is exit 19 (Q5). The proxy prints no warning (D10).
-read_toml : Reads, List(Str) -> Try({ toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str }, Fail)
+read_toml : Reads, List(Str) -> Try({ toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), path : Str }, Fail)
 read_toml = |read, tomls| match tomls {
 	[path] => match text_of(read, path) {
 		Ok(text) => {
 			scanned = Intent.read({ path, text, role: Root })?
-			Ok({ toolchain: scanned.intent.toolchain, patches: scanned.intent.patches, path })
+			Ok({ toolchain: scanned.intent.toolchain, patches: scanned.intent.patches, exclude: scanned.intent.resolution.min_release_age_exclude, path })
 		}
-		Err(NotFound) => Ok({ toolchain: no_toolchain, patches: [], path: "" })
+		Err(NotFound) => Ok({ toolchain: no_toolchain, patches: [], exclude: [], path: "" })
 		Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 	}
-	_ => Ok({ toolchain: no_toolchain, patches: [], path: "" })
+	_ => Ok({ toolchain: no_toolchain, patches: [], exclude: [], path: "" })
 }
 
-unread : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str }
-unread = { toolchain: no_toolchain, patches: [], path: "" }
+unread : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), path : Str }
+unread = { toolchain: no_toolchain, patches: [], exclude: [], path: "" }
 
 # R-PX5, R-PD6, R-WS5: the `[patch]` table comes from the nearest `talon.toml` of the target file, and from no other file (no merge). The root file is `reuse`d when it is the nearest one and it was read.
 # Another file is a member file of its own (role `Member`). With `Patches` the root file is the nearest one too, and its role is `Root`.
-patch_table : Reads, { nearest : Try(Str, [NoToml]), root : List(Str), rooted : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), path : Str }, reuse : Bool } -> Try({ patches : List(Intent.PatchEntry), path : Str }, Fail)
+patch_table : Reads, { nearest : Try(Str, [NoToml]), root : List(Str), rooted : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), path : Str }, reuse : Bool } -> Try({ patches : List(Intent.PatchEntry), path : Str }, Fail)
 patch_table = |read, x| match x.nearest {
 	Err(NoToml) => Ok({ patches: [], path: "" })
 	Ok(path) => {
@@ -396,7 +397,7 @@ patch_of = |locked, toml| match locked {
 }
 
 no_config : ConfigToml.Config
-no_config = { nightly: Err(Unset), min_release_age: Err(Unset), default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }
+no_config = { nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }
 
 # R-SO6, R-TF4: `default-roc` and the settings of `config.toml`. A missing file gives no setting.
 read_config : Reads, Str -> Try(ConfigToml.Config, Fail)

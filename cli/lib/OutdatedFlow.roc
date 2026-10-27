@@ -76,7 +76,7 @@ flow! = |fx, args| {
 	vars = built.vars.keep_if(|v| v.uses.any(|u| shown.contains(u.file)))
 	names = vars.keep_oks(|v| indexed_name(v)).fold([], |found, name| if found.contains(name) found else found.append(name))
 	found = PickIndex.index!(fx, request, names, built.vars.join_map(|v| v.uses.map(|u| u.url)))?
-	pending = shown.map(|file| pending_of(file, vars, found, { now: request.now, min_age: settings.min_age }))
+	pending = shown.map(|file| pending_of(file, vars, found, { now: request.now, min_age: settings.min_age, exclude: settings.exclude }))
 	behind = pending.join_map(|p| p.rows)
 	# R-DI1, D8: the compiler list and the facts are read only when a row is behind.
 	releases = if behind.is_empty() [] else PickLoop.releases!(fx, request)
@@ -94,7 +94,7 @@ indexed_name = |v| match (v.host, v.name) {
 }
 
 # One member: a row for each group that it uses and that is behind, and the `Fixed` hosts (R-DI11), each once.
-pending_of : Str, List(Vars.Var), List(ResolveBase.Candidates), { now : U64, min_age : U64 } -> Pending
+pending_of : Str, List(Vars.Var), List(ResolveBase.Candidates), { now : U64, min_age : U64, exclude : List(Str) } -> Pending
 pending_of = |file, vars, found, ctx| {
 	mine = vars.keep_if(|v| v.uses.any(|u| u.file == file))
 	hosts = mine.keep_oks(
@@ -111,11 +111,11 @@ pending_of = |file, vars, found, ctx| {
 }
 
 # R-WS1: the alias and `current` are of the first use in the member. A group that is not behind has no row.
-row_of : Str, Vars.Var, List(ResolveBase.Candidates), { now : U64, min_age : U64 } -> Try({ row : Outdated.Row, hash : Str }, [NoRow])
+row_of : Str, Vars.Var, List(ResolveBase.Candidates), { now : U64, min_age : U64, exclude : List(Str) } -> Try({ row : Outdated.Row, hash : Str }, [NoRow])
 row_of = |file, v, found, ctx| match (indexed_name(v), v.uses.find_first(|u| u.file == file)) {
 	(Ok(name), Ok(first)) => {
 		list = found.find_first(|c| c.name == name).map_ok(|c| c.list) ?? []
-		got = Outdated.versions({ current: first.url, ranges: v.ranges.map(|r| r.range), list, now: ctx.now, min_age: ctx.min_age, snapshot: Err(None) })
+		got = Outdated.versions({ current: first.url, ranges: v.ranges.map(|r| r.range), list, now: ctx.now, min_age: ctx.min_age, exclude: ctx.exclude, snapshot: Err(None) })
 		row = { alias: first.alias, name, current: first.version, wanted: got.wanted, latest: got.latest, new_series: got.new_series, range: Unread }
 		if Outdated.behind(row) Ok({ row, hash: Ident.of_url(first.url).map_ok(|ident| ident.hash) ?? "" }) else Err(NoRow)
 	}

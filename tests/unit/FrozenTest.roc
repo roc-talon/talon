@@ -41,7 +41,7 @@ check = |members, outside, req_text, nightly| {
 		Ok(b) => b
 		Err(e) => crash e.line()
 	}
-	scoped = match Vars.scope({ command: Install, names: [], selectors: [], vars: built.vars }) {
+	scoped = match Vars.scope({ command: Install, names: [], selectors: [], fixed: [], vars: built.vars }) {
 		Ok(s) => s
 		Err(e) => crash e.line()
 	}

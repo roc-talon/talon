@@ -1,0 +1,3 @@
+note: acme/foo 1.1.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/*
+platform pf/main.roc
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029

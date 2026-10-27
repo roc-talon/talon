@@ -1,0 +1,6 @@
+install file=app/main.roc compiler=nightly-2026-10-14-38a3029
+install file=app3/main.roc compiler=nightly-2026-10-14-38a3029
+install file=app4/main.roc compiler=nightly-2026-10-14-38a3029 snapshot=2026-10-10T00:00:00Z
+install file=app5/main.roc compiler=nightly-2026-10-14-38a3029
+install file=ws/apps/a/main.roc compiler=nightly-2026-10-14-38a3029
+install file=ws6/apps/b/main.roc compiler=nightly-2026-10-14-38a3029

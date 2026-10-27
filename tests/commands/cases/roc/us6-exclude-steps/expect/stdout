@@ -1,0 +1,33 @@
+== roc use @latest --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ roc: nightly-2026-10-16-1df370f -> nightly-2026-10-17-601b54c
+the roc pin is now nightly-2026-10-17-601b54c
+exit 0
+== roc use @+1 --file p2/main.roc
+exit 2
+== env:HOME={w}/home2 roc use @latest --file p3/main.roc
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ roc: nightly-2026-10-16-1df370f -> nightly-2026-10-18-5349569
+the roc pin is now nightly-2026-10-18-5349569
+exit 0
+== env:HOME={w}/home3 roc use @+1 --file p4/main.roc
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ roc: nightly-2026-10-17-601b54c -> nightly-2026-10-18-5349569
+the roc pin is now nightly-2026-10-18-5349569
+exit 0
+== env:HOME={w}/home4 roc use @latest --file p5/main.roc
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  ~ roc: nightly-2026-10-16-1df370f -> nightly-2026-10-18-5349569
+the roc pin is now nightly-2026-10-18-5349569
+exit 0
+== env:HOME={w}/home4 roc use @latest --file p5/main.roc
+the roc pin is already nightly-2026-10-18-5349569 in every member. Nothing was written.
+exit 0

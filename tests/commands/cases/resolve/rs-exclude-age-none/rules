@@ -1,0 +1,2 @@
+R-C15 R-C14 R-C7 R-C11 R-SE3 (slice 082, split from `rs-exclude-age`: a case has one home): the same releases, no `config.toml`. Run 1: no list: `install` of the new key `parser` takes 1.1.0, the older release, with no note (the age hides 1.2.0, R-C7, R-SE3). Run 2: the list ["acme/parser"] is in `[resolution]` of talon.toml only: 1.2.0 is chosen with the note. A project list works with no user list (R-C14: the union of one list). Run 3: the list ["acme/*"] with the project age "0d": nothing is hidden, so no note (the list has no effect and no warning).
+

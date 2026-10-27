@@ -1,0 +1,3 @@
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst	0	-	-	dir:{cwd}/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f;copy:{cwd}/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f/main.roc={w}/fx/pkgs/bundle.roc
+unbundle AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq.tar.zst	0	-	-	dir:{cwd}/AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq;copy:{cwd}/AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq/main.roc={w}/fx/pkgs/bundle.roc

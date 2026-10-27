@@ -1,4 +1,5 @@
 import Add
+import Age
 import Answer
 import BuildTarget
 import Closure
@@ -46,9 +47,11 @@ ResolveBase :: [].{
 	## Slice 060 (R-FE4, question Q1): `selected` is the compiler that the fetches of the run call selected (`Fetch.selected`: the held compiler of a flow with a decision, else the `default-roc` of `config.toml` when the flow knows it, else `""`). Every constructor gives `""`; a flow sets it with `{ ..request, selected: ... }` after it has loaded the files.
 	## Slice 072b (R-SO14, R-LF1): `none` is what a fetch does when no compiler is installed and none is on `PATH` (`Fetch.Unbundler`): `Stop` (exit code 18) or `Download`. Every constructor gives `Stop`; `InstallFlow.install_with!` sets `no_rank(request, loaded)` with `selected`.
 	## `toolchain` is `ROC_TOOLCHAIN` (rank 2, R-SO2), a full compiler id (`Compiler.toolchain_of`), `Err(Unset)` when it is not set (slice 013: R-SO19 to R-SO22). It goes to `Pin.decide`.
+	## Slice 085 (R-SP23, R-IN10): `fixed` are the aliases of variables that are never movable (`Vars.scope`): the platform that `tln init` names with a version. Every other constructor gives `[]`.
 	Request : {
 		command : [Install, Update, Upgrade],
 		names : List(Str),
+		fixed : List(Str),
 		frozen : Bool,
 		no_check : Bool,
 		project : Project,
@@ -99,7 +102,7 @@ ResolveBase :: [].{
 				_ => Err(NotRelease)
 			},
 		)
-		Download({ scope: Project(hashes), downloads: ResolveBase.ladder_downloads(request) })
+		Download({ scope: Project(hashes), exclude: loaded.intent.resolution.min_release_age_exclude, downloads: ResolveBase.ladder_downloads(request) })
 	}
 
 	Fact : { url : Str, release : Release }
@@ -118,7 +121,7 @@ ResolveBase :: [].{
 	## `load!` makes it from the `roc` on `PATH` (rank 7). `select!` replaces it. `version_file` is the id of the nearest `.roc-version` (`Compiler.version_file`), read in the same `read_files!` call as the headers.
 	Selected : { id : Try(Str, [NoCompiler]), from : [Range, VersionFile, Default, Path] }
 
-	Settings : { nightly : Bool, nightly_from : Pin.Source, strategy : [Highest, Lowest], min_age : U64 }
+	Settings : { nightly : Bool, nightly_from : Pin.Source, strategy : [Highest, Lowest], min_age : U64, exclude : List(Str) }
 
 	# What a planned change did, for `Report.Outcome` (the line of a change is in `Edit.line`).
 	Did : [Added(Report.Entry), Moved({ alias : Str, from : { name : Str, version : Str }, to : { name : Str, version : Str } }), Pinned(Str)]
@@ -167,7 +170,8 @@ ResolveBase :: [].{
 	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move), nightly : Try(Str, [None]), probed : Probed }
 
 	## R-NS8 to R-NS10, R-C7, R-LY4: the settings. The priority is the flag or the environment, `talon.toml`, `config.toml`, the default.
-	settings_of : ResolveBase.Request, Loaded -> Settings
+	## It reads only `command`, `strategy` and `nightly` of the request, so a caller can give any record that has them.
+	settings_of : { command : [Install, Update, Upgrade], strategy : Try([Highest, Lowest], [Unset]), nightly : Try(Bool, [Unset]), .. }, Loaded -> Settings
 	settings_of = |request, loaded| {
 		intent = loaded.intent
 		strategy = match request.strategy {
@@ -185,6 +189,7 @@ ResolveBase :: [].{
 			nightly_from,
 			strategy,
 			min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: intent.resolution.min_release_age, user: loaded.config.min_release_age }) ?? 172800,
+			exclude: Age.join({ project: intent.resolution.min_release_age_exclude, user: loaded.config.min_release_age_exclude }),
 		}
 	}
 

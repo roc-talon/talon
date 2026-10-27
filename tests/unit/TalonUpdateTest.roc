@@ -70,7 +70,7 @@ expect {
 expect {
 	now = pub("2026-10-15T12:00:00Z")
 	day = 86400
-	show = |list, current| match TalonUpdate.pick({ list, now, min_age: 2 * day, current, asset: "tln-x64musl" }) {
+	show = |list, current| match TalonUpdate.pick({ list, now, min_age: 2 * day, current, asset: "tln-x64musl", exclude: [] }) {
 		Ok(Newer(r)) => "newer ${r.version}"
 		Ok(Current(r)) => "current ${r.version}"
 		Err(fail) => fail.line()
@@ -100,6 +100,66 @@ expect {
 		(show([{ ..mk("0.3.4", "2026-10-01T12:00:00Z"), sums: Err(NoSums) }], "0.3.0"), "newer 0.3.4"),
 	]
 	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
+# R-T9 R-S2 R-C15 R-C12 (slice 083): `tln tool update talon` and `min-release-age-exclude`. The name that a pattern compares is `roc-talon/talon`. `roc-talon/talon`, `roc-talon/*` and `ROC-TALON/TALON` keep a release that is younger than `min-release-age`;
+# `acme/*` and `roc-talon/other` do not. The rest of `pick` is the same: the asset rule, the highest version, and no downgrade (`Current` wins when the installed version is the newest, also when a young release is kept by a pattern and is not above it).
+expect {
+	now = pub("2026-10-15T12:00:00Z")
+	day = 86400
+	show = |list, current, exclude| match TalonUpdate.pick({ list, now, min_age: 2 * day, current, asset: "tln-x64musl", exclude }) {
+		Ok(Newer(r)) => "newer ${r.version}"
+		Ok(Current(r)) => "current ${r.version}"
+		Err(fail) => fail.line()
+	}
+	b = mk("0.3.4", "2026-10-01T12:00:00Z")
+	young = mk("0.3.5", "2026-10-14T12:00:00Z")
+	no_asset_young = { ..mk("0.3.6", "2026-10-14T13:00:00Z"), bin: Err(NoAsset) }
+	not_old = "tln: error[usage]: no release of roc-talon/talon is old enough for min-release-age"
+	rows = [
+		("no pattern", show([b, young], "0.3.0", []), "newer 0.3.4"),
+		("roc-talon/talon", show([b, young], "0.3.0", ["roc-talon/talon"]), "newer 0.3.5"),
+		("roc-talon/*", show([b, young], "0.3.0", ["roc-talon/*"]), "newer 0.3.5"),
+		("upper case", show([b, young], "0.3.0", ["ROC-TALON/TALON"]), "newer 0.3.5"),
+		("the second pattern matches", show([b, young], "0.3.0", ["acme/*", "roc-talon/*"]), "newer 0.3.5"),
+		("acme/*", show([b, young], "0.3.0", ["acme/*"]), "newer 0.3.4"),
+		("another repo of the owner", show([b, young], "0.3.0", ["roc-talon/other"]), "newer 0.3.4"),
+		("only a young release, a pattern", show([young], "0.3.0", ["roc-talon/*"]), "newer 0.3.5"),
+		("only a young release, another owner", show([young], "0.3.0", ["acme/*"]), not_old),
+		("only a young release, no pattern", show([young], "0.3.0", []), not_old),
+		("the installed version is the newest: Current", show([b, young], "0.3.5", ["roc-talon/*"]), "current 0.3.5"),
+		("no downgrade: the installed version is above", show([b, young], "0.4.0", ["roc-talon/*"]), "current 0.3.5"),
+		("a young release without the asset is no candidate", show([b, no_asset_young], "0.3.0", ["roc-talon/*"]), "newer 0.3.4"),
+		("no release with the asset", show([no_asset_young], "0.3.0", ["roc-talon/*"]), "tln: error[usage]: roc-talon/talon has no release with tln-x64musl"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-C16 R-T9 R-S2 (slice 083): `TalonUpdate.kept_note` is `Age.note` with the id `roc-talon/talon` and the version of the release. `Ok(text)` only when the release is younger than `min-release-age` and a pattern matches `roc-talon/talon`.
+# The flow prints it for `Newer`. The pattern is in the text as written, and the first pattern that matches is named.
+expect {
+	now = pub("2026-10-15T12:00:00Z")
+	day = 86400
+	note = |release, min_age, exclude| TalonUpdate.kept_note({ release, now, min_age, exclude })
+	young = mk("0.3.5", "2026-10-14T12:00:00Z")
+	hours = mk("0.3.6", "2026-10-15T09:00:00Z")
+	old = mk("0.3.4", "2026-10-01T12:00:00Z")
+	text = |version, days, pattern| Ok("roc-talon/talon ${version} is ${days} old (min-release-age 2d), not hidden by min-release-age-exclude: ${pattern}")
+	rows = [
+		("roc-talon/*", note(young, 2 * day, ["roc-talon/*"]), text("0.3.5", "1d", "roc-talon/*")),
+		("the pattern as written", note(young, 2 * day, ["ROC-Talon/Talon"]), text("0.3.5", "1d", "ROC-Talon/Talon")),
+		("the first pattern that matches", note(young, 2 * day, ["acme/*", "roc-talon/talon", "roc-talon/*"]), text("0.3.5", "1d", "roc-talon/talon")),
+		("3 hours is 0 days", note(hours, 2 * day, ["roc-talon/*"]), text("0.3.6", "0d", "roc-talon/*")),
+		("no pattern", note(young, 2 * day, []), Err(None)),
+		("a pattern of another owner", note(young, 2 * day, ["acme/*"]), Err(None)),
+		("an old release", note(old, 2 * day, ["roc-talon/*"]), Err(None)),
+		("min-release-age 0", note(young, 0, ["roc-talon/*"]), Err(None)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
 }

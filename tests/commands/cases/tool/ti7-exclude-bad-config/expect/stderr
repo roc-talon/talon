@@ -1,0 +1,1 @@
+tln: error[input]: $HOME/.config/talon/config.toml:2: min-release-age-exclude: 'acme/*/x' must be owner/repo or owner/*

@@ -1,0 +1,7 @@
+[resolution]
+min-release-age = "5d"
+min-release-age-exclude = ["zed/lib"]
+
+[dependencies]
+parser = "acme/parser@^1"
+lib = "zed/lib@^1"

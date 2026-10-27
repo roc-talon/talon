@@ -27,10 +27,10 @@ view = |r| match r {
 	Fail(fail) => Err(Err(fail.line()))
 }
 
-step = |slots, facts, strategy| view(Oracle.step({ slots, strategy, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }))
+step = |slots, facts, strategy| view(Oracle.step({ slots, strategy, now, min_age: 2 * day, exclude: [], snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }))
 
 # Slice 016: the same with the path entries of the members (`unmanaged`, the header entries that no slot owns) and the path files that are read (`paths`).
-step_paths = |facts| view(Oracle.step({ slots: facts.slots, strategy: facts.strategy, now, min_age: 2 * day, snapshot: Err(None), facts: facts.facts, unmanaged: facts.unmanaged, paths: facts.paths, second: Bool.False }))
+step_paths = |facts| view(Oracle.step({ slots: facts.slots, strategy: facts.strategy, now, min_age: 2 * day, exclude: [], snapshot: Err(None), facts: facts.facts, unmanaged: facts.unmanaged, paths: facts.paths, second: Bool.False }))
 
 dep = |alias, value| { alias, value, is_platform: Bool.False }
 

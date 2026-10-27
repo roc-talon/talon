@@ -1,0 +1,530 @@
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v1/main.roc
+list_dirs $HOME1/.cache/roc/talon/index/github/acme/pfx
+programs gh
+http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME1/.cache/roc/talon/index/github/acme/pfx/1.json $HOME1/.cache/roc/talon/index/github/acme/pfx/1.meta
+read_files $HOME1/.config/talon/config.toml
+random
+list_dirs $HOME1/.cache/roc/packages
+read_files $HOME1/.cache/roc/packages/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA/main.roc
+write_atomic $PROJECT/v1/main.roc
+env_all
+clock
+cwd
+canonical $PROJECT/v1/main.roc
+list_dirs $PROJECT/v1
+list_dirs $PROJECT
+read_files $PROJECT/v1/main.roc
+canonical $PROJECT/v1/main.roc
+lock $HOME1/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME1/.cache/roc/talon
+read_files $HOME1/.cache/roc/talon/projects.json
+write_atomic $HOME1/.cache/roc/talon/projects.json
+unlock $HOME1/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME1/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME1/.cache/roc/talon/path-roc.json
+read_files $PROJECT/v1/main.roc $PROJECT/v1/talon.toml $HOME1/.config/talon/config.toml
+list_dirs $HOME1/.cache/roc/toolchains
+platform
+list_dirs $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME1/.cache/roc/toolchains
+platform
+list_dirs $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+random
+list_dirs $HOME1/.cache/roc/packages
+read_files $HOME1/.cache/roc/packages/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA/main.roc
+list_dirs $HOME1/.cache/roc/toolchains
+canonical $HOME1/.cache $HOME1/.cache/roc
+write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME1/.cache/roc/packages/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA nightly-2026-10-12-2a2a2a2 $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME1/.cache ROC_CACHE_DIR=$HOME1/.cache/roc TALON_IN_PROXY=1
+db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
+probes 1
+  probe $HOME1/.cache/roc/packages/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA nightly-2026-10-11-1f1f1f1 $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME1/.cache ROC_CACHE_DIR=$HOME1/.cache/roc TALON_IN_PROXY=1
+db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME1/.cache/roc/toolchains
+canonical $HOME1/.cache $HOME1/.cache/roc
+random
+copy_tree $PROJECT/v1 $HOME1/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME1/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME1/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
+probes 1
+  probe $PROJECT/v1 nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME1/.cache ROC_CACHE_DIR=$HOME1/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
+probes 1
+  probe $HOME1/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME1/.cache ROC_CACHE_DIR=$HOME1/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME1/.cache/roc/packages/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA/main.roc
+db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+write_atomic $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
+probes 1
+  probe $HOME1/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-11-1f1f1f1 $HOME1/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc build main.roc --output=$HOME1/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
+    env XDG_CACHE_HOME=$HOME1/.cache ROC_CACHE_DIR=$HOME1/.cache/roc TALON_IN_PROXY=1
+db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME1/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/v1/main.roc
+write_atomic $PROJECT/v1/main.roc
+read_files $PROJECT/v1/.github/workflows/ci.yml
+write_atomic $PROJECT/v1/.github/workflows/ci.yml
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v2/main.roc
+list_dirs $HOME2/.cache/roc/talon/index/github/acme/pfy
+programs gh
+http_get https://api.github.com/repos/acme/pfy/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME2/.cache/roc/talon/index/github/acme/pfy/1.json $HOME2/.cache/roc/talon/index/github/acme/pfy/1.meta
+read_files $HOME2/.config/talon/config.toml
+random
+list_dirs $HOME2/.cache/roc/packages
+read_files $HOME2/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+write_atomic $PROJECT/v2/main.roc
+env_all
+clock
+cwd
+canonical $PROJECT/v2/main.roc
+list_dirs $PROJECT/v2
+list_dirs $PROJECT
+read_files $PROJECT/v2/main.roc
+canonical $PROJECT/v2/main.roc
+lock $HOME2/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME2/.cache/roc/talon
+read_files $HOME2/.cache/roc/talon/projects.json
+write_atomic $HOME2/.cache/roc/talon/projects.json
+unlock $HOME2/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME2/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME2/.cache/roc/talon/path-roc.json
+read_files $PROJECT/v2/main.roc $PROJECT/v2/talon.toml $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+platform
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME2/.cache/roc/toolchains
+platform
+list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+random
+list_dirs $HOME2/.cache/roc/packages
+read_files $HOME2/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+list_dirs $HOME2/.cache/roc/toolchains
+canonical $HOME2/.cache $HOME2/.cache/roc
+write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME2/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp nightly-2026-10-12-2a2a2a2 $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME2/.cache ROC_CACHE_DIR=$HOME2/.cache/roc TALON_IN_PROXY=1
+db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME2/.cache/roc/toolchains
+canonical $HOME2/.cache $HOME2/.cache/roc
+random
+copy_tree $PROJECT/v2 $HOME2/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME2/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME2/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $PROJECT/v2 nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME2/.cache ROC_CACHE_DIR=$HOME2/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME2/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME2/.cache ROC_CACHE_DIR=$HOME2/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME2/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+write_atomic $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME2/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME2/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
+    env XDG_CACHE_HOME=$HOME2/.cache ROC_CACHE_DIR=$HOME2/.cache/roc TALON_IN_PROXY=1
+db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/v2/main.roc
+write_atomic $PROJECT/v2/main.roc
+read_files $PROJECT/v2/.github/workflows/ci.yml
+write_atomic $PROJECT/v2/.github/workflows/ci.yml
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v3/main.roc
+list_dirs $HOME3/.cache/roc/talon/index/github/acme/pfy
+programs gh
+http_get https://api.github.com/repos/acme/pfy/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME3/.cache/roc/talon/index/github/acme/pfy/1.json $HOME3/.cache/roc/talon/index/github/acme/pfy/1.meta
+read_files $HOME3/.config/talon/config.toml
+random
+list_dirs $HOME3/.cache/roc/packages
+read_files $HOME3/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+write_atomic $PROJECT/v3/main.roc
+env_all
+clock
+cwd
+canonical $PROJECT/v3/main.roc
+list_dirs $PROJECT/v3
+list_dirs $PROJECT
+read_files $PROJECT/v3/main.roc
+canonical $PROJECT/v3/main.roc
+lock $HOME3/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME3/.cache/roc/talon
+read_files $HOME3/.cache/roc/talon/projects.json
+write_atomic $HOME3/.cache/roc/talon/projects.json
+unlock $HOME3/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME3/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME3/.cache/roc/talon/path-roc.json
+read_files $PROJECT/v3/main.roc $PROJECT/v3/talon.toml $HOME3/.config/talon/config.toml
+list_dirs $HOME3/.cache/roc/toolchains
+platform
+list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME3/.cache/roc/toolchains
+platform
+list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+random
+list_dirs $HOME3/.cache/roc/packages
+read_files $HOME3/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+list_dirs $HOME3/.cache/roc/toolchains
+canonical $HOME3/.cache $HOME3/.cache/roc
+write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME3/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp nightly-2026-10-12-2a2a2a2 $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
+db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME3/.cache/roc/toolchains
+canonical $HOME3/.cache $HOME3/.cache/roc
+random
+copy_tree $PROJECT/v3 $HOME3/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME3/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME3/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $PROJECT/v3 nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME3/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME3/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+write_atomic $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME3/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME3/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
+    env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
+db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME3/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/v3/main.roc
+write_atomic $PROJECT/v3/main.roc
+read_files $PROJECT/v3/.github/workflows/ci.yml
+write_atomic $PROJECT/v3/.github/workflows/ci.yml
+args
+args
+args
+args
+args
+args
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v6/main.roc
+list_dirs $HOME1/.cache/roc/talon/index/github/acme/pfx
+read_files $HOME1/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME1/.cache/roc/talon/index/github/acme/pfx/1.json
+read_files $HOME1/.config/talon/config.toml
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v7/main.roc
+list_dirs $HOME7/.cache/roc/talon/index/github/acme/pfz
+programs gh
+http_get https://api.github.com/repos/acme/pfz/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME7/.cache/roc/talon/index/github/acme/pfz/1.json $HOME7/.cache/roc/talon/index/github/acme/pfz/1.meta
+read_files $HOME7/.config/talon/config.toml
+random
+list_dirs $HOME7/.cache/roc/packages
+read_files $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK/main.roc
+write_atomic $PROJECT/v7/main.roc
+env_all
+clock
+cwd
+canonical $PROJECT/v7/main.roc
+list_dirs $PROJECT/v7
+list_dirs $PROJECT
+read_files $PROJECT/v7/main.roc
+canonical $PROJECT/v7/main.roc
+lock $HOME7/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME7/.cache/roc/talon
+read_files $HOME7/.cache/roc/talon/projects.json
+write_atomic $HOME7/.cache/roc/talon/projects.json
+unlock $HOME7/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME7/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME7/.cache/roc/talon/path-roc.json
+read_files $PROJECT/v7/main.roc $PROJECT/v7/talon.toml $HOME7/.config/talon/config.toml
+list_dirs $HOME7/.cache/roc/toolchains
+platform
+list_dirs $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME7/.cache/roc/toolchains
+platform
+list_dirs $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+random
+list_dirs $HOME7/.cache/roc/packages
+read_files $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK/main.roc
+list_dirs $HOME7/.cache/roc/toolchains
+canonical $HOME7/.cache $HOME7/.cache/roc
+write_atomic $HOME7/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK nightly-2026-10-12-2a2a2a2 $HOME7/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME7/.cache ROC_CACHE_DIR=$HOME7/.cache/roc TALON_IN_PROXY=1
+db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+write_atomic $HOME7/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/.last-use
+probes 1
+  probe $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK nightly-2026-10-11-1f1f1f1 $HOME7/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME7/.cache ROC_CACHE_DIR=$HOME7/.cache/roc TALON_IN_PROXY=1
+db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+write_atomic $HOME7/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/.last-use
+probes 1
+  probe $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK nightly-2026-10-10-0e0e0e0 $HOME7/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME7/.cache ROC_CACHE_DIR=$HOME7/.cache/roc TALON_IN_PROXY=1
+db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME7/.cache/roc/toolchains
+canonical $HOME7/.cache $HOME7/.cache/roc
+random
+copy_tree $PROJECT/v7 $HOME7/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME7/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME7/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+probes 2
+  probe $PROJECT/v7 nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME7/.cache ROC_CACHE_DIR=$HOME7/.cache/roc TALON_IN_PROXY=1
+  probe $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME7/.cache ROC_CACHE_DIR=$HOME7/.cache/roc TALON_IN_PROXY=1
+db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME7/.cache/roc/talon/tmp/0123456789abcdef
+delete $PROJECT/v7/main.roc
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v8/main.roc
+list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/basic-cli
+programs gh
+http_get https://api.github.com/repos/roc-lang/basic-cli/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/basic-cli/1.json $HOME8/.cache/roc/talon/index/github/roc-lang/basic-cli/1.meta
+read_files $HOME8/.config/talon/config.toml
+write_atomic $PROJECT/v8/main.roc
+env_all
+clock
+cwd
+canonical $PROJECT/v8/main.roc
+list_dirs $PROJECT/v8
+list_dirs $PROJECT
+read_files $PROJECT/v8/main.roc
+canonical $PROJECT/v8/main.roc
+lock $HOME8/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME8/.cache/roc/talon
+read_files $HOME8/.cache/roc/talon/projects.json
+write_atomic $HOME8/.cache/roc/talon/projects.json
+unlock $HOME8/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME8/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME8/.cache/roc/talon/path-roc.json
+read_files $PROJECT/v8/main.roc $PROJECT/v8/talon.toml $HOME8/.config/talon/config.toml
+list_dirs $HOME8/.cache/roc/toolchains
+platform
+list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME8/.cache/roc/toolchains
+platform
+list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+random
+list_dirs $HOME8/.cache/roc/packages
+read_files $HOME8/.cache/roc/packages/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5/main.roc
+list_dirs $HOME8/.cache/roc/toolchains
+canonical $HOME8/.cache $HOME8/.cache/roc
+write_atomic $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME8/.cache/roc/packages/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5 nightly-2026-10-12-2a2a2a2 $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME8/.cache ROC_CACHE_DIR=$HOME8/.cache/roc TALON_IN_PROXY=1
+db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME8/.cache/roc/toolchains
+canonical $HOME8/.cache $HOME8/.cache/roc
+random
+copy_tree $PROJECT/v8 $HOME8/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME8/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME8/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+write_atomic $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $PROJECT/v8 nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME8/.cache ROC_CACHE_DIR=$HOME8/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME8/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME8/.cache ROC_CACHE_DIR=$HOME8/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME8/.cache/roc/packages/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5/main.roc
+read_files $HOME8/.cache/roc/packages/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5/Stdout.roc
+db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+write_atomic $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME8/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME8/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME8/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
+    env XDG_CACHE_HOME=$HOME8/.cache ROC_CACHE_DIR=$HOME8/.cache/roc TALON_IN_PROXY=1
+db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME8/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/v8/main.roc
+write_atomic $PROJECT/v8/main.roc
+read_files $PROJECT/v8/.github/workflows/ci.yml
+write_atomic $PROJECT/v8/.github/workflows/ci.yml
+args
+env_all
+clock
+cwd
+read_files $PROJECT/v9/main.roc
+list_dirs $HOME9/.cache/roc/talon/index/github/acme/pfy
+programs gh
+http_get https://api.github.com/repos/acme/pfy/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME9/.cache/roc/talon/index/github/acme/pfy/1.json $HOME9/.cache/roc/talon/index/github/acme/pfy/1.meta
+read_files $HOME9/.config/talon/config.toml
+random
+list_dirs $HOME9/.cache/roc/packages
+read_files $HOME9/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+write_atomic $PROJECT/v9/main.roc
+env_all
+clock
+cwd
+canonical $PROJECT/v9/main.roc
+list_dirs $PROJECT/v9
+list_dirs $PROJECT
+read_files $PROJECT/v9/main.roc
+canonical $PROJECT/v9/main.roc
+lock $HOME9/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME9/.cache/roc/talon
+read_files $HOME9/.cache/roc/talon/projects.json
+write_atomic $HOME9/.cache/roc/talon/projects.json
+unlock $HOME9/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME9/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME9/.cache/roc/talon/path-roc.json
+read_files $PROJECT/v9/main.roc $PROJECT/v9/talon.toml $HOME9/.config/talon/config.toml
+list_dirs $HOME9/.cache/roc/toolchains
+platform
+list_dirs $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+list_dirs $HOME9/.cache/roc/toolchains
+platform
+list_dirs $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
+db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
+random
+list_dirs $HOME9/.cache/roc/packages
+read_files $HOME9/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+list_dirs $HOME9/.cache/roc/toolchains
+canonical $HOME9/.cache $HOME9/.cache/roc
+write_atomic $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME9/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp nightly-2026-10-12-2a2a2a2 $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME9/.cache ROC_CACHE_DIR=$HOME9/.cache/roc TALON_IN_PROXY=1
+db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+list_dirs $HOME9/.cache/roc/toolchains
+canonical $HOME9/.cache $HOME9/.cache/roc
+random
+copy_tree $PROJECT/v9 $HOME9/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME9/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME9/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+write_atomic $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $PROJECT/v9 nightly-2026-10-09-9d9d9d9 /fake/bin/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME9/.cache ROC_CACHE_DIR=$HOME9/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME9/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc check main.roc timeout=9
+    env XDG_CACHE_HOME=$HOME9/.cache ROC_CACHE_DIR=$HOME9/.cache/roc TALON_IN_PROXY=1
+platform
+read_files $HOME9/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
+db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
+write_atomic $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+probes 1
+  probe $HOME9/.cache/roc/talon/tmp/0123456789abcdef nightly-2026-10-12-2a2a2a2 $HOME9/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc build main.roc --output=$HOME9/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=9
+    env XDG_CACHE_HOME=$HOME9/.cache ROC_CACHE_DIR=$HOME9/.cache/roc TALON_IN_PROXY=1
+db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
+delete $HOME9/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/v9/main.roc
+write_atomic $PROJECT/v9/main.roc
+read_files $PROJECT/v9/.github/workflows/ci.yml
+write_atomic $PROJECT/v9/.github/workflows/ci.yml

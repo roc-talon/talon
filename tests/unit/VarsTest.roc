@@ -181,7 +181,7 @@ expect {
 		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.any_series, s.note)))
 		Err(e) => Err(e.line())
 	}
-	scope = |command, names, selectors, vs| Vars.scope({ command, names, selectors, vars: vs })
+	scope = |command, names, selectors, vs| Vars.scope({ command, names, selectors, fixed: [], vars: vs })
 	fixed_note = Ok("fixed: example.com has no index without a registry")
 	rows = [
 		(
@@ -270,7 +270,7 @@ expect {
 		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable)))
 		Err(e) => Err(e.line())
 	}
-	scope = |command, names, selectors, vs| Vars.scope({ command, names, selectors, vars: vs })
+	scope = |command, names, selectors, vs| Vars.scope({ command, names, selectors, fixed: [], vars: vs })
 	rows = [
 		(
 			"install, no names: each held variable is movable, the fixed host is not (R-SP19, R-DI11)",
@@ -360,7 +360,7 @@ expect {
 		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable, s.any_series, s.note, s.variable.ranges.map(|x| x.range))))
 		Err(e) => Err(e.line())
 	}
-	scope = |names, vs| view(Vars.scope({ command: Upgrade, names, selectors: [], vars: vs }))
+	scope = |names, vs| view(Vars.scope({ command: Upgrade, names, selectors: [], fixed: [], vars: vs }))
 	fixed_note = Ok("fixed: example.com has no index without a registry")
 	rows = [
 		(
@@ -436,7 +436,7 @@ expect {
 		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable, s.any_series, s.note, s.variable.ranges.map(|x| x.range))))
 		Err(e) => Err(e.line())
 	}
-	scope = |vs| view(Vars.scope({ command: NightlyOnly, names: [], selectors: [], vars: vs }))
+	scope = |vs| view(Vars.scope({ command: NightlyOnly, names: [], selectors: [], fixed: [], vars: vs }))
 	rows = [
 		(
 			"upgrade roc, no talon.toml: no package is free, the indexed ones are movable with no range, the fixed host is neither (R-SP8, R-SP23)",
@@ -456,6 +456,63 @@ expect {
 				(["parser"], Bool.False, Bool.False, Bool.False, Err(None), ["=2.0.0"]),
 				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None), [">=1.0.0, <2.0.0"]),
 				(["pf"], Bool.False, Bool.True, Bool.False, Err(None), []),
+			]),
+		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-SP23 R-IN10 R-SP8 (slice 085): `fixed` is a list of aliases that the command never moves. `tln init --platform owner/repo@<version>` fixes `pf`: the user named the release, so the second search (R-SP24) must not move the platform.
+# The scope is the one of `tln upgrade roc` (`NightlyOnly`: no package is free, the held ones are movable). With `fixed: ["pf"]` the platform is held and not movable, and the other held packages stay movable. With `fixed: []` the platform is
+# movable, as before. An alias that no variable has changes nothing. The fixed variable keeps its state otherwise: not free, no series, no note. A `Fixed` host stays not movable also when it is not in the list.
+expect {
+	header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""])
+	plain = member("/p/main.roc", header, Err(NoToml))
+	vars_of = |m| match Vars.build({ members: [m], priority: Err(Unset) }) {
+		Ok(built) => built.vars
+		Err(e) => crash e.line()
+	}
+	view = |r| match r {
+		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.free, s.movable, s.any_series, s.note)))
+		Err(e) => Err(e.line())
+	}
+	scope = |command, names, fixed| view(Vars.scope({ command, names, selectors: [], fixed, vars: vars_of(plain) }))
+	rows = [
+		(
+			"upgrade roc, fixed pf: the platform is held and not movable, json and parser stay movable (R-SP23, R-IN10)",
+			scope(NightlyOnly, [], ["pf"]),
+			Ok([
+				(["json"], Bool.False, Bool.True, Bool.False, Err(None)),
+				(["parser"], Bool.False, Bool.True, Bool.False, Err(None)),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None)),
+				(["pf"], Bool.False, Bool.False, Bool.False, Err(None)),
+			]),
+		),
+		(
+			"upgrade roc, nothing fixed: the platform is movable as before (R-SP8, R-SP23)",
+			scope(NightlyOnly, [], []),
+			Ok([
+				(["json"], Bool.False, Bool.True, Bool.False, Err(None)),
+				(["parser"], Bool.False, Bool.True, Bool.False, Err(None)),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None)),
+				(["pf"], Bool.False, Bool.True, Bool.False, Err(None)),
+			]),
+		),
+		(
+			"upgrade roc, an alias that no variable has: nothing changes",
+			scope(NightlyOnly, [], ["nosuch"]),
+			scope(NightlyOnly, [], []),
+		),
+		(
+			"upgrade roc, two fixed aliases: both are not movable",
+			scope(NightlyOnly, [], ["pf", "json"]),
+			Ok([
+				(["json"], Bool.False, Bool.False, Bool.False, Err(None)),
+				(["parser"], Bool.False, Bool.True, Bool.False, Err(None)),
+				(["fixed"], Bool.False, Bool.False, Bool.False, Err(None)),
+				(["pf"], Bool.False, Bool.False, Bool.False, Err(None)),
 			]),
 		),
 	]
@@ -487,7 +544,7 @@ expect {
 		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.variable.patched, s.free, s.movable, s.note)))
 		Err(e) => Err(e.line())
 	}
-	scope = |command, names, ms| view(Vars.scope({ command, names, selectors: [], vars: vars_of(ms) }))
+	scope = |command, names, ms| view(Vars.scope({ command, names, selectors: [], fixed: [], vars: vars_of(ms) }))
 	note = Ok("json: patched, held")
 	rows = [
 		(
@@ -559,7 +616,7 @@ expect {
 	a = member("/w/a/main.roc", header_a, Ok({ path: "/w/a/talon.toml", text: "[patch]\njson = { path = \"./.talon/patches/json/main.roc\", base = \"${h_json1}\" }\n", role: Member }))
 	b = member("/w/b/main.roc", header_b, Err(NoToml))
 	view = |ms| match Vars.build({ members: ms, priority: Err(Unset) }) {
-		Ok(built) => match Vars.scope({ command: Update, names: [], selectors: [], vars: built.vars }) {
+		Ok(built) => match Vars.scope({ command: Update, names: [], selectors: [], fixed: [], vars: built.vars }) {
 			Ok(scoped) => scoped.map(|s| (s.variable.uses.map(|u| (u.file, u.alias)), s.variable.patched, s.free, s.note))
 			Err(e) => crash e.line()
 		}

@@ -55,7 +55,7 @@ Upgrade :: [].{
 		Ok({ opts }) => {
 			shown = Common.shown_fx(fx, args)
 			result = match Update.begin!(shown, args) {
-				Ok(start) => Update.resolve!(shown, args, opts, start, { command: Upgrade, names: opts.names, fresh: Bool.False })
+				Ok(start) => Update.resolve!(shown, args, opts, start, { command: Upgrade, names: opts.names, fixed: [], fresh: Bool.False })
 				Err(fail) => Err(fail)
 			}
 			match result {

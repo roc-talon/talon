@@ -1,0 +1,2 @@
+nightly = true
+min-release-age = "2d"

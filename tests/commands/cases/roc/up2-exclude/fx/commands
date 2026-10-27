@@ -1,0 +1,12 @@
+# R-C15 R-RU1 R-NS3 R-C7: CI, HOME is home, no pattern. TALON_NOW is 2026-10-19T15:00:00Z. The newest nightly (2026-10-18, 24 hours old) is hidden. 2026-10-17 is exactly 2 days old, so it is visible and it is the newest that min-release-age allows. It is installed and the default moves to it. No note.
+env:CI=true roc update
+# R-C15 R-C16 R-RU1 R-NS3 R-NI6 (slice 084): a person (Enter), HOME is home2, config.toml has roc-lang/nightlies. The pattern matches the name of a nightly, so the age does not hide the newest (24 hours old). The note is on stderr before the download line. The default moves to it.
+env:HOME={w}/home2 roc update
+# R-C15 R-C12 (slice 084): CI, HOME is home3, config.toml has roc-lang/roc only. A nightly is not in that name, so the age still hides 2026-10-18: the older nightly is installed, and there is no note.
+env:CI=true env:HOME={w}/home3 roc update
+# R-C15 R-C16 R-RU1 (slice 084, decision Q1): CI, HOME is home4, config.toml has roc-lang/*, and the newest nightly (24 hours old) is installed already. It is the newest, the default moves to it, and there is no note (nothing is chosen for download).
+env:CI=true env:HOME={w}/home4 roc update
+# R-C16 R-NI6 (slice 084): CI, HOME is home5, config.toml has roc-lang/nightlies. No prompt: the command is the consent. The note comes first, then the line `downloading ...` (the note is before the download line).
+env:CI=true env:HOME={w}/home5 roc update
+# R-C16 R-FL4 (slice 084): CI, HOME is home6, config.toml has roc-lang/nightlies, `--quiet`. `--quiet` hides the note. The answer line `downloading ...` stays (an answer line records an action, R-FL4).
+env:CI=true env:HOME={w}/home6 roc update --quiet

@@ -160,7 +160,7 @@ expect {
 		row("plain", "1.1.0", Pass, []),
 	]
 	used = [{ id: u("usedfail", "1.1.0"), modules: ["Json.roc"] }]
-	input = |compiler, rows| { slots, chosen: picked, facts, now, min_age: 2 * day, snapshot: Err(None), compiler, checks: rows, used }
+	input = |compiler, rows| { slots, chosen: picked, facts, now, min_age: 2 * day, exclude: [], snapshot: Err(None), compiler, checks: rows, used }
 	on = "on ${nightly}"
 	got = lag_view(Lags.of(input(Ok(nightly), checks)))
 	want = [

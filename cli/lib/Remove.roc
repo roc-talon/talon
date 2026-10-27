@@ -64,6 +64,7 @@ flow! = |fx, args, opts| {
 		{
 			command: Install,
 			names: [],
+			fixed: [],
 			frozen: Bool.False,
 			no_check: opts.no_check,
 			project: start.project,

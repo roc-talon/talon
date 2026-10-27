@@ -1,0 +1,4 @@
+tests/unit/AgeTest.roc
+tests/commands/cases/resolve/rs-exclude-bad/
+tests/commands/cases/resolve/rs-exclude-bad-config/
+tests/commands/cases/tool/ti7-exclude-bad-config/

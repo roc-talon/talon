@@ -14,6 +14,7 @@ OracleBase :: [].{
 		strategy : [Highest, Lowest],
 		now : U64,
 		min_age : U64,
+		exclude : List(Str),
 		snapshot : Try(U64, [None]),
 		facts : List({ url : Str, release : Release }),
 		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),

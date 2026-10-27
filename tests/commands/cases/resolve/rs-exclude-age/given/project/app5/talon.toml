@@ -1,0 +1,2 @@
+[dependencies]
+parser = "acme/parser@^1"

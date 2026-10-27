@@ -1,0 +1,23 @@
+== setup
+recorded talon 0.0.1 in $HOME/.local/share/talon/tools.json
+made $HOME/.local/bin/tln (hard link)
+made $HOME/.local/bin/roc (hard link)
+default compiler: nightly-2026-10-21-601b54c (downloaded when a command needs it)
+exit 0
+== setup env:HOME={w}/home2 env:PATH={w}/home2/.local/bin:/usr/bin
+recorded talon 0.0.1 in $HOME2/.local/share/talon/tools.json
+made $HOME2/.local/bin/tln (hard link)
+made $HOME2/.local/bin/roc (hard link)
+default compiler: nightly-2026-10-19-5349569 (downloaded when a command needs it)
+exit 0
+== setup env:HOME={w}/home3 env:PATH={w}/home3/.local/bin:/usr/bin
+recorded talon 0.0.1 in $HOME3/.local/share/talon/tools.json
+made $HOME3/.local/bin/tln (hard link)
+made $HOME3/.local/bin/roc (hard link)
+default compiler: nightly-2026-10-19-5349569 (downloaded when a command needs it)
+exit 0
+== setup env:HOME={w}/home4 env:PATH={w}/home4/.local/bin:/usr/bin
+recorded talon 0.0.1 in $HOME4/.local/share/talon/tools.json
+made $HOME4/.local/bin/tln (hard link)
+made $HOME4/.local/bin/roc (hard link)
+exit 0

@@ -236,7 +236,7 @@ listing! = |fx, words| {
 		Err(NotSet) => []
 	}
 	found = Nightlies.list!(fx, { net, roots, now: fx.clock!(), offline: words.contains("--offline"), host })?
-	Ok({ releases: found.releases, source: found.source, visible: Nightlies.visible({ list: found.releases, now, min_age, snapshot, keep }) })
+	Ok({ releases: found.releases, source: found.source, visible: Nightlies.visible({ list: found.releases, now, min_age, snapshot, keep, exclude: [] }) })
 }
 
 nightlies! : Fx, List(Str) => Try({}, Fail)

@@ -149,6 +149,7 @@ flow! = |fx, args, opts| {
 		{
 			command: Install,
 			names: opts.names,
+			fixed: [],
 			frozen: opts.frozen,
 			no_check: opts.no_check,
 			project,

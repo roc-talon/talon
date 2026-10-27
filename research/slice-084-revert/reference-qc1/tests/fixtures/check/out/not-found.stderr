@@ -1,0 +1,6 @@
+── ✗ file not found ────────────────────────────────────────────────────────────
+
+/tmp/talon-check-fixtures/project/not-found/Missing.roc: FileNotFound.
+
+── 1 error and 0 warnings ───────────────────────────────────────────── main.roc
+

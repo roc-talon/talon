@@ -37,7 +37,7 @@ import Vars
 NightlyFlow :: [].{
 
 	## `free` are the values of the compiler slot (`NightlyPlan.pick.askable`), `Err(Held)` when the slot is not free (also when only H can be asked, or when the list could not be read: Q1). `downloads` is the number of compilers that this command installed. `note` is a line
-	## for stdout and `data.notes` (the list could not be read).
+	## for stdout and `data.notes` (the list could not be read, or R-C16: the young N that only a pattern of `min-release-age-exclude` keeps visible).
 	Plan : { free : Try(List(Str), [Held]), newest : Try(Str, [NoneKnown]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, downloads : U64, note : Try(Str, [None]) }
 
 	## R-WS4, Q3: `NightlyPlan.unify` for a request (`free` is `request.command == Upgrade` and `NightlyPlan.scope(request.names).nightly == Free`): the rows for `Pin.decide` and `differ`.
@@ -62,7 +62,7 @@ NightlyFlow :: [].{
 			Err(NoCompiler) => []
 		}
 		installed = Launch.toolchains!(fx, request.roots).concat(on_path)
-		NightlyPlan.movable({ releases: run.releases, req: ctx.loaded.intent.toolchain.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, held: run.held, installed })
+		NightlyPlan.movable({ releases: run.releases, req: ctx.loaded.intent.toolchain.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, exclude: ctx.settings.exclude, held: run.held, installed })
 	}
 
 	## `held` is H, the compiler of the header (`Pin.Decision.held`). `snapshot` is the time of `--snapshot` (R-C7). The steps and the prompt table are in the comment above.
@@ -95,7 +95,7 @@ known! = |fx, request, ctx, run| {
 		Ok(found) => [found.id]
 		Err(NoCompiler) => []
 	}
-	picked = NightlyPlan.pick({ releases: run.releases, req: intent.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, held: run.held, installed: toolchains.concat(on_path) })
+	picked = NightlyPlan.pick({ releases: run.releases, req: intent.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, exclude: ctx.settings.exclude, held: run.held, installed: toolchains.concat(on_path) })
 	newest = match picked.newest {
 		Ok(id) => id
 		Err(NoneKnown) => return Err(Toolchain.range_failed({ req_text: intent.roc_text ?? "*", switch: { nightly: ctx.settings.nightly, source: ctx.settings.nightly_from } }))
@@ -123,9 +123,11 @@ known! = |fx, request, ctx, run| {
 			Present(_) => {}
 		}
 	}
-	optional = NightlyPlan.optional({ releases: run.releases, req: intent.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, held: run.held, installed: toolchains.concat(on_path) })
+	optional = NightlyPlan.optional({ releases: run.releases, req: intent.roc ?? Any, now: request.now, min_age: ctx.settings.min_age, snapshot: run.snapshot, nightly: ctx.settings.nightly, exclude: ctx.settings.exclude, held: run.held, installed: toolchains.concat(on_path) })
 	only_held = picked.askable.all(|id| Pin.same_id(id, run.held))
-	Ok({ free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note: Err(None) })
+	# R-C16 (slice 084): N is a new choice when it is not H. A young N that only a pattern kept gets the note.
+	note = if Pin.same_id(newest, run.held) Err(None) else Toolchain.kept_note({ id: newest, releases: run.releases, now: request.now, min_age: ctx.settings.min_age, exclude: ctx.settings.exclude })
+	Ok({ free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note })
 }
 
 # Step 3: `RocInstall.offer!` for each id, in order. An id that is installed after all (`Present`) is no download.

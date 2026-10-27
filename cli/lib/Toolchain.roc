@@ -1,3 +1,4 @@
+import Age
 import Args
 import Clock
 import Db
@@ -84,19 +85,26 @@ Toolchain :: [].{
 	##
 	## Slice 022 (R-NS3, R-NS4, R-NS2): `nightly` is the value of the `nightly` switch (`Pin.switch`). With `nightly` false `auto` is empty (the domain is the releases only and there is none: R-NS2), and `named` is
 	## the same (a name is not limited by the switch, R-NS4).
-	domain : { releases : List(Nightlies.Release), now : U64, min_age : U64, nightly : Bool } -> { named : List(Str), auto : List(Str) }
+	domain : { releases : List(Nightlies.Release), now : U64, min_age : U64, nightly : Bool, exclude : List(Str) } -> { named : List(Str), auto : List(Str) }
 	domain = |facts| {
 		found = Nightlies.candidates(facts.releases)
-		shown = Nightlies.visible({ list: found, now: facts.now, min_age: facts.min_age, snapshot: Err(None), keep: [] })
+		shown = Nightlies.visible({ list: found, now: facts.now, min_age: facts.min_age, snapshot: Err(None), keep: [], exclude: facts.exclude })
 		{ named: found.map(|r| r.id), auto: if facts.nightly shown.map(|r| r.id) else [] }
 	}
 
 	## R-ST16, R-RU1, R-SO14 (slice 072a): the latest compiler in the channel: the newest release that the `nightly` switch and `min-release-age` allow. It is the last id of `auto` of `domain`.
 	## `Err(Empty)` when `auto` is empty (no release, all too new, or the switch is off). `tln setup` (R-ST16) and R-SO14 outside a project (slice 072b) use it.
-	latest : { releases : List(Nightlies.Release), now : U64, min_age : U64, nightly : Bool } -> Try(Str, [Empty])
+	latest : { releases : List(Nightlies.Release), now : U64, min_age : U64, nightly : Bool, exclude : List(Str) } -> Try(Str, [Empty])
 	latest = |facts| match Toolchain.domain(facts).auto.last() {
 		Ok(id) => Ok(id)
 		Err(_) => Err(Empty)
+	}
+
+	## R-C16: the note for the compiler `id` when it is young and only a pattern of `exclude` keeps it visible. The text has no version. `Err(None)` when the id is not in `releases`.
+	kept_note : { id : Str, releases : List(Nightlies.Release), now : U64, min_age : U64, exclude : List(Str) } -> Try(Str, [None])
+	kept_note = |facts| match facts.releases.find_first(|r| r.id == facts.id) {
+		Ok(r) => Age.note({ id: facts.id, version: "", now: facts.now, min_age: facts.min_age, published_at: r.published_at, exclude: facts.exclude, name: Ok(Age.compiler_name(facts.id)) })
+		Err(_) => Err(None)
 	}
 
 	## R-SO13, R-NS1, R-NS3, R-NS7, R-C7 (slice 025b): the compiler that rank 4 downloads when no installed compiler is in the range of `[toolchain] roc`: the newest compiler of the list that the range, the
@@ -112,7 +120,7 @@ Toolchain :: [].{
 	##
 	## An installed compiler is not looked at: the caller found that none is in the range (`Compiler.select`). A compiler that the user names is not limited by the switch or `min-release-age` (R-NS4), and this function is
 	## never called for it.
-	range_pick : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool } -> Try(Str, [NoneKnown])
+	range_pick : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str) } -> Try(Str, [NoneKnown])
 	range_pick = |facts| {
 		times = facts.releases.map(|r| { id: r.id, published_at: r.published_at })
 		newest = |best, id| if Pin.order({ a: id, b: best, times }) == After id else best
@@ -123,9 +131,9 @@ Toolchain :: [].{
 	}
 
 	## Slice 039: the releases that `range_pick` chooses from (steps 1 to 3 of its table), in the order of `releases`.
-	range_allowed : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool } -> List(Nightlies.Release)
+	range_allowed : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str) } -> List(Nightlies.Release)
 	range_allowed = |facts| {
-		shown = Nightlies.visible({ list: Nightlies.candidates(facts.releases), now: facts.now, min_age: facts.min_age, snapshot: facts.snapshot, keep: [] })
+		shown = Nightlies.visible({ list: Nightlies.candidates(facts.releases), now: facts.now, min_age: facts.min_age, snapshot: facts.snapshot, keep: [], exclude: facts.exclude })
 		times = facts.releases.map(|r| { id: r.id, published_at: r.published_at })
 		shown.keep_if(|r| (facts.nightly or !Pin.is_nightly(r.id)) and Pin.admits({ req: facts.req, id: r.id, times }))
 	}

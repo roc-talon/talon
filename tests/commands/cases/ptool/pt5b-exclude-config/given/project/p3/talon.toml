@@ -1,0 +1,5 @@
+[tools]
+foo = { ref = "acme/foo@^1" }
+
+[resolution]
+min-release-age-exclude = ["other/*"]

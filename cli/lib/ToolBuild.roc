@@ -31,7 +31,7 @@ ToolBuild :: [].{
 	Done : { how : ToolInstall.How, key : Str, name : Str, version : Str, bin : Str, built : Try({ url : Str, nightly : Str, target : Str, sha256 : Str, entry : [HardLink, Copy] }, [None]) }
 
 	# What steps 2 to 5 found. `file` is the name of the binary file and of the bin dir entry (R-ST15).
-	Facts : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, entries : List(ToolsJson.Entry), min_age : U64, probe_timeout : U64, name : Str, key : Str, file : Str, selected : Str }
+	Facts : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, entries : List(ToolsJson.Entry), min_age : U64, exclude : List(Str), probe_timeout : U64, name : Str, key : Str, file : Str, selected : Str }
 
 	# The app that step 8 chose (slice 048: a release bundle or a git source). `version` is the text of the reports (`1.1.0`, `git main@dd03c09e`), `url` the bundle (for a git source the archive), `hash` the closure of the evidence (the hash of the bundle, or the commit),
 	# `dir` the dir that the build runs in, `source` and `path` what `tools.json` records, then the `roc:` pin, the platform entry and the hashes of the release URL entries of the header (D13).

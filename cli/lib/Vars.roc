@@ -107,16 +107,26 @@ Vars :: [].{
 	## Failures (kind `Usage`, exit 2): a name that is no alias of a variable: `'<x>' is not in the project` (slice 004, Q7). A name that is the alias of 2 or more
 	## variables (R-WS8: members use one alias for 2 groups): `"<x>" matches <n> packages. Use a name from the list.` (the line of the tie of R-SC14: `Lookup.find` prints the list before it, so
 	## this line is a backstop).
+	##
+	## `fixed` are the aliases of variables that are never movable (R-SP23, R-IN10: the platform that `tln init` names with a version). An alias that is no use changes nothing.
 	scope : {
 		command : [Install, Update, Upgrade, NightlyOnly],
 		names : List(Str),
+		fixed : List(Str),
 		selectors : List({ alias : Str, range : Str }),
 		vars : List(Var),
 	} -> Try(List(Scoped), Fail)
 	scope = |facts| {
 		named = named_indexes(facts.vars, facts.names)?
 		selected = facts.selectors.map_try(|sel| named_indexes(facts.vars, [sel.alias]).map_ok(|idx| (idx, sel.range)))?
-		Ok(facts.vars.map_with_index(|variable, i| scoped_one(facts.command, facts.names.is_empty(), named.contains(i), selected.find_first(|(idx, _)| idx.contains(i)), variable)))
+		Ok(
+			facts.vars.map_with_index(
+				|variable, i| {
+					fixed = variable.uses.any(|u| facts.fixed.contains(u.alias))
+					scoped_one({ command: facts.command, all: facts.names.is_empty(), is_named: named.contains(i), fixed }, selected.find_first(|(idx, _)| idx.contains(i)), variable)
+				},
+			),
+		)
 	}
 
 	## The names that the picker of `tln update -i` lists (R-SP14, prompt R-NI2): the first alias of each variable that `Update` with no names frees, in the order of `vars`. The nightly
@@ -273,14 +283,17 @@ named_indexes = |vars, names| names.fold_try(
 )
 
 # R-SP1 to R-SP5, R-SP20, R-DI11: the state of one variable for the command.
-scoped_one : [Install, Update, Upgrade, NightlyOnly], Bool, Bool, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped
-scoped_one = |command, all, is_named, selector, variable| {
+scoped_one : { command : [Install, Update, Upgrade, NightlyOnly], all : Bool, is_named : Bool, fixed : Bool }, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped
+scoped_one = |run, selector, variable| {
+	all = run.all
+	is_named = run.is_named
+	movable_of = |v, free| !run.fixed and can_move(v, free)
 	indexed = variable.host == Indexed
 	fixed_note = match variable.host {
 		Fixed(host) => Ok(Index.fixed_line(host))
 		Indexed => Err(None)
 	}
-	match command {
+	match run.command {
 		Install => {
 			free = outside_range(variable)
 			{ variable, free, movable: movable_of(variable, free), any_series: Bool.False, note: Err(None) }
@@ -310,9 +323,9 @@ scoped_one = |command, all, is_named, selector, variable| {
 	}
 }
 
-# R-SP23, R-VA5, R-DI11, R-PA4: a held variable moves, unless it is an anchor (a range with `=`), is patched or has a fixed host.
-movable_of : Vars.Var, Bool -> Bool
-movable_of = |variable, free| !free and variable.host == Indexed and !variable.patched and !variable.ranges.any(|r| r.range.starts_with("="))
+# R-SP23, R-VA5, R-DI11, R-PA4: a held variable moves, unless it is an anchor (a range with `=`), is patched or has a fixed host. `scoped_one` also holds a variable of `fixed` (R-IN10).
+can_move : Vars.Var, Bool -> Bool
+can_move = |variable, free| !free and variable.host == Indexed and !variable.patched and !variable.ranges.any(|r| r.range.starts_with("="))
 
 # R-SP20, R-WS3: a use that is outside the intersection of the ranges of its variable.
 outside_range : Vars.Var -> Bool

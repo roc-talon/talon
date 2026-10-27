@@ -1,0 +1,2 @@
+tool install acme/app
+tool install acme/named@1.4.0

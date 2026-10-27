@@ -1,0 +1,65 @@
+── ✗ type mismatch ─────────────────────────────────────────────── main.roc:14:2
+
+This expression produces a value, but it's not being used.
+
+Stdout.line!(Util.twice("a"))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+It has the type:
+
+    Try({}, [StdoutErr(IOErr)])
+
+Since this expression is used as a statement, it must evaluate to {}.
+If you don't need the value, you can ignore it with _ =.
+
+── ✗ type mismatch ─────────────────────────────────────────────── main.roc:15:2
+
+This expression produces a value, but it's not being used.
+
+Stdout.line!(Local.name)
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+It has the type:
+
+    Try({}, [StdoutErr(IOErr)])
+
+Since this expression is used as a statement, it must evaluate to {}.
+If you don't need the value, you can ignore it with _ =.
+
+── ✗ type mismatch ────────────────────────────────────────────── main.roc:16:15
+
+This number is being used where a non-number type is needed.
+
+Stdout.line!(5)
+             ^
+
+Other code expects this to have the type:
+
+    Str
+
+── ✗ type mismatch ─────────────────────────────────────────────── Util.roc:5:15
+
+This expression is used in an unexpected way.
+
+broken = |n| n
+             ^
+
+It has the type:
+
+    U64
+
+But the annotation says it should be:
+
+    Str
+
+── ✗ type mismatch ─────────── ../../../../../../project/lib-local/Local.roc:3:9
+
+This number is being used where a non-number type is needed.
+
+name = 7
+       ^
+
+Other code expects this to have the type:
+
+    Str
+

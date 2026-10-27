@@ -1,0 +1,2 @@
+== tool install acme/foo
+exit 19

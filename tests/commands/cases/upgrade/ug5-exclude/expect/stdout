@@ -1,0 +1,26 @@
+== upgrade --file p1/main.roc
+note: pf 0.2.2 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/pfx
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.2
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ json: acme/json 2.1.0 -> 3.0.2 new series
+  ~ parser: acme/parser 1.0.0 -> 2.0.0 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.2 new series
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0
+== upgrade --file p2/main.roc
+note: json 3.1.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/json
+note: pf 0.2.2 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/pfx
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.2
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.1.0 -> 3.1.0 new series
+  ~ parser: acme/parser 1.0.0 -> 2.0.0 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.2 new series
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== upgrade --dry-run --json --file p3/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":2,"downloads":0,"dry_run":true,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.1.0"},"to":{"name":"acme/json","version":"3.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"2.0.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.2.2"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["json 3.1.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/json","pf 0.2.2 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/pfx","platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.2"],"written":[]},"error":null}
+exit 0

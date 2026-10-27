@@ -1,0 +1,45 @@
+== cwd:x1 env:HOME={w}/home1 init --platform acme/pfy
+check: passed
+build: passed
+$PROJECT/x1/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+note: acme/pfy 1.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/*
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:x2 env:HOME={w}/home2 init --platform acme/pfy
+check: passed
+build: passed
+$PROJECT/x2/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:x3 env:HOME={w}/home3 init --platform acme/pfy
+check: passed
+build: passed
+$PROJECT/x3/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:x4 env:HOME={w}/home4 init --platform acme/pfw
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: pf 1.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+note: tuple dropped: the unit check on nightly-2026-10-09-9d9d9d9 fails for the platform acme/pfw 1.2.0 (no module is named)
+note: platform changes: acme/pfw 1.2.0 -> acme/pfw 1.1.0
+note: pf 1.2.0 is not used, 1.1.0 is chosen: fails the unit check on nightly-2026-10-12-2a2a2a2
+check: passed
+build: passed
+$PROJECT/x4/main.roc
+  ~ pf: acme/pfw 1.2.0 -> 1.1.0
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 9 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:x1j env:HOME={w}/home5 init --json --platform acme/pfy
+{"schema":1,"command":"init","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":4,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":"nightly-2026-10-12-2a2a2a2","toml":[],"renamed":[],"notes":["acme/pfy 1.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/*"],"written":["$PROJECT/x1j/main.roc","$PROJECT/x1j/.github/workflows/ci.yml"]},"error":null}
+exit 0

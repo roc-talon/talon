@@ -32,7 +32,7 @@ pf_fact = |url| { url, release: { kind: Platform, pf: Err(None), deps: [] } }
 
 slot = |id, ranges, current, hold, candidates| { id, is_platform: Bool.False, ranges, current: Ok(current), hold, named: Err(None), candidates, files: [] }
 
-input = |slots, facts| { slots, strategy: Highest, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }
+input = |slots, facts| { slots, strategy: Highest, now, min_age: 2 * day, exclude: [], snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }
 
 # A row of compat.db for a release on a compiler (the target `any` is a check).
 row = |url, id, outcome, modules| { hash: hash(url), nightly: id, target: "any", outcome, modules, closure: "" }

@@ -1,0 +1,5 @@
+[dependencies]
+lib = "zed/lib@^1"
+
+[resolution]
+min-release-age-exclude = ["zed/lib"]

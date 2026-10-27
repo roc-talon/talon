@@ -207,7 +207,7 @@ release_item! : Fx, Args, ToolBuild.Facts, ToolsJson.Tool => Try(Item, Fail)
 release_item! = |fx, args, facts, tool| {
 	list = ToolFlow.release_list_for!(fx, args, facts)?
 	selector = Ok(Selector.Latest)
-	picked = ToolInstall.pick({ name: facts.name, list, selector, now: facts.now, min_age: facts.min_age })?
+	picked = ToolInstall.pick({ name: facts.name, list, selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
 	newest = match picked.order.first() {
 		Ok(first) => first
 		Err(_) => return Err(Fail.new(Internal, "no release was picked"))
@@ -216,7 +216,7 @@ release_item! = |fx, args, facts, tool| {
 		Keep(_) => return Ok(skip(tool, UpToDate, ToolUpdate.up_to_date_text(tool)))
 		Build => {}
 	}
-	ToolFlow.notes_for!(fx, facts, picked, newest)
+	ToolFlow.notes_for!(fx, args, facts, picked, newest)
 	entry_check!(fx, facts)?
 	bundle = ToolFlow.first_app_for!(fx, args, facts, picked.order)?
 	id = pin_of(tool, bundle)?

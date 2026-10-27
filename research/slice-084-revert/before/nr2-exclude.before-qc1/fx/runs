@@ -1,0 +1,10 @@
+# Run 1: R-SO14 step (d), a project with no fact for its hash: the latest in the channel. TALON_NOW is 2026-10-20T15:00:00Z: N4 (10-19) is 1 day old, N3 (10-18) is exactly 2 days old. config.toml has roc-lang/nightlies, so N4 is the latest: the note on stderr, the download, the default.
+norank config:fx/cfg-nightlies.toml none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+# Run 2: the same project, home2 has no config.toml: the age hides N4, so N3 is the latest. No note.
+norank home:home2 none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+# Run 3: R-SO14 (2), no project, the pattern: N4 and the note.
+norank config:fx/cfg-nightlies.toml none:outside env:TALON_AUTO_INSTALL=yes
+# Run 4: patterns that do not match a nightly (roc-lang/roc, acme/*): N3, no note.
+norank home:home2 config:fx/cfg-other.toml none:project:CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA env:TALON_AUTO_INSTALL=yes
+# Run 5: step (c), the hashes HA and HB have facts: the newest compiler that passes for both is N2 (10-16). It is not young, so the pattern changes nothing and there is no note.
+norank config:fx/cfg-nightlies.toml none:project:9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17,J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr env:TALON_AUTO_INSTALL=yes

@@ -1,3 +1,4 @@
+import Age
 import Args
 import Clock
 import Common
@@ -101,6 +102,7 @@ context! = |fx, args, cmd| {
 		net: start.net,
 		now: start.now,
 		min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: read.intent.resolution.min_release_age, user: config.min_release_age }) ?? 172800,
+		exclude: Age.join({ project: read.intent.resolution.min_release_age_exclude, user: config.min_release_age_exclude }),
 		probe_timeout: ToolBuild.probe_timeout(config),
 		snapshot: snapshot_of(cmd, read.intent)?,
 		dry_run: cmd.dry_run,

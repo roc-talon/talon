@@ -1,6 +1,7 @@
 import lib.Ident
 import lib.Index
 import lib.Oracle
+import lib.OracleRequest
 import lib.Pick
 
 OracleTest :: [].{}
@@ -21,7 +22,7 @@ fact = |url, deps| { url, release: { kind: Package, pf: Err(None), deps } }
 
 slot = |id, ranges, current, hold, candidates| { id, is_platform: Bool.False, ranges, current: Ok(current), hold, named: Err(None), candidates, files: [] }
 
-input = |slots, facts, strategy, second| { slots, strategy, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second }
+input = |slots, facts, strategy, second| { slots, strategy, now, min_age: 2 * day, exclude: [], snapshot: Err(None), facts, unmanaged: [], paths: [], second }
 
 view = |r| match r {
 	Need(urls) => Err(Ok(urls))
@@ -174,6 +175,7 @@ expect {
 			strategy: if seed % 2 == 0 Highest else Lowest,
 			now,
 			min_age: 2 * day,
+			exclude: [],
 			snapshot: if seed % 9 == 4 Ok(now - 10 * day) else Err(None),
 			facts: facts.concat(z_fact),
 			unmanaged: [],
@@ -194,4 +196,55 @@ expect {
 	)
 	dbg rows.take_first(3)
 	rows == []
+}
+
+# R-C15 R-DT4 R-C9 (slice 082): `OracleRequest.request_of`, the request that goes to the solver (the package `resolve`, which is not changed). The solver has its own age test (rule 4 of `Domain`: `published_at + min_age > now`, or
+# `published_at > snapshot`). The CLI side gives it the time of each candidate with `Age.seen`: 0 for a candidate that a pattern matches and that is not after the snapshot, else the real time. So an excluded candidate looks old to the
+# solver, a candidate after the snapshot keeps its time (the snapshot still hides it), and a candidate exactly at the snapshot gets 0 (the snapshot limit is inclusive, R-DT4). `acme/json` is the name of the candidates.
+# The header value has no time in the request. A closed slot (a `Held` slot) has no candidate. The tuple of a row is the list of (version, time) of the candidates.
+expect {
+	json = |v| u("json", v)
+	list = [cand(json("2.1.0"), 30), cand(json("2.3.0"), 3), cand(json("2.4.0"), 1), cand(json("2.5.0"), 5)]
+	s = slot("json", [], json("2.1.0"), Free, list)
+	compat = { compiler: Err(None), checks: [], looked: [], probes: Off, conflicts: [], used: [], domain: Err(NotRead), inferred: [], failed: Other }
+	times = |inp| OracleRequest.request_of(inp, compat, Bool.True, Err(Held)).slots.map(|sl| sl.candidates.map(|c| (c.version, c.published_at)))
+	real = [("2.1.0", now - 30 * day), ("2.3.0", now - 3 * day), ("2.4.0", now - day), ("2.5.0", now - 5 * day)]
+	cfg = |exclude, snapshot, slots| { ..input(slots, [], Highest, Bool.False), exclude, snapshot }
+	rows = [
+		("no pattern: the real times", times(cfg([], Err(None), [s])), [real]),
+		("acme/json: every candidate has time 0", times(cfg(["acme/json"], Err(None), [s])), [[("2.1.0", 0), ("2.3.0", 0), ("2.4.0", 0), ("2.5.0", 0)]]),
+		("acme/*, upper case: the same", times(cfg(["ACME/*"], Err(None), [s])), [[("2.1.0", 0), ("2.3.0", 0), ("2.4.0", 0), ("2.5.0", 0)]]),
+		("another repo and another owner: the real times", times(cfg(["acme/other", "other/*"], Err(None), [s])), [real]),
+		("a snapshot 4 days ago: the candidates after it keep their time, the others get 0", times(cfg(["acme/json"], Ok(now - 4 * day), [s])), [[("2.1.0", 0), ("2.3.0", now - 3 * day), ("2.4.0", now - day), ("2.5.0", 0)]]),
+		("a candidate exactly at the snapshot gets 0", times(cfg(["acme/json"], Ok(now - 3 * day), [s])), [[("2.1.0", 0), ("2.3.0", 0), ("2.4.0", now - day), ("2.5.0", 0)]]),
+		("a snapshot and no pattern: the real times", times(cfg([], Ok(now - 4 * day), [s])), [real]),
+		("a closed slot has no candidate", times(cfg(["acme/json"], Err(None), [{ ..s, hold: Held }])), [[]]),
+		("2 slots: a slot is mapped by its own name (acme/lib does not match acme/json)", times(cfg(["acme/json"], Err(None), [s, slot("lib", [], u("lib", "1.0.0"), Free, [cand(u("lib", "1.0.0"), 9)])])), [[("2.1.0", 0), ("2.3.0", 0), ("2.4.0", 0), ("2.5.0", 0)], [("1.0.0", now - 9 * day)]]),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-C15 R-DT4 R-C9 R-C16 (slice 082): the search over that request. `acme/json` has 2.1.0 (header value, old), 2.3.0 (3 days) and 2.4.0 (1 day, `min-release-age` 2 days). With the pattern the solver picks the young 2.4.0 (and the note names
+# the real age, 1 day: the note reads the real time of the candidate, not the time 0 of the solver); without the pattern it picks 2.3.0; with a snapshot 2 days ago the young release stays hidden also with the pattern, and with a snapshot 10 days ago
+# 2.3.0 is hidden too: the header value stays. A release exactly at the snapshot is visible.
+expect {
+	json = |v| u("json", v)
+	list = [cand(json("2.1.0"), 30), cand(json("2.3.0"), 3), cand(json("2.4.0"), 1)]
+	s = slot("json", ["^2"], json("2.1.0"), Free, list)
+	facts = list.map(|c| fact(c.url, []))
+	run = |exclude, snapshot| view(Oracle.step({ ..input([s], facts, Highest, Bool.False), exclude, snapshot }))
+	note = Ok("json 2.4.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/*")
+	rows = [
+		("no pattern: 2.3.0", run([], Err(None)), Ok([("json", "2.3.0", Move("2.1.0"), Err(None))])),
+		("a pattern: the young 2.4.0, the note has the real age", run(["acme/*"], Err(None)), Ok([("json", "2.4.0", Move("2.1.0"), note)])),
+		("a pattern and a snapshot 2 days ago: 2.3.0 is before it, 2.4.0 is after it and stays hidden", run(["acme/*"], Ok(now - 2 * day)), Ok([("json", "2.3.0", Move("2.1.0"), Err(None))])),
+		("a pattern and a snapshot 10 days ago: only the header value is before it", run(["acme/*"], Ok(now - 10 * day)), Ok([("json", "2.1.0", Keep, Err(None))])),
+		("a pattern and a snapshot at the time of 2.3.0: 2.3.0 is visible, 2.4.0 is not", run(["acme/*"], Ok(now - 3 * day)), Ok([("json", "2.3.0", Move("2.1.0"), Err(None))])),
+		("another owner: 2.3.0", run(["other/*"], Err(None)), Ok([("json", "2.3.0", Move("2.1.0"), Err(None))])),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
 }

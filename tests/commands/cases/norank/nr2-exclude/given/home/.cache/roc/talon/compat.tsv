@@ -1,0 +1,12 @@
+format	1
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	any	pass		
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-16-1df370f	any	pass		
+fact	J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr	nightly-2026-10-14-38a3029	any	pass		
+fact	J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr	nightly-2026-10-16-1df370f	any	pass		
+fact	J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr	nightly-2026-10-18-5349569	any	pass		
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-18-5349569	any	fail	Json.roc	
+fact	3qTaf7SaPEKpXvbNTLjB9oyDxXJkTkhWrfxMDajqKH8K	nightly-2026-10-18-5349569	any	fail	Json.roc	
+pinned	nightly-2026-10-14-38a3029	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+pinned	nightly-2026-10-16-1df370f	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+pinned	nightly-2026-10-18-5349569	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+pinned	nightly-2026-10-19-0badf00	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest

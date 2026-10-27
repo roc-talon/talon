@@ -1,0 +1,18 @@
+# R-T9 R-C15 R-C16 R-C14 R-C12 R-FL4 R-SE19 (slice 083): `tln tool install` and `min-release-age-exclude` end to end with the real Fx, the real curl, the real `roc unbundle` (the fake roc passes it to the pinned roc, given/roc.tsv)
+# and the fake release server (the data of the case tool ti1-tool-install: acme/foo 1.1.0 and 1.0.0). Here 1.1.0 was published on 2026-10-14T12:00:00Z, 1 day before TALON_NOW, so `min-release-age` (2 days) hides it.
+# `config.toml` has `min-release-age-exclude = ["acme/*"]`. The note is on stderr (R-J2), not on stdout.
+export TALON_NOW=2026-10-15T12:00:00Z
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+D=$TALON_TEST_DIR
+J=$XDG_DATA_HOME/talon/tools.json
+chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+
+echo "-- 1: the list names acme/*, so 1.1.0 is not hidden by the age (R-C15): it is the newest release and it is built. One note on stderr (R-C16) that names the pattern and the age. tools.json has 1.1.0."
+st tln tool install acme/foo
+cat $J
+cat $D/build.log
+
+echo "-- 2: --quiet hides the note (R-FL4). The tool is removed first, so the next install builds again."
+st tln tool remove foo
+st tln tool install acme/foo --quiet
+cat $J

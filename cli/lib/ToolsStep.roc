@@ -41,7 +41,7 @@ import XCacheIo
 ToolsStep :: [].{
 
 	## What a run needs. `home` is the `talon.toml` that holds `[tools]` (`ToolsPlan.home`), `home_text` its text as the command read it (`""` for no file), `tools` the entries of that text.
-	Ctx : { args : Args, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, min_age : U64, probe_timeout : U64, snapshot : Try(U64, [None]), dry_run : Bool, allow : Bool, home : Str, home_text : Str, tools : List(ToolsToml.Entry), selected : Str }
+	Ctx : { args : Args, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, min_age : U64, exclude : List(Str), probe_timeout : U64, snapshot : Try(U64, [None]), dry_run : Bool, allow : Bool, home : Str, home_text : Str, tools : List(ToolsToml.Entry), selected : Str }
 
 	## One result. `action` is `Added`, `Locked`, `Moved`, `Built`, `Kept` or `Removed`. A `Kept` row has no line. `would_build` is set by `--dry-run` for a release that has no `x` entry: the real run would build it (D8 of the review).
 	Row : { key : Str, name : Str, action : [Added, Locked, Moved, Built, Kept, Removed], ref : Try(Str, [None]), url : Try(Str, [None]), version : Try(Str, [None]), previous : Try(Str, [None]), built : Bool, would_build : Bool }
@@ -75,6 +75,7 @@ ToolsStep :: [].{
 			net: request.net,
 			now: request.now,
 			min_age: settings.min_age,
+			exclude: settings.exclude,
 			probe_timeout: ToolBuild.probe_timeout(loaded.config),
 			snapshot,
 			dry_run: request.dry_run,
@@ -213,6 +214,7 @@ ToolsStep :: [].{
 			target: machine.target,
 			entries: [],
 			min_age: ctx.min_age,
+			exclude: ctx.exclude,
 			probe_timeout: ctx.probe_timeout,
 			name,
 			key,
@@ -227,12 +229,12 @@ ToolsStep :: [].{
 		facts = ToolsStep.facts_of(ctx, run.machine, run.name)
 		list = ToolFlow.release_list_for!(fx, ctx.args, facts)?
 		shown = ToolsPlan.visible({ list, snapshot: ctx.snapshot })
-		picked = ToolInstall.pick({ name: run.name, list: shown, selector: run.selector, now: ctx.now, min_age: ctx.min_age })?
+		picked = ToolInstall.pick({ name: run.name, list: shown, selector: run.selector, now: ctx.now, min_age: ctx.min_age, exclude: ctx.exclude })?
 		newest = match picked.order.first() {
 			Ok(first) => first
 			Err(_) => return Err(Fail.new(Internal, "no release was picked"))
 		}
-		ToolFlow.notes_for!(fx, facts, picked, newest)
+		ToolFlow.notes_for!(fx, ctx.args, facts, picked, newest)
 		Ok({ facts, picked, newest })
 	}
 

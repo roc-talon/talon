@@ -81,10 +81,10 @@ expect {
 		rel({ id: "nightly-2026-10-13-91fa0c2", at: now - 2 * day + 1, asset: Ok(one_asset("nightly-2026-10-13-91fa0c2")) }),
 		rel({ id: "nightly-2026-10-14-38a3029", at: now - 10, asset: Ok(one_asset("nightly-2026-10-14-38a3029")) }),
 	]
-	two_days = Toolchain.domain({ releases: list, now, min_age: 2 * day, nightly: Bool.True })
-	none = Toolchain.domain({ releases: list, now, min_age: 0, nightly: Bool.True })
-	empty = Toolchain.domain({ releases: [], now, min_age: 2 * day, nightly: Bool.True })
-	off = Toolchain.domain({ releases: list, now, min_age: 0, nightly: Bool.False })
+	two_days = Toolchain.domain({ releases: list, now, min_age: 2 * day, nightly: Bool.True, exclude: [] })
+	none = Toolchain.domain({ releases: list, now, min_age: 0, nightly: Bool.True, exclude: [] })
+	empty = Toolchain.domain({ releases: [], now, min_age: 2 * day, nightly: Bool.True, exclude: [] })
+	off = Toolchain.domain({ releases: list, now, min_age: 0, nightly: Bool.False, exclude: [] })
 	all_named = ["nightly-2026-10-09-258ab27", "nightly-2026-10-12-2664a27", "nightly-2026-10-13-91fa0c2", "nightly-2026-10-14-38a3029"]
 	dbg two_days
 	dbg none
@@ -110,7 +110,7 @@ expect {
 		rel({ id: "nightly-2026-10-15-38e6c42", at: now - 5, asset: Err(Several(2)) }),
 	]
 	young = [rel({ id: "nightly-2026-10-16-1df370f", at: now - 10, asset: Ok(one_asset("nightly-2026-10-16-1df370f")) })]
-	latest = |releases, min_age, nightly| Toolchain.latest({ releases, now, min_age, nightly })
+	latest = |releases, min_age, nightly| Toolchain.latest({ releases, now, min_age, nightly, exclude: [] })
 	two_days = latest(list, 2 * day, Bool.True)
 	none = latest(list, 0, Bool.True)
 	dbg two_days
@@ -378,7 +378,7 @@ expect {
 		rel({ id: "nightly-2026-10-14-38a3029", at: now - 5 * day, asset: Err(NoAsset) }),
 		rel({ id: "nightly-2026-10-13-91fa0c2", at: now - 6 * day, asset: Ok(one_asset("nightly-2026-10-13-91fa0c2")) }),
 	]
-	pick = |releases, req, min_age, snapshot, nightly| Toolchain.range_pick({ releases, req, now, min_age, snapshot, nightly })
+	pick = |releases, req, min_age, snapshot, nightly| Toolchain.range_pick({ releases, req, now, min_age, snapshot, nightly, exclude: [] })
 	newest = ids.get(0) ?? ""
 	third = ids.get(2) ?? ""
 	fourth = ids.get(3) ?? ""
@@ -456,6 +456,138 @@ expect {
 		("", Bool.False),
 	]
 	bad = rows.keep_if(|(text, want)| Toolchain.needs_base(text) != want).map(|(text, want)| (text, want))
+	dbg bad
+	bad == []
+}
+
+# R-C15 R-NS3 R-C7 R-SO14 R-ST16 R-PB3 R-RU1 (slice 084, decision Q1): `domain` and `latest` with the list `min-release-age-exclude`. A nightly has the name `roc-lang/nightlies`, a release `roc-lang/roc` (`Age.compiler_name`).
+# A pattern that matches lifts the age for that compiler: `auto` has the young nightlies and `latest` is the newest of them. `named` does not change. The switch still cuts (R-NS3). `roc-lang/*` matches both kinds (decision Q1).
+# `domain.auto` is the list that `ProbeSearch` uses as `allowed` (R-PB3): there is no other pure function there. 4 nightlies: 9 days old, exactly 2 days, 2 days less 1 second, and 10 seconds old.
+expect {
+	now = 1_000_000
+	day = 86400
+	old = "nightly-2026-10-09-258ab27"
+	edge = "nightly-2026-10-12-2664a27"
+	young = "nightly-2026-10-13-91fa0c2"
+	newest = "nightly-2026-10-14-38a3029"
+	list = [
+		rel({ id: old, at: now - 9 * day, asset: Ok(one_asset(old)) }),
+		rel({ id: edge, at: now - 2 * day, asset: Ok(one_asset(edge)) }),
+		rel({ id: young, at: now - 2 * day + 1, asset: Ok(one_asset(young)) }),
+		rel({ id: newest, at: now - 10, asset: Ok(one_asset(newest)) }),
+	]
+	young_only = [rel({ id: newest, at: now - 10, asset: Ok(one_asset(newest)) })]
+	domain_of = |exclude| Toolchain.domain({ releases: list, now, min_age: 2 * day, nightly: Bool.True, exclude })
+	last = |releases, exclude, nightly| Toolchain.latest({ releases, now, min_age: 2 * day, nightly, exclude })
+	all4 = [old, edge, young, newest]
+	rows = [
+		("no pattern: the 2 old ones", domain_of([]).auto, [old, edge]),
+		("roc-lang/nightlies: all 4", domain_of(["roc-lang/nightlies"]).auto, all4),
+		("roc-lang/*: all 4 (Q1)", domain_of(["roc-lang/*"]).auto, all4),
+		("ROC-LANG/NIGHTLIES: all 4", domain_of(["ROC-LANG/NIGHTLIES"]).auto, all4),
+		("roc-lang/roc: a nightly is not in it", domain_of(["roc-lang/roc"]).auto, [old, edge]),
+		("acme/*: another owner", domain_of(["acme/*"]).auto, [old, edge]),
+		("named does not change", domain_of(["roc-lang/*"]).named, all4),
+		("the switch is off: auto is empty also with a pattern (R-NS3)", Toolchain.domain({ releases: list, now, min_age: 2 * day, nightly: Bool.False, exclude: ["roc-lang/*"] }).auto, []),
+		("min_age 0 and a pattern: all 4", Toolchain.domain({ releases: list, now, min_age: 0, nightly: Bool.True, exclude: ["acme/*"] }).auto, all4),
+	]
+	latest_rows = [
+		("latest, no pattern: the edge one", last(list, [], Bool.True), Ok(edge)),
+		("latest, roc-lang/nightlies: the newest, 10 seconds old", last(list, ["roc-lang/nightlies"], Bool.True), Ok(newest)),
+		("latest, roc-lang/*: the newest", last(list, ["roc-lang/*"], Bool.True), Ok(newest)),
+		("latest, roc-lang/roc: the edge one", last(list, ["roc-lang/roc"], Bool.True), Ok(edge)),
+		("latest, all releases young, no pattern: Empty", last(young_only, [], Bool.True), Err(Empty)),
+		("latest, all releases young, a pattern: the newest", last(young_only, ["roc-lang/*"], Bool.True), Ok(newest)),
+		("latest, the switch is off: Empty also with a pattern", last(list, ["roc-lang/*"], Bool.False), Err(Empty)),
+		("latest, an empty list: Empty", last([], ["roc-lang/*"], Bool.True), Err(Empty)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	bad_latest = latest_rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	dbg bad_latest
+	bad == [] and bad_latest == []
+}
+
+# R-NS3 R-NS7 R-C15 R-C7 R-DT4 R-SO13 R-SL7 (slice 084): `range_pick` and `range_allowed` with the list. The young compiler is allowed when a pattern matches its name. The `[toolchain] roc` range (R-NS7), the switch (R-NS3)
+# and the snapshot (R-DT4) still cut. `@latest`, `@+N` and `@-N` use the domain `auto` of the rows above, so the rows of `domain` cover them; the L2 cases `roc/us6-exclude-steps` run them.
+# A release (`0.1.2`, 1 day old) has the name `roc-lang/roc`.
+expect {
+	day = 86400
+	at = |text| Clock.parse_utc(text) ?? 0
+	today = at("2026-10-20T12:00:00Z")
+	old = rel({ id: "nightly-2026-10-14-38a3029", at: today - 5 * day, asset: Ok(one_asset("nightly-2026-10-14-38a3029")) })
+	young = rel({ id: "nightly-2026-10-19-601b54c", at: today - day, asset: Ok(one_asset("nightly-2026-10-19-601b54c")) })
+	rel_old = rel({ id: "0.1.1", at: today - 6 * day, asset: Ok(one_asset("0.1.1")) })
+	rel_young = rel({ id: "0.1.2", at: today - day, asset: Ok(one_asset("0.1.2")) })
+	list = [old, young]
+	mixed = [rel_old, rel_young]
+	ask = |releases, req, snapshot, nightly, exclude| { releases, req, now: today, min_age: 2 * day, snapshot, nightly, exclude }
+	pick = |releases, req, snapshot, nightly, exclude| Toolchain.range_pick(ask(releases, req, snapshot, nightly, exclude))
+	allowed = |releases, req, snapshot, nightly, exclude| Toolchain.range_allowed(ask(releases, req, snapshot, nightly, exclude)).map(|r| r.id)
+	rows = [
+		("Any, no pattern: the old nightly", pick(list, Any, Err(None), Bool.True, []), Ok(old.id)),
+		("Any, roc-lang/nightlies: the young nightly", pick(list, Any, Err(None), Bool.True, ["roc-lang/nightlies"]), Ok(young.id)),
+		("Any, roc-lang/*: the young nightly (Q1)", pick(list, Any, Err(None), Bool.True, ["roc-lang/*"]), Ok(young.id)),
+		("Any, roc-lang/roc: a nightly is not in it", pick(list, Any, Err(None), Bool.True, ["roc-lang/roc"]), Ok(old.id)),
+		("Any, acme/*: another owner", pick(list, Any, Err(None), Bool.True, ["acme/*"]), Ok(old.id)),
+		("a lower bound that only the young one meets, no pattern", pick(list, AtLeast(young.id), Err(None), Bool.True, []), Err(NoneKnown)),
+		("a lower bound that only the young one meets, a pattern", pick(list, AtLeast(young.id), Err(None), Bool.True, ["roc-lang/nightlies"]), Ok(young.id)),
+		("exact old: the range still cuts the young one", pick(list, Exactly(old.id), Err(None), Bool.True, ["roc-lang/*"]), Ok(old.id)),
+		("the switch is off: a pattern does not bring a nightly back (R-NS3)", pick(list, Any, Err(None), Bool.False, ["roc-lang/*"]), Err(NoneKnown)),
+		("the snapshot before the young one: a pattern does not show it (R-DT4)", pick(list, Any, Ok(today - 2 * day), Bool.True, ["roc-lang/*"]), Ok(old.id)),
+		("a semver range, roc-lang/roc: the young release", pick(mixed, Semver("0.1.*"), Err(None), Bool.True, ["roc-lang/roc"]), Ok(rel_young.id)),
+		("a semver range, roc-lang/nightlies: the old release", pick(mixed, Semver("0.1.*"), Err(None), Bool.True, ["roc-lang/nightlies"]), Ok(rel_old.id)),
+		("a semver range, no pattern: the old release", pick(mixed, Semver("0.1.*"), Err(None), Bool.True, []), Ok(rel_old.id)),
+	]
+	allowed_rows = [
+		("allowed: no pattern", allowed(list, Any, Err(None), Bool.True, []), [old.id]),
+		("allowed: a pattern keeps the order of the list", allowed(list, Any, Err(None), Bool.True, ["roc-lang/nightlies"]), [old.id, young.id]),
+		("allowed: the switch is off, a release stays", allowed(mixed.concat(list), Any, Err(None), Bool.False, ["roc-lang/*"]), [rel_old.id, rel_young.id]),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	bad_allowed = allowed_rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	dbg bad_allowed
+	bad == [] and bad_allowed == []
+}
+
+# R-C16 R-C15 R-RU1 R-ST16 R-SO14 R-UP6 (slice 084): `Toolchain.kept_note`, the note for a compiler that Talon chose, that is younger than `min_age`, and that only a pattern kept visible. The text is `<tag> is <n>d old (min-release-age <m>d),
+# not hidden by min-release-age-exclude: <pattern>` with no version (a compiler has none, R-C16). `<n>` and `<m>` are whole days. `<pattern>` is the first pattern that matches, as written. No note: an old compiler, exactly the age,
+# no matching pattern, `min_age` 0, an id that is not in the list.
+expect {
+	now = 1_000_000
+	day = 86400
+	hour = 3600
+	n1 = "nightly-2026-10-13-91fa0c2"
+	n2 = "nightly-2026-10-14-38a3029"
+	n3 = "nightly-2026-10-12-2664a27"
+	n4 = "nightly-2026-10-11-1a2b3c4"
+	list = [
+		rel({ id: n4, at: now - 3 * day, asset: Ok(one_asset(n4)) }),
+		rel({ id: n3, at: now - 2 * day, asset: Ok(one_asset(n3)) }),
+		rel({ id: n1, at: now - day, asset: Ok(one_asset(n1)) }),
+		rel({ id: n2, at: now - 3 * hour, asset: Ok(one_asset(n2)) }),
+		rel({ id: "0.2.0", at: now - 36 * hour, asset: Ok(one_asset("0.2.0")) }),
+	]
+	note = |id, min_age, exclude| Toolchain.kept_note({ id, releases: list, now, min_age, exclude })
+	two = 2 * day
+	rows = [
+		("1 day old, roc-lang/nightlies", note(n1, two, ["roc-lang/nightlies"]), Ok("${n1} is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies")),
+		("3 hours old: 0d", note(n2, two, ["roc-lang/nightlies"]), Ok("${n2} is 0d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies")),
+		("the first pattern that matches, as written", note(n1, two, ["acme/*", "Roc-Lang/*", "roc-lang/nightlies"]), Ok("${n1} is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: Roc-Lang/*")),
+		("a release, 36 hours old: 1d, roc-lang/roc", note("0.2.0", two, ["roc-lang/roc"]), Ok("0.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/roc")),
+		("min-release-age 5d", note(n1, 5 * day, ["roc-lang/*"]), Ok("${n1} is 1d old (min-release-age 5d), not hidden by min-release-age-exclude: roc-lang/*")),
+		("a release against the nightlies pattern", note("0.2.0", two, ["roc-lang/nightlies"]), Err(None)),
+		("a nightly against the releases pattern", note(n1, two, ["roc-lang/roc"]), Err(None)),
+		("no pattern", note(n1, two, []), Err(None)),
+		("another owner", note(n1, two, ["acme/*"]), Err(None)),
+		("an old compiler", note(n4, two, ["roc-lang/*"]), Err(None)),
+		("exactly the age: visible, no note", note(n3, two, ["roc-lang/*"]), Err(None)),
+		("min-release-age 0", note(n1, 0, ["roc-lang/*"]), Err(None)),
+		("an id that is not in the list", note("nightly-2026-10-15-abcdef0", two, ["roc-lang/*"]), Err(None)),
+		("an empty list", Toolchain.kept_note({ id: n1, releases: [], now, min_age: two, exclude: ["roc-lang/*"] }), Err(None)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
 }

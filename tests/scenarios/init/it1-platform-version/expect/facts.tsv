@@ -1,0 +1,7 @@
+format	1
+fact	539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA	nightly-2026-10-11-1f1f1f1	any	pass		
+fact	539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA	nightly-2026-10-11-1f1f1f1	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+fact	539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA	nightly-2026-10-12-2a2a2a2	any	fail		
+pinned	nightly-2026-10-11-1f1f1f1	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+pinned	nightly-2026-10-12-2a2a2a2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest
+pinned	nightly-2026-10-14-4c4c4c4	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest

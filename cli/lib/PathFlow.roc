@@ -77,8 +77,9 @@ rows_of! = |fx, file| match fx.read_files!([file]) {
 }
 
 # Step 6, R-PTH2: the release is fetched when its directory is missing. The result is not read.
+# R-C14: `tln path` reads no `talon.toml`, so the R-SO14 pick gets only the list of `config.toml` (`exclude: []`).
 fetch! : Fx, { roots : Roots, net : Net.Settings, url : Str, selected : Str, hashes : List(Str), downloads : Start.Downloads } => Try({}, Fail)
-fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.downloads.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Project(facts.hashes), downloads: facts.downloads }) }), downloader: facts.net.downloader }) {
+fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.downloads.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Project(facts.hashes), exclude: [], downloads: facts.downloads }) }), downloader: facts.net.downloader }) {
 	[Ok(_)] => Ok({})
 	[Err(fail)] => Err(fail)
 	_ => Err(Fail.new(Internal, "the fetch of ${facts.url} gave no answer"))

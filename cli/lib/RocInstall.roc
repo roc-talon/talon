@@ -60,7 +60,12 @@ RocInstall :: [].{
 	## Steps 2 to 6 of the table. `id` is the text of the compiler (as `Toolchain.read` gives it for `roc install`: a full id, a prefix, `@latest`). `env` is the environment (`Fx.env_all!` of the caller). A failure is the failure of the step
 	## (as `run!` prints it): the usage, network, integrity, environment and consent failures of slices 020 and 021.
 	offer! : Fx, { id : Str, env : List((Str, Str)), offline : Bool } => Try(RocInstall.Offer, Fail)
-	offer! = |fx, run| {
+	offer! = |fx, run| Ok(RocInstall.offer_noted!(fx, run)?.offer)
+
+	## R-C16 (slice 084): `offer!` with the note of a compiler that Talon selects by itself (`@latest`, `@+N`, `@-N`) when it is young and only a pattern of `min-release-age-exclude` keeps it visible. A text that names the compiler gets no note (R-NS4).
+	## The caller prints the note (`print_note!`) only when the selection changes something.
+	offer_noted! : Fx, { id : Str, env : List((Str, Str)), offline : Bool } => Try({ offer : RocInstall.Offer, note : Try(Str, [None]) }, Fail)
+	offer_noted! = |fx, run| {
 		roots = Roots.from_env(run.env)?
 		real = fx.clock!()
 		now = match Clock.now({ talon_now: RocInstall.env_var(run.env, "TALON_NOW"), real }) {
@@ -70,9 +75,10 @@ RocInstall :: [].{
 		system = Toolchain.host(fx.platform!())?
 		config = RocInstall.read_config!(fx, roots)?
 		min_age = config.min_release_age ?? 172800
+		exclude = config.min_release_age_exclude
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
-		if RocInstall.has_dir(entries, run.id) return Ok(Present({ id: run.id }))
+		if RocInstall.has_dir(entries, run.id) return Ok({ offer: Present({ id: run.id }), note: Err(None) })
 		basis = if Toolchain.needs_base(run.id) {
 			Base.selected!(fx, { env: run.env, roots, installed: Compiler.installed(entries), config })?
 		} else {
@@ -80,10 +86,10 @@ RocInstall :: [].{
 		}
 		found = Nightlies.list!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system })?
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
-		lists = Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly })
+		lists = Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude })
 		# R-SL7, R-SO23 (slice 072e): with no compiler selected the base is a pick as an id (no download), else the base of `selected!`.
 		base = if Toolchain.needs_base(run.id) {
-			Base.listed!(fx, { roots, basis, releases: found.releases, auto: lists.auto, now, min_age, nightly: switch.nightly })?
+			Base.listed!(fx, { roots, basis, releases: found.releases, auto: lists.auto, now, min_age, nightly: switch.nightly, exclude })?
 		} else {
 			Err(None)
 		}
@@ -101,13 +107,14 @@ RocInstall :: [].{
 				return Err(Toolchain.pick_failed({ error, releases: found.releases, host: system, switch }))
 			}
 		}
-		if RocInstall.has_dir(entries, id) return Ok(Present({ id: id }))
+		note = if run.id == "@latest" or Toolchain.needs_base(run.id) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
+		if RocInstall.has_dir(entries, id) return Ok({ offer: Present({ id: id }), note })
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
 		if run.offline return Err(Toolchain.offline_missing(id))
 		item = Roots.item(roots, Item.Toolchain(id))
 		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system }
-		Ok(Download({ id, size: asset.size, ctx }))
+		Ok({ offer: Download({ id, size: asset.size, ctx }), note })
 	}
 
 	## R-SO13, R-NS3, R-C7 (slice 025b): the id of the compiler that rank 4 needs when no installed compiler is in the range of `[toolchain] roc`. It reads the list of the host and picks the newest release in the range
@@ -121,13 +128,16 @@ RocInstall :: [].{
 	## | `Nightlies.list!` | Its failure (`Network`, exit 15) |
 	## | The list is `Missing` (`--offline`, no cached page) | `Toolchain.offline_no_list` (exit 15) |
 	## | `range_pick` gives `Err(NoneKnown)` | `Toolchain.range_failed` (kind `NoTuple`, exit 10) |
-	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source } } => Try(Str, Fail)
+	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the pick (rank 4 selects by itself).
+	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source } } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
 	range_id! = |fx, run| {
 		system = Toolchain.host(fx.platform!())?
 		found = Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host: system })?
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
-		picked = Toolchain.range_pick({ releases: found.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly })
-		picked.map_err(|_| Toolchain.range_failed({ req_text: run.req_text, switch: run.switch }))
+		match Toolchain.range_pick({ releases: found.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {
+			Ok(id) => Ok({ id, note: Toolchain.kept_note({ id, releases: found.releases, now: run.now, min_age: run.min_age, exclude: run.exclude }) })
+			Err(_) => Err(Toolchain.range_failed({ req_text: run.req_text, switch: run.switch }))
+		}
 	}
 
 	## R-ST16, R-RU1 (slice 072a): the latest compiler in the channel, for `tln setup`. It downloads nothing and writes only the list cache (`Nightlies.list!`). The calls, in order: `clock!` (one call: `Clock.now` of `TALON_NOW` and the real
@@ -136,7 +146,8 @@ RocInstall :: [].{
 	## `Missing` (`--offline` and no cached page: the text of `Toolchain.offline_no_list`), and (question Q1 of slice 072a) a list with no release that the switch and `min-release-age` allow (manager answer Q1 of slice 072a), and a host that has no asset (`Toolchain.host`:
 	## the text is its message, `no compiler asset exists for <os> <arch>`; manager answer Q2 of slice 072a: setup does not fail for the first default, and `Nightlies.list!` is not called). The outer failure is a bad `TALON_NOW` (kind
 	## `Usage`) and a missing home dir (`Roots.from_env`).
-	latest! : Fx, { env : List((Str, Str)), offline : Bool, config : ConfigToml.Config } => Try(Try(Str, [Unread(Str)]), Fail)
+	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the latest compiler.
+	latest! : Fx, { env : List((Str, Str)), offline : Bool, config : ConfigToml.Config } => Try(Try({ id : Str, note : Try(Str, [None]) }, [Unread(Str)]), Fail)
 	latest! = |fx, run| {
 		roots = Roots.from_env(run.env)?
 		real = fx.clock!()
@@ -152,14 +163,22 @@ RocInstall :: [].{
 					Ok(Err(Unread(Toolchain.offline_no_list({}).message)))
 				} else {
 					switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: run.config.nightly })
-					latest = Toolchain.latest({ releases: found.releases, now, min_age: run.config.min_release_age ?? 172800, nightly: switch.nightly })
-					match latest {
-						Ok(id) => Ok(Ok(id))
+					min_age = run.config.min_release_age ?? 172800
+					exclude = run.config.min_release_age_exclude
+					match Toolchain.latest({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude }) {
+						Ok(id) => Ok(Ok({ id, note: Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) }))
 						Err(Empty) => Ok(Err(Unread("no compiler release is allowed by the nightly switch and min-release-age")))
 					}
 				}
 			}
 		}
+	}
+
+	## R-C16 (slice 084): one line `note: <text>` on stderr for a compiler that only a pattern kept. `--quiet` hides it (R-FL4).
+	print_note! : Fx, Bool, Try(Str, [None]) => {}
+	print_note! = |fx, quiet, note| match note {
+		Ok(text) if !quiet => fx.err!("note: ${text}\n")
+		_ => {}
 	}
 
 	## Steps 8 to 12 of the table, for the `Download` of `offer!`: the lock of the item (`Wait`), the checks under the lock, the download, the extract and the rename. R-SO24: it sets the default when none is set, under the lock of `config.toml` and before the rename (steps 9 to 11 of the table).
@@ -277,13 +296,15 @@ Ctx : { roots : Roots, net : Net.Settings, now : U64, published_at : U64, typed 
 flow! : Fx, Args, Str => Try(Done, Fail)
 flow! = |fx, args, typed| {
 	env = fx.env_all!()
-	match RocInstall.offer!(fx, { id: typed, env, offline: args.offline })? {
+	noted = RocInstall.offer_noted!(fx, { id: typed, env, offline: args.offline })?
+	match noted.offer {
 		Present(found) => {
 			roots = Roots.from_env(env)?
 			default = set_default!(fx, roots, found.id)?
 			Ok({ ..present(roots, found.id), default })
 		}
 		Download(offer) => {
+			RocInstall.print_note!(fx, args.quiet, noted.note)
 			RocInstall.ask_download!(fx, args, env, { id: offer.id, size: offer.size })?
 			RocInstall.install_offer!(fx, offer)
 		}

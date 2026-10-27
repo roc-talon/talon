@@ -12,3 +12,10 @@ zig-cache/
 
 # The revert copies of test fixtures hold fake cache dirs (given/home/.cache), as tests/ does.
 !research/slice-*-revert/**/.cache/
+
+# Binaries that the revert runs build (8 to 31 MB each). They can be built again.
+research/slice-081-revert/reference/l2bin
+research/slice-084-revert/reference-qc1/l2bin
+research/slice-085-revert/reference/l2
+research/slice-085-revert/merged/l2
+research/slice-085-revert/reference/bin/

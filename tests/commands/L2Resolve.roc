@@ -39,6 +39,7 @@ L2Resolve :: [].{
 					{
 						command,
 						names,
+						fixed: [],
 						frozen: given.contains("frozen"),
 						no_check: given.contains("no-check"),
 						project,

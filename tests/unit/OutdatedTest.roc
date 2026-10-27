@@ -24,6 +24,7 @@ ask = |current, ranges, specs| {
 	list: specs.map(|(ver, days)| cand(u("json", ver), days)),
 	now,
 	min_age: 2 * day,
+	exclude: [],
 	snapshot: Err(None),
 }
 
@@ -88,6 +89,29 @@ expect {
 		("the order is the version number: 2.10.0 is above 2.9.0 although it is older", view(Outdated.versions(ask("2.0.0", [], [("2.0.0", 90), ("2.9.0", 5), ("2.10.0", 40)]))), ("2.10.0", "2.10.0", Bool.False)),
 		("below 1.0 the series is 0.minor: 0.1.1 is wanted and 0.2.0 is a new series", view(Outdated.versions(ask("0.1.0", ["^0.1.0"], d30(["0.1.0", "0.1.1", "0.2.0"])))), ("0.1.1", "0.2.0", Bool.True)),
 		("a header value that is no release URL has no versions", view(Outdated.versions({ ..ask("2.1.0", [], d30(json)), current: "./local/main.roc" })), ("", "", Bool.False)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(name, got, want)| (name, got, want))
+	dbg bad
+	bad == []
+}
+
+# R-C15 R-C12 R-UP1 R-DT4 R-C9 (slice 082): the list `min-release-age-exclude` in `Outdated.versions` (`exclude` in the input). The releases are of `acme/json`. A release that a pattern matches is not hidden by the age, so `wanted` and `latest` can be
+# a young release. `outdated` chooses nothing and prints no note (R-C16). The snapshot still hides what is published after it. A pattern of another owner or another repo changes nothing.
+expect {
+	list = [("2.1.0", 30), ("2.2.0", 1), ("3.0.2", 1)]
+	pat = |exclude, input| { ..input, exclude }
+	snap = |input| { ..input, snapshot: Ok(now - 10 * day) }
+	rows = [
+		("no pattern: the young releases are no candidates", view(Outdated.versions(ask("2.1.0", ["^2.1"], list))), ("2.1.0", "2.1.0", Bool.False)),
+		("acme/json: wanted and latest are the young releases", view(Outdated.versions(pat(["acme/json"], ask("2.1.0", ["^2.1"], list)))), ("2.2.0", "3.0.2", Bool.True)),
+		("acme/*", view(Outdated.versions(pat(["acme/*"], ask("2.1.0", ["^2.1"], list)))), ("2.2.0", "3.0.2", Bool.True)),
+		("the compare is case-insensitive", view(Outdated.versions(pat(["ACME/Json"], ask("2.1.0", ["^2.1"], list)))), ("2.2.0", "3.0.2", Bool.True)),
+		("another repo of the owner: nothing changes", view(Outdated.versions(pat(["acme/other"], ask("2.1.0", ["^2.1"], list)))), ("2.1.0", "2.1.0", Bool.False)),
+		("another owner: nothing changes", view(Outdated.versions(pat(["other/*"], ask("2.1.0", ["^2.1"], list)))), ("2.1.0", "2.1.0", Bool.False)),
+		("the range still cuts: a pattern shows 2.2.0 but not 3.0.2 in wanted", view(Outdated.versions(pat(["acme/json"], ask("2.1.0", ["^2.1", "<2.3.0"], list)))), ("2.2.0", "3.0.2", Bool.True)),
+		("the snapshot still hides what is after it, also with a pattern (R-DT4)", view(Outdated.versions(pat(["acme/*"], snap(ask("2.1.0", ["^2.1"], [("2.1.0", 30), ("2.2.0", 5), ("3.0.2", 20)]))))), ("2.1.0", "3.0.2", Bool.True)),
+		("a snapshot 10 days ago and a release 1 day old: still hidden with a pattern", view(Outdated.versions(pat(["acme/*"], snap(ask("2.1.0", ["^2.1"], list))))), ("2.1.0", "2.1.0", Bool.False)),
+		("the header value is a candidate with and without a pattern (R-C9)", view(Outdated.versions(pat(["acme/*"], ask("2.1.0", ["^2.1"], [("2.1.0", 1)])))), ("2.1.0", "2.1.0", Bool.False)),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(name, got, want)| (name, got, want))
 	dbg bad

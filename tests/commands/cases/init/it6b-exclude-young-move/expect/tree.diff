@@ -1,0 +1,33 @@
+--- project/x5/.github/workflows/ci.yml
++++ project/x5/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/x5/main.roc
++++ project/x5/main.roc
+@@ -0,0 +1,6 @@
++app [main!] {
++	pf: platform "https://github.com/acme/pfv/releases/download/1.2.0/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
++}
++
++main! = || crash "write the app"

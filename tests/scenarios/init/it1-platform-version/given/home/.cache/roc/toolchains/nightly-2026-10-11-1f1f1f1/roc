@@ -1,0 +1,18 @@
+#!/bin/sh
+# The fake compiler of the case init/it1-platform-version (slice 085). It logs one line for each run to $TALON_TEST_DIR/prog.log: its id (the name of its dir), the command and the dir.
+# The newest nightly (2a2a2a2) fails the check of the platform 1.2.0 (the dir 539VF...): a type error. So the newest nightly that passes with this platform is the older one (R-IN10 (2)).
+id=$(basename "$(dirname "$0")")
+here=$(basename "$PWD")
+# The temp dir of a probe has a random name of 16 hex digits: the log shows `tmp`.
+shown=$here
+if [ "${#here}" = 16 ]; then shown=tmp; fi
+printf '%s %s %s\n' "$id" "$1" "$shown" >> "$TALON_TEST_DIR/prog.log"
+if [ "$id" = nightly-2026-10-12-2a2a2a2 ] && [ "$1" = check ] && [ "$here" = 539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA ]; then
+    printf '%s\n\nThe body.\n\n%s\n' '── ✗ type mismatch ─────────────────────────── ../otherx1x0x0/Lib.roc:3:1' '── 1 error and 0 warnings ───────────────────────────── main.roc' >&2
+    exit 1
+fi
+case "$1" in
+check) echo "No errors found in 1ms for $2" ;;
+build) printf '0 errors and 0 warnings found in 1ms while successfully building:\n\n    %s\n' "${3#--output=}" ;;
+esac
+exit 0

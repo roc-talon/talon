@@ -79,7 +79,7 @@ expect {
 		Ok({ intent, warnings }) => Ok((intent.toolchain, intent.deps, intent.overrides, intent.resolution, warnings))
 		Err(e) => Err(e.line())
 	}
-	empty_want = Ok(({ roc: Err(Unset), roc_text: Err(Unset), nightly: Err(Unset) }, [], [], { priority: Err(Unset), strategy: Err(Unset), min_release_age: Err(Unset), snapshot: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }, []))
+	empty_want = Ok(({ roc: Err(Unset), roc_text: Err(Unset), nightly: Err(Unset) }, [], [], { priority: Err(Unset), strategy: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], snapshot: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }, []))
 	dbg empty_view
 
 	member_text = lines(["# a member", "[dependencies]", "json = \"^2.3\"", "", "[overrides]", "x = \"^1\"", "", "[patch]", "y = 1"])
@@ -387,6 +387,72 @@ expect {
 		("empty", "gc-age = \"\"\n", bad_form("1")),
 	]
 	bad = rows.keep_if(|(_, text, want)| age_of(read(text)) != want).map(|(label, text, want)| (label, want, age_of(read(text))))
+	dbg bad
+	bad == []
+}
+
+# R-C11 R-C13 R-TF4 R-WS5 R-EC19 (slice 081): the key `min-release-age-exclude` of `[resolution]` in `talon.toml` is a list of patterns (`owner/repo` or `owner/*`, `Age.check`). Not set: the empty list. The list is read as written (no case fold, no sort).
+# A bad pattern, or a value that is not a list of texts, is exit 19 with the file, the line, the key `resolution.min-release-age-exclude` and the pattern. The key is known: no `unknown key` warning.
+# A member file of a workspace has no `[resolution]` table (R-WS5): the failure is the one of `strategy`, with the line of the table. Standalone and root files read the key.
+expect {
+	read = |text, role| Intent.read({ path: "/p/talon.toml", text, role })
+	exclude_shown = |r| match r {
+		Ok(done) => Ok((done.intent.resolution.min_release_age_exclude, done.warnings))
+		Err(f) => Err(f.line())
+	}
+	key = "resolution.min-release-age-exclude"
+	bad_pattern = |line, pattern| Err("tln: error[input]: /p/talon.toml:${line}: ${key}: '${pattern}' must be owner/repo or owner/*")
+	bad_form = |line| Err("tln: error[input]: /p/talon.toml:${line}: ${key}: must be a list of owner/repo or owner/* patterns")
+	rows = [
+		("two patterns, as written", read("[resolution]\nmin-release-age-exclude = [\"acme/*\", \"Roc-Lang/basic-cli\"]\n", Standalone), Ok((["acme/*", "Roc-Lang/basic-cli"], []))),
+		("the root file reads it", read("[workspace]\nmembers = [\"apps/*/main.roc\"]\n\n[resolution]\nmin-release-age-exclude = [\"acme/*\"]\n", Root), Ok((["acme/*"], []))),
+		("the order of the file is kept", read("[resolution]\nmin-release-age-exclude = [\"z/y\", \"a/b\", \"z/y\"]\n", Standalone), Ok((["z/y", "a/b", "z/y"], []))),
+		("an empty list", read("[resolution]\nmin-release-age-exclude = []\n", Standalone), Ok(([], []))),
+		("the other keys of the table are read too", read("[resolution]\nmin-release-age = \"3d\"\nmin-release-age-exclude = [\"acme/*\"]\nstrategy = \"lowest\"\n", Standalone), Ok((["acme/*"], []))),
+		("absent", read("[resolution]\nstrategy = \"highest\"\n", Standalone), Ok(([], []))),
+		("no resolution table", read("[dependencies]\njson = \"^2\"\n", Standalone), Ok(([], []))),
+		("an empty file", read("", Standalone), Ok(([], []))),
+		("a bad pattern", read("[resolution]\nmin-release-age-exclude = [\"acme/*/x\"]\n", Standalone), bad_pattern("2", "acme/*/x")),
+		("the first bad pattern of the list is named", read("# c\n[resolution]\nmin-release-age-exclude = [\"acme/ok\", \"*/*\", \"bad pattern\"]\n", Standalone), bad_pattern("3", "*/*")),
+		("a version in the pattern", read("[resolution]\nmin-release-age-exclude = [\"acme/lib@1.0.0\"]\n", Root), bad_pattern("2", "acme/lib@1.0.0")),
+		("an empty pattern", read("[resolution]\nmin-release-age-exclude = [\"\"]\n", Standalone), bad_pattern("2", "")),
+		("not a list: a text", read("[resolution]\nmin-release-age-exclude = \"acme/*\"\n", Standalone), bad_form("2")),
+		("a list of a number", read("[resolution]\nmin-release-age-exclude = [1]\n", Standalone), bad_form("2")),
+		("a list of a text and a number", read("[resolution]\nstrategy = \"highest\"\nmin-release-age-exclude = [\"acme/*\", 2]\n", Standalone), bad_form("3")),
+		("a number", read("[resolution]\nmin-release-age-exclude = 5\n", Standalone), bad_form("2")),
+		("a member file has no [resolution] table (R-WS5)", read("# member\n[dependencies]\njson = \"^2\"\n\n[resolution]\nmin-release-age-exclude = [\"acme/*\"]\n", Member), Err("tln: error[input]: /p/talon.toml:5: the table [resolution] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)")),
+	]
+	bad = rows.keep_if(|(_, got, want)| exclude_shown(got) != want).map(|(label, got, want)| (label, want, exclude_shown(got)))
+	dbg bad
+	bad == []
+}
+
+# R-C11 R-C13 R-TF4 R-EC19 (slice 081): the key `min-release-age-exclude` of `config.toml` (a top-level key). The same patterns and failures as in `talon.toml`, with the key as `min-release-age-exclude` (no table name, as `min-release-age`).
+# The message names the line of the key (the first line of the key, also when the list has many lines). The key is known: no `unknown key` warning. Not set: the empty list.
+expect {
+	read = |text| Intent.read_config({ path: "/c/config.toml", text })
+	exclude_shown = |r| match r {
+		Ok(done) => Ok((done.config.min_release_age_exclude, done.config.min_release_age, done.warnings))
+		Err(f) => Err((f.kind.code(), f.message))
+	}
+	bad_pattern = |line, pattern| Err((19, "/c/config.toml:${line}: min-release-age-exclude: '${pattern}' must be owner/repo or owner/*"))
+	bad_form = |line| Err((19, "/c/config.toml:${line}: min-release-age-exclude: must be a list of owner/repo or owner/* patterns"))
+	rows = [
+		("two patterns, as written", read("min-release-age-exclude = [\"acme/*\", \"Roc-Lang/basic-cli\"]\n"), Ok((["acme/*", "Roc-Lang/basic-cli"], Err(Unset), []))),
+		("with min-release-age", read("min-release-age = \"3d\"\nmin-release-age-exclude = [\"roc-lang/*\"]\n"), Ok((["roc-lang/*"], Ok(259200), []))),
+		("not set", read("nightly = true\n"), Ok(([], Err(Unset), []))),
+		("an empty list", read("min-release-age-exclude = []\n"), Ok(([], Err(Unset), []))),
+		("an empty file", read(""), Ok(([], Err(Unset), []))),
+		("a list on many lines", read("nightly = true\nmin-release-age-exclude = [\n\t\"a/x\",\n\t\"b/*\",\n]\n"), Ok((["a/x", "b/*"], Err(Unset), []))),
+		("a bad pattern", read("# the list\nmin-release-age-exclude = [\"acme/*/x\"]\n"), bad_pattern("2", "acme/*/x")),
+		("a bad pattern: all", read("min-release-age-exclude = [\"*/*\"]\n"), bad_pattern("1", "*/*")),
+		("a bad pattern after a good one, on the line of the key", read("# c\nmin-release-age-exclude = [\n\t\"a/x\",\n\t\"b/y/z\",\n]\nnightly = true\n"), bad_pattern("2", "b/y/z")),
+		("a second key after a good list: the line of the other key", read("min-release-age-exclude = [\"a/x\", \"b/y\"]\nmin-release-age = \"48h\"\n"), Err((19, "/c/config.toml:2: min-release-age: must be a number of days, for example \"2d\""))),
+		("not a list: a text", read("min-release-age-exclude = \"acme/*\"\n"), bad_form("1")),
+		("a list of a number", read("# c\nmin-release-age-exclude = [1]\n"), bad_form("2")),
+		("a table", read("[min-release-age-exclude]\nx = 1\n"), bad_form("1")),
+	]
+	bad = rows.keep_if(|(_, got, want)| exclude_shown(got) != want).map(|(label, got, want)| (label, want, exclude_shown(got)))
 	dbg bad
 	bad == []
 }

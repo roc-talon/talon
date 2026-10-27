@@ -118,16 +118,18 @@ ResolveLoad :: [].{
 	}
 
 	# The first steps of `install!` and `verify!`: the files, the variables, and the pin of the compiler.
-	prepared! : Fx, ResolveBase.Request, [Lock, Verify] => Try({ loaded : ResolveBase.Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision }, Fail)
+	## `range_note` is the note of a new rank 4 pick (R-C16, `ResolveSelect.select_noted!`).
+	prepared! : Fx, ResolveBase.Request, [Lock, Verify] => Try({ loaded : ResolveBase.Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision, range_note : Try(Str, [None]) }, Fail)
 	prepared! = |fx, request, role| {
-		loaded = ResolveSelect.select!(fx, request, ResolveLoad.load!(fx, request)?)?
+		selected = ResolveSelect.select_noted!(fx, request, ResolveLoad.load!(fx, request)?)?
+		loaded = selected.loaded
 		built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
 		# R-WS6: only `install` and `add` stop for a key that no header has. `update` and `verify` ignore it (R-I5).
 		if role == Lock and request.command == Install {
 			Vars.check_keys(built.wants)?
 		}
 		decision = ResolveLoad.decide(request, loaded, role)?
-		Ok({ loaded, built, decision })
+		Ok({ loaded, built, decision, range_note: selected.note })
 	}
 
 	## `Pin.decide` for the files of the run (R-SO19 to R-SO21). `prepared!` calls it, and `InstallFlow.install_with!` calls it again with `with_pick` when the run picked a compiler.
@@ -163,7 +165,7 @@ read_config! = |fx, path, result| match result {
 		}
 		Ok(read.config)
 	}
-	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } })
+	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } })
 	Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 }
 

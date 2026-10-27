@@ -1,0 +1,2 @@
+[resolution]
+min-release-age-exclude = ["acme/*/x"]

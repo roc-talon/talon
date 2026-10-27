@@ -116,6 +116,7 @@ PickIndex :: [].{
 			slots: var_slots.concat(want_slots).concat(fresh_slots),
 			strategy: settings.strategy,
 			min_age: settings.min_age,
+			exclude: settings.exclude,
 			snapshot,
 			unmanaged,
 			second: Bool.False,

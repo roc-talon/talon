@@ -1,0 +1,15 @@
+== probe parser2 --range --file p3/main.roc
+acme/parser 1.2.0 passes on nightly-2026-10-01-1b1b1b1 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-01-1b1b1b1 (real)
+  upper end: nightly-2026-10-07-7b7b7b7 (unknown)
+exit 12
+== probe parser2 --range --file p7/main.roc
+acme/parser 1.2.0 passes on nightly-2026-10-01-1b1b1b1 .. nightly-2026-10-07-7b7b7b7
+  lower end: nightly-2026-10-01-1b1b1b1 (real)
+  upper end: nightly-2026-10-07-7b7b7b7 (unknown)
+exit 12
+== probe parser2 --range --file p6/main.roc
+acme/parser 1.2.0 passes on nightly-2026-10-01-1b1b1b1 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-01-1b1b1b1 (real)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 0

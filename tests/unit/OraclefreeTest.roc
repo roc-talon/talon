@@ -38,7 +38,7 @@ fact = |url, deps| { url, release: { kind: Package, pf: Err(None), deps } }
 
 slot = |id, current, hold, candidates| { id, is_platform: Bool.False, ranges: [], current: Ok(current), hold, named: Err(None), candidates, files: [] }
 
-input = |slots, facts| { slots, strategy: Highest, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }
+input = |slots, facts| { slots, strategy: Highest, now, min_age: 2 * day, exclude: [], snapshot: Err(None), facts, unmanaged: [], paths: [], second: Bool.False }
 
 row = |url, id, outcome| { hash: hash(url), nightly: id, target: "any", outcome, modules: [], closure: "" }
 

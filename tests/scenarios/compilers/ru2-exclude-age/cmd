@@ -1,0 +1,37 @@
+# R-C15 R-C16 R-C14 R-C12 R-RU1 R-NS3 R-C7 R-DL4 R-FL4 (slice 084): `tln roc update` with the list `min-release-age-exclude` in `config.toml`, end to end with the real Fx, the real curl and tar, and the fake release server
+# (tests/tools/mk-nightly.sh with ARCHIVE=real made given/http: `ARCHIVE=real mk-nightly.sh given/http nightly-2026-10-21-5349569@2026-10-21T00:00:00Z nightly-2026-10-14-38a3029 nightly-2026-10-09-258ab27`).
+# The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW): the nightly of 2026-10-21 is 36 hours old (1d), so min-release-age (2 days) hides it. The newest nightly that the age allows is nightly-2026-10-14-38a3029.
+# The runner has CI=true, so no run has a person: a download that the command names starts with no prompt (R-DL4). Each run has its own store and config dir.
+export TALON_NOW=2026-10-22T12:00:00Z
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+store() { export ROC_CACHE_DIR=$PWD/$1/roc XDG_CACHE_HOME=$PWD/$1 XDG_CONFIG_HOME=$PWD/cfg-$1; T=$XDG_CACHE_HOME/roc/toolchains; C=$XDG_CONFIG_HOME/talon/config.toml; mkdir -p $XDG_CONFIG_HOME/talon; }
+
+echo "== 1: no list. The nightly of 2026-10-21 is 1d old and is hidden. The older nightly is installed. No note."
+store s1
+st tln roc update
+ls $T
+
+echo "== 2: config.toml has roc-lang/nightlies. The age does not hide the young nightly: it is installed, with the note on stderr before the download line (R-C16)."
+store s2
+printf 'min-release-age-exclude = ["roc-lang/nightlies"]\n' > $C
+st tln roc update
+ls $T
+cat $C
+
+echo "== 3: roc-lang/roc is the name of a release, not of a nightly. The age still hides the young nightly: the older one is installed, no note."
+store s3
+printf 'min-release-age-exclude = ["roc-lang/roc"]\n' > $C
+st tln roc update
+ls $T
+
+echo "== 4: roc-lang/* matches both kinds (decision Q1). The young nightly is installed with the note. --json: stdout is only the envelope, the note is on stderr."
+store s4
+printf 'min-release-age-exclude = ["Roc-Lang/*"]\n' > $C
+st tln roc update --json
+ls $T
+
+echo "== 5: --quiet hides the note (R-FL4). The line downloading stays (an answer line). config.toml has roc-lang/nightlies."
+store s5
+printf 'min-release-age-exclude = ["roc-lang/nightlies"]\n' > $C
+st tln roc update --quiet
+ls $T

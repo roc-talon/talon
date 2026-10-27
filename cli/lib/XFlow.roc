@@ -71,6 +71,7 @@ flow! = |fx, args, plan| {
 		target: machine.target,
 		entries: machine.tools.map(|t| { key: t.key, name: t.name, source: t.source }),
 		min_age: machine.min_age,
+		exclude: machine.exclude,
 		probe_timeout: machine.probe_timeout,
 		name,
 		key,
@@ -92,7 +93,7 @@ flow! = |fx, args, plan| {
 			_ => return Err(fail)
 		}
 	}
-	picked = ToolInstall.pick({ name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age })?
+	picked = ToolInstall.pick({ name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
 	newest = newest_of(picked)?
 	check = Online({ first: newest.ident.version, listed: list.map(|c| c.ident.version) })
 	match XCache.choose({ name, target: facts.target, selector: plan.ref.selector, check, installed, entries: found }) {
@@ -182,7 +183,7 @@ newest_of = |picked| match picked.order.first() {
 build! : Fx, Args, XCmd.Plan, { facts : ToolBuild.Facts, picked : ToolInstall.Picked, newest : Index.Candidate, stale : List(Str) } => Try(Str, Fail)
 build! = |fx, args, plan, run| {
 	facts = run.facts
-	ToolFlow.notes_for!(fx, facts, run.picked, run.newest)
+	ToolFlow.notes_for!(fx, args, facts, run.picked, run.newest)
 	bundle = ToolFlow.first_app_for!(fx, args, facts, run.picked.order)?
 	ToolFlow.platform_for!(fx, args, facts, bundle)?
 	chosen = ToolFlow.choose_for!(fx, args, { roc: plan.roc }, facts, bundle)?

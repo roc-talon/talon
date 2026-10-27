@@ -1,0 +1,5 @@
+[workspace]
+members = ["m1/main.roc"]
+
+[tools]
+foo = { ref = "acme/foo@^1" }

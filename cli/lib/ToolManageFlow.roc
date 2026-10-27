@@ -106,6 +106,7 @@ ToolManageFlow :: [].{
 			target,
 			entries: tools.map(entry_of),
 			min_age: config.min_release_age ?? 172800,
+			exclude: config.min_release_age_exclude,
 			probe_timeout: ToolBuild.probe_timeout(config),
 			name: "",
 			key: "",

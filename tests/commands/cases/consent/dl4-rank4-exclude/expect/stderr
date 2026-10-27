@@ -1,0 +1,11 @@
+downloading nightly-2026-10-17-601b54c (73.1 MB)
+downloading nightly-2026-10-18-5349569 (73.0 MB)
+downloading nightly-2026-10-18-5349569 (73.0 MB)
+note: nightly-2026-10-18-5349569 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies
+downloading nightly-2026-10-18-5349569 (73.0 MB)
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  + roc: nightly-2026-10-18-5349569
+resolved at 2026-10-19T15:00:00Z, 6 probes

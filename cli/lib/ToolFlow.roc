@@ -56,7 +56,7 @@ import XTake
 ToolFlow :: [].{
 
 	## What steps 2 and 3 found (slice 049, `tln x`): the machine, `tools.json` with all fields of each tool, `config.toml`. `ToolBuild.Facts` is this and the name of the app.
-	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, probe_timeout : U64, default_roc : Str }
+	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str }
 
 	## Steps 1 to 13.
 	run! : Fx, Args => I32
@@ -93,8 +93,8 @@ ToolFlow :: [].{
 	release_list_for! : Fx, Args, ToolBuild.Facts => Try(List(Index.Candidate), Fail)
 	release_list_for! = |fx, args, facts| release_list!(fx, args, facts)
 
-	notes_for! : Fx, ToolBuild.Facts, ToolInstall.Picked, Index.Candidate => {}
-	notes_for! = |fx, facts, picked, newest| notes!(fx, facts, picked, newest)
+	notes_for! : Fx, Args, ToolBuild.Facts, ToolInstall.Picked, Index.Candidate => {}
+	notes_for! = |fx, args, facts, picked, newest| notes!(fx, args, facts, picked, newest)
 
 	first_app_for! : Fx, Args, ToolBuild.Facts, List(Index.Candidate) => Try(ToolBuild.Bundle, Fail)
 	first_app_for! = |fx, args, facts, order| first_app!(fx, args, facts, order)
@@ -127,7 +127,7 @@ flow! = |fx, args, plan| {
 		Ok(got) => got
 		Err(fail) => return no_list!(fx, args, { plan, facts, fail })
 	}
-	picked = ToolInstall.pick({ name: facts.name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age })?
+	picked = ToolInstall.pick({ name: facts.name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
 	newest = match picked.order.first() {
 		Ok(first) => first
 		Err(_) => return Err(Fail.new(Internal, "no release was picked"))
@@ -144,7 +144,7 @@ flow! = |fx, args, plan| {
 		Ok(done) => return Ok(done)
 		Err(NoMatch) => {}
 	}
-	notes!(fx, facts, picked, newest)
+	notes!(fx, args, facts, picked, newest)
 	ToolBuild.entry_verdict!(fx, facts, Fresh)?
 	bundle = first_app!(fx, args, facts, picked.order)?
 	check_platform!(fx, args, facts, bundle)?
@@ -169,7 +169,7 @@ gather! = |fx, plan| {
 		Elsewhere(other) => return Err(ToolInstall.elsewhere_failure({ key: other.key, name }))
 		_ => {}
 	}
-	Ok({ env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) })
+	Ok({ env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) })
 }
 
 # Slice 049 (R-B7): a release list that fails with the kind `Network` (no network, and no `--offline`) is the offline case: a matching `x` entry is offered. No match, or another kind: the failure of the list.
@@ -198,7 +198,7 @@ machine! = |fx| {
 	tools_file = Roots.item(roots, Item.ToolsJson)
 	tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
 	config = RocInstall.read_config!(fx, roots)?
-	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "" })
+	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "" })
 }
 
 # Step 4 (R-SC3, R-AD7): an installed tool by its name or short name, else the name as typed. A failure prints its block first.
@@ -255,15 +255,19 @@ default_branch! = |fx, args, facts| if args.offline {
 	}
 }
 
-# Step 7 (R-T9): the notes on stderr for a build.
-notes! : Fx, ToolBuild.Facts, ToolInstall.Picked, Index.Candidate => {}
-notes! = |fx, facts, picked, newest| {
+# Step 7 (R-T9, R-C16): the notes on stderr for a build. The note of a release that only a pattern kept is hidden by `--quiet` (R-FL4).
+notes! : Fx, Args, ToolBuild.Facts, ToolInstall.Picked, Index.Candidate => {}
+notes! = |fx, args, facts, picked, newest| {
 	match picked.note {
 		Ok(note) => fx.err!("note: ${note}\n")
 		Err(None) => {}
 	}
 	if picked.young {
 		fx.err!("${ToolInstall.age_note({ name: facts.name, version: newest.ident.version, published_at: newest.published_at })}\n")
+	}
+	match picked.kept {
+		Ok(text) if !args.quiet => fx.err!("note: ${text}\n")
+		_ => {}
 	}
 }
 
@@ -303,7 +307,7 @@ read_bundle! = |fx, args, facts, rel| {
 # The text of the `main.roc` of a package that is fetched when its dir is missing (R-FE2, R-FE7).
 package_text! : Fx, Args, ToolBuild.Facts, { url : Str, hash : Str } => Try(Str, Fail)
 package_text! = |fx, args, facts, pkg| {
-	match Fetch.packages!(fx, { roots: facts.roots, urls: [pkg.url], offline: args.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Outside, downloads: downloads_of(args, facts) }) }), downloader: facts.net.downloader }) {
+	match Fetch.packages!(fx, { roots: facts.roots, urls: [pkg.url], offline: args.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Outside, exclude: [], downloads: downloads_of(args, facts) }) }), downloader: facts.net.downloader }) {
 		[Ok(_)] => {}
 		[Err(fail)] => return Err(fail)
 		_ => return Err(Fail.new(Internal, "the fetch of ${pkg.url} gave no answer"))

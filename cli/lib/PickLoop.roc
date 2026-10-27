@@ -41,6 +41,7 @@ PickLoop :: [].{
 		slots : List(Pick.Slot),
 		strategy : [Highest, Lowest],
 		min_age : U64,
+		exclude : List(Str),
 		snapshot : Try(U64, [None]),
 		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
 		second : Bool,
@@ -87,7 +88,7 @@ PickLoop :: [].{
 			Ok(read) => run!(fx, request, input, setup, { facts: read.facts, paths: read.paths, probed: { ..probed, seen: probed.seen.concat(read.seen) } })
 		}
 		gated = BuildTarget.gate({ facts: state.facts, seen: probed.seen, wanted: wants })
-		step_input = { slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, snapshot: input.snapshot, facts: gated, unmanaged: input.unmanaged, paths: state.paths, second: input.second }
+		step_input = { slots: input.slots, strategy: input.strategy, now: request.now, min_age: input.min_age, exclude: input.exclude, snapshot: input.snapshot, facts: gated, unmanaged: input.unmanaged, paths: state.paths, second: input.second }
 		verdict = match setup.movable {
 			Ok(values) => Oracle.step_moved(step_input, compat, values)
 			Err(None) => Oracle.step_free(step_input, compat, setup.free.map_ok(|ids| ids.concat(probed.optional.open).concat(probed.optional.got)))

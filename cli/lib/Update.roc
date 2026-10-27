@@ -95,11 +95,12 @@ Update :: [].{
 
 	## Steps 8 and 9 (shared with `Upgrade.run!`): the compiler and `Resolve.install!` with `which.command` and the names.
 	## Slice 072e (R-IN2, R-IN4): `fresh` is true for `init`: the header is new, so the pin of the held compiler is a change of the run (`InstallFlow.install_fresh!`).
-	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str), fresh : Bool } => Try(InstallFlow.Done, Fail)
+	## `fixed` are the aliases that are never movable (R-SP23, R-IN10).
+	resolve! : Fx, Args, Opts, Start, { command : [Update, Upgrade], names : List(Str), fixed : List(Str), fresh : Bool } => Try(InstallFlow.Done, Fail)
 	resolve! = |fx, args, opts, start, which| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
-		request = request_of(args, opts, start, { command: which.command, names: which.names, compiler, toolchain })
+		request = request_of(args, opts, start, { command: which.command, names: which.names, fixed: which.fixed, compiler, toolchain })
 		if which.fresh Resolve.install_fresh!(fx, request, Ok(args)) else Resolve.install_with!(fx, request, Ok(args))
 	}
 
@@ -128,7 +129,7 @@ flow! = |fx, args, opts, pick| {
 	start = Update.begin!(fx, args)?
 	mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
 	picked = if pick {
-		items = picker_items!(fx, mode, request_of(args, opts, start, { command: Update, names: opts.names, compiler: Err(NoCompiler), toolchain: Err(Unset) }))?
+		items = picker_items!(fx, mode, request_of(args, opts, start, { command: Update, names: opts.names, fixed: [], compiler: Err(NoCompiler), toolchain: Err(Unset) }))?
 		if items.is_empty() Ok([]) else ask_names!(fx, items)
 	} else {
 		Ok(opts.names)
@@ -137,18 +138,19 @@ flow! = |fx, args, opts, pick| {
 	if pick and names.is_empty() {
 		Ok(NothingPicked)
 	} else {
-		Ok(Moved(Update.resolve!(fx, args, opts, start, { command: Update, names, fresh: Bool.False })?))
+		Ok(Moved(Update.resolve!(fx, args, opts, start, { command: Update, names, fixed: [], fresh: Bool.False })?))
 	}
 }
 
 # Step 9: the `Resolve.Request` (R-CM4, R-SP2, R-SP3, R-SP5, R-SP6).
-request_of : Args, Opts, Start, { command : [Update, Upgrade], names : List(Str), compiler : Try({ id : Str, path : Str }, [NoCompiler]), toolchain : Try(Str, [Unset]) } -> Resolve.Request
+request_of : Args, Opts, Start, { command : [Update, Upgrade], names : List(Str), fixed : List(Str), compiler : Try({ id : Str, path : Str }, [NoCompiler]), toolchain : Try(Str, [Unset]) } -> Resolve.Request
 request_of = |args, opts, start, selected| {
 	command: match selected.command {
 		Update => Update
 		Upgrade => Upgrade
 	},
 	names: selected.names,
+	fixed: selected.fixed,
 	frozen: Bool.False,
 	no_check: opts.no_check,
 	project: start.project,

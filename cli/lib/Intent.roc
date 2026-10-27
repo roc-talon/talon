@@ -1,6 +1,7 @@
 import BuildTarget
 import Clock
 import ConfigToml
+import Age
 import Fail
 import Ident
 import IntentEdit
@@ -51,6 +52,7 @@ Intent := {
 		priority : Try(List(Str), [Unset]),
 		strategy : Try([Highest, Lowest], [Unset]),
 		min_release_age : Try(U64, [Unset]),
+		min_release_age_exclude : List(Str),
 		snapshot : Try([Log(U64), Time(U64)], [Unset]),
 		probe : Probe.Keys,
 	},
@@ -344,7 +346,7 @@ read_snapshot = |v| {
 	}
 }
 
-read_resolution : Toml -> { value : { priority : Try(List(Str), [Unset]), strategy : Try([Highest, Lowest], [Unset]), min_release_age : Try(U64, [Unset]), snapshot : Try([Log(U64), Time(U64)], [Unset]), probe : Probe.Keys }, issues : List(Note), warnings : List(Note) }
+read_resolution : Toml -> { value : { priority : Try(List(Str), [Unset]), strategy : Try([Highest, Lowest], [Unset]), min_release_age : Try(U64, [Unset]), min_release_age_exclude : List(Str), snapshot : Try([Log(U64), Time(U64)], [Unset]), probe : Probe.Keys }, issues : List(Note), warnings : List(Note) }
 read_resolution = |doc| {
 	priority = field(
 		doc,
@@ -379,12 +381,13 @@ read_resolution = |doc| {
 			_ => Err("must be a number of days, for example \"2d\"")
 		},
 	)
+	exclude = field(doc, "resolution", "min-release-age-exclude", Age.read_list)
 	snapshot = field(doc, "resolution", "snapshot", read_snapshot)
 	probe = TomlKeys.read_probe(doc, ["resolution", "probe"], "resolution.probe")
 	{
-		value: { priority: priority.value, strategy: strategy.value, min_release_age: age.value, snapshot: snapshot.value, probe: probe.value },
-		issues: priority.issues.concat(strategy.issues).concat(age.issues).concat(snapshot.issues).concat(probe.issues),
-		warnings: unknown_keys(doc, "resolution", ["priority", "strategy", "min-release-age", "snapshot", "probe"]).concat(probe.warnings),
+		value: { priority: priority.value, strategy: strategy.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], snapshot: snapshot.value, probe: probe.value },
+		issues: priority.issues.concat(strategy.issues).concat(age.issues).concat(exclude.issues).concat(snapshot.issues).concat(probe.issues),
+		warnings: unknown_keys(doc, "resolution", ["priority", "strategy", "min-release-age", "min-release-age-exclude", "snapshot", "probe"]).concat(probe.warnings),
 	}
 }
 

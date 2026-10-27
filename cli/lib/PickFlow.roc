@@ -68,6 +68,7 @@ PickFlow :: [].{
 		everyone = Vars.scope({
 			command,
 			names: asked.names,
+			fixed: request.fixed,
 			selectors: asked.picks.keep_oks(|p| PickAsk.range_of_selector(p.selector).map_ok(|range| { alias: p.alias, range })),
 			vars: built.vars,
 		})?
@@ -121,6 +122,7 @@ PickFlow :: [].{
 				facts: looped.facts,
 				now: request.now,
 				min_age: ready.settings.min_age,
+				exclude: ready.settings.exclude,
 				snapshot: ready.snapshot,
 				compiler: looped.nightly,
 				checks: looped.probed.checks,

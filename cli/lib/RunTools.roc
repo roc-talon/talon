@@ -109,6 +109,7 @@ build! = |fx, args, run, know, what| {
 		net: run.net,
 		now: run.now,
 		min_age: config.min_release_age ?? 172800,
+		exclude: config.min_release_age_exclude,
 		probe_timeout: ToolBuild.probe_timeout(config),
 		snapshot: Err(None),
 		dry_run: Bool.False,

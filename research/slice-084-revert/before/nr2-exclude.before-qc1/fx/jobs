@@ -1,0 +1,4 @@
+# Slice 072c (R-SO14): the download of a compiler (.tar.gz: the file is {out}), its extract, its chmod. The compat check of a new compiler (roc check) has no rule: it exits with 99, and its code is not read (R-GC10).
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

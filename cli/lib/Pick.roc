@@ -1,3 +1,4 @@
+import Age
 import Closure
 import Fail
 import Ident
@@ -38,7 +39,8 @@ Pick :: [].{
 	}
 
 	## One chosen value. `change` is `Keep` when the URL is `current`, else `Move(<old version>)` (`<old version>` is `""` for a want). `note` is set when
-	## the user named a version that `min-release-age` would have hidden (R-C7): `<id> <version> is <n>d old (min-release-age <m>d)`, whole days (a proposal, TW24).
+	## the user named a version that `min-release-age` would have hidden (R-C7): `<id> <version> is <n>d old (min-release-age <m>d)`, whole days (a proposal, TW24),
+	## or when a young release is newly chosen because a pattern of `min-release-age-exclude` keeps it visible (R-C16, `Age.note`).
 	Chosen : { id : Str, url : Str, version : Str, change : [Keep, Move(Str)], note : Try(Str, [None]) }
 
 	## The rules, applied in this order to the domain of a slot:
@@ -47,7 +49,7 @@ Pick :: [].{
 	## | --- | --- | --- |
 	## | 1 | A held slot: the domain is `current`. A free slot: the candidates, and `current` (it is added when the list has no candidate with its URL: R-C9). | R-SP1, R-C9 |
 	## | 2 | Each range of the slot admits the version (`Ranges.admits`) | R-C1 |
-	## | 3 | Hidden: `published_at + min_age > now`, or `published_at > snapshot` when there is a snapshot time. Not hidden: `current` (R-C9), and the candidate with the version `named` (R-C7). | R-C7, R-C9 |
+	## | 3 | Hidden: `Age.hides` (`published_at + min_age > now`, and no pattern of `exclude` matches the name: R-C15), or `published_at > snapshot` when there is a snapshot time. Not hidden: `current` (R-C9), and the candidate with the version `named` (R-C7). | R-C7, R-C9, R-C15 |
 	## | 4 | The kind: the release of the facts must have the kind of the slot (R-C4). A candidate with no fact yet counts as right. | R-C4 |
 	## | 5 | The order: `Index.order(strategy)` | R-DI9, R-VA6 |
 	##
@@ -101,6 +103,7 @@ Pick :: [].{
 		strategy : [Highest, Lowest],
 		now : U64,
 		min_age : U64,
+		exclude : List(Str),
 		snapshot : Try(U64, [None]),
 		facts : List({ url : Str, release : Release }),
 		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
@@ -120,7 +123,7 @@ Pick :: [].{
 			Err(NoFailure) => match search(search_order(facts, domains), [], ctx) {
 				Err(NoFit) => Fail(Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(facts.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)"))
 				Ok(found) => if found.need.is_empty() {
-					Done(facts.slots.map2(found.picked, |slot, p| Pick.chosen_for({ slot, url: p.c.url, version: p.c.ident.version, published_at: p.c.published_at, now: facts.now, min_age: facts.min_age })))
+					Done(facts.slots.map2(found.picked, |slot, p| Pick.chosen_for({ slot, url: p.c.url, version: p.c.ident.version, published_at: p.c.published_at, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })))
 				} else {
 					Need(found.need)
 				}
@@ -150,6 +153,7 @@ Pick :: [].{
 		strategy : [Highest, Lowest],
 		now : U64,
 		min_age : U64,
+		exclude : List(Str),
 		snapshot : Try(U64, [None]),
 		facts : List({ url : Str, release : Release }),
 		unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
@@ -186,31 +190,36 @@ Pick :: [].{
 	}
 
 	## Slice 036 (N1): one `Chosen` for the slot and the release `url` (version `version`, published at `published_at`). `change` and `note` are as in the doc of `Chosen`.
-	chosen_for : { slot : Slot, url : Str, version : Str, published_at : U64, now : U64, min_age : U64 } -> Chosen
+	## The note: the R-C7 note when the slot names this version and it is young. Else, for a change (not `Keep`), the R-C16 note of `Age.note`.
+	chosen_for : { slot : Slot, url : Str, version : Str, published_at : U64, now : U64, min_age : U64, exclude : List(Str) } -> Chosen
 	chosen_for = |input| {
 		old = match input.slot.current {
 			Ok(url) => Ident.of_url(url).map_ok(|ident| ident.version) ?? ""
 			Err(None) => ""
 		}
 		days = |seconds| (seconds // 86400).to_str()
-		hidden_by_age = input.slot.named == Ok(input.version) and input.slot.current != Ok(input.url) and too_young(input.now, input.min_age, input.published_at)
-		{
-			id: input.slot.id,
-			url: input.url,
-			version: input.version,
-			change: if input.slot.current == Ok(input.url) Keep else Move(old),
-			note: if hidden_by_age Ok("${input.slot.id} ${input.version} is ${days(if input.now > input.published_at input.now - input.published_at else 0)}d old (min-release-age ${days(input.min_age)}d)") else Err(None),
-		}
+		change = if input.slot.current == Ok(input.url) Keep else Move(old)
+		named = input.slot.named == Ok(input.version) and change != Keep
+		note =
+			if named {
+				if too_young(input.now, input.min_age, input.published_at) Ok("${input.slot.id} ${input.version} is ${days(input.now.minus_saturated(input.published_at))}d old (min-release-age ${days(input.min_age)}d)") else Err(None)
+			} else if change == Keep {
+				Err(None)
+			} else {
+				name = Ident.of_url(input.url).map_ok(|ident| ident.name) ?? Err(NoName)
+				Age.note({ id: input.slot.id, version: input.version, now: input.now, min_age: input.min_age, published_at: input.published_at, exclude: input.exclude, name })
+			}
+		{ id: input.slot.id, url: input.url, version: input.version, change, note }
 	}
 
 	## Slice 038 (R-UP2): the newest release of the domain of one slot with no range (rules 1, 3, 4 and 5 of `step`, order `Highest`). `Err(None)` when the domain is empty.
-	newest : Slot, { now : U64, min_age : U64, snapshot : Try(U64, [None]), facts : List({ url : Str, release : Release }) } -> Try(Index.Candidate, [None])
+	newest : Slot, { now : U64, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), facts : List({ url : Str, release : Release }) } -> Try(Index.Candidate, [None])
 	newest = |slot, ctx| Pick.newest_in({ ..slot, ranges: [] }, ctx)
 
 	## Slice 040 (R-UP10, R-C1): `newest` with the ranges of the slot kept (rule 2 of `step`). `Err(None)` when the domain is empty.
-	newest_in : Slot, { now : U64, min_age : U64, snapshot : Try(U64, [None]), facts : List({ url : Str, release : Release }) } -> Try(Index.Candidate, [None])
+	newest_in : Slot, { now : U64, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), facts : List({ url : Str, release : Release }) } -> Try(Index.Candidate, [None])
 	newest_in = |slot, ctx| {
-		one = { slots: [slot], strategy: Highest, now: ctx.now, min_age: ctx.min_age, snapshot: ctx.snapshot, facts: ctx.facts, unmanaged: [], paths: [], second: Bool.False }
+		one = { slots: [slot], strategy: Highest, now: ctx.now, min_age: ctx.min_age, exclude: ctx.exclude, snapshot: ctx.snapshot, facts: ctx.facts, unmanaged: [], paths: [], second: Bool.False }
 		domain_of(slot, one, Dict.from_list(ctx.facts.map(|f| (f.url, f.release)))).ordered.first().map_err(|_| None)
 	}
 
@@ -239,6 +248,7 @@ Step : {
 	strategy : [Highest, Lowest],
 	now : U64,
 	min_age : U64,
+	exclude : List(Str),
 	snapshot : Try(U64, [None]),
 	facts : List({ url : Str, release : Release }),
 	unmanaged : List({ file : Str, entries : List(Closure.Entry) }),
@@ -307,11 +317,11 @@ search_order = |facts, domains| {
 	front.concat(back).map(|r| { slot: r.slot, files: r.files, is_platform: r.is_platform, cands: r.cands })
 }
 
-# R-C7, R-C9: hidden by the age or by the snapshot. The header value and the version that the user named are never hidden.
+# R-C7, R-C9, R-C15: hidden by the age (a pattern of `exclude` lifts it) or by the snapshot. The header value and the version that the user named are never hidden.
 is_hidden : Pick.Slot, Step, Cand -> Bool
 is_hidden = |slot, facts, c| {
 	exempt = slot.current == Ok(c.url) or slot.named == Ok(c.ident.version)
-	!exempt and (too_young(facts.now, facts.min_age, c.published_at) or after_snapshot(facts, c))
+	!exempt and (Age.hides({ now: facts.now, min_age: facts.min_age, published_at: c.published_at, exclude: facts.exclude, name: c.ident.name }) or after_snapshot(facts, c))
 }
 
 too_young : U64, U64, U64 -> Bool

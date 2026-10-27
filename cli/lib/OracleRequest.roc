@@ -1,3 +1,4 @@
+import Age
 import Ident
 import Pick
 import Release
@@ -34,14 +35,16 @@ OracleRequest :: [].{
 	}
 
 	# R-SP1, R-C9: a closed slot has the one value `current`, with no candidate and no range.
-	solver_slot : Pick.Slot, U64, Bool -> Solver.Slot
-	solver_slot = |slot, i, second| {
-		open = slot.hold == Free or (slot.hold == Movable and second)
+	# R-C15, R-DT4: the solver sees the time of `Age.seen`, so a pattern of `exclude` lifts its age test (rule 4) and the snapshot still hides a later release.
+	solver_slot : Pick.Slot, U64, { second : Bool, snapshot : Try(U64, [None]), exclude : List(Str) } -> Solver.Slot
+	solver_slot = |slot, i, rules| {
+		open = slot.hold == Free or (slot.hold == Movable and rules.second)
+		seen = |c| Age.seen({ published_at: c.published_at, snapshot: rules.snapshot, exclude: rules.exclude, name: c.ident.name })
 		{
 			name: slot_name(i),
 			group: slot_group(slot),
 			kind: if slot.is_platform Platform else Package,
-			candidates: if open slot.candidates.map(|c| { id: c.url, version: c.ident.version, published_at: c.published_at, yanked: Bool.False }) else [],
+			candidates: if open slot.candidates.map(|c| { id: c.url, version: c.ident.version, published_at: seen(c), yanked: Bool.False }) else [],
 			ranges: if open slot.ranges else [],
 			current: match slot.current {
 				Ok(url) => Ident.of_url(url).map_ok(|ident| { id: url, version: ident.version }).map_err(|_| None)
@@ -85,7 +88,7 @@ OracleRequest :: [].{
 	# R-AL3, R-EP7: the request. The compiler slot is the last one, so the decision order of the other slots does not change.
 	request_of : OracleBase.Input, OracleBase.Compat, Bool, Try(List(Str), [Held]) -> Solver.Request
 	request_of = |input, compat, assume, askable| {
-		slots = input.slots.map_with_index(|slot, i| solver_slot(slot, i, input.second))
+		slots = input.slots.map_with_index(|slot, i| solver_slot(slot, i, { second: input.second, snapshot: input.snapshot, exclude: input.exclude }))
 		base = {
 			slots,
 			rules: { now: input.now, min_age: input.min_age, snapshot: input.snapshot, strategy: input.strategy },

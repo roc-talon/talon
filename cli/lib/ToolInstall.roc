@@ -1,3 +1,4 @@
+import Age
 import Args
 import Clock
 import Consent
@@ -35,7 +36,8 @@ ToolInstall :: [].{
 	Plan : { ref : Ref, as_name : Try(Str, [Unset]), roc : [Auto, Pinned, Installed] }
 
 	## What `pick` gives: the candidates to try, newest first (the flow tries each one until its bundle is an app, R-T10), `young` (the first one is younger than `min-release-age`: only a named version, R-T9), and the note of `Index.new_entry` (other URL forms).
-	Picked : { order : List(Index.Candidate), young : Bool, note : Try(Str, [None]) }
+	## `kept` is the note of R-C16 (`Age.note`) when the first candidate is young and only a pattern of `exclude` keeps it visible (step 4 only).
+	Picked : { order : List(Index.Candidate), young : Bool, note : Try(Str, [None]), kept : Try(Str, [None]) }
 
 	## The compiler of the build (R-T11, R-T12). `Use(id)`: the pin is installed. `Missing(id)`: the pin is not installed (R-T6 decides). `NoPin`: the header has no `roc:` entry (question Q3).
 	Compiler : [Use(Str), Missing(Str), NoPin]
@@ -131,9 +133,9 @@ ToolInstall :: [].{
 	## | 1 | The selector: `Exact(v)` keeps the candidates with the version `v`. `Range(text)` keeps those that `Ranges.admits`. `Latest` and no selector keep all. | R-B2 |
 	## | 2 | Nothing is left: kind `Usage`, `<name> has no release <v>` (`Exact`) or `<name> has no release in <text>` (`Range`) | |
 	## | 3 | `Exact`: no age rule. `young` is true when the first candidate (the newest of that version) is younger than `min_age` (`published_at + min_age > now`). The order is `Index.order(.., Highest)`. | R-T9 |
-	## | 4 | Else: the candidates that `min-release-age` hides are dropped (`published_at + min_age <= now` stays), then `Index.new_entry`: the URL form of the newest one, as `tln add` (R-DI6). Then `Index.order(.., Highest)`. | R-T9, R-C7, R-DI6 |
+	## | 4 | Else: the candidates that `min-release-age` hides are dropped (`Age.hides`: a pattern of `exclude` that matches `name` keeps a young one), then `Index.new_entry`: the URL form of the newest one, as `tln add` (R-DI6). Then `Index.order(.., Highest)`. `kept` is the note of the first one. | R-T9, R-C7, R-C15, R-C16, R-DI6 |
 	## | 5 | Nothing is left after step 4: kind `Usage`, `no release of <name> is old enough for min-release-age` | R-T9 |
-	pick : { name : Str, list : List(Index.Candidate), selector : Try(Selector, [None]), now : U64, min_age : U64 } -> Try(Picked, Fail)
+	pick : { name : Str, list : List(Index.Candidate), selector : Try(Selector, [None]), now : U64, min_age : U64, exclude : List(Str) } -> Try(Picked, Fail)
 	pick = |facts| {
 		kept = match facts.selector {
 			Ok(Exact(version)) => facts.list.keep_if(|c| c.ident.version == version)
@@ -148,6 +150,7 @@ ToolInstall :: [].{
 			}
 		}
 		young = |c| c.published_at + facts.min_age > facts.now
+		age = |c| { now: facts.now, min_age: facts.min_age, published_at: c.published_at, exclude: facts.exclude, name: Ok(facts.name) }
 		match facts.selector {
 			Ok(Exact(_)) => {
 				order = Index.order(kept, Highest)
@@ -155,12 +158,19 @@ ToolInstall :: [].{
 					Ok(c) => young(c)
 					Err(_) => Bool.False
 				}
-				Ok({ order, young: first_young, note: Err(None) })
+				Ok({ order, young: first_young, note: Err(None), kept: Err(None) })
 			}
 			_ => {
-				visible = kept.keep_if(|c| !young(c))
+				visible = kept.keep_if(|c| !Age.hides(age(c)))
 				match Index.new_entry({ name: facts.name, list: visible }) {
-					Ok(entry) => Ok({ order: Index.order(entry.list, Highest), young: Bool.False, note: entry.note })
+					Ok(entry) => {
+						order = Index.order(entry.list, Highest)
+						kept_note = match order.first() {
+							Ok(c) => Age.note({ id: facts.name, version: c.ident.version, now: facts.now, min_age: facts.min_age, published_at: c.published_at, exclude: facts.exclude, name: Ok(facts.name) })
+							Err(_) => Err(None)
+						}
+						Ok({ order, young: Bool.False, note: entry.note, kept: kept_note })
+					}
 					Err(NoCandidate) => Err(usage("no release of ${facts.name} is old enough for min-release-age"))
 				}
 			}

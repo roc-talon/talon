@@ -1,0 +1,10 @@
+# R-SO13 R-C7 R-NS3 (slice 084, control): rank 4 with the range of p1 (>=nightly-2026-10-13) and no list. TALON_NOW is 2026-10-19T15:00:00Z: 2026-10-17 is exactly 2 days old and visible, 2026-10-18 is 1 day old and hidden. The newest release in the range is 2026-10-17. It is downloaded (CI, the flag answers) and the header gets it as the roc: pin. No note.
+env:CI=true update json --file p1/main.roc --allow-downloads
+# R-SO13 R-C14 R-C15 R-C16 (slice 084, review C4): HOME is home2, and the project p2 has `[resolution] min-release-age-exclude = ["roc-lang/nightlies"]`. The list of the project lifts the age for the range pick, so the newest release in the range is the young nightly 2026-10-18. It is a new choice of a compiler that only the pattern kept: one `note:` line (the notes of the report, stdout). The download, the probes and the pin as in run 1.
+env:CI=true env:HOME={w}/home2 update json --file p2/main.roc --allow-downloads
+# R-SO13 R-C16 (slice 084): the same command again. The pin is written and the compiler is installed, so rank 4 selects the installed compiler (rank 3, the pin): nothing is chosen, no note, no download.
+env:CI=true env:HOME={w}/home2 update json --file p2/main.roc --allow-downloads
+# R-SO13 R-C14 R-C15 R-C16 R-C12 (slice 084): HOME is home3, whose config.toml has `roc-lang/*` (decision Q1), and p3 has no list. The user list alone gives the same pick and the same note.
+env:CI=true env:HOME={w}/home3 update json --file p3/main.roc --allow-downloads
+# R-SO13 R-C14 R-C15 R-C16 R-OUT4 R-J3 (slice 084, review Q-T5): HOME is home4, the list is in the project p4, and the command has `--json`. With `--json` stdout is only the envelope. The note is the first entry of `data.notes`, without the prefix (decision Q-T5).
+env:CI=true env:HOME={w}/home4 update json --file p4/main.roc --allow-downloads --json

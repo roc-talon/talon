@@ -88,7 +88,12 @@ run! = |fx, args| {
 	list = release_list!(fx, args, facts, asset)?
 	current = TalonUpdate.current({ entry: machine.talon, running: Help.version })
 	ctx = { facts, talon: machine.talon, asset, current }
-	picked = TalonUpdate.pick({ list, now: facts.now, min_age: facts.min_age, current, asset })?
+	picked = TalonUpdate.pick({ list, now: facts.now, min_age: facts.min_age, current, asset, exclude: facts.exclude })?
+	# R-C16: a newer release that only a pattern keeps visible gets the note first. `Current` changes nothing: no note.
+	match picked {
+		Newer(release) => kept_note!(fx, args, facts, release)
+		Current(_) => {}
+	}
 	from_source = args.options.any(|(flag, _)| flag == "--from-source")
 	if from_source {
 		release = match picked {
@@ -105,6 +110,13 @@ run! = |fx, args| {
 			Newer(release) => prebuilt!(fx, args, ctx, release)
 		}
 	}
+}
+
+# R-C16: the note on stderr for a release that only a pattern of `min-release-age-exclude` keeps visible. `--quiet` hides it (R-FL4).
+kept_note! : Fx, Args, ToolBuild.Facts, TalonUpdate.Release => {}
+kept_note! = |fx, args, facts, release| match TalonUpdate.kept_note({ release, now: facts.now, min_age: facts.min_age, exclude: facts.exclude }) {
+	Ok(text) if !args.quiet => fx.err!("note: ${text}\n")
+	_ => {}
 }
 
 # Step 2 (R-DI2, R-DI12): the cache page, the line of an offline run, `TalonUpdate.releases`.

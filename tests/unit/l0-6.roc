@@ -12,6 +12,7 @@ import OptsTest
 import OraclefreeTest
 import OutTest
 import ProxyTest
+import ResolvebaseTest
 import TalonRemoveTest
 import VerifyTest
 import ZigTest

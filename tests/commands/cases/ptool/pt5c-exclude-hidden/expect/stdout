@@ -1,0 +1,6 @@
+== update --tool --snapshot 2026-10-12T00:00:00Z --file p1/main.roc
+nothing to change
+exit 0
+== update --tool --file p2/main.roc
+nothing to change
+exit 0

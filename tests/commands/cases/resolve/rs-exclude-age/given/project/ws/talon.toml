@@ -1,0 +1,5 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[resolution]
+min-release-age-exclude = ["zed/lib"]

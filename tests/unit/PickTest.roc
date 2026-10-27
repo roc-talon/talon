@@ -32,7 +32,9 @@ slot = |id, is_platform, ranges, current, free, candidates| { id, is_platform, r
 
 package_fact = |url| { url, release: { kind: Package, pf: Err(None), deps: [] } }
 
-step = |slots, facts, strategy, min_age, snapshot| Oracle.step({ slots, strategy, now, min_age, snapshot, facts, unmanaged: [], paths: [], second: Bool.False })
+step = |slots, facts, strategy, min_age, snapshot| step_with(slots, facts, strategy, min_age, snapshot, [])
+
+step_with = |slots, facts, strategy, min_age, snapshot, exclude| Oracle.step({ slots, strategy, now, min_age, exclude, snapshot, facts, unmanaged: [], paths: [], second: Bool.False })
 
 view = |r| match r {
 	Need(urls) => Err(Ok(urls))
@@ -174,6 +176,98 @@ expect {
 		("a header that does not parse", "package [Lib] {\n\thttp: 5,\n}\n", Err("tln: error[input]: /pkgs/x/main.roc:2: the header is not valid")),
 	]
 	bad = rows.keep_if(|(_, text, want)| read(text) != want).map(|(label, text, want)| (label, want, read(text)))
+	dbg bad
+	bad == []
+}
+
+# R-C15 R-C12 R-C16 R-C9 R-DT4 R-C4 R-C1 R-C7 (slice 082): the list `min-release-age-exclude` in the pick. A release of a repository that a pattern matches is not hidden by `min-release-age`. `json` is `someone/roc-json`.
+# The list is in the input of the step (`exclude`, the patterns already joined, R-C14). 2.4.0 is 1 day old, 2.3.0 is 3 days old, `min-release-age` is 2 days. The chosen release gets the note of R-C16 (the first pattern that matches,
+# as written) when it is young, it moves the header value, and only the pattern kept it. The compare is ASCII case-insensitive and by the whole repo name (R-C12): `someone/other` and `other/*` do not match. A release with no name
+# (another host) matches no pattern. A snapshot time still hides the releases after it, also when a pattern matches them (R-DT4). The header value is in the domain with and without a pattern (R-C9). A named version keeps the note
+# of R-C7 (its age only). The kind rule (R-C4) and the range rule (R-C1) still apply to an excluded release.
+expect {
+	json = |version| json_url(version)
+	young_list = [cand(json("2.1.0"), 30), cand(json("2.3.0"), 3), cand(json("2.4.0"), 1), cand(json("3.0.0"), 1)]
+	base = slot("json", Bool.False, [">=2.1.0, <3.0.0"], Ok(json("2.1.0")), Bool.True, young_list)
+	run = |s, exclude, snapshot| view(step_with([s], facts_of([s]), Highest, 2 * day, snapshot, exclude))
+	no_snap = Err(None)
+	note = |pattern| Ok("json 2.4.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: ${pattern}")
+	chosen_young = |pattern| Ok([("json", "2.4.0", Move("2.1.0"), note(pattern))])
+	moved_old = Ok([("json", "2.3.0", Move("2.1.0"), Err(None))])
+	just_old = { ..base, current: Ok(json("2.5.0")), candidates: [cand(json("2.5.0"), 1), cand(json("2.4.0"), 30)] }
+	named = { ..base, ranges: ["=2.4.0"], named: Ok("2.4.0") }
+	gitlab = |version| "https://gitlab.com/someone/roc-json/releases/download/${version}/${h_a}.tar.zst"
+	foreign = { ..base, current: Ok(gitlab("2.1.0")), candidates: [cand(gitlab("2.1.0"), 30), cand(gitlab("2.3.0"), 3), cand(gitlab("2.4.0"), 1)] }
+	wrong_kind = view(step_with([base], facts_of([base]).map(|f| if f.url == json("2.4.0") { url: f.url, release: { kind: Platform, pf: Err(None), deps: [] } } else f), Highest, 2 * day, no_snap, ["someone/*"]))
+	rows = [
+		("no pattern: the young releases are hidden (R-C7)", run(base, [], no_snap), moved_old),
+		("owner/repo: 2.4.0 is chosen, with the note (R-C15, R-C16)", run(base, ["someone/roc-json"], no_snap), chosen_young("someone/roc-json")),
+		("owner/*: the same", run(base, ["someone/*"], no_snap), chosen_young("someone/*")),
+		("the compare is case-insensitive, the note has the pattern as written (R-C12)", run(base, ["SOMEONE/ROC-JSON"], no_snap), chosen_young("SOMEONE/ROC-JSON")),
+		("the first pattern that matches is in the note (R-C16)", run(base, ["other/*", "someone/*", "someone/roc-json"], no_snap), chosen_young("someone/*")),
+		("the same owner, another repo: hidden (R-C12)", run(base, ["someone/other"], no_snap), moved_old),
+		("another owner: hidden", run(base, ["other/*"], no_snap), moved_old),
+		("a repo name that is only a prefix: hidden", run(base, ["someone/roc"], no_snap), moved_old),
+		("a release with no name (another host) matches no pattern (R-C12)", run(foreign, ["someone/*", "someone/roc-json"], no_snap), Ok([("json", "2.3.0", Move("2.1.0"), Err(None))])),
+		("a snapshot time before the release: hidden also with a pattern (R-DT4)", run(base, ["someone/*"], Ok(now - 5 * day)), Ok([("json", "2.1.0", Keep, Err(None))])),
+		("a snapshot time 5 days ago: 2.3.0 and 2.4.0 are after it, 2.2.0 is not", run({ ..base, candidates: young_list.append(cand(json("2.2.0"), 10)) }, ["someone/*"], Ok(now - 5 * day)), Ok([("json", "2.2.0", Move("2.1.0"), Err(None))])),
+		("the header value stays in the domain with a pattern (R-C9): it is 1 day old, and no note for a Keep", run(just_old, ["someone/*"], no_snap), Ok([("json", "2.5.0", Keep, Err(None))])),
+		("the header value stays in the domain with no pattern (R-C9)", run(just_old, [], no_snap), Ok([("json", "2.5.0", Keep, Err(None))])),
+		("a named version: the note of R-C7 only, also with a pattern (R-C16)", run(named, ["someone/*"], no_snap), Ok([("json", "2.4.0", Move("2.1.0"), Ok("json 2.4.0 is 1d old (min-release-age 2d)"))])),
+		("a release with the wrong kind is dropped also with a pattern (R-C4)", wrong_kind, moved_old),
+		("a range still cuts an excluded release: 3.0.0 is young and in the list, the range stops below 3 (R-C1)", run(base, ["someone/*"], no_snap), chosen_young("someone/*")),
+		("min-release-age 0d: nothing is hidden, so no note (R-C7)", view(step_with([base], facts_of([base]), Highest, 0, no_snap, ["someone/*"])), Ok([("json", "2.4.0", Move("2.1.0"), Err(None))])),
+		("a held slot has its header value only (R-SP1)", run({ ..base, hold: Held }, ["someone/*"], no_snap), Ok([("json", "2.1.0", Keep, Err(None))])),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-C16 R-C15 R-C7 (slice 082): `Pick.chosen_for`, the note of one chosen release. `exclude` is in the input. The note of R-C16 is for a release that is young, not the header value, and kept visible only by a pattern.
+# A release that the user named gets the note of R-C7 (its age), also when a pattern matches. A new entry (no header value) is a move from `""`. The tuple is (change, note).
+expect {
+	json = |version| json_url(version)
+	base = { id: "json", is_platform: Bool.False, ranges: [], current: Ok(json("2.1.0")), hold: Free, named: Err(None), candidates: [], files: [] }
+	young = now - day
+	ask = |s, version, published_at, exclude| {
+		c = Pick.chosen_for({ slot: s, url: json(version), version, published_at, now, min_age: 2 * day, exclude })
+		(c.change, c.note)
+	}
+	note = Ok("json 2.4.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: someone/*")
+	rows = [
+		("young, excluded, a move: the note with the pattern", ask(base, "2.4.0", young, ["someone/*"]), (Move("2.1.0"), note)),
+		("young, excluded, the first match is in the note", ask(base, "2.4.0", young, ["a/b", "someone/roc-json", "someone/*"]), (Move("2.1.0"), Ok("json 2.4.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: someone/roc-json"))),
+		("young, excluded, Keep (the header value): no note", ask(base, "2.1.0", young, ["someone/*"]), (Keep, Err(None))),
+		("old, excluded: no note", ask(base, "2.4.0", now - 30 * day, ["someone/*"]), (Move("2.1.0"), Err(None))),
+		("exactly min-release-age old, excluded: visible, so no note", ask(base, "2.4.0", now - 2 * day, ["someone/*"]), (Move("2.1.0"), Err(None))),
+		("young, named and excluded: the note of R-C7 only", ask({ ..base, named: Ok("2.4.0") }, "2.4.0", young, ["someone/*"]), (Move("2.1.0"), Ok("json 2.4.0 is 1d old (min-release-age 2d)"))),
+		("young, not excluded, not named: no note", ask(base, "2.4.0", young, []), (Move("2.1.0"), Err(None))),
+		("young, another owner: no note", ask(base, "2.4.0", young, ["other/*"]), (Move("2.1.0"), Err(None))),
+		("a new entry, young, excluded: the note, a move from the empty version", ask({ ..base, current: Err(None) }, "2.4.0", young, ["someone/*"]), (Move(""), note)),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-UP1 R-C15 R-C7 R-DT4 R-C1 (slice 082): `Pick.newest` and `Pick.newest_in`, the newest release of the domain of one slot (the base of `upgrade` and of the lag). `newest` has no range, `newest_in` keeps the ranges.
+# The young release is the newest with a pattern, and the older one without. The header value is in the domain.
+expect {
+	json = |version| json_url(version)
+	list = [cand(json("2.1.0"), 30), cand(json("2.3.0"), 3), cand(json("2.4.0"), 1), cand(json("3.0.0"), 1)]
+	base = { id: "json", is_platform: Bool.False, ranges: ["^2"], current: Ok(json("2.1.0")), hold: Free, named: Err(None), candidates: list, files: [] }
+	ctx = |exclude| { now, min_age: 2 * day, exclude, snapshot: Err(None), facts: [] }
+	version = |r| r.map_ok(|c| c.ident.version)
+	rows = [
+		("newest, no pattern: the old release", version(Pick.newest(base, ctx([]))), Ok("2.3.0")),
+		("newest, a pattern: the young release of any series (no range)", version(Pick.newest(base, ctx(["someone/*"]))), Ok("3.0.0")),
+		("newest, another owner: the old release", version(Pick.newest(base, ctx(["other/*"]))), Ok("2.3.0")),
+		("newest_in, no pattern", version(Pick.newest_in(base, ctx([]))), Ok("2.3.0")),
+		("newest_in, a pattern: the young release inside ^2 (R-C1)", version(Pick.newest_in(base, ctx(["someone/roc-json"]))), Ok("2.4.0")),
+		("newest_in, a snapshot before the young releases: a pattern does not show them (R-DT4)", version(Pick.newest_in(base, { ..ctx(["someone/*"]), snapshot: Ok(now - 5 * day) })), Ok("2.1.0")),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
 }

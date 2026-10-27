@@ -1,0 +1,33 @@
+== upgrade roc --file p1/main.roc
+note: nightly-2026-10-14-4c4c4c4 is 0d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-14-4c4c4c4
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:CI=true env:HOME={w}/home2 upgrade roc --file p2/main.roc
+note: nightly-2026-10-14-4c4c4c4 is 0d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/*
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-14-4c4c4c4
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:CI=true env:HOME={w}/home3 upgrade roc --file p3/main.roc
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:CI=true env:HOME={w}/home4 upgrade roc --file p4/main.roc
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:CI=true env:HOME={w}/home5 upgrade roc --json --file p5/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":5,"downloads":1,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":"nightly-2026-10-14-4c4c4c4","toml":[],"renamed":[],"notes":["nightly-2026-10-14-4c4c4c4 is 0d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies"],"written":["$PROJECT/p5/main.roc"]},"error":null}
+exit 0

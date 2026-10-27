@@ -1,0 +1,11 @@
+== tool install acme/app
+installed app 1.4.0 (acme/app)
+exit 0
+== x acme/xtool
+exit 0
+== tool install acme/named@1.4.0
+installed named 1.4.0 (acme/named)
+exit 0
+== tool install beta/tool
+installed tool 2.0.0 (beta/tool)
+exit 0

@@ -50,6 +50,7 @@ ProbeSearch :: [].{
 		path : Try({ id : Str, path : Str }, [NoCompiler]),
 		nightly : Bool,
 		min_age : U64,
+		exclude : List(Str),
 		probe : Probe.Settings,
 		env : List((Str, Str)),
 		flag : Try(Answer, [NoFlag]),
@@ -65,7 +66,7 @@ ProbeSearch :: [].{
 		host = Toolchain.host(fx.platform!())?
 		listed = Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host })?
 		domain = Nightlies.candidates(listed.releases).map(|r| r.id)
-		allowed = Toolchain.domain({ releases: listed.releases, now: run.now, min_age: run.min_age, nightly: run.nightly }).auto
+		allowed = Toolchain.domain({ releases: listed.releases, now: run.now, min_age: run.min_age, nightly: run.nightly, exclude: run.exclude }).auto
 		askable = allowed.keep_if(|id| run.installed.contains(id))
 		hash = run.node.hash
 		rows = Facts.load!(fx, { roots: run.roots, keys: domain.map(|id| { hash, nightly: id, target: "any" }) })?

@@ -1,0 +1,5 @@
+cwd:x1 env:HOME={w}/home1 init --platform acme/pfy
+cwd:x2 env:HOME={w}/home2 init --platform acme/pfy
+cwd:x3 env:HOME={w}/home3 init --platform acme/pfy
+cwd:x4 env:HOME={w}/home4 init --platform acme/pfw
+cwd:x1j env:HOME={w}/home5 init --json --platform acme/pfy

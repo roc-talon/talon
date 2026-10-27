@@ -1,0 +1,2 @@
+note: nightly-2026-10-21-601b54c is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: roc-lang/nightlies
+note: no default compiler was set, because the list of compilers cannot be read (no compiler release is allowed by the nightly switch and min-release-age). The first command that needs a compiler picks one.

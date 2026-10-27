@@ -1,0 +1,1 @@
+copy build main.roc --output=/tmp/talon-check-fixtures/home/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --target=x64freebsd

@@ -35,9 +35,9 @@ NightlyPlan :: [].{
 	## | `domain` | D: the ids of `releases` (the order of the list), for the checks and the inferred facts (R-EP11) |
 	##
 	## An installed compiler that is not allowed (too new for `min-release-age`, outside the range, the switch is off) is not askable: Talon selects it by itself here (R-NS3). A compiler older than H is not askable: `upgrade` moves up.
-	pick : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, held : Str, installed : List(Str) } -> { newest : Try(Str, [NoneKnown]), askable : List(Str), domain : List(Str) }
+	pick : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str), held : Str, installed : List(Str) } -> { newest : Try(Str, [NoneKnown]), askable : List(Str), domain : List(Str) }
 	pick = |f| {
-		newest = Toolchain.range_pick({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly })
+		newest = Toolchain.range_pick({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly, exclude: f.exclude })
 		{ newest: newest, askable: askable_of(f, newest), domain: f.releases.map(|r| r.id) }
 	}
 
@@ -45,20 +45,20 @@ NightlyPlan :: [].{
 	## that are not N (N is a required download, R-UP6) and that are not H (the baseline, a required download, R-BL3). `ids` are in the order of `releases` (newest first, so the cap R-DL6 keeps the compilers that are nearest to N).
 	## `sizes` are the asset sizes of `ids`, one row for each id (R-DL1: the line of a skipped download shows the size). A release with no asset for the host is no candidate (R-CV2), so it is never optional.
 	## The search asks an optional compiler only when a pair needs it (slice 039b, `PickOptional`). With no opt-in (`--probe-downloads`, `--yes`) none is downloaded: they leave the search.
-	optional : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, held : Str, installed : List(Str) } -> { ids : List(Str), sizes : List({ id : Str, size : U64 }) }
+	optional : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str), held : Str, installed : List(Str) } -> { ids : List(Str), sizes : List({ id : Str, size : U64 }) }
 	optional = |f| {
 		times = f.releases.map(|r| { id: r.id, published_at: r.published_at })
-		newest = Toolchain.range_pick({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly })
+		newest = Toolchain.range_pick({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly, exclude: f.exclude })
 		have = |id| f.installed.any(|i| Pin.same_id(i, id))
 		fit = |id| Pin.order({ a: id, b: f.held, times }) != Before and !have(id) and newest != Ok(id) and !Pin.same_id(id, f.held)
-		listed = Toolchain.range_allowed({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly }).keep_if(|r| fit(r.id))
+		listed = Toolchain.range_allowed({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly, exclude: f.exclude }).keep_if(|r| fit(r.id))
 		{ ids: listed.map(|r| r.id), sizes: listed.keep_oks(|r| r.asset.map_ok(|asset| { id: r.id, size: asset.size })) }
 	}
 
 	## R-RP4, R-SP23, R-SP24, R-UP1, R-C7, R-C9 (slice 039c): the values of the movable compiler of `tln upgrade X` (the nightly is held, and a held move can include it). `releases`, `req`, `nightly`, `min_age`, `snapshot`, `held` and `installed` are the facts of `pick`.
 	## The values are the compilers that the second search may move the nightly to: the allowed compilers (`Toolchain.range_allowed`: the range, the switch, `min-release-age`, the snapshot) that are installed, and H itself (R-C9: it stays a value, also when it is outside the range or too young).
 	## A compiler older than H (`Pin.order`) is no value: `upgrade` moves up (D2 of slice 039, question Q2 of slice 039c). The order is the order of `releases`. A compiler that is not installed is no value: a held move makes no download (question Q1 of slice 039c). The id of the other tag form of H is H (`Pin.same_id`).
-	movable : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, held : Str, installed : List(Str) } -> List(Str)
+	movable : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str), held : Str, installed : List(Str) } -> List(Str)
 	movable = |f| askable_of(f, Err(NoneKnown))
 
 	## R-RP4, R-SP16, R-SP25 (slice 039c): the held move of the nightly, as a `Consent.Move` (the report and the prompt of R-NI3 name it `roc`). `held` is H, `nightly` is the compiler of the second search (`OracleBase.Free.Done`), `why` is the reason (`Lags.blame` over the chosen releases of the tuple, on H),
@@ -103,10 +103,10 @@ NightlyPlan :: [].{
 }
 
 # The allowed compilers that are installed, or are `extra`, and not older than H. H is always a value (R-C9). The order of `releases`.
-askable_of : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, held : Str, installed : List(Str) }, Try(Str, [NoneKnown]) -> List(Str)
+askable_of : { releases : List(Nightlies.Release), req : Pin.Req, now : U64, min_age : U64, snapshot : Try(U64, [None]), nightly : Bool, exclude : List(Str), held : Str, installed : List(Str) }, Try(Str, [NoneKnown]) -> List(Str)
 askable_of = |f, extra| {
 	times = f.releases.map(|r| { id: r.id, published_at: r.published_at })
-	allowed = Toolchain.range_allowed({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly }).map(|r| r.id)
+	allowed = Toolchain.range_allowed({ releases: f.releases, req: f.req, now: f.now, min_age: f.min_age, snapshot: f.snapshot, nightly: f.nightly, exclude: f.exclude }).map(|r| r.id)
 	have = |id| f.installed.any(|i| Pin.same_id(i, id))
 	not_older = |id| Pin.order({ a: id, b: f.held, times }) != Before
 	fit = |id| Pin.same_id(id, f.held) or (not_older(id) and (have(id) or extra == Ok(id)))

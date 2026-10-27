@@ -1,3 +1,4 @@
+import Age
 import Db
 import Fail
 import Facts
@@ -104,17 +105,17 @@ Nightlies :: [].{
 
 	## R-C7 for compilers (R-NS3: where Talon selects a compiler by itself): hides the nightlies that are too new. A nightly is visible when it is at least
 	## `min_age` seconds old (`now - published_at >= min_age`: "at least 2 days old", R-RU1) and, when there is a `snapshot` time, it is not later than it (R-DT4: a
-	## release published after that time is hidden). `min_age` 0 hides nothing (`"0d"`). `keep` are ids that are never hidden (R-C9: the value that a pin has now).
+	## release published after that time is hidden). `min_age` 0 hides nothing (`"0d"`). A release whose name (`Age.compiler_name`) a pattern of `exclude` matches is not hidden by the age (R-C15); the snapshot still hides it. `keep` are ids that are never hidden (R-C9: the value that a pin has now).
 	## The order of `list` stays. A user that names a compiler is not limited by this (R-NS4, R-C7): `pick` takes the full list for names.
-	visible : { list : List(Release), now : U64, min_age : U64, snapshot : Try(U64, [None]), keep : List(Str) } -> List(Release)
+	visible : { list : List(Release), now : U64, min_age : U64, snapshot : Try(U64, [None]), keep : List(Str), exclude : List(Str) } -> List(Release)
 	visible = |facts| facts.list.keep_if(
 		|r| {
-			age = if facts.now >= r.published_at facts.now - r.published_at else 0
 			not_after = match facts.snapshot {
 				Ok(at) => r.published_at <= at
 				Err(None) => Bool.True
 			}
-			facts.keep.contains(r.id) or (age >= facts.min_age and not_after)
+			hidden = Age.hides({ now: facts.now, min_age: facts.min_age, published_at: r.published_at, exclude: facts.exclude, name: Ok(Age.compiler_name(r.id)) })
+			facts.keep.contains(r.id) or (!hidden and not_after)
 		},
 	)
 

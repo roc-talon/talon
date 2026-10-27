@@ -1,0 +1,4 @@
+tool install acme/app
+x acme/xtool
+tool install acme/named@1.4.0
+tool install beta/tool

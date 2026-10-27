@@ -1,0 +1,3 @@
+nightly = true
+min-release-age = "2d"
+min-release-age-exclude = ["roc-lang/nightlies"]

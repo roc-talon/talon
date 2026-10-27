@@ -1,3 +1,4 @@
+import Age
 import Args
 import Clock
 import Fail
@@ -59,13 +60,13 @@ TalonUpdate :: [].{
 	## | 2 | No release with the asset is old enough (`published_at + min_age <= now`, as `ToolInstall.pick`) | Kind `Usage`: `no release of roc-talon/talon is old enough for min-release-age` |
 	## | 3 | The highest version of the old enough releases (numbers, `0.10.0` is above `0.9.0`; the first of a tie) is above `current` | `Newer(release)` |
 	## | 4 | Any other (the same version, or a lower one: no downgrade, R-S4) | `Current(release)`: the newest old enough release (`--from-source` builds its tag) |
-	pick : { list : List(Release), now : U64, min_age : U64, current : Str, asset : Str } -> Try([Newer(Release), Current(Release)], Fail)
+	pick : { list : List(Release), now : U64, min_age : U64, current : Str, asset : Str, exclude : List(Str) } -> Try([Newer(Release), Current(Release)], Fail)
 	pick = |facts| {
 		with_asset = facts.list.keep_if(|r| r.bin.is_ok())
 		if with_asset.is_empty() {
 			return Err(Fail.new(Usage, "${TalonUpdate.name} has no release with ${facts.asset}"))
 		}
-		old_enough = with_asset.keep_if(|r| r.published_at + facts.min_age <= facts.now)
+		old_enough = with_asset.keep_if(|r| !Age.hides({ now: facts.now, min_age: facts.min_age, published_at: r.published_at, exclude: facts.exclude, name: Ok(TalonUpdate.name) }))
 		match old_enough.first() {
 			Err(_) => Err(Fail.new(Usage, "no release of ${TalonUpdate.name} is old enough for min-release-age"))
 			Ok(first) => {
@@ -74,6 +75,10 @@ TalonUpdate :: [].{
 			}
 		}
 	}
+
+	## R-C16: the note for a release of `roc-talon/talon` that only a pattern of `exclude` keeps visible. The flow prints it for `Newer`.
+	kept_note : { release : Release, now : U64, min_age : U64, exclude : List(Str) } -> Try(Str, [None])
+	kept_note = |facts| Age.note({ id: TalonUpdate.name, version: facts.release.version, now: facts.now, min_age: facts.min_age, published_at: facts.release.published_at, exclude: facts.exclude, name: Ok(TalonUpdate.name) })
 
 	## The installed version: the version of the entry `talon` of `tools.json` (a prebuilt entry: its version; a source build: the version of its tag ref, `v0.3.2` is `0.3.2`), else `running` (`Help.version`: no entry, or a source build of another ref).
 	current : { entry : Try(ToolsJson.Talon, [None]), running : Str } -> Str

@@ -148,9 +148,13 @@ latest_default! = |fx, args, facts, config| match RocInstall.latest!(fx, { env: 
 		fx.err!(SetupText.unread_note(why))
 		Ok(Unread(why))
 	}
-	Ok(id) => match RocInstall.first_default!(fx, facts.roots, id)? {
-		Set => Ok(Set(id))
-		Kept => Ok(Kept(id))
+	Ok(latest) => {
+		# R-C16 (slice 084): the note of a young compiler that only a pattern kept, before the default is written.
+		RocInstall.print_note!(fx, args.quiet, latest.note)
+		match RocInstall.first_default!(fx, facts.roots, latest.id)? {
+			Set => Ok(Set(latest.id))
+			Kept => Ok(Kept(latest.id))
+		}
 	}
 }
 

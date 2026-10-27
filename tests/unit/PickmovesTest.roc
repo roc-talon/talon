@@ -33,7 +33,7 @@ view = |r| match r {
 	Fail(fail) => Err(Err(fail.line()))
 }
 
-input = |slots, facts, strategy, second| { slots, strategy, now, min_age: 2 * day, snapshot: Err(None), facts, unmanaged: [], paths: [], second }
+input = |slots, facts, strategy, second| { slots, strategy, now, min_age: 2 * day, exclude: [], snapshot: Err(None), facts, unmanaged: [], paths: [], second }
 
 run = |slots, facts, strategy, second| view(Oracle.step(input(slots, facts, strategy, second)))
 

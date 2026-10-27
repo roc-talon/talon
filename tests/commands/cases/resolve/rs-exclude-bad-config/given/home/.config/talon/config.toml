@@ -1,0 +1,3 @@
+# the user list
+nightly = true
+min-release-age-exclude = ["acme/ok", "*/*"]

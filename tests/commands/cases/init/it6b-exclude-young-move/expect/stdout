@@ -1,0 +1,15 @@
+== cwd:x5 env:HOME={w}/home6 init --platform acme/pfv
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: pf 1.3.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+note: tuple dropped: the unit check on nightly-2026-10-09-9d9d9d9 fails for the platform acme/pfv 1.3.0 (no module is named)
+note: pf 1.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/*
+note: platform changes: acme/pfv 1.3.0 -> acme/pfv 1.2.0
+note: pf 1.3.0 is not used, 1.2.0 is chosen: fails the unit check on nightly-2026-10-12-2a2a2a2
+check: passed
+build: passed
+$PROJECT/x5/main.roc
+  ~ pf: acme/pfv 1.3.0 -> 1.2.0
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 9 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0

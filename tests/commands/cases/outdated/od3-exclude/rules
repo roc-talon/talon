@@ -1,0 +1,2 @@
+R-C15 R-C16 R-C14 R-C11 R-C7 R-UP1 R-J3 R-OUT4 (slice 082): `tln outdated` with the exclude list. The world is the one of `od1-table` run 1 (p1): parser 1.0.0 with 1.1.0 (1 day old, hidden by R-C7) and 2.0.0. `config.toml` has ["acme/parser"].
+Run 1: the table shows 1.1.0 as `wanted` of parser (in `od1-table` it is 1.0.0). The other rows are as in `od1-table`. `outdated` chooses nothing, so stderr has no note (R-C16). Run 2: `--json` has the same values and no new field.

@@ -29,7 +29,7 @@ HeldRoc :: [].{
 		Stop => Err(Compiler.failure(NoCompiler))
 		Download(run) => {
 			listed = Launch.toolchains!(fx, request.roots)
-			NoRank.pick_id!(fx, { roots: request.roots, env: run.downloads.env, offline: run.downloads.offline, scope: run.scope, listed })
+			NoRank.pick_id!(fx, { roots: request.roots, env: run.downloads.env, offline: run.downloads.offline, scope: run.scope, exclude: run.exclude, listed })
 		}
 	}
 }

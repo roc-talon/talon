@@ -1,0 +1,38 @@
+== install file=app/main.roc compiler=nightly-2026-10-14-38a3029
+note: parser 1.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/parser
+check: passed
+build: passed
+$PROJECT/app/main.roc
+  + parser: acme/parser 1.2.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=app3/main.roc compiler=nightly-2026-10-14-38a3029
+note: parser 1.2.0 is 1d old (min-release-age 5d), not hidden by min-release-age-exclude: acme/parser
+note: lib 1.1.0 is 1d old (min-release-age 5d), not hidden by min-release-age-exclude: zed/lib
+check: passed
+build: skipped (recorded pass)
+$PROJECT/app3/main.roc
+  + parser: acme/parser 1.2.0
+  + lib: zed/lib 1.1.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=app4/main.roc compiler=nightly-2026-10-14-38a3029 snapshot=2026-10-10T00:00:00Z
+check: passed
+build: skipped (recorded pass)
+$PROJECT/app4/main.roc
+  + parser: acme/parser 1.1.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=app5/main.roc compiler=nightly-2026-10-14-38a3029
+nothing to change
+exit 0
+== install file=ws/apps/a/main.roc compiler=nightly-2026-10-14-38a3029
+note: lib 1.1.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: zed/lib
+check: passed
+build: skipped (recorded pass)
+$PROJECT/ws/apps/a/main.roc
+  + lib: zed/lib 1.1.0
+  + roc: nightly-2026-10-14-38a3029
+exit 0
+== install file=ws6/apps/b/main.roc compiler=nightly-2026-10-14-38a3029
+exit 19

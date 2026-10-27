@@ -1,0 +1,14 @@
+warning: acme/json has 2 series in the closure: 3 via json, 2 via parser. The types of the 2 series are different types.
+warning: acme/json has 2 series in the closure: 3 via json, 2 via parser. The types of the 2 series are different types.
+note: json 3.1.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/json
+note: pf 0.2.2 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/pfx
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.2
+warning: acme/json has 2 series in the closure: 3 via json, 2 via parser. The types of the 2 series are different types.
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p3/main.roc
+  ~ json: acme/json 2.1.0 -> 3.1.0 new series
+  ~ parser: acme/parser 1.0.0 -> 2.0.0 new series
+  ~ pf: acme/pfx 0.1.0 -> 0.2.2 new series
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written

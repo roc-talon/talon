@@ -1,0 +1,12 @@
+# R-SL7 R-NS3 R-C15 (slice 084): HOME is home (no list). p1 has the pin 2026-10-16. TALON_NOW is 2026-10-19T15:00:00Z, so 2026-10-17 (exactly 2 days old) is the newest nightly that min-release-age allows. `@latest` is that nightly. It is installed: no download, no note.
+roc use @latest --file p1/main.roc
+# R-SL7 R-NS3 R-C7 (slice 084): the pin of p2 is 2026-10-17, the newest allowed nightly. `@+1` goes past it, so it is exit 2: the young nightly (1 day old) is not in the domain without a pattern.
+roc use @+1 --file p2/main.roc
+# R-SL7 R-NS3 R-C15 R-C16 R-NI6 (slice 084): HOME is home2, config.toml has roc-lang/nightlies, a person (Enter). `@latest` is the young nightly 2026-10-18. It is not installed: the note is on stderr, the prompt names the download, then the install, the probes and the new pin.
+env:HOME={w}/home2 roc use @latest --file p3/main.roc
+# R-SL7 R-NS3 R-C15 R-C16 (slice 084, decision Q1): HOME is home3, config.toml has roc-lang/*. The pin of p4 is 2026-10-17. `@+1` is the young nightly 2026-10-18 (one step after the pin in the domain with the pattern). The same download and note.
+env:HOME={w}/home3 roc use @+1 --file p4/main.roc
+# R-C16 R-SL7 R-NS3 R-C15 (slice 084, review C4): HOME is home4, config.toml has roc-lang/nightlies, and the young nightly 2026-10-18 is installed already. The pin of p5 is 2026-10-16. `@latest` is the young nightly. `roc use` writes a pin, so the choice is new, also when the compiler is installed: the note, no download, the pin is written.
+env:HOME={w}/home4 roc use @latest --file p5/main.roc
+# R-C16 (slice 084, review C4): the same command again. The pin of p5 is the young nightly now, so nothing changes: no note, no probe, no write.
+env:HOME={w}/home4 roc use @latest --file p5/main.roc

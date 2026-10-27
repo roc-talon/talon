@@ -97,6 +97,7 @@ Ls :: [].{
 	request_of = |args, start| {
 		command: Install,
 		names: [],
+		fixed: [],
 		frozen: Bool.False,
 		no_check: Bool.False,
 		project: start.project,

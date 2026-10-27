@@ -1,3 +1,4 @@
+import Age
 import Fail
 import Pin
 import Probe
@@ -10,7 +11,7 @@ ConfigToml :: [].{
 
 	## The settings that `config.toml` has (CLI 6.1, R-LY4): `nightly` (R-NS10), `min-release-age` in seconds (R-C7), from slice 022, `default-roc` (R-SO6: rank 6, a full compiler id, `Pin.is_id`), and from slice 028, `gc-age` in seconds (R-GC9: `"<n>d"`, a whole number of days as `min-release-age`; a value of the wrong form is `<path>:<line>: gc-age: must be a number of days, for example "30d"`, exit 19).
 	## A `default-roc` that is not a string, or not a full id (a prefix), is a failure of kind `Input` (exit 19, R-TF4, R-SC12): `<path>:<line>: default-roc: must be a full compiler id`. The other keys are known and not read.
-	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]), default_roc : Try(Str, [Unset]), gc_age : Try(U64, [Unset]), probe : Probe.Keys }
+	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]), min_release_age_exclude : List(Str), default_roc : Try(Str, [Unset]), gc_age : Try(U64, [Unset]), probe : Probe.Keys }
 
 	## Reads the text of a `config.toml` (R-TF4). A key with a value of the wrong form is a failure of kind `Input` (exit 19): `<path>:<line>: <key>: <why>`.
 	## An unknown top-level key is a warning: `<path>:<line>: unknown key <key>`.
@@ -34,6 +35,7 @@ ConfigToml :: [].{
 					_ => Err("must be a number of days, for example \"2d\"")
 				},
 			)
+			exclude = config_field(doc, "min-release-age-exclude", Age.read_list)
 			default_roc = config_field(
 				doc,
 				"default-roc",
@@ -51,13 +53,13 @@ ConfigToml :: [].{
 				},
 			)
 			probe = TomlKeys.read_probe(doc, ["probe"], "probe")
-			issues = nightly.issues.concat(age.issues).concat(default_roc.issues).concat(gc_age.issues).concat(probe.issues)
+			issues = nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(probe.issues)
 			match issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
 				[first, ..] => Err(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}"))
 				[] => {
 					unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: TomlKeys.key_line(doc, [key]), message: "unknown key ${key}" })
 					warnings = unknown.concat(probe.warnings).sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}")
-					Ok({ config: { nightly: nightly.value, min_release_age: age.value, default_roc: default_roc.value, gc_age: gc_age.value, probe: probe.value }, warnings })
+					Ok({ config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, probe: probe.value }, warnings })
 				}
 			}
 		}
@@ -70,7 +72,7 @@ is_default_id = |text| Pin.is_id(text) or ["git-", "link-", "copy-"].any(|prefix
 
 # The keys of `config.toml` (CLI 6.1). `probe` is a table.
 config_keys : List(Str)
-config_keys = ["default-roc", "registry", "nightly", "min-release-age", "gc-age", "share", "probe"]
+config_keys = ["default-roc", "registry", "nightly", "min-release-age", "min-release-age-exclude", "gc-age", "share", "probe"]
 
 # A top-level key of `config.toml`, or the reason that it is wrong.
 config_field : Toml, Str, (Value -> Try(a, Str)) -> { value : Try(a, [Unset]), issues : List(TomlKeys.Note) }

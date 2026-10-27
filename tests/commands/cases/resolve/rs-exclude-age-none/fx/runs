@@ -1,0 +1,3 @@
+install file=app/main.roc compiler=nightly-2026-10-14-38a3029
+install file=app2/main.roc compiler=nightly-2026-10-14-38a3029
+install file=app3/main.roc compiler=nightly-2026-10-14-38a3029

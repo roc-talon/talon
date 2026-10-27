@@ -1,0 +1,13 @@
+# R-C15 R-C16 R-C13 R-C11 R-C7 R-EV22 R-SE19 (slice 082): `tln update` on the real binary, with the exclude list in `config.toml`. TALON_NOW is 2026-10-15T12:00:00Z. acme/parser 1.2.0 is 1 day old (the fake API), 1.1.0 is older than 2 days.
+# Run 1: the pattern `acme/*` keeps 1.2.0 visible. `update parser` moves the entry to 1.2.0. The note of R-C16 is printed where the note of R-C7 is printed (stdout of the run, as in `up1-update-entries`). Exit 0.
+# Run 2: a bad pattern (`*/*` would be a hidden `0d`, R-C12). Exit 19 (R-C13) before any list call: `http.log` has no new line. The header stays.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+C=$XDG_CONFIG_HOME/talon/config.toml
+mkdir -p "$XDG_CONFIG_HOME/talon"
+printf 'min-release-age-exclude = ["acme/*"]\n' > "$C"
+st tln update parser
+printf 'min-release-age-exclude = ["*/*"]\n' > "$C"
+st tln update parser
+echo "== the files"
+cat main.roc
+rm -rf "$XDG_CACHE_HOME/roc/talon/index"
