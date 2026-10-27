@@ -30,7 +30,7 @@ Db :: [].{
 	format : U64
 	format = 1
 
-	## R-CC8: `PRAGMA busy_timeout`, in milliseconds. The command gives it to the `Fx` (the real `Fx` has no Talon constant, TW4).
+	## R-CC8: the busy timeout (an option of the connection), in milliseconds. The command gives it to the `Fx` (the real `Fx` has no Talon constant, TW4).
 	busy_ms : U64
 	busy_ms = 5000
 

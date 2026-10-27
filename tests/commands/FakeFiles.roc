@@ -245,7 +245,7 @@ list_one! = |dir, overrides| match Path.list!(Path.utf8(dir)) {
 				Err(_) => Bool.False
 			}
 			real = match Path.time_modified!(p) {
-				Ok(ns) => (ns // 1_000_000_000).to_u64_wrap()
+				Ok(time) => (time.to_nanos_since_epoch() // 1_000_000_000).to_u64_try() ?? 0
 				Err(_) => 0
 			}
 			mtime = match overrides.find_first(|(suffix, _)| "${dir}/${name}".ends_with(suffix)) {
@@ -304,7 +304,7 @@ time_of! : Str, List((Str, U64)) => U64
 time_of! = |path, overrides| match overrides.find_first(|(suffix, _)| path.ends_with(suffix)) {
 	Ok((_, seconds)) => seconds
 	Err(_) => match Path.time_modified!(Path.utf8(path)) {
-		Ok(ns) => (ns // 1_000_000_000).to_u64_wrap()
+		Ok(time) => (time.to_nanos_since_epoch() // 1_000_000_000).to_u64_try() ?? 0
 		Err(_) => 0
 	}
 }

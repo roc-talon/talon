@@ -145,7 +145,7 @@ Fx := {
 	programs! : Fx, List(Str) => List(Bool)
 	programs! = |Fx.{ programs!: f, .. }, names| f(names)
 
-	## Starts the child processes of `jobs` in the order of the list, with at most `limit` running at the same time, and polls them with `try_wait!`
+	## Starts the child processes of `jobs` in the order of the list, with at most `limit` running at the same time, and polls them with `poll!`
 	## (R-DA5, R-HF3: the poll loop also writes the heartbeat of the locks that the process holds, R-CC12). `argv` is the program and its arguments, `cwd`
 	## is its working directory (`Inherit`: the one of the process). The stdin of a child is closed. Each result is in the order of the jobs: `ended`,
 	## the stdout as text, and the last line of the stderr that is not empty (the empty text when there is none). `NotStarted(text)` is a child that
@@ -186,7 +186,7 @@ Fx := {
 	copy_tree! = |Fx.{ copy_tree!: f, .. }, move| f(move)
 
 	## The system of this machine (slice 021, R-CV8). `os` is `Linux`, `Macos` or `Windows`, else `Other(name)`. `arch` is `X64` (x86_64), `Arm64` (arm64, aarch64), else `Other(name)`.
-	## The real `Fx` reads it from the platform (basic-cli `Env.platform!`: `X86` is `Other("x86")`). It has no Talon logic (TW4).
+	## The real `Fx` reads it from the platform (basic-cli `System.target!`: `X86` is `Other("x86")`). It has no Talon logic (TW4).
 	platform! : Fx => { os : [Linux, Macos, Windows, Other(Str)], arch : [X64, Arm64, Other(Str)] }
 	platform! = |Fx.{ platform!: f, .. }| f()
 
@@ -239,7 +239,7 @@ Fx := {
 
 	## Slice 030, R-EF1, R-CC8, R-TF1, R-TF3: the rows of `compat.db` for the keys of `query` (the rows that exist, in any order). One call, one query (TW3).
 	## The real `Fx` (`cli/RealDb.roc`) does these steps, in this order (the spike `research/compat-db/RESULTS.md`, F1, F2): the file `open.path` does not exist: the answer is empty and the call makes no file.
-	## Else it sets `PRAGMA busy_timeout` to `open.busy_ms` first (before the WAL switch, else a second process fails at once), then reads `PRAGMA user_version` (R-TF1). A version that is larger than
+	## Else it opens one connection for the call with the busy timeout `open.busy_ms` as an open option (so a second process does not fail at once at the WAL switch), then reads `PRAGMA user_version` (R-TF1). A version that is larger than
 	## `open.format` gives `Err(TooNew(version))`, and nothing else is done: not even the WAL switch, because it changes the file header (R-TF3: the bytes of the file stay the same). Else it does
 	## `PRAGMA journal_mode=WAL` (a failure of this switch is not an error: SQLite keeps its default journal, R-CC8).
 	## The version 0 (a file with no schema yet) gives the empty answer. A query with no key gives the empty answer. A lock that stays held for `open.busy_ms` gives `Err(Busy)`. Another failure gives `Err(Failed(text))`.

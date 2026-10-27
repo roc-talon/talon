@@ -22,7 +22,7 @@ RealBase :: [].{
 	command : Str, List(Str), List((Str, Str)) -> Cmd.Command
 	command = |program, args, env| Cmd.new(OsStr.from_str(program)).args(args.map(OsStr.from_str)).envs(env.map(|(name, value)| (OsStr.from_str(name), OsStr.from_str(value))))
 
-	## The text of a child that did not start, as basic-cli 0.25 gave it: the IO error (`NotFound`). `run!` puts it in `IO(..)`.
+	## The text of a child that did not start, as basic-cli gave it: the IO error (`NotFound`). `run!` puts it in `IO(..)`.
 	start_err : [CmdErr(Cmd.Err), Interrupted] -> Str
 	start_err = |err| match err {
 		CmdErr(StartFailed(io, _)) => Str.inspect(io)
