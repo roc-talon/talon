@@ -1,0 +1,6 @@
+# R-FE2 R-SO14 (as closure/cl3-frozen-none): the unbundle of core makes the dir of its hash with the main.roc of fx/pkgs (the first rule whose needle is in the arguments answers, so the unbundle rule comes first), then the download of the package (.tar.zst: the file is {out}) and of a compiler (.tar.gz), its extract and its chmod.
+unbundle 8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst	0	-	-	dir:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r;copy:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc={w}/fx/pkgs/acme_core_1.0.0.roc
+.tar.zst	0	-	-	file:{out}
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

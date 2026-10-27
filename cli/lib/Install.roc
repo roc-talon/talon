@@ -69,14 +69,18 @@ Install :: [].{
 
 	# Steps 2 to 4: the environment, the time, and the project (`remove` makes the same calls in the same order).
 	begin! : Fx, Args => Try({ env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, Fail)
-	begin! = |fx, args| {
+	begin! = |fx, args| Install.begin_toml!(fx, args).map_ok(|got| got.start)
+
+	## Slice 086: `begin!` and the text of the `talon.toml` of the project (`Project.find_text!`, no new call).
+	begin_toml! : Fx, Args => Try({ start : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, toml : Try(Str, [NoToml]) }, Fail)
+	begin_toml! = |fx, args| {
 		got = Install.begin_loose!(fx, args)?
-		project = got.project?
-		Ok({ env: got.env, roots: got.roots, net: got.net, now: got.now, project })
+		found = got.found?
+		Ok({ start: { env: got.env, roots: got.roots, net: got.net, now: got.now, project: found.project }, toml: found.text })
 	}
 
 	## Slice 056 (Q3 of the review): the calls of `begin!`, but a failure of the search for the project file is the field `project`, not the failure of the run (`add --tool` makes `talon.toml` in `cwd` when `ToolsPlan.no_project` is true for it). `cwd` is the answer of the one `cwd!` call.
-	begin_loose! : Fx, Args => Try({ env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, cwd : Str, project : Try(Project, Fail) }, Fail)
+	begin_loose! : Fx, Args => Try({ env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, cwd : Str, project : Try(Project, Fail), found : Try({ project : Project, text : Try(Str, [NoToml]) }, Fail) }, Fail)
 	begin_loose! = |fx, args| {
 		env = fx.env_all!()
 		roots = Roots.from_env(env)?
@@ -87,8 +91,8 @@ Install :: [].{
 			Err(_) => ""
 		}
 		cwd = fx.cwd!()
-		project = Project.find!(fx, { start: cwd, file: args.file, home })
-		Ok({ env, roots, net, now, cwd, project })
+		found = Project.find_text!(fx, { start: cwd, file: args.file, home })
+		Ok({ env, roots, net, now, cwd, project: found.map_ok(|f| f.project), found })
 	}
 
 	# Step 5, R-WS12: a run that needs a member (`add` with names, `remove`) needs a current member. No `Fx` call is made after the project is found.

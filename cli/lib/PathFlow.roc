@@ -5,15 +5,19 @@ import Fail
 import Fetch
 import Fx
 import Install
+import Intent
 import Known
 import Locked
 import Mode
 import Net
+import NoRank
 import Out
 import PathCmd
+import Project
 import RocInstall
 import Roots
 import Start
+import Text
 
 ## The command `tln path <alias>` (slice 055, R-CM25, R-PTH1 to R-PTH5, R-PD14, R-PD9): in direct style over `Fx` (TESTING.md 2.2, part C). `PathCmd` has the decisions. `Run.run!` calls it for the command `path`.
 ##
@@ -22,11 +26,11 @@ import Start
 ## | # | Step | Rule |
 ## | --- | --- | --- |
 ## | 1 | `PathCmd.read(args)`. A failure is printed as `Common.failed!` does (no `Fx` call). | R-PTH1, R-EC2 |
-## | 2 | `Install.begin!` (environment, time, project) | R-PD14, R-PD1 to R-PD8 |
+## | 2 | `Install.begin_toml!` (environment, time, project, the text of its `talon.toml`) | R-PD14, R-PD1 to R-PD8 |
 ## | 3 | A workspace root with no current member (answer Q1 of the review): `Install.check_member(Bool.True, project)`, as `add` and `remove`: exit 2 that lists the members. L2 `path/pt1-entry` run 9. | R-PD5, R-WS12 |
 ## | 4 | `canonical!` and `Known.record!` of the member files: the run records the project, also when it fails later | R-PTH4, R-PD9 |
 ## | 5 | One `read_files!` of the project file (`Install.begin!` read it before: the log has 2 reads, decision D1), `Locked.read`, `PathCmd.pick`. No other read: a file in the directory of the entry is never read. | R-PTH1, R-PTH3, R-PTH5 |
-## | 6 | A release entry: `RocInstall.read_config!` (one `read_files!` of `config.toml`: `default-roc` is the selected compiler of the fetch, R-FE4, R-SO6, decision D1 of slice 064), then `Fetch.packages!` for its URL (nothing is resolved, no project file is written). A failure is the failure of the run (`--offline` and a missing directory: exit 15). A path entry: no fetch. | R-PTH2, R-FE2, R-FE3, R-FE7 |
+## | 6 | A release entry: `RocInstall.read_config!` (one `read_files!` of `config.toml`: `default-roc` is the selected compiler of the fetch, R-FE4, R-SO6, decision D1 of slice 064), then `Fetch.packages!` for its URL. Slice 086: the R-SO14 pick gets the `[resolution]` list and age and the `[toolchain] nightly` of the project `talon.toml` (`project_toml`, the text of step 2; a file that is not valid is exit 19) (nothing is resolved, no project file is written). A failure is the failure of the run (`--offline` and a missing directory: exit 15). A path entry: no fetch. | R-PTH2, R-FE2, R-FE3, R-FE7 |
 ## | 7 | The output | R-PTH1, R-J1 to R-J6 |
 ##
 ## The output: stdout is the line of `PathCmd.text`, nothing else (also with `--quiet`: it is the answer, R-FL4). With `--json` stdout is the envelope `Out.json_ok({ command: args.typed, data: PathCmd.data(entry) })`. A failure is printed with `Common.failed!`.
@@ -52,7 +56,8 @@ PathFlow :: [].{
 # Steps 2 to 6: the project, the record, the entry, and the fetch of a release entry.
 flow! : Fx, Args, Str => Try(PathCmd.Entry, Fail)
 flow! = |fx, args, alias| {
-	start = Install.begin!(fx, args)?
+	begun = Install.begin_toml!(fx, args)?
+	start = begun.start
 	Install.check_member(Bool.True, start.project)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 	file = start.project.file ?? ""
@@ -63,7 +68,8 @@ flow! = |fx, args, alias| {
 		Release(url) => {
 			config = RocInstall.read_config!(fx, start.roots)?
 			selected = Fetch.selected({ held: "", default: config.default_roc ?? "" })
-			fetch!(fx, { roots: start.roots, net: start.net, url, selected, hashes: release_hashes(rows), downloads: downloads_of(args, start.env) })?
+			project = project_toml(start.project, begun.toml)?
+			fetch!(fx, { roots: start.roots, net: start.net, url, selected, hashes: release_hashes(rows), project, downloads: downloads_of(args, start.env) })?
 		}
 	}
 	Ok(entry)
@@ -77,12 +83,28 @@ rows_of! = |fx, file| match fx.read_files!([file]) {
 }
 
 # Step 6, R-PTH2: the release is fetched when its directory is missing. The result is not read.
-# R-C14: `tln path` reads no `talon.toml`, so the R-SO14 pick gets only the list of `config.toml` (`exclude: []`).
-fetch! : Fx, { roots : Roots, net : Net.Settings, url : Str, selected : Str, hashes : List(Str), downloads : Start.Downloads } => Try({}, Fail)
-fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.downloads.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Project(facts.hashes), exclude: [], downloads: facts.downloads }) }), downloader: facts.net.downloader }) {
+# R-C14, R-C7, R-NS9 (slice 086): the R-SO14 pick gets the list, the age and the switch of the project `talon.toml`.
+fetch! : Fx, { roots : Roots, net : Net.Settings, url : Str, selected : Str, hashes : List(Str), project : { exclude : List(Str), toml : NoRank.Toml }, downloads : Start.Downloads } => Try({}, Fail)
+fetch! = |fx, facts| match Fetch.packages!(fx, { roots: facts.roots, urls: [facts.url], offline: facts.downloads.offline, unbundler: Choose({ selected: facts.selected, none: Download({ scope: Project(facts.hashes), exclude: facts.project.exclude, toml: facts.project.toml, downloads: facts.downloads }) }), downloader: facts.net.downloader }) {
 	[Ok(_)] => Ok({})
 	[Err(fail)] => Err(fail)
 	_ => Err(Fail.new(Internal, "the fetch of ${facts.url} gave no answer"))
+}
+
+# Slice 086: the `[resolution]` list and age and the `[toolchain] nightly` of the `talon.toml` of the project (the text that `Project.find_text!` read). A file that is not valid is exit 19 (R-C13, R-TF4).
+# The role is `Member` for a member `talon.toml` of a workspace, as in `ResolveLoad`.
+project_toml : Project, Try(Str, [NoToml]) -> Try({ exclude : List(Str), toml : NoRank.Toml }, Fail)
+project_toml = |project, text| match (project.toml, text) {
+	(Ok(path), Ok(content)) => {
+		role = match project.workspace {
+			Ok(ws) => if path == Text.join(ws.root, "talon.toml") Root else Member
+			Err(Standalone) => Root
+		}
+		read = Intent.read({ path, text: content, role })?
+		resolution = read.intent.resolution
+		Ok({ exclude: resolution.min_release_age_exclude, toml: { min_age: resolution.min_release_age, nightly: read.intent.toolchain.nightly } })
+	}
+	_ => Ok({ exclude: [], toml: NoRank.no_toml })
 }
 
 # R-SO23: the hashes of the release entries of the project file (the facts of the fetch with no compiler, R-SO14 (1)).

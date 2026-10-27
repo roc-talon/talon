@@ -15,6 +15,7 @@ import Patched
 import Pin
 import Project
 import Roots
+import Setting
 import Text
 import Toolchain
 
@@ -280,7 +281,7 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: config.min_release_age ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
+		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: toml.age, user: config.min_release_age }) ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
 	}
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
@@ -348,25 +349,25 @@ text_of = |read, path| match read.find_first(|(file, _)| file == path) {
 }
 
 # R-SO4, R-TF4, R-PX5: the `[toolchain]` table and the `[patch]` table of the `talon.toml`. A file that does not parse is exit 19 (Q5). The proxy prints no warning (D10).
-read_toml : Reads, List(Str) -> Try({ toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), path : Str }, Fail)
+read_toml : Reads, List(Str) -> Try({ toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), age : Try(U64, [Unset]), path : Str }, Fail)
 read_toml = |read, tomls| match tomls {
 	[path] => match text_of(read, path) {
 		Ok(text) => {
 			scanned = Intent.read({ path, text, role: Root })?
-			Ok({ toolchain: scanned.intent.toolchain, patches: scanned.intent.patches, exclude: scanned.intent.resolution.min_release_age_exclude, path })
+			Ok({ toolchain: scanned.intent.toolchain, patches: scanned.intent.patches, exclude: scanned.intent.resolution.min_release_age_exclude, age: scanned.intent.resolution.min_release_age, path })
 		}
-		Err(NotFound) => Ok({ toolchain: no_toolchain, patches: [], exclude: [], path: "" })
+		Err(NotFound) => Ok({ toolchain: no_toolchain, patches: [], exclude: [], age: Err(Unset), path: "" })
 		Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 	}
-	_ => Ok({ toolchain: no_toolchain, patches: [], exclude: [], path: "" })
+	_ => Ok({ toolchain: no_toolchain, patches: [], exclude: [], age: Err(Unset), path: "" })
 }
 
-unread : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), path : Str }
-unread = { toolchain: no_toolchain, patches: [], exclude: [], path: "" }
+unread : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), age : Try(U64, [Unset]), path : Str }
+unread = { toolchain: no_toolchain, patches: [], exclude: [], age: Err(Unset), path: "" }
 
 # R-PX5, R-PD6, R-WS5: the `[patch]` table comes from the nearest `talon.toml` of the target file, and from no other file (no merge). The root file is `reuse`d when it is the nearest one and it was read.
 # Another file is a member file of its own (role `Member`). With `Patches` the root file is the nearest one too, and its role is `Root`.
-patch_table : Reads, { nearest : Try(Str, [NoToml]), root : List(Str), rooted : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), path : Str }, reuse : Bool } -> Try({ patches : List(Intent.PatchEntry), path : Str }, Fail)
+patch_table : Reads, { nearest : Try(Str, [NoToml]), root : List(Str), rooted : { toolchain : TomlToolchain, patches : List(Intent.PatchEntry), exclude : List(Str), age : Try(U64, [Unset]), path : Str }, reuse : Bool } -> Try({ patches : List(Intent.PatchEntry), path : Str }, Fail)
 patch_table = |read, x| match x.nearest {
 	Err(NoToml) => Ok({ patches: [], path: "" })
 	Ok(path) => {

@@ -1,0 +1,6 @@
+# R-PTH2 R-SO14 R-C14 R-C15 R-C16 (slice 086): `tln path core` in p1. The package core is not in the cache, nothing is installed, no default, no roc on PATH: the fetch needs a compiler for `roc unbundle`, so Talon picks one (R-SO14 (1): no hash has a fact, so the latest in the channel). TALON_NOW is 2026-10-20T15:00:00Z: N4 (10-19) is 1 day old, N3 (10-18) is exactly 2 days old. The `talon.toml` of p1 has `[resolution] min-release-age-exclude = ["roc-lang/nightlies"]`, `config.toml` has no list. R-C14: the list is the union, so N4 is not hidden: the note on stderr, the download of N4, the default, `roc unbundle` with N4.
+cwd:p1 env:TALON_AUTO_INSTALL=yes path core
+# R-SO14 R-C7 (slice 086, the control run): p2 has the same header and no `talon.toml`, home2 has no config.toml. The age hides N4: N3, no note.
+cwd:p2 env:HOME={w}/home2 env:TALON_AUTO_INSTALL=yes path core
+# R-C7 R-C15 R-SO14 (slice 086): the `talon.toml` of p3 has `[resolution] min-release-age = "0d"`, home3 has no config.toml. R-C7: the value of `talon.toml` replaces the value of `config.toml` (and the default 2d). "0d" hides nothing: N4. No note (R-C16: N4 is not younger than 0d).
+cwd:p3 env:HOME={w}/home3 env:TALON_AUTO_INSTALL=yes path core

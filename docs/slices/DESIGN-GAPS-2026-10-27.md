@@ -90,6 +90,7 @@ The test agent wrote the tests of slices 081 to 085 and raised points. The user 
 | --- | --- | --- |
 | Q3 | `Age.hides` with `min_age` 0 and a `published_at` after `now` | `Age.hides` is False for `min_age` 0, also for a future time (R-C7: `"0d"` hides nothing). It is a row in slice 081 (`AgeTest` `hides`) and in slice 084 (Q-T4). `Age.note` is `Err(None)` for `min_age` 0, with the same guard. |
 | Q7 | The name check of `init --platform` (slice 085, T2) | The test agent's reading is the rule: the whole text is read; the part before the first `@` is exactly two non-empty parts at one `/`; at most one `@`. So `acme/pfx@1.2.0/x`, `acme/@1.2.0`, `a/b/c@^1` and `acme/pfx@1.2.0@x` are name errors (`is not a platform name: use owner/repo or owner/repo@1.2.3`), and `acme/pfx@` is a version error. The text of section 2 of slice 085 says so. |
+| Q8 | R-C15 "The list does not change these rules" names `tln install --frozen` ("They make no list call and no choice"). R-LF1 and R-FE4 make the `--frozen` fetch use the pick of R-SO14 when no compiler is installed. (Slice 086.) | The user's reading (review of slice 086, 2026-10-27): the row is for the packages only (`--frozen` resolves nothing). The compiler pick of R-SO14 in a `--frozen` fetch (and in `tln path`, R-PTH2) still uses the lists and the `min-release-age` of the command (the last row of the R-C15 place table, R-C16), and the `nightly` switch of the project (R-SO15, R-NS9). No design text changes. |
 
 ## D. Rules changed or added
 

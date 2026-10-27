@@ -1,0 +1,8 @@
+# Slice 086 (from closure/cl3-frozen-none): the unbundles of the packages, the download of a package (.tar.zst) and of a compiler (.tar.gz), its extract and its chmod.
+unbundle 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst	0	-	-	dir:{cwd}/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK;copy:{cwd}/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc={w}/fx/pkgs/acme_pfx_0.1.1.platform
+unbundle 8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst	0	-	-	dir:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r;copy:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc={w}/fx/pkgs/acme_core_1.0.0.roc
+unbundle ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst	0	-	-	dir:{cwd}/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L;copy:{cwd}/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc={w}/fx/pkgs/acme_lex_1.0.0.roc
+.tar.zst	0	-	-	file:{out}
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

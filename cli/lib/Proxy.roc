@@ -287,7 +287,7 @@ offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, en
 # else the latest. The proxy runs no probe (R-PX2). A pick that is not installed is `Missing`, and `install_missing!` applies the consent rules of the proxy.
 picked! : Fx, { loaded : Base.Loaded, roots : Roots, env : List((Str, Str)), known : List(Str) } => Try(Base.Selected, Fail)
 picked! = |fx, run| {
-	id = NoRank.pick_id!(fx, { roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), exclude: run.loaded.exclude, listed: run.known })?
+	id = NoRank.pick_id!(fx, { roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), exclude: run.loaded.exclude, toml: { min_age: Ok(run.loaded.min_age), nightly: run.loaded.toml_nightly }, listed: run.known })?
 	Ok({ id, rank: Picked, state: if run.known.contains(id) Installed else Missing })
 }
 

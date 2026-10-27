@@ -1,0 +1,4 @@
+# R-NS9 R-NS2 R-SO14 R-SO15 R-PTH2 R-FE4 (slice 086, finding 3): `tln path core` in p1, nothing installed, no default, no roc on PATH, so the fetch needs the R-SO14 pick: the newest compiler in the channel, and the channel is the `nightly` switch (R-SO15, R-NS8 to R-NS11). The `talon.toml` of p1 has `[toolchain] nightly = false` (R-NS9), home has no config.toml. Off, the domain is the releases only, and Talon knows no release source (R-NS2): exit 10 (`no_tuple`), the error names the switch and its source. No compiler is downloaded, no default is written, core is not fetched.
+cwd:p1 env:TALON_AUTO_INSTALL=yes path core
+# R-NS8 R-NS9 (slice 086, the control run): the same project, home2, `TALON_NIGHTLY=1`: the environment has priority over talon.toml (R-NS8), so the switch is on: N3 (the age hides N4), the download, the default.
+cwd:p1 env:HOME={w}/home2 env:TALON_AUTO_INSTALL=yes env:TALON_NIGHTLY=1 path core

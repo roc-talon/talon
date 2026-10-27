@@ -161,10 +161,14 @@ Project := {
 	##
 	## With no project file (no current member), step 5 does not run.
 	find! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try(Project, Fail)
-	find! = |fx, facts| {
-		found = Project.find_loose!(fx, facts)?
+	find! = |fx, facts| Project.find_text!(fx, facts).map_ok(|found| found.project)
+
+	## Slice 086: `find!` with the text of the `talon.toml` of the project (`find_loose!`).
+	find_text! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, text : Try(Str, [NoToml]) }, Fail)
+	find_text! = |fx, facts| {
+		found = search!(fx, facts)?
 		match found.header {
-			Ok({}) => Ok(found.project)
+			Ok({}) => Ok({ project: found.project, text: found.text })
 			Err(fail) => Err(fail)
 		}
 	}
@@ -172,30 +176,7 @@ Project := {
 	## Slice 023, R-TF5 (review of Q6): `find!` with the same arguments and the same calls (steps 1 to 5), but a header that `Project.check_header` refuses is not a failure of the search. The result has the
 	## project and `header`, the result of the check (`Ok({})`, or the failure that `find!` gives). Any other failure stops the search as in `find!`. The `roc` proxy uses it: a bad header drops only the `roc:` pin.
 	find_loose! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, header : Try({}, Fail) }, Fail)
-	find_loose! = |fx, facts| {
-		start_and_file = match facts.file {
-			Ok(typed) => match fx.canonical!([Project.absolute({ base: facts.start, path: typed })]) {
-				[Ok(real)] => Ok((Text.dir_of(real), Ok(real)))
-				_ => Err(Fail.new(Usage, "${typed}: no such file"))
-			}
-			Err(Unset) => Ok((facts.start, Err(Unset)))
-		}
-		(start, file) = start_and_file?
-		listed_walk = walk!(fx, start, facts.home, [])
-		walk = read_tomls!(fx, listed_walk)?
-		members = match Project.root_of({ walk: walk })? {
-			Ok(root) => expand_members!(fx, root, listed_walk)
-			Err(NoWorkspace) => []
-		}
-		project = Project.find({ file, walk, members })?
-		match project.file {
-			Ok(path) => {
-				text = read_text!(fx, path)?
-				Ok({ project, header: Project.check_header({ path, text }).map_ok(|_| {}) })
-			}
-			Err(NoCurrent) => Ok({ project, header: Ok({}) })
-		}
-	}
+	find_loose! = |fx, facts| search!(fx, facts).map_ok(|found| { project: found.project, header: found.header })
 
 	## Slice 057, R-RUN12, R-PD2, R-PD3: the walk of `find!` with no project file: the steps 2 to 4 of `find!` (the `list_dirs!` of each directory from `start` up to the stop of R-PD2, one `read_files!` of the `talon.toml` files of the walk, the `list_dirs!` that `Members.step` needs
 	## for the root). `walk` is the directories nearest first, the last one is the stop directory. `root` is the workspace root directory (R-PD3), `members` the member files of the root (sorted, `[]` for no root). The failures are those of `find!` for the same steps
@@ -296,6 +277,44 @@ climb_version : List(Dir) -> Try(Str, [None])
 climb_version = |walk| match walk {
 	[] => Err(None)
 	[d, .. as above] => if d.names.contains(".roc-version") Ok(Text.join(d.dir, ".roc-version")) else climb_version(above)
+}
+
+# Slice 086: the steps of `find_loose!`, and `text`: the text of the `talon.toml` of the project (`toml`), from the read of step 3. No new call.
+search! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, header : Try({}, Fail), text : Try(Str, [NoToml]) }, Fail)
+search! = |fx, facts| {
+	start_and_file = match facts.file {
+		Ok(typed) => match fx.canonical!([Project.absolute({ base: facts.start, path: typed })]) {
+			[Ok(real)] => Ok((Text.dir_of(real), Ok(real)))
+			_ => Err(Fail.new(Usage, "${typed}: no such file"))
+		}
+		Err(Unset) => Ok((facts.start, Err(Unset)))
+	}
+	(start, file) = start_and_file?
+	listed_walk = walk!(fx, start, facts.home, [])
+	walk = read_tomls!(fx, listed_walk)?
+	members = match Project.root_of({ walk: walk })? {
+		Ok(root) => expand_members!(fx, root, listed_walk)
+		Err(NoWorkspace) => []
+	}
+	project = Project.find({ file, walk, members })?
+	toml = toml_text(walk, project.toml)
+	match project.file {
+		Ok(path) => {
+			text = read_text!(fx, path)?
+			Ok({ project, header: Project.check_header({ path, text }).map_ok(|_| {}), text: toml })
+		}
+		Err(NoCurrent) => Ok({ project, header: Ok({}), text: toml })
+	}
+}
+
+# Slice 086: the text of the `talon.toml` at `path`, from the walk.
+toml_text : List(Dir), Try(Str, [NoToml]) -> Try(Str, [NoToml])
+toml_text = |walk, path| match path {
+	Ok(file) => match walk.find_first(|d| Text.join(d.dir, "talon.toml") == file) {
+		Ok(d) => d.toml.map_err(|_| NoToml)
+		Err(_) => Err(NoToml)
+	}
+	Err(NoToml) => Err(NoToml)
 }
 
 # A project file that is not a member: the `talon.toml` of its own directory, when that is not the root file.

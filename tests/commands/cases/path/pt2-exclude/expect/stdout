@@ -1,0 +1,9 @@
+== cwd:p1 env:TALON_AUTO_INSTALL=yes path core
+$HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r
+exit 0
+== cwd:p2 env:HOME={w}/home2 env:TALON_AUTO_INSTALL=yes path core
+$HOME2/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r
+exit 0
+== cwd:p3 env:HOME={w}/home3 env:TALON_AUTO_INSTALL=yes path core
+$HOME3/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r
+exit 0

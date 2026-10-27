@@ -1,0 +1,6 @@
+m1: FAIL closure/cl4-frozen-age FAIL path/pt2-exclude commands: 7 passed, 2 failed 
+m2: FAIL path/pt3-nightly-switch commands: 8 passed, 1 failed 
+m3: FAIL path/pt2-exclude commands: 8 passed, 1 failed 
+m4: FAIL path/pt2-exclude FAIL path/pt3-nightly-switch commands: 7 passed, 2 failed 
+m5: FAIL closure/cl4-frozen-age commands: 8 passed, 1 failed 
+m6: FAIL closure/cl4-frozen-age FAIL path/pt2-exclude FAIL path/pt3-nightly-switch commands: 6 passed, 3 failed 

@@ -1,0 +1,5 @@
+== cwd:p1 env:TALON_AUTO_INSTALL=yes path core
+exit 10
+== cwd:p1 env:HOME={w}/home2 env:TALON_AUTO_INSTALL=yes env:TALON_NIGHTLY=1 path core
+$HOME2/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r
+exit 0

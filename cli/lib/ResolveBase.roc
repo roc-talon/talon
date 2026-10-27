@@ -102,7 +102,9 @@ ResolveBase :: [].{
 				_ => Err(NotRelease)
 			},
 		)
-		Download({ scope: Project(hashes), exclude: loaded.intent.resolution.min_release_age_exclude, downloads: ResolveBase.ladder_downloads(request) })
+		# Slice 086 (R-C7, R-NS9): the age and the switch of the project go to the pick too.
+		toml = { min_age: loaded.intent.resolution.min_release_age, nightly: loaded.intent.toolchain.nightly }
+		Download({ scope: Project(hashes), exclude: loaded.intent.resolution.min_release_age_exclude, toml, downloads: ResolveBase.ladder_downloads(request) })
 	}
 
 	Fact : { url : Str, release : Release }

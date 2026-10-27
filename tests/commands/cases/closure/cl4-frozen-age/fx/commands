@@ -1,0 +1,4 @@
+# R-SO14 R-C7 R-LY4 R-LF1 R-FE4 (slice 086): `install --frozen` in p1 (a platform and the package core, no pin). Nothing is installed, no default, no roc on PATH, no compat.db fact: the fetch needs `roc unbundle`, so R-SO14 picks the latest in the channel. TALON_NOW is 2026-10-20T15:00:00Z: N4 (10-19) is 1 day old, N3 (10-18) is exactly 2 days old. The `talon.toml` of p1 has `[resolution] min-release-age = "0d"`, home has no config.toml. R-C7: the value of talon.toml replaces the default 2d, and "0d" hides nothing: N4 is downloaded, it becomes `default-roc`, and `roc unbundle` runs with it. No note (R-C16: N4 is not younger than 0d).
+install --frozen --file p1/main.roc --allow-downloads
+# R-SO14 R-C7 (slice 086, the control run): p2 has the same header and no talon.toml, home2 has no config.toml: the default 2d hides N4, so N3.
+install --frozen --file p2/main.roc --allow-downloads env:HOME={w}/home2
