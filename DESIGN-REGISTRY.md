@@ -972,25 +972,25 @@ Why the check uses module names and not symbols. A Roc package header lists its 
 
 JSPI (JavaScript Promise Integration) lets a synchronous wasm import wait for a JS promise. So Roc code calls `fetch!` as a normal effect, and the Roc compiler needs no async support. The host is in Zig.
 
-State of 2026-10-17: the platform is built (`cloudflare-workers/PLAN.md`, order of work rows 1 to 11). This section describes it as built. The first plan had a pool of instances (16 requests each, retire at 32 MB). `cloudflare-workers/PLAN.md:2990` (problem 12) replaced it with one instance for each isolate.
+State of 2026-10-27: the platform is built (`cloudflare-workers/PLAN.md`, order of work rows 1 to 11) and released (0.0.1; 0.0.2 is prepared, not released). This section describes it as built. The first plan had a pool of instances (16 requests each, retire at 32 MB). `cloudflare-workers/PLAN.md` problem 12 replaced it with one instance for each isolate. The facts of the platform are in Design 6.1. The app API is `cloudflare-workers/API.md`, and the signatures are in `cloudflare-workers/MODULES.md`.
 
 Evidence:
 
 | Evidence | Result |
 | --- | --- |
 | Local test (`scratchpad/jspi/`, workerd `2026-10-12`, no compatibility flag) | An import wrapped in `WebAssembly.Suspending` waits on a timer and a subrequest. 3 parallel calls through `WebAssembly.promising` return correct values. |
-| Edge run (2026-10-17, Free plan, colo `TBS`, `cloudflare-workers/PLAN.md:2709`) | The conformance checks of the platform run on the Cloudflare network. Run 1: 213 pass, 69 fail. Each fail is a check that cannot run on the edge, run data, or a real difference with its own row (E1 to E53). No row stops JSPI. |
+| Edge run (2026-10-17, Free plan, colo `TBS`, `cloudflare-workers/PLAN.md` "Status of the edge run") | The conformance checks of the platform run on the Cloudflare network. Run 1: 213 pass, 69 fail. Each fail is a check that cannot run on the edge, run data, or a real difference with its own row (E1 to E53). No row stops JSPI. |
 | Community | workers-zig and Almide report JSPI on the Cloudflare edge (see Sources). |
 
 Patterns of the Worker host:
 
 | # | Pattern | Talon Worker |
 | --- | --- | --- |
-| R-WH1 | App API | `cloudflare-workers/API.md`. One entry `event! : Event => Outcome` for all Workers handler kinds. The app gives its handlers in a `Worker` record (`Worker.{ fetch!, scheduled!, ... }`, `cloudflare-workers/MODULES.md:122`). Typed modules (`Http`, `D1`, `R2`, `Cache`, `WebCrypto`, `Cbor`, ..., signatures in `cloudflare-workers/MODULES.md`) build programs of JS ops, and one JSPI wait runs one program (`await!`). Sync JS APIs use `call!` with no wait. Zig code with no Workers API (zstd) uses `native!`. The app takes the platform by release URL, and the platform brings the `Http` and `Cbor` packages (`cloudflare-workers/README.md:27`). API.md 1 is the audit of what the registry needs (RN1 to RN15). |
+| R-WH1 | App API | `cloudflare-workers/API.md`. One entry `event! : Event => Outcome` for all Workers handler kinds. The app gives its handlers to `Worker.new` (`worker = Worker.new({ fetch!, scheduled!, ... })`, `event! = \|e\| worker.event!(e)`, `cloudflare-workers/MODULES.md` 2, 3). Typed modules (`Http`, `D1`, `R2`, `Kv`, `Cache`, `Queue`, `Object`, `WebCrypto`, `Memo`, ..., signatures in `cloudflare-workers/MODULES.md`) build programs of JS ops, and one JSPI wait runs one program (`Js.await!`). Sync JS APIs use `Js.call!` with no wait. Zig code with no Workers API (zstd, BLAKE3) uses `Native`. `Js`, `Io`, `Native` and `Cbor` are the low-level modules, for an API with no typed module yet (`cloudflare-workers/MODULES.md` 1). The app takes the platform by release URL, and the platform brings the `http` and `cbor` packages (`cloudflare-workers/README.md` "What a release has"). API.md 1 is the audit of what the registry needs (RN1 to RN19). |
 | R-WH2 | Arguments | JS reads them before its first `await`, because they can be on the stack. |
-| R-WH3 | Results | JS writes the body with `js_alloc` into a heap record, not the stack. |
+| R-WH3 | Results and bodies | JS writes the result bytes of a program with `js_alloc` into a heap block, not the stack. The host decodes them into values that the task owns (`cloudflare-workers/API.md` 9, RS4). A body stays in JS as `Stream(Ref)` (a request body, a fetch response body, an R2 body). Bytes go into wasm only when Roc asks, with a limit (`Body.bytes_with!`, `Body.chunk!`). A stream given to a `Response` or an R2 put goes back to JS with no copy (RS3, `cloudflare-workers/PLAN.md` 10). So the ingest reads `main.roc` from a large archive and wasm memory does not grow by the archive size. |
 | R-WH4 | Tests | Pure logic: `roc test`. Handlers: in Miniflare with local D1 and R2 and a fake GitHub service (API.md 11). Not a scripted record in `roc test`: an `expect` cannot run an effect (`research/core-shape/`). |
-| R-WH5 | Shadow stack | JSPI keeps the wasm stack, not the shadow stack (`__stack_pointer`) in linear memory. The host copies the used stack to the heap at a wait and back at resume, so many tasks share one instance (`cloudflare-workers/host/host.zig:213`, `:246`). One instance for each isolate takes all tasks (R-WH6). After a trap, the host frees the heap of the dead task (owner tags, see below). |
+| R-WH5 | Shadow stack | JSPI keeps the wasm stack, not the shadow stack (`__stack_pointer`) in linear memory. The host copies the used stack to the heap at a wait and back at resume, so many tasks share one instance (`cloudflare-workers/host/host.zig:213`, `:246`). Only one task is in wasm at a time: a new run and a resume wait until the task that owns the stack leaves wasm (at its wait, or after the catch of its trap), so a trap never leaves its stack state to another task (`cloudflare-workers/js/wait.js:33`, `:46`). One instance for each isolate takes all tasks (R-WH6). After a trap, the host frees the heap of the dead task (owner tags, see below). |
 
 The host in one picture:
 
@@ -1020,7 +1020,7 @@ Code, reproduce commands and all tables: `cloudflare-workers/bench/README.md`. S
 
 The stack copy costs less than the noise up to 64 KB. Instantiation is the real cost, and it grows with module size: the registry app will be larger than 49 KB.
 
-Later measure with the final host (v7 allocator, check at each resume, 64 requests at once, full app, `cloudflare-workers/PLAN.md:2990`):
+Later measure with the final host (v7 allocator, check at each resume, 64 requests at once, full app, `cloudflare-workers/PLAN.md` problem 1, "Cost of variant A", and problem 12, "Costs"). Memory is the wasm memory of all 64 requests:
 
 | Items | A: instance per request | B: one instance, check at each resume (as built) |
 | --- | --- | --- |
@@ -1052,9 +1052,9 @@ R-WH6: The host runs one wasm instance for each isolate, with owner tags and che
 | # | Rule | As built |
 | --- | --- | --- |
 | R-WH7 | Tasks at one time | Up to 254, one slot for each task (`cloudflare-workers/hostlib/alloc.zig:342`). A request that finds no free slot gets a 503 (shed) and the instance stays. Slot 0 is the host and slot 255 is JS. |
-| R-WH8 | After a trap | A clean trap (Roc `crash`, stack overflow, out of memory, CPU signal, cancel): free the pages of the task, keep the instance, the request gets a 503. Any other trap (an engine fault, a trap in host code, a failed sum) is an alarm: the task gets a 503, its pages and slot are freed, and the global check runs before the next task enters. The instance stays when the check passes. When it fails, all tasks get a 503 and a new instance starts (`cloudflare-workers/PLAN.md:406`, M1). |
-| R-WH9 | Memory | No retire at a size. The budget for wasm is `isolateBytes` less `jsReserveBytes` (defaults: 128 MB less 48 MB, so 80 MB). Each grow asks JS first (`js_grow`). A refused grow is a clean out-of-memory trap for that task. While memory is under pressure, new requests get a 503 for `graceMs` (1 s). A dropped instance counts in the budget until the runtime collects it. The allocator also has a cap of 128 MiB (`hostlib/alloc.zig:24`). A developer cap is the option `maxInstanceBytes`. See `cloudflare-workers/js/budget.js:9`. |
-| R-WH10 | Stack | The stack of a task is at most 1 MB (`initial_stack_size` in the platform header, `cloudflare-workers/platform/main.roc:17`), and the layout is stack first, so an overflow does not write over data. A task that goes past it gets a clean trap (canary or out-of-bounds) and a 503. The copy at a wait is the used part only. The first plan had a log line for a copy over 256 KB. It is not built. |
+| R-WH8 | After a trap | A clean trap (Roc `crash`, stack overflow, out of memory, CPU signal, cancel): free the pages of the task, keep the instance, the request gets a 503. Any other trap (an engine fault, a trap in host code, a failed sum) is an alarm: the task gets a 503, its pages and slot are freed, and the global check runs before the next task enters. The instance stays when the check passes. When it fails, all tasks get a 503 and a new instance starts (`cloudflare-workers/PLAN.md` problem 4, M1). |
+| R-WH9 | Memory | No retire at a size. The budget for wasm is `isolateBytes` less `jsReserveBytes` (defaults: 128 MB less 48 MB, so 80 MB). Each grow asks JS first (`js_grow`). A refused grow is a clean out-of-memory trap for that task. While memory is under pressure, new requests get a 503 for `graceMs` (1 s). A dropped instance counts in the budget until the runtime collects it. The allocator also has a cap of 128 MiB (`hostlib/alloc.zig:24`). A developer cap is the option `maxInstanceBytes`. See `cloudflare-workers/js/budget.js:10`. |
+| R-WH10 | Stack | The stack of a task is at most 1 MB (`initial_stack_size` in the platform header, `cloudflare-workers/platform/main.roc:20`), and the layout is stack first, so an overflow does not write over data. A module that is not stack-first throws at the first event. There is no fallback (`cloudflare-workers/PLAN.md` problem 1). A task that goes past it gets a clean trap (canary or out-of-bounds) and a 503. The copy at a wait is the used part only. The first plan had a log line for a copy over 256 KB. It is not built. |
 
 ### Checks at resume
 
@@ -1077,11 +1077,11 @@ The global check reads the allocator tables, the constant data and the host glob
 
 | Item | Value | Source |
 | --- | --- | --- |
-| `resumeCheck` default | `"always"`: check at each resume after other code ran. `"afterAlarm"` is the cheaper option. | `cloudflare-workers/PLAN.md:3022` |
+| `resumeCheck` default | `"always"`: check at each resume after other code ran. `"afterAlarm"` is the cheaper option. The production host refuses `"off"`. | `cloudflare-workers/PLAN.md` problem 4, "Shim options" |
 | `heapCheckEvery` default | 100 requests (the cost stays under 0.1 % of the CPU). It is set from the median request time of the app. | `cloudflare-workers/js/host.js:85` |
-| Cost of `"always"` against no sums, full app, 64 at once | +3.3 % at 200 items, +4.9 % at 2,000 items (8 and 114 µs for each request) | `cloudflare-workers/PLAN.md:3135` |
-| Time of the global check | 0.02 ms (5.8 MB of heap), 0.04 ms (47.9 MB). Cost with N = 100: 0.07 % and 0.02 %. | `cloudflare-workers/PLAN.md:3157` |
-| Wild writes (20,000 requests, 0.5 % write 16 to 4,096 random words, then trap) | With sums: 0 wrong bodies with status 200. With no sums: 4 to 620. | `cloudflare-workers/PLAN.md:3045` |
+| Cost of `"always"` against no sums, full app, 64 at once | +3.3 % at 200 items, +4.9 % at 2,000 items (8 and 114 µs for each request) | `cloudflare-workers/PLAN.md` "Status of step 12f" |
+| Time of the global check | 0.02 ms (5.8 MB of heap), 0.04 ms (47.9 MB). Cost with N = 100: 0.07 % and 0.02 %. | `cloudflare-workers/PLAN.md` "Status of step 12f" |
+| Wild writes (20,000 requests, 0.5 % write 16 to 4,096 random words, then trap) | With sums: 0 wrong bodies with status 200. With no sums: 4 to 620. | `cloudflare-workers/PLAN.md` problem 12, "Costs" |
 
 Not found by the checks: a wild write into the memory of the task that writes it, and a change in a block that JS writes during a wait (the owner word and the length of the response block are checked).
 
@@ -1089,14 +1089,42 @@ Not found by the checks: a wild write into the memory of the task that writes it
 
 | Case | What the platform does | Source |
 | --- | --- | --- |
-| A wait that never settles | The shim cancels the task at its deadline. One wait of a `Fetch` task before the response: 120 s. A `Scheduled`, `Queue` or `Alarm` task: 15 min for the whole task. After the response: 30 s. A wait on a socket: no deadline. The request gets a 503 and the pages of the task go back at once. | `cloudflare-workers/API.md:655` (10.2) |
-| The client goes away | `request.signal` cancels the task before the response (needs the flag `enable_request_signal`). The edge also cancels an open response stream. | `cloudflare-workers/API.md:655`, `cloudflare-workers/PLAN.md:2709` (E9, E11, E12) |
-| CPU limit | Near the limit, workerd writes 24 to `__instance_signal`. The host checks it at each allocation and wait. The task gets a clean trap (503, cause `cpu`) and the instance stays. If the isolate is stopped (`__instance_terminated`), the next request replaces the instance. | `cloudflare-workers/hostlib/cpu.zig:30`, `cloudflare-workers/PLAN.md:847` (problem 5) |
-| Memory limit | The budget (R-WH9) keeps wasm under the isolate limit, and a refused grow is a 503 for one request only. | `cloudflare-workers/PLAN.md:386` (problem 4) |
+| A wait that never settles | The shim cancels the task at its deadline. One wait of a `Fetch` task before the response: 120 s. A `Scheduled`, `Queue` or `Alarm` task: 15 min for the whole task. After the response: 30 s. A wait on a socket: no deadline. The request gets a 503 and the pages and refs of the task go back at once. | `cloudflare-workers/API.md` 10.2, `cloudflare-workers/js/tasks.js:15` |
+| The client goes away | `request.signal` cancels the task before the response (needs the flag `enable_request_signal`). The edge also cancels an open response stream. | `cloudflare-workers/API.md` 10.2, `cloudflare-workers/PLAN.md` "Status of the edge run" (E9, E11, E12) |
+| CPU limit | Near the limit, workerd writes 24 to `__instance_signal`. The host checks it at each allocation and wait. The task gets a clean trap (503, cause `cpu`) and the instance stays. If the isolate is stopped (`__instance_terminated`), the next request replaces the instance. | `cloudflare-workers/hostlib/cpu.zig:31`, `cloudflare-workers/PLAN.md` problem 5 |
+| Memory limit | The budget (R-WH9) keeps wasm under the isolate limit, and a refused grow is a 503 for one request only. | `cloudflare-workers/PLAN.md` problem 4 |
+
+### Release, shim and project setup
+
+```
+platform release X.Y.Z: <hash>.tar.zst  (one file, CI builds it with compat/last-stack-first-nightly)
+├─ Roc modules (exposed in main.roc) + packages http, cbor by release URL
+├─ targets/wasm32/host.wasm          (production host: no bench exports)
+└─ js/                                (the shim: same version as the host)
+   ├─ index.js ...                    makeHandler, objectClass, entrypointClass
+   ├─ cli.mjs                         sync: writes worker.js, checks wrangler.toml
+   ├─ cfw.json                        { "api": N }: the contract with roc-cfw
+   └─ template/                       files for roc-cfw init
+
+Worker project
+├─ main.roc       header: platform URL (its hash pins the host and the shim)
+├─ talon.toml     [tools] roc-cfw (ref + locked url), [scripts]
+├─ .roc-cfw/      copy of js/ (gitignored), made by roc-cfw sync
+├─ worker.js      written by sync, imports ./.roc-cfw/index.js
+└─ wrangler.toml
+```
+
+| Item | State (2026-10-27) | Source |
+| --- | --- | --- |
+| Platform release | 0.0.1 is released (roc-cbor 0.2.1). 0.0.2 is prepared, not released: `R2.Range` is `R2.ByteRange`, roc-cbor 0.2.2 (a NULL in a record row is no key, a `Bool` reads 0 and 1), `Memo(a)` with the loader at `get!`. | `cloudflare-workers/README.md` "Changes in 0.0.2", `cloudflare-workers/PLAN.md` "Status of the 0.0.2 preparation" |
+| Shim | In the bundle (`js/`). There is no npm package and no `package.json` in a project. | `cloudflare-workers/README.md` "What a release has" |
+| `roc-cfw` | 0.0.1 is released: a basic-cli app, released as an app bundle, so Talon builds it from the locked `url` (CLI 6.4, R-PT6). Commands: `shim`, `sync`, `init`. `sync` finds the bundle with `tln path pf`, copies `js/` to `.roc-cfw/` when the platform hash changed, then runs `node .roc-cfw/cli.mjs sync`. It refuses a `cfw.json` `api` number that it does not support (exit 2). | `cloudflare-workers/research/talon-fit/TRANSITION.md` 1, 5 |
+
+R-WH12: The registry Worker (`worker/`) pins `roc-cfw` in its `talon.toml` `[tools]` (CLI 6.4, R-PT1). Its build script runs `roc build` and then `roc-cfw sync`. Its `worker.js` imports the shim from `.roc-cfw/`. No global install of `roc-cfw`, and no npm package. How the header names the platform (release URL or a path to the submodule) is open: Design Q54.
 
 ### Edge results that matter to the registry
 
-Run on 2026-10-17, Workers Free plan, client in Tbilisi (colo `TBS`), D1 in `EEUR`. Source: `cloudflare-workers/PLAN.md:2709` (E1 to E53), `cloudflare-workers/edge/results/`.
+Run on 2026-10-17, Workers Free plan, client in Tbilisi (colo `TBS`), D1 in `EEUR`. Source: `cloudflare-workers/PLAN.md` "Status of the edge run" (E1 to E53), `cloudflare-workers/edge/results/`.
 
 | Item | Result on the edge | Effect for the registry |
 | --- | --- | --- |
@@ -1113,9 +1141,9 @@ Open for the registry app:
 
 | Item | State | Where |
 | --- | --- | --- |
-| 12g: record the allocator calls of the registry app, replay them against the allocator, measure the heap waste (H7, H8), and set `heapCheckEvery` from the median request time | Waits for the registry app on the platform | `cloudflare-workers/PLAN.md:3133`, Design Q14 |
+| 12g: record the allocator calls of the registry app, replay them against the allocator, measure the heap waste (H7, H8), and set `heapCheckEvery` from the median request time | Waits for the registry app on the platform | `cloudflare-workers/PLAN.md` problem 12 (step 12g), order of work row 13, Design Q14 |
 | A load test of the registry app on the paid plan with `cpu_ms` | Not done. The Free plan refuses `cpu_ms`. | Design Q14, Q28 |
-| The example app deployed by the CI of the platform (11c) | Not done | `cloudflare-workers/PLAN.md:38` (row 11) |
+| The example app deployed by the CI of the platform (11c) | Not done | `cloudflare-workers/PLAN.md` order of work row 11 |
 
 R-WH11: If JSPI is ever removed, Talon returns effects as data, as Joy does. The Roc API (the modules of `cloudflare-workers/API.md`) does not change. Only the platform changes.
 
