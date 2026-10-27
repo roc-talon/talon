@@ -5,6 +5,7 @@ import Common
 import Compiler
 import Del
 import DelFlow
+import Exit
 import Fail
 import Fx
 import Help
@@ -368,8 +369,8 @@ windows! = |fx, scene, plan, renamed| {
 # R-HF11: one `exec!` of `powershell` takes the bin dir out of the user `Path`. It returns the dir.
 user_path! : Fx, Scene => Try(Str, Fail)
 user_path! = |fx, scene| match fx.exec!(Setup.windows_path({ dir: scene.bin, op: Remove })) {
-	Ok(0) => Ok(scene.bin)
-	Ok(code) => Err(Fail.new(Environment, "powershell could not change the user Path: exit code ${code.to_str()}"))
+	Ok(Exited(0)) => Ok(scene.bin)
+	Ok(ended) => Err(Fail.new(Environment, "powershell could not change the user Path: exit code ${Exit.of_child(ended).to_str()}"))
 	Err(NotStarted(text)) => Err(Fail.new(Environment, "cannot start powershell: ${text}"))
 }
 

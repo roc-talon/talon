@@ -1,0 +1,13 @@
+[scripts]
+okb = [{ run = "roc build main.roc", ok-exit = [2] }, "tool-next"]
+warnb = ["roc build main.roc", "tool-never"]
+warnc = "roc check main.roc"
+errb = [{ run = "roc build main.roc --output=bad", ok-exit = [2] }, "tool-never"]
+runr = "roc run main.roc"
+direct = "roc main.roc"
+scr = "scripts/notes.roc"
+tool = "tool-two"
+intool = { in = "sub", run = "tool-two sub", ok-exit = [0, 2] }
+sigt = [{ run = "tool-sig", ok-exit = [130] }, "tool-never"]
+sigr = [{ run = "roc build main.roc --sig", ok-exit = [130] }, "tool-never"]
+pinb = "roc +nightly-2026-10-14-38a3029 build main.roc"

@@ -5,6 +5,7 @@ app [main!] {
 }
 
 import lib.Db
+import lib.Exit
 import lib.Fx
 import lib.Text
 import RealFx
@@ -303,7 +304,7 @@ probe! = |fx, call, rest| match (call, rest) {
 					},
 				)
 				match fx.exec!({ argv: words.drop_first(at + 1), env }) {
-					Ok(code) => say!(fx, "exec ok ${code.to_str()}")
+					Ok(ended) => say!(fx, "exec ok ${Exit.of_child(ended).to_str()}")
 					Err(NotStarted(text)) => say!(fx, "exec err ${text}")
 				}
 			}
@@ -339,7 +340,7 @@ probe! = |fx, call, rest| match (call, rest) {
 					},
 				)
 				match fx.exec_in!({ argv: words.drop_first(at + 1), env, cwd: dir }) {
-					Ok(code) => say!(fx, "exec-in ok ${code.to_str()}")
+					Ok(ended) => say!(fx, "exec-in ok ${Exit.of_child(ended).to_str()}")
 					Err(NotStarted(text)) => say!(fx, "exec-in err ${text}")
 				}
 			}

@@ -1,0 +1,3 @@
+[scripts]
+ok = "tool-ok"
+bad = ["tool-a", { run = "tool-b", ok-exit = [2, 256] }]

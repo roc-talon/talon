@@ -1,4 +1,4 @@
-Slice 058, `tln run --each` (entry `commands`): R-RUN13, R-RUN10 (OP9), R-RUN8 (Q-S13), R-EA1 to R-EA8, R-FL12, R-FL1, R-RUN7, R-RUN9, R-PD9, R-PD3, R-PD5, R-PD6, R-WS5, NC2, NC4, NC5, Q-S6, Q-S12.
+Slice 058, `tln run --each` (entry `commands`): R-RUN13, R-RUN18 (slice 087), R-RUN10 (OP9), R-RUN8 (Q-S13), R-EA1 to R-EA8, R-FL12, R-FL1, R-RUN7, R-RUN9, R-PD9, R-PD3, R-PD5, R-PD6, R-WS5, NC2, NC4, NC5, Q-S6, Q-S12.
 `TALON_NOW=2026-10-15T12:00:00Z`, `project/` has a `.git` (the stop of the walk). The fake runs no child: `fx/exec` gives the exit code by a word of the argv (`tool-fail` 3, `tool-sig` 143, `tool-gone` is not on PATH), else 0.
 Workspace `w1` (root members `workers/*/main.roc` and `zlib/main.roc`; the root has the scripts `build`, `fail` and `ins`, which no `--each` run may start):
 
@@ -33,3 +33,4 @@ Other workspaces: `w2` (a after b by `after`, b after a by a path entry: a cycle
 | 13 | `run --each build` in `w4` | the second node has a shell word: exit 19 before the first step (the first node does not run) | R-RUN2, R-RUN13 |
 | 14 | `run --each build` in `p1` | no workspace: exit 2 | R-RUN13 |
 | 15 | `run --each build` in `w1/workers/solo` | a standalone project inside a workspace directory: the walk stops at its own `talon.toml`, the workspace has no effect (R-PD5): as with no workspace, exit 2. Nothing is recorded, no node runs | R-RUN13, NC2, NC5, R-PD5 |
+| 16 | `run --each warn --keep-going` in `w1` | slice 087: the `warn` step of ledger is `{ run = "tool-two ledger", ok-exit = [2] }` and exits with 2: a pass, with the R-RUN18 note on stderr. So ledger is no failed node: web (after ledger) runs and is not skipped, zlib and api run, exit 0 | R-RUN18, R-EA7, R-RUN5, R-RUN7 |

@@ -107,3 +107,89 @@ The test agent wrote the tests of slices 081 to 085 and raised points. The user 
 | Design 4.2 sample, the index of rule ids | Design | The key in the sample. R-C1 to R-C16, R-IN1 to R-IN10, R-SE1 to R-SE19. |
 
 `scripts/rules.sh` lists the new ids R-C11 to R-C16, R-IN9, R-IN10 and R-SE19 with no test.
+
+## E. Question of slice 087 (TW17): a `roc` exit code 2 with warnings only
+
+Slice file: `docs/slices/087-roc-exit-2.md`. Answered in E5: option (d), with a hint (R-RUN18, R-RUN19). The text of E1 to E4 is the question as the test agent wrote it.
+
+### E1. The facts
+
+| Fact | Where |
+| --- | --- |
+| roc exits with 2 when a command did its work with warnings and no errors: `check`, `build`, `test` and `run`. `build` still writes the program. It is the one warning policy of roc, on purpose. | roc `src/cli/main.zig:15502-15510` (`exitOnWarnings`, commit `22c1242e74`). Seen on the pinned nightly: `tests/fixtures/check/out/build-warn.*` (exit 2, `0 errors and 1 warning found in ... while successfully building`). Seen on nightly 2026-10-26: a platform module `R2.Range` shadows a builtin, a warning only, `roc build` exits 2. |
+| The probes (ladder, baseline, unit probes, tool try, tool build, `tln x` build, source build of Talon) classify by the summary line, not by the exit code. Exit 2 with `0 errors` is a pass. | Resolution R-RC1 (`DESIGN-RESOLUTION.md:278`), R-P2 (`:288`). Code: `cli/lib/Probe.roc:23` (doc), `:104-121` (`classify`), `:178-187` (`classify_text`: row 7, `[n, ..] => if n == 0 Pass` at `:182`). |
+| `tln run` passes the exit code of each step through. A step that is not 0 stops the script and is the exit code of `tln run`. A `roc` step is a proxy call, and the proxy passes the exit code of roc through. | CLI R-RUN3 (`DESIGN-CLI.md:354`), R-RUN5 (`:356`), R-RUN7 (`:358`), R-E1 (`:673`), R-PX2 (`:956`), Design R-HF6 (`DESIGN.md:489`). Code: `cli/lib/RunSteps.roc:103`, `:118-119`; `cli/lib/Proxy.roc:164`, `:250-251`. |
+
+So each place follows its rule. Together they give this: the ladder says that the tuple builds, and `tln run build` (a step `roc build ...`) fails with exit 2. The design does not say whether this is wanted. A warning in a platform or a package is not in the code of the user, so the user cannot remove it.
+
+### E2. Options
+
+| Id | Option | For | Against |
+| --- | --- | --- | --- |
+| a | Exit 2 with warnings only is a pass everywhere. Talon maps it to 0 in `tln run` and in the proxy. roc prints the warnings. | One meaning in all of Talon. `tln run build` works when the ladder said that the tuple builds. | The proxy uses `execve` (R-PX2) and does not see the output, so it can map by the code only. `roc app.roc` and `roc run` also give the exit code of the app, so an app that exits with 2 would become 0. It changes the documented exit code of roc for each user of the proxy, and breaks R-E1 and R-PX3 ("no change"). A CI gate that runs `roc check` to fail on warnings stops working. |
+| b | Exit 2 is a failure everywhere, also in the ladder. | One meaning. Strict. | Against R-P2. A warning in a platform or package release would make each tuple with it fail (exit 10), and the user cannot fix it. The probe facts and the shared matrix would change meaning. |
+| c | No change (the design today): pass in the ladder; `tln run` and the proxy pass the exit code through. | Talon does not change roc. Same as `npm run`, `uv run`, `make`. No new rule. | The case of E1 stays. Inside `tln run` there is no shell (R-RUN2), so the user cannot write `|| true`. The only escape is a `.roc` script or a program that wraps roc. |
+| d | (c), plus an opt-in in a step: for example `{ run = "roc build main.roc", ok-exit = [0, 2] }` (the name is a proposal). | R-E1 stays the default. The user who has the case of E1 fixes it with one line. Like the `-` prefix of `make` and `just`, and `continue-on-error` of GitHub Actions. | New syntax in R-RUN1, and its rules (form, exit 19). The user must find it. |
+| e | (c) for the proxy. In `tln run` only, a `roc` step whose roc command is `check`, `build` or `test` and that exits with 2 counts as 0. Talon prints one note on stderr (proposal): `tln: note: roc exited with 2 (warnings only): the step counts as a pass`. `roc run` and `roc app.roc` (and R-RUN6 scripts) are not changed, because their code can be the code of the app. | No config. `tln run` and the ladder agree. The proxy and direct `roc` calls keep the contract of roc. | Talon gives a roc code a new meaning in one place. A script that wants to fail on warnings cannot do it with a `roc` step (it can run `roc check` outside `tln run`). It depends on the roc policy "2 = warnings only", which roc can change. |
+
+### E3. Reference tools
+
+| Tool | Warnings | A child that fails |
+| --- | --- | --- |
+| cargo | Exit 0. `-D warnings` (`RUSTFLAGS`) makes them errors. | `cargo run` gives the exit code of the program. |
+| `npm run`, `pnpm run`, `bun run` | Not their concern. | The exit code of the script, not changed. The chain stops. |
+| `uv run` | Not its concern. | The exit code of the command, not changed. |
+| `make`, `just` | Not their concern. | A line that is not 0 stops the target. A `-` prefix on the line ignores the failure (opt-in, per line). |
+| `tsc` | | Exit 2 when it found errors but wrote the output. Users write `tsc || true` or set `noEmitOnError`. The same kind of friction. |
+| gcc, clang, go | Exit 0. `-Werror` makes them errors. | |
+
+No reference tool changes the exit code of a child by default. Most compilers exit 0 on warnings, so the friction comes from the policy of roc.
+
+### E4. Recommendation of the test agent
+
+(d): keep (c) as the default, and add the per-step opt-in. Reasons: R-E1 and R-PX3 stay true (Talon never changes what roc says); the user with a platform warning has a fix of one line; it has a parallel in `make` and `just`. If the user wants no config, (e) is the second choice: it must not touch the proxy.
+
+Also, for any answer: R-RC1 can say "exit code 0 or 2" in its Signal column, so that the reader sees that the exit code is not the class (the code already does this, `cli/lib/Probe.roc:23`).
+
+### E5. Decision: (d), a per-step `ok-exit`, plus a hint
+
+The default does not change: `tln run` and the proxy pass the exit code of roc through (R-RUN7, R-E1, R-PX2). A step table can name more codes that pass: `{ run = "roc build main.roc", ok-exit = [2] }` (R-RUN18). When a `roc check|build|test` step fails with 2 and has no `ok-exit`, Talon prints one note that names the fix (R-RUN19). The exit code does not change. R-RC1 now says that the exit code of a pass is 0 or 2.
+
+Reasons, for the long term:
+
+| Concern | (d) `ok-exit` | (e) exit 2 of `roc check\|build\|test` is 0 in `tln run` |
+| --- | --- | --- |
+| Two questions | Talon answers its own question with the summary (ladder, R-RC1, R-P2). The script of the user gets the answer of roc. Each place keeps one meaning. | `tln run` gets a third meaning: not the code of roc, not the class of the ladder. |
+| The CI gate (`check = ["roc check main.roc", "roc test main.roc"]`, Design 4.2 sample) | Strict by default, as roc wants: a new warning fails CI. The user relaxes one step. | A new warning passes CI with one note that nobody reads. A strict team needs a second switch (the hybrid below). |
+| The policy of roc | roc exits with 2 on purpose, one policy for `check`, `build`, `test`, `run` (`src/cli/main.zig:15506-15510`, comment at `:16420`). Talon does not override it. | Talon overrides it in one place. |
+| A change in roc | When roc adds a flag (for example "warnings are not errors") or exits 0 on warnings, the user changes one step or removes `ok-exit`. Talon has no rule to remove. | Talon must track the code table of roc. If 2 gets a second meaning in `check`, `build` or `test`, Talon hides a real failure. To remove the rule later is a break for each script that depends on it. |
+| Which step is a roc check | Not needed: the user says it. | Talon must parse the command grammar of roc (`roc app.roc` is `run`, flags before the subcommand, new subcommands). `roc run` and a `.roc` script pass the code of the app (`main.zig:3492`, `:3664`), so 2 there is ambiguous. |
+| Other tools | The same key fixes `tsc` (2 with output), `diff` (1), `grep` (1), a `.roc` script, or a tool with its own convention. A step has no shell for `\|\| true` (R-RUN2), so a general escape is useful. | roc only. |
+| Reference tools | `make` and `just` `-` prefix (per line, opt-in), GitHub Actions `continue-on-error`. `ok-exit` is narrower: only the named codes. | No reference runner (`npm`, `pnpm`, `bun`, `uv`, `cargo run`, `make`) changes the code of a child by default. |
+| `--json` | One more field in the listing of R-RUN11 (proposal). `tln run <name> --json` stays exit 2 (R-FL1). | No change. |
+| Trust (R-SE17) | No change: `ok-exit` is in the `talon.toml` of the user, as the step. A package never gives scripts (R-RUN14). | No change. |
+| Windows | Codes 0 to 255 only. A Windows exception code (above 255) and a Unix signal are always a failure, so a crash is never accepted (R-RC4). | Same codes. |
+| Discovery | The weak point of (d). R-RUN19 prints the fix at the moment of the failure, only for `roc check\|build\|test`, where 2 means warnings only today. A wrong guess costs one note line, not a wrong exit code. | No discovery needed. |
+| Cost | Two rules, one key, one note. | One rule plus the roc grammar, and later a strict switch. |
+
+Rejected:
+
+| Option | Why |
+| --- | --- |
+| (e) | Above: it changes the default gate in CI, depends on the code table and the command grammar of roc, and is for roc only. |
+| (e) plus a strict opt-out (for example `strict-exit = true`) | Two features where (d) has one. The default is the less safe one (a warning passes the gate), and a team must know the switch to get the behavior of roc back. |
+| (a), (b), (c) | As E2. (c) is the default of (d); (d) only adds the escape. |
+
+Rules changed or added (in the design, not in this part):
+
+| Rule | File | Change |
+| --- | --- | --- |
+| R-RUN1 | CLI 1 | A step table has `run` (required), `in` and `ok-exit` (optional). |
+| R-RUN5, R-RUN7 | CLI 1 | A step passes with 0 or a code of its `ok-exit`. Talon does not read the output. |
+| R-RUN11 | CLI 1 | `--json` listing: a step with `in` or `ok-exit` is `{ run, in, ok_exit }` (proposal, R-OUT2). |
+| R-RUN18 (new) | CLI 1 | `ok-exit`: form, range 0 to 255, signals and Windows exception codes always fail, not with `@<name>` (exit 19), the note. |
+| R-RUN19 (new) | CLI 1 | The hint for a `roc check\|build\|test` step that fails with 2. |
+| R-RC1 | Resolution 4 | Exit code 0 or 2; Talon reads the summary. |
+| The `[scripts]` sample, the flow of `tln run`, R-CM24, the index, R-PH3 | CLI 1, Design | `ok-exit` in the sample and the flow. R-RUN1 to R-RUN19. |
+
+Open for the human review (proposals, R-OUT2): the name `ok-exit`, the two note lines, and the `--json` field `ok_exit`.

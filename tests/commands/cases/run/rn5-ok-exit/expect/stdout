@@ -1,0 +1,61 @@
+== run okb cwd:p1
+exit 0
+== run warnb cwd:p1
+exit 2
+== run warnc cwd:p1
+exit 2
+== run errb cwd:p1
+exit 1
+== run runr cwd:p1
+exit 2
+== run direct cwd:p1
+exit 2
+== run scr cwd:p1
+exit 2
+== run tool cwd:p1
+exit 2
+== run intool cwd:p1
+exit 0
+== run sigt cwd:p1
+exit 130
+== run sigr cwd:p1
+exit 130
+== run pinb cwd:p1
+exit 2
+== run cwd:p1
+scripts of $PROJECT/p1/talon.toml
+okb:
+  roc build main.roc (ok-exit = [2])
+  tool-next
+warnb:
+  roc build main.roc
+  tool-never
+warnc:
+  roc check main.roc
+errb:
+  roc build main.roc --output=bad (ok-exit = [2])
+  tool-never
+runr:
+  roc run main.roc
+direct:
+  roc main.roc
+scr:
+  scripts/notes.roc
+tool:
+  tool-two
+intool:
+  in sub: tool-two sub (ok-exit = [0, 2])
+sigt:
+  tool-sig (ok-exit = [130])
+  tool-never
+sigr:
+  roc build main.roc --sig (ok-exit = [130])
+  tool-never
+pinb:
+  roc +nightly-2026-10-14-38a3029 build main.roc
+exit 0
+== run --json cwd:p1
+{"schema":1,"command":"run","ok":true,"data":{"file":"$PROJECT/p1/talon.toml","scripts":[{"name":"okb","steps":[{"run":"roc build main.roc","in":null,"ok_exit":[2]},"tool-next"]},{"name":"warnb","steps":["roc build main.roc","tool-never"]},{"name":"warnc","steps":["roc check main.roc"]},{"name":"errb","steps":[{"run":"roc build main.roc --output=bad","in":null,"ok_exit":[2]},"tool-never"]},{"name":"runr","steps":["roc run main.roc"]},{"name":"direct","steps":["roc main.roc"]},{"name":"scr","steps":["scripts/notes.roc"]},{"name":"tool","steps":["tool-two"]},{"name":"intool","steps":[{"run":"tool-two sub","in":"sub","ok_exit":[0,2]}]},{"name":"sigt","steps":[{"run":"tool-sig","in":null,"ok_exit":[130]},"tool-never"]},{"name":"sigr","steps":[{"run":"roc build main.roc --sig","in":null,"ok_exit":[130]},"tool-never"]},{"name":"pinb","steps":["roc +nightly-2026-10-14-38a3029 build main.roc"]}]},"error":null}
+exit 0
+== run ok cwd:p2
+exit 19

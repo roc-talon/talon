@@ -2,3 +2,4 @@
 build = "tool-admin build"
 fail = "tool-ok admin"
 gone = "tool-ok admin"
+warn = "tool-ok admin"

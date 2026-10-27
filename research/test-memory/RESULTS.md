@@ -72,3 +72,31 @@ Selftest row `s_mem`: `jobs_for` and `mem_budget_mb` with fixed numbers, `prune_
 | `mod/` cache: 14 GB, 10116 files | It grows by edit too, but it costs disk only (667 GB free). No prune rule yet. |
 | `tests/run.sh` and `tests/commands/run.sh` alone | They do not prune. Run `scripts/test.sh` (or `scripts/test.sh check`) first. |
 | Two `scripts/test.sh` runs in one repo | They share `.work/logs` and `.work/bin`. The memory rule is per run: two runs use two budgets. |
+
+## 6. The l0 reserve by build (2026-10-27)
+
+Cause of l0 at 11 to 18 s in a full run (budget 10 s), after slices 081 to 086. The test files did not grow: each l0 file alone (`roc test --no-cache --jobs=2`) takes the same time at 5d776bf and at 64c7bfe (drivers 3.0 to 3.6 s wall, 4.3 to 5.3 s user CPU; resolve tests 0.1 to 0.6 s).
+The cause is the job count. A full run plans 7 builds (l2, tln, fxprobe, flowprobe, 3 l1 targets) and the old rule reserved 7 x 2000 MB for them. With MemAvailable 60 GB the budget is 20.6 GB, so l0 got (20.6 - 14) / 1 = 6 jobs for 8 drivers: the drivers ran in 2 waves. With less MemAvailable (other work on the machine) l0 got fewer jobs and took longer.
+
+Peak RSS of each build alone (`/usr/bin/time`), `--jobs=1` as in a run with l0 and OPT=dev:
+
+| Build | Peak | Time |
+| --- | --- | --- |
+| l2 (`tests/commands/main.roc`, dev) | 1.97 GB | 10.6 s |
+| tln (`cli/main.roc`, dev) | 2.12 GB | 10.6 s |
+| flowprobe / fxprobe (dev) | 0.67 / 0.32 GB | 2.3 / 0.8 s |
+| l1 diff / epochs / pubgrub (`--fuzz --opt=speed`) | 0.32 / 0.37 / 1.34 GB | 2.4 / 3.1 / 43 s |
+| With all threads or LLVM: pubgrub, flowprobe speed, fxprobe speed | 1.83 / 1.62 / 0.71 GB | 45 / 29 / 9 s |
+
+Rule now (`scripts/test.sh` `plan_builds`, `build_mb`): the reserve is the sum of the n largest planned builds (n = the builds that run at the same time). l2 and tln count `BUILD_MB` (2000). Another build counts `SMALL_BUILD_MB` (1400) when `BUILD_THREADS=1` and OPT=dev, else `BUILD_MB`. For the 7 builds: 11000 MB (was 14000), so l0 gets 9 jobs at a budget of 20 GB (was 6).
+
+Full run, `TEST_MEM_GB=20`, a clean worktree at 64c7bfe, the old and the new script one after the other (l0 seconds):
+
+| Script | Run 1 | Run 2 | Run 3 |
+| --- | --- | --- | --- |
+| Old (6 jobs) | 29.0 (load 14 from other work) | 11.5 | 12.2 |
+| New (9 jobs) | 9.5 | 8.6 | 8.4 |
+
+l2 went from 9.6 to 10.8 s to 11.7 to 13.1 s (budget 30): the l2 build shares the CPU with more l0 jobs. Other steps did not change.
+
+Open: one l0 driver with 2 threads peaks at 1.08 to 1.34 GB, over the 1000 MB of `CHECK_MB`. Not changed here: a higher value gives l0 fewer jobs again.

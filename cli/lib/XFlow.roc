@@ -2,6 +2,7 @@ import Args
 import Answer
 import Clock
 import Common
+import Exit
 import Fail
 import Fetch
 import Fx
@@ -202,6 +203,6 @@ build! = |fx, args, plan, run| {
 # Step 8 (R-X3, R-X4, R-E1, R-HF6): the binary runs with the words after `--` and no more variables. The exit code of the run is the exit code of the app.
 run_binary! : Fx, XCmd.Plan, Str => Try(I32, Fail)
 run_binary! = |fx, plan, bin| match fx.exec!({ argv: [bin].concat(plan.args), env: [] }) {
-	Ok(code) => Ok(code)
+	Ok(ended) => Ok(Exit.of_child(ended))
 	Err(NotStarted(text)) => Err(XCmd.start_failed({ program: bin, text }))
 }

@@ -32,3 +32,9 @@ tln: error[input]: $PROJECT/w3/a/talon.toml: run.after names '../nope', which is
 tln: error[input]: $PROJECT/w4/b/talon.toml: script build: the step 'tool-p | tool-q' has the word '|': a step is one command; use 2 steps, or a .roc script
 tln: error[usage]: tln run --each needs a workspace: no talon.toml with [workspace] on the walk. Checked: $PROJECT/p1, $PROJECT.
 tln: error[usage]: tln run --each needs a workspace: $PROJECT/w1/workers/solo/talon.toml is a standalone project (no member file of a workspace is in it) and the walk stops there.
+running workers/Admin
+running workers/ledger
+tln: note: step "tool-two ledger" exited with 2; this is accepted as success by the ok-exit of the step
+running workers/web
+running zlib
+running workers/api

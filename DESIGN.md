@@ -320,7 +320,7 @@ Ids, and where each group is:
 | R-LF1 to R-LF5 | Lock and frozen modes | Resolution 12 |
 | R-SO1 to R-SO24 | Compiler selection order, the held nightly | Resolution 13 |
 | R-CM1 to R-CM25, R-FL1 to R-FL14, R-RG1 to R-RG6 | Commands, flags, registry precedence, privacy guard | CLI 1 |
-| R-RUN1 to R-RUN17, R-EA1 to R-EA8, R-HK1 | `tln run`, `[scripts]`, the order of `tln run --each`, no hooks | CLI 1 |
+| R-RUN1 to R-RUN19, R-EA1 to R-EA8, R-HK1 | `tln run`, `[scripts]`, the order of `tln run --each`, no hooks | CLI 1 |
 | R-PTH1 to R-PTH5 | `tln path` | CLI 1 |
 | R-SH1 to R-SH11 | Sharing probe results, `tln share`, the first-run prompt | CLI 1 |
 | R-AU1 to R-AU15 | `tln audit` | CLI 1 |
@@ -530,7 +530,7 @@ R-PH1: Each phase only adds commands and steps. A rule that a phase implements d
 | # | Phase | Commands |
 | --- | --- | --- |
 | R-PH2 | P0 | `install` (and `add`, `i`, `install --frozen`), `remove`, `update` (and `update -i`), `list`, `why`, `verify` |
-| R-PH3 | P1 | `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool ...`, `roc ...`, `cache ...`, `setup`, the `roc` proxy, `run` (and `run --each`, CLI 1, R-RUN1 to R-RUN17, R-EA1 to R-EA8), `path` (R-PTH1 to R-PTH5), project tools (`add --tool`, `remove --tool`, and the `[tools]` part of `install`, `update` and `upgrade`, CLI 6.4, R-PT1 to R-PT16). P1 adds the `[tools]` step of the P0 command `install --frozen`, with its exit code 14 (R-PT7), as R-PH1 allows: a phase adds steps |
+| R-PH3 | P1 | `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool ...`, `roc ...`, `cache ...`, `setup`, the `roc` proxy, `run` (and `run --each`, CLI 1, R-RUN1 to R-RUN19, R-EA1 to R-EA8), `path` (R-PTH1 to R-PTH5), project tools (`add --tool`, `remove --tool`, and the `[tools]` part of `install`, `update` and `upgrade`, CLI 6.4, R-PT1 to R-PT16). P1 adds the `[tools]` step of the P0 command `install --frozen`, with its exit code 14 (R-PT7), as R-PH1 allows: a phase adds steps |
 | R-PH4 | P2 | `publish`, `probe --share`, `share`, and the share queue (CLI 1, R-SH4) |
 | R-PH5 | P3 | `audit`, `yank`, `move` |
 

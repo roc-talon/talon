@@ -1,0 +1,6 @@
+tln: note: step "roc build main.roc" exited with 2; this is accepted as success by the ok-exit of the step
+tln: note: roc exits with 2 when it finds warnings and no errors; to accept them in this step, use { run = "...", ok-exit = [2] } (R-RUN18)
+tln: note: roc exits with 2 when it finds warnings and no errors; to accept them in this step, use { run = "...", ok-exit = [2] } (R-RUN18)
+tln: note: step "in sub: tool-two sub" exited with 2; this is accepted as success by the ok-exit of the step
+tln: note: roc exits with 2 when it finds warnings and no errors; to accept them in this step, use { run = "...", ok-exit = [2] } (R-RUN18)
+tln: error[input]: $PROJECT/p2/talon.toml:3: scripts.bad[2]: ok-exit must be an array of 1 or more integers from 0 to 255

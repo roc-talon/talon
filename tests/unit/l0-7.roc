@@ -7,6 +7,7 @@ import ClockTest
 import GcTest
 import ListingTest
 import ModeTest
+import OkexitTest
 import PathcmdTest
 import PickmovesTest
 import ProberangeTest

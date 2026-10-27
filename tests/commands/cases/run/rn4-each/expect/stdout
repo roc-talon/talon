@@ -40,3 +40,5 @@ exit 19
 exit 2
 == run --each build cwd:w1/workers/solo
 exit 2
+== run --each warn --keep-going cwd:w1
+exit 0

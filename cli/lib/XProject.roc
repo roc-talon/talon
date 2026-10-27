@@ -1,5 +1,6 @@
 import Args
 import Clock
+import Exit
 import Fail
 import Fx
 import Ident
@@ -162,7 +163,7 @@ exec_hit! = |fx, args, plan, what| {
 	know = RunTools.load!(fx, what.run.roots)?
 	got = RunTools.bin!(fx, args, what.run, know, entry)?
 	match fx.exec!({ argv: [got.bin].concat(plan.args), env: [] }) {
-		Ok(code) => Ok(code)
+		Ok(ended) => Ok(Exit.of_child(ended))
 		Err(NotStarted(text)) => Err(XCmd.start_failed({ program: got.bin, text }))
 	}
 }

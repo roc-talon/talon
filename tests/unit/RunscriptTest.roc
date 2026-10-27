@@ -56,17 +56,17 @@ expect {
 					and ScriptsToml.is_name("a".repeat(64))
 }
 
-# R-RUN1 (exit code 19): a form that is not valid, by line. Each failure names the script. A table step needs the strings `in` and `run` and no other key. The first failure by line is the one that is shown.
+# R-RUN1 (exit code 19): a form that is not valid, by line. Each failure names the script. A table step needs the string `run`, and can have the string `in` and `ok-exit` (slice 087, R-RUN18), no other key. The first failure by line is the one that is shown.
 expect {
-	step = "a table step needs the strings in and run, and no other key"
+	step = "a table step needs the string run, and can have the string in and ok-exit, no other key"
 	read_view("scripts = 1\n") == Err("19 talon.toml:1: scripts: must be a table")
 		and read_view("[scripts]\n\"Bad Name\" = \"x\"\n") == Err("19 talon.toml:2: scripts.Bad Name: ${bad_name}")
-			and read_view("[scripts]\nn = 5\n") == Err("19 talon.toml:2: scripts.n: must be a step (a string, or a table with in and run) or an array of steps")
-				and read_view("[scripts]\nn = [\"a\", 5]\n") == Err("19 talon.toml:2: scripts.n[2]: must be a string or a table with in and run")
+			and read_view("[scripts]\nn = 5\n") == Err("19 talon.toml:2: scripts.n: must be a step (a string, or a table with run) or an array of steps")
+				and read_view("[scripts]\nn = [\"a\", 5]\n") == Err("19 talon.toml:2: scripts.n[2]: must be a string or a table with run")
 					and read_view("[scripts]\nn = { in = \"x\" }\n") == Err("19 talon.toml:2: scripts.n: ${step}")
 						and read_view("[scripts]\nn = { in = 1, run = \"y\" }\n") == Err("19 talon.toml:2: scripts.n: ${step}")
 							and read_view("[scripts]\nn = [\"a\", { in = \"x\", run = \"y\", more = \"z\" }]\n") == Err("19 talon.toml:2: scripts.n[2]: ${step}")
-								and read_view("[scripts]\nok = \"x\"\na = 1\nb = 2\n") == Err("19 talon.toml:3: scripts.a: must be a step (a string, or a table with in and run) or an array of steps")
+								and read_view("[scripts]\nok = \"x\"\na = 1\nb = 2\n") == Err("19 talon.toml:3: scripts.a: must be a step (a string, or a table with run) or an array of steps")
 }
 
 # What `ScriptsToml.words` gives: the words, or the marker of a refusal.
@@ -200,8 +200,13 @@ expect {
 		and Fail.line(failure) == "tln: error[environment]: script build: the step 'tool-x --a' cannot start 'tool-x': NotFound"
 			and failure.kind.code() == 18
 				and RunPlan.list_text({ file: "/r/p/talon.toml", scripts }) == "scripts of /r/p/talon.toml\na:\n  x\n  in d: @y\nb:\n"
-					and JsonDoc.render(RunPlan.list_data({ file: "/r/p/talon.toml", scripts })) == "{\"file\":\"/r/p/talon.toml\",\"scripts\":[{\"name\":\"a\",\"steps\":[\"x\",\"in d: @y\"]},{\"name\":\"b\",\"steps\":[]}]}"
-						and RunPlan.path_note("fmt") == "the tool key 'fmt' is also a program on PATH: inside tln run the key wins (R-RUN3)"
+					and RunPlan.path_note("fmt") == "the tool key 'fmt' is also a program on PATH: inside tln run the key wins (R-RUN3)"
+}
+
+# R-RUN11 (slice 087, a proposal R-OUT2): in `data` a step with `in` (or `ok-exit`) is the object `{ run, in, ok_exit }` (`null` for a key that the step does not have), the other steps are strings. More rows: `OkexitTest`.
+expect {
+	scripts = [sc("a", [Line("x"), In({ dir: "d", run: "@y" })]), sc("b", [])]
+	JsonDoc.render(RunPlan.list_data({ file: "/r/p/talon.toml", scripts })) == "{\"file\":\"/r/p/talon.toml\",\"scripts\":[{\"name\":\"a\",\"steps\":[\"x\",{\"run\":\"@y\",\"in\":\"d\",\"ok_exit\":null}]},{\"name\":\"b\",\"steps\":[]}]}"
 }
 
 # What `Args.parse` and `RunCmd.read` give for the words after `tln`: the script and the args, or the failure as `<code> <message>`.

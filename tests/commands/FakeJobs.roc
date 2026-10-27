@@ -148,7 +148,7 @@ FakeJobs :: [].{
 		$results
 	}
 
-	exec! : Str, { argv : List(Str), env : List((Str, Str)) } => Try(I32, [NotStarted(Str)])
+	exec! : Str, { argv : List(Str), env : List((Str, Str)) } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
 	exec! = |w, run| {
 		joined = Str.join_with(run.argv, " ")
 		FakeBase.log!(w, "exec ${joined}")
@@ -157,17 +157,13 @@ FakeJobs :: [].{
 		}
 		rules = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/exec")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
 		match rules.find_first(|row| joined.contains(row.first() ?? "")) {
-			Ok([_, code, ..]) => if code.starts_with("notstarted:") {
-				Err(NotStarted(code.drop_prefix("notstarted:")))
-			} else {
-				Ok(I32.from_str(code) ?? 99)
-			}
-			_ => Ok(0)
+			Ok([_, code, ..]) => child_end(code)
+			_ => Ok(Exited(0))
 		}
 	}
 
 	## Slice 057: `exec!` with a working directory. The log line is `exec_in <cwd> <arguments>`, the rules are those of `fx/exec`.
-	exec_in! : Str, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
+	exec_in! : Str, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
 	exec_in! = |w, run| {
 		joined = Str.join_with(run.argv, " ")
 		FakeBase.log!(w, "exec_in ${run.cwd} ${joined}")
@@ -176,12 +172,8 @@ FakeJobs :: [].{
 		}
 		rules = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/exec")).keep_if(|l| !l.starts_with("#")).map(|l| l.split_on("\t"))
 		match rules.find_first(|row| joined.contains(row.first() ?? "")) {
-			Ok([_, code, ..]) => if code.starts_with("notstarted:") {
-				Err(NotStarted(code.drop_prefix("notstarted:")))
-			} else {
-				Ok(I32.from_str(code) ?? 99)
-			}
-			_ => Ok(0)
+			Ok([_, code, ..]) => child_end(code)
+			_ => Ok(Exited(0))
 		}
 	}
 
@@ -293,6 +285,14 @@ run_hooks! = |w, n| {
 			_ => {}
 		}
 	}
+}
+
+# Slice 087 (R-RUN18, R-RUN7): the end of a child of `exec!` and `exec_in!` by the code of a rule of `fx/exec`: `<n>` is `Exited(n)`, `signal:<n>` is `Signaled(n)`, `notstarted:<text>` is `Err(NotStarted(text))`.
+child_end : Str -> Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
+child_end = |code| match ended_of(code) {
+	Exited(n) => Ok(Exited(n))
+	Signaled(n) => Ok(Signaled(n))
+	NotStarted(text) => Err(NotStarted(text))
 }
 
 ended_of : Str -> [Exited(I32), Signaled(I32), NotStarted(Str)]

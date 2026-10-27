@@ -87,17 +87,17 @@ program_name! = || match Env.program_name!() {
 	Err(_) => ""
 }
 
-## Slice 023, R-HF6, R-E1: one child with the terminal of the process (basic-cli `Cmd.run!` with inherited stdio). The exit code, or 128 + the signal number.
+## Slice 023, R-HF6, R-E1: one child with the terminal of the process (basic-cli `Cmd.run!` with inherited stdio). `Exited(code)`, or `Signaled(signal)` (slice 087).
 ## `Cmd.exec_exit_code!` is not used: it gives an error for a child that a signal ended.
-exec! : { argv : List(Str), env : List((Str, Str)) } => Try(I32, [NotStarted(Str)])
+exec! : { argv : List(Str), env : List((Str, Str)) } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
 exec! = |run| match run.argv {
 	[] => Err(NotStarted("no program"))
 	[program, .. as rest] => {
 		cmd = RealBase.command(program, rest, run.env).stdin(Inherit).stdout(Inherit).stderr(Inherit)
 		match cmd.run!() {
 			Ok(out) => match out.status {
-				Exited(code) => Ok(code)
-				Signaled(signal) => Ok(128 + signal)
+				Exited(code) => Ok(Exited(code))
+				Signaled(signal) => Ok(Signaled(signal))
 			}
 			Err(err) => Err(NotStarted(RealBase.run_err(err)))
 		}
@@ -105,15 +105,15 @@ exec! = |run| match run.argv {
 }
 
 ## Slice 057, R-RUN5, R-RUN8, R-RUN9: `exec!` in the directory `cwd` (basic-cli `Cmd.cwd`). The same exit code rule.
-exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
+exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
 exec_in! = |run| match run.argv {
 	[] => Err(NotStarted("no program"))
 	[program, .. as rest] => {
 		cmd = RealBase.command(program, rest, run.env).cwd(Path.utf8(run.cwd)).stdin(Inherit).stdout(Inherit).stderr(Inherit)
 		match cmd.run!() {
 			Ok(out) => match out.status {
-				Exited(code) => Ok(code)
-				Signaled(signal) => Ok(128 + signal)
+				Exited(code) => Ok(Exited(code))
+				Signaled(signal) => Ok(Signaled(signal))
 			}
 			Err(err) => Err(NotStarted(RealBase.run_err(err)))
 		}

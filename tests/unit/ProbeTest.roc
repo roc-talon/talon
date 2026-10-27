@@ -16,6 +16,8 @@ import "../fixtures/check/out/build-pass.stdout" as build_pass_out : Str
 import "../fixtures/check/out/build-errors.stdout" as build_errors_out : Str
 import "../fixtures/check/out/build-errors.stderr" as build_errors_err : Str
 import "../fixtures/check/out/build-target.stderr" as build_target_err : Str
+import "../fixtures/check/out/build-warn.stdout" as build_warn_out : Str
+import "../fixtures/check/out/build-warn.stderr" as build_warn_err : Str
 
 ProbeTest :: [].{}
 
@@ -61,6 +63,8 @@ expect {
 		("build passes", out(Exited(0), build_pass_out, ""), Pass),
 		("build with 5 errors, summary on stdout", out(Exited(1), build_errors_out, build_errors_err), Fail(5)),
 		("build target error, no summary", out(Exited(1), "", build_target_err), Fail(1)),
+		# R-RC1 R-P2 (slice 087): a build with warnings only. roc exits with 2 and writes the program. The summary has 0 errors: a pass.
+		("build warnings only, exit 2", out(Exited(2), build_warn_out, build_warn_err), Pass),
 		("hang", out(TimedOut, "", ""), Hang),
 		("hang with output", out(TimedOut, pass_out, ""), Hang),
 		("SIGSEGV", out(Signaled(11), "", ""), Crash("signal 11")),

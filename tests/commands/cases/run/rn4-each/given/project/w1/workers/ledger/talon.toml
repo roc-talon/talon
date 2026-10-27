@@ -2,3 +2,4 @@
 build = "tool-ledger build"
 fail = "tool-fail ledger"
 gone = "tool-gone ledger"
+warn = { run = "tool-two ledger", ok-exit = [2] }

@@ -1,0 +1,8 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600},{"path":"$PROJECT/p1/scripts/notes.roc","last_use":1792065600}]}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z

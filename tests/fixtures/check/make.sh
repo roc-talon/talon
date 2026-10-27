@@ -72,6 +72,8 @@ if [ "$ONLY" != unit ]; then
     run build-pass pass copy build main.roc --output="$OUT"
     run build-target pass copy build main.roc --output="$OUT" --target=x64freebsd
     run build-errors app-errors-shifted copy build main.roc --output="$OUT"
+    # Slice 087: a build with warnings only. roc exits with 2 and still writes the program (R-RC1, R-P2).
+    run build-warn warn copy build main.roc --output="$OUT"
 fi
 # unit <case> <source dir in src/>: `roc check main.roc` in the dir of a package.
 unit() {

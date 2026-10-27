@@ -296,3 +296,34 @@ list_dirs $PROJECT
 read_files $PROJECT/w1/workers/solo/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/talon.toml
 list_dirs $PROJECT/w1/workers/Admin $PROJECT/w1/workers/api $PROJECT/w1/workers/ledger $PROJECT/w1/workers/mid $PROJECT/w1/workers/web $PROJECT/w1/zlib
 read_files $PROJECT/w1/workers/Admin/talon.toml $PROJECT/w1/workers/api/talon.toml $PROJECT/w1/workers/ledger/talon.toml $PROJECT/w1/workers/mid/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/workers/web/talon.toml $PROJECT/w1/zlib/talon.toml
+args
+env_all
+clock
+cwd
+list_dirs $PROJECT/w1
+list_dirs $PROJECT
+read_files $PROJECT/w1/talon.toml
+list_dirs $PROJECT/w1/workers $PROJECT/w1/zlib
+list_dirs $PROJECT/w1/workers/Admin $PROJECT/w1/workers/api $PROJECT/w1/workers/ledger $PROJECT/w1/workers/mid $PROJECT/w1/workers/solo $PROJECT/w1/workers/web
+read_files $PROJECT/w1/workers/Admin/talon.toml $PROJECT/w1/workers/api/talon.toml $PROJECT/w1/workers/ledger/talon.toml $PROJECT/w1/workers/mid/talon.toml $PROJECT/w1/workers/talon.toml $PROJECT/w1/workers/web/talon.toml $PROJECT/w1/zlib/talon.toml
+canonical $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/w1/workers/Admin/main.roc $PROJECT/w1/workers/api/main.roc $PROJECT/w1/workers/ledger/main.roc $PROJECT/w1/workers/mid/main.roc $PROJECT/w1/workers/web/main.roc $PROJECT/w1/zlib/main.roc
+exec_in $PROJECT/w1/workers/Admin tool-ok admin
+  env TALON_SCRIPT=warn
+  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/Admin
+exec_in $PROJECT/w1/workers/ledger tool-two ledger
+  env TALON_SCRIPT=warn
+  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/ledger
+exec_in $PROJECT/w1/workers/web tool-ok web
+  env TALON_SCRIPT=warn
+  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/web
+exec_in $PROJECT/w1/zlib tool-ok zlib
+  env TALON_SCRIPT=warn
+  env TALON_SCRIPT_DIR=$PROJECT/w1/zlib
+exec_in $PROJECT/w1/workers/api tool-ok api
+  env TALON_SCRIPT=warn
+  env TALON_SCRIPT_DIR=$PROJECT/w1/workers/api

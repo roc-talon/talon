@@ -1,0 +1,15 @@
+run okb cwd:p1
+run warnb cwd:p1
+run warnc cwd:p1
+run errb cwd:p1
+run runr cwd:p1
+run direct cwd:p1
+run scr cwd:p1
+run tool cwd:p1
+run intool cwd:p1
+run sigt cwd:p1
+run sigr cwd:p1
+run pinb cwd:p1
+run cwd:p1
+run --json cwd:p1
+run ok cwd:p2

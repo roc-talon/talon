@@ -1,0 +1,7 @@
+m1: check: No errors found in 981ms for cli/main.roc | l0-7: ── ✗ fail ────────────────────────────────────── tests/unit/OkexitTest.roc:114:1     1 failed  | l2: FAIL run/rn5-ok-exit commands: 1 passed, 1 failed 
+m2: check: No errors found in 910ms for cli/main.roc | l0-7: ── ✗ fail ────────────────────────────────────── tests/unit/OkexitTest.roc:114:1     1 failed  | l2: commands: 2 passed, 0 failed 
+m3: check: No errors found in 993ms for cli/main.roc | l0-7: All (73) tests passed in 2493.4 ms.  | l2: FAIL run/rn5-ok-exit commands: 1 passed, 1 failed 
+m4: check: No errors found in 980ms for cli/main.roc | l0-7: ── ✗ fail ────────────────────────────────────── tests/unit/OkexitTest.roc:127:1     1 failed  | l2: FAIL run/rn5-ok-exit commands: 1 passed, 1 failed 
+m5: check: No errors found in 896ms for cli/main.roc | l0-7: ── ✗ fail ─────────────────────────────────────── tests/unit/OkexitTest.roc:66:1     1 failed  | l2: commands: 2 passed, 0 failed 
+m6: check: No errors found in 1007ms for cli/main.roc | l0-7: All (73) tests passed in 1993.0 ms.  | l2: FAIL run/rn4-each FAIL run/rn5-ok-exit commands: 0 passed, 2 failed 
+m7: check: No errors found in 942ms for cli/main.roc | l0-7: ── ✗ fail ────────────────────────────────────── tests/unit/OkexitTest.roc:127:1     1 failed  | l2: commands: 2 passed, 0 failed 

@@ -1,0 +1,21 @@
+Slice 087, `ok-exit` of a step and the hint for a `roc check|build|test` step that exits with 2 (entry `commands`): R-RUN1, R-RUN5, R-RUN7, R-RUN11, R-RUN18, R-RUN19, R-RUN3, R-RUN6, R-RC1 (exit 2 is warnings only), R-E1, R-E4.
+One home with the compiler `nightly-2026-10-14-38a3029` installed (as `rn2-words`). `p1/main.roc` pins it, so each `roc` step goes through the proxy to that compiler. The fake runs no child: `fx/exec` gives the end of the child by a needle of the argv (`--output=bad` 1; `--sig` and `tool-sig` the signal 2 (`signal:2`, `Signaled(2)`, slice 087); `roc build main.roc`, `roc check main.roc`, `roc run main.roc`, `roc main.roc`, `scripts/notes.roc` and `tool-two` 2; else 0).
+`p2/talon.toml` has a bad `ok-exit` (`[2, 256]`) on the second step of the script `bad`, so each run in `p2` stops before the first step.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `run okb` in `p1` | `{ run = "roc build main.roc", ok-exit = [2] }` exits with 2: the step passes, one note `tln: note: step "roc build main.roc" exited with 2; this is accepted as success by the ok-exit of the step` on stderr, the next step `tool-next` runs (`exec_in` in `calls.log`), exit 0 | R-RUN18, R-RUN5, R-RUN7, R-RUN1 |
+| 2 | `run warnb` in `p1` | `roc build main.roc` (no `ok-exit`) exits with 2: the script stops (`tool-never` does not run), exit 2, the hint of R-RUN19 on stderr | R-RUN19, R-RUN7, R-RUN5, R-E1 |
+| 3 | `run warnc` in `p1` | `roc check main.roc` exits with 2: exit 2 and the hint | R-RUN19 |
+| 4 | `run errb` in `p1` | `ok-exit = [2]`, roc exits with 1: the step fails, exit 1, no note, no hint, `tool-never` does not run | R-RUN18, R-RUN19, R-RUN7 |
+| 5 | `run runr` in `p1` | `roc run main.roc` exits with 2: exit 2, no hint (the code can be the code of the app) | R-RUN19 |
+| 6 | `run direct` in `p1` | `roc main.roc` exits with 2: exit 2, no hint | R-RUN19 |
+| 7 | `run scr` in `p1` | the `.roc` script `scripts/notes.roc` exits with 2: exit 2, no hint | R-RUN19, R-RUN6 |
+| 8 | `run tool` in `p1` | the program `tool-two` (not `roc`) exits with 2: exit 2, no hint | R-RUN19, R-RUN3 |
+| 9 | `run intool` in `p1` | `{ in = "sub", run = "tool-two sub", ok-exit = [0, 2] }` exits with 2: pass, the note names the step as the other messages do (`in sub: tool-two sub`), exit 0 | R-RUN18, R-RUN8, R-RUN1 |
+| 10 | `run sigt` in `p1` | `{ run = "tool-sig", ok-exit = [130] }`, the child is ended by the signal 2: a failure with 128 + 2 = 130, also though 130 is in `ok-exit`. No note, `tool-never` does not run, exit 130 | R-RUN18, R-RUN7 |
+| 11 | `run sigr` in `p1` | the same for a `roc` step (`roc build main.roc --sig`, through the proxy): exit 130, no note, no hint | R-RUN18, R-RUN7, R-RUN19 |
+| 12 | `run pinb` in `p1` | `roc +nightly-2026-10-14-38a3029 build main.roc` (a `+<id>` selector, R-SC11) exits with 2, no `ok-exit`: exit 2 and the hint | R-RUN19 |
+| 13 | `run` in `p1` | the list: a step with `ok-exit` shows ` (ok-exit = [<codes>])` after its text (a proposal, R-OUT2) | R-RUN11 |
+| 14 | `run --json` in `p1` | a step with `in` or `ok-exit` is `{ "run", "in", "ok_exit" }` (`null` for a key that the step does not have, a proposal), the other steps are strings | R-RUN11, R-J4 |
+| 15 | `run ok` in `p2` | a bad `ok-exit` (256) in the file: exit 19 before any step, the message names the script and the item (a proposal) | R-RUN18, R-RUN1 |

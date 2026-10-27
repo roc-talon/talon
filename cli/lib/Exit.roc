@@ -13,4 +13,11 @@ Exit :: [].{
 			Err(ListWasEmpty) => run.child ?? 0
 		}
 	}
+
+	## R-HF6, R-RUN7: the code of a child: its exit code, or 128 + the signal number (slice 087).
+	of_child : [Exited(I32), Signaled(I32)] -> I32
+	of_child = |ended| match ended {
+		Exited(code) => code
+		Signaled(n) => 128 + n
+	}
 }

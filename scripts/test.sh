@@ -264,11 +264,20 @@ plan_builds() {
         l3) build_start tln cli/main.roc; build_start fxprobe cli/fxprobe.roc; build_start flowprobe cli/flowprobe.roc ;;
         esac
     done
-    # The l0 step runs while the builds run: it keeps their memory free.
-    local n
+    # The l0 step runs while the builds run: it keeps the memory of the n largest builds that run at the same time free.
+    local n b
     n=$(roc_jobs 0 "$BUILD_MB")
     [ "$n" -gt ${#BUILD_LIST[@]} ] && n=${#BUILD_LIST[@]}
-    BUILD_RESERVE_MB=$((n * BUILD_MB))
+    BUILD_RESERVE_MB=$(for b in "${BUILD_LIST[@]}"; do build_mb "${b%% *}"; done | sort -rn | head -n "$n" | awk '{ s += $1 } END { print s + 0 }')
+}
+# build_mb <name>: the peak memory of one build (MB). With 1 thread (BUILD_THREADS=1, dev) only l2 and tln (the apps that import all of lib) reach BUILD_MB:
+# measured 2026-10-27 (research/test-memory/RESULTS.md 6): l2 1.97 GB, tln 2.12 GB, flowprobe 0.67, fxprobe 0.32, l1 targets 0.32 to 1.34 GB. With all threads or LLVM, each build gets BUILD_MB.
+SMALL_BUILD_MB=1400
+build_mb() {
+    case $1 in
+    l2 | tln) echo "$BUILD_MB" ;;
+    *) [ "${BUILD_THREADS:-}" = 1 ] && [ "$OPT" = dev ] && echo "$SMALL_BUILD_MB" || echo "$BUILD_MB" ;;
+    esac
 }
 # Slice 036b3: a build gets BUILD_THREADS compile threads (`roc build --jobs`) when the run has the l0 step and OPT=dev. The builds run while l0 runs, and 6 builds with 24 threads each (the default of roc: one for each CPU)
 # took the CPU of l0 (l0: 8.9 s, with 1 thread for each build: 6.5 s). Without l0, or with OPT=speed (an LLVM build is the slow step of that mode), a build keeps all threads.

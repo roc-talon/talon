@@ -75,13 +75,13 @@ Fx := {
 	sha256_file! : Str => Try(Str, [NotFound, Denied, Other(Str)]),
 	path_roc! : () => { exe : Try({ path : Str, size : U64, mtime : U64 }, [Unknown]), found : List({ path : Str, size : U64, mtime : U64 }) },
 	program_name! : () => Str,
-	exec! : { argv : List(Str), env : List((Str, Str)) } => Try(I32, [NotStarted(Str)]),
+	exec! : { argv : List(Str), env : List((Str, Str)) } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)]),
 	copy_file! : { from : Str, to : Str } => Try({}, [NotFound, Exists, Denied, Other(Str)]),
 	hard_link! : { from : Str, to : Str } => Try({}, [NotFound, Exists, Denied, Other(Str)]),
 	tree_info! : List(Str) => List(Try({ newest : U64, size : U64 }, [NotFound, Denied, Other(Str)])),
 	db_query! : Db.Open, Db.Query => Try(Db.Answer, Db.Err),
 	db_write! : Db.Open, Db.Write => Try({}, Db.Err),
-	exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)]),
+	exec_in! : { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)]),
 	spawn_detached! : { argv : List(Str), env : List((Str, Str)) } => Try({}, [NotStarted(Str)]),
 	windows! : () => Bool,
 }.{
@@ -210,10 +210,10 @@ Fx := {
 	program_name! = |Fx.{ program_name!: f, .. }| f()
 
 	## Slice 023, R-HF6, R-E1: runs the child `argv` (the program and its arguments, the program as a path or as a name for `PATH`) in the current directory, with the stdin, the stdout and the stderr of this process, and waits.
-	## `env` are variables that are set for the child in addition to the environment of this process (a name that is in both takes the value of `env`). The result is the exit code of the child, or `128 + <signal number>`
-	## when a signal ended it (R-HF6: the form for Windows and for the time before `execve` is in basic-cli). `NotStarted(text)`: the child could not start (no such file, no permission). The real `Fx` kills no child
+	## `env` are variables that are set for the child in addition to the environment of this process (a name that is in both takes the value of `env`). The result is `Exited(<exit code>)`, or `Signaled(<signal number>)`
+	## when a signal ended it (slice 087; a caller that needs one code uses `128 + <signal number>`, R-HF6, R-RUN7). `NotStarted(text)`: the child could not start (no such file, no permission). The real `Fx` kills no child
 	## and has no timeout: the user ends a run with Ctrl-C (the signal reaches the child, R-HF6). It has no Talon logic (TW4).
-	exec! : Fx, { argv : List(Str), env : List((Str, Str)) } => Try(I32, [NotStarted(Str)])
+	exec! : Fx, { argv : List(Str), env : List((Str, Str)) } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
 	exec! = |Fx.{ exec!: f, .. }, run| f(run)
 
 	## Slice 024b, R-LK2: copies the file `from` to the new file `to`. A link at `from` is followed: `to` is a plain file with the content and the permission bits (the executable bit) of the file that the link points to. It makes the parent dirs of `to`.
@@ -256,9 +256,9 @@ Fx := {
 	db_write! = |Fx.{ db_write!: f, .. }, open, write| f(open, write)
 
 	## Slice 057, R-RUN5, R-RUN8, R-RUN9, R-E1: `exec!` in the directory `cwd` (absolute): runs the child `argv` with the stdin, the stdout and the stderr of this process, and waits. `env` are variables that are set for the child in addition to the environment of this process (a name that is in both
-	## takes the value of `env`). The result is the exit code of the child, or `128 + <signal number>` when a signal ended it. `NotStarted(text)`: the child could not start (the program is not on `PATH`, `cwd` is missing, no permission). The real `Fx` has no Talon logic (TW4): it looks the program up
+	## takes the value of `env`). The result is `Exited(<exit code>)`, or `Signaled(<signal number>)` when a signal ended it (slice 087). `NotStarted(text)`: the child could not start (the program is not on `PATH`, `cwd` is missing, no permission). The real `Fx` has no Talon logic (TW4): it looks the program up
 	## on `PATH` as `exec!` does, it kills no child and has no timeout.
-	exec_in! : Fx, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try(I32, [NotStarted(Str)])
+	exec_in! : Fx, { argv : List(Str), env : List((Str, Str)), cwd : Str } => Try([Exited(I32), Signaled(I32)], [NotStarted(Str)])
 	exec_in! = |Fx.{ exec_in!: f, .. }, run| f(run)
 
 	## Slice 051, R-RM5: starts the child `argv` (the program and its arguments, the program as a path or as a name for `PATH`) and does not wait. The child has no stdin, no stdout and no stderr (they are closed or null), and it goes on after `tln` has ended. The real `Fx` needs a launcher for this (`Cmd.spawn!` ends the child when its handle is released).

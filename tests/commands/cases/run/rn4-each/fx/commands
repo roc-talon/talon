@@ -13,3 +13,4 @@ run --each build cwd:w3
 run --each build cwd:w4
 run --each build cwd:p1
 run --each build cwd:w1/workers/solo
+run --each warn --keep-going cwd:w1

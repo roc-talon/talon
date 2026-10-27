@@ -19,7 +19,7 @@ import ToolsToml
 ## | `record_files!` | The project files to record (R-PD9, NC1) | R-PD9, R-PD16 |
 ## | `known_files` | The `talon.toml` files of the walk, as `RunPlan` wants them | R-RUN4, R-RUN8 |
 ## | `plan!` | `RunPlan.plan` before any step. A `Need(dir)` is one `read_files!` of `<dir>/talon.toml`, then the plan again | R-RUN1, R-RUN2, R-RUN4, R-RUN8, R-RUN10 |
-## | `steps!` | Each step in order, a child at a time, until one gives a code that is not 0 (the code of the run, R-RUN7) or cannot start (exit 18). The program is `RunPlan.program`: `Path`, `Tool`, `Roc` (`Proxy.run!` with `derived`) or `Tln` (the function that the caller gives) | R-RUN3, R-RUN5, R-RUN6, R-RUN7, R-RUN9, R-PT9, R-PX1 |
+## | `steps!` | Each step in order, a child at a time, until one does not pass (`RunPlan.step_end`: its code is the code of the run, R-RUN7, R-RUN18) or cannot start (exit 18). The note of `step_end` goes to stderr after the step (R-RUN18, R-RUN19). The program is `RunPlan.program`: `Path`, `Tool`, `Roc` (`Proxy.ended!` with `derived`) or `Tln` (the function that the caller gives) | R-RUN3, R-RUN5, R-RUN6, R-RUN7, R-RUN9, R-PT9, R-PX1 |
 ## | `derived` | The `Fx` that a `roc` or `tln` step gets: 5 fields change (`args!`, `cwd!`, `env_all!`, `program_name!`, `exec!`), `exec!` runs in the directory of the step with the 2 variables of R-RUN9 added | R-RUN3, R-RUN6, R-RUN9 |
 RunSteps :: [].{
 
@@ -91,7 +91,7 @@ RunSteps :: [].{
 		}
 	}
 
-	## R-RUN5, R-RUN7: the steps in order, a child at a time, until one gives a code that is not 0.
+	## R-RUN5, R-RUN7, R-RUN18: the steps in order, a child at a time, until one does not pass.
 	steps! : Fx, Args, { name : Str, ready : Ready }, List(RunPlan.Flat), (Fx => I32) => Try(I32, Fail)
 	steps! = |fx, args, run, flats, tln| {
 		keys = run.ready.table.tools.map(|e| e.key)
@@ -99,10 +99,10 @@ RunSteps :: [].{
 		for flat in flats {
 			vars = RunPlan.env({ script: run.name, dir: flat.dir })
 			inner = derived(fx, { env: run.ready.env, vars, dir: flat.dir })
-			code = match RunPlan.program({ words: flat.words, keys }) {
-				Err(NoWords) => Ok(0)
-				Ok(Roc(rest)) => Ok(Proxy.run!({ ..inner, args!: || rest, program_name!: || "roc" }))
-				Ok(Tln(rest)) => Ok(tln({ ..inner, args!: || rest, program_name!: || "tln" }))
+			ended = match RunPlan.program({ words: flat.words, keys }) {
+				Err(NoWords) => Ok(Exited(0))
+				Ok(Roc(rest)) => Ok(Proxy.ended!({ ..inner, args!: || rest, program_name!: || "roc" }))
+				Ok(Tln(rest)) => Ok(Exited(tln({ ..inner, args!: || rest, program_name!: || "tln" })))
 				Ok(Path(p)) => exec!(fx, flat, { program: p.program, args: p.args, vars })
 				Ok(Tool(t)) => {
 					known = match $know {
@@ -115,8 +115,12 @@ RunSteps :: [].{
 					exec!(fx, flat, { program: got.bin, args: t.args, vars })
 				}
 			}
-			done = code?
-			if done != 0 return Ok(done)
+			end = RunPlan.step_end({ words: flat.words, text: flat.text, ok_exit: flat.ok_exit, ended: ended? })
+			match end.note {
+				Ok(note) => fx.err!("${note}\n")
+				Err(None) => {}
+			}
+			if !end.pass return Ok(end.code)
 		}
 		Ok(0)
 	}
@@ -138,9 +142,9 @@ derived = |fx, step| {
 }
 
 # One child in the directory of the step. A program that cannot start is exit 18.
-exec! : Fx, RunPlan.Flat, { program : Str, args : List(Str), vars : List((Str, Str)) } => Try(I32, Fail)
+exec! : Fx, RunPlan.Flat, { program : Str, args : List(Str), vars : List((Str, Str)) } => Try([Exited(I32), Signaled(I32)], Fail)
 exec! = |fx, flat, run| match fx.exec_in!({ argv: [run.program].concat(run.args), env: run.vars, cwd: flat.dir }) {
-	Ok(code) => Ok(code)
+	Ok(ended) => Ok(ended)
 	Err(NotStarted(why)) => Err(RunPlan.start_failed({ owner: flat.owner, text: flat.text, program: run.program, why }))
 }
 

@@ -65,7 +65,7 @@ import FakeJobs
 ## The bytes of a file that `sha256_file!` hashes are the real bytes of the path, so a case makes real files in `{w}` for a path that is hashed. The log line is `path_roc`.
 ##
 ## `exec` (slice 023, R-HF6, R-E1): one rule for each line, with 2 fields split by a TAB: `needle` and `code`. The first rule whose `needle` is in the arguments of the child (joined by one space) answers.
-## `code` is `<n>` (the exit code, the real `Fx` gives `128 + <signal>` for a signal, so the case writes that number) or `notstarted:<text>`. Lines that start with `#` are comments.
+## `code` is `<n>` (`Exited(n)`), `signal:<n>` (`Signaled(n)`, slice 087: the child ended by the signal `n`) or `notstarted:<text>`. No rule: `Exited(0)`. Lines that start with `#` are comments.
 ## The log has `exec <arguments>` (the program and its arguments, joined by one space) and then one line `  env <NAME>=<value>` for each variable of `env`, in the order of the call. The fake runs nothing.
 ## `exec_in!` (slice 057, R-RUN5, R-RUN8, R-RUN9): the same rules, the log line is `exec_in <cwd> <arguments>` (the working directory first) and then the same `  env` lines.
 ## `spawn_detached!` (slice 051, R-RM5): the same rules and `  env` lines, the log line is `spawn_detached <arguments>`. Only the code `notstarted:<text>` matters (the child could not start); any other code is a started child. The fake runs nothing.

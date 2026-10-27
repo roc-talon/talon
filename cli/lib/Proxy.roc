@@ -47,7 +47,7 @@ import Text
 ## | 9g | Slice 024b (R-LK4): `Launch.program!` with the id of the compiler, `installed` (the listing of step 7, and the id of an install of 9f) and `path`. For a `link-*` id in the listing: one `read_files!` of its `.talon.json`, and the program is the absolute path that it records (`Link.target`). A failure of it is the failure of the run: no `.last-use`, no `canonical!`, no `exec!`. Any other id: no call (`copy-*` runs `toolchains/copy-<name>/roc`). The result is the program of step 12. | R-LK4, R-R5, R-LK2 |
 ## | 10 | The compiler is in the listing of step 7, and not opted out: `write_atomic!` of `<cache>/toolchains/<id>/.last-use` with `Proxy.last_use(now)`. A failure is ignored (Q7). The compiler on `PATH` has no `.last-use`. | R-CC9, R-PX2 |
 ## | 11 | Not opted out: `canonical!` of the directory of `roots.cache` (the path of `XDG_CACHE_HOME`) and of `roots.build` (one call, in this order). | R-PX6 |
-## | 12 | `exec!` of `[<the program of step 9g>] ++ <the arguments after +<id>>` with `Proxy.child_env`. `Ok(code)`: the exit code of the run is `code`. `Err(NotStarted(text))`: `Proxy.start_failed` (Q8). | R-PX2, R-PX3, R-HF6, R-E1 |
+## | 12 | `exec!` of `[<the program of step 9g>] ++ <the arguments after +<id>>` with `Proxy.child_env`. `Ok(Exited(code))`: the exit code of the run is `code`. `Ok(Signaled(n))`: `128 + n` (slice 087). `Err(NotStarted(text))`: `Proxy.start_failed` (Q8). | R-PX2, R-PX3, R-HF6, R-E1 |
 ##
 ## Slice 023b, the install of a compiler that is not installed (R-PX4, R-DL1, R-DL8 to R-DL10, R-NI5, R-CC4). It replaces the refusal of step 9 for `Missing`. `NoCompiler` and `NoneInRange` stay as in step 9
 ## (R-SO13 is slice 025). The calls, in order (the L2 case `proxy/px2-install` fixes them). The steps 9a to 9d make no `Fx` call except `tty!` in 9b. `<auto>` is `Consent.auto_install`.
@@ -158,13 +158,17 @@ Proxy :: [].{
 	start_failed : { program : Str, text : Str } -> Fail
 	start_failed = |run| Fail.new(Environment, "cannot run ${run.program}: ${run.text}")
 
-	## The proxy: steps 1 to 12 of the table above. It gives the exit code of the child, or the code of a failure.
+	## The proxy: steps 1 to 12 of the table above. It gives the exit code of the child (128 + the signal number for a signal), or the code of a failure.
 	run! : Fx => I32
-	run! = |fx| match go!(fx) {
-		Ok(code) => code
+	run! = |fx| Exit.of_child(Proxy.ended!(fx))
+
+	## Slice 087 (R-RUN18): `run!` that gives how the child ended, so a `roc` step of `tln run` can tell a signal from an exit code. A failure is `Exited(<its code>)`.
+	ended! : Fx => [Exited(I32), Signaled(I32)]
+	ended! = |fx| match go!(fx) {
+		Ok(ended) => ended
 		Err(fail) => {
 			fx.err!(Out.fail({ command: "roc", json: Bool.False, fail }).stderr)
-			Exit.choose({ failures: [fail], child: Err(NoChild) })
+			Exited(Exit.choose({ failures: [fail], child: Err(NoChild) }))
 		}
 	}
 }
@@ -198,7 +202,7 @@ source_text = |run| match run.rank {
 }
 
 # The steps 1 to 12 of the table in the doc of `Proxy`.
-go! : Fx => Try(I32, Fail)
+go! : Fx => Try([Exited(I32), Signaled(I32)], Fail)
 go! = |fx| {
 	words = fx.args!()
 	env = fx.env_all!()
@@ -248,7 +252,7 @@ go! = |fx| {
 	# R-PX5, R-PA10: `--replace-dep <header URL> <copy>` for each `[patch]` entry of the header of the target file.
 	args = Patched.proxy_args({ args: split.rest, target: Proxy.target(split.rest), replace: if off [] else loaded.patch.replace })
 	match fx.exec!({ argv: [program].concat(args), env: child_env }) {
-		Ok(code) => Ok(code)
+		Ok(ended) => Ok(ended)
 		Err(NotStarted(text)) => Err(Proxy.start_failed({ program, text }))
 	}
 }

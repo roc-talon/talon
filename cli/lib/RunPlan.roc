@@ -17,8 +17,8 @@ RunPlan :: [].{
 	## One `talon.toml` that the run knows: its directory (absolute), and its scripts (`Err(NoFile)`: the directory has no `talon.toml`).
 	File : { dir : Str, scripts : Try(List(ScriptsToml.Script), [NoFile]) }
 
-	## One step to run. `dir` is its working directory (absolute, R-RUN8). `words` are the words of the command line with the args of `--` (R-RUN10) after them. `text` is the step as written. `owner` is the name of the script that holds the step (for the messages).
-	Flat : { dir : Str, words : List(Str), text : Str, owner : Str }
+	## One step to run. `dir` is its working directory (absolute, R-RUN8). `words` are the words of the command line with the args of `--` (R-RUN10) after them. `text` is the step as written. `owner` is the name of the script that holds the step (for the messages). `ok_exit` are the codes of its `ok-exit` (R-RUN18, `[]`: none).
+	Flat : { dir : Str, words : List(Str), text : Str, owner : Str, ok_exit : List(U8) }
 
 	## What `plan` needs: the script `start.name` of the `talon.toml` in `start.dir` (the file that R-RUN12 found), the words after `--`, the stop directory of the walk (R-RUN8: an `in` directory must be inside it), and the files that are known.
 	Want : { start : { dir : Str, name : Str }, args : List(Str), stop : Str, files : List(RunPlan.File) }
@@ -73,11 +73,35 @@ RunPlan :: [].{
 	start_failed : { owner : Str, text : Str, program : Str, why : Str } -> Fail
 	start_failed = |facts| Fail.new(Environment, "script ${facts.owner}: the step '${facts.text}' cannot start '${facts.program}': ${facts.why}")
 
+	## Slice 087 (R-RUN5, R-RUN7, R-RUN18, R-RUN19): the end of one step. `words` are the words of the step (`Flat.words`), `text` is the step as the messages show it (`Flat.text`), `ok_exit` the codes of its `ok-exit` (`[]`: none), `ended` how the child ended.
+	##
+	## | Field | Value |
+	## | --- | --- |
+	## | `pass` | `Exited(0)`, or `Exited(c)` with `c` in `ok_exit`. `Signaled(_)` and a code below 0 or above 255 are never a pass. |
+	## | `code` | The code of the step: `c` for `Exited(c)`, `128 + n` for `Signaled(n)` (R-RUN7). |
+	## | `note` | A pass with a code that is not 0: `tln: note: step "<text>" exited with <code>; this is accepted as success by the ok-exit of the step` (R-RUN18). A failure with code 2, no `ok-exit`, the first word `roc` and the next word, after an optional `+<id>` (R-SC11), `check`, `build` or `test`: the hint of R-RUN19. Else `Err(None)`. No line end. |
+	step_end : { words : List(Str), text : Str, ok_exit : List(U8), ended : [Exited(I32), Signaled(I32)] } -> { pass : Bool, code : I32, note : Try(Str, [None]) }
+	step_end = |facts| {
+		(code, pass) = match facts.ended {
+			Exited(c) => (c, c == 0 or (c >= 0 and c <= 255 and facts.ok_exit.contains(c.to_u8_wrap())))
+			Signaled(n) => (128 + n, Bool.False)
+		}
+		note =
+			if pass and code != 0 {
+				Ok("tln: note: step \"${facts.text}\" exited with ${code.to_str()}; this is accepted as success by the ok-exit of the step")
+			} else if facts.ended == Exited(2) and !pass and facts.ok_exit.is_empty() and roc_warns(facts.words) {
+				Ok("tln: note: roc exits with 2 when it finds warnings and no errors; to accept them in this step, use { run = \"...\", ok-exit = [2] } (R-RUN18)")
+			} else {
+				Err(None)
+			}
+		{ pass, code, note }
+	}
+
 	## R-RUN11: the list of `tln run` with no name (a proposal, TW24). The line `scripts of <file>`, then for each script (in the order that is given) its name and a colon, and each step, 2 spaces in. A line end after each line.
 	list_text : { file : Str, scripts : List(ScriptsToml.Script) } -> Str
 	list_text = |facts| facts.scripts.fold(
 		"scripts of ${facts.file}\n",
-		|text, script| "${text}${script.name}:\n${Str.join_with(script.steps.map(|step| "  ${ScriptsToml.step_text(step)}\n"), "")}",
+		|text, script| "${text}${script.name}:\n${Str.join_with(script.steps.map(|step| "  ${ScriptsToml.step_text(step)}${ok_text(step)}\n"), "")}",
 	)
 
 	## R-RUN11, R-J3: the `data` of `--json` with no name: `{ "file": <file>, "scripts": [ { "name": <name>, "steps": [<step text>, ...] }, ... ] }` (the shape is given by the design, the text of a step is a proposal: `ScriptsToml.step_text`).
@@ -90,7 +114,7 @@ RunPlan :: [].{
 				facts.scripts.map(
 					|script| JsonDoc.Obj([
 						("name", JsonDoc.Text(script.name)),
-						("steps", JsonDoc.Arr(script.steps.map(|step| JsonDoc.Text(ScriptsToml.step_text(step))))),
+						("steps", JsonDoc.Arr(script.steps.map(step_data))),
 					]),
 				),
 			),
@@ -100,6 +124,45 @@ RunPlan :: [].{
 	## R-RUN11 (decision Q-S15 (b)): the note for a `[tools]` key that is also a program on `PATH` (a proposal, TW24): `the tool key '<key>' is also a program on PATH: inside tln run the key wins (R-RUN3)`. The caller prints it as `note: <text>` on stderr.
 	path_note : Str -> Str
 	path_note = |key| "the tool key '${key}' is also a program on PATH: inside tln run the key wins (R-RUN3)"
+}
+
+# R-RUN19: the words are `roc`, an optional `+<id>` (R-SC11), then `check`, `build` or `test`.
+roc_warns : List(Str) -> Bool
+roc_warns = |words| match words {
+	["roc", sel, sub, ..] if sel.starts_with("+") => is_warn_sub(sub)
+	["roc", sub, ..] => is_warn_sub(sub)
+	_ => Bool.False
+}
+
+is_warn_sub : Str -> Bool
+is_warn_sub = |sub| sub == "check" or sub == "build" or sub == "test"
+
+# R-RUN11: ` (ok-exit = [2, 3])` for a step with `ok-exit`, else empty.
+ok_text : ScriptsToml.Step -> Str
+ok_text = |step| match ScriptsToml.ok_exit(step) {
+	[] => ""
+	codes => " (ok-exit = [${Str.join_with(codes.map(|c| c.to_str()), ", ")}])"
+}
+
+# R-RUN11: a step with `in` or `ok-exit` is `{ run, in, ok_exit }`, another step is its text.
+step_data : ScriptsToml.Step -> JsonDoc
+step_data = |step| {
+	obj = |run, dir, codes| JsonDoc.Obj([
+		("run", JsonDoc.Text(run)),
+		(
+			"in",
+			match dir {
+				Ok(d) => JsonDoc.Text(d)
+				Err(_) => JsonDoc.Null
+			},
+		),
+		("ok_exit", JsonDoc.Arr(codes.map(|c| JsonDoc.Num(c.to_i64())))),
+	])
+	match step {
+		Line(text) => JsonDoc.Text(text)
+		In({ dir, run }) => JsonDoc.Obj([("run", JsonDoc.Text(run)), ("in", JsonDoc.Text(dir)), ("ok_exit", JsonDoc.Null)])
+		Run(r) => obj(r.run, r.dir, r.ok_exit)
+	}
 }
 
 Ctx : { stop : Str, files : List(RunPlan.File), start_dir : Str }
@@ -154,13 +217,20 @@ Here : { ctx : Ctx, dir : Str, owner : Str, step : ScriptsToml.Step, stack : Lis
 one_step : Here, List(Str) -> Planned
 one_step = |here, args| match here.step {
 	Line(line) => run_text(here, here.dir, line, args)
-	In({ dir, run }) => {
-		target = Text.resolve(here.dir, dir)
-		if inside(here.ctx.stop, target) {
-			run_text(here, target, run, args)
-		} else {
-			Err(Stop(step_fail(here, "has the directory '${dir}', which is outside the repository (${here.ctx.stop})")))
-		}
+	In({ dir, run }) => in_dir(here, dir, run, args)
+	Run(r) => match r.dir {
+		Ok(dir) => in_dir(here, dir, r.run, args)
+		Err(Here) => run_text(here, here.dir, r.run, args)
+	}
+}
+
+in_dir : Here, Str, Str, List(Str) -> Planned
+in_dir = |here, dir, run, args| {
+	target = Text.resolve(here.dir, dir)
+	if inside(here.ctx.stop, target) {
+		run_text(here, target, run, args)
+	} else {
+		Err(Stop(step_fail(here, "has the directory '${dir}', which is outside the repository (${here.ctx.stop})")))
 	}
 }
 
@@ -190,7 +260,7 @@ run_text = |here, target, text, args| {
 			Err(Shell(word)) => Err(Stop(step_fail(here, "has the word '${word}': a step is one command; use 2 steps, or a .roc script")))
 			Err(Unclosed) => Err(Stop(step_fail(here, "has a quote that is not closed")))
 			Ok([]) => Err(Stop(step_fail(here, "has no command")))
-			Ok(words) => Ok([{ dir: target, words: words.concat(args), text: ScriptsToml.step_text(here.step), owner: here.owner }])
+			Ok(words) => Ok([{ dir: target, words: words.concat(args), text: ScriptsToml.step_text(here.step), owner: here.owner, ok_exit: ScriptsToml.ok_exit(here.step) }])
 		}
 	}
 }

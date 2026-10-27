@@ -275,7 +275,7 @@ Result classes, all seen in the measurement below:
 
 | # | Class | Signal | Meaning |
 | --- | --- | --- | --- |
-| R-RC1 | pass | `No errors found`, or `0 errors and N warnings` | Works |
+| R-RC1 | pass | `No errors found`, or `0 errors and N warnings`. The exit code is 0 or 2 (roc exits with 2 for warnings only): Talon reads the summary, not the exit code. | Works |
 | R-RC2 | fail | `N errors` with N > 0. Each error header names a file. | A code incompatibility, per module |
 | R-RC3 | hang | No result in 30 s. A normal check takes under 2 s. | Compiler fault |
 | R-RC4 | crash | A fault signal: SIGSEGV (exit 139 seen), SIGBUS, SIGILL, SIGFPE or SIGABRT. On Windows, a fault exception code, such as `0xC0000005` (access violation) or `0xC00000FD` (stack overflow). | Compiler fault |

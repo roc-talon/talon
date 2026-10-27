@@ -11,7 +11,7 @@ tln: error[usage]: tln run hi does not take --json: the steps write to stdout. O
 tln: error[usage]: flag '--file' is not for 'run'
 tln: error[usage]: flag '--frozen' is not for 'run'
 tln: error[usage]: unknown command 'build'
-tln: error[input]: $PROJECT/p3/talon.toml:3: scripts.bad: a table step needs the strings in and run, and no other key
+tln: error[input]: $PROJECT/p3/talon.toml:3: scripts.bad: a table step needs the string run, and can have the string in and ok-exit, no other key
 tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/s/talon.toml.
 tln: error[usage]: no script 'r' in the talon.toml files that the walk checked: $PROJECT/w/deep/inner/talon.toml, $PROJECT/w/deep/talon.toml.
 tln: error[usage]: no talon.toml found. Checked: $PROJECT.

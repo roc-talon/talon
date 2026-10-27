@@ -14,8 +14,9 @@ import toml.Value
 ## ```
 ScriptsToml :: [].{
 
-	## One step. `Line(text)` is a command line or `@<name>` (R-RUN4), as written. `In({ dir, run })` is the table `{ in = "<dir>", run = "<step string>" }` (R-RUN8), as written.
-	Step : [Line(Str), In({ dir : Str, run : Str })]
+	## One step. `Line(text)` is a command line or `@<name>` (R-RUN4), as written, also the table `{ run = "<text>" }`. `In({ dir, run })` is the table `{ in = "<dir>", run = "<step string>" }` (R-RUN8), as written.
+	## `Run({ dir, run, ok_exit })` is a table with `ok-exit` (slice 087, R-RUN18): `dir` is `Err(Here)` when the table has no `in`.
+	Step : [Line(Str), In({ dir : Str, run : Str }), Run({ dir : Try(Str, [Here]), run : Str, ok_exit : List(U8) })]
 
 	## One script: the name, its steps in order (a string is one step), and the 1-based line of its key.
 	Script : { name : Str, steps : List(ScriptsToml.Step), line : U64 }
@@ -34,9 +35,11 @@ ScriptsToml :: [].{
 	## | --- | --- |
 	## | `scripts` is not a table | `scripts: must be a table` |
 	## | The key is not `is_name` | `scripts.<key>: the key is not a script name (lower case letters, digits, ':', '_' and '-', the first one a letter or a digit, at most 64 characters)` |
-	## | The value is not a string, a table or an array | `scripts.<key>: must be a step (a string, or a table with in and run) or an array of steps` |
-	## | An item of the array is not a string or a table | `scripts.<key>[<n>]: must be a string or a table with in and run` (`<n>` is 1-based) |
-	## | A table has no string `in`, no string `run`, or another key (a table that is the whole value too, `<key>` with no `[<n>]`) | `scripts.<key>[<n>]: a table step needs the strings in and run, and no other key` |
+	## | The value is not a string, a table or an array | `scripts.<key>: must be a step (a string, or a table with run) or an array of steps` |
+	## | An item of the array is not a string or a table | `scripts.<key>[<n>]: must be a string or a table with run` (`<n>` is 1-based) |
+	## | A table has no string `run`, an `in` that is not a string, or another key (a table that is the whole value too, `<key>` with no `[<n>]`) | `scripts.<key>[<n>]: a table step needs the string run, and can have the string in and ok-exit, no other key` |
+	## | `ok-exit` is not an array of 1 or more integers from 0 to 255 (R-RUN18) | `scripts.<key>[<n>]: ok-exit must be an array of 1 or more integers from 0 to 255` |
+	## | `ok-exit` with `run = "@<name>"` (R-RUN18) | `scripts.<key>[<n>]: ok-exit is not allowed with run = "@<name>": put it on a step of the script <name>` |
 	##
 	## `in` is a reserved word of Roc: the key is read as the string `"in"` (a Dict key), not as a field.
 	read_table : Toml -> { value : List(ScriptsToml.Script), issues : List(TomlKeys.Note), warnings : List(TomlKeys.Note) }
@@ -68,11 +71,22 @@ ScriptsToml :: [].{
 	words : Str -> Try(List(Str), [Shell(Str), Unclosed])
 	words = |text| read_words(text.to_utf8(), { done: [], cur: [], begun: Bool.False, quoted: Bool.False, mode: Plain })
 
-	## The step as it is shown (the list of `tln run`, the messages): a `Line` is its text, an `In` is `in <dir>: <run>`.
+	## The step as it is shown (the list of `tln run`, the messages): a `Line` is its text, an `In` is `in <dir>: <run>`. A `Run` is the same with no `ok-exit`.
 	step_text : ScriptsToml.Step -> Str
 	step_text = |step| match step {
 		Line(text) => text
 		In({ dir, run }) => "in ${dir}: ${run}"
+		Run(r) => match r.dir {
+			Ok(dir) => "in ${dir}: ${r.run}"
+			Err(Here) => r.run
+		}
+	}
+
+	## R-RUN18: the codes of the `ok-exit` of a step (`[]`: none).
+	ok_exit : ScriptsToml.Step -> List(U8)
+	ok_exit = |step| match step {
+		Run(r) => r.ok_exit
+		_ => []
 	}
 }
 
@@ -84,7 +98,15 @@ name_head : U8 -> Bool
 name_head = |b| (b >= 'a' and b <= 'z') or (b >= '0' and b <= '9')
 
 step_rule : Str
-step_rule = "a table step needs the strings in and run, and no other key"
+step_rule = "a table step needs the string run, and can have the string in and ok-exit, no other key"
+
+# Why a table is not a step: the message.
+table_why : [Table, OkExit, At(Str)] -> Str
+table_why = |why| match why {
+	Table => step_rule
+	OkExit => "ok-exit must be an array of 1 or more integers from 0 to 255"
+	At(name) => "ok-exit is not allowed with run = \"@${name}\": put it on a step of the script ${name}"
+}
 
 # R-RUN1: one key of `[scripts]`. The first problem is its one issue (all issues are at the line of the key).
 read_script : Toml, Str, Value -> One
@@ -99,26 +121,59 @@ read_script = |doc, key, value| {
 		Value.String(text) => good([Line(text)])
 		Value.Table(t) => match table_step(t) {
 			Ok(step) => good([step])
-			Err(Bad) => refused(step_rule)
+			Err(why) => refused(table_why(why))
 		}
 		Value.Array(items) => match read_items(items) {
 			Ok(steps) => good(steps)
-			Err(Item(n, Plain)) => { line, script: Err(Bad), issues: [{ line, message: "scripts.${key}[${n.to_str()}]: must be a string or a table with in and run" }] }
-			Err(Item(n, Table)) => { line, script: Err(Bad), issues: [{ line, message: "scripts.${key}[${n.to_str()}]: ${step_rule}" }] }
+			Err(Item(n, Plain)) => { line, script: Err(Bad), issues: [{ line, message: "scripts.${key}[${n.to_str()}]: must be a string or a table with run" }] }
+			Err(Item(n, Bad(why))) => { line, script: Err(Bad), issues: [{ line, message: "scripts.${key}[${n.to_str()}]: ${table_why(why)}" }] }
 		}
-		_ => refused("must be a step (a string, or a table with in and run) or an array of steps")
+		_ => refused("must be a step (a string, or a table with run) or an array of steps")
 	}
 }
 
-# The table `{ in = "<dir>", run = "<step>" }`: the 2 strings and no other key. `in` is a reserved word of Roc, so the key is the string "in".
-table_step : Dict(Str, Value) -> Try(ScriptsToml.Step, [Bad])
-table_step = |t| match (t.get("in"), t.get("run")) {
-	(Ok(Value.String(dir)), Ok(Value.String(run))) => if t.len() == 2 Ok(In({ dir, run })) else Err(Bad)
+# R-RUN1, R-RUN18: the table `{ run = "<step>" }` with the optional keys `in` (a string) and `ok-exit`, and no other key. `in` is a reserved word of Roc, so the key is the string "in".
+table_step : Dict(Str, Value) -> Try(ScriptsToml.Step, [Table, OkExit, At(Str)])
+table_step = |t| {
+	known = t.keys().all(|k| k == "run" or k == "in" or k == "ok-exit")
+	run = match t.get("run") {
+		Ok(Value.String(text)) if known => text
+		_ => return Err(Table)
+	}
+	dir = match t.get("in") {
+		Ok(Value.String(text)) => Ok(text)
+		Ok(_) => return Err(Table)
+		Err(_) => Err(Here)
+	}
+	match t.get("ok-exit") {
+		Err(_) => Ok(
+			match dir {
+				Ok(d) => In({ dir: d, run })
+				Err(Here) => Line(run)
+			},
+		)
+		Ok(value) => {
+			codes = ok_codes(value) ? |_| OkExit
+			line = run.trim()
+			if line.starts_with("@") Err(At(line.drop_prefix("@"))) else Ok(Run({ dir, run, ok_exit: codes }))
+		}
+	}
+}
+
+# R-RUN18: an array of 1 or more integers from 0 to 255.
+ok_codes : Value -> Try(List(U8), [Bad])
+ok_codes = |value| match value {
+	Value.Array([_, ..] as items) => items.map_try(
+		|item| match item {
+			Value.Integer(n) if n >= 0 and n <= 255 => Ok(n.to_u8_wrap())
+			_ => Err(Bad)
+		},
+	)
 	_ => Err(Bad)
 }
 
 # The items of an array: the steps, or the 1-based place of the first item that is not a step, and why.
-read_items : List(Value) -> Try(List(ScriptsToml.Step), [Item(U64, [Plain, Table])])
+read_items : List(Value) -> Try(List(ScriptsToml.Step), [Item(U64, [Plain, Bad([Table, OkExit, At(Str)])])])
 read_items = |items| items.fold_try(
 	[],
 	|steps, item| {
@@ -127,7 +182,7 @@ read_items = |items| items.fold_try(
 			Value.String(text) => Ok(steps.append(Line(text)))
 			Value.Table(t) => match table_step(t) {
 				Ok(step) => Ok(steps.append(step))
-				Err(Bad) => Err(Item(n, Table))
+				Err(why) => Err(Item(n, Bad(why)))
 			}
 			_ => Err(Item(n, Plain))
 		}

@@ -1,0 +1,10 @@
+# needle, TAB, code: the first rule whose needle is in the argv answers (default: exit 0). roc exits with 2 for warnings and no errors (slice 087).
+--output=bad	1
+--sig	signal:2
+tool-sig	signal:2
+roc build main.roc	2
+roc check main.roc	2
+roc run main.roc	2
+roc main.roc	2
+scripts/notes.roc	2
+tool-two	2

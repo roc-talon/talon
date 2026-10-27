@@ -2,3 +2,4 @@
 build = "tool-api build"
 fail = "tool-ok api"
 gone = "tool-ok api"
+warn = "tool-ok api"

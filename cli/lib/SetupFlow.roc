@@ -6,6 +6,7 @@ import Common
 import Compiler
 import ConfigToml
 import Consent
+import Exit
 import Fail
 import Fx
 import Help
@@ -465,7 +466,10 @@ write_path! : Fx, Facts, { target : Str, content : Str, line : Str } => Try({}, 
 write_path! = |fx, facts, pending| if facts.os == Windows {
 	command = Setup.windows_path({ dir: facts.bin, op: Add })
 	match fx.exec!({ argv: command.argv, env: command.env }) {
-		Ok(code) => if code == 0 Ok({}) else Err(Fail.new(Environment, "the change of the user Path failed (exit code ${code.to_str()})"))
+		Ok(ended) => {
+			code = Exit.of_child(ended)
+			if code == 0 Ok({}) else Err(Fail.new(Environment, "the change of the user Path failed (exit code ${code.to_str()})"))
+		}
 		Err(NotStarted(text)) => Err(Fail.new(Environment, "cannot start powershell: ${text}"))
 	}
 } else {
