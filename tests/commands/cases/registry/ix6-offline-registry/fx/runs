@@ -1,0 +1,4 @@
+get /v1/releases?group=github.com%2Fsomeone%2Froc-json%2Freleases%2Fdownload%2F%7Bv%7D%2F
+get /v1/packages/someone/roc-b/releases
+get /v1/packages/someone/roc-d/releases
+offline name=someone/roc-json name=Someone/Roc-B name=someone/roc-c name=someone/roc-d known=https://github.com/someone/roc-json/releases/download/1.0.0/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst known=https://github.com/someone/roc-b/releases/download/2.0.0/6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6.tar.zst known=https://github.com/someone/roc-c/releases/download/1.0.0/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst hint=https://github.com/someone/roc-json/releases/download/1.0.0/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst

@@ -1,0 +1,2 @@
+# run 1: x64musl pass
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

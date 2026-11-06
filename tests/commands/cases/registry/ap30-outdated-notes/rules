@@ -1,0 +1,4 @@
+R-AP29 R-AP30 R-FL4 R-J6 R-OUT2 (slice 206e4, Design Q406 to Q408): `tln outdated` with a registry (the world of registry/cv1-outdated-query) and the `checked` items of registry/ap30-update-notes: acme/json stale (3d), acme/parser not stale (no note), acme/pfx stale with a null time.
+Run 1: the table, then one `note:` line for each stale repository, sorted by name (a proposal, R-OUT2: after the table). Exit code 0 (R-AP30, R-E7).
+Run 2 (--json): `data` has the member `index_notes` after `members` (Q407). `outdated` has no `notes` list, so none is added (proposal).
+Run 3 (--quiet): R-FL4 hides the notes: the table only.

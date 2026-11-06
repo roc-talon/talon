@@ -1,0 +1,3 @@
+{"queue":"talon-index","messages":[{"id":"m4","attempts":4,"body":{"event":"release","action":"published","installation_id":0,"repository_id":500,"release_id":9001,"repository_ids":[]}}]}
+{"queue":"talon-index","messages":[{"id":"m5","attempts":5,"body":{"event":"release","action":"published","installation_id":0,"repository_id":500,"release_id":9001,"repository_ids":[]}}]}
+{"queue":"talon-index","messages":[{"id":"m6","attempts":5,"body":{"event":"release","action":"published","installation_id":0,"repository_id":500,"release_id":9001,"repository_ids":[]}}]}

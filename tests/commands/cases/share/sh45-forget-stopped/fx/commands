@@ -1,0 +1,4 @@
+# R-SH9, R-AP36, Q481, Q485: run 1: forget with a live JWT and a 401: exit 20 (rejected), the message says to run tln share login and then tln share forget; share.json is not changed (JWT, id, totals stay). Runs 2 and 3: --offline: exit 15 for forget and for logout, no request, no change; the calls end after the read of config.toml.
+share forget
+share forget --offline
+share logout --offline

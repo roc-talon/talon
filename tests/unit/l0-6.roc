@@ -7,11 +7,14 @@ import CleanTest
 import ClosureTest
 import CommonTest
 import FetchTest
+import IndexqueryTest
 import LookupTest
 import OptsTest
 import OraclefreeTest
 import OutTest
 import ProxyTest
+import PublishCheckTest
+import PublishTest
 import ResolvebaseTest
 import TalonRemoveTest
 import VerifyTest

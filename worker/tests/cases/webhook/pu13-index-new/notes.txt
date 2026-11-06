@@ -1,0 +1,1 @@
+1: published, release 9001, repository 500, installation 55. The job reads the repository by id (public, full name Acme/Lib), the release by id, then the shared flow: the release by tag, the asset, .roc-version. The URL has the full name as GitHub gives it (Acme/Lib). Acked

@@ -1,0 +1,4 @@
+cli/lib/ToolBinUse.roc
+tests/unit/ToolbinuseTest.roc
+research/slice-093-revert/ToolBinUse.reference.roc
+docs/slices/093-prebuilt-bin-use.md

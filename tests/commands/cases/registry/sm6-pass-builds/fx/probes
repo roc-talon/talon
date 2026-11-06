@@ -1,0 +1,4 @@
+# the unit probes (a check in a dir of packages/) have no row here (FakeJobs). The rows: the baseline, the candidate check, the build
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/build-target.stdout	../fixtures/check/out/build-target.stderr

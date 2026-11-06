@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -9,6 +11,8 @@ http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
 args
+env_all
+tty
 env_all
 clock
 platform
@@ -31,6 +35,8 @@ read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
 delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -49,6 +55,8 @@ spawn_all limit=8
   job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.1/sha256sums.txt
 delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
 env_all
 clock
 platform
@@ -71,6 +79,8 @@ read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
 delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -78,6 +88,8 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
 read_files $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json
 args
+env_all
+tty
 env_all
 clock
 platform
@@ -117,6 +129,8 @@ write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
 env_all
 clock
 platform

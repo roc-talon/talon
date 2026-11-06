@@ -1,0 +1,23 @@
+# R-AP23 R-AP45 R-DA1 R-AP9 R-AP10 TW4: http_send! of the real Fx (slice 200), with `fxprobe send`: the method, the headers, the body bytes and the answer.
+# The fake server (tests/tools/fakehttp.py) has the routes `w.POST`, `w.POST.2`, `w.PUT`, `w.DELETE` and `w` (the route form of TESTING 3.1). The bodies that it got are in expect/http-bodies/, named by the line number of http.log.
+unstable() { grep -v -i '^header \(content-length\|date\|server\|content-type\|connection\)'; }
+U=$TALON_HTTP/x/w
+J='h:Content-Type=application/json'
+A='h:User-Agent=tln/0.4.1'
+
+echo "== POST with a body: the route requires Content-Type and User-Agent (R-AP23, R-AP45), the answer is the first one (201)"
+fxprobe send POST "$U" 20 "$J" "$A" 'body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}' | unstable
+echo "== the same POST again: the answer is the 2nd one of the route, a 200 (the n-th answer)"
+fxprobe send POST "$U" 20 "$J" "$A" 'body={"url":"https://github.com/o/r/releases/download/v1/b.tar.zst"}' | unstable
+echo "== a POST with no Content-Type breaks the require line of the route: 599"
+fxprobe send POST "$U" 20 "$A" 'body={}' | unstable
+echo "== PUT with a body of two lines and a backslash"
+fxprobe send PUT "$U" 20 "$J" 'body={"a":1,\n"b":"x\\y"}' | unstable
+echo "== DELETE with no body: 204 and an empty body"
+fxprobe send DELETE "$U" 20 "$A" | unstable
+echo "== DELETE with an Authorization header breaks the require-none line of the route (R-RG3: no token to a registry): 599"
+fxprobe send DELETE "$U" 20 'h:Authorization=Bearer-x' | unstable
+echo "== GET is the plain route, not the POST route (R-DA1: a small API answer, no download)"
+fxprobe send GET "$U" 20 | unstable
+echo "== a route with no file: 404 for a write too"
+fxprobe send POST "$TALON_HTTP/x/none" 20 "$J" 'body={}' | unstable

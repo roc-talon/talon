@@ -1,0 +1,1 @@
+tln: error[usage]: the compat bot needs a registry, and TALON_REGISTRY is not set or is empty. Set TALON_REGISTRY to the base URL of the registry.

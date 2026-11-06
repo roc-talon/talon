@@ -1,0 +1,1 @@
+R-SH4 R-AP25 R-E6 (slice 206e4, Design Q533): `tln update` with a registry whose closure answer is 429 (exit 15) and `share = true`, a share.json and a queue row HA of 0.0.1. Exit 15: the send is skipped (the registry did not give an answer): no queue call, no POST /v1/compat. The exit code is 15.

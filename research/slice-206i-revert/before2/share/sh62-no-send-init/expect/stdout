@@ -1,0 +1,9 @@
+== cwd:i1 init
+check: passed
+build: passed
+$PROJECT/i1/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at log:60, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0

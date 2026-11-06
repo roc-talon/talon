@@ -1,0 +1,9 @@
+{"outcome":"ok","acked":[],"retried":[{"id":"a1","delay_s":60}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"a2","delay_s":300}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"a3","delay_s":900}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"a4","delay_s":3600}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"a5","delay_s":null}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"a6","delay_s":null}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"u1","delay_s":300}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"u2","delay_s":900}]}
+{"outcome":"ok","acked":[],"retried":[{"id":"b1","delay_s":60},{"id":"b2","delay_s":900},{"id":"b3","delay_s":null}]}

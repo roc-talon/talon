@@ -1,6 +1,8 @@
+import records.Closure as Wire
 import Db
 import JsonDoc
 import Locked
+import Matrix
 import Pin
 import Probe
 
@@ -26,11 +28,12 @@ import Probe
 ## ```
 Evidence :: [].{
 
-	## The source words of a line, for the text and for `--json` (`source`): `local`, `pin`, `roc-version`.
-	Source : [Local, Pin, Hint]
+	## The source words of a line, for the text and for `--json` (`source`): `local`, `pin`, `roc-version`. Slice 209 (a proposal, R-OUT2): `bot` and `author` (rank 2), `shared` (rank 6).
+	Source : [Local, Bot, Author, Pin, Hint, Shared]
 
-	## One source that has a value. `rank` is 1, 3 or 4. `result` is `Pass` for `Pin` and `Hint`. `modules` are the failing modules of a `Local` fail (as the fact has them, sorted), else `[]`.
-	Line : { rank : U64, source : Evidence.Source, result : Db.Outcome, modules : List(Str) }
+	## One source that has a value. `rank` is 1, 2, 3, 4 or 6. `result` is `Pass` for `Pin` and `Hint`. `modules` are the failing modules of a `Local` fail (as the fact has them, sorted), else `[]`.
+	## Slice 209: `digest` is the `error_digest` of a rank 2 line (R-AP58: `Err(None)` for `null`), `Err(None)` for the other ranks. `counts` are the counts of a rank 6 line, `Err(None)` for the other ranks.
+	Line : { rank : U64, source : Evidence.Source, result : Db.Outcome, modules : List(Str), digest : Try(Str, [None]), counts : Try({ pass_count : U64, fail_count : U64, crash_count : U64 }, [None]) }
 
 	## The evidence of one package for `tln why`. `compiler` is the compiler of the member (Resolution 13, no download): `Err(None)` when none is selected. `lines` are in rank order. `notes` are the unit-fail notes
 	## (`Evidence.note`, no prefix) for the modules of the `Local` fail that the app does not import (`Evidence.ignored`).
@@ -51,9 +54,38 @@ Evidence :: [].{
 		local = pair.facts
 			.keep_if(|f| f.hash == pair.hash and f.nightly == pair.compiler and f.target == "any")
 			.take_first(1)
-			.map(|f| { rank: 1, source: Local, result: f.outcome, modules: f.modules })
-		hint = |rank, source, found| if is_compiler(found, pair.compiler) [{ rank, source, result: Pass, modules: [] }] else []
+			.map(|f| { rank: 1, source: Local, result: f.outcome, modules: f.modules, digest: Err(None), counts: Err(None) })
+		hint = |rank, source, found| if is_compiler(found, pair.compiler) [{ rank, source, result: Pass, modules: [], digest: Err(None), counts: Err(None) }] else []
 		local.concat(hint(3, Pin, pair.pin)).concat(hint(4, Hint, pair.hint))
+	}
+
+	## Slice 209 (R-EF1 ranks 2 and 6, R-EF3, R-CM7, R-SE5): the lines of one pair with the registry, in rank order: the lines of `of_pair` with the rank 2 lines after rank 1 and the rank 6 line at the end.
+	##
+	## | Rank | Line when |
+	## | --- | --- |
+	## | 2 | `rows` has a row with `hash`, the target `any` and a `nightly` that is `Pin.same_id` with `compiler`. A `bot` line (the first such `bot` row) and then an `author` line (the first such `author` row): both are shown (R-EF3: `--json` gives both), the `bot` line first, as it wins. `result` is the result of the row, `modules` `[]`, `digest` its `error_digest` |
+	## | 6 | `Matrix.shared` of `shared` for (`hash`, `compiler`, `any`) is `Ok`: `result` is its result, `modules` `[]`, `counts` its 3 counts. Equal counts: no line |
+	of_all : { hash : Str, compiler : Str, facts : List(Db.Fact), pin : Try(Str, [NoPin]), hint : Try(Str, [None]), rows : List(Matrix.Row), shared : List(Wire.Hint) } -> List(Evidence.Line)
+	of_all = |pair| {
+		base = Evidence.of_pair({ hash: pair.hash, compiler: pair.compiler, facts: pair.facts, pin: pair.pin, hint: pair.hint })
+		mine = pair.rows.keep_if(|r| r.hash == pair.hash and r.target == "any" and Pin.same_id(r.nightly, pair.compiler))
+		reg = |source| mine
+			.keep_if(|r| r.source == source)
+			.take_first(1)
+			.map(|r| { rank: 2, source: if source == Bot Bot else Author, result: r.result, modules: [], digest: r.error_digest, counts: Err(None) })
+		shared = match Matrix.shared({ hints: pair.shared, hash: pair.hash, nightly: pair.compiler, target: "any" }) {
+			Ok(h) => [{ rank: 6, source: Shared, result: if h.result == Pass Pass else Fail, modules: [], digest: Err(None), counts: Ok({ pass_count: h.pass_count, fail_count: h.fail_count, crash_count: h.crash_count }) }]
+			Err(None) => []
+		}
+		base.keep_if(|l| l.rank == 1).concat(reg(Bot)).concat(reg(Author)).concat(base.keep_if(|l| l.rank != 1)).concat(shared)
+	}
+
+	## R-EF3 (slice 209): the note when the `bot` line and the `author` line of the block have different results (the `result` word: `pass`, `fail`, `hang`, `crash`; a different `digest` with the same result is no difference, Design Q394). No such pair of lines: none. The text, with no `note: ` prefix (a proposal, R-OUT2):
+	## `the bot and the author rows differ on <compiler>: bot <result>, author <result>`.
+	differ : { compiler : Str, lines : List(Evidence.Line) } -> List(Str)
+	differ = |block| match (block.lines.find_first(|l| l.source == Bot), block.lines.find_first(|l| l.source == Author)) {
+		(Ok(bot), Ok(author)) if bot.result != author.result => ["the bot and the author rows differ on ${block.compiler}: bot ${Db.outcome_word(bot.result)}, author ${Db.outcome_word(author.result)}"]
+		_ => []
 	}
 
 	## R-EF1 rank 3: the `roc:` pin of the header text of a release (`Locked.read`, which reads a package header as an app header, R-H8). A header with no pin, a text with no header and a pin that is not a full
@@ -73,6 +105,7 @@ Evidence :: [].{
 	## | each of `notes` | 4 spaces, `note: `, the note |
 	##
 	## The result is `pass`, `hang`, `crash`, `fail`, or `fail (<module>, <module>)` for a fail with modules (in the order of the line). Each line ends with a line end.
+	## Slice 209 (a proposal, R-OUT2): the source words `bot`, `author` (rank 2) and `shared` (rank 6). A rank 2 line has no digest in the text. A rank 6 line adds ` (<pass_count> pass, <fail_count> fail, <crash_count> crash)` after the result.
 	text : Evidence.Block -> Str
 	text = |block| match block.compiler {
 		Err(None) => ""
@@ -93,6 +126,8 @@ Evidence :: [].{
 	## | `compiler` | The compiler id, or null |
 	## | `evidence` | A list in rank order (`[]` when there is no compiler or no value): `{ "rank", "source", "result", "modules", "winner" }`. `rank` is a number, `source` is `local`, `pin` or `roc-version`, `result` is `pass`, `fail`, `hang` or `crash`, `modules` is a list of texts, `winner` is true for the first line only |
 	## | `notes` | The texts of `notes` |
+	##
+	## Slice 209 (a proposal, R-OUT2, R-OUT4): `source` is also `bot`, `author` or `shared`. A rank 2 line has one more key after `winner`: `error_digest`, its text or null (R-AP58). A rank 6 line has 3 more keys after `winner`: `pass_count`, `fail_count`, `crash_count` (numbers). The other lines have no more keys.
 	fields : Evidence.Block -> List((Str, JsonDoc))
 	fields = |block| {
 		lines = match block.compiler {
@@ -146,8 +181,11 @@ is_compiler = |found, compiler| match found {
 source_word : Evidence.Source -> Str
 source_word = |source| match source {
 	Local => "local"
+	Bot => "bot"
+	Author => "author"
 	Pin => "pin"
 	Hint => "roc-version"
+	Shared => "shared"
 }
 
 # `fail (<module>, <module>)` for a fail with modules, else the word of the outcome.
@@ -159,13 +197,40 @@ result_text = |line| if line.result == Fail and !line.modules.is_empty() {
 }
 
 line_text : Str, Evidence.Line -> Str
-line_text = |mark, line| "      ${mark} ${line.rank.to_str()} ${source_word(line.source)}: ${result_text(line)}\n"
+line_text = |mark, line| {
+	counts = match line.counts {
+		Ok(c) => " (${c.pass_count.to_str()} pass, ${c.fail_count.to_str()} fail, ${c.crash_count.to_str()} crash)"
+		Err(None) => ""
+	}
+	"      ${mark} ${line.rank.to_str()} ${source_word(line.source)}: ${result_text(line)}${counts}\n"
+}
 
 line_doc : Evidence.Line, Bool -> JsonDoc
-line_doc = |line, winner| JsonDoc.Obj([
-	("rank", Num(line.rank.to_i64_wrap())),
-	("source", Text(source_word(line.source))),
-	("result", Text(Db.outcome_word(line.result))),
-	("modules", Arr(line.modules.map(|m| Text(m)))),
-	("winner", Flag(winner)),
-])
+line_doc = |line, winner| JsonDoc.Obj(
+	[
+		("rank", Num(line.rank.to_i64_wrap())),
+		("source", Text(source_word(line.source))),
+		("result", Text(Db.outcome_word(line.result))),
+		("modules", Arr(line.modules.map(|m| Text(m)))),
+		("winner", Flag(winner)),
+	].concat(line_extra(line)),
+)
+
+# Slice 209: the keys after `winner`: `error_digest` for a rank 2 line (R-AP58: null for `Err(None)`), the 3 counts for a rank 6 line, none for the others.
+line_extra : Evidence.Line -> List((Str, JsonDoc))
+line_extra = |line| match line.source {
+	Bot | Author => [
+		(
+			"error_digest",
+			match line.digest {
+				Ok(digest) => Text(digest)
+				Err(None) => Null
+			},
+		),
+	]
+	Shared => match line.counts {
+		Ok(c) => [("pass_count", Num(c.pass_count.to_i64_wrap())), ("fail_count", Num(c.fail_count.to_i64_wrap())), ("crash_count", Num(c.crash_count.to_i64_wrap()))]
+		Err(None) => []
+	}
+	_ => []
+}

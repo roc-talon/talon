@@ -1,0 +1,2 @@
+# R-SH4: 1001 rows. At most 2 requests of 500 rows, the oldest first (rows 1 to 500, then 501 to 1000). Row 1001 waits for a later command. Each request has the timeout 5 (the fake clock does not move). The totals add both answers: sent 1000, counted 900, first 400.
+queue-send 0.9.0

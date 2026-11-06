@@ -1,0 +1,97 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -1 +1,9 @@
+ format	1
++fact	FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8	nightly-2026-10-12-2a2a2a2	any	pass		
++fact	FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8	nightly-2026-10-12-2a2a2a2	x64musl	pass		33126c41d4e37f5e15d79a7c76b1d5b6cdd8d7b69722605218ceeb514c225c01
++pinned	nightly-2026-10-08-8c8c8c8	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-09-9d9d9d9	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-10-0e0e0e0	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-11-1f1f1f1	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-12-2a2a2a2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-14-4c4c4c4	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
+--- home/.cache/roc/talon/index/github/roc-lang/basic-cli/repo.json
++++ home/.cache/roc/talon/index/github/roc-lang/basic-cli/repo.json
+@@ -0,0 +1 @@
++{"id":5,"full_name":"roc-lang/basic-cli","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":1,"hash":"FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8","group":"github.com/roc-lang/basic-cli/releases/download/{v}/","series":"0.24","version":"0.24.0","url":"https://github.com/roc-lang/basic-cli/releases/download/0.24.0/FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8.tar.zst","tag":"0.24.0","roc_version":null,"repo":"roc-lang/basic-cli","published_at":1780315200000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":2,"hash":"4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5","group":"github.com/roc-lang/basic-cli/releases/download/{v}/","series":"0.25","version":"0.25.0","url":"https://github.com/roc-lang/basic-cli/releases/download/0.25.0/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5.tar.zst","tag":"0.25.0","roc_version":null,"repo":"roc-lang/basic-cli","published_at":1782907200000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":3,"hash":"FyNWHHHxWAJrUG3LDbX8mNkYHgnYAC56LgCNgTsKGfry","group":"github.com/roc-lang/basic-cli/releases/download/{v}/","series":"0.26","version":"0.26.0","url":"https://github.com/roc-lang/basic-cli/releases/download/0.26.0/FyNWHHHxWAJrUG3LDbX8mNkYHgnYAC56LgCNgTsKGfry.tar.zst","tag":"0.26.0","roc_version":null,"repo":"roc-lang/basic-cli","published_at":1791979200000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/roc-lang/basic-cli/releases
++etag "r1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+@@ -0,0 +1 @@
++{"format":1,"rows":[{"tag":"nightly-2026-10-08-8c8c8c8","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-08-8c8c8c8.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73800000,"published_at":1791471600000,"log_index":10},{"tag":"nightly-2026-10-09-9d9d9d9","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-09-9d9d9d9.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73900000,"published_at":1791558000000,"log_index":20},{"tag":"nightly-2026-10-10-0e0e0e0","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":74000000,"published_at":1791644400000,"log_index":30},{"tag":"nightly-2026-10-11-1f1f1f1","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-11-1f1f1f1.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":74100000,"published_at":1791730800000,"log_index":40},{"tag":"nightly-2026-10-12-2a2a2a2","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":74200000,"published_at":1791817200000,"log_index":50},{"tag":"nightly-2026-10-14-4c4c4c4","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-14-4c4c4c4.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":74400000,"published_at":1791990000000,"log_index":60}]}
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/i1/main.roc","last_use":1792065600}]}
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.last-use
+@@ -0,0 +1 @@
++2026-10-15T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-12-2a2a2a2","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-12-2a2a2a2/roc_nightly-linux_x86_64-2026-10-12-2a2a2a2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"registry","typed":"nightly-2026-10-12-2a2a2a2","compat":null,"installed_at":"2026-10-15T12:00:00Z","published_at":"2026-10-12T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/LICENSE
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/legal_details
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc
++++ home/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2/roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- project/i1/.github/workflows/ci.yml
++++ project/i1/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/i1/main.roc
++++ project/i1/main.roc
+@@ -0,0 +1,11 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.24.0/FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
++}
++
++import pf.Stdout
++
++main! = |_args| {
++	Stdout.line!("Hello, World!")?
++	Ok({})
++}

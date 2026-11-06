@@ -1,0 +1,7 @@
+format	1
+fact	HQ	nightly-2026-10-10-aaaaaaa	any	pass		
+fact	HQ	nightly-2026-10-13-bbbbbbb	any	hang		
+pinned	nightly-2026-10-12-2664a27	linux_x86_64	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	github-digest
+pinned	nightly-2026-10-14-38a3029	linux_x86_64	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	github-digest
+pinned	nightly-2026-10-13-bbbbbbb	linux_x86_64	aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa	github-digest
+pinned	nightly-2026-10-10-aaaaaaa	windows_x86_64	bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb	github-digest

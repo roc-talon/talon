@@ -1,0 +1,47 @@
+All (30) tests passed in 371.8 ms.
+PASS reconcile/pu21-poll-job (2967 ms)
+PASS reconcile/pu23-list (5335 ms)
+PASS reconcile/pu23-pages (3294 ms)
+PASS reconcile/pu24-missing-again (3524 ms)
+PASS reconcile/pu25-reserve (2753 ms)
+PASS reconcile/pu31-repo-etag (2969 ms)
+PASS reconcile/pu36-overlap (2502 ms)
+PASS reconcile/pu36-state-guard (2502 ms)
+PASS reconcile/pu37-backoff (2753 ms)
+PASS reconcile/pu37-etag-effects (2427 ms)
+FAIL reconcile/tp18-rename (2641 ms)
+    db: @ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\tW/\"l2\"\t\\N\t1767225600000\t1767312000000\t0\t1","acme/lib2\t\\N\t\\N\t\\N\t1767312000000\t0\t1","acme/p\tW/\"lq\"\t\\N\t1767225600000\t1767229200000\t0\t0","acme/q\t\\N\t\\N\t\\N\t1769817600000\t0\t0","acme/x\tW/\"ly\"\t\\N\t1767225600000\t1767229200000\t0\t0","acme/y\t\\N\t\\N\t\\N\t1769817600000\t0\t0"]
+      got:      ["acme/lib\tW/\"l2\"\t\\N\t1767225600000\t1767312000000\t0\t1","acme/p\tW/\"lq\"\t\\N\t1767225600000\t1767229200000\t0\t0","acme/q\t\\N\t\\N\t\\N\t1769817600000\t0\t0","acme/x\tW/\"ly\"\t\\N\t1767225600000\t1767229200000\t0\t0","acme/y\t\\N\t\\N\t\\N\t1769817600000\t0\t0"]
+FAIL reconcile/tp18-rename-transfer (2211 ms)
+    d1-calls: request 2: expected 3, got 2 (all,batch)
+    db: @ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/t\t\\N\t\\N\t1767229200000\t1767232800000\t0\t0","acme/t2\t\\N\t\\N\t1767229200000\t1767232800000\t0\t0"]
+      got:      ["acme/t\t\\N\t\\N\t1767229200000\t1767232800000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100"]
+PASS reconcile/tp9-transfer (2227 ms)
+PASS webhook/ap12-empty-secret (1835 ms)
+PASS webhook/ap12-no-secret (1774 ms)
+PASS webhook/ap12-signature (2422 ms)
+PASS webhook/pu11-events (2076 ms)
+PASS webhook/pu13-identity-changed (2061 ms)
+PASS webhook/pu13-index-new (2065 ms)
+PASS webhook/pu13-no-asset-end (2061 ms)
+PASS webhook/pu13-not-candidate (1996 ms)
+PASS webhook/pu13-refused (2054 ms)
+PASS webhook/pu13-retry-no-asset (2445 ms)
+PASS webhook/pu14-labels (2489 ms)
+PASS webhook/pu17-withdraw-clear (4076 ms)
+PASS webhook/pu26-app-installed (3256 ms)
+PASS webhook/pu26-release-installed (2919 ms)
+PASS webhook/pu33-privatized (3735 ms)
+PASS webhook/pu33-publicized (2310 ms)
+PASS webhook/pu33-release-private (2125 ms)
+PASS webhook/pu35-dead-letter (1354 ms)
+PASS webhook/pu35-retry-schedule (1185 ms)
+w2: 30 passed, 2 failed

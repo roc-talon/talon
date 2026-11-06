@@ -1,0 +1,5 @@
+== share login --offline
+exit 15
+== share login --offline --json
+{"schema":1,"command":"share login","ok":false,"data":null,"error":{"kind":"network","code":15,"message":"tln share login needs the network, and --offline is set."}}
+exit 15

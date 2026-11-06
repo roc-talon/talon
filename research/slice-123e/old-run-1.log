@@ -1,0 +1,10 @@
+
+step       result seconds  budget
+wbuild     pass   0.3      90
+w2         pass   86.8     45
+wtrap      pass   0.1      5
+WARN w2: 86.8 s is over the budget of 45 s (TW20)
+
+real	1m28.016s
+user	4m10.375s
+sys	0m35.719s

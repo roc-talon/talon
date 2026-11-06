@@ -1,0 +1,11 @@
+Slice 102, case s5-keys-and-checks (cases K6 and K9 of research/d1-int-keys/ on the real tables, and the CHECKs and keys that the pragma output cannot show).
+  R-IK5, R-IK6, R-RE2: the label UNIQUE (form, version, version_text); version is a signed 64-bit key (key XOR 2^63) that sorts as semver; a saturated key has a version_text.
+  R-RE6 (the tables part): the columns that change (yanked, withdrawn, withdrawn_at) can be updated. A compat row is written once: the first write of a key wins.
+  R-RE3, R-IK7: compat has one bot row (source 0) and one author row (source 1) for a pair. source is 0 or 1, result is 0 to 3.
+  R-RE4: toolchains is keyed by (nightly, target): one nightly has several rows (plan gap G11).
+  R-RE5, R-SG2, R-SG5: the log index is a key, and index = max + 1 in one statement gives a sequence. A used index is an error.
+  R-RE9, R-RE15: provenance and repo_events are rowid tables with a composite key: a key column does not take NULL.
+  R-RE16, R-IK7: contributions.result is 0 (pass), 1 (fail) or 3 (crash). A hang (2) is not a hint. R-RE17: contributor is above 0. R-RE18: machine is below 0 (R-CT3).
+  R-RE1, R-AP49: artifacts.kind is app 0, package 1, platform 2 (R-IK7). releases.withdrawn is NULL or one of the 6 texts of R-PU17, R-PU20, R-PU24.
+  R-RE11, R-RE9, R-RE15: repos.state (0 to 2), provenance.via (0 to 3) and repo_events.action (0 to 9) are closed sets (R-IK7, R-AP44).
+  R-RE26: a time column holds an integer in ms; a real is an error.

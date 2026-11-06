@@ -1,0 +1,40 @@
+
+── ✗ fail ────────────────────────────────────── tests/unit/IngestTest.roc:331:1
+
+expect {
+    (app_plan({}).leaf == { grp: app_form, version: "2.0.0", hash: h1, time: 1767225630000 })
+        and (
+            app_plan({}).release
+                == {
+                    form: 8403020328855985657,
+                    column: { version: "-9222809086901288961", version_text: "" },
+                    artifact: -3601728077696412455,
+                    repo: 8104212146272099543,
+                    url: "https://github.com/acme/app/releases/download/2.0.0/${h1}.tar.zst",
+                    tag: "2.0.0",
+                    roc_version: Ok("nightly-2026-10-14-38a3029"),
+                    published_at: 1792497600000,
+                }
+        )
+        and (app_plan({}).provenance_time == 1767225630000)
+        and (app_plan({}).repo_row == { repo: 8104212146272099543, repository_id: 503, repository_owner_id: 9001, time: 1767225630000 })
+        and (app_plan({}).check_row == { repo: 8104212146272099543, next_check_at: 1767229230000 })
+}
+
+Mentioned values:
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+app_form = "github.com/acme/app/releases/download/{v}/"
+
+Ran 43 tests in 567.4 ms.:
+    42 passed
+    1 failed
+    0 compiler errors
+PASS ingest/ap26-body-and-route (1474 ms)
+PASS ingest/ik3-id-collision (1528 ms)
+PASS ingest/pu14-pu19-labels (1658 ms)
+FAIL ingest/pu4-index-kinds (1656 ms)
+    db: @ SELECT CAST(repo AS TEXT), etag, checked_at, next_check_at, fail_count, app_installed FROM repo_checks ORDER BY 1: rows differ:
+      expected: ["-5098407274140512775\t\\N\t\\N\t1767229230000\t0\t0","6409962513437831361\t\\N\t\\N\t1767229230000\t0\t0","8104212146272099543\t\\N\t\\N\t1767229230000\t0\t0"]
+      got:      ["-5098407274140512775\t\\N\t\\N\t1767225630000\t0\t0","6409962513437831361\t\\N\t\\N\t1767225630000\t0\t0","8104212146272099543\t\\N\t\\N\t1767225630000\t0\t0"]
+PASS ingest/pu6-not-candidates (1712 ms)
+w2: 4 passed, 1 failed

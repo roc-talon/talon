@@ -39,7 +39,7 @@ spawn_all limit=2
 env_all
 platform
 programs zig
-list_dirs $HOME/.cache/roc/toolchains
+list_dirs C:/AppData/Local\roc/toolchains
 spawn_all limit=2
   job - zig version
 env_all

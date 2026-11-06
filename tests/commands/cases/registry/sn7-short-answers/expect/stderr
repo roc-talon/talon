@@ -1,0 +1,21 @@
+"Parser" matches 2 packages:
+  lukewilliamboswell/roc-parser
+  someone/parser
+Similar names:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: 3 short names are not identified: "Parser", "pars", "xx". Use the full name (owner/repo) of each.
+Similar names:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: 2 short names are not identified: "qf", "pars". Use the full name (owner/repo) of each.
+Registry matches for "parser":
+  lukewilliamboswell/roc-parser
+Registry matches for "Parser":
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: 2 short names are not identified: "parser", "Parser". Use the full name (owner/repo) of each.
+"Parser" matches 2 packages:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: "Parser" matches 2 packages. Use a name from the list.

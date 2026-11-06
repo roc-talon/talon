@@ -1,0 +1,8 @@
+== tool install acme/foo
+installed foo 1.1.0 (acme/foo)
+exit 0
+== tool install acme/zed@2.0.0
+exit 18
+== tool install acme/qux@2.0.0
+replaced qux 1.0.0 with 2.0.0 (acme/qux)
+exit 0

@@ -1,0 +1,5 @@
+== share logout
+exit 2
+== share forget --json
+{"schema":1,"command":"share forget","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"tln share forget needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml."}}
+exit 2

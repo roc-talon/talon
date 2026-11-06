@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -20,6 +22,7 @@ path_roc
 list_dirs $HOME/.cache/roc/toolchains
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -38,6 +41,8 @@ read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERU
 path_roc
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
 env_all
 clock
 cwd

@@ -1,0 +1,12 @@
+platform "acme"
+	requires {} { main! : () => {} }
+	exposes [Std]
+	packages {}
+	provides [main_for_host!]
+	targets: {
+		inputs_dir: "targets/",
+		x64musl: { inputs: ["crt1.o", "libhost.a", "libunwind.a", app, "libc.a"] },
+		arm64musl: { inputs: ["crt1.o", "libhost.a", "libunwind.a", app, "libc.a"] },
+		x64glibc: { inputs: ["crt1.o", "libhost.a", "libunwind.a", app, "libc.a"] },
+		wasm32: { inputs: ["host.wasm", app] },
+	}

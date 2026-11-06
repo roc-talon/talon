@@ -1,0 +1,22 @@
+All (17) tests passed in 319.6 ms.
+PASS webhook/ap12-empty-secret (2111 ms)
+PASS webhook/ap12-no-secret (2052 ms)
+PASS webhook/ap12-signature (2493 ms)
+PASS webhook/pu11-events (2604 ms)
+FAIL webhook/pu13-index-new (2367 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t\\N\t\\N\t1767312000000\t0\t1"]
+      got:      ["acme/lib\t\\N\t\\N\t1767229200000\t0\t1"]
+PASS webhook/pu13-no-asset-end (2282 ms)
+PASS webhook/pu13-not-candidate (2142 ms)
+PASS webhook/pu13-retry-no-asset (2529 ms)
+PASS webhook/pu14-labels (2929 ms)
+PASS webhook/pu17-withdraw-clear (4044 ms)
+PASS webhook/pu26-app-installed (3342 ms)
+PASS webhook/pu26-release-installed (2996 ms)
+PASS webhook/pu33-privatized (3585 ms)
+PASS webhook/pu33-publicized (2620 ms)
+PASS webhook/pu33-release-private (2459 ms)
+PASS webhook/pu35-dead-letter (1750 ms)
+PASS webhook/pu35-retry-schedule (1871 ms)
+w2: 16 passed, 1 failed

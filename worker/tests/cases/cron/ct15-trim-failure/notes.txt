@@ -1,0 +1,2 @@
+1: runs 1 and 2: the batch of 9100 fails and rolls back, one log line for each run, the run is ok, 9050 is trimmed once (no double count). The snap tables hold that state.
+2: the cause goes (DROP TRIGGER): run 3 trims 9100 (due by state, R-PU35). Run 4 changes nothing (R-PU36).

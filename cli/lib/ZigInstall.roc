@@ -48,7 +48,7 @@ ZigInstall :: [].{
 	## The steps of the table at the top.
 	ensure! : Fx, ZigInstall.Facts => Try(ZigInstall.Done, Fail)
 	ensure! = |fx, facts| {
-		roots = Roots.from_env(facts.env)?
+		roots = Roots.of_run!(fx, facts.env)?
 		host = Toolchain.host(fx.platform!())?
 		dir = Text.join(roots.cache, "toolchains")
 		found = ZigInstall.search!(fx, { facts, roots, host, dir })

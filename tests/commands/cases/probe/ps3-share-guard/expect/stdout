@@ -1,0 +1,6 @@
+== HQ url=https://github.com/acme/json/releases/download/2.1.0/HQ.tar.zst env:GITHUB_TOKEN=tok1
+  shared 1 fact of HQ: 1 counted, 0 skipped by the registry
+== HQ url=https://github.com/acme/priv/releases/download/1.0.0/HQ.tar.zst env:GITHUB_TOKEN=tok1
+exit 2
+== HQ url=https://example.org/pkg/releases/download/1/HQ.tar.zst
+  shared 1 fact of HQ: 0 counted, 0 skipped by the registry

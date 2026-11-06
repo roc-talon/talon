@@ -1,0 +1,11 @@
+{"method": "GET", "path": "/v1/artifacts/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE"}
+{"method": "GET", "path": "/v1/artifacts/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3"}
+{"method": "GET", "path": "/v1/artifacts/cGfHiC6Kgg3FpFZvgwGcswsCRtp4aBP2fzuXRQPizuN"}
+{"method": "GET", "path": "/v1/artifacts/EWmDvi3hhz86LYi2NcD6YUp18DeeB5gDkwJzde3MgF9A"}
+{"method": "GET", "path": "/v1/artifacts/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE", "headers": {"if-none-match": "\"3a81eba65eb1f95ff98029e839a40c1d\""}}
+{"method": "GET", "path": "/v1/artifacts/3qbR1eZRqXUWroWKKYhbDmR3FfqTHfqSU8zZSxtANzYh"}
+{"method": "GET", "path": "/v1/artifacts/3qbR1eZRqXUWroWKKYhbDmR3FfqTHfqSU8zZSxtANzYh"}
+{"method": "GET", "path": "/v1/artifacts/not-a-hash"}
+{"method": "GET", "path": "/v1/artifacts/0OIl"}
+{"method": "GET", "path": "/v1/artifacts/1CiMQsCUhqABwwLyCFeX2iPnBZX3s28dUUCBrirhs"}
+{"method": "GET", "path": "/v1/artifacts/14wBqpZM9xaSheZzJSMawUKKwhdpChKbZ5eu5ky4Vigw"}

@@ -221,6 +221,7 @@ needs_sub = |command| command == "roc" or command == "tool" or command == "cache
 takes_value : List(Str), Str -> Bool
 takes_value = |cmd, flag| match flag {
 	"--registry" | "--file" | "--as" | "--ci" | "--path" | "--roc" | "--snapshot" | "--strategy" | "--slots" | "--reason" | "--to" | "--ignore" => Bool.True
+	"--target" => cmd == ["probe"]
 	"--platform" => cmd == ["init"]
 	_ => Bool.False
 }
@@ -247,13 +248,13 @@ allows = |cmd, flag| {
 		"-i" => cmd == "update"
 		"--diff" => cmd == "patch"
 		"--tree" => cmd == "list"
-		"--range" | "--share" => cmd == "probe"
+		"--range" | "--share" | "--smoke" | "--target" => cmd == "probe"
 		"--all" => cmd == "cache clean"
 		"--force" => one_of(["remove", "roc link"])
 		"--copy" => cmd == "roc link"
 		"--rename-keys" => cmd == "install"
 		"--allow-moves" => one_of(["install", "update", "upgrade"])
-		"--probe-downloads" => one_of(["upgrade", "probe", "init"])
+		"--probe-downloads" => one_of(["upgrade", "probe", "init", "publish"])
 		"--allow-downloads" => resolving or one_of(["probe", "roc use", "init"])
 		"--roc" | "--allow-unchecked" | "--resolve" => one_of(["tool install", "x"])
 		"--remove-tools" | "--keep-all" => cmd == "tool remove"

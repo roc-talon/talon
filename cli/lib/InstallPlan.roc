@@ -44,6 +44,7 @@ InstallPlan :: [].{
 	idle : Request, U64 -> Report.Outcome
 	idle = |request, at| {
 		at: Clock.format_utc(at),
+		log: Err(None),
 		probes: 0,
 		downloads: 0,
 		dry_run: request.dry_run,
@@ -136,6 +137,7 @@ InstallPlan :: [].{
 		)
 		{
 			at: Clock.format_utc(done.at),
+			log: Err(None),
 			probes: done.ran.probes,
 			downloads: done.ran.downloads,
 			dry_run: request.dry_run,

@@ -1,0 +1,13 @@
+== install --frozen --json --file p1/main.roc
+{"schema":1,"command":"install","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":false,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"tools":[{"key":"foo","name":"acme/foo","action":"kept","ref":"acme/foo@^1","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst","version":"1.1.0","previous":null,"file":"$PROJECT/p1/talon.toml","built":false,"would_build":false,"bin":["x64musl"],"binary":"prebuilt","bin_skip":null,"would_check":[]}]},"error":null}
+exit 0
+== install --frozen --file p1/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --file p2/main.roc
+the header satisfies talon.toml
+exit 16
+== install --frozen --file p3/main.roc
+the header satisfies talon.toml
+built tool foo 1.1.0 (acme/foo)
+exit 0

@@ -1,0 +1,4 @@
+status 200
+header Content-Type: application/json
+header Cache-Control: s-maxage=600
+header ETag: "n1"

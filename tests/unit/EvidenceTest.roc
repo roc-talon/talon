@@ -22,7 +22,7 @@ no_hint = Err(None)
 
 pair = |facts, pin, hint| Evidence.of_pair({ hash: "H1", compiler: nt, facts, pin, hint })
 
-line = |rank, source, result, modules| { rank, source, result, modules }
+line = |rank, source, result, modules| { rank, source, result, modules, digest: Err(None), counts: Err(None) }
 
 unit_err = |hash, path| { file: Package({ hash, path }), title: "REDUNDANT EXPOSE", message: "x" }
 
@@ -156,6 +156,101 @@ expect {
 		("a module in a directory", text("sub/Yaml.roc"), "module sub/Yaml fails on ${nt}. Your app does not import it."),
 		("the name of a module", Evidence.module_name("Yaml.roc"), "Yaml"),
 		("a path with no suffix", Evidence.module_name("Yaml"), "Yaml"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# Slice 209: the registry lines. A rank 2 line has the `error_digest` of its row (R-AP58), a rank 6 line has the 3 counts.
+reg = |source, result, digest| { rank: 2, source, result, modules: [], digest, counts: Err(None) }
+
+shared_line = |result, p, f, c| { rank: 6, source: Shared, result, modules: [], digest: Err(None), counts: Ok({ pass_count: p, fail_count: f, crash_count: c }) }
+
+rrow = |hash, nightly, target, source, result, digest| { hash, nightly, target, source, result, error_digest: digest }
+
+hrow = |hash, nightly, target, p, f, c| { hash, nightly, target, pass_count: p, fail_count: f, crash_count: c }
+
+# R-EF1 ranks 2 and 6, R-EF3, R-CM7, R-SE5, R-AP58, R-CV1 (slice 209): the lines of one pair with the registry. Rank 2 after rank 1: the `bot` line, then the `author` line (both are shown, the `bot` line wins). Rank 6 at the end, with
+# its counts, only when the counts give a hint. Only the target `any`. With no registry row and no hint, the lines of `of_pair`.
+expect {
+	all = |facts, pin, hint, rows, shared| Evidence.of_all({ hash: "H1", compiler: nt, facts, pin, hint, rows, shared })
+	bot_fail = rrow("H1", nt, "any", Bot, Fail, Ok("d1"))
+	author_pass = rrow("H1", nt, "any", Author, Pass, Err(None))
+	local_pass = fact("H1", nt, "any", Pass, [])
+	rows = [
+		("no registry data: the lines of of_pair", all([local_pass], Ok(nt), no_hint, [], []), pair([local_pass], Ok(nt), no_hint)),
+		("a bot row", all([], no_pin, no_hint, [bot_fail], []), [reg(Bot, Fail, Ok("d1"))]),
+		("an author row only", all([], no_pin, no_hint, [author_pass], []), [reg(Author, Pass, Err(None))]),
+		("R-EF3: both, the bot line first, also when the author row comes first", all([], no_pin, no_hint, [author_pass, bot_fail], []), [reg(Bot, Fail, Ok("d1")), reg(Author, Pass, Err(None))]),
+		("R-AP58: an empty digest is a digest", all([], no_pin, no_hint, [rrow("H1", nt, "any", Bot, Fail, Ok(""))], []), [reg(Bot, Fail, Ok(""))]),
+		("a row of another hash, compiler or target is no line", all([], no_pin, no_hint, [rrow("H2", nt, "any", Bot, Pass, Err(None)), rrow("H1", other, "any", Bot, Pass, Err(None)), rrow("H1", nt, "x64musl", Bot, Fail, Ok("l"))], []), []),
+		("R-CV1: a row of the other tag form", all([], no_pin, no_hint, [rrow("H1", nt_long, "any", Bot, Pass, Err(None))], []), [reg(Bot, Pass, Err(None))]),
+		("rank 6: a pass hint with its counts", all([], no_pin, no_hint, [], [hrow("H1", nt, "any", 5, 1, 0)]), [shared_line(Pass, 5, 1, 0)]),
+		("rank 6: a fail hint", all([], no_pin, no_hint, [], [hrow("H1", nt, "any", 1, 1, 1)]), [shared_line(Fail, 1, 1, 1)]),
+		("rank 6: equal counts are no line", all([], no_pin, no_hint, [], [hrow("H1", nt, "any", 2, 1, 1)]), []),
+		(
+			"rank order 1, 2, 3, 4, 6",
+			all([local_pass], Ok(nt), Ok(nt), [author_pass, bot_fail], [hrow("H1", nt, "any", 0, 3, 0)]),
+			[line(1, Local, Pass, []), reg(Bot, Fail, Ok("d1")), reg(Author, Pass, Err(None)), line(3, Pin, Pass, []), line(4, Hint, Pass, []), shared_line(Fail, 0, 3, 0)],
+		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-EF3 Q394 R-OUT2 (accepted, slice 209): the note when the bot line and the author line have different results. None when they agree, when one is missing, and for the other sources.
+expect {
+	differ = |lines| Evidence.differ({ compiler: nt, lines })
+	rows = [
+		("bot fail, author pass", differ([reg(Bot, Fail, Ok("d1")), reg(Author, Pass, Err(None))]), ["the bot and the author rows differ on ${nt}: bot fail, author pass"]),
+		("bot hang, author fail", differ([line(1, Local, Pass, []), reg(Bot, Hang, Err(None)), reg(Author, Fail, Ok("d"))]), ["the bot and the author rows differ on ${nt}: bot hang, author fail"]),
+		("the same result", differ([reg(Bot, Pass, Err(None)), reg(Author, Pass, Err(None))]), []),
+		("Q394: 2 fails with 2 digests are the same result: no note", differ([reg(Bot, Fail, Ok("d1")), reg(Author, Fail, Ok("d2"))]), []),
+		("a bot line only", differ([reg(Bot, Fail, Ok("d1"))]), []),
+		("rank 1 and rank 6 differ: no note", differ([line(1, Local, Fail, []), shared_line(Pass, 3, 0, 0)]), []),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-CM7 R-EF1 ranks 2 and 6 R-OUT2 (proposal, TW24, slice 209): the text of `tln why` with the registry lines. The source words `bot`, `author`, `shared`. A rank 2 line has no digest in the text. A rank 6 line has its counts.
+expect {
+	head = "    evidence on ${nt}:\n"
+	text = |lines, notes| Evidence.text({ compiler: Ok(nt), lines, notes })
+	rows = [
+		("a bot line", text([reg(Bot, Fail, Ok("d1"))], []), "${head}      * 2 bot: fail\n"),
+		(
+			"bot, author and a note",
+			text([reg(Bot, Pass, Err(None)), reg(Author, Fail, Ok("d"))], ["the bot and the author rows differ on ${nt}: bot pass, author fail"]),
+			"${head}      * 2 bot: pass\n        2 author: fail\n    note: the bot and the author rows differ on ${nt}: bot pass, author fail\n",
+		),
+		("rank 1, then rank 6 with its counts", text([line(1, Local, Pass, []), shared_line(Pass, 5, 1, 0)], []), "${head}      * 1 local: pass\n        6 shared: pass (5 pass, 1 fail, 0 crash)\n"),
+		("a rank 6 line alone", text([shared_line(Fail, 0, 2, 1)], []), "${head}      * 6 shared: fail (0 pass, 2 fail, 1 crash)\n"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# R-OUT4 R-AP58 R-EF3 R-OUT2 (proposal, TW24, slice 209): the registry lines in `why --json`. Both rank 2 lines. A rank 2 line has `error_digest` after `winner`: its text, an empty text, or null. A rank 6 line has the 3 counts after `winner`.
+expect {
+	json = |lines| JsonDoc.Obj(Evidence.fields({ compiler: Ok(nt), lines, notes: [] })).render()
+	start = "{\"compiler\":\"${nt}\",\"evidence\":["
+	rows = [
+		(
+			"bot with a digest, author with null",
+			json([reg(Bot, Fail, Ok("d1")), reg(Author, Pass, Err(None))]),
+			"${start}{\"rank\":2,\"source\":\"bot\",\"result\":\"fail\",\"modules\":[],\"winner\":true,\"error_digest\":\"d1\"},{\"rank\":2,\"source\":\"author\",\"result\":\"pass\",\"modules\":[],\"winner\":false,\"error_digest\":null}],\"notes\":[]}",
+		),
+		("an empty digest is a text", json([reg(Bot, Fail, Ok(""))]), "${start}{\"rank\":2,\"source\":\"bot\",\"result\":\"fail\",\"modules\":[],\"winner\":true,\"error_digest\":\"\"}],\"notes\":[]}"),
+		(
+			"rank 1 then rank 6",
+			json([line(1, Local, Pass, []), shared_line(Pass, 5, 1, 0)]),
+			"${start}{\"rank\":1,\"source\":\"local\",\"result\":\"pass\",\"modules\":[],\"winner\":true},{\"rank\":6,\"source\":\"shared\",\"result\":\"pass\",\"modules\":[],\"winner\":false,\"pass_count\":5,\"fail_count\":1,\"crash_count\":0}],\"notes\":[]}",
+		),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad

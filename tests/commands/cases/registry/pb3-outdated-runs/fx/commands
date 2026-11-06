@@ -1,0 +1,2 @@
+outdated --file u1/main.roc
+outdated --json --file u1/main.roc

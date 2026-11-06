@@ -1,0 +1,22 @@
+== probe --smoke --file p1/main.roc
+exit 2
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --range
+exit 2
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --share
+exit 2
+== probe --smoke out/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --file p1/main.roc
+exit 2
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst pf
+exit 2
+== probe json --target x64musl --file p1/main.roc
+exit 2
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --target x64musl --target riscv
+exit 2
+== probe --smoke https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst
+exit 2
+== probe --smoke https://github.com/acme/pfx/releases/download/latest/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst
+exit 2
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --file p1/main.roc
+exit 2
+== probe --smoke https://github.com/acme/pfn/releases/download/0.5.0/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
+exit 2

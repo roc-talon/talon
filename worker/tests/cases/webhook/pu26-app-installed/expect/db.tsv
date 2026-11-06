@@ -1,0 +1,29 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/a	100	10	0	\N	1767000000000	1767000000000
+acme/b	101	10	0	\N	1767000000000	1767000000000
+acme/c	200	10	0	\N	1767000000000	1767000000000
+acme/d	300	10	0	\N	1767000000000	1767000000000
+acme/new	700	70	0	\N	1767000000000	1767000000000
+acme/old	700	70	2	acme/new	1767000000000	1767000000000
+acme/x	701	71	0	\N	1767000000000	1767000000000
+acme/y	701	71	2	acme/x	1767000000000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/a	1	0	\N	100	\N	10	\N	\N	1767000000000
+acme/b	1	0	\N	101	\N	10	\N	\N	1767000000000
+acme/c	1	0	\N	200	\N	10	\N	\N	1767000000000
+acme/d	1	0	\N	300	\N	10	\N	\N	1767000000000
+acme/new	1	0	\N	700	\N	70	\N	\N	1767000000000
+acme/old	1	0	\N	700	\N	70	\N	\N	1767000000000
+acme/x	1	0	\N	701	\N	71	\N	\N	1767000000000
+acme/y	1	0	\N	701	\N	71	\N	\N	1767000000000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/a	\N	\N	1767003600000	0	0
+acme/b	\N	\N	1767003600000	0	0
+acme/c	\N	\N	1767003600000	0	0
+acme/d	\N	\N	1767003600000	0	1
+acme/new	\N	\N	1767003600000	0	1
+acme/old	\N	\N	1767003600000	0	1
+acme/x	\N	\N	1767003600000	0	0
+acme/y	\N	\N	1767003600000	0	0
+@ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance)
+8	8	8	8	0	0	0

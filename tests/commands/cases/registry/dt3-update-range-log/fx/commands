@@ -1,0 +1,2 @@
+update --no-check --dry-run --file u1/main.roc
+update --no-check --dry-run --snapshot log:30 --file u1/main.roc

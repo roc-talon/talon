@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
@@ -10,6 +12,8 @@ read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e53
 read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
 tree_info $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d
 args
+env_all
+tty
 env_all
 clock
 lock $HOME/.cache/roc/talon/gc nowait: held
@@ -24,6 +28,8 @@ tree_info $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbb
 delete $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d
 unlock $HOME/.cache/roc/talon/gc
 args
+env_all
+tty
 env_all
 clock
 lock $HOME/.cache/roc/talon/gc nowait: held

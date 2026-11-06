@@ -1,0 +1,19 @@
+send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+send POST http://127.0.0.1:9/v1/releases body={}
+send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 h:Authorization=Bearer-x body={}
+send GET http://127.0.0.1:9/v1/releases h:User-Agent=tln/0.4.1
+send PUT http://127.0.0.1:9/v1/toolchains/nightly-x h:Content-Type=application/json body={"a":1,\n"b":"x\\y"}
+send DELETE http://127.0.0.1:9/v1/tokens h:Authorization=Bearer-t
+send DELETE http://127.0.0.1:9/v1/nothing
+send GET http://127.0.0.1:9/v1/ping
+send GET http://127.0.0.1:9/v1/ping
+send GET http://127.0.0.1:9/v1/ping timeout=3
+send POST http://127.0.0.1:9/v1/slow timeout=5 body={}
+all 2 GET:http://127.0.0.1:9/v1/n/c GET:http://127.0.0.1:9/v1/n/a GET:http://127.0.0.1:9/v1/n/missing GET:http://127.0.0.1:9/v1/n/slow
+all 4 POST:http://127.0.0.1:9/v1/releases GET:http://127.0.0.1:9/v1/n/b
+all 0 GET:http://127.0.0.1:9/v1/n/a GET:http://127.0.0.1:9/v1/n/b
+sleep 2000
+sleep 8000

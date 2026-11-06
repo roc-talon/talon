@@ -1,0 +1,11 @@
+== update --no-probe --dry-run --yes --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at log:50, 3 probes
+dry run: nothing was written
+exit 0

@@ -1,0 +1,1 @@
+R-AP46 R-MX4 R-MX18 R-AP10 (slice 223, Q572): 501 missing hashes (log size 8, members 501), all pass. 2 posts: 500 rows and no sweep, then 1 row and the sweep up to 8 (a new token for each). The hashes are the 41 first characters of a real hash and 3 digits.

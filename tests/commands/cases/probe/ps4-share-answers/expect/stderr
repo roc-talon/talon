@@ -1,0 +1,6 @@
+tln: error[network]: the registry answered 429 (/errors/rate-limited). Try again later.
+tln: error[network]: the registry is busy (503). Try again later.
+tln: error[network]: the registry http://127.0.0.1:9 gave no answer: no answer in 20 s. Try again later.
+tln: error[network]: the registry http://127.0.0.1:9 gave no answer: connection refused. Try again later.
+tln: error[internal]: the registry http://127.0.0.1:9 refused the request (/errors/bad-request): D. This is a fault of tln 0.0.1 or a version skew.
+tln: error[rejected]: D (/errors/unprocessable). Fix the release or the workflow, then run the command again.

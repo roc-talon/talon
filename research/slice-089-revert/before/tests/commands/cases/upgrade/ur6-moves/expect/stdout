@@ -1,0 +1,104 @@
+== env:CI=true env:HOME={w}/home1 upgrade jb --file p1/main.roc
+check: passed
+build: passed
+exit 13
+== env:CI=true env:HOME={w}/home2 upgrade jb --allow-moves --file p2/main.roc
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0
+resolved at 2026-10-15T12:00:00Z, 9 probes
+exit 0
+== env:HOME={w}/home3 upgrade jb --file p3/main.roc
+check: passed
+build: passed
+exit 13
+== env:HOME={w}/home4 upgrade jb --file p4/main.roc
+check: passed
+build: passed
+$PROJECT/p4/main.roc
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0
+resolved at 2026-10-15T12:00:00Z, 9 probes
+exit 0
+== env:CI=true env:HOME={w}/home5 upgrade jb --dry-run --file p5/main.roc
+check: passed
+build: passed
+$PROJECT/p5/main.roc
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0
+resolved at 2026-10-15T12:00:00Z, 9 probes
+dry run: nothing was written
+exit 0
+== env:CI=true env:HOME={w}/home6 upgrade jb --json --file p6/main.roc
+{"schema":1,"command":"upgrade","ok":false,"data":null,"error":{"kind":"consent","code":13,"message":"moving the held variables core, roc needs consent. Pass --allow-moves or --yes.","details":{"moves":[{"alias":"core","name":"acme/core","from":"1.0.0","to":"1.2.0","why":"lib 1.0.0 needs core >= 1.2.0","members":["$PROJECT/p6/main.roc"]},{"alias":"roc","name":"roc","from":"nightly-2026-10-09-9d9d9d9","to":"nightly-2026-10-10-0e0e0e0","why":"core 1.2.0 fails the unit check on nightly-2026-10-09-9d9d9d9","members":["$PROJECT/p6/main.roc"]}]}}}
+exit 13
+== env:CI=true env:HOME={w}/home7 update jb --file p7/main.roc
+exit 10
+== env:CI=true env:HOME={w}/home8 upgrade jb roc --allow-moves --file p8/main.roc
+check: passed
+build: passed
+$PROJECT/p8/main.roc
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0
+== env:CI=true env:HOME={w}/home9 upgrade jb --file p9/main.roc
+exit 10
+== env:CI=true env:HOME={w}/home10 upgrade jb --allow-moves --file p10/apps/a/main.roc
+$PROJECT/p10/apps/a/main.roc: check: passed
+$PROJECT/p10/apps/a/main.roc: build: passed
+$PROJECT/p10/apps/b/main.roc: check: passed
+$PROJECT/p10/apps/b/main.roc: build: skipped (recorded pass)
+$PROJECT/p10/apps/a/main.roc
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0
+$PROJECT/p10/apps/b/main.roc
+  ~ core: acme/core 1.0.0 -> 1.2.0
+  + roc: nightly-2026-10-10-0e0e0e0
+resolved at 2026-10-15T12:00:00Z, 11 probes
+exit 0
+== env:CI=true env:HOME={w}/home11 upgrade jb --file p11/main.roc
+check: passed
+build: passed
+$PROJECT/p11/main.roc
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0
+== env:CI=true env:HOME={w}/home12 upgrade jb --allow-moves --file p12/main.roc
+check: passed
+build: passed
+$PROJECT/p12/main.roc
+  ~ corep: acme/corep 1.0.0 -> 1.2.0
+  ~ jb: acme/jb 1.0.0 -> 1.1.0
+resolved at 2026-10-15T12:00:00Z, 7 probes
+exit 0
+== env:CI=true env:HOME={w}/home13 upgrade roc --no-probe --file p13/main.roc
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: ja 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+check: passed
+build: passed
+$PROJECT/p13/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-11-1f1f1f1
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== env:CI=true env:HOME={w}/home14 upgrade roc --no-probe --file p14/main.roc
+check: passed
+build: passed
+$PROJECT/p14/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0
+== env:CI=true env:HOME={w}/home15 upgrade roc --no-probe --file p15/main.roc
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-10-0e0e0e0 is chosen: ja 1.0.0 fails the unit check on nightly-2026-10-12-2a2a2a2 (inferred)
+check: passed
+build: passed
+$PROJECT/p15/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-10-0e0e0e0
+resolved at 2026-10-15T12:00:00Z, 3 probes
+exit 0

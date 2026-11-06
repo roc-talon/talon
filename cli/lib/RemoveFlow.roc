@@ -3,6 +3,7 @@ import Fail
 import Fetch
 import Fx
 import HeldRoc
+import IndexQuery
 import IntentEdit
 import Ladder
 import Locked
@@ -35,7 +36,10 @@ RemoveFlow :: [].{
 	## The flow of `Resolve.remove!`. The steps are in the doc of `Resolve.remove!`.
 	remove! : Fx, Request, { names : List(Str), force : Bool } => Try(Report.RemoveOutcome, Fail)
 	remove! = |fx, request, facts| {
-		loaded = ResolveSelect.select!(fx, request, ResolveLoad.load!(fx, request)?)?
+		read_first = ResolveLoad.load!(fx, request)?
+		# Slice 206f (R-RG7 row 6, R-TF4, Design Q546): `remove` reads `config.toml` for its own keys, so a bad `registry` there is exit 19 before the names. The flag and the variable are not read: `remove` makes no index call.
+		_ = IndexQuery.setting({ flag: Err(Unset), env: Err(Unset), config: read_first.config.registry })?
+		loaded = ResolveSelect.select!(fx, request, read_first)?
 		current = request.project.file ?? ""
 		member = match loaded.members.find_first(|m| m.file == current) {
 			Ok(m) => m

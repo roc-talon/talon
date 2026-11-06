@@ -1,0 +1,9 @@
+== publish
+published acme/json 2.1.0: 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq, 4 facts sent
+exit 0
+== publish
+acme/json 2.1.0 is published already: 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq, 4 facts sent
+exit 0
+== publish --json
+{"schema":1,"command":"publish","ok":true,"data":{"publish":{"repository":"acme/json","tag":"2.1.0","hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","created":true,"facts":4}},"error":null}
+exit 0

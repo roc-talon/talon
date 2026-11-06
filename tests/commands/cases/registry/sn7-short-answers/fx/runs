@@ -1,0 +1,6 @@
+# T = 1792065600 (the clock of the word). max-age is 60 for short and 300 for q.
+shorts install parser@^2 json
+shorts install Parser pars json xx
+shorts install qf pars
+shorts tool parser Parser
+shorts install parser Parser

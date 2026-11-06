@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -25,6 +26,7 @@ read_files $HOME/.cache/roc/packages/HHHmbitLoVKgaw1KLiPKPddTczS4aKa1oKn7HpZwYRu
 list_dirs $HOME/.cache/roc/packages/3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 args
+env_all
 env_all
 clock
 cwd
@@ -52,6 +54,7 @@ http_get https://api.github.com/repos/acme/json/releases?per_page=100
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -74,6 +77,7 @@ list_dirs $HOME/.cache/roc/packages/3LaX5yAe5tiWZp8rGDNUTsNbBdj58AtZ8mWVgBu9kBD3
 list_dirs $HOME/.cache/roc/talon/index/github/acme/json
 read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc/talon/index/github/acme/json/1.json
 args
+env_all
 env_all
 clock
 cwd
@@ -100,6 +104,7 @@ read_files $HOME/.cache/roc/talon/index/github/acme/json/1.meta $HOME/.cache/roc
 random
 list_dirs $HOME/.cache/roc/packages
 args
+env_all
 env_all
 clock
 cwd
@@ -140,6 +145,7 @@ list_dirs $HOME/.cache/roc/packages/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4
 read_files $HOME/.cache/roc/packages/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4/Json.roc $HOME/.cache/roc/packages/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4/main.roc $PROJECT/p2/.talon/patches/json/Json.roc $PROJECT/p2/.talon/patches/json/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -163,6 +169,7 @@ http_get https://api.github.com/repos/acme/json/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/json/1.json $HOME/.cache/roc/talon/index/github/acme/json/1.meta
 args
+env_all
 env_all
 clock
 cwd

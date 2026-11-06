@@ -1,0 +1,14 @@
+# Files that slice 109 adds (the copies of the files it changes are beside this file, under their own paths).
+docs/slices/109-toolchains.md
+worker/lib/Toolchains.roc
+worker/ToolchainRoutes.roc
+worker/tests/unit/ToolchainsTest.roc
+worker/tests/cases/toolchains/
+worker/tests/cases/runner/r-wh4-json-lists/
+worker/tests/selftest/wrong-json-len/
+worker/tests/selftest/wrong-json-at/
+worker/tests/selftest/wrong-json-range/
+worker/tests/selftest/wrong-json-range-order/
+research/slice-109-revert/
+# Changed, with a copy under before/: worker/lib/Route.roc, worker/main.roc, worker/lib/main.roc, worker/tests/unit/w0.roc, worker/tests/run.mjs,
+# worker/tests/worker-test.js, and worker/tests/cases/oidc/* (only the files expect/responses.jsonl, expect/d1-calls, rules; seed.sql is new in 6 cases).

@@ -1,11 +1,5 @@
 args
 env_all
-platform
-read_files $HOME/.local/share/talon/tools.json
-list_dirs $HOME/.cache/roc/toolchains $HOME/.local/bin
-read_files $HOME/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/.cache/roc/toolchains/link-mine/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
-tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/compat-c2 $HOME/.cache/roc/compat-c1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
-args
 env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -14,12 +8,22 @@ read_files $HOME/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/.cache/roc
 tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/compat-c2 $HOME/.cache/roc/compat-c1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
 args
 env_all
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 list_dirs $HOME/.cache/roc/toolchains $HOME/.local/bin
 read_files $HOME/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/.cache/roc/toolchains/link-mine/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/compat-c2 $HOME/.cache/roc/compat-c1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
+args
+env_all
 tty
+read_files $HOME/.config/talon/config.toml
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.cache/roc/toolchains $HOME/.local/bin
+read_files $HOME/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/.cache/roc/toolchains/link-mine/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/compat-c2 $HOME/.cache/roc/compat-c1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
 ask "Remove Talon 0.3.1 (tln and the roc proxy)?
 
 Talon also manages:
@@ -36,12 +40,14 @@ The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
 Choose [1-4, default 1] "
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 list_dirs $HOME/.cache/roc/toolchains $HOME/.local/bin
 read_files $HOME/.cache/roc/toolchains/git-ab12cd34/.talon.json $HOME/.cache/roc/toolchains/link-mine/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 tree_info $HOME/.local/share/talon/bin/tln $HOME/.local/share/talon/bin/foo $HOME/.local/share/talon/bin/bar $HOME/.local/share/talon/bin/baz $HOME/.cache/roc/toolchains/git-ab12cd34 $HOME/.cache/roc/toolchains/link-mine $HOME/.cache/roc/toolchains/nightly-2026-09-01-abcdef0 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME/.cache/roc/compat-c2 $HOME/.cache/roc/compat-c1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/talon $HOME/.config/talon/config.toml $HOME/.local/share/talon/share.json
-tty
 ask "Remove Talon 0.3.1 (tln and the roc proxy)?
 
 Talon also manages:
@@ -107,6 +113,7 @@ delete $HOME/.local/bin/roc
 rename $HOME/.local/bin/roc.old $HOME/.local/bin/roc
 delete $HOME/.local/bin/tln $HOME/.local/share/talon/bin/tln
 args
+env_all
 env_all
 platform
 read_files $HOME/.local/share/talon/tools.json

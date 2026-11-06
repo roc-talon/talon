@@ -1,0 +1,9 @@
+patch: lib/Shorts.roc: already done, skipped: '\tparse_query = |_shorts, _qs| crash "todo"\n'
+patch: ShortRoutes.roc: already done, skipped: 'match Shorts.parse_url(req.url()) {'
+patch: lib/ArchiveRead.roc: already done, skipped: '\tfeed_bytes = 0\n'
+patch: Auth.roc: already done, skipped: 'Memo.new("github-jwks", { max_age_ms: 3_600_000 })'
+All (449) tests passed in 7327.3 ms.
+PASS shorts/ap7-query-forms (599 ms)
+w2: 1 passed, 0 failed
+wtrap: 9 causes, 0 failures
+done

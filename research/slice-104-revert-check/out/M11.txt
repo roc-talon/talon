@@ -1,0 +1,29 @@
+── ● unused variable ──────────────────────── packages/records/Closure.roc:125:6
+
+Variable other is defined here and then never used.
+
+other => Ok(Active)
+^^^^^
+
+If you don't need this variable, prefix it with an underscore like _other to
+suppress this warning.
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:185:1
+
+expect {
+    bad_c = |t| match Closure.decode_checked(t) {
+        Err(BadJson(_)) => Bool.True
+        _ => Bool.False
+    }
+    bad_r = |t| match Closure.decode_repo(t) {
+        Err(BadJson(_)) => Bool.True
+        _ => Bool.False
+    }
+    bad_c(js("{'checked_at':null,'name':'a'}")) and bad_c(js("{'checked_at':null,'name':null,'stale':true}")) and bad_c(js("{'checked_at':'x','name':'a','stale':true}")) and bad_c("[]") and bad_r(js("{'name':'a','state':'gone','state_at':1,'successor':null}")) and bad_r(js("{'name':'a','state':'active','successor':null}")) and bad_r(js("{'name':'a','state':null,'state_at':1,'successor':null}"))
+}
+
+Ran 38 tests in 585.3 ms.:
+    37 passed
+    1 failed
+    0 compiler errors

@@ -1,0 +1,30 @@
+args
+env_all
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+args
+env_all
+tty
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc

@@ -1,0 +1,9 @@
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"sig"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"payload"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"k2"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"kid9"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"bot"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"kid9","now":1767225660000}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"kid9","now":1767225660001}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"kid9","now":1767225660002}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"bot","now":1767225660002}

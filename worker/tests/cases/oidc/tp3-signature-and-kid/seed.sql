@@ -1,0 +1,2 @@
+INSERT INTO log (idx, grp, version, hash, time) VALUES (1, 'roc-lang/nightlies:linux_x86_64', 'nightly-2026-10-31-f7bef6b', 'sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 1700000000000);
+INSERT INTO toolchains (nightly, target, tag, asset_name, sha256, size, published_at, log_index) VALUES (5572174540651, 'linux_x86_64', 'nightly-2026-10-31-f7bef6b', 'roc_nightly-linux_x86_64-2026-10-31-f7bef6b.tar.gz', 'eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee', 1001, 1793448000000, 1);

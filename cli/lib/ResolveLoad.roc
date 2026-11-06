@@ -118,8 +118,8 @@ ResolveLoad :: [].{
 	}
 
 	# The first steps of `install!` and `verify!`: the files, the variables, and the pin of the compiler.
-	## `range_note` is the note of a new rank 4 pick (R-C16, `ResolveSelect.select_noted!`).
-	prepared! : Fx, ResolveBase.Request, [Lock, Verify] => Try({ loaded : ResolveBase.Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision, range_note : Try(Str, [None]) }, Fail)
+	## `range_note` is the note of a new rank 4 pick (R-C16, `ResolveSelect.select_noted!`). `listed` (slice 206e2, R-IX4): that pick read the registry compiler list.
+	prepared! : Fx, ResolveBase.Request, [Lock, Verify] => Try({ loaded : ResolveBase.Loaded, built : { vars : List(Vars.Var), wants : List(Vars.Want) }, decision : Pin.Decision, range_note : Try(Str, [None]), listed : Bool }, Fail)
 	prepared! = |fx, request, role| {
 		selected = ResolveSelect.select_noted!(fx, request, ResolveLoad.load!(fx, request)?)?
 		loaded = selected.loaded
@@ -129,7 +129,7 @@ ResolveLoad :: [].{
 			Vars.check_keys(built.wants)?
 		}
 		decision = ResolveLoad.decide(request, loaded, role)?
-		Ok({ loaded, built, decision, range_note: selected.note })
+		Ok({ loaded, built, decision, range_note: selected.note, listed: selected.listed })
 	}
 
 	## `Pin.decide` for the files of the run (R-SO19 to R-SO21). `prepared!` calls it, and `InstallFlow.install_with!` calls it again with `with_pick` when the run picked a compiler.
@@ -165,7 +165,7 @@ read_config! = |fx, path, result| match result {
 		}
 		Ok(read.config)
 	}
-	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } })
+	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), tool_binaries: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }, registry: Err(Unset), share: Err(Unset) })
 	Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 }
 

@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/ws/apps/b/main.roc
@@ -80,9 +83,11 @@ platform
 read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
-tty
 ask "Move the held variable json? [y/N] "
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -143,11 +148,13 @@ platform
 read_files $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
-tty
 ask "Move the held variable json? [y/N] "
 read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/talon.toml
 write_atomic $PROJECT/ws/talon.toml $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -221,7 +228,6 @@ platform
 read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
-tty
 ask "Move the held variable pf? [y/N] "
 read_files $PROJECT/ws2/apps/a/main.roc $PROJECT/ws2/apps/b/main.roc
 write_atomic $PROJECT/ws2/apps/a/main.roc $PROJECT/ws2/apps/b/main.roc

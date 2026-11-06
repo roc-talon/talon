@@ -9,7 +9,7 @@ probe --file p2/main.roc
 probe --file p3/main.roc
 probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
 probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
-probe --share json --file p1/main.roc
+probe --share --file p1/main.roc
 probe json parser --file p1/main.roc
 probe --range --file p1/main.roc
 probe json --file p4/main.roc

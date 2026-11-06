@@ -1,0 +1,3 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml

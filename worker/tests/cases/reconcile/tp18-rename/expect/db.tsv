@@ -1,0 +1,26 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/lib	500	50	2	acme/lib2	1767225600000	1767000000000
+acme/lib2	500	50	0	\N	1767225600000	1767225600000
+acme/p	700	70	0	\N	1767000000000	1767000000000
+acme/q	999	99	0	\N	1767000000000	1767000000000
+acme/x	600	60	2	acme/y	1767225600000	1767000000000
+acme/y	600	60	0	\N	1767225600000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/lib	1	0	\N	500	\N	50	\N	\N	1767000000000
+acme/lib	2	2	500	500	50	50	acme/lib2	\N	1767225600000
+acme/lib2	1	2	\N	500	\N	50	\N	\N	1767225600000
+acme/p	1	0	\N	700	\N	70	\N	\N	1767000000000
+acme/q	1	0	\N	999	\N	99	\N	\N	1767000000000
+acme/x	1	0	\N	600	\N	60	\N	\N	1767000000000
+acme/x	2	2	600	600	60	60	acme/y	\N	1767225600000
+acme/y	1	0	\N	600	\N	60	\N	\N	1767000000000
+acme/y	2	2	600	600	60	60	\N	\N	1767225600000
+@ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/lib	W/"l2"	\N	1767225600000	1767312000000	0	1
+acme/lib2	\N	\N	\N	1767312000000	0	1
+acme/p	W/"lq"	\N	1767225600000	1767229200000	0	0
+acme/q	\N	\N	\N	1769817600000	0	0
+acme/x	W/"ly"	\N	1767225600000	1767229200000	0	0
+acme/y	\N	\N	\N	1769817600000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	\N	\N

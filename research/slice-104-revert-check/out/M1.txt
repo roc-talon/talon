@@ -1,0 +1,46 @@
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:198:1
+
+expect {
+    r = Release.encode({ ..release_row, tag: Err(None), roc_version: Err(None), repo: Err(None), yank_reason: Err(None), withdrawn: Err(None) })
+    a = Artifact.encode(artifact_row)
+    ["\"tag\":null", "\"roc_version\":null", "\"repo\":null", "\"yank_reason\":null", "\"withdrawn\":null"].all(|m| r.contains(m)) and ["\"platform_hash\":null", "\"roc_pin\":null", "\"series\":null", "\"version\":null"].all(|m| a.contains(m)) and Release.decode(r) == Ok({ ..release_row, tag: Err(None), roc_version: Err(None), repo: Err(None), yank_reason: Err(None), withdrawn: Err(None) })
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+release_row = {
+	log_index: 7,
+	hash: "H1",
+	group: form,
+	series: "4",
+	version: "4.2.0",
+	url: "https://${form.replace_each("{v}", "4.2.0")}H1.tar.zst",
+	tag: Ok("v4.2.0"),
+	roc_version: Ok("nightly-2026-10-09-258ab27"),
+	repo: Ok("roc-lang/unicode"),
+	published_at: 1760000000000,
+	yanked: Bool.False,
+	yank_reason: Err(None),
+	withdrawn: Ok("edited"),
+}
+
+Ran 40 tests in 1717.6 ms.:
+    39 passed
+    1 failed
+    0 compiler errors

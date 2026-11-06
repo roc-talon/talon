@@ -1,0 +1,21 @@
+== upgrade json --no-check --dry-run --registry direct --file u1/main.roc env:TALON_REGISTRY=http://127.0.0.1:9
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 3.0.0 new series
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0
+== upgrade json --no-check --dry-run --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 3.0.0 new series
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0
+== upgrade json --no-check --dry-run --snapshot 2026-09-26T00:00:00Z --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-09-26T00:00:00Z (log:50), 0 probes
+dry run: nothing was written
+exit 0

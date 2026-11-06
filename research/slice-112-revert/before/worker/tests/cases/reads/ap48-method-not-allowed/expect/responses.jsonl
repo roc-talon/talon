@@ -1,0 +1,6 @@
+{"status": 405, "problem": {"type": "/errors/method-not-allowed", "detail": "POST is not allowed on /v1/releases"}, "headers": {"allow": "GET"}}
+{"status": 405, "problem": {"type": "/errors/method-not-allowed", "detail": "PUT is not allowed on /v1/artifacts/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE"}, "headers": {"allow": "GET"}}
+{"status": 405, "problem": {"type": "/errors/method-not-allowed", "detail": "DELETE is not allowed on /v1/packages/roc-lang/unicode/releases"}, "headers": {"allow": "GET"}}
+{"status": 405, "problem": {"type": "/errors/method-not-allowed", "detail": "PATCH is not allowed on /v1/releases"}, "headers": {"allow": "GET"}}
+{"status": 404, "problem": {"type": "/errors/not-found", "detail": "no route for GET /v1/packages/roc-lang/unicode"}}
+{"status": 404, "problem": {"type": "/errors/not-found", "detail": "no route for GET /v1/artifacts"}}

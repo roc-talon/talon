@@ -1,0 +1,2 @@
+1: the trim of 3 old compilers in the order of age (9100, 9050, 9200), not of id. Totals of 3 contributors (one merged with an old row, one made, one machine). The rows of the compiler at 365 days and of the new one stay. compat is not trimmed.
+2: 2 runs of one planned time: the second changes nothing (no double count). The tracker of 4242 is the same before and after (R-CT15).

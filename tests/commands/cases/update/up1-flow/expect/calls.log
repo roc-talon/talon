@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u1/main.roc
@@ -15,6 +16,9 @@ write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/u1/main.roc
@@ -27,7 +31,6 @@ lock $HOME/.cache/roc/talon/projects.json nowait: held
 list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-tty
 read_files $PROJECT/u1/main.roc $PROJECT/u1/talon.toml $HOME/.config/talon/config.toml
 ask "Pick packages to update (numbers or names, empty for none): "
 ask "Pick packages to update (numbers or names, empty for none): "
@@ -88,6 +91,9 @@ read_files $PROJECT/u1/main.roc
 write_atomic $PROJECT/u1/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/u1/main.roc
@@ -100,10 +106,12 @@ lock $HOME/.cache/roc/talon/projects.json nowait: held
 list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-tty
 read_files $PROJECT/u1/main.roc $PROJECT/u1/talon.toml $HOME/.config/talon/config.toml
 ask "Pick packages to update (numbers or names, empty for none): "
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -161,6 +169,9 @@ read_files $PROJECT/u1/main.roc
 write_atomic $PROJECT/u1/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/u1/main.roc
@@ -173,6 +184,5 @@ lock $HOME/.cache/roc/talon/projects.json nowait: held
 list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-tty
 read_files $PROJECT/u1/main.roc $PROJECT/u1/talon.toml $HOME/.config/talon/config.toml
 ask "Pick packages to update (numbers or names, empty for none): "

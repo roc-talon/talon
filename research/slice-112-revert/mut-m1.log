@@ -1,0 +1,61 @@
+── ● unconditional condition ────────────────────────────── lib/Ingest.roc:110:7
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+
+── ✗ fail ────────────────────────────────────── tests/unit/IngestTest.roc:260:1
+
+expect {
+    t = target(h1)
+    got = [
+        Ingest.after_read(t, []),
+        Ingest.after_read(t, [row(List.repeat(1, 32), Bool.True)]),
+        Ingest.after_read(t, [row(List.repeat(1, 32), Bool.False)]),
+        Ingest.after_read(t, [row(List.repeat(2, 32), Bool.True)]),
+    ]
+    got == [Ok(Index), Ok(Answer(record7)), Ok(AddProvenance(7)), Ok(Conflict(Ingest.label_conflict(t, Ok(h2))))]
+}
+
+Mentioned values:
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+h2 = "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+record7 = {
+	log_index: 7,
+	hash: h1,
+	group: app_form,
+	series: "2",
+	version: "2.0.0",
+	url: "https://github.com/acme/app/releases/download/2.0.0/${h1}.tar.zst",
+	tag: Ok("2.0.0"),
+	roc_version: Err(None),
+	repo: Ok("acme/app"),
+	published_at: 1792497600000,
+	yanked: Bool.False,
+	yank_reason: Err(None),
+	withdrawn: Err(None),
+}
+
+Ran 43 tests in 607.4 ms.:
+    42 passed
+    1 failed
+    0 compiler errors
+PASS ingest/ap26-body-and-route (1943 ms)
+PASS ingest/ik3-id-collision (2015 ms)
+FAIL ingest/pu14-pu19-labels (2175 ms)
+    request 3: status: expected 409, got 200
+    request 3: problem: content-type: expected "application/problem+json", got "application/json"
+    request 3: problem.type: expected "/errors/label-conflict", got missing
+    request 3: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 1.0.0 has the hash GhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ in the index, not CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8: release a new version", got missing
+    request 3: problem.status: expected 200 (the HTTP status), got missing
+    request 4: status: expected 409, got 200
+    request 4: problem: content-type: expected "application/problem+json", got "application/json"
+    request 4: problem.type: expected "/errors/label-conflict", got missing
+    request 4: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 1.0.0 has the hash GhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ in the index, not CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8: release a new version", got missing
+    request 4: problem.status: expected 200 (the HTTP status), got missing
+PASS ingest/pu4-index-kinds (2174 ms)
+PASS ingest/pu6-not-candidates (2226 ms)
+w2: 4 passed, 1 failed

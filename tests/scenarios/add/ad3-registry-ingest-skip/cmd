@@ -1,0 +1,5 @@
+# R-AD35 R-AD2 R-DA8 R-DA1 R-AP9 R-AP23 R-AP34 R-AP1 R-RG4 R-RG5 R-RG7 R-EC2 R-SC3 (slice 206f): `tln add acme/lib` with a registry, on the real binary, the real `curl` child and the fake servers (the registry is the root of the fake server, `--registry $TALON_HTTP`: an http URL of 127.0.0.1, R-RG7 row 1).
+# The registry has no release list of acme/lib yet (R-AP1 answers 404), GitHub has one release, 1.0.0. The order of the requests is: the guard (`GET /repos/acme/lib`, R-RG4), R-AP1, the GitHub release list (R-DI2), one ingest (R-AD35 step 3: a `curl` child, the body is `{"url":...}`, no `Authorization` and no `Talon-Contributor`, R-DA8). The ingest is answered 409, so it is skipped with a warning, no ingest is indexed, R-AP1 is not read again (R-AD35 step 4), and the command stops with exit 2: the text of no candidate.
+# One candidate only: the order of the requests of `http_all!` is not fixed, so one request keeps the request log and the body file fixed. `--no-check --dry-run`: no probe and no write of the project.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st tln add acme/lib --registry $TALON_HTTP --no-check --dry-run

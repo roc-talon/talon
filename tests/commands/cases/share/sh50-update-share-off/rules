@@ -1,0 +1,4 @@
+R-SH2 R-SH3 R-SH4 R-EV26 R-NM1 (slice 206e4): the world of share/sh49-update-share (`share = true`, a queue row HA of 0.0.1, `pinned` for nightly-2026-10-14-38a3029), with R-SH2 false in runs 1 and 2.
+Run 1 (`DO_NOT_TRACK=1`, R-SH2 condition 4): the round 1 unit probes run, their facts are stored, but nothing goes in the queue and nothing is sent: no queue call at all (no `pinned` query, no `clock`, no queue write, no `queue_rows`). R-SH2 is checked when a fact goes into the queue and again before the send.
+Run 2 (`CI=true`, condition 5): no probe (the facts are stored), no send: no queue call.
+Run 3 (no variable): the stored facts of run 1 are NOT queued (filter 1: they are old facts, not a probe of this command), only the row HA is sent: one POST with 1 row, 201, `unqueue=1`.

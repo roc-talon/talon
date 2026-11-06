@@ -1,0 +1,17 @@
+== probe parser --range --file p2/main.roc
+acme/parser 1.0.0 passes on nightly-2026-10-08-8c8c8c8 .. nightly-2026-10-10-0e0e0e0
+  lower end: nightly-2026-10-08-8c8c8c8 (unknown)
+  upper end: nightly-2026-10-10-0e0e0e0 (real)
+exit 12
+== probe parser --range --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"range","hash":"EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc","label":"acme/parser 1.0.0","range":{"from":{"id":"nightly-2026-10-06-6a6a6a6","real":true},"to":{"id":"nightly-2026-10-10-0e0e0e0","real":true}},"probes":3,"downloads":0,"facts":[{"nightly":"nightly-2026-10-05-5f5f5f5","target":"any","result":"fail"},{"nightly":"nightly-2026-10-06-6a6a6a6","target":"any","result":"pass"},{"nightly":"nightly-2026-10-07-7b7b7b7","target":"any","result":"pass"}]},"error":null}
+exit 0
+== probe --range {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"range","hash":"8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f","label":"8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f","range":{"from":{"id":"nightly-2026-10-01-1b1b1b1","real":true},"to":{"id":"nightly-2026-10-10-0e0e0e0","real":true}},"probes":7,"downloads":0,"facts":[{"nightly":"nightly-2026-10-10-0e0e0e0","target":"any","result":"pass"},{"nightly":"nightly-2026-10-09-9d9d9d9","target":"any","result":"pass"},{"nightly":"nightly-2026-10-08-8c8c8c8","target":"any","result":"pass"},{"nightly":"nightly-2026-10-03-3d3d3d3","target":"any","result":"pass"},{"nightly":"nightly-2026-10-05-5f5f5f5","target":"any","result":"pass"},{"nightly":"nightly-2026-10-06-6a6a6a6","target":"any","result":"pass"},{"nightly":"nightly-2026-10-01-1b1b1b1","target":"any","result":"pass"}]},"error":null}
+exit 0
+== probe --range {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"range","hash":"8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f","label":"8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f","range":{"from":{"id":"nightly-2026-10-01-1b1b1b1","real":true},"to":{"id":"nightly-2026-10-10-0e0e0e0","real":true}},"probes":0,"downloads":0,"facts":[]},"error":null}
+exit 0
+== probe --range {w}/project/bundles/AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq.tar.zst --json --file p1/main.roc
+{"schema":1,"command":"probe","ok":true,"data":{"kind":"range","hash":"AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq","label":"AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq","range":null,"probes":8,"downloads":0,"facts":[{"nightly":"nightly-2026-10-10-0e0e0e0","target":"any","result":"fail"},{"nightly":"nightly-2026-10-09-9d9d9d9","target":"any","result":"fail"},{"nightly":"nightly-2026-10-08-8c8c8c8","target":"any","result":"fail"},{"nightly":"nightly-2026-10-07-7b7b7b7","target":"any","result":"fail"},{"nightly":"nightly-2026-10-06-6a6a6a6","target":"any","result":"fail"},{"nightly":"nightly-2026-10-05-5f5f5f5","target":"any","result":"fail"},{"nightly":"nightly-2026-10-03-3d3d3d3","target":"any","result":"fail"},{"nightly":"nightly-2026-10-01-1b1b1b1","target":"any","result":"fail"}]},"error":null}
+exit 0

@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 R-SO6 (slice 222, Design Q542): the package has no pin, `talon.toml` has `[toolchain] roc = ">=nightly-2026-10-25-0000000"`, and the only installed compiler (nightly-2026-10-14-38a3029) is out of the range. The note names the range as it is written. No download, no probe, exit 0.

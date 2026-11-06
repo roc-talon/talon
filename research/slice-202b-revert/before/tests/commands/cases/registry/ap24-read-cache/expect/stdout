@@ -1,0 +1,56 @@
+== get /v1/packages/acme/lib/releases now=1792065600
+status: 200
+source: live
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/lib/releases now=1792065630
+status: 200
+source: copy 1792065600
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/lib/releases now=1792065690
+status: 200
+source: live
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/lib/releases now=1792065690 newest
+status: 200
+source: live
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/lib/releases now=1792065630 bookmark=b123
+status: 200
+source: live
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/gone/releases now=1792065600
+status: 404
+source: live
+body: {"type":"https://talon.dev/problems/not-found","title":"Not found","status":404,"detail":"no indexed release for acme/gone"}
+== get /v1/packages/acme/gone/releases now=1792065600
+status: 404
+source: live
+body: {"type":"https://talon.dev/problems/not-found","title":"Not found","status":404,"detail":"no indexed release for acme/gone"}
+== get /v1/contributors/me now=1792065600
+status: 200
+source: live
+body: {"id":"u1"}
+== get /v1/contributors/me now=1792065601
+status: 200
+source: live
+body: {"id":"u1"}
+== get /v1/packages/acme/lib/releases now=1792099999 offline
+status: 200
+source: copy 1792065600
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/none/releases offline
+no copy
+== get /v1/packages/acme/slow/releases
+exit 15
+== get /v1/packages/acme/low/releases now=1792065600
+status: 200
+source: live
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/packages/acme/low/releases now=1792065630
+status: 200
+source: copy 1792065600
+body: {"releases":[],"checked":null,"repos":[]}
+== get /v1/releases?group=example.com%2Fpkg%2F%7Bv%7D%2F now=1792065600
+status: 200
+source: live
+body: {"releases":[],"checked":null,"repos":[]}

@@ -1,0 +1,12 @@
+== install --frozen --file p1/main.roc
+the header satisfies talon.toml
+built tool foo 1.1.0 (acme/foo)
+exit 0
+== env:HOME={w}/home2 install --frozen --file p2/main.roc
+the header satisfies talon.toml
+built tool foo 1.1.0 (acme/foo)
+exit 0
+== env:HOME={w}/home3 install --frozen --file p3/main.roc
+the header satisfies talon.toml
+built tool foo 1.1.0 (acme/foo)
+exit 0

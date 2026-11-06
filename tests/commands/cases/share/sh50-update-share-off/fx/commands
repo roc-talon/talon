@@ -1,0 +1,3 @@
+update --dry-run --file u1/main.roc env:DO_NOT_TRACK=1
+update --dry-run --file u1/main.roc env:CI=true
+update --dry-run --file u1/main.roc

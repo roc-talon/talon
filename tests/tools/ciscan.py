@@ -349,7 +349,8 @@ def check_fast(root, fails):
         inc = matrix_include(job)
         for e in inc:
             got[str(e.get("os", "")).split("-")[0]] = e.get("steps")
-    for osn, want in (("ubuntu", ""), ("macos", ""), ("windows", "check fmt l0")):
+    # TW35: Linux runs all steps. macOS runs the CLI steps and w0 (the default list of scripts/test.sh without w1, wbuild and w2). Windows runs check fmt l0 w0.
+    for osn, want in (("ubuntu", ""), ("macos", "check fmt l0 l2 l3 w0 selftest l1"), ("windows", "check fmt l0 w0")):
         if osn not in got:
             fails.append("ci.yml: the matrix (include) has no %s entry" % osn)
         elif (got[osn] or "") != want:
@@ -404,8 +405,12 @@ def check_pin(root, fails):
         fails.append("scripts/env.sh: no line `ROC_TAG=${ROC_TAG:-nightly-<date>-<sha>}`")
     elif m.group(1) != "nightly-2026-10-14-38a3029":
         fails.append("scripts/env.sh: ROC_TAG is %s, the pin is nightly-2026-10-14-38a3029 (docs/slices/PLAN.md)" % m.group(1))
-    if len(pinned) != 1:
-        fails.append("scripts/env.sh: the nightly tag must be in the text once (ROC_TAG), found %d" % len(pinned))
+    # Slice 101 (TW28, R-WH13): a second tag, ROC_TAG_WORKER, for worker/ (the nightly of the platform release).
+    mw = re.search(r"^ROC_TAG_WORKER=\$\{ROC_TAG_WORKER:-(nightly-\d{4}-\d{2}-\d{2}-[0-9a-f]+)\}$", env_sh, re.M)
+    if not mw:
+        fails.append("scripts/env.sh: no line `ROC_TAG_WORKER=${ROC_TAG_WORKER:-nightly-<date>-<sha>}`")
+    if len(pinned) != 2:
+        fails.append("scripts/env.sh: the nightly tags must be in the text twice (ROC_TAG and ROC_TAG_WORKER), found %d" % len(pinned))
     roc_line = re.search(r"^ROC=\$\{ROC:-(.*)\}$", env_sh, re.M)
     if not roc_line or not re.search(r"\$\{?ROC_TAG\}?", roc_line.group(1)):
         fails.append("scripts/env.sh: the default of ROC must use $ROC_TAG")
@@ -630,7 +635,82 @@ def check_release(root, fails, path=None):
         fails.append("%s: the sha256sums.txt step must sum the tln-* files" % name)
 
 
-CHECKS = {"yaml": check_yaml, "fast": check_fast, "nightly": check_nightly, "pin": check_pin, "portable": check_portable, "release": check_release}
+def check_compatbot(root, fails):
+    """Slice 223 (Registry R-MX1, R-MX15, R-MX17, R-TP7, R-TP2, R-TP17): .github/workflows/compat-bot.yml. The file name is part of BOT_WORKFLOW_REF, so it is checked by name."""
+    name = "compat-bot.yml"
+    doc = workflow(root, name, fails)
+    if doc is None:
+        return
+    if triggers(doc) != {"schedule", "workflow_dispatch"}:
+        fails.append("%s: the triggers must be `schedule` and `workflow_dispatch` only (R-TP7: the Worker accepts only these event names)" % name)
+    perm = doc.get("permissions")
+    if perm != {"contents": "read"}:
+        fails.append("%s: the top-level permissions must be exactly `contents: read`" % name)
+    js = jobs(doc)
+    if len(js) != 1:
+        fails.append("%s: one job (one Linux runner, R-MX10, R-MX15), found %d" % (name, len(js)))
+        return
+    jn, job = list(js.items())[0]
+    if not str(job.get("runs-on", "")).startswith("ubuntu"):
+        fails.append("%s: job %s must run on ubuntu (one Linux runner, R-MX10)" % (name, jn))
+    if job.get("permissions") != {"contents": "read", "id-token": "write"}:
+        fails.append("%s: job %s needs exactly `contents: read` and `id-token: write` (the OIDC token of R-TP2, and no right to write)" % (name, jn))
+    text = open(os.path.join(root, ".github", "workflows", name), encoding="utf-8").read()
+    if "secrets." in text:
+        fails.append("%s: the bot uses no secret: the token is the OIDC token (R-TP2)" % name)
+    if "cloudflare-workers/" in text:
+        fails.append("%s: a workflow never uses a path of cloudflare-workers/ (TW28)" % name)
+    # Slice 223, Q577 (R-MX18 item 11): the details of the workflow.
+    if "'43 4 * * *'" not in text and '"43 4 * * *"' not in text:
+        fails.append("%s: the schedule must be the cron `43 4 * * *`" % name)
+    on = doc.get("on")
+    wd = on.get("workflow_dispatch") if isinstance(on, dict) else None
+    ins = wd.get("inputs") if isinstance(wd, dict) else None
+    if not (isinstance(ins, dict) and "tags" in ins):
+        fails.append("%s: workflow_dispatch needs the input `tags`" % name)
+    if "inputs.tags" not in text:
+        fails.append("%s: the run of `bot` must get ${{ inputs.tags }} as its operands" % name)
+    if str(job.get("if", "")).strip() != "github.repository == 'roc-talon/talon'":
+        fails.append("%s: the job needs `if: github.repository == 'roc-talon/talon'`" % name)
+    if str(job.get("timeout-minutes", "")) != "120":
+        fails.append("%s: the job needs timeout-minutes: 120" % name)
+    conc = doc.get("concurrency")
+    if not (isinstance(conc, dict) and conc.get("group") == "compat-bot" and str(conc.get("cancel-in-progress")).lower() == "false"):
+        fails.append("%s: concurrency must be group `compat-bot` with `cancel-in-progress: false`" % name)
+    if env_of(job).get("TALON_AUTO_INSTALL") != "yes":
+        fails.append("%s: the env of the job needs TALON_AUTO_INSTALL: yes (the compiler of a probe is a required download)" % name)
+    if "GITHUB_TOKEN" in text:
+        fails.append("%s: no GITHUB_TOKEN: the GitHub list is read with no token (Q567)" % name)
+    if "TALON_REGISTRY" not in str(env_of(doc, job)):
+        fails.append("%s: the env of the job must set TALON_REGISTRY (the audience of the token is the registry base URL, R-TP17)" % name)
+    ss = steps(job)
+    run = [str(s.get("run", "")) for s in ss]
+    def at(word):
+        for n, r in enumerate(run):
+            if word in r:
+                return n
+        return None
+    i_get = at("scripts/get-roc.sh")
+    i_tln = at("cli/main.roc")
+    i_bot = at("bot/main.roc")
+    i_run = None
+    for n, r in enumerate(run):
+        if re.search(r"^[ \t]*bot(\s|$)", r, re.M):
+            i_run = n
+    for label, i in (("an install of the compiler with scripts/get-roc.sh", i_get), ("a build of cli/main.roc (tln, for the probes)", i_tln), ("a build of bot/main.roc", i_bot), ("a step that runs `bot`", i_run)):
+        if i is None:
+            fails.append("%s: job %s has no step for %s" % (name, jn, label))
+    if None not in (i_get, i_tln, i_bot, i_run) and not (i_get < i_tln and i_get < i_bot and max(i_tln, i_bot) < i_run):
+        fails.append("%s: the steps must go in this order: the compiler, the builds, the run of `bot`" % name)
+    if i_run is not None:
+        e = env_of(doc, job, ss[i_run])
+        if "TALON_REGISTRY" not in e:
+            fails.append("%s: the step that runs `bot` has no TALON_REGISTRY" % name)
+        if "GH_TOKEN" in env_of(ss[i_run]) or "GH_TOKEN" in run[i_run]:
+            fails.append("%s: the step that runs `bot` has no GH_TOKEN" % name)
+
+
+CHECKS = {"yaml": check_yaml, "fast": check_fast, "nightly": check_nightly, "pin": check_pin, "portable": check_portable, "release": check_release, "compatbot": check_compatbot}
 
 if __name__ == "__main__":
     if len(sys.argv) not in (3, 4) or sys.argv[1] not in CHECKS or (len(sys.argv) == 4 and sys.argv[1] != "release"):

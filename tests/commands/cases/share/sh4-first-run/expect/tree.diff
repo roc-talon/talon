@@ -1,0 +1,21 @@
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1 +1,2 @@
+ # my settings
++share = true
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -0,0 +1 @@
++{"format":1,"id":"0123456789abcdef0123456789abcdef","sent":0,"counted":0,"first":0,"first_sent_at":null,"last_sent_at":null,"token":null,"token_expires_at":null,"account":null}
+--- home/h2/.config/talon/config.toml
++++ home/h2/.config/talon/config.toml
+@@ -0,0 +1 @@
++share = false
+--- home/h3/.config/talon/config.toml
++++ home/h3/.config/talon/config.toml
+@@ -0,0 +1 @@
++share = false
+--- home/h5/.config/talon/config.toml
++++ home/h5/.config/talon/config.toml
+@@ -0,0 +1 @@
++share = false

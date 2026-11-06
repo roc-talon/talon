@@ -1,0 +1,9 @@
+== update --tool --json --file p1/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"tools":[{"key":"foo","name":"acme/foo","action":"moved","ref":"acme/foo@^1","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst","version":"1.1.0","previous":"1.0.0","file":"$PROJECT/p1/talon.toml","built":false,"would_build":false,"bin":["x64musl"],"binary":"prebuilt","bin_skip":null,"would_check":[]}]},"error":null}
+exit 0
+== update --tool --file p1/main.roc
+nothing to change
+exit 0
+== update --tool --file p1/main.roc
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0

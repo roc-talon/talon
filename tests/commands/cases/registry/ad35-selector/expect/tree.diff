@@ -1,0 +1,64 @@
+--- home/.cache/roc/talon/index/github/acme/sel1/1.json
++++ home/.cache/roc/talon/index/github/acme/sel1/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-06-01T12:00:00Z","assets":[{"name":"BUbY7Mz6fbDJCHBJXShH9Kk5PzCMCDFKxhBHhPEV4fye.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel1/releases/download/1.0.0/BUbY7Mz6fbDJCHBJXShH9Kk5PzCMCDFKxhBHhPEV4fye.tar.zst"}]},{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"DM7bPjbgMAWGXRzdicxH2AT2jL27oxEpaYJpXBeJUV5r.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel1/releases/download/2.0.0/DM7bPjbgMAWGXRzdicxH2AT2jL27oxEpaYJpXBeJUV5r.tar.zst"}]},{"tag_name":"1.5.0","draft":false,"prerelease":false,"published_at":"2026-07-01T12:00:00Z","assets":[{"name":"6mugWz1EaENQNEgsATdSLDrc1RZCHSXGcVYLVsXnpABy.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel1/releases/download/1.5.0/6mugWz1EaENQNEgsATdSLDrc1RZCHSXGcVYLVsXnpABy.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/sel1/1.meta
++++ home/.cache/roc/talon/index/github/acme/sel1/1.meta
+@@ -0,0 +1 @@
++etag "g1"
+--- home/.cache/roc/talon/index/github/acme/sel1/repo.json
++++ home/.cache/roc/talon/index/github/acme/sel1/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/sel1","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/sel2/1.json
++++ home/.cache/roc/talon/index/github/acme/sel2/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-06-01T12:00:00Z","assets":[{"name":"9TRgzWg1QD2PyWWDQ15VhA7PbcN4vMj2e98oLrbMDk9e.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel2/releases/download/1.0.0/9TRgzWg1QD2PyWWDQ15VhA7PbcN4vMj2e98oLrbMDk9e.tar.zst"}]},{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"HnjojRhoLDCJeoy3i5jtTGrASxTQHpgULXFqJ42Ts4E6.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel2/releases/download/2.0.0/HnjojRhoLDCJeoy3i5jtTGrASxTQHpgULXFqJ42Ts4E6.tar.zst"}]},{"tag_name":"1.5.0","draft":false,"prerelease":false,"published_at":"2026-07-01T12:00:00Z","assets":[{"name":"DUpyGV4sHz1dhQ9BRu4wCxw1FhcF2UFEdAqCN4JmCBPR.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel2/releases/download/1.5.0/DUpyGV4sHz1dhQ9BRu4wCxw1FhcF2UFEdAqCN4JmCBPR.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/sel2/1.meta
++++ home/.cache/roc/talon/index/github/acme/sel2/1.meta
+@@ -0,0 +1 @@
++etag "g1"
+--- home/.cache/roc/talon/index/github/acme/sel2/repo.json
++++ home/.cache/roc/talon/index/github/acme/sel2/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/sel2","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/sel3/1.json
++++ home/.cache/roc/talon/index/github/acme/sel3/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-06-01T12:00:00Z","assets":[{"name":"9ZfseYXvUdQAqD2nCYdNAw3Sro9msmYefVQPGz2P6w4T.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel3/releases/download/1.0.0/9ZfseYXvUdQAqD2nCYdNAw3Sro9msmYefVQPGz2P6w4T.tar.zst"}]},{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"HHnMjxqDCwtbXX3ebwoEJTXS7DECyCXVgyuQRVesKdPg.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel3/releases/download/2.0.0/HHnMjxqDCwtbXX3ebwoEJTXS7DECyCXVgyuQRVesKdPg.tar.zst"}]},{"tag_name":"1.5.0","draft":false,"prerelease":false,"published_at":"2026-07-01T12:00:00Z","assets":[{"name":"8UwTpsmNaPPEweC8ZQuk6J6k9izxP47roxFXTdMVbUbm.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/sel3/releases/download/1.5.0/8UwTpsmNaPPEweC8ZQuk6J6k9izxP47roxFXTdMVbUbm.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/sel3/1.meta
++++ home/.cache/roc/talon/index/github/acme/sel3/1.meta
+@@ -0,0 +1 @@
++etag "g1"
+--- home/.cache/roc/talon/index/github/acme/sel3/repo.json
++++ home/.cache/roc/talon/index/github/acme/sel3/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/sel3","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/1a14d7a5b639a7eff6450facf57716c6.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/1a14d7a5b639a7eff6450facf57716c6.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":1,"hash":"9TRgzWg1QD2PyWWDQ15VhA7PbcN4vMj2e98oLrbMDk9e","group":"github.com/acme/sel2/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/acme/sel2/releases/download/1.0.0/9TRgzWg1QD2PyWWDQ15VhA7PbcN4vMj2e98oLrbMDk9e.tar.zst","tag":"1.0.0","roc_version":null,"repo":"acme/sel2","published_at":1790848800000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/1a14d7a5b639a7eff6450facf57716c6.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/1a14d7a5b639a7eff6450facf57716c6.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/sel2/releases
++etag "r1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9adac3f8d5d48323067dbe292c403b6c.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9adac3f8d5d48323067dbe292c403b6c.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":1,"hash":"6mugWz1EaENQNEgsATdSLDrc1RZCHSXGcVYLVsXnpABy","group":"github.com/acme/sel1/releases/download/{v}/","series":"1","version":"1.5.0","url":"https://github.com/acme/sel1/releases/download/1.5.0/6mugWz1EaENQNEgsATdSLDrc1RZCHSXGcVYLVsXnpABy.tar.zst","tag":"1.5.0","roc_version":null,"repo":"acme/sel1","published_at":1790848800000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":2,"hash":"BUbY7Mz6fbDJCHBJXShH9Kk5PzCMCDFKxhBHhPEV4fye","group":"github.com/acme/sel1/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/acme/sel1/releases/download/1.0.0/BUbY7Mz6fbDJCHBJXShH9Kk5PzCMCDFKxhBHhPEV4fye.tar.zst","tag":"1.0.0","roc_version":null,"repo":"acme/sel1","published_at":1790848800000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9adac3f8d5d48323067dbe292c403b6c.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9adac3f8d5d48323067dbe292c403b6c.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/sel1/releases
++etag "r1"
++max-age 60

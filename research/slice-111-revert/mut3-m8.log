@@ -1,0 +1,37 @@
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:329:1
+
+expect
+    [
+        file("Zeta.roc", "again"),
+        file("zeta.roc", "again"),
+        file("a/b", "x").concat(file("a//b", "y")),
+        file("a/b", "x").concat(link_member("a/b/", '5', "")),
+        link_member("src/", '5', "").concat(link_member("src/", '5', "")),
+        file("MAIN.ROC", "x"),
+    ].map(|m| read(with_extra(m)))
+        == [
+            Err(Duplicate("Zeta.roc")),
+            Err(Duplicate("zeta.roc")),
+            Err(Duplicate("a//b")),
+            Err(Duplicate("a/b/")),
+            Err(Duplicate("src/")),
+            Err(Duplicate("MAIN.ROC")),
+        ]
+
+Ran 33 tests in 949.6 ms.:
+    32 passed
+    1 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2396 ms)
+PASS archive/pu38-made-kinds (2304 ms)
+FAIL archive/pu38-paths-and-header (2389 ms)
+    request 8: status: expected 422, got 200
+    request 8: problem: content-type: expected "application/problem+json", got "application/json"
+    request 8: problem.type: expected "/errors/not-a-candidate", got missing
+    request 8: problem.detail: expected "the archive has the path MAIN.ROC two times", got missing
+    request 8: problem.status: expected 200 (the HTTP status), got missing
+PASS archive/pu38-real-bundles (2336 ms)
+PASS archive/pu38-size (5364 ms)
+PASS archive/pu38-window (2302 ms)
+w2: 5 passed, 1 failed

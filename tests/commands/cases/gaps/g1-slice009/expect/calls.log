@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/lc/main.roc
@@ -39,6 +42,9 @@ read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNU
 list_dirs $HOME/.cache/roc/toolchains
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/pin/main.roc
@@ -56,6 +62,7 @@ path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/pin/main.roc $PROJECT/pin/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
 env_all
 clock
 cwd
@@ -99,6 +106,9 @@ probes 1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/nf/main.roc
@@ -111,5 +121,4 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
-tty
 read_files $PROJECT/nf/main.roc $PROJECT/nf/talon.toml $HOME/.config/talon/config.toml

@@ -1,0 +1,5 @@
+update --tool --file p1/main.roc
+update --tool --file p2/main.roc
+env:HOME={w}/home2 update --tool --file p3/main.roc
+env:HOME={w}/home2 update --tool --file p4/main.roc
+add --tool acme/foo --file p2/main.roc

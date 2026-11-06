@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u13/main.roc
@@ -26,6 +27,9 @@ list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/u1/main.roc
@@ -51,7 +55,6 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
-tty
 clock
 platform
 read_files $HOME/.config/talon/config.toml
@@ -131,6 +134,9 @@ read_files $PROJECT/u1/main.roc
 write_atomic $PROJECT/u1/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/u2/main.roc
@@ -153,7 +159,6 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
-tty
 clock
 platform
 read_files $HOME/.config/talon/config.toml
@@ -163,6 +168,7 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 ask "nightly-2026-10-12-2664a27 is not installed. Download 1 compiler, 73.6 MB? [y/N] "
 args
+env_all
 env_all
 clock
 cwd
@@ -194,6 +200,7 @@ list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
+env_all
 env_all
 clock
 cwd
@@ -289,6 +296,7 @@ read_files $PROJECT/u4/main.roc
 write_atomic $PROJECT/u4/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/r5/main.roc
@@ -372,6 +380,9 @@ read_files $PROJECT/r5/main.roc
 write_atomic $PROJECT/r5/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/u6/main.roc
@@ -395,6 +406,7 @@ read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZt
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
 env_all
 clock
 cwd
@@ -490,6 +502,7 @@ read_files $PROJECT/u7/main.roc
 write_atomic $PROJECT/u7/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u8/main.roc
@@ -521,6 +534,7 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u11/main.roc
@@ -544,6 +558,7 @@ read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZt
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
 env_all
 clock
 cwd
@@ -639,6 +654,7 @@ read_files $PROJECT/f1/main.roc
 write_atomic $PROJECT/f1/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u12/main.roc
@@ -733,6 +749,7 @@ read_files $PROJECT/u12/main.roc $PROJECT/u12/talon.toml
 write_atomic $PROJECT/u12/talon.toml $PROJECT/u12/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/r14/main.roc
@@ -815,6 +832,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/r14/main.roc
 write_atomic $PROJECT/r14/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -910,6 +928,7 @@ read_files $PROJECT/u15/main.roc
 write_atomic $PROJECT/u15/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u16/main.roc
@@ -1004,6 +1023,7 @@ read_files $PROJECT/u16/main.roc
 write_atomic $PROJECT/u16/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/u17/main.roc
@@ -1097,6 +1117,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/u17/main.roc
 write_atomic $PROJECT/u17/main.roc
 args
+env_all
 env_all
 clock
 cwd

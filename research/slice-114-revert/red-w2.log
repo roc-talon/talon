@@ -1,0 +1,67 @@
+== w2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w2.log)
+    request 1: queue outcome: expected ok, got exception
+    request 1: queue retried: expected [{"delay_s":60,"id":"a1"}], got []
+    request 2: queue outcome: expected ok, got exception
+    request 2: queue retried: expected [{"delay_s":300,"id":"a2"}], got []
+    request 3: queue outcome: expected ok, got exception
+    request 3: queue retried: expected [{"delay_s":900,"id":"a3"}], got []
+    request 4: queue outcome: expected ok, got exception
+    request 4: queue retried: expected [{"delay_s":3600,"id":"a4"}], got []
+    request 5: queue outcome: expected ok, got exception
+    request 5: queue retried: expected [{"delay_s":null,"id":"a5"}], got []
+    request 6: queue outcome: expected ok, got exception
+    request 6: queue retried: expected [{"delay_s":null,"id":"a6"}], got []
+    request 7: queue outcome: expected ok, got exception
+    request 7: queue retried: expected [{"delay_s":300,"id":"u1"}], got []
+    request 8: queue outcome: expected ok, got exception
+    request 8: queue retried: expected [{"delay_s":900,"id":"u2"}], got []
+    request 9: queue outcome: expected ok, got exception
+    request 9: queue retried: expected [{"delay_s":60,"id":"b1"},{"delay_s":900,"id":"b2"},{"delay_s":null,"id":"b3"}], got []
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500"]
+      got:      []
+    worker log: queue: trap: todo
+    worker log: queue: trap: todo
+    worker log: queue: trap: todo
+    worker log: queue: trap: todo
+    worker log: queue: trap: todo
+PASS selftest/case-timeout (1004 ms)
+PASS selftest/missing-fake-route (2152 ms)
+PASS selftest/session-absent (2140 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (1697 ms)
+PASS selftest/unexpected-github-call (2028 ms)
+PASS selftest/wrong-auth-log (2011 ms)
+PASS selftest/wrong-body (2011 ms)
+PASS selftest/wrong-clock (1952 ms)
+PASS selftest/wrong-d1-count (1817 ms)
+PASS selftest/wrong-d1-row (1913 ms)
+PASS selftest/wrong-force-cache (1909 ms)
+PASS selftest/wrong-github-log (1863 ms)
+PASS selftest/wrong-header (1732 ms)
+PASS selftest/wrong-header-set (1664 ms)
+PASS selftest/wrong-json-array (1736 ms)
+PASS selftest/wrong-json-at (2817 ms)
+PASS selftest/wrong-json-field (2771 ms)
+PASS selftest/wrong-json-len (2768 ms)
+PASS selftest/wrong-json-range (2766 ms)
+PASS selftest/wrong-json-range-order (2754 ms)
+PASS selftest/wrong-log (6842 ms)
+PASS selftest/wrong-problem-content-type (2445 ms)
+PASS selftest/wrong-problem-member (2387 ms)
+PASS selftest/wrong-queue-acked (2433 ms)
+PASS selftest/wrong-queue-retry (2428 ms)
+PASS selftest/wrong-queue-sent (2429 ms)
+PASS selftest/wrong-queue-sent-none (1911 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (2313 ms)
+PASS selftest/wrong-status (2299 ms)
+PASS selftest/wrong-timing-safe (2303 ms)
+PASS selftest/wrong-tokens-log (2302 ms)
+w2: 134 passed, 21 failed
+
+step       result seconds  budget
+wbuild     pass   0.2      90
+w2         FAIL   66.8     45
+WARN w2: 66.8 s is over the budget of 45 s (TW20)
+done

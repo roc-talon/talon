@@ -1,0 +1,13 @@
+== shorts install parser@^2 json
+use lukewilliamboswell/roc-parser@^2
+matched "parser": lukewilliamboswell/roc-parser
+use acme/roc-json
+matched "json": acme/roc-json (moved from olduser/roc-json)
+== shorts install Parser pars json xx
+exit 2
+== shorts install qf pars
+exit 2
+== shorts tool parser Parser
+exit 2
+== shorts install parser Parser
+exit 2

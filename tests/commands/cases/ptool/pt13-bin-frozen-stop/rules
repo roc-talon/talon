@@ -1,0 +1,6 @@
+Slice 093 (entry `commands`): R-PT21, R-PT7, R-T25, R-CC2, Design Q238. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). `gh` is a rule of `fx/jobs` (no real `gh`). The release acme/foo 1.1.0 (`tags/1.1.0`, the one call of R-PT20 step 1) has binary assets `<hash>-<target>` with a `digest`; the files of the assets are in `fx/src/bin-<target>`. The commit of the bundle is `1a2b3c4d...`, its workflow is `.github/workflows/release.yml`. The host is Linux x64 (`x64musl`).
+Project `p1` has 3 tools with a `bin` value for the host: foo (the sha256 is right), bar (a sha256 that is not the file) and baz (right).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `install --frozen --file p1/main.roc` | foo is downloaded and its `x` entry is made. bar is downloaded and is not its lock: exit 16, its temp dir is deleted. baz is not started (no call for it). The entry of foo stays | R-PT21, R-PT7, R-T25, R-CC2, Q238 |

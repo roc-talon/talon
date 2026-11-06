@@ -1,0 +1,4 @@
+# Files that slice 108b adds (the copies of the files it changes are beside this file, under their own paths).
+docs/slices/108b-roc-jwt.md
+worker/tests/cases/oidc/tp3-jwt-strict/
+research/slice-108b-revert/

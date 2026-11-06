@@ -1,0 +1,1 @@
+1: published, the release is a candidate, but the ids of the repository answer (901, owner 91) are not the ids of the row of acme/chg (900, owner 90): R-TP9 row 4. The shared flow stops before the tag read. Nothing is written, one warn line with the two ids, acked

@@ -1,0 +1,2 @@
+# R-SH9, R-AP36, R-SH5, R-SH13: forget with no JWT: no clock call. DELETE /v1/contributors/me with Talon-Contributor: <id> and no Authorization (the machine form). After the 204: a new id, the totals 0, the times null. The text says that the counts in compat_hints stay.
+share forget

@@ -1,0 +1,18 @@
+--- home/.cache/roc/packages/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2/main.roc
++++ home/.cache/roc/packages/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2/main.roc
+@@ -0,0 +1,10 @@
++platform "acme"
++	requires {} { main! : () => {} }
++	exposes [Std]
++	packages {}
++	provides [main_for_host!]
++	targets: {
++		inputs_dir: "targets/",
++		x64musl: { inputs: ["crt1.o", "libhost.a", "libunwind.a", app, "libc.a"] },
++		arm64musl: { inputs: ["crt1.o", "libhost.a", "libunwind.a", app, "libc.a"] },
++	}
+--- home/.cache/roc/talon/smoke.tsv
++++ home/.cache/roc/talon/smoke.tsv
+@@ -0,0 +1,2 @@
++CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2	nightly-2026-10-14-38a3029	x64musl	pass
++CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2	nightly-2026-10-14-38a3029	arm64musl	pass

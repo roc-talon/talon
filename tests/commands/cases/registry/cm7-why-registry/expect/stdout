@@ -1,0 +1,23 @@
+== why json --file u1/main.roc
+$PROJECT/u1/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-13-5e6f7a8:
+      * 2 bot: fail
+        2 author: pass
+        6 shared: pass (5 pass, 1 fail, 0 crash)
+    note: the bot and the author rows differ on nightly-2026-10-13-5e6f7a8: bot fail, author pass
+exit 0
+== why json --json --file u1/main.roc
+{"schema":1,"command":"why","ok":true,"data":{"members":[{"file":"$PROJECT/u1/main.roc","package":{"alias":"json","name":"acme/json","version":"2.0.0","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst","direct":true,"via":null,"raised":null,"foreign":false,"platform":false},"paths":[[{"alias":"json","kind":"release","id":"https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst"}]],"compiler":"nightly-2026-10-13-5e6f7a8","evidence":[{"rank":2,"source":"bot","result":"fail","modules":[],"winner":true,"error_digest":"error: e1"},{"rank":2,"source":"author","result":"pass","modules":[],"winner":false,"error_digest":null},{"rank":6,"source":"shared","result":"pass","modules":[],"winner":false,"pass_count":5,"fail_count":1,"crash_count":0}],"notes":["the bot and the author rows differ on nightly-2026-10-13-5e6f7a8: bot fail, author pass"]}]},"error":null}
+exit 0
+== why json --registry direct --file u1/main.roc
+$PROJECT/u1/main.roc
+  acme/json 2.0.0 (direct)
+    json
+exit 0
+== why json --offline --file u1/main.roc
+$PROJECT/u1/main.roc
+  acme/json 2.0.0 (direct)
+    json
+exit 0

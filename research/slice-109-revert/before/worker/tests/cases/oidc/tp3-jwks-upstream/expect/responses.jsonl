@@ -1,0 +1,5 @@
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub JWKS read failed with status 500"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub JWKS is not a valid JWKS"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub JWKS is not a valid JWKS"}}
+{"status":500,"problem":{"type":"/errors/internal","detail":"the Worker failed to handle the request"}}
+{"status":500,"problem":{"type":"/errors/internal","detail":"the Worker failed to handle the request"}}

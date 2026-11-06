@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -20,6 +21,9 @@ read_files $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json
 platform
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -88,6 +92,7 @@ read_files $PROJECT/p2/main.roc
 write_atomic $PROJECT/p2/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -129,6 +134,9 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p4/main.roc
@@ -147,6 +155,7 @@ read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/confi
 list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json
 args
+env_all
 env_all
 clock
 cwd
@@ -171,6 +180,7 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p6/main.roc
@@ -193,6 +203,7 @@ list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
+env_all
 env_all
 clock
 cwd
@@ -296,6 +307,7 @@ read_files $PROJECT/p7/main.roc
 write_atomic $PROJECT/p7/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p8/main.roc
@@ -396,6 +408,9 @@ read_files $PROJECT/p8/main.roc
 write_atomic $PROJECT/p8/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p9/main.roc
@@ -424,7 +439,6 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
-tty
 clock
 platform
 read_files $HOME/.config/talon/config.toml
@@ -497,6 +511,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p9/main.roc
 write_atomic $PROJECT/p9/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -598,6 +613,7 @@ read_files $PROJECT/p10/main.roc
 write_atomic $PROJECT/p10/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p13/main.roc
@@ -698,6 +714,7 @@ read_files $PROJECT/p13/main.roc
 write_atomic $PROJECT/p13/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p11/main.roc
@@ -797,6 +814,7 @@ db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p12/main.roc
@@ -886,6 +904,9 @@ read_files $PROJECT/p12/main.roc
 write_atomic $PROJECT/p12/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p14/main.roc
@@ -916,6 +937,9 @@ read_files $PROJECT/p14/main.roc
 write_atomic $PROJECT/p14/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p15/main.roc
@@ -938,6 +962,9 @@ list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd

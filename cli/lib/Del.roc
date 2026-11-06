@@ -16,11 +16,11 @@ Del :: [].{
 	## The bin dir entry, as `SetupIo.have_of!` gives it.
 	Have : [Absent, Dir, Unreadable, Sha(Str)]
 
-	## R-ST10: the dirs that the sweep at the start of `tln` lists, on Windows: the bin dir (`Setup.bin_dir` with `Windows`, so `USERPROFILE`), then the data bin dir (`Roots.item` `Bin`, so `XDG_DATA_HOME` or `HOME`). A dir that cannot be found (its variable is not set, or is empty) is left out, and there is no failure: the command that runs after the sweep reports the variable itself (the sweep never changes an exit code or prints). Both left out: no dir.
+	## R-ST10: the dirs that the sweep at the start of `tln` lists, on Windows: the bin dir (`Setup.bin_dir` with `Windows`, so `USERPROFILE`), then the data bin dir (`Roots.item` `Bin` of `Roots.from_env_on(Windows, env)`, so `LOCALAPPDATA` or `HOME`: the sweep runs on Windows only). A dir that cannot be found (its variable is not set, or is empty) is left out, and there is no failure: the command that runs after the sweep reports the variable itself (the sweep never changes an exit code or prints). Both left out: no dir.
 	dirs : List((Str, Str)) -> List(Str)
 	dirs = |env| {
 		bin = Setup.bin_dir({ os: Windows, env }).map_ok(|dir| [dir]) ?? []
-		data = Roots.from_env(env).map_ok(|roots| [Roots.item(roots, Item.Bin)]) ?? []
+		data = Roots.from_env_on(Windows, env).map_ok(|roots| [Roots.item(roots, Item.Bin)]) ?? []
 		bin.concat(data)
 	}
 

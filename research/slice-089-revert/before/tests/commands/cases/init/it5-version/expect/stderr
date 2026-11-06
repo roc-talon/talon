@@ -1,0 +1,18 @@
+acme/pfy 1.2.0 was released at 2026-10-14T12:00:00Z, less than min-release-age ago. It is used because the version is named.
+acme/pfy 1.2.0 was released at 2026-10-14T12:00:00Z, less than min-release-age ago. It is used because the version is named.
+tln: error[usage]: '1.2' is not an exact version: use owner/repo@1.2.3, or owner/repo for the newest release
+tln: error[usage]: '^1' is not an exact version: use owner/repo@1.2.3, or owner/repo for the newest release
+tln: error[usage]: 'latest' is not an exact version: use owner/repo@1.2.3, or owner/repo for the newest release
+tln: error[usage]: 'nightly-2026-10-09-258ab27' is not an exact version: use owner/repo@1.2.3, or owner/repo for the newest release
+tln: error[usage]: '-1' is not an exact version: use owner/repo@1.2.3, or owner/repo for the newest release
+tln: error[usage]: '' is not an exact version: use owner/repo@1.2.3, or owner/repo for the newest release
+tln: error[usage]: acme/pfx has no release 9.9.9
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-09-9d9d9d9 fails for the platform acme/pfz 1.2.0 (no module is named)
+acme/pfy 1.2.0 was released at 2026-10-14T12:00:00Z, less than min-release-age ago. It is used because the version is named.
+check: passed
+build: passed
+$PROJECT/v9/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml

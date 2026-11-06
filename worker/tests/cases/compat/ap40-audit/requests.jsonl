@@ -1,0 +1,12 @@
+{"method":"GET","path":"/v1/compat_hints?audit=100","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=100","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=100","headers":{"if-none-match":"\"9b408635d67cbcedd83e37f5f39fcad6\""},"now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=100","headers":{"cache-control":"no-cache"},"now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=2","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=0","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=abc","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=007","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=5000","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=1000","now":1767225600000}
+{"method":"GET","path":"/v1/compat_hints?audit=99999999999999999999999999","now":1767225600000}

@@ -1,0 +1,6 @@
+GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/acme/y/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repositories/700 token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/acme/z/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/acme/x/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json

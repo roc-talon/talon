@@ -1,0 +1,129 @@
+--- project/p10/apps/a/main.roc
++++ project/p10/apps/a/main.roc
+@@ -1,9 +1,9 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	lib: "https://github.com/acme/lib/releases/download/1.0.0/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg93.tar.zst",
+-	core: "https://github.com/acme/core/releases/download/1.0.0/9J9YaAXgA4GM4T9pUuLDnNa8dzw6ghdVGHjEfD3wygwt.tar.zst",
+-	jb: "https://github.com/acme/jb/releases/download/1.0.0/DELiN7LE1kUXFSoiZzid3mMAkg3eCDrqPDnNd6u2ZSFy.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	core: "https://github.com/acme/core/releases/download/1.2.0/31QGBxcxY74xADaqfgtBFgCp3EQhCTVoYtoJqL9LxVrV.tar.zst",
++	jb: "https://github.com/acme/jb/releases/download/1.1.0/EL55X5DJBpH4oq5bgSWZX89r48FeAuACeYUrrGBQaeda.tar.zst",
++	roc: "nightly-2026-10-10-0e0e0e0",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p10/apps/b/main.roc
++++ project/p10/apps/b/main.roc
+@@ -1,7 +1,8 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	lib: "https://github.com/acme/lib/releases/download/1.0.0/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg93.tar.zst",
+-	core: "https://github.com/acme/core/releases/download/1.0.0/9J9YaAXgA4GM4T9pUuLDnNa8dzw6ghdVGHjEfD3wygwt.tar.zst",
++	core: "https://github.com/acme/core/releases/download/1.2.0/31QGBxcxY74xADaqfgtBFgCp3EQhCTVoYtoJqL9LxVrV.tar.zst",
++	roc: "nightly-2026-10-10-0e0e0e0",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p11/main.roc
++++ project/p11/main.roc
+@@ -2,7 +2,7 @@
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	libp: "https://github.com/acme/libp/releases/download/1.0.0/HKMFtTvfYzZ32igvv6TV7YmZ6pha8hLrvjY2QR3pFazW.tar.zst",
+ 	corep: "https://github.com/acme/corep/releases/download/1.2.0/3f9FYfF2T5UgzJpeqPp7GD9W9M6kuj2ky6bLayis9Ymj.tar.zst",
+-	jb: "https://github.com/acme/jb/releases/download/1.0.0/DELiN7LE1kUXFSoiZzid3mMAkg3eCDrqPDnNd6u2ZSFy.tar.zst",
++	jb: "https://github.com/acme/jb/releases/download/1.1.0/EL55X5DJBpH4oq5bgSWZX89r48FeAuACeYUrrGBQaeda.tar.zst",
+ 	roc: "nightly-2026-10-09-9d9d9d9",
+ }
+ 
+--- project/p12/main.roc
++++ project/p12/main.roc
+@@ -1,8 +1,8 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	libp: "https://github.com/acme/libp/releases/download/1.0.0/HKMFtTvfYzZ32igvv6TV7YmZ6pha8hLrvjY2QR3pFazW.tar.zst",
+-	corep: "https://github.com/acme/corep/releases/download/1.0.0/HPu7PFaTh3WjwN5NjyhcHWkpzhuZvoRBLLs6asWppnCo.tar.zst",
+-	jb: "https://github.com/acme/jb/releases/download/1.0.0/DELiN7LE1kUXFSoiZzid3mMAkg3eCDrqPDnNd6u2ZSFy.tar.zst",
++	corep: "https://github.com/acme/corep/releases/download/1.2.0/3f9FYfF2T5UgzJpeqPp7GD9W9M6kuj2ky6bLayis9Ymj.tar.zst",
++	jb: "https://github.com/acme/jb/releases/download/1.1.0/EL55X5DJBpH4oq5bgSWZX89r48FeAuACeYUrrGBQaeda.tar.zst",
+ 	roc: "nightly-2026-10-09-9d9d9d9",
+ }
+ 
+--- project/p13/main.roc
++++ project/p13/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	ja: "https://github.com/acme/ja/releases/download/1.0.0/DM5o7mG8Q6LQQHsEzh43XwPnJ8zMnYkjQRSiGkyUqqeV.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-11-1f1f1f1",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p14/main.roc
++++ project/p14/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	jc: "https://github.com/acme/jc/releases/download/1.0.0/J962TzxpQUyX4kanFjmaQfULCBmrWEwwsFRFc1YkY5Vv.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-12-2a2a2a2",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p15/main.roc
++++ project/p15/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	ja: "https://github.com/acme/ja/releases/download/1.0.0/DM5o7mG8Q6LQQHsEzh43XwPnJ8zMnYkjQRSiGkyUqqeV.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	roc: "nightly-2026-10-10-0e0e0e0",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p2/main.roc
++++ project/p2/main.roc
+@@ -1,9 +1,9 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	lib: "https://github.com/acme/lib/releases/download/1.0.0/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg93.tar.zst",
+-	core: "https://github.com/acme/core/releases/download/1.0.0/9J9YaAXgA4GM4T9pUuLDnNa8dzw6ghdVGHjEfD3wygwt.tar.zst",
+-	jb: "https://github.com/acme/jb/releases/download/1.0.0/DELiN7LE1kUXFSoiZzid3mMAkg3eCDrqPDnNd6u2ZSFy.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	core: "https://github.com/acme/core/releases/download/1.2.0/31QGBxcxY74xADaqfgtBFgCp3EQhCTVoYtoJqL9LxVrV.tar.zst",
++	jb: "https://github.com/acme/jb/releases/download/1.1.0/EL55X5DJBpH4oq5bgSWZX89r48FeAuACeYUrrGBQaeda.tar.zst",
++	roc: "nightly-2026-10-10-0e0e0e0",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p4/main.roc
++++ project/p4/main.roc
+@@ -1,9 +1,9 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	lib: "https://github.com/acme/lib/releases/download/1.0.0/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg93.tar.zst",
+-	core: "https://github.com/acme/core/releases/download/1.0.0/9J9YaAXgA4GM4T9pUuLDnNa8dzw6ghdVGHjEfD3wygwt.tar.zst",
+-	jb: "https://github.com/acme/jb/releases/download/1.0.0/DELiN7LE1kUXFSoiZzid3mMAkg3eCDrqPDnNd6u2ZSFy.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	core: "https://github.com/acme/core/releases/download/1.2.0/31QGBxcxY74xADaqfgtBFgCp3EQhCTVoYtoJqL9LxVrV.tar.zst",
++	jb: "https://github.com/acme/jb/releases/download/1.1.0/EL55X5DJBpH4oq5bgSWZX89r48FeAuACeYUrrGBQaeda.tar.zst",
++	roc: "nightly-2026-10-10-0e0e0e0",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p8/main.roc
++++ project/p8/main.roc
+@@ -1,9 +1,9 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pfx/releases/download/0.1.0/2aj7buu7WXsDgvopE3YSBcdJuA8CVERjSZVyH2cxMfB6.tar.zst",
+ 	lib: "https://github.com/acme/lib/releases/download/1.0.0/HEyRz9C3TTHMbApJexrZ6rxdKZZbVGPA9e7N57Gjcg93.tar.zst",
+-	core: "https://github.com/acme/core/releases/download/1.0.0/9J9YaAXgA4GM4T9pUuLDnNa8dzw6ghdVGHjEfD3wygwt.tar.zst",
+-	jb: "https://github.com/acme/jb/releases/download/1.0.0/DELiN7LE1kUXFSoiZzid3mMAkg3eCDrqPDnNd6u2ZSFy.tar.zst",
+-	roc: "nightly-2026-10-09-9d9d9d9",
++	core: "https://github.com/acme/core/releases/download/1.2.0/31QGBxcxY74xADaqfgtBFgCp3EQhCTVoYtoJqL9LxVrV.tar.zst",
++	jb: "https://github.com/acme/jb/releases/download/1.1.0/EL55X5DJBpH4oq5bgSWZX89r48FeAuACeYUrrGBQaeda.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
+ }
+ 
+ main! = |_args| Ok({})

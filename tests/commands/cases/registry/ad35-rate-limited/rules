@@ -1,0 +1,2 @@
+R-AD35 R-AD2 R-AP25 R-E6 R-AP34 R-AP28 (slice 212, entry registry, the word fullname): a 429 answer to an ingest of step 3.
+2 candidates, newest first: 2.0.0 then 1.0.0. One http_all with both POSTs. The first answers 201 (it stays indexed), the second 429 with Retry-After 30. Talon stops with exit 15 (kind network) at once, with `Try again in 30 s.` (R-AP25, Design Q424): NO second read of R-AP1, although one ingest indexed. An ingest is sent once (R-AP34).

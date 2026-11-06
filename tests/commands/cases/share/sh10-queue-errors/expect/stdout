@@ -1,0 +1,10 @@
+== queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+  Lost
+== queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+  Lost
+== queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+exit 19
+== queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+  Queued
+== queue-count
+  1

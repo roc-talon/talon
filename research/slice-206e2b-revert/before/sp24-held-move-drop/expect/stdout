@@ -1,0 +1,13 @@
+== update yaml@1.1.0 --no-probe --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: tuple dropped: the whole-app check found new errors in acme/json 2.0.0 (Wire.roc: type mismatch)
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/u1/talon.toml: yaml = "=1.1.0"
+resolved at log:40, 5 probes
+dry run: nothing was written
+exit 0

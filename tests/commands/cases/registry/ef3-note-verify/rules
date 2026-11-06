@@ -1,0 +1,4 @@
+R-EF3 R-AL7 R-CM11 Q500 Q501 (slice 206e3b): `tln verify` with the world of registry/ef3-note-tuple (the same answer: 3 pairs where a `bot` row and an `author` row differ; the tuple json 2.2.0, parser 1.2.0, pf 0.1.1 on H = nightly-2026-10-14-38a3029), with the check.
+Q501: `verify` prints the note of Q500: one note, for (json 2.2.0, H) (in the tuple, on the compiler of the run). Not for (parser 1.2.0, nightly-2026-10-16-5e6f7a8) (another compiler) and not for (parser 1.0.0, H) (not in the tuple). The text is the text of `install`: `note: acme/json 2.2.0: the bot and the author rows differ on nightly-2026-10-14-38a3029: bot pass, author fail`, after the platform note and before `check:` (as ef3-note-tuple).
+Run 2: `--json`: the note is an item of `data.notes`, after the platform note (the order of `verify`: the pick notes, the platform notes, the differ notes, the notes of the ladder).
+Today `verify` prints no such note.

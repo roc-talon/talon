@@ -1,0 +1,12 @@
+All (14) tests passed in 149.4 ms.
+PASS identity/q262-row-race (4392 ms)
+PASS identity/tp10-301-followed (4390 ms)
+PASS identity/tp10-rename (4712 ms)
+PASS identity/tp18-301-no-row (4366 ms)
+PASS identity/tp18-rename-back (4684 ms)
+FAIL identity/tp9-four-rows (5531 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tprov/repo\t1.0.0\t\\N\t\\N","2\tback/repo\t0.9.0\trepo-missing\t1767000000500","3\tsame/repo\t1.0.0\t\\N\t\\N","4\txfer/repo\t1.0.0\t\\N\t\\N","5\tagain/repo\t1.0.0\t\\N\t\\N","6\tfresh/repo\t1.0.0\t\\N\t\\N","7\tback/repo\t1.0.0\t\\N\t\\N"]
+      got:      ["1\tprov/repo\t1.0.0\t\\N\t\\N","2\tback/repo\t0.9.0\t\\N\t\\N","3\tsame/repo\t1.0.0\t\\N\t\\N","4\txfer/repo\t1.0.0\t\\N\t\\N","5\tagain/repo\t1.0.0\t\\N\t\\N","6\tfresh/repo\t1.0.0\t\\N\t\\N","7\tback/repo\t1.0.0\t\\N\t\\N"]
+PASS identity/tp9-private-first (1560 ms)
+w2: 6 passed, 1 failed

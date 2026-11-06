@@ -1,0 +1,5 @@
+# the settings of the project
+[dependencies]
+json = "^1"  # the parser
+
+# end

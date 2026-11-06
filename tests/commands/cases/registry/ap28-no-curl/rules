@@ -1,0 +1,2 @@
+R-DA8 R-AP28 R-EC18 R-AP9 (slice 208, entry registry, the word settle): case 2 needs curl for http_all (Design Q229).
+The answer lists one github.com hash as unknown. The command asks `programs curl` first (one call), curl is not on PATH (the case has no fx/programs): exit 18 (kind environment, R-EC18), and NO http_all and no ingest and no second query. The text is a proposal (R-OUT2): `curl is not on PATH. Talon needs curl to send the ingests at the same time.`

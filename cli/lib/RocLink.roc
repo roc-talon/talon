@@ -53,7 +53,7 @@ Work : { plan : Link.Plan, full : Str, item : Str, now : U64 }
 flow! : Fx, Link.Plan => Try(Done, Fail)
 flow! = |fx, plan| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	now = Clock.now!(fx, env)?
 	lexical = Text.resolve(fx.cwd!(), plan.path)
 	canonical = match fx.canonical!([lexical]) {

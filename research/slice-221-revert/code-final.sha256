@@ -1,0 +1,5 @@
+b0eed6af76bcaf2f7055b67f0dcc43826f33203eb4c0ea2836179b2e57734bda  cli/lib/Publish.roc
+049f69bbea640b7227bcf91f47d4c8711dab9126f261bd1047ce6083c50190d7  cli/lib/PublishFlow.roc
+f2e70f1ece28b3ce16b817d3590fdf48f407885b9e0c95de07ee8f26f75b883e  cli/lib/Index.roc
+51f310bbea111f93b2ec39a46b6beb63129e25c5c091d1156319f55f34bcfe64  cli/lib/ProbeShare.roc
+921a6cb5f7c79133f9161f3cacc9be20dcb589fc41150f50895c6f6566ad5590  cli/lib/Opts.roc

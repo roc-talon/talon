@@ -1,14 +1,17 @@
 args
 env_all
+tty
+read_files $HOME1/.config/talon/config.toml
+env_all
 clock
 cwd
 read_files $PROJECT/v1/main.roc
+read_files $HOME1/.config/talon/config.toml
 list_dirs $HOME1/.cache/roc/talon/index/github/acme/pfx
 programs gh
 http_get https://api.github.com/repos/acme/pfx/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME1/.cache/roc/talon/index/github/acme/pfx/1.json $HOME1/.cache/roc/talon/index/github/acme/pfx/1.meta
-read_files $HOME1/.config/talon/config.toml
 random
 list_dirs $HOME1/.cache/roc/packages
 read_files $HOME1/.cache/roc/packages/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA/main.roc
@@ -42,10 +45,6 @@ write_atomic $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME1/.cache/roc/toolchains
-platform
-list_dirs $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 random
 list_dirs $HOME1/.cache/roc/packages
@@ -91,15 +90,18 @@ read_files $PROJECT/v1/.github/workflows/ci.yml
 write_atomic $PROJECT/v1/.github/workflows/ci.yml
 args
 env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
 clock
 cwd
 read_files $PROJECT/v2/main.roc
+read_files $HOME2/.config/talon/config.toml
 list_dirs $HOME2/.cache/roc/talon/index/github/acme/pfy
 programs gh
 http_get https://api.github.com/repos/acme/pfy/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME2/.cache/roc/talon/index/github/acme/pfy/1.json $HOME2/.cache/roc/talon/index/github/acme/pfy/1.meta
-read_files $HOME2/.config/talon/config.toml
 random
 list_dirs $HOME2/.cache/roc/packages
 read_files $HOME2/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
@@ -133,10 +135,6 @@ write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME2/.cache/roc/toolchains
-platform
-list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 random
 list_dirs $HOME2/.cache/roc/packages
@@ -177,15 +175,18 @@ read_files $PROJECT/v2/.github/workflows/ci.yml
 write_atomic $PROJECT/v2/.github/workflows/ci.yml
 args
 env_all
+tty
+read_files $HOME3/.config/talon/config.toml
+env_all
 clock
 cwd
 read_files $PROJECT/v3/main.roc
+read_files $HOME3/.config/talon/config.toml
 list_dirs $HOME3/.cache/roc/talon/index/github/acme/pfy
 programs gh
 http_get https://api.github.com/repos/acme/pfy/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME3/.cache/roc/talon/index/github/acme/pfy/1.json $HOME3/.cache/roc/talon/index/github/acme/pfy/1.meta
-read_files $HOME3/.config/talon/config.toml
 random
 list_dirs $HOME3/.cache/roc/packages
 read_files $HOME3/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
@@ -219,10 +220,6 @@ write_atomic $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME3/.cache/roc/toolchains
-platform
-list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 random
 list_dirs $HOME3/.cache/roc/packages
@@ -262,30 +259,54 @@ write_atomic $PROJECT/v3/main.roc
 read_files $PROJECT/v3/.github/workflows/ci.yml
 write_atomic $PROJECT/v3/.github/workflows/ci.yml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME1/.config/talon/config.toml
 env_all
 clock
 cwd
 read_files $PROJECT/v6/main.roc
+read_files $HOME1/.config/talon/config.toml
 list_dirs $HOME1/.cache/roc/talon/index/github/acme/pfx
 read_files $HOME1/.cache/roc/talon/index/github/acme/pfx/1.meta $HOME1/.cache/roc/talon/index/github/acme/pfx/1.json
-read_files $HOME1/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME7/.config/talon/config.toml
 env_all
 clock
 cwd
 read_files $PROJECT/v7/main.roc
+read_files $HOME7/.config/talon/config.toml
 list_dirs $HOME7/.cache/roc/talon/index/github/acme/pfz
 programs gh
 http_get https://api.github.com/repos/acme/pfz/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME7/.cache/roc/talon/index/github/acme/pfz/1.json $HOME7/.cache/roc/talon/index/github/acme/pfz/1.meta
-read_files $HOME7/.config/talon/config.toml
 random
 list_dirs $HOME7/.cache/roc/packages
 read_files $HOME7/.cache/roc/packages/GAnwsoJBDc55uHeNe6gpMWsCUWRkREWwBrqYMpgeVETK/main.roc
@@ -319,10 +340,6 @@ write_atomic $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME7/.cache/roc/toolchains
-platform
-list_dirs $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 random
 list_dirs $HOME7/.cache/roc/packages
@@ -360,15 +377,18 @@ delete $HOME7/.cache/roc/talon/tmp/0123456789abcdef
 delete $PROJECT/v7/main.roc
 args
 env_all
+tty
+read_files $HOME8/.config/talon/config.toml
+env_all
 clock
 cwd
 read_files $PROJECT/v8/main.roc
+read_files $HOME8/.config/talon/config.toml
 list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/basic-cli
 programs gh
 http_get https://api.github.com/repos/roc-lang/basic-cli/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/basic-cli/1.json $HOME8/.cache/roc/talon/index/github/roc-lang/basic-cli/1.meta
-read_files $HOME8/.config/talon/config.toml
 write_atomic $PROJECT/v8/main.roc
 env_all
 clock
@@ -399,10 +419,6 @@ write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME8/.cache/roc/toolchains
-platform
-list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 random
 list_dirs $HOME8/.cache/roc/packages
@@ -444,15 +460,16 @@ read_files $PROJECT/v8/.github/workflows/ci.yml
 write_atomic $PROJECT/v8/.github/workflows/ci.yml
 args
 env_all
+env_all
 clock
 cwd
 read_files $PROJECT/v9/main.roc
+read_files $HOME9/.config/talon/config.toml
 list_dirs $HOME9/.cache/roc/talon/index/github/acme/pfy
 programs gh
 http_get https://api.github.com/repos/acme/pfy/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME9/.cache/roc/talon/index/github/acme/pfy/1.json $HOME9/.cache/roc/talon/index/github/acme/pfy/1.meta
-read_files $HOME9/.config/talon/config.toml
 random
 list_dirs $HOME9/.cache/roc/packages
 read_files $HOME9/.cache/roc/packages/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp/main.roc
@@ -486,10 +503,6 @@ write_atomic $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME9/.cache/roc/toolchains
-platform
-list_dirs $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 random
 list_dirs $HOME9/.cache/roc/packages

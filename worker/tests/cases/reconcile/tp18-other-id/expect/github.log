@@ -1,0 +1,8 @@
+GET https://api.github.com/repositories/900
+GET https://api.github.com/repos/acme/b/releases?per_page=100
+GET https://api.github.com/repositories/810
+GET https://api.github.com/repos/Acme/S/releases?per_page=100
+GET https://api.github.com/repositories/900
+GET https://api.github.com/repos/acme/b/releases?per_page=100
+GET https://api.github.com/repositories/810
+GET https://api.github.com/repos/Acme/S/releases?per_page=100

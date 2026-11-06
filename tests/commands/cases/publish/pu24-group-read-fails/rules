@@ -1,0 +1,1 @@
+R-PU39 R-AP13 R-PUB4 (slice 222, Design Q527): the group read gets a 503 (run 1) and a body that does not decode (run 2). No retry (one group request in each run). The note names the group and the cause, no compiler is started, the publish goes on. The exit code is 0.

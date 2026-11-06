@@ -1,0 +1,24 @@
+args
+env_all
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-2026-10-29-aaaaaaa timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer jwt1
+http_get http://127.0.0.1:9/v1/sweeps/nightly-2026-10-29-aaaaaaa
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send POST http://127.0.0.1:9/v1/compat timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt2
+  <body> {"rows":[],"sweep":{"nightly":"nightly-2026-10-29-aaaaaaa","target":"any","upto_log_index":8}}
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send POST http://127.0.0.1:9/v1/compat timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt3
+  <body> {"rows":[],"sweep":{"nightly":"nightly-2026-10-29-aaaaaaa","target":"any","upto_log_index":8}}

@@ -1,0 +1,4 @@
+m1 rc=1 ingest/pu14-pu19-labels  w0fails=1
+m2 rc=1 ingest/pu14-pu19-labels  w0fails=0
+m7 rc=1 ingest/pu6-not-candidates  w0fails=1
+m9 rc=1 ingest/pu14-pu19-labels ingest/pu4-index-kinds  w0fails=1

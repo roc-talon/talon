@@ -1,0 +1,9 @@
+env_all
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/releases?group=github.com%2Fsomeone%2Froc-b%2Freleases%2Fdownload%2Fv%7Bv%7D%2F
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get

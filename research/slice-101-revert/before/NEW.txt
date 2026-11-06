@@ -1,0 +1,6 @@
+docs/slices/101-worker-skeleton.md
+sql/tests/ (split.mjs, run.mjs, cases/, selftest/)
+worker/ (main.roc, talon.toml, wrangler.toml, worker.js, .gitignore, lib/, tests/)
+research/slice-101-revert/ (reference/, clock-probe/)
+worker/tests/selftest/case-timeout
+worker/tests/cases/compat/mx9-missing-100/timeout

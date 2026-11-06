@@ -1,0 +1,4 @@
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"noncanonical"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"long"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"iat_future"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"bot"}

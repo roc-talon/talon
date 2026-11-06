@@ -1,0 +1,101 @@
+=== m1-size-in-leaf
+FAIL toolchains/pu-asset-rules (2504 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-10-22-1a2b3c4\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-10-22-1a2b3c4.tar.gz\",\"sha256\":\"aaaaaaaaaaaaaaaaaaaaaaa
+FAIL toolchains/pu-digest-kept (2572 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-09-01-db83307\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-09-01-db83307.tar.gz\",\"sha256\":\"c35f883c864d81358462f0c
+    request 2: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-09-01-db83307\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-09-01-db83307.tar.gz\",\"sha256\":\"c35f883c864d81358462f0c
+FAIL toolchains/pu-digest-rules (2351 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-10-31-5555555\",\"target\":\"linux_x86_64\",\"asset_name\":\"roc_nightly-linux_x86_64-2026-10-30-6666666.tar.gz\",\"sha256\":\"bbbbbbbbbbbbbbbbbbbbb
+FAIL toolchains/pu-id-collision (2439 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2025-October-25-c3487d2\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz\",\"sha256\":\"6edf3f221dd0a15036
+    request 2: problem.type: expected "/errors/not-a-candidate", got "/errors/upstream"
+    request 2: problem.detail: expected "the tag nightly-2025-10-25-c3487d2 has the same nightly id as the recorded tag nightly-2025-October-25-c3487d2", got "the GitHub release read failed with status 599"
+    request 3: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2025-October-25-c3487d2\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz\",\"sha256\":\"6edf3f221dd0a15036
+FAIL toolchains/pu-new-tag (2415 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-10-21-5349569\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-10-21-5349569.tar.gz\",\"sha256\":\"cb6cbe82e45ba284d5b0191
+    request 2: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-10-21-5349569\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-10-21-5349569.tar.gz\",\"sha256\":\"cb6cbe82e45ba284d5b0191
+FAIL toolchains/pu-odd-sha-names (2146 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2025-October-25-c3487d2\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz\",\"sha256\":\"6edf3f221dd0a15036
+    request 2: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-February-10-c95f04d\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-02-10-ea7058b.tar.gz\",\"sha256\":\"0a7e677e46da0c8b7
+FAIL toolchains/pu-size-rules (785 ms)
+    request 1: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-11-01-7777777\",\"target\":\"linux_x86_64\",\"asset_name\":\"roc_nightly-linux_x86_64-2026-10-31-9999999.tar.gz\",\"sha256\":\"333333333333333333333
+w2: 6 passed, 7 failed
+=== m2-zero-size-accepted
+    78 passed
+    3 failed
+    0 compiler errors
+FAIL sqlite closure/c2-closure-cte (14 ms)
+FAIL d1 closure/c2-closure-cte (688 ms)
+FAIL sqlite schema/s1-tables (3 ms)
+      expected: ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+      got:      ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+FAIL d1 schema/s1-tables (325 ms)
+      expected: ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+      got:      ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+PASS d1 triggers/t5-d1-error-text (290 ms)
+PASS sqlite selftest/batch-no-error (3 ms)
+PASS d1 selftest/batch-no-error (252 ms)
+PASS sqlite selftest/no-error (3 ms)
+PASS d1 selftest/no-error (236 ms)
+w1: 49 passed, 4 failed
+FAIL toolchains/pu-size-rules (668 ms)
+    request 2: problem.type: expected "/errors/not-a-candidate", got "/errors/internal"
+    request 2: problem.detail: expected "the release nightly-2026-11-01-8888888 has no compiler asset (roc_nightly-<target>-*.tar.gz, or .zip for Windows)", got "the Worker failed to handle the request"
+w2: 12 passed, 1 failed
+=== m3-size-after-published
+    77 passed
+    4 failed
+    0 compiler errors
+FAIL sqlite closure/c2-closure-cte (11 ms)
+FAIL d1 closure/c2-closure-cte (741 ms)
+FAIL sqlite schema/s1-tables (3 ms)
+      expected: ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+      got:      ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+FAIL d1 schema/s1-tables (204 ms)
+      expected: ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+      got:      ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+PASS d1 triggers/t5-d1-error-text (204 ms)
+PASS sqlite selftest/batch-no-error (2 ms)
+PASS d1 selftest/batch-no-error (177 ms)
+PASS sqlite selftest/no-error (3 ms)
+PASS d1 selftest/no-error (171 ms)
+w1: 49 passed, 4 failed
+FAIL toolchains/get-query (2630 ms)
+FAIL toolchains/pu-asset-rules (2309 ms)
+FAIL toolchains/pu-digest-kept (2316 ms)
+FAIL toolchains/pu-digest-rules (2098 ms)
+FAIL toolchains/pu-id-collision (2228 ms)
+FAIL toolchains/pu-new-tag (2187 ms)
+FAIL toolchains/pu-odd-sha-names (1902 ms)
+FAIL toolchains/pu-size-rules (682 ms)
+w2: 5 passed, 8 failed
+=== m4-fraction-size-accepted
+    80 passed
+    1 failed
+    0 compiler errors
+FAIL sqlite closure/c2-closure-cte (14 ms)
+FAIL d1 closure/c2-closure-cte (640 ms)
+FAIL sqlite schema/s1-tables (4 ms)
+      expected: ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+      got:      ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+FAIL d1 schema/s1-tables (251 ms)
+      expected: ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+      got:      ["artifact_targets\tartifact\tINTEGER\t\\N\t1\t0","artifact_targets\ttarget\tINTEGER\t\\N\t2\t0","artifacts\tartifact\tINTEGER\t\\N\t1\t0","artifacts\texposes\tTEXT\t1\t0\t0","artifacts\tkind\tINTEGER\t1\
+PASS d1 triggers/t5-d1-error-text (312 ms)
+PASS sqlite selftest/batch-no-error (3 ms)
+PASS d1 selftest/batch-no-error (266 ms)
+PASS sqlite selftest/no-error (3 ms)
+PASS d1 selftest/no-error (188 ms)
+w1: 49 passed, 4 failed
+FAIL toolchains/pu-size-rules (688 ms)
+    request 2: problem.type: expected "/errors/not-a-candidate", got missing
+w2: 12 passed, 1 failed
+=== m5-later-put-rewrites-size
+FAIL toolchains/pu-digest-kept (2258 ms)
+    request 2: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-09-01-db83307\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-09-01-db83307.tar.gz\",\"sha256\":\"c35f883c864d81358462f0c
+FAIL toolchains/pu-id-collision (2074 ms)
+    request 3: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2025-October-25-c3487d2\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz\",\"sha256\":\"6edf3f221dd0a15036
+FAIL toolchains/pu-new-tag (1901 ms)
+    request 2: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-10-21-5349569\",\"target\":\"linux_arm64\",\"asset_name\":\"roc_nightly-linux_arm64-2026-10-21-5349569.tar.gz\",\"sha256\":\"cb6cbe82e45ba284d5b0191
+w2: 10 passed, 3 failed
+ALLDONE

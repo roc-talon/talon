@@ -1,0 +1,23 @@
+1: a good signature of the RAW bytes (white space, a non-ASCII escape, an order of members that a write would change): 202, no body, no-store, one message, one constant-time compare, no D1 call
+2: the signature of the compact JSON (the body parsed and written again) is not the signature of the bytes: 401, nothing sent
+3: the signature made with another key: 401
+4: the good signature with the last hex digit changed: 401 (the whole value is compared)
+5: the signature of a body that is one byte longer: 401
+6: no signature header: 401
+7: the old header form sha1= with 40 hex digits: 401
+8: sha256= and 63 hex digits: 401
+9: 64 hex digits with no sha256= prefix: 401
+10: sha256= and a character that is not a hex digit: 401
+11: a good signature of a body that is not JSON: 400 bad-request (R-AP48 row 6), nothing sent
+12: no body (the signature of the empty body is good): 400 bad-request
+13: a body of 1048576 bytes (R-AP46, Design Q326: 1 MiB is the limit of this route, it passes) with a good signature: 202, the event ping is ignored, nothing sent
+14: a body of 262145 bytes with a good signature: 202 (the old limit of 256 KB is gone)
+15: a body of 1048577 bytes: 413 too-large with field body and limit 1048576, before the media type and the signature check (no compare)
+16: the media type of a form (GitHub can send it by a setting) and a bad signature: 415 comes first (R-AP79 row 3 before row 5), no compare
+17: GET: 405 with Allow: POST
+18: a path below the route is no route: 404
+19: (a) a good signature and no X-GitHub-Event header: 400 (R-AP79 row 6, Design Q321), nothing sent, the signature was checked first
+20: (b) a good signature and an empty X-GitHub-Event header: 400
+21: (c) no event header and no signature: 401 (the signature comes before the event check)
+22: (d) a body that is not JSON, a bad signature, the event release: 401 (Design Q320: the signature first, then the parse), one compare
+23: (e) a body that is not JSON, a good signature, the event ping: 202, no message (R-AP79 row 7: the body of an event that is not used is not read)

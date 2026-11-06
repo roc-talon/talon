@@ -1,0 +1,8 @@
+reference: failing=0
+M1 last mark wins for pf: failing=1
+M2 app mark used for pf: failing=1
+M3 mark ignored (pf none): failing=3
+M4 entry flag ignored: failing=3
+M5 pf of the first dep, not the marked one: failing=3
+M6 entry flag is the mark as sent (Q402): failing=1
+M7 app entry flag set (Q401): failing=1

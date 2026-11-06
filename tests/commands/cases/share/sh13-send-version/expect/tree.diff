@@ -1,0 +1,12 @@
+--- home/.cache/roc/talon/share_queue.tsv
++++ home/.cache/roc/talon/share_queue.tsv
+@@ -1,4 +0,0 @@
+-1	OLD1	nightly-2026-10-14-38a3029	any	pass	0.8.0	t
+-2	HB	nightly-2026-10-14-38a3029	any	pass	0.9.0	t
+-3	OLD3	nightly-2026-10-14-38a3029	any	fail	0.8.0	t
+-4	HD	nightly-2026-10-14-38a3029	any	crash	0.9.0	t
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -1 +1 @@
+-{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":0,"counted":0,"first":0,"first_sent_at":null,"last_sent_at":null,"token":null,"token_expires_at":null,"account":null}
++{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":2,"counted":2,"first":2,"first_sent_at":"2026-10-15T12:00:00Z","last_sent_at":"2026-10-15T12:00:00Z","token":null,"token_expires_at":null,"account":null}

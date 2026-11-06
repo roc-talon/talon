@@ -1,0 +1,10 @@
+{"method":"GET","path":"/v1/toolchains"}
+{"method":"GET","path":"/v1/toolchains"}
+{"method":"GET","path":"/v1/toolchains","headers":{"if-none-match":"\"9a42bf4afe998ce8b77b0fd583d9fc72\""}}
+{"method":"GET","path":"/v1/toolchains","headers":{"if-none-match":"\"0123456789abcdef0123456789abcdef\""}}
+{"method":"GET","path":"/v1/toolchains","headers":{"if-none-match":"\"nope\", W/\"9a42bf4afe998ce8b77b0fd583d9fc72\""}}
+{"method":"GET","path":"/v1/toolchains","headers":{"if-none-match":"*"}}
+{"method":"GET","path":"/v1/toolchains","headers":{"cache-control":"no-cache"}}
+{"method":"GET","path":"/v1/toolchains","headers":{"if-none-match":"\"9a42bf4afe998ce8b77b0fd583d9fc72\"","cache-control":"No-Cache, max-age=0"}}
+{"method":"GET","path":"/v1/toolchains?after=0"}
+{"method":"GET","path":"/v1/toolchains?after=0","headers":{"cache-control":"max-age=0"}}

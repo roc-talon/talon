@@ -1,0 +1,5 @@
+{"method": "GET", "path": "/v1/packages?short=yank&short=wd&short=ghost&short=roc-x&short=roc-roc-x&short=rocx&short=multi&short=a%2Froc-yank&short=ROC-YANK"}
+{"method": "GET", "path": "/v1/packages?short=x"}
+{"method": "GET", "path": "/v1/packages?short=ROC-ROC-X"}
+{"method": "GET", "path": "/v1/packages?short=roc-"}
+{"method": "GET", "path": "/v1/packages?short=x&short=rocx&short=%72oc-yank"}

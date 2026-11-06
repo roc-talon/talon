@@ -1,0 +1,12 @@
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+1	2	\N	1767225600000
+1	3	\N	1767000000000
+2	2	\N	1767225600000
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	\N	\N
+2	acme/lib	2.0.0	\N	\N
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	github.com/acme/lib/releases/download/{v}/	1.0.0	4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi	1767000000000
+2	github.com/acme/lib/releases/download/{v}/	2.0.0	2WGrnCk1SFMKUxbnGQNRj5GsYKAd62kSio1nvSsWaJWU	1767225600000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/lib	\N	\N	1767229200000	0	0

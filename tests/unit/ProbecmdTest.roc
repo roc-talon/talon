@@ -4,6 +4,7 @@ import lib.Db
 import lib.Ident
 import lib.JsonDoc
 import lib.ProbeCmd
+import lib.ProbeShow
 
 ProbecmdTest :: [].{}
 
@@ -59,11 +60,12 @@ expect {
 				}
 				probe = if plan.opts.probe_downloads.is_ok() [" probe-downloads"] else []
 				allow = if plan.opts.allow_downloads.is_ok() [" allow-downloads"] else []
-				"${target}${if plan.range " range" else ""}${Str.join_with(slots.concat(probe).concat(allow), "")}"
+				"${target}${if plan.range " range" else ""}${if plan.share " share" else ""}${Str.join_with(slots.concat(probe).concat(allow), "")}"
 			}
 		}
 	}
-	share = "tln: error[usage]: tln probe --share needs a registry, and this version of tln has only --registry direct"
+	no_hash = "tln: error[usage]: tln probe --share needs a header alias: the project file has no hash"
+	bundle = "tln: error[usage]: tln probe --share needs a header alias: a bundle file can be a hash before its release"
 	rows = [
 		("no operand: the project file", view(["probe"]), "project"),
 		("a header alias", view(["probe", "json"]), "alias json"),
@@ -73,15 +75,17 @@ expect {
 		("--range with a bundle file", view(["probe", "--range", "${json_hash}.tar.zst"]), "bundle ${json_hash}.tar.zst range"),
 		("2 operands", view(["probe", "a", "b"]), "tln: error[usage]: tln probe takes one name or one bundle file"),
 		("--range with no operand: the project file has no hash (question R1)", view(["probe", "--range"]), "tln: error[usage]: tln probe --range needs a header alias or a bundle file: the project file has no hash"),
-		("--share with no operand (R-PB6: no hash)", view(["probe", "--share"]), share),
-		("--share with an alias (R-PB6: no registry)", view(["probe", "--share", "json"]), share),
-		("--share with a bundle file (R-PB6)", view(["probe", "--share", "x.tar.zst"]), share),
-		("--share is checked before the operands", view(["probe", "a", "b", "--share"]), share),
-		("--share is checked before --range", view(["probe", "--share", "--range"]), share),
+		("--share with no operand: the project file has no hash (R-PB6, R-EC2)", view(["probe", "--share"]), no_hash),
+		("--share with an alias is a plan: the registry is read in the flow, not here (R-PB6)", view(["probe", "--share", "json"]), "alias json share"),
+		("--share with a bundle file (R-PB6, R-EC2)", view(["probe", "--share", "x.tar.zst"]), bundle),
+		("--share with --range and an alias (R-PB6, R-CM8: both flags)", view(["probe", "--share", "--range", "json"]), "alias json range share"),
+		("--share with 2 operands: the 2 operands rule (R-CM8)", view(["probe", "a", "b", "--share"]), "tln: error[usage]: tln probe takes one name or one bundle file"),
+		("--share with a registry flag is read (R-PB6, R-RG1, R-FL5)", view(["probe", "--share", "--registry", "http://127.0.0.1:9", "json"]), "alias json share"),
+		("--share and --registry direct: the flow stops it, not the plan (R-PB6)", view(["probe", "--share", "--registry", "direct", "json"]), "alias json share"),
 		("--slots is read by Opts", view(["probe", "--slots", "4", "json"]), "alias json slots 4"),
 		("--slots 0 is the failure of Opts.read (R-FL11)", view(["probe", "--slots", "0", "json"]), "tln: error[usage]: --slots must be a whole number of 1 or more, not '0'"),
 		("--probe-downloads and --allow-downloads are read (R-NI4, R-NI5)", view(["probe", "--probe-downloads", "--allow-downloads", "json"]), "alias json probe-downloads allow-downloads"),
-		("--registry other: the failure of Opts.read", view(["probe", "--registry", "other", "json"]), "tln: error[usage]: --registry 'other': no registry exists in this version of tln. Use --registry direct."),
+		("--registry other: no failure of Opts.read (slice 206f, R-RG7 row 6: `probe` with no --share uses no registry)", view(["probe", "--registry", "other", "json"]), "alias json"),
 		("--registry direct is fine", view(["probe", "--registry", "direct"]), "project"),
 		("a flag that probe does not take is a failure of the parser (R-FL7: --frozen)", view(["probe", "--frozen"]), "args: tln: error[usage]: flag '--frozen' is not for 'probe'"),
 		("--json and --file are global and fine", view(["probe", "--json", "--file", "p/main.roc", "json"]), "alias json"),
@@ -195,7 +199,7 @@ expect {
 	passed = { class: Pass, errors: [] }
 	failed = |errors| { class: Fail(errors.len()), errors }
 	project = |kind, check, build| ProbeCmd.text(Project({ file: "/p/main.roc", kind, compiler: "n3", check, build, probes: 1 }))
-	range = |node, found| ProbeCmd.text(Range({ node, found, probes: 5, downloads: 0 }))
+	range = |node, found| ProbeCmd.text(Range({ node, found, probes: 5, downloads: 0, facts: [] }))
 	both = Range({ from: { id: "n2", real: Bool.True }, to: { id: "n5", real: Bool.False } })
 	rows = [
 		("unit: pass", unit(json, Pass, []), "unit check of acme/json 2.1.0 on n3: pass\n"),
@@ -232,12 +236,27 @@ expect {
 		("unit", render(Unit({ node: json, compiler: "n3", fact, probes: 1 })), "{\"kind\":\"unit\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"compiler\":\"n3\",\"outcome\":\"fail\",\"modules\":[\"Yaml.roc\"],\"probes\":1}"),
 		("project: a failed check and no build", render(Project({ file: "/p/main.roc", kind: App, compiler: "n3", check: done, build: Err(NotRun), probes: 1 })), "{\"kind\":\"project\",\"file\":\"/p/main.roc\",\"compiler\":\"n3\",\"check\":{\"outcome\":\"fail\",\"errors\":[{\"place\":\"main.roc\",\"title\":\"type mismatch\"}]},\"build\":null,\"probes\":1}"),
 		("project: a pass and a build", render(Project({ file: "/p/main.roc", kind: App, compiler: "n3", check: { class: Pass, errors: [] }, build: Ok({ class: Hang, errors: [] }), probes: 2 })), "{\"kind\":\"project\",\"file\":\"/p/main.roc\",\"compiler\":\"n3\",\"check\":{\"outcome\":\"pass\",\"errors\":[]},\"build\":{\"outcome\":\"hang\",\"errors\":[]},\"probes\":2}"),
-		("range", render(Range({ node: json, found: Range({ from: { id: "n2", real: Bool.True }, to: { id: "n5", real: Bool.False } }), probes: 5, downloads: 0 })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":{\"from\":{\"id\":\"n2\",\"real\":true},\"to\":{\"id\":\"n5\",\"real\":false}},\"probes\":5,\"downloads\":0}"),
+		("range", render(Range({ node: json, found: Range({ from: { id: "n2", real: Bool.True }, to: { id: "n5", real: Bool.False } }), probes: 5, downloads: 0, facts: [] })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":{\"from\":{\"id\":\"n2\",\"real\":true},\"to\":{\"id\":\"n5\",\"real\":false}},\"probes\":5,\"downloads\":0,\"facts\":[]}"),
 		# R-NI4 R-DL1 (slice 037c): the number of compilers that the search downloaded, as `data.downloads` of slice 025.
-		("range: 2 downloads", render(Range({ node: json, found: Range({ from: { id: "n2", real: Bool.True }, to: { id: "n5", real: Bool.True } }), probes: 7, downloads: 2 })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":{\"from\":{\"id\":\"n2\",\"real\":true},\"to\":{\"id\":\"n5\",\"real\":true}},\"probes\":7,\"downloads\":2}"),
-		("range: no pass", render(Range({ node: json, found: NoPass, probes: 0, downloads: 0 })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":null,\"probes\":0,\"downloads\":0}"),
+		("range: 2 downloads", render(Range({ node: json, found: Range({ from: { id: "n2", real: Bool.True }, to: { id: "n5", real: Bool.True } }), probes: 7, downloads: 2, facts: [] })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":{\"from\":{\"id\":\"n2\",\"real\":true},\"to\":{\"id\":\"n5\",\"real\":true}},\"probes\":7,\"downloads\":2,\"facts\":[]}"),
+		("range: no pass", render(Range({ node: json, found: NoPass, probes: 0, downloads: 0, facts: [] })), "{\"kind\":\"range\",\"hash\":\"${json_hash}\",\"label\":\"acme/json 2.1.0\",\"range\":null,\"probes\":0,\"downloads\":0,\"facts\":[]}"),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad
 	bad == []
+}
+
+# R-PB9 R-J6 (slice 217b, Design Q580): `ProbeShow.facts_doc`, the member `data.range.facts`. One `{nightly, target, result}` for each fact, in the order of the list (the probe order), with the 4 result words and the target of the fact as it is. The modules and the closure of a fact are not in the member.
+expect {
+	fact = |nightly, target, outcome, modules| { hash: json_hash, nightly, target, outcome, modules, closure: "" }
+	facts = [
+		fact("n9", "any", Pass, []),
+		fact("n3", "any", Fail, ["Yaml.roc"]),
+		fact("n7", "any", Hang, []),
+		fact("n8", "x64musl", Crash, []),
+	]
+	want = "[{\"nightly\":\"n9\",\"target\":\"any\",\"result\":\"pass\"},{\"nightly\":\"n3\",\"target\":\"any\",\"result\":\"fail\"},{\"nightly\":\"n7\",\"target\":\"any\",\"result\":\"hang\"},{\"nightly\":\"n8\",\"target\":\"x64musl\",\"result\":\"crash\"}]"
+	got = JsonDoc.render(ProbeShow.facts_doc(facts))
+	dbg got
+	got == want
 }

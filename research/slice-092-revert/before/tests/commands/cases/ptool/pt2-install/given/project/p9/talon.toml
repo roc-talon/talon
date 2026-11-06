@@ -1,0 +1,2 @@
+[tools]
+w = { ref = "acme/wasm@^1", url = "https://github.com/acme/wasm/releases/download/1.0.0/B7THWRCjXESatTpFHQW3MTACSCHUf3pS1XE7wDi6J1w6.tar.zst" }

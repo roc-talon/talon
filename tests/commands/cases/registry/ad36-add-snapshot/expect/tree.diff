@@ -1,0 +1,9 @@
+--- home/.cache/roc/talon/index/github/acme/snap/repo.json
++++ home/.cache/roc/talon/index/github/acme/snap/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/snap","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600}]}

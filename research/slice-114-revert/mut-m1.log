@@ -1,0 +1,11 @@
+PASS publish/pu1-publish-package (2329 ms)
+FAIL publish/pu16-after-ingest (2119 ms)
+    request 4: status: expected 403, got 409
+    request 4: json.issues_url: expected "https://github.com/roc-talon/talon/issues", got missing
+    request 4: problem.type: expected "/errors/repository-changed", got "/errors/label-conflict"
+    request 4: problem.title: expected "Repository changed", got "Label conflict"
+    request 4: problem.status: expected 403, got 409
+    request 4: problem.detail: expected "the name acme/lib is bound to another GitHub account (repository id 900)", got "the label github.com/acme/lib/releases/download/{v}/ 1.0.0 has the hash 3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg in the index, not FfhdJC6hjGYxLT2it8N1ipqaofCXs4K6AQLt9zzEKNLG: release a new version"
+PASS publish/tp3-claims-vs-url (1962 ms)
+PASS publish/tp9-claim-ids (2137 ms)
+w2: 3 passed, 1 failed

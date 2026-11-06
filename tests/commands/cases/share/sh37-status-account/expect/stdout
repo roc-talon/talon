@@ -1,0 +1,22 @@
+== share
+sharing: on
+id: 01234567
+sent: 7
+counted: 5
+first: 2
+first sent: 2026-10-01T10:00:00Z
+last sent: 2026-10-02T11:30:00Z
+queued: 4
+account: octocat
+account machines: 2
+account counted: 9
+account first: 4
+account agreed: 3
+account disagreed: 1
+account unconfirmed: 5
+account first sent: 2026-10-10T00:00:00Z
+account last sent: 2026-10-16T12:00:00Z
+exit 0
+== share --json
+{"schema":1,"command":"share","ok":true,"data":{"on":true,"reason":null,"id":"01234567","sent":7,"counted":5,"first":2,"first_sent_at":"2026-10-01T10:00:00Z","last_sent_at":"2026-10-02T11:30:00Z","queued":4,"account":{"id":583231,"login":"octocat","machines":2,"counted":9,"first":4,"agreed":3,"disagreed":1,"unconfirmed":5,"first_sent_at":"2026-10-10T00:00:00Z","last_sent_at":"2026-10-16T12:00:00Z"}},"error":null}
+exit 0

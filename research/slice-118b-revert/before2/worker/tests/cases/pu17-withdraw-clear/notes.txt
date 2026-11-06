@@ -1,0 +1,7 @@
+1: 1.0.0 is a draft again (unpublished): withdrawn = unpublished with the clock (R-PU17)
+2: 2.0.0 is a prerelease now (prereleased): withdrawn = prereleased
+3: 3.0.0 edited, and it is a prerelease now: withdrawn = edited (Design Q332)
+4: 4.0.0 was withdrawn (unpublished) and is published again with the same asset: withdrawn and its time are cleared (R-PU17)
+5: 5.0.0 was asset-replaced and the asset is there again (edited): cleared (R-PU20)
+6: 6.0.0 edited, nothing wrong: no write (withdrawn stays NULL)
+7: 7.0.0 edited, and the release has no package asset now: the recorded asset is gone, withdrawn = asset-replaced (R-PU20); the release has no package asset, so the job reads again: retried after 60 s (R-PU13)

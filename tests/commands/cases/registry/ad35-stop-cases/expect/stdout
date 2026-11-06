@@ -1,0 +1,6 @@
+== fullname acme/priv env:GITHUB_TOKEN=tok1
+exit 2
+== fullname acme/none env:GITHUB_TOKEN=tok1
+exit 2
+== fullname acme/empty env:GITHUB_TOKEN=tok1
+exit 2

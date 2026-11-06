@@ -1,0 +1,14 @@
+== verify --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: acme/json 2.2.0: the bot and the author rows differ on nightly-2026-10-14-38a3029: bot pass, author fail
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --json --file u1/main.roc
+{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"log:50","log_size":50,"probes":2,"downloads":0,"dry_run":false,"check":"passed","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.2.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.2.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1","acme/json 2.2.0: the bot and the author rows differ on nightly-2026-10-14-38a3029: bot pass, author fail"],"written":[]},"error":null}
+exit 0

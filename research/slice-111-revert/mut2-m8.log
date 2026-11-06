@@ -1,0 +1,12 @@
+PASS archive/pu38-hash-and-end (2258 ms)
+PASS archive/pu38-made-kinds (2205 ms)
+FAIL archive/pu38-paths-and-header (2248 ms)
+    request 6: status: expected 422, got 200
+    request 6: problem: content-type: expected "application/problem+json", got "application/json"
+    request 6: problem.type: expected "/errors/not-a-candidate", got missing
+    request 6: problem.detail: expected "the archive has the path Zeta.roc two times", got missing
+    request 6: problem.status: expected 200 (the HTTP status), got missing
+PASS archive/pu38-real-bundles (2216 ms)
+PASS archive/pu38-size (4374 ms)
+PASS archive/pu38-window (2186 ms)
+w2: 5 passed, 1 failed

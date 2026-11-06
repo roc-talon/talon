@@ -1,0 +1,12 @@
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim iss is \"https://token.actions.githubusercontent.com/\", expected \"https://token.actions.githubusercontent.com\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim aud is \"https://registry.example/\", expected \"https://registry.example\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim aud is \"https://other.example\", expected \"https://registry.example\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim aud is missing"}}
+{"status":500,"problem":{"type":"/errors/internal","detail":"the Worker failed to handle the request"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim exp is 1767225900: the token expired (now is 1767225960, leeway 60 s)"}}
+{"status":500,"problem":{"type":"/errors/internal","detail":"the Worker failed to handle the request"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim nbf is 1767225300: the token is not valid yet (now is 1767225239, leeway 60 s)"}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_id is \"900002\", expected \"900001\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim workflow_ref is \"roc-talon/talon/.github/workflows/compat-bot.yml@refs/heads/feature\", expected \"roc-talon/talon/.github/workflows/compat-bot.yml@refs/heads/main\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim event_name is \"push\", expected \"schedule\" or \"workflow_dispatch\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_id is \"812345\", expected \"900001\""}}

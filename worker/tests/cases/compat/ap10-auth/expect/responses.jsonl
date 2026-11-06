@@ -1,0 +1,7 @@
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1}"}
+{"status":403,"problem":{"type":"/errors/forbidden"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0}"}
+{"status":400,"problem":{"type":"/errors/bad-request"}}

@@ -1,0 +1,35 @@
+== share
+sharing: off (share is not true in config.toml)
+id: 01234567
+sent: 7
+counted: 5
+first: 2
+first sent: 2026-10-01T10:00:00Z
+last sent: 2026-10-02T11:30:00Z
+queued: 0
+exit 0
+== setup
+exit 18
+== @roc --version
+exit 2
+== --version
+tln 0.0.1
+exit 0
+== env:TALON_REGISTRY=direct cache dir
+$HOME/.cache/roc
+exit 0
+== env:DO_NOT_TRACK=1 cache dir
+$HOME/.cache/roc
+exit 0
+== env:CI=true cache dir
+$HOME/.cache/roc
+exit 0
+== cache dir --json
+{"schema":1,"command":"cache dir","ok":true,"data":{"path":"$HOME/.cache/roc"},"error":null}
+exit 0
+== env:TALON_INTERACTIVE=0 cache dir
+$HOME/.cache/roc
+exit 0
+== env:CI=true env:TALON_INTERACTIVE=0 cache dir
+$HOME/.cache/roc
+exit 0

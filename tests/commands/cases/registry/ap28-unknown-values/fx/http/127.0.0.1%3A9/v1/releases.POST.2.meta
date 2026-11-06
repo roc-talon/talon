@@ -1,0 +1,6 @@
+status 200
+header Content-Type: application/json
+header Talon-Bookmark: 0000000b-00000020-00004c70-1f22
+require content-type: application/json
+require-none authorization
+require-none talon-contributor

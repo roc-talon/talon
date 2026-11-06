@@ -1,0 +1,17 @@
+Slice 102, case s1-tables. One case, one expect file: the shape of the whole schema (W1, on node:sqlite and on local D1).
+The rule ids (one by one, so that scripts/rules.sh counts them):
+  R-RE1, R-RE2, R-RE3, R-RE4, R-RE5, R-RE7, R-RE9, R-RE11, R-RE12, R-RE14, R-RE15, R-RE16, R-RE17, R-RE18, R-RE19, R-RE20, R-RE21,
+  R-RE22, R-RE23, R-RE24, R-RE25: the table exists, with the columns, the types, the key columns and the indexes of the expect file.
+  R-RE26: each time column has the type INTEGER (time, first_time, last_time, published_at, state_at, checked_at, next_check_at,
+    tokens_after, withdrawn_at). Each id column is INTEGER too (R-IK1, R-IK2): artifact, form, repo, contributor, machine, nightly.
+  R-IK5, R-IK6: releases has the key log_index, version INTEGER, version_text TEXT, and UNIQUE (form, version, version_text).
+  R-IK8: every table is STRICT (the last column of block 1). WITHOUT ROWID: compat, compat_hints, contributions, sweeps, transitions,
+    deps, artifact_targets, toolchains. The other tables have a rowid.
+  R-SG1, R-SG2: the log is a D1 table (idx, grp, version, hash, time), next to the index tables.
+  R-IK4: each nightly column (compat, compat_hints, contributions, sweeps, transitions, toolchains) is INTEGER (the id is under 47 bits).
+Not in the list: yanks (P3) and every trigger (slice 103). Slice 103 and later slices change block 1 to 3 when they add a table.
+The output is sorted by name, so the order of the columns in CREATE TABLE is free. NOT NULL is shown for non-key columns only:
+a key column of a STRICT table is NOT NULL by SQLite, and s5-keys-and-checks tests it for the two rowid tables with a composite key.
+Block 4: no foreign key (slice file, proposal 5). The Worker writes the names and the rows that refer to them in one batch (R-IK3).
+The expect file is made by research/slice-102-revert/gen-shape.mjs. Do not edit it by hand.
+Slice 125: deps has the column platform (INTEGER NOT NULL, R-AP81). The pk, deps and expect lines for it are in this case.

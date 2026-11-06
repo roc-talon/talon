@@ -1,0 +1,31 @@
+# R-AD35 R-DA5 R-DA1 R-AP34 R-AP9 TW4: http_all! and sleep! of the real Fx (slice 200), with `fxprobe all` and `fxprobe sleep`.
+# R-AD35 step 3: 8 ingests with at most 4 at the same time. The results are in the order of the list, not the order of the end: the first URL is the slowest.
+U=$TALON_HTTP/n
+unstable() { grep -v -i '^header \(content-length\|date\|server\|content-type\|connection\)'; }
+
+echo "== http_all! with limit 4 and 8 requests: results in the order of the list (the 1st request ends last)"
+fxprobe all 4 GET:$U/1 GET:$U/2 GET:$U/3 GET:$U/4 GET:$U/5 GET:$U/6 GET:$U/7 GET:$U/8
+echo "== the server saw 4 requests at the same time, not more and not less (the limit, R-DA5)"
+cat "$TALON_TEST_DIR/http.maxconn"
+echo "== limit 1: the results are in the order of the list"
+fxprobe all 1 GET:$U/2 GET:$U/3
+echo "== a request that fails does not stop the others, and each result is at its place"
+fxprobe all 4 GET:$U/2 GET:http://127.0.0.1:1/x GET:$U/3 | sed -e 's/ err Failed.*/ err Failed/'
+echo "== a list can have more than one method: the POST has its own route"
+fxprobe all 2 POST:$U/post GET:$U/2
+echo "== http_all! with headers and bodies (R-AD35 step 3: the ingest POSTs; R-AP23, R-AP45): the route needs both headers, the server got both bodies"
+fxprobe all 2 'h:Content-Type=application/json' 'h:User-Agent=tln/0.4.1' "POST:$U/ingest|{\"a\":1}" "POST:$U/ingest|{\"a\":2}"
+for f in "$TALON_TEST_DIR"/http-bodies/*; do cat "$f"; echo; done | grep '"a":' | sort
+echo "== an empty list gives no result"
+fxprobe all 4
+echo "== a body of 20000 bytes is sent whole (send)"
+head -c 20000 /dev/zero | tr '\0' a > big.txt
+fxprobe send POST $U/post 20 "body=$(cat big.txt)" | unstable
+wc -c < "$TALON_TEST_DIR/http-bodies/$(grep -n 'POST /n/post' "$TALON_TEST_DIR/http.log" | tail -1 | cut -d: -f1)"
+rm big.txt
+
+echo "== sleep!: it waits at least the time (R-AP34)"
+t0=$(python3 -I -c 'import time; print(time.time())')
+fxprobe sleep 400
+t1=$(python3 -I -c 'import time; print(time.time())')
+python3 -I -c 'import sys; d = float(sys.argv[2]) - float(sys.argv[1]); print("waited long enough" if 0.35 <= d < 5 else "bad wait %.2f" % d)' "$t0" "$t1"

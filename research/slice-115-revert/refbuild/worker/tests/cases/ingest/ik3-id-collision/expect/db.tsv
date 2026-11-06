@@ -1,0 +1,10 @@
+@ SELECT CAST(id AS TEXT), kind, CASE kind WHEN 1 THEN hex(value) ELSE value END FROM names ORDER BY kind, 3
+-2569884988743550866	1	0000000000000000000000000000000000000000000000000000000000000000
+-3925254045967471780	3	someone/else
+@ SELECT CAST(artifact AS TEXT), kind, exposes, CAST(platform AS TEXT), roc_pin, size FROM artifacts ORDER BY kind
+@ SELECT CAST(artifact AS TEXT), alias, CAST(dep AS TEXT), CAST(form AS TEXT), CAST(version AS TEXT), version_text, url FROM deps ORDER BY alias
+@ SELECT log_index, CAST(form AS TEXT), CAST(version AS TEXT), version_text, CAST(artifact AS TEXT), CAST(repo AS TEXT), url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at FROM releases ORDER BY log_index
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+@ SELECT CAST(repo AS TEXT), repository_id, repository_owner_id, state, successor, state_at, time FROM repos ORDER BY repository_id
+@ SELECT CAST(repo AS TEXT), etag, checked_at, next_check_at, fail_count, app_installed FROM repo_checks ORDER BY 1

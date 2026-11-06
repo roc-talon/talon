@@ -1,0 +1,1 @@
+R-AP34 R-E6 R-AP6 R-MX18 (slice 223, Q573): the PUT of the tag times out 4 times: the sleeps 2000, 8000, 30000 (R-AP34), the same token, then exit 15. No read of the work list.

@@ -1,0 +1,11 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/t	800	81	2	acme/t2	1767225600000	1767000000000
+acme/t2	800	81	0	\N	1767225600000	1767225600000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/t	1	0	\N	800	\N	80	\N	\N	1767000000000
+acme/t	2	1	800	800	80	81	\N	\N	1767225600000
+acme/t	3	2	800	800	81	81	acme/t2	\N	1767225600000
+acme/t2	1	2	\N	800	\N	81	\N	\N	1767225600000
+@ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/t	\N	\N	1767229200000	1767232800000	0	0
+acme/t2	\N	\N	1767229200000	1767232800000	0	0

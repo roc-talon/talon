@@ -1,0 +1,2 @@
+probe --smoke https://github.com/acme/pfz/releases/download/0.3.0/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2.tar.zst
+probe --smoke https://github.com/acme/pfw/releases/download/0.4.0/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst

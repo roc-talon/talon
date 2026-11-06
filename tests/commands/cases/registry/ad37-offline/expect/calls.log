@@ -1,0 +1,2 @@
+env_all
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get

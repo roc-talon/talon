@@ -1,0 +1,4 @@
+# run 1: x64musl pass, arm64musl SIGKILL. Run 2: wasm32 a machine error on stderr (the build itself passes: the line decides)
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+signal:9	-	-
+0	../fixtures/check/out/pass.stdout	smoke-sdk.stderr

@@ -1,0 +1,1 @@
+R-SH4 R-AP34 (slice 206e4, Design Q533): run 2 of registry/sp24-update-held-move (--snapshot log:30: no tuple, exit 10) with `share = true`, a share.json and a queue row HA of 0.0.1. The command ended with an error (exit 10) after an answer of the registry: the send still runs after the error text (one POST, a 503: the row stays). The exit code stays 10.

@@ -1,0 +1,44 @@
+── ● unused variable ──────────────────────── packages/records/Artifact.roc:71:4
+
+Variable other is defined here and then never used.
+
+other => Ok(App)
+^^^^^
+
+If you don't need this variable, prefix it with an underscore like _other to
+suppress this warning.
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:142:1
+
+expect {
+    good = Artifact.encode(artifact_row)
+    is_bad = |t| match Artifact.decode(t) {
+        Err(BadJson(_)) => Bool.True
+        _ => Bool.False
+    }
+    is_bad(good.replace_first("\"kind\":\"package\"", "\"kind\":\"library\"")) and is_bad(good.replace_first("\"size\":1234,", "")) and is_bad(good.replace_first("\"hash\":\"H1\"", "\"hash\":null")) and Artifact.decode(good.replace_first("\"roc_pin\":null,", "")) == Ok(artifact_row)
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+
+Ran 38 tests in 571.2 ms.:
+    37 passed
+    1 failed
+    0 compiler errors

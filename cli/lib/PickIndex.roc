@@ -1,8 +1,11 @@
 import Add
 import Closure
+import ClosureIndex
 import Fail
 import Fx
 import Github
+import Help
+import Ident
 import Index
 import PickLoop
 import Ranges
@@ -14,33 +17,48 @@ import semver.Semver
 PickIndex :: [].{
 
 	# The pages of each repo that a free variable or a want needs (R-SP1: a held variable needs no index call), as candidates (R-DI3 to R-DI5).
+	# Slice 206 (R-DI14, R-IX6): the index of the run (`request.index`). `Direct`: the GitHub pages. `Answer`: the release rows of the closure answer (`ClosureIndex.candidates`), with no call.
+	# Slice 206d (Design Q461): with `Answer`, the registry's release of a `Label` value (a `known` URL with the same group form and version and another hash) is no candidate (`ClosureIndex.drop_labels`).
+	# `Offline(origin)`: the kept copies of the registry reads (`ClosureIndex.offline!`) for the group forms of the `known` URLs of the name. In both offline forms one line `index: cached at <oldest>` (R-DI12).
 	index! : Fx, ResolveBase.Request, List(Str), List(Str) => Try(List(ResolveBase.Candidates), Fail)
 	index! = |fx, request, names, known| {
 		var $found = no_candidates
 		var $oldest = Err(None)
 		for name in names {
-			(owner, repo) = match name.split_on("/") {
-				[o, r] => (o, r)
-				_ => return Err(Fail.new(Usage, "'${name}' is not on github.com: an index of other hosts needs a registry (--registry)"))
-			}
-			fetched = Github.releases!(fx, { net: request.net, roots: request.roots, owner, repo, now: request.now, offline: request.offline })?
-			match fetched.source {
-				Cached(t) => {
-					$oldest = match $oldest {
-						Ok(old) if old <= t => Ok(old)
-						_ => Ok(t)
+			match request.index {
+				Answer(a) => {
+					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [] })
+				}
+				Offline(origin) => {
+					got = ClosureIndex.offline!(fx, { roots: request.roots, origin, version: Help.version, now: request.now, name, forms: forms_of(name, known) })?
+					$oldest = match got.oldest {
+						Ok(t) => older($oldest, t)
+						Err(None) => $oldest
+					}
+					$found = $found.append({ name, list: got.list, missing: got.missing, missing_forms: got.missing_forms })
+				}
+				Direct => {
+					(owner, repo) = match name.split_on("/") {
+						[o, r] => (o, r)
+						_ => return Err(Fail.new(Usage, "'${name}' is not on github.com: an index of other hosts needs a registry (--registry)"))
+					}
+					fetched = Github.releases!(fx, { net: request.net, roots: request.roots, owner, repo, now: request.now, offline: request.offline })?
+					match fetched.source {
+						Cached(t) => {
+							$oldest = older($oldest, t)
+						}
+						_ => {}
+					}
+					match Index.candidates({ owner, repo, pages: fetched.pages, known }) {
+						Ok({ list, warnings }) => {
+							for w in warnings {
+								fx.err!("warning: ${w}\n")
+							}
+							$found = $found.append({ name, list, missing: fetched.source == Missing, missing_forms: [] })
+						}
+						Err(BadPage(n)) => return Err(Fail.new(Network, "the release list of ${name} (page ${n.to_str()}) is not a list of releases"))
 					}
 				}
-				_ => {}
-			}
-			match Index.candidates({ owner, repo, pages: fetched.pages, known }) {
-				Ok({ list, warnings }) => {
-					for w in warnings {
-						fx.err!("warning: ${w}\n")
-					}
-					$found = $found.append({ name, list, missing: fetched.source == Missing })
-				}
-				Err(BadPage(n)) => return Err(Fail.new(Network, "the release list of ${name} (page ${n.to_str()}) is not a list of releases"))
 			}
 		}
 		match $oldest {
@@ -55,7 +73,7 @@ PickIndex :: [].{
 	slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged, current_file| {
 		candidates_of = |name| match found.find_first(|c| c.name == name) {
 			Ok(c) => c
-			Err(_) => { name, list: [], missing: Bool.True }
+			Err(_) => { name, list: [], missing: Bool.True, missing_forms: [] }
 		}
 		var_slots = scoped.map(
 			|s| {
@@ -64,7 +82,7 @@ PickIndex :: [].{
 					Ok(name) => {
 						c = candidates_of(name)
 						group = if s.any_series c.list.keep_if(|x| x.ident.group.form == v.group.form) else Index.in_group({ list: c.list, group: v.group })
-						{ list: group, missing: c.missing }
+						{ list: group, missing: c.missing or c.missing_forms.contains(v.group.form) }
 					}
 					Err(NoName) => { list: [], missing: Bool.True }
 				}
@@ -164,6 +182,24 @@ PickIndex :: [].{
 
 no_candidates : List(ResolveBase.Candidates)
 no_candidates = []
+
+# The smaller of 2 copy times (R-DI12: the line names the oldest copy).
+older : Try(U64, [None]), U64 -> Try(U64, [None])
+older = |oldest, t| match oldest {
+	Ok(old) if old <= t => Ok(old)
+	_ => Ok(t)
+}
+
+# R-IX6 (slice 206 reading 9): the group forms of the `known` URLs whose name is `name` (any case), in the order of first appearance, each once.
+forms_of : Str, List(Str) -> List(Str)
+forms_of = |name, known| {
+	lower = name.with_ascii_lowercased()
+	known
+		.keep_oks(Ident.of_url)
+		.keep_if(|ident| (ident.name.map_ok(|n| n.with_ascii_lowercased() == lower) ?? Bool.False))
+		.map(|ident| ident.group.form)
+		.fold([], |found, form| if found.contains(form) found else found.append(form))
+}
 
 # D7, R-C7: a version that `add X@1.2.3` names for a new entry is named for the variable of that group too: it may move to it, and `min-release-age` does not hide it.
 named_by_entry : Vars.Var, List(ResolveBase.FreshRow) -> Try(Str, [None])

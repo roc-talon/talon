@@ -108,7 +108,7 @@ Facts :: [].{
 			open = open_of(run.roots)
 			match fx.db_query!(open, Facts(run.keys)) {
 				Ok(Facts(rows)) => Ok(rows)
-				Ok(Pinned(_)) => Err(wrong_answer)
+				Ok(_) => Err(wrong_answer)
 				Err(err) => match settle!(fx, { err, what: Read, path: open.path }) {
 					Ok(_) => Ok([])
 					Err(fail) => Err(fail)
@@ -145,7 +145,7 @@ Facts :: [].{
 			keys = run.listed.map(|row| { tag: row.tag, target: row.target })
 			recorded = match fx.db_query!(open, Pinned(keys)) {
 				Ok(Pinned(rows)) => Ok(Some(rows))
-				Ok(Facts(_)) => Err(wrong_answer)
+				Ok(_) => Err(wrong_answer)
 				Err(err) => match settle!(fx, { err, what: Read, path: open.path }) {
 					Ok(_) => Ok(None)
 					Err(fail) => Err(fail)
@@ -172,7 +172,7 @@ Facts :: [].{
 		key = { tag: run.listed.tag, target: run.listed.target }
 		recorded = match fx.db_query!(open, Pinned([key])) {
 			Ok(Pinned(rows)) => Ok(rows)
-			Ok(Facts(_)) => Err(wrong_answer)
+			Ok(_) => Err(wrong_answer)
 			Err(err) => match settle!(fx, { err, what: Read, path: open.path }) {
 				Ok(_) => Ok([])
 				Err(fail) => Err(fail)

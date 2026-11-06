@@ -1,0 +1,3 @@
+@ SELECT n.value, p.time FROM repos p JOIN names n ON n.id = p.repo WHERE n.value IN ('acme/new1', 'acme/new2', 'acme/new3') ORDER BY 1
+acme/new1	1767225630000
+acme/new3	1767312000000

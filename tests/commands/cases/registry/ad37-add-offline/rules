@@ -1,0 +1,1 @@
+R-AD37 R-DI12 R-IX6 R-EC2 (slice 206f): `tln add acme/off --offline` with a registry and no cached page of R-AP1: no request at all (no guard request, R-RG4), exit 15, the text names `--offline`. The calls after the load are those of registry/ad37-offline (one `list_dirs` of the copies).

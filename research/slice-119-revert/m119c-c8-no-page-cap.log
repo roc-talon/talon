@@ -1,0 +1,41 @@
+All (30) tests passed in 339.5 ms.
+PASS reconcile/pu21-poll-job (2654 ms)
+PASS reconcile/pu23-list (4629 ms)
+FAIL reconcile/pu23-pages (3101 ms)
+    github: no fake route for GET https://api.github.com/repos/acme/many/releases?per_page=100&page=11 (expected the file github/api.github.com/repos/acme/many/releases%3Fper_page=100&page=11)
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100&page=2 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/610 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=2 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=3 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=4 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=5 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=6 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=7 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=8 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=9 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=10 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100&page=2 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/610 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=2 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=3 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=4 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=5 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=6 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=7 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=8 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=9 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=10 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=11 token=1 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repos/acme/two/releases?per_page=100&page=2","GET https://api.github.com/repositories/610","GET https://api.github.com/repos/acme/many/releases?per_page=100","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=2","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=3","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=4","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=5","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=6","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=7","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=8","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=9","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=10"]
+      got:      ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repos/acme/two/releases?per_page=100&page=2","GET https://api.github.com/repositories/610","GET https://api.github.com/repos/acme/many/releases?per_page=100","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=2","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=3","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=4","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=5","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=6","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=7","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=8","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=9","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=10","GET https://api.github.com/repos/acme/many/releases?per_page=100&page=11"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 599","fail_count":1,"job":"reconcile","repository_id":610}
+PASS reconcile/pu24-missing-again (3075 ms)
+PASS reconcile/pu25-reserve (2430 ms)
+PASS reconcile/pu31-repo-etag (2623 ms)
+PASS reconcile/pu36-overlap (2238 ms)
+PASS reconcile/pu36-state-guard (2140 ms)
+PASS reconcile/pu37-backoff (2384 ms)
+PASS reconcile/pu37-etag-effects (2294 ms)
+PASS reconcile/tp18-rename (2268 ms)
+PASS reconcile/tp9-transfer (2128 ms)
+PASS webhook/ap12-empty-secret (1668 ms)
+PASS webhook/ap12-no-secret (1618 ms)
+PASS webhook/ap12-signature (2002 ms)
+PASS webhook/pu11-events (2574 ms)
+PASS webhook/pu13-identity-changed (1841 ms)
+PASS webhook/pu13-index-new (2420 ms)
+PASS webhook/pu13-no-asset-end (2349 ms)
+PASS webhook/pu13-not-candidate (2173 ms)
+PASS webhook/pu13-refused (2216 ms)
+PASS webhook/pu13-retry-no-asset (2454 ms)
+PASS webhook/pu14-labels (2609 ms)
+PASS webhook/pu17-withdraw-clear (4233 ms)
+PASS webhook/pu26-app-installed (3548 ms)
+PASS webhook/pu26-release-installed (3249 ms)
+PASS webhook/pu33-privatized (3865 ms)
+PASS webhook/pu33-publicized (2795 ms)
+PASS webhook/pu33-release-private (2388 ms)
+PASS webhook/pu35-dead-letter (1077 ms)
+PASS webhook/pu35-retry-schedule (1013 ms)
+w2: 30 passed, 1 failed

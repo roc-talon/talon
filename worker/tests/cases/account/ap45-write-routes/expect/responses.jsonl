@@ -1,0 +1,10 @@
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the request has no Authorization header: this route needs a registry token"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.3.0"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the login request body is not valid: github_token is missing"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the login request body is not valid: github_token is missing"}}
+{"status":405,"headers":{"allow":"DELETE, POST"},"problem":{"type":"/errors/method-not-allowed"}}
+{"status":404,"problem":{"type":"/errors/not-found"}}

@@ -1,0 +1,14 @@
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_10/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_10/toolchains.json
+@@ -1 +1 @@
+-{"format":1,"rows":[{"tag":"nightly-2026-10-14-38a3029","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","published_at":1792238400000,"log_index":20},{"tag":"nightly-2026-10-15-38e6c42","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz","sha256":"fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210","published_at":1792324800000,"log_index":22}]}
++{"format":1,"rows":[{"tag":"nightly-2026-10-14-38a3029","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","published_at":1792238400000,"log_index":20},{"tag":"nightly-2026-10-15-38e6c42","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz","sha256":"fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210","published_at":1792324800000,"log_index":22},{"tag":"nightly-2026-10-18-1df370f","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-18-1df370f.tar.gz","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","published_at":1792584000000,"log_index":25}]}
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_11/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_11/toolchains.json
+@@ -1 +1 @@
+-{"format":1,"rows":[{"tag":
++{"format":1,"rows":[{"tag":"nightly-2026-10-09-258ab27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","published_at":1792065600000,"log_index":1}]}
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+@@ -0,0 +1 @@
++{"format":1,"rows":[{"tag":"nightly-2026-10-09-258ab27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","published_at":1792065600000,"log_index":10},{"tag":"nightly-2026-10-09-258ab27","target":"macos_apple_silicon","asset_name":"roc_nightly-macos_apple_silicon-2026-10-09-258ab27.tar.gz","sha256":"fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210","published_at":1792065600001,"log_index":11},{"tag":"nightly-2026-10-12-2664a27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef","published_at":1792152000000,"log_index":14}]}

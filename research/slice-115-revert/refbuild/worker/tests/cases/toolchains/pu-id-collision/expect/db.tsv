@@ -1,0 +1,14 @@
+@ SELECT nightly, target, tag, asset_name, sha256, published_at, log_index FROM toolchains ORDER BY log_index
+5472529975250	linux_arm64	nightly-2025-October-25-c3487d2	roc_nightly-linux_arm64-2025-10-25-2b89aee.tar.gz	6edf3f221dd0a15036436c60dda9f78417629f41ceffffc719a1c4e021cbc045	1761383100000	1
+5472529975250	linux_x86_64	nightly-2025-October-25-c3487d2	roc_nightly-linux_x86_64-2025-10-25-2b89aee.tar.gz	b8effe57b39f38e1e780ac6a57d98b5983b95fc01f369ed689487901f4cdbe23	1761383100000	2
+5472529975250	macos_apple_silicon	nightly-2025-October-25-c3487d2	roc_nightly-macos_apple_silicon-2025-10-25-2b89aee.tar.gz	b23806251bbc1a2043db5a16e9ae00f781ce19952b1f1b59445c297bf0ab47cc	1761383100000	3
+5472529975250	macos_x86_64	nightly-2025-October-25-c3487d2	roc_nightly-macos_x86_64-2025-10-25-2b89aee.tar.gz	22bc3a93c39170a65ad1be3e0b20f1da75019ab9741379e003f70a7ff2279332	1761383100000	4
+5472529975250	windows_arm64	nightly-2025-October-25-c3487d2	roc_nightly-windows_arm64-2025-10-25-2b89aee.zip	f8b76a608cd8e1a573d13e90d507cea40f2b61fa1fe074e5a7b33b40f548a4f4	1761383100000	5
+5472529975250	windows_x86_64	nightly-2025-October-25-c3487d2	roc_nightly-windows_x86_64-2025-10-25-2b89aee.zip	bdf77086fcc9da7e97df7236fde35519b1b486e56c1e7b1535e00ac7c38b69df	1761383100000	6
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	roc-lang/nightlies:linux_arm64	nightly-2025-October-25-c3487d2	sha256:6edf3f221dd0a15036436c60dda9f78417629f41ceffffc719a1c4e021cbc045	1767225600000
+2	roc-lang/nightlies:linux_x86_64	nightly-2025-October-25-c3487d2	sha256:b8effe57b39f38e1e780ac6a57d98b5983b95fc01f369ed689487901f4cdbe23	1767225600000
+3	roc-lang/nightlies:macos_apple_silicon	nightly-2025-October-25-c3487d2	sha256:b23806251bbc1a2043db5a16e9ae00f781ce19952b1f1b59445c297bf0ab47cc	1767225600000
+4	roc-lang/nightlies:macos_x86_64	nightly-2025-October-25-c3487d2	sha256:22bc3a93c39170a65ad1be3e0b20f1da75019ab9741379e003f70a7ff2279332	1767225600000
+5	roc-lang/nightlies:windows_arm64	nightly-2025-October-25-c3487d2	sha256:f8b76a608cd8e1a573d13e90d507cea40f2b61fa1fe074e5a7b33b40f548a4f4	1767225600000
+6	roc-lang/nightlies:windows_x86_64	nightly-2025-October-25-c3487d2	sha256:bdf77086fcc9da7e97df7236fde35519b1b486e56c1e7b1535e00ac7c38b69df	1767225600000

@@ -1,0 +1,14 @@
+── ✗ name not in scope ─────────────────────────────────────────────────────────────────
+
+Nothing is named nope in this scope.
+
+hello = |name| nope(name)
+               ^^^^
+
+── ✗ package does not compile ─────────────────────────────────────────────────────────────────
+
+roc bump failed.
+
+The new package (p/main.roc) does not compile with this compiler. roc bump needs both packages to compile so their public APIs can be compared.
+
+

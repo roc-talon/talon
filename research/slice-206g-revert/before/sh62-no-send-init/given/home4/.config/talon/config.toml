@@ -1,0 +1,5 @@
+default-roc = "nightly-2026-10-09-9d9d9d9"
+min-release-age = "0d"
+
+[probe]
+timeout = 9

@@ -1,0 +1,6 @@
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at log:30, 0 probes
+dry run: nothing was written
+tln: error[usage]: --registry 'http://example.org' is not a registry URL. Use direct, an https:// URL, or an http:// URL of 127.0.0.1, [::1] or localhost, with no path.

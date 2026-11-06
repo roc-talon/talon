@@ -1,0 +1,5 @@
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=latin-1"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=utf-16"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=UTF-8"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"Application/JSON;Charset=utf-8"},"body":"{}"}

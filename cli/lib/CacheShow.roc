@@ -34,7 +34,7 @@ CacheShow :: [].{
 	dir! : Fx, Args => I32
 	dir! = |fx, args| match CacheView.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok(_) => match Roots.from_env(fx.env_all!()) {
+		Ok(_) => match Roots.of_run!(fx, fx.env_all!()) {
 			Err(fail) => Common.failed!(fx, args, fail)
 			Ok(roots) => print!(fx, args, CacheView.dir_report(roots.cache), CacheView.dir_data(roots.cache))
 		}
@@ -44,7 +44,7 @@ CacheShow :: [].{
 	list! : Fx, Args => I32
 	list! = |fx, args| match CacheView.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok(_) => match Roots.from_env(fx.env_all!()) {
+		Ok(_) => match Roots.of_run!(fx, fx.env_all!()) {
 			Err(fail) => Common.failed!(fx, args, fail)
 			Ok(roots) => {
 				listed = CacheClean.measure!(fx, roots, Bool.True)

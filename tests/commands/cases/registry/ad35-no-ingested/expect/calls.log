@@ -1,0 +1,47 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/github/acme/all409/repo.json
+http_get https://api.github.com/repos/acme/all409
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/all409/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/all409/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/all409
+http_get https://api.github.com/repos/acme/all409/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/all409/1.json $HOME/.cache/roc/talon/index/github/acme/all409/1.meta
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/all409/releases/download/2.0.0/2om9WSAiD2RUfbAGZU7F2LzitJE9ipfqe8SBmA3aWjDv.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/all409/releases/download/1.0.0/Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY.tar.zst"}
+read_files $HOME/.cache/roc/talon/index/github/acme/one5xx/repo.json
+http_get https://api.github.com/repos/acme/one5xx
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/one5xx/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/one5xx/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/one5xx
+http_get https://api.github.com/repos/acme/one5xx/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/one5xx/1.json $HOME/.cache/roc/talon/index/github/acme/one5xx/1.meta
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/one5xx/releases/download/2.0.0/7ALEYjKjFrGbxdizoYuiYdHbrgUL3s5hUGPDBny5XhS1.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/one5xx/releases/download/1.0.0/7bJEr9pTNzmDD7nivz6BkT6r9QgJCR2q5Tqn3wJugemN.tar.zst"}

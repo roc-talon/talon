@@ -1,0 +1,5 @@
+status 404
+header Content-Type: application/problem+json
+require-none authorization
+require-none cache-control
+require-none if-none-match

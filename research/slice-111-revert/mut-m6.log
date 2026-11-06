@@ -1,0 +1,14 @@
+All (27) tests passed in 1246.3 ms.
+── ● unused variable ───────────────────────────────────────── Archive.roc:47:14
+
+Variable c is defined here and then never used.
+
+Ok(Chunk(c)) if !$s.reading() => {
+         ^
+
+If you don't need this variable, prefix it with an underscore like _c to
+suppress this warning.
+
+0 errors and 1 warning found in 1m 18s while successfully building:
+
+    archive-test.wasm

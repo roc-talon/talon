@@ -1,0 +1,6 @@
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the tag nightly-2026-02-30-1234567 is not a nightly tag"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the tag v1.2.3 is not a nightly tag"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the tag nightly-2026-10-21-ABCDEF0 is not a nightly tag"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the release nightly-2026-10-30-2222222 is a draft or a prerelease"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the release nightly-2026-10-30-3333333 is a draft or a prerelease"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the release nightly-2026-10-30-4444444 has no compiler asset (roc_nightly-<target>-*.tar.gz, or .zip for Windows)"}}

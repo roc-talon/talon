@@ -1,0 +1,4 @@
+{"status":200,"headers":{"cache-control":"no-store"},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":16,"first":9,"agreed":4,"disagreed":2,"unconfirmed":10,"first_time":1690000000000,"last_time":1767224000000}}
+{"status":200,"json":{"outcome":"ok"}}
+{"status":200,"json":{"outcome":"ok"}}
+{"status":200,"headers":{"cache-control":"no-store"},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":16,"first":9,"agreed":4,"disagreed":2,"unconfirmed":10,"first_time":1690000000000,"last_time":1767224000000}}

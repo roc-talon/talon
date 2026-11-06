@@ -1,0 +1,4 @@
+install --no-check --dry-run --registry direct --file u1/main.roc env:TALON_REGISTRY=http://127.0.0.1:9
+install --no-check --dry-run --file u1/main.roc
+install --no-check --dry-run --json --snapshot log:30 --file u1/main.roc
+install --no-check --registry http://example.org --file u1/main.roc

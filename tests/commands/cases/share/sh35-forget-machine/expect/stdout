@@ -1,0 +1,5 @@
+== share forget
+The registry removed the results that this machine sent before a login.
+This machine has a new id, and its totals are 0.
+The counts that went into compat_hints stay, because they hold no id.
+exit 0

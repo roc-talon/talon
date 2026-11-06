@@ -1,0 +1,5 @@
+== share login
+exit 19
+== share login --json
+{"schema":1,"command":"share login","ok":false,"data":null,"error":{"kind":"input","code":19,"message":"$HOME/.local/share/talon/share.json: the content does not parse"}}
+exit 19

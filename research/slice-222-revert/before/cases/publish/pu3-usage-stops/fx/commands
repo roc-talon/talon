@@ -1,0 +1,11 @@
+publish --registry direct
+publish --registry direct --offline
+publish --offline
+publish extra --offline
+publish extra
+publish extra env:GITHUB_REPOSITORY=
+publish env:GITHUB_REPOSITORY=
+publish env:GITHUB_REPOSITORY=acme/json/x
+publish env:GITHUB_REF=refs/heads/main
+publish env:GITHUB_REF=refs/heads/main env:ACTIONS_ID_TOKEN_REQUEST_URL=
+publish env:ACTIONS_ID_TOKEN_REQUEST_URL=

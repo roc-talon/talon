@@ -1,0 +1,14 @@
+== share on
+exit 18
+== share on
+sharing: on
+exit 0
+== share off
+sharing: off
+exit 0
+== share on
+sharing: on
+exit 0
+== share off
+sharing: off
+exit 0

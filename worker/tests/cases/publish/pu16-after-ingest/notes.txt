@@ -1,0 +1,8 @@
+1: indexed label, same hash, a fact: 200
+2: again with no compat: 200 and 1 D1 call
+3: another hash: 409
+4: both ids differ, another hash: 403 before 409
+5: transfer, indexed label: 200
+6: draft: 422
+7: release 404: 422
+8: race: 409 another hash

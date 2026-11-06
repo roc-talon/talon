@@ -1,0 +1,50 @@
+# R-DA8 Q228 R-DA9 R-DA1 R-AD35 R-AP34 R-CC2 TW4 TW27: the rules of http_all! of the real Fx (slice 200, Design Q224 to Q227), with `fxprobe all` and a `curl` shim that writes its arguments to argv.log.
+# The shim runs the real curl. Each wait is under 1 s (TW27).
+U=$TALON_HTTP/n
+PROBE=$(command -v fxprobe)
+REAL_CURL=$(command -v curl)
+mkdir shim
+printf '#!/bin/sh\necho "$@" >> "%s/argv.log"\nexec %s "$@"\n' "$PWD" "$REAL_CURL" > shim/curl
+chmod +x shim/curl
+withshim() { PATH="$PWD/shim:$PATH" "$@"; }
+count() { grep -c -e "$1" argv.log; true; }
+
+echo "== limit 0 runs 1 request at a time (Q226): the results are in list order and the server saw 1 request at a time"
+withshim "$PROBE" all 0 "tmp=$PWD/tmpdir" GET:$U/s1 GET:$U/s2
+cat "$TALON_TEST_DIR/http.maxconn"
+
+echo "== the command line (R-DA8 rules 2 to 5): the body is a file in tmp_dir, no --fail, no --location, --proto =https,http, --max-time. The temp files are gone after the call (R-CC2)."
+: > argv.log
+withshim "$PROBE" all 2 "tmp=$PWD/tmpdir" t=7 h:Content-Type=application/json "POST:$U/ingest|{\"a\":1}" GET:$U/fast
+echo "fail: $(count '--fail')"
+echo "location: $(count '--location')"
+echo "proto: $(count '--proto =https,http')"
+echo "max-time 7: $(count '--max-time 7')"
+echo "body file in tmp_dir: $(count "--data-binary @$PWD/tmpdir/")"
+echo "header as -H: $(count '-H Content-Type: application/json')"
+echo "temp files left: $(ls tmpdir | wc -l | tr -d ' ')"
+
+echo "== a request with Authorization or Talon-Contributor is not sent and gets Failed (R-DA8 rule 1, Q6 proposal): no secret on a command line, no request at the server"
+: > argv.log
+withshim "$PROBE" all 3 "tmp=$PWD/tmpdir" auth@GET:$U/x contrib@GET:$U/y GET:$U/z
+echo "secret in argv: $(count secret)"
+echo "requests for x and y: $(grep -c -e 'GET /n/x ' -e 'GET /n/y ' "$TALON_TEST_DIR/http.log"; true)"
+echo "requests for z: $(grep -c 'GET /n/z ' "$TALON_TEST_DIR/http.log")"
+
+echo "== the header names match in any case (R-DA8 rule 1, Q228): h:authorization and h:TALON-CONTRIBUTOR give Failed, no secret in the arguments, no request at the server"
+: > argv.log
+withshim "$PROBE" all 2 "tmp=$PWD/tmpdir" h:authorization=Bearer-secret-lc GET:$U/lc GET:$U/lc
+withshim "$PROBE" all 2 "tmp=$PWD/tmpdir" h:TALON-CONTRIBUTOR=secret-uc GET:$U/uc GET:$U/uc
+echo "secret in argv: $(count secret)"
+echo "requests for lc and uc: $(grep -c -e 'GET /n/lc ' -e 'GET /n/uc ' "$TALON_TEST_DIR/http.log"; true)"
+
+echo "== no curl on PATH: each result is Failed, no crash (R-DA8, Q7 proposal: the command asks programs! first and stops with exit 18)"
+PATH=/no/such/dir "$PROBE" all 2 "tmp=$PWD/tmpdir" GET:$U/fast GET:$U/fast
+
+echo "== the timeout is the time of the whole answer (R-DA9): the first bytes come at once, the body takes 2 s, the timeout is 1 s. http_send! and http_all!"
+"$PROBE" send GET $U/slowbody 1 > send.out &
+pid=$!
+"$PROBE" all 2 "tmp=$PWD/tmpdir" t=1 GET:$U/slowbody GET:$U/fast
+wait $pid
+cat send.out
+rm -rf shim argv.log send.out tmpdir

@@ -1,0 +1,6 @@
+1: read the group: empty
+2: package with facts: 201
+3: read the group: the release
+4: same publish again: 200
+5: no facts: 200 and 1 D1 call
+6: a new fact and an old key: 200

@@ -1,0 +1,5 @@
+
+step       result seconds  budget
+wbuild     pass   0.3      90
+w2         pass   77.6     45
+WARN w2: 77.6 s is over the budget of 45 s (TW20)

@@ -1,0 +1,16 @@
+--- home/.cache/roc/talon/index/github/roc-lang/basic-cli/repo.json
++++ home/.cache/roc/talon/index/github/roc-lang/basic-cli/repo.json
+@@ -0,0 +1 @@
++{"id":5,"full_name":"roc-lang/basic-cli","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":1,"hash":"FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8","group":"github.com/roc-lang/basic-cli/releases/download/{v}/","series":"0.24","version":"0.24.0","url":"https://github.com/roc-lang/basic-cli/releases/download/0.24.0/FYkF6rabRLDoRMfACo8DNmyXWcX7Kwh3NYCU2JghiZN8.tar.zst","tag":"0.24.0","roc_version":null,"repo":"roc-lang/basic-cli","published_at":1780315200000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":2,"hash":"4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5","group":"github.com/roc-lang/basic-cli/releases/download/{v}/","series":"0.25","version":"0.25.0","url":"https://github.com/roc-lang/basic-cli/releases/download/0.25.0/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5.tar.zst","tag":"0.25.0","roc_version":null,"repo":"roc-lang/basic-cli","published_at":1782907200000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":3,"hash":"FyNWHHHxWAJrUG3LDbX8mNkYHgnYAC56LgCNgTsKGfry","group":"github.com/roc-lang/basic-cli/releases/download/{v}/","series":"0.26","version":"0.26.0","url":"https://github.com/roc-lang/basic-cli/releases/download/0.26.0/FyNWHHHxWAJrUG3LDbX8mNkYHgnYAC56LgCNgTsKGfry.tar.zst","tag":"0.26.0","roc_version":null,"repo":"roc-lang/basic-cli","published_at":1791979200000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/roc-lang/basic-cli/releases
++etag "r1"
++max-age 60

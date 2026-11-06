@@ -1,0 +1,3 @@
+{"status":422,"headers":{"talon-bookmark":null},"problem":{"type":"/errors/not-a-candidate","detail":"repository not found or not public"}}
+{"status":422,"headers":{"talon-bookmark":null},"problem":{"type":"/errors/not-a-candidate","detail":"repository not found or not public"}}
+{"status":403,"headers":{"talon-bookmark":null},"problem":{"type":"/errors/repository-changed","title":"Repository changed","status":403,"detail":"the name taken/repo is bound to another GitHub account (repository id 4001)"},"json":{"issues_url":"https://github.com/roc-talon/talon/issues"}}

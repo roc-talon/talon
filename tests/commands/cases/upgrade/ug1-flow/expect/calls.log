@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -85,6 +87,8 @@ read_files $PROJECT/p1/main.roc
 write_atomic $PROJECT/p1/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -141,6 +145,8 @@ read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml
 write_atomic $PROJECT/p2/talon.toml $PROJECT/p2/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -194,6 +200,8 @@ read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml
 write_atomic $PROJECT/p3/talon.toml $PROJECT/p3/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p4/main.roc
@@ -239,7 +247,11 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml
 write_atomic $PROJECT/p4/talon.toml $PROJECT/p4/main.roc
 args
+env_all
+tty
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -307,6 +319,8 @@ read_files $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc $PROJECT/ws/t
 write_atomic $PROJECT/ws/talon.toml $PROJECT/ws/apps/a/main.roc $PROJECT/ws/apps/b/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p7/main.roc
@@ -367,6 +381,8 @@ read_files $PROJECT/p7/main.roc
 write_atomic $PROJECT/p7/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p5/main.roc
@@ -413,6 +429,8 @@ read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml
 write_atomic $PROJECT/p5/talon.toml $PROJECT/p5/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p6/main.roc
@@ -457,6 +475,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p6/main.roc
 write_atomic $PROJECT/p6/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -509,6 +528,8 @@ db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p9/main.roc
@@ -555,6 +576,8 @@ read_files $PROJECT/p9/main.roc
 write_atomic $PROJECT/p9/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p10/main.roc
@@ -600,6 +623,8 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p10/main.roc $PROJECT/p10/talon.toml
 write_atomic $PROJECT/p10/talon.toml $PROJECT/p10/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd

@@ -1,0 +1,6 @@
+tln: error[usage]: tln probe --share needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln probe --share needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln probe --share needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln probe --share needs a header alias: the project file has no hash
+tln: error[usage]: tln probe --share needs a header alias: a bundle file can be a hash before its release
+tln: error[network]: tln probe --share needs the network: --offline sends no request

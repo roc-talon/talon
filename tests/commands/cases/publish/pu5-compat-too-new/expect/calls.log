@@ -1,0 +1,8 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/json/releases/tags/2.1.0
+  User-Agent: tln/0.0.1
+  Authorization: Bearer gh1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts_of=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq

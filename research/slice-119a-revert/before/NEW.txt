@@ -1,0 +1,15 @@
+worker/lib/GithubApp.roc
+worker/GithubRead.roc
+worker/tests/githubapp.mjs
+worker/tests/unit/GithubAppTest.roc
+worker/tests/cases/githubtoken/
+worker/tests/cases/runner/r-pu25-auth-log/
+worker/tests/selftest/wrong-auth-log/
+worker/tests/selftest/wrong-tokens-log/
+docs/slices/119a-read-token.md
+research/slice-119a-revert/gen-cases.py
+research/slice-119a-revert/ref.sh
+research/slice-119a-revert/reference/
+research/slice-119a-revert/mutations/
+research/slice-119a-revert/red/
+Files changed (copies in before/worker/, a one-line edit each, except run.mjs): worker/main.roc (import GithubRead), worker/lib/main.roc (GithubApp in the exposes list), worker/tests/unit/w0.roc (import GithubAppTest), worker/tests/run.mjs (the settings of the App, the token request of the fake, tokens.log, auth.log). The before/ copy of worker/main.roc was made before slice 117 edited it: undo only the line `import GithubRead`.

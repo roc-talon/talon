@@ -1,0 +1,14 @@
+name = "talon-dlq-check"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+workers_dev = true
+
+[[queues.producers]]
+binding = "MAIN"
+queue = "talon-dlqc-main"
+
+[[queues.consumers]]
+queue = "talon-dlqc-main"
+max_retries = 1
+max_batch_timeout = 1
+dead_letter_queue = "talon-dlqc-dlq"

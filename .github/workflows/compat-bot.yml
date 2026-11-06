@@ -1,0 +1,61 @@
+# The compat bot (slice 223, Registry R-MX1, R-MX15, R-MX17, R-TP7; Design Q66). It is written here and is not run by a test.
+# It runs on one Linux runner, on `schedule` and `workflow_dispatch` only (R-TP7: the Worker checks `event_name`).
+# The Worker setting BOT_WORKFLOW_REF is `roc-talon/talon/.github/workflows/compat-bot.yml@refs/heads/<default branch>`: do not rename this file (R-MX15).
+# The GitHub list of nightlies is read with no token (Q567): the sweep step has no GitHub token variable. Only the install of the compiler has one (scripts/get-roc.sh).
+# The job needs `id-token: write` for the OIDC token (R-TP2). Nothing else of the job writes (no `contents: write`).
+# The registry is the repository variable TALON_REGISTRY, in the base URL form of CLI 1, R-RG7. The OIDC audience is that text (R-TP17).
+# The compiler of the bot is ROC_TAG of scripts/env.sh (TW28). The probes use the compilers that `tln probe` downloads (CLI 6.2, R-MX15).
+name: compat-bot
+
+on:
+  schedule:
+    - cron: '43 4 * * *'
+  workflow_dispatch:
+    inputs:
+      tags:
+        description: 'Nightly tags to sweep, separated by spaces (Q567: empty, the bot reads the newest 7 nightlies)'
+        required: false
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compat-bot
+  cancel-in-progress: false
+
+jobs:
+  bot:
+    if: github.repository == 'roc-talon/talon'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      TALON_REGISTRY: ${{ vars.TALON_REGISTRY }}
+      TALON_AUTO_INSTALL: 'yes'
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Pinned compiler tag
+        run: |
+          . scripts/env.sh
+          echo "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"
+
+      - name: Install the compiler
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
+
+      - name: Build tln and the bot
+        run: |
+          mkdir -p "$RUNNER_TEMP/bin"
+          "$ROC" build cli/main.roc --opt=speed --output="$RUNNER_TEMP/bin/tln"
+          "$ROC" build bot/main.roc --opt=speed --output="$RUNNER_TEMP/bin/bot"
+          echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
+
+      - name: Sweep
+        env:
+          TAGS: ${{ inputs.tags }}
+        run: bot $TAGS

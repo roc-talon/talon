@@ -1,0 +1,4 @@
+status 200
+header content-type: application/json
+header cache-control: max-age=60
+header etag: "l1"

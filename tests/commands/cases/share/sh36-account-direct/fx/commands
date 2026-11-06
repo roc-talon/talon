@@ -1,0 +1,3 @@
+# R-SH10, R-EC2: logout and forget with the registry direct stop with exit 2 (usage). The calls end after the read of config.toml: no share.json read, no request, no write. Plain, and forget with --json.
+share logout
+share forget --json

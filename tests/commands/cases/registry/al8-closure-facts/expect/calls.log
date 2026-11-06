@@ -1,0 +1,15 @@
+env_all
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN"]}
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w/main.roc
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN","4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq"]}

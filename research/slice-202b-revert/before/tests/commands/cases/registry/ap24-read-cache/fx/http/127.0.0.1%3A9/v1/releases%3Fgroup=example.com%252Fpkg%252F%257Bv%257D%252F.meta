@@ -1,0 +1,3 @@
+status 200
+header cache-control: max-age=60
+header etag: "g1"

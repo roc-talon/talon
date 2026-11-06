@@ -1,4 +1,5 @@
 import Closure
+import ClosureIndex
 import Fail
 import Fx
 import Gather
@@ -22,12 +23,13 @@ import Roots
 Walk :: [].{
 
 	## `file` and `entries` are the project file (absolute) and its header entries (`Locked.rows` without the `roc` entry, as `Closure.Entry`). `known` are nodes that the command read already (the facts of the pick), or `[]`.
+	## Slice 206 (R-AL8 source 2, R-AL9): `index` is the index of the run. With `Answer`, a level reads the facts of an id whose hash has a record in the answer from the record (`Gather.facts!`): no fetch and no read for it. The walk asks only for the winners (R-AL9), so a record of a version that does not win is never read.
 	## The result has `nodes`: `known` and every node that this call read, so a second member does not read them again.
-	run! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) } => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
+	run! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) } => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
 	run! = |fx, facts| walk!(fx, facts, facts.known)
 }
 
-Facts : { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) }
+Facts : { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) }
 
 # Steps 1 to 4: `Closure.step`, then the levels that it asks for, until it is done.
 walk! : Fx, Facts, List(Closure.Node) => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
@@ -40,13 +42,20 @@ walk! = |fx, facts, nodes| match Closure.step({ file: facts.file, entries: facts
 	}
 }
 
-# One level: `Gather.get!` for the ids, then the entries of each header.
+# One level: `Gather.facts!` for the ids (slice 206: a record of the closure answer gives its entries, no read), then the entries of each header text.
 level! : Fx, Facts, List(Str) => Try(List(Closure.Node), Fail)
 level! = |fx, facts, ids| {
-	got = Gather.get!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none }, ids)?
+	got = Gather.facts!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none, index: facts.index }, ids)?
 	var $nodes = no_nodes
 	for g in got {
-		$nodes = $nodes.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
+		match g {
+			Record(r) => {
+				$nodes = $nodes.append({ id: r.id, entries: r.header.entries })
+			}
+			Text(t) => {
+				$nodes = $nodes.append({ id: t.id, entries: Release.entries_of({ path: t.path, text: t.text })? })
+			}
+		}
 	}
 	Ok($nodes)
 }

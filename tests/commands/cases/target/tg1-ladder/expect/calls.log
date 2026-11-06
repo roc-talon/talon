@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -54,6 +55,7 @@ db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -106,6 +108,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p2/main.roc
 write_atomic $PROJECT/p2/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -160,6 +163,7 @@ read_files $PROJECT/p3/main.roc
 write_atomic $PROJECT/p3/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p4/main.roc
@@ -209,6 +213,7 @@ read_files $PROJECT/p4/main.roc
 write_atomic $PROJECT/p4/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p5/main.roc
@@ -253,6 +258,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p5/main.roc
 write_atomic $PROJECT/p5/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -307,6 +313,7 @@ read_files $PROJECT/p6/main.roc
 write_atomic $PROJECT/p6/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p7/main.roc
@@ -353,6 +360,7 @@ read_files $HOME/.cache/roc/packages/EsBVoGDNEtCT2jM6QX8XXeGVBpa9J7nCJrhuAFUwGGL
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p8/main.roc
@@ -370,6 +378,7 @@ path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p8/main.roc $PROJECT/p8/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
 env_all
 clock
 cwd
@@ -417,6 +426,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p9/main.roc
 write_atomic $PROJECT/p9/main.roc
 args
+env_all
 env_all
 clock
 cwd

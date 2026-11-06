@@ -204,7 +204,8 @@ unit_files() {
     for f in tests/unit/*.roc; do
         [ -f "$f" ] && unit_is_app "$f" && echo "$f"
     done
-    ls packages/*/tests/*.roc 2> /dev/null
+    # packages/records is a W0 package (TW31): the w0 step runs it with both compilers.
+    ls packages/*/tests/*.roc 2> /dev/null | grep -v '^packages/records/'
     return 0
 }
 # unit_modules_check <dir>: every unit module of the dir (a file that is not an app) is imported by exactly one app of the dir. A module that no driver imports is never run, and `roc test` says nothing.
@@ -260,4 +261,50 @@ prune_roc_objects() {
             ls -t -- "${old[@]}" | tail -n +$((keep + 1)) | while IFS= read -r f; do rm -f -- "$f"; done
         done < <(find "$o" -type d)
     done
+}
+
+# roc_build_ok <exit code> <output file>: the verdict on a `roc build` of the Worker (slice 106, platform note P2). roc exits with 2 when the build has warnings and no
+# errors, and it writes the file. Accepted: exit 0, or exit 2 when the output says `0 errors and N warning(s)`. The warnings are printed. Any other exit code fails.
+roc_build_ok() {
+    [ "$1" = 0 ] && return 0
+    if [ "$1" = 2 ] && grep -Eq '(^|[^0-9])0 errors and [0-9]+ warnings? found' "$2"; then
+        echo "roc build: exit 2 with 0 errors and warnings only: accepted. The warnings:"
+        cat "$2"
+        return 0
+    fi
+    return 1
+}
+
+# --- The Worker build of scripts/test.sh, safe for parallel runs (slice 101). The build of one stamp is the dir $WORK/worker/<stamp>/ (app.wasm and .roc-cfw/). ---
+# worker_publish <tmp dir> <final dir>: move a finished build dir to its stamp name. Two runs with the same stamp: the first rename wins, the other removes its dir and uses the first.
+# A dir that is in use is never changed: a run reads only the dir of its own stamp.
+worker_publish() {
+    if [ -d "$2" ]; then rm -rf "$1"; return 0; fi
+    mv -T "$1" "$2" 2> /dev/null || { [ -d "$2" ] && rm -rf "$1"; }
+    [ -d "$2" ]
+}
+# worker_prune <root> <keep> <current>: remove the old stamp dirs of <root>, keep the <keep> newest and <current>, and remove the unfinished `.tmp.*` dirs older than 60 minutes.
+worker_prune() {
+    local d n=0
+    touch "$3"
+    while IFS= read -r d; do
+        n=$((n + 1))
+        [ "$n" -gt "$2" ] && [ "$d" != "$3" ] && rm -rf "$d"
+    done < <(find "$1" -mindepth 1 -maxdepth 1 -type d -not -name '.tmp.*' -printf '%T@ %p\n' | sort -rn | cut -d' ' -f2-)
+    find "$1" -mindepth 1 -maxdepth 1 -type d -name '.tmp.*' -mmin +60 -exec rm -rf {} + 2> /dev/null
+    return 0
+}
+
+# worker_stamp: the stamp of the Worker build (needs ROOT, ROC_TAG_WORKER, WORKER_OPT): a checksum of the compiler tag, the mode, and every file that the build can read: the files of worker/ and of
+# packages/records (the Roc sources, and the files that `import "..." as x : Str` embeds, such as worker/sql/*.sql), and the SQL texts of sql/queries/ (slice 110). Not in the stamp: tests, the build
+# products (app.wasm, .roc-cfw/, worker.js), the Wrangler files, .wrangler. The names are in the checksum too.
+worker_stamp() {
+    local q=
+    [ -d "$ROOT/sql/queries" ] && q="$ROOT/sql/queries"
+    {
+        echo "$ROC_TAG_WORKER $WORKER_OPT"
+        find "$ROOT/worker" "$ROOT/packages/records" $q \( -name tests -o -name .roc-cfw -o -name .wrangler -o -name node_modules \) -prune -o -type f \
+            -not -name app.wasm -not -name worker.js -not -name wrangler.toml -not -name talon.toml -not -name .gitignore -print 2> /dev/null |
+            LC_ALL=C sort | while IFS= read -r f; do printf '%s\n' "${f#"$ROOT"/}"; cat "$f"; done
+    } | cksum | tr ' ' '-'
 }

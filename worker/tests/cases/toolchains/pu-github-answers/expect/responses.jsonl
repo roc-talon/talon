@@ -1,0 +1,8 @@
+{"status":404,"problem":{"type":"/errors/not-found","detail":"roc-lang/nightlies has no release with the tag nightly-2026-10-23-aaaaaaa"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub release read failed with status 500"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub release read failed with status 403"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub release answer is not a valid release"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub release answer is not a valid release"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the release nightly-2025-November-03-4215483 has no compiler asset (roc_nightly-<target>-*.tar.gz, or .zip for Windows)"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the release nightly-2026-10-28-fffffff has no compiler asset (roc_nightly-<target>-*.tar.gz, or .zip for Windows)"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub release answer is not a valid release"}}

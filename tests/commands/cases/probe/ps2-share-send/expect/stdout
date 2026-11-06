@@ -1,0 +1,5 @@
+== HQ env:CI=true env:DO_NOT_TRACK=1
+  shared 2 facts of HQ: 2 counted, 0 skipped by the registry
+    not shared: nightly-2026-10-10-aaaaaaa any: the compiler has no recorded sha256 or is not a nightly
+    not shared: nightly-2026-10-13-bbbbbbb any: a hang, or a machine error
+    not shared: nightly-2026-10-14-38a3029 linux_x86_64: not a unit check

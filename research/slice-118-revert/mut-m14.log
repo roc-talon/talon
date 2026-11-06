@@ -1,0 +1,14 @@
+All (13) tests passed in 215.7 ms.
+PASS webhook/ap12-empty-secret (2467 ms)
+PASS webhook/ap12-no-secret (2345 ms)
+PASS webhook/ap12-signature (2951 ms)
+PASS webhook/pu11-events (3308 ms)
+FAIL webhook/pu26-app-installed (3521 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/a\t\\N\t\\N\t1767003600000\t0\t0","acme/b\t\\N\t\\N\t1767003600000\t0\t0","acme/c\t\\N\t\\N\t1767003600000\t0\t0","acme/d\t\\N\t\\N\t1767003600000\t0\t1","acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t1","acme/x\t\\N\t\\N\t1767003600000\t0\t0","acme/y\t\\N\t\\N\t1767003600000\t0\t0"]
+      got:      ["acme/a\t\\N\t\\N\t1767003600000\t0\t0","acme/b\t\\N\t\\N\t1767003600000\t0\t0","acme/c\t\\N\t\\N\t1767003600000\t0\t0","acme/d\t\\N\t\\N\t1767003600000\t0\t1","acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t0","acme/x\t\\N\t\\N\t1767003600000\t0\t1","acme/y\t\\N\t\\N\t1767003600000\t0\t0"]
+PASS webhook/pu33-privatized (4371 ms)
+PASS webhook/pu33-publicized (2159 ms)
+PASS webhook/pu35-dead-letter (1727 ms)
+PASS webhook/pu35-retry-schedule (1588 ms)
+w2: 8 passed, 1 failed

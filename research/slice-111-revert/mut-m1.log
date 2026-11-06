@@ -1,0 +1,36 @@
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:195:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:363:1
+
+expect {
+    bad = with_extra(link_member("evil", '2', "x"))
+    [read_with(pkg_tar, 4096, wrong), read_with(bad, 4096, wrong)]
+        == [Err(HashMismatch({ expected: wrong, actual: b58(pkg_tar) })), Err(HashMismatch({ expected: wrong, actual: b58(bad) }))]
+}
+
+Mentioned values:
+wrong = "GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t"
+pkg_tar = pkg_members.concat(end2)
+
+Ran 27 tests in 1032.1 ms.:
+    26 passed
+    1 failed
+    0 compiler errors
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:195:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+0 errors and 1 warning found in 1m 10s while successfully building:
+
+    archive-test.wasm

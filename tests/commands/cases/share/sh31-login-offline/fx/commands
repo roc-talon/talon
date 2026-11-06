@@ -1,0 +1,3 @@
+# Q476, R-EC15: share login --offline stops with exit 15 (network) and sends no request. The calls end after the read of config.toml: no share.json read, no intro. Plain and --json.
+share login --offline
+share login --offline --json

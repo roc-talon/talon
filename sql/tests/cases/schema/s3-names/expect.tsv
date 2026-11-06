@@ -1,0 +1,5 @@
+@ SELECT CAST(id AS TEXT), kind, typeof(value), CASE kind WHEN 1 THEN hex(value) ELSE value END FROM names ORDER BY kind, id
+-5806314255104343322	1	blob	0707070707070707070707070707070707070707070707070707070707070707
+-2687166099708853831	2	text	github.com/roc-lang/unicode/releases/download/{v}/
+4611686018427387905	3	text	roc-lang/unicode
+6148914691236517205	3	text	github.com/roc-lang/unicode/releases/download/{v}/

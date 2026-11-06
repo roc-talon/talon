@@ -1,0 +1,7 @@
+# R-SH12 row 9, R-SH7, R-E6, R-J7, R-EC1, R-EC15, R-EC20: another error text from GitHub is exit 1 (internal) with the text in the message: run 1 at the code request (device_flow_disabled), run 2 at the poll (incorrect_device_code). The registry answers: 401 unauthenticated (GitHub refuses the token): exit 20 (run 3; run 4 with --json: error.details has status and type); 400: exit 1 (run 5); 429: exit 15 (run 6). share.json is not changed.
+share login
+share login
+share login
+share login --json
+share login
+share login

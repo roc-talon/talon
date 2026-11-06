@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 R-SO13 R-CV1 (slice 222, Design Q544): the package has no pin, `talon.toml` has `[toolchain] roc = ">=nightly-2026-10-09-0000000"`, nothing is installed, and `--probe-downloads` is set. One read of the compiler list, the download of the newest compiler in the range (nightly-2026-10-10-0e0e0e0), then the bump on it. Exit 0.

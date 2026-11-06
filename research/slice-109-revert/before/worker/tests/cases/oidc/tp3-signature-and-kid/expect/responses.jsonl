@@ -1,0 +1,9 @@
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token kid \"kid-9\" is not in the GitHub JWKS"}}
+{"status":500,"problem":{"type":"/errors/internal","detail":"the Worker failed to handle the request"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token kid \"kid-9\" is not in the GitHub JWKS"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token kid \"kid-9\" is not in the GitHub JWKS"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token kid \"kid-9\" is not in the GitHub JWKS"}}
+{"status":500,"problem":{"type":"/errors/internal","detail":"the Worker failed to handle the request"}}

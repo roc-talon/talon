@@ -1,0 +1,6 @@
+{"method": "GET", "path": "/v1/releases?group=github.com%2Fo%2Ffresh%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method": "GET", "path": "/v1/releases?group=github.com%2Fo%2Fnever%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method": "GET", "path": "/v1/releases?group=github.com%2Fo%2Ftwo-hours%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method": "GET", "path": "/v1/releases?group=github.com%2Fo%2Fover-two%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method": "GET", "path": "/v1/releases?group=github.com%2Fo%2Fapp-day%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method": "GET", "path": "/v1/releases?group=github.com%2Fo%2Fapp-old%2Freleases%2Fdownload%2F%7Bv%7D%2F"}

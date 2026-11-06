@@ -1,0 +1,14 @@
+FAIL archive/pu38-hash-and-end (2338 ms)
+    request 4: json.target_names: expected an array of 0 items, got ["x64mac"]
+    request 5: json.target_names: expected an array of 0 items, got ["x64mac"]
+    request 6: json.target_names: expected an array of 0 items, got ["x64mac"]
+FAIL archive/pu38-made-kinds (2247 ms)
+    request 1: json.target_names: expected an array of 0 items, got ["x64mac"]
+FAIL archive/pu38-paths-and-header (2325 ms)
+    request 1: json.target_names: expected an array of 0 items, got ["x64mac"]
+    request 12: json.target_names: expected an array of 0 items, got ["x64mac"]
+PASS archive/pu38-real-bundles (2260 ms)
+PASS archive/pu38-size (4685 ms)
+FAIL archive/pu38-window (2221 ms)
+    request 1: json.target_names: expected an array of 0 items, got ["x64mac"]
+w2: 2 passed, 4 failed

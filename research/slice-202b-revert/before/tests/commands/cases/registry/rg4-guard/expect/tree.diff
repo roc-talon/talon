@@ -1,0 +1,20 @@
+--- home/.cache/roc/talon/index/github/acme/hook/repo.json
++++ home/.cache/roc/talon/index/github/acme/hook/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/hook","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pub/repo.json
++++ home/.cache/roc/talon/index/github/acme/pub/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pub","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pub2/repo.json
++++ home/.cache/roc/talon/index/github/acme/pub2/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pub2","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pub3/repo.json
++++ home/.cache/roc/talon/index/github/acme/pub3/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pub3","private":false,"fork":false}
+\ No newline at end of file

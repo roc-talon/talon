@@ -16,7 +16,8 @@ import Project
 import Report
 import Resolve
 import Roots
-import ToolsPlan
+import ShareHook
+import ToolsStep
 
 ## The command `tln update` (also `up`, R-CM4, R-CM19): the wiring of a run, in direct style over `Fx` (TESTING.md 2.2, part C). It owns no decision: `Update.read` reads the flags,
 ## `Resolve.install!` with `command: Update` is the flow of slices 005 to 007, `Picker` and `Consent.picker` decide the picker of `-i`. `Run.run!` calls it for the command `update`, after `Run.check_refs`.
@@ -73,13 +74,14 @@ Update :: [].{
 			match flow!(shown, args, opts, pick) {
 				Ok(Moved(done)) => {
 					Update.print!(fx, shown, args, opts, done)
+					ShareHook.send!(fx, done.ran, 0)
 					0
 				}
 				Ok(NothingPicked) => {
 					shown.out!("nothing picked\n")
 					0
 				}
-				Err(fail) => Common.failed!(fx, args, fail)
+				Err(fail) => ShareHook.failed!(fx, args, fail)
 			}
 		}
 	}
@@ -100,7 +102,9 @@ Update :: [].{
 	resolve! = |fx, args, opts, start, which| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
-		request = request_of(args, opts, start, { command: which.command, names: which.names, fixed: which.fixed, compiler, toolchain })
+		asked = request_of(args, opts, start, { command: which.command, names: which.names, fixed: which.fixed, compiler, toolchain })
+		# Slice 206g (Design Q560): `init` (`fresh`) reads the registry setting for the compiler list only (`InstallFlow.compilers_only`).
+		request = asked
 		if which.fresh Resolve.install_fresh!(fx, request, Ok(args)) else Resolve.install_with!(fx, request, Ok(args))
 	}
 
@@ -110,13 +114,13 @@ Update :: [].{
 		outcome = done.outcome
 		planned = !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
 		if planned {
-			shown.out!("${Report.resolved_line({ at: outcome.at, probes: outcome.probes })}\n")
+			shown.out!("${Report.resolved_line({ at: outcome.at, log: outcome.log, probes: outcome.probes })}\n")
 		}
 		if opts.dry_run {
 			shown.out!("dry run: nothing was written\n")
 		}
 		if args.json {
-			fx.out!(Out.json_ok({ command: args.typed, data: ToolsPlan.with_tools({ base: Report.data(outcome), rows: done.tools }) }))
+			fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.ran) }))
 		}
 	}
 }
@@ -163,6 +167,9 @@ request_of = |args, opts, start, selected| {
 	compiler: selected.compiler,
 	selected: "",
 	none: Stop,
+	index: Direct,
+	# Slice 206b: `update` reads the registry setting. Slice 206e (R-UP13): `upgrade` with names and no `roc` (the nightly is held). Slice 206e2 (R-CV1, R-AP16): `upgrade` with a free nightly too. `init` stays `Off` (`resolve!`).
+	registry: Setting(args.registry),
 	toolchain: selected.toolchain,
 	snapshot: opts.snapshot,
 	dry_run: opts.dry_run,

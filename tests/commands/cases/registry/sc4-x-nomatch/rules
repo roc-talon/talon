@@ -1,0 +1,1 @@
+R-SC4 R-AD35 R-SL3 R-X1 R-EC2 Q430 (slice 206f): `tln x acme/foo@9.9.9` with a registry: R-AP1 answers 200 and the selector keeps no candidate (`NoMatch`). The text is the text of `x` as in `direct` (Q430), exit 2. No download, no build.

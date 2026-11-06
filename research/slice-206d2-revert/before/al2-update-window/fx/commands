@@ -1,0 +1,2 @@
+update --no-check --dry-run --file u1/main.roc
+update --no-check --dry-run --snapshot 2026-10-01T00:00:00Z --file u1/main.roc

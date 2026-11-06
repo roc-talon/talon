@@ -57,4 +57,8 @@ ProbeShow :: [].{
 
 	end_doc : ProbeRange.End -> JsonDoc
 	end_doc = |end| JsonDoc.Obj([("id", Text(end.id)), ("real", Flag(end.real))])
+
+	## Slice 217b (R-PB9, Design Q580, Q581): the member `facts` of `data` (and of `error.details`) of `tln probe --range --json`. The list of the real facts that this run probed, in the order of the list that it gets: one `{ "nightly", "target", "result" }` for each fact (`result`: `"pass"`, `"fail"`, `"hang"`, `"crash"`). The caller gives only the facts of this run: not the inferred facts, and not the stored facts. `[]` for no fact: the member is always there. The caller puts `facts` last in the object.
+	facts_doc : List(Db.Fact) -> JsonDoc
+	facts_doc = |facts| JsonDoc.Arr(facts.map(|f| Obj([("nightly", Text(f.nightly)), ("target", Text(f.target)), ("result", Text(Db.outcome_word(f.outcome)))])))
 }

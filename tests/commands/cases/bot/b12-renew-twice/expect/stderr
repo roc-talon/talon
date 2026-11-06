@@ -1,0 +1,1 @@
+tln: error[rejected]: the registry http://127.0.0.1:9 refused the OIDC token of this run (/errors/unauthenticated): D. Check that the run is the workflow of BOT_WORKFLOW_REF on the default branch of BOT_REPOSITORY_ID (R-TP7) and that the job has permissions: id-token: write.

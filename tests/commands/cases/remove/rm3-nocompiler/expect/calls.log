@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/n1/main.roc
@@ -18,6 +20,8 @@ list_dirs $WORK/h5/.cache/roc/toolchains
 read_files $PROJECT/n1/main.roc
 write_atomic $PROJECT/n1/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd

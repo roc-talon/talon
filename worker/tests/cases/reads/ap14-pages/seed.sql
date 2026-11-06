@@ -1,0 +1,6 @@
+INSERT INTO names (id, kind, value) VALUES (5265119941757224538, 1, X'000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f'), (-6885103379976005063, 2, 'example.com/page/{v}/');
+WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM n WHERE i < 1002) INSERT INTO log (idx, grp, version, hash, time) SELECT i, 'example.com/page/{v}/', '1.0.' || i, '1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE', 0 FROM n;
+WITH RECURSIVE n(i) AS (SELECT 1 UNION ALL SELECT i + 1 FROM n WHERE i < 1002) INSERT INTO releases (log_index, form, version, version_text, artifact, repo, url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at) SELECT i, -6885103379976005063, ((1 << 48) | (i << 16) | 65535) + (-9223372036854775807 - 1), '', 5265119941757224538, NULL, 'https://example.com/page/' || i || '/x.tar.zst', NULL, NULL, 1700000000000 + i * 1000, 0, NULL, NULL FROM n;
+-- Slice 122, R-AP49 `provenance`, R-RE9: every release has an ingest row, the even ones also an oidc row (inserted after it).
+INSERT INTO provenance (release, via, claims, time) SELECT log_index, 3, NULL, 0 FROM releases;
+INSERT INTO provenance (release, via, claims, time) SELECT log_index, 0, NULL, 0 FROM releases WHERE log_index % 2 = 0;

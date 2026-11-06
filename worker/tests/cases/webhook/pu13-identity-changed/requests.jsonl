@@ -1,0 +1,1 @@
+{"queue":"talon-index","messages":[{"id":"m1","attempts":1,"body":{"event":"release","action":"published","installation_id":0,"repository_id":901,"release_id":9801,"repository_ids":[]}}]}

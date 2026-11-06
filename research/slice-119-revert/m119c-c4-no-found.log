@@ -1,0 +1,45 @@
+All (30) tests passed in 380.8 ms.
+PASS reconcile/pu21-poll-job (2610 ms)
+PASS reconcile/pu23-list (4875 ms)
+PASS reconcile/pu23-pages (2845 ms)
+FAIL reconcile/pu24-missing-again (3162 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t500\t50\t0\t\\N\t1767229200000\t1767000000000","acme/lib-old\t500\t50\t2\tacme/lib\t1767000000000\t1767000000000","acme/priv\t800\t80\t1\t\\N\t1767225600000\t1767000000000"]
+      got:      ["acme/lib\t500\t50\t1\t\\N\t1767225600000\t1767000000000","acme/lib-old\t500\t50\t2\tacme/lib\t1767000000000\t1767000000000","acme/priv\t800\t80\t1\t\\N\t1767225600000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t4\t500\t500\t50\t50\t\\N\t\\N\t1767225600000","acme/lib\t3\t5\t500\t500\t50\t50\t\\N\t\\N\t1767229200000","acme/lib-old\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/priv\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/priv\t2\t4\t800\t800\t80\t80\t\\N\t\\N\t1767225600000"]
+      got:      ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t4\t500\t500\t50\t50\t\\N\t\\N\t1767225600000","acme/lib-old\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/priv\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/priv\t2\t4\t800\t800\t80\t80\t\\N\t\\N\t1767225600000"]
+PASS reconcile/pu25-reserve (2455 ms)
+PASS reconcile/pu31-repo-etag (2676 ms)
+PASS reconcile/pu36-overlap (2578 ms)
+PASS reconcile/pu36-state-guard (2503 ms)
+PASS reconcile/pu37-backoff (2746 ms)
+PASS reconcile/pu37-etag-effects (2599 ms)
+PASS reconcile/tp18-rename (2712 ms)
+FAIL reconcile/tp9-transfer (2382 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t500\t51\t0\t\\N\t1767225600000\t1767000000000"]
+      got:      ["acme/lib\t500\t51\t1\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t1\t500\t500\t50\t51\t\\N\t\\N\t1767225600000","acme/lib\t3\t5\t500\t500\t51\t51\t\\N\t\\N\t1767225600000"]
+      got:      ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t1\t500\t500\t50\t51\t\\N\t\\N\t1767225600000"]
+PASS webhook/ap12-empty-secret (1889 ms)
+PASS webhook/ap12-no-secret (1995 ms)
+PASS webhook/ap12-signature (2341 ms)
+PASS webhook/pu11-events (2793 ms)
+PASS webhook/pu13-identity-changed (1814 ms)
+PASS webhook/pu13-index-new (2124 ms)
+PASS webhook/pu13-no-asset-end (2134 ms)
+PASS webhook/pu13-not-candidate (2078 ms)
+PASS webhook/pu13-refused (2124 ms)
+PASS webhook/pu13-retry-no-asset (2484 ms)
+PASS webhook/pu14-labels (2589 ms)
+PASS webhook/pu17-withdraw-clear (4294 ms)
+PASS webhook/pu26-app-installed (3288 ms)
+PASS webhook/pu26-release-installed (3077 ms)
+PASS webhook/pu33-privatized (3926 ms)
+PASS webhook/pu33-publicized (2769 ms)
+PASS webhook/pu33-release-private (2662 ms)
+PASS webhook/pu35-dead-letter (1275 ms)
+PASS webhook/pu35-retry-schedule (1325 ms)
+w2: 29 passed, 2 failed

@@ -1,0 +1,1 @@
+R-AP2 R-AP34 R-MX18 (slice 223, Q594, Q595): the only missing hash: GET /v1/artifacts/<hash> answers 503 busy 4 times (sleeps 2000, 8000, 30000): exit 15 at once, no job, no post, no audit read.

@@ -1,0 +1,32 @@
+
+── ✗ fail ──────────────────────────────────── tests/unit/ReconcileTest.roc:60:1
+
+expect {
+    c = Reconcile.claim_sql()
+    consts = Reconcile.cron == "*/5 * * * *" and Reconcile.max_rows == 500 and Reconcile.claim_ms == 900_000 and Reconcile.backoff_ms == 300_000
+    one = c.split_on(";").len() == 1 and !c.contains("DELETE") and !c.contains("INSERT")
+    claim = holds(c, ["UPDATE repo_checks", "next_check_at = ?1 + 900000", "next_check_at <= ?1", "ORDER BY next_check_at", "LIMIT ?2", "RETURNING"])
+    columns = holds(c, ["CAST(repo AS TEXT)", "repository_id", "etag", "fail_count", "app_installed", "json_group_array", "log_index", "tag", "hash", "withdrawn"])
+    consts and one and claim and columns
+}
+
+Ran 26 tests in 421.1 ms.:
+    25 passed
+    1 failed
+    0 compiler errors
+PASS reconcile/pu21-poll-job (2860 ms)
+PASS reconcile/pu23-list (3911 ms)
+PASS reconcile/pu25-reserve (2683 ms)
+FAIL reconcile/pu36-overlap (2947 ms)
+    d1-calls: request 1: expected 5, got 8 (all,all,batch,batch,batch,batch,batch,batch)
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/y/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/z/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/x/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/600 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/y/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/y/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/z/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/z/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/x/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/x/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/y/releases?per_page=100","GET https://api.github.com/repositories/700","GET https://api.github.com/repos/acme/z/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/x/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/600","GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/y/releases?per_page=100","GET https://api.github.com/repos/acme/y/releases?per_page=100","GET https://api.github.com/repositories/700","GET https://api.github.com/repos/acme/z/releases?per_page=100","GET https://api.github.com/repositories/700","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/z/releases?per_page=100","GET https://api.github.com/repos/acme/x/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/x/releases?per_page=100"]
+PASS reconcile/pu37-backoff (3103 ms)
+PASS reconcile/pu37-etag-effects (3039 ms)
+PASS webhook/pu13-index-new (1227 ms)
+PASS webhook/pu17-withdraw-clear (1448 ms)
+w2: 7 passed, 1 failed

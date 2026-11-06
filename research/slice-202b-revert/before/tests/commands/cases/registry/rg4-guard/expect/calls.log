@@ -1,0 +1,40 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/github/acme/pub/repo.json
+http_get https://api.github.com/repos/acme/pub
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pub/repo.json
+read_files $HOME/.cache/roc/talon/index/github/acme/pub/repo.json
+read_files $HOME/.cache/roc/talon/index/github/acme/priv/repo.json
+http_get https://api.github.com/repos/acme/priv
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+read_files $HOME/.cache/roc/talon/index/github/acme/none/repo.json
+programs gh
+http_get https://api.github.com/repos/acme/none
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/github/acme/none2/repo.json
+http_get https://api.github.com/repos/acme/none2
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+read_files $HOME/.cache/roc/talon/index/github/acme/pub2/repo.json $HOME/.cache/roc/talon/index/github/acme/pub3/repo.json $HOME/.cache/roc/talon/index/github/acme/pub/repo.json
+http_get https://api.github.com/repos/acme/pub2
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pub2/repo.json
+http_get https://api.github.com/repos/acme/pub3
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/pub3/repo.json
+read_files $HOME/.cache/roc/talon/index/github/acme/limited/repo.json
+http_get https://api.github.com/repos/acme/limited
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+read_files $HOME/.cache/roc/talon/index/github/acme/slow/repo.json
+http_get https://api.github.com/repos/acme/slow
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+read_files $HOME/.cache/roc/talon/index/github/acme/hook/repo.json
+http_get http://127.0.0.1:1/api/repos/acme/hook
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/hook/repo.json

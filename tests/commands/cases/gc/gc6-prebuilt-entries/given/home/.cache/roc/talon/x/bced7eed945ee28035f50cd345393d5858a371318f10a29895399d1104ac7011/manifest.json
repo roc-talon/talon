@@ -1,0 +1,1 @@
+{"format":1,"name":"acme/ke","source":{"kind":"prebuilt","version":"1.0.0","url":"https://github.com/acme/ke/releases/download/1.0.0/H1UhwgA95i3FhChGFTVbxPgVDxm7UF3H16ZLZLK4LsxQ.tar.zst-x64musl"},"target":"x64musl","sha256":"8298ad94867ada52767a720a68c08d31a5e0c0f2a03db38ee6ab980f0dca1826","bundle":"H1UhwgA95i3FhChGFTVbxPgVDxm7UF3H16ZLZLK4LsxQ","last_run":"2020-01-01T00:00:00Z"}

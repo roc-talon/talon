@@ -1,3 +1,4 @@
+import ClosureIndex
 import Fail
 import Fetch
 import Fx
@@ -47,6 +48,48 @@ Gather :: [].{
 		Ok($got)
 	}
 
+	## Slice 206 (R-AL8 source 2, R-DI14): one fact of an id. `Record`: the header facts of a release from the artifact record of the closure answer. `Text`: the text of its header file, as `get!` gives it (sources 3 and 4).
+	Fact : [Record({ id : Str, header : ClosureIndex.Header }), Text(Got)]
+
+	## Slice 206 (R-AL8, R-DI14): the facts of the ids, in the order of the ids. With `index` `Answer(a)`: an id that is a release URL whose hash has an artifact record in `a.answer` is `Record` (`ClosureIndex.header`), with no fetch and no read.
+	## The other ids go to one `get!` call, in their order, each as `Text`; when there is no other id, no call. With `Direct` or `Offline`: one `get!` call for all ids. The failure of `get!` is the failure.
+	facts! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source }, List(Str) => Try(List(Fact), Fail)
+	facts! = |fx, facts, ids| {
+		settings = { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none }
+		match facts.index {
+			Answer(a) => {
+				found = ids.map(|id| (id, ClosureIndex.header(a.answer, id)))
+				rest = found.keep_oks(
+					|(id, header)| match header {
+						Ok(_) => Err(InAnswer)
+						Err(NotInAnswer) => Ok(id)
+					},
+				)
+				got = if rest.is_empty() no_got else Gather.get!(fx, settings, rest)?
+				var $facts = no_facts
+				var $at = 0
+				for (id, header) in found {
+					match header {
+						Ok(h) => {
+							$facts = $facts.append(Record({ id, header: h }))
+						}
+						Err(NotInAnswer) => {
+							match got.get($at) {
+								Ok(g) => {
+									$facts = $facts.append(Text(g))
+								}
+								Err(_) => return Err(Fail.new(Internal, "the read gave no text for ${id}"))
+							}
+							$at = $at + 1
+						}
+					}
+				}
+				Ok($facts)
+			}
+			Direct | Offline(_) => Gather.get!(fx, settings, ids).map_ok(|got| got.map(|g| Text(g)))
+		}
+	}
+
 	## The header file of an id: `main.roc` of a release in the package cache, else the path file itself.
 	file_of : Roots, Str -> Str
 	file_of = |roots, id| match Ident.of_url(id) {
@@ -57,3 +100,6 @@ Gather :: [].{
 
 no_got : List(Gather.Got)
 no_got = []
+
+no_facts : List(Gather.Fact)
+no_facts = []

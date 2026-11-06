@@ -1,0 +1,169 @@
+@ SELECT t.name, t.ncol, t.wr, t.strict FROM pragma_table_list t WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*' ORDER BY t.name
+artifact_targets	2	1	1
+artifacts	6	0	1
+compat	8	1	1
+compat_hints	9	1	1
+contributions	7	1	1
+contributor_totals	8	0	1
+contributors	5	0	1
+deps	7	1	1
+hint_days	2	0	1
+links	3	0	1
+log	5	0	1
+names	3	0	1
+provenance	4	0	1
+releases	13	0	1
+repo_checks	7	0	1
+repo_events	10	0	1
+repos	7	0	1
+sweeps	4	1	1
+targets	2	0	1
+toolchains	8	1	1
+transitions	5	1	1
+@ SELECT t.name, c.name, c.type, CASE WHEN c.pk > 0 THEN NULL ELSE c."notnull" END, c.pk, c.hidden FROM pragma_table_list t, pragma_table_xinfo(t.name) c WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*' ORDER BY t.name, c.name
+artifact_targets	artifact	INTEGER	\N	1	0
+artifact_targets	target	INTEGER	\N	2	0
+artifacts	artifact	INTEGER	\N	1	0
+artifacts	exposes	TEXT	1	0	0
+artifacts	kind	INTEGER	1	0	0
+artifacts	platform	INTEGER	0	0	0
+artifacts	roc_pin	TEXT	0	0	0
+artifacts	size	INTEGER	1	0	0
+compat	artifact	INTEGER	\N	1	0
+compat	error_digest	TEXT	0	0	0
+compat	log_index	INTEGER	0	0	0
+compat	nightly	INTEGER	\N	2	0
+compat	result	INTEGER	1	0	0
+compat	source	INTEGER	\N	4	0
+compat	target	INTEGER	\N	3	0
+compat	time	INTEGER	1	0	0
+compat_hints	artifact	INTEGER	\N	1	0
+compat_hints	crash_count	INTEGER	1	0	0
+compat_hints	fail_count	INTEGER	1	0	0
+compat_hints	first_time	INTEGER	1	0	0
+compat_hints	last_time	INTEGER	1	0	0
+compat_hints	nightly	INTEGER	\N	2	0
+compat_hints	pass_count	INTEGER	1	0	0
+compat_hints	talon_version	INTEGER	\N	4	0
+compat_hints	target	INTEGER	\N	3	0
+contributions	artifact	INTEGER	\N	2	0
+contributions	contributor	INTEGER	\N	1	0
+contributions	nightly	INTEGER	\N	3	0
+contributions	result	INTEGER	1	0	0
+contributions	talon_version	INTEGER	1	0	0
+contributions	target	INTEGER	\N	4	0
+contributions	time	INTEGER	1	0	0
+contributor_totals	agreed	INTEGER	1	0	0
+contributor_totals	contributor	INTEGER	\N	1	0
+contributor_totals	counted	INTEGER	1	0	0
+contributor_totals	disagreed	INTEGER	1	0	0
+contributor_totals	first	INTEGER	1	0	0
+contributor_totals	first_time	INTEGER	1	0	0
+contributor_totals	last_time	INTEGER	1	0	0
+contributor_totals	unconfirmed	INTEGER	1	0	0
+contributors	contributor	INTEGER	\N	1	0
+contributors	first_time	INTEGER	1	0	0
+contributors	last_time	INTEGER	1	0	0
+contributors	login	TEXT	1	0	0
+contributors	tokens_after	INTEGER	1	0	0
+deps	alias	TEXT	\N	2	0
+deps	artifact	INTEGER	\N	1	0
+deps	dep	INTEGER	1	0	0
+deps	form	INTEGER	0	0	0
+deps	url	TEXT	1	0	0
+deps	version	INTEGER	0	0	0
+deps	version_text	TEXT	0	0	0
+hint_days	counted	INTEGER	1	0	0
+hint_days	day	INTEGER	\N	1	0
+links	contributor	INTEGER	1	0	0
+links	machine	INTEGER	\N	1	0
+links	time	INTEGER	1	0	0
+log	grp	TEXT	1	0	0
+log	hash	TEXT	1	0	0
+log	idx	INTEGER	\N	1	0
+log	time	INTEGER	1	0	0
+log	version	TEXT	1	0	0
+names	id	INTEGER	\N	1	0
+names	kind	INTEGER	1	0	0
+names	value	ANY	1	0	0
+provenance	claims	TEXT	0	0	0
+provenance	release	INTEGER	\N	1	0
+provenance	time	INTEGER	1	0	0
+provenance	via	INTEGER	\N	2	0
+releases	artifact	INTEGER	1	0	0
+releases	form	INTEGER	1	0	0
+releases	log_index	INTEGER	\N	1	0
+releases	published_at	INTEGER	1	0	0
+releases	repo	INTEGER	0	0	0
+releases	roc_version	TEXT	0	0	0
+releases	tag	TEXT	0	0	0
+releases	url	TEXT	1	0	0
+releases	version	INTEGER	1	0	0
+releases	version_text	TEXT	1	0	0
+releases	withdrawn	TEXT	0	0	0
+releases	withdrawn_at	INTEGER	0	0	0
+releases	yanked	INTEGER	1	0	0
+repo_checks	app_installed	INTEGER	1	0	0
+repo_checks	checked_at	INTEGER	0	0	0
+repo_checks	etag	TEXT	0	0	0
+repo_checks	fail_count	INTEGER	1	0	0
+repo_checks	next_check_at	INTEGER	1	0	0
+repo_checks	repo	INTEGER	\N	1	0
+repo_checks	repo_etag	TEXT	0	0	0
+repo_events	action	INTEGER	1	0	0
+repo_events	claims	TEXT	0	0	0
+repo_events	owner_id_after	INTEGER	0	0	0
+repo_events	owner_id_before	INTEGER	0	0	0
+repo_events	repo	INTEGER	\N	1	0
+repo_events	repository_id_after	INTEGER	0	0	0
+repo_events	repository_id_before	INTEGER	0	0	0
+repo_events	seq	INTEGER	\N	2	0
+repo_events	successor	INTEGER	0	0	0
+repo_events	time	INTEGER	1	0	0
+repos	repo	INTEGER	\N	1	0
+repos	repository_id	INTEGER	1	0	0
+repos	repository_owner_id	INTEGER	1	0	0
+repos	state	INTEGER	1	0	0
+repos	state_at	INTEGER	1	0	0
+repos	successor	INTEGER	0	0	0
+repos	time	INTEGER	1	0	0
+sweeps	nightly	INTEGER	\N	1	0
+sweeps	target	INTEGER	\N	2	0
+sweeps	time	INTEGER	1	0	0
+sweeps	upto_log_index	INTEGER	1	0	0
+targets	name	TEXT	1	0	0
+targets	target	INTEGER	\N	1	0
+toolchains	asset_name	TEXT	1	0	0
+toolchains	log_index	INTEGER	1	0	0
+toolchains	nightly	INTEGER	\N	1	0
+toolchains	published_at	INTEGER	1	0	0
+toolchains	sha256	TEXT	1	0	0
+toolchains	size	INTEGER	1	0	0
+toolchains	tag	TEXT	1	0	0
+toolchains	target	TEXT	\N	2	0
+transitions	changed	INTEGER	1	0	0
+transitions	compared	INTEGER	1	0	0
+transitions	nightly	INTEGER	\N	1	0
+transitions	previous	INTEGER	1	0	0
+transitions	target	INTEGER	\N	2	0
+@ SELECT t.name, CASE WHEN i.origin = 'c' THEN i.name END, i."unique", i.origin, (SELECT group_concat(x.name, ',') FROM (SELECT name FROM pragma_index_info(i.name) ORDER BY seqno) x) FROM pragma_table_list t, pragma_index_list(t.name) i WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*' ORDER BY 1, 4, 5
+artifact_targets	\N	1	pk	artifact,target
+compat	compat_artifact_target	0	c	artifact,target,nightly
+compat	compat_nightly	0	c	nightly,target,source,artifact
+compat	\N	1	pk	artifact,nightly,target,source
+compat_hints	\N	1	pk	artifact,nightly,target,talon_version
+contributions	contributions_pair	0	c	artifact,nightly,target,time
+contributions	contributions_nightly	0	c	nightly
+contributions	\N	1	pk	contributor,artifact,nightly,target
+deps	\N	1	pk	artifact,alias
+names	\N	1	u	kind,value
+provenance	\N	1	pk	release,via
+releases	releases_artifact	0	c	artifact,log_index
+releases	\N	1	u	form,version,version_text
+repo_events	\N	1	pk	repo,seq
+sweeps	\N	1	pk	nightly,target
+targets	\N	1	u	name
+toolchains	\N	1	pk	nightly,target
+transitions	\N	1	pk	nightly,target
+@ SELECT count(*) FROM pragma_table_list t, pragma_foreign_key_list(t.name) f WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*'
+0

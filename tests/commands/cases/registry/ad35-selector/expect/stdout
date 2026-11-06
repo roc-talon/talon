@@ -1,0 +1,9 @@
+== fullname acme/sel1 sel=^1 env:GITHUB_TOKEN=tok1
+releases 2
+release 1.5.0 6mugWz1EaENQNEgsATdSLDrc1RZCHSXGcVYLVsXnpABy
+release 1.0.0 BUbY7Mz6fbDJCHBJXShH9Kk5PzCMCDFKxhBHhPEV4fye
+== fullname acme/sel2 sel=1.0.0 env:GITHUB_TOKEN=tok1
+releases 1
+release 1.0.0 9TRgzWg1QD2PyWWDQ15VhA7PbcN4vMj2e98oLrbMDk9e
+== fullname acme/sel3 sel=9.9.9 env:GITHUB_TOKEN=tok1
+no match

@@ -1,0 +1,7 @@
+GET https://token.actions.githubusercontent.com/.well-known/jwks
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569
+GET https://api.github.com/repos/acme/roc-thing
+GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0
+GET https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst
+GET https://raw.githubusercontent.com/acme/roc-thing/1.2.0/.roc-version
+GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100

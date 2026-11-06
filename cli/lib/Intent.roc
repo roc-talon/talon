@@ -9,6 +9,7 @@ import Pin
 import Probe
 import Ranges
 import Text
+import ToolBin
 import ToolsToml
 import TomlKeys
 import toml.Toml
@@ -45,6 +46,9 @@ Intent := {
 
 	## Slice 056 (R-PT1, R-PT2): the entries of `[tools]` (`ToolsToml.read_table`), in the order of their lines. An entry is `{ key, ref, url, line }` (`url` is `Err(Unset)` until `tln install` writes it).
 	tools : List(ToolsToml.Entry),
+
+	## Slice 091 (R-PT18): the `bin` of the entries that have the key, as `ToolsToml.read_table` gives it (`bins`). An entry with no `bin` has no row.
+	tool_bins : List({ key : Str, bin : ToolBin.Lock }),
 
 	## Slice 054 (R-TG1, R-TG3, R-TG5, R-WS5): `[build] target`, a Roc target name (`BuildTarget.is_name`). `Err(Unset)` when the table or the key is missing.
 	build : { target : Try(Str, [Unset]), bad : Try({ line : U64, message : Str }, [Valid]) },
@@ -184,6 +188,7 @@ read_tables = |doc, role, text| {
 			overrides: overrides.value,
 			patches: read_patches(doc),
 			tools: tools.value,
+			tool_bins: tools.bins,
 			build: build.value,
 			resolution: resolution.value,
 		},

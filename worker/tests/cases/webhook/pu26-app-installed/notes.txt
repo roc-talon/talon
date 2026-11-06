@@ -1,0 +1,9 @@
+1: installation created with 100, 101 and 999 (999 has no row): app_installed is 1 for 100 and 101. No row is added for 999. next_check_at does not change
+2: installation_repositories removed 101: app_installed is 0 again
+3: installation_repositories added 200
+4: installation deleted 100 and 300: both 0
+5: installation created with an empty list: nothing changes
+6: installation suspend 200 (Design Q322): 1 becomes 0
+7: installation unsuspend 300: 0 becomes 1
+8: installation created 700 (a rename: acme/new active, acme/old moved): EVERY row of the repository id gets 1, also the moved row (Design Q324)
+9: installation_repositories removed 701 (two rows, both 1): both become 0

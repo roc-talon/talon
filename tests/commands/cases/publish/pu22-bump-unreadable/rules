@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 (slice 222, Design Q525: no guess): exit 1 with the headline `insufficient version bump` and `must be at least`, but the stdout has no `This is a <LEVEL> change.` and no `<old> -> <next>` line: the note (the cause is the headline), not the warning. The publish goes on, exit 0.

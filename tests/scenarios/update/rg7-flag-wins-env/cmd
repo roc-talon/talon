@@ -1,0 +1,7 @@
+# R-RG1 R-RG7 R-FL5 R-EC2 (slice 206b, Design Q439): a valid `--registry` wins, so `TALON_REGISTRY` is not read: a bad value there does not stop the command (exit 0). The real binary.
+# The project is the one of `update/up1-update-entries` (the direct index on the fake GitHub). `--no-check --dry-run`: no probe, no write.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+# The flag `direct` wins: the run is the direct run, the bad variable is not read.
+st env TALON_REGISTRY=ftp://127.0.0.1:1 tln update --registry direct --no-check --dry-run
+# With no flag the variable wins and is read: exit 2, the message names TALON_REGISTRY and the text (R-RG7 row 6). No index request.
+st env TALON_REGISTRY=ftp://127.0.0.1:1 tln update --no-check --dry-run

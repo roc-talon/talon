@@ -1,0 +1,1 @@
+R-PB6 R-AP10 R-SH6 R-E6 R-CT11 (slice 217): 10,500 facts make 21 batches of 500 rows, but the send stops at 20 requests (10,000 rows, Design Q498): all 20 get 201, the last 500 facts are listed as not shared (not sent), the exit is 15 (a send that did not finish), and share.json has the totals of the 20 requests (sent 10000, counted 10000, first 2000).

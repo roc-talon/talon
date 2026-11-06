@@ -1,0 +1,39 @@
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:139:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:141:1
+
+expect {
+    s1 = ArchiveRead.empty().count(60000000) ?? crash "count 1"
+    s2 = s1.count(40000000)
+    s3 = (s2 ?? crash "count 2").count(1)
+    (s2.is_ok(), s3.map_ok(|_| {})) == (Bool.True, Err(TooLarge({ bytes: 100000001, from: Count })))
+}
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:148:1
+
+expect ArchiveRead.empty().count(100000001).map_ok(|_| {}) == Err(TooLarge({ bytes: 100000001, from: Count }))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 33 tests in 1098.0 ms.:
+    31 passed
+    2 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2400 ms)
+PASS archive/pu38-made-kinds (2298 ms)
+PASS archive/pu38-paths-and-header (2395 ms)
+PASS archive/pu38-real-bundles (2339 ms)
+FAIL archive/pu38-size (5533 ms)
+    request 2: status: expected 422, got 200
+    request 2: problem: content-type: expected "application/problem+json", got "application/json"
+    request 2: problem.type: expected "/errors/not-a-candidate", got missing
+    request 2: problem.status: expected 200 (the HTTP status), got missing
+PASS archive/pu38-window (2287 ms)
+w2: 5 passed, 1 failed

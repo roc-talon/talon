@@ -1,0 +1,25 @@
+@ SELECT CAST(id AS TEXT), kind, CASE kind WHEN 1 THEN hex(value) ELSE value END FROM names ORDER BY kind, 3
+-2520680117492241062	1	04EF68EC567580FDBB3800F386ED257E5838978C0A053EE7AF67E00EB0F988D7
+2630453920787326350	1	0B1F22941FBCB95F308C99F37BAE4B01BA351168040E712E2F07FE7E2CB07152
+4469800713240684981	1	A35B62EF3E987B3BA45F11878B2975DD2EF45ECC4B5A7452392CDC711DBAB2D1
+-7163292474072844271	2	github.com/Karakatiza666/roc-semver/releases/download/{v}/
+-1687802212097379299	2	github.com/acme/pfpkg/releases/download/{v}/
+3760840769798076254	2	github.com/acme/plat/releases/download/v{v}/
+-5561780661778416768	3	acme/pfpkg
+@ SELECT CAST(artifact AS TEXT), kind, exposes, CAST(platform AS TEXT), roc_pin, size FROM artifacts ORDER BY kind
+2630453920787326350	1	["Zeta"]	\N	\N	353
+@ SELECT CAST(artifact AS TEXT), alias, CAST(dep AS TEXT), CAST(form AS TEXT), CAST(version AS TEXT), version_text, url, platform FROM deps ORDER BY alias
+2630453920787326350	pf	-2520680117492241062	3760840769798076254	-9223372023969808385		https://github.com/acme/plat/releases/download/v0.3.0/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk.tar.zst	1
+2630453920787326350	semver	4469800713240684981	-7163292474072844271	-9223372028264775681		https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst	0
+@ SELECT CAST(a.artifact AS TEXT), t.target, t.name FROM artifact_targets a JOIN targets t ON t.target = a.target ORDER BY t.target
+@ SELECT target, name FROM targets WHERE target >= 36 ORDER BY target
+@ SELECT log_index, CAST(form AS TEXT), CAST(version AS TEXT), version_text, CAST(artifact AS TEXT), CAST(repo AS TEXT), url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at FROM releases ORDER BY log_index
+1	-1687802212097379299	-9223090561877999617		2630453920787326350	-5561780661778416768	https://github.com/acme/pfpkg/releases/download/1.0.0/kR2CcAG469xZGavQQPRM7NXWDYzGNvQCdc1bMgKiDMs.tar.zst	1.0.0	\N	1792497600000	0	\N	\N
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	github.com/acme/pfpkg/releases/download/{v}/	1.0.0	kR2CcAG469xZGavQQPRM7NXWDYzGNvQCdc1bMgKiDMs	1767225630000
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+1	3	\N	1767225630000
+@ SELECT CAST(repo AS TEXT), repository_id, repository_owner_id, state, successor, state_at, time FROM repos ORDER BY repository_id
+-5561780661778416768	511	9001	0	\N	1767225630000	1767225630000
+@ SELECT CAST(repo AS TEXT), etag, checked_at, next_check_at, fail_count, app_installed FROM repo_checks ORDER BY 1
+-5561780661778416768	\N	\N	1767229230000	0	0

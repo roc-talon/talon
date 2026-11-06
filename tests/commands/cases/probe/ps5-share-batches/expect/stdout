@@ -1,0 +1,4 @@
+== HQ
+  shared 500 facts of HQ: 400 counted, 0 skipped by the registry
+    not shared: nightly-2026-10-12-2664a27 t501: not sent
+exit 15

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Install the pinned roc compiler (ROC_TAG of scripts/env.sh, TW28) and print its path.
-# Usage: scripts/get-roc.sh      Needs gh and GH_TOKEN. Messages go to stderr, the path of roc to stdout.
+# Usage: scripts/get-roc.sh [worker]      Needs gh and GH_TOKEN. Messages go to stderr, the path of roc to stdout.
+# With the argument `worker`, it installs the compiler ROC_TAG_WORKER of the registry Worker (TW28, TW31, R-WH13) in place of ROC_TAG.
 # It downloads the asset of the release ROC_TAG in roc-lang/nightlies, checks the sha256 against the digest of the
 # release API (R-CV3), and installs to $WORK/nightlies/$ROC_TAG. A found file is not downloaded again.
 # Exit 1: unknown system, no asset, no digest, a sha256 mismatch, or no roc in the archive.
@@ -10,6 +11,12 @@ HERE=$(cd "$(dirname "$0")" && pwd)
 REPO=roc-lang/nightlies
 
 fail() { echo "get-roc: $*" >&2; exit 1; }
+
+case ${1:-} in
+"") ;;
+worker) ROC_TAG=$ROC_TAG_WORKER ;;
+*) fail "unknown argument: $1 (usage: get-roc.sh [worker])" ;;
+esac
 
 case "$(uname -s)-$(uname -m)" in
 Linux-x86_64) target=linux_x86_64 ext=.tar.gz exe=roc ;;

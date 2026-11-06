@@ -4,6 +4,7 @@ import Fail
 import Fx
 import NightlyPlan
 import Opts
+import ShareHook
 import Update
 
 ## The command `tln upgrade` for packages (slice 038, R-CM5, Resolution 10): the wiring of a run, in direct style over `Fx` (TESTING.md 2.2, part C). It is the wiring of `Update.run!` with these differences:
@@ -61,9 +62,10 @@ Upgrade :: [].{
 			match result {
 				Ok(done) => {
 					Update.print!(fx, shown, args, opts, done)
+					ShareHook.send!(fx, done.ran, 0)
 					0
 				}
-				Err(fail) => Common.failed!(fx, args, fail)
+				Err(fail) => ShareHook.failed!(fx, args, fail)
 			}
 		}
 	}

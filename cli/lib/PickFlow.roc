@@ -1,8 +1,16 @@
+import records.Closure as Wire
 import Add
+import ClosureIndex
+import ClosureRequest
 import Consent
 import Fail
 import Fx
+import FullName
+import Help
+import Ident
+import IndexQuery
 import Lags
+import LogSnapshot
 import Lookup
 import NightlyFlow
 import NightlyPlan
@@ -11,10 +19,12 @@ import PickAsk
 import PickIndex
 import PickLoop
 import PickMoves
+import PrivacyGuard
 import Prompt
 import Ref
 import ResolveBase
 import Scope
+import UnknownValues
 import Vars
 
 Loaded : ResolveBase.Loaded
@@ -34,7 +44,9 @@ Picked : ResolveBase.Picked
 PickFlow :: [].{
 
 	## What `search!` needs: the result of `prepare!`. `input` is the input of the first search, `setup` has the probe rounds' settings (`held` is `Err(None)` for no probe).
+	## Slice 206b: `request` is the request of the rest of the run: with a registry (`registry` is `Read`), its `index` is the `Answer` of the first closure query.
 	Ready : {
+		request : ResolveBase.Request,
 		loaded : Loaded,
 		settings : Settings,
 		snapshot : Try(U64, [None]),
@@ -46,14 +58,12 @@ PickFlow :: [].{
 		prepared : ResolveBase.Prepared,
 		input : PickLoop.Input,
 		setup : PickLoop.Setup,
+		second : Try(PickFlow.Second, [None]),
 	}
 
-	# Steps 2 to 7 of the flow: the names, the scope, the index and the pick (shared by `install!` and `verify!`). `held` is the compiler of the probe rounds (`Err(None)`: no probe and no lookup).
-	pick! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, Settings, Try(U64, [None]), Try(Str, [None]) => Try(Picked, Fail)
-	pick! = |fx, request, loaded, built, settings, snapshot, held| {
-		ready = PickFlow.prepare!(fx, request, loaded, built, settings, snapshot, held, Err(Held), Err(NoneKnown), no_optional)?
-		PickFlow.search!(fx, request, ready, PickLoop.start(ready.setup, ready.prepared.facts))
-	}
+	## Slice 206d2 (Registry R-AP16 second query, R-AP19, Design Q403, Q404, Q460): what the second closure query of a held move needs, from the first query of a run with a registry. `Err(None)` with no registry answer.
+	## `first` is the answer that the first search used (the answer of `UnknownValues.settle!`, not hidden), `compilers` the window of the first request, `keep` its `hashes`, `user` the N of `--snapshot log:N`, `anchors` the anchor URLs (R-DI11).
+	Second : { origin : Str, first : Wire.Answer, compilers : Try(Wire.Window, [None]), keep : List(Str), user : Try(U64, [None]), anchors : List(Str) }
 
 	## Slice 039: `free` are the values of the compiler slot (`NightlyFlow.Plan.free`). Slice 039b: `optional` are the optional compilers (`NightlyFlow.Plan.optional`). Slice 039c: `newest` is N (`NightlyFlow.Plan.newest`).
 	prepare! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, Settings, Try(U64, [None]), Try(Str, [None]), Try(List(Str), [Held]), Try(Str, [NoneKnown]), { ids : List(Str), sizes : List({ id : Str, size : U64 }) } => Try(PickFlow.Ready, Fail)
@@ -74,23 +84,47 @@ PickFlow :: [].{
 		})?
 		# `--platform` replaces the platform entry, so the old platform is no variable of the pick (R-AD31).
 		scoped = if request.add.as_platform and !asked.fresh.is_empty() everyone.keep_if(|s| !s.variable.is_platform) else everyone
+		# Slice 206d (reading 6, Design Q462): with a registry the `direct` text of a `Fixed` host (R-DI11) is not printed. With the `Offline` index it prints `<alias>: fixed: not in the registry index` (Design Q465).
+		registry = match (request.registry, request.index) {
+			(Read(_), _) | (_, Offline(_)) => Bool.True
+			_ => Bool.False
+		}
 		for s in scoped {
 			match s.note {
+				Ok(_) if registry and s.variable.host != Indexed => {
+					# Design Q465: offline, a value of another host prints the line of R-AP28, as online (online it comes from `settle!`).
+					match request.index {
+						Offline(_) => fx.out!("${s.variable.uses.first().map_ok(|u| u.alias) ?? ""}: fixed: not in the registry index\n")
+						_ => {}
+					}
+				}
 				Ok(note) => fx.out!("${note}\n")
 				Err(None) => {}
 			}
 		}
 		stale = live_wants!(fx, request, built.wants)?
+		known = built.vars.join_map(|v| v.uses.map(|u| u.url))
+		# Slice 206f (R-AD35, R-AD36, R-AD37, Design Q545): a new full name is read from the registry (R-AP1) before the first closure query: the group of the query is known only after that read.
+		items = fresh_items!(fx, request, asked.fresh, known)?
+		queried = query!(fx, request, loaded, IndexQuery.groups(scoped).concat(items))?
+		indexed = queried.request
+		# Slice 206d2 (R-SP23, R-DI11): a fixed anchor of the closure answer is never movable.
+		held_scope = IndexQuery.held_anchors({ scoped, anchors: queried.anchors })
 		free_names = scoped.keep_if(|s| s.free).keep_oks(|s| s.variable.name.map_err(|_| None))
 		want_names = stale.live.keep_oks(|w| w.name.map_err(|_| None))
-		known = built.vars.join_map(|v| v.uses.map(|u| u.url))
 		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(ResolveBase.no_names, |found, name| if found.contains(name) found else found.append(name))
-		found = PickIndex.index!(fx, request, repos, known)?
-		prepared = PickIndex.prepare!(fx, request, loaded, asked.fresh, found)?
-		input = PickIndex.slots_of(scoped, stale.live, found, asked, prepared.rows, settings, snapshot, PickAsk.unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
+		found = anchored(PickIndex.index!(fx, indexed, repos, known)?, queried.anchors)
+		offline_notes!(fx, indexed, held_scope, found)
+		prepared = PickIndex.prepare!(fx, indexed, loaded, asked.fresh, found)?
+		input = PickIndex.slots_of(held_scope, stale.live, found, asked, prepared.rows, settings, snapshot, PickAsk.unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
 		setup = { held, free, newest, movable: Err(None), optional, probes: if request.probe.no_probe Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), target: ResolveBase.member_target(m) }) }
-		Ok({ loaded, settings, snapshot, scoped, asked, stale, found, known, prepared, input, setup })
+		Ok({ request: indexed, loaded, settings, snapshot, scoped: held_scope, asked, stale, found, known, prepared, input, setup, second: queried.second })
 	}
+
+	## Slice 206e2 (R-AP16, R-AP74, R-RG4, R-DI1, R-CM6): the first closure query of a command that only reports (`tln outdated`), with its `groups` (`IndexQuery.report_groups`) and the window of `request` (`Report`).
+	## The calls of `query!` (the guard, one query, `settle!`). The result is the request with the index of the answer. A request that is not `Read`: as it is (no call).
+	report_query! : Fx, ResolveBase.Request, Loaded, List(ClosureRequest.Group) => Try(ResolveBase.Request, Fail)
+	report_query! = |fx, request, loaded, groups| Ok(query!(fx, request, loaded, groups)?.request)
 
 	## The oracle loop of the first search, and the second search of a held move (R-SP16, R-DI1). `state` has what the command read and probed before: the first call has `PickLoop.start`, the call after a dropped tuple has the facts, the count and the dropped tuples.
 	search! : Fx, ResolveBase.Request, PickFlow.Ready, PickLoop.State => Try(Picked, Fail)
@@ -101,13 +135,13 @@ PickFlow :: [].{
 			Err(stuck) => {
 				if !PickMoves.second_wanted(stuck.fail, ready.scoped) return Err(failed(stuck.fail))
 				# R-SP16, R-DI1: the second search of a held move. The index of the movable groups is read once, in the order of the slots. The facts of the first search stay (R-AL8).
-				more = PickIndex.index!(fx, request, movable_names(ready.scoped, ready.found), ready.known)?
+				moved = second_index!(fx, request, ready, stuck.probed.second)?
 				again = {
-					..PickIndex.slots_of(ready.scoped, ready.stale.live, ready.found.concat(more), ready.asked, ready.prepared.rows, ready.settings, ready.snapshot, PickAsk.unmanaged_of(ready.loaded, ready.asked, request.project.file ?? ""), request.project.file ?? ""),
+					..PickIndex.slots_of(ready.scoped, ready.stale.live, moved.found, ready.asked, ready.prepared.rows, ready.settings, ready.snapshot, PickAsk.unmanaged_of(ready.loaded, ready.asked, request.project.file ?? ""), request.project.file ?? ""),
 					second: Bool.True,
 				}
 				held = held_nightly!(fx, request, ready, stuck)
-				match PickLoop.run!(fx, request, again, held.setup, { facts: stuck.facts, paths: stuck.paths, probed: held.probed }) {
+				match PickLoop.run!(fx, moved.request, again, held.setup, { facts: stuck.facts, paths: stuck.paths, probed: { ..held.probed, second: moved.second, domain: wider(moved.request.index, held.probed.domain) } }) {
 					Ok(c) => { looped: c, moves: PickMoves.moves_of({ scoped: ready.scoped, slots: again.slots, chosen: c.chosen, facts: c.facts }).concat(roc_moves(ready, { slots: again.slots, setup: held.setup }, c)) }
 					Err(second) => if second.fail.kind == NoTuple return Err(failed(stuck.fail)) else return Err(second.fail)
 				}
@@ -138,6 +172,65 @@ PickFlow :: [].{
 			probed: looped.probed,
 		})
 	}
+}
+
+# Slice 206f (R-AD35 steps 1 to 5, R-AD36, R-AD37, Design Q430, Q545): the registry read of each new full name of `add` and `install <names>` (`FullName.read!`, the guard included), in the order of the names, and the one item of the closure query for each (`FullName.closure_item`).
+# A run with no registry (`direct`) makes no call and gives no item. `--offline` has the copies only (`Offline`: `read!` sends no request). A selector that keeps no release is `Add.no_release` (the text of `add`, with the close versions of the answer).
+# `SourceBuild` and the compiler selectors do not reach here: `Ref.parse` stops them for `add` (`Scope.Install`).
+fresh_items! : Fx, ResolveBase.Request, List(ResolveBase.Fresh), List(Str) => Try(List(ClosureRequest.Group), Fail)
+fresh_items! = |fx, request, fresh, known| {
+	source = match (request.registry, request.index) {
+		(Read(query), _) => Ok({
+			origin: query.origin,
+			snapshot: match query.snapshot {
+				Log(n) => Ok(n)
+				_ => Err(None)
+			},
+		})
+		(_, Offline(origin)) => Ok({ origin, snapshot: Err(None) })
+		_ => Err(Direct)
+	}
+	match source {
+		Err(Direct) => Ok([])
+		Ok(registry) => {
+			var $items = no_items
+			for f in fresh {
+				typed = match f.selector {
+					Ok(selector) => Ok({ selector, text: f.text })
+					Err(None) => Err(None)
+				}
+				read = FullName.read!(fx, { net: request.net, roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, name: f.name, selector: typed, snapshot: registry.snapshot, known })?
+				match read {
+					Found(releases) => match FullName.closure_item({ releases, selector: f.selector, text: f.text, range: f.range }) {
+						Ok(item) => {
+							$items = $items.append(item)
+						}
+						Err(NoMatch) => return Err(no_match(f, releases.releases.map(|r| r.version)))
+					}
+					NoMatch => return Err(no_match(f, []))
+					SourceBuild => return Err(Fail.new(Internal, "${f.name}: a source build is not read from the registry"))
+				}
+			}
+			Ok($items)
+		}
+	}
+}
+
+no_items : List(ClosureRequest.Group)
+no_items = []
+
+# Design Q430: the text of `add`. A name with no selector and no release at all is the text of R-AD35 step 2.
+no_match : ResolveBase.Fresh, List(Str) -> Fail
+no_match = |f, versions| match f.selector {
+	Ok(_) => Add.no_release({ name: f.name, selector: f.selector, text: f.text, versions })
+	Err(None) => FullName.no_candidate({ name: f.name })
+}
+
+# Slice 206e3b (Design Q522, R-EP4, D8): the second search infers the facts again with the merged `epochs` of both answers: a domain that has more than the held compiler is read again (`PickLoop.wide!`, no new list read). A domain of the held compiler only has nothing to infer.
+wider : ClosureIndex.Source, Try(List(Str), [NotRead]) -> Try(List(Str), [NotRead])
+wider = |index, domain| match (index, domain) {
+	(Answer(_), Ok(ids)) if ids.len() > 1 => Err(NotRead)
+	_ => domain
 }
 
 # R-RP4, D3: `upgrade X` holds the nightly, and its second search can move it. The values are the installed compilers (`NightlyFlow.movable!`). The compiler list is read once for the command (`Probed.listed`, Q3).
@@ -269,5 +362,124 @@ short_failure = |from, text| match Ref.parse(text, Scope.Install, Bool.False) {
 	}
 }
 
-no_optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }
-no_optional = { ids: [], sizes: [] }
+# Slice 206b (R-AL2 step 2, R-RG4, R-AP16, R-AP19, R-DI1, R-DI14): the first closure query of a run with a registry (`registry` is `Read`), after the scope and before the index.
+# The guard checks what the query carries (`IndexQuery.sources`: the groups, then the URLs with a hash), then one query (`ClosureIndex.query!`) with the groups of the free variables (`IndexQuery.groups`), the header entries and the window of the query (`Query.window`: `Held`, `Free` for the free nightly of `upgrade` (slice 206e2), or none: Q437).
+# `--snapshot log:N` hides the answer above N, with the `hashes` of the request as the keep list (Q403). The result is the request with `index` = `Answer`. Any other `registry`: the request as it is (no call).
+# Slice 206d (R-AP28, R-AP65, R-DI7, R-DI11, R-C9, Design Q425, Q460, Q462): `UnknownValues.settle!` after the first query (the header values as `urls`, `snapshot` true for `log:N`), then `hide_above`. The index is the answer of `settle!`.
+# Slice 206e (Design Q469): with no group and no hash (no source) there is no guard and no query: the request as it is.
+# Each value whose `anchor_note` is `Ok` (no release of its group in the answer of `settle!`) prints `<alias>: <note>` on stdout, in the order of `unknown`, and is an anchor (`anchors`: its URL).
+# Slice 206e2: `groups` are given by the caller (`IndexQuery.groups` of the scope, or `IndexQuery.report_groups` for `tln outdated`).
+query! : Fx, ResolveBase.Request, Loaded, List(ClosureRequest.Group) => Try({ request : ResolveBase.Request, anchors : List(Str), second : Try(PickFlow.Second, [None]) }, Fail)
+query! = |fx, request, loaded, groups| match request.registry {
+	Read(query) => {
+		entries = loaded.members.join_map(|m| m.locked.rows.map(|r| r.value))
+		sources = IndexQuery.sources({ groups, entries })
+		# Slice 206e (Design Q469, R-DI1): a run with no group and no hash sends no query (no guard): the run is as `direct`.
+		if sources.is_empty() {
+			return Ok({ request, anchors: [], second: Err(None) })
+		}
+		PrivacyGuard.check!(fx, { net: request.net, roots: request.roots, sources, offline: request.offline, frozen: request.frozen })?
+		facts = { groups, entries, window: query.window }
+		(keep, compilers) = match ClosureRequest.request(facts) {
+			Ok(wire) => (wire.hashes, wire.compilers)
+			Err(_) => ([], Err(None))
+		}
+		first = ClosureIndex.query!(fx, { origin: query.origin, version: Help.version, facts })?
+		log = match query.snapshot {
+			Log(_) => Bool.True
+			_ => Bool.False
+		}
+		settled = UnknownValues.settle!(fx, { origin: query.origin, version: Help.version, roots: request.roots, facts, first, urls: entries, snapshot: log })?
+		rows = loaded.members.join_map(|m| m.locked.rows)
+		var $anchors = []
+		for v in settled.values {
+			match UnknownValues.anchor_note({ end: v.end, url: v.url, releases: settled.answer.releases }) {
+				Ok(note) => {
+					alias = rows.find_first(|r| r.value == v.url).map_ok(|r| r.alias) ?? ""
+					fx.out!("${alias}: ${note}\n")
+					$anchors = $anchors.append(v.url)
+				}
+				Err(None) => {}
+			}
+		}
+		(shown, user) = match query.snapshot {
+			Log(n) => (LogSnapshot.hide_above(settled.answer, { n, keep }), Ok(n))
+			_ => (settled.answer, Err(None))
+		}
+		second = { origin: query.origin, first: settled.answer, compilers, keep, user, anchors: $anchors }
+		Ok({ request: { ..request, index: Answer({ origin: query.origin, answer: shown }) }, anchors: $anchors, second: Ok(second) })
+	}
+	_ => Ok({ request, anchors: [], second: Err(None) })
+}
+
+# Slice 206d (R-AP28, R-DI11): the group of an anchor URL acts as a group with no index: its form is in `missing_forms` of its name, so the pick holds the header value (R-C9).
+anchored : List(Candidates), List(Str) -> List(Candidates)
+anchored = |found, anchors| {
+	idents = anchors.keep_oks(Ident.of_url)
+	found.map(
+		|c| {
+			lower = c.name.with_ascii_lowercased()
+			forms = idents
+				.keep_if(|ident| (ident.name.map_ok(|n| n.with_ascii_lowercased() == lower) ?? Bool.False))
+				.map(|ident| ident.group.form)
+				.fold(c.missing_forms, |list, form| if list.contains(form) list else list.append(form))
+			{ ..c, missing_forms: forms }
+		},
+	)
+}
+
+# Slice 206d (R-IX6, Design Q462): with the index `Offline`, each variable whose group has no kept copy (`missing`, or its form in `missing_forms`) prints `<alias>: fixed: offline, no cached index` (the alias of its first use), in the order of the variables.
+offline_notes! : Fx, ResolveBase.Request, List(Vars.Scoped), List(Candidates) => {}
+offline_notes! = |fx, request, scoped, found| match request.index {
+	Offline(_) => {
+		for s in scoped {
+			match s.variable.name {
+				Ok(name) => match found.find_first(|c| c.name == name) {
+					Ok(c) if c.missing or c.missing_forms.contains(s.variable.group.form) => {
+						alias = s.variable.uses.first().map_ok(|u| u.alias) ?? ""
+						fx.out!("${alias}: fixed: offline, no cached index\n")
+					}
+					_ => {}
+				}
+				Err(NoName) => {}
+			}
+		}
+	}
+	_ => {}
+}
+
+# Slice 206d2 (R-SP24, Registry R-AP16, R-AP19, R-AL8, Design Q404, Q460): the index of the second search. With no registry answer: the release lists of the movable names that have no page yet (R-DI1), as before.
+# With a registry answer: one second closure query (`LogSnapshot.second!`), once per command (Design Q466: `kept` is the second answer of an earlier search of the command, for example before a ladder drop, and is used again with no request) with the groups of the movable variables (`IndexQuery.second_groups`). The candidates of the movable names come from the second answer (after the hide).
+# The second search reads its facts from the records of both answers (the second first), so the facts of a moved release need no archive read. The request that `finish!` gets keeps the first answer (R-DT5: the first `log_size`).
+second_index! : Fx, ResolveBase.Request, PickFlow.Ready, Try(Wire.Answer, [NotRead]) => Try({ request : ResolveBase.Request, found : List(Candidates), second : Try(Wire.Answer, [NotRead]) }, Fail)
+second_index! = |fx, request, ready, kept| match (ready.second, request.index) {
+	(Ok(q), Answer(a)) => {
+		answer = match kept {
+			Ok(got) => got
+			Err(NotRead) => LogSnapshot.second!(fx, { origin: q.origin, version: Help.version, first: q.first, compilers: q.compilers, groups: IndexQuery.second_groups(ready.scoped), keep: q.keep, user: q.user })?
+		}
+		names = ready.scoped
+			.keep_if(|s| s.movable)
+			.keep_oks(|s| s.variable.name.map_err(|_| None))
+			.fold(ResolveBase.no_names, |list, name| if list.contains(name) list else list.append(name))
+		more = anchored(PickIndex.index!(fx, { ..request, index: Answer({ origin: q.origin, answer }) }, names, ready.known)?, q.anchors)
+		both = LogSnapshot.merged({ first: a.answer, second: answer })
+		Ok({ request: { ..request, index: Answer({ origin: a.origin, answer: both }) }, found: joined(ready.found, more), second: Ok(answer) })
+	}
+	_ => {
+		more = PickIndex.index!(fx, request, movable_names(ready.scoped, ready.found), ready.known)?
+		Ok({ request, found: ready.found.concat(more), second: kept })
+	}
+}
+
+# The candidates of the first index with those of the second answer: a name in both gets the releases of the second answer that its list does not have.
+joined : List(Candidates), List(Candidates) -> List(Candidates)
+joined = |found, more| {
+	merged = found.map(
+		|c| match more.find_first(|m| m.name == c.name) {
+			Ok(m) => { ..c, list: c.list.concat(m.list.keep_if(|x| !c.list.any(|y| y.url == x.url))) }
+			Err(_) => c
+		},
+	)
+	merged.concat(more.keep_if(|m| !found.any(|c| c.name == m.name)))
+}

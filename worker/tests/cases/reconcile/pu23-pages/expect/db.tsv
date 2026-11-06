@@ -1,0 +1,8 @@
+@ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/many	W/"m"	\N	1767000000000	1767225900000	1	0
+acme/two	\N	\N	1767225600000	1767229200000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/two	1.0.0	\N	\N
+2	acme/two	2.0.0	\N	\N
+3	acme/two	3.0.0	deleted	1767225600000
+4	acme/many	1.0.0	\N	\N

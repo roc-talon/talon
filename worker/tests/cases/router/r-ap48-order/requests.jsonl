@@ -1,0 +1,4 @@
+{"method":"POST","path":"/v1/nowhere","headers":{"content-type":"text/plain"},"body":"x"}
+{"method":"DELETE","path":"/v1/closure","headers":{"content-type":"text/plain"},"body":"x"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"text/plain"},"body":"x"}
+{"method":"POST","path":"/v1/closure","json":{}}

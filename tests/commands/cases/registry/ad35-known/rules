@@ -1,0 +1,2 @@
+R-AD35 R-AP1 R-RG4 R-IX3 R-AP24 (slice 212, entry registry, the word fullname): the registry knows the name: no ingest.
+The guard runs first (R-RG4: the name is in the request). R-AP1 answers 200: the answer is the result. No GitHub release list, no `programs curl`, no POST, no second read (R-AD35 is for a 404 only). The copy is kept (R-IX3).

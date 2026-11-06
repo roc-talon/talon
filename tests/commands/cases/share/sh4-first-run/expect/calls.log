@@ -1,0 +1,101 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+lock $HOME/.local/share/talon/share.json nowait: held
+read_files $HOME/.local/share/talon/share.json
+random
+random
+random
+write_atomic $HOME/.local/share/talon/share.json.0123456789abcdef.tmp
+spawn_all limit=1
+  job - chmod 0600 $HOME/.local/share/talon/share.json.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/share.json.0123456789abcdef.tmp $HOME/.local/share/talon/share.json
+unlock $HOME/.local/share/talon/share.json
+env_all
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+args
+env_all
+tty
+read_files $HOME/h2/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+lock $HOME/h2/.config/talon/config.toml nowait: held
+read_files $HOME/h2/.config/talon/config.toml
+read_files $HOME/h2/.config/talon/config.toml
+write_atomic $HOME/h2/.config/talon/config.toml
+unlock $HOME/h2/.config/talon/config.toml
+env_all
+args
+env_all
+tty
+read_files $HOME/h3/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+lock $HOME/h3/.config/talon/config.toml nowait: held
+read_files $HOME/h3/.config/talon/config.toml
+read_files $HOME/h3/.config/talon/config.toml
+write_atomic $HOME/h3/.config/talon/config.toml
+unlock $HOME/h3/.config/talon/config.toml
+env_all
+args
+env_all
+tty
+read_files $HOME/h5/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+lock $HOME/h5/.config/talon/config.toml nowait: held
+read_files $HOME/h5/.config/talon/config.toml
+read_files $HOME/h5/.config/talon/config.toml
+write_atomic $HOME/h5/.config/talon/config.toml
+unlock $HOME/h5/.config/talon/config.toml
+env_all
+args
+env_all
+tty
+read_files $HOME/h4/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+env_all
+args
+env_all
+tty
+read_files $HOME/h4/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+env_all

@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -30,6 +31,7 @@ delete $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c283586552
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -59,6 +61,7 @@ write_atomic $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90
 unlock $HOME/.local/share/talon/tools.json
 args
+env_all
 env_all
 clock
 platform
@@ -92,6 +95,7 @@ delete $HOME/.cache/roc/talon/x/3fcb48642a45b799cfb0f931e6ad0bb39d7fc573d873cad9
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -122,6 +126,7 @@ write_atomic $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/x/2465c81fd37d63dfe64b7fb10405cb4e2288e7d896bf7b1f7764c036cb4d9d79
 unlock $HOME/.local/share/talon/tools.json
 args
+env_all
 env_all
 clock
 platform
@@ -185,6 +190,7 @@ unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -238,6 +244,7 @@ unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -246,6 +253,7 @@ list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec/manifest.json $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa/manifest.json $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785/manifest.json $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37/manifest.json
 list_dirs $HOME/.cache/roc/talon/x/5b63baf21a7c3ce15a158b0019403274644d0500355153c514b457120525dcec $HOME/.cache/roc/talon/x/67cc000938554db938e11fb98521e9292921616cc87fa7e97febd53459c1f8aa $HOME/.cache/roc/talon/x/8ccda09c91d22e8fadaca2fac0d62b380983adb731453fbd89264539e7b6c785 $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc184349dfe16cc8697d37
 args
+env_all
 env_all
 clock
 platform
@@ -273,6 +281,7 @@ delete $HOME/.cache/roc/talon/x/a02f7671da85563e40fe92c0f8a3c3136c0b8f058cbc1843
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -280,6 +289,7 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
 args
+env_all
 env_all
 clock
 platform

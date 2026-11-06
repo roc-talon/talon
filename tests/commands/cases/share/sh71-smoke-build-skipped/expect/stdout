@@ -1,0 +1,8 @@
+== verify --no-probe --file u1/main.roc
+check: passed
+build: skipped (recorded pass)
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+verified: the tuple passes. No project file was written.
+exit 0

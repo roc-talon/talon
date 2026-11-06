@@ -1,0 +1,18 @@
+FAIL reconcile/tp18-rename-transfer (1088 ms)
+    d1-calls: request 2: expected 3, got 2 (all,batch)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/t\t800\t81\t2\tacme/t2\t1767225600000\t1767000000000","acme/t2\t800\t81\t0\t\\N\t1767225600000\t1767225600000"]
+      got:      ["acme/t\t800\t80\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/t\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/t\t2\t1\t800\t800\t80\t81\t\\N\t\\N\t1767225600000","acme/t\t3\t2\t800\t800\t81\t81\tacme/t2\t\\N\t1767225600000","acme/t2\t1\t2\t\\N\t800\t\\N\t81\t\\N\t\\N\t1767225600000"]
+      got:      ["acme/t\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000"]
+    db: @ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/t\t\\N\t\\N\t1767229200000\t1767232800000\t0\t0","acme/t2\t\\N\t\\N\t1767229200000\t1767232800000\t0\t0"]
+      got:      ["acme/t\t\\N\t\\N\t1767229200000\t1767232800000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/T2/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repos/Acme/T2/releases?per_page=100"]
+w2: 0 passed, 1 failed

@@ -1,0 +1,8 @@
+{"status": 200, "json": {"matches": [{"matches": [], "short": "a"}, {"matches": [], "short": "b"}]}}
+{"status": 200, "json": {"matches": [{"matches": [], "short": "Roc-x y"}]}}
+{"status": 200, "json": {"matches": [{"matches": [], "short": "a&b"}, {"matches": [], "short": "c=d"}]}}
+{"status": 200, "json": {"matches": [{"matches": [], "short": "100%"}, {"matches": [], "short": "50%"}]}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter short must not be empty"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "GET /v1/packages needs the query parameter short or q"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter q must not be given more than once"}}
+{"status": 200, "json": {"matches": [{"matches": [], "short": "\ufffd"}, {"matches": [], "short": "a\ufffd(b"}]}}

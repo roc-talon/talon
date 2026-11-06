@@ -1,0 +1,12 @@
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"a body with compat needs a GitHub OIDC token (tln publish)"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is empty"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"}}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type"}}
+{"status":405,"headers":{"allow":"GET, POST"},"problem":{"type":"/errors/method-not-allowed"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate"}}

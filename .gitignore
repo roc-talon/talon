@@ -19,3 +19,6 @@ research/slice-084-revert/reference-qc1/l2bin
 research/slice-085-revert/reference/l2
 research/slice-085-revert/merged/l2
 research/slice-085-revert/reference/bin/
+
+# Local secrets (Cloudflare token, R2 keys). Never commit.
+/.env

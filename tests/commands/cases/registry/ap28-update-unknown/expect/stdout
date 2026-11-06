@@ -1,0 +1,29 @@
+== update --no-check --dry-run --file u1/main.roc
+csv: fixed: not in the registry index
+yaml: fixed: not in the registry index
+other: fixed: not in the registry index
+check: skipped
+$PROJECT/u1/main.roc
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+resolved at log:51, 0 probes
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --snapshot log:40 --file u1/main.roc
+json: fixed: not in the registry index
+csv: fixed: not in the registry index
+yaml: fixed: not in the registry index
+other: fixed: not in the registry index
+check: skipped
+$PROJECT/u1/main.roc
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+resolved at log:40, 0 probes
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --snapshot log:30 --file u1/main.roc
+json: fixed: not in the registry index
+csv: fixed: not in the registry index
+yaml: fixed: not in the registry index
+other: fixed: not in the registry index
+nothing to change
+dry run: nothing was written
+exit 0

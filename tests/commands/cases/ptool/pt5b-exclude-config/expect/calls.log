@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -55,6 +57,8 @@ read_files $PROJECT/p1/talon.toml
 write_atomic $PROJECT/p1/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -86,6 +90,8 @@ read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/
 read_files $PROJECT/p3/talon.toml
 write_atomic $PROJECT/p3/talon.toml
 args
+env_all
+tty
 env_all
 clock
 cwd

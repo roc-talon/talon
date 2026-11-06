@@ -1,0 +1,39 @@
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:129:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:141:1
+
+expect {
+    s1 = ArchiveRead.empty().count(60000000) ?? crash "count 1"
+    s2 = s1.count(40000000)
+    s3 = (s2 ?? crash "count 2").count(1)
+    (s2.is_ok(), s3.map_ok(|_| {})) == (Bool.True, Err(TooLarge({ bytes: 100000001, from: Count })))
+}
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:148:1
+
+expect ArchiveRead.empty().count(100000001).map_ok(|_| {}) == Err(TooLarge({ bytes: 100000001, from: Count }))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 27 tests in 1081.7 ms.:
+    25 passed
+    2 failed
+    0 compiler errors
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:129:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+0 errors and 1 warning found in 1m 6s while successfully building:
+
+    archive-test.wasm

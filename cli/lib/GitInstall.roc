@@ -70,7 +70,7 @@ Run : { args : Args, env : List((Str, Str)), roots : Roots, host : Nightlies.Hos
 flow! : Fx, Args, GitRef.Source => Try(Done, Fail)
 flow! = |fx, args, source| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
 	real = fx.clock!()
 	now = match Clock.now({ talon_now: env_var(env, "TALON_NOW"), real }) {

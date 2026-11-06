@@ -1,0 +1,19 @@
+@ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/lib	W/"l2"	W/"r2"	1767232800000	1767236400000	0	0
+acme/lib-old	\N	\N	\N	1769817600000	0	0
+acme/priv	\N	\N	\N	1769817600000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	\N	\N
+2	acme/lib	2.0.0	repo-missing	1767225600000
+3	acme/lib-old	0.9.0	\N	\N
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/lib	500	50	0	\N	1767229200000	1767000000000
+acme/lib-old	500	50	2	acme/lib	1767000000000	1767000000000
+acme/priv	800	80	1	\N	1767225600000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/lib	1	0	\N	500	\N	50	\N	\N	1767000000000
+acme/lib	2	4	500	500	50	50	\N	\N	1767225600000
+acme/lib	3	5	500	500	50	50	\N	\N	1767229200000
+acme/lib-old	1	0	\N	500	\N	50	\N	\N	1767000000000
+acme/priv	1	0	\N	800	\N	80	\N	\N	1767000000000
+acme/priv	2	4	800	800	80	80	\N	\N	1767225600000

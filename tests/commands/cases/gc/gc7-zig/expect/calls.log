@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
@@ -9,6 +11,7 @@ read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $H
 read_files $HOME/.cache/roc/toolchains/zig-0.14.0/.last-use $HOME/.cache/roc/toolchains/zig-0.15.1/.last-use $HOME/.cache/roc/toolchains/zig-0.16.1/.last-use $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
 tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/zig-0.14.0 $HOME/.cache/roc/toolchains/zig-0.16.1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp
 args
+env_all
 env_all
 clock
 lock $HOME/.cache/roc/talon/gc nowait: held
@@ -39,6 +42,8 @@ delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp
 unlock $HOME/.cache/roc/talon/gc
 args
 env_all
+tty
+env_all
 clock
 lock $HOME/.cache/roc/talon/gc nowait: held
 read_files $HOME/.config/talon/config.toml
@@ -51,6 +56,8 @@ tree_info $HOME/.cache/roc/toolchains/zig-0.16.1
 lock $HOME/.cache/roc/toolchains/zig-0.16.1 nowait: busy
 unlock $HOME/.cache/roc/talon/gc
 args
+env_all
+tty
 env_all
 clock
 lock $HOME2/.cache/roc/talon/gc nowait: held

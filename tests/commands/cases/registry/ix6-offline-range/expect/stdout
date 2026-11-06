@@ -1,0 +1,2 @@
+== update --no-check --dry-run --offline --file u1/main.roc
+exit 15

@@ -1,0 +1,20 @@
+== update --no-check --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --snapshot 2026-10-01T00:00:00Z --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-01T00:00:00Z (log:50), 0 probes
+dry run: nothing was written
+exit 0

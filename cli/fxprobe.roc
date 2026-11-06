@@ -33,6 +33,13 @@ import RealFx
 ## | `mkdirs <path>...` | `make_dirs!` | `made` or `err <error>` |
 ## | `random` | `random!` twice | `random ok` when the two numbers differ |
 ## | `lockspawn <item> <cwd or -> <argv words>` | `lock!` (`NoWait`) of the item, then `spawn_all!` with one job and limit 1, then `unlock!` | `held <item>`, the `job` line, `unlocked <item>`. Or `busy <item>`. The lock stays held during the child (R-CC3 point 3), and its heartbeat goes on in the poll loop (R-CC12). |
+## Slice 200 adds three calls:
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `send <GET, POST, PUT or DELETE> <url> <timeout_s> [h:<Name>=<value>]... [body=<text>]` | `http_send!`. `body=<text>` is one argument (`\n` is a new line, `\\` a backslash). | `status <n>`, `header <Name>: <value>` for each header, `body <text>`. Or `err Timeout` or `err Failed` (the text of `Failed` is not printed: it depends on the code of the real `Fx`). |
+## | `all <limit> [tmp=<dir>] [t=<s>] [h:<Name>=<value>]... [auth@\|contrib@]<METHOD>:<url>[\|<body>]...` | `http_all!` with one request for each other word. Each request has all the `h:` headers, the text after `\|` as its body, the timeout `t` (default 20) and `tmp_dir` (default `tmp`). The prefix `auth@` adds `Authorization: Bearer secret-token`, `contrib@` adds `Talon-Contributor: secret-contributor` (R-DA8 rule 1). | `result <i> status <n> body <text>` or `result <i> err <the error>`, in the order of the list |
+## | `sleep <ms>` | `sleep!` | `slept <ms>` |
 ## Slice 006 adds two calls:
 ##
 ## | Call | Does | Prints |
@@ -99,6 +106,30 @@ import RealFx
 ## | `db-query <path> <busy_ms> pinned <tag:target>...` | `db_query!` with `Pinned(keys)` | the `Db.pinned_line` of each row, sorted, or `none`, or `err <the error>` |
 ## | `db-write <path> <busy_ms> facts <replace or keep> <hash:nightly:target:outcome:modules:closure>...` | `db_write!` with `Facts` (`modules` are split at `,`) | `ok` or `err <the error>` |
 ## | `db-write <path> <busy_ms> pinned <tag:target:sha256:source>...` | `db_write!` with `Pinned` (`source` is `github-digest` or `registry`) | `ok` or `err <the error>` |
+## Slice 215 adds 3 calls (the share queue, R-SH3, R-SH4, R-TF7; slice 213 left the SQL of `QueueCount` and `ClearQueue` with no probe line):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `db-write <path> <busy_ms> queue <cap> <hash,nightly,target,result,talon_version,queued_at>...` | `db_write!` with `Queue({ rows, cap })` (the fields are split at `,`, `result` is `pass`, `fail` or `crash`) | `ok` or `err <the error>` |
+## | `db-write <path> <busy_ms> clear-queue` | `db_write!` with `ClearQueue` | `ok` or `err <the error>` |
+## | `db-query <path> <busy_ms> queue-count` | `db_query!` with `QueueCount` | `queue <n>`, or `err <the error>` |
+## Slice 216 adds 2 calls (R-SH4, the send of the queue):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `db-query <path> <busy_ms> queue-rows` | `db_query!` with `QueueRows` | `qrow <Db.queue_line>` for each row in the order of `seq` (the columns split by a TAB), or `none`, or `err <the error>` |
+## | `db-write <path> <busy_ms> unqueue <seq>...` | `db_write!` with `Unqueue` | `ok` or `err <the error>` |
+## Slice 217 adds 1 call (R-PB6, `tln probe --share`):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `db-query <path> <busy_ms> facts-of <hash>` | `db_query!` with `FactsOf(hash)` | the `Db.fact_line` of each row of that hash (each nightly, target and closure), sorted by the line (no row: `none`), or `err <the error>` |
+## Slice 218 adds 2 calls (R-SM3 row 3, R-SM4, R-TF7, the table `smoke`):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `db-query <path> <busy_ms> smoke <hash:nightly:target>...` | `db_query!` with `Smoke(keys)` | the `Db.smoke_line` of each row, sorted by the line (no row: `none`), or `err <the error>` |
+## | `db-write <path> <busy_ms> smoke <hash,nightly,target,outcome>...` | `db_write!` with `Smoke(rows)` (`outcome` is `pass`, `fail`, `hang` or `crash`) | `ok` or `err <the error>` |
 main! = |args| {
 	fx = RealFx.make!(args.map(|a| a.display()))
 	match fx.args!() {
@@ -197,6 +228,83 @@ probe! = |fx, call, rest| match (call, rest) {
 			}
 			Err(err) => say!(fx, "err ${Str.inspect(err)}")
 		}
+	}
+	("send", [method, url, timeout, .. as extra]) => {
+		headers = extra.keep_oks(
+			|word| if word.starts_with("h:") {
+				match word.drop_prefix("h:").split_first("=") {
+					Ok({ before, after }) => Ok((before, after))
+					Err(_) => Err(NotHeader)
+				}
+			} else {
+				Err(NotHeader)
+			},
+		)
+		body = match extra.find_first(|word| word.starts_with("body=")) {
+			Ok(word) => word.drop_prefix("body=").replace_each("\\n", "\n").replace_each("\\\\", "\\")
+			Err(_) => ""
+		}
+		match fx.http_send!({ method: http_method(method), url, headers, body, timeout_s: U64.from_str(timeout) ?? 20 }) {
+			Ok(answer) => {
+				say!(fx, "status ${answer.status.to_str()}")
+				for (name, value) in answer.headers {
+					say!(fx, "header ${name}: ${value}")
+				}
+				say!(fx, "body ${answer.body}")
+			}
+			Err(err) => say!(fx, "err ${err_name(err)}")
+		}
+	}
+	("all", [limit, .. as words]) => {
+		headers = words.keep_oks(
+			|word| if word.starts_with("h:") {
+				match word.drop_prefix("h:").split_first("=") {
+					Ok({ before, after }) => Ok((before, after))
+					Err(_) => Err(NotHeader)
+				}
+			} else {
+				Err(NotHeader)
+			},
+		)
+		tmp_dir = match words.find_first(|word| word.starts_with("tmp=")) {
+			Ok(word) => word.drop_prefix("tmp=")
+			Err(_) => "tmp"
+		}
+		timeout_s = match words.find_first(|word| word.starts_with("t=")) {
+			Ok(word) => U64.from_str(word.drop_prefix("t=")) ?? 20
+			Err(_) => 20
+		}
+		requests = words.keep_if(|word| !word.starts_with("h:") and !word.starts_with("tmp=") and !word.starts_with("t=")).map(
+			|item| {
+				(extra, plain) = if item.starts_with("auth@") {
+					([("Authorization", "Bearer secret-token")], item.drop_prefix("auth@"))
+				} else if item.starts_with("contrib@") {
+					([("Talon-Contributor", "secret-contributor")], item.drop_prefix("contrib@"))
+				} else {
+					([], item)
+				}
+				(target, body) = match plain.split_first("|") {
+					Ok({ before, after }) => (before, after)
+					Err(_) => (plain, "")
+				}
+				all_headers = headers.concat(extra)
+				match target.split_first(":") {
+					Ok({ before, after }) => { method: http_method(before), url: after, headers: all_headers, body, timeout_s }
+					Err(_) => { method: Get, url: target, headers: all_headers, body, timeout_s }
+				}
+			},
+		)
+		results = fx.http_all!({ requests, limit: U64.from_str(limit) ?? 1, tmp_dir })
+		for (i, result) in results.map_with_index(|r, i| (i, r)) {
+			match result {
+				Ok(answer) => say!(fx, "result ${i.to_str()} status ${answer.status.to_str()} body ${answer.body}")
+				Err(err) => say!(fx, "result ${i.to_str()} err ${err_name(err)}")
+			}
+		}
+	}
+	("sleep", [ms]) => {
+		fx.sleep!(U64.from_str(ms) ?? 0)
+		say!(fx, "slept ${ms}")
 	}
 	("programs", names) => {
 		found = fx.programs!(names)
@@ -356,9 +464,14 @@ probe! = |fx, call, rest| match (call, rest) {
 		)
 		match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Facts(keys)) {
 			Ok(Facts(rows)) => lines_of!(fx, rows.map(Db.fact_line))
-			Ok(Pinned(_)) => say!(fx, "err wrong answer")
+			Ok(_) => say!(fx, "err wrong answer")
 			Err(err) => say!(fx, "err ${Str.inspect(err)}")
 		}
+	}
+	("db-query", [path, busy, "facts-of", hash]) => match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, FactsOf(hash)) {
+		Ok(Facts(rows)) => lines_of!(fx, rows.map(Db.fact_line))
+		Ok(_) => say!(fx, "err wrong answer")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
 	}
 	("db-query", [path, busy, "pinned", .. as specs]) => {
 		keys = specs.keep_oks(
@@ -369,7 +482,7 @@ probe! = |fx, call, rest| match (call, rest) {
 		)
 		match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Pinned(keys)) {
 			Ok(Pinned(rows)) => lines_of!(fx, rows.map(Db.pinned_line))
-			Ok(Facts(_)) => say!(fx, "err wrong answer")
+			Ok(_) => say!(fx, "err wrong answer")
 			Err(err) => say!(fx, "err ${Str.inspect(err)}")
 		}
 	}
@@ -400,6 +513,73 @@ probe! = |fx, call, rest| match (call, rest) {
 			},
 		)
 		match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Pinned(rows)) {
+			Ok(_) => say!(fx, "ok")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
+	}
+	("db-write", [path, busy, "queue", cap, .. as specs]) => {
+		rows = specs.keep_oks(
+			|spec| match spec.split_on(",") {
+				[hash, nightly, target, result, talon_version, queued_at] => match Db.outcome_of(result) {
+					Ok(outcome) => Ok({ hash, nightly, target, result: outcome, talon_version, queued_at })
+					Err(_) => Err(BadSpec)
+				}
+				_ => Err(BadSpec)
+			},
+		)
+		match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Queue({ rows, cap: U64.from_str(cap) ?? 0 })) {
+			Ok(_) => say!(fx, "ok")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
+	}
+	("db-write", [path, busy, "clear-queue"]) => match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, ClearQueue) {
+		Ok(_) => say!(fx, "ok")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("db-query", [path, busy, "queue-count"]) => match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, QueueCount) {
+		Ok(QueueCount(n)) => say!(fx, "queue ${n.to_str()}")
+		Ok(_) => say!(fx, "err wrong answer")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("db-query", [path, busy, "queue-rows"]) => match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, QueueRows) {
+		Ok(QueueRows(items)) => if items.is_empty() {
+			say!(fx, "none")
+		} else {
+			for item in items {
+				say!(fx, "qrow ${Db.queue_line(item)}")
+			}
+		}
+		Ok(_) => say!(fx, "err wrong answer")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("db-write", [path, busy, "unqueue", .. as seqs]) => match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Unqueue(seqs.keep_oks(U64.from_str))) {
+		Ok(_) => say!(fx, "ok")
+		Err(err) => say!(fx, "err ${Str.inspect(err)}")
+	}
+	("db-query", [path, busy, "smoke", .. as specs]) => {
+		keys = specs.keep_oks(
+			|spec| match spec.split_on(":") {
+				[hash, nightly, target] => Ok({ hash, nightly, target })
+				_ => Err(BadSpec)
+			},
+		)
+		match fx.db_query!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Smoke(keys)) {
+			Ok(Smoke(rows)) => lines_of!(fx, rows.map(Db.smoke_line))
+			Ok(_) => say!(fx, "err wrong answer")
+			Err(err) => say!(fx, "err ${Str.inspect(err)}")
+		}
+	}
+	("db-write", [path, busy, "smoke", .. as specs]) => {
+		rows = specs.keep_oks(
+			|spec| match spec.split_on(",") {
+				[hash, nightly, target, outcome] => match Db.outcome_of(outcome) {
+					Ok(found) => Ok({ hash, nightly, target, outcome: found })
+					Err(_) => Err(BadSpec)
+				}
+				_ => Err(BadSpec)
+			},
+		)
+		match fx.db_write!({ path, busy_ms: U64.from_str(busy) ?? 0, format: Db.format }, Smoke(rows)) {
 			Ok(_) => say!(fx, "ok")
 			Err(err) => say!(fx, "err ${Str.inspect(err)}")
 		}
@@ -475,4 +655,18 @@ show_probes! = |fx, pool, words| {
 	for (i, result) in results.map_with_index(|r, i| (i, r)) {
 		say!(fx, "probe ${i.to_str()} ${Str.inspect(result.ended)} stdout=${Str.inspect(result.stdout)} stderr=${Str.inspect(result.stderr)}")
 	}
+}
+
+http_method : Str -> [Get, Post, Put, Delete]
+http_method = |text| match text {
+	"POST" => Post
+	"PUT" => Put
+	"DELETE" => Delete
+	_ => Get
+}
+
+err_name : [Timeout, Failed(Str)] -> Str
+err_name = |err| match err {
+	Timeout => "Timeout"
+	Failed(_) => "Failed"
 }

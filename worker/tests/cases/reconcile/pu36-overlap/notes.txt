@@ -1,0 +1,2 @@
+1: 2 scheduled runs at the same time: the claim of one run takes the 3 rows, the claim of the other takes none (D1 runs one write at a time). Each repository is read once. 2 claims + 3 batches
+2: the same planned time again: no row, no read, 1 D1 call

@@ -1,0 +1,14 @@
+docs/slices/104-records.md
+packages/records/main.roc
+packages/records/Id.roc
+packages/records/Code.roc
+packages/records/Problem.roc
+packages/records/Release.roc
+packages/records/Artifact.roc
+packages/records/Closure.roc
+packages/records/tests/w0.roc
+packages/records/tests/IdTest.roc
+packages/records/tests/CodeTest.roc
+packages/records/tests/ProblemTest.roc
+packages/records/tests/WireTest.roc
+research/slice-104-revert/probe/p2.roc

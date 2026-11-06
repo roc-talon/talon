@@ -1,0 +1,1 @@
+R-AD34 R-AD3 R-SN4 R-I8 R-AD35 Q545 (slice 206f): `tln install known` with a registry: the short name has one match (`?short=known`, no guard call), the line `matched "known": acme/known` (stdout, first, D2), then the same as `add acme/known`: R-AP1, one closure query with `{group}` only, `+ known: acme/known 1.1.0`. Exit 0.

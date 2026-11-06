@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -66,68 +67,8 @@ list_dirs $HOME/.cache/roc/toolchains
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
-clock
-platform
-read_files $HOME/.local/share/talon/tools.json
-read_files $HOME/.config/talon/config.toml
-list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
-read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
-list_dirs $HOME/.local/bin
-sha256_file $HOME/.local/bin/foo
-sha256_file $HOME/.local/share/talon/bin/foo
-random
-list_dirs $HOME/.cache/roc/packages
-read_files $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc/main.roc
-random
-list_dirs $HOME/.cache/roc/packages
-read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
-list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
-read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/talon/index/github/acme/bar/1.json
-http_get https://api.github.com/repos/acme/gm/commits/main
-  User-Agent: tln/0.0.1
-  Accept: application/vnd.github.sha
-list_dirs $HOME/.local/bin
-sha256_file $HOME/.local/bin/gm
-sha256_file $HOME/.local/share/talon/bin/gm
-programs curl wget
-random
-make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
-spawn_all limit=8
-  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/gm/tarball/bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c
-spawn_all limit=1
-  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
-delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
-read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/main.roc
-random
-list_dirs $HOME/.cache/roc/packages
-read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
-http_get https://api.github.com/repos/acme/gs/commits/stable
-  User-Agent: tln/0.0.1
-  Accept: application/vnd.github.sha
-list_dirs $HOME/.cache/roc/toolchains
-db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
-list_dirs $HOME/.cache/roc/toolchains
 tty
-clock
-platform
 read_files $HOME/.config/talon/config.toml
-list_dirs $HOME/.cache/roc/toolchains
-list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
-http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
-  User-Agent: tln/0.0.1
-write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
-db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
-db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
-clock
-platform
-read_files $HOME/.config/talon/config.toml
-list_dirs $HOME/.cache/roc/toolchains
-list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
-ask "Download 2 compilers, 147.3 MB: nightly-2026-10-11-1a2b3c4, nightly-2026-10-12-2664a27? [Y/n] "
-delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
-args
 env_all
 clock
 platform
@@ -170,7 +111,71 @@ http_get https://api.github.com/repos/acme/gs/commits/stable
 list_dirs $HOME/.cache/roc/toolchains
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
 list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+ask "Download 2 compilers, 147.3 MB: nightly-2026-10-11-1a2b3c4, nightly-2026-10-12-2664a27? [Y/n] "
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+args
+env_all
 tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
+read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/foo
+sha256_file $HOME/.local/share/talon/bin/foo
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/bar
+read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/talon/index/github/acme/bar/1.json
+http_get https://api.github.com/repos/acme/gm/commits/main
+  User-Agent: tln/0.0.1
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/bin/gm
+sha256_file $HOME/.local/share/talon/bin/gm
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef/src
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz https://api.github.com/repos/acme/gm/tarball/bbbbbbbb5e8a2f4b6c0d9e1a7f3b5c8d2e4f6a1c
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz -C $HOME/.cache/roc/talon/tmp/0123456789abcdef/src --strip-components=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef/source.tar.gz
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/src/main.roc
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+http_get https://api.github.com/repos/acme/gs/commits/stable
+  User-Agent: tln/0.0.1
+  Accept: application/vnd.github.sha
+list_dirs $HOME/.cache/roc/toolchains
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2
+list_dirs $HOME/.cache/roc/toolchains
 clock
 platform
 read_files $HOME/.config/talon/config.toml
@@ -285,6 +290,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -301,6 +307,9 @@ http_get https://api.github.com/repos/acme/gs/commits/stable
   Accept: application/vnd.github.sha
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -309,14 +318,23 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
 args
 env_all
-clock
-platform
-read_files $HOME/.local/share/talon/tools.json
+tty
 read_files $HOME/.config/talon/config.toml
-args
 env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml

@@ -1,0 +1,4 @@
+== install --frozen --registry http://127.0.0.1:9 --file p1/main.roc env:TALON_AUTO_INSTALL=no
+exit 13
+== install --frozen --registry ftp://bad --file p1/main.roc env:TALON_AUTO_INSTALL=no
+exit 13

@@ -1,0 +1,3 @@
+R-AD36 R-AD35 R-RG4 R-AP19 R-EC2 (slice 212, entry registry, the word fullname): `--snapshot log:N` sends no ingest.
+The guard runs and R-AP1 answers 404. With log:40 Talon sends no ingest (a new release has a log index above 40): exit 2, and the message says that the name has no release in the log at size 40. No GitHub release list (nothing to select, the text needs no GitHub data: Question Q1 of the slice file), no `programs curl`, no POST, no second read.
+The text is a proposal (R-OUT2): FullName.snapshot_stop.

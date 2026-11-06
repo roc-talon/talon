@@ -1,0 +1,10 @@
+
+── ✗ fail ────────────────────────── packages/records/tests/ProblemTest.roc:90:1
+
+expect Problem.decode("{\"type\":\"/errors/not-found\",\"status\":404,\"detail\":\"d\"}") == Ok({ type_text: "/errors/not-found", title: "", status: 404, detail: "d", extra: None }) and Problem.decode("{\"type\":\"/errors/not-found\",\"status\":404,\"title\":\"T\"}") == Ok({ type_text: "/errors/not-found", title: "T", status: 404, detail: "", extra: None })
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 40 tests in 618.7 ms.:
+    39 passed
+    1 failed
+    0 compiler errors

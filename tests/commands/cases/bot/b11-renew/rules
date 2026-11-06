@@ -1,0 +1,1 @@
+R-AP34 R-TP2 R-AP10 R-MX18 (slice 223, Q571): as b2, the first POST answers 401. A new token (the third request of the token route), the same body, 200. No sleep.

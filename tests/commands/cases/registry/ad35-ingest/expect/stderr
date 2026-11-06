@@ -1,0 +1,3 @@
+warning: acme/lib 0.9.0: the release has 2 package assets (BA59TcqhskLLYdkBwVG6uWGJZ1XtrBJSnWb6v246323Z, EynWQxtEXbDPnQYyhGYvoX5mq9GuL3CSqrVqPez8vHxF). It is not a candidate.
+warning: acme/lib 1.2.0: skipped, the registry answered 409 (/errors/label-conflict).
+warning: acme/lib 1.1.0: skipped, the registry answered 422 (/errors/not-a-candidate).

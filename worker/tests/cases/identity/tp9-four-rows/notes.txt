@@ -1,0 +1,7 @@
+1: same ids: 201
+2: transfer: 201
+3: recreate: 201
+4: both ids different: 403
+5: no row: 201 and bind
+6: missing row, same ids: 201 and found
+7: indexed label, both ids different: 403

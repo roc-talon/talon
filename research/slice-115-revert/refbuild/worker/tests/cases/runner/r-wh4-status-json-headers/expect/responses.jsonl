@@ -1,0 +1,2 @@
+{"status":200,"headers":{"content-type":"application/json","x-test":"yes","x-absent":null},"json":{"a":1,"b":{"c":[1,2,3]}},"body":"{\"a\":1,\"b\":{\"c\":[1,2,3]},\"s\":\"x\"}"}
+{"status":404,"problem":{"type":"/errors/not-found","detail":"fixed"}}

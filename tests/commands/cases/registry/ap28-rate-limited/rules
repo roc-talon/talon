@@ -1,0 +1,3 @@
+R-AP25 R-AD35 R-AP28 R-E6 R-AP34 (slice 208, entry registry, the word settle): a 429 answer to an ingest.
+Two github.com hashes are unknown. The 2 ingests run (one http_all). The first gets 201 (it stays indexed), the second gets 429 with Retry-After 30: the command stops with exit 15 (R-AP25, R-E6 kind network) at once: NO second closure query, although one ingest indexed. The ingest is sent once (R-AP34).
+Design Q424, R-AP25: the message gives the time of Retry-After in whole seconds: `Try again in 30 s.` (the text is a proposal, R-OUT2).

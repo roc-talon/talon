@@ -1,0 +1,5 @@
+cli/lib/PrivacyGuard.roc
+tests/unit/PrivacyTest.roc
+tests/commands/cases/registry/rg4-guard/
+docs/slices/203-privacy-guard.md
+(the entry registry is in tests/commands/L2Registry.roc of slice 202; slice 203 adds its guard lines to it)

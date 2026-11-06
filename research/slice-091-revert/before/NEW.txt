@@ -1,0 +1,3 @@
+cli/lib/ToolBin.roc
+tests/unit/ToolbinTest.roc
+docs/slices/091-prebuilt-bin-lock.md

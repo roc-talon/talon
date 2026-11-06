@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 list_dirs $HOME/.cache/roc/toolchains $HOME/.local/bin

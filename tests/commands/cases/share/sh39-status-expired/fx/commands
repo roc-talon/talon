@@ -1,0 +1,2 @@
+# R-SH13, R-SH8: share --json with a JWT whose token_expires_at (2026-10-01) is before the clock (2026-10-15): Talon sends no request. It removes the JWT, as for a 401. data has account null and login_needed true (Q477, Q488).
+share --json

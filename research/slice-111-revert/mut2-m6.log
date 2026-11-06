@@ -1,0 +1,8 @@
+PASS archive/pu38-hash-and-end (2281 ms)
+PASS archive/pu38-made-kinds (2216 ms)
+PASS archive/pu38-paths-and-header (2272 ms)
+PASS archive/pu38-real-bundles (2244 ms)
+FAIL archive/pu38-size (3423 ms)
+    request 3: problem.detail: expected "the BLAKE3 hash of the asset is 5YNMkaSqDHek9Znxz2GosTRNMvBGubPoxAgzQ42qgSw9, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got "the BLAKE3 hash of the asset is GEZAmBnmyXxTY1WNbTTeHPMKzQutBxh9BEKtGXAoLopS, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL"
+PASS archive/pu38-window (2209 ms)
+w2: 5 passed, 1 failed

@@ -1,0 +1,7 @@
+worker/lib/Publish.roc
+worker/PublishRoutes.roc
+worker/tests/unit/PublishTest.roc
+worker/tests/tools/mk-publish.mjs
+worker/tests/cases/publish/
+docs/slices/114-publish.md
+research/slice-114-revert/

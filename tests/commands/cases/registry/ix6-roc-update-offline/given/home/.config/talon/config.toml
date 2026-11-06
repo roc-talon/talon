@@ -1,0 +1,3 @@
+default-roc = "nightly-2026-10-18-5349569"
+registry = "http://127.0.0.1:9"
+share = true

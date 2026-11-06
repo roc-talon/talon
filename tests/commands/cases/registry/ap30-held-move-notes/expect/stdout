@@ -1,0 +1,16 @@
+== update yaml@1.1.0 --no-check --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: index: acme/json checked 2d ago
+note: index: acme/pfx not checked since its first ingest
+note: index: acme/yaml checked 12m ago
+check: skipped
+$PROJECT/u1/main.roc
+  ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/u1/talon.toml: yaml = "=1.1.0"
+resolved at log:40, 0 probes
+dry run: nothing was written
+exit 0
+== update yaml@1.1.0 --no-check --dry-run --json --file u1/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"log:40","log_size":40,"probes":0,"downloads":0,"dry_run":true,"check":"skipped","build":"skipped","added":[],"moved":[{"alias":"yaml","from":{"name":"acme/yaml","version":"1.0.0"},"to":{"name":"acme/yaml","version":"1.1.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[{"path":"$PROJECT/u1/talon.toml","key":"yaml","value":"=1.1.0"}],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1","index: acme/json checked 2d ago","index: acme/pfx not checked since its first ingest","index: acme/yaml checked 12m ago"],"written":[],"index_notes":[{"kind":"index-stale","name":"acme/json","checked_at":1791892800000,"text":"index: acme/json checked 2d ago"},{"kind":"index-stale","name":"acme/pfx","checked_at":null,"text":"index: acme/pfx not checked since its first ingest"},{"kind":"index-stale","name":"acme/yaml","checked_at":1792064880000,"text":"index: acme/yaml checked 12m ago"}]},"error":null}
+exit 0

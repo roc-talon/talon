@@ -1,0 +1,20 @@
+Slice 206d revert check (test step, 2026-11-03). A private green reference (PickFlow.roc, PickIndex.roc, InstallFlow.roc) in a private copy of the tree:
+L2 registry/ 35 of 35 green; all L2 cases green except tool/rm1, rm2, rm7 (they differ only by the length of the private TMPDIR path, also on the unchanged code)
+and the share/sh11 to sh21 cases of slice 216 (todo). The reference, the tree copy and the mutate script were deleted (TW18). before/ = the 3 files before the slice.
+M1 no settle! (the 206b flow)                      CAUGHT  ap28-update-unknown
+M2 settle! ignores --snapshot log:N                CAUGHT  ap28-update-unknown (run 2)
+M3 the index keeps the first answer (not settled)  CAUGHT  ap28-update-unknown (json archive read, note)
+M4 anchor note from the rows of the first answer   NOT CAUGHT: equivalent here (an Indexed value has no note in both answers; the other groups have no rows in both)
+M5 the R-DI11 direct line with a registry          CAUGHT  ap28-update-unknown
+M6 --offline with a registry stays direct          CAUGHT  ix6-update-offline
+M7 no R-IX6 note                                   CAUGHT  ix6-update-offline
+M8 no anchor (held) for a group with no rows        NOT CAUGHT: with --no-check the pick keeps the header value of a free variable with no candidate (R-C9), so held and free give one output. Slice 206d2 (an anchor is never movable, R-SP23) can see it.
+
+Round 2 (after Design Q460 to Q462, 2026-11-03): a new private reference (also ClosureIndex.drop_labels), then deleted with its tree and script.
+before/ClosureIndex.roc is the file with the stub of drop_labels. Reference: L0 l0-8 191 of 191, L2 registry 35 of 35, all old cases green (except tool/rm1, rm2, rm7: TMPDIR path length).
+N1 the command does not call drop_labels           NOT CAUGHT at L2: the current pick tries the registry's row first, then drops that tuple on a closure conflict
+                                                    (the header entry of the same label stays in the closure), so the outcome is the same. L0 fixes the decision (N2, N3).
+N2 drop_labels ignores the hash                    CAUGHT  L0
+N3 drop_labels ignores the version                 CAUGHT  L0, al2-update-query, al2-update-window, ap28-update-unknown
+N4 the anchor line has no alias (Q462)             CAUGHT  ap28-update-unknown
+N5 the offline line has no alias (Q462)            CAUGHT  ix6-update-offline

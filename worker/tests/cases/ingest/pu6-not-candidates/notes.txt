@@ -1,0 +1,26 @@
+1: url: http
+2: url: no .tar.zst
+3: url: a hash of 31 bytes
+4: url: not releases/download
+5: url: a path part more
+6: url: no version
+7: url: two versions
+8: url: 0.0.0
+9: url: a query
+10: url: another host (R-PU40)
+11: url: www.github.com (R-PU40)
+12: repository 404
+13: private
+14: internal
+15: repository 500
+16: release 404
+17: draft
+18: prerelease
+19: no package asset
+20: two package assets
+21: another asset
+22: published_at null
+23: release 503
+24: hash mismatch
+25: asset 404
+26: .roc-version 500

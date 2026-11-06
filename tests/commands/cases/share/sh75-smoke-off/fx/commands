@@ -1,0 +1,2 @@
+verify --file u1/main.roc env:DO_NOT_TRACK=1
+verify --file u1/main.roc env:CI=true

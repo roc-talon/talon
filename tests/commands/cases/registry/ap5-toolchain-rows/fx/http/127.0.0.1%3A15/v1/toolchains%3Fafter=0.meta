@@ -1,0 +1,2 @@
+status 301
+header location: https://elsewhere.example/v1/toolchains

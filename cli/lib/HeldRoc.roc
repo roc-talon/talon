@@ -24,12 +24,13 @@ HeldRoc :: [].{
 
 	## Slice 072e (R-SO19, R-SO23, R-SL7): the compiler of a command that holds a nightly (`install`, `update`, `add`, `remove`, `upgrade`, `roc use`) when no compiler is selected, as an id only: no gate, no download, no default
 	## (`NoRank.pick_id!`). The download is at the first probe (R-SO22), and it makes the default (R-SO24, `Start.run_picked!`). The caller calls it only when a probe will run: a run with nothing to check picks nothing.
+	## Slice 206e2 (R-CV1, R-SO23): with a registry (`ResolveBase.list_first`) the pick is from the registry list.
 	picked! : Fx, ResolveBase.Request, ResolveBase.Loaded => Try(Str, Fail)
 	picked! = |fx, request, loaded| match ResolveBase.no_rank(request, loaded) {
 		Stop => Err(Compiler.failure(NoCompiler))
 		Download(run) => {
 			listed = Launch.toolchains!(fx, request.roots)
-			NoRank.pick_id!(fx, { roots: request.roots, env: run.downloads.env, offline: run.downloads.offline, scope: run.scope, exclude: run.exclude, toml: run.?toml ?? NoRank.no_toml, listed })
+			NoRank.pick_id!(fx, { roots: request.roots, env: run.downloads.env, offline: run.downloads.offline, scope: run.scope, exclude: run.exclude, toml: run.?toml ?? NoRank.no_toml, listed, list: ResolveBase.list_first(request) })
 		}
 	}
 }

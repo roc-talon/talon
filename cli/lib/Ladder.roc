@@ -1,3 +1,4 @@
+import records.Closure as Wire
 import BuildFlow
 import BuildSkip
 import Closure
@@ -11,6 +12,7 @@ import Item
 import LadderJudge
 import LadderPlan
 import Locked
+import Matrix
 import Pin
 import Probe
 import Rebase
@@ -54,11 +56,13 @@ Ladder :: [].{
 	## Slice 036b (R-AL4, R-AL6): what the oracle loop already did, for `run!`. `started` is the compiler that the loop started (`Err(None)`: the ladder starts it). `looked` are the keys that the loop asked the db for, `checks` are the rows that it has (the ladder asks for the other keys only),
 	## `count` is the number of probes that the command started (`probe.max` counts them all, R-P5).
 	## Slice 039 (R-RP1, R-BL3): `base` is the compiler H of the baseline check (`Ok(id)`) when the candidate is a new compiler (`held` of `run!` is that compiler). `Err(None)`: the baseline runs on `held`.
-	Loop : { started : Try(Start.Started, [None]), looked : List(Db.Key), checks : List(Db.Fact), count : U64, base : Try(Str, [None]) }
+	Loop : { started : Try(Start.Started, [None]), looked : List(Db.Key), checks : List(Db.Fact), count : U64, base : Try(Str, [None]), answer : Try(Wire.Answer, [None]), share : Try(Fail.Ran, [None]) }
+
+	## Slice 206e3b (R-EF1 rank 2, R-EF3): `answer` is the closure answer of the command (`Ok` with a registry): `known_facts!` adds its rank 2 facts after the db rows of the keys that it asks for.
 
 	## The loop of a command that has no oracle loop (`verify`, `roc use`, `remove`): nothing started, nothing looked up.
 	no_loop : Ladder.Loop
-	no_loop = { started: Err(None), looked: [], checks: [], count: 0, base: Err(None) }
+	no_loop = { started: Err(None), looked: [], checks: [], count: 0, base: Err(None), answer: Err(None), share: Err(None) }
 
 	## One member of `run!`: a project file whose header changes. `ops` are the edits of its header (`Locked.edit` gives the candidate text).
 	## Slice 043 (R-PA10): `patch` has the `--replace-dep` pairs of the patches of the member, for the baseline check and for the candidate check and the build (`LadderPlan.with_patches`). Both lists are empty for a member with no patch.
@@ -84,21 +88,23 @@ Ladder :: [].{
 	## Slice 031 (R-CM11, R-LD2, R-LD3): `verify!` runs ladder step 1 too. The calls of one run, in order: after `Start.run!`, one `Facts.load!` (a `db_query` with the keys of the packages of `closures`, the candidate tuple), and for one member: `random`, `make_dirs`, round 1 (`probes!` with the baseline and the unit probes of the packages with no fact, as `run!`), `db_write` of the facts, round 2 (the candidate check), round 3 (the build, apps only). `closures` has one row for each member (`file`). `text` is the header text of the member (for the scan of the used modules). `no_probe`, the budget `probe.max`, the verdict and the failures are as for `run!`. The result `probes` is the number of probes that started.
 	## The lines are printed and the notes are given as `run!` does it. The failures are the ones of `Ladder.check` and `Ladder.build`: exit 10 for a new error in a hash, exit 11 for a new error in an app file. A member is probed after the member before it passed.
 	## Slice 023c: `path_roc` is the id and the file of the `roc` on `PATH` (`Install.compiler!`), `now` is the time of Talon (`request.now` of the command: `.last-use` has it).
-	verify! : Fx, { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Checked), replace : List(LadderPlan.Replace), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) } => Try({ notes : List(Str), downloads : U64, probes : U64, skipped : U64 }, Fail)
+	verify! : Fx, { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Checked), replace : List(LadderPlan.Replace), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }), answer : Try(Wire.Answer, [None]), share : Try(Fail.Ran, [None]) } => Try({ notes : List(Str), downloads : U64, probes : U64, skipped : U64, built : List(Fail.Built) }, Fail)
 	verify! = |fx, request| {
 		started = Start.run!(fx, { roots: request.roots, path_roc: request.path_roc, held: request.held, downloads: request.downloads })?
-		var $facts = known_facts!(fx, request.roots, request.closures, started.id, Ladder.no_loop)?
+		var $facts = known_facts!(fx, request.roots, request.closures, started.id, { ..Ladder.no_loop, answer: request.answer })?
 		var $count = 0
 		var $skipped = 0
+		var $built = []
 		var $done = no_done
 		for member in request.members {
 			ran = verify_member!(fx, request, { started, facts: $facts, count: $count }, member)?
 			$facts = ran.facts
 			$count = ran.probes
 			$skipped = $skipped + ran.skipped
+			$built = $built.concat(ran.built)
 			$done = $done.append({ file: member.file, lines: ran.lines })
 		}
-		Ok({ notes: print_lines!(fx, $done), downloads: started.downloads, probes: $count, skipped: $skipped })
+		Ok({ notes: print_lines!(fx, $done), downloads: started.downloads, probes: $count, skipped: $skipped, built: $built })
 	}
 
 	## Command code (part C). Called by `Resolve.finish!` after the choice and before the write, only when a header changes and `--no-check` is false. The calls
@@ -121,7 +127,7 @@ Ladder :: [].{
 	## After all members passed, the command prints the lines of each member in the order of the members (stdout, a line end after each), and returns the text of each `note:` line without the prefix `note: ` (slice 007: the command puts them in `Report.Outcome.notes`). With 2 or more
 	## members each line has the file path of its member in front: `<file>: check: passed`. A member is probed after the member before it passed. Each member has its own copy. `timeout` is 30 s (R-RC3, R-P5). The `pkgs` of the facts is `Roots.pkgs`.
 	## Slice 023c: `path_roc` is the id and the file of the `roc` on `PATH` (`Install.compiler!`), `now` is the time of Talon (`request.now` of the command: `.last-use` has it).
-	run! : Fx, { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Member), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }), loop : Ladder.Loop } => Try({ notes : List(Str), downloads : U64, probes : U64, skipped : U64 }, Fail)
+	run! : Fx, { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Member), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }), loop : Ladder.Loop } => Try({ notes : List(Str), downloads : U64, probes : U64, skipped : U64, built : List(Fail.Built) }, Fail)
 	run! = |fx, request| {
 		known = request.loop.started
 		at = { roots: request.roots, path_roc: request.path_roc, downloads: request.downloads }
@@ -139,15 +145,17 @@ Ladder :: [].{
 		var $facts = known_facts!(fx, request.roots, request.closures, started.id, request.loop)?
 		var $count = request.loop.count
 		var $skipped = 0
+		var $built = []
 		var $done = no_done
 		for member in request.members {
 			ran = probe_member!(fx, request, { started, base, facts: $facts, count: $count }, member)?
 			$facts = ran.facts
 			$count = ran.probes
 			$skipped = $skipped + ran.skipped
+			$built = $built.concat(ran.built)
 			$done = $done.append({ file: member.file, lines: ran.lines })
 		}
-		Ok({ notes: print_lines!(fx, $done), downloads: started.downloads, probes: $count, skipped: $skipped })
+		Ok({ notes: print_lines!(fx, $done), downloads: started.downloads, probes: $count, skipped: $skipped, built: $built })
 	}
 
 	## A member of `use!` (slice 026b, `tln roc use`): a `Member` and the compiler of its baseline check (R-BL1: the old pin of the member, or the compiler that Resolution 13 selects when it has no pin).
@@ -213,7 +221,7 @@ start_on! = |fx, request, held| Start.run!(fx, { roots: request.roots, path_roc:
 
 Pair : { started : Start.Started, base : Start.Started, facts : List(Db.Fact), count : U64 }
 
-Ran : { lines : List(Str), probes : U64, facts : List(Db.Fact), skipped : U64 }
+Ran : { lines : List(Str), probes : U64, facts : List(Db.Fact), skipped : U64, built : List(Fail.Built) }
 
 Request : { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Ladder.Member), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }), loop : Ladder.Loop }
 
@@ -252,7 +260,7 @@ probe_in_copy! = |fx, request, pair, member, copy| {
 	# Slice 026b: the baseline check runs on its own compiler. For `run!` it is the compiler of the candidate (`base` is `started`).
 	other = base.id != started.id
 	first_spec = if other { ..baseline_spec, compiler: base.id, program: base.program, env: base.env } else baseline_spec
-	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures }, pair, { file: member.file, kind: member.kind, text: member.text, target: member.target })
+	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures, share: request.loop.share }, pair, { file: member.file, kind: member.kind, text: member.text, target: member.target })
 	round = UnitFlow.first!(fx, ctx, { baseline: first_spec, count: pair.count })?
 	baseline = LadderJudge.baseline({ output: round.baseline, dir, pkgs, compiler: if other base.id else compiler, timeout })?
 	verdict = UnitFlow.verdict!(fx, ctx, { first: round, baseline }).map_err(|fail| fail.with_probes(round.count))?
@@ -260,10 +268,10 @@ probe_in_copy! = |fx, request, pair, member, copy| {
 	second = UnitFlow.step!(fx, ctx, { spec: candidate_spec, count: round.count })?
 	checked = LadderJudge.check({ output: second.output, dir: copy, pkgs, baseline, owners: request.owners, moved: request.moved, compiler, timeout }).map_err(|fail| fail.with_probes(second.count))?
 	match candidate_plan.build {
-		Err(None) => Ok({ lines: checked.lines.concat(notes), probes: second.count, facts: round.facts, skipped: 0 })
+		Err(None) => Ok({ lines: checked.lines.concat(notes), probes: second.count, facts: round.facts, skipped: 0, built: [] })
 		Ok(spec) => {
-			third = build_round!(fx, ctx, { spec, count: second.count, used: verdict.used, dir: copy, baseline, owners: request.owners })?
-			Ok({ lines: checked.lines.concat(third.lines).concat(notes), probes: third.probes, facts: round.facts, skipped: third.skipped })
+			third = build_round!(fx, ctx, { spec, count: second.count, used: verdict.used, dir: copy, baseline, owners: request.owners, answer: request.loop.answer })?
+			Ok({ lines: checked.lines.concat(third.lines).concat(notes), probes: third.probes, facts: round.facts, skipped: third.skipped, built: third.built })
 		}
 	}
 }
@@ -272,20 +280,26 @@ probe_in_copy! = |fx, request, pair, member, copy| {
 known_facts! : Fx, Roots, List({ file : Str, walked : Closure.Walked }), Str, Ladder.Loop => Try(List(Db.Fact), Fail)
 known_facts! = |fx, roots, closures, nightly, loop| {
 	keys = Units.keys({ nodes: Units.nodes(closures.map(|c| c.walked)), nightly }).keep_if(|key| !loop.looked.contains(key))
-	Ok(loop.checks.concat(Facts.load!(fx, { roots, keys })?))
+	local = loop.checks.concat(Facts.load!(fx, { roots, keys })?)
+	# Slice 206e3b (R-EF1, R-EF3): the rank 2 facts of the answer, after the db rows (rank 1 wins). They are not written to `compat.db`.
+	reg = match loop.answer {
+		Ok(answer) => Matrix.rank2({ answer, domain: [{ id: nightly, published_at: 0, asset: Err(NoAsset) }], local, keys }).facts
+		Err(None) => []
+	}
+	Ok(local.concat(reg))
 }
 
 # The context of ladder step 1 for one member (the closure of the member file, no closure gives no package).
-unit_ctx : { roots : Roots, now : U64, held : Str, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) }, { started : Start.Started, base : Start.Started, facts : List(Db.Fact), count : U64 }, { file : Str, kind : [App, Package, Platform], text : Str, target : Try(Str, [Unset]) } -> UnitFlow.Ctx
+unit_ctx : { roots : Roots, now : U64, held : Str, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }), share : Try(Fail.Ran, [None]) }, { started : Start.Started, base : Start.Started, facts : List(Db.Fact), count : U64 }, { file : Str, kind : [App, Package, Platform], text : Str, target : Try(Str, [Unset]) } -> UnitFlow.Ctx
 unit_ctx = |request, pair, member| {
 	walked = match request.closures.find_first(|c| c.file == member.file) {
 		Ok(c) => c.walked
 		Err(_) => { rows: [], links: [] }
 	}
-	{ roots: request.roots, now: request.now, started: pair.started, base: pair.base, held: request.held, probe: request.probe, no_probe: request.no_probe, member: { file: member.file, kind: member.kind, text: member.text }, target: member.target, walked, nodes: Units.nodes([walked]), facts: pair.facts }
+	{ roots: request.roots, now: request.now, started: pair.started, base: pair.base, held: request.held, probe: request.probe, no_probe: request.no_probe, member: { file: member.file, kind: member.kind, text: member.text }, target: member.target, walked, nodes: Units.nodes([walked]), facts: pair.facts, share: request.share }
 }
 
-VerifyRequest : { roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Ladder.Checked), replace : List(LadderPlan.Replace), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) }
+VerifyRequest : { answer : Try(Wire.Answer, [None]), share : Try(Fail.Ran, [None]), roots : Roots, now : U64, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), held : Str, members : List(Ladder.Checked), replace : List(LadderPlan.Replace), owners : List(LadderJudge.Owner), moved : List(LadderJudge.Owner), downloads : Ladder.Downloads, probe : Probe.Settings, no_probe : Bool, closures : List({ file : Str, walked : Closure.Walked }) }
 
 # The steps 1 to 5 of `verify!` for one member. The temp dir is deleted also after a failure (R-CC2).
 verify_member! : Fx, VerifyRequest, { started : Start.Started, facts : List(Db.Fact), count : U64 }, Ladder.Checked => Try(Ran, Fail)
@@ -312,7 +326,7 @@ probe_in_place! = |fx, request, state, member, tmp| {
 		[before, after] => (before, after)
 		_ => return Err(no_answer("the plan"))
 	}
-	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures }, { started, base: started, facts: state.facts, count: state.count }, { file: member.file, kind: member.kind, text: member.text, target: member.target })
+	ctx = unit_ctx({ roots: request.roots, now: request.now, held: compiler, probe: request.probe, no_probe: request.no_probe, closures: request.closures, share: request.share }, { started, base: started, facts: state.facts, count: state.count }, { file: member.file, kind: member.kind, text: member.text, target: member.target })
 	round = UnitFlow.first!(fx, ctx, { baseline: baseline_spec, count: state.count })?
 	baseline = LadderJudge.baseline({ output: round.baseline, dir, pkgs, compiler, timeout })?
 	verdict = UnitFlow.verdict!(fx, ctx, { first: round, baseline })?
@@ -320,27 +334,52 @@ probe_in_place! = |fx, request, state, member, tmp| {
 	second = UnitFlow.step!(fx, ctx, { spec: candidate_spec, count: round.count })?
 	checked = LadderJudge.check({ output: second.output, dir, pkgs, baseline, owners: request.owners, moved: request.moved, compiler, timeout })?
 	match plan.build {
-		Err(None) => Ok({ lines: checked.lines.concat(notes), probes: second.count, facts: round.facts, skipped: 0 })
+		Err(None) => Ok({ lines: checked.lines.concat(notes), probes: second.count, facts: round.facts, skipped: 0, built: [] })
 		Ok(spec) => {
-			third = build_round!(fx, ctx, { spec, count: second.count, used: verdict.used, dir, baseline, owners: request.owners })?
-			Ok({ lines: checked.lines.concat(third.lines).concat(notes), probes: third.probes, facts: round.facts, skipped: third.skipped })
+			third = build_round!(fx, ctx, { spec, count: second.count, used: verdict.used, dir, baseline, owners: request.owners, answer: request.answer })?
+			Ok({ lines: checked.lines.concat(third.lines).concat(notes), probes: third.probes, facts: round.facts, skipped: third.skipped, built: third.built })
 		}
 	}
 }
 
 # Round 3 (R-LD5, R-BS1, R-BS2): the build, or its skip. `BuildFlow.before!` decides. A build that ran is recorded before `LadderJudge.build` judges it (R-P4: a failed build is a fact too).
-build_round! : Fx, UnitFlow.Ctx, { spec : Probe.Spec, count : U64, used : Try(List(BuildSkip.Used), [NotScanned]), dir : Str, baseline : List(Probe.Err), owners : List(LadderJudge.Owner) } => Try({ lines : List(Str), probes : U64, skipped : U64 }, Fail)
+build_round! : Fx, UnitFlow.Ctx, { spec : Probe.Spec, count : U64, used : Try(List(BuildSkip.Used), [NotScanned]), dir : Str, baseline : List(Probe.Err), owners : List(LadderJudge.Owner), answer : Try(Wire.Answer, [None]) } => Try({ lines : List(Str), probes : U64, skipped : U64, built : List(Fail.Built) }, Fail)
 build_round! = |fx, ctx, run| {
 	plan = BuildFlow.before!(fx, ctx, { used: run.used })?
+	smoke_stop(ctx, { owners: run.owners, answer: run.answer, count: run.count }, plan)?
 	if plan.skip {
-		Ok({ lines: [BuildSkip.skipped_line], probes: run.count, skipped: 1 })
+		Ok({ lines: [BuildSkip.skipped_line], probes: run.count, skipped: 1, built: built_of(ctx, plan) })
 	} else {
 		pkgs = ctx.roots.pkgs
 		third = UnitFlow.step!(fx, ctx, { spec: LadderPlan.with_target({ spec: run.spec, target: plan.target }), count: run.count })?
 		BuildFlow.after!(fx, ctx, { id: plan.id, output: third.output, dir: run.dir, pkgs })?
 		built = LadderJudge.build_at({ output: third.output, dir: run.dir, pkgs, baseline: run.baseline, owners: run.owners, compiler: ctx.held, timeout: ctx.probe.timeout, target: plan.target }).map_err(|fail| fail.with_probes(third.count))?
-		Ok({ lines: built.lines, probes: third.count, skipped: 0 })
+		Ok({ lines: built.lines, probes: third.count, skipped: 0, built: built_of(ctx, plan) })
 	}
+}
+
+# Slice 209b (R-SM6 row 1, R-EF3, Q557, Q558, Q559): a `bot` smoke `fail` or `crash` of the build key (platform hash, compiler, target) is a fail of step 3 with no build. A local build `pass` of the key wins (Q559), so the build runs.
+# The failure blames the platform and has the key, so the next search gets the smoke checks of the platform (`InstallFlow.attempts!`). No probe, no `.last-use`, no fact (R-P4: a fact is the result of a run).
+smoke_stop : UnitFlow.Ctx, { owners : List(LadderJudge.Owner), answer : Try(Wire.Answer, [None]), count : U64 }, BuildFlow.Plan -> Try({}, Fail)
+smoke_stop = |ctx, run, plan| match (plan.id, run.answer) {
+	(Ok(id), Ok(answer)) if !plan.local_pass => {
+		rows = Matrix.rows({ runs: answer.runs, nearest: answer.nearest, domain: [{ id: ctx.started.id, published_at: 0, asset: Err(NoAsset) }] })
+		match Matrix.smoke_fail({ rows, hash: id.key.hash, nightly: id.key.nightly, target: id.key.target }) {
+			Ok(row) => {
+				fail = LadderJudge.smoke_build({ owners: run.owners, target: plan.target, digest: row.error_digest }).with_probes(run.count)
+				Err(if plan.url.is_empty() fail else fail.with_smoke({ id: plan.url, hash: id.key.hash, nightly: id.key.nightly, target: id.key.target }))
+			}
+			Err(None) => Ok({})
+		}
+	}
+	_ => Ok({})
+}
+
+# Slice 218 (R-SM1, R-SM3 row 1): the build of step 3 for the smoke build after the work: the key of the build id (the target is the target of the build) and what the smoke build needs. No id (no key): no smoke build.
+built_of : UnitFlow.Ctx, BuildFlow.Plan -> List(Fail.Built)
+built_of = |ctx, plan| match plan.id {
+	Ok(id) => if plan.header.is_empty() or plan.url.is_empty() [] else [{ key: id.key, url: plan.url, text: plan.header, program: ctx.started.program, env: ctx.started.env, slots: ctx.probe.slots, timeout: ctx.probe.timeout }]
+	Err(NoId) => []
 }
 
 # R-UM1, E5: one `note:` line for each unit fail that the scan ignored. They follow the lines of the check and of the build.

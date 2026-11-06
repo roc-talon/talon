@@ -1,0 +1,93 @@
+# R-SM3 R-SM4 R-TF7 R-TF2 R-TF3 R-CC8 TW4 (slice 218): db_query! Smoke and db_write! Smoke of the real Fx, with `fxprobe`. The smoke build reads the table for the keys that it may build (R-SM3 row 3) and writes the result of each build (R-SM4). Q433: a read of a missing table gives no rows; R-TF7: a table is made by its first write, so a smoke write makes `smoke` and not `share_queue`.
+# R-SM4, Design Q551: a key that is in the table already keeps its first row (ON CONFLICT DO NOTHING), also a repeat in the same call (step 4b).
+FX=$(command -v fxprobe)
+DB=$HOME/.cache/roc/talon/compat.db
+NT=nightly-2026-10-14-38a3029
+NT2=nightly-2026-10-16-5e6f7a8
+mkdir -p t
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+tables() {
+python3 -I - "$1" <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("user_version", c.execute("PRAGMA user_version").fetchone()[0])
+print("tables", sorted(r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type = 'table'")))
+PY
+}
+
+echo "== 1. a file that does not exist: a query and a query with no key give no row, a write with no row is ok, and none of them makes a file or a dir"
+$FX db-query $DB 5000 smoke HP:$NT:x64musl
+$FX db-query $DB 5000 smoke
+$FX db-write $DB 5000 smoke
+test ! -e $HOME/.cache && echo "nothing was made"
+
+echo "== 2. R-TF7: a write to a new file makes the file with the 2 tables of format 1 and the table smoke, user_version 1, and no share_queue"
+$FX db-write $DB 5000 smoke HP,$NT,x64musl,pass HP,$NT,arm64mac,fail HQ,$NT,x64musl,hang HQ,$NT2,x64musl,crash
+tables $DB
+
+echo "== 3. R-SM3 row 3: a query gives the rows of the keys that exist (the 4 outcome words), with the key of the row: another target, nightly or hash gives no row"
+$FX db-query $DB 5000 smoke HP:$NT:x64musl HP:$NT:arm64mac HQ:$NT:x64musl HQ:$NT2:x64musl
+$FX db-query $DB 5000 smoke HP:$NT:arm64win HP:$NT2:x64musl HZ:$NT:x64musl
+$FX db-query $DB 5000 smoke HQ:$NT2:x64musl
+
+echo "== 4. a second write adds its rows and keeps the first ones"
+$FX db-write $DB 5000 smoke HR,$NT,x64musl,pass
+$FX db-query $DB 5000 smoke HP:$NT:x64musl HR:$NT:x64musl
+tables $DB
+
+echo "== 4b. R-SM4, Q551: a key that is in the table keeps its first row (the repeat of HP has another outcome), and a repeat in the same call keeps the first row of the call"
+$FX db-write $DB 5000 smoke HP,$NT,x64musl,fail HS,$NT,x64musl,crash HS,$NT,x64musl,pass
+$FX db-query $DB 5000 smoke HP:$NT:x64musl HS:$NT:x64musl
+
+echo "== 5. R-TF7, Q433: a file of an older Talon (format 1, facts and pinned, no smoke). A query gives no row and makes no table. A write makes the table, keeps user_version 1 and the facts."
+python3 -I - t/old.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target, closure)) WITHOUT ROWID")
+c.execute("CREATE TABLE pinned (tag TEXT NOT NULL, target TEXT NOT NULL, sha256 TEXT NOT NULL, source TEXT NOT NULL, PRIMARY KEY (tag, target)) WITHOUT ROWID")
+c.execute("INSERT INTO facts VALUES ('old', 'n', 'any', 'pass', '', '')")
+c.execute("PRAGMA user_version = 1")
+c.commit()
+c.close()
+PY
+$FX db-query t/old.db 5000 smoke HP:$NT:x64musl
+tables t/old.db
+$FX db-write t/old.db 5000 smoke HP,$NT,x64musl,pass
+tables t/old.db
+$FX db-query t/old.db 5000 smoke HP:$NT:x64musl
+$FX db-query t/old.db 5000 facts old:n:any
+
+echo "== 6. a file with user_version 0 (no Talon table): a query gives no row and makes no table"
+python3 -I - t/zero.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE other (a TEXT)")
+c.commit()
+c.close()
+PY
+$FX db-query t/zero.db 5000 smoke HP:$NT:x64musl
+tables t/zero.db
+
+echo "== 7. R-TF3: a file with a newer format (2). The query and the write give TooNew, and the bytes of the file stay the same"
+python3 -I - t/new.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target)) WITHOUT ROWID")
+c.execute("PRAGMA user_version = 2")
+c.commit()
+c.close()
+PY
+before=$(sha t/new.db)
+$FX db-query t/new.db 5000 smoke HP:$NT:x64musl
+$FX db-write t/new.db 5000 smoke HP,$NT,x64musl,pass
+after=$(sha t/new.db)
+test "$before" = "$after" && echo "the file is the same"
+
+echo "== 8. a file that is not a database: Failed for both calls, and the text file is the same"
+printf 'this is not a database file, only text, padding padding padding padding padding padding padding padding' > t/text.db
+before=$(sha t/text.db)
+$FX db-query t/text.db 5000 smoke HP:$NT:x64musl | sed -e 's/Failed(.*/Failed(...)/'
+$FX db-write t/text.db 5000 smoke HP,$NT,x64musl,pass | sed -e 's/Failed(.*/Failed(...)/'
+after=$(sha t/text.db)
+test "$before" = "$after" && echo "the text file is the same"
+rm -rf t

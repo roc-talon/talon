@@ -1,0 +1,24 @@
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	unpublished	1767225600000
+2	acme/lib	2.0.0	prereleased	1767225600000
+3	acme/lib	3.0.0	edited	1767225600000
+4	acme/lib	4.0.0	\N	\N
+5	acme/lib	5.0.0	\N	\N
+6	acme/lib	6.0.0	\N	\N
+7	acme/lib	7.0.0	asset-replaced	1767225600000
+8	acme/del	1.0.0	\N	\N
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+1	1	\N	1767000000000
+2	1	\N	1767000000000
+3	1	\N	1767000000000
+4	1	\N	1767000000000
+5	1	\N	1767000000000
+6	1	\N	1767000000000
+7	1	\N	1767000000000
+8	1	\N	1767000000000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/del	\N	\N	1767225600000	0	0
+acme/del-old	\N	\N	1767830400000	0	0
+acme/lib	\N	\N	1767003600000	0	0
+@ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance)
+3	3	3	3	8	8	8

@@ -1,0 +1,6 @@
+status 204
+header Cache-Control: no-store
+require user-agent: tln/0.0.1
+require talon-contributor: 0123456789abcdeffedcba9876543210
+require-none authorization
+require-none content-type

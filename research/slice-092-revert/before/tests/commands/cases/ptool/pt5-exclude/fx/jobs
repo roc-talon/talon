@@ -1,0 +1,16 @@
+# R-DA3 the download, R-FE2 `roc unbundle`, R-T23 the source archive (`source.tar.gz`, before the generic `tar -xf`), R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+unbundle CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst	0	-	-	dir:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA;copy:{cwd}/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc={w}/fx/src/platform-basic-cli.src
+unbundle Gjd7Us4DTdcWjQgC2FQUo4eXgXbJ7xCiTYUFdUajzWvq.tar.zst	0	-	-	dir:{cwd}/Gjd7Us4DTdcWjQgC2FQUo4eXgXbJ7xCiTYUFdUajzWvq;copy:{cwd}/Gjd7Us4DTdcWjQgC2FQUo4eXgXbJ7xCiTYUFdUajzWvq/main.roc={w}/fx/src/foo-2.0.0.src
+unbundle AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst	0	-	-	dir:{cwd}/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY;copy:{cwd}/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY/main.roc={w}/fx/src/foo-1.1.0.src
+unbundle GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst	0	-	-	dir:{cwd}/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW;copy:{cwd}/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW/main.roc={w}/fx/src/foo-1.0.0.src
+unbundle FtbE8BA8DgLZtspqA4Tu8nhjrL2yjpEE3yGRVgQXUbBZ.tar.zst	0	-	-	dir:{cwd}/FtbE8BA8DgLZtspqA4Tu8nhjrL2yjpEE3yGRVgQXUbBZ;copy:{cwd}/FtbE8BA8DgLZtspqA4Tu8nhjrL2yjpEE3yGRVgQXUbBZ/main.roc={w}/fx/src/bar-2.0.0.src
+unbundle 2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst	0	-	-	dir:{cwd}/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN;copy:{cwd}/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN/main.roc={w}/fx/src/bar-1.0.0.src
+unbundle FNHXocaZrUQxv3XVuDmSabqJX4e9XR6ttDnUUwTyomYQ.tar.zst	0	-	-	dir:{cwd}/FNHXocaZrUQxv3XVuDmSabqJX4e9XR6ttDnUUwTyomYQ;copy:{cwd}/FNHXocaZrUQxv3XVuDmSabqJX4e9XR6ttDnUUwTyomYQ/main.roc={w}/fx/src/baz-2.0.0.src
+unbundle 9Ef6ztwqT4Q9yBbRkAugdX8hWtUW4jMaJqfwyqZQFXML.tar.zst	0	-	-	dir:{cwd}/9Ef6ztwqT4Q9yBbRkAugdX8hWtUW4jMaJqfwyqZQFXML;copy:{cwd}/9Ef6ztwqT4Q9yBbRkAugdX8hWtUW4jMaJqfwyqZQFXML/main.roc={w}/fx/src/baz-1.2.0.src
+unbundle 4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu.tar.zst	0	-	-	dir:{cwd}/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu;copy:{cwd}/4yUwFgumMQiw7gVYVnMSCTXy4LBkVmyhCUrdQHexZGRu/main.roc={w}/fx/src/baz-1.0.0.src
+unbundle 6TFK1qt5cNPhj9Vw6X98ZJfaD91wUNE82UsTYcj199bZ.tar.zst	0	-	-	dir:{cwd}/6TFK1qt5cNPhj9Vw6X98ZJfaD91wUNE82UsTYcj199bZ;copy:{cwd}/6TFK1qt5cNPhj9Vw6X98ZJfaD91wUNE82UsTYcj199bZ/main.roc={w}/fx/src/fmt-1.1.0.src
+unbundle HUhnMnhZM81eHg9NRfEG9pEAF7nB6oFTRCvpt5oTUAdS.tar.zst	0	-	-	dir:{cwd}/HUhnMnhZM81eHg9NRfEG9pEAF7nB6oFTRCvpt5oTUAdS;copy:{cwd}/HUhnMnhZM81eHg9NRfEG9pEAF7nB6oFTRCvpt5oTUAdS/main.roc={w}/fx/src/fmt-1.0.0.src
+unbundle GfTcxVACFDYckWHoPqVDdqDA4zz3whjKuGTfS7THxaU5.tar.zst	0	-	-	dir:{cwd}/GfTcxVACFDYckWHoPqVDdqDA4zz3whjKuGTfS7THxaU5;copy:{cwd}/GfTcxVACFDYckWHoPqVDdqDA4zz3whjKuGTfS7THxaU5/main.roc={w}/fx/src/pfx-1.1.0.src
+unbundle HvPvdpaxBsqfKYJ2vfQvvDAACof9Pjpk8wy4HiphVGx8.tar.zst	0	-	-	dir:{cwd}/HvPvdpaxBsqfKYJ2vfQvvDAACof9Pjpk8wy4HiphVGx8;copy:{cwd}/HvPvdpaxBsqfKYJ2vfQvvDAACof9Pjpk8wy4HiphVGx8/main.roc={w}/fx/src/pfx-1.0.0.src
+curl --fail	0	-	-	file:{out}

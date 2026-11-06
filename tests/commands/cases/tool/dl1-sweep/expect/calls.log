@@ -1,27 +1,29 @@
 env_all
-list_dirs $WORK/nowhere\.local\bin $HOME/.local/share/talon/bin
-delete $HOME/.local/share/talon/bin/roc.old.2222222222222222.del $HOME/.local/share/talon/bin/tln.1111111111111111.del
+list_dirs $WORK/nowhere\.local\bin C:/AppData/Local\talon/bin
+delete C:/AppData/Local\talon/bin/roc.old.2222222222222222.del C:/AppData/Local\talon/bin/tln.1111111111111111.del
 args
 env_all
-list_dirs $HOME/u\.local\bin
+list_dirs $HOME/u\.local\bin C:/AppData/Local\talon/bin
 delete $HOME/u\.local\bin/foo.0123456789abcdef.del $HOME/u\.local\bin/tln.fedcba9876543210.del
 args
 env_all
-list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+list_dirs $HOME/u\.local\bin C:/AppData/Local\talon/bin
 args
 env_all
-list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+list_dirs $HOME/u\.local\bin C:/AppData/Local\talon/bin
 args
 env_all
-read_files $HOME/.local/share/talon/tools.json
+tty
 env_all
-list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+read_files C:/AppData/Local\talon/tools.json
+env_all
+list_dirs $HOME/u\.local\bin C:/AppData/Local\talon/bin
 args
 env_all
 clock
 cwd
-list_dirs $HOME/.cache/roc/toolchains
+list_dirs C:/AppData/Local\roc/toolchains
 path_roc
 env_all
-list_dirs $HOME/u\.local\bin $HOME/.local/share/talon/bin
+list_dirs $HOME/u\.local\bin C:/AppData/Local\talon/bin
 args

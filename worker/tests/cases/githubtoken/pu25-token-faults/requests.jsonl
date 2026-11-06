@@ -1,0 +1,6 @@
+{"method":"POST","path":"/v1/compat","headers":{"content-type":"application/json","talon-contributor":"0123456789abcdef0123456789abcdef"},"body":"{\"talon_version\":\"0.4.1\",\"rows\":[{\"hash\":\"29d2S7vB453rNYFdR5Ycwt7y9haRT5fwVwL9zTmBhfV2\",\"nightly\":\"nightly-2026-10-29-aaaaaaa\",\"target\":\"any\",\"result\":\"pass\"}]}","now":1767225601000}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-21-5349569","token":"bot","now":1767225602000}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-21-5349569","token":"bot","now":1767225603000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst"},"now":1767225604000}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-21-5349569","token":"bot","now":1767225605000}
+{"method":"POST","path":"/v1/compat","headers":{"content-type":"application/json","talon-contributor":"0123456789abcdef0123456789abcdef"},"body":"{\"talon_version\":\"0.4.1\",\"rows\":[{\"hash\":\"29d2S7vB453rNYFdR5Ycwt7y9haRT5fwVwL9zTmBhfV2\",\"nightly\":\"nightly-2026-10-30-bbbbbbb\",\"target\":\"any\",\"result\":\"pass\"}]}","now":1767225606000}

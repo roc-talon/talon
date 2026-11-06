@@ -1,0 +1,77 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/json/releases/tags/2.1.0
+  User-Agent: tln/0.0.1
+  Authorization: Bearer gh1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts_of=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
+http_get http://127.0.0.1:9/v1/releases?group=github.com%2Facme%2Fjson%2Freleases%2Fdownload%2F%7Bv%7D%2F
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+env_all
+clock
+cwd
+canonical $PROJECT/p/main.roc
+list_dirs $PROJECT/p
+list_dirs $PROJECT
+read_files $PROJECT/p/talon.toml
+read_files $PROJECT/p/main.roc
+path_roc
+read_files $PROJECT/p/main.roc $PROJECT/p/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer gh1
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
+lock $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-10-0e0e0e0/roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz
+sha256_file $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz -C $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-10-0e0e0e0.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp/.talon.json
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+rename $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
+unlock $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
+canonical $HOME/.cache $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/.last-use
+probes 1
+  probe $PROJECT/p nightly-2026-10-10-0e0e0e0 $HOME/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0/roc bump --old https://github.com/acme/json/releases/download/2.0.0/2222222222222222222222222222222222222222222b.tar.zst --expect 2.1.0 $PROJECT/p/main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt1
+  <body> {"compat":[{"error_digest":null,"nightly":"nightly-2026-10-12-2664a27","result":"pass","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-13-bbbbbbb","result":"hang","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-14-38a3029","result":"fail","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-15-0a0a0a0","result":"crash","target":"any"}],"url":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}

@@ -1,0 +1,6 @@
+PASS cron/ct15-trim (1403 ms)
+PASS cron/ct15-trim-failure (1305 ms)
+FAIL cron/pu35-cleanup-failure (4218 ms)
+    logs: no Worker log line has {"level":"warn","msg":"hint cleanup failed"}; the lines are []
+PASS cron/pu35-hint-cleanup (1298 ms)
+w2: 3 passed, 1 failed

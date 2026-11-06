@@ -6,6 +6,7 @@ import CacheShow
 import DelFlow
 import Exit
 import Fail
+import FirstRunFlow
 import Fx
 import GitDefault
 import GitInstall
@@ -19,7 +20,9 @@ import OutdatedFlow
 import PatchFlow
 import PathFlow
 import ProbeFlow
+import ProbeSmokeFlow
 import Proxy
+import PublishFlow
 import Ref
 import Remove
 import RocInstall
@@ -29,6 +32,9 @@ import RocUse
 import RunFlow
 import Scope
 import SetupFlow
+import ShareAccountFlow
+import ShareFlow
+import ShareLogin
 import TalonRemove
 import TalonRemoveFlow
 import TalonUpdate
@@ -82,79 +88,102 @@ Run :: [].{
 				} else {
 					match check_refs(args) {
 						Err(failure) => fail!(fx, { command: args.typed, json: args.json, fail: failure })
-						# Slice 056 (R-FL12): `Args.parse` allows `--tool` for `install` (`add`), `remove`, `update` and `upgrade` only. These lines are the commands of `[tools]`: their operands are keys.
-						Ok({}) => if args.options.any(|(name, _)| name == "--tool") {
-							ToolsFlow.run!(fx, args)
-						} else if args.command == ["init"] {
-							Init.run!(fx, args)
-						} else if args.command == ["install"] {
-							Install.run!(fx, args)
-						} else if args.command == ["remove"] {
-							Remove.run!(fx, args)
-						} else if args.command == ["update"] {
-							Update.run!(fx, args)
-						} else if args.command == ["upgrade"] {
-							Upgrade.run!(fx, args)
-						} else if args.command == ["verify"] {
-							Verify.run!(fx, args)
-						} else if args.command == ["list"] {
-							Ls.run!(fx, args)
-						} else if args.command == ["why"] {
-							Why.run!(fx, args)
-						} else if args.command == ["outdated"] {
-							OutdatedFlow.run!(fx, args)
-						} else if args.command == ["patch"] {
-							PatchFlow.run!(fx, args)
-						} else if args.command == ["probe"] {
-							ProbeFlow.run!(fx, args)
-						} else if args.command == ["roc", "install"] {
-							GitInstall.run!(fx, args)
-						} else if args.command == ["roc", "link"] {
-							RocLink.link!(fx, args)
-						} else if args.command == ["roc", "list"] {
-							RocManage.list!(fx, args)
-						} else if args.command == ["roc", "default"] {
-							GitDefault.run!(fx, args)
-						} else if args.command == ["roc", "remove"] {
-							RocManage.remove!(fx, args)
-						} else if args.command == ["roc", "update"] {
-							RocManage.update!(fx, args)
-						} else if args.command == ["roc", "use"] {
-							RocUse.use!(fx, args)
-						} else if args.command == ["cache", "gc"] {
-							CacheGc.run!(fx, args)
-						} else if args.command == ["cache", "clean"] {
-							CacheClean.run!(fx, args)
-						} else if args.command == ["cache", "dir"] {
-							CacheShow.dir!(fx, args)
-						} else if args.command == ["cache", "list"] {
-							CacheShow.list!(fx, args)
-						} else if args.command == ["run"] {
-							RunFlow.run!(fx, args, |inner| Run.tln!(inner))
-						} else if args.command == ["path"] {
-							PathFlow.run!(fx, args)
-						} else if args.command == ["setup"] {
-							SetupFlow.run!(fx, args)
-						} else if args.command == ["x"] {
-							XFlow.run!(fx, args)
-						} else if args.command == ["tool", "install"] {
-							ToolGitFlow.run!(fx, args)
-						} else if args.command == ["tool", "list"] {
-							ToolManageFlow.list!(fx, args)
-						} else if args.command == ["tool", "remove"] {
-							if TalonRemove.is_target(args) TalonRemoveFlow.remove!(fx, args) else ToolManageFlow.remove!(fx, args)
-						} else if args.command == ["tool", "update"] {
-							if TalonUpdate.is_target(args) TalonUpdateFlow.update!(fx, args) else ToolUpdateFlow.update!(fx, args)
-						} else if args.command == ["tool", "rebuild"] {
-							ToolUpdateFlow.rebuild!(fx, args)
-						} else {
-							fail!(fx, { command: args.typed, json: args.json, fail: Fail.new(Internal, "command '${args.typed}' is not built yet") })
+						Ok({}) => match FirstRunFlow.before!(fx, args) {
+							Err(failure) => fail!(fx, { command: args.typed, json: args.json, fail: failure })
+							Ok(shown) => dispatch!(shown, args)
 						}
 					}
 				}
 			}
 		}
 	}
+}
+
+# The command itself. `fx` is the one that `FirstRunFlow.before!` gave back (`tty!` fixed when it asked the terminal, R-HF1).
+# Slice 056 (R-FL12): `Args.parse` allows `--tool` for `install` (`add`), `remove`, `update` and `upgrade` only. These lines are the commands of `[tools]`: their operands are keys.
+dispatch! : Fx, Args => I32
+dispatch! = |fx, args| if args.options.any(|(name, _)| name == "--tool") {
+	ToolsFlow.run!(fx, args)
+} else if args.command == ["init"] {
+	Init.run!(fx, args)
+} else if args.command == ["install"] {
+	Install.run!(fx, args)
+} else if args.command == ["remove"] {
+	Remove.run!(fx, args)
+} else if args.command == ["update"] {
+	Update.run!(fx, args)
+} else if args.command == ["upgrade"] {
+	Upgrade.run!(fx, args)
+} else if args.command == ["verify"] {
+	Verify.run!(fx, args)
+} else if args.command == ["list"] {
+	Ls.run!(fx, args)
+} else if args.command == ["why"] {
+	Why.run!(fx, args)
+} else if args.command == ["outdated"] {
+	OutdatedFlow.run!(fx, args)
+} else if args.command == ["patch"] {
+	PatchFlow.run!(fx, args)
+} else if args.command == ["probe"] and args.options.any(|(name, _)| name == "--smoke" or name == "--target") {
+	ProbeSmokeFlow.run!(fx, args)
+} else if args.command == ["probe"] {
+	ProbeFlow.run!(fx, args)
+} else if args.command == ["publish"] {
+	PublishFlow.run!(fx, args)
+} else if args.command == ["roc", "install"] {
+	GitInstall.run!(fx, args)
+} else if args.command == ["roc", "link"] {
+	RocLink.link!(fx, args)
+} else if args.command == ["roc", "list"] {
+	RocManage.list!(fx, args)
+} else if args.command == ["roc", "default"] {
+	GitDefault.run!(fx, args)
+} else if args.command == ["roc", "remove"] {
+	RocManage.remove!(fx, args)
+} else if args.command == ["roc", "update"] {
+	RocManage.update!(fx, args)
+} else if args.command == ["roc", "use"] {
+	RocUse.use!(fx, args)
+} else if args.command == ["cache", "gc"] {
+	CacheGc.run!(fx, args)
+} else if args.command == ["cache", "clean"] {
+	CacheClean.run!(fx, args)
+} else if args.command == ["cache", "dir"] {
+	CacheShow.dir!(fx, args)
+} else if args.command == ["cache", "list"] {
+	CacheShow.list!(fx, args)
+} else if args.command == ["run"] {
+	RunFlow.run!(fx, args, |inner| Run.tln!(inner))
+} else if args.command == ["path"] {
+	PathFlow.run!(fx, args)
+} else if args.command == ["share"] {
+	ShareFlow.status!(fx, args)
+} else if args.command == ["share", "on"] {
+	ShareFlow.on!(fx, args)
+} else if args.command == ["share", "off"] {
+	ShareFlow.off!(fx, args)
+} else if args.command == ["share", "login"] {
+	ShareLogin.login!(fx, args)
+} else if args.command == ["share", "logout"] {
+	ShareAccountFlow.logout!(fx, args)
+} else if args.command == ["share", "forget"] {
+	ShareAccountFlow.forget!(fx, args)
+} else if args.command == ["setup"] {
+	SetupFlow.run!(fx, args)
+} else if args.command == ["x"] {
+	XFlow.run!(fx, args)
+} else if args.command == ["tool", "install"] {
+	ToolGitFlow.run!(fx, args)
+} else if args.command == ["tool", "list"] {
+	ToolManageFlow.list!(fx, args)
+} else if args.command == ["tool", "remove"] {
+	if TalonRemove.is_target(args) TalonRemoveFlow.remove!(fx, args) else ToolManageFlow.remove!(fx, args)
+} else if args.command == ["tool", "update"] {
+	if TalonUpdate.is_target(args) TalonUpdateFlow.update!(fx, args) else ToolUpdateFlow.update!(fx, args)
+} else if args.command == ["tool", "rebuild"] {
+	ToolUpdateFlow.rebuild!(fx, args)
+} else {
+	fail!(fx, { command: args.typed, json: args.json, fail: Fail.new(Internal, "command '${args.typed}' is not built yet") })
 }
 
 # W1 to W4: the checks of the operands that need no file and no index (R-SL13). `probe` is not here (R-SC1:

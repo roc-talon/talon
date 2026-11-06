@@ -164,4 +164,5 @@ tool_run = |ready| {
 	path: ready.tools_file.path,
 	text: ready.tools_file.text,
 	tools: ready.table.tools,
+	bins: ready.table.bins,
 }

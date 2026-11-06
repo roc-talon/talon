@@ -1,0 +1,1 @@
+R-AP34 R-AP39 R-MX18 (slice 223, Q594): as b2, but the first GET /v1/sweeps/<tag> answers 503 /errors/busy: sleep 2000 and the same read, then 200 and the run goes on (the sweep alone, as b2).

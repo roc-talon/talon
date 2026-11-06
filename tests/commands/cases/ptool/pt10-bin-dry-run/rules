@@ -1,0 +1,7 @@
+Slice 092 (entry `commands`): R-PT19, Design Q233. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). `gh` is a rule of `fx/jobs` (no real `gh`). The release acme/foo 1.1.0 (in the release list, R-DI2: step 1 of R-PT20, no other call) has binary assets `<hash>-<target>` with a `digest`; the files of the assets are in `fx/src/bin-<target>`. The commit of the bundle is `1a2b3c4d...`, its workflow is `.github/workflows/release.yml`. The host is Linux x64 (`x64musl`).
+
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `update --tool --dry-run --file p1/main.roc` | the plan has the new `url`. `--dry-run` reads the release list only: no release call of R-PT20 for binaries, no `programs gh`, no `gh`, no download, nothing in `talon/x/`, nothing written | R-PT19, Q233 |
+| 2 | `update --tool --dry-run --json --file p2/main.roc` | the `url` stays and `bin` has a value for x64musl only. The release has an asset for arm64mac, so R-PT19 looks at it also when the `url` stays: `would_check` is `["arm64mac"]` (the targets with an asset and no value, Q233). No `gh`, no download, nothing written | R-PT19, Q233 |

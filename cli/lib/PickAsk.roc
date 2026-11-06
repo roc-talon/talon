@@ -3,12 +3,14 @@ import Alias
 import Closure
 import Fail
 import Fx
+import Help
 import Ident
 import Lookup
 import Ref
 import ResolveBase
 import Scope
 import Selector
+import ShortNames
 import Vars
 
 ## The names step of the pick (slice 031b: split from `PickFlow`): the operands of `install`, `update` and `add` become the asked names, the picks of selectors, the kept entries and the new entries.
@@ -26,10 +28,24 @@ PickAsk :: [].{
 		var $picks = no_picks
 		var $kept = no_kept
 		var $fresh = no_fresh
-		# Slice 039: the word `roc` of `upgrade` is the nightly, not a package.
-		for text in if request.command == Upgrade request.names.keep_if(|name| name != "roc") else request.names {
-			ref = Ref.parse(text, scope, Bool.False)?
-			looked = if request.command != Install Lookup.find_move(scope, ref, entities) else add_lookup(request, ref, entities)
+		var $shorted = 0
+		texts = if request.command == Upgrade request.names.keep_if(|name| name != "roc") else request.names
+		# Slice 206f (R-AD34, R-I8, Design Q223): with a registry, the short names of the command are read with one request, before any other registry call.
+		shorts = short_names!(fx, request, scope, entities, texts)?
+		for text in texts {
+			parsed = Ref.parse(text, scope, Bool.False)?
+			short = if shorts.is_empty() Err(None) else if Lookup.needs_registry(scope, parsed, entities) shorts.get($shorted).map_err(|_| None) else Err(None)
+			if short.is_ok() {
+				$shorted = $shorted + 1
+			}
+			ref = match short {
+				Ok(entry) => entry.ref
+				Err(None) => parsed
+			}
+			looked = match short {
+				Ok(entry) => Ok(entry.lookup)
+				Err(None) => if request.command != Install Lookup.find_move(scope, ref, entities) else add_lookup(request, ref, entities)
+			}
 			found = match looked {
 				Ok(f) => f
 				Err({ fail, block }) => {
@@ -102,6 +118,52 @@ PickAsk :: [].{
 					.map(|r| { alias: r.alias, value: r.value, is_platform: r.is_platform }),
 			},
 		)
+	}
+}
+
+# Slice 206f (R-AD3 to R-AD5, R-AD34, R-I8, Design Q223): the short names of `add` and `install <names>` with a registry. A name that `Lookup.needs_registry` selects is a short name; all of them go in one `ShortNames.lookup!`, then `Lookup.registry_all`.
+# The `matched "<short>": <name>` lines are printed at once, in the order of the names (R-AD3). A failure prints its block on stderr and stops the command (exit 2, or 15 for `--offline` with no copy). No registry (`direct`), or a command other than `Install`: `[]`, no call.
+# The result has one entry for each short name, in the order of the command.
+short_names! : Fx, ResolveBase.Request, Scope, List(Lookup.Entity), List(Str) => Try(List({ ref : Ref, lookup : Lookup, matched : Try(Str, [None]) }), Fail)
+short_names! = |fx, request, scope, entities, texts| {
+	source = match (request.registry, request.index) {
+		(Read(query), _) => Ok({
+			origin: query.origin,
+			snapshot: match query.snapshot {
+				Log(n) => Ok(n)
+				_ => Err(None)
+			},
+		})
+		(_, Offline(origin)) => Ok({ origin, snapshot: Err(None) })
+		_ => Err(Direct)
+	}
+	if request.command != Install {
+		return Ok([])
+	}
+	match source {
+		Err(Direct) => Ok([])
+		Ok(registry) => {
+			refs = texts.keep_oks(|text| Ref.parse(text, scope, Bool.False)).keep_if(|ref| Lookup.needs_registry(scope, ref, entities))
+			if refs.is_empty() {
+				return Ok([])
+			}
+			found = ShortNames.lookup!(fx, { roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, snapshot: registry.snapshot, shorts: refs.map(|ref| ref.name) })?
+			match Lookup.registry_all(scope, refs.map2(found, |ref, one| { ref, found: one })) {
+				Ok(entries) => {
+					for entry in entries {
+						match entry.matched {
+							Ok(line) => fx.out!("${line}\n")
+							Err(None) => {}
+						}
+					}
+					Ok(entries)
+				}
+				Err({ fail, block }) => {
+					if !block.is_empty() fx.err!(block)
+					Err(fail)
+				}
+			}
+		}
 	}
 }
 

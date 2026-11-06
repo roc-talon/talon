@@ -1,0 +1,13 @@
+Slice 206d2 test step, revert check (2026-11-03). A private green reference (all L0 drivers l0-1, l0-5, l0-6; all 309 L2 cases with the normal TMPDIR)
+was mutated 8 times, one at a time; each mutation ran only the L2 cases it touches. The reference, the mutants, the build and the script were deleted (TW18).
+
+| # | Mutation | Caught by |
+| --- | --- | --- |
+| M1 | the anchor hold is gone (`held_anchors` gives `scoped` as it is; 206d revert M8) | L2 sp24-update-held-move run 4 (a second query, pf moves, exit 0), L0 IndexqueryTest |
+| M2 | the second query also holds the groups of the free variables | L2 sp24 (request body) |
+| M3 | the second query ignores the user N (Q404) | L2 sp24 run 2 |
+| M4 | no second query (the movable groups from the first answer, the code before the slice) | L2 sp24 run 1 |
+| M5 | the printed log size is the `log_size` of the second answer | Not caught: equivalent in the reference (its `finish!` reads the first index). The expect files fix `log:40` |
+| M6 | the second answer is not hidden by the first `log_size` | L2 sp24 run 3 |
+| M7 | the range step ignores `log:N` (no toolchain row hidden) | L2 dt3-update-range-log run 2 |
+| M8 | the facts of a moved release are not read from the records of the second answer | L2 sp24 run 1 |

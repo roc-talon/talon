@@ -1,0 +1,4 @@
+update yaml@1.1.0 --no-check --dry-run --file u1/main.roc
+update yaml@1.1.0 --no-check --dry-run --snapshot log:30 --file u1/main.roc
+update yaml@1.2.0 --no-check --dry-run --file u1/main.roc
+update yaml@1.1.0 --no-check --dry-run --snapshot log:50 --file u2/main.roc

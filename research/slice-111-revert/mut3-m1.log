@@ -1,0 +1,40 @@
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:210:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:420:1
+
+expect {
+    bad = with_extra(link_member("evil", '2', "x"))
+    [read_with(pkg_tar, 4096, wrong), read_with(bad, 4096, wrong)]
+        == [Err(HashMismatch({ expected: wrong, actual: b58(pkg_tar) })), Err(HashMismatch({ expected: wrong, actual: b58(bad) }))]
+}
+
+Mentioned values:
+wrong = "GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t"
+pkg_tar = pkg_members.concat(end2)
+
+Ran 33 tests in 1193.2 ms.:
+    32 passed
+    1 failed
+    0 compiler errors
+FAIL archive/pu38-hash-and-end (2546 ms)
+    request 1: status: expected 422, got 200
+    request 1: problem: content-type: expected "application/problem+json", got "application/json"
+    request 1: problem.type: expected "/errors/not-a-candidate", got missing
+    request 1: problem.detail: expected "the BLAKE3 hash of the asset is EkFUp47m67vbivqsR14Qy8X2eWjUzEScVrzrsAPoBWqk, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got missing
+    request 1: problem.status: expected 200 (the HTTP status), got missing
+    request 2: problem.detail: expected "the BLAKE3 hash of the asset is D3QxgTkm8TZmzbNRkku6cKi4sYBNupYkYkq5kDaFLWP3, not the hash EkFUp47m67vbivqsR14Qy8X2eWjUzEScVrzrsAPoBWqk of the URL", got "the asset is not a valid zstd stream: the stream ends inside a frame"
+    request 8: problem.detail: expected "the BLAKE3 hash of the asset is 7rYJKSRKAMLjwvzfVwJk32Hm1ZyiG5zdtWkmugDZQeaj, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got "the archive has a symbolic link, not a file: evil"
+PASS archive/pu38-made-kinds (2457 ms)
+PASS archive/pu38-paths-and-header (2543 ms)
+PASS archive/pu38-real-bundles (2512 ms)
+FAIL archive/pu38-size (6020 ms)
+    request 3: problem.detail: expected "the BLAKE3 hash of the asset is 5YNMkaSqDHek9Znxz2GosTRNMvBGubPoxAgzQ42qgSw9, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got "the asset is not a valid zstd stream: a damaged frame"
+PASS archive/pu38-window (2444 ms)
+w2: 4 passed, 2 failed

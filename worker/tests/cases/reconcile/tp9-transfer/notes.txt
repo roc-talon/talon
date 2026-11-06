@@ -1,0 +1,2 @@
+1: the read by id is public with the owner id 51 (the row has 50): R-TP9 row 2, the new owner id and the event transfer; the row was missing: active and the event found after it; then the clear of repo-missing (1.0.0 is a candidate with its asset). 1 + 1 D1 calls
+2: the same planned time again: no row

@@ -1,0 +1,4 @@
+R-AP28 R-AP34 R-AP17 R-AP59 R-AP41 R-AP43 R-DA8 R-IX3 R-ID7 (slice 208, entry registry, the word settle): Design Q421, Q423.
+Run 1 (Q421): P gets a 502 answer, Q gets no answer (the fake route has `error timeout`). Each is case 3 for its URL with ONE warning that names the URL and `502` or `no answer`. The exit code does not change (the app returns 0 and no `exit` line), the ingests are sent once (R-AP34), and there is NO second query (no ingest answered 200 or 201). Both values end as archive.
+Run 2 (Q423): X and Y get 200 and 201 with NO `Talon-Bookmark`: the second query is sent once with `Cache-Control: no-cache` and no `Talon-Bookmark` header. Its answer has the release of X and still lists Y as unknown: X ends as indexed, Y ends as archive (case 3), and there is no third query and no more ingest. No warning.
+The warning text is a proposal (R-OUT2): the text of UnknownValues.unindexed_warning.

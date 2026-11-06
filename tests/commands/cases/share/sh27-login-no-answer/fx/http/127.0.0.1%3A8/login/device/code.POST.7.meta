@@ -1,0 +1,7 @@
+status 503
+header Content-Type: application/json
+require accept: application/json
+require user-agent: tln/0.0.1
+require content-type: application/x-www-form-urlencoded
+require-none authorization
+require-none talon-contributor

@@ -1,0 +1,41 @@
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:359:8
+
+This if guard is known at compile time, so this conditional will always make
+the same choice.
+
+_ if Bool.True => Ok(dep)
+     ^^^^^^^^^
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:231:1
+
+expect
+    bad_deps.map(|u| ArchiveRead.header_fields("package [A] { util: \"${u}\" }\n".to_utf8()))
+        == bad_deps.map(|u| Err(BadDep({ alias: "util", url: u })))
+
+Mentioned values:
+bad_deps = [
+	"../util/main.roc",
+	"http://github.com/t/u/releases/download/1.0.0/${json_hash}.tar.zst",
+	"https://github.com/t/u/releases/download/1.0.0/main.roc",
+	"https://github.com/t/u/releases/download/1.0.0/2.0.0/${json_hash}.tar.zst",
+	"https://github.com/t/u/releases/download/0.0.0/${json_hash}.tar.zst",
+	"https://github.com/t/u/releases/download/1.0.0/0Hc1J9u5WrD1NGTHxmFr6t3CQ4F9VXP
+UCyRcZ1HGnFno.tar.zst",
+	"https://github.com/t/u/releases/download/1.0.0/G6ShajrrdiRnD4mW22j8T5kXyKSvwXa
+C64S9VGSzFA.tar.zst",
+	"https://github.com/t/u/releases/download/1.0.0/6541KsXhNYsav4wZjH4ZfEdkqQ6Wv7c
+sYioYgd82EUrfi.tar.zst",
+]
+
+Ran 33 tests in 1181.4 ms.:
+    32 passed
+    1 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2663 ms)
+PASS archive/pu38-made-kinds (2565 ms)
+PASS archive/pu38-paths-and-header (2647 ms)
+PASS archive/pu38-real-bundles (2590 ms)
+PASS archive/pu38-size (6302 ms)
+PASS archive/pu38-window (2552 ms)
+w2: 6 passed, 0 failed

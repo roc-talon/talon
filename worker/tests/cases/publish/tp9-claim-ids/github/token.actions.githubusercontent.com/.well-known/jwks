@@ -1,0 +1,1 @@
+{"keys":[{"$key":"k1","kid":"kid-1","alg":"RS256","use":"sig","x5t":"test"}]}

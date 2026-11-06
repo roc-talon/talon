@@ -1,0 +1,50 @@
+--- home/.cache/roc/talon/index/github/acme/case1/repo.json
++++ home/.cache/roc/talon/index/github/acme/case1/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/case1","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/form1/repo.json
++++ home/.cache/roc/talon/index/github/acme/form1/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/form1","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/form2/repo.json
++++ home/.cache/roc/talon/index/github/acme/form2/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/form2","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/form3/repo.json
++++ home/.cache/roc/talon/index/github/acme/form3/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/form3","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/hook/repo.json
++++ home/.cache/roc/talon/index/github/acme/hook/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/hook","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/ok4/repo.json
++++ home/.cache/roc/talon/index/github/acme/ok4/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/ok4","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pub/repo.json
++++ home/.cache/roc/talon/index/github/acme/pub/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pub","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pub2/repo.json
++++ home/.cache/roc/talon/index/github/acme/pub2/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pub2","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pub3/repo.json
++++ home/.cache/roc/talon/index/github/acme/pub3/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pub3","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pubfirst/repo.json
++++ home/.cache/roc/talon/index/github/acme/pubfirst/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/pubfirst","private":false,"fork":false}
+\ No newline at end of file

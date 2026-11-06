@@ -1,0 +1,2 @@
+# R-SH7, R-SH12 row 1 and 2, R-EV28 (the default https://github.com), R-OUT2, R-OUT4, R-J2: with no hook the 2 requests go to github.com. interval 0 is used as it is (sleep 0). The token comes at the first poll. share.json had a token and an account: they are replaced (a login again, R-CT8 row 3). --json: stdout has the envelope only (the JWT is not in it), the intro and the code are on stderr.
+share login --json

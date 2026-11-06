@@ -1,0 +1,8 @@
+# R-SH4, R-AP34, R-CT4, R-CT13, R-CT14: runs 1 to 4: a 429 (with Retry-After), a 503 busy (R-AP82, with Retry-After 1; the send does not wait), no answer (timeout), a failed request: the rows stay, one request each, no sleep, no retry, no write. Run 5: a 422: both rows leave, nothing is counted (no share.json write). Then the rows again. Run 6: a 200 that skips both rows: they leave, sent 2, counted 0, first 0.
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0
+queue-add 10000 HA,nightly-2026-10-14-38a3029,any,pass,0.9.0,t HB,nightly-2026-10-14-38a3029,any,fail,0.9.0,t
+queue-send 0.9.0

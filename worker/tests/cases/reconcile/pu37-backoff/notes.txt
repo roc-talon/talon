@@ -1,0 +1,3 @@
+1: run 1: acme/d (the oldest) gets 500 for its list: fail_count 1, next_check_at now + 5 min, checked_at stays; the run goes on: acme/a (304, fail_count 2 before: 0 after, the interval, Design Q374) and acme/b (200) pass; acme/c had fail_count 4 and fails again: 5, and 5 min x 2^4 = 80 min is capped at the interval (1 h); acme/e: the visibility read gives 502: fail_count 1, no list read. One log line for each failed row (no name). The outcome is ok. 1 + 5 D1 calls
+2: run 2 at now + 5 min: only acme/d and acme/e are due. acme/d fails again: fail_count 2, next_check_at + 10 min. acme/e passes: fail_count 0, the interval. 1 + 2 D1 calls
+3: run 3 at now + 15 min: acme/d passes: fail_count 0, next_check_at + 1 h, the etag. 1 + 1 D1 calls

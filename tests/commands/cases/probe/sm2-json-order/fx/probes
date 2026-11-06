@@ -1,0 +1,4 @@
+# run 1: arm64musl (the first --target) hang, x64musl pass. Run 2: wasm32 pass
+timeout	-	-
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

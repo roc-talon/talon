@@ -1,0 +1,4 @@
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"text/plain"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/xml"},"body":"<a/>"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/jsonx"},"body":"{}"}

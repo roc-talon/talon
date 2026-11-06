@@ -1,0 +1,13 @@
+FAIL reconcile/pu25-reserve (745 ms)
+    d1-calls: request 1: expected 3, got 2 (all,batch)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/p\t\\N\t1767000000000\t1767229800000\t2\t0","acme/q\tW/\"r\"\t1767000000000\t1767229800000\t0\t0","acme/r\tW/\"p\"\t1767225600000\t1767229200000\t0\t0"]
+      got:      ["acme/p\t\\N\t1767000000000\t1767229800000\t2\t0","acme/q\tW/\"r\"\t1767000000000\t1767229800000\t0\t0","acme/r\t\\N\t\\N\t1767226500000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/501 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/r/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/501 token=1 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/501","GET https://api.github.com/repos/acme/r/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/501"]
+    worker log: {"level":"warn","msg":"reconcile rate reserve","moved":2,"reset_ms":1767229800000}
+w2: 0 passed, 1 failed

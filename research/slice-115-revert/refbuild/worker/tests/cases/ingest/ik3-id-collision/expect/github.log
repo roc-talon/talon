@@ -1,0 +1,8 @@
+GET https://api.github.com/repos/acme/coll
+GET https://api.github.com/repos/acme/coll/releases/tags/1.0.0
+GET https://github.com/acme/coll/releases/download/1.0.0/3P3QiL6VHAB5RYpMfcyNVKddfP62gsKhEZAGcyfhvdgH.tar.zst
+GET https://raw.githubusercontent.com/acme/coll/1.0.0/.roc-version
+GET https://api.github.com/repos/acme/coll2
+GET https://api.github.com/repos/acme/coll2/releases/tags/1.0.0
+GET https://github.com/acme/coll2/releases/download/1.0.0/Esd1FbSvJmXGkxvMKx8yeM4SmMBY6rQwM16nuD6Kb2cC.tar.zst
+GET https://raw.githubusercontent.com/acme/coll2/1.0.0/.roc-version

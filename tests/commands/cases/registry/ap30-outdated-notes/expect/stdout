@@ -1,0 +1,19 @@
+== outdated --file u1/main.roc
+$PROJECT/u1/main.roc
+  package  current  wanted  latest  nightly range
+  json     2.0.0    2.1.0   2.1.0   none known
+  parser   1.0.0    1.2.0   1.2.0   none known
+  pf       0.1.0    0.1.1   0.1.1   none known
+note: index: acme/json checked 3d ago
+note: index: acme/pfx not checked since its first ingest
+exit 0
+== outdated --json --file u1/main.roc
+{"schema":1,"command":"outdated","ok":true,"data":{"members":[{"file":"$PROJECT/u1/main.roc","packages":[{"alias":"json","name":"acme/json","current":"2.0.0","wanted":"2.1.0","latest":"2.1.0","new_series":false,"nightly_range":{"state":"no-pass"}},{"alias":"parser","name":"acme/parser","current":"1.0.0","wanted":"1.2.0","latest":"1.2.0","new_series":false,"nightly_range":{"state":"no-pass"}},{"alias":"pf","name":"acme/pfx","current":"0.1.0","wanted":"0.1.1","latest":"0.1.1","new_series":false,"nightly_range":{"state":"no-pass"}}],"fixed":[]}],"index_notes":[{"kind":"index-stale","name":"acme/json","checked_at":1791799200000,"text":"index: acme/json checked 3d ago"},{"kind":"index-stale","name":"acme/pfx","checked_at":null,"text":"index: acme/pfx not checked since its first ingest"}]},"error":null}
+exit 0
+== outdated --quiet --file u1/main.roc
+$PROJECT/u1/main.roc
+  package  current  wanted  latest  nightly range
+  json     2.0.0    2.1.0   2.1.0   none known
+  parser   1.0.0    1.2.0   1.2.0   none known
+  pf       0.1.0    0.1.1   0.1.1   none known
+exit 0

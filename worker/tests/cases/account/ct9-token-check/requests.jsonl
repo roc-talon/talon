@@ -1,0 +1,26 @@
+{"method":"GET","path":"/v1/contributors/me","headers":{},"now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{"authorization":"Basic abc"},"now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"garbage","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"rs256","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"none","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"kid2","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"tamper_sig","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"tamper_payload","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"other_key","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"iss","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"aud","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"exp_edge","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"future","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_abc","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_0","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_neg","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_plus","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_frac","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_empty","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"sub_77","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"old","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"good","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"exp_ok","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"iat_now","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"iat_edge","now":1767226600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{"talon-contributor":"fedcba9876543210fedcba9876543210"},"token":"good","now":1767226600000}

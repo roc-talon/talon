@@ -1,0 +1,4 @@
+removing Talon, the compilers, the data and the tools
+warning: $HOME/u1\.local\bin/bar.exe is not a file that tln wrote, so tln keeps it
+removing Talon, the compilers, the data and the tools
+tln: error[environment]: cannot move $HOME/u2\.local\bin/foo.exe to $HOME/u2\.local\bin/foo.0123456789abcdef.del: Exists

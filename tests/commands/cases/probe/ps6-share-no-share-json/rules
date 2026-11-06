@@ -1,0 +1,1 @@
+R-PB6 R-SH5 R-SH13 R-SH6 (slice 217): no share.json: `tln probe --share` needs the id, so the file is made with a new id (the calls of `tln share on`), then the request has `Talon-Contributor: <new id>`, and the totals are written (a second write). The id is not read again.

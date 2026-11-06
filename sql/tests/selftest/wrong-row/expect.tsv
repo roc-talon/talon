@@ -1,0 +1,2 @@
+@ SELECT id, amount, label FROM example ORDER BY id
+1	6	five

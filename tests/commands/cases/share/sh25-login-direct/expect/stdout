@@ -1,0 +1,5 @@
+== share login
+exit 2
+== env:TALON_REGISTRY=direct share login --json
+{"schema":1,"command":"share login","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"tln share login needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml."}}
+exit 2

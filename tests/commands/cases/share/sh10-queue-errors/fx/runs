@@ -1,0 +1,7 @@
+# R-SH4, R-CC8, R-TF3 (the write of the queue fails): a busy file and a failed write are a warning and the rows are lost (the command goes on, exit 0). A file with a newer format stops with exit 19. Nothing is written in these 3 runs.
+queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+# 4 and 5: the same rows work when the file is free
+queue-add 10000 H1,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:00:00Z
+queue-count

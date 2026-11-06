@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT/p1
@@ -67,6 +69,8 @@ rename $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.01
 delete $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.0123456789abcdef.tmp
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT/p2
@@ -132,6 +136,8 @@ spawn_all limit=8
 rename $HOME2/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.0123456789abcdef.tmp/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r $HOME2/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r
 delete $HOME2/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.0123456789abcdef.tmp
 args
+env_all
+tty
 env_all
 clock
 cwd

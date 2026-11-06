@@ -1,0 +1,20 @@
+# R-CM23, R-SH8, R-SH2, R-SH5, R-SH6, R-SE15: share with no word, all 5 conditions true. Prints on, 8 characters of the id, the totals, the 2 times and the queue count (4 rows). No lock, no write, no random. Only the first 8 characters of the id are on stdout.
+share
+# R-SH8, R-OUT2, R-OUT4: --json: the envelope only.
+share --json
+# R-SH8, R-SH2 row 3: --offline turns sharing off. The other facts are the same.
+share --offline
+# R-SH8, R-SH2 row 4, R-EV26: DO_NOT_TRACK=1.
+env:DO_NOT_TRACK=1 share
+# R-SH2 row 4, R-EV26: DO_NOT_TRACK=0 does not turn it off.
+env:DO_NOT_TRACK=0 share
+# R-SH8, R-SH2 row 5: CI=true. With --json the reason is the word ci.
+env:CI=true share --json
+# R-SH8, R-SH2 row 2: no registry (direct). DO_NOT_TRACK=1 is also set: the first condition in the order of the table is named (registry).
+env:TALON_REGISTRY=direct env:DO_NOT_TRACK=1 share
+# R-SH8, R-SH2 row 1: no config.toml in this home, so share is not set. The queue is empty (no compat.db).
+env:HOME={w}/home/h2 share
+# Q213, G-C32, R-SH8, R-SH13, R-SE15: no share.json in this home (h3), and no config.toml, no compat.db. The status prints id: none and the 3 totals as 0 (queued 0). It makes no file: no lock, no write, no random.
+env:HOME={w}/home/h3 share
+# Q213, R-OUT2, R-OUT4: the same with --json (Design Q217: "id":null).
+env:HOME={w}/home/h3 share --json

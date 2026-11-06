@@ -1,0 +1,144 @@
+PASS cron/ct15-trim (2472 ms)
+PASS cron/ct15-trim-failure (2083 ms)
+PASS cron/pu35-cleanup-failure (1707 ms)
+PASS cron/pu35-hint-cleanup (1997 ms)
+FAIL reconcile/pu21-poll-job (1759 ms)
+    request 1: queue acked: expected ["m1"], got []
+    request 1: queue retried: expected [], got [{"delay_s":60,"id":"m1"}]
+    request 2: queue acked: expected ["m2"], got []
+    request 2: queue retried: expected [], got [{"delay_s":60,"id":"m2"}]
+    request 3: queue acked: expected ["m3"], got []
+    request 3: queue retried: expected [], got [{"delay_s":60,"id":"m3"}]
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t2\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t2\t\\N\t1767225600000"]
+      got:      ["1\t3\t\\N\t1767000000000"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\t\\N\t\\N"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N"]
+    db: @ SELECT idx, grp, version, hash, time FROM log ORDER BY idx: rows differ:
+      expected: ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\t4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi\t1767000000000","2\tgithub.com/acme/lib/releases/download/{v}/\t2.0.0\t2WGrnCk1SFMKUxbnGQNRj5GsYKAd62kSio1nvSsWaJWU\t1767225600000"]
+      got:      ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\t4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi\t1767000000000"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases/9001 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases/9001 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases/9002 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9002","GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0","GET https://github.com/acme/lib/releases/download/2.0.0/2WGrnCk1SFMKUxbnGQNRj5GsYKAd62kSio1nvSsWaJWU.tar.zst","GET https://raw.githubusercontent.com/acme/lib/2.0.0/.roc-version"]
+      got:      []
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the message is not a job of this Worker"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the message is not a job of this Worker"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the message is not a job of this Worker"}
+FAIL reconcile/pu23-list (3188 ms)
+    request 1: status: expected 200, got 500
+    request 1: json.outcome: expected "ok", got "exception"
+    request 1: queue_sent: expected [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9108,"repository_id":600,"repository_ids":[]},"delay_s":0}], got []
+    request 2: status: expected 200, got 500
+    request 2: json.outcome: expected "ok", got "exception"
+    d1-calls: request 1: expected 5, got 0 (no call)
+    d1-calls: request 2: expected 1, got 0 (no call)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/gone\t\\N\t1767225600000\t1767229200000\t0\t0","acme/later\t\\N\t\\N\t1767225600001\t0\t0","acme/lib\tW/\"e-lib-2\"\t1767225600000\t1767312000000\t0\t1","acme/lib-old\t\\N\t\\N\t1767312000000\t0\t0","acme/priv\t\\N\t1767225600000\t1767229200000\t0\t0","acme/same\tW/\"e-same\"\t1767225600000\t1767229200000\t0\t0"]
+      got:      ["acme/gone\t\\N\t\\N\t1767225540000\t0\t0","acme/later\t\\N\t\\N\t1767225600001\t0\t0","acme/lib\t\\N\t\\N\t1767225360000\t0\t1","acme/lib-old\t\\N\t\\N\t1767312000000\t0\t0","acme/priv\t\\N\t\\N\t1767225480000\t0\t0","acme/same\tW/\"e-same\"\t1767000000000\t1767225420000\t0\t0"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\tdeleted\t1767225600000","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\tdeleted\t1767225600000","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\t\\N\t\\N","3\tacme/lib\t3.0.0\t\\N\t\\N","4\tacme/lib\t4.0.0\t\\N\t\\N","5\tacme/lib\t5.0.0\t\\N\t\\N","6\tacme/lib\t6.0.0\tunpublished\t1767000000010","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\t\\N\t\\N","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\t\\N\t\\N","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\t\\N\t\\N","14\tacme/later\t1.0.0\t\\N\t\\N"]
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/gone\t700\t70\t1\t\\N\t1767225600000\t1767000000000","acme/later\t900\t90\t0\t\\N\t1767000000000\t1767000000000","acme/lib\t600\t60\t0\t\\N\t1767000000000\t1767000000000","acme/lib-old\t600\t60\t2\tacme/lib\t1767000000000\t1767000000000","acme/priv\t800\t80\t1\t\\N\t1767225600000\t1767000000000","acme/same\t500\t50\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["acme/gone\t700\t70\t0\t\\N\t1767000000000\t1767000000000","acme/later\t900\t90\t0\t\\N\t1767000000000\t1767000000000","acme/lib\t600\t60\t0\t\\N\t1767000000000\t1767000000000","acme/lib-old\t600\t60\t2\tacme/lib\t1767000000000\t1767000000000","acme/priv\t800\t80\t0\t\\N\t1767000000000\t1767000000000","acme/same\t500\t50\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/gone\t1\t0\t\\N\t700\t\\N\t70\t\\N\t\\N\t1767000000000","acme/gone\t2\t4\t700\t700\t70\t70\t\\N\t\\N\t1767225600000","acme/later\t1\t0\t\\N\t900\t\\N\t90\t\\N\t\\N\t1767000000000","acme/lib\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/lib-old\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/priv\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/priv\t2\t4\t800\t800\t80\t80\t\\N\t\\N\t1767225600000","acme/same\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000"]
+      got:      ["acme/gone\t1\t0\t\\N\t700\t\\N\t70\t\\N\t\\N\t1767000000000","acme/later\t1\t0\t\\N\t900\t\\N\t90\t\\N\t\\N\t1767000000000","acme/lib\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/lib-old\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/priv\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/same\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/same/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/same/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repositories/700"]
+      got:      []
+    worker log: scheduled: trap: todo
+    worker log: scheduled: trap: todo
+FAIL reconcile/pu25-reserve (4589 ms)
+    request 1: status: expected 200, got 500
+    request 1: json.outcome: expected "ok", got "exception"
+    d1-calls: request 1: expected 3, got 0 (no call)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/p\t\\N\t1767000000000\t1767229800000\t2\t0","acme/q\tW/\"r\"\t1767000000000\t1767229800000\t0\t0","acme/r\tW/\"p\"\t1767225600000\t1767229200000\t0\t0"]
+      got:      ["acme/p\t\\N\t1767000000000\t1767225480000\t2\t0","acme/q\tW/\"r\"\t1767000000000\t1767225540000\t0\t0","acme/r\t\\N\t\\N\t1767225420000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/501 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/r/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    logs: no Worker log line has {"level":"warn","msg":"reconcile rate reserve","moved":2}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"}]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/501","GET https://api.github.com/repos/acme/r/releases?per_page=100"]
+      got:      []
+    worker log: scheduled: trap: todo
+FAIL reconcile/pu36-overlap (1423 ms)
+    request 1: status: expected 200, got 500
+    request 1: json.outcome: expected "ok", got "exception"
+    request 1: status: expected 200, got 500
+    request 1: json.outcome: expected "ok", got "exception"
+    request 2: status: expected 200, got 500
+    request 2: json.outcome: expected "ok", got "exception"
+    d1-calls: request 1: expected 5, got 0 (no call)
+    d1-calls: request 2: expected 1, got 0 (no call)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/x\tW/\"acme/x\"\t1767225600000\t1767229200000\t0\t0","acme/y\tW/\"acme/y\"\t1767225600000\t1767229200000\t0\t0","acme/z\tW/\"acme/z\"\t1767225600000\t1767229200000\t0\t0"]
+      got:      ["acme/x\tW/\"acme/x\"\t1767000000000\t1767225540000\t0\t0","acme/y\tW/\"acme/y\"\t1767000000000\t1767225420000\t0\t0","acme/z\tW/\"acme/z\"\t1767000000000\t1767225480000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/y/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/z/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/x/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/y/releases?per_page=100","GET https://api.github.com/repositories/700","GET https://api.github.com/repos/acme/z/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/x/releases?per_page=100"]
+      got:      []
+    worker log: scheduled: trap: todo
+    worker log: scheduled: trap: todo
+    worker log: scheduled: trap: todo
+FAIL reconcile/pu37-backoff (4351 ms)
+    request 1: status: expected 200, got 500
+    request 1: json.outcome: expected "ok", got "exception"
+    request 2: status: expected 200, got 500
+    request 2: json.outcome: expected "ok", got "exception"
+    request 3: status: expected 200, got 500
+    request 3: json.outcome: expected "ok", got "exception"
+    d1-calls: request 1: expected 6, got 0 (no call)
+    d1-calls: request 2: expected 3, got 0 (no call)
+    d1-calls: request 3: expected 2, got 0 (no call)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/a\tW/\"b\"\t1767225600000\t1767229200000\t0\t0","acme/b\tW/\"c\"\t1767225600000\t1767229200000\t0\t0","acme/c\t\\N\t1767000000000\t1767229200000\t5\t0","acme/d\tW/\"a3\"\t1767226500000\t1767230100000\t0\t0","acme/e\tW/\"e\"\t1767225900000\t1767229500000\t0\t0"]
+      got:      ["acme/a\tW/\"b\"\t1767000000000\t1767225360000\t0\t0","acme/b\t\\N\t\\N\t1767225420000\t0\t0","acme/c\t\\N\t1767000000000\t1767225480000\t4\t0","acme/d\t\\N\t1767000000000\t1767225300000\t0\t0","acme/e\t\\N\t\\N\t1767225540000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/501 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/d/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/502 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/a/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/503 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/b/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/504 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/c/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/505 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/501 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/d/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/505 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/e/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/501 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/d/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":501,"fail_count":1}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"}]
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":504,"fail_count":5}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"}]
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":505,"fail_count":1}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"}]
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":501,"fail_count":2}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"}]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/501","GET https://api.github.com/repos/acme/d/releases?per_page=100","GET https://api.github.com/repositories/502","GET https://api.github.com/repos/acme/a/releases?per_page=100","GET https://api.github.com/repositories/503","GET https://api.github.com/repos/acme/b/releases?per_page=100","GET https://api.github.com/repositories/504","GET https://api.github.com/repos/acme/c/releases?per_page=100","GET https://api.github.com/repositories/505","GET https://api.github.com/repositories/501","GET https://api.github.com/repos/acme/d/releases?per_page=100","GET https://api.github.com/repositories/505","GET https://api.github.com/repos/acme/e/releases?per_page=100","GET https://api.github.com/repositories/501","GET https://api.github.com/repos/acme/d/releases?per_page=100"]
+      got:      []
+    worker log: scheduled: trap: todo
+    worker log: scheduled: trap: todo
+    worker log: scheduled: trap: todo
+FAIL reconcile/pu37-etag-effects (4267 ms)
+    request 1: status: expected 200, got 500
+    request 1: json.outcome: expected "ok", got "exception"
+    request 2: status: expected 200, got 500
+    request 2: json.outcome: expected "ok", got "exception"
+    request 2: queue_sent: expected [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9002,"repository_id":500,"repository_ids":[]},"delay_s":0}], got []
+    d1-calls: request 1: expected 4, got 0 (no call)
+    d1-calls: request 2: expected 3, got 0 (no call)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\tW/\"new\"\t1767225900000\t1767229500000\t0\t0","acme/two\tW/\"boom\"\t1767225900000\t1767229500000\t0\t0"]
+      got:      ["acme/lib\tW/\"old\"\t1767000000000\t1767225540000\t0\t0","acme/two\t\\N\t\\N\t1767225480000\t0\t0"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\tdeleted\t1767225900000","2\tacme/two\t1.0.0\tdeleted\t1767225900000"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/two\t1.0.0\t\\N\t\\N"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":500,"fail_count":1}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"}]
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":600,"fail_count":1}; the lines are [{"msg":"scheduled: trap: todo","level":"warn"},{"msg":"scheduled: trap: todo","level":"warn"}]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100"]
+      got:      []
+    worker log: scheduled: trap: todo
+    worker log: scheduled: trap: todo
+w2: 4 passed, 6 failed

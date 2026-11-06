@@ -1,0 +1,19 @@
+args
+env_all
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-2026-10-29-aaaaaaa timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer jwt1
+sleep 2000
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-2026-10-29-aaaaaaa timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer jwt1
+sleep 8000
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-2026-10-29-aaaaaaa timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer jwt1
+sleep 30000
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-2026-10-29-aaaaaaa timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer jwt1

@@ -1,0 +1,1 @@
+1: the dead letter queue gets a message that failed 5 times, and one that is not a message: both acked, one error log line each (no name). Nothing is sent, no D1 row

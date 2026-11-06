@@ -1,0 +1,4 @@
+install --frozen --json --file p1/main.roc
+install --frozen --file p1/main.roc
+install --frozen --file p2/main.roc
+install --frozen --file p3/main.roc

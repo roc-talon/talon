@@ -1,0 +1,7 @@
+── ✗ insufficient version bump ─────────────────────────────────────────────────────────────────
+
+roc bump failed.
+
+This is a MAJOR change, so the next version must be at least 3.0.0, but --expect was 2.1.0.
+
+

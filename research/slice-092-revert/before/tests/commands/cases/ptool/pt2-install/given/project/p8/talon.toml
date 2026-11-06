@@ -1,0 +1,3 @@
+[tools]
+n1 = { ref = "acme/n1@^1", url = "https://github.com/acme/n1/releases/download/1.0.0/5oFVsrTxFcbgGpqbJ2HHfUQ3JdbNbUsSzbVpNyMuroBg.tar.zst" }
+n2 = { ref = "acme/n2@^1", url = "https://github.com/acme/n2/releases/download/1.0.0/Fk8ayvercd756NeKsmv63AuoGt11B9YkWqjoETwWeXpX.tar.zst" }

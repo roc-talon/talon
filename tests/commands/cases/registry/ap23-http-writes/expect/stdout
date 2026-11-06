@@ -1,0 +1,60 @@
+== send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+status 201
+header Content-Type: application/json
+body {"status":"indexed"}
+== send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+status 200
+header Content-Type: application/json
+body {"status":"known"}
+== send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+status 409
+header Content-Type: application/problem+json
+body {"type":"/errors/label-conflict","title":"Conflict","status":409,"detail":"x"}
+== send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+status 201
+header Content-Type: application/json
+body {"status":"indexed"}
+== send POST http://127.0.0.1:9/v1/releases body={}
+status 599
+body wrong header
+== send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 h:Authorization=Bearer-x body={}
+status 599
+body wrong header
+== send GET http://127.0.0.1:9/v1/releases h:User-Agent=tln/0.4.1
+status 200
+body []
+== send PUT http://127.0.0.1:9/v1/toolchains/nightly-x h:Content-Type=application/json body={"a":1,\n"b":"x\\y"}
+status 200
+body {"ok":true}
+== send DELETE http://127.0.0.1:9/v1/tokens h:Authorization=Bearer-t
+status 204
+body 
+== send DELETE http://127.0.0.1:9/v1/nothing
+status 404
+body {"message":"Not Found"}
+== send GET http://127.0.0.1:9/v1/ping
+status 200
+body pong
+== send GET http://127.0.0.1:9/v1/ping
+status 200
+body pong again
+== send GET http://127.0.0.1:9/v1/ping timeout=3
+status 200
+body pong
+== send POST http://127.0.0.1:9/v1/slow timeout=5 body={}
+err Timeout
+== all 2 GET:http://127.0.0.1:9/v1/n/c GET:http://127.0.0.1:9/v1/n/a GET:http://127.0.0.1:9/v1/n/missing GET:http://127.0.0.1:9/v1/n/slow
+result 0 status 200 body c body
+result 1 status 200 body a body
+result 2 status 404 body {"message":"Not Found"}
+result 3 err Timeout
+== all 4 POST:http://127.0.0.1:9/v1/releases GET:http://127.0.0.1:9/v1/n/b
+result 0 status 599 body wrong header
+result 1 status 200 body b body
+== all 0 GET:http://127.0.0.1:9/v1/n/a GET:http://127.0.0.1:9/v1/n/b
+result 0 status 200 body a body
+result 1 status 200 body b body
+== sleep 2000
+slept 2000
+== sleep 8000
+slept 8000

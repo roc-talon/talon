@@ -1,0 +1,4 @@
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:122:1
+    447 passed
+    1 failed
+    0 compiler errors

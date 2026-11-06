@@ -1,0 +1,44 @@
+== old-edge-in
+PASS hints/ap45-client-version (7073 ms)
+PASS hints/ct11-rate-limit (7212 ms)
+PASS hints/ct12-tags-fail (6658 ms)
+PASS hints/ct12-talon-version (7069 ms)
+PASS hints/ct13-hint-quota (6828 ms)
+FAIL hints/ct14-old-nightly-edge (6823 ms)
+PASS hints/ct2-bad-requests (2777 ms)
+PASS hints/ct4-hint-batch (2598 ms)
+w2: 7 passed, 1 failed
+== old-max
+PASS hints/ap45-client-version (5014 ms)
+PASS hints/ct11-rate-limit (5158 ms)
+PASS hints/ct12-tags-fail (4748 ms)
+PASS hints/ct12-talon-version (5046 ms)
+PASS hints/ct13-hint-quota (4771 ms)
+FAIL hints/ct14-old-nightly-edge (4767 ms)
+PASS hints/ct2-bad-requests (2290 ms)
+PASS hints/ct4-hint-batch (2180 ms)
+w2: 7 passed, 1 failed
+== limit-first
+PASS hints/ap45-client-version (5621 ms)
+FAIL hints/ct11-rate-limit (5697 ms)
+    request 2: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 3: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 8: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 9: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 16: problem.type: expected "/errors/bad-request", got "/errors/rate-limited"
+    request 17: problem.type: expected "/errors/bad-request", got "/errors/rate-limited"
+    request 18: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 19: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 20: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 23: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 24: problem.type: expected "/errors/bad-request", got "/errors/rate-limited"
+    request 27: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+    request 28: body: expected "{\"written\":0,\"first\":0,\"skipped\":[]}", got "{\"detail\":\"too many user hint requests from this address: try again in a minute\",\"status\":429,\"title\":\"Rate limited\",\"type\":\"/errors/rate-limited\"}"
+PASS hints/ct12-tags-fail (5327 ms)
+PASS hints/ct12-talon-version (5639 ms)
+PASS hints/ct13-hint-quota (5492 ms)
+PASS hints/ct14-old-nightly-edge (5421 ms)
+PASS hints/ct2-bad-requests (2349 ms)
+PASS hints/ct4-hint-batch (2196 ms)
+w2: 7 passed, 1 failed
+done

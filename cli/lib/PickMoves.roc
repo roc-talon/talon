@@ -7,9 +7,9 @@ import Vars
 ## Slice 017 (R-SP16, R-SP23, R-SP24): the decisions of a held move that `PickFlow` uses. Pure functions.
 PickMoves :: [].{
 
-	## D4: the second search runs after a first search that ended with "do not fit together" (each slot has a release), and only when a variable is movable.
+	## D4, Design Q562: the second search runs after a first search that ended with any no-tuple failure (R-SP16), and only when a variable is movable.
 	second_wanted : Fail, List(Vars.Scoped) -> Bool
-	second_wanted = |fail, scoped| fail.kind == NoTuple and fail.message.contains("do not fit together") and scoped.any(|s| s.movable)
+	second_wanted = |fail, scoped| fail.kind == NoTuple and scoped.any(|s| s.movable)
 
 	## The moves of the second search, for the report and the prompt (R-SP16): `Pick.moves` with the name of the variable and the member files that the move writes (R-SP25).
 	## `slots` are the slots of the search, `scoped` the variables in the order of the first slots.

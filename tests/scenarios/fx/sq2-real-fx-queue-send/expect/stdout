@@ -1,0 +1,55 @@
+== 1. a file that does not exist: QueueRows gives no row, Unqueue and Unqueue with no seq are ok, and none of them makes a file or a dir
+none
+ok
+ok
+nothing was made
+== 2. 5 rows of 2 versions: QueueRows gives all of them, the smallest seq first, also the rows of another version (the plan sorts them out)
+ok
+qrow 1	H1	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+qrow 2	H2	nightly-2026-10-14-38a3029	any	fail	0.8.0	2026-11-03T10:00:00Z
+qrow 3	H3	nightly-2026-10-14-38a3029	any	crash	0.9.0	2026-11-03T10:00:00Z
+qrow 4	H4	nightly-2026-10-14-38a3029	linux_x86_64	pass	0.8.0	2026-11-03T10:00:00Z
+qrow 5	H5	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+== 3. Unqueue 2 and 4 (the rows of 0.8.0): only the rows with these seq go, the others keep their seq and their order
+ok
+qrow 1	H1	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+qrow 3	H3	nightly-2026-10-14-38a3029	any	crash	0.9.0	2026-11-03T10:00:00Z
+qrow 5	H5	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+queue 3
+== 4. a seq that is not in the table is no error, and the other seq in the call still goes
+ok
+qrow 1	H1	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+qrow 5	H5	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+== 5. Unqueue with no seq changes nothing. A new row has the seq after the largest one (6), so the order is still the order of seq
+ok
+ok
+qrow 1	H1	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+qrow 5	H5	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
+qrow 6	H2	nightly-2026-10-14-38a3029	any	pass	0.8.0	2026-11-03T10:00:00Z
+== 6. Unqueue of all rows: the table stays (empty), QueueRows gives no row, the count is 0, user_version is 1
+ok
+none
+queue 0
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+== 7. R-TF7, Q433, Q451: a file of an older Talon (format 1, facts and pinned, no share_queue). QueueRows gives no row and makes no table. Unqueue makes the table (ok), and keeps user_version 1 and the facts.
+none
+user_version 1
+tables ['facts', 'pinned']
+ok
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+none
+fact	old	n	any	pass		
+== 8. a file with user_version 0 (no Talon table): QueueRows gives no row and makes no table
+none
+user_version 0
+tables ['other']
+== 9. R-TF3: a file with a newer format (2). QueueRows and Unqueue give TooNew, and the bytes of the file stay the same
+err TooNew(2)
+err TooNew(2)
+the file is the same
+== 10. a file that is not a database: Failed for both calls, and the text file is the same
+err Failed(...)
+err Failed(...)
+the text file is the same

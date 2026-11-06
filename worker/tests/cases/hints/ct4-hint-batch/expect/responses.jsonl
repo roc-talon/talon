@@ -1,0 +1,8 @@
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":4,\"first\":3,\"skipped\":[{\"row\":3,\"reason\":\"unknown-hash\"},{\"row\":4,\"reason\":\"unknown-nightly\"},{\"row\":5,\"reason\":\"unknown-target\"},{\"row\":6,\"reason\":\"bot-row\"},{\"row\":7,\"reason\":\"old-nightly\"},{\"row\":10,\"reason\":\"unknown-hash\"},{\"row\":11,\"reason\":\"unknown-hash\"},{\"row\":12,\"reason\":\"unknown-nightly\"}]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[{\"row\":3,\"reason\":\"unknown-hash\"},{\"row\":4,\"reason\":\"unknown-nightly\"},{\"row\":5,\"reason\":\"unknown-target\"},{\"row\":6,\"reason\":\"bot-row\"},{\"row\":7,\"reason\":\"old-nightly\"},{\"row\":10,\"reason\":\"unknown-hash\"},{\"row\":11,\"reason\":\"unknown-hash\"},{\"row\":12,\"reason\":\"unknown-nightly\"}]}"}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":2,\"first\":1,\"skipped\":[]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1,\"first\":0,\"skipped\":[]}"}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1,\"first\":0,\"skipped\":[]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}

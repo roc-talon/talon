@@ -360,7 +360,7 @@ Consent :: [].{
 	## No request is made, so the id of the download is not known. The text names the three ways (a proposal, TW24): `no installed compiler is in [toolchain] roc (<range>). TALON_AUTO_INSTALL=no refuses the download.
 	## Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.` The proxy has no flag, so its failure is `Compiler.failure(NoneInRange)`.
 	range_refused : Str -> Fail
-	range_refused = |range| Fail.new(Consent, "no installed compiler is in [toolchain] roc (${range}). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes.")
+	range_refused = |range| { ..Fail.new(Consent, "no installed compiler is in [toolchain] roc (${range}). TALON_AUTO_INSTALL=no refuses the download. Run: tln roc install <id> for an id in the range, pass --allow-downloads, or set TALON_AUTO_INSTALL=yes."), refused_range: Ok(range) }
 
 	## R-EV6, R-DL5 (slice 025, moved from `Proxy.auto_install`: the commands read it too): `TALON_AUTO_INSTALL`. `ask` and no variable are `Ask` (the default), `yes` is `Yes`, `no` is `No`. Any other
 	## text, also the empty text and a text in another letter case, counts as not set: `Ask` (the answer of the user for `TALON_NIGHTLY`, `docs/slices/ANSWERS.md`). No failure, no warning.

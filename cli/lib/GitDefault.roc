@@ -32,7 +32,7 @@ GitDefault :: [].{
 # Steps 2 and 3: the newest installed build of the repo and the ref. One `read_files!` of the `.talon.json` of each `git-*` id.
 newest! : Fx, GitRef.Source => Try({ roots : Roots, id : Str }, Fail)
 newest! = |fx, source| {
-	roots = Roots.from_env(fx.env_all!())?
+	roots = Roots.of_run!(fx, fx.env_all!())?
 	ids = Launch.toolchains!(fx, roots).keep_if(|id| id.starts_with("git-"))
 	metas = if ids.is_empty() [] else fx.read_files!(ids.map(|id| Roots.item(roots, ToolchainMeta(id))))
 	rows = ids.map2(metas, |id, text| { id, text })

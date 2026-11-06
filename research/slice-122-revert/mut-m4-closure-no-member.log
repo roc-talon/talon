@@ -1,0 +1,71 @@
+FAIL closure/ap17-answer (1554 ms)
+    request 1: status: expected 200, got 500
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: json.artifacts: expected an array of 6 items, got missing
+    request 1: json.releases: expected an array of 4 items, got missing
+    request 1: json.epochs: expected an array of 1 items, got missing
+    request 1: json.runs: expected an array of 3 items, got missing
+    request 1: json.nearest: expected an array of 3 items, got missing
+    request 1: json.hints: expected an array of 1 items, got missing
+    request 1: json.log_size: expected 14, got missing
+    request 1: json.unknown: expected an array of 2 items, got missing
+    request 1: json.checked: expected an array of 2 items, got missing
+    request 1: json.repos: expected an array of 3 items, got missing
+    request 2: status: expected 200, got 500
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: json.artifacts: expected an array of 6 items, got missing
+    request 2: json.releases: expected an array of 4 items, got missing
+    request 2: json.epochs: expected an array of 1 items, got missing
+    request 2: json.runs: expected an array of 3 items, got missing
+    request 2: json.nearest: expected an array of 3 items, got missing
+    request 2: json.hints: expected an array of 1 items, got missing
+    request 2: json.log_size: expected 14, got missing
+    request 2: json.unknown: expected an array of 2 items, got missing
+    request 2: json.checked: expected an array of 2 items, got missing
+    request 2: json.repos: expected an array of 3 items, got missing
+    request 3: status: expected 200, got 500
+    request 3: header content-type: expected "application/json", got "application/problem+json"
+    request 3: header cache-control: expected "no-store", got null
+    request 3: json.artifacts: expected an array of 6 items, got missing
+    request 3: json.releases: expected an array of 4 items, got missing
+    request 3: json.epochs: expected an array of 1 items, got missing
+    request 3: json.runs: expected an array of 9 items, got missing
+    request 3: json.nearest: expected an array of 0 items, got missing
+    request 3: json.hints: expected an array of 2 items, got missing
+    request 3: json.log_size: expected 14, got missing
+    request 3: json.unknown: expected an array of 2 items, got missing
+    request 3: json.checked: expected an array of 2 items, got missing
+    request 3: json.repos: expected an array of 3 items, got missing
+    request 5: status: expected 200, got 500
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json.releases: expected an array of 2 items, got missing
+    request 5: json.checked: expected an array of 1 items, got missing
+    request 5: json.repos: expected an array of 1 items, got missing
+    request 5: json.unknown: expected an array of 0 items, got missing
+    request 6: status: expected 200, got 500
+    request 6: header content-type: expected "application/json", got "application/problem+json"
+    request 6: header cache-control: expected "no-store", got null
+    request 6: json.artifacts: expected an array of 3 items, got missing
+    request 6: json.releases: expected an array of 2 items, got missing
+    request 6: json.unknown: expected an array of 0 items, got missing
+    request 6: json.checked: expected an array of 1 items, got missing
+    request 7: status: expected 200, got 500
+    request 7: header content-type: expected "application/json", got "application/problem+json"
+    request 7: header cache-control: expected "no-store", got null
+    request 7: json.artifacts: expected an array of 6 items, got missing
+    request 7: json.releases: expected an array of 4 items, got missing
+    request 7: json.epochs: expected an array of 1 items, got missing
+    request 7: json.runs: expected an array of 9 items, got missing
+    request 7: json.nearest: expected an array of 0 items, got missing
+    request 7: json.hints: expected an array of 2 items, got missing
+    request 7: json.log_size: expected 14, got missing
+    request 7: json.unknown: expected an array of 2 items, got missing
+    request 7: json.checked: expected an array of 2 items, got missing
+    request 7: json.repos: expected an array of 3 items, got missing
+PASS closure/ap41-sixty-groups (1201 ms)
+PASS closure/ap46-limits (1300 ms)
+PASS closure/ap51-bad-requests (1238 ms)
+w2: 3 passed, 1 failed

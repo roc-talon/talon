@@ -1,0 +1,17 @@
+case: file with no attestation
+cmd:  gh attestation verify plain.txt --repo cli/cli --format json
+exit: 1
+stdout: (empty)
+last stderr line: Error: no attestations found
+
+case: right file, wrong repo
+cmd:  gh attestation verify gh_2.103.3_linux_amd64.tar.gz --repo cli/go-gh --format json
+exit: 1
+stdout: (empty)
+last stderr line: Error: HTTP 404: Not Found (https://api.github.com/repos/cli/go-gh/attestations/sha256:4c806978ffce1cec70853302a56d70ac6da4f19bae7adca4e1a8ab00633dd91d?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)
+
+case: right file, wrong owner (cli-nonexistent-xyz)
+cmd:  gh attestation verify gh_2.103.3_linux_amd64.tar.gz --owner cli-nonexistent-xyz --format json
+exit: 1
+stdout: (empty)
+last stderr line: Error: HTTP 404: Not Found (https://api.github.com/orgs/cli-nonexistent-xyz/attestations/sha256:4c80...?per_page=30&predicate_type=https%3A%2F%2Fslsa.dev%2Fprovenance%2Fv1)

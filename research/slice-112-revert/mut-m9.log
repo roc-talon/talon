@@ -1,0 +1,71 @@
+── ● unconditional condition ───────────────────────────── lib/Ingest.roc:112:14
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+} else if Bool.False {
+          ^^^^^^^^^^
+
+
+── ✗ fail ────────────────────────────────────── tests/unit/IngestTest.roc:264:1
+
+expect {
+    t = target(h1)
+    got = [
+        Ingest.after_read(t, []),
+        Ingest.after_read(t, [row(List.repeat(1, 32), Bool.True)]),
+        Ingest.after_read(t, [row(List.repeat(1, 32), Bool.False)]),
+        Ingest.after_read(t, [row(List.repeat(2, 32), Bool.True)]),
+    ]
+    got == [Ok(Index), Ok(Answer(record7)), Ok(AddProvenance(7)), Ok(Conflict(Ingest.label_conflict(t, Ok(h2))))]
+}
+
+Mentioned values:
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+h2 = "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+record7 = {
+	log_index: 7,
+	hash: h1,
+	group: app_form,
+	series: "2",
+	version: "2.0.0",
+	url: "https://github.com/acme/app/releases/download/2.0.0/${h1}.tar.zst",
+	tag: Ok("2.0.0"),
+	roc_version: Err(None),
+	repo: Ok("acme/app"),
+	published_at: 1792497600000,
+	yanked: Bool.False,
+	yank_reason: Err(None),
+	withdrawn: Err(None),
+}
+
+Ran 43 tests in 618.9 ms.:
+    42 passed
+    1 failed
+    0 compiler errors
+PASS ingest/ap26-body-and-route (1638 ms)
+PASS ingest/ik3-id-collision (1707 ms)
+FAIL ingest/pu14-pu19-labels (1797 ms)
+    request 5: json.release.log_index: expected 2, got 4
+    request 6: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 2.0.0 has another hash in the index, not 58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g: release a new version", got "the label github.com/acme/lib/releases/download/{v}/ 2.0.0 has the hash 9DE9hna44rZ4E9gKfPtmB6n1Av73eFbi7kzV2iCwdWgQ in the index, not 58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g: release a new version"
+    d1-calls: request 2: expected 1, got 2 (all,batch)
+    d1-calls: request 6: expected 2, got 1 (all)
+    db: @ SELECT idx, grp, version, hash, time FROM log ORDER BY idx: rows differ:
+      expected: ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\tGhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ\t1767000000000","2\tgithub.com/acme/lib/releases/download/v{v}/\t1.0.0\tCLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8\t1767225630000","3\tgithub.com/acme/lib/releases/download/{v}/\t2.0.0\t9DE9hna44rZ4E9gKfPtmB6n1Av73eFbi7kzV2iCwdWgQ\t1767225600000"]
+      got:      ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\tGhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ\t1767000000000","3\tgithub.com/acme/lib/releases/download/{v}/\t2.0.0\t9DE9hna44rZ4E9gKfPtmB6n1Av73eFbi7kzV2iCwdWgQ\t1767225600000","4\tgithub.com/acme/lib/releases/download/v{v}/\t1.0.0\tCLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8\t1767225630000"]
+    db: @ SELECT log_index, CAST(artifact AS TEXT), tag FROM releases ORDER BY log_index: rows differ:
+      expected: ["1\t-2132199083618042159\t1.0.0","2\t6422947076234556011\tv1.0.0","3\t3833141144405703952\t2.0.0"]
+      got:      ["1\t-2132199083618042159\t1.0.0","3\t3833141144405703952\t2.0.0","4\t6422947076234556011\tv1.0.0"]
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767000000000","1\t3\t\\N\t1767225630000","2\t3\t\\N\t1767225630000"]
+      got:      ["1\t1\t\\N\t1767000000000","1\t3\t\\N\t1767225630000","4\t3\t\\N\t1767225630000"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/v1.0.0","GET https://github.com/acme/lib/releases/download/v1.0.0/CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8.tar.zst","GET https://raw.githubusercontent.com/acme/lib/v1.0.0/.roc-version","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0","GET https://github.com/acme/lib/releases/download/2.0.0/58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g.tar.zst","GET https://raw.githubusercontent.com/acme/lib/2.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/v1.0.0","GET https://github.com/acme/lib/releases/download/v1.0.0/CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8.tar.zst","GET https://raw.githubusercontent.com/acme/lib/v1.0.0/.roc-version"]
+FAIL ingest/pu4-index-kinds (1869 ms)
+    d1-calls: request 4: expected 1, got 2 (all,batch)
+    github.log differs:
+      expected: ["GET https://api.github.com/repos/acme/roc-thing","GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0","GET https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","GET https://raw.githubusercontent.com/acme/roc-thing/1.2.0/.roc-version","GET https://api.github.com/repos/acme/plat","GET https://api.github.com/repos/acme/plat/releases/tags/v0.3.0","GET https://github.com/acme/plat/releases/download/v0.3.0/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk.tar.zst","GET https://raw.githubusercontent.com/acme/plat/v0.3.0/.roc-version","GET https://api.github.com/repos/acme/app","GET https://api.github.com/repos/acme/app/releases/tags/2.0.0","GET https://github.com/acme/app/releases/download/2.0.0/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6.tar.zst","GET https://raw.githubusercontent.com/acme/app/2.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repos/acme/roc-thing","GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0","GET https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","GET https://raw.githubusercontent.com/acme/roc-thing/1.2.0/.roc-version","GET https://api.github.com/repos/acme/plat","GET https://api.github.com/repos/acme/plat/releases/tags/v0.3.0","GET https://github.com/acme/plat/releases/download/v0.3.0/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk.tar.zst","GET https://raw.githubusercontent.com/acme/plat/v0.3.0/.roc-version","GET https://api.github.com/repos/acme/app","GET https://api.github.com/repos/acme/app/releases/tags/2.0.0","GET https://github.com/acme/app/releases/download/2.0.0/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6.tar.zst","GET https://raw.githubusercontent.com/acme/app/2.0.0/.roc-version","GET https://api.github.com/repos/acme/roc-thing"]
+PASS ingest/pu6-not-candidates (1900 ms)
+w2: 3 passed, 2 failed

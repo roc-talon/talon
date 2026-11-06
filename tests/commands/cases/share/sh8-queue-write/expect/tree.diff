@@ -1,0 +1,13 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1 @@
++format	1
+--- home/.cache/roc/talon/share_queue.tsv
++++ home/.cache/roc/talon/share_queue.tsv
+@@ -0,0 +1,6 @@
++1	H1	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z
++2	H2	nightly-2026-10-14-38a3029	any	fail	0.9.0	2026-11-03T10:00:00Z
++3	H1	nightly-2026-10-14-38a3029	any	crash	0.8.0	2026-11-03T10:00:01Z
++4	H1	nightly-2026-10-14-38a3029	linux_x86_64	pass	0.9.0	2026-11-03T10:00:01Z
++5	H1	nightly-2026-10-12-2664a27	any	pass	0.9.0	2026-11-03T10:00:01Z
++6	H3	nightly-2026-10-13-91fa0c2	any	pass	0.9.0	2026-11-03T10:05:00Z

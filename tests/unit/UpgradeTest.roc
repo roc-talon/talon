@@ -53,6 +53,24 @@ read_view = |words| match Args.parse(words) {
 	}
 }
 
+# R-FL5 R-RG1 R-RG7 R-AL2 R-DI1 R-UP13 (slice 206e): `upgrade` with names that hold the nightly (R-UP13: no `roc` name) takes a registry URL (the window of the query is the held pin, Registry R-AP16).
+# R-CV1 R-AP16 R-UP6 (slice 206e2): with a free nightly (no names, `roc`, or `X roc`) it takes a registry URL too (the `Free` window of the registry compiler list).
+# `Opts.read` does not check the text of an allowed URL: the flow reads it (slice 206b).
+expect {
+	rows = [
+		(["upgrade", "json", "--registry", "https://r.example"], Ok((["json"], [Bool.False, Bool.False, Bool.False], Err(Unset)))),
+		(["upgrade", "json", "parser", "--no-check", "--registry", "http://127.0.0.1:9"], Ok((["json", "parser"], [Bool.False, Bool.True, Bool.False], Err(Unset)))),
+		(["upgrade", "json", "--registry", "ftp://bad"], Ok((["json"], [Bool.False, Bool.False, Bool.False], Err(Unset)))),
+		(["upgrade", "--registry", "https://r.example"], Ok(([], [Bool.False, Bool.False, Bool.False], Err(Unset)))),
+		(["upgrade", "roc", "--registry", "https://r.example"], Ok((["roc"], [Bool.False, Bool.False, Bool.False], Err(Unset)))),
+		(["upgrade", "json", "roc", "--registry", "https://r.example"], Ok((["json", "roc"], [Bool.False, Bool.False, Bool.False], Err(Unset)))),
+		(["upgrade", "--registry", "direct"], Ok(([], [Bool.False, Bool.False, Bool.False], Err(Unset)))),
+	]
+	bad = rows.keep_if(|(words, want)| read_view(words) != want).map(|(words, want)| (words, want, read_view(words)))
+	dbg bad
+	bad == []
+}
+
 # R-UP8 R-UP9 R-UP13 R-CM5 R-FL5 R-FL10 R-FL13 R-SP8 R-SP9 R-SL5 (slice 038, Q4 (a); slice 039): the options of `upgrade`. A name with a selector (`json@^3`) is a usage failure: the selector is the word of `update`. The names and the flags are the ones of `update`. `--strategy lowest` is a usage failure (R-UP8: upgrade only moves up).
 # `--frozen` is a usage failure (R-FL13). The name `roc` is a name like the others (slice 039). R-UP9: `--no-check` is a usage failure when the nightly is free (no names, or the name `roc`): the pin moves only after the check. With the packages named (`upgrade json --no-check`) the nightly is held and the flag works. The order of the checks: the registry and the strategy of `Opts.read`, then `--frozen`, then `lowest`, then a selector, then `--no-check` with a free nightly.
 expect {

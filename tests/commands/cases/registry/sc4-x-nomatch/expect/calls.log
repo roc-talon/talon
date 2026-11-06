@@ -1,0 +1,20 @@
+args
+env_all
+tty
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/x
+read_files $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8/manifest.json $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39/manifest.json $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463/manifest.json $HOME/.cache/roc/talon/x/future/manifest.json $HOME/.cache/roc/talon/x/garbage/manifest.json
+delete $HOME/.cache/roc/talon/x/garbage
+list_dirs $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8 $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39 $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90 $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463
+read_files $HOME/.cache/roc/talon/index/github/acme/foo/repo.json
+http_get https://api.github.com/repos/acme/foo
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/foo/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/acdd588cd97481e5777473efe4eb1ee2.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/acdd588cd97481e5777473efe4eb1ee2.meta

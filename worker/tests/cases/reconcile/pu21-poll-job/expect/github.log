@@ -1,0 +1,9 @@
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9001
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9001
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9002
+GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0
+GET https://github.com/acme/lib/releases/download/2.0.0/2WGrnCk1SFMKUxbnGQNRj5GsYKAd62kSio1nvSsWaJWU.tar.zst
+GET https://raw.githubusercontent.com/acme/lib/2.0.0/.roc-version

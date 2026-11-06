@@ -1,0 +1,10 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json

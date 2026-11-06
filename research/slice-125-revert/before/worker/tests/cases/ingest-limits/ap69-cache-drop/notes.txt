@@ -1,0 +1,17 @@
+1: miss: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F
+2: hit: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F
+3: miss: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1
+4: hit: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1
+5: miss: /v1/packages/acme/lib/releases
+6: hit: /v1/packages/acme/lib/releases
+7: miss: /v1/artifacts/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb
+8: hit: /v1/artifacts/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb
+9: a key that is not dropped (another series): miss
+10: ingest 1.1.0: 201
+11: after the drop, a miss with the new release: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F
+12: after the drop, a miss with the new release: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1
+13: after the drop, a miss with the new release: /v1/packages/acme/lib/releases
+14: after the drop, a miss with the new release: /v1/artifacts/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb
+15: the key that is not dropped: still a hit
+16: ingest 1.1.0 again: 200 of row 4
+17: no drop: a hit: /v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F

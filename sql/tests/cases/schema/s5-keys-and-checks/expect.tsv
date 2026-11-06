@@ -1,0 +1,32 @@
+@ SELECT log_index FROM releases WHERE form = -2687166099708853831 ORDER BY version, version_text
+4
+5
+3
+1
+2
+6
+@ SELECT log_index, yanked, withdrawn, withdrawn_at FROM releases WHERE log_index IN (1, 2) ORDER BY log_index
+1	1	\N	\N
+2	0	repo-missing	1790000009999
+@ SELECT count(*), count(DISTINCT form) FROM releases
+7	2
+@ SELECT CAST(artifact AS TEXT), source, result, error_digest, typeof(time), time, log_index FROM compat ORDER BY source
+5000000000000000001	0	0	\N	integer	1790000000000	\N
+5000000000000000001	1	1	author digest	integer	1790000000003	3
+@ SELECT nightly, target, sha256, size FROM toolchains ORDER BY target
+5368709123456	linux_x86_64	aa	1001
+5368709123456	macos_apple_silicon	bb	1002
+@ SELECT idx, grp, version, hash, typeof(time) FROM log ORDER BY idx
+1	github.com/roc-lang/unicode/releases/download/{v}/	0.1.0	hash-one	integer
+2	github.com/roc-lang/unicode/releases/download/{v}/	0.2.0	hash-two	integer
+3	roc-lang/nightlies:linux_x86_64	nightly-2026-10-09-258ab27	sha256:aa	integer
+@ SELECT (SELECT count(*) FROM provenance), (SELECT count(*) FROM repo_events), (SELECT count(*) FROM artifacts), (SELECT count(*) FROM contributors), (SELECT count(*) FROM links)
+2	1	2	1	1
+@ SELECT contributor, artifact, result FROM contributions ORDER BY artifact
+-5	1	3
+-5	2	0
+@ SELECT state, count(*) FROM repos GROUP BY state
+2	1
+@ SELECT alias, platform, typeof(platform) FROM deps ORDER BY alias
+pf	1	integer
+plain	0	integer

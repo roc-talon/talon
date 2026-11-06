@@ -1,0 +1,37 @@
+All (30) tests passed in 338.8 ms.
+PASS reconcile/pu21-poll-job (2709 ms)
+PASS reconcile/pu23-list (4926 ms)
+FAIL reconcile/pu23-pages (2947 ms)
+    db: @ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/many\tW/\"m\"\t\\N\t1767000000000\t1767225900000\t1\t0","acme/two\t\\N\t\\N\t1767225600000\t1767229200000\t0\t0"]
+      got:      ["acme/many\tW/\"m\"\t\\N\t1767000000000\t1767225900000\t1\t0","acme/two\tW/\"p1\"\t\\N\t1767225600000\t1767229200000\t0\t0"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list has more than 10 pages","fail_count":1,"job":"reconcile","repository_id":610}
+PASS reconcile/pu24-missing-again (3152 ms)
+PASS reconcile/pu25-reserve (2513 ms)
+PASS reconcile/pu31-repo-etag (2811 ms)
+PASS reconcile/pu36-overlap (2550 ms)
+PASS reconcile/pu36-state-guard (2534 ms)
+PASS reconcile/pu37-backoff (2629 ms)
+PASS reconcile/pu37-etag-effects (2479 ms)
+PASS reconcile/tp18-rename (2382 ms)
+PASS reconcile/tp9-transfer (2133 ms)
+PASS webhook/ap12-empty-secret (1704 ms)
+PASS webhook/ap12-no-secret (1702 ms)
+PASS webhook/ap12-signature (2190 ms)
+PASS webhook/pu11-events (2394 ms)
+PASS webhook/pu13-identity-changed (1805 ms)
+PASS webhook/pu13-index-new (1820 ms)
+PASS webhook/pu13-no-asset-end (1878 ms)
+PASS webhook/pu13-not-candidate (1924 ms)
+PASS webhook/pu13-refused (2011 ms)
+PASS webhook/pu13-retry-no-asset (2115 ms)
+PASS webhook/pu14-labels (2566 ms)
+PASS webhook/pu17-withdraw-clear (4162 ms)
+PASS webhook/pu26-app-installed (3401 ms)
+PASS webhook/pu26-release-installed (3199 ms)
+PASS webhook/pu33-privatized (3757 ms)
+PASS webhook/pu33-publicized (2866 ms)
+PASS webhook/pu33-release-private (2392 ms)
+PASS webhook/pu35-dead-letter (1057 ms)
+PASS webhook/pu35-retry-schedule (1104 ms)
+w2: 30 passed, 1 failed

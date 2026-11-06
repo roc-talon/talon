@@ -1,0 +1,62 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,13 @@
++format	1
++pinned	nightly-2026-10-07-3f4e5d6	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-08-0a1b2c3	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-09-258ab27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-10-abcdef0	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-11-1a2b3c4	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-12-2664a27	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-13-91fa0c2	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-14-38a3029	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-15-38e6c42	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-16-1df370f	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
++pinned	nightly-2026-10-17-601b54c	linux_x86_64	2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881	registry
++pinned	nightly-2026-10-18-5349569	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	registry
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+@@ -0,0 +1 @@
++{"format":1,"rows":[{"tag":"nightly-2026-10-07-3f4e5d6","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-07-3f4e5d6.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":72000000,"published_at":1791385200000,"log_index":10},{"tag":"nightly-2026-10-08-0a1b2c3","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-08-0a1b2c3.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":74000000,"published_at":1791471600000,"log_index":20},{"tag":"nightly-2026-10-09-258ab27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73861067,"published_at":1791558000000,"log_index":30},{"tag":"nightly-2026-10-10-abcdef0","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-10-abcdef0.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73800000,"published_at":1791644400000,"log_index":40},{"tag":"nightly-2026-10-11-1a2b3c4","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73700000,"published_at":1791730800000,"log_index":50},{"tag":"nightly-2026-10-12-2664a27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73600000,"published_at":1791817200000,"log_index":60},{"tag":"nightly-2026-10-13-91fa0c2","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-13-91fa0c2.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73500000,"published_at":1791903600000,"log_index":70},{"tag":"nightly-2026-10-14-38a3029","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73400000,"published_at":1791990000000,"log_index":80},{"tag":"nightly-2026-10-15-38e6c42","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73300000,"published_at":1792076400000,"log_index":90},{"tag":"nightly-2026-10-16-1df370f","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-16-1df370f.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73200000,"published_at":1792162800000,"log_index":100},{"tag":"nightly-2026-10-17-601b54c","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-17-601b54c.tar.gz","sha256":"2d711642b726b04401627ca9fbac32f5c8530fb1903cc4db02258717921a4881","size":73100000,"published_at":1792249200000,"log_index":110},{"tag":"nightly-2026-10-18-5349569","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-18-5349569.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","size":73000001,"published_at":1792335600000,"log_index":120}]}
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p6/main.roc","last_use":1792670400}]}
+--- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-10-22T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"nightly-2026-10-14-38a3029","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-10-14-38a3029/roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"registry","typed":"nightly-2026-10-14-38a3029","compat":"38a3029","installed_at":"2026-10-22T12:00:00Z","published_at":"2026-10-14T15:00:00Z"}
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/LICENSE
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/LICENSE
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/legal_details
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/legal_details
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- project/p6/main.roc
++++ project/p6/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	roc: "nightly-2026-10-09-258ab27",
++	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
+ main! = |_args| Ok({})

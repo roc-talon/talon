@@ -1,0 +1,41 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/github/acme/lib/repo.json
+http_get https://api.github.com/repos/acme/lib
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/lib/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/lib/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/lib
+http_get https://api.github.com/repos/acme/lib/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/lib/1.json $HOME/.cache/roc/talon/index/github/acme/lib/1.meta
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/2.0.0/4h1ioVWhDdxswt14A2AffLfY1tUDTQPocWdnprqHbXGH.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/1.2.0/63TkNp7wbLmsjxkw9eyYGy9bz3ANdjae9GuDs8yxJZZN.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/1.5.0/C6ufMHiTgPj11N3GBuNPvMvB5QuMq1UhJKYVbPataBL1.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/1.1.0/BbxPZq6EFdZ7pGdHfEYqo8V1ekGGj9Rt1ipyLC3DiPPd.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/1.0.0/J2igNP4iQ3HLrCjBGjffJtRf5gZFD3jbz2kkq53uuHCP.tar.zst"}
+http_get http://127.0.0.1:9/v1/packages/acme/lib/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+  Talon-Bookmark: 0000000c-00000030-00004c70-1f22
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta

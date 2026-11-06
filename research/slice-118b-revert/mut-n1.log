@@ -1,0 +1,117 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:315:1
+
+expect {
+    read = |tag, draft, prerelease, assets| { tag, release: { draft, prerelease, published_at: Ok(1792497600000), assets } }
+    step = |action, full_name, r| Webhook.release_step({ action, full_name, read: r })
+    url = |name, tag, hash| "https://github.com/${name}/releases/download/${tag}/${hash}.tar.zst"
+    final = |assets| read("1.2.0", Bool.False, Bool.False, assets)
+    step("published", "Acme/Lib", final(["${h1}.tar.zst"])) == Index(url("Acme/Lib", "1.2.0", h1))
+        and step("released", "Acme/Lib", final(["${h1}.tar.zst"])) == Index(url("Acme/Lib", "1.2.0", h1))
+        and step("edited", "acme/lib", final(["${h1}.tar.zst"])) == Index(url("acme/lib", "1.2.0", h1))
+        and step("published", "acme/lib", read("v2.0.0", Bool.False, Bool.False, ["${h2}.tar.zst"])) == Index(url("acme/lib", "v2.0.0", h2))
+        and step("published", "acme/lib", final(["docs.tar.gz", "${h3}.tar.zst", "${h3}.tar.zst.intoto.jsonl", "notes.txt"])) == Index(url("acme/lib", "1.2.0", h3))
+        and step("published", "acme/lib", final([])) == NoAsset
+        and step("published", "acme/lib", final(["docs.tar.gz", "${h1}.tar.zst.intoto.jsonl", "x.tar.zst"])) == NoAsset
+        and step("released", "acme/lib", final(["${h1}.tar.zst", "${h2}.tar.zst"])) == TooMany
+        and step("edited", "acme/lib", final(["${h1}.tar.zst", "${h2}.tar.zst", "${h3}.tar.zst"])) == TooMany
+        and step("unpublished", "acme/lib", read("1.2.0", Bool.True, Bool.False, ["${h1}.tar.zst"])) == Withdraw("unpublished")
+        and step("prereleased", "acme/lib", read("1.2.0", Bool.False, Bool.True, ["${h1}.tar.zst"])) == Withdraw("prereleased")
+        and step("edited", "acme/lib", read("1.2.0", Bool.False, Bool.True, ["${h1}.tar.zst"])) == Withdraw("edited")
+        and step("edited", "acme/lib", read("1.2.0", Bool.True, Bool.False, [])) == Withdraw("edited")
+}
+
+Mentioned values:
+h1 = "7o7Rdz2Y1iJ86hB9Jg3p68pPccx7wVmMJ6f2p69bvYvF"
+h3 = "58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g"
+h2 = "CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8"
+
+Ran 17 tests in 314.0 ms.:
+    16 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (1880 ms)
+PASS webhook/ap12-no-secret (1809 ms)
+PASS webhook/ap12-signature (2001 ms)
+PASS webhook/pu11-events (2136 ms)
+FAIL webhook/pu13-index-new (1810 ms)
+    github: no fake route for GET https://api.github.com/repos/acme/lib/releases/tags/1.0.0 (expected the file github/api.github.com/repos/acme/lib/releases/tags/1.0.0)
+    request 1: queue acked: expected ["m1"], got []
+    request 1: queue retried: expected [], got [{"delay_s":60,"id":"m1"}]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N"]
+      got:      []
+    db: @ SELECT idx, grp, version, hash, time FROM log ORDER BY idx: rows differ:
+      expected: ["1\tgithub.com/Acme/Lib/releases/download/{v}/\t1.0.0\t3wSiK7wXpyfyGaYsSrd3Wp5aP2Wq6dUdBnmX9xUJBmq4\t1767225600000"]
+      got:      []
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767225600000"]
+      got:      []
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t500\t10\t0\t\\N\t1767225600000\t1767225600000"]
+      got:      []
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t500\t\\N\t10\t\\N\t\\N\t1767225600000"]
+      got:      []
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t\\N\t\\N\t1767312000000\t0\t1"]
+      got:      []
+    db: @ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance): rows differ:
+      expected: ["1\t1\t1\t1\t1\t1\t1"]
+      got:      ["0\t0\t0\t0\t0\t0\t0"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/500","GET https://api.github.com/repos/Acme/Lib/releases/9001","GET https://api.github.com/repos/Acme/Lib/releases/tags/1.0.0","GET https://github.com/Acme/Lib/releases/download/1.0.0/3wSiK7wXpyfyGaYsSrd3Wp5aP2Wq6dUdBnmX9xUJBmq4.tar.zst","GET https://raw.githubusercontent.com/Acme/Lib/1.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repositories/500","GET https://api.github.com/repos/Acme/Lib/releases/9001","GET https://api.github.com/repos/acme/lib/releases/tags/1.0.0"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the index was refused: {\"detail\":\"the GitHub release read failed with status 599\",\"status\":502,\"title\":\"Upstream error\",\"type\":\"/errors/upstream\"}"}
+PASS webhook/pu13-no-asset-end (1737 ms)
+PASS webhook/pu13-not-candidate (1790 ms)
+FAIL webhook/pu13-retry-no-asset (1839 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N"]
+      got:      []
+    db: @ SELECT idx, grp, version, hash, time FROM log ORDER BY idx: rows differ:
+      expected: ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\tFqPdo8YQh4t54fPHyViAqF8BMNyXdhbQZtY178gmrjtm\t1767225960000"]
+      got:      []
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767225960000"]
+      got:      []
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t500\t10\t0\t\\N\t1767225960000\t1767225960000"]
+      got:      []
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t\\N\t\\N\t1767229560000\t0\t0"]
+      got:      []
+    db: @ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance): rows differ:
+      expected: ["1\t1\t1\t1\t1\t1\t1"]
+      got:      ["0\t0\t0\t0\t0\t0\t0"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repos/acme/lib/releases/tags/1.0.0","GET https://github.com/acme/lib/releases/download/1.0.0/FqPdo8YQh4t54fPHyViAqF8BMNyXdhbQZtY178gmrjtm.tar.zst","GET https://raw.githubusercontent.com/acme/lib/1.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases/9001"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the release has no package asset"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the release has no package asset"}
+FAIL webhook/pu14-labels (1822 ms)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t3\t\\N\t1767000000000"]
+      got:      ["1\t3\t\\N\t1767000000000","2\t3\t\\N\t1767000000000"]
+    db: @ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance): rows differ:
+      expected: ["1\t1\t1\t1\t2\t2\t3"]
+      got:      ["1\t1\t1\t1\t2\t2\t2"]
+    worker log: {"level":"warn","msg":"index label conflict","group":"github.com/acme/lib/releases/download/{v}/","release_id":9102,"repository_id":500,"version":"2.0.0"}
+PASS webhook/pu17-withdraw-clear (3010 ms)
+PASS webhook/pu26-app-installed (2440 ms)
+FAIL webhook/pu26-release-installed (1992 ms)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t1\t\\N\t1767225600000","2\t3\t\\N\t1767000000000"]
+      got:      ["1\t3\t\\N\t1767000000000","2\t3\t\\N\t1767000000000"]
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t1","acme/other\t\\N\t\\N\t1767003600000\t0\t1"]
+      got:      ["acme/new\t\\N\t\\N\t1767003600000\t0\t0","acme/old\t\\N\t\\N\t1767003600000\t0\t0","acme/other\t\\N\t\\N\t1767003600000\t0\t0"]
+    db: @ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance): rows differ:
+      expected: ["3\t3\t3\t3\t2\t2\t4"]
+      got:      ["3\t3\t3\t3\t2\t2\t2"]
+PASS webhook/pu33-privatized (2179 ms)
+PASS webhook/pu33-publicized (1898 ms)
+PASS webhook/pu33-release-private (1883 ms)
+PASS webhook/pu35-dead-letter (1255 ms)
+PASS webhook/pu35-retry-schedule (1216 ms)
+w2: 13 passed, 4 failed

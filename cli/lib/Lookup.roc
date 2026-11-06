@@ -4,6 +4,7 @@ import Ranges
 import Ref
 import Scope
 import Selector
+import ShortNames
 
 ## Lookup of a name in a scope, with no registry (`direct`, CLI 2, R-SC1, R-SC6 to R-SC8, R-SC14 to R-SC16, R-WS8, R-AD1, R-AD2, R-AD6, R-AD7).
 ## The registry path (R-AD3 to R-AD5, R-AD34 to R-AD36) is a later slice. It adds a result and a parameter.
@@ -128,6 +129,79 @@ Lookup := [
 		Project => find_move_project(ref, entities)
 		_ => find_local(scope, ref, entities)
 	}
+
+	## Slice 211 (R-AD3, R-AD7, R-I8, R-AD34): does the name need a registry search for its short name? The flow asks this for each ref of the command before it sends the one `?short=` request (`ShortNames.lookup!`), and sends only the names that need it.
+	##
+	## | Scope | Ref | Result |
+	## | --- | --- | --- |
+	## | `Install` | form `Bare`, and no entity has `alias == ref.name` (form 1 comes first, R-AD1) | `Bool.True` |
+	## | `Tool`, `X` | form `Bare`, and no entity matches it by alias or short name (the forms 1 and 3 of the table above). A tie of local matches is a match: no search | `Bool.True` |
+	## | `Project`, `Roc` | any | `Bool.False` |
+	## | any | form `Full` or `HostPath` (R-AD2: no search, R-SN3: `host/path` has no short name) | `Bool.False` |
+	needs_registry : Scope, Ref, List(Lookup.Entity) -> Bool
+	needs_registry = |scope, ref, entities| if ref.form != Bare {
+		Bool.False
+	} else {
+		match scope {
+			Install => !entities.any(|e| e.alias == ref.name)
+			Tool | X => candidates(ref, entities).is_empty()
+			Project | Roc => Bool.False
+		}
+	}
+
+	## Slice 211 (R-AD3, R-AD4, R-AD5, R-AD7, R-AP33): what the registry result of one short name gives. Called for a name with `needs_registry`. `ref.name` is the short name as typed. The texts are proposals (TW24, R-OUT2). Failures have the kind `Usage` (R-EC2, exit 2). `block` is printed on stderr before the failure line, as for a tie.
+	##
+	## | Scope | `found.outcome` | Result |
+	## | --- | --- | --- |
+	## | `Install` | `One(item)` | `Ok({ lookup: New(item.name), matched: Ok(ShortNames.matched_line({ short: ref.name, item })) })` (R-AD3) |
+	## | `Install` | `Many(items)` | `Err`: `"<x>" matches <n> packages. Use a name from the list.` and the block `"<x>" matches <n> packages:\n` then `ShortNames.list_lines(items)` (R-AD4: the form of the tie list of R-SC14) |
+	## | `Install` | `NoMatch` | `Err`: `"<x>" matches no indexed package. Use the full name (owner/repo).` No search of GitHub (R-AD5). The block is `""` with no suggestion, else `Similar names:\n` and one line `  <name>\n` for each of `found.suggest` (R-SN5) |
+	## | `Tool`, `X` | `One` or `Many` | `Err`: `'<x>' matches no installed tool or cached app. Use the full name (owner/repo).` and the block `Registry matches for "<x>":\n` then the lines of the items (R-AD7: no registry pick, the matches are listed as full names, also for one) |
+	## | `Tool`, `X` | `NoMatch` | `Err`: the same message, block `""` |
+	## | `Project`, `Roc` | any | not called: `Err` of kind `Internal` |
+	registry : Scope, Ref, ShortNames.Found -> Try({ lookup : Lookup, matched : Try(Str, [None]) }, { fail : Fail, block : Str })
+	registry = |scope, ref, found| match scope {
+		Install => registry_install(ref, found)
+		Tool | X => Err(registry_listed(ref, found))
+		Project | Roc => Err({ fail: Fail.new(Internal, "a short name is not asked of the registry in this scope"), block: "" })
+	}
+
+	## Slice 204b (Design Q223, R-I8, R-AD34): the registry results of all short names of one command, with one stop. `names` are the refs that `needs_registry` gave, each with its `found`, in the order of the command.
+	## Each name is read as `registry` reads it. The result is `Ok` only when no name fails: one entry for each name, in order. `ref` is the full-name ref to go on with: `form` `Full`, `name` the matched full name, and the `selector` of the typed ref unchanged,
+	## so `parser@^2` goes on as `<owner>/roc-parser@^2` (R-AD34). `lookup` and `matched` are those of `registry`. For a scope that never picks (`Tool`, `X`) each name fails, so the result is `Err`.
+	##
+	## | Failing names | Result |
+	## | --- | --- |
+	## | 0 | `Ok(entries)` |
+	## | 1 | The `Err` of `registry` for that name, unchanged (the failure and the block) |
+	## | 2 or more | One `Err`. `block`: the blocks of the failing names in the order of the command, one after the other (a name with an empty block adds nothing). `fail`: kind `Usage` (exit 2), the message `<n> short names are not identified: "<x1>", "<x2>". Use the full name (owner/repo) of each.` with each failing name as typed (`ref.name`). A name that does not fail is in neither (a proposal, TW24) |
+	registry_all : Scope, List({ ref : Ref, found : ShortNames.Found }) -> Try(List({ ref : Ref, lookup : Lookup, matched : Try(Str, [None]) }), { fail : Fail, block : Str })
+	registry_all = |scope, names| {
+		results = names.map(|asked| (asked, Lookup.registry(scope, asked.ref, asked.found)))
+		failed = results.keep_oks(
+			|(asked, result)| match result {
+				Err(stop) => Ok((asked.ref.name, stop))
+				Ok(_) => Err(NoStop)
+			},
+		)
+		match failed {
+			[] => Ok(results.keep_oks(|(asked, result)| result.map_ok(|got| { ref: go_on(asked.ref, got.lookup), lookup: got.lookup, matched: got.matched })))
+			[(_, one)] => Err(one)
+			many => {
+				count = many.len().to_str()
+				quoted = many.map(|(name, _)| "\"${name}\"")
+				block = Str.join_with(many.map(|(_, stop)| stop.block), "")
+				Err({ fail: Fail.new(Usage, "${count} short names are not identified: ${Str.join_with(quoted, ", ")}. Use the full name (owner/repo) of each."), block })
+			}
+		}
+	}
+}
+
+# R-AD34: the ref to go on with: the matched full name and the selector as typed.
+go_on : Ref, Lookup -> Ref
+go_on = |ref, lookup| match lookup {
+	New(name) => { ..ref, form: Full, name }
+	_ => ref
 }
 
 failure : Str -> { fail : Fail, block : Str }
@@ -325,4 +399,30 @@ tie = |text, entities, matches, last| {
 		fail: Fail.new(Usage, "\"${text}\" matches ${count} packages. ${last}"),
 		block: "\"${text}\" matches ${count} packages:\n${Str.join_with(lines, "")}",
 	}
+}
+
+# R-AD3 to R-AD5: the result of a short name for `Install`.
+registry_install : Ref, ShortNames.Found -> Try({ lookup : Lookup, matched : Try(Str, [None]) }, Failed)
+registry_install = |ref, found| match found.outcome {
+	One(item) => Ok({ lookup: New(item.name), matched: Ok(ShortNames.matched_line({ short: ref.name, item })) })
+	Many(items) => {
+		count = items.len().to_str()
+		Err({ fail: Fail.new(Usage, "\"${ref.name}\" matches ${count} packages. Use a name from the list."), block: "\"${ref.name}\" matches ${count} packages:\n${ShortNames.list_lines(items)}" })
+	}
+	NoMatch => {
+		similar = if found.suggest.is_empty() "" else "Similar names:\n${Str.join_with(found.suggest.map(|hit| "  ${hit.name}\n"), "")}"
+		Err({ fail: Fail.new(Usage, "\"${ref.name}\" matches no indexed package. Use the full name (owner/repo)."), block: similar })
+	}
+}
+
+# R-AD7: `Tool` and `X` never pick a registry match. The matches are listed as full names.
+registry_listed : Ref, ShortNames.Found -> Failed
+registry_listed = |ref, found| {
+	listed = match found.outcome {
+		One(item) => ShortNames.list_lines([item])
+		Many(items) => ShortNames.list_lines(items)
+		NoMatch => ""
+	}
+	block = if listed.is_empty() "" else "Registry matches for \"${ref.name}\":\n${listed}"
+	{ fail: Fail.new(Usage, "'${ref.name}' matches no installed tool or cached app. Use the full name (owner/repo)."), block }
 }

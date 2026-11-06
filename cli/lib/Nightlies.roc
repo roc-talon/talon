@@ -8,6 +8,7 @@ import Github
 import Ident
 import JsonDoc
 import Net
+import RegistryToolchains
 import Roots
 import Selector
 import Text
@@ -202,15 +203,7 @@ Nightlies :: [].{
 	## R-CV6 (slice 030b): the rows to record for a list. One row for each release that has an asset for the host (`Ok(asset)`) and a sha256 (`asset.sha256` is `Ok`), in the order of `releases`:
 	## `{ tag: <id>, target: Nightlies.target(host), sha256, source: GithubDigest }` (the source of `direct` mode, R-CV3). A release with `NoAsset`, `Several(n)` or no sha256 gives no row (R-CV4 stops an install of it).
 	pins : { host : Host, releases : List(Release) } -> List(Db.Pinned)
-	pins = |facts| facts.releases.keep_oks(
-		|release| match release.asset {
-			Ok(asset) => match asset.sha256 {
-				Ok(sha256) => Ok({ tag: release.id, target: Nightlies.target(facts.host), sha256, source: GithubDigest })
-				Err(None) => Err(NoRow)
-			}
-			Err(_) => Err(NoRow)
-		},
-	)
+	pins = |facts| pins_of(facts.host, facts.releases, GithubDigest)
 
 	## R-CV6 (slice 030b): the list with no release that has a change. A release is dropped when `changed` has a row with its id as `now.tag`. The order of the other releases stays. The tag is compared as text.
 	without_changed : { releases : List(Release), changed : List(Facts.Change) } -> List(Release)
@@ -250,7 +243,116 @@ Nightlies :: [].{
 			Err(BadPage(n)) => Err(Fail.new(Network, "page ${n.to_str()} of roc-lang/nightlies is not a release list"))
 		}
 	}
+
+	## Slice 204 (R-CV1, R-CV2, R-CV3, R-AP50): the nightlies of the host from the rows of a registry (`RegistryToolchains.visible` has already hidden the rows above `log:N`). Pure.
+	## One release for each row with `target == Nightlies.target(host)` and a tag that `Nightlies.parts` reads (a row of another target gives no release on this host, as a nightly with no asset for it: R-CV2). Of two rows of one tag and target the row with the smaller `log_index` counts (any order in the list); the later one is dropped (`row_changes` sees it).
+	## `id` is the tag, `published_at` is the row value in seconds (`published_at // 1000`: R-AP50 gives milliseconds, R-DI10 seconds). `asset` is `Ok` with `name` = `asset_name`, `size` = the row `size` (R-AP80; a row with size 0 is `Err(NoAsset)`, Q340), `url` = `https://github.com/roc-lang/nightlies/releases/download/<tag>/<asset_name>` (Q1 of slice 204),
+	## and `sha256` = `Ok(<the row sha256>)` when it is 64 lower-case hex digits, else `Err(None)` (R-CV4 then stops an install). An `asset_name` that is not a safe path part (`Ident.safe_part`, R-CV2, R-SE18) gives `Err(NoAsset)`. The result is in the order of `order` (R-NS1).
+	from_rows : { host : Host, rows : List(RegistryToolchains.Row) } -> List(Release)
+	from_rows = |facts| {
+		want = Nightlies.target(facts.host)
+		mine = facts.rows.keep_if(|row| row.target == want and Nightlies.parts(row.tag).is_ok())
+		first = mine.fold([], |acc, row| keep_first(acc, row))
+		Nightlies.order(first.map(row_release))
+	}
+
+	## Slice 204 (R-CV3, R-CV5, R-CV6): as `pins`, with the source `Registry` (the sha256 comes from the registry, not from a GitHub `digest`). One row for each release with an asset and a sha256, in the order of `releases`.
+	registry_pins : { host : Host, releases : List(Release) } -> List(Db.Pinned)
+	registry_pins = |facts| pins_of(facts.host, facts.releases, Registry)
+
+	## Slice 204b (R-CV6, R-IX4, Design Q222): the changes that two rows of one tag and one target make. The rows are those of the file (any order, all targets). Only a row is counted that
+	## has `target == Nightlies.target(host)`, a tag that `Nightlies.parts` reads, an `asset_name` that is a safe path part, a size above 0 and a sha256 of 64 lower-case hex digits.
+	## For each such row that is not the first of its tag and target (the first is the row with the smallest `log_index`): when its sha256 is not the one of the first row, one change `{ first, now }`.
+	## `first` and `now` are the pins of the two rows (`tag`, `target`, `sha256`, source `Registry`). The changes are in the order of the later rows by `log_index`. A later row with the same sha256 gives none.
+	## `list_registry!` adds these changes to `changed` and drops the release of each tag (`without_changed`): the later row is the mismatch of R-CV6 and the tag is no candidate (exit 16 where a command names it).
+	row_changes : { host : Host, rows : List(RegistryToolchains.Row) } -> List(Facts.Change)
+	row_changes = |facts| {
+		want = Nightlies.target(facts.host)
+		counted = facts.rows
+			.keep_if(|row| row.target == want and Nightlies.parts(row.tag).is_ok() and Ident.safe_part(row.asset_name) and row.size > 0 and is_sha256(row.sha256))
+			.sort_with(|a, b| compare_numbers([a.log_index], [b.log_index]))
+		counted
+			.fold(
+				{ firsts: [], changes: [] },
+				|acc, row| match acc.firsts.find_first(|o| o.tag == row.tag) {
+					Err(_) => { firsts: acc.firsts.append(row), changes: acc.changes }
+					Ok(first) => if first.sha256 == row.sha256 acc else { firsts: acc.firsts, changes: acc.changes.append({ first: row_pin(first), now: row_pin(row) }) }
+				},
+			)
+			.changes
+	}
+
+	## Slice 204: the registry source of the list, next to `list!` (the GitHub source). `origin` is the registry, `version` the `tln` version, `log` is `--snapshot log:N` (R-AP19). A command picks the source: slice 206.
+	## The calls: those of `RegistryToolchains.list!`, then (rows to releases with `RegistryToolchains.visible` and `from_rows`) `Facts.pin_all!` with `registry_pins`: the `compat.db` calls follow the registry calls, for the visible rows only (Q4 of slice 204: a hidden row is not seen), also for a list from the file.
+	## `releases`, `changed` and `dropped` are as in `list!` (R-CV6: a tag with a changed sha256 is no candidate, whatever the source of the first sha256 was). `source` is the one of `RegistryToolchains.list!`. The failure of `RegistryToolchains.list!` or of `pin_all!` is the failure.
+	list_registry! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, host : Host, log : Try(U64, [None]) } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Fail)
+	list_registry! = |fx, facts| {
+		got = RegistryToolchains.list!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, offline: facts.offline })?
+		shown = RegistryToolchains.visible({ rows: got.rows, log: facts.log })
+		found = Nightlies.from_rows({ host: facts.host, rows: shown })
+		pinned = Facts.pin_all!(fx, { roots: facts.roots, listed: Nightlies.registry_pins({ host: facts.host, releases: found }) })?
+		changed = pinned.concat(Nightlies.row_changes({ host: facts.host, rows: shown }))
+		kept = Nightlies.without_changed({ releases: found, changed })
+		Ok({ releases: kept, source: got.source, changed, dropped: found.keep_if(|release| !kept.any(|k| k.id == release.id)) })
+	}
+
+	## Slice 206e2 (R-CV1, R-IX4, R-CV5): where a command reads its compiler list. `Direct`: the GitHub list (`list!`). `Registry`: the rows of a registry (`list_registry!`, `log` is `--snapshot log:N`).
+	## `kept` is true when the command has read the registry list once already: the read uses only the kept file (`offline` true, no request), so the command sends one `GET /v1/toolchains` (R-IX4).
+	Source : [Direct, Registry({ origin : Str, version : Str, log : Try(U64, [None]), kept : Bool })]
+
+	## Slice 206e2: the list of `source`: `list!` for `Direct`, `list_registry!` for `Registry` (offline when `kept`). The result and the failures are those of the function.
+	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Fail)
+	list_of! = |fx, facts| match facts.source {
+		Direct => Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })
+		Registry(r) => Nightlies.list_registry!(fx, { roots: facts.roots, origin: r.origin, version: r.version, offline: facts.offline or r.kept, host: facts.host, log: r.log })
+	}
+
+	## R-CV5 (slice 206e2): the `sha256_source` of a compiler of the list of `source`: `GithubDigest` for `Direct`, `Registry` for a registry row.
+	digest_source : Nightlies.Source -> Db.Source
+	digest_source = |source| match source {
+		Direct => GithubDigest
+		Registry(_) => Registry
+	}
 }
+
+# The pin rows of a list: one for each release with an asset and a sha256, with the source of the list.
+pins_of : Host, List(Release), Db.Source -> List(Db.Pinned)
+pins_of = |host, list, source| list.keep_oks(
+	|release| match release.asset {
+		Ok(asset) => match asset.sha256 {
+			Ok(sha256) => Ok({ tag: release.id, target: Nightlies.target(host), sha256, source })
+			Err(None) => Err(NoRow)
+		}
+		Err(_) => Err(NoRow)
+	},
+)
+
+# R-CV2, R-CV3, R-AP50: the release of one registry row. A row has `size` (0 is no asset, R-AP80) and no URL: the URL is the GitHub download of the tag (Q1 of slice 204).
+row_release : RegistryToolchains.Row -> Release
+row_release = |row| {
+	sha = if is_sha256(row.sha256) Ok(row.sha256) else Err(None)
+	url = "https://github.com/roc-lang/nightlies/releases/download/${row.tag}/${row.asset_name}"
+	asset = if Ident.safe_part(row.asset_name) and row.size > 0 Ok({ name: row.asset_name, url, size: row.size, sha256: sha }) else Err(NoAsset)
+	{ id: row.tag, published_at: row.published_at // 1000, asset }
+}
+
+# The pin of a registry row (R-CV6).
+row_pin : RegistryToolchains.Row -> Db.Pinned
+row_pin = |row| { tag: row.tag, target: row.target, sha256: row.sha256, source: Registry }
+
+# One row for each tag: the row with the smaller `log_index` stays, wherever it is in the list. The place of a tag in `acc` stays.
+keep_first : List(RegistryToolchains.Row), RegistryToolchains.Row -> List(RegistryToolchains.Row)
+keep_first = |acc, row| match acc.find_first_index(|o| o.tag == row.tag) {
+	Err(_) => acc.append(row)
+	Ok(i) => match acc.get(i) {
+		Ok(old) if row.log_index < old.log_index => acc.set(i, row) ?? acc
+		_ => acc
+	}
+}
+
+# 64 lower-case hex digits.
+is_sha256 : Str -> Bool
+is_sha256 = |text| text.count_utf8_bytes() == 64 and text.to_utf8().all(|b| (b >= '0' and b <= '9') or (b >= 'a' and b <= 'f'))
 
 months : List(Str)
 months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]

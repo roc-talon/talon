@@ -1,0 +1,4 @@
+PASS cron/ct15-trim (1709 ms)
+PASS cron/ct15-trim-failure (1604 ms)
+PASS cron/pu35-hint-cleanup (1539 ms)
+w2: 3 passed, 0 failed

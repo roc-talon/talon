@@ -1,0 +1,4 @@
+    setup failed: table toolchains has no column named size
+FAIL d1 closure/c3-order-window (141 ms)
+    setup failed: D1_ERROR: table toolchains has no column named size: SQLITE_ERROR
+w1: 0 passed, 6 failed

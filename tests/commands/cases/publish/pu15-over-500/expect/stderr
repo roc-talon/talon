@@ -1,0 +1,2 @@
+warning: sent 500 of 501 facts for 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq: the registry takes at most 500 for a publish
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run

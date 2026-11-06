@@ -1,0 +1,1 @@
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":2,\"first\":2,\"skipped\":[{\"row\":1,\"reason\":\"old-nightly\"},{\"row\":2,\"reason\":\"old-nightly\"}]}"}

@@ -1,0 +1,3 @@
+db: @ SELECT v FROM example ORDER BY v: rows differ
+expected: ["other"]
+got:      ["written"]

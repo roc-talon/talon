@@ -1,0 +1,6 @@
+# R-SH10, R-SH1, R-CM23, R-LY3: share on with the registry direct (the default here: no flag, no variable, no key) writes the setting and says that Talon shares nothing. The id is made. No config.toml before: the file is made with one line.
+share on
+# R-SH10, R-OUT2, R-OUT4: the same with --json: only the envelope, data.sends is false. TALON_REGISTRY=direct gives the same.
+env:TALON_REGISTRY=direct share on --json
+# R-SH1, R-SH4, R-TF7, R-OUT2: off with --json. compat.db does not exist (slice 215 makes the table), so ClearQueue makes no file. A registry URL changes nothing for off.
+env:TALON_REGISTRY=https://registry.example.org share off --json

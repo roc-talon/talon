@@ -1,0 +1,19 @@
+== install --no-check --dry-run --registry direct --file u1/main.roc env:TALON_REGISTRY=http://127.0.0.1:9
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0
+== install --no-check --dry-run --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0
+== install --no-check --dry-run --json --snapshot log:30 --file u1/main.roc
+{"schema":1,"command":"install","ok":true,"data":{"snapshot":"log:30","log_size":30,"probes":0,"downloads":0,"dry_run":true,"check":"skipped","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+exit 0
+== install --no-check --registry http://example.org --file u1/main.roc
+exit 2

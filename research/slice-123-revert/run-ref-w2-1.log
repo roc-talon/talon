@@ -1,0 +1,775 @@
+FAIL account/ap45-write-routes (517 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698610822","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct10-tracker (478 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698610822","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct11-login-limit (479 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698610822","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct7-delete (481 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698610837","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct8-login (466 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698610822","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct8-login-refusals (480 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698610836","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct9-token-check (235 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611065","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL account/ct9-tokens-after (260 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611074","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL archive/pu38-hash-and-end (220 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611059","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL archive/pu38-made-kinds (213 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611056","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL archive/pu38-paths-and-header (217 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611058","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL archive/pu38-real-bundles (218 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611060","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL archive/pu38-size (270 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611294","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL archive/pu38-window (269 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611294","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL closure/ap17-answer (389 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611353","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL closure/ap41-sixty-groups (390 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611346","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL closure/ap46-limits (389 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611369","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL closure/ap51-bad-requests (356 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611361","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap10-404-and-targets (315 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611484","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap10-auth (310 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611486","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap10-bad-requests (309 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611669","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap10-bot-rows-and-sweep (308 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611666","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap39-sweeps (307 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611670","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap4-artifact-compat (469 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611795","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap40-audit (287 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611794","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/ap46-500-rows (286 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611792","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/mx9-missing-100 (393 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612105","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL compat/mx9-sweep-errors (312 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698611956","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL cron/ct15-trim (394 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612107","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL cron/ct15-trim-failure (234 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612107","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL cron/pu35-cleanup-failure (442 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612181","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL cron/pu35-hint-cleanup (233 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612102","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL githubtoken/pu25-missing-key (297 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612194","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL githubtoken/pu25-three-routes (321 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612406","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL githubtoken/pu25-token-faults (319 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612399","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL githubtoken/pu25-token-kept (318 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612400","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ap45-client-version (477 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612498","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct11-rate-limit (271 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612504","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct12-tags-fail (370 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612669","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct12-talon-version (267 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612670","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct13-hint-quota (389 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612778","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct14-old-nightly-edge (387 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612770","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct2-bad-requests (229 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612766","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL hints/ct4-hint-batch (478 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613050","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/q262-row-race (284 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698612893","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/tp10-301-followed (377 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613062","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/tp10-rename (256 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613056","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/tp18-301-no-row (257 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613062","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/tp18-rename-back (255 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613052","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/tp9-four-rows (347 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613147","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL identity/tp9-private-first (330 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613417","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest/ap26-body-and-route (331 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613413","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest/ik3-id-collision (332 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613414","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest/pu14-pu19-labels (501 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613469","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest/pu38-platform-mark (502 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613482","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest/pu4-index-kinds (254 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613491","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest/pu6-not-candidates (451 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613810","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest-limits/ap69-cache-drop (331 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There is likely additional logging output above. |     at #assembleAndUpdateConfigInternal (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:134814:13) |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5) |     at async #assembleAndUpdateConfig (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:134728:7)
+FAIL ingest-limits/pu34-ip (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613656","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL ingest-limits/pu34-owner (278 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613811","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-jwks-max-age (277 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613813","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-jwks-upstream (430 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698613922","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-jwt-strict (339 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614084","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-key-rotation (335 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614074","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-signature-and-kid (365 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614138","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-token-form (220 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614082","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp3-tp7-claims (364 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614147","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL oidc/tp7-bot-token-pass (210 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614148","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL publish/pu1-publish-package (325 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614434","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL publish/pu15-ingest-then-publish (318 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There is likely additional logging output above. |     at #assembleAndUpdateConfigInternal (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:134814:13) |     at process.processTicksAndRejections (node:internal/process/task_queues:104:5) |     at async #assembleAndUpdateConfig (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:134728:7)
+FAIL publish/pu16-after-ingest (318 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614434","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL publish/tp3-claims-vs-url (168 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614430","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL publish/tp9-claim-ids (177 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614432","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap1-body-etag-cache (179 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614439","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap13-bad-requests (356 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614743","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap13-group-series-after (352 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614741","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap14-pages (351 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614737","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap2-artifact (291 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614729","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap24-conditional-first (347 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614740","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap29-checked-stale (346 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698614751","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap43-cache-refresh (322 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615052","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap43-not-found-uncached (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615062","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap48-method-not-allowed (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615065","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/ap56-case-fold (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615062","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reads/bookmark-session (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615065","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu21-poll-job (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615071","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu23-list (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615381","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu23-pages (273 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615386","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu24-missing-again (269 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615381","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu25-reserve (277 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615393","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu31-repo-etag (275 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615384","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu36-overlap (269 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615382","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu36-state-guard (357 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615740","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu37-backoff (404 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615737","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/pu37-etag-effects (350 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615735","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/tp18-other-id (402 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615746","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/tp18-rename (400 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615743","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/tp18-rename-transfer (399 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615744","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL reconcile/tp9-transfer (314 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698615872","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap21-handler-err-internal (367 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616075","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap21-unknown-method (385 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616139","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap21-unknown-path (382 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616133","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap23-charset (384 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616125","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap23-no-body (384 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616140","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap23-parameters (127 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616144","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap23-unsupported-media-type (329 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616206","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap44-unknown-ignored (332 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616469","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap48-method-not-allowed (332 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616471","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL router/r-ap48-order (332 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616471","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-pu25-auth-log (332 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616475","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-wh4-d1-count-and-rows (536 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616528","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-wh4-github-and-clock (279 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616538","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-wh4-json-lists (328 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616834","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-wh4-queue-and-logs (322 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616829","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-wh4-sql-session-cache (322 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616829","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL runner/r-wh4-status-json-headers (323 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616832","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL shorts/ap33-moved (218 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616841","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL shorts/ap46-limits (218 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698616839","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL shorts/sn1-table (304 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617131","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL shorts/sn2-members (294 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617124","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL shorts/sn5-search (297 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617127","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/get-bad-query (303 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617136","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/get-etag-304 (207 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617135","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/get-pages (202 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617131","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/get-query (307 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617431","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-asset-rules (306 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617434","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-digest-kept (304 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617434","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-digest-rules (303 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617433","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-github-answers (348 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617438","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-id-collision (299 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617435","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-new-tag (292 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617688","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-not-candidates (291 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617692","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-odd-sha-names (443 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617758","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL toolchains/pu-size-rules (290 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617685","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/ap12-empty-secret (442 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617760","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/ap12-no-secret (396 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698617760","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/ap12-signature (410 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618083","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu11-events (410 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618081","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu13-identity-changed (408 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618081","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu13-index-new (257 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618083","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu13-no-asset-end (256 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618087","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu13-not-candidate (193 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618074","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu13-refused (318 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618391","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu13-retry-no-asset (256 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618390","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu14-labels (316 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618409","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu17-withdraw-clear (316 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618413","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu26-app-installed (314 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618407","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu26-release-installed (312 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618413","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu33-privatized (339 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618522","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu33-publicized (408 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618768","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu33-release-private (467 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618824","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu35-dead-letter (352 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618761","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL webhook/pu35-retry-schedule (468 ms)
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618823","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/case-timeout (466 ms)
+    the failure has no text "timed out after 1 s"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618825","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/missing-fake-route (190 ms)
+    the failure has no text "github: no fake route for GET https://api.github.com/repos/o/r"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698618834","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/session-absent (337 ms)
+    the failure has no text "request 1: header x-d1-session: expected "first-unconstrained", got null"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619135","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+PASS selftest/sql-line-response-count (0 ms)
+FAIL selftest/sql-line-wrong-count (339 ms)
+    the failure has no text "request 2: json.count: expected 0, got 1"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619141","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/unexpected-github-call (273 ms)
+    the failure has no text "github.log differs"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619146","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-auth-log (273 ms)
+    the failure has no text "auth.log differs"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619149","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-body (221 ms)
+    the failure has no text "request 1: body: expected "x""; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619137","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-body-pad (271 ms)
+    the failure has no text "json.len: expected 299999, got 300000"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619146","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-clock (332 ms)
+    the failure has no text "request 1: json.now: expected 6, got 5"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619468","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-d1-count (385 ms)
+    the failure has no text "d1-calls: request 1: expected 3, got 2 (all,all)"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619486","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-d1-row (385 ms)
+    the failure has no text "db: @ SELECT v FROM example ORDER BY v: rows differ"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619483","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    the failure has no text "expected: ["other"]"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619483","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    the failure has no text "got:      ["written"]"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619483","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-force-cache (342 ms)
+    the failure has no text "request 1: json.cache-control: expected "no-cache", got null"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619486","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-github-log (338 ms)
+    the failure has no text "github.log differs"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619478","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-header (339 ms)
+    the failure has no text "request 1: header x-test: expected "no", got "yes""; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619481","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-header-set (330 ms)
+    the failure has no text "request 1: header talon-bookmark: expected a value, got none"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619666","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-json-array (339 ms)
+    the failure has no text "request 1: json.b.c: expected an array of 2 items"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619837","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-json-at (338 ms)
+    the failure has no text "request 1: json_at rows.1.n: expected 9, got 2"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619829","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-json-field (338 ms)
+    the failure has no text "request 1: json.a: expected 2, got 1"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619833","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-json-len (336 ms)
+    the failure has no text "request 1: json_len rows: expected an array of 2 items, got 3 items"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619821","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-json-range (336 ms)
+    the failure has no text "request 1: json_range rows.n: expected 1..4 in order, 3 items"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619838","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-json-range-order (317 ms)
+    the failure has no text "request 1: json_range rows.n: expected 2..4 in order, first difference at item 0 (1)"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698619893","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-log (309 ms)
+    the failure has no text "logs: no Worker log line has"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620152","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-problem-content-type (309 ms)
+    the failure has no text "request 1: problem: content-type: expected "application/problem+json", got "application/json""; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620149","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-problem-member (523 ms)
+    the failure has no text "request 1: problem.detail: expected "other", got "fixed""; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620344","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-queue-acked (309 ms)
+    the failure has no text "request 1: queue acked: expected"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620145","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-queue-retry (454 ms)
+    the failure has no text "request 1: queue retried: expected"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620199","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-queue-sent (274 ms)
+    the failure has no text "request 1: queue_sent: expected"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620345","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-queue-sent-none (217 ms)
+    the failure has no text "request 1: queue_sent: expected"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620345","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+PASS selftest/wrong-response-count (0 ms)
+FAIL selftest/wrong-session (216 ms)
+    the failure has no text "request 1: header x-d1-session: expected "b2", got "b1""; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620355","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-status (215 ms)
+    the failure has no text "request 1: status: expected 404, got 200"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620356","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-timing-safe (122 ms)
+    the failure has no text "request 1: timing_safe: expected 0 calls of timingSafeEqual, got 1"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620415","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+FAIL selftest/wrong-tokens-log (84 ms)
+    the failure has no text "tokens.log differs"; it is:
+    runner fault: MiniflareCoreError [ERR_RUNTIME_FAILURE]: The Workers runtime failed to start. There was likely a problem with the workerd binary or your configuration. | Runtime stderr: | {"timestamp":"1793698620472","level":"error","source":"src/workerd/server/json-logger.c++:127","message":"service core:user:: Uncaught ReferenceError: now is not defined\n  at worker-test.js:14:34","context_depth":0} |     at StartupLogBuffer.handleStartupFailure (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/miniflare/dist/src/index.js:117069:13)
+    worker log: service core:user:: Uncaught ReferenceError: now is not defined
+  at worker-test.js:14:34
+w2: 2 passed, 185 failed

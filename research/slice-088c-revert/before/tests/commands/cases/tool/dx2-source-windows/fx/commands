@@ -1,0 +1,2 @@
+env:HOME={w}/home/u1 env:USERPROFILE={w}/home/u1 env:LOCALAPPDATA={w}/home/u1/AppData/Local env:APPDATA={w}/home/u1/AppData/Roaming tool update talon --from-source
+env:HOME={w}/home/u2 env:USERPROFILE={w}/home/u2 env:LOCALAPPDATA={w}/home/u2/AppData/Local env:APPDATA={w}/home/u2/AppData/Roaming tool update talon --from-source

@@ -1,0 +1,2 @@
+verify --file u1/main.roc
+verify --json --file u1/main.roc

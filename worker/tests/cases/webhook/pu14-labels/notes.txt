@@ -1,0 +1,3 @@
+1: published 1.0.0 with the hash that the index has (indexed by an ingest, via 3): no artifact, release or log row; the job adds its provenance row (via 1). No read of the tag, the asset or .roc-version. Acked
+2: the same event again (GitHub sends it again): the webhook row is there, nothing is written. Acked
+3: published 2.0.0 now shows another hash: 409 label-conflict in the other paths. The webhook path writes no index row and logs the conflict (Design Q333). R-PU20: the recorded asset of 2.0.0 is gone: withdrawn = asset-replaced with the clock. Acked, not retried

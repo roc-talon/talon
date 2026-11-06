@@ -1,0 +1,1 @@
+R-PU39 R-AP13 (slice 222): the answer of the group (all series) has 3 releases and none can be the previous release of 2.1.0: 3.0.0 is larger, 2.1.0 is the same version (another hash), 2.0.0 is smaller but yanked. So the check gives the note of a first release, runs no roc, and the publish goes on. The exit code is 0.

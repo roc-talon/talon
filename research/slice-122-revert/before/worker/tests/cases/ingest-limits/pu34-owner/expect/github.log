@@ -1,0 +1,12 @@
+GET https://api.github.com/repos/acme/new1
+GET https://api.github.com/repos/acme/new1/releases/tags/1.0.0
+GET https://github.com/acme/new1/releases/download/1.0.0/2XtGC6VimVDoEcSTWMGDK4WmcEcCjGyQAPWN1ERudubk.tar.zst
+GET https://raw.githubusercontent.com/acme/new1/1.0.0/.roc-version
+GET https://api.github.com/repos/acme/r01
+GET https://api.github.com/repos/acme/r01/releases/tags/2.0.0
+GET https://github.com/acme/r01/releases/download/2.0.0/C37zRYpnSu4JSmmuVR5pT6DwCCZA1fogPuKTeuqbsSrT.tar.zst
+GET https://raw.githubusercontent.com/acme/r01/2.0.0/.roc-version
+GET https://api.github.com/repos/acme/new3
+GET https://api.github.com/repos/acme/new3/releases/tags/1.0.0
+GET https://github.com/acme/new3/releases/download/1.0.0/HL9tmuoKPgZ1ULuLGdqDBoSfwaGCka6UX8fK4Hx3U977.tar.zst
+GET https://raw.githubusercontent.com/acme/new3/1.0.0/.roc-version

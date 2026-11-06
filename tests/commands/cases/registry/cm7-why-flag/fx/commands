@@ -1,0 +1,1 @@
+why json --registry http://127.0.0.1:9 --file u1/main.roc

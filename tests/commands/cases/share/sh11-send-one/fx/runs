@@ -1,0 +1,2 @@
+# R-SH4, R-SH5, R-SH6, R-AP10, R-CT1, R-CT2: 3 rows of the running version go in one POST /v1/compat with Talon-Contributor (the id of share.json) and no Authorization. A 201 answer: the rows leave, and share.json gets sent 3, counted 3, first 2.
+queue-send 0.9.0

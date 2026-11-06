@@ -1,0 +1,8 @@
+note: binaries of foo 1.1.0 not checked (gh is too old, needs 2.68.0 or later). Each target builds from source. To lock them, update gh and run tln update foo.
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+note: binaries of foo 1.1.0 not checked (needs gh, logged in). Each target builds from source. To lock them, run tln update foo with gh.
+note: foo 1.1.0: the bundle has no valid attestation (gh exit 1: Error: no attestations found for the file). Each target builds from source.

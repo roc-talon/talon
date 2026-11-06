@@ -1,0 +1,4 @@
+@ SELECT count(*) FROM toolchains
+0
+@ SELECT count(*) FROM log
+0

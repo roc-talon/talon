@@ -1,0 +1,4 @@
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}
+{"sql":["INSERT INTO compat (artifact, nightly, target, source, result, error_digest, time, log_index) VALUES (103, 9400, 0, 0, 0, NULL, 1767225200000, NULL)"]}
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}

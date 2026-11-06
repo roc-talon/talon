@@ -1,0 +1,1 @@
+{"AUDIENCE": "https://registry.example", "BOT_REPOSITORY_ID": "900001", "BOT_WORKFLOW_REF": "roc-talon/talon/.github/workflows/compat-bot.yml@refs/heads/main", "CONTRIBUTOR_KEY": "test-contributor-key", "GITHUB_APP_KEY": null}

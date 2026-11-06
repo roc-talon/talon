@@ -1,0 +1,20 @@
+# 1: nothing fits (PATH has 0.16.0, the installed dirs are 0.18.0 and no Zig), --offline: exit 15 after the list
+0.17.0 offline
+# 2: ZIG fits and comes first
+0.17.0 offline env:ZIG=/opt/z17/zig
+# 3: PATH, the same major and minor (0.16.0 for 0.16.2)
+0.16.2 offline
+# 4: an installed Zig (0.18.0 for 0.18.1)
+0.18.1 offline
+# 5: --quiet hides the list
+0.16.2 offline quiet
+# 6: ZIG and PATH both fit: ZIG comes first
+0.16.2 offline env:ZIG=/opt/z16/zig
+# 7: a Windows host runs zig.exe
+0.18.1 offline
+# 8: ZIG is used as it is: it prints 0.16.9 and 0.17.0 is needed (R-D1 asks for a matching version only for PATH)
+0.17.0 offline env:ZIG=/opt/z16/zig
+# 9: ZIG names a program that exits with an error: a failure of kind environment that names ZIG, no list, even when PATH has a zig
+0.17.0 offline env:ZIG=/opt/bad/zig
+# 10: ZIG names a program that does not start
+0.17.0 offline env:ZIG=/opt/gone/zig

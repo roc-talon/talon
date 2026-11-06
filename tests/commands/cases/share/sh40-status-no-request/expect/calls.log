@@ -1,0 +1,10 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue

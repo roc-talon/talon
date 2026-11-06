@@ -1,0 +1,4 @@
+== install Parser --no-check --dry-run --file p1/main.roc
+exit 2
+== install pars --no-check --dry-run --file p1/main.roc
+exit 2

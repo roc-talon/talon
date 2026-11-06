@@ -1,0 +1,16 @@
+--- home/.local/share/talon/bin/roc.old.2222222222222222.del
++++ home/.local/share/talon/bin/roc.old.2222222222222222.del
+@@ -1 +0,0 @@
+-stale
+--- home/.local/share/talon/bin/tln.1111111111111111.del
++++ home/.local/share/talon/bin/tln.1111111111111111.del
+@@ -1 +0,0 @@
+-stale
+--- home/u\.local\bin/foo.0123456789abcdef.del
++++ home/u\.local\bin/foo.0123456789abcdef.del
+@@ -1 +0,0 @@
+-stale
+--- home/u\.local\bin/tln.fedcba9876543210.del
++++ home/u\.local\bin/tln.fedcba9876543210.del
+@@ -1 +0,0 @@
+-stale

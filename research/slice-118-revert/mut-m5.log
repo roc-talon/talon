@@ -1,0 +1,36 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:218:1
+
+expect {
+    Webhook.retry_delay_ms(1) == Ok(60_000)
+        and Webhook.retry_delay_ms(2) == Ok(300_000)
+        and Webhook.retry_delay_ms(3) == Ok(900_000)
+        and Webhook.retry_delay_ms(4) == Ok(3_600_000)
+        and Webhook.retry_delay_ms(5) == Err(GiveUp)
+        and Webhook.retry_delay_ms(6) == Err(GiveUp)
+        and Webhook.retry_delay_ms(100) == Err(GiveUp)
+        and Webhook.max_attempts == 5
+        and Webhook.queue_name == "talon-index"
+        and Webhook.dlq_name == "talon-index-dlq"
+}
+
+Ran 12 tests in 206.3 ms.:
+    11 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (1689 ms)
+PASS webhook/ap12-no-secret (1627 ms)
+PASS webhook/ap12-signature (1961 ms)
+PASS webhook/pu11-events (2185 ms)
+PASS webhook/pu26-app-installed (2055 ms)
+PASS webhook/pu33-privatized (2915 ms)
+PASS webhook/pu33-publicized (1373 ms)
+PASS webhook/pu35-dead-letter (1174 ms)
+FAIL webhook/pu35-retry-schedule (1070 ms)
+    request 4: queue retried: expected [{"delay_s":3600,"id":"a4"}], got [{"delay_s":null,"id":"a4"}]
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the body is not a message"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the message is of an unknown event or action"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the GitHub repository read failed with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the GitHub repository read failed with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"the GitHub repository read failed with status 500"}
+w2: 8 passed, 1 failed

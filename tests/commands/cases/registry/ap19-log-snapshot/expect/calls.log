@@ -1,0 +1,17 @@
+env_all
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[{"group":"github.com/someone/roc-json/releases/download/{v}/"}],"hashes":[]}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[{"group":"github.com/someone/roc-json/releases/download/{v}/"}],"hashes":[]}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[{"group":"github.com/someone/roc-json/releases/download/{v}/"}],"hashes":[]}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[{"group":"github.com/someone/roc-json/releases/download/{v}/"}],"hashes":["3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm"]}

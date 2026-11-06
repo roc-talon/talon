@@ -1,0 +1,5 @@
+cli/lib/RegistryToolchains.roc
+tests/unit/RegtoolchainsTest.roc
+docs/slices/204-registry-toolchains.md
+tests/commands/cases/registry/ap5-toolchain-rows
+tests/commands/cases/registry/cv1-registry-nightlies

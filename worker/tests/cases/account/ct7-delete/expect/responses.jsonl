@@ -1,0 +1,12 @@
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the request needs the header Authorization (an account) or the header Talon-Contributor (one machine)"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the header Talon-Contributor must be 32 characters, each one of 0 to 9 and a to f"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is not a valid JWT"}}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is revoked or its account has no data in this registry: log in again"}}
+{"status":200,"json":{"account":{"id":77,"login":"other"},"machines":1,"counted":4}}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}

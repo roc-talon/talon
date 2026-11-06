@@ -1,0 +1,4 @@
+R-AL4 R-EF1 R-EF3 R-SE5 R-P5 R-UP7 Q395 (slice 206e3): run 1 of registry/cv1-upgrade-free (`tln upgrade roc`, N = nightly-2026-10-16-5e6f7a8) with `probe.max = 2` and `hints` in the answer (rank 6, R-EF1):
+json 2.0.0 on N: 0 pass, 2 fail, 1 crash, a `fail` hint (R-EF3). parser 1.0.0 on N: 3 pass, 1 fail, a `pass` hint. pf 0.1.0: no hint.
+The round has 3 pairs on N and the budget cuts it to 2 (R-P5), so the order counts (R-AL4, PairOrder.order_shared): the rank 6 `pass` group (parser), then the pairs with no hint (pf), then the rank 6 `fail` group (json, Q395).
+The 2 probes that run are parser and pf; json does not run. Then exit 12 after the facts are saved (R-UP7). The hints only order the search (R-SE5): they are no fact.

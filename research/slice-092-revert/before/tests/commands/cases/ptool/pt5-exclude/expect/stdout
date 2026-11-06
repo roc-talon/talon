@@ -1,0 +1,6 @@
+== update --tool --file p1/main.roc
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0
+== install --file w2/m1/main.roc
+exit 19

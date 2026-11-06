@@ -1,8 +1,11 @@
+import records.Closure as Wire
 import Add
 import BuildTarget
 import Closure
+import ClosureIndex
 import Db
 import Epochs
+import Evidence
 import Explain
 import Facts
 import Fail
@@ -11,16 +14,21 @@ import Gather
 import Github
 import Ident
 import Launch
+import Matrix
+import Net
 import Nightlies
 import Oracle
 import OracleBase
 import PairOrder
 import Pin
+import PinOrder
 import Pick
 import PickOptional
 import Probe
 import Release
 import ResolveBase
+import Roots
+import ShareHook
 import Start
 import Toolchain
 import UnitFlow
@@ -65,11 +73,16 @@ PickLoop :: [].{
 
 	## The first state of a command: nothing read, nothing probed.
 	start : PickLoop.Setup, List(ResolveBase.Fact) -> PickLoop.State
-	start = |setup, facts| { facts, paths: [], probed: { compiler: setup.held, checks: [], looked: [], count: 0, started: Err(None), tried: [], used: [], domain: Err(NotRead), inferred: [], listed: Err(NotRead), optional: { open: setup.optional.ids, got: [], tried: 0, downloads: 0, dropped: 0 }, seen: [] } }
+	start = |setup, facts| { facts, paths: [], probed: { compiler: setup.held, checks: [], looked: [], count: 0, started: Err(None), tried: [], used: [], domain: Err(NotRead), inferred: [], listed: Err(NotRead), optional: { open: setup.optional.ids, got: [], tried: 0, downloads: 0, dropped: 0 }, seen: [], second: Err(NotRead) } }
 
 	## Slice 039c (Q3): the compiler list of the command, `[]` when it cannot be read. The command reads it at most once: the result is `ResolveBase.Probed.listed`.
+	## Slice 206e2 (R-CV1, R-IX4): the source is `ResolveBase.list_later`: the kept file of the registry list when the command read it.
 	releases! : Fx, ResolveBase.Request => List(Nightlies.Release)
-	releases! = |fx, request| listed!(fx, request) ?? []
+	releases! = |fx, request| listed!(fx, request, ResolveBase.list_first(request)) ?? []
+
+	## Slice 206e2 (R-CV1, R-AP16): `releases!` for the first read of a command that only reports (`tln outdated`): the source is `ResolveBase.list_first` (the registry list of a `Read`).
+	first_releases! : Fx, ResolveBase.Request => List(Nightlies.Release)
+	first_releases! = |fx, request| listed!(fx, request, ResolveBase.list_first(request)) ?? []
 
 	run! : Fx, ResolveBase.Request, PickLoop.Input, PickLoop.Setup, PickLoop.State => Try(PickLoop.Looped, PickLoop.Stuck)
 	run! = |fx, request, input, setup, state| {
@@ -111,11 +124,63 @@ PickLoop :: [].{
 				rows = scan_rows!(fx, request, input, setup, state, scan)
 				run!(fx, request, input, setup, { ..state, probed: { ..probed, used: probed.used.concat(rows) } })
 			}
-			Pairs(pairs) => match round!(fx, request, setup, probed, pairs) {
+			Pairs(pairs) => match round!(fx, request, setup, probed, state.facts, pairs) {
 				Err(fail) => Err({ fail, facts: state.facts, paths: state.paths, probed })
 				Ok(next) => run!(fx, request, input, setup, { ..state, probed: next })
 			}
 		}
+	}
+
+	## Slice 206e3 (Resolution R-EF3, Design Q500): the notes of the pairs of the chosen tuple on the compiler of the run (`nightly`, else the held compiler of `probed`) where the `bot` row and the `author` row of the answer differ
+	## (`Matrix.rows` on that compiler, `Evidence.of_all`, `Evidence.differ`), one for each pair, in the order of `chosen`: `<name> <version>: the bot and the author rows differ on <compiler>: bot <r>, author <r>` (no `note: ` prefix). No `Answer` index: none.
+	differ_notes : ResolveBase.Request, List(Pick.Chosen), ResolveBase.Probed, Try(Str, [None]) -> List(Str)
+	differ_notes = |request, chosen, probed, nightly| match (request.index, nightly.on_err(|_| probed.compiler)) {
+		(Answer(a), Ok(compiler)) => {
+			on = round_domain(probed, [{ id: "", nightly: compiler, is_platform: Bool.False }])
+			rows = Matrix.rows({ runs: a.answer.runs, nearest: a.answer.nearest, domain: on })
+			chosen
+				.map(|c| c.url)
+				.fold([], |found, url| if found.contains(url) found else found.append(url))
+				.join_map(
+					|url| match Ident.of_url(url) {
+						Ok(ident) => {
+							lines = Evidence.of_all({ hash: ident.hash, compiler, facts: [], pin: Err(NoPin), hint: Err(None), rows, shared: [] })
+							Evidence.differ({ compiler, lines }).map(|text| "${ident.name ?? url} ${ident.version}: ${text}")
+						}
+						Err(_) => []
+					},
+				)
+		}
+		_ => []
+	}
+
+	## Slice 206 (R-AL4, R-EF1 rank 4, R-DI8, R-DI14, R-IX6): the hints of the pairs whose order the budget cuts (`hinted!` passes them to `PairOrder.order`).
+	##
+	## | `index` | Calls | Hints |
+	## | --- | --- | --- |
+	## | `Direct` | `Github.hint!` for each item of `PairOrder.asks(pairs)`, in order (as slice 068b) | `Ok(compiler)` of an answer that has one; a failure or no hint gives no item |
+	## | `Answer(a)` | None: no `.roc-version` request and no cache file (R-DI14) | for each release URL of `pairs` (each once, in order) with `ClosureIndex.hint(a.answer, url)` `Ok`: one item |
+	## | `Offline(_)` | None | None: the evidence is the local facts only (R-IX6) |
+	hints! : Fx, { net : Net.Settings, roots : Roots, offline : Bool, index : ClosureIndex.Source }, List(OracleBase.Pair) => List({ id : Str, hint : Try(Str, [None]) })
+	hints! = |fx, facts, pairs| match facts.index {
+		Direct => {
+			var $hints = []
+			for ask in PairOrder.asks(pairs) {
+				match Github.hint!(fx, { net: facts.net, roots: facts.roots, owner: ask.owner, repo: ask.repo, tag: ask.tag, offline: facts.offline }) {
+					Ok(Ok(compiler)) => {
+						$hints = $hints.append({ id: ask.id, hint: Ok(compiler) })
+					}
+					_ => {}
+				}
+			}
+			$hints
+		}
+		Answer(a) => pairs
+			.map(|pair| pair.id)
+			.keep_if(|id| Ident.of_url(id).is_ok())
+			.fold([], |found, id| if found.contains(id) found else found.append(id))
+			.keep_oks(|id| ClosureIndex.hint(a.answer, id).map_ok(|compiler| { id, hint: Ok(compiler) }))
+		Offline(_) => []
 	}
 }
 
@@ -157,24 +222,33 @@ hash_of = |url| match Ident.of_url(url) {
 	Err(_) => ""
 }
 
-# One `Gather.get!` for the ids of a `Need`: a release URL gives a fact, a path file gives a node of the closure.
+# One `Gather.facts!` for the ids of a `Need`: a release URL gives a fact, a path file gives a node of the closure. Slice 206 (R-AL8 source 2, R-DI14): a record of the closure answer gives the fact
+# and, for a platform, its target names (R-RE20), with no read.
 read_all! : Fx, ResolveBase.Request, List(Str), List(ResolveBase.Fact), List(Closure.Node) => Try({ facts : List(ResolveBase.Fact), paths : List(Closure.Node), seen : List(BuildTarget.Seen) }, Fail)
 read_all! = |fx, request, ids, facts, paths| {
-	got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none }, ids)?
+	got = Gather.facts!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none, index: request.index }, ids)?
 	var $facts = facts
 	var $paths = paths
 	var $seen = no_seen
-	for g in got {
-		match Ident.of_url(g.id) {
-			Ok(_) => {
-				release = Release.read({ path: g.path, text: g.text })?
-				$facts = $facts.append({ url: g.id, release })
-				if release.kind == Platform {
-					$seen = $seen.append({ url: g.id, found: BuildTarget.targets_of(g.text) })
+	for fact in got {
+		match fact {
+			Record(r) => {
+				$facts = $facts.append({ url: r.id, release: r.header.release })
+				if r.header.release.kind == Platform {
+					$seen = $seen.append({ url: r.id, found: Ok(r.header.target_names) })
 				}
 			}
-			Err(Foreign) => {
-				$paths = $paths.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
+			Text(g) => match Ident.of_url(g.id) {
+				Ok(_) => {
+					release = Release.read({ path: g.path, text: g.text })?
+					$facts = $facts.append({ url: g.id, release })
+					if release.kind == Platform {
+						$seen = $seen.append({ url: g.id, found: BuildTarget.targets_of(g.text) })
+					}
+				}
+				Err(Foreign) => {
+					$paths = $paths.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
+				}
 			}
 		}
 	}
@@ -245,22 +319,24 @@ node_of = |pair| match Ident.of_url(pair.id) {
 	Err(_) => { hash: "", name: pair.id, version: "", is_platform: pair.is_platform }
 }
 
-# R-AL4, R-LF2: one round of the oracle loop. The keys that the command did not look up are asked of the db first (one call). Then the probes: R-P5 cuts them, the compiler starts, one `probes!` call runs the pairs, and the facts are written before the next step (R-PP4).
-round! : Fx, ResolveBase.Request, PickLoop.Setup, ResolveBase.Probed, List(OracleBase.Pair) => Try(ResolveBase.Probed, Fail)
-round! = |fx, request, setup, probed, pairs| {
+# R-AL4, R-LF2: one round of the oracle loop. The keys that the command did not look up are asked of the db first (one call). Slice 206e3 (R-EF1, R-EF3, Q393): with an `Answer` index, then the rank 2 facts of these keys (`rank2_of`, after the db: rank 1 wins). Then the probes: R-P5 cuts them, the compiler starts, one `probes!` call runs the pairs, and the facts are written before the next step (R-PP4).
+round! : Fx, ResolveBase.Request, PickLoop.Setup, ResolveBase.Probed, List(ResolveBase.Fact), List(OracleBase.Pair) => Try(ResolveBase.Probed, Fail)
+round! = |fx, request, setup, probed, known, pairs| {
 	unknown = pairs.map(key_of).keep_if(|key| !probed.looked.contains(key))
 	if !unknown.is_empty() {
 		rows = Facts.load!(fx, { roots: request.roots, keys: unknown })?
-		Ok({ ..probed, checks: probed.checks.concat(rows), looked: probed.looked.concat(unknown) })
+		local = probed.checks.concat(rows)
+		reg = rank2_of(request.index, round_domain(probed, pairs), local, unknown)
+		Ok({ ..probed, checks: local.concat(reg.facts), inferred: reg.unknown.concat(probed.inferred), looked: probed.looked.concat(unknown) })
 	} else if setup.probes == Off {
 		Err(Fail.new(Internal, "the lookup of the facts gave no result for each pair"))
 	} else {
-		probe_round!(fx, request, setup, probed, pairs)
+		probe_round!(fx, request, setup, probed, known, pairs)
 	}
 }
 
-probe_round! : Fx, ResolveBase.Request, PickLoop.Setup, ResolveBase.Probed, List(OracleBase.Pair) => Try(ResolveBase.Probed, Fail)
-probe_round! = |fx, request, setup, probed, pairs| {
+probe_round! : Fx, ResolveBase.Request, PickLoop.Setup, ResolveBase.Probed, List(ResolveBase.Fact), List(OracleBase.Pair) => Try(ResolveBase.Probed, Fail)
+probe_round! = |fx, request, setup, probed, known, pairs| {
 	max = setup.settings.max
 	budget = match Units.budget({ max, started: probed.count, fixed: 0, wanted: pairs.len() }) {
 		Ok(done) => done
@@ -303,6 +379,8 @@ probe_round! = |fx, request, setup, probed, pairs| {
 		}
 	}
 	_ = Facts.save!(fx, { roots: request.roots, rows: $facts, existing: Replace })?
+	# Slice 206e4 (R-SH3, R-PP4, Design Q539): the unit facts of the round go into the share queue, right after the write of the facts.
+	ShareHook.enqueue!(fx, request, { facts: $facts, known, seen: begun.probed.seen, second: begun.probed.second, domain: round_domain(probed, pairs) })?
 	match $failure {
 		Ok(fail) => Err(fail)
 		Err(None) => if budget.cut {
@@ -313,20 +391,15 @@ probe_round! = |fx, request, setup, probed, pairs| {
 	}
 }
 
-# Slice 068b, D3: a hint that fails is no hint (R-EF2: a hint only orders the search).
+# Slice 068b, D3: a hint that fails is no hint (R-EF2: a hint only orders the search). Slice 206: the hints come from the index of the run (`PickLoop.hints!`).
+# Slice 206e3 (R-AL4, R-EF1 rank 6, Q395): with an `Answer` index, `PairOrder.order_shared` with the `hints` of the answer.
 hinted! : Fx, ResolveBase.Request, List(OracleBase.Pair) => List(OracleBase.Pair)
 hinted! = |fx, request, pairs| {
-	var $hints = []
-	for ask in PairOrder.asks(pairs) {
-		answer = Github.hint!(fx, { net: request.net, roots: request.roots, owner: ask.owner, repo: ask.repo, tag: ask.tag, offline: request.offline })
-		match answer {
-			Ok(Ok(compiler)) => {
-				$hints = $hints.append({ id: ask.id, hint: Ok(compiler) })
-			}
-			_ => {}
-		}
+	hints = PickLoop.hints!(fx, { net: request.net, roots: request.roots, offline: request.offline, index: request.index }, pairs)
+	match request.index {
+		Answer(a) => PairOrder.order_shared({ pairs, hints, shared: a.answer.hints })
+		_ => PairOrder.order({ pairs, hints })
 	}
-	PairOrder.order({ pairs, hints: $hints })
 }
 
 no_groups : List({ id : Str, nodes : List(Units.Node) })
@@ -370,6 +443,7 @@ rekey = |probed, old, id| if old == id {
 
 # R-EP10, R-EP11, Q1 (b) of slice 036: D is the compiler list (`Nightlies.list!` with the clock of the command) when it has the held compiler H, else `[H]` with no inferred fact. A list that cannot be read is no failure of the command.
 # Then one `Facts.load!` for the rows of the releases of the slots on each compiler of D that the command has not looked up, and `Epochs.epochs` for the inferred facts.
+# Slice 206e3 (R-EF1, R-EF3, R-EP12, R-EP15, Q393): with an `Answer` index, the rank 2 facts of these keys after the local rows (`rank2_of`), and `Matrix.found` with the `epochs` of the answer and the facts of rank 1 and rank 2.
 wide! : Fx, ResolveBase.Request, PickLoop.Input, ResolveBase.Probed => Try(ResolveBase.Probed, Fail)
 wide! = |fx, request, input, probed| {
 	held = probed.compiler ?? ""
@@ -381,17 +455,21 @@ wide! = |fx, request, input, probed| {
 	if releases.any(|r| r.id == held) {
 		keys = domain_keys(input, releases, probed.looked)
 		rows = Facts.load!(fx, { roots: request.roots, keys })?
-		checks = probed.checks.concat(rows)
-		Ok({ ..next, domain: Ok(releases.map(|r| r.id)), checks, looked: probed.looked.concat(keys), inferred: Epochs.epochs(releases, checks).inferred })
+		local = probed.checks.concat(rows)
+		reg = rank2_of(request.index, releases, local, keys)
+		found = Matrix.found({ domain: releases, epochs: epochs_of(request.index), facts: local.concat(reg.facts).concat(reg.fails) })
+		# Slice 206e3b (Q522): the second search of a held move reads D again with the merged epochs. The inferred facts of the pairs that it infers again replace the old ones; the others stay.
+		fresh = reg.unknown.concat(found.inferred)
+		Ok({ ..next, domain: Ok(releases.map(|r| r.id)), checks: local.concat(reg.facts), looked: probed.looked.concat(keys), inferred: fresh.concat(probed.inferred.keep_if(|old| !fresh.any(|i| i.hash == old.hash and PinOrder.same_id(i.nightly, old.nightly)))) })
 	} else {
 		Ok({ ..next, domain: Ok([held]) })
 	}
 }
 
-listed! : Fx, ResolveBase.Request => Try(List(Nightlies.Release), [Unread])
-listed! = |fx, request| match Toolchain.host(fx.platform!()) {
+listed! : Fx, ResolveBase.Request, Nightlies.Source => Try(List(Nightlies.Release), [Unread])
+listed! = |fx, request, source| match Toolchain.host(fx.platform!()) {
 	Err(_) => Err(Unread)
-	Ok(host) => match Nightlies.list!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host }) {
+	Ok(host) => match Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host, source }) {
 		Ok(found) => Ok(found.releases)
 		Err(_) => Err(Unread)
 	}
@@ -404,3 +482,29 @@ domain_keys = |input, releases, looked| input.slots
 	.fold([], |found, url| if found.contains(url) found else found.append(url))
 	.join_map(|url| releases.map(|r| { hash: hash_of(url), nightly: r.id, target: "any" }))
 	.keep_if(|key| !looked.contains(key))
+
+# Slice 206e3 (R-EF1 rank 2, R-EF3, R-EP12, Q393): the rank 2 facts of the `keys` from the `runs` and `nearest` of an `Answer` index on `domain` (`Matrix.rows`), for the keys that `local` (rank 1) does not have (`Matrix.real`: rank 1 wins, a `bot` row wins).
+# `facts` are the rank 2 facts that are no `fail`: they go to the checks. A rank 2 `fail` has an unknown set of modules (Q393): it is no check row, but an inferred fact with no module (`unknown`), so it never decides alone (R-EP8) and the pair is probed.
+# This is the check that `Matrix.unknown_sets` gives (`source: Inferred`, `modules: []`): `OracleDomain.checks` makes it from `unknown`. `fails` are the rank 2 `fail` facts for the epochs (R-EP6). Another index: none.
+rank2_of : ClosureIndex.Source, List(Nightlies.Release), List(Db.Fact), List(Db.Key) -> { facts : List(Db.Fact), fails : List(Db.Fact), unknown : List(Epochs.Inferred) }
+rank2_of = |index, domain, local, keys| match index {
+	Answer(a) => Matrix.rank2({ answer: a.answer, domain, local, keys })
+	_ => { facts: [], fails: [], unknown: [] }
+}
+
+# Slice 206e3 (R-EP15): the `epochs` of an `Answer` index. Another index has none (`Matrix.found` is then `Epochs.epochs`).
+epochs_of : ClosureIndex.Source -> List(Wire.Epoch)
+epochs_of = |index| match index {
+	Answer(a) => a.answer.epochs
+	_ => []
+}
+
+# Slice 206e3 (reading 2 of the slice file): the compilers of a round for `Matrix.rows`: the compilers of the pairs, each once, with the time of the compiler list when the command read it, else the date of the tag (R-NS1). No list is read.
+round_domain : ResolveBase.Probed, List(OracleBase.Pair) -> List(Nightlies.Release)
+round_domain = |probed, pairs| {
+	known = probed.listed ?? []
+	pairs
+		.map(|p| p.nightly)
+		.fold([], |found, id| if found.contains(id) found else found.append(id))
+		.map(|id| known.find_first(|r| PinOrder.same_id(r.id, id)).map_ok(|r| { ..r, id }) ?? { id, published_at: 0, asset: Err(NoAsset) })
+}

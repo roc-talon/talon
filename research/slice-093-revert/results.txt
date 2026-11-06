@@ -1,0 +1,6 @@
+m1 CAUGHT Q237: a source entry wins over the prebuilt entry
+m2 CAUGHT R-PT25: a bin table overrides the machine opt-out in step 1
+m3 CAUGHT R-B10, R-T22: a global run uses a prebuilt entry
+m4 CAUGHT R-PT15: offline downloads
+m5 CAUGHT R-PT22: the entry is not matched by its sha256
+m6 CAUGHT R-PT22: the digest ignores the sha256

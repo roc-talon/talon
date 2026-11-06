@@ -1,0 +1,57 @@
+env_all
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=parser
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=parser&short=json
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ee2390d46b02355601fed38e83c39974.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ee2390d46b02355601fed38e83c39974.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=Parser
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=pars
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/947d731c7b74c15b7bb7102ed7caf64c.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/947d731c7b74c15b7bb7102ed7caf64c.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?q=pars
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/0a8eb6471c886ef3d869244d78128901.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/0a8eb6471c886ef3d869244d78128901.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/665b62ee04aaa9659d1239515ecf23ee.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?q=Parser
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9998ca9f58c7c8b791c089aaf9dd476a.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9998ca9f58c7c8b791c089aaf9dd476a.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=parser&short=parser
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/93d74077b4fffb52980fa7d56f53ed86.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/93d74077b4fffb52980fa7d56f53ed86.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=xx
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/85cd8bdbdc8162be6315cf8ca5ea5404.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/85cd8bdbdc8162be6315cf8ca5ea5404.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?q=xx
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5c9cd22e847f0ce2e5d93bdb96a93396.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5c9cd22e847f0ce2e5d93bdb96a93396.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=bad2
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b04697ea59f85e30815e835a9f54afdf.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b04697ea59f85e30815e835a9f54afdf.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages?short=bad3
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/b8b72c822be05491d57572608dfa35dd.json

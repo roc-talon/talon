@@ -1,0 +1,53 @@
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.json
+@@ -0,0 +1 @@
++{"releases":[],"checked":null,"repos":["noage"]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.meta
+@@ -0,0 +1,2 @@
++url /v1/packages/acme/noage/releases
++etag "n1"
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json
+@@ -0,0 +1 @@
++{"releases":[],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/lib/releases
++etag "e1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5a08b6a899d7261cdcf368c8344726e9.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5a08b6a899d7261cdcf368c8344726e9.json
+@@ -0,0 +1 @@
++{"releases":[],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5a08b6a899d7261cdcf368c8344726e9.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5a08b6a899d7261cdcf368c8344726e9.meta
+@@ -0,0 +1,3 @@
++url /v1/releases?group=example.com%2Fpkg%2F%7Bv%7D%2F
++etag "g1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.json
+@@ -0,0 +1 @@
++{"releases":[],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/low/releases
++etag "l1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.json
+@@ -0,0 +1 @@
++{"releases":[],"checked":null,"repos":["noetag"]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.meta
+@@ -0,0 +1,2 @@
++url /v1/packages/acme/noetag/releases
++max-age 60

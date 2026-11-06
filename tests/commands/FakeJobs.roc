@@ -13,42 +13,38 @@ FakeJobs :: [].{
 		for (name, value) in request.headers {
 			FakeBase.log!(w, "  ${name}: ${value}")
 		}
-		rest = request.url.drop_prefix("https://").drop_prefix("http://")
-		(path_part, query) = match rest.split_on("?") {
-			[p] => (p, "")
-			[p, .. as q] => (p, Str.join_with(q, "?"))
-			[] => (rest, "")
-		}
-		with_query = "${w}/fx/http/${path_part}?${query}"
-		plain = "${w}/fx/http/${path_part}"
-		route = if !query.is_empty() and (FakeBase.exists!(with_query) or FakeBase.exists!("${with_query}.meta")) with_query else plain
-		if !FakeBase.exists!(route) and !FakeBase.exists!("${route}.meta") {
-			Ok({ status: 404, headers: [], body: "{\"message\":\"Not Found\"}" })
-		} else {
-			meta = FakeBase.lines(FakeBase.read_or_empty!("${route}.meta"))
-			status = match meta.find_first(|l| l.starts_with("status ")) {
-				Ok(l) => U16.from_str(l.drop_prefix("status ")) ?? 200
-				Err(_) => 200
-			}
-			headers = meta.keep_if(|l| l.starts_with("header ")).map(
-				|l| match l.drop_prefix("header ").split_on(":") {
-					[name, .. as value] => (name.trim(), Str.join_with(value, ":").trim())
-					[] => ("", "")
-				},
-			)
-			fails = meta.find_first(|l| l.starts_with("error "))
-			etag = headers.find_first(|(name, _)| name == "ETag")
-			sent = request.headers.find_first(|(name, _)| name == "If-None-Match")
-			match fails {
-				Ok("error timeout") => Err(Timeout)
-				Ok(l) => Err(Failed(l.drop_prefix("error failed ")))
-				Err(_) => match (etag, sent) {
-					(Ok((_, tag)), Ok((_, same))) if tag == same => Ok({ status: 304, headers, body: "" })
-					_ => Ok({ status, headers, body: route_body!(route) })
-				}
-			}
-		}
+		route_answer!(w, "GET", request.url, request.headers)
 	}
+
+	## Slice 200. The answer of the fake `http_send!`: the route of the method (`<route>.POST`, `<route>.PUT`, `<route>.DELETE`, and the plain `<route>` for `Get`),
+	## the same meta lines, and the n-th answer of the route. The log has the request body (see `FakeFx.roc`).
+	http_send! : Str, { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
+	http_send! = |w, request| {
+		method = method_text(request.method)
+		FakeBase.log!(w, "http_send ${method} ${request.url} timeout=${request.timeout_s.to_str()}")
+		for (name, value) in request.headers {
+			FakeBase.log!(w, "  ${name}: ${value}")
+		}
+		if !request.body.is_empty() {
+			FakeBase.log!(w, "  <body> ${escape_body(request.body)}")
+		}
+		route_answer!(w, method, request.url, request.headers)
+	}
+
+	## Slice 200. The fake `http_all!`: the log line `http_all limit=<n>`, then each request as `http_send!` logs it, in the order of the list. The results are in the order of the list.
+	http_all! : Str, { requests : List({ method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 }), limit : U64, tmp_dir : Str } => List(Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)]))
+	http_all! = |w, batch| {
+		FakeBase.log!(w, "http_all limit=${batch.limit.to_str()} tmp=${batch.tmp_dir}")
+		var $results = []
+		for request in batch.requests {
+			$results = $results.append(FakeJobs.http_send!(w, request))
+		}
+		$results
+	}
+
+	## Slice 200. The fake `sleep!`: waits for no time, and writes the line `sleep <ms>`.
+	sleep! : Str, U64 => {}
+	sleep! = |w, ms| FakeBase.log!(w, "sleep ${ms.to_str()}")
 
 	## The answer of the fake `spawn_all!` (see the table in `FakeFx.roc`).
 	spawn_all! : Str, { jobs : List({ argv : List(Str), cwd : Try(Str, [Inherit]) }), limit : U64 } => List({ ended : [Exited(I32), Signaled(I32), NotStarted(Str)], stdout : Str, stderr_last : Str })
@@ -341,4 +337,86 @@ route_body! : Str => Str
 route_body! = |route| match Path.is_dir!(Path.utf8(route)) {
 	Ok(Bool.True) => FakeBase.read_or_empty!("${route}/@")
 	_ => FakeBase.read_or_empty!(route)
+}
+
+method_text : [Get, Post, Put, Delete] -> Str
+method_text = |method| match method {
+	Get => "GET"
+	Post => "POST"
+	Put => "PUT"
+	Delete => "DELETE"
+}
+
+## The body in one log line: `\` is `\\`, a new line is `\n`, a carriage return is `\r`.
+escape_body : Str -> Str
+escape_body = |text| text.replace_each("\\", "\\\\").replace_each("\n", "\\n").replace_each("\r", "\\r")
+
+## The answer of a route (slice 200 gives it the method and the n-th answer). The files of a route `<r>` (the file of the URL, with the query file first) are:
+## `<r>` for `GET` and `<r>.<METHOD>` for another method; then `<file>.<n>` for the n-th request of the same method and URL (n from 2; no such file: `<file>`), each with its `.meta`.
+route_answer! : Str, Str, Str, List((Str, Str)) => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
+route_answer! = |w, method, url, request_headers| {
+	rest = url.drop_prefix("https://").drop_prefix("http://")
+	(path_part, query) = match rest.split_on("?") {
+		[p] => (p, "")
+		[p, .. as q] => (p, Str.join_with(q, "?"))
+		[] => (rest, "")
+	}
+	suffix = if method == "GET" "" else ".${method}"
+	with_query = "${w}/fx/http/${path_part}?${query}${suffix}"
+	plain = "${w}/fx/http/${path_part}${suffix}"
+	route = if !query.is_empty() and (FakeBase.exists!(with_query) or FakeBase.exists!("${with_query}.meta")) with_query else plain
+	# The n-th request of this method and URL: the lines of `calls.log` that start like the line of this request (this request is already in the log).
+	n = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(
+		|l| (l == "http_get ${url}" and method == "GET") or l.starts_with("http_send ${method} ${url} timeout="),
+	).len()
+	nth = "${route}.${n.to_str()}"
+	file = if n > 1 and (FakeBase.exists!(nth) or FakeBase.exists!("${nth}.meta")) nth else route
+	if !FakeBase.exists!(file) and !FakeBase.exists!("${file}.meta") {
+		Ok({ status: 404, headers: [], body: "{\"message\":\"Not Found\"}" })
+	} else {
+		meta = FakeBase.lines(FakeBase.read_or_empty!("${file}.meta"))
+		status = match meta.find_first(|l| l.starts_with("status ")) {
+			Ok(l) => U16.from_str(l.drop_prefix("status ")) ?? 200
+			Err(_) => 200
+		}
+		headers = meta.keep_if(|l| l.starts_with("header ")).map(
+			|l| match l.drop_prefix("header ").split_on(":") {
+				[name, .. as value] => (name.trim(), Str.join_with(value, ":").trim())
+				[] => ("", "")
+			},
+		)
+		fails = meta.find_first(|l| l.starts_with("error "))
+		etag = headers.find_first(|(name, _)| name == "ETag")
+		sent = request_headers.find_first(|(name, _)| name == "If-None-Match")
+		# Slice 200: `require <name>: <value>` (the request has this header, with this exact value) and `require-none <name>` (it has not). A request that breaks one gets 599 `wrong header`.
+		header_of = |name| request_headers.find_first(|(h, _)| h.caseless_ascii_equals(name))
+		broken = meta.keep_if(|l| l.starts_with("require ") or l.starts_with("require-none ")).any(
+			|l| if l.starts_with("require-none ") {
+				match header_of(l.drop_prefix("require-none ").trim()) {
+					Ok(_) => Bool.True
+					Err(_) => Bool.False
+				}
+			} else {
+				match l.drop_prefix("require ").split_first(":") {
+					Ok({ before, after }) => match header_of(before.trim()) {
+						Ok((_, value)) => value != after.trim()
+						Err(_) => Bool.True
+					}
+					Err(_) => Bool.True
+				}
+			},
+		)
+		if broken {
+			Ok({ status: 599, headers: [], body: "wrong header" })
+		} else {
+			match fails {
+				Ok("error timeout") => Err(Timeout)
+				Ok(l) => Err(Failed(l.drop_prefix("error failed ")))
+				Err(_) => match (etag, sent) {
+					(Ok((_, tag)), Ok((_, same))) if tag == same => Ok({ status: 304, headers, body: "" })
+					_ => if status == 304 or status == 204 Ok({ status, headers, body: "" }) else Ok({ status, headers, body: route_body!(file) })
+				}
+			}
+		}
+	}
 }

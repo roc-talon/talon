@@ -1,0 +1,6 @@
+== share forget
+exit 20
+== share forget --offline
+exit 15
+== share logout --offline
+exit 15

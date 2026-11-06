@@ -1,0 +1,68 @@
+== w2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w2.log)
+    token request: JWT exp is 1793699846, not now + 540 = 1767226140
+    token request: JWT iat is 1793699246, not now - 60 = 1767225540
+    token request: JWT exp is 1793699846, not now + 540 = 1767226140
+    token request: JWT iat is 1793699246, not now - 60 = 1767225540
+    token request: JWT exp is 1793699846, not now + 540 = 1767226140
+    token request: JWT iat is 1793699246, not now - 60 = 1767225540
+    token request: JWT exp is 1793699846, not now + 540 = 1767226140
+    token request: JWT iat is 1793699246, not now - 60 = 1767225540
+    token request: JWT exp is 1793699846, not now + 540 = 1767226140
+    token request: JWT iat is 1793699246, not now - 60 = 1767225540
+    token request: JWT exp is 1793699846, not now + 540 = 1767226140
+    token request: JWT iat is 1793699247, not now - 60 = 1767225540
+    token request: JWT exp is 1793699847, not now + 540 = 1767226140
+    token request: JWT iat is 1793699247, not now - 60 = 1767225540
+    token request: JWT exp is 1793699847, not now + 540 = 1767226140
+    token request: JWT iat is 1793699247, not now - 60 = 1767225540
+    token request: JWT exp is 1793699847, not now + 540 = 1767226140
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/500"]
+      got:      []
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the body is not an index message"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the message is not a job of this Worker"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the repository read failed: Token(TokenStatus(401))"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the repository read failed: Token(TokenStatus(401))"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"the repository read failed: Token(TokenStatus(401))"}
+PASS selftest/case-timeout (1024 ms)
+PASS selftest/missing-fake-route (2439 ms)
+PASS selftest/session-absent (1938 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (1855 ms)
+PASS selftest/unexpected-github-call (2020 ms)
+PASS selftest/wrong-auth-log (1956 ms)
+PASS selftest/wrong-body (1824 ms)
+PASS selftest/wrong-body-pad (1970 ms)
+PASS selftest/wrong-clock (1883 ms)
+PASS selftest/wrong-d1-count (2512 ms)
+PASS selftest/wrong-d1-row (3099 ms)
+PASS selftest/wrong-force-cache (2923 ms)
+PASS selftest/wrong-github-log (3145 ms)
+PASS selftest/wrong-header (2956 ms)
+PASS selftest/wrong-header-set (3108 ms)
+PASS selftest/wrong-json-array (2015 ms)
+PASS selftest/wrong-json-at (2061 ms)
+PASS selftest/wrong-json-field (2037 ms)
+PASS selftest/wrong-json-len (1925 ms)
+PASS selftest/wrong-json-range (1925 ms)
+PASS selftest/wrong-json-range-order (1882 ms)
+PASS selftest/wrong-log (5750 ms)
+PASS selftest/wrong-problem-content-type (1536 ms)
+PASS selftest/wrong-problem-member (1533 ms)
+PASS selftest/wrong-queue-acked (1548 ms)
+PASS selftest/wrong-queue-retry (1544 ms)
+PASS selftest/wrong-queue-sent (1406 ms)
+PASS selftest/wrong-queue-sent-none (1964 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (1997 ms)
+PASS selftest/wrong-status (1893 ms)
+PASS selftest/wrong-timing-safe (1891 ms)
+PASS selftest/wrong-tokens-log (1890 ms)
+w2: 91 passed, 98 failed
+
+step       result seconds  budget
+wbuild     pass   197.5    90
+w2         FAIL   101.7    45
+WARN wbuild: 197.5 s is over the budget of 90 s (TW20)
+WARN w2: 101.7 s is over the budget of 45 s (TW20)
+WARN total: 299.6 s is over 180 s (TW20)

@@ -1,0 +1,8 @@
+GET https://api.github.com/repositories/700
+GET https://api.github.com/repos/acme/new/releases/9701
+GET https://api.github.com/repositories/701
+GET https://api.github.com/repos/acme/other/releases/9702
+GET https://api.github.com/repositories/701
+GET https://api.github.com/repos/acme/other/releases/9702
+GET https://api.github.com/repositories/702
+GET https://api.github.com/repos/acme/slow/releases/9703

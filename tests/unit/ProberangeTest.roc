@@ -13,9 +13,9 @@ pass = |id| fact(id, Pass)
 
 fail = |id| fact(id, Fail)
 
-step = |askable, facts| ProbeRange.step({ hash: "H", domain: d9, askable, facts })
+step = |askable, facts| ProbeRange.step({ hash: "H", domain: d9, askable, facts, epochs: [] })
 
-found = |facts| ProbeRange.found({ hash: "H", domain: d9, askable: d9, facts })
+found = |facts| ProbeRange.found({ hash: "H", domain: d9, askable: d9, facts, epochs: [] })
 
 view = |round| match round {
 	Need(ids) => "need ${Str.join_with(ids, " ")}"
@@ -87,6 +87,24 @@ expect {
 	bad == []
 }
 
+# R-EP15 R-EP4 R-EP6 R-EP13 R-PB3 (slice 206e3): `ProbeRange.Input.epochs`, the epochs of D that the caller has (the matrix of a closure answer, `Matrix.intervals`). Case (a) of R-EP6: a real code result infers the same result
+# on each release of its epoch, so the range grows to the ends of the epoch. A release that no interval holds is an epoch of its own (R-EP4): `epochs: []` is the P1 partition (the rows above). The same facts with and without the epoch.
+expect {
+	in_epoch = |facts, epochs| ProbeRange.found({ hash: "H", domain: d9, askable: d9, facts, epochs })
+	steps = |askable, facts, epochs| ProbeRange.step({ hash: "H", domain: d9, askable, facts, epochs })
+	rows = [
+		("no epoch: a pass on n2 and a fail on n5, both ends unknown", view_found(in_epoch([pass("n2"), fail("n5")], [])), "n2? .. n2?"),
+		("the epoch n1 to n4: n1, n3 and n4 are inferred passes, n1 is the end of D and n5 has a real fail, so both ends are real", view_found(in_epoch([pass("n2"), fail("n5")], [{ from: "n1", to: "n4" }])), "n1 .. n4"),
+		("the epoch n1 to n4 and a pass on n4 only: the range is n1 to n4, the upper end has no real fail next to it", view_found(in_epoch([pass("n4")], [{ from: "n1", to: "n4" }, { from: "n5", to: "n9" }])), "n1 .. n4?"),
+		("an epoch that holds a pass and a fail infers nothing (R-EP6): the range is the real pass only", view_found(in_epoch([pass("n2"), fail("n3")], [{ from: "n1", to: "n4" }])), "n2? .. n2"),
+		("step, no epoch: n1 to n3 are open below the pass of n4, the open range is asked", view(steps(["n1", "n2", "n3"], [pass("n4")], [])), "need n1 n2 n3"),
+		("step, the epoch n1 to n4: no release below the pass is open, so no probe", view(steps(["n1", "n2", "n3"], [pass("n4")], [{ from: "n1", to: "n4" }])), "done n1 .. n4?"),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
 # The world of the simulation: bit i of `truth` says that release i+1 passes. `ask` answers the probes of a round with the facts.
 pow2 = |n| List.repeat(0, n).fold(1.U64, |acc, _| acc * 2)
 
@@ -100,7 +118,7 @@ index_of = |ids, id| ids.find_first_index(|x| x == id) ?? 0
 simulate : { n : U64, truth : U64, askable : List(Str) }, List(Db.Fact), U64 -> Try({ result : ProbeRange.Found, rounds : U64, facts : List(Db.Fact) }, Str)
 simulate = |world, facts, fuel| {
 	ids = ids_of(world.n)
-	input = { hash: "H", domain: ids, askable: world.askable, facts }
+	input = { hash: "H", domain: ids, askable: world.askable, facts, epochs: [] }
 	if fuel == 0 {
 		Err("no end")
 	} else {
@@ -190,7 +208,7 @@ expect {
 						Range(r) => Ok(r)
 					}
 					same = Str.inspect(got) == Str.inspect(want)
-					same_found = Str.inspect(ProbeRange.found({ hash: "H", domain: ids, askable, facts: done.facts })) == Str.inspect(done.result)
+					same_found = Str.inspect(ProbeRange.found({ hash: "H", domain: ids, askable, facts: done.facts, epochs: [] })) == Str.inspect(done.result)
 					places = ids.keep_if(|id| passes(truth, index_of(ids, id)))
 					run_from = places.first() ?? ""
 					run_to = places.last() ?? ""

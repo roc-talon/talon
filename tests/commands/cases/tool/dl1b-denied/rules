@@ -5,3 +5,7 @@ Slice 050c, a `.del` file that cannot be deleted (R-ST10: "A delete fails while 
 | 1 | `--version` | the sweep deletes both files in one `delete` call. `ok.1111111111111111.del` goes, the other stays (`Denied`). No text on stderr, exit 0: a failed delete is no failure | R-ST10 |
 | 2 | `--version` | the next start tries again: one `delete` call with the file that stays, again `Denied`, again no text and exit 0 | R-ST10 |
 | 3 | `tool list` | the same for a command: the command runs as usual (exit 0) | R-ST10 |
+
+Slice 088b (test world) and 088c: the fake Windows has `LOCALAPPDATA` and `APPDATA` in its env, as the other Windows cases. The data bin dir of the sweep is `home/AppData/Local\talon/bin` (R-LY7, slice 088c: `Del.dirs` uses the roots of Windows). Run 5 reads `tools.json` from `AppData/Local\talon`.
+
+Slice 088f (R-LY10, Q216): `HOME`, `LOCALAPPDATA` and `APPDATA` of the fake Windows are absolute on Windows: `C:/` (HOME of a case with one home), `C:/AppData/Local`, `C:/AppData/Roaming` (with the `u<n>` home: `C:/u1/...`). They are real paths on the Linux and macOS host: `tests/commands/run.sh` makes the link `<W>/C:` to `home` for a case with `C:/` in `fx/`, and runs the app in `<W>`. So `C:/AppData/Local\talon` is the dir `home/AppData/Local\talon`, and the log has the portable text `C:/...` (no work dir path). A run of another system in the same case (the `fx/platform` rows) keeps its own env.

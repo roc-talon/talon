@@ -1,0 +1,1 @@
+request 1: header x-d1-session: expected "b2", got "b1"

@@ -1,0 +1,4 @@
+{"method":"GET","path":"/v1/closure"}
+{"method":"DELETE","path":"/v1/closure"}
+{"method":"PUT","path":"/v1/closure?x=1","headers":{"content-type":"text/plain"},"body":"x"}
+{"method":"PATCH","path":"/v1/closure"}

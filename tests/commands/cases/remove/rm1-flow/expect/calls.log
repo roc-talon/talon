@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/r1/main.roc
@@ -62,6 +64,8 @@ read_files $PROJECT/r1/talon.toml $PROJECT/r1/main.roc
 write_atomic $PROJECT/r1/talon.toml $PROJECT/r1/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/r2/main.roc
@@ -100,6 +104,8 @@ probes 1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/r3/main.roc
@@ -136,6 +142,8 @@ probes 1
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -180,6 +188,8 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/r4/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/r5/lib/main.roc
@@ -198,6 +208,7 @@ read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/r5/lib/main.roc $PROJECT/r5/lib/talon.toml $HOME/.config/talon/config.toml
 read_files $PROJECT/r5/lib/Lib.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -237,6 +248,8 @@ read_files $PROJECT/r5/lib/main.roc
 write_atomic $PROJECT/r5/lib/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/r6/main.roc
@@ -254,6 +267,8 @@ read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/r6/main.roc $PROJECT/r6/talon.toml $HOME/.config/talon/config.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/r6/main.roc
@@ -269,6 +284,8 @@ path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/r6/main.roc $PROJECT/r6/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
+tty
 env_all
 clock
 cwd

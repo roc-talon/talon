@@ -1,0 +1,3 @@
+cli/lib/Registry.roc
+tests/unit/RegistryTest.roc
+docs/slices/201-registry-client-core.md

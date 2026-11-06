@@ -1,0 +1,4 @@
+# R-SH9, R-AP36, R-AP38, R-E6, Q482, Q424: the DELETE fails. Run 1: logout, no answer. Run 2: forget, 429 with Retry-After 7. Run 3: forget, 502. Each: exit 15 (network), no write: the JWT, the id and the totals stay.
+share logout
+share forget
+share forget

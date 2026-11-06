@@ -1,0 +1,2 @@
+== cwd:i1 init --platform roc-lang/basic-cli@9.9.9
+exit 2

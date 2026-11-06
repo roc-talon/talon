@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -22,6 +24,8 @@ http_get https://api.github.com/repos/acme/foo/releases?per_page=100
   User-Agent: tln/0.0.1
 write_atomic $HOME/.cache/roc/talon/index/github/acme/foo/1.json $HOME/.cache/roc/talon/index/github/acme/foo/1.meta
 args
+env_all
+tty
 env_all
 clock
 cwd

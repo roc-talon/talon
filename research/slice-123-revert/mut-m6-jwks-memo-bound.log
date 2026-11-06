@@ -1,0 +1,14 @@
+FAIL oidc/tp3-jwks-max-age (2458 ms)
+    request 2: status: expected 200, got 401
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: body: expected "{\"toolchains\":[{\"tag\":\"nightly-2026-10-31-f7bef6b\",\"target\":\"linux_x86_64\",\"asset_name\":\"roc_nightly-linux_x86_64-2026-10-31-f7bef6b.tar.gz\",\"sha256\":\"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee\",\"size\":1001,\"published_at\":1793448000000,\"log_index\":1}]}", got "{\"detail\":\"the token kid \\\"kid-1\\\" is not in the GitHub JWKS\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    d1-calls: request 2: expected 1, got 0 (no call)
+PASS oidc/tp3-jwks-upstream (2408 ms)
+PASS oidc/tp3-jwt-strict (2379 ms)
+PASS oidc/tp3-key-rotation (2414 ms)
+PASS oidc/tp3-signature-and-kid (2433 ms)
+PASS oidc/tp3-token-form (2246 ms)
+PASS oidc/tp3-tp7-claims (643 ms)
+w2: 6 passed, 1 failed
+done

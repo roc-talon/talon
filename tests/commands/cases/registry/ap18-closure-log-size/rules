@@ -1,0 +1,2 @@
+R-AP18 R-E6 R-AP51 (Design Q390): a closure answer with a release whose log_index is greater than log_size is refused (slice 206, entry registry, the word closure).
+Run 1: the release has log_index 40 = log_size 40: the answer is used (the candidate of someone/roc-json). Run 2 (the answer .POST.2): the same release with log_index 41: Talon uses nothing of the answer (no log_size line, no candidate) and the run stops with exit 15, as an answer that does not decode (R-E6 last row). The text is a proposal (R-OUT2).

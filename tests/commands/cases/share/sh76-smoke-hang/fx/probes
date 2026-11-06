@@ -1,0 +1,5 @@
+# baseline, whole-app check, build, then the smoke build: no end in probe.timeout seconds (R-RC3)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+timeout	-	-

@@ -1,20 +1,28 @@
 import Args
+import ClosureIndex
 import Common
+import Db
+import Epochs
 import Facts
 import Fail
 import Fetch
 import Fx
 import Ident
+import IndexQuery
 import Install
+import InstallFlow
 import Known
 import Ls
+import Matrix
 import Nightlies
 import Out
 import Outdated
+import PickFlow
 import PickIndex
 import PickLoop
 import ResolveBase
 import ResolveLoad
+import ShareHook
 import Vars
 
 ## The command code of `tln outdated` (slice 040, R-CM6, TESTING.md 2.2 part C). The pure part is `Outdated`. It resolves nothing, runs no probe, downloads no archive and no compiler, and writes no header and no `talon.toml`.
@@ -32,6 +40,10 @@ import Vars
 ## | 7 | Only when a row is behind: the compiler list (`PickLoop.releases!`, at most once), then one `Facts.load!` for the keys (hash, release of D, `any`) of the rows. An empty or unread list gives `Unread` and no query | R-EP11, R-EF1 |
 ## | 8 | The output (below) | R-J1 to R-J6, R-FL4, R-OUT4 |
 ##
+## Slice 206e2 (R-CV1, R-AP16, R-AP74 row 4, R-RG1, R-RG4, R-DI1): with a registry (`--registry`, `TALON_REGISTRY`, `config.toml`: `InstallFlow.setting_of` after step 3), before step 5: the registry compiler list (`PickLoop.first_releases!`, also when no row is behind: the window needs it),
+## then the guard and one closure query (`PickFlow.report_query!`) with `IndexQuery.report_groups` of the shown variables and the `Report` window of the list (no `compilers` member when no compiler is allowed: no stop). Step 5 reads the candidates from the answer.
+## Step 7 uses that list as D (no second read). Slice 206e3 (R-EP12, R-EP15, R-EF3, R-PB3): step 7 adds the rank 2 facts of the `runs` and `nearest` of the answer after the local rows, and gives the epochs of the answer to `Outdated.range_of` (`evidence_of`).
+##
 ## Output. The notes of the index (the offline line, the warnings of `Index.candidates`) go to stderr as in the other commands. stdout is `Outdated.text` of each member, or with `--json` only the envelope
 ## `Out.json_ok({ command: args.typed, data: Outdated.data(members) })`. The answer is not hidden by `--quiet` (R-FL4). The exit code is 0 when the report was made (question Q3). A failure is printed with `Common.failed!`.
 OutdatedFlow :: [].{
@@ -41,15 +53,26 @@ OutdatedFlow :: [].{
 	run! = |fx, args| match Outdated.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
 		Ok(_) => match flow!(fx, args) {
-			Err(fail) => Common.failed!(fx, args, fail)
-			Ok(members) => {
+			Err(fail) => ShareHook.failed!(fx, args, fail)
+			Ok(done) => {
+				# Slice 206e4 (R-AP30, Design Q537, Q540): the index notes come after the table, and `data.index_notes` after `members`. `--quiet` hides the notes.
+				texts = match done.ran {
+					Ok(found) => ShareHook.notes(found)
+					Err(None) => []
+				}
 				if args.json {
-					fx.out!(Out.json_ok({ command: args.typed, data: Outdated.data(members) }))
+					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(Outdated.data(done.members), done.ran) }))
 				} else {
-					for member in members {
+					for member in done.members {
 						fx.out!(Outdated.text(member))
 					}
 				}
+				if !args.quiet and !args.json {
+					for text in texts {
+						fx.out!("note: ${text}\n")
+					}
+				}
+				ShareHook.send!(fx, done.ran, 0)
 				0
 			}
 		}
@@ -60,30 +83,71 @@ OutdatedFlow :: [].{
 Pending : { file : Str, rows : List({ row : Outdated.Row, hash : Str }), fixed : List(Str) }
 
 # Steps 2 to 8 of the table above.
-flow! : Fx, Args => Try(List(Outdated.Member), Fail)
+flow! : Fx, Args => Try({ members : List(Outdated.Member), ran : Try(Fail.Ran, [None]) }, Fail)
 flow! = |fx, args| {
 	start = Install.begin!(fx, args)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-	asked = { ..Ls.request_of(args, start), command: Update }
+	asked = { ..Ls.request_of(args, start), command: Update, registry: Setting(args.registry) }
 	loaded = ResolveLoad.load!(fx, asked)?
-	request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }
+	set = { ..InstallFlow.setting_of(asked, loaded)?, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }
 	# R-WS7: one `Vars.build` over all members, as `ResolveLoad.prepared!`, so a key of one member limits the group for every member.
 	built = Vars.build({ members: loaded.members, priority: loaded.intent.resolution.priority })?
-	settings = ResolveBase.settings_of(request, loaded)
+	settings = ResolveBase.settings_of(set, loaded)
 	current = start.project.file ?? ""
 	named = loaded.members.keep_if(|m| m.file == current)
 	shown = (if named.is_empty() loaded.members else named).map(|m| m.file)
 	vars = built.vars.keep_if(|v| v.uses.any(|u| shown.contains(u.file)))
 	names = vars.keep_oks(|v| indexed_name(v)).fold([], |found, name| if found.contains(name) found else found.append(name))
+	# Slice 206e2: with a registry the list comes first, then the query with the `Report` window.
+	(listed, request) = match set.registry {
+		Read(query) => {
+			list = PickLoop.first_releases!(fx, set)
+			window = Report(ResolveBase.compiler_domain(set, loaded, settings, { releases: list, snapshot: query.snapshot }))
+			queried = PickFlow.report_query!(fx, { ..set, registry: Read({ ..query, window, listed: Bool.True }) }, loaded, IndexQuery.report_groups(vars))?
+			(Ok(list), queried)
+		}
+		_ => (Err(NotRead), set)
+	}
+	# Slice 206e4 (R-SH4, Design Q533): a failure after the closure answer carries the run.
+	ran = ShareHook.ran_of(request, { notes: Bool.True, second: Err(NotRead) })
+	members = report!(fx, request, { names, built, shown, vars, settings, listed }).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
+	Ok({ members, ran })
+}
+
+# Steps 9 to the end of the table above: the candidates, the compiler list and the facts of the rows that are behind.
+report! : Fx, ResolveBase.Request, { names : List(Str), built : { vars : List(Vars.Var), wants : List(Vars.Want) }, shown : List(Str), vars : List(Vars.Var), settings : ResolveBase.Settings, listed : Try(List(Nightlies.Release), [NotRead]) } => Try(List(Outdated.Member), Fail)
+report! = |fx, request, ctx| {
+	names = ctx.names
+	built = ctx.built
+	shown = ctx.shown
+	vars = ctx.vars
+	settings = ctx.settings
+	listed = ctx.listed
 	found = PickIndex.index!(fx, request, names, built.vars.join_map(|v| v.uses.map(|u| u.url)))?
 	pending = shown.map(|file| pending_of(file, vars, found, { now: request.now, min_age: settings.min_age, exclude: settings.exclude }))
 	behind = pending.join_map(|p| p.rows)
 	# R-DI1, D8: the compiler list and the facts are read only when a row is behind.
-	releases = if behind.is_empty() [] else PickLoop.releases!(fx, request)
-	domain = Nightlies.candidates(releases).map(|r| r.id)
+	releases = match listed {
+		Ok(list) => list
+		Err(NotRead) => if behind.is_empty() [] else PickLoop.releases!(fx, request)
+	}
+	listed_d = Nightlies.candidates(releases)
+	domain = listed_d.map(|r| r.id)
 	hashes = behind.map(|r| r.hash).fold([], |found_hashes, hash| if found_hashes.contains(hash) found_hashes else found_hashes.append(hash))
-	facts = Facts.load!(fx, { roots: request.roots, keys: hashes.join_map(|hash| domain.map(|id| { hash, nightly: id, target: "any" })) })?
-	Ok(pending.map(|p| { file: p.file, rows: p.rows.map(|r| { ..r.row, range: Outdated.range_of({ hash: r.hash, domain, facts }) }), fixed: p.fixed }))
+	local = Facts.load!(fx, { roots: request.roots, keys: hashes.join_map(|hash| domain.map(|id| { hash, nightly: id, target: "any" })) })?
+	ranged = evidence_of(request.index, listed_d, local)
+	Ok(pending.map(|p| { file: p.file, rows: p.rows.map(|r| { ..r.row, range: Outdated.range_of({ hash: r.hash, domain, facts: ranged.facts, epochs: ranged.epochs }) }), fixed: p.fixed }))
+}
+
+# Slice 206e3 (R-EP12, R-EP15, R-EF3, R-PB3): the facts and the epochs of the `nightly range` column. With an `Answer` index: the local rows first, then the rank 2 rows of the `runs` and `nearest` of the answer on D (`Matrix.real`: rank 1 wins, a `bot` row wins),
+# and the epochs of the answer on D (`Matrix.intervals`). Else the local rows and no epoch (each release of D is its own epoch, R-EP4).
+evidence_of : ClosureIndex.Source, List(Nightlies.Release), List(Db.Fact) -> { facts : List(Db.Fact), epochs : List(Epochs.Interval) }
+evidence_of = |index, releases, local| match index {
+	Answer(a) => {
+		joined = Matrix.real({ local, rows: Matrix.rows({ runs: a.answer.runs, nearest: a.answer.nearest, domain: releases }) })
+		{ facts: joined, epochs: Matrix.intervals({ domain: releases, epochs: a.answer.epochs, facts: joined }) }
+	}
+	_ => { facts: local, epochs: [] }
 }
 
 # The repository of a group with an index (R-DI11: a `Fixed` host has none).

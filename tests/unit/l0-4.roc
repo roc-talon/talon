@@ -13,6 +13,10 @@ import PinTest
 import ProbeTest
 import SetupTest
 import ToolSourceTest
+import ToolbinTest
+import ToolbincheckTest
+import ToolbinlistTest
+import ToolbinuseTest
 import UsesTest
 
 main! = |_args| Ok({})

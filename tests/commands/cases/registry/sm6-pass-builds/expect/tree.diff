@@ -1,0 +1,16 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,4 @@
++format	1
++fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
++fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	fail		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
++fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+--- home/.cache/roc/talon/index/github/acme/parser/repo.json
++++ home/.cache/roc/talon/index/github/acme/parser/repo.json
+@@ -0,0 +1 @@
++{"id":2,"full_name":"acme/parser","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/u1/main.roc","last_use":1792497600}]}

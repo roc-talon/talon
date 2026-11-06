@@ -1,0 +1,23 @@
+Slice 212 revert check (test step). A private reference (reference/tree: a copy of cli, packages, scripts and the tests, with a full FullName.roc; deleted after) and 12 hand mutations (mutate.py).
+reference: L0 l0-1.roc 183 passed, 0 failed. L2 `registry`: 28 passed, 0 failed (the 9 new cases with the expect files written by hand before, mkcases.py: no change needed).
+M1 oldest first instead of newest first (R-AD35 step 3): l0 3 failed, l2 3 failed (ad35-ingest, ad35-rate-limited, ad35-selector)
+M2 an exact selector is ignored (step 1): l0 2 failed, l2 1 failed (ad35-selector)
+M2b a range selector is ignored: l0 1 failed, l2 1 failed (ad35-selector)
+M3 a 422 is not skipped with a warning (only 409): l0 1 failed, l2 1 failed (ad35-ingest)
+M4 no privacy guard (R-RG4): l0 0 failed, l2 8 failed
+M5 the second read has no bookmark (R-AP41 row 5, R-AP43): l0 0 failed, l2 3 failed (ad35-ingest, ad35-selector, ad35-still-404)
+M6 a 429 does not stop (R-AP25): l0 0 failed, l2 1 failed (ad35-rate-limited)
+M7 the snapshot stop comes after the GitHub read (R-AD36): l0 0 failed, l2 1 failed (ad36-snapshot)
+M8 the first read ignores --offline (R-AD37): l0 0 failed, l2 1 failed (ad37-offline)
+M9 the ingests run one at a time, limit 1 (R-DA8): l0 0 failed, l2 4 failed
+M10 candidates with one time are in the reverse page order: l0 3 failed, l2 0 failed (the L0 expect with 1.5.0 and 1.6.0 catches it)
+All 12 caught. A first M1 (sort by page, then by time again) and a first M2 (a type error) were not real mutations and were replaced.
+
+Second round (Design Q396 to Q399, Q430; the answers of G-C73 to G-C77): the stub gained `way`, `compiler_only`, `unindexed_warning`, `after_ingests`, `not_indexed`; `no_candidate` lost its selector; `read!` gives `Found`, `NoMatch` or `SourceBuild`. A new private reference (deleted, with mutate.py): L0 198 passed; L2 registry 31 passed, 0 failed (the 3 new cases and the changed selector run, expect files by hand: no change needed).
+N1 R-AP1 is read again after every ingest step (Q399): l0 0 failed, l2 1 failed (ad35-no-ingested)
+N2 a 5xx is not counted as another answer (Q398, Q399): l0 0 failed, l2 1 failed (ad35-no-ingested)
+N3 a sha selector is a registry name (Q397): l0 1 failed, l2 1 failed (ad35-way)
+N4 a nightly tag is a registry name (Q397): l0 1 failed, l2 1 failed (ad35-way)
+N5 the stop of only 409/422 is exit 15 (Q399): l0 1 failed, l2 1 failed (ad35-no-ingested)
+N6 another 4xx gets a warning (Q398): l0 0 failed, l2 1 failed (ad35-other-answers)
+All 6 caught (18 of 18 with the first round; M7 of round 1 still holds for Q396).

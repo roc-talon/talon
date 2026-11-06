@@ -1,0 +1,3 @@
+1: published 600: the repository is private and has no row (R-PU32): nothing is written, no release read, acked
+2: published 601: private, a known name: R-PU33. The row is missing (event Missing, seq 2), its release gets repo-missing. No release read. Acked
+3: published 602: GitHub answers 404 for the repository (deleted, or private and not readable): the same as private for a known name

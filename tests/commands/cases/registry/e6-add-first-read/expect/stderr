@@ -1,0 +1,3 @@
+tln: error[network]: the registry answered 502 (/errors/upstream). Try again later.
+tln: error[network]: the registry answered 429 (/errors/rate-limited). Try again in 30 s.
+tln: error[network]: the registry http://127.0.0.1:9 gave the answer 302 for /v1/packages/acme/e3/releases, and Talon cannot use it. Try again later.

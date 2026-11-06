@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -33,7 +36,6 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQG/main.roc
 list_dirs $HOME/.cache/roc/toolchains
-tty
 clock
 platform
 read_files $HOME/.config/talon/config.toml
@@ -116,6 +118,9 @@ read_files $HOME/.cache/roc/packages/GqCT1gibKhSDVNtziTGJcyq93kHA8SmamjrYH6si2ZQ
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd

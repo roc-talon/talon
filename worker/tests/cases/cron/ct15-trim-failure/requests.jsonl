@@ -1,0 +1,5 @@
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}
+{"sql":["CREATE TABLE snap_totals AS SELECT contributor, counted FROM contributor_totals","CREATE TABLE snap_rows AS SELECT contributor, artifact, nightly FROM contributions","CREATE TABLE snap_hints AS SELECT artifact, nightly FROM compat_hints","DROP TRIGGER boom"]}
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}
+{"cron":"0 3 * * *","time":1767225600000,"now":1767225600000}

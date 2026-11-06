@@ -1,0 +1,4 @@
+== list --file p1/main.roc
+$PROJECT/p1/main.roc
+  pf  acme/pfx 0.1.0  direct
+exit 0

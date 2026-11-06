@@ -1,0 +1,3 @@
+status 200
+header cache-control: no-store
+header etag: "c1"

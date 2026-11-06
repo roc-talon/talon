@@ -1,0 +1,12 @@
+== delete-no-guard
+All (11) tests passed in 407.6 ms.
+PASS account/ap45-write-routes (2618 ms)
+PASS account/ct10-tracker (4009 ms)
+PASS account/ct11-login-limit (6083 ms)
+FAIL account/ct7-delete (4053 ms)
+PASS account/ct8-login (3917 ms)
+PASS account/ct8-login-refusals (2907 ms)
+PASS account/ct9-token-check (2005 ms)
+PASS account/ct9-tokens-after (1518 ms)
+w2: 7 passed, 1 failed
+done

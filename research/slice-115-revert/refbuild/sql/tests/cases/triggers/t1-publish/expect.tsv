@@ -1,0 +1,21 @@
+@ SELECT log_index, form, version_text, artifact FROM releases ORDER BY log_index
+1	1		11
+2	2		12
+3	3		13
+4	4		11
+5	1	70000.1.2	99
+6	6		16
+10	5		15
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	g1	1.0.0	H11	1790000000001
+2	g2	1.0.0	H12	1790000000002
+3	g3	1.0.0	H13	1790000000003
+4	g4	1.0.0	H11	1790000000004
+5	g1	70000.1.2	H99	1790000000005
+6	g6	1.0.0	H16	1790000000006
+7	roc-lang/nightlies:linux_x86_64	nightly-2026-10-09-258ab27	sha256:aa	1790000000007
+8	roc-lang/nightlies:macos_arm64	nightly-2026-10-10-aaaaaaa	sha256:bb	1790000000008
+9	roc-lang/nightlies:windows_x86_64	nightly-A	sha256:dd	1790000000009
+10	g5	1.0.0	H15	1790000000010
+@ SELECT nightly, target, log_index FROM toolchains
+1000	linux_x86_64	7

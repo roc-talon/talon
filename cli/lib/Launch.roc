@@ -50,15 +50,15 @@ Launch :: [].{
 	}
 
 	## R-PX6, R-EV17, R-PX7 (moved from `Proxy.child_env`, slice 023): the variables that Talon sets for the compiler. In this order: `XDG_CACHE_HOME` and `ROC_CACHE_DIR`, then `TALON_IN_PROXY=1`. `xdg` is the path of `XDG_CACHE_HOME` (the directory of
-	## `Roots.cache`), `build` is `Roots.build`. `canonical` is what `Fx.canonical!` gave for the path. A path that does not exist (`Err(Failed)`) is the path with its `.` and `..` parts removed (`Text.resolve`), so a `..` never reaches roc (Q15 of the design).
+	## `Roots.cache`), `build` is `Roots.build`. `canonical` is what `Fx.canonical!` gave for the path. A path that does not exist (`Err(Failed)`) is the path with its `.` and `..` parts removed (`Launch.clean_text`), so a `..` never reaches roc (Q15 of the design).
 	## Opted out (R-PX7): only `TALON_IN_PROXY=1`. A probe is never opted out (question Q1 of slice 023c: it sets the same 3 variables as the proxy does, R-PX6 "Probes use the same rule").
-	child_env : { opted_out : Bool, xdg : { path : Str, canonical : Try(Str, [Failed]) }, build : { path : Str, canonical : Try(Str, [Failed]) } } -> List((Str, Str))
+	child_env : { opted_out : Bool, windows : Bool, xdg : { path : Str, canonical : Try(Str, [Failed]) }, build : { path : Str, canonical : Try(Str, [Failed]) } } -> List((Str, Str))
 	child_env = |facts| {
 		inside = ("TALON_IN_PROXY", "1")
 		if facts.opted_out {
 			[inside]
 		} else {
-			[("XDG_CACHE_HOME", clean(facts.xdg)), ("ROC_CACHE_DIR", clean(facts.build)), inside]
+			[("XDG_CACHE_HOME", clean(facts.windows, facts.xdg)), ("ROC_CACHE_DIR", clean(facts.windows, facts.build)), inside]
 		}
 	}
 
@@ -81,14 +81,52 @@ Launch :: [].{
 		{}
 	}
 
+	## Slice 088c, R-PX6, R-LY5: the path of `XDG_CACHE_HOME` for the compiler: the directory of the cache root `cache` (`Roots.cache`). On Windows the root is `<dir>\roc` and the dir may have `/` (an `XDG_CACHE_HOME` with `/`), so the cut is at the last `\` or `/`, whichever is later: `C:\u\AppData\Local\roc` gives `C:\u\AppData\Local`. On another system the cut is at the last `/` only (a `\` is a letter of a name): `Text.dir_of`. No separator: the empty text. `child_env!` calls it with `fx.windows!()`.
+	xdg_dir : { windows : Bool, cache : Str } -> Str
+	xdg_dir = |x| {
+		slash = Text.dir_of(x.cache)
+		back = Str.join_with(x.cache.split_on("\\").drop_last(1), "\\")
+		if x.windows and back.count_utf8_bytes() > slash.count_utf8_bytes() back else slash
+	}
+
+	## Slice 088d and 088e, R-PX6, Design Q212 and Q214: the text-only cleanup of a path that does not exist (no file system call, no symlink resolved). `windows` gives the separator: on Windows each `/` becomes `\`, and the parts are split at `\`; on another system only `/` separates (a `\` is a letter of a name).
+	## The root stays: `/` (Linux), `\` (Windows with no drive), `<drive>:\` or the UNC prefix `\\server\share` (Windows). A path that is not absolute gets no root. Each `.` part and each empty part is removed, and each `..` part removes the part before it (never a part of the root). The parts are joined with the separator.
+	## Rows: `("/h/./a/../b", Linux)` gives `/h/b`. `("C:/a/../b", Windows)` gives `C:\b`. `("\\srv\sh\..\x", Windows)` gives `\\srv\sh\x`. `("x/./y", Windows)` gives `x\y`. Slice 088f, Q216: a UNC root has a `\\` at the end (`\\srv\sh` gives `\\srv\sh\`), `//srv/sh` is UNC on Windows, and a `..` that starts a relative path stays (`..\a` on Windows, `../a` on other systems). A `..` after a root removes nothing.
+	clean_text : { windows : Bool, path : Str } -> Str
+	clean_text = |x| {
+		sep = if x.windows "\\" else "/"
+		text = if x.windows x.path.replace_each("/", "\\") else x.path
+		all = text.split_on(sep)
+		head = all.first() ?? ""
+		server = all.get(2) ?? ""
+		share = all.get(3) ?? ""
+		unc = x.windows and head == "" and all.get(1) == Ok("") and server != "" and share != ""
+		drive = x.windows and head.count_utf8_bytes() == 2 and head.ends_with(":")
+		rooted = head == "" and all.len() > 1
+		skip = if unc 4 else if drive 1 else if rooted 1 else 0
+		root = if unc "${sep}${sep}${server}${sep}${share}${sep}" else if drive "${head}${sep}" else if rooted sep else ""
+		var $kept = []
+		for part in all.drop_first(skip) {
+			if part == "" or part == "." {
+				{}
+			} else if part == ".." {
+				$kept = if ($kept == [] and root == "") or $kept.last() == Ok("..") $kept.append("..") else $kept.drop_last(1)
+			} else {
+				$kept = $kept.append(part)
+			}
+		}
+		"${root}${Str.join_with($kept, sep)}"
+	}
+
 	## R-PX6 (the steps 11 of `Proxy.run!`, moved): the variables for the compiler. One `canonical!` call with 2 paths (the directory of `roots.cache`, then `roots.build`), in this order, and `child_env` on the results.
 	## With `opted_out`, no call, and `child_env` with the paths as they are.
 	child_env! : Fx, Roots, { opted_out : Bool } => List((Str, Str))
 	child_env! = |fx, roots, run| {
-		xdg = Text.dir_of(roots.cache)
+		xdg = Launch.xdg_dir({ windows: fx.windows!(), cache: roots.cache })
 		canonical = if run.opted_out [] else fx.canonical!([xdg, roots.build])
 		Launch.child_env({
 			opted_out: run.opted_out,
+			windows: fx.windows!(),
 			xdg: { path: xdg, canonical: canonical_at(canonical, 0) },
 			build: { path: roots.build, canonical: canonical_at(canonical, 1) },
 		})
@@ -96,10 +134,10 @@ Launch :: [].{
 }
 
 # R-PX6: a path with no `.` and no `..` part, for a path that `canonical!` could not resolve.
-clean : { path : Str, canonical : Try(Str, [Failed]) } -> Str
-clean = |dir| match dir.canonical {
+clean : Bool, { path : Str, canonical : Try(Str, [Failed]) } -> Str
+clean = |windows, dir| match dir.canonical {
 	Ok(real) => real
-	Err(Failed) => Text.resolve("/", dir.path)
+	Err(Failed) => Launch.clean_text({ windows, path: dir.path })
 }
 
 # The result of `canonical!` for the path at `at`.

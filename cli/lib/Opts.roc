@@ -40,7 +40,7 @@ Opts := {
 	##
 	## | # | Case | Message | Rule |
 	## | --- | --- | --- | --- |
-	## | 1 | `--registry` with a value other than `direct` (P0 has only `direct`, question Q6) | `--registry '<value>': no registry exists in this version of tln. Use --registry direct.` | R-FL5, R-RG2 |
+	## | 1 | Slice 206f: no check of `--registry` here (the P0 refusal is gone). A command that reads the setting (`IndexQuery.setting`) checks the text in its flow; a command that makes no index call does not read the flag (R-RG7 row 6) | none | R-FL5, R-RG7 |
 	## | 2 | `--strategy` with a value other than `highest` or `lowest` | `--strategy must be highest or lowest, not '<value>'` | R-FL10 |
 	## | 3 | `--frozen` with one name or more (`install` with names changes the header) | `flag '--frozen' works only for tln install with no names` | R-FL13 |
 	## | 4 | `--platform` with no name or with 2 or more names (question Q3) | `flag '--platform' names one entry: got <n> names` | R-AD29 |
@@ -51,7 +51,6 @@ Opts := {
 	## change nothing in P0 (R-LF2: no unit probe). `--yes`, `--json` and the other global flags are not options of the command: `Args` has them.
 	read : Args -> Try(Opts, Fail)
 	read = |args| {
-		check_registry(args)?
 		strategy = strategy_of(args)?
 		slots = slots_of(args)?
 		given = |flag| args.options.any(|(name, _)| name == flag)
@@ -91,13 +90,6 @@ value_of : Args, Str -> Try(Str, [Unset])
 value_of = |args, flag| match args.options.find_first(|(name, _)| name == flag) {
 	Ok((_, value)) => value
 	Err(NotFound) => Err(Unset)
-}
-
-# R-FL5, R-RG2: P0 has only `direct`.
-check_registry : Args -> Try({}, Fail)
-check_registry = |args| match args.registry {
-	Ok(value) if value != "direct" => Err(Fail.new(Usage, "--registry '${value}': no registry exists in this version of tln. Use --registry direct."))
-	_ => Ok({})
 }
 
 # R-FL10

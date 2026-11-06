@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/apps/a/main.roc
@@ -59,6 +60,7 @@ probes 1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
 env_all
 clock
 cwd

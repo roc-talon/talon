@@ -1,0 +1,5 @@
+error timeout
+require authorization: Bearer jwt1
+require user-agent: tln/0.0.1
+require content-type: application/json
+require-none talon-contributor

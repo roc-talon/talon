@@ -1,0 +1,1 @@
+R-AP2 R-MX4 R-MX18 (slice 223, Q595): 2 missing hashes. GET /v1/artifacts/<first> answers 404 (not indexed): a warning, no row. The second is fetched, probed (pass) and posted with no sweep. The audit follows. Exit 1.

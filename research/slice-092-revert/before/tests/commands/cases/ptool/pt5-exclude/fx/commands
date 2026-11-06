@@ -1,0 +1,2 @@
+update --tool --file p1/main.roc
+install --file w2/m1/main.roc

@@ -1,0 +1,6 @@
+{"status": 200, "json": {"checked": {"name": "o/fresh", "checked_at": 1767222000000, "stale": false}}}
+{"status": 200, "json": {"checked": {"name": "o/never", "checked_at": null, "stale": true}}}
+{"status": 200, "json": {"checked": {"name": "o/two-hours", "checked_at": 1767218400000, "stale": false}}}
+{"status": 200, "json": {"checked": {"name": "o/over-two", "checked_at": 1767218399999, "stale": true}}}
+{"status": 200, "json": {"checked": {"name": "o/app-day", "checked_at": 1767214800000, "stale": false}}}
+{"status": 200, "json": {"checked": {"name": "o/app-old", "checked_at": 1767052799999, "stale": true}}}

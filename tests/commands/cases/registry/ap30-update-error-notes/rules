@@ -1,0 +1,2 @@
+R-AP30 R-SP16 R-AP16 R-E6 (slice 206e4, Design Q533): run 2 of registry/sp24-update-held-move (--snapshot log:30: no tuple, exit 10) with `checked` in the first answer: acme/yaml stale, 12 minutes ago.
+The command ends with an error, and the answer was read: the index note is printed after the error text, on stderr: `note: index: acme/yaml checked 12m ago`. Exit code 10 (R-AP30: unchanged). Run 2 (--json): the same lines on stderr, and the error object on stdout has no note.

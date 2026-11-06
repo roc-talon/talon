@@ -1,0 +1,11 @@
+M1 client id one char wrong -> L0 3 expect(s) fail, L2 fails: share/sh23-login-flow,share/sh24-login-default-json,share/sh26-login-declined,share/sh27-login-no-answer,share/sh28-login-errors
+M2 slow_down with no interval adds 4 -> L0 1 expect(s) fail, L2 fails: share/sh23-login-flow
+M3 expired is > not >= -> L0 1 expect(s) fail, L2 fails: share/sh26-login-declined
+M4 access_denied is Internal not Consent -> L0 1 expect(s) fail, L2 fails: share/sh26-login-declined
+M5 interval 0 becomes 5 -> L0 1 expect(s) fail, L2 fails: share/sh24-login-default-json,share/sh26-login-declined,share/sh27-login-no-answer,share/sh28-login-errors
+M6 direct is checked after share.json is read -> L0 0 expect(s) fail, L2 fails: share/sh25-login-direct
+M7 expiry kept in ms -> L0 1 expect(s) fail, L2 fails: share/sh23-login-flow,share/sh24-login-default-json
+M8 the contributor id goes to GitHub -> L0 1 expect(s) fail, L2 fails: share/sh23-login-flow,share/sh24-login-default-json,share/sh26-login-declined,share/sh27-login-no-answer,share/sh28-login-errors
+M9 no sleep when the wait is 0 -> L0 0 expect(s) fail, L2 fails: share/sh24-login-default-json,share/sh26-login-declined,share/sh27-login-no-answer,share/sh28-login-errors
+M10 the GitHub token is sent as Authorization to the registry -> L0 1 expect(s) fail, L2 fails: share/sh23-login-flow,share/sh24-login-default-json,share/sh27-login-no-answer,share/sh28-login-errors
+M11 a login replaces the totals (fresh doc) -> L0 1 expect(s) fail, L2 fails: share/sh23-login-flow,share/sh24-login-default-json

@@ -1,0 +1,14 @@
+@ SELECT hex(substr(n.value, 1, 1)) AS h, c.nightly, c.target, c.source, c.result, c.error_digest, c.time, c.log_index FROM compat c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.nightly, c.target, c.source
+11	5571556846250	0	0	0	\N	1767225601000	\N
+22	5571556846250	0	0	1	boom"é	1767225601000	\N
+22	5571843177403	0	0	0	\N	1767225604000	\N
+22	5572129508556	0	0	0	\N	1767225606000	\N
+33	5571556846250	0	0	0	\N	1767225601000	\N
+33	5571843177403	0	0	0	\N	1767225604000	\N
+66	5571556846250	0	0	0	\N	1767225601000	\N
+66	5571843177403	0	0	0		1767225601000	\N
+@ SELECT nightly, target, upto_log_index, time FROM sweeps ORDER BY nightly, target
+5571556846250	0	8	1767225603000
+5571843177403	0	8	1767225604000
+@ SELECT nightly, target, previous, compared, changed FROM transitions ORDER BY nightly, target
+5571843177403	0	5571556846250	3	1

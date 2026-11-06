@@ -1,0 +1,7 @@
+M1 last mark wins for pf
+M2 app mark used for pf
+M3 mark ignored (pf none)
+M4 entry flag ignored
+M5 pf of the first dep, not the marked one
+M6 entry flag is the mark as sent (Q402)
+M7 app entry flag set (Q401)

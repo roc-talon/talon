@@ -1,0 +1,8 @@
+status 429
+header Content-Type: application/json
+header Cache-Control: no-store
+header Retry-After: 7
+require user-agent: tln/0.0.1
+require authorization: Bearer eyJ.jwt.sig
+require-none talon-contributor
+require-none content-type

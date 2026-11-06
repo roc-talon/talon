@@ -1,0 +1,3 @@
+worker/tests/unit/VersionTest.roc
+worker/lib/Version.roc
+sql/tests/cases/versions/

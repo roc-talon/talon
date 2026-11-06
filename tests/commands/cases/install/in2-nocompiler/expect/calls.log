@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/n1/main.roc
@@ -112,6 +114,8 @@ read_files $PROJECT/n1/main.roc
 write_atomic $PROJECT/n1/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/n2/main.roc
@@ -152,6 +156,8 @@ db_query $WORK/h2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $WORK/h2/.cache/roc/toolchains
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/n3/main.roc
@@ -178,6 +184,8 @@ read_files $WORK/h3/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2f
 read_files $PROJECT/n3/main.roc
 write_atomic $PROJECT/n3/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -277,6 +285,8 @@ read_files $PROJECT/n4/main.roc
 write_atomic $PROJECT/n4/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/n5/main.roc
@@ -295,6 +305,8 @@ random
 list_dirs $WORK/h5/.cache/roc/packages
 read_files $WORK/h5/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $WORK/h5/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $WORK/h5/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -402,6 +414,8 @@ delete $WORK/h6/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/n6/main.roc
 write_atomic $PROJECT/n6/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd

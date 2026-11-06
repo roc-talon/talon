@@ -1,0 +1,19 @@
+@ SELECT nightly, target, previous, compared, changed FROM transitions ORDER BY nightly, target
+200	0	300	7	2
+300	0	100	4	1
+300	9	100	2	1
+400	0	200	9	1
+500	0	400	7	1
+268435461	0	500	7	1
+536870919	0	268435461	8	1
+@ SELECT nightly, target, upto_log_index FROM sweeps ORDER BY nightly, target
+100	0	15
+100	9	15
+200	0	15
+300	0	15
+300	9	15
+400	0	16
+500	0	15
+999	0	15
+268435461	0	15
+536870919	0	15

@@ -1,0 +1,5 @@
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569 token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-22-aaaaaaa token=1 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-23-bbbbbbb token=2 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-24-ccccccc token=2 ua=talon-registry accept=application/vnd.github+json
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-25-ddddddd token=3 ua=talon-registry accept=application/vnd.github+json

@@ -1,0 +1,13 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1 @@
++format	1
+--- home/.cache/roc/talon/smoke.tsv
++++ home/.cache/roc/talon/smoke.tsv
+@@ -0,0 +1,6 @@
++HP	nightly-2026-10-14-38a3029	x64musl	pass
++HP	nightly-2026-10-14-38a3029	arm64mac	fail
++HQ	nightly-2026-10-14-38a3029	x64musl	hang
++HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
++HR	nightly-2026-10-14-38a3029	x64musl	pass
++HS	nightly-2026-10-14-38a3029	x64musl	crash

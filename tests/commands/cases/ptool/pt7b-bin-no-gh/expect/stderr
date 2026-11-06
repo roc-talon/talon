@@ -1,0 +1,4 @@
+note: binaries of foo 1.1.0 not checked (needs gh, logged in). Each target builds from source. To lock them, run tln update foo with gh.
+note: default-roc is not set, so nightly-2026-10-14-38a3029, the newest installed compiler, is used. Run: tln setup, or tln roc default nightly-2026-10-14-38a3029
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029

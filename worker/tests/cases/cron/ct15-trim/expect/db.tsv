@@ -1,0 +1,20 @@
+@ SELECT contributor, counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor
+-5	1	1	0	0	1	1700000600000	1700000600000
+77	2	1	0	1	1	1700000200000	1720000200000
+88	3	1	1	1	1	1690000000100	1690000000900
+4242	14	7	4	2	8	1690000000000	1730000100000
+@ SELECT contributor, artifact, nightly FROM contributions ORDER BY contributor, artifact, nightly
+77	102	9400
+4242	101	9300
+4242	102	9400
+@ SELECT artifact, nightly, target, talon_version FROM compat_hints ORDER BY artifact, nightly
+101	9300	0	1
+102	9400	0	1
+@ SELECT COUNT(*) FROM compat
+4
+@ SELECT nightly FROM probe GROUP BY nightly ORDER BY MIN(n)
+9100
+9050
+9200
+@ SELECT day, counted FROM hint_days ORDER BY day
+20453	2

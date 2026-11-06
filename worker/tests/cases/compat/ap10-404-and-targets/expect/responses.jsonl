@@ -1,0 +1,11 @@
+{"status":404,"problem":{"type":"/errors/not-found","detail":"no artifact 6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6"}}
+{"status":404,"problem":{"type":"/errors/not-found","detail":"no artifact 6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":2}"}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":2}"}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":404,"problem":{"type":"/errors/not-found","detail":"no artifact 6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}

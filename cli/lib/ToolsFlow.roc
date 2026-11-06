@@ -111,6 +111,8 @@ context! = |fx, args, cmd| {
 		home_text: text,
 		tools: read.intent.tools,
 		selected: Fetch.selected({ held: "", default: config.default_roc ?? "" }),
+		machine_bins: config.tool_binaries,
+		bins: read.intent.tool_bins,
 	})
 }
 
@@ -160,10 +162,29 @@ fresh! = |fx, ctx, run| {
 	found = XCacheIo.entries!(fx, ctx.roots, machine.os)?
 	picked = ToolsStep.pick!(fx, ctx, { machine, name: run.name, selector: run.selector })?
 	chosen = ToolsStep.chosen!(fx, ctx, { pick: picked, found })?
-	ensured = ToolsStep.ensure!(fx, ctx, { facts: picked.facts, rel: chosen.rel, bundle: chosen.bundle, found })?
+	locked = ToolsStep.locks!(fx, ctx, { machine, gate: Err(NotAsked) }, { command: AddTool, key: run.key, name: run.name, rel: chosen.rel, pages: picked.pages, url_changed: Bool.True })?
+	ensured = ToolsStep.ensure!(fx, ctx, { key: run.key, facts: picked.facts, rel: chosen.rel, bundle: chosen.bundle, found: found.concat(locked.checked.added), bin: locked.bin })?
 	ref = ToolsPlan.add_ref({ name: run.name, selector: run.selector, version: chosen.rel.version })
-	row = { key: run.key, name: run.name, action: Added, ref: Ok(ref), url: Ok(chosen.rel.url), version: Ok(chosen.rel.version), previous: Err(None), built: ensured.built, would_build: ensured.would }
-	Ok({ rows: [row], changes: [Put({ key: run.key, ref, url: chosen.rel.url })] })
+	row = {
+		key: run.key,
+		name: run.name,
+		action: Added,
+		ref: Ok(ref),
+		url: Ok(chosen.rel.url),
+		version: Ok(chosen.rel.version),
+		previous: Err(None),
+		built: ensured.built,
+		would_build: ensured.would,
+		bin: ToolsStep.bin_view(locked.bin),
+		binary: if locked.checked.added.is_empty() ensured.binary else Prebuilt,
+		bin_skip: ToolsStep.skip_text(locked.checked.skip),
+		would_check: locked.checked.would_check,
+	}
+	bin = match locked.write {
+		Set(list) => Ok(list)
+		_ => Err(None)
+	}
+	Ok({ rows: [row], changes: [Put({ key: run.key, ref, url: chosen.rel.url, bin })] })
 }
 
 # Step 4: the keys must be in `[tools]`. No build, no network.
@@ -176,7 +197,7 @@ remove! = |ctx, cmd| {
 				Ok(entry) => entry.ref
 				Err(_) => ""
 			}
-			{ key, name: ToolsToml.app_of(ref), action: Removed, ref: Err(None), url: Err(None), version: Err(None), previous: Err(None), built: Bool.False, would_build: Bool.False }
+			{ key, name: ToolsToml.app_of(ref), action: Removed, ref: Err(None), url: Err(None), version: Err(None), previous: Err(None), built: Bool.False, would_build: Bool.False, bin: Targets([]), binary: NoBinary, bin_skip: Err(None), would_check: [] }
 		},
 	)
 	Ok({ rows, changes: cmd.keys.map(|key| Drop(key)) })

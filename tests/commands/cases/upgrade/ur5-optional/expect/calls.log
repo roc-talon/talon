@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -59,10 +60,6 @@ read_files $HOME1/.config/talon/config.toml
 unlock $HOME1/.config/talon/config.toml
 rename $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME1/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-platform
-list_dirs $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME1/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME1/.cache/roc/packages
@@ -78,6 +75,7 @@ probes 2
     env XDG_CACHE_HOME=$HOME1/.cache ROC_CACHE_DIR=$HOME1/.cache/roc TALON_IN_PROXY=1
 db_write $HOME1/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
 env_all
 clock
 cwd
@@ -138,10 +136,6 @@ read_files $HOME2/.config/talon/config.toml
 unlock $HOME2/.config/talon/config.toml
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-platform
-list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME2/.cache/roc/packages
@@ -226,6 +220,9 @@ read_files $PROJECT/p2/main.roc
 write_atomic $PROJECT/p2/main.roc
 args
 env_all
+tty
+read_files $HOME3/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -285,10 +282,6 @@ read_files $HOME3/.config/talon/config.toml
 unlock $HOME3/.config/talon/config.toml
 rename $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-platform
-list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME3/.cache/roc/packages
@@ -373,6 +366,7 @@ read_files $PROJECT/p3/main.roc
 write_atomic $PROJECT/p3/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p4/main.roc
@@ -432,10 +426,6 @@ read_files $HOME4/.config/talon/config.toml
 unlock $HOME4/.config/talon/config.toml
 rename $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME4/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-platform
-list_dirs $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME4/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME4/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME4/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME4/.cache/roc/packages
@@ -451,6 +441,7 @@ probes 2
     env XDG_CACHE_HOME=$HOME4/.cache ROC_CACHE_DIR=$HOME4/.cache/roc TALON_IN_PROXY=1
 db_write $HOME4/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
 env_all
 clock
 cwd
@@ -512,10 +503,6 @@ read_files $HOME5/.config/talon/config.toml
 unlock $HOME5/.config/talon/config.toml
 rename $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2.0123456789abcdef.tmp $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
 unlock $HOME5/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2
-platform
-list_dirs $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME5/.cache/roc/packages
@@ -531,6 +518,7 @@ probes 2
     env XDG_CACHE_HOME=$HOME5/.cache ROC_CACHE_DIR=$HOME5/.cache/roc TALON_IN_PROXY=1
 db_write $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
 env_all
 clock
 cwd
@@ -560,10 +548,6 @@ write_atomic $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME6/.cache/roc/toolchains
-platform
-list_dirs $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME6/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME6/.cache/roc/packages
@@ -620,6 +604,7 @@ probes 2
 db_write $HOME6/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p7/main.roc
@@ -648,10 +633,6 @@ write_atomic $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME7/.cache/roc/toolchains
-platform
-list_dirs $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME7/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME7/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME7/.cache/roc/packages
@@ -684,6 +665,7 @@ delete $HOME7/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1.0123456789abcdef.
 unlock $HOME7/.cache/roc/toolchains/nightly-2026-10-11-1f1f1f1
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p8/main.roc
@@ -711,10 +693,6 @@ write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME8/.cache/roc/toolchains
-platform
-list_dirs $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME8/.cache/roc/packages
@@ -763,6 +741,9 @@ delete $HOME8/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0.0123456789abcdef.
 unlock $HOME8/.cache/roc/toolchains/nightly-2026-10-10-0e0e0e0
 args
 env_all
+tty
+read_files $HOME9/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p9/main.roc
@@ -790,10 +771,6 @@ write_atomic $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME9/.cache/roc/toolchains
-platform
-list_dirs $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME9/.cache/roc/packages
@@ -809,6 +786,7 @@ probes 2
     env XDG_CACHE_HOME=$HOME9/.cache ROC_CACHE_DIR=$HOME9/.cache/roc TALON_IN_PROXY=1
 db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
 env_all
 clock
 cwd
@@ -837,10 +815,6 @@ write_atomic $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HO
 db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME10/.cache/roc/toolchains
-platform
-list_dirs $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME10/.cache/roc/packages
@@ -925,6 +899,9 @@ read_files $PROJECT/p10/main.roc
 write_atomic $PROJECT/p10/main.roc
 args
 env_all
+tty
+read_files $HOME11/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p11/main.roc
@@ -966,7 +943,6 @@ list_dirs $HOME11/.cache/roc/toolchains
 list_dirs $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
-tty
 ask "Download 2 compilers, 148.1 MB: nightly-2026-10-12-2a2a2a2, nightly-2026-10-09-9d9d9d9? [Y/n] "
 lock $HOME11/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2 nowait: held
 list_dirs $HOME11/.cache/roc/toolchains
@@ -1020,10 +996,6 @@ read_files $HOME11/.config/talon/config.toml
 unlock $HOME11/.config/talon/config.toml
 rename $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 unlock $HOME11/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
-platform
-list_dirs $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME11/.cache/roc/packages
@@ -1039,6 +1011,9 @@ probes 2
     env XDG_CACHE_HOME=$HOME11/.cache ROC_CACHE_DIR=$HOME11/.cache/roc TALON_IN_PROXY=1
 db_write $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
+tty
+read_files $HOME12/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -1081,7 +1056,6 @@ list_dirs $HOME12/.cache/roc/toolchains
 list_dirs $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
-tty
 ask "Download 2 compilers, 148.1 MB: nightly-2026-10-12-2a2a2a2, nightly-2026-10-09-9d9d9d9? [Y/n] "
 lock $HOME12/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2 nowait: held
 list_dirs $HOME12/.cache/roc/toolchains
@@ -1135,10 +1109,6 @@ read_files $HOME12/.config/talon/config.toml
 unlock $HOME12/.config/talon/config.toml
 rename $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9.0123456789abcdef.tmp $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
 unlock $HOME12/.cache/roc/toolchains/nightly-2026-10-09-9d9d9d9
-platform
-list_dirs $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME12/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME12/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME12/.cache/roc/packages
@@ -1223,6 +1193,7 @@ read_files $PROJECT/p12/main.roc
 write_atomic $PROJECT/p12/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p13/main.roc
@@ -1251,10 +1222,6 @@ write_atomic $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HO
 db_query $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME13/.cache/roc/toolchains
-platform
-list_dirs $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME13/.cache/roc/packages
@@ -1270,6 +1237,7 @@ probes 2
     env XDG_CACHE_HOME=$HOME13/.cache ROC_CACHE_DIR=$HOME13/.cache/roc TALON_IN_PROXY=1
 db_write $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
 env_all
 clock
 cwd
@@ -1298,10 +1266,6 @@ write_atomic $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HO
 db_query $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME14/.cache/roc/toolchains
-platform
-list_dirs $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME14/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME14/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME14/.cache/roc/packages
@@ -1346,6 +1310,7 @@ read_files $PROJECT/p14/main.roc
 write_atomic $PROJECT/p14/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p15/main.roc
@@ -1373,10 +1338,6 @@ write_atomic $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HO
 db_query $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME15/.cache/roc/toolchains
-platform
-list_dirs $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME15/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME15/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME15/.cache/roc/packages
@@ -1421,6 +1382,7 @@ read_files $PROJECT/p15/main.roc
 write_atomic $PROJECT/p15/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p16/main.roc
@@ -1448,10 +1410,6 @@ write_atomic $HOME16/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HO
 db_query $HOME16/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME16/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 list_dirs $HOME16/.cache/roc/toolchains
-platform
-list_dirs $HOME16/.cache/roc/talon/index/github/roc-lang/nightlies
-read_files $HOME16/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME16/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
-db_query $HOME16/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME16/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 random
 list_dirs $HOME16/.cache/roc/packages

@@ -1,0 +1,12 @@
+m1 CAUGHT R-LY4 a bin table overrides tool-binaries = false
+m2 CAUGHT R-PT19 a url that stays gets no new value
+m3 CAUGHT R-PT21 the lock is never downloaded
+m4 CAUGHT R-PT21 a changed asset is used
+m5 CAUGHT Q233 a dry run downloads and verifies
+m6 CAUGHT R-PT22 GC cannot read a prebuilt manifest
+
+Round 2 (Q9: the digests come from the release list, no releases/tags call; Q239: no asset gives bin = {}; --json fields)
+m2 CAUGHT R-PT19 a url that stays gets no new value (pt6, pt8)
+m5 CAUGHT Q233 a dry run downloads and verifies (pt10)
+m7 CAUGHT Q239 a release with no binary asset gets bin = {} (pt14)
+m8 CAUGHT (L0 ToolbinlistTest, 2 of 3 expects fail; L2 misses it: the tag is the first release in every case) the assets are those of the release with the tag

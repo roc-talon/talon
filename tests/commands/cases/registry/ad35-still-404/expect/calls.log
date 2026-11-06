@@ -1,0 +1,24 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/github/acme/slow/repo.json
+http_get https://api.github.com/repos/acme/slow
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/slow/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/slow/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/slow
+http_get https://api.github.com/repos/acme/slow/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/slow/1.json $HOME/.cache/roc/talon/index/github/acme/slow/1.meta
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/slow/releases/download/1.0.0/8HueYzKmsUKsrePm87sEYQokDH68sDthv1iRdWaUdMjQ.tar.zst"}
+http_get http://127.0.0.1:9/v1/packages/acme/slow/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+  Talon-Bookmark: 0000000a-00000010-00004c60-8e61

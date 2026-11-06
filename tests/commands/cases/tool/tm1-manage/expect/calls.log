@@ -1,20 +1,33 @@
 args
 env_all
-read_files $HOME/.local/share/talon/tools.json
-args
+tty
 env_all
 read_files $HOME/.local/share/talon/tools.json
 args
+env_all
+env_all
+read_files $HOME/.local/share/talon/tools.json
+args
+env_all
+tty
 env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 args
 env_all
+tty
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 args
+env_all
+tty
 args
+env_all
+tty
 args
+env_all
+tty
 env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -28,6 +41,7 @@ write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 lock $HOME/.local/share/talon/tools.json nowait: held
@@ -40,6 +54,8 @@ write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+tty
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 lock $HOME/.local/share/talon/tools.json nowait: held
@@ -51,12 +67,26 @@ write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+tty
+env_all
 read_files $HOME/.local/share/talon/tools.json
 args
+env_all
+tty
 env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 args
+env_all
+tty
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
 env_all
 clock
 platform
@@ -64,17 +94,13 @@ read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 args
 env_all
-clock
-platform
-read_files $HOME/.local/share/talon/tools.json
-read_files $HOME/.config/talon/config.toml
-args
 env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 args
+env_all
 env_all
 clock
 platform

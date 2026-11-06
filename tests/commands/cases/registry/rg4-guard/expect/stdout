@@ -1,0 +1,42 @@
+== guard repo:acme/pub env:GITHUB_TOKEN=tok1
+ok
+== guard repo:acme/pub env:GITHUB_TOKEN=tok1
+ok
+== guard repo:acme/priv env:GITHUB_TOKEN=tok1
+exit 2
+== guard repo:acme/none
+exit 2
+== guard repo:acme/none2 env:GITHUB_TOKEN=tok1
+exit 2
+== guard repo:acme/priv offline
+ok
+== guard repo:acme/priv frozen
+ok
+== guard short:priv
+ok
+== guard group:example.com/pkg/{v}/ url:https://example.org/a/b/releases/download/1/h.tar.zst
+ok
+== guard group:github.com/acme/pub2/releases/download/{v}/ url:https://github.com/acme/pub3/releases/download/1.0.0/h.tar.zst repo:acme/pub2 repo:acme/pub env:GITHUB_TOKEN=tok1
+ok
+== guard repo:acme/limited env:GITHUB_TOKEN=tok1
+exit 15
+== guard repo:acme/slow env:GITHUB_TOKEN=tok1
+exit 15
+== guard repo:acme/hook env:TALON_GITHUB_API=http://127.0.0.1:1/api env:GITHUB_TOKEN=tok1 env:GH_TOKEN=tok2
+ok
+== guard repo:Acme/Case1 repo:acme/case1 group:github.com/ACME/CASE1/x env:GITHUB_TOKEN=tok1
+ok
+== guard url:https://github.com/acme/form1 group:github.com/acme/form2/x/y url:github.com/acme/form3/releases/download/1/h.tar.zst env:GITHUB_TOKEN=tok1
+ok
+== guard repo:acme/pub repo:../lib env:GITHUB_TOKEN=tok1
+exit 2
+== guard group:github.com/../lib/releases/download/{v}/ url:https://github.com/acme/../x/y repo:acme/ok4 env:GITHUB_TOKEN=tok1
+ok
+== guard repo:acme/nobool env:GITHUB_TOKEN=tok1
+exit 15
+== guard repo:acme/nojson env:GITHUB_TOKEN=tok1
+exit 15
+== guard repo:acme/pubfirst repo:acme/priv2 env:GITHUB_TOKEN=tok1
+exit 2
+== guard repo:acme/pubfirst env:GITHUB_TOKEN=tok1
+ok

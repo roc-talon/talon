@@ -1,0 +1,18 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+cwd
+read_files $PROJECT/i1/main.roc
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/basic-cli/repo.json
+programs gh
+http_get https://api.github.com/repos/roc-lang/basic-cli
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/basic-cli/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/roc-lang/basic-cli/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/00b27ed3b2bb44add4738fe2e9ae72af.meta
+read_files $HOME/.config/talon/config.toml

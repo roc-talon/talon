@@ -1,0 +1,4 @@
+env_all
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts_of=HQ
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2

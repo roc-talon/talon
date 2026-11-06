@@ -1,0 +1,6 @@
+worker/tests/cases/shorts/ap7-query-forms
+worker/tests/cases/archive/pu38-zero-run
+worker/tests/tools/mk-zero-run.mjs
+docs/slices/123-platform-003.md
+research/slice-123-revert/ (all)
+worker/tests/trap-table.mjs

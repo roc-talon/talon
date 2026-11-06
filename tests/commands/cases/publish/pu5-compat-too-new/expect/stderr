@@ -1,0 +1,1 @@
+tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon

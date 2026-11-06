@@ -1,0 +1,15 @@
+All (12) tests passed in 205.5 ms.
+PASS webhook/ap12-empty-secret (2139 ms)
+PASS webhook/ap12-no-secret (2064 ms)
+PASS webhook/ap12-signature (2513 ms)
+PASS webhook/pu11-events (2936 ms)
+PASS webhook/pu26-app-installed (2728 ms)
+FAIL webhook/pu33-privatized (3928 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\trepo-missing\t1767225600000","2\tacme/lib\t1.1.0\tdeleted\t1767000000100","3\tacme/old\t0.9.0\trepo-missing\t1767225600000","4\tother/pkg\t1.0.0\t\\N\t\\N","5\tstale/pkg\t1.0.0\t\\N\t\\N","6\tgone/pkg\t1.0.0\trepo-missing\t1767225601000","7\tboom/pkg\t1.0.0\t\\N\t\\N","8\talready/pkg\t1.0.0\trepo-missing\t1767000000500"]
+      got:      ["1\tacme/lib\t1.0.0\trepo-missing\t1767225600000","2\tacme/lib\t1.1.0\tdeleted\t1767000000100","3\tacme/old\t0.9.0\t\\N\t\\N","4\tother/pkg\t1.0.0\t\\N\t\\N","5\tstale/pkg\t1.0.0\t\\N\t\\N","6\tgone/pkg\t1.0.0\trepo-missing\t1767225601000","7\tboom/pkg\t1.0.0\t\\N\t\\N","8\talready/pkg\t1.0.0\trepo-missing\t1767000000500"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the GitHub repository read failed with status 500"}
+PASS webhook/pu33-publicized (1843 ms)
+PASS webhook/pu35-dead-letter (1530 ms)
+PASS webhook/pu35-retry-schedule (1486 ms)
+w2: 8 passed, 1 failed

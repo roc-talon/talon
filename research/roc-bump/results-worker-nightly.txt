@@ -1,0 +1,318 @@
+compiler: Roc compiler version nightly-2026-10-31-f7bef6b
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.0.1 v2patch/main.roc
+exit 0, 32 ms
+--- stdout
+Comparing v1 (old, 1.0.0) with v2patch/main.roc (new)...
+
+No API changes detected.
+
+This is a PATCH change.
+
+1.0.0 -> 1.0.1
+
+1.0.1 satisfies the required PATCH bump.
+--- stderr
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.1.0 v2minor/main.roc
+exit 0, 38 ms
+--- stdout
+Comparing v1 (old, 1.0.0) with v2minor/main.roc (new)...
+
+---- Greet - MINOR ----
+
+    + Greet.bye : Str -> Str
+
+This is a MINOR change.
+
+1.0.0 -> 1.1.0
+
+1.1.0 satisfies the required MINOR bump.
+--- stderr
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.0.1 v2minor/main.roc
+exit 1, 22 ms
+--- stdout
+Comparing v1 (old, 1.0.0) with v2minor/main.roc (new)...
+
+---- Greet - MINOR ----
+
+    + Greet.bye : Str -> Str
+
+This is a MINOR change.
+
+1.0.0 -> 1.1.0
+--- stderr
+── ✗ insufficient version bump ─────────────────────────────────────────────────
+
+roc bump failed.
+
+This is a MINOR change, so the next version must be at least 1.1.0, but
+--expect was 1.0.1.
+
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.9.0 v2major/main.roc
+exit 1, 29 ms
+--- stdout
+Comparing v1 (old, 1.0.0) with v2major/main.roc (new)...
+
+---- Greet - MAJOR ----
+
+    - Greet.hello : Str -> Str
+    + Greet.hello : Str, Str -> Str
+
+This is a MAJOR change.
+
+1.0.0 -> 2.0.0
+--- stderr
+── ✗ insufficient version bump ─────────────────────────────────────────────────
+
+roc bump failed.
+
+This is a MAJOR change, so the next version must be at least 2.0.0, but
+--expect was 1.9.0.
+
+
+### roc bump --old v1 --old-version 1.0.0 --expect 3.0.0 v2major/main.roc
+exit 0, 25 ms
+--- stdout
+Comparing v1 (old, 1.0.0) with v2major/main.roc (new)...
+
+---- Greet - MAJOR ----
+
+    - Greet.hello : Str -> Str
+    + Greet.hello : Str, Str -> Str
+
+This is a MAJOR change.
+
+1.0.0 -> 2.0.0
+
+3.0.0 satisfies the required MAJOR bump.
+--- stderr
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.0.0 v2patch/main.roc
+exit 1, 18 ms
+--- stdout
+Comparing v1 (old, 1.0.0) with v2patch/main.roc (new)...
+
+No API changes detected.
+
+This is a PATCH change.
+
+1.0.0 -> 1.0.1
+--- stderr
+── ✗ insufficient version bump ─────────────────────────────────────────────────
+
+roc bump failed.
+
+The expected version 1.0.0 does not move forward from 1.0.0.
+
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.0.1 bad/main.roc
+exit 1, 46 ms
+--- stdout
+--- stderr
+── ✗ name not in scope ────────────────────────────────────── bad/Greet.roc:3:17
+
+Nothing is named nope in this scope.
+
+hello = |name| nope(name)
+               ^^^^
+
+Is it misspelled, or is there an import missing?
+
+── ✗ package does not compile ──────────────────────────────────────────────────
+
+roc bump failed.
+
+The new package (bad/main.roc) does not compile with this compiler. roc bump
+needs both packages to compile so their public APIs can be compared.
+
+
+### roc bump --old bad --old-version 1.0.0 --expect 1.0.1 v2patch/main.roc
+exit 1, 23 ms
+--- stdout
+--- stderr
+── ✗ name not in scope ────────────────────────────────────── bad/Greet.roc:3:17
+
+Nothing is named nope in this scope.
+
+hello = |name| nope(name)
+               ^^^^
+
+Is it misspelled, or is there an import missing?
+
+── ✗ package does not compile ──────────────────────────────────────────────────
+
+roc bump failed.
+
+The old package (bad/main.roc) does not compile with this compiler. roc bump
+needs both packages to compile so their public APIs can be compared.
+
+
+### roc bump --old v1 --expect 1.0.1 v2patch/main.roc
+exit 1, 12 ms
+--- stdout
+--- stderr
+── ✗ missing old version ───────────────────────────────────────────────────────
+
+roc bump failed.
+
+The old package's version could not be determined. Pass it with --old-version
+<MAJOR.MINOR.PATCH>; it can only be inferred when --old is a URL with a version
+path segment.
+
+
+### roc bump --old v1 --old-version 1.0.0-rc.1 --expect 1.0.1 v2patch/main.roc
+exit 1, 12 ms
+--- stdout
+--- stderr
+── ✗ invalid old version ───────────────────────────────────────────────────────
+
+roc bump failed.
+
+`1.0.0-rc.1` is not a valid version. Versions are MAJOR.MINOR.PATCH, e.g. 1.2.3.
+
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.0.1-rc.1 v2patch/main.roc
+exit 1, 11 ms
+--- stdout
+--- stderr
+── ✗ invalid expected version ──────────────────────────────────────────────────
+
+roc bump failed.
+
+`1.0.1-rc.1` is not a valid version. Versions are MAJOR.MINOR.PATCH, e.g. 1.2.3.
+
+
+### roc bump --old v1 --old-version 1.0.0 --expect 1.0.1 nonexist/main.roc
+exit 1, 15 ms
+--- stdout
+--- stderr
+── ✗ file not found ────────────────────────────────────────────────────────────
+
+I could not find the file nonexist/main.roc.
+
+Make sure the file exists and you do not have any typos in its name or path.
+
+── ✗ package does not compile ──────────────────────────────────────────────────
+
+roc bump failed.
+
+The new package (nonexist/main.roc) does not compile with this compiler. roc
+bump needs both packages to compile so their public APIs can be compared.
+
+
+### roc bump --old http://127.0.0.1:8765/dl/1.0.0/ErABna2KjP41JooC4sF6ZTWvEA1TBTex61HxcZU1VoeX.tar.zst --expect 1.1.0 v2minor/main.roc
+exit 0, 19 ms
+--- stdout
+Comparing http://127.0.0.1:8765/dl/1.0.0/ErABna2KjP41JooC4sF6ZTWvEA1TBTex61HxcZU1VoeX.tar.zst (old, 1.0.0) with v2minor/main.roc (new)...
+
+---- Greet - MINOR ----
+
+    + Greet.bye : Str -> Str
+
+This is a MINOR change.
+
+1.0.0 -> 1.1.0
+
+1.1.0 satisfies the required MINOR bump.
+--- stderr
+
+### roc bump --old http://127.0.0.1:8765/dl/1.0.0/ErABna2KjP41JooC4sF6ZTWvEA1TBTex61HxcZU1VoeX.tar.zst --expect 1.0.1 v2minor/main.roc
+exit 1, 29 ms
+--- stdout
+Comparing http://127.0.0.1:8765/dl/1.0.0/ErABna2KjP41JooC4sF6ZTWvEA1TBTex61HxcZU1VoeX.tar.zst (old, 1.0.0) with v2minor/main.roc (new)...
+
+---- Greet - MINOR ----
+
+    + Greet.bye : Str -> Str
+
+This is a MINOR change.
+
+1.0.0 -> 1.1.0
+--- stderr
+── ✗ insufficient version bump ─────────────────────────────────────────────────
+
+roc bump failed.
+
+This is a MINOR change, so the next version must be at least 1.1.0, but
+--expect was 1.0.1.
+
+
+### roc bump --old http://127.0.0.1:8765/dl/1.0.0/missing.tar.zst --expect 1.0.1 v2minor/main.roc
+exit 1, 20 ms
+--- stdout
+--- stderr
+── ✗ download failed ───────────────────────────────────────────────────────────
+
+Error: InvalidHash.
+
+The url contains an invalid hash.
+
+Platform Url: http://127.0.0.1:8765/dl/1.0.0/missing.tar.zst
+
+Possible Reasons: 
+1. The platform was built with the old Roc (Rust) compiler (alpha4 or older),
+instead of the new Roc (Zig) compiler. The new compiler is available at
+https://github.com/roc-lang/nightlies
+2. The Hash portion of the URL is malformed.
+
+Tips:
+1. If there is a newer version of the platform available, try updating.
+2. Verify the URL and ensure it matches a valid platform release.
+
+
+### roc bump --old http://127.0.0.1:9/dl/1.0.0/x.tar.zst --expect 1.0.1 v2minor/main.roc
+exit 1, 14 ms
+--- stdout
+--- stderr
+── ✗ download failed ───────────────────────────────────────────────────────────
+
+Error: InvalidHash.
+
+The url contains an invalid hash.
+
+Platform Url: http://127.0.0.1:9/dl/1.0.0/x.tar.zst
+
+Possible Reasons: 
+1. The platform was built with the old Roc (Rust) compiler (alpha4 or older),
+instead of the new Roc (Zig) compiler. The new compiler is available at
+https://github.com/roc-lang/nightlies
+2. The Hash portion of the URL is malformed.
+
+Tips:
+1. If there is a newer version of the platform available, try updating.
+2. Verify the URL and ensure it matches a valid platform release.
+
+
+### roc bump --expect 1.0.1 v2patch/main.roc
+exit 1, 13 ms
+--- stdout
+--- stderr
+── ✗ missing flag value ────────────────────────────────────────────────────────
+
+No value was supplied for the --old flag.
+
+
+### roc bump --old ../v1 --old-version 1.0.0 --expect 1.0.1
+exit 1, 20 ms
+--- stdout
+Comparing ../v1 (old, 1.0.0) with main.roc (new)...
+
+---- Greet - MINOR ----
+
+    + Greet.bye : Str -> Str
+
+This is a MINOR change.
+
+1.0.0 -> 1.1.0
+--- stderr
+── ✗ insufficient version bump ─────────────────────────────────────────────────
+
+roc bump failed.
+
+This is a MINOR change, so the next version must be at least 1.1.0, but
+--expect was 1.0.1.
+
+

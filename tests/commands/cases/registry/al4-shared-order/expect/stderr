@@ -1,0 +1,2 @@
+downloading nightly-2026-10-16-5e6f7a8 (1.0 KB)
+tln: error[budget]: the probe budget is spent: probe.max is 2 and 1 unit check did not run. Run the command again to go on (the facts are saved), or set probe.max higher.

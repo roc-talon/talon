@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -71,6 +73,8 @@ unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -78,6 +82,8 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
 read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
 args
+env_all
+tty
 env_all
 clock
 platform
@@ -129,6 +135,8 @@ unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -178,6 +186,8 @@ write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
 env_all
 clock
 platform
@@ -232,6 +242,7 @@ unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -282,6 +293,8 @@ unlock $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -289,6 +302,8 @@ read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/talon/index/github/acme/qux
 read_files $HOME/.cache/roc/talon/index/github/acme/qux/1.meta $HOME/.cache/roc/talon/index/github/acme/qux/1.json
 args
+env_all
+tty
 env_all
 clock
 platform

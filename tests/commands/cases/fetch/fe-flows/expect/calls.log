@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -66,6 +68,8 @@ rename $WORK/h1/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit
 delete $WORK/h1/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.0123456789abcdef.tmp
 read_files $WORK/h1/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -139,6 +143,8 @@ db_query $WORK/h2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 read_files $WORK/h2/.cache/roc/talon/index/github/acme/json/2.2.0.roc-version
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -205,6 +211,8 @@ spawn_all limit=8
 rename $WORK/h3/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.0123456789abcdef.tmp/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit $WORK/h3/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit
 delete $WORK/h3/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit.0123456789abcdef.tmp
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -274,6 +282,8 @@ delete $WORK/h4/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit
 copy_tree $WORK/h4/.cache/roc/packages/6GazBn4DW3GsrGekgHDHGQoCvUZmga59MLqJGPQsFCit $PROJECT/p1/.talon/patches/json
 write_atomic $PROJECT/p1/talon.toml
 args
+env_all
+tty
 env_all
 clock
 cwd

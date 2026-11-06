@@ -1,0 +1,7 @@
+@ SELECT hex(substr(n.value, 1, 1)) AS h, c.nightly, c.target, c.source, c.result, c.error_digest, c.time, c.log_index FROM compat c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.nightly, c.target, c.source
+22	5571556846250	0	0	0	\N	1767225602000	\N
+22	5571556846250	0	1	0	\N	1790000000000	6
+33	5571556846250	0	0	0	\N	1767225602000	\N
+66	5571556846250	0	0	0	\N	1767225602000	\N
+@ SELECT nightly, target, upto_log_index, time FROM sweeps ORDER BY nightly, target
+5571556846250	0	8	1767225602000

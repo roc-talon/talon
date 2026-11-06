@@ -1,0 +1,16 @@
+Slice 206e (sub-slice 1) test step, revert check (2026-11-03). A private green reference (a copy of cli/, packages/, tests/commands, tests/unit with the code of the
+sub-slice: Opts.check_registry, Install, Verify, Update.request_of, VerifyFlow, 2 exports of InstallFlow) passed l0-1, l0-6, l0-7 and 310 of 315 L2 cases
+(tool/rm1, rm2, rm3, rm5, rm7 fail only because of the private TMPDIR; they fail the same way on the unchanged code). It was mutated 7 times, one at a time,
+and each mutation ran only the tests it touches. The reference, the mutants, the builds and the mutate script were deleted (TW18).
+
+| # | Mutation | Caught by |
+| --- | --- | --- |
+| M1 | verify does not read the registry setting (the request keeps `Setting`, so no query) | L2 al2-verify-query (stdout, stderr, tree) |
+| M2 | verify searches with the request before the query (the old `PickFlow.pick!`): facts not from the answer | L2 al2-verify-query (Fx calls: archive reads) |
+| M3 | verify sends no window (the held pin is not set in the query) | L2 al2-verify-query (Fx calls: request body) |
+| M4 | verify has no log size in its outcome | L2 al2-verify-query run 3 (`log_size`) |
+| M5 | the refusal is lifted for `install <names>` too | L0 OptsTest |
+| M6 | the refusal is lifted for `upgrade` with a free nightly (no names, `roc`) | L0 UpgradeTest |
+| M7 | `upgrade` with no names reads the registry setting (config.toml) | L2 al2-upgrade-query run 4 |
+
+7 of 7 caught.

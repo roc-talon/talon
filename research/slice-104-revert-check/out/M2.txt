@@ -1,0 +1,290 @@
+
+── ✗ fail ───────────────────────────── packages/records/tests/WireTest.roc:36:1
+
+expect (Release.decode(release_json) == Ok(release_row)) and (Release.decode(js("{'log_index':8,'hash':'H2','group':'${form}','series':'0.25','version':'0.25.1','url':'u','tag':null,'repo':null,'published_at':1000,'yanked':true,'yank_reason':'broken','withdrawn':null}")) == Ok({ ..release_row, log_index: 8, hash: "H2", series: "0.25", version: "0.25.1", url: "u", tag: Err(None), roc_version: Err(None), repo: Err(None), published_at: 1000, yanked: Bool.True, yank_reason: Ok("broken"), withdrawn: Err(None) }))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mentioned values:
+release_row = {
+	log_index: 7,
+	hash: "H1",
+	group: form,
+	series: "4",
+	version: "4.2.0",
+	url: "https://${form.replace_each("{v}", "4.2.0")}H1.tar.zst",
+	tag: Ok("v4.2.0"),
+	roc_version: Ok("nightly-2026-10-09-258ab27"),
+	repo: Ok("roc-lang/unicode"),
+	published_at: 1760000000000,
+	yanked: Bool.False,
+	yank_reason: Err(None),
+	withdrawn: Ok("edited"),
+}
+form = "github.com/roc-lang/unicode/releases/download/{v}/"
+release_json =
+js("{'log_index':7,'hash':'H1','group':'${form}','series':'4','version':'4.2.0',
+'url':'https://${form.replace_each("{v}",
+"4.2.0")}H1.tar.zst','tag':'v4.2.0','roc_version':'nightly-2026-10-09-258ab27','
+repo':'roc-lang/unicode','published_at':1760000000000,'yanked':false,'yank_reaso
+n':null,'withdrawn':'edited'}")
+
+
+── ✗ fail ───────────────────────────── packages/records/tests/WireTest.roc:38:1
+
+expect {
+    text = Release.encode({ ..release_row, repo: Err(None) })
+    text.contains(js("'group':'${form}'")) and text.contains("\"series\":\"4\"") and text.contains("\"repo\":null") and text.contains("\"yank_reason\":null") and text.contains("\"published_at\":1760000000000") and Release.decode(text) == Ok({ ..release_row, repo: Err(None) })
+}
+
+Mentioned values:
+release_row = {
+	log_index: 7,
+	hash: "H1",
+	group: form,
+	series: "4",
+	version: "4.2.0",
+	url: "https://${form.replace_each("{v}", "4.2.0")}H1.tar.zst",
+	tag: Ok("v4.2.0"),
+	roc_version: Ok("nightly-2026-10-09-258ab27"),
+	repo: Ok("roc-lang/unicode"),
+	published_at: 1760000000000,
+	yanked: Bool.False,
+	yank_reason: Err(None),
+	withdrawn: Ok("edited"),
+}
+form = "github.com/roc-lang/unicode/releases/download/{v}/"
+
+
+── ✗ fail ───────────────────────────── packages/records/tests/WireTest.roc:59:1
+
+expect {
+    text = Artifact.encode(artifact_row)
+    text.contains("\"exposed\":[\"Json\",\"Parser\"]") and text.contains("\"platform_hash\":null") and text.contains("\"version\":null") and text.contains("\"size\":1234") and text.contains("\"kind\":\"package\"") and Artifact.decode(text) == Ok(artifact_row)
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+
+
+── ✗ fail ───────────────────────────── packages/records/tests/WireTest.roc:63:1
+
+expect {
+    with_platform = { ..artifact_row, kind: App, platform_hash: Ok("HP"), roc_pin: Ok("nightly-2026-10-09-258ab27"), target_names: ["wasm32", "x64linux"] }
+    Artifact.decode(Artifact.encode(with_platform)) == Ok(with_platform)
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:120:1
+
+expect Closure.decode_answer(answer_json) == Ok(answer_row)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mentioned values:
+answer_row = {
+	artifacts: [],
+	releases: [release_row],
+	epochs: [{ target: "x64linux", from: "nightly-2026-10-09-258ab27", to:
+"nightly-2026-10-14-38a3029" }],
+	runs: [{ hash: "H1", target: "any", source: Bot, result: Fail, error_digest:
+"e1", from: "nightly-2026-10-09-258ab27", to: "nightly-2026-10-14-38a3029" }],
+	nearest: [{ hash: "H1", target: "any", source: Author, result: Pass,
+error_digest: "", nightly: "nightly-2026-10-01-1111111", side: Before }],
+	hints: [{ hash: "H1", nightly: "nightly-2026-10-09-258ab27", target:
+"x64linux", pass_count: 3, fail_count: 0, crash_count: 1 }],
+	log_size: 9007199254740993,
+	unknown: ["H7"],
+	checked: [{ name: "roc-lang/unicode", checked_at: Err(None), stale: Bool.True
+}],
+	repos: [
+		{ name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"),
+state_at: 1760000001000 },
+		{ name: "a/b", state: Active, successor: Err(None), state_at: 5 },
+	],
+}
+answer_json =
+js("{'artifacts':[],'releases':[${release_json}],'epochs':[{'target':'x64linux',
+'from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'runs':[
+{'hash':'H1','target':'any','source':'bot','result':'fail','error_digest':'e1','
+from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'nearest'
+:[{'hash':'H1','target':'any','source':'author','result':'pass','error_digest':'
+','nightly':'nightly-2026-10-01-1111111','side':'before'}],'hints':[{'hash':'H1'
+,'nightly':'nightly-2026-10-09-258ab27','target':'x64linux','pass_count':3,'fail
+_count':0,'crash_count':1}],'log_size':9007199254740993,'unknown':['H7'],'checke
+d':[{'name':'roc-lang/unicode','checked_at':null,'stale':true}],'repos':[{'name'
+:'roc-lang/unicode','state':'moved','successor':'acme/unicode','state_at':176000
+0001000},{'name':'a/b','state':'active','successor':null,'state_at':5}]}")
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:122:1
+
+expect {
+    text = Closure.encode_answer(answer_row)
+    names = ["'log_size':9007199254740993", "'source':'bot'", "'result':'fail'", "'side':'before'", "'state':'moved'", "'checked_at':null", "'successor':null", "'error_digest':'e1'", "'pass_count':3"]
+    names.all(|n| text.contains(js(n))) and Closure.decode_answer(text) == Ok(answer_row)
+}
+
+Mentioned values:
+answer_row = {
+	artifacts: [],
+	releases: [release_row],
+	epochs: [{ target: "x64linux", from: "nightly-2026-10-09-258ab27", to:
+"nightly-2026-10-14-38a3029" }],
+	runs: [{ hash: "H1", target: "any", source: Bot, result: Fail, error_digest:
+"e1", from: "nightly-2026-10-09-258ab27", to: "nightly-2026-10-14-38a3029" }],
+	nearest: [{ hash: "H1", target: "any", source: Author, result: Pass,
+error_digest: "", nightly: "nightly-2026-10-01-1111111", side: Before }],
+	hints: [{ hash: "H1", nightly: "nightly-2026-10-09-258ab27", target:
+"x64linux", pass_count: 3, fail_count: 0, crash_count: 1 }],
+	log_size: 9007199254740993,
+	unknown: ["H7"],
+	checked: [{ name: "roc-lang/unicode", checked_at: Err(None), stale: Bool.True
+}],
+	repos: [
+		{ name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"),
+state_at: 1760000001000 },
+		{ name: "a/b", state: Active, successor: Err(None), state_at: 5 },
+	],
+}
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:135:1
+
+expect {
+    unsorted = { ..artifact_row, kind: Platform, deps: artifact_row.deps.rev(), target_names: ["x64linux", "arm64mac", "wasm32"] }
+    text = Artifact.encode(unsorted)
+    Artifact.decode(text) == Ok({ ..unsorted, deps: artifact_row.deps, target_names: ["arm64mac", "wasm32", "x64linux"] }) and text.contains("\"target_names\":[\"arm64mac\",\"wasm32\",\"x64linux\"]") and Artifact.encode(artifact_row) == Artifact.encode({ ..artifact_row, deps: artifact_row.deps.rev() })
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:142:1
+
+expect {
+    good = Artifact.encode(artifact_row)
+    is_bad = |t| match Artifact.decode(t) {
+        Err(BadJson(_)) => Bool.True
+        _ => Bool.False
+    }
+    is_bad(good.replace_first("\"kind\":\"package\"", "\"kind\":\"library\"")) and is_bad(good.replace_first("\"size\":1234,", "")) and is_bad(good.replace_first("\"hash\":\"H1\"", "\"hash\":null")) and Artifact.decode(good.replace_first("\"roc_pin\":null,", "")) == Ok(artifact_row)
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:158:1
+
+expect {
+    req_bad = |t| match Closure.decode_request(t) {
+        Err(BadJson(_)) => Bool.True
+        _ => Bool.False
+    }
+    ans_bad = |t| match Closure.decode_answer(t) {
+        Err(BadJson(_)) => Bool.True
+        _ => Bool.False
+    }
+    req_bad(js("{'hashes':[]}")) and req_bad(js("{'groups':[]}")) and req_bad(js("{'groups':null,'hashes':[]}")) and ans_bad(answer_json.replace_first(js("'log_size':9007199254740993,"), "")) and ans_bad(answer_json.replace_first(js("'artifacts':[],"), "")) and ans_bad(answer_json.replace_first(js("'log_size':9007199254740993"), js("'log_size':null"))) and Closure.decode_request(js("{'groups':[{'group':'g','series':null,'range':null}],'hashes':[],'compilers':null}")) == Ok({ groups: [{ group: "g", series: Err(None), range: Err(None) }], hashes: [], compilers: Err(None) })
+}
+
+Mentioned values:
+answer_json =
+js("{'artifacts':[],'releases':[${release_json}],'epochs':[{'target':'x64linux',
+'from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'runs':[
+{'hash':'H1','target':'any','source':'bot','result':'fail','error_digest':'e1','
+from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'nearest'
+:[{'hash':'H1','target':'any','source':'author','result':'pass','error_digest':'
+','nightly':'nightly-2026-10-01-1111111','side':'before'}],'hints':[{'hash':'H1'
+,'nightly':'nightly-2026-10-09-258ab27','target':'x64linux','pass_count':3,'fail
+_count':0,'crash_count':1}],'log_size':9007199254740993,'unknown':['H7'],'checke
+d':[{'name':'roc-lang/unicode','checked_at':null,'stale':true}],'repos':[{'name'
+:'roc-lang/unicode','state':'moved','successor':'acme/unicode','state_at':176000
+0001000},{'name':'a/b','state':'active','successor':null,'state_at':5}]}")
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:171:1
+
+expect {
+    c1 = { name: "roc-lang/unicode", checked_at: Ok(1760000000000), stale: Bool.False }
+    c2 = { name: "a/b", checked_at: Err(None), stale: Bool.True }
+    Closure.encode_checked(c1) == js("{'checked_at':1760000000000,'name':'roc-lang/unicode','stale':false}") and Closure.encode_checked(c2) == js("{'checked_at':null,'name':'a/b','stale':true}") and Closure.decode_checked(Closure.encode_checked(c1)) == Ok(c1) and Closure.decode_checked(Closure.encode_checked(c2)) == Ok(c2) and Closure.decode_checked(js("{'name':'a/b','stale':true,'extra':1}")) == Ok(c2)
+}
+
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:177:1
+
+expect {
+    r1 = { name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"), state_at: 1760000001000 }
+    r2 = { name: "a/b", state: Active, successor: Err(None), state_at: 5 }
+    r3 = { name: "c/d", state: Missing, successor: Err(None), state_at: 0 }
+    Closure.encode_repo(r1) == js("{'name':'roc-lang/unicode','state':'moved','state_at':1760000001000,'successor':'acme/unicode'}") and Closure.encode_repo(r2) == js("{'name':'a/b','state':'active','state_at':5,'successor':null}") and [r1, r2, r3].all(|r| Closure.decode_repo(Closure.encode_repo(r)) == Ok(r)) and Closure.decode_repo(js("{'name':'a/b','state':'active','state_at':5}")) == Ok(r2)
+}
+
+Ran 38 tests in 570.2 ms.:
+    27 passed
+    11 failed
+    0 compiler errors

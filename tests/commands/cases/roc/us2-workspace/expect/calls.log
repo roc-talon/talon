@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -85,6 +88,9 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/c/main.roc
 write_atomic $PROJECT/apps/a/main.roc $PROJECT/apps/b/main.roc $PROJECT/apps/c/main.roc
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd

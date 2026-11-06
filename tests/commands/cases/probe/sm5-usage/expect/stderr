@@ -1,0 +1,11 @@
+tln: error[usage]: tln probe --smoke needs a header alias or a release URL
+tln: error[usage]: tln probe --smoke cannot run with --range
+tln: error[usage]: tln probe --smoke cannot run with --share
+tln: error[usage]: tln probe --smoke needs a header alias or a release URL, not a bundle file: the smoke app names the URL of the platform
+tln: error[usage]: tln probe --smoke takes one platform: a header alias or a release URL
+tln: error[usage]: flag '--target' works only with --smoke
+tln: error[usage]: 'riscv' is not a target of 'https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst': it has the targets x64musl, arm64musl, x64glibc, wasm32
+tln: error[usage]: 'https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst' is not a platform: tln probe --smoke builds the smoke app of a platform
+tln: error[usage]: 'https://github.com/acme/pfx/releases/download/latest/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst' is not a release URL: it needs one version X.Y.Z (R-DI5)
+tln: error[usage]: flag '--file' does not work with a release URL: it uses no project
+tln: error[usage]: 'https://github.com/acme/pfn/releases/download/0.5.0/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst' has no target to build: the header of the platform has no targets

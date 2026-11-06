@@ -1,0 +1,5 @@
+Slice 201b revert check (test step). A private reference (reference/tree, a copy of cli, packages and tests/unit with the one change to Registry.problem_fail, deleted after) and 3 hand mutations. Each line: the result of l0-8.roc.
+reference: All (186) tests passed in 3535.6 ms. (cached) 
+M1 busy text for any 503 (type not checked): ── ✗ fail ─────────────────────────────────────────────── RegistryTest.roc:271:1     185 passed     1 failed 
+M2 busy text for any 5xx with the busy type: ── ✗ fail ─────────────────────────────────────────────── RegistryTest.roc:275:1     185 passed     1 failed 
+M3 Retry-After ignored: ── ✗ fail ─────────────────────────────────────────────── RegistryTest.roc:243:1 ── ✗ fail ─────────────────────────────────────────────── RegistryTest.roc:245:1 ── ✗ fail ─────────────────────────────────────────────── RegistryTest.roc:247:1     183 passed     3 failed 

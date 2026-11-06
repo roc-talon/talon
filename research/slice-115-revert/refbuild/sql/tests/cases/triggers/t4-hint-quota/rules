@@ -1,0 +1,4 @@
+Slice 103, case t4-hint-quota (Q1, Q2, W1 to W5 of research/d1-contrib/ on the integer tables, with the daily limit of 200,000 and times in ms).
+  R-CT13: an AFTER INSERT trigger on contributions adds 1 to hint_days.counted of the UTC day of the row (day = time / 86400000, R-RE24, R-RE26) and RAISE(ABORT, 'hint-quota') when counted is above 200000. The abort stops the whole statement, with the trigger writes.
+  R-RE12, R-RE13 row 3, R-CT4: the same trigger adds 1 to pass_count, fail_count or crash_count (result 0, 1, 3, R-IK7) of the compat_hints row of (artifact, nightly, target, talon_version). A row that ON CONFLICT DO NOTHING skips fires no trigger, so it counts nothing. Another talon_version is another row.
+  R-RE6: a hint_days row changes only in counted.

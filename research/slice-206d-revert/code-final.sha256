@@ -1,0 +1,4 @@
+ec105fe17d01669969069dd3b915254f89450149faca40cf09adfa6da910acfe  cli/lib/ClosureIndex.roc
+cba1226e0fe3eeea5de7ac0dfc55a4a13b25445de12bd93920be62f3f9b1e708  cli/lib/PickIndex.roc
+b8c893852f498167bdc23d7646245ac7b19c5c641853abc58a28cba71f110181  cli/lib/InstallFlow.roc
+68a07080fb06cdc1195645b1a75ad89f178a8ac9c01b90cd2e5ab4774ed216e8  cli/lib/PickFlow.roc

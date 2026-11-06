@@ -1,0 +1,6 @@
+env_all
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["CESbRHjXTgergRSXK2ytdTtuzcgnvLTbFX2LZGzvsCgF"]}
+programs curl

@@ -1,0 +1,4 @@
+1: run 1: the read by id gives 404: missing, the event, repo-missing on the 3 releases of both names, and (Q376) etag and repo_etag NULL on BOTH repo_checks rows of the repository id. No list read
+2: the job privatized of repository 800 (private): the same withdraw statements, so its etag and repo_etag are NULL too (Q376, R-PU33)
+3: run 2, 1 h later: public again. No if-none-match on either read (both etags are NULL), so the list is a 200. found (Q378: active, one event), then the clear of repo-missing of 1.0.0 and of 0.9.0 of the moved name (candidates with the recorded asset, R-PU24, Q379). 2.0.0 is not in the list: it keeps repo-missing and its time (Q339). Both etags stored
+4: run 3, 1 h later: 304 for both reads (the stored etags are sent): no write but the pass, no second found event (R-TP19 "No change")

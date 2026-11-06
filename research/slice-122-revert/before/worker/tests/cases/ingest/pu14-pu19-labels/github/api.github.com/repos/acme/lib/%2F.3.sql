@@ -1,0 +1,3 @@
+INSERT INTO names (id, kind, value) VALUES (3833141144405703952, 1, X'79FF557CBBD2843B285344E890A93CBF3D706287F2B219E8B668694DAA805FA1');
+INSERT INTO log (idx, grp, version, hash, time) VALUES (3, 'github.com/acme/lib/releases/download/{v}/', '2.0.0', '9DE9hna44rZ4E9gKfPtmB6n1Av73eFbi7kzV2iCwdWgQ', 1767225600000);
+INSERT INTO releases (log_index, form, version, version_text, artifact, repo, url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at) VALUES (3, 1867293425818598420, -9222809086901288961, '', 3833141144405703952, 261373930947811203, 'https://github.com/acme/lib/releases/download/2.0.0/9DE9hna44rZ4E9gKfPtmB6n1Av73eFbi7kzV2iCwdWgQ.tar.zst', '2.0.0', NULL, 1792497600000, 0, NULL, NULL);

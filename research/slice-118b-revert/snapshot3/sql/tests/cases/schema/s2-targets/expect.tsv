@@ -1,0 +1,40 @@
+@ SELECT target, name FROM targets ORDER BY target
+0	any
+1	x64mac
+2	x64win
+3	x64mingw
+4	x64freebsd
+5	x64openbsd
+6	x64netbsd
+7	x64musl
+8	x64glibc
+9	x64linux
+10	x64elf
+11	x64v1mac
+12	x64v1win
+13	x64v1mingw
+14	x64v1freebsd
+15	x64v1openbsd
+16	x64v1netbsd
+17	x64v1musl
+18	x64v1glibc
+19	x64v1linux
+20	x64v1elf
+21	arm64mac
+22	arm64win
+23	arm64mingw
+24	arm64linux
+25	arm64musl
+26	arm64glibc
+27	arm64v1win
+28	arm64v1mingw
+29	arm64v1linux
+30	arm64v1musl
+31	arm64v1glibc
+32	arm32linux
+33	arm32musl
+34	wasm32
+35	wasm32v1
+36	riscv64
+@ SELECT count(*), count(DISTINCT name), min(target), max(target) FROM targets
+37	37	0	36

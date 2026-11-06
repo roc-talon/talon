@@ -1,0 +1,2 @@
+== tln add acme/lib --registry http://127.0.0.1:$PORT --no-check --dry-run
+exit 2

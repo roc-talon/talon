@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -39,6 +41,8 @@ db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/apps/a/main.roc
@@ -64,6 +68,7 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=12
 args
+env_all
 env_all
 clock
 cwd
@@ -91,6 +96,8 @@ db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/ws2/apps/b/main.roc
@@ -116,6 +123,8 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -145,6 +154,8 @@ read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=6
 args
+env_all
+tty
 env_all
 clock
 cwd

@@ -1,0 +1,3 @@
+tln: error[network]: the registry http://127.0.0.1:9 gave no answer: no answer in 20 s. Try again later.
+tln: error[network]: the registry answered 429 (/errors/rate-limited). Try again in 7 s.
+tln: error[network]: the registry answered 502 (/errors/upstream). Try again later.

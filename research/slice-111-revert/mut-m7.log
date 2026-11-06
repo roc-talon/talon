@@ -1,0 +1,77 @@
+mod_text("Zeta"))).concat(file("Alpha.roc",
+mod_text("Alpha"))).concat(file("targets/x64mac/libhost.a", "not a target"))
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:319:1
+
+expect {
+    var $many = []
+    for i in 0.U64..<10000 {
+        $many = $many.concat(header_block("m${i.to_str()}", "", '0', 0, ""))
+    }
+    many = $many
+    read(pkg_members.concat(many).concat(end2)) == Err(BadTar(TooManyMembers({ offset: pkg_members.len() + 512 * 9996, limit: 10000 })))
+}
+
+Mentioned values:
+pkg_members = file("main.roc", pkg_header).concat(file("Zeta.roc",
+mod_text("Zeta"))).concat(file("Alpha.roc",
+mod_text("Alpha"))).concat(file("targets/x64mac/libhost.a", "not a target"))
+end2 = List.repeat(0, 1024)
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:339:1
+
+expect {
+    lone = pkg_members.concat(List.repeat(0, 512)).concat(file("Late.roc", "x")).concat(end2)
+    after = pkg_tar.append('x')
+    cut = pkg_members.concat(header_block("Cut.roc", "", '0', 1000, "")).concat(List.repeat(65, 100))
+    [read(lone), read(after), read(cut)]
+        == [
+            Err(BadTar(LoneZeroBlock({ offset: pkg_members.len() + 512 }))),
+            Err(BadTar(DataAfterEnd({ offset: pkg_tar.len() }))),
+            Err(BadTar(Truncated({ offset: cut.len(), inside: Data }))),
+        ]
+}
+
+Mentioned values:
+pkg_members = file("main.roc", pkg_header).concat(file("Zeta.roc",
+mod_text("Zeta"))).concat(file("Alpha.roc",
+mod_text("Alpha"))).concat(file("targets/x64mac/libhost.a", "not a target"))
+pkg_tar = pkg_members.concat(end2)
+end2 = List.repeat(0, 1024)
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:370:1
+
+expect {
+    two = with_extra(link_member("evil", '2', "x").concat(file("src/../x.roc", "x")))
+    refused = ArchiveRead.empty().push(two)
+    ended = ArchiveRead.empty().push(pkg_tar)
+    (read(two), refused.reading(), ended.reading()) == (Err(NotAFile({ path: "evil", kind: Symlink })), Bool.False, Bool.True)
+}
+
+Mentioned values:
+pkg_tar = pkg_members.concat(end2)
+
+Ran 27 tests in 1061.9 ms.:
+    20 passed
+    7 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2709 ms)
+PASS archive/pu38-made-kinds (2643 ms)
+PASS archive/pu38-paths-and-header (2694 ms)
+FAIL archive/pu38-real-bundles (2641 ms)
+    request 2: status: expected 200, got 422
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: json.hash: expected "f352LLRKJCZ4JJVEocp3H9e4e6Sxa6Ym5CxZ1GZCpfd", got missing
+    request 2: json.kind: expected "platform", got missing
+    request 2: json.exposed: expected an array of 38 items, got missing
+    request 2: json.platform_hash: expected null, got missing
+    request 2: json.roc_pin: expected null, got missing
+    request 2: json.size: expected 228076, got missing
+    request 2: json.deps: expected an array of 2 items, got missing
+    request 2: json.target_names: expected an array of 1 items, got missing
+PASS archive/pu38-size (4688 ms)
+PASS archive/pu38-window (2639 ms)
+w2: 5 passed, 1 failed

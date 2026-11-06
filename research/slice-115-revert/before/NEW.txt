@@ -1,0 +1,11 @@
+worker/lib/Compat.roc
+worker/lib/CompatReads.roc
+worker/CompatRoutes.roc
+worker/CompatReadRoutes.roc
+worker/tests/unit/CompatTest.roc
+worker/tests/unit/CompatReadsTest.roc
+sql/tests/compat.mjs
+sql/tests/cases/compat/
+worker/tests/cases/compat/
+docs/slices/115a-compat-post.md
+docs/slices/115b-compat-reads.md

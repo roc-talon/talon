@@ -1,0 +1,8 @@
+# Slice 072b (R-SO14, R-LF1): the fake downloads of the packages (an unbundle makes the dir of the hash with the main.roc of the fixture package in fx/pkgs; the first rule whose needle is in the arguments answers, so the unbundle rules come first), then a download of a package (.tar.zst: the file is {out}) and of a compiler (.tar.gz), its extract and its chmod. The compat check of a new compiler (roc check) has no rule: it exits with 99, and its code is not read.
+unbundle 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst	0	-	-	dir:{cwd}/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK;copy:{cwd}/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc={w}/fx/pkgs/acme_pfx_0.1.1.platform
+unbundle 8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.tar.zst	0	-	-	dir:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r;copy:{cwd}/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r/main.roc={w}/fx/pkgs/acme_core_1.0.0.roc
+unbundle ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.tar.zst	0	-	-	dir:{cwd}/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L;copy:{cwd}/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc={w}/fx/pkgs/acme_lex_1.0.0.roc
+.tar.zst	0	-	-	file:{out}
+.tar.gz	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-

@@ -1,0 +1,7 @@
+Slice 105, case v1-order-bounds-filter (cases S4 and S5 of research/semver-key/ on the real table releases).
+  R-IK5 column: version holds key XOR 2^63 as a signed INTEGER, bound as text (R-IK2), read with CAST(version AS TEXT). ORDER BY version is the order of the keys. Versions with one key
+    (1.2.3-alpha10, 1.2.3-alpha4, 1.2.3-alpha.10, 1.2.3-alpha.4, and 1.2.3 with 1.2.3+build.5) come in the order of version_text: the Worker sorts the ties with Version.sort_precedence (R-IK5 property 3).
+  R-IK5 version_text: empty for an exact key. UNIQUE (form, version, version_text) holds 65535.0.0 and 70000.1.2 (one saturated key).
+  R-IK5 ?series=: BETWEEN the series bounds. Series 65535 gives 70000.1.2 too: the Worker checks Version.series_of of each row.
+  R-IK5 range: BETWEEN the bounds of ^1.2.3 gives a superset: 2.0.0-alpha, 2.0.0-rc and 2.0.0 are in, and only Version.filter_range removes them.
+  R-AP41 row 4: the list of rows goes in as one JSON parameter.

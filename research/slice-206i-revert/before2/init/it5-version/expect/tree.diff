@@ -1,0 +1,170 @@
+--- project/v1/.github/workflows/ci.yml
++++ project/v1/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/v1/main.roc
++++ project/v1/main.roc
+@@ -0,0 +1,6 @@
++app [main!] {
++	pf: platform "https://github.com/acme/pfx/releases/download/1.2.0/539VFTyu6WmbCR6quL3VNv8PsbkPg6TgjqhZ3aMGRkFA.tar.zst",
++	roc: "nightly-2026-10-11-1f1f1f1",
++}
++
++main! = || crash "write the app"
+--- project/v2/.github/workflows/ci.yml
++++ project/v2/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/v2/main.roc
++++ project/v2/main.roc
+@@ -0,0 +1,6 @@
++app [main!] {
++	pf: platform "https://github.com/acme/pfy/releases/download/1.2.0/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
++}
++
++main! = || crash "write the app"
+--- project/v3/.github/workflows/ci.yml
++++ project/v3/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/v3/main.roc
++++ project/v3/main.roc
+@@ -0,0 +1,6 @@
++app [main!] {
++	pf: platform "https://github.com/acme/pfy/releases/download/1.2.0/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
++}
++
++main! = || crash "write the app"
+--- project/v8/.github/workflows/ci.yml
++++ project/v8/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/v8/main.roc
++++ project/v8/main.roc
+@@ -0,0 +1,11 @@
++app [main!] {
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/4oYDdxXzoz3DnHac4i8rR1FuqumnXbDSy9qiN96z18K5.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
++}
++
++import pf.Stdout
++
++main! = |_args| {
++	Stdout.line!("Hello, World!")?
++	Ok({})
++}
+--- project/v9/.github/workflows/ci.yml
++++ project/v9/.github/workflows/ci.yml
+@@ -0,0 +1,21 @@
++name: CI
++
++on:
++  push:
++  pull_request:
++
++jobs:
++  check:
++    runs-on: ubuntu-latest
++    env:
++      TALON_AUTO_INSTALL: "yes"
++    steps:
++      - uses: actions/checkout@v4
++      - name: Install Talon
++        run: curl -fsSL https://github.com/roc-talon/talon/releases/download/v0.0.1/install.sh | sh -s -- --yes --version 0.0.1
++      - name: Install packages
++        run: tln install --frozen
++      - name: Check
++        run: roc check
++      - name: Test
++        run: roc test
+--- project/v9/main.roc
++++ project/v9/main.roc
+@@ -0,0 +1,6 @@
++app [main!] {
++	pf: platform "https://github.com/acme/pfy/releases/download/1.2.0/Fe7fYntFqeAgVNhWempfobyNdQhqff6ScpAhib8Dq6Dp.tar.zst",
++	roc: "nightly-2026-10-12-2a2a2a2",
++}
++
++main! = || crash "write the app"

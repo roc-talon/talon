@@ -44,14 +44,26 @@ expect {
 		(["update", "-i", "json"], Err(pick_names)),
 		(["update", "--frozen", "-i", "json"], Err(frozen)),
 		(["update", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
-		(["update", "--registry", "https://r.example", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		(["update", "--registry", "https://r.example", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
 	]
 	bad = rows.keep_if(|(words, want)| update_view(words) != want).map(|(words, _)| (words, update_view(words)))
 	dbg bad
 	bad == []
 }
 
-# R-CM11 R-FL14 R-FL5 R-FL8 R-FL9 R-FL10 R-FL7 R-EC2 R-E4 R-LB2 (question Q6 of slice 009): the options of `verify`. `--frozen` and `--dry-run` are rejected (it writes nothing), a name is rejected, and the order of the checks is: the registry and the strategy, `--frozen`, `--dry-run`, a name. `--no-check` and `--strategy` are read.
+# R-FL5 R-RG1 R-RG7 (slice 206b): `update` and `up` take a registry URL. `Update.read` does not check the text: the flow reads the setting with `config.toml` (`IndexQuery.setting`), so a bad text is the failure of the flow, not of the options.
+expect {
+	rows = [
+		(["update", "--registry", "https://r.example"], Ok(([], flags([]), Err(Unset), Err(Unset), Err(NoFlag)))),
+		(["up", "--registry", "http://127.0.0.1:9", "--snapshot", "log:30", "json"], Ok((["json"], flags([]), Err(Unset), Ok("log:30"), Err(NoFlag)))),
+		(["update", "--registry", "ftp://bad", "--dry-run"], Ok(([], flags([1]), Err(Unset), Err(Unset), Err(NoFlag)))),
+	]
+	bad = rows.keep_if(|(words, want)| update_view(words) != want).map(|(words, _)| (words, update_view(words)))
+	dbg bad
+	bad == []
+}
+
+# R-CM11 R-FL14 R-FL5 R-FL8 R-FL9 R-FL10 R-FL7 R-EC2 R-E4 R-LB2 R-RG1 R-AL2 (question Q6 of slice 009; slice 206e): the options of `verify`. `--frozen` and `--dry-run` are rejected (it writes nothing), a name is rejected, and the order of the checks is: the registry and the strategy, `--frozen`, `--dry-run`, a name. `--no-check` and `--strategy` are read.
 expect {
 	rows = [
 		(["verify"], Ok(([], [Bool.False, Bool.False, Bool.False, Bool.False], Err(Unset), Err(Unset)))),
@@ -64,7 +76,10 @@ expect {
 		(["verify", "json"], Err("tln: error[usage]: tln verify takes no name")),
 		(["verify", "--dry-run", "json"], Err("tln: error[usage]: tln verify writes nothing, so it rejects --dry-run")),
 		(["verify", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
-		(["verify", "--registry", "https://r.example", "--frozen"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		# Slice 206e (R-FL5, R-RG1): `verify` takes a registry URL, so the first failure of this line is `--frozen`.
+		(["verify", "--registry", "https://r.example", "--frozen"], Err("tln: error[usage]: tln verify writes nothing, so it rejects --frozen")),
+		(["verify", "--registry", "https://r.example", "--no-check"], Ok(([], [Bool.False, Bool.False, Bool.True, Bool.False], Err(Unset), Err(Unset)))),
+		(["verify", "--registry", "ftp://bad"], Ok(([], [Bool.False, Bool.False, Bool.False, Bool.False], Err(Unset), Err(Unset)))),
 	]
 	bad = rows.keep_if(|(words, want)| verify_view(words) != want).map(|(words, _)| (words, verify_view(words)))
 	dbg bad

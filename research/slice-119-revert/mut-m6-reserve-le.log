@@ -1,0 +1,26 @@
+
+── ✗ fail ─────────────────────────────────── tests/unit/ReconcileTest.roc:193:1
+
+expect {
+    h = |remaining, limit, reset| Reconcile.reserve({ remaining, limit, reset })
+    under = h(Ok("499"), Ok("5000"), Ok("1767229200")) == Ok(1_767_229_200_000) and h(Ok("0"), Ok("5000"), Ok("1767229200")) == Ok(1_767_229_200_000) and h(Ok("9"), Ok("100"), Ok("7")) == Ok(7000)
+    edge = h(Ok("500"), Ok("5000"), Ok("1767229200")) == Err(Go) and h(Ok("10"), Ok("100"), Ok("7")) == Err(Go)
+    above = h(Ok("4999"), Ok("5000"), Ok("1767229200")) == Err(Go)
+    missing = h(Err(None), Ok("5000"), Ok("1767229200")) == Err(Go) and h(Ok("1"), Err(None), Ok("1767229200")) == Err(Go) and h(Ok("1"), Ok("5000"), Err(None)) == Err(Go)
+    bad = h(Ok("x"), Ok("5000"), Ok("1767229200")) == Err(Go) and h(Ok("1"), Ok("-5"), Ok("1767229200")) == Err(Go) and h(Ok("1"), Ok("5000"), Ok("soon")) == Err(Go) and h(Ok(""), Ok("5000"), Ok("1")) == Err(Go)
+    under and edge and above and missing and bad
+}
+
+Ran 26 tests in 407.7 ms.:
+    25 passed
+    1 failed
+    0 compiler errors
+PASS reconcile/pu21-poll-job (2805 ms)
+PASS reconcile/pu23-list (3539 ms)
+PASS reconcile/pu25-reserve (2615 ms)
+PASS reconcile/pu36-overlap (2748 ms)
+PASS reconcile/pu37-backoff (2945 ms)
+PASS reconcile/pu37-etag-effects (2916 ms)
+PASS webhook/pu13-index-new (994 ms)
+PASS webhook/pu17-withdraw-clear (1145 ms)
+w2: 8 passed, 0 failed

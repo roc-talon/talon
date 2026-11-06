@@ -1,0 +1,8 @@
+@ SELECT id, amount, label FROM example ORDER BY id
+1	5	five
+2	7	seven; with a semicolon
+4	9	small
+10	9	big
+@ SELECT count(*) FROM example
+4
+@ SELECT label FROM example WHERE id = 99

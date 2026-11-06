@@ -1,0 +1,10 @@
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "GET /v1/releases needs the query parameter group or after"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "GET /v1/releases needs the query parameter group or after"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "GET /v1/releases needs the query parameter group or after"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter group must not be empty"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter after must be a log index (decimal digits), got x"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter after must be a log index (decimal digits), got -1"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter series must be a series (M or 0.m), got 0"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter after must be a log index (decimal digits), got 007"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter after must be a log index (decimal digits), got 9223372036854775808"}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "detail": "the query parameter series must be a series (M or 0.m), got 1.2"}}

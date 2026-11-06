@@ -1,0 +1,1 @@
+R-MX13 R-MX10 R-MX1 R-AP40 R-AP10 R-MX17 (slice 223): the sweep part is as b2. The audit read has 2 unit pairs of the nightly nightly-2026-10-20-bbbbbbb (one probe each on that compiler: pass, crash). Then a new token and POST /v1/compat with the 2 rows and no sweep (201). The pairs are grouped by nightly.

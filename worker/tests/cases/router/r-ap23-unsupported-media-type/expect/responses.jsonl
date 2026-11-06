@@ -1,0 +1,4 @@
+{"status":415,"problem":{"type":"/errors/unsupported-media-type","title":"Unsupported media type","status":415,"detail":"the request body must be application/json, got text/plain"}}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type","title":"Unsupported media type","status":415,"detail":"the request body must be application/json, but the request has no Content-Type"}}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type","title":"Unsupported media type","status":415,"detail":"the request body must be application/json, got application/xml"}}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type","title":"Unsupported media type","status":415,"detail":"the request body must be application/json, got application/jsonx"}}

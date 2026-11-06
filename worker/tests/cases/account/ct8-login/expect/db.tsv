@@ -1,0 +1,19 @@
+@ SELECT contributor, login, tokens_after, first_time, last_time FROM contributors ORDER BY contributor
+77	other	1767225603000	1767225603000	1767225603000
+99	ninety	1767225604000	1767225604000	1767225604000
+4242	renamed	1767225601000	1767225601000	1767225602000
+@ SELECT CAST(machine AS TEXT), contributor, time FROM links ORDER BY machine
+-6890997442180345381	99	1767225604000
+-3374339886126876297	4242	1767225602000
+@ SELECT hex(substr(n.value, 1, 1)) AS h, CAST(c.contributor AS TEXT) AS contributor, c.nightly, c.target, c.result, c.time FROM contributions c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.nightly, c.target, c.contributor
+11	4242	5571556846250	0	0	1767225000100
+22	4242	5571556846250	0	1	1767225000110
+44	4242	5571843177403	0	0	1767225000130
+66	4242	5571556846250	0	0	1767225000120
+@ SELECT CAST(contributor AS TEXT), counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor
+4242	9	3	1	1	7	1767224000050	1767224000500
+@ SELECT hex(substr(n.value, 1, 1)) AS h, x.nightly, x.target, CAST(x.talon_version AS TEXT), x.pass_count, x.fail_count, x.crash_count, x.first_time, x.last_time FROM compat_hints x JOIN names n ON n.id = x.artifact ORDER BY n.value, x.nightly, x.target, x.talon_version
+11	5571556846250	0	17180000255	1	1	0	1767225000100	1767225000105
+22	5571556846250	0	17180000255	0	1	0	1767225000110	1767225000110
+44	5571843177403	0	17180000255	1	0	0	1767225000130	1767225000130
+66	5571556846250	0	17180000255	1	0	0	1767225000120	1767225000120

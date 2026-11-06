@@ -1,0 +1,10 @@
+m1 CAUGHT R-LY4 a bin table overrides the machine opt-out |     0 compiler errors
+m2 CAUGHT R-PT19 merge changes an old value |     0 compiler errors
+m3 CAUGHT R-PT19 stale table stays at a new url |     0 compiler errors
+m4 CAUGHT R-PT25 bin = false is changed |     0 compiler errors
+m5 CAUGHT R-PT17 .exe on the wrong target |     0 compiler errors
+m6 CAUGHT R-PT19 put drops bin = false |     0 compiler errors
+m7 CAUGHT R-PT20 old gh is no-gh |     0 compiler errors
+m8 CAUGHT R-PT20 step 5 workflow not compared |     0 compiler errors
+m9 CAUGHT R-PT20 step 1 a sha512 digest counts |     0 compiler errors
+m10 CAUGHT R-PT20 step 4 empty array passes |     0 compiler errors

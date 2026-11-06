@@ -1,0 +1,2 @@
+status 302
+header Location: https://elsewhere.example/v1/packages/acme/e3/releases

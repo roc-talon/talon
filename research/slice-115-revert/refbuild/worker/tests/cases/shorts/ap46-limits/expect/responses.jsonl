@@ -1,0 +1,14 @@
+{"status": 200, "headers": {"content-type": "application/json", "cache-control": "max-age=60", "etag": "\"f12230257d14ee61b9bc33c930069557\""}, "json_len": {"matches": 50}, "json_at": {"matches.0.short": "s1", "matches.49.short": "s50", "matches.0.matches.0.name": "o/s1", "matches.1.matches": []}}
+{"status": 413, "problem": {"type": "/errors/too-large", "status": 413, "field": "short", "limit": 50}}
+{"status": 413, "problem": {"type": "/errors/too-large", "status": 413, "field": "short", "limit": 50}}
+{"status": 413, "problem": {"type": "/errors/too-large", "status": 413, "field": "short", "limit": 50}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "status": 400}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "status": 400}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "status": 400}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "status": 400}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "status": 400}}
+{"status": 400, "problem": {"type": "/errors/bad-request", "status": 400}}
+{"status": 405, "headers": {"allow": "GET"}, "problem": {"type": "/errors/method-not-allowed", "status": 405}}
+{"status": 405, "headers": {"allow": "GET"}, "problem": {"type": "/errors/method-not-allowed", "status": 405}}
+{"status": 405, "headers": {"allow": "GET"}, "problem": {"type": "/errors/method-not-allowed", "status": 405}}
+{"status": 404, "problem": {"type": "/errors/not-found", "status": 404}}

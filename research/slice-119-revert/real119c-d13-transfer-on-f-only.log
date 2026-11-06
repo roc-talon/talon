@@ -1,0 +1,40 @@
+All (30) tests passed in 368.9 ms.
+PASS reconcile/pu21-poll-job (3144 ms)
+PASS reconcile/pu23-list (5267 ms)
+PASS reconcile/pu23-pages (3548 ms)
+PASS reconcile/pu24-missing-again (3732 ms)
+PASS reconcile/pu25-reserve (2869 ms)
+PASS reconcile/pu31-repo-etag (3163 ms)
+PASS reconcile/pu36-overlap (2549 ms)
+PASS reconcile/pu36-state-guard (2333 ms)
+PASS reconcile/pu37-backoff (2718 ms)
+PASS reconcile/pu37-etag-effects (2335 ms)
+PASS reconcile/tp18-rename (2532 ms)
+FAIL reconcile/tp18-rename-transfer (2162 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/t\t800\t81\t2\tacme/t2\t1767225600000\t1767000000000","acme/t2\t800\t81\t0\t\\N\t1767225600000\t1767225600000"]
+      got:      ["acme/t\t800\t80\t2\tacme/t2\t1767225600000\t1767000000000","acme/t2\t800\t81\t0\t\\N\t1767225600000\t1767225600000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/t\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/t\t2\t1\t800\t800\t80\t81\t\\N\t\\N\t1767225600000","acme/t\t3\t2\t800\t800\t81\t81\tacme/t2\t\\N\t1767225600000","acme/t2\t1\t2\t\\N\t800\t\\N\t81\t\\N\t\\N\t1767225600000"]
+      got:      ["acme/t\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/t\t2\t2\t800\t800\t80\t80\tacme/t2\t\\N\t1767225600000","acme/t2\t1\t2\t\\N\t800\t\\N\t81\t\\N\t\\N\t1767225600000"]
+PASS reconcile/tp9-transfer (2369 ms)
+PASS webhook/ap12-empty-secret (2035 ms)
+PASS webhook/ap12-no-secret (1864 ms)
+PASS webhook/ap12-signature (2265 ms)
+PASS webhook/pu11-events (2764 ms)
+PASS webhook/pu13-identity-changed (2110 ms)
+PASS webhook/pu13-index-new (2264 ms)
+PASS webhook/pu13-no-asset-end (2158 ms)
+PASS webhook/pu13-not-candidate (2188 ms)
+PASS webhook/pu13-refused (2225 ms)
+PASS webhook/pu13-retry-no-asset (2462 ms)
+PASS webhook/pu14-labels (2528 ms)
+PASS webhook/pu17-withdraw-clear (4451 ms)
+PASS webhook/pu26-app-installed (3305 ms)
+PASS webhook/pu26-release-installed (3021 ms)
+PASS webhook/pu33-privatized (4214 ms)
+PASS webhook/pu33-publicized (2792 ms)
+PASS webhook/pu33-release-private (2424 ms)
+PASS webhook/pu35-dead-letter (1572 ms)
+PASS webhook/pu35-retry-schedule (1482 ms)
+w2: 31 passed, 1 failed

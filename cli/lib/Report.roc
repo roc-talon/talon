@@ -6,7 +6,8 @@ import JsonDoc
 ##
 ## | Field | Holds | Human text |
 ## | --- | --- | --- |
-## | `at` | The time that the resolve is at, `YYYY-MM-DDTHH:MM:SSZ` (R-DT5: `TALON_NOW`, or the time of `--snapshot`) | the line `resolved at <time>, <n> probes` |
+## | `at` | The time that the resolve is at, `YYYY-MM-DDTHH:MM:SSZ` (R-DT5: `TALON_NOW`, or the time of `--snapshot`). Slice 206d2 (Design Q438, a proposal): with a registry and no time snapshot, `log:<n>` | the line `resolved at <time>, <n> probes` |
+## | `log` | Slice 206d2 (R-DT5, Design Q438, a proposal): the log size of a run with a registry answer (`LogSnapshot.printed`), `Err(None)` for a run with no answer | the line `resolved at <time> (log:<n>), <n> probes` |
 ## | `probes` | The number of `roc` runs of the ladder: 3 for an app that changes (baseline, check, build), 2 for a package or a platform, 0 with `--no-check` | the same line |
 ## | `dry_run` | `--dry-run` | the line `dry run: nothing was written` |
 ## | `check`, `build` | The state of the ladder steps: `Passed`, `Skipped` (`--no-check`, or for `build` a recorded pass of the build id: R-BS1, slice 032; `check` is `Passed` then), `NotRun` (nothing changed, or a package for the build) | `check: passed`, `build: passed`, `check: skipped` |
@@ -24,6 +25,7 @@ Report :: [].{
 
 	Outcome : {
 		at : Str,
+		log : Try(U64, [None]),
 		probes : U64,
 		downloads : U64,
 		dry_run : Bool,
@@ -40,10 +42,15 @@ Report :: [].{
 	}
 
 	## R-DT5 (proposal, TW24, question Q4): `resolved at 2026-10-15T12:00:00Z, 3 probes`. One probe is `1 probe`, none is `0 probes`.
-	resolved_line : { at : Str, probes : U64 } -> Str
+	## Slice 206d2 (R-DT5, Design Q438): with `log` `Ok(n)` and an `at` that is not `log:<n>` (a time), the line names both: `resolved at 2026-10-12T00:00:00Z (log:184467), 4 probes`. With `at` = `log:<n>`, the log is not named twice.
+	resolved_line : { at : Str, log : Try(U64, [None]), probes : U64 } -> Str
 	resolved_line = |facts| {
 		count = if facts.probes == 1 "1 probe" else "${facts.probes.to_str()} probes"
-		"resolved at ${facts.at}, ${count}"
+		at = match facts.log {
+			Ok(n) if facts.at != "log:${n.to_str()}" => "${facts.at} (log:${n.to_str()})"
+			_ => facts.at
+		}
+		"resolved at ${at}, ${count}"
 	}
 
 	## The `data` of the envelope of `install` and `add` (R-J3, R-J4, R-OUT4, R-OUT5). Keys in this order (proposal, TW24):
@@ -51,6 +58,7 @@ Report :: [].{
 	## | Key | Value |
 	## | --- | --- |
 	## | `snapshot` | `at` |
+	## | `log_size` | Slice 206d2 (Design Q438, a proposal): `log` (number), only when it is `Ok`: a run with no registry answer has no `log_size` key |
 	## | `probes` | `probes` (number) |
 	## | `downloads` | `downloads` (number): the compilers that this command downloaded, 1 after one download and 0 with none (slice 025, answer Q7 of the review) |
 	## | `dry_run` | `dry_run` (true or false) |
@@ -65,8 +73,17 @@ Report :: [].{
 	## | `notes` | a list of texts |
 	## | `written` | a list of paths |
 	data : Outcome -> JsonDoc
-	data = |o| JsonDoc.Obj([
-		("snapshot", Text(o.at)),
+	data = |o| {
+		log = match o.log {
+			Ok(n) => [("log_size", Num(n.to_i64_wrap()))]
+			Err(None) => []
+		}
+		JsonDoc.Obj([("snapshot", Text(o.at))].concat(log).concat(rest_of(o)))
+	}
+
+	# The keys of `data` after `snapshot` and `log_size`.
+	rest_of : Outcome -> List((Str, JsonDoc))
+	rest_of = |o| [
 		("probes", Num(o.probes.to_i64_wrap())),
 		("downloads", Num(o.downloads.to_i64_wrap())),
 		("dry_run", Flag(o.dry_run)),
@@ -97,7 +114,7 @@ Report :: [].{
 		("renamed", Arr(o.renamed.map(|r| Obj([("path", Text(r.path)), ("from", Text(r.from)), ("to", Text(r.to))])))),
 		("notes", Arr(o.notes.map(|n| Text(n)))),
 		("written", Arr(o.written.map(|w| Text(w)))),
-	])
+	]
 
 	## One entry that `tln remove` took out of a header (slice 008). `kind` is `Release` (`name` is the full name, `version` is `Ok(<version>)`), `Path` or
 	## `Foreign` (`name` is the value of the entry, `version` is `Err(None)`).

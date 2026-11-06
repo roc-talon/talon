@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 (slice 222, Design Q523): the previous release exists, the package header pins nightly-2026-10-14-38a3029, and that compiler is not installed (none is). No flag: the note `no API check: the compiler <pin> is not installed (pass --probe-downloads to install it)`, no download, no probe, the publish goes on, exit 0.

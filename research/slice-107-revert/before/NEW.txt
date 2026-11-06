@@ -1,0 +1,6 @@
+worker/lib/Shorts.roc
+worker/ShortRoutes.roc
+worker/tests/unit/ShortsTest.roc
+worker/tests/cases/shorts/
+docs/slices/107-short-names.md
+research/slice-107-revert/ (all)

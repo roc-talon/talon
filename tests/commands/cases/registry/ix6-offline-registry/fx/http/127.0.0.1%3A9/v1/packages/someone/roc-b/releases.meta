@@ -1,0 +1,4 @@
+status 200
+header Content-Type: application/json
+header Cache-Control: max-age=60
+header ETag: "e1"

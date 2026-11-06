@@ -1,0 +1,7 @@
+== probe --smoke https://github.com/acme/pfq/releases/download/0.6.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst --json
+{"schema":1,"command":"probe","ok":true,"data":{"smoke":[{"target":"x64musl","result":"no-smoke-app"},{"target":"arm64musl","result":"no-smoke-app"}]},"error":null}
+exit 0
+== probe --smoke https://github.com/acme/pfq/releases/download/0.6.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst --target arm64musl
+smoke build of the platform acme/pfq 0.6.0 on nightly-2026-10-14-38a3029:
+  arm64musl: no-smoke-app
+exit 0

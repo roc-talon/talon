@@ -1,0 +1,34 @@
+== cwd:ws1 why json
+$PROJECT/ws1/apps/a/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-13-5e6f7a8:
+      * 2 bot: pass
+$PROJECT/ws1/apps/b/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-13-5e6f7a8:
+      * 2 bot: pass
+$PROJECT/ws1/apps/c/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-13-5e6f7a8:
+      * 2 bot: pass
+exit 0
+== cwd:ws2 why json
+$PROJECT/ws2/apps/a/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-13-5e6f7a8:
+      * 2 bot: pass
+$PROJECT/ws2/apps/b/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-14-38a3029:
+      * 2 bot: fail
+$PROJECT/ws2/apps/c/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-12-2664a27:
+      * 2 bot: pass
+exit 0

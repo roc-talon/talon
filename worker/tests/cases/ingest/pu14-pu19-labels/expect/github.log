@@ -1,0 +1,14 @@
+GET https://api.github.com/repos/acme/lib
+GET https://api.github.com/repos/acme/lib
+GET https://api.github.com/repos/acme/lib/releases/tags/v1.0.0
+GET https://github.com/acme/lib/releases/download/v1.0.0/CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8.tar.zst
+GET https://raw.githubusercontent.com/acme/lib/v1.0.0/.roc-version
+GET https://api.github.com/repos/acme/lib
+GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0
+GET https://github.com/acme/lib/releases/download/2.0.0/58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g.tar.zst
+GET https://raw.githubusercontent.com/acme/lib/2.0.0/.roc-version
+GET https://api.github.com/repos/acme/lib
+GET https://api.github.com/repos/acme/lib
+GET https://api.github.com/repos/acme/lib/releases/tags/5.0.0
+GET https://github.com/acme/lib/releases/download/5.0.0/7o7Rdz2Y1iJ86hB9Jg3p68pPccx7wVmMJ6f2p69bvYvF.tar.zst
+GET https://raw.githubusercontent.com/acme/lib/5.0.0/.roc-version

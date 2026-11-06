@@ -157,6 +157,17 @@ sec fl3-roc-missing fl3 roc-missing 'roc calls differs' 'true' expect/roc.log $'
 sec fl3-roc-wrong-args fl3 roc-wrong-args 'roc calls differs' 'roc build a.roc' given/roc.tsv $'*\t0\t-\t-\n' expect/roc.log $'build b.roc\n'
 sec fl3-roc-no-answer fl3 roc-no-answer 'exit code differs' 'roc check main.roc' expect/roc.log $'check main.roc\n'
 sec fl3-http-log fl3 http-log 'http requests differs' 'curl -s "$TALON_HTTP/x" > /dev/null' given/http/x $'x' expect/http.log $'GET /y 200\n'
+# Slice 200 (M17): expect/http-bodies/ is compared. The body of the request is `abc`; the first case has the right file, the second has another content.
+sec fl3-http-bodies fl3 http-bodies 'http request bodies differ' 'curl -s -X POST -d abc "$TALON_HTTP/x" > /dev/null' given/http/x.POST $'ok' expect/http-bodies/1 $'zzz'
+s_l3_http_bodies_ok() {
+    local root=$T/l3-http-bodies-ok
+    mk "$root" runner/http-bodies-ok 'curl -s -X POST -d abc "$TALON_HTTP/x" > /dev/null'
+    put "$root" runner/http-bodies-ok given/http/x.POST 'ok'
+    put "$root" runner/http-bodies-ok expect/http-bodies/1 'abc'
+    out=$(l3 "$root")
+    if echo "$out" | grep -q '1 passed, 0 failed'; then ok; else bad "l3 http-bodies-ok: the right body file must pass"; echo "$out"; fi
+}
+sec l3_http_bodies_ok s_l3_http_bodies_ok
 sec fl3-facts-differs fl3 facts-differs 'compat.db rows differs' "$MKDB" expect/facts.tsv "${FACTS_TSV/B.roc,A.roc/A.roc,B.roc}"
 sec fl3-facts-extra-db fl3 facts-extra-db 'compat.db rows differs' "$MKDB" expect/facts.tsv ''
 sec fl3-facts-missing-db fl3 facts-missing-db 'compat.db rows differs' 'true' expect/facts.tsv $'format\t1\n'
@@ -402,7 +413,7 @@ sec l0_order s_l0_order
 # still run, and each failure shows its output and the line `^^^ roc check <file> (exit <n>)`, in the order of the files (the report is not in the order in which the calls end).
 s_chk_par() {
 # The unit files are not in `check` (the l0 step compiles them, see s_unit_guard), so the count of calls is the count of apps. cli/f matches cli/flowprobe.roc and cli/fxprobe.roc.
-n_apps=$(cd "$ROOT" && { echo cli/main.roc; echo cli/fxprobe.roc; echo cli/flowprobe.roc; echo cli/lib/main.roc; echo tests/commands/main.roc; ls packages/*/main.roc 2> /dev/null; } | sort -u | wc -l)
+n_apps=$(cd "$ROOT" && { echo cli/main.roc; echo cli/fxprobe.roc; echo cli/flowprobe.roc; echo cli/lib/main.roc; echo tests/commands/main.roc; echo bot/main.roc; echo bot/lib/main.roc; ls packages/*/main.roc 2> /dev/null; } | sort -u | wc -l)
 n_fail=2
 fx chk-par env JOBS=4 FAKE_ROC_SLEEP=0.1 FAKE_ROC_FAIL=cli/f FAKE_ROC_CONC="$T/chk-par.conc" TAIL=1000 "$ROOT/scripts/test.sh" check
 rc_par=$rc
@@ -482,6 +493,68 @@ fx chk-ok env JOBS=4 FAKE_ROC_SLEEP=0.1 "$ROOT/scripts/test.sh" check
 if [ $rc = 0 ] && grep -Eq '^check +pass' $T/chk-ok.out; then ok; else bad "check in parallel: all files pass, exit 0"; cat $T/chk-ok.out; fi
 }
 sec chk_ok s_chk_ok
+
+# Slice 110 (RQ2): the stamp of the Worker build changes with each file that the build reads (a .roc file, a .sql file that the Worker embeds, a file of sql/queries), and with the compiler tag
+# and the mode. It does not change with a test file, app.wasm or worker.js.
+s_workerstamp() {
+R=$T/stamp; rm -rf $R; mkdir -p $R/worker/lib $R/worker/sql $R/worker/tests $R/packages/records $R/sql/queries
+echo a > $R/worker/main.roc; echo a > $R/worker/lib/X.roc; echo a > $R/worker/sql/q.sql; echo a > $R/packages/records/R.roc; echo a > $R/sql/queries/z.sql
+got=$(. "$SELF/lib.sh"; ROOT=$R ROC_TAG_WORKER=t1 WORKER_OPT=speed
+    st() { worker_stamp; }
+    base=$(st)
+    chg() { [ "$(st)" != "$base" ] && echo -n "changed " || echo -n "same "; }
+    echo b > $R/worker/sql/q.sql; chg; echo a > $R/worker/sql/q.sql
+    echo b > $R/sql/queries/z.sql; chg; echo a > $R/sql/queries/z.sql
+    echo b > $R/worker/lib/X.roc; chg; echo a > $R/worker/lib/X.roc
+    echo b > $R/packages/records/R.roc; chg; echo a > $R/packages/records/R.roc
+    echo new > $R/worker/sql/new.sql; chg; rm $R/worker/sql/new.sql
+    ROC_TAG_WORKER=t2 chg; WORKER_OPT=size chg
+    echo b > $R/worker/tests/T.roc; chg; echo b > $R/worker/app.wasm; chg; echo b > $R/worker/worker.js; chg
+    st)
+case "$got" in
+"changed changed changed changed changed changed changed same same same "*) ok ;;
+*) bad "worker_stamp: got '$got' (a changed .roc/.sql/sql/queries file, the compiler tag or the mode changes the stamp; a test file, app.wasm and worker.js do not)" ;;
+esac
+}
+sec workerstamp s_workerstamp
+
+# Slice 101 (parallel runs): the Worker build of scripts/test.sh is a dir for each stamp. worker_publish moves a finished build to its stamp name; when the name is there already
+# (a run with the same stamp was first) the first dir stays whole and the second is removed. worker_prune keeps the 3 newest dirs and the current one.
+s_workerdir() {
+W=$T/wd; rm -rf $W; mkdir -p $W/.tmp.1 $W/.tmp.2
+echo first > $W/.tmp.1/app.wasm; echo second > $W/.tmp.2/app.wasm
+got=$(. "$SELF/lib.sh"
+    worker_publish $W/.tmp.1 $W/s1 && echo -n "pub1 "
+    worker_publish $W/.tmp.2 $W/s1 && echo -n "pub2 "
+    echo -n "$(cat $W/s1/app.wasm) "
+    [ -d $W/.tmp.1 ] || [ -d $W/.tmp.2 ] && echo -n "tmp-left " || echo -n "no-tmp "
+    for i in 2 3 4 5 6; do mkdir $W/s$i; touch -d "2026-01-0$i" $W/s$i; done
+    touch -d 2026-01-01 $W/s1
+    worker_prune $W 3 $W/s3
+    ls $W | tr '\n' ' ')
+want="pub1 pub2 first no-tmp s3 s5 s6 "
+if [ "$got" = "$want" ]; then ok
+else bad "worker_publish / worker_prune (parallel Worker builds): got '$got', want '$want' (the first dir of a stamp stays whole, the second is removed; prune keeps the 3 newest and the current dir)"; fi
+}
+sec workerdir s_workerdir
+
+# Slice 106 (platform note P2): the w2 build accepts `roc build` exit 2 only when the output says 0 errors, and prints the warnings. Another exit code, or an error count, fails.
+s_rocbuild() {
+printf '0 errors and 1 warning found in 5.7s while successfully building:\n\n    app.wasm\n' > $T/rb-warn.out
+printf '1 error and 0 warnings found in 5.7s while successfully building:\n' > $T/rb-err.out
+printf '10 errors and 2 warnings found in 5.7s while successfully building:\n' > $T/rb-ten.out
+printf '0 errors and 0 warnings found in 5.7s while successfully building:\n' > $T/rb-ok.out
+got=$(. "$SELF/lib.sh"
+    for row in "0 rb-ok" "2 rb-warn" "2 rb-err" "2 rb-ten" "1 rb-ok" "1 rb-warn" "134 rb-warn"; do
+        set -- $row
+        if roc_build_ok "$1" "$T/$2.out" > $T/rb-text.out; then echo -n "pass "; else echo -n "fail "; fi
+    done
+    roc_build_ok 2 "$T/rb-warn.out" | grep -c 'accepted')
+want="pass pass fail fail fail fail fail 1"
+if [ "$got" = "$want" ]; then ok
+else bad "roc_build_ok (w2 build): got '$got', want '$want' (exit 0 passes; exit 2 passes only with '0 errors and N warnings' and prints them; exit 1, 134, and 2 with errors fail)"; fi
+}
+sec rocbuild s_rocbuild
 
 # Memory rule (research/test-memory/RESULTS.md): jobs_for = min(cores, (budget - reserve) / per job), at least 1. TEST_MEM_GB sets the budget.
 # prune_roc_objects keeps the 3 newest files of a dir of the object cache, and every file under 10 minutes old (a large cache made `roc check` use 14 GB).
@@ -641,8 +714,11 @@ fx l1-stale env L1_HOST=Linux-x86_64 "$ROOT/scripts/test.sh" l1
 if [ $rc = 0 ] && grep -q '^RUN ' $T/l1-stale.log && ! grep -q '^STALE ' $T/l1-stale.log; then ok
 else bad "l1: the dir \$WORK/l1/<name> is new for each run (a stale file must be gone)"; cat $T/l1-stale.log; fi
 # The default steps have l1 (the full run needs the real builds, so the row reads the line of the script), as the last step.
-if grep -Eq '^\[ \$\{#STEPS\[@\]\} -eq 0 \] && STEPS=\(check fmt l0 l2 l3 selftest l1\)$' "$ROOT/scripts/test.sh"; then ok
-else bad "l1: the default steps of scripts/test.sh are 'check fmt l0 l2 l3 selftest l1' (l1 last: the LLVM builds of the targets start at the start and run while the other steps run)"; fi
+if grep -Eq '^\[ \$\{#STEPS\[@\]\} -eq 0 \] && STEPS=\(check fmt l0 l2 l3 w0 w1 wbuild w2 wtrap selftest l1\)$' "$ROOT/scripts/test.sh"; then ok
+else bad "l1: the default steps of scripts/test.sh are 'check fmt l0 l2 l3 w0 w1 wbuild w2 wtrap selftest l1' (TW32) (l1 last: the LLVM builds of the targets start at the start and run while the other steps run)"; fi
+# TW32: wbuild has its own budget (90 s), w2 keeps 45 s, and w2 never builds: it fails with a message when the run has no build.
+if grep -Eq '^declare -A BUDGET=\(.*\[wbuild\]=90 \[w2\]=45' "$ROOT/scripts/test.sh" && ! sed -n '/^step_w2()/,/^}/p' "$ROOT/scripts/test.sh" | grep -q 'wait_build'; then ok
+else bad "wbuild: scripts/test.sh has the budgets wbuild 90 and w2 45, and step_w2 does not wait for a build (TW32)"; fi
 }
 sec l1 s_l1
 
@@ -663,10 +739,11 @@ rc=$?
 if [ $rc = 1 ] && echo "$out" | grep -q 'ci.yml: line 4: tab in indentation' && echo "$out" | grep -q 'nightly.yml: line 4: anchor'; then ok
 else bad "ciscan: a tab and an anchor in a workflow file must fail the yaml check (exit 1)"; echo "$out"; fi
 ci_row yaml "ci/yaml: .github/workflows/ci.yml and nightly.yml parse, have name, on, permissions (contents: read), jobs; each job has runs-on, timeout-minutes and steps; each action is pinned"
-ci_row fast "ci/fast: ci.yml runs on push and pull_request, a matrix of ubuntu, macos and windows runs scripts/test.sh (windows: check fmt l0), with shell bash, no OPT, SLOW, NET or REAL_ROC; Linux has bubblewrap"
+ci_row fast "ci/fast: ci.yml runs on push and pull_request, a matrix of ubuntu, macos and windows runs scripts/test.sh (macos: check fmt l0 l2 l3 w0 selftest l1, windows: check fmt l0 w0, TW35), with shell bash, no OPT, SLOW, NET or REAL_ROC; Linux has bubblewrap"
 ci_row nightly "ci/nightly: nightly.yml runs on schedule and workflow_dispatch only, on ubuntu, scripts/test.sh with OPT=speed SLOW=1 NET=1 REAL_ROC=1 and GITHUB_TOKEN, no package cache"
 ci_row pin "ci/pin: scripts/env.sh has ROC_TAG (the one place of the nightly tag), scripts/get-roc.sh uses it, the workflows run get-roc.sh, cache by runner.os and env.ROC_TAG, have no cloudflare-workers path"
 ci_row portable "ci/portable: bash 4 scripts have an env bash shebang, no bc, the macOS job installs bash, coreutils, findutils and diffutils and puts the gnubin dirs on PATH"
+ci_row compatbot "ci/compatbot: compat-bot.yml has cron 43 4 * * *, input tags, the roc-talon/talon guard, contents read and id-token write, 120 minutes, concurrency compat-bot with no cancel, vars.TALON_REGISTRY, TALON_AUTO_INSTALL yes, no secret, tln and bot built from the commit (R-MX15, Q577)"
 }
 sec ci s_ci
 

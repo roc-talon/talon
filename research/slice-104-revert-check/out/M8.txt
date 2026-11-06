@@ -1,0 +1,19 @@
+
+── ✗ fail ─────────────────────────────── packages/records/tests/IdTest.roc:42:1
+
+expect bad.map(Id.nightly_id) == bad.map(|_| Err(NotANightly))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mentioned values:
+bad = ["", "v1.0.0", "nightly-2026-10-09", "nightly-2026-13-09-258ab27",
+"nightly-2026-Octobre-09-258ab27", "nightly-2026-10-09-zzzzzzz",
+"nightly-2026-10-09-258ab2", "nightly-2026-10-09-258ab27f",
+"nightly-2026-10-09-258AB27", "nightly-2026-02-30-258ab27",
+"nightly-2026-1-09-258ab27", "nightly-2026-10-9-258ab27",
+"nightly-2026-october-09-258ab27", "nightly-2026-OCTOBER-09-258ab27",
+"nightly-2027-02-29-258ab27"]
+
+Ran 38 tests in 584.8 ms.:
+    37 passed
+    1 failed
+    0 compiler errors

@@ -1,0 +1,4 @@
+# R-SH8, Q479, Q424, R-E6: share with a live JWT when the GET fails. Run 1: no answer. Run 2: 429 with Retry-After 7. Run 3: 502. Each: the local lines on stdout, a warning on stderr that names the cause, exit 0, no write, the JWT stays.
+share
+share
+share

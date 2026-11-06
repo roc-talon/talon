@@ -12,8 +12,11 @@ import lib.Fx
 import lib.Github
 import lib.Index
 import lib.Known
+import lib.Mode
 import lib.Net
 import lib.Nightlies
+import lib.PickIndex
+import lib.ResolveBase
 import lib.Roots
 import lib.ZigInstall
 import RealFx
@@ -46,6 +49,11 @@ import RealFx
 ## | Call | Does | Prints |
 ## | --- | --- | --- |
 ## | `zig [--yes] [--quiet] [--offline] [--llvm <target>:<size>] <need>` | `ZigInstall.ensure!` with the environment of the process (`ZIG`, `TALON_ZIG_INDEX`, `CI`, ...). `<need>` is the text of `minimum_zig_version`. `--llvm` gives the LLVM line of the dependency list (`<size>` is a number of bytes or `?`, default `x86_64-linux-musl:45000000`). | stderr: the dependency list, the answer line, the wait line. stdout: `zig <version> <how> <path>` (`how` is `found-env`, `found-path`, `found-installed`, `installed` or `present`). A failure prints its line to stderr and exits with the code of its kind. |
+## Slice 206 adds one flow (the stand-in of a registry command with `--offline`, CLI R-IX6, R-TF6):
+##
+## | Call | Does | Prints |
+## | --- | --- | --- |
+## | `registry-index --offline --origin <url> [--known <url>]... <owner>/<repo>...` | `PickIndex.index!` with a request with `offline` and the index `Offline(<origin>)`, the roots of `Roots.from_env`, the clock of `Fx.clock!` | stderr: `index: cached at <time>`, the warning of a damaged copy. stdout: for each name `candidate <name> <version> <tag or -> <published_at> <size> <url>`, then `missing <name>` when no group has a copy, then `missing-group <name> <form>` for each group with no copy. A failure prints its line to stderr and exits with the code of its kind. |
 main! = |args| {
 	fx = RealFx.make!(args.map(|a| a.display()))
 	match fx.args!() {
@@ -65,8 +73,9 @@ main! = |args| {
 		["nightlies", .. as rest] => finish!(fx, nightlies!(fx, rest))
 		["compiler", .. as rest] => finish!(fx, compiler!(fx, rest))
 		["zig", .. as rest] => finish!(fx, zig!(fx, rest))
+		["registry-index", .. as rest] => finish!(fx, registry_index!(fx, rest))
 		_ => {
-			fx.err!("usage: flowprobe record <file>... | releases | hint | fetch | nightlies | compiler | zig\n")
+			fx.err!("usage: flowprobe record <file>... | releases | hint | fetch | nightlies | compiler | zig | registry-index\n")
 			Err(Exit(99))
 		}
 	}
@@ -75,7 +84,7 @@ main! = |args| {
 record! : Fx, List(Str) => Try({}, Fail)
 record! = |fx, files| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	talon_now = match env.find_first(|(name, _)| name == "TALON_NOW") {
 		Ok((_, text)) => Ok(text)
 		Err(_) => Err(NotSet)
@@ -99,7 +108,7 @@ finish! = |fx, result| match result {
 releases! : Fx, List(Str) => Try({}, Fail)
 releases! = |fx, words| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
 	known = known_urls(words)
 	name = match words.keep_if(|w| !w.starts_with("--") and !known.contains(w)).last() {
@@ -141,10 +150,67 @@ show_candidates! = |fx, owner, repo, pages, known| {
 known_urls : List(Str) -> List(Str)
 known_urls = |words| words.map2(words.drop_first(1), |a, b| (a, b)).keep_if(|(a, _)| a == "--known").map(|(_, b)| b)
 
+registry_index! : Fx, List(Str) => Try({}, Fail)
+registry_index! = |fx, words| {
+	env = fx.env_all!()
+	roots = Roots.of_run!(fx, env)?
+	known = known_urls(words)
+	origin = match option_of(words, "--origin") {
+		Ok(o) => o
+		Err(_) => return Err(Fail.new(Usage, "registry-index needs --origin <url>"))
+	}
+	if !words.contains("--offline") return Err(Fail.new(Usage, "registry-index needs --offline"))
+	names = words.keep_if(|w| !w.starts_with("--") and !known.contains(w) and w != origin)
+	request = offline_request(roots, Net.from_env(env), fx.clock!(), origin)
+	found = PickIndex.index!(fx, request, names, known)?
+	for c in found {
+		for x in c.list {
+			tag = if x.tag.is_empty() "-" else x.tag
+			fx.out!("candidate ${c.name} ${x.ident.version} ${tag} ${x.published_at.to_str()} ${x.size.to_str()} ${x.url}\n")
+		}
+		if c.missing {
+			fx.out!("missing ${c.name}\n")
+		}
+		for form in c.missing_forms {
+			fx.out!("missing-group ${c.name} ${form}\n")
+		}
+	}
+	Ok({})
+}
+
+# A resolve request for `registry-index`: only `roots`, `net`, `now`, `offline` and `index` are read by `PickIndex.index!` with an `Offline` index.
+offline_request : Roots, Net.Settings, U64, Str -> ResolveBase.Request
+offline_request = |roots, net, now, origin| {
+	command: Install,
+	names: [],
+	fixed: [],
+	frozen: Bool.False,
+	no_check: Bool.True,
+	project: { file: Err(NoCurrent), workspace: Err(Standalone), toml: Err(NoToml), roc_version: Err(None) },
+	roots,
+	net,
+	now,
+	offline: Bool.True,
+	strategy: Err(Unset),
+	nightly: Err(Unset),
+	compiler: Err(NoCompiler),
+	selected: "",
+	none: Stop,
+	index: Offline(origin),
+	registry: Off,
+	toolchain: Err(Unset),
+	snapshot: Err(Unset),
+	dry_run: Bool.False,
+	add: { as_platform: Bool.False, as_alias: Err(Unset), no_pin: Bool.False },
+	prompt: { mode: Mode.from_env({ env: Dict.empty(), json: Bool.False }), yes: Bool.False, quiet: Bool.False, rename_keys: Err(NoFlag), allow_moves: Err(NoFlag) },
+	downloads: { auto: No, allow: Err(NoFlag), probe: Err(NoFlag), env: [] },
+	probe: { no_probe: Bool.True, slots: Err(Unset) },
+}
+
 hint! : Fx, List(Str) => Try({}, Fail)
 hint! = |fx, words| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
 	(name, tag) = match words.keep_if(|w| w != "--offline") {
 		[n, t] => (n, t)
@@ -164,7 +230,7 @@ hint! = |fx, words| {
 fetch! : Fx, List(Str) => Try({}, [Exit(I32)])
 fetch! = |fx, words| {
 	env = fx.env_all!()
-	roots = match Roots.from_env(env) {
+	roots = match Roots.of_run!(fx, env) {
 		Ok(r) => r
 		Err(fail) => return finish!(fx, Err(fail))
 	}
@@ -205,7 +271,7 @@ Listing : { releases : List(Nightlies.Release), source : [Live, Cached(U64), Mis
 listing! : Fx, List(Str) => Try(Listing, Fail)
 listing! = |fx, words| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
 	target = option_of(words, "--host") ?? "linux_x86_64"
 	host = match [LinuxX64, LinuxArm64, MacosApple, MacosX64, WindowsX64, WindowsArm64].find_first(|h| Nightlies.target(h) == target) {

@@ -1,0 +1,10 @@
+Slice 092 (entry `commands`), a `url` that stays, and the two opt-outs: R-PT19, R-PT25, R-LY4, Design Q230. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). `gh` is a rule of `fx/jobs` (no real `gh`). The release acme/foo 1.1.0 (`tags/1.1.0`, the one call of R-PT20 step 1) has binary assets `<hash>-<target>` with a `digest`; the files of the assets are in `fx/src/bin-<target>`. The commit of the bundle is `1a2b3c4d...`, its workflow is `.github/workflows/release.yml`. The host is Linux x64 (`x64musl`).
+`home2` has `config.toml` with `tool-binaries = false` (runs 3 and 4). Release 1.1.0 has the assets x64musl, arm64mac and x64mac, all attested at the commit of the bundle.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `update --tool --file p1/main.roc` | `foo` is at 1.1.0 and has `bin = { x64musl = "aaaa..." }` (a value that is not the digest of the release). The `url` stays. The check runs for the 4 other targets, and 2 have an asset: arm64mac and x64mac are added. The value of x64musl is not checked and not changed. One write, no `x` entry | R-PT19, R-PT20 |
+| 2 | `update --tool --file p2/main.roc` | `bin = false`: no release call for binaries, no `gh`, nothing is written | R-PT25, R-PT19 |
+| 3 | `update --tool --file p3/main.roc` (home2) | `tool-binaries = false`, the `url` stays: no check, the `bin` table stays as it is | R-PT25, R-LY4, R-PT19 |
+| 4 | `update --tool --file p4/main.roc` (home2) | `tool-binaries = false`, a new `url`: no check, the old `bin` table goes (it belongs to the old `url`), the tool is built from source | R-PT25, R-PT19 |
+| 5 | `add --tool acme/foo --file p2/main.roc` | the key `foo` has the same app and `bin = false`: the command acts as `update foo`, `bin = false` stays, nothing is checked | R-PT3, R-PT19, R-PT25, Q230 |

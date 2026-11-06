@@ -1,0 +1,37 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/lib	100	10	1	\N	1767225600000	1767000000000
+acme/old	100	10	2	acme/lib	1767000000000	1767000000000
+already/pkg	600	60	1	\N	1767000000500	1767000000000
+boom/pkg	500	50	0	\N	1767000000000	1767000000000
+gone/pkg	400	40	1	\N	1767225601000	1767000000000
+other/pkg	200	20	0	\N	1767000000000	1767000000000
+stale/pkg	300	30	0	\N	1767000000000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/lib	1	0	\N	100	\N	10	\N	\N	1767000000000
+acme/lib	2	4	100	100	10	10	\N	\N	1767225600000
+acme/old	1	0	\N	100	\N	10	\N	\N	1767000000000
+already/pkg	1	0	\N	600	\N	60	\N	\N	1767000000000
+boom/pkg	1	0	\N	500	\N	50	\N	\N	1767000000000
+gone/pkg	1	0	\N	400	\N	40	\N	\N	1767000000000
+gone/pkg	2	4	400	400	40	40	\N	\N	1767225601000
+other/pkg	1	0	\N	200	\N	20	\N	\N	1767000000000
+stale/pkg	1	0	\N	300	\N	30	\N	\N	1767000000000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/lib	\N	\N	1767003600000	0	0
+acme/old	\N	\N	1767003600000	0	0
+already/pkg	\N	\N	1767003600000	0	0
+boom/pkg	\N	\N	1767003600000	0	0
+gone/pkg	\N	\N	1767003600000	0	0
+other/pkg	\N	\N	1767003600000	0	0
+stale/pkg	\N	\N	1767003600000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	repo-missing	1767225600000
+2	acme/lib	1.1.0	deleted	1767000000100
+3	acme/old	0.9.0	repo-missing	1767225600000
+4	other/pkg	1.0.0	\N	\N
+5	stale/pkg	1.0.0	\N	\N
+6	gone/pkg	1.0.0	repo-missing	1767225601000
+7	boom/pkg	1.0.0	\N	\N
+8	already/pkg	1.0.0	repo-missing	1767000000500
+@ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance)
+7	7	7	9	8	8	8

@@ -1,14 +1,17 @@
 import Args
 import Base
+import ClosureRequest
 import Clock
 import Common
 import Compiler
 import ConfigToml
 import Consent
+import Db
 import Download
 import Facts
 import Fail
 import Fx
+import IndexQuery
 import Item
 import Mode
 import Net
@@ -59,14 +62,15 @@ RocInstall :: [].{
 
 	## Steps 2 to 6 of the table. `id` is the text of the compiler (as `Toolchain.read` gives it for `roc install`: a full id, a prefix, `@latest`). `env` is the environment (`Fx.env_all!` of the caller). A failure is the failure of the step
 	## (as `run!` prints it): the usage, network, integrity, environment and consent failures of slices 020 and 021.
-	offer! : Fx, { id : Str, env : List((Str, Str)), offline : Bool } => Try(RocInstall.Offer, Fail)
+	## Slice 206e2 (R-CV1, R-IX4, R-CV5): `list` is the source of the compiler list (`Nightlies.list_of!`). Left out: `Direct`. A compiler of a registry list gets `sha256_source` `registry` in `.talon.json`.
+	offer! : Fx, { id : Str, env : List((Str, Str)), offline : Bool, list ?: Nightlies.Source, registry ?: [Off, First(Try(Str, [Unset])), Later(Try(Str, [Unset]))] } => Try(RocInstall.Offer, Fail)
 	offer! = |fx, run| Ok(RocInstall.offer_noted!(fx, run)?.offer)
 
 	## R-C16 (slice 084): `offer!` with the note of a compiler that Talon selects by itself (`@latest`, `@+N`, `@-N`) when it is young and only a pattern of `min-release-age-exclude` keeps it visible. A text that names the compiler gets no note (R-NS4).
 	## The caller prints the note (`print_note!`) only when the selection changes something.
-	offer_noted! : Fx, { id : Str, env : List((Str, Str)), offline : Bool } => Try({ offer : RocInstall.Offer, note : Try(Str, [None]) }, Fail)
+	offer_noted! : Fx, { id : Str, env : List((Str, Str)), offline : Bool, list ?: Nightlies.Source, registry ?: [Off, First(Try(Str, [Unset])), Later(Try(Str, [Unset]))] } => Try({ offer : RocInstall.Offer, note : Try(Str, [None]) }, Fail)
 	offer_noted! = |fx, run| {
-		roots = Roots.from_env(run.env)?
+		roots = Roots.of_run!(fx, run.env)?
 		real = fx.clock!()
 		now = match Clock.now({ talon_now: RocInstall.env_var(run.env, "TALON_NOW"), real }) {
 			Ok(t) => t
@@ -84,7 +88,13 @@ RocInstall :: [].{
 		} else {
 			{ base: Err(None), hashes: [], range: Err(None) }
 		}
-		found = Nightlies.list!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system })?
+		# Slice 206g (R-CV1, R-IX4, R-IX6, R-RG1): `registry` makes the list the registry list (`First`: the request, `Later`: the kept rows), with the flag of the caller. Left out: `list`.
+		list = match run.?registry ?? Off {
+			Off => run.?list ?? Direct
+			First(flag) => IndexQuery.list_source({ flag, env: Net.from_env(run.env).registry, config: config.registry, offline: run.offline, kept: Bool.False })?
+			Later(flag) => IndexQuery.list_source({ flag, env: Net.from_env(run.env).registry, config: config.registry, offline: run.offline, kept: Bool.True })?
+		}
+		found = Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list })?
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
 		lists = Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude })
 		# R-SL7, R-SO23 (slice 072e): with no compiler selected the base is a pick as an id (no download), else the base of `selected!`.
@@ -113,7 +123,7 @@ RocInstall :: [].{
 		sha = Toolchain.require_digest({ id, asset })?
 		if run.offline return Err(Toolchain.offline_missing(id))
 		item = Roots.item(roots, Item.Toolchain(id))
-		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system }
+		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: Nightlies.digest_source(list) }
 		Ok({ offer: Download({ id, size: asset.size, ctx }), note })
 	}
 
@@ -129,10 +139,29 @@ RocInstall :: [].{
 	## | The list is `Missing` (`--offline`, no cached page) | `Toolchain.offline_no_list` (exit 15) |
 	## | `range_pick` gives `Err(NoneKnown)` | `Toolchain.range_failed` (kind `NoTuple`, exit 10) |
 	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the pick (rank 4 selects by itself).
-	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source } } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
+	## Slice 206d2 (R-CV1, R-AP19, R-DT3): `registry` `Ok({ origin, version, log })` (a run with a registry): the list is `Nightlies.list_registry!` (the registry list, the rows above `log:N` hidden) in place of `Nightlies.list!`. `Err(None)`: as before.
+	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]) }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
 	range_id! = |fx, run| {
 		system = Toolchain.host(fx.platform!())?
-		found = Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host: system })?
+		# Slice 206g (Design Q561): the proxy gives the `registry` key of `config.toml` in `config`; the form is checked here, after `platform!`, when the list is needed (exit 19 for a bad value).
+		registry = match run.?config {
+			Ok(config) => match IndexQuery.list_source({ flag: Err(Unset), env: run.net.registry, config, offline: run.offline, kept: Bool.False })? {
+				Direct => Err(None)
+				Registry(r) => Ok({ origin: r.origin, version: r.version, log: r.log })
+			}
+			Err(_) => run.registry
+		}
+		found = match registry {
+			Ok(r) => {
+				listed = Nightlies.list_registry!(fx, { roots: run.roots, origin: r.origin, version: r.version, offline: run.offline, host: system, log: r.log })?
+				# Design Q489 (changes Q467): offline with no kept rows (`Missing`) the list cannot be read: the failure of `direct` (`Toolchain.offline_no_list`, exit 15).
+				if listed.source == Missing return Err(Toolchain.offline_no_list({}))
+				# R-AP74 row 4: a list that was read and has no row is empty: the first cause of `ClosureRequest.no_compiler` (exit 10).
+				if listed.releases.is_empty() return Err(ClosureRequest.no_compiler({ rows: [], nightly: run.switch.nightly, nightly_from: run.switch.source, req: Ok(run.req_text), now: run.now, min_age: run.min_age, exclude: run.exclude, snapshot: None }))
+				listed
+			}
+			Err(None) => Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host: system })?
+		}
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
 		match Toolchain.range_pick({ releases: found.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {
 			Ok(id) => Ok({ id, note: Toolchain.kept_note({ id, releases: found.releases, now: run.now, min_age: run.min_age, exclude: run.exclude }) })
@@ -149,7 +178,7 @@ RocInstall :: [].{
 	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the latest compiler.
 	latest! : Fx, { env : List((Str, Str)), offline : Bool, config : ConfigToml.Config } => Try(Try({ id : Str, note : Try(Str, [None]) }, [Unread(Str)]), Fail)
 	latest! = |fx, run| {
-		roots = Roots.from_env(run.env)?
+		roots = Roots.of_run!(fx, run.env)?
 		real = fx.clock!()
 		now = match Clock.now({ talon_now: RocInstall.env_var(run.env, "TALON_NOW"), real }) {
 			Ok(t) => t
@@ -192,7 +221,8 @@ RocInstall :: [].{
 
 	## Slice 037c and 039b (R-NI4, R-DL5, R-DL6): the fetch of one optional compiler of a probe search. `offer!`, then the answer line `Consent.optional_line` on stderr, then `install_offer!`.
 	## `Present`: another process installed the compiler, so no download was made.
-	fetch_optional! : Fx, { id : Str, env : List((Str, Str)), offline : Bool } => Try([Present, Installed], Fail)
+	## Slice 206e2: `list` as in `offer!`.
+	fetch_optional! : Fx, { id : Str, env : List((Str, Str)), offline : Bool, list ?: Nightlies.Source, registry ?: [Off, First(Try(Str, [Unset])), Later(Try(Str, [Unset]))] } => Try([Present, Installed], Fail)
 	fetch_optional! = |fx, run| match RocInstall.offer!(fx, run)? {
 		Present(_) => Ok(Present)
 		Download(offer) => {
@@ -290,16 +320,17 @@ Entries : List({ name : Str, is_dir : Bool, mtime : U64 })
 Done : { id : Str, item : Str, how : [Installed, Present], default : [Set, Kept], compat : Compat }
 
 # What the steps after the pick need.
-Ctx : { roots : Roots, net : Net.Settings, now : U64, published_at : U64, typed : Str, id : Str, item : Str, asset : Nightlies.Asset, sha : Str, system : Nightlies.Host }
+# Slice 206e2 (R-CV5): `source` is the `sha256_source` of `.talon.json`.
+Ctx : { roots : Roots, net : Net.Settings, now : U64, published_at : U64, typed : Str, id : Str, item : Str, asset : Nightlies.Asset, sha : Str, system : Nightlies.Host, source : Db.Source }
 
 # Steps 2 to 12: `offer!`, the consent, `install_offer!`. `roc install` is a user act: it sets the default when none is set (R-SO15).
 flow! : Fx, Args, Str => Try(Done, Fail)
 flow! = |fx, args, typed| {
 	env = fx.env_all!()
-	noted = RocInstall.offer_noted!(fx, { id: typed, env, offline: args.offline })?
+	noted = RocInstall.offer_noted!(fx, { id: typed, env, offline: args.offline, registry: First(args.registry) })?
 	match noted.offer {
 		Present(found) => {
-			roots = Roots.from_env(env)?
+			roots = Roots.of_run!(fx, env)?
 			default = set_default!(fx, roots, found.id)?
 			Ok({ ..present(roots, found.id), default })
 		}
@@ -380,7 +411,7 @@ build! = |fx, ctx, p, program| {
 	extract!(fx, ctx, p)?
 	set_executable!(fx, ctx, p)?
 	compat = learn_compat!(fx, ctx, p)?
-	meta = Toolchain.meta({ id: ctx.id, url: ctx.asset.url, sha256: ctx.sha, typed: ctx.typed, compat, now: ctx.now, published_at: ctx.published_at })
+	meta = Toolchain.meta_from({ id: ctx.id, url: ctx.asset.url, sha256: ctx.sha, typed: ctx.typed, compat, now: ctx.now, published_at: ctx.published_at }, ctx.source)
 	match fx.write_atomic!([{ path: p.meta, content: meta }]) {
 		Ok(_) => Ok(compat)
 		Err({ path, err }) => Err(Fail.new(Environment, "cannot write ${path}: ${Str.inspect(err)}"))

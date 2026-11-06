@@ -1,0 +1,7 @@
+--- home/.cache/roc/talon/smoke.tsv
++++ home/.cache/roc/talon/smoke.tsv
+@@ -1,2 +1,4 @@
+ 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass
+ 9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	arm64musl	pass
++9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64glibc	hang
++9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	wasm32	crash

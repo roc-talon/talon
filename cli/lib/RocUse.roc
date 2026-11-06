@@ -77,7 +77,7 @@ Offered : RocInstall.Offer
 Done : { id : Str, written : List({ file : Str, previous : Try(Str, [NoPin]) }), probes : U64, downloads : U64, built : Bool, notes : List(Str), toolchain : Try(Str, [Unset]) }
 
 # The facts that steps 7 and 8 share.
-Context : { env : List((Str, Str)), mode : Mode, offline : Bool, auto : [Ask, Yes, No], flag : Try(Answer, [NoFlag]), yes : Bool, quiet : Bool, installed : List(Str), path_roc : Try({ id : Str, path : Str }, [NoCompiler]) }
+Context : { env : List((Str, Str)), mode : Mode, offline : Bool, auto : [Ask, Yes, No], flag : Try(Answer, [NoFlag]), yes : Bool, quiet : Bool, installed : List(Str), path_roc : Try({ id : Str, path : Str }, [NoCompiler]), registry : [Off, First(Try(Str, [Unset])), Later(Try(Str, [Unset]))] }
 
 # Steps 2 to 10.
 flow! : Fx, Args, Str => Try(Done, Fail)
@@ -93,8 +93,13 @@ flow! = |fx, args, text| {
 	loaded = ResolveLoad.load!(fx, request)?
 	fallback = fallback!(fx, request, loaded)?
 	installed = Launch.toolchains!(fx, start.roots)
-	noted = named!(fx, { text, installed, env: start.env, offline: args.offline })?
+	noted = named!(fx, { text, installed, env: start.env, offline: args.offline, flag: args.registry })?
 	target = noted.offer
+	# Slice 206g (R-IX4): the new compiler read the compiler list when it is a download or a step; the baselines then read the kept rows.
+	listed = match target {
+		Download(_) => Bool.True
+		Present(_) => text.starts_with("@")
+	}
 	id = match target {
 		Present({ id: found }) => found
 		Download(offer) => offer.id
@@ -108,7 +113,7 @@ flow! = |fx, args, text| {
 	}
 	# R-C16 (slice 084): `roc use` writes a pin, so a young compiler that only a pattern kept is a new choice, also when it is installed. A pin that equals it changes nothing (the return above): no note.
 	RocInstall.print_note!(fx, args.quiet, noted.note)
-	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler }
+	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler, registry: if listed Later(args.registry) else First(args.registry) }
 	installs = install_all!(fx, args, ctx, { target, id, rows: changes, picked: fallback.picked })?
 	members = changes.map(|r| use_member(loaded, r, id))
 	ran = Ladder.use!(fx, { roots: start.roots, now: start.now, path_roc: compiler, held: id, members, owners: [], downloads: ResolveBase.ladder_downloads(request), probe: { max: 100, timeout: 30, slots: 12, max_toolchains: 10 } })?
@@ -142,6 +147,8 @@ request_of = |args, start, facts| {
 	compiler: facts.compiler,
 	selected: "",
 	none: Stop,
+	index: Direct,
+	registry: Off,
 	toolchain: facts.toolchain,
 	snapshot: Err(Unset),
 	dry_run: Bool.False,
@@ -177,15 +184,14 @@ fallback! = |fx, request, loaded| {
 
 # Step 4, R-U2: the operand names an installed compiler (a unique prefix is expanded), else the compiler of `roc install` (`@latest`, a step, a new id).
 # R-C16: `note` is the note of `RocInstall.offer_noted!` (a step or `@latest` only).
-named! : Fx, { text : Str, installed : List(Str), env : List((Str, Str)), offline : Bool } => Try({ offer : Offered, note : Try(Str, [None]) }, Fail)
+named! : Fx, { text : Str, installed : List(Str), env : List((Str, Str)), offline : Bool, flag : Try(Str, [Unset]) } => Try({ offer : Offered, note : Try(Str, [None]) }, Fail)
 named! = |fx, run| {
-	offer = { id: run.text, env: run.env, offline: run.offline }
 	if run.text.starts_with("@") {
-		RocInstall.offer_noted!(fx, offer)
+		RocInstall.offer_noted!(fx, { id: run.text, env: run.env, offline: run.offline, registry: First(run.flag) })
 	} else {
 		match Nightlies.pick({ text: run.text, named: run.installed, auto: run.installed, base: Err(None) }) {
 			Ok(id) => Ok({ offer: Present({ id: id }), note: Err(None) })
-			Err(NoMatch(_)) => RocInstall.offer_noted!(fx, offer)
+			Err(NoMatch(_)) => RocInstall.offer_noted!(fx, { id: run.text, env: run.env, offline: run.offline, registry: First(run.flag) })
 			Err(error) => Err(Nightlies.failure(error))
 		}
 	}
@@ -221,7 +227,7 @@ install_all! = |fx, args, ctx, run| {
 	baselines = missing_baselines(ctx, run)?
 	var $offers = no_offers
 	for id in baselines {
-		match RocInstall.offer!(fx, { id, env: ctx.env, offline: ctx.offline })? {
+		match RocInstall.offer!(fx, { id, env: ctx.env, offline: ctx.offline, registry: ctx.registry })? {
 			Download(offer) => {
 				$offers = $offers.append(Download(offer))
 			}

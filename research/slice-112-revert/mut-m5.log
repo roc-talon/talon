@@ -1,0 +1,29 @@
+
+── ✗ fail ────────────────────────────────────── tests/unit/IngestTest.roc:303:1
+
+expect {
+    app_plan({}).names
+        == [
+            { id: -3601728077696412455, kind: 1, value: List.repeat(1, 32) },
+            { id: -1064978168533308264, kind: 1, value: List.repeat(2, 32) },
+            { id: 1377047433888313964, kind: 1, value: List.repeat(3, 32) },
+            { id: 1867293425818598420, kind: 2, value: lib_form.to_utf8() },
+            { id: 8104212146272099543, kind: 3, value: "acme/app".to_utf8() },
+            { id: 8403020328855985657, kind: 2, value: app_form.to_utf8() },
+        ]
+}
+
+Mentioned values:
+app_form = "github.com/acme/app/releases/download/{v}/"
+lib_form = "github.com/acme/lib/releases/download/{v}/"
+
+Ran 43 tests in 595.4 ms.:
+    42 passed
+    1 failed
+    0 compiler errors
+PASS ingest/ap26-body-and-route (1712 ms)
+PASS ingest/ik3-id-collision (1837 ms)
+PASS ingest/pu14-pu19-labels (1969 ms)
+PASS ingest/pu4-index-kinds (1966 ms)
+PASS ingest/pu6-not-candidates (2037 ms)
+w2: 5 passed, 0 failed

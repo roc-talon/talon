@@ -1,0 +1,8 @@
+Slice 092 (entry `commands`), the check that does not run or stops after step 2 and 3: R-PT19, R-PT20, R-PT23, Design Q169, Q231, Q232. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). `gh` is a rule of `fx/jobs` (no real `gh`). The release acme/foo 1.1.0 (`tags/1.1.0`, the one call of R-PT20 step 1) has binary assets `<hash>-<target>` with a `digest`; the files of the assets are in `fx/src/bin-<target>`. The commit of the bundle is `1a2b3c4d...`, its workflow is `.github/workflows/release.yml`. The host is Linux x64 (`x64musl`).
+Release 1.1.0 has the assets x64musl and arm64mac, both attested. Each run moves `foo` 1.0.0 to 1.1.0 in its own project. Run 1 builds it (the source path: the platform line, the build line), runs 2 and 3 find that build in the `x` cache.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `update --tool --file p1/main.roc` | the help run of `gh` exits with 1 (`gh` older than 2.68.0): the note `gh is too old`, no `gh auth status`, no download of a binary. `talon.toml` gets no `bin` key. The tool is built from source | R-PT20 step 2, R-PT23, R-PT19, Q169, Q231 |
+| 2 | `update --tool --file p2/main.roc` | `gh auth status` exits with 1: the note `needs gh, logged in`, no bundle download, no binary download. No `bin` key | R-PT20 step 2, R-PT23, Q231 |
+| 3 | `update --tool --file p3/main.roc` | the verify of the bundle exits with 1: one note for the tool (`the bundle has no valid attestation`), no binary is downloaded or verified. No `bin` key | R-PT20 step 3, R-PT23, Q232 |

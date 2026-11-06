@@ -1,0 +1,8 @@
+m1 rc=1
+m2 rc=1
+m3 rc=1
+m4 rc=1
+m5 rc=0
+m7 rc=1
+m8 rc=1
+m9 rc=1

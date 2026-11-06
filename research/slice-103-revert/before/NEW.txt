@@ -1,0 +1,5 @@
+docs/slices/103-triggers.md
+sql/0002_triggers.sql (a stub with a TODO comment)
+sql/tests/cases/triggers/ (t1-publish, t2-sweep-guard, t3-transitions, t4-hint-quota, t5-d1-error-text, t6-batch-rollback)
+sql/tests/cases/schema/s4-int64-ids/migrations, sql/tests/cases/schema/s5-keys-and-checks/migrations (content: 0001)
+research/slice-103-revert/ (reference/, gen-ref.mjs, gen-cases.py, run-ref.sh, mutate.sh)

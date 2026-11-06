@@ -1,0 +1,18 @@
+Slice 206b test step, revert check (2026-11-03).
+A private green reference (L0 l0-1..l0-8 all pass, L2 all 292 cases pass, al2-update-query included) was mutated by hand, one mutation at a time. The reference and the mutate script are deleted (TW18).
+
+M1 IndexQuery.setting: TALON_REGISTRY wins over --registry          caught (L0 IndexqueryTest)
+M2 IndexQuery.setting: a bad config.toml value stops only when it wins caught (L0 IndexqueryTest)
+M3 IndexQuery.groups: movable variables are sent in the first query    caught (L0 IndexqueryTest)
+M4 IndexQuery.groups: series sent also with any_series                 caught (L0 IndexqueryTest)
+M5 flow: no privacy guard before the closure query                     caught (L2 al2-update-query)
+M6 flow: hide_above with an empty keep list (Q403)                     NOT caught: equivalent at the command level. The pick keeps the header value in the domain (R-C9), so no output, call or file changes (also tried: `update parser@1.0.0`, `--strategy lowest`, `json@2.0.0` with log:30). The keep list is fixed by L0 LogsnapshotTest (slice 207).
+M7 flow: the R-DT5 line prints log_size, not the N of --snapshot       caught (L2)
+M8 Opts: the refusal is lifted for every command                       caught (L0 OptsTest)
+M9 flow: no compilers window (None) in place of the held pin           caught (L2, request body)
+
+8 of 9 caught, 1 equivalent.
+
+After the answers Q437 to Q439 (2026-11-03): a private reference (the same code, plus the Q438 line) went green on l0-6, the L2 groups registry/, update/, resolve/ (53 cases, the 2 al2 cases included) and the L3 cases update/rg7-flag-wins-env and update/up1-update-entries. Then deleted with its script.
+N1 a time snapshot prints `log:<n>` only (Q438)                         caught (L2 al2-update-window)
+N2 TALON_REGISTRY is read also when a valid --registry wins (Q439)     caught (L0 IndexqueryTest, L3 rg7-flag-wins-env)

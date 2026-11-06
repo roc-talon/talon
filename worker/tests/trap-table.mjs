@@ -1,0 +1,71 @@
+// The `on_trap` table of the Worker (slice 123d, Registry R-AP82, R-AP21, Design Q440). No route of the Worker can trap, so no W2 case can see these answers. This check reads the
+// manifest of the built app.wasm in Node (as `startApp` of the platform does) and asks the code of the shim that answers a trap (`trapResponse` of .roc-cfw/manifest.js) for each cause.
+//   node worker/tests/trap-table.mjs <dir with app.wasm and .roc-cfw/>      (scripts/test.sh step wtrap: the dir of the wbuild stamp)
+// Checked for each of the 10 causes of API.md 10.3: status, `type`, `title`, `detail` (exact members, no other member, and no text of the crash), `content-type: application/problem+json`,
+// `cache-control: no-store`, and `retry-after: 1` only on `oom` and `shed` (the shim adds it, TR7; the app must not give it on another cause).
+import { readFileSync } from 'node:fs';
+import { join, resolve } from 'node:path';
+import { pathToFileURL } from 'node:url';
+
+const dir = resolve(process.argv[2] ?? '.');
+const shim = (f) => import(pathToFileURL(join(dir, '.roc-cfw', f)).href);
+const { checkManifest, trapResponse } = await shim('manifest.js');
+const { manifestOf } = await shim('runner.js');
+const { manifestEvent } = await shim('events.js');
+
+const busy = (detail) => ({ status: 503, type: '/errors/busy', title: 'Busy', detail });
+const internal = { status: 500, type: '/errors/internal', title: 'Internal error', detail: 'a fault in the Worker' };
+// R-AP82. `result`: a runner result that `causeOf` maps to the cause (js/manifest.js TR2). `retry`: the shim adds `retry-after: 1`.
+const WANT = {
+  crash: { want: internal, result: { trap: 'crash text 1' }, retry: false },
+  alarm: { want: busy('the Worker stopped the request'), result: { trap: 'crash text 2', alarm: true }, retry: false },
+  cpu: { want: busy('the request used its CPU budget'), result: { trap: 'crash text 3', cause: 'cpu', status: 503 }, retry: false },
+  oom: { want: busy('the Worker has no memory for this request'), result: { trap: 'crash text 4', cause: 'oom', status: 503 }, retry: true },
+  shed: { want: busy('the Worker is busy: send the request again'), result: { trap: 'crash text 5', shed: true, status: 503 }, retry: true },
+  deadline: { want: busy('the request used its time budget'), result: { trap: 'crash text 6', cancelled: 'deadline' }, retry: false },
+  cancelled: { want: busy('the Worker stopped the request'), result: { trap: 'crash text 7', cancelled: 'replace' }, retry: false },
+  event: { want: internal, result: { trap: 'crash text 8', cause: 'event' }, retry: false },
+  failed: { want: internal, result: {}, retry: false },
+};
+
+const fails = [];
+const bad = (cause, why) => fails.push(`${cause}: ${why}`);
+let traps;
+try {
+  const bytes = readFileSync(join(dir, 'app.wasm'));
+  const got = manifestOf(new WebAssembly.Module(bytes), manifestEvent());
+  if (got === undefined) throw new Error('app.wasm has no manifest (not a stack-first build)');
+  traps = checkManifest(got).traps;
+} catch (e) {
+  console.log(`FAIL wtrap: ${e.message}`);
+  process.exit(1);
+}
+if (!traps) {
+  console.log('FAIL wtrap: the manifest of app.wasm has no on_trap table: Worker.new({ on_trap }) is missing (R-AP82, slice 123d)');
+  process.exit(1);
+}
+if (!traps.default) bad('default', 'the table has no default');
+else if (traps.default.status !== 500) bad('default', `status ${traps.default.status}, expected 500`);
+
+for (const [cause, { want, result, retry }] of Object.entries(WANT)) {
+  const res = trapResponse(traps, result, '1');
+  const text = await res.text();
+  if (res.status !== want.status) bad(cause, `status ${res.status}, expected ${want.status}`);
+  if (res.headers.get('content-type') !== 'application/problem+json') bad(cause, `content-type ${res.headers.get('content-type')}, expected application/problem+json`);
+  if (res.headers.get('cache-control') !== 'no-store') bad(cause, `cache-control ${res.headers.get('cache-control')}, expected no-store`);
+  if (res.headers.get('retry-after') !== (retry ? '1' : null)) bad(cause, `retry-after ${res.headers.get('retry-after')}, expected ${retry ? '1' : 'none'}`);
+  let body;
+  try { body = JSON.parse(text); } catch { bad(cause, `the body is not JSON: ${text.slice(0, 80)}`); continue; }
+  const exp = { type: want.type, title: want.title, status: want.status, detail: want.detail };
+  if (JSON.stringify(Object.entries(body).sort()) !== JSON.stringify(Object.entries(exp).sort())) bad(cause, `body ${text}, expected ${JSON.stringify(exp)}`);
+  if (text.includes('crash text')) bad(cause, 'the body has the text of the crash (TR8)');
+}
+// The table itself: no `retry-after` of the app on a cause that must not have it (the shim adds it for oom and shed only).
+for (const [cause, f] of Object.entries(traps)) {
+  const has = f.headers.some(([n]) => n.toLowerCase() === 'retry-after');
+  if (has && cause !== 'oom' && cause !== 'shed') bad(cause, 'the app gives retry-after');
+}
+
+for (const f of fails) console.log(`FAIL wtrap ${f}`);
+console.log(`wtrap: ${Object.keys(WANT).length} causes, ${fails.length} failures`);
+process.exit(fails.length ? 1 : 0);

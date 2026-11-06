@@ -1,0 +1,33 @@
+All (26) tests passed in 402.7 ms.
+PASS reconcile/pu21-poll-job (2794 ms)
+FAIL reconcile/pu23-list (3734 ms)
+    d1-calls: request 1: expected 5, got 6 (all,batch,batch,batch,batch,batch)
+FAIL reconcile/pu25-reserve (2624 ms)
+    d1-calls: request 1: expected 3, got 4 (all,batch,batch,batch)
+    worker log: {"level":"warn","msg":"reconcile rate reserve","moved":2,"reset_ms":1767229800000}
+PASS reconcile/pu36-overlap (2788 ms)
+FAIL reconcile/pu37-backoff (3002 ms)
+    d1-calls: request 1: expected 6, got 7 (all,batch,batch,batch,batch,batch,batch)
+    d1-calls: request 2: expected 3, got 4 (all,batch,batch,batch)
+    d1-calls: request 3: expected 2, got 3 (all,batch,batch)
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":1,"job":"reconcile","repository_id":501}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":5,"job":"reconcile","repository_id":504}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 502","fail_count":1,"job":"reconcile","repository_id":505}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":2,"job":"reconcile","repository_id":501}
+FAIL reconcile/pu37-etag-effects (2957 ms)
+    github: GET https://api.github.com/repos/acme/lib/releases?per_page=100: the header if-none-match is "W/\"new\"", expected "W/\"old\""
+    request 2: queue_sent: expected [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9002,"repository_id":500,"repository_ids":[]},"delay_s":0}], got []
+    d1-calls: request 1: expected 4, got 6 (all,batch,batch,batch,batch,batch)
+    d1-calls: request 2: expected 3, got 4 (all,batch,batch,batch)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\tW/\"new\"\t1767225900000\t1767229500000\t0\t0","acme/two\tW/\"boom\"\t1767225900000\t1767229500000\t0\t0"]
+      got:      ["acme/lib\tW/\"new\"\t1767225600000\t1767226500000\t2\t0","acme/two\tW/\"boom\"\t1767225900000\t1767229500000\t0\t0"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\tdeleted\t1767225900000","2\tacme/two\t1.0.0\tdeleted\t1767225900000"]
+      got:      ["1\tacme/lib\t1.0.0\tdeleted\t1767225600000","2\tacme/two\t1.0.0\tdeleted\t1767225900000"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"d1 batch: Constraint({ kind: Trigger, message: \"test: the etag write is refused\" })","fail_count":1,"job":"reconcile","repository_id":600}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"queue send: Infra(QueueErr({ message: \"test: the queue send is refused (TEST_INDEX_FAIL_SENDS)\", name: \"Error\" }))","fail_count":1,"job":"reconcile","repository_id":500}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 599","fail_count":2,"job":"reconcile","repository_id":500}
+PASS webhook/pu13-index-new (1105 ms)
+PASS webhook/pu17-withdraw-clear (1282 ms)
+w2: 4 passed, 4 failed

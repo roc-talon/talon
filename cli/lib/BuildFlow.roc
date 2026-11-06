@@ -3,6 +3,7 @@ import BuildTarget
 import Facts
 import Fail
 import Fx
+import Ident
 import Probe
 import Text
 import UnitFlow
@@ -28,20 +29,36 @@ BuildFlow :: [].{
 
 	## What step 3 does for one member. `skip` is true when the build does not run. `id` is the build id when the key is known, else `Err(NoId)` (no skip is possible, nothing is recorded).
 	## Slice 054 (R-TG1, R-TG2): `target` is the build target of the member (`BuildTarget.pick`): the build probe gets it (`LadderPlan.with_target`), and the id has it in its key. `Unlisted` for a member with no id (no key, no platform hash).
-	Plan : { skip : Bool, id : Try(BuildSkip.Id, [NoId]), target : BuildTarget.Chosen }
+	Plan : { skip : Bool, id : Try(BuildSkip.Id, [NoId]), target : BuildTarget.Chosen, header : Str, url : Str, local_pass : Bool }
 
 	## `used` is the result of the scan of the verdict of step 1 (`Ok`), or `Err(NotScanned)` when step 1 did no scan.
 	before! : Fx, UnitFlow.Ctx, { used : Try(List(BuildSkip.Used), [NotScanned]) } => Try(BuildFlow.Plan, Fail)
 	before! = |fx, ctx, run| {
-		plain = { skip: Bool.False, id: Err(NoId), target: Unlisted }
+		plain = { skip: Bool.False, id: Err(NoId), target: Unlisted, header: "", url: "", local_pass: Bool.False }
 		pf = match BuildSkip.pf_hash(ctx.nodes) {
 			Ok(hash) => hash
 			Err(NoPlatform) => return Ok(plain)
 		}
 		system = fx.platform!()
-		listed = match fx.read_files!([Text.join(ctx.roots.pkgs, "${pf}/main.roc")]) {
-			[Ok(text)] => BuildTarget.targets_of(text)
-			_ => Err(NoSection)
+		header = match fx.read_files!([Text.join(ctx.roots.pkgs, "${pf}/main.roc")]) {
+			[Ok(text)] => Ok(text)
+			_ => Err(NoText)
+		}
+		listed = match header {
+			Ok(text) => BuildTarget.targets_of(text)
+			Err(NoText) => Err(NoSection)
+		}
+		# Slice 218 (Q549): the URL of the platform of the built tuple, from the release row of its hash.
+		url = match ctx.walked.rows.find_first(
+			|row| row.kind == Release and (
+				match Ident.of_url(row.id) {
+					Ok(ident) => ident.hash == pf
+					Err(_) => Bool.False
+				}
+			),
+		) {
+			Ok(row) => row.id
+			Err(_) => ""
 		}
 		chosen = BuildTarget.pick({ project: ctx.target, host: BuildTarget.host(system), found: listed, file: ctx.member.file })?
 		key = match BuildTarget.key({ pf, nightly: ctx.started.id, chosen, system }) {
@@ -58,7 +75,9 @@ BuildFlow :: [].{
 			Skip => Bool.True
 			Build => Bool.False
 		}
-		Ok({ skip, id: Ok({ key, digest }), target: chosen })
+		# Slice 209b (Q559): a local build `pass` of the key with any digest wins over a smoke row of the answer.
+		local_pass = facts.any(|row| row.hash == key.hash and row.nightly == key.nightly and row.target == key.target and row.outcome == Pass)
+		Ok({ skip, id: Ok({ key, digest }), target: chosen, header: header ?? "", url, local_pass })
 	}
 
 	## The record of the result of a build that ran (pass, fail, hang or crash). `output` is the output of the build probe, `dir` is the dir of the probe and `pkgs` is `Roots.pkgs` (for `Probe.errors`).

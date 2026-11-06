@@ -2,6 +2,7 @@ import pf.Cmd
 import pf.Http
 import pf.Env
 import pf.Path
+import pf.Sleep
 import pf.Stderr
 import pf.Stdin
 import pf.Stdout
@@ -51,6 +52,9 @@ real_fx = |args, token| Fx.{
 	lock!: |item, mode| RealLocks.take_lock!(token, item, mode),
 	unlock!: RealLocks.release_lock!,
 	http_get!: http_get!,
+	http_send!: http_send!,
+	http_all!: |batch| http_all!(token, batch),
+	sleep!: sleep!,
 	programs!: programs!,
 	spawn_all!: |batch| RealJobs.run_jobs!(token, batch),
 	rename!: rename!,
@@ -207,6 +211,169 @@ http_get! = |req| {
 		Err(HttpErr(other)) => Err(Failed(Str.inspect(other)))
 		Err(Interrupted) => Err(Failed("interrupted"))
 	}
+}
+
+## Slice 200. One request with a method, a body and a timeout for the whole answer (R-DA9). `Fx` adds no header. An empty `body` is no body.
+http_send! : { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
+http_send! = |req| {
+	method = match req.method {
+		Get => GET
+		Post => POST
+		Put => PUT
+		Delete => DELETE
+	}
+	base = Request.from_method(method).with_uri(req.url).with_timeout(TimeoutMilliseconds(req.timeout_s * 1000))
+	with_headers = req.headers.fold(base, |r, (name, value)| r.add_header(name, value))
+	request = if req.body.is_empty() with_headers else with_headers.with_body(req.body.to_utf8())
+	match Http.send!(request, {}) {
+		Ok(response) => match Str.from_utf8(Response.body(response)) {
+			Ok(body) => Ok({
+				status: Response.status(response),
+				headers: Response.headers(response).map(|h| (h.name, h.value)),
+				body,
+			})
+			Err(_) => Err(Failed("bad body"))
+		}
+		Err(InvalidUrl(_)) => Err(Failed("invalid URL"))
+		Err(HttpErr(Timeout)) => Err(Timeout)
+		Err(HttpErr(NetworkError)) => Err(Failed("network error"))
+		Err(HttpErr(BadBody)) => Err(Failed("bad body"))
+		Err(HttpErr(Other(bytes))) => Err(Failed(Str.from_utf8_lossy(bytes)))
+		Err(HttpErr(other)) => Err(Failed(Str.inspect(other)))
+		Err(Interrupted) => Err(Failed("interrupted"))
+	}
+}
+
+HttpRequest : { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 }
+
+HttpAnswer : Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
+
+## Slice 200, R-DA5, R-DA8, R-CC2. At most `limit` `curl` children at the same time (a limit of 0 runs 1), the results in the order of the list.
+## A request with `Authorization` or `Talon-Contributor` is not sent: `Failed("credential")`. A body is a file in `tmp_dir`, removed after the batch.
+http_all! : Str, { requests : List(HttpRequest), limit : U64, tmp_dir : Str } => List(HttpAnswer)
+http_all! = |token, batch| {
+	if batch.requests.is_empty() {
+		[]
+	} else {
+		var $made = Bool.False
+		var $files = []
+		var $jobs = []
+		var $slots = []
+		for req in batch.requests {
+			if has_credential(req.headers) {
+				$slots = $slots.append(Err(Failed("credential")))
+			} else {
+				body_arg = if req.body.is_empty() {
+					Ok([])
+				} else {
+					if !$made {
+						_ = Path.create_all!(Path.utf8(batch.tmp_dir))
+						$made = Bool.True
+					}
+					file = "${batch.tmp_dir}/http-${Temp.hex(RealBase.draw!())}"
+					$files = $files.append(file)
+					match Path.write_bytes!(Path.utf8(file), req.body.to_utf8()) {
+						Ok(_) => Ok(["--data-binary", "@${file}"])
+						Err(_) => Err(Failed("body file"))
+					}
+				}
+				match body_arg {
+					Ok(body_args) => {
+						$slots = $slots.append(Ok($jobs.len()))
+						$jobs = $jobs.append({ argv: curl_argv(req, body_args), cwd: Err(Inherit) })
+					}
+					Err(failure) => {
+						$slots = $slots.append(Err(failure))
+					}
+				}
+			}
+		}
+		results = RealJobs.run_jobs!(token, { jobs: $jobs, limit: batch.limit })
+		for file in $files {
+			_ = Path.delete!(Path.utf8(file))
+		}
+		$slots.map(
+			|slot| match slot {
+				Ok(i) => match results.get(i) {
+					Ok(result) => curl_answer(result)
+					Err(_) => Err(Failed("not run"))
+				}
+				Err(failure) => Err(failure)
+			},
+		)
+	}
+}
+
+has_credential : List((Str, Str)) -> Bool
+has_credential = |headers| headers.any(
+	|(name, _)| {
+		lower = name.with_ascii_lowercased()
+		lower == "authorization" or lower == "talon-contributor"
+	},
+)
+
+curl_argv : HttpRequest, List(Str) -> List(Str)
+curl_argv = |req, body_args| {
+	method = match req.method {
+		Get => "GET"
+		Post => "POST"
+		Put => "PUT"
+		Delete => "DELETE"
+	}
+	head = ["curl", "--silent", "--show-error", "--include", "--proto", "=https,http", "--max-time", req.timeout_s.to_str(), "--request", method, "-H", "Expect:"]
+	with_headers = req.headers.fold(head, |args, (name, value)| args.concat(["-H", "${name}: ${value}"]))
+	with_headers.concat(body_args).concat(["--url", req.url])
+}
+
+## The answer of a `curl --include` child: the status line and the headers (a `1xx` block is skipped), then the body.
+curl_answer : { ended : [Exited(I32), Signaled(I32), NotStarted(Str)], stdout : Str, stderr_last : Str } -> HttpAnswer
+curl_answer = |result| match result.ended {
+	NotStarted(text) => Err(Failed(text))
+	Signaled(_) => Err(Failed("curl was ended by a signal"))
+	Exited(28) => Err(Timeout)
+	Exited(0) => match parse_include(result.stdout) {
+		Ok(answer) => Ok(answer)
+		Err(_) => Err(Failed("bad answer"))
+	}
+	Exited(code) => Err(Failed("curl exit ${code.to_str()}: ${result.stderr_last}"))
+}
+
+parse_include : Str -> Try({ status : U16, headers : List((Str, Str)), body : Str }, [BadAnswer])
+parse_include = |text| {
+	if !text.starts_with("HTTP/") {
+		Err(BadAnswer)
+	} else {
+		match text.split_first("\r\n\r\n") {
+			Ok({ before, after }) => {
+				lines = before.split_on("\r\n")
+				status = match lines.first() {
+					Ok(line) => match line.split_on(" ").get(1) {
+						Ok(code) => U16.from_str(code) ?? 0
+						Err(_) => 0
+					}
+					Err(_) => 0
+				}
+				if status >= 100 and status < 200 {
+					parse_include(after)
+				} else {
+					headers = lines.drop_first(1).keep_oks(
+						|line| match line.split_first(":") {
+							Ok({ before: name, after: value }) => Ok((name.trim(), value.trim()))
+							Err(_) => Err(BadAnswer)
+						},
+					)
+					Ok({ status, headers, body: after })
+				}
+			}
+			Err(_) => Err(BadAnswer)
+		}
+	}
+}
+
+## Slice 200. Waits `ms` milliseconds (basic-cli `Sleep.millis!`).
+sleep! : U64 => {}
+sleep! = |ms| {
+	_ = Sleep.millis!(ms)
 }
 
 ## Whether each program is on `PATH` (basic-cli `Cmd.check_available!`).

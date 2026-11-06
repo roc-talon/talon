@@ -1,0 +1,7 @@
+status 403
+header Content-Type: application/json
+header Cache-Control: no-store
+require authorization: Bearer jwt1
+require user-agent: tln/0.0.1
+require content-type: application/json
+require-none talon-contributor

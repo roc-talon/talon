@@ -1,0 +1,23 @@
+== update --no-check --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --snapshot 2026-10-01T00:00:00Z --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-01T00:00:00Z (log:50), 0 probes
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --json --snapshot 2026-10-01T00:00:00Z --file u1/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"2026-10-01T00:00:00Z","log_size":50,"probes":0,"downloads":0,"dry_run":true,"check":"skipped","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}},{"alias":"parser","from":{"name":"acme/parser","version":"1.0.0"},"to":{"name":"acme/parser","version":"1.1.0"}},{"alias":"pf","from":{"name":"acme/pfx","version":"0.1.0"},"to":{"name":"acme/pfx","version":"0.1.1"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":["platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1"],"written":[]},"error":null}
+exit 0

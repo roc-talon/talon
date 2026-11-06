@@ -1,0 +1,13 @@
+guard repo:acme/pub env:GITHUB_TOKEN=tok1
+guard repo:acme/pub env:GITHUB_TOKEN=tok1
+guard repo:acme/priv env:GITHUB_TOKEN=tok1
+guard repo:acme/none
+guard repo:acme/none2 env:GITHUB_TOKEN=tok1
+guard repo:acme/priv offline
+guard repo:acme/priv frozen
+guard short:priv
+guard group:example.com/pkg/{v}/ url:https://example.org/a/b/releases/download/1/h.tar.zst
+guard group:github.com/acme/pub2/releases/download/{v}/ url:https://github.com/acme/pub3/releases/download/1.0.0/h.tar.zst repo:acme/pub2 repo:acme/pub env:GITHUB_TOKEN=tok1
+guard repo:acme/limited env:GITHUB_TOKEN=tok1
+guard repo:acme/slow env:GITHUB_TOKEN=tok1
+guard repo:acme/hook env:TALON_GITHUB_API=http://127.0.0.1:1/api env:GITHUB_TOKEN=tok1 env:GH_TOKEN=tok2

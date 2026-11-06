@@ -1,0 +1,15 @@
+All (14) tests passed in 234.1 ms.
+PASS identity/q262-row-race (3274 ms)
+PASS identity/tp10-301-followed (3265 ms)
+PASS identity/tp10-rename (3542 ms)
+PASS identity/tp18-301-no-row (3261 ms)
+FAIL identity/tp18-rename-back (3526 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/a\t100\t10\t0\t\\N\t1767225630000\t1767000000000","acme/b\t100\t10\t2\tacme/c\t1767000000000\t1767000000000","acme/c\t100\t10\t2\tacme/a\t1767225630000\t1767000000000"]
+      got:      ["acme/a\t100\t10\t2\tacme/b\t1767000000000\t1767000000000","acme/b\t100\t10\t2\tacme/c\t1767000000000\t1767000000000","acme/c\t100\t10\t2\tacme/a\t1767225630000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/a\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/a\t2\t2\t100\t100\t10\t10\tacme/b\t\\N\t1767000000000","acme/a\t3\t2\t100\t100\t10\t10\t\\N\t\\N\t1767225630000","acme/b\t1\t2\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/b\t2\t2\t100\t100\t10\t10\tacme/c\t\\N\t1767000000000","acme/c\t1\t2\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/c\t2\t2\t100\t100\t10\t10\tacme/a\t\\N\t1767225630000"]
+      got:      ["acme/a\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/a\t2\t2\t100\t100\t10\t10\tacme/b\t\\N\t1767000000000","acme/b\t1\t2\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/b\t2\t2\t100\t100\t10\t10\tacme/c\t\\N\t1767000000000","acme/c\t1\t2\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/c\t2\t2\t100\t100\t10\t10\tacme/a\t\\N\t1767225630000"]
+PASS identity/tp9-four-rows (3858 ms)
+PASS identity/tp9-private-first (1004 ms)
+w2: 6 passed, 1 failed

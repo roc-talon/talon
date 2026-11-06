@@ -1,0 +1,6 @@
+Slice 115b, case a1-audit (the statement `audit` of GET /v1/compat_hints?audit=n, Registry R-AP40, R-MX13).
+  R-AP40: the pairs (hash, nightly, target) that have compat_hints rows and no `bot` row, with the counts added up over the Talon versions, the largest total first.
+  R-RE8, R-EF3: an `author` row does not remove a pair (only a `bot` row does). A pair on another target is another pair.
+  R-MX13: unit checks (target `any`) and platform targets only: a hint with a real target on an app (a tool build) is not in the list. The bot builds no tool app.
+  R-MX16: a pair on a nightly with no toolchains row has no tag, so it is not in the list.
+  R-AP67 (Design Q151): the order of equal totals is the hash bytes, then the nightly id, then the target code. The limit ?1 cuts the list (0 gives no pair).

@@ -1,0 +1,4 @@
+status 403
+header Content-Type: application/json
+header Cache-Control: no-store
+require authorization: bearer req1

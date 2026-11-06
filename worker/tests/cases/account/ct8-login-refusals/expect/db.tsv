@@ -1,0 +1,5 @@
+@ SELECT contributor, login, tokens_after, first_time, last_time FROM contributors ORDER BY contributor
+77	other	1767225600000	1767225600000	1767225600000
+@ SELECT CAST(machine AS TEXT), contributor, time FROM links ORDER BY machine
+@ SELECT hex(substr(n.value, 1, 1)) AS h, CAST(c.contributor AS TEXT) AS contributor, c.nightly, c.target, c.result, c.time FROM contributions c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.nightly, c.target, c.contributor
+@ SELECT CAST(contributor AS TEXT), counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor

@@ -1,0 +1,3 @@
+# R-SH9, Q480: logout when share.json has no JWT: no clock call, no request, no write; the text says that there is no login; exit 0. --json: data logged_out false.
+share logout
+share logout --json

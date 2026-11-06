@@ -1,0 +1,8 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json

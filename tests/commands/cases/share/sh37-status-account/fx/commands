@@ -1,0 +1,3 @@
+# R-SH8, R-AP35, R-SH5, R-OUT2: share with a live JWT: after the local lines, the clock is read and GET /v1/contributors/me goes with Authorization: Bearer <JWT> (no Talon-Contributor). The answer 200 gives the login and the totals of the account. share.json is not written (no lock). Run 2: --json, the member account in data.
+share
+share --json

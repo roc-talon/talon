@@ -1,0 +1,10 @@
+Apply when the Worker `Problem.Kind` has `Busy` (records slice 104j, then the Worker copy `worker/lib/Problem.roc`: type_uri, kebab, status 503, title "Busy").
+It cannot be in the tree before: the tag `Busy` does not exist, and the whole W0 would not compile.
+File: worker/tests/unit/ProblemTest.roc
+
+1. In `types`, after the row (Upstream, ...):
+	(Busy, "/errors/busy", 503, "Busy"),
+   and change the comment "each of the 17 problem types" to 18 (R-AP21 has /errors/busy, R-AP82).
+
+Note for the code agent of 123d: R-AP82 gives the `title` "Internal Server Error" for the 500 of a trap. `Problem.title(Internal)` is "Internal error" (slice 101, a TW24 proposal that the W2 cases of earlier slices
+check). So the bodies of the 500 trap answers are not `Problem.to_json(Problem.new(Internal, ..))`: write the text of R-AP82 in the table. The Node check `worker/tests/trap-table.mjs` has the exact texts.

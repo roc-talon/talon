@@ -5,20 +5,24 @@ DelTest :: [].{}
 # Slice 050c (docs/slices/050c-windows-del.md): the pure decisions of the `.del` files of Windows (CLI 6.7, R-ST10). The expected value of each row is the design text or the slice file text, not the code. A wrong row prints with `dbg`.
 # `TalonUpdate.is_del`, `stale` and `del_moves` (slice 050) have their rows in `TalonUpdateTest` 8: the rows here use them only through `Del`. The `Fx` calls are in the L2 cases `tests/commands/cases/tool/dl1-sweep`, `dl1b-denied`, `dl2-tool-windows`.
 
-# R-ST10: the dirs of the sweep at each start of `tln` on Windows: the bin dir (`%USERPROFILE%\.local\bin`, R-LY8), then the data bin dir (`<data>/bin`, R-T3, with the roots of `Roots.from_env`). A dir whose variable is not set (or is empty) is left out, with no failure: the sweep never stops a command. The sweep is no part of `Del`: the order of the 2 dirs is the order of the files in the L2 `calls.log`.
+# R-ST10 R-LY7 (slice 088c): the dirs of the sweep at each start of `tln` on Windows: the bin dir (`%USERPROFILE%\.local\bin`, R-LY8), then the data bin dir (`<data>/bin` with the roots of Windows, `Roots.from_env_on(Windows, env)`: `%LOCALAPPDATA%\talon`, R-LY7; the join of `bin` is `/` as `Roots.item`). `Del.dirs` has no new parameter: the sweep runs on Windows only (`Run.run!` checks `Fx.windows!`), so it always uses the Windows form. Without `LOCALAPPDATA` the data root is `<HOME>\.local\share\talon` (Q211). `XDG_DATA_HOME` is no part of the Windows data root. The roots of Windows need `APPDATA` too (or `HOME`): with none of them the roots fail, and the data bin dir is left out. A dir whose variables are not set (or are empty) is left out, with no failure: the sweep never stops a command. The order of the 2 dirs is the order of the files in the L2 `calls.log`.
 expect {
+	local = "C:\\Users\\u\\AppData\\Local"
+	roaming = "C:\\Users\\u\\AppData\\Roaming"
+	bin = "C:\\Users\\u\\.local\\bin"
+	data = "C:\\Users\\u\\AppData\\Local\\talon/bin"
 	rows = [
-		("both", [("USERPROFILE", "C:\\Users\\u"), ("HOME", "/h")], ["C:\\Users\\u\\.local\\bin", "/h/.local/share/talon/bin"]),
-		("a `\\` at the end of USERPROFILE", [("USERPROFILE", "C:\\Users\\u\\"), ("HOME", "/h")], ["C:\\Users\\u\\.local\\bin", "/h/.local/share/talon/bin"]),
-		("XDG_DATA_HOME wins for the data dir", [("USERPROFILE", "C:\\Users\\u"), ("HOME", "/h"), ("XDG_DATA_HOME", "/xd")], ["C:\\Users\\u\\.local\\bin", "/xd/talon/bin"]),
-		("XDG_DATA_HOME that is no absolute path is ignored", [("USERPROFILE", "C:\\Users\\u"), ("HOME", "/h"), ("XDG_DATA_HOME", "xd")], ["C:\\Users\\u\\.local\\bin", "/h/.local/share/talon/bin"]),
-		("no HOME, but the 3 XDG dirs", [("USERPROFILE", "C:\\Users\\u"), ("XDG_CACHE_HOME", "/xc"), ("XDG_CONFIG_HOME", "/xf"), ("XDG_DATA_HOME", "/xd")], ["C:\\Users\\u\\.local\\bin", "/xd/talon/bin"]),
-		("no HOME and no XDG dirs: only the bin dir", [("USERPROFILE", "C:\\Users\\u")], ["C:\\Users\\u\\.local\\bin"]),
-		("no USERPROFILE: only the data bin dir", [("HOME", "/h")], ["/h/.local/share/talon/bin"]),
-		("USERPROFILE is empty", [("USERPROFILE", ""), ("HOME", "/h")], ["/h/.local/share/talon/bin"]),
-		("HOME is empty", [("USERPROFILE", "C:\\Users\\u"), ("HOME", "")], ["C:\\Users\\u\\.local\\bin"]),
-		("no variable", [("PATH", "/bin")], []),
-		("both empty", [("USERPROFILE", ""), ("HOME", "")], []),
+		("both", [("USERPROFILE", "C:\\Users\\u"), ("LOCALAPPDATA", local), ("APPDATA", roaming)], [bin, data]),
+		("a `\\` at the end of USERPROFILE and LOCALAPPDATA", [("USERPROFILE", "C:\\Users\\u\\"), ("LOCALAPPDATA", "${local}\\"), ("APPDATA", "${roaming}\\")], [bin, data]),
+		("LOCALAPPDATA wins over HOME", [("USERPROFILE", "C:\\Users\\u"), ("LOCALAPPDATA", local), ("APPDATA", roaming), ("HOME", "C:\\h")], [bin, data]),
+		("XDG_DATA_HOME is not read on Windows", [("USERPROFILE", "C:\\Users\\u"), ("LOCALAPPDATA", local), ("APPDATA", roaming), ("XDG_DATA_HOME", "/xd")], [bin, data]),
+		("no LOCALAPPDATA: the HOME form", [("USERPROFILE", "C:\\Users\\u"), ("HOME", "C:\\h")], [bin, "C:\\h\\.local\\share\\talon/bin"]),
+		("no LOCALAPPDATA and no HOME: only the bin dir", [("USERPROFILE", "C:\\Users\\u")], [bin]),
+		("no USERPROFILE: only the data bin dir", [("LOCALAPPDATA", local), ("APPDATA", roaming)], [data]),
+		("USERPROFILE is empty", [("USERPROFILE", ""), ("LOCALAPPDATA", local), ("APPDATA", roaming)], [data]),
+		("LOCALAPPDATA is empty and no HOME", [("USERPROFILE", "C:\\Users\\u"), ("LOCALAPPDATA", "")], [bin]),
+		("no variable", [("PATH", "C:\\bin")], []),
+		("both empty", [("USERPROFILE", ""), ("LOCALAPPDATA", "")], []),
 		("an empty environment", [], []),
 	]
 	bad = rows.keep_if(|(_, env, want)| Del.dirs(env) != want).map(|(name, _, _)| name)

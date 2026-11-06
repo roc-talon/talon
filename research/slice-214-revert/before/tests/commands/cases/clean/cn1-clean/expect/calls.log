@@ -1,0 +1,62 @@
+args
+env_all
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+args
+env_all
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+args
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+tty
+ask "Remove 7 cache dirs, 236 B? [Y/n] "
+args
+env_all
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+tty
+ask "Remove 2 cache dirs, 82 B? [Y/n] "
+lock $HOME/.cache/roc/talon/gc nowait: held
+delete $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+lock $HOME/.cache/roc/talon/gc nowait: held
+delete $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages
+args
+env_all
+tree_info $HOME/h4/.cache/roc/talon/index $HOME/h4/.cache/roc/talon/x
+tty
+ask "Remove 2 cache dirs, 11 B? [Y/n] "
+args
+env_all
+tree_info $HOME/h3/.cache/roc/talon/index $HOME/h3/.cache/roc/talon/x
+lock $HOME/h3/.cache/roc/talon/gc nowait: busy
+lock $HOME/h3/.cache/roc/talon/gc wait: held
+delete $HOME/h3/.cache/roc/talon/index $HOME/h3/.cache/roc/talon/x
+unlock $HOME/h3/.cache/roc/talon/gc
+args
+env_all
+list_dirs $HOME/h2/.cache/roc
+tree_info $HOME/h2/.cache/roc/talon/index $HOME/h2/.cache/roc/talon/x $HOME/h2/.cache/roc/packages $HOME/h2/.cache/roc/compat-ten
+lock $HOME/h2/.cache/roc/talon/gc nowait: held
+delete $HOME/h2/.cache/roc/talon/index $HOME/h2/.cache/roc/compat-ten
+unlock $HOME/h2/.cache/roc/talon/gc

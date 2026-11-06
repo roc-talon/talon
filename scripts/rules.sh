@@ -6,8 +6,8 @@
 # A test names a rule in a comment (`# R-H3: ...`) or in its case directory name (`r-h3-...`).
 set -u
 cd "$(dirname "$0")/.."
-# `install/test.sh` is a test (slice 052). `cli/` and `worker/` hold code, not tests. A rule id in a code comment is no test (slice 001).
-TEST_DIRS=$(ls -d tests packages install 2>/dev/null)
+# `install/test.sh` is a test (slice 052). `sql/tests/` and `worker/tests/` are tests (TW36, slice 101). `cli/` and the rest of `worker/` hold code, not tests. A rule id in a code comment is no test (slice 001).
+TEST_DIRS=$(ls -d tests packages install sql/tests worker/tests 2>/dev/null)
 want=${*:-}
 printf "id\tfile\tsection\ttests\n"
 for f in DESIGN*.md; do

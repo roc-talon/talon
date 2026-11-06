@@ -1,0 +1,23 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/IdentityTest.roc:59:1
+
+expect {
+    moved = row(Moved, Ok(99), 2000)
+    missing = row(Missing, Err(None), 2000)
+    decide(Ok(moved), 101, 10)
+        == Ok({ row: { ..moved, repository_id: 101, state: Active, successor: Err(None), state_at: now }, events: [event(Recreate, Ok(100), Ok(101), Ok(10), Ok(10), Err(None))] })
+        and decide(Ok(missing), 101, 10)
+            == Ok({ row: { ..missing, repository_id: 101, state: Active, state_at: now }, events: [event(Recreate, Ok(100), Ok(101), Ok(10), Ok(10), Err(None))] })
+}
+
+Mentioned values:
+now = 5000
+
+Ran 13 tests in 222.5 ms.:
+    12 passed
+    1 failed
+    0 compiler errors
+PASS identity/tp10-301-followed (1880 ms)
+PASS identity/tp10-rename (2009 ms)
+PASS identity/tp9-four-rows (2216 ms)
+w2: 3 passed, 0 failed

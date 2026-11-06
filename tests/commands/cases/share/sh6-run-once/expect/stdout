@@ -1,0 +1,12 @@
+== run go cwd:p1
+$HOME/.cache/roc
+$HOME/.cache/roc
+exit 0
+== env:TALON_SHARE_ASKED=1 run go cwd:p1
+$HOME/.cache/roc
+$HOME/.cache/roc
+exit 0
+== env:HOME={w}/home/h2 run go cwd:p1
+$HOME/h2/.cache/roc
+$HOME/h2/.cache/roc
+exit 0

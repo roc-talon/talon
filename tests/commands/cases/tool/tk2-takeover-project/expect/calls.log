@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -29,6 +30,7 @@ rename $HOME/.local/bin/foo.0123456789abcdef.tmp $HOME/.local/bin/foo
 write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
+env_all
 env_all
 clock
 platform
@@ -60,6 +62,7 @@ write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -89,6 +92,7 @@ rename $HOME/.local/bin/tl.0123456789abcdef.tmp $HOME/.local/bin/tl
 write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
+env_all
 env_all
 clock
 platform
@@ -120,6 +124,7 @@ write_atomic $HOME/.local/share/talon/tools.json
 delete $HOME/.cache/roc/talon/x/bd0fe87166e62184689484b0bb096d96b8735461d30071fca0b8955dbcbf9a9d
 unlock $HOME/.local/share/talon/tools.json
 args
+env_all
 env_all
 clock
 platform

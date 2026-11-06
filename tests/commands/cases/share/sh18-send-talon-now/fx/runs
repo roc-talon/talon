@@ -1,0 +1,2 @@
+# R-SH6, R-EV22, Q457: TALON_NOW fixes the times first_sent_at and last_sent_at (the clock call is still made once).
+queue-send 0.9.0 env:TALON_NOW=2026-11-03T09:00:00Z

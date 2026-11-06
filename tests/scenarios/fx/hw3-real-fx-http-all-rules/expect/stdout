@@ -1,0 +1,35 @@
+== limit 0 runs 1 request at a time (Q226): the results are in list order and the server saw 1 request at a time
+result 0 status 200 body a-body
+result 1 status 200 body b-body
+1
+== the command line (R-DA8 rules 2 to 5): the body is a file in tmp_dir, no --fail, no --location, --proto =https,http, --max-time. The temp files are gone after the call (R-CC2).
+result 0 status 200 body {"ok":true}
+result 1 status 200 body fast
+fail: 0
+location: 0
+proto: 2
+max-time 7: 2
+body file in tmp_dir: 1
+header as -H: 2
+temp files left: 0
+== a request with Authorization or Talon-Contributor is not sent and gets Failed (R-DA8 rule 1, Q6 proposal): no secret on a command line, no request at the server
+result 0 err Failed
+result 1 err Failed
+result 2 status 200 body z
+secret in argv: 0
+requests for x and y: 0
+requests for z: 1
+== the header names match in any case (R-DA8 rule 1, Q228): h:authorization and h:TALON-CONTRIBUTOR give Failed, no secret in the arguments, no request at the server
+result 0 err Failed
+result 1 err Failed
+result 0 err Failed
+result 1 err Failed
+secret in argv: 0
+requests for lc and uc: 0
+== no curl on PATH: each result is Failed, no crash (R-DA8, Q7 proposal: the command asks programs! first and stops with exit 18)
+result 0 err Failed
+result 1 err Failed
+== the timeout is the time of the whole answer (R-DA9): the first bytes come at once, the body takes 2 s, the timeout is 1 s. http_send! and http_all!
+result 0 err Timeout
+result 1 status 200 body fast
+err Timeout

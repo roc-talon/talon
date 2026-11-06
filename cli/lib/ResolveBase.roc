@@ -1,8 +1,11 @@
+import records.Closure as Wire
 import Add
 import Age
 import Answer
 import BuildTarget
 import Closure
+import ClosureRequest
+import ClosureIndex
 import Compiler
 import ConfigToml
 import Consent
@@ -11,6 +14,7 @@ import Epochs
 import Fail
 import Fx
 import Gather
+import Help
 import Guard
 import Ident
 import Index
@@ -47,6 +51,10 @@ ResolveBase :: [].{
 	## Slice 060 (R-FE4, question Q1): `selected` is the compiler that the fetches of the run call selected (`Fetch.selected`: the held compiler of a flow with a decision, else the `default-roc` of `config.toml` when the flow knows it, else `""`). Every constructor gives `""`; a flow sets it with `{ ..request, selected: ... }` after it has loaded the files.
 	## Slice 072b (R-SO14, R-LF1): `none` is what a fetch does when no compiler is installed and none is on `PATH` (`Fetch.Unbundler`): `Stop` (exit code 18) or `Download`. Every constructor gives `Stop`; `InstallFlow.install_with!` sets `no_rank(request, loaded)` with `selected`.
 	## `toolchain` is `ROC_TOOLCHAIN` (rank 2, R-SO2), a full compiler id (`Compiler.toolchain_of`), `Err(Unset)` when it is not set (slice 013: R-SO19 to R-SO22). It goes to `Pin.decide`.
+	## Slice 206 (R-DI14, R-AL8 source 2): `index` is the one index of the run (`ClosureIndex.Source`). Every constructor gives `Direct`. `read_releases!` and `closure!` read the facts of a hash that an `Answer` has from its record (no fetch, no read).
+	## Slice 206b (R-RG1, R-AL2 step 2): `registry` says if the command reads the registry setting. `Off`: it does not (the index stays `Direct`, as before the slice): every constructor except `Update.request_of` gives it, until a later sub-slice
+	## wires that command. `Setting(flag)`: the flow reads the setting after the load (`IndexQuery.setting` with `flag` = the value of `--registry`, `net.registry` = `TALON_REGISTRY` and the key `registry` of `config.toml`), sends the first closure query and sets `index`.
+	## The flow replaces `Setting` after the load (`InstallFlow`): `Off` for `direct` (and for `--offline`: slice 206d), `Read(query)` for a registry. `PickFlow.prepare!` sends the query of a `Read` and sets `index` to `Answer`.
 	## Slice 085 (R-SP23, R-IN10): `fixed` are the aliases of variables that are never movable (`Vars.scope`): the platform that `tln init` names with a version. Every other constructor gives `[]`.
 	Request : {
 		command : [Install, Update, Upgrade],
@@ -64,6 +72,9 @@ ResolveBase :: [].{
 		compiler : Try({ id : Str, path : Str }, [NoCompiler]),
 		selected : Str,
 		none : NoRank.Fallback,
+		index : ClosureIndex.Source,
+		# Slice 206g (Design Q560): `Compilers` is a registry for the compiler list only (`init`: the platform and package lists stay GitHub lists).
+		registry : [Off, Setting(Try(Str, [Unset])), Read(ResolveBase.Query), Compilers(ResolveBase.Query)],
 		toolchain : Try(Str, [Unset]),
 		snapshot : Try(Str, [Unset]),
 		dry_run : Bool,
@@ -78,7 +89,15 @@ ResolveBase :: [].{
 	probe_settings : ResolveBase.Request, ResolveBase.Loaded -> Probe.Settings
 	probe_settings = |request, loaded| Probe.settings({ flag_slots: request.probe.slots, project: loaded.intent.resolution.probe, user: loaded.config.probe })
 
+	## Slice 206e3b (R-EF1 rank 2): the closure answer of the command for the ladder (`Ladder.Loop.answer`). `Err(None)` with no registry answer.
+	answer_of : ResolveBase.Request -> Try(Wire.Answer, [None])
+	answer_of = |request| match request.index {
+		Answer(a) => Ok(a.answer)
+		_ => Err(None)
+	}
+
 	## Slice 025: the facts of the consent rules for the ladder (`Ladder.Downloads`). The flows pass them to `Ladder.run!` and `Ladder.verify!`: the mode, `--yes`, `--quiet` and `--offline` come from `request.prompt` and `request.offline`.
+	## Slice 206e2 (R-IX4): `list` is `list_later`: the offer of the first probe uses the kept registry list when the command read it.
 	ladder_downloads : ResolveBase.Request -> Ladder.Downloads
 	ladder_downloads = |request| {
 		auto: request.downloads.auto,
@@ -88,6 +107,7 @@ ResolveBase :: [].{
 		quiet: request.prompt.quiet,
 		offline: request.offline,
 		env: request.downloads.env,
+		list: ResolveBase.list_later(request),
 	}
 
 	## R-SO14, R-FE4, R-LF1 (slice 072b): what a fetch does when no compiler is installed and none is on `PATH`. `Download` with the scope `Project` and the hashes of the release entries of the headers of the members
@@ -105,6 +125,56 @@ ResolveBase :: [].{
 		# Slice 086 (R-C7, R-NS9): the age and the switch of the project go to the pick too.
 		toml = { min_age: loaded.intent.resolution.min_release_age, nightly: loaded.intent.toolchain.nightly }
 		Download({ scope: Project(hashes), exclude: loaded.intent.resolution.min_release_age_exclude, toml, downloads: ResolveBase.ladder_downloads(request) })
+	}
+
+	## Slice 206b: the registry of a run after the setting was read. `origin` is the base URL form (R-RG7). `snapshot` is `IndexQuery.snapshot` with a registry.
+	## Slice 206e2: `window` is the `compilers` window of the first query (R-AP16): `Held(id)` for the held compiler (`Pin.Decision.held`), `Free(domain)` for the free nightly of `upgrade`, `None` for no window (Q437).
+	## `listed` is true when the command has read the registry compiler list (R-IX4: the later reads use the kept file, `list_later`).
+	## Slice 206e4 (R-SH1, R-SH2): `share` is the key `share` of `config.toml`, for the share hooks (`ShareHook`).
+	Query : { origin : Str, snapshot : [None, Time(U64), Log(U64)], window : ClosureRequest.Window, listed : Bool, share : Try(Bool, [Unset]) }
+
+	## Slice 206e2b (R-CV1, R-IX4, R-IX6): the source of the first compiler list read of a command (`HeldRoc.picked!`, `NightlyFlow.plan!`, `PickLoop.releases!`): the registry of a `Read` (the kept file when `listed`), the kept file of the registry with `--offline` (`Offline`, any age, no request), else `Direct`.
+	list_first : ResolveBase.Request -> Nightlies.Source
+	list_first = |request| match request.registry {
+		Read(query) => Registry({ origin: query.origin, version: Help.version, log: log_of(query), kept: query.listed })
+		Compilers(query) => Registry({ origin: query.origin, version: Help.version, log: Err(None), kept: query.listed or request.offline })
+		_ => match request.index {
+			Offline(origin) => Registry({ origin, version: Help.version, log: Err(None), kept: Bool.True })
+			_ => Direct
+		}
+	}
+
+	## Slice 206e2b (R-IX4): the source of each later read (the offers, the optional compilers): the kept file of the registry (no request: the first read of the command asked once), else `Direct`.
+	list_later : ResolveBase.Request -> Nightlies.Source
+	list_later = |request| match request.registry {
+		Read(query) => Registry({ origin: query.origin, version: Help.version, log: log_of(query), kept: Bool.True })
+		Compilers(query) => Registry({ origin: query.origin, version: Help.version, log: Err(None), kept: Bool.True })
+		_ => list_first(request)
+	}
+
+	## Slice 206e2 (R-AP16): the domain of a `Free` or `Report` window: the compilers of `releases` (the list that the command read), with the switch, the `[toolchain] roc` range, `min-release-age` and the snapshot of the run.
+	## `log:N` hid the rows above N in the read of the list (R-AP19), so only a time snapshot is left in the domain (`log_index` is not used).
+	compiler_domain : ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings, { releases : List(Nightlies.Release), snapshot : [None, Time(U64), Log(U64)] } -> ClosureRequest.Domain
+	compiler_domain = |request, loaded, settings, facts| {
+		rows: facts.releases.map(|r| { id: r.id, published_at: r.published_at, log_index: 0 }),
+		nightly: settings.nightly,
+		nightly_from: settings.nightly_from,
+		req: loaded.intent.toolchain.roc_text,
+		now: request.now,
+		min_age: settings.min_age,
+		exclude: settings.exclude,
+		snapshot: match facts.snapshot {
+			Time(t) => Time(t)
+			_ => None
+		},
+	}
+
+	## Slice 206e2: the request after a read of the registry compiler list (`listed` true). Other requests stay.
+	listed : ResolveBase.Request -> ResolveBase.Request
+	listed = |request| match request.registry {
+		Read(query) => { ..request, registry: Read({ ..query, listed: Bool.True }) }
+		Compilers(query) => { ..request, registry: Compilers({ ..query, listed: Bool.True }) }
+		_ => request
 	}
 
 	Fact : { url : Str, release : Release }
@@ -136,7 +206,9 @@ ResolveBase :: [].{
 	# A stale key of `talon.toml` that the person agreed to rename (R-NI1).
 	Rename : { path : Str, from : Str, to : Str }
 
-	Candidates : { name : Str, list : List(Index.Candidate), missing : Bool }
+	## Slice 206 (R-IX6, Design Q391): `missing` is true when the name has no index at all (`direct`: no cached page 1 offline; a registry offline: no kept copy for any group of the name).
+	## `missing_forms` are the group forms (`Ident.group.form`) that have no kept copy offline with a registry: each acts as in R-DI11, and the other groups use their copies. `direct` and an answer give `[]`.
+	Candidates : { name : Str, list : List(Index.Candidate), missing : Bool, missing_forms : List(Str) }
 
 	# An entry of the header that `add` found and keeps (R-AD21).
 	Kept : { alias : Str, name : Str, version : Str, note : Str }
@@ -166,7 +238,7 @@ ResolveBase :: [].{
 	## Slice 039b: `optional` is the state of `PickOptional` (the type of `PickOptional.State`, written here because `PickOptional` imports this module): the optional compilers that are open, the ones that the command installed, and the counts. It goes on to a second search and to a re-search of the ladder.
 	## Slice 054 (R-C10): `seen` are the target names of the platform releases that the loop read (`BuildTarget.targets_of`). `BuildTarget.gate` needs them.
 	## Slice 036c: `domain` is D (`OracleBase.Compat.domain`): `Err(NotRead)` until the command reads the compiler list (the verdict `Wide`), then the ids oldest first, or `[compiler]` when the list cannot be read. `inferred` are the inferred facts of `Epochs.epochs` over D and the rows.
-	Probed : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), count : U64, started : Try(Start.Started, [None]), tried : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), listed : Try(List(Nightlies.Release), [NotRead]), optional : { open : List(Str), got : List(Str), tried : U64, downloads : U64, dropped : U64 }, seen : List(BuildTarget.Seen) }
+	Probed : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), count : U64, started : Try(Start.Started, [None]), tried : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), listed : Try(List(Nightlies.Release), [NotRead]), optional : { open : List(Str), got : List(Str), tried : U64, downloads : U64, dropped : U64 }, seen : List(BuildTarget.Seen), second : Try(Wire.Answer, [NotRead]) }
 
 	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need, and the facts of the probe rounds.
 	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move), nightly : Try(Str, [None]), probed : Probed }
@@ -257,14 +329,21 @@ ResolveBase :: [].{
 		}
 	}
 
-	# The header facts of release URLs (R-AL8, R-DI7): `Gather.get!`, then `Release.read` of each text.
+	# The header facts of release URLs (R-AL8, R-DI7): `Gather.facts!` (slice 206: a record of the closure answer, source 2), then `Release.read` of each text (sources 3 and 4).
 	read_releases! : Fx, ResolveBase.Request, List(Str) => Try(List(Fact), Fail)
 	read_releases! = |fx, request, urls| {
-		got = Gather.get!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none }, urls)?
+		got = Gather.facts!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none, index: request.index }, urls)?
 		var $facts = ResolveBase.no_facts
 		for g in got {
-			release = Release.read({ path: g.path, text: g.text })?
-			$facts = $facts.append({ url: g.id, release })
+			match g {
+				Record(r) => {
+					$facts = $facts.append({ url: r.id, release: r.header.release })
+				}
+				Text(t) => {
+					release = Release.read({ path: t.path, text: t.text })?
+					$facts = $facts.append({ url: t.id, release })
+				}
+			}
 		}
 		Ok($facts)
 	}
@@ -356,7 +435,7 @@ ResolveBase :: [].{
 		var $nodes = facts.known
 		var $done = no_closures
 		for m in facts.members {
-			run = Walk.run!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none, file: m.file, entries: m.entries, known: $nodes })?
+			run = Walk.run!(fx, { roots: request.roots, net: request.net, offline: request.offline, selected: request.selected, none: request.none, index: request.index, file: m.file, entries: m.entries, known: $nodes })?
 			$nodes = run.nodes
 			$done = $done.append({ file: m.file, walked: run.walked })
 		}
@@ -393,3 +472,10 @@ owner_of = |name, is_platform, c| Ident.of_url(c.url).map_ok(|ident| { hash: ide
 
 no_closures : List({ file : Str, walked : Closure.Walked })
 no_closures = []
+
+# R-AP19: `--snapshot log:N` hides the toolchain rows above N.
+log_of : ResolveBase.Query -> Try(U64, [None])
+log_of = |query| match query.snapshot {
+	Log(n) => Ok(n)
+	_ => Err(None)
+}

@@ -73,7 +73,7 @@ Clocks : { real : U64, now : U64 }
 gc_flow! : Fx, Gc.Plan => Try(Gc.Done, Fail)
 gc_flow! = |fx, plan| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	clocks = CacheGc.clocks_of({ env, real: fx.clock!() })?
 	if plan.dry_run {
 		work!(fx, roots, clocks, plan)

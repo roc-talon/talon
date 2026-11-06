@@ -1,0 +1,1 @@
+R-AP29 R-AP30 (slice 206e4, Design Q537): `tln upgrade json` with a registry (run 2 of registry/al2-upgrade-query) and the `checked` items of registry/ap30-update-notes. `upgrade` with names prints the index notes: one `note:` line for json and one for pfx (parser is not stale), after the other notes and before `check:`. Exit code 0.

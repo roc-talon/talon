@@ -1,0 +1,1 @@
+R-PB6 R-E6 R-AP10 R-J7 (slice 217): any failed request stops the send, also a 4xx (Q505): run 1 the first request gets 422 (exit 20), run 2 gets 400 (exit 1). Only one request goes in each run (501 facts are 2 batches), all 501 facts are listed as not sent, share.json is not written.

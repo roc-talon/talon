@@ -134,7 +134,7 @@ Edited : { previous : Try(Str, [Unset]), changed : Bool }
 # Steps 2 to 5 of `roc list`, and the output.
 list_flow! : Fx, Args => Try({}, Fail)
 list_flow! = |fx, args| {
-	roots = Roots.from_env(fx.env_all!())?
+	roots = Roots.of_run!(fx, fx.env_all!())?
 	config = RocInstall.read_config!(fx, roots)?
 	ids = Launch.toolchains!(fx, roots)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
@@ -162,7 +162,7 @@ Defaulted : { id : Str, installed : Bool, compat : Try(Str, [Unknown, Several(Li
 default_flow! : Fx, Args, Str => Try(Defaulted, Fail)
 default_flow! = |fx, args, text| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	installed = Launch.toolchains!(fx, roots)
 	got = fetched!(fx, args, { env, installed, text })?
 	path = Roots.item(roots, Config)
@@ -196,7 +196,7 @@ fetched! = |fx, args, facts| {
 # Step 4: `roc install` for the text. The consent comes before the lock.
 download! : Fx, Args, { env : List((Str, Str)), text : Str, installed : List(Str) } => Try(Fetched, Fail)
 download! = |fx, args, facts| {
-	noted = RocInstall.offer_noted!(fx, { id: facts.text, env: facts.env, offline: args.offline })?
+	noted = RocInstall.offer_noted!(fx, { id: facts.text, env: facts.env, offline: args.offline, registry: First(args.registry) })?
 	match noted.offer {
 		Present(found) => Ok({ id: found.id, installed: Bool.False, compat: Err(Unknown), defaulted: Bool.False })
 		Download(offer) => {
@@ -241,7 +241,7 @@ Updated : { id : Str, item : Str, installed : Bool, compat : Try(Str, [Unknown, 
 update_flow! : Fx, Args => Try(Updated, Fail)
 update_flow! = |fx, args| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	before = RocInstall.read_config!(fx, roots)?.default_roc
 	got = download!(fx, args, { env, text: "@latest", installed: [] })?
 	moved = if got.defaulted {
@@ -312,7 +312,7 @@ Removed : { id : Str, item : Str, was_default : Bool, default : Try(Str, [None])
 remove_flow! : Fx, Str => Try(Removed, Fail)
 remove_flow! = |fx, text| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	config = RocInstall.read_config!(fx, roots)?
 	switch = Pin.switch({ env: Common.nightly_of(env), toml: Err(Unset), config: config.nightly })
 	installed = Launch.toolchains!(fx, roots)

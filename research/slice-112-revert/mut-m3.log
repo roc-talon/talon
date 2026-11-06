@@ -1,0 +1,17 @@
+All (43) tests passed in 697.8 ms.
+PASS ingest/ap26-body-and-route (1302 ms)
+PASS ingest/ik3-id-collision (1432 ms)
+FAIL ingest/pu14-pu19-labels (1504 ms)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767000000000","1\t3\t\\N\t1767225630000","2\t3\t\\N\t1767225630000"]
+      got:      ["1\t1\t\\N\t1767000000000","1\t3\t\\N\t1767225630000","2\t1\t\\N\t1767225630000"]
+FAIL ingest/pu4-index-kinds (1510 ms)
+    d1-calls: request 4: expected 1, got 2 (all,batch)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t3\t\\N\t1767225630000","2\t3\t\\N\t1767225630000","3\t3\t\\N\t1767225630000"]
+      got:      ["1\t1\t\\N\t1767225630000","1\t3\t\\N\t1767225635000","2\t1\t\\N\t1767225630000","3\t1\t\\N\t1767225630000"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repos/acme/roc-thing","GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0","GET https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","GET https://raw.githubusercontent.com/acme/roc-thing/1.2.0/.roc-version","GET https://api.github.com/repos/acme/plat","GET https://api.github.com/repos/acme/plat/releases/tags/v0.3.0","GET https://github.com/acme/plat/releases/download/v0.3.0/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk.tar.zst","GET https://raw.githubusercontent.com/acme/plat/v0.3.0/.roc-version","GET https://api.github.com/repos/acme/app","GET https://api.github.com/repos/acme/app/releases/tags/2.0.0","GET https://github.com/acme/app/releases/download/2.0.0/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6.tar.zst","GET https://raw.githubusercontent.com/acme/app/2.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repos/acme/roc-thing","GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0","GET https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","GET https://raw.githubusercontent.com/acme/roc-thing/1.2.0/.roc-version","GET https://api.github.com/repos/acme/plat","GET https://api.github.com/repos/acme/plat/releases/tags/v0.3.0","GET https://github.com/acme/plat/releases/download/v0.3.0/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk.tar.zst","GET https://raw.githubusercontent.com/acme/plat/v0.3.0/.roc-version","GET https://api.github.com/repos/acme/app","GET https://api.github.com/repos/acme/app/releases/tags/2.0.0","GET https://github.com/acme/app/releases/download/2.0.0/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6.tar.zst","GET https://raw.githubusercontent.com/acme/app/2.0.0/.roc-version","GET https://api.github.com/repos/acme/roc-thing"]
+PASS ingest/pu6-not-candidates (1575 ms)
+w2: 3 passed, 2 failed

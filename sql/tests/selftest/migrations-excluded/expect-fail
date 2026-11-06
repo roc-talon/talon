@@ -1,0 +1,1 @@
+rows differ for "SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'names'"

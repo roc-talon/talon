@@ -1,0 +1,10 @@
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases"}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases"}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"if-none-match": "\"21ce73f8e17efcb2a724947ab39cd31d\""}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"if-none-match": "\"nope\""}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "no-cache"}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"pragma": "no-cache"}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "No-Cache, max-age=0", "if-none-match": "\"21ce73f8e17efcb2a724947ab39cd31d\""}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "max-age=0"}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "no-store, private"}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases"}

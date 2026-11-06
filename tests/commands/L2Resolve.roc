@@ -55,6 +55,8 @@ L2Resolve :: [].{
 						},
 						selected: "",
 						none: Stop,
+						index: Direct,
+						registry: Off,
 						compiler: match value("compiler") {
 							Ok(id) => Ok({ id, path: "${w}/home/bin/roc" })
 							Err(_) => Err(NoCompiler)

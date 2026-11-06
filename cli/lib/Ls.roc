@@ -61,18 +61,32 @@ Ls :: [].{
 	## Slice 032b: `walk!` with the `ResolveBase.Request` and the `ResolveBase.Loaded` of the run (`tln why` reads the evidence with them).
 	walk_full! : Fx, Args, Bool => Try({ closures : List({ file : Str, walked : Closure.Walked }), request : ResolveBase.Request, loaded : ResolveBase.Loaded }, Fail)
 	walk_full! = |fx, args, notes| {
+		read = Ls.load_full!(fx, args)?
+		Ls.walk_loaded!(fx, read, notes)
+	}
+
+	## Slice 206e3: steps 2 to 7 of `walk_full!` (the environment, the project, the record, the load). `tln why` sends the closure query (Design Q499) between this step and `walk_loaded!`.
+	load_full! : Fx, Args => Try({ project : Project, request : ResolveBase.Request, loaded : ResolveBase.Loaded }, Fail)
+	load_full! = |fx, args| {
 		start = Install.begin!(fx, args)?
 		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 		asked = Ls.request_of(args, start)
 		loaded = ResolveLoad.load!(fx, asked)?
-		request = { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }
+		Ok({ project: start.project, request: { ..asked, selected: Fetch.selected({ held: "", default: loaded.config.default_roc ?? "" }), none: ResolveBase.no_rank(asked, loaded) }, loaded })
+	}
+
+	## Slice 206e3: step 8 of `walk_full!` (the walk of the current member, else all members) with the request and the load of `load_full!`.
+	walk_loaded! : Fx, { project : Project, request : ResolveBase.Request, loaded : ResolveBase.Loaded }, Bool => Try({ closures : List({ file : Str, walked : Closure.Walked }), request : ResolveBase.Request, loaded : ResolveBase.Loaded }, Fail)
+	walk_loaded! = |fx, read, notes| {
+		request = read.request
+		loaded = read.loaded
 		# R-SO18: `ls` warns when `.roc-version` and the header pin differ (`why` does not: `notes` is false).
 		if notes {
 			for line in ResolveBase.roc_version_warnings(loaded) {
 				fx.err!("warning: ${line}\n")
 			}
 		}
-		current = start.project.file ?? ""
+		current = read.project.file ?? ""
 		named = loaded.members.keep_if(|m| m.file == current)
 		members = if named.is_empty() loaded.members else named
 		closures = ResolveBase.closure!(fx, request, { members: members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, []) }), known: [] })?
@@ -110,6 +124,8 @@ Ls :: [].{
 		compiler: Err(NoCompiler),
 		selected: "",
 		none: Stop,
+		index: Direct,
+		registry: Off,
 		toolchain: Err(Unset),
 		snapshot: Err(Unset),
 		dry_run: Bool.False,

@@ -1,0 +1,50 @@
+        final(9115, "16.0.0", ["docs.tar.gz", zst(h4)]),
+        pre(9116, "13.0.0", [zst(h3)]),
+    ]
+    work = Reconcile.list_work({ full_name: "Acme/Lib", rows, list })
+    want_changes = [set(2, "prereleased"), set(3, "deleted"), set(4, "deleted"), set(5, "asset-replaced"), clear(6), set(10, "deleted")]
+    work.changes == want_changes and work.candidates == [9108, 9115]
+}
+
+Mentioned values:
+h3 = "CktRuQ2mttgRGkXJtyksdKHjUdc2C4TgDzyB98oEzy8"
+h4 = "GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq"
+h5 = "LbUiWL3xVV8hTFYBVdbTNrpDo41NKS6o3LHHuDzjfcY"
+h6 = "QWmroo4YnnMqYW3cnxWkFdaTxGD3P7vMSzwMHGbUzwF"
+h8 = "YMN9Qj5jPNp7j14VPcML1B6xGgcPWVZUGLFU3Mnyfaf"
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+h7 = "US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx"
+h9 = "cGfHiC6Kgg3FpFZvgwGcswsCRtp4aBP2fzuXRQPizuN"
+h2 = "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+
+
+── ✗ fail ─────────────────────────────────── tests/unit/ReconcileTest.roc:182:1
+
+expect {
+    only_new = Reconcile.list_work({ full_name: "acme/lib", rows: [], list: [final(7, "1.0.0", [zst(h1)]), final(8, "v2.0.0", [zst(h2)])] })
+    empty = Reconcile.list_work({ full_name: "acme/lib", rows: [row(1, "1.0.0", h1, Err(None)), row(2, "2.0.0", h2, Ok("edited"))], list: [] })
+    again = Reconcile.list_work({ full_name: "acme/lib", rows: [row(1, "1.0.0", h1, Err(None))], list: [final(7, "1.0.0", [zst(h2)])] })
+    only_new == { changes: [], candidates: [7, 8] }
+        and empty == { changes: [set(1, "deleted")], candidates: [] }
+        and again == { changes: [set(1, "asset-replaced")], candidates: [] }
+        and Reconcile.list_work({ full_name: "acme/lib", rows: [], list: [] }) == { changes: [], candidates: [] }
+}
+
+Mentioned values:
+h2 = "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+
+Ran 26 tests in 319.4 ms.:
+    24 passed
+    2 failed
+    0 compiler errors
+PASS reconcile/pu21-poll-job (2385 ms)
+FAIL reconcile/pu23-list (3186 ms)
+    request 1: queue_sent: expected [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9108,"repository_id":600,"repository_ids":[]},"delay_s":0}], got [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9105,"repository_id":600,"repository_ids":[]},"delay_s":0},{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9108,"repository_id":600,"repository_ids":[]},"delay_s":0}]
+PASS reconcile/pu25-reserve (2220 ms)
+PASS reconcile/pu36-overlap (2452 ms)
+PASS reconcile/pu37-backoff (2555 ms)
+PASS reconcile/pu37-etag-effects (2525 ms)
+PASS webhook/pu13-index-new (1084 ms)
+PASS webhook/pu17-withdraw-clear (1206 ms)
+w2: 7 passed, 1 failed

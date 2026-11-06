@@ -1,0 +1,16 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/gone	602	62	1	\N	1767225600000	1767000000000
+acme/priv	601	61	1	\N	1767225600000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/gone	1	0	\N	602	\N	62	\N	\N	1767000000000
+acme/gone	2	4	602	602	62	62	\N	\N	1767225600000
+acme/priv	1	0	\N	601	\N	61	\N	\N	1767000000000
+acme/priv	2	4	601	601	61	61	\N	\N	1767225600000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/gone	\N	\N	1767003600000	0	0
+acme/priv	\N	\N	1767003600000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/priv	1.0.0	repo-missing	1767225600000
+2	acme/gone	1.0.0	repo-missing	1767225600000
+@ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance)
+2	2	2	4	2	2	2

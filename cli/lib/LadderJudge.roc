@@ -101,6 +101,20 @@ LadderJudge :: [].{
 		}
 		build_for({ output: facts.output, dir: facts.dir, pkgs: facts.pkgs, baseline: facts.baseline, owners: facts.owners, compiler: facts.compiler, timeout: facts.timeout, what })
 	}
+
+	## Slice 209b (R-SM6, R-LD5, Q558): the failure of step 3 for a `bot` smoke `fail` or `crash` of the build key, with no build. It is the text of `build_at` for an error that no file owns, with the digest of the row as the title and the suffix `(bot smoke build)`; a null digest gives `bot smoke build failed`.
+	smoke_build : { owners : List(Owner), target : BuildTarget.Chosen, digest : Try(Str, [None]) } -> Fail
+	smoke_build = |facts| {
+		what = match facts.target {
+			Unlisted => "the host target"
+			Named(name) => "the target ${name}"
+		}
+		title = match facts.digest {
+			Ok(text) => "${text} (bot smoke build)"
+			Err(None) => "bot smoke build failed"
+		}
+		Fail.of_tuple("no tuple works: the build for ${what} failed on ${platform_text(facts.owners)}: ${title}", platform_hashes(facts.owners))
+	}
 }
 
 # C6: a failed probe whose errors Talon cannot read is no fact. An empty set would blame the wrong hash (R-BL3).

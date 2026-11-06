@@ -82,7 +82,7 @@ XCacheIo :: [].{
 
 	## `touch!`: the manifest of `found` with `last_run` set to `last_run` (the time of Talon as `Clock.format_utc`).
 	touch! : Fx, XCache.Found, Str => Try({}, Fail)
-	touch! = |fx, found, last_run| SetupIo.write_file!(fx, XCache.manifest_of(found.dir), XCache.manifest_text({ ..found.entry, last_run }))
+	touch! = |fx, found, last_run| SetupIo.write_file!(fx, XCache.manifest_of(found.dir), XCache.manifest_text_any({ ..found.entry, last_run }))
 
 	## Q-X3, R-B10 (slice 073): does an entry dir have the binary? It has when it holds the file that the manifest names: a file (not a directory) with exactly the name `file`. `file` is the repo name of the full name, with `.exe` on Windows only (`XCache.layout`, R-X2). So `fmt.exe` is no binary
 	## for `fmt` on Linux and `fmt` is no binary for `fmt.exe` on Windows. A dir that cannot be listed has none. `entries!` gives one `list_dirs!` result as `listed`, and the file.

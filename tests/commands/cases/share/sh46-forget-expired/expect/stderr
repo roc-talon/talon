@@ -1,0 +1,1 @@
+tln: error[usage]: the login has expired, so the registry cannot delete the account. Run tln share login, and then tln share forget.

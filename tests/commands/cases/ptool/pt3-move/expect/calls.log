@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -95,6 +97,8 @@ read_files $PROJECT/p1/talon.toml
 write_atomic $PROJECT/p1/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -120,6 +124,8 @@ read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/
 list_dirs $HOME/.cache/roc/talon/index/github/acme/baz
 read_files $HOME/.cache/roc/talon/index/github/acme/baz/1.meta $HOME/.cache/roc/talon/index/github/acme/baz/1.json
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -209,6 +215,8 @@ read_files $PROJECT/p1/talon.toml
 write_atomic $PROJECT/p1/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -235,6 +243,8 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/baz
 read_files $HOME/.cache/roc/talon/index/github/acme/baz/1.meta $HOME/.cache/roc/talon/index/github/acme/baz/1.json
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -250,7 +260,11 @@ unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/talon.toml
 read_files $HOME/.config/talon/config.toml
 args
+env_all
+tty
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -313,6 +327,8 @@ read_files $PROJECT/p2/talon.toml
 write_atomic $PROJECT/p2/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -343,6 +359,8 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/fmt
 read_files $HOME/.cache/roc/talon/index/github/acme/fmt/1.meta $HOME/.cache/roc/talon/index/github/acme/fmt/1.json
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -360,6 +378,8 @@ path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -418,6 +438,8 @@ read_files $PROJECT/p3/talon.toml
 write_atomic $PROJECT/p3/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/w/m1/main.roc
@@ -444,6 +466,8 @@ read_files $PROJECT/w/talon.toml
 write_atomic $PROJECT/w/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/w2/m1/main.roc
@@ -462,6 +486,8 @@ path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/w2/m1/main.roc $PROJECT/w2/m1/talon.toml $PROJECT/w2/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -486,6 +512,8 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/fmt
 read_files $HOME/.cache/roc/talon/index/github/acme/fmt/1.meta $HOME/.cache/roc/talon/index/github/acme/fmt/1.json
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -508,6 +536,8 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -524,6 +554,7 @@ path_roc
 read_files $HOME/.cache/roc/talon/path-roc.json
 read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
 env_all
 clock
 cwd
@@ -555,6 +586,7 @@ read_files $HOME/.cache/roc/talon/index/github/acme/fmt/1.meta $HOME/.cache/roc/
 read_files $PROJECT/p4/talon.toml
 write_atomic $PROJECT/p4/talon.toml
 args
+env_all
 env_all
 clock
 cwd

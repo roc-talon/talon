@@ -1,0 +1,10 @@
+== upgrade roc --dry-run --file u1/main.roc
+note: acme/json 2.0.0: the bot and the author rows differ on nightly-2026-10-16-5e6f7a8: bot fail, author pass
+note: acme/parser 1.0.0: the bot and the author rows differ on nightly-2026-10-16-5e6f7a8: bot pass, author fail
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ roc: nightly-2026-10-14-38a3029 -> nightly-2026-10-16-5e6f7a8
+resolved at log:50, 5 probes
+dry run: nothing was written
+exit 0

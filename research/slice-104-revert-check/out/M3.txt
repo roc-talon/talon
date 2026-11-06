@@ -1,0 +1,31 @@
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:135:1
+
+expect {
+    unsorted = { ..artifact_row, kind: Platform, deps: artifact_row.deps.rev(), target_names: ["x64linux", "arm64mac", "wasm32"] }
+    text = Artifact.encode(unsorted)
+    Artifact.decode(text) == Ok({ ..unsorted, deps: artifact_row.deps, target_names: ["arm64mac", "wasm32", "x64linux"] }) and text.contains("\"target_names\":[\"arm64mac\",\"wasm32\",\"x64linux\"]") and Artifact.encode(artifact_row) == Artifact.encode({ ..artifact_row, deps: artifact_row.deps.rev() })
+}
+
+Mentioned values:
+artifact_row = {
+	hash: "H1",
+	kind: Package,
+	size: 1234,
+	exposed: ["Json", "Parser"],
+	platform_hash: Err(None),
+	roc_pin: Err(None),
+	deps: [
+		{ alias: "local", hash: "H8", group: "example.org/x/", series: Err(None),
+version: Err(None), url: "https://example.org/x/H8.tar.zst" },
+		{ alias: "semver", hash: "H9", group:
+"github.com/a/b/releases/download/{v}/", series: Ok("0.2"), version:
+Ok("0.2.0"), url: "https://github.com/a/b/releases/download/0.2.0/H9.tar.zst" },
+	],
+	target_names: [],
+}
+
+Ran 38 tests in 514.8 ms.:
+    37 passed
+    1 failed
+    0 compiler errors

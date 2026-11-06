@@ -1,0 +1,2 @@
+# Q476, R-SH7: --quiet does not hide the intro text and the code line (the person needs the code). stdout keeps the result line. (The result line with --quiet is a proposal, R-OUT2.)
+share login --quiet

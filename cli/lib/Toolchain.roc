@@ -294,13 +294,17 @@ Toolchain :: [].{
 	## | `id` | The id |
 	## | `url` | The URL of the asset |
 	## | `sha256` | The 64 digits |
-	## | `sha256_source` | `github-digest` (`direct`). The registry form `registry` is P2. |
+	## | `sha256_source` | `github-digest` (`direct`). Slice 206e2 (R-CV5): `meta_from` with `Registry` (a compiler of the registry list) gives `registry`. |
 	## | `typed` | The text that the user typed (`@latest`, a prefix, the id) |
 	## | `compat` | The compat id, or `null` for `Unknown` and `Several` |
 	## | `installed_at` | `Clock.format_utc(now)` (the time of Talon, `TALON_NOW`) |
 	## | `published_at` | Slice 022 (Q5 of the review): `Clock.format_utc(published_at)`, the GitHub `published_at` of the release (R-NS1). The last key. `Compiler.times` reads it, so rank 4 orders the installed compilers with no network. |
 	meta : { id : Str, url : Str, sha256 : Str, typed : Str, compat : Try(Str, [Unknown, Several(List(Str))]), now : U64, published_at : U64 } -> Str
-	meta = |facts| {
+	meta = |facts| Toolchain.meta_from(facts, GithubDigest)
+
+	## Slice 206e2 (R-CV5): `meta` with the source of the sha256: `GithubDigest` gives `github-digest`, `Registry` gives `registry`.
+	meta_from : { id : Str, url : Str, sha256 : Str, typed : Str, compat : Try(Str, [Unknown, Several(List(Str))]), now : U64, published_at : U64 }, Db.Source -> Str
+	meta_from = |facts, source| {
 		compat = match facts.compat {
 			Ok(id) => JsonDoc.Text(id)
 			Err(_) => JsonDoc.Null
@@ -311,7 +315,15 @@ Toolchain :: [].{
 				("id", JsonDoc.Text(facts.id)),
 				("url", JsonDoc.Text(facts.url)),
 				("sha256", JsonDoc.Text(facts.sha256)),
-				("sha256_source", JsonDoc.Text("github-digest")),
+				(
+					"sha256_source",
+					JsonDoc.Text(
+						match source {
+							GithubDigest => "github-digest"
+							Registry => "registry"
+						},
+					),
+				),
 				("typed", JsonDoc.Text(facts.typed)),
 				("compat", compat),
 				("installed_at", JsonDoc.Text(Clock.format_utc(facts.now))),

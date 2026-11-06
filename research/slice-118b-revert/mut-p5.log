@@ -1,0 +1,25 @@
+All (17) tests passed in 286.8 ms.
+PASS webhook/ap12-empty-secret (1632 ms)
+PASS webhook/ap12-no-secret (1746 ms)
+PASS webhook/ap12-signature (2016 ms)
+PASS webhook/pu11-events (2017 ms)
+PASS webhook/pu13-index-new (1807 ms)
+PASS webhook/pu13-no-asset-end (1735 ms)
+PASS webhook/pu13-not-candidate (1454 ms)
+FAIL webhook/pu13-refused (5349 ms)
+    request 1: queue acked: expected ["m1"], got []
+    request 1: queue retried: expected [], got [{"delay_s":60,"id":"m1"}]
+    logs: no Worker log line has {"level":"warn","msg":"index job refused","repository_id":500,"release_id":9001,"type":"/errors/not-a-candidate"}; the lines are [{"level":"warn","msg":"index job failed","attempts":1,"error":"the index was refused: {\"detail\":\"the BLAKE3 hash of the asset is 23MZCBQifRUTjY995dZb54qPjzXXA9Et3cmRENW9JoDb, not the hash 46BBrLCSwuGWfjLtiWwrk87weqNUmg3VuULmXNTziNNp of the URL\",\"status\":422,\"title\":\"Not a candidate\",\"type\":\"/errors/not-a-candidate\"}"},{"level":"warn","msg":"index job failed","attempts":1,"error":"the index was refused: {\"detail\":\"the asset read failed with status 500\",\"status\":502,\"title\":\"Upstream error\",\"type\":\"/errors/upstream\"}"}]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the index was refused: {\"detail\":\"the BLAKE3 hash of the asset is 23MZCBQifRUTjY995dZb54qPjzXXA9Et3cmRENW9JoDb, not the hash 46BBrLCSwuGWfjLtiWwrk87weqNUmg3VuULmXNTziNNp of the URL\",\"status\":422,\"title\":\"Not a candidate\",\"type\":\"/errors/not-a-candidate\"}"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the index was refused: {\"detail\":\"the asset read failed with status 500\",\"status\":502,\"title\":\"Upstream error\",\"type\":\"/errors/upstream\"}"}
+PASS webhook/pu13-retry-no-asset (1864 ms)
+PASS webhook/pu14-labels (1996 ms)
+PASS webhook/pu17-withdraw-clear (2915 ms)
+PASS webhook/pu26-app-installed (2252 ms)
+PASS webhook/pu26-release-installed (1779 ms)
+PASS webhook/pu33-privatized (2324 ms)
+PASS webhook/pu33-publicized (1597 ms)
+PASS webhook/pu33-release-private (1607 ms)
+PASS webhook/pu35-dead-letter (1057 ms)
+PASS webhook/pu35-retry-schedule (1021 ms)
+w2: 17 passed, 1 failed

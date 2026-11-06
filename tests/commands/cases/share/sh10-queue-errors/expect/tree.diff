@@ -1,0 +1,8 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1 @@
++format	1
+--- home/.cache/roc/talon/share_queue.tsv
++++ home/.cache/roc/talon/share_queue.tsv
+@@ -0,0 +1 @@
++1	H1	nightly-2026-10-14-38a3029	any	pass	0.9.0	2026-11-03T10:00:00Z

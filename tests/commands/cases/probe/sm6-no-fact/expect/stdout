@@ -1,0 +1,7 @@
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --target x64musl --target arm64musl --json
+{"schema":1,"command":"probe","ok":false,"data":null,"error":{"kind":"internal","code":1,"message":"a smoke build gave no result: run the command again","details":{"smoke":[{"target":"x64musl","result":"pass"},{"target":"arm64musl","result":"no-fact"}]}}}
+exit 1
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --target wasm32
+smoke build of the platform acme/pfx 0.1.1 on nightly-2026-10-14-38a3029:
+  wasm32: machine-error
+exit 0

@@ -1,0 +1,6 @@
+warning: acme/all409 2.0.0: skipped, the registry answered 409 (/errors/label-conflict).
+warning: acme/all409 1.0.0: skipped, the registry answered 422 (/errors/not-a-candidate).
+tln: error[usage]: acme/all409 has no release that Talon can use. A release needs one <hash>.tar.zst asset and must not be a draft or a prerelease.
+warning: acme/one5xx 2.0.0: skipped, the registry answered 409 (/errors/label-conflict).
+warning: acme/one5xx 1.0.0: skipped, the registry did not index this release (502).
+tln: error[network]: the registry did not index acme/one5xx now. Run the command again in a moment.

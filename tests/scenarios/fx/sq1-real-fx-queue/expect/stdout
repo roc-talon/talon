@@ -1,0 +1,92 @@
+== 1. a file that does not exist: QueueCount is 0, ClearQueue and a Queue write with no row are ok, and none of them makes a file or a dir
+queue 0
+ok
+ok
+nothing was made
+== 2. a Queue write makes the dirs and the file (format 1, WAL) and the table share_queue (R-TF7), and gives seq 1 to 3 in the order of the rows
+ok
+journal_mode wal
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+columns [('seq', 'INTEGER', 0, 1), ('hash', 'TEXT', 1, 0), ('nightly', 'TEXT', 1, 0), ('target', 'TEXT', 1, 0), ('result', 'TEXT', 1, 0), ('talon_version', 'TEXT', 1, 0), ('queued_at', 'TEXT', 1, 0)]
+unique [('hash', 'nightly', 'target', 'talon_version')]
+row 1 H1 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:00:00Z
+row 2 H2 nightly-2026-10-14-38a3029 any fail 0.9.0 2026-11-03T10:00:00Z
+row 3 H3 nightly-2026-10-14-38a3029 linux_x86_64 crash 0.9.0 2026-11-03T10:01:00Z
+queue 3
+== 3. R-TF7 UNIQUE (hash, nightly, target, talon_version): the same key with another result stays as it was. Another talon_version, another nightly and another hash are new rows. A repeat in the same call is one row (the first).
+ok
+row 1 H1 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:00:00Z
+row 2 H2 nightly-2026-10-14-38a3029 any fail 0.9.0 2026-11-03T10:00:00Z
+row 3 H3 nightly-2026-10-14-38a3029 linux_x86_64 crash 0.9.0 2026-11-03T10:01:00Z
+row 4 H1 nightly-2026-10-14-38a3029 any crash 0.8.0 2026-11-03T10:01:00Z
+row 5 H1 nightly-2026-10-12-2664a27 any pass 0.9.0 2026-11-03T10:01:00Z
+row 6 H4 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:02:00Z
+queue 6
+== 4. R-SH4, the cap: with cap 4 a seventh row drops the oldest rows, the smallest seq (1, 2 and 3)
+ok
+row 4 H1 nightly-2026-10-14-38a3029 any crash 0.8.0 2026-11-03T10:01:00Z
+row 5 H1 nightly-2026-10-12-2664a27 any pass 0.9.0 2026-11-03T10:01:00Z
+row 6 H4 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:02:00Z
+row 7 H5 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:03:00Z
+queue 4
+== 5. a repeat of a row that is in the queue adds no row and drops no row
+ok
+row 4 H1 nightly-2026-10-14-38a3029 any crash 0.8.0 2026-11-03T10:01:00Z
+row 5 H1 nightly-2026-10-12-2664a27 any pass 0.9.0 2026-11-03T10:01:00Z
+row 6 H4 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:02:00Z
+row 7 H5 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:03:00Z
+queue 4
+== 6. a row that was dropped is a new row when it comes again: it has the next seq, and the oldest row (seq 4) goes
+ok
+row 5 H1 nightly-2026-10-12-2664a27 any pass 0.9.0 2026-11-03T10:01:00Z
+row 6 H4 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:02:00Z
+row 7 H5 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:03:00Z
+row 8 H2 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:04:00Z
+== 7. a call with more new rows than the cap (5 rows, cap 3): the queue keeps the last 3 rows
+ok
+row 11 H8 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:04:00Z
+row 12 H9 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:04:00Z
+row 13 H10 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:04:00Z
+queue 3
+== 8. R-TF2: the 3 tables do not touch each other. A facts write leaves the queue, and the queue has the same 3 rows
+ok
+fact	H1	nightly-2026-10-14-38a3029	any	pass		
+queue 3
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+== 9. R-TF7: a file of an older Talon (format 1, the tables facts and pinned, no share_queue). QueueCount gives 0 and makes no table. A Queue write makes the table with CREATE TABLE IF NOT EXISTS, keeps user_version 1 and the facts.
+queue 0
+user_version 1
+tables ['facts', 'pinned']
+ok
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+row 1 H1 nightly-2026-10-14-38a3029 any pass 0.9.0 2026-11-03T10:00:00Z
+fact	old	n	any	pass		
+queue 1
+== 10. ClearQueue on the same kind of file: it makes the table (ok), then it removes all rows, and the facts and the version stay
+ok
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+ok
+queue 2
+ok
+queue 0
+fact	old	n	any	pass		
+user_version 1
+tables ['facts', 'pinned', 'share_queue']
+== 11. a file with user_version 0 (no Talon table): QueueCount is 0 and makes no table
+queue 0
+user_version 0
+tables ['other']
+== 12. R-TF3: a file with a newer format (2). QueueCount, a Queue write and ClearQueue give TooNew, and the bytes of the file stay the same
+err TooNew(2)
+err TooNew(2)
+err TooNew(2)
+the file is the same
+== 13. a file that is not a database: Failed for the 3 calls, and the text file is the same
+err Failed(...)
+err Failed(...)
+err Failed(...)
+the text file is the same

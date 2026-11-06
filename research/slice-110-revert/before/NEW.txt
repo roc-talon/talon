@@ -1,0 +1,7 @@
+worker/lib/ClosureQuery.roc
+worker/ClosureRoute.roc
+worker/tests/unit/ClosureQueryTest.roc
+worker/tests/cases/closure/
+sql/tests/closure.mjs
+sql/tests/cases/closure/
+docs/slices/110-closure.md

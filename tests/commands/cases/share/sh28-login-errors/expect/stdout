@@ -1,0 +1,13 @@
+== share login
+exit 1
+== share login
+exit 1
+== share login
+exit 20
+== share login --json
+{"schema":1,"command":"share login","ok":false,"data":null,"error":{"kind":"rejected","code":20,"message":"the registry http://127.0.0.1:9 refused the login (/errors/unauthenticated): D. Run tln share login again.","details":{"status":401,"type":"/errors/unauthenticated"}}}
+exit 20
+== share login
+exit 1
+== share login
+exit 15

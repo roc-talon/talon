@@ -1,0 +1,5 @@
+R-AD35 R-AD2 R-SC3 R-SC4 R-SL3 R-SL4 R-SL5 R-DI6 R-AP1 R-AP9 R-AP41 R-AP43 R-DA8 (slice 212, entry registry, the word fullname): the selector of the command (R-AD35 step 1) keeps the candidates that are ingested (step 3).
+Each run is another repository (acme/sel1, sel2, sel3), each with 3 candidates on GitHub: 1.0.0 (June), 2.0.0 (August), 1.5.0 (July).
+Run 1, sel=^1 (a range): 2.0.0 is not ingested. 2 POSTs, newest first: 1.5.0 then 1.0.0. Run 2, sel=1.0.0 (exact): one POST, for 1.0.0 only.
+Run 3, sel=9.9.9: the selector keeps no candidate (R-AD35 step 2): the result is `no match` (the command gives its own text, Design Q430, slice 206b), and nothing after the GitHub read: no `programs curl`, no POST, no second read of R-AP1.
+In runs 1 and 2 the bookmarks grow with the order of the POSTs of the case (run 1: 1 and 2, run 2: 3): the second read has the largest of the run. 

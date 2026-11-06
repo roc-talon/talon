@@ -1,0 +1,6 @@
+── ✗ linker failed ─────────────────────────────────────────────────────────────
+
+The linker failed while building for target x64win.
+
+Error: WindowsSDKNotFound
+

@@ -1,0 +1,14 @@
+All (26) tests passed in 276.5 ms.
+PASS reconcile/pu21-poll-job (1965 ms)
+FAIL reconcile/pu23-list (2529 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\tdeleted\t1767225600000","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\tdeleted\t1767225600000","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\tdeleted\t1767225600000","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\t\\N\t\\N","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+PASS reconcile/pu25-reserve (1791 ms)
+FAIL reconcile/pu36-overlap (1773 ms)
+    runner fault: TypeError: Body is unusable: Body has already been read |     at consumeBody (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/body.js:430:27) |     at _Response.text (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/body.js:337:14) |     at file:///home/george/dev/Karakatiza666/talon/research/slice-119-revert/refbuild-m9-this-name-only/worker/tests/run.mjs:327:179
+PASS reconcile/pu37-backoff (2064 ms)
+PASS reconcile/pu37-etag-effects (2014 ms)
+PASS webhook/pu13-index-new (865 ms)
+PASS webhook/pu17-withdraw-clear (1054 ms)
+w2: 6 passed, 2 failed

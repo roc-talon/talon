@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/app/main.roc
@@ -27,6 +30,9 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/B8BEmGfcd49XAMfMC8a9ttLPzXq5xf87GUtkiqwTawt4/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/app/main.roc
@@ -46,6 +52,9 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/B8BEmGfcd49XAMfMC8a9ttLPzXq5xf87GUtkiqwTawt4/main.roc
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd

@@ -1,0 +1,6 @@
+header Cache-Control: no-store
+error timeout
+require user-agent: tln/0.0.1
+require authorization: Bearer eyJ.jwt.sig
+require-none talon-contributor
+require-none content-type

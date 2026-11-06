@@ -1,0 +1,9 @@
+== upgrade json --no-check --dry-run --file u1/main.roc
+note: index: acme/json checked 3d ago
+note: index: acme/pfx not checked since its first ingest
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 3.0.0 new series
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0

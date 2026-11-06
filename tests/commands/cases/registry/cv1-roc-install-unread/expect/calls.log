@@ -1,0 +1,12 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=0
+  User-Agent: tln/0.0.1

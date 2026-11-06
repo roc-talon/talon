@@ -1,0 +1,22 @@
+1: release published: one message with the ids of the repository (100), the release (9001) and the installation (55), no name
+2: release released: one message with the ids of the repository (100), the release (9001) and the installation (55), no name
+3: release edited: one message with the ids of the repository (100), the release (9001) and the installation (55), no name
+4: release prereleased: one message with the ids of the repository (100), the release (9001) and the installation (55), no name
+5: release unpublished: one message with the ids of the repository (100), the release (9001) and the installation (55), no name
+6: release deleted: one message with the ids of the repository (100), the release (9001) and the installation (55), no name
+7: release created (a draft): 202, ignored
+8: release with no installation member: the installation id is 0
+9: repository privatized: one message with the repository id
+10: repository publicized
+11: repository archived: ignored
+12: repository deleted: ignored (the reconcile finds it)
+13: installation created with 3 repositories: one message with their ids (no names)
+14: installation deleted
+15: installation_repositories added: the ids of repositories_added only
+16: installation_repositories removed: the ids of repositories_removed only
+17: installation suspend (Design Q322): one message with the ids, as created
+18: installation unsuspend: one message with the ids
+19: installation new_permissions_accepted: 202, ignored
+20: ping (the first event of a new webhook): 202, ignored
+21: an event that the App does not use, with a body that looks like a release: ignored
+22: a release body with no repository id: 400 bad-request, nothing sent

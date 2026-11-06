@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
@@ -25,11 +28,17 @@ delete $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD.01
 read_files $HOME/.cache/roc/packages/AoUiNvPc7ASuqMw29Nnti2pzGHnoupQ2wy7jSb74o9vD/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json
 read_files $HOME/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform
@@ -69,7 +78,6 @@ read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkb
 list_dirs $HOME/.cache/roc/toolchains
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 list_dirs $HOME/.cache/roc/toolchains
-tty
 clock
 platform
 read_files $HOME/.config/talon/config.toml

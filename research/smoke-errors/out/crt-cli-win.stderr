@@ -1,0 +1,97 @@
+lld-link: error: <root>: undefined symbol: mainCRTStartup
+lld-link: error: undefined symbol: _tls_index
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::drop_join_handle_slow::<host::process_service::observed_pump<tokio::process::ChildStderr>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::drop_join_handle_slow::<host::process_service::spawn::{closure#0}::{closure#4}::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<core::pin::Pin<alloc::boxed::Box<dyn core::future::future::Future<Output = ()> + core::marker::Send>>, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced 148 more times
+
+lld-link: error: undefined symbol: memset
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::observed_pump<tokio::process::ChildStderr>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::observed_pump<tokio::process::ChildStdout>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<tokio_rustls::common::Stream<hyper_util::rt::tokio::TokioIo<hyper_util::rt::tokio::TokioIo<tokio::net::tcp::stream::TcpStream>>, rustls::client::client_conn::connection::ClientConnection>>::read_io)
+>>> referenced 338 more times
+
+lld-link: error: undefined symbol: memcpy
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::observed_pump<tokio::process::ChildStderr>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::observed_pump<tokio::process::ChildStderr>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::observed_pump<tokio::process::ChildStderr>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced 1499 more times
+
+lld-link: error: undefined symbol: __CxxFrameHandler3
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(.xdata)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(.xdata)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(.xdata)
+>>> referenced 144 more times
+
+lld-link: error: undefined symbol: memmove
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::sync_task<core::result::Result<(), std::io::error::Error>, <host::process_service::Child>::write::{closure#0}>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::sync_task<(), <host::process_service::Child>::close_stdin::{closure#0}>::{closure#0}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(bytes::bytes::promotable_odd_to_vec)
+>>> referenced 168 more times
+
+lld-link: error: undefined symbol: __chkstk
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(tokio::runtime::task::raw::poll::<host::process_service::spawn::{closure#0}::{closure#4}, alloc::sync::Arc<tokio::runtime::scheduler::current_thread::Handle>>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<hyper_util::client::legacy::client::Client<hyper_rustls::connector::HttpsConnector<hyper_util::client::legacy::connect::http::HttpConnector>, http_body_util::full::Full<bytes::bytes::Bytes>>>::send_request::{closure#0})
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<hyper_rustls::connector::HttpsConnector<hyper_util::client::legacy::connect::http::HttpConnector> as tower_service::Service<http::uri::Uri>>::call::{closure#4})
+>>> referenced 13 more times
+
+lld-link: error: undefined symbol: memcmp
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library\core\src\str\pattern.rs:1105
+>>>               host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<core::str::pattern::StrSearcher>::new)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<std::path::PathBuf as hashbrown::Equivalent<std::path::PathBuf>>::equivalent)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<std::path::PathBuf as hashbrown::Equivalent<std::path::PathBuf>>::equivalent)
+>>> referenced 127 more times
+
+lld-link: error: undefined symbol: _tls_used
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<std::sys::thread_local::native::lazy::Storage<core::cell::RefCell<std::collections::hash::map::HashMap<usize, host::resources::Finalizer>>, ()>>::get_or_init_slow::<host::resources::RESOURCES::__rust_std_internal_init_fn>)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<std::sys::thread_local::native::eager::Storage<core::cell::RefCell<host::sqlite::ConnectionCache>>>::initialize)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library\std\src\sys\thread_local\native\eager.rs:49
+>>>               host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(<std::sys::thread_local::native::eager::Storage<core::cell::Cell<std::thread::spawnhook::SpawnHooks>>>::initialize)
+>>> referenced 5 more times
+
+lld-link: error: undefined symbol: strlen
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(host::sqlite::sqlite_errmsg)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(host::sqlite::sqlite_errmsg)
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(hosted_sqlite_columns)
+>>> referenced 372 more times
+
+lld-link: error: undefined symbol: const type_info::`vftable'
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o):(__rustc::__rust_panic_type_info)
+
+lld-link: error: undefined symbol: _fltused
+>>> referenced by host.lib(host-259a24809af6ae13.host.7cc1353a84e16921-cgu.14.rcgu.o)
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o)
+
+lld-link: error: undefined symbol: __report_rangecheckfailure
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(soundexFunc)
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(winLogErrorAtLine)
+
+lld-link: error: undefined symbol: __declspec(dllimport) free
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3MemFree)
+
+lld-link: error: undefined symbol: __declspec(dllimport) malloc
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3MemMalloc)
+
+lld-link: error: undefined symbol: __declspec(dllimport) _msize
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3MemSize)
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3MemRealloc)
+
+lld-link: error: undefined symbol: __declspec(dllimport) realloc
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3MemRealloc)
+
+lld-link: error: undefined symbol: __declspec(dllimport) qsort
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3Fts3SegReaderPending)
+
+lld-link: error: undefined symbol: strchr
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):($LN66)
+
+lld-link: error: undefined symbol: strrchr
+>>> referenced by host.lib(c877a2978823c39d-sqlite3.o):(sqlite3ShadowTableName)
+
+lld-link: error: too many errors emitted, stopping now (use /errorlimit:0 to see all errors)
+── ✗ linker failed ─────────────────────────────────────────────────────────────
+
+The linker failed while building for target x64win.
+
+Error: LinkFailed
+

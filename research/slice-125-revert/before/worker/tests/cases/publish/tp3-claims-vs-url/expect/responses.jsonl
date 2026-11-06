@@ -1,0 +1,22 @@
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":413,"problem":{"type":"/errors/too-large","detail":"the compat member of the publish request has more than 500 facts"},"json":{"field":"compat","limit":500}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the publish request body is not valid: member hash or source is not allowed in a fact"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the publish request body is not valid: member hash or source is not allowed in a fact"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the result bogus of a fact is not pass, fail, hang or crash"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the target linux_x64 of a fact is not any"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the url is not a GitHub release asset URL with a version and a hash (https://github.com/<owner>/<repo>/releases/download/<tag>/<hash>.tar.zst): https://gitlab.com/acme/lib/-/releases/1.0.0/downloads/4RFVEvYtVAcjwGo8qYU9PwdMjpeLN2fM2VVbtXSKTJEA.tar.zst"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the Authorization header must be \"Bearer <token>\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is not a valid JWT"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim aud is \"https://registry.example/\", expected \"https://registry.example\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository is \"acme/other\", expected \"acme/roc-json\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository is \"roc-talon/talon\", expected \"acme/roc-json\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_visibility is \"private\", expected \"public\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim ref_type is \"branch\", expected \"tag\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim ref is \"refs/tags/9.9.9\", expected \"refs/tags/1.2.0\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim event_name is \"pull_request_target\", expected \"release\", \"push\" or \"workflow_dispatch\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim event_name is \"schedule\", expected \"release\", \"push\" or \"workflow_dispatch\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_id is \"12a\", expected a number"}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_owner_id is missing"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the result bogus of a fact is not pass, fail, hang or crash"}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim ref is \"refs/heads/main\", expected \"refs/tags/1.2.0\""}}

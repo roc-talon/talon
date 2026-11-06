@@ -41,9 +41,9 @@ read_view = |words| match Args.parse(words) {
 
 # R-CM6 R-FL5 R-FL7 R-EC2 R-E4 (slice 040): the options of `outdated`. R-CM6 has no operand, so a name (also with a selector) is a usage failure. The checks of `Opts.read` come first (the registry). `Args.parse` rejects the resolve flags (R-FL7:
 # `--snapshot`, `--strategy`, `--dry-run`), which `Outdated.read` never sees. `--json`, `--quiet`, `--yes`, `--offline` and `--file` work.
+# R-FL5 R-RG1 R-CV1 R-AP16 (slice 206e2): `outdated` takes a registry URL (the flow reads it, the `Report` window); with a name the failure is the name.
 expect {
 	no_name = "tln: error[usage]: tln outdated takes no name"
-	registry = "tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct."
 	rows = [
 		(["outdated"], Ok("ok")),
 		(["outdated", "--json", "--quiet", "--yes", "--offline"], Ok("ok")),
@@ -51,8 +51,8 @@ expect {
 		(["outdated", "json"], Err(no_name)),
 		(["outdated", "json@^2"], Err(no_name)),
 		(["outdated", "--json", "json", "parser"], Err(no_name)),
-		(["outdated", "--registry", "https://r.example"], Err(registry)),
-		(["outdated", "--registry", "https://r.example", "json"], Err(registry)),
+		(["outdated", "--registry", "https://r.example"], Ok("ok")),
+		(["outdated", "--registry", "https://r.example", "json"], Err(no_name)),
 		(["outdated", "--snapshot", "2026-10-01T00:00:00Z"], Err("tln: error[usage]: flag '--snapshot' is not for 'outdated'")),
 		(["outdated", "--strategy", "lowest"], Err("tln: error[usage]: flag '--strategy' is not for 'outdated'")),
 		(["outdated", "--dry-run"], Err("tln: error[usage]: flag '--dry-run' is not for 'outdated'")),
@@ -123,7 +123,7 @@ expect {
 expect {
 	d = ["n1", "n2", "n3", "n4", "n5", "n6"]
 	fact = |hash, id, outcome| { hash, nightly: id, target: "any", outcome, modules: [], closure: "" }
-	text = |domain, facts| Outdated.range_text(Outdated.range_of({ hash: "H", domain, facts }))
+	text = |domain, facts| Outdated.range_text(Outdated.range_of({ hash: "H", domain, facts, epochs: [] }))
 	rows = [
 		("no fact", text(d, []), "none known"),
 		("a pass with fails on both sides: both ends are real", text(d, [fact("H", "n2", Fail), fact("H", "n3", Pass), fact("H", "n4", Pass), fact("H", "n5", Fail)]), "n3 .. n4"),

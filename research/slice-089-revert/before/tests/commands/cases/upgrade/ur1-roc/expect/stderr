@@ -1,0 +1,19 @@
+downloading nightly-2026-10-12-2a2a2a2 (74.2 MB)
+downloading nightly-2026-10-12-2a2a2a2 (74.2 MB)
+downloading nightly-2026-10-12-2a2a2a2 (74.2 MB)
+downloading nightly-2026-10-14-4c4c4c4 (74.4 MB)
+tln: error[no_tuple]: no compiler release is in [toolchain] roc (*), and nightly is false (set by TALON_NIGHTLY)
+check: passed
+build: passed
+$PROJECT/p10/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+dry run: nothing was written
+tln: error[usage]: --no-check does not work when tln upgrade moves the nightly: the roc pin moves only after the check. Name the packages to hold the nightly: tln upgrade <name> --no-check
+tln: error[usage]: --no-check does not work when tln upgrade moves the nightly: the roc pin moves only after the check. Name the packages to hold the nightly: tln upgrade <name> --no-check
+downloading nightly-2026-10-12-2a2a2a2 (74.2 MB)
+check: passed
+build: passed
+$PROJECT/p12/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes

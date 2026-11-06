@@ -39,7 +39,7 @@ exit 0
 == probe {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --file p1/main.roc
 unit check of 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f on nightly-2026-10-14-38a3029: pass
 exit 0
-== probe --share json --file p1/main.roc
+== probe --share --file p1/main.roc
 exit 2
 == probe json parser --file p1/main.roc
 exit 2

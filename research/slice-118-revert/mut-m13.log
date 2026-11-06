@@ -1,0 +1,43 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:141:1
+
+expect {
+    repos = "[{\"id\":100,\"name\":\"lib\",\"full_name\":\"acme/lib\",\"private\":false},{\"id\":101,\"name\":\"secret\",\"full_name\":\"acme/secret\",\"private\":true}]"
+    created = "{\"action\":\"created\",\"installation\":{\"id\":55,\"account\":{\"id\":3}},\"repositories\":${repos},${junk}}"
+    deleted = "{\"action\":\"deleted\",\"installation\":{\"id\":55},\"repositories\":${repos}}"
+    empty = "{\"action\":\"created\",\"installation\":{\"id\":55}}"
+    suspended = "{\"action\":\"suspend\",\"installation\":{\"id\":55},\"repositories\":${repos}}"
+    unsuspended = "{\"action\":\"unsuspend\",\"installation\":{\"id\":55},\"repositories\":${repos}}"
+    perms = "{\"action\":\"new_permissions_accepted\",\"installation\":{\"id\":55},\"repositories\":${repos}}"
+    added = "{\"action\":\"added\",\"installation\":{\"id\":55},\"repository_selection\":\"selected\",\"repositories_added\":[{\"id\":200,\"name\":\"a\"}],\"repositories_removed\":[{\"id\":300,\"name\":\"c\"}]}"
+    removed = "{\"action\":\"removed\",\"installation\":{\"id\":55},\"repositories_added\":[{\"id\":200,\"name\":\"a\"}],\"repositories_removed\":[{\"id\":300,\"name\":\"c\"},{\"id\":301,\"name\":\"d\"}]}"
+    event("installation", created) == Ok(Send(message("installation", "created", 55, 0, 0, [100, 101])))
+        and event("installation", deleted) == Ok(Send(message("installation", "deleted", 55, 0, 0, [100, 101])))
+        and event("installation", empty) == Ok(Send(message("installation", "created", 55, 0, 0, [])))
+        and event("installation", suspended) == Ok(Send(message("installation", "suspend", 55, 0, 0, [100, 101])))
+        and event("installation", unsuspended) == Ok(Send(message("installation", "unsuspend", 55, 0, 0, [100, 101])))
+        and event("installation", perms) == Ok(Ignore)
+        and event("installation_repositories", added) == Ok(Send(message("installation_repositories", "added", 55, 0, 0, [200])))
+        and event("installation_repositories", removed) == Ok(Send(message("installation_repositories", "removed", 55, 0, 0, [300, 301])))
+}
+
+Mentioned values:
+junk =
+"\"sender\":{\"login\":\"someone\",\"id\":5,\"site_admin\":false},\"organization
+\":{\"id\":3,\"login\":\"acme\"}"
+
+Ran 13 tests in 197.0 ms.:
+    12 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (2616 ms)
+PASS webhook/ap12-no-secret (2492 ms)
+PASS webhook/ap12-signature (3186 ms)
+FAIL webhook/pu11-events (3514 ms)
+    request 17: queue_sent: expected [{"body":{"action":"suspend","event":"installation","installation_id":55,"release_id":0,"repository_id":0,"repository_ids":[100]},"delay_s":0}], got []
+PASS webhook/pu26-app-installed (3646 ms)
+PASS webhook/pu33-privatized (4352 ms)
+PASS webhook/pu33-publicized (1939 ms)
+PASS webhook/pu35-dead-letter (1540 ms)
+PASS webhook/pu35-retry-schedule (1285 ms)
+w2: 8 passed, 1 failed

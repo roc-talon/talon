@@ -1,0 +1,53 @@
+# R-PB6 R-TF3 R-CC8 R-TF2 TW4 (slice 217): db_query! FactsOf of the real Fx, with `fxprobe`. `tln probe --share` reads all rows of one hash (each nightly, each target, each closure digest): the rows of other hashes are not in the answer, and a query makes no file.
+FX=$(command -v fxprobe)
+DB=$HOME/.cache/roc/talon/compat.db
+NT=nightly-2026-10-14-38a3029
+H1=9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17
+H2=Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu
+H3=Cz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZv
+mkdir -p t
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+tables() {
+python3 -I - "$1" <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("user_version", c.execute("PRAGMA user_version").fetchone()[0])
+print("tables", sorted(r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type = 'table'")))
+PY
+}
+
+echo "== 1. a file that does not exist: FactsOf gives no row, and the read makes no file and no dir"
+$FX db-query $DB 5000 facts-of $H1
+test ! -e $HOME/.cache && echo "nothing was made"
+
+echo "== 2. rows of 2 hashes. H1 has a unit pass, a build pass with its closure digest, a hang of a release and a fail of another target with 2 modules. H2 has one pass. FactsOf H1 gives the 4 rows of H1 and no row of H2, sorted by the line (the modules are sorted). H2 gives its row. H3 has none."
+$FX db-write $DB 5000 facts replace $H1:$NT:any:pass:: $H1:$NT:linux_x86_64:pass::c0ffee $H1:0.1.0:any:hang:: $H1:$NT:other:fail:Yaml.roc,Json.roc: $H2:$NT:any:pass::
+$FX db-query $DB 5000 facts-of $H1
+$FX db-query $DB 5000 facts-of $H2
+$FX db-query $DB 5000 facts-of $H3
+
+echo "== 3. a file with user_version 0 (no Talon table): no row and no table made"
+python3 -I - t/zero.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE other (a TEXT)")
+c.commit()
+c.close()
+PY
+$FX db-query t/zero.db 5000 facts-of $H1
+tables t/zero.db
+
+echo "== 4. R-TF3: a file with a newer format (2): TooNew, and the bytes of the file stay the same"
+python3 -I - t/new.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target)) WITHOUT ROWID")
+c.execute("PRAGMA user_version = 2")
+c.commit()
+c.close()
+PY
+before=$(sha t/new.db)
+$FX db-query t/new.db 5000 facts-of $H1
+after=$(sha t/new.db)
+test "$before" = "$after" && echo "the file is the same"
+rm -rf t

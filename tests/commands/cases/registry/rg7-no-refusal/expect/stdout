@@ -1,0 +1,4 @@
+== remove nope --registry ftp://bad --file p1/main.roc
+exit 2
+== remove nope --registry http://127.0.0.1:9 --file p1/main.roc
+exit 2

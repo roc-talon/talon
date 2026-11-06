@@ -1,0 +1,1 @@
+R-RG7 R-TF4 R-EC19 R-SH2 (slice 206f, Design Q546): `tln share` reads config.toml for its own key (`share`), so a bad `registry` in the same file stops it with exit 19, as for `remove`. Same text as registry/rg7-remove-bad-config. Calls: the read of config.toml, then nothing (D3).

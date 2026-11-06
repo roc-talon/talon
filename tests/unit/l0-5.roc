@@ -8,11 +8,13 @@ import DelTest
 import FactsTest
 import IndexTest
 import LinkTest
+import MatrixTest
 import NoRankTest
 import PickclosureTest
 import ProbecmdTest
 import PromptTest
 import ReportTest
+import SmokeTest
 import ToolCompilerTest
 import WhyTest
 import XCacheTest

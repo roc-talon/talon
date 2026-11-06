@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -43,6 +46,7 @@ read_files $PROJECT/p1/main.roc
 write_atomic $PROJECT/p1/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -85,6 +89,9 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p3/main.roc
 write_atomic $PROJECT/p3/main.roc
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -130,6 +137,9 @@ read_files $PROJECT/p4/main.roc
 write_atomic $PROJECT/p4/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p5/main.roc
@@ -173,6 +183,9 @@ read_files $PROJECT/p5/main.roc
 write_atomic $PROJECT/p5/main.roc
 args
 env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p6/main.roc
@@ -199,7 +212,6 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
-tty
 ask "Download 1 compiler, 73.4 MB: nightly-2026-10-14-38a3029? [Y/n] "
 lock $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
 list_dirs $HOME2/.cache/roc/toolchains
@@ -253,6 +265,7 @@ delete $HOME2/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p6/main.roc
 write_atomic $PROJECT/p6/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -367,6 +380,9 @@ read_files $PROJECT/p7/main.roc
 write_atomic $PROJECT/p7/main.roc
 args
 env_all
+tty
+read_files $HOME5/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p8/main.roc
@@ -393,7 +409,6 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME5/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
-tty
 ask "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27? [Y/n] "
 lock $HOME5/.cache/roc/toolchains/nightly-2026-10-09-258ab27 nowait: held
 list_dirs $HOME5/.cache/roc/toolchains
@@ -448,6 +463,7 @@ read_files $PROJECT/p8/main.roc
 write_atomic $PROJECT/p8/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p9/main.roc
@@ -482,7 +498,13 @@ list_dirs $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME3/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME6/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -501,6 +523,9 @@ read_files $PROJECT/p16/main.roc $PROJECT/p16/talon.toml $HOME6/.config/talon/co
 list_dirs $HOME6/.cache/roc/toolchains
 args
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -521,6 +546,9 @@ list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-13-91fa0c2/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p13/main.roc
@@ -537,6 +565,9 @@ path_roc
 read_files $PROJECT/p13/main.roc $PROJECT/p13/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -573,6 +604,9 @@ probes 1
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -617,6 +651,9 @@ read_files $PROJECT/p15/main.roc
 write_atomic $PROJECT/p15/main.roc
 args
 env_all
+tty
+read_files $HOME9/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p17/main.roc
@@ -644,6 +681,7 @@ write_atomic $HOME9/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOM
 db_query $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME9/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 args
+env_all
 env_all
 clock
 cwd
@@ -719,6 +757,9 @@ read_files $PROJECT/p18/main.roc
 write_atomic $PROJECT/p18/main.roc
 args
 env_all
+tty
+read_files $HOME10/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p19/main.roc
@@ -745,7 +786,6 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
-tty
 ask "Download 1 compiler, 73.4 MB: nightly-2026-10-14-38a3029? [Y/n] "
 lock $HOME10/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
 list_dirs $HOME10/.cache/roc/toolchains
@@ -795,6 +835,9 @@ read_files $PROJECT/p19/main.roc
 write_atomic $PROJECT/p19/main.roc
 args
 env_all
+tty
+read_files $HOME8/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p20/main.roc
@@ -821,9 +864,11 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME8/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME8/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
-tty
 ask "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27? [Y/n] "
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -855,6 +900,9 @@ probes 1
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
+read_files $HOME11/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -889,7 +937,6 @@ list_dirs $HOME11/.cache/roc/toolchains
 list_dirs $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME11/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME11/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
-tty
 ask "Download 2 compilers, 147.3 MB: nightly-2026-10-14-38a3029, nightly-2026-10-09-258ab27? [Y/n] "
 lock $HOME11/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
 list_dirs $HOME11/.cache/roc/toolchains
@@ -971,6 +1018,9 @@ read_files $PROJECT/p22/main.roc
 write_atomic $PROJECT/p22/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p23/main.roc
@@ -987,6 +1037,9 @@ path_roc
 read_files $PROJECT/p23/main.roc $PROJECT/p23/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME12/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -1033,6 +1086,9 @@ read_files $PROJECT/p24/main.roc
 write_atomic $PROJECT/p24/main.roc
 args
 env_all
+tty
+read_files $HOME13/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p25/main.roc
@@ -1061,7 +1117,6 @@ write_atomic $HOME13/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HO
 db_query $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME13/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 read_files $HOME13/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME13/.cache/roc/toolchains/nightly-2026-10-14-ffffff0/.talon.json
-tty
 ask "Download 1 compiler, 73.4 MB: nightly-2026-10-14-38a3029? [Y/n] "
 lock $HOME13/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
 list_dirs $HOME13/.cache/roc/toolchains
@@ -1116,6 +1171,7 @@ read_files $PROJECT/p25/main.roc
 write_atomic $PROJECT/p25/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p26/main.roc
@@ -1154,6 +1210,9 @@ read_files $PROJECT/p26/main.roc
 write_atomic $PROJECT/p26/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p23/main.roc
@@ -1169,6 +1228,9 @@ path_roc
 read_files $PROJECT/p23/main.roc $PROJECT/p23/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -1186,6 +1248,9 @@ path_roc
 read_files $PROJECT/p28/main.roc $PROJECT/p28/talon.toml $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd

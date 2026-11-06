@@ -1,0 +1,5 @@
+Slice 103, case t1-publish (the publish statements of research/d1-sweep/ P1, P2, P3 on the integer tables).
+  Q27, R-RE2, R-IK5, R-IK6: the label of a release is (form, version, version_text). A label with the same artifact is a no-op (INSERT OR IGNORE, no error). A label with another artifact stops the statement with the RAISE text label-conflict, also under INSERT OR IGNORE. Another version_text is another label.
+  R-SG2, R-SG5, Q27: a new release writes one leaf with idx = its log_index (log_index = max + 1 in the same statement). An ignored release writes no leaf. A used idx is an error and the release is not written.
+  R-SG3: a compiler leaf is a row of the same table and shares the sequence. The next release gets the next index.
+  Question Q103-1 (docs/slices/103-triggers.md): the case does not check grp, version, hash and time of a leaf.

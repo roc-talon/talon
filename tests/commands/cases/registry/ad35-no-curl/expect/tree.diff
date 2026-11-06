@@ -1,0 +1,14 @@
+--- home/.cache/roc/talon/index/github/acme/nocurl/1.json
++++ home/.cache/roc/talon/index/github/acme/nocurl/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-06-01T12:00:00Z","assets":[{"name":"3LbNAKHf1rZ11MJw4NxbR26gv9mynWa1J6ndKGzuwiDX.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/nocurl/releases/download/1.0.0/3LbNAKHf1rZ11MJw4NxbR26gv9mynWa1J6ndKGzuwiDX.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/nocurl/1.meta
++++ home/.cache/roc/talon/index/github/acme/nocurl/1.meta
+@@ -0,0 +1 @@
++etag "g1"
+--- home/.cache/roc/talon/index/github/acme/nocurl/repo.json
++++ home/.cache/roc/talon/index/github/acme/nocurl/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/nocurl","private":false,"fork":false}
+\ No newline at end of file

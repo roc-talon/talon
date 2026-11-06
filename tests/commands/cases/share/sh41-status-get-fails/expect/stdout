@@ -1,0 +1,30 @@
+== share
+sharing: on
+id: 01234567
+sent: 7
+counted: 5
+first: 2
+first sent: 2026-10-01T10:00:00Z
+last sent: 2026-10-02T11:30:00Z
+queued: 4
+exit 0
+== share
+sharing: on
+id: 01234567
+sent: 7
+counted: 5
+first: 2
+first sent: 2026-10-01T10:00:00Z
+last sent: 2026-10-02T11:30:00Z
+queued: 4
+exit 0
+== share
+sharing: on
+id: 01234567
+sent: 7
+counted: 5
+first: 2
+first sent: 2026-10-01T10:00:00Z
+last sent: 2026-10-02T11:30:00Z
+queued: 4
+exit 0

@@ -1,0 +1,5 @@
+1: the secret is the empty text: a signature made with a made-up key: 500 internal, nothing sent
+2: the secret is the empty text: a signature made with the empty key: 500 internal (an empty key must never accept a request), nothing sent
+3: the secret is the empty text: no signature header: 500 internal (the secret is checked before the signature header, R-AP79 row 4, Design Q327)
+4: the secret is the empty text: a body of 1048577 bytes: 413 (the size check comes before the secret)
+5: the secret is the empty text: the media type of a form: 415 (the media check comes before the secret)

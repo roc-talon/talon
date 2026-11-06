@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/app/main.roc
@@ -78,6 +80,8 @@ read_files $PROJECT/app/main.roc
 write_atomic $PROJECT/app/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/app/main.roc
@@ -145,6 +149,8 @@ read_files $PROJECT/app/main.roc
 write_atomic $PROJECT/app/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/app/main.roc
@@ -211,6 +217,8 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/app/main.roc $PROJECT/app/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/lib/main.roc
@@ -257,6 +265,7 @@ read_files $PROJECT/lib/main.roc
 write_atomic $PROJECT/lib/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/lib/main.roc
@@ -287,6 +296,7 @@ read_files $PROJECT/lib/main.roc
 write_atomic $PROJECT/lib/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/app/main.roc
@@ -304,6 +314,7 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21/main.roc $HOME/.cache/roc/packages/FaSACze7PmHRTFb729jy9fkoZS2rNK2RretLTUpxLB51/main.roc $HOME/.cache/roc/packages/7r2t7xhwfM9esnfmYrQCSFZAmkzvfsyTeo1J5276kjmc/main.roc $HOME/.cache/roc/packages/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw/main.roc $PROJECT/lib/main.roc $PROJECT/app/inner/main.roc
 args
+env_all
 env_all
 clock
 cwd

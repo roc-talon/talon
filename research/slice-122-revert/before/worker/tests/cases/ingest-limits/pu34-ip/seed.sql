@@ -1,0 +1,6 @@
+INSERT INTO names (id, kind, value) VALUES (-5138182055661737216, 1, X'DF7966A926F144BA8711085A029600AE502E310FF95B2D4F6A20FD07FB7A5B01'), (-7202336610104624899, 2, 'github.com/acme/known/releases/download/{v}/'), (4473222531713561350, 3, 'acme/known');
+INSERT INTO artifacts (artifact, kind, exposes, platform, roc_pin, size) VALUES (-5138182055661737216, 1, '["Zeta","Alpha"]', NULL, NULL, 999);
+INSERT INTO log (idx, grp, version, hash, time) VALUES (1, 'github.com/acme/known/releases/download/{v}/', '1.0.0', 'G3MHVJrWNFc9yVgf51XJeZhWN2HpyW7BW3Hx1vBXk8bz', 1767000000000);
+INSERT INTO releases (log_index, form, version, version_text, artifact, repo, url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at) VALUES (1, -7202336610104624899, -9223090561877999617, '', -5138182055661737216, 4473222531713561350, 'https://github.com/acme/known/releases/download/1.0.0/G3MHVJrWNFc9yVgf51XJeZhWN2HpyW7BW3Hx1vBXk8bz.tar.zst', '1.0.0', NULL, 1792497600000, 0, NULL, NULL);
+INSERT INTO provenance (release, via, claims, time) VALUES (1, 3, NULL, 1767000000000);
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (4473222531713561350, 900, 9100, 0, NULL, 1767000000000, 1767000000000);

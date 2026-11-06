@@ -6,11 +6,17 @@ import AddTest
 import AliasTest
 import BuildskipTest
 import ClosuregapsTest
+import ClosureindexTest
+import ClosurerequestTest
 import DbTest
 import OracleprobeTest
 import PickTest
+import QueuesendTest
 import RebaseTest
+import RegistryTest
 import RootsTest
+import SharequeueTest
+import ShareTest
 import ToolchainTest
 import ToolsplanTest
 

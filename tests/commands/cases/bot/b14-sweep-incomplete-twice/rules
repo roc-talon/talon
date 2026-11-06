@@ -1,0 +1,1 @@
+R-MX9 R-MX4 R-MX18 (slice 223, Q572, Q573): as b13, but the second post is 422 too: at most 2 sweep requests for a tag, no third post, a warning. The run goes on with the second operand (nightly-2026-10-30-ddddddd, done: PUT and one read). The audit follows. Exit 1 at the end.

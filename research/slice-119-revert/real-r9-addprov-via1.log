@@ -1,0 +1,17 @@
+All (26) tests passed in 325.3 ms.
+FAIL reconcile/pu21-poll-job (2402 ms)
+    request 2: queue acked: expected ["m2"], got []
+    request 2: queue retried: expected [], got [{"delay_s":60,"id":"m2"}]
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t2\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t2\t\\N\t1767225600000"]
+      got:      ["1\t1\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t2\t\\N\t1767225600000"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"Constraint({ kind: PrimaryKey, message: \"UNIQUE constraint failed: provenance.release, provenance.via\" })"}
+PASS reconcile/pu23-list (3613 ms)
+PASS reconcile/pu25-reserve (2215 ms)
+PASS reconcile/pu36-overlap (2354 ms)
+PASS reconcile/pu36-state-guard (2361 ms)
+PASS reconcile/pu37-backoff (2601 ms)
+PASS reconcile/pu37-etag-effects (1570 ms)
+PASS webhook/pu13-index-new (1348 ms)
+PASS webhook/pu17-withdraw-clear (1619 ms)
+w2: 8 passed, 1 failed

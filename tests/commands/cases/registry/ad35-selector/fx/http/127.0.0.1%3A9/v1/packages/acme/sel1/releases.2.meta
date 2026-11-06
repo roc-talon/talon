@@ -1,0 +1,8 @@
+status 200
+header Content-Type: application/json
+header ETag: "r1"
+header Cache-Control: max-age=60
+require cache-control: no-cache
+require talon-bookmark: 00000002-00000010-00004c60-8e61
+require-none if-none-match
+require-none authorization

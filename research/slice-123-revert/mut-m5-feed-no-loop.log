@@ -1,0 +1,59 @@
+FAIL archive/pu38-hash-and-end (2431 ms)
+    request 4: status: expected 200, got 422
+    request 4: header content-type: expected "application/json", got "application/problem+json"
+    request 4: json.hash: expected "CHSESQT2ikwy4Mv46CN4nPEtTn8yKaAMfd8Fo789P1rV", got missing
+    request 4: json.kind: expected "package", got missing
+    request 4: json.exposed: expected an array of 2 items, got missing
+    request 4: json.platform_hash: expected null, got missing
+    request 4: json.roc_pin: expected null, got missing
+    request 4: json.size: expected 310255, got missing
+    request 4: json.deps: expected an array of 1 items, got missing
+    request 4: json.target_names: expected an array of 0 items, got missing
+PASS archive/pu38-made-kinds (2312 ms)
+FAIL archive/pu38-paths-and-header (2395 ms)
+    request 13: status: expected 200, got 422
+    request 13: header content-type: expected "application/json", got "application/problem+json"
+    request 13: json.hash: expected "C9WQhcXkkNWEqHPm8SHFDZ3rQSwzuBDgpmhXEynQsE5t", got missing
+    request 13: json.kind: expected "package", got missing
+    request 13: json.exposed: expected an array of 2 items, got missing
+    request 13: json.platform_hash: expected null, got missing
+    request 13: json.roc_pin: expected null, got missing
+    request 13: json.size: expected 413, got missing
+    request 13: json.deps: expected an array of 1 items, got missing
+    request 13: json.target_names: expected an array of 0 items, got missing
+FAIL archive/pu38-real-bundles (2310 ms)
+    request 2: status: expected 200, got 422
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: json.hash: expected "f352LLRKJCZ4JJVEocp3H9e4e6Sxa6Ym5CxZ1GZCpfd", got missing
+    request 2: json.kind: expected "platform", got missing
+    request 2: json.exposed: expected an array of 38 items, got missing
+    request 2: json.platform_hash: expected null, got missing
+    request 2: json.roc_pin: expected null, got missing
+    request 2: json.size: expected 228076, got missing
+    request 2: json.deps: expected an array of 2 items, got missing
+    request 2: json.target_names: expected an array of 1 items, got missing
+PASS archive/pu38-size (4593 ms)
+PASS archive/pu38-window (2297 ms)
+FAIL archive/pu38-zero-run (579 ms)
+    request 1: status: expected 200, got 422
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: json.hash: expected "5u1c7dikruUfwmfmUv15FaajuecXweoSvX8mQDrcVLKD", got missing
+    request 1: json.kind: expected "package", got missing
+    request 1: json.exposed: expected an array of 2 items, got missing
+    request 1: json.platform_hash: expected null, got missing
+    request 1: json.roc_pin: expected null, got missing
+    request 1: json.size: expected 1430, got missing
+    request 1: json.deps: expected an array of 1 items, got missing
+    request 1: json.target_names: expected an array of 0 items, got missing
+    request 2: status: expected 200, got 422
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: json.hash: expected "J6RJRuWLYhHkEuv5H4rnbLNGxRtn9HV7KML6Ad7VJdeq", got missing
+    request 2: json.kind: expected "package", got missing
+    request 2: json.exposed: expected an array of 2 items, got missing
+    request 2: json.platform_hash: expected null, got missing
+    request 2: json.roc_pin: expected null, got missing
+    request 2: json.size: expected 1396, got missing
+    request 2: json.deps: expected an array of 1 items, got missing
+    request 2: json.target_names: expected an array of 0 items, got missing
+w2: 3 passed, 4 failed
+done

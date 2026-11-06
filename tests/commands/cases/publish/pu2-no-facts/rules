@@ -1,0 +1,1 @@
+R-PUB3 R-PB5 R-PU5 R-AP71 (slice 221): compat.db has only a fact of another hash. The body has no `compat` member, the warning of R-PUB3 is on stderr (before the token request), the exit code is 0.

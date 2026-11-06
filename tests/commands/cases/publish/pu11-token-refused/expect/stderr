@@ -1,0 +1,2 @@
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[usage]: the GitHub OIDC token request was refused (403). The job needs permissions: id-token: write.

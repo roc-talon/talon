@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 R-SO24 R-SO15 (slice 222, Design Q544): the pin nightly-2026-10-09-9d9d9d9 is not installed, `--probe-downloads` is set, and `config.toml` has `default-roc` (another compiler). The download runs, the bump runs on the pin, and `config.toml` is not changed (R-SO24: a set default is never changed). Exit 0.

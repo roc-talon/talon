@@ -1,0 +1,115 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:8/login/device/code timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ
+clock
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:8/login/device/code timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ
+clock
+sleep 0
+clock
+http_send POST http://127.0.0.1:8/login/oauth/access_token timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ&device_code=DC1&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:8/login/device/code timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ
+clock
+sleep 0
+clock
+http_send POST http://127.0.0.1:8/login/oauth/access_token timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ&device_code=DC1&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+http_send POST http://127.0.0.1:9/v1/tokens timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Talon-Contributor: 0123456789abcdeffedcba9876543210
+  <body> {"github_token":"gho_test"}
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:8/login/device/code timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ
+clock
+sleep 0
+clock
+http_send POST http://127.0.0.1:8/login/oauth/access_token timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ&device_code=DC1&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+http_send POST http://127.0.0.1:9/v1/tokens timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Talon-Contributor: 0123456789abcdeffedcba9876543210
+  <body> {"github_token":"gho_test"}
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:8/login/device/code timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ
+clock
+sleep 0
+clock
+http_send POST http://127.0.0.1:8/login/oauth/access_token timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ&device_code=DC1&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+http_send POST http://127.0.0.1:9/v1/tokens timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Talon-Contributor: 0123456789abcdeffedcba9876543210
+  <body> {"github_token":"gho_test"}
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:8/login/device/code timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ
+clock
+sleep 0
+clock
+http_send POST http://127.0.0.1:8/login/oauth/access_token timeout=20
+  Accept: application/json
+  User-Agent: tln/0.0.1
+  Content-Type: application/x-www-form-urlencoded
+  <body> client_id=Ov23li2sxWgMaAvjaUbQ&device_code=DC1&grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Adevice_code
+http_send POST http://127.0.0.1:9/v1/tokens timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Talon-Contributor: 0123456789abcdeffedcba9876543210
+  <body> {"github_token":"gho_test"}

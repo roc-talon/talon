@@ -1,0 +1,11 @@
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":4,"hash":"6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","group":"github.com/someone/roc-b/releases/download/v{v}/","series":"1","version":"1.0.0","url":"https://github.com/someone/roc-b/releases/download/v1.0.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst","tag":"v1.0.0","roc_version":null,"repo":"someone/roc-b","published_at":1790000000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/728ee13ade9201bf3df3b7d22a57d179.meta
+@@ -0,0 +1,3 @@
++url /v1/releases?group=github.com%2Fsomeone%2Froc-b%2Freleases%2Fdownload%2Fv%7Bv%7D%2F
++etag "e1"
++max-age 60

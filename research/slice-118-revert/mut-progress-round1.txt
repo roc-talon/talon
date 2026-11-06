@@ -1,0 +1,10 @@
+m1 exit=1 2 w2-fail-lines All (12) tests passed in 238.1 ms. w2: 7 passed, 2 failed 
+m2 exit=1 2 w2-fail-lines All (12) tests passed in 230.3 ms. w2: 7 passed, 2 failed 
+m3 exit=1 2 w2-fail-lines All (12) tests passed in 270.7 ms. w2: 7 passed, 2 failed 
+m4 exit=1 1 w2-fail-lines w2: 8 passed, 1 failed 
+m5 exit=1 1 w2-fail-lines w2: 8 passed, 1 failed 
+m6 exit=1 1 w2-fail-lines w2: 8 passed, 1 failed 
+m7 exit=1 1 w2-fail-lines All (12) tests passed in 205.5 ms. w2: 8 passed, 1 failed 
+m8 exit=1 1 w2-fail-lines w2: 8 passed, 1 failed 
+m9 exit=1 1 w2-fail-lines All (12) tests passed in 223.3 ms. w2: 8 passed, 1 failed 
+m10 exit=1 1 w2-fail-lines w2: 8 passed, 1 failed 

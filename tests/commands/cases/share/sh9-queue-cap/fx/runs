@@ -1,0 +1,17 @@
+# R-SH4, R-TF7: the cap of the queue, here 4 (the command gives Db.queue_cap, 10000, to the Fx). The given queue has 3 rows with seq 5, 6 and 9.
+queue-count
+# 2 and 3: 2 new rows make 5: the oldest row (the smallest seq, 5) is dropped. The new rows have seq 10 and 11 (after the largest seq).
+queue-add 4 HD,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:01:00Z HE,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:01:00Z
+queue-count
+# 4 and 5: a repeat of a row that is in the queue (HC, other result) adds no row, so nothing is dropped
+queue-add 4 HC,nightly-2026-10-12-2664a27,any,pass,0.9.0,2026-11-03T10:02:00Z
+queue-count
+# 6 and 7: the row HA was dropped: it is a new row now (seq 12), and the oldest row (HB, seq 6) is dropped
+queue-add 4 HA,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:02:00Z
+queue-count
+# 8 and 9: a call with 6 new rows (more than the cap): the queue keeps the last 4 of all
+queue-add 4 HF,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:03:00Z HG,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:03:00Z HH,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:03:00Z HI,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:03:00Z HJ,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:03:00Z HK,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:03:00Z
+queue-count
+# 10 and 11: a larger cap drops nothing and does not add rows back
+queue-add 10 HL,nightly-2026-10-14-38a3029,any,pass,0.9.0,2026-11-03T10:04:00Z
+queue-count

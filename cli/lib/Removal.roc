@@ -19,7 +19,7 @@ Removal :: [].{
 	##
 	## | # | Case | Message | Rule |
 	## | --- | --- | --- | --- |
-	## | 1 | `--registry` with a value other than `direct` | `--registry '<value>': no registry exists in this version of tln. Use --registry direct.` | R-FL5, R-RG2 |
+	## | 1 | Slice 206f: no check of `--registry` (the P0 refusal is gone; `remove` makes no index call, R-RG7 row 6) | none | R-FL5, R-RG7 |
 	## | 2 | `--strategy` with a value other than `highest` or `lowest` | `--strategy must be highest or lowest, not '<value>'` | R-FL10 |
 	## | 3 | `--frozen` (`remove` changes the header) | `flag '--frozen' works only for tln install with no names` | R-FL13, R-EC2 |
 	## | 4 | No operand (question Q2) | `tln remove needs one name or more` | |

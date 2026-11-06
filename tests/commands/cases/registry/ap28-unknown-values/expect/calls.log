@@ -1,0 +1,63 @@
+env_all
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["9oETwoBba7i2t2j7UGbW5ZbcJL2Qcb6fZ38KxdPqcRm","DrVX2Uz1uvFJ7Bo9MMiji1aHK9L8ueqVChacHXa7EMHk","2EHLWuCuiAS3A5AJAMdoLzeF9zWKP2yRtqmVSt63XdgH","GTPH27GVhLxn3wU6m9FQUnH7FCRmhtceUkzV24KWAM4v","C9MGpSSZyYJVF6U6EVPEnv7oiPagAvucGHKE6mRHGrjT"]}
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/1.0.0/9oETwoBba7i2t2j7UGbW5ZbcJL2Qcb6fZ38KxdPqcRm.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/other/releases/download/2.0.0/2EHLWuCuiAS3A5AJAMdoLzeF9zWKP2yRtqmVSt63XdgH.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/third/releases/download/3.0.0/C9MGpSSZyYJVF6U6EVPEnv7oiPagAvucGHKE6mRHGrjT.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Cache-Control: no-cache
+  Talon-Bookmark: 0000000b-00000020-00004c70-1f22
+  <body> {"groups":[],"hashes":["9oETwoBba7i2t2j7UGbW5ZbcJL2Qcb6fZ38KxdPqcRm","DrVX2Uz1uvFJ7Bo9MMiji1aHK9L8ueqVChacHXa7EMHk","2EHLWuCuiAS3A5AJAMdoLzeF9zWKP2yRtqmVSt63XdgH","GTPH27GVhLxn3wU6m9FQUnH7FCRmhtceUkzV24KWAM4v","C9MGpSSZyYJVF6U6EVPEnv7oiPagAvucGHKE6mRHGrjT"]}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["G9uqmydQRU4vQJBsHkzSuBVAYwiyQhWQ7ssp4YnfSHCy","2Go5JhKMcQ88gPhThvnVdLS9MKo1nuL1cyDrSoY8pSgy"]}
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/4.0.0/G9uqmydQRU4vQJBsHkzSuBVAYwiyQhWQ7ssp4YnfSHCy.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/other/releases/download/5.0.0/2Go5JhKMcQ88gPhThvnVdLS9MKo1nuL1cyDrSoY8pSgy.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Cache-Control: no-cache
+  Talon-Bookmark: 0000000c-00000040-00004c80-aaaa
+  <body> {"groups":[],"hashes":["G9uqmydQRU4vQJBsHkzSuBVAYwiyQhWQ7ssp4YnfSHCy","2Go5JhKMcQ88gPhThvnVdLS9MKo1nuL1cyDrSoY8pSgy"]}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["5SbQxfg2bwZtVLVbY8TLBnHzfB5zjiG9Pt3fRYMoSUY1","3i5f2mngSTBunmYR4QzLT7BVdgfdezDj31aUPLeV1bq7"]}
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/6.0.0/5SbQxfg2bwZtVLVbY8TLBnHzfB5zjiG9Pt3fRYMoSUY1.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/other/releases/download/7.0.0/3i5f2mngSTBunmYR4QzLT7BVdgfdezDj31aUPLeV1bq7.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["5URLGvrvmkTZyhXgBBuXNAsi1WaH4uxev2RbE2MdRRur","6DWbyFGs2kwj6TYhfvsWXffXcWwrgT4C9JjjjBhbTXRX"]}

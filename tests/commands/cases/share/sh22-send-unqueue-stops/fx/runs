@@ -1,0 +1,2 @@
+# R-SH4, Q464: 501 rows (2 batches). The first request gets a 201, its Unqueue fails (db call 2): the send stops, the second batch does not go, no totals write, the rows stay.
+queue-send 0.9.0

@@ -1,0 +1,9 @@
+1: attempt 1 fails (GitHub answers 500): retried after 60 s
+2: attempt 2 fails (GitHub answers 500): retried after 300 s
+3: attempt 3 fails (GitHub answers 500): retried after 900 s
+4: attempt 4 fails (GitHub answers 500): retried after 3600 s
+5: attempt 5 fails (GitHub answers 500): the last attempt: a retry with no delay (the platform moves the message to the dead letter queue because max_retries 4 is used up)
+6: attempt 6 (not possible with max_retries 4, but a changed config): no delay
+7: a body that is not a message (attempt 2): a failure, retried after 300 s
+8: a message of an event or action that this Worker never writes (attempt 3): a failure, retried after 900 s
+9: one batch with 3 messages of different attempts: each has its own delay

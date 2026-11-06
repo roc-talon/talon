@@ -1,0 +1,6 @@
+cli/lib/FirstRun.roc
+cli/lib/FirstRunFlow.roc
+docs/slices/214-first-run-prompt.md
+tests/commands/cases/share/sh4-first-run/
+tests/commands/cases/share/sh5-first-skips/
+tests/scenarios/share/fr1-first-run-tty/

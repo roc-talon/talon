@@ -1,0 +1,53 @@
+        row(10, "0.9.0", h9, Err(None)),
+        row(11, "13.0.0", h3, Ok("prereleased")),
+    ]
+    list = [
+        final(9101, "1.0.0", [zst(h1), "notes.txt"]),
+        pre(9102, "2.0.0", [zst(h2)]),
+        draft(9104, "4.0.0", [zst(h4)]),
+        final(9105, "5.0.0", [zst(h9)]),
+        final(9106, "6.0.0", [zst(h6)]),
+        final(9107, "7.0.0", [zst(h7)]),
+        final(9109, "12.0.0", [zst(h1), zst(h3)]),
+        final(9108, "8.0.0", [zst(h8), "${zst(h8)}.intoto.jsonl"]),
+        pre(9110, "9.0.0", [zst(h5)]),
+        final(9111, "nightly", [zst(h5)]),
+        final(9112, "10.0.0", [zst(h5), zst(h6)]),
+        final(9113, "14.0.0", []),
+        draft(9114, "15.0.0", [zst(h5)]),
+        final(9115, "16.0.0", ["docs.tar.gz", zst(h4)]),
+        pre(9116, "13.0.0", [zst(h3)]),
+    ]
+    work = Reconcile.list_work({ full_name: "Acme/Lib", rows, list })
+    want_changes = [set(2, "prereleased"), set(3, "deleted"), set(4, "deleted"), set(5, "asset-replaced"), clear(6), set(10, "deleted")]
+    work.changes == want_changes and work.candidates == [9108, 9115]
+}
+
+Mentioned values:
+h3 = "CktRuQ2mttgRGkXJtyksdKHjUdc2C4TgDzyB98oEzy8"
+h4 = "GgBaCs3NCBuZN12kCJgAW63ydqohFkHEdfdEXBPzLHq"
+h5 = "LbUiWL3xVV8hTFYBVdbTNrpDo41NKS6o3LHHuDzjfcY"
+h6 = "QWmroo4YnnMqYW3cnxWkFdaTxGD3P7vMSzwMHGbUzwF"
+h8 = "YMN9Qj5jPNp7j14VPcML1B6xGgcPWVZUGLFU3Mnyfaf"
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+h7 = "US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx"
+h9 = "cGfHiC6Kgg3FpFZvgwGcswsCRtp4aBP2fzuXRQPizuN"
+h2 = "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+
+Ran 26 tests in 427.7 ms.:
+    25 passed
+    1 failed
+    0 compiler errors
+PASS reconcile/pu21-poll-job (2616 ms)
+FAIL reconcile/pu23-list (3788 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\tdeleted\t1767225600000","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\tdeleted\t1767225600000","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\t\\N\t\\N","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\tdeleted\t1767225600000","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+PASS reconcile/pu25-reserve (2490 ms)
+PASS reconcile/pu36-overlap (2517 ms)
+PASS reconcile/pu36-state-guard (2608 ms)
+PASS reconcile/pu37-backoff (2874 ms)
+PASS reconcile/pu37-etag-effects (1559 ms)
+PASS webhook/pu13-index-new (1406 ms)
+PASS webhook/pu17-withdraw-clear (1685 ms)
+w2: 8 passed, 1 failed

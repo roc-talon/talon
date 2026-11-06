@@ -32,17 +32,21 @@ RealDb :: [].{
 		if write_is_empty(write) {
 			Ok({})
 		} else {
-			match make_parent!(open.path) {
+			match nothing_to_clear!(open, write) {
 				Err(err) => Err(err)
-				Ok(_) => match open_db!(open) {
+				Ok(Bool.True) => Ok({})
+				Ok(Bool.False) => match make_parent!(open.path) {
 					Err(err) => Err(err)
-					Ok(db) => match start!(db, open) {
+					Ok(_) => match open_db!(open) {
 						Err(err) => Err(err)
-						Ok(version) => {
-							made = if version == 0 create!(db, open) else Ok({})
-							match made {
-								Err(err) => Err(err)
-								Ok(_) => insert!(db, write)
+						Ok(db) => match start!(db, open) {
+							Err(err) => Err(err)
+							Ok(version) => {
+								made = if version == 0 create!(db, open) else Ok({})
+								match made {
+									Err(err) => Err(err)
+									Ok(_) => insert!(db, write)
+								}
 							}
 						}
 					}
@@ -52,22 +56,48 @@ RealDb :: [].{
 	}
 }
 
+# R-SH4, R-TF7: `ClearQueue` and `Unqueue` for a file that does not exist make no file (nothing is queued).
+nothing_to_clear! : Db.Open, Db.Write => Try(Bool, Db.Err)
+nothing_to_clear! = |open, write| match write {
+	ClearQueue => file_missing!(open)
+	Unqueue(_) => file_missing!(open)
+	_ => Ok(Bool.False)
+}
+
+file_missing! : Db.Open => Try(Bool, Db.Err)
+file_missing! = |open| match Path.exists!(Path.utf8(open.path)) {
+	Ok(found) => Ok(!found)
+	Err(PathErr(err, _)) => Err(Failed(Str.inspect(err)))
+}
+
 query_is_empty : Db.Query -> Bool
 query_is_empty = |query| match query {
 	Facts(keys) => keys.is_empty()
+	FactsOf(_) => Bool.False
 	Pinned(keys) => keys.is_empty()
+	QueueCount => Bool.False
+	QueueRows => Bool.False
+	Smoke(keys) => keys.is_empty()
 }
 
 write_is_empty : Db.Write -> Bool
 write_is_empty = |write| match write {
 	Facts({ rows, existing: _ }) => rows.is_empty()
 	Pinned(rows) => rows.is_empty()
+	ClearQueue => Bool.False
+	Queue({ rows, cap: _ }) => rows.is_empty()
+	Unqueue(seqs) => seqs.is_empty()
+	Smoke(rows) => rows.is_empty()
 }
 
 empty_answer : Db.Query -> Db.Answer
 empty_answer = |query| match query {
 	Facts(_) => Facts([])
+	FactsOf(_) => Facts([])
 	Pinned(_) => Pinned([])
+	QueueCount => QueueCount(0)
+	QueueRows => QueueRows([])
+	Smoke(_) => Smoke([])
 }
 
 # R-CC8: `Busy` and `Locked` are a lock that stayed held. Any other error is a failure with its text.
@@ -151,6 +181,14 @@ select! = |db, query| match query {
 			Ok(rows) => Ok(Facts(rows.keep_oks(fact_of)))
 		}
 	}
+	FactsOf(hash) => {
+		text = "SELECT hash, nightly, target, outcome, modules, closure FROM facts WHERE hash = ?"
+		decoder = pair(Decoder.str("hash"), pair(Decoder.str("nightly"), pair(Decoder.str("target"), pair(Decoder.str("outcome"), pair(Decoder.str("modules"), Decoder.str("closure"))))))
+		match db.query_all!(sql(text, [String(hash)]), decoder) {
+			Err(err) => Err(err_of(err))
+			Ok(rows) => Ok(Facts(rows.keep_oks(fact_of)))
+		}
+	}
 	Pinned(keys) => {
 		clause = Str.join_with(keys.map(|_| "(tag = ? AND target = ?)"), " OR ")
 		values = keys.map(|key| [String(key.tag), String(key.target)]).join()
@@ -159,6 +197,96 @@ select! = |db, query| match query {
 		match db.query_all!(sql(text, values), decoder) {
 			Err(err) => Err(err_of(err))
 			Ok(rows) => Ok(Pinned(rows.keep_oks(pinned_of)))
+		}
+	}
+	# Slice 218 (R-SM4, R-TF7): `Smoke(keys)`. A missing table gives no rows and makes none.
+	Smoke(keys) => match db.query_one!(sql("SELECT count(*) AS n FROM sqlite_master WHERE type = 'table' AND name = 'smoke'", []), Decoder.i64("n")) {
+		Err(err) => Err(err_of(err))
+		Ok(0) => Ok(Smoke([]))
+		Ok(_) => {
+			clause = Str.join_with(keys.map(|_| "(hash = ? AND nightly = ? AND target = ?)"), " OR ")
+			values = keys.map(|key| [String(key.hash), String(key.nightly), String(key.target)]).join()
+			text = "SELECT hash, nightly, target, outcome FROM smoke WHERE ${clause}"
+			decoder = pair(Decoder.str("hash"), pair(Decoder.str("nightly"), pair(Decoder.str("target"), Decoder.str("outcome"))))
+			match db.query_all!(sql(text, values), decoder) {
+				Err(err) => Err(err_of(err))
+				Ok(rows) => Ok(Smoke(rows.keep_oks(smoke_row_of)))
+			}
+		}
+	}
+	QueueCount => match db.query_one!(sql("SELECT count(*) AS n FROM sqlite_master WHERE type = 'table' AND name = 'share_queue'", []), Decoder.i64("n")) {
+		Err(err) => Err(err_of(err))
+		Ok(0) => Ok(QueueCount(0))
+		Ok(_) => match db.query_one!(sql("SELECT count(*) AS n FROM share_queue", []), Decoder.i64("n")) {
+			Err(err) => Err(err_of(err))
+			Ok(count) => Ok(QueueCount(I64.to_u64_try(count) ?? 0))
+		}
+	}
+	QueueRows => match db.query_one!(sql("SELECT count(*) AS n FROM sqlite_master WHERE type = 'table' AND name = 'share_queue'", []), Decoder.i64("n")) {
+		Err(err) => Err(err_of(err))
+		Ok(0) => Ok(QueueRows([]))
+		Ok(_) => {
+			text = "SELECT seq, hash, nightly, target, result, talon_version, queued_at FROM share_queue ORDER BY seq"
+			decoder = pair(Decoder.i64("seq"), pair(Decoder.str("hash"), pair(Decoder.str("nightly"), pair(Decoder.str("target"), pair(Decoder.str("result"), pair(Decoder.str("talon_version"), Decoder.str("queued_at")))))))
+			match db.query_all!(sql(text, []), decoder) {
+				Err(err) => Err(err_of(err))
+				Ok(rows) => Ok(QueueRows(rows.keep_oks(queue_item_of)))
+			}
+		}
+	}
+}
+
+# A row with a result word that this Talon does not know is ignored (as `fact_of`).
+queue_item_of : (I64, (Str, (Str, (Str, (Str, (Str, Str)))))) -> Try(Db.QueueItem, [BadWord])
+queue_item_of = |(seq, (hash, (nightly, (target, (result_text, (talon_version, queued_at))))))| match Db.outcome_of(result_text) {
+	Ok(result) => Ok({ seq: I64.to_u64_try(seq) ?? 0, row: { hash, nightly, target, result, talon_version, queued_at } })
+	Err(BadWord) => Err(BadWord)
+}
+
+# A row with an outcome word that this Talon does not know is ignored (as `fact_of`).
+smoke_row_of : (Str, (Str, (Str, Str))) -> Try(Db.SmokeRow, [BadWord])
+smoke_row_of = |(hash, (nightly, (target, outcome_text)))| match Db.outcome_of(outcome_text) {
+	Ok(outcome) => Ok({ hash, nightly, target, outcome })
+	Err(BadWord) => Err(BadWord)
+}
+
+# R-SM4, R-TF7, Q551: the table (made when it is missing), then each row with `ON CONFLICT DO NOTHING` (the first row of a key stays), all in one transaction.
+smoke_insert! : Sqlite.Db, List(Db.SmokeRow) => Try({}, Db.Err)
+smoke_insert! = |db, rows| match exec!(db, "BEGIN IMMEDIATE", []) {
+	Err(err) => Err(err)
+	Ok(_) => {
+		var $failures = []
+		match exec!(db, "CREATE TABLE IF NOT EXISTS smoke (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, PRIMARY KEY (hash, nightly, target)) WITHOUT ROWID", []) {
+			Ok(_) => {}
+			Err(err) => {
+				$failures = [err]
+			}
+		}
+		for row in rows {
+			if $failures.is_empty() {
+				values = [String(row.hash), String(row.nightly), String(row.target), String(Db.outcome_word(row.outcome))]
+				match exec!(db, "INSERT INTO smoke (hash, nightly, target, outcome) VALUES (?, ?, ?, ?) ON CONFLICT DO NOTHING", values) {
+					Ok(_) => {}
+					Err(err) => {
+						$failures = [err]
+					}
+				}
+			}
+		}
+		if $failures.is_empty() {
+			match exec!(db, "COMMIT", []) {
+				Ok(_) => {}
+				Err(err) => {
+					$failures = [err]
+				}
+			}
+		}
+		match $failures {
+			[] => Ok({})
+			[err, ..] => {
+				_ = exec!(db, "ROLLBACK", [])
+				Err(err)
+			}
 		}
 	}
 }
@@ -228,6 +356,100 @@ insert! = |db, write| match write {
 		marks = Str.join_with(rows.map(|_| "(?, ?, ?, ?)"), ", ")
 		values = rows.map(|row| [String(row.tag), String(row.target), String(row.sha256), String(Db.source_word(row.source))]).join()
 		exec!(db, "INSERT INTO pinned (tag, target, sha256, source) VALUES ${marks} ON CONFLICT DO NOTHING", values)
+	}
+	# Slice 218 (R-SM4, R-TF7): `CREATE TABLE IF NOT EXISTS smoke`, then the rows.
+	Smoke(rows) => smoke_insert!(db, rows)
+	Queue({ rows, cap }) => queue_insert!(db, rows, cap)
+	Unqueue(seqs) => in_transaction!(
+		db,
+		[
+			"CREATE TABLE IF NOT EXISTS share_queue (seq INTEGER PRIMARY KEY, hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, result TEXT NOT NULL, talon_version TEXT NOT NULL, queued_at TEXT NOT NULL, UNIQUE (hash, nightly, target, talon_version))",
+			"DELETE FROM share_queue WHERE seq IN (${Str.join_with(seqs.map(|seq| U64.to_str(seq)), ", ")})",
+		],
+	)
+	ClearQueue => in_transaction!(
+		db,
+		[
+			"CREATE TABLE IF NOT EXISTS share_queue (seq INTEGER PRIMARY KEY, hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, result TEXT NOT NULL, talon_version TEXT NOT NULL, queued_at TEXT NOT NULL, UNIQUE (hash, nightly, target, talon_version))",
+			"DELETE FROM share_queue",
+		],
+	)
+}
+
+# R-SH3, R-SH4, R-TF7: the table (made when it is missing), each row with `ON CONFLICT DO NOTHING` (the unique key keeps the first row), then the rows with the smallest `seq` go until `cap` rows stay.
+# All in one transaction. `seq` is an `INTEGER PRIMARY KEY`: a new row gets the largest `seq` + 1.
+queue_insert! : Sqlite.Db, List(Db.Queued), U64 => Try({}, Db.Err)
+queue_insert! = |db, rows, cap| {
+	make = "CREATE TABLE IF NOT EXISTS share_queue (seq INTEGER PRIMARY KEY, hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, result TEXT NOT NULL, talon_version TEXT NOT NULL, queued_at TEXT NOT NULL, UNIQUE (hash, nightly, target, talon_version))"
+	cap_text = U64.to_str(cap)
+	trim = "DELETE FROM share_queue WHERE seq IN (SELECT seq FROM share_queue ORDER BY seq DESC LIMIT -1 OFFSET ${cap_text})"
+	match exec!(db, "BEGIN IMMEDIATE", []) {
+		Err(err) => Err(err)
+		Ok(_) => {
+			var $failures = []
+			if $failures.is_empty() {
+				match exec!(db, make, []) {
+					Ok(_) => {}
+					Err(err) => {
+						$failures = [err]
+					}
+				}
+			}
+			for row in rows {
+				if $failures.is_empty() {
+					values = [String(row.hash), String(row.nightly), String(row.target), String(Db.outcome_word(row.result)), String(row.talon_version), String(row.queued_at)]
+					match exec!(db, "INSERT INTO share_queue (hash, nightly, target, result, talon_version, queued_at) VALUES (?, ?, ?, ?, ?, ?) ON CONFLICT DO NOTHING", values) {
+						Ok(_) => {}
+						Err(err) => {
+							$failures = [err]
+						}
+					}
+				}
+			}
+			for step in [trim, "COMMIT"] {
+				if $failures.is_empty() {
+					match exec!(db, step, []) {
+						Ok(_) => {}
+						Err(err) => {
+							$failures = [err]
+						}
+					}
+				}
+			}
+			match $failures {
+				[] => Ok({})
+				[err, ..] => {
+					_ = exec!(db, "ROLLBACK", [])
+					Err(err)
+				}
+			}
+		}
+	}
+}
+
+# One transaction: the steps in order. A failed step rolls the others back.
+in_transaction! : Sqlite.Db, List(Str) => Try({}, Db.Err)
+in_transaction! = |db, steps| match exec!(db, "BEGIN IMMEDIATE", []) {
+	Err(err) => Err(err)
+	Ok(_) => {
+		var $failures = []
+		for step in steps.append("COMMIT") {
+			if $failures.is_empty() {
+				match exec!(db, step, []) {
+					Ok(_) => {}
+					Err(err) => {
+						$failures = [err]
+					}
+				}
+			}
+		}
+		match $failures {
+			[] => Ok({})
+			[err, ..] => {
+				_ = exec!(db, "ROLLBACK", [])
+				Err(err)
+			}
+		}
 	}
 }
 

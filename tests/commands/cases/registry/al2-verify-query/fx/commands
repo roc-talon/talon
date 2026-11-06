@@ -1,0 +1,4 @@
+verify --no-check --registry direct --file u1/main.roc env:TALON_REGISTRY=http://127.0.0.1:9
+verify --no-check --file u1/main.roc
+verify --no-check --json --snapshot log:30 --file u1/main.roc
+verify --no-check --offline --file u1/main.roc

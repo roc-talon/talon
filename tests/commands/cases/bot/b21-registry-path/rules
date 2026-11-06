@@ -1,0 +1,1 @@
+R-MX18 R-TP17 R-RG7 (slice 223, Q576, dispute D1): TALON_REGISTRY=HTTPS://Reg.Example:443/ is read as the base URL form (R-RG7 row 3): the calls go to https://reg.example/v1/..., and the token request has audience=https%3A%2F%2Freg.example. As b2, exit 0. A registry with a path (https://reg.example/api/) is a bad form (R-RG7 rows 2 and 6): exit 2 with no request, as b19 and b20.

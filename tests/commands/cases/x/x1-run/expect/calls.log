@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -58,22 +60,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 exec $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/foo a b
 args
 env_all
-clock
-cwd
-list_dirs $PROJECT
-env_all
-clock
-platform
-read_files $HOME/.local/share/talon/tools.json
-read_files $HOME/.config/talon/config.toml
-list_dirs $HOME/.cache/roc/talon/x
-read_files $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8/manifest.json $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39/manifest.json $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463/manifest.json $HOME/.cache/roc/talon/x/future/manifest.json
-list_dirs $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8 $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39 $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90 $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463
-list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
-read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
-write_atomic $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json
-exec $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/foo
-args
+tty
 env_all
 clock
 cwd
@@ -91,6 +78,27 @@ read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/
 write_atomic $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json
 exec $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/foo
 args
+env_all
+tty
+env_all
+clock
+cwd
+list_dirs $PROJECT
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/x
+read_files $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8/manifest.json $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39/manifest.json $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463/manifest.json $HOME/.cache/roc/talon/x/future/manifest.json
+list_dirs $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8 $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39 $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90 $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463
+list_dirs $HOME/.cache/roc/talon/index/github/acme/foo
+read_files $HOME/.cache/roc/talon/index/github/acme/foo/1.meta $HOME/.cache/roc/talon/index/github/acme/foo/1.json
+write_atomic $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json
+exec $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/foo
+args
+env_all
+tty
 env_all
 clock
 platform
@@ -134,6 +142,8 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 exec $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/foo
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -152,6 +162,8 @@ write_atomic $HOME/.cache/roc/talon/index/github/acme/bar/1.json $HOME/.cache/ro
 write_atomic $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json
 exec $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/bar
 args
+env_all
+tty
 env_all
 clock
 platform
@@ -195,6 +207,8 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 exec $HOME/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/bar
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -211,6 +225,8 @@ read_files $HOME/.cache/roc/talon/index/github/acme/bar/1.meta $HOME/.cache/roc/
 write_atomic $HOME/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/manifest.json
 exec $HOME/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/bar
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -229,6 +245,8 @@ http_get https://api.github.com/repos/acme/baz/releases?per_page=100
 write_atomic $HOME/.cache/roc/talon/index/github/acme/baz/1.json $HOME/.cache/roc/talon/index/github/acme/baz/1.meta
 exec $HOME/.local/share/talon/bin/baz
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -280,6 +298,8 @@ exec $HOME/.cache/roc/talon/x/409a6626577b67f1aff9aff5cced3ecbdf7f15adda287fdff1
 args
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT
@@ -292,6 +312,8 @@ list_dirs $HOME/.cache/roc/talon/x
 read_files $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7/manifest.json $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8/manifest.json $HOME/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468/manifest.json $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39/manifest.json $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90/manifest.json $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463/manifest.json $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50/manifest.json $HOME/.cache/roc/talon/x/future/manifest.json
 list_dirs $HOME/.cache/roc/talon/x/12a9a07e3bfad229b786f055419c9cd6824c28c2835865525c4c3d2b5cdfa2c7 $HOME/.cache/roc/talon/x/21fd99fbbb04de4664fc8a9557849810b9efc9efe251356a078153bd58d915e8 $HOME/.cache/roc/talon/x/54c38f663718b5c6c9df45ed0b1c8a482463b9dd38713c6c6dce886c52a55468 $HOME/.cache/roc/talon/x/7afde976c42fcd534db8c88e04e21284417f2b14bc4189ef8e85fd5abb724e39 $HOME/.cache/roc/talon/x/9680fdbdd1fafa5f6e0374e7dff17d7ed6bec57d197f4e3cbd2cef97feb28d90 $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463 $HOME/.cache/roc/talon/x/ff9f707384e031645bd80200ffb94e812df8390328af4c0b7685da7ef8fd7b50
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -308,6 +330,8 @@ list_dirs $HOME/.cache/roc/talon/index/github/acme/baz
 read_files $HOME/.cache/roc/talon/index/github/acme/baz/1.meta $HOME/.cache/roc/talon/index/github/acme/baz/1.json
 exec $HOME/.local/share/talon/bin/baz boom
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -357,6 +381,8 @@ rename $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bd
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 exec $HOME/.cache/roc/talon/x/dd6f22254da3fdb0110b67cdb70806c6ddcae5e29131b9bdfba884575252b463/nobin
 args
+env_all
+tty
 env_all
 clock
 cwd

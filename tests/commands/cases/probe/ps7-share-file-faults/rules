@@ -1,0 +1,1 @@
+R-PB6 R-TF3 R-SH13 (slice 217): run 1: compat.db has a newer format (db call 1, TooNew): exit 19, the message of Db.on_err, no closure query, no request. Run 2: share.json does not parse: exit 19 with the text of ShareJson.read, no compat request, no write (Q497).

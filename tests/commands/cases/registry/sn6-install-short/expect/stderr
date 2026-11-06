@@ -1,0 +1,8 @@
+"Parser" matches 2 packages:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: "Parser" matches 2 packages. Use a name from the list.
+Similar names:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: "pars" matches no indexed package. Use the full name (owner/repo).

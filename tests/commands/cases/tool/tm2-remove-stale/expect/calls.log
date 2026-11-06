@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 platform
 read_files $HOME/.local/share/talon/tools.json
 lock $HOME/.local/share/talon/tools.json nowait: held
@@ -11,6 +13,7 @@ delete $HOME/.local/bin/foo $HOME/.local/share/talon/bin/foo
 write_atomic $HOME/.local/share/talon/tools.json
 unlock $HOME/.local/share/talon/tools.json
 args
+env_all
 env_all
 platform
 read_files $HOME/.local/share/talon/tools.json

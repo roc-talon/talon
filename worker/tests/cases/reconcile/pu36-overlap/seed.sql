@@ -1,0 +1,12 @@
+INSERT INTO names (id, kind, value) VALUES (9143114135261108830, 3, 'acme/x');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (9143114135261108830, 500, 50, 0, NULL, 1767000000000, 1767000000000);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (9143114135261108830, 'W/"acme/x"', 1767000000000, 1767225540000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (9143114135261108830, 1, 0, NULL, 500, NULL, 50, NULL, NULL, 1767000000000);
+INSERT INTO names (id, kind, value) VALUES (-3283538266078861979, 3, 'acme/y');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (-3283538266078861979, 600, 50, 0, NULL, 1767000000000, 1767000000000);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (-3283538266078861979, 'W/"acme/y"', 1767000000000, 1767225420000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-3283538266078861979, 1, 0, NULL, 600, NULL, 50, NULL, NULL, 1767000000000);
+INSERT INTO names (id, kind, value) VALUES (2726154527102690480, 3, 'acme/z');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (2726154527102690480, 700, 50, 0, NULL, 1767000000000, 1767000000000);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (2726154527102690480, 'W/"acme/z"', 1767000000000, 1767225480000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (2726154527102690480, 1, 0, NULL, 700, NULL, 50, NULL, NULL, 1767000000000);

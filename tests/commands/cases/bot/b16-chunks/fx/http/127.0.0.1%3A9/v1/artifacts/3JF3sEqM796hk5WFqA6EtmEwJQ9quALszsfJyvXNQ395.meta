@@ -1,0 +1,5 @@
+status 200
+header Content-Type: application/json
+header Cache-Control: no-store
+require-none authorization
+require user-agent: tln/0.0.1

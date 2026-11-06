@@ -1,0 +1,7 @@
+PASS cron/ct15-trim (1301 ms)
+PASS cron/ct15-trim-failure (1226 ms)
+FAIL cron/pu35-hint-cleanup (1186 ms)
+    db: @ SELECT artifact, nightly, target, talon_version FROM compat_hints ORDER BY artifact, nightly, target, talon_version: rows differ:
+      expected: ["101\t9400\t8\t1","102\t9400\t0\t1","104\t9400\t0\t1"]
+      got:      ["101\t9400\t8\t1","104\t9400\t0\t1"]
+w2: 2 passed, 1 failed

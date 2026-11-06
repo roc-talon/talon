@@ -1,0 +1,9 @@
+Slice 122, Q158: one release with 2 provenance rows, ingest first and then publish (R-PU16). The rows are inserted in the order ingest (3), oidc (0), and the list is strongest first.
+1: ingest of a new label: 201, provenance [ingest]
+2: read the repository: [ingest] (the answer goes into the Cache API)
+3: publish of the same label and hash: 200, the oidc row is added, [oidc, ingest] (R-PU16)
+4: read the repository: [oidc, ingest] (the publish dropped the cached answer, R-AP69)
+5: ingest again: 200, [oidc, ingest], no new row (R-PU14)
+6: GET /v1/releases?after=0: the page route, [oidc, ingest]
+7: GET /v1/artifacts/<hash>: the artifact route, [oidc, ingest]
+8: publish again: 200, [oidc, ingest], no new row (R-PU15)

@@ -35,7 +35,10 @@ run_case() {
     find "$W/home" "$W/project" -name '*.json' -type f -exec sed -i "s#{w}#$W#g" {} + 2> /dev/null
     mkdir -p "$W/orig" && cp -a "$W/home" "$W/orig/home" && cp -a "$W/project" "$W/orig/project"
     entry=$(cat "$dir/entry")
-    "$bin" "$W" "$entry" > "$W/out/app.log" 2>&1
+    # Slice 088f (R-LY10): a Windows root variable must be absolute on Windows (`C:/AppData/Local`), and a real path on the Linux and macOS host. A case whose `fx/` has the text `C:/` gets the link `<W>/C:` -> `home`, and the app runs in <W>, so `C:/x` is the file `<W>/home/x`. The log then has the portable text `C:/x`, not a work dir path.
+    local run_in=.
+    if grep -rqs 'C:/' "$dir/fx"; then ln -s home "$W/C:"; run_in=$W; fi
+    (cd "$run_in" && "$bin" "$W" "$entry") > "$W/out/app.log" 2>&1
     local app_rc=$?
     [ -f "$W/out/exit" ] || { echo "  the test app wrote no exit file (exit $app_rc):"; sed -e 's/^/    /' "$W/out/app.log"; return 1; }
     for f in stdout stderr calls.log; do

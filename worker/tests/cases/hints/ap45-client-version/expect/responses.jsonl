@@ -1,0 +1,14 @@
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[]}"}
+{"status":200}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.3.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":405,"problem":{"type":"/errors/method-not-allowed"}}
+{"status":404,"problem":{"type":"/errors/not-found"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}

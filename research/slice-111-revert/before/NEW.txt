@@ -1,0 +1,13 @@
+# Files that slice 111 adds (the copies of changed files are in this dir, same path)
+docs/slices/111-archive-read.md
+worker/lib/ArchiveRead.roc
+worker/Archive.roc
+worker/archive-test.roc
+worker/tests/unit/ArchiveReadTest.roc
+worker/tests/unit/fixtures/roc-semver-0.2.0.tar
+worker/tests/tools/mk-bundle.mjs
+worker/tests/tools/blake3.mjs
+worker/tests/cases/archive/
+research/slice-111/probe/
+# Changed: worker/main.roc, worker/lib/main.roc, worker/tests/unit/w0.roc (headers: tar, header; lib exposes ArchiveRead; w0 imports ArchiveReadTest),
+#          worker/tests/run.mjs (app per case, gen.json bodies), scripts/test.sh (archive_build, W2_ARCHIVE_WASM)

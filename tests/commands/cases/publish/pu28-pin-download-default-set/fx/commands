@@ -1,0 +1,1 @@
+publish --file p/main.roc --probe-downloads

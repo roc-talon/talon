@@ -2,8 +2,10 @@
 # or `. "$ROOT/scripts/env.sh"`. It sets ROOT, ROC, WORK and the roc cache variables.
 # The cache paths are absolute with no `..` (TESTING.md 3.2).
 ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
-# The pinned compiler (docs/slices/PLAN.md, TW28): ROC_TAG is the one place of the tag. A caller can set ROC_TAG or ROC.
+# The pinned compilers (docs/slices/PLAN.md, TW28): ROC_TAG (the CLI, the packages) and ROC_TAG_WORKER are the one place of each tag. A caller can set ROC_TAG or ROC.
 ROC_TAG=${ROC_TAG:-nightly-2026-10-14-38a3029}
+# The compiler of the registry Worker (worker/, its roc: pin): the nightly of the platform release cloudflare-workers 0.0.2 (TESTING.md TW28, Design Q59).
+ROC_TAG_WORKER=${ROC_TAG_WORKER:-nightly-2026-10-31-f7bef6b}
 ROC=${ROC:-$ROOT/cloudflare-workers/.cache/nightlies/$ROC_TAG/roc}
 # A caller can set WORK (the self-test runs the scripts in its own dir).
 WORK=${WORK:-$ROOT/.work}
@@ -18,4 +20,4 @@ MINGW* | MSYS* | CYGWIN*)
     ROC_CACHE_DIR=$(cygpath -w "$ROC_CACHE_DIR")
     ;;
 esac
-export ROOT ROC ROC_TAG WORK
+export ROOT ROC ROC_TAG ROC_TAG_WORKER WORK

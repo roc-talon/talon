@@ -1,0 +1,13 @@
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:467:1
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:532:1
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:538:1
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:546:1
+        fin(ArchiveRead.empty().unzip_failed(WindowTooLarge)),
+        fin(ArchiveRead.empty().unzip_failed(BadFrame)),
+        fin(ArchiveRead.empty().push(pkg_members).unzip_failed(Truncated)),
+        fin(ArchiveRead.empty().unzip_failed(OutputLimit)),
+        fin(link.unzip_failed(Truncated)),
+    results == want and !ArchiveRead.empty().unzip_failed(BadFrame).reading()
+    445 passed
+    4 failed
+    0 compiler errors

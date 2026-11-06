@@ -1,5 +1,5 @@
 # The fast set (TW20, TW28): scripts/test.sh on Linux, macOS and Windows.
-# The compiler tag is ROC_TAG of scripts/env.sh. scripts/get-roc.sh installs it.
+# The compiler tags are ROC_TAG and ROC_TAG_WORKER of scripts/env.sh. scripts/get-roc.sh installs them.
 name: ci
 
 on:
@@ -22,9 +22,9 @@ jobs:
           - os: ubuntu-latest
             steps: ''
           - os: macos-latest
-            steps: ''
+            steps: check fmt l0 l2 l3 w0 selftest l1
           - os: windows-latest
-            steps: check fmt l0
+            steps: check fmt l0 w0
     defaults:
       run:
         shell: bash
@@ -66,23 +66,41 @@ jobs:
         run: |
           . scripts/env.sh
           echo "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"
+          echo "ROC_TAG_WORKER=$ROC_TAG_WORKER" >> "$GITHUB_ENV"
 
       - name: Cache of the compiler
         uses: actions/cache@v4
         with:
           path: .work/nightlies
-          key: roc-${{ runner.os }}-${{ runner.arch }}-${{ env.ROC_TAG }}
+          key: roc-${{ runner.os }}-${{ runner.arch }}-${{ env.ROC_TAG }}-${{ env.ROC_TAG_WORKER }}
 
       - name: Install the compiler
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
 
+      # The registry Worker (worker/) builds with its own compiler, ROC_TAG_WORKER (TW28, TW31, R-WH13). The steps w0 and wbuild read ROC_WORKER.
+      - name: Install the compiler of the Worker
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "ROC_WORKER=$(scripts/get-roc.sh worker)" >> "$GITHUB_ENV"
+
+      # The steps w1 and w2 need Node 26 or later (JSPI, node:sqlite) and a global wrangler 4 with Miniflare (TW34). Only Linux runs them (TW35); macOS and Windows run w0, which needs the Worker compiler only.
+      - name: Node
+        if: runner.os == 'Linux'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      - name: Wrangler
+        if: runner.os == 'Linux'
+        run: npm install --global wrangler@4.151.0
+
       # The key is the hash of the package URLs in the roc headers, not of all files: a new commit keeps the cache.
       - name: Hash of the package URLs
         id: pkgs
         run: |
-          dirs=$(ls -d cli tests packages 2> /dev/null || true)
+          dirs=$(ls -d cli tests packages worker 2> /dev/null || true)
           hash=$({ grep -rhoE 'https://[^"]+[.]tar[.]zst' --include='*.roc' $dirs || true; } | sort -u | sha256sum | cut -d' ' -f1)
           echo "hash=$hash" >> "$GITHUB_OUTPUT"
 

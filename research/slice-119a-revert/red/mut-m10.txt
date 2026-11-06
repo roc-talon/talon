@@ -1,0 +1,7 @@
+PASS githubtoken/pu25-missing-key (1868 ms)
+PASS githubtoken/pu25-three-routes (1817 ms)
+FAIL githubtoken/pu25-token-faults (1809 ms)
+    request 2: problem.detail: expected "the GitHub installation token request failed with status 403", got "the GitHub installation token answer is not valid"
+    request 4: problem.detail: expected "the GitHub installation token request failed with status 500", got "the GitHub installation token answer is not valid"
+PASS githubtoken/pu25-token-kept (1678 ms)
+w2: 3 passed, 1 failed

@@ -1,0 +1,51 @@
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: GitHub gave no answer: connection reset. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: GitHub answered 500. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: GitHub answered with text that is not JSON. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: the registry answered 502 (/errors/upstream). Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: the registry http://127.0.0.1:9 gave no answer: no answer in 20 s. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+tln: error[network]: GitHub gave no answer in 20 s. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+tln: error[network]: GitHub answered 503. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+tln: error[network]: GitHub answered with text that is not JSON. Try again later.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+tln: error[network]: GitHub answered the code request with no device_code. Try again later.

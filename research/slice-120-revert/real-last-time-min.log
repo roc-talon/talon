@@ -1,0 +1,12 @@
+FAIL cron/ct15-trim (1263 ms)
+    db: @ SELECT contributor, counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor: rows differ:
+      expected: ["-5\t1\t1\t0\t0\t1\t1700000600000\t1700000600000","77\t2\t1\t0\t1\t1\t1700000200000\t1720000200000","88\t3\t1\t1\t1\t1\t1690000000100\t1690000000900","4242\t14\t7\t4\t2\t8\t1690000000000\t1730000100000"]
+      got:      ["-5\t1\t1\t0\t0\t1\t1700000600000\t1700000600000","77\t2\t1\t0\t1\t1\t1700000200000\t1700000200000","88\t3\t1\t1\t1\t1\t1690000000100\t1690000000900","4242\t14\t7\t4\t2\t8\t1690000000000\t1700000150000"]
+FAIL cron/ct15-trim-failure (1176 ms)
+    db: @ SELECT contributor, counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor: rows differ:
+      expected: ["4242\t2\t2\t0\t0\t2\t1700000100000\t1720000100000"]
+      got:      ["4242\t2\t2\t0\t0\t2\t1700000100000\t1700000100000"]
+    worker log: {"level":"warn","msg":"trim failed","error":"Constraint({ kind: Trigger, message: \"boom\" })","nightly":"9100"}
+    worker log: {"level":"warn","msg":"trim failed","error":"Constraint({ kind: Trigger, message: \"boom\" })","nightly":"9100"}
+PASS cron/pu35-hint-cleanup (1135 ms)
+w2: 1 passed, 2 failed

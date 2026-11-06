@@ -1,0 +1,12 @@
+== env TALON_REGISTRY=ftp://127.0.0.1:1 tln update --registry direct --no-check --dry-run
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0
+== env TALON_REGISTRY=ftp://127.0.0.1:1 tln update --no-check --dry-run
+exit 2

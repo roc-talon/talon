@@ -1,4 +1,5 @@
 tln: error[network]: nightly-2026-10-10-abcdef0 is not installed and --offline is set
+warning: the compat id of nightly-2026-10-11-1a2b3c4 is not known: roc check touched no compat dir
 tln: error[consent]: nightly-2026-10-12-2664a27 is not installed. Nothing was downloaded.
 waiting for another tln: nightly-2026-10-13-91fa0c2
 downloading nightly-2026-10-14-38a3029 (73.4 MB)

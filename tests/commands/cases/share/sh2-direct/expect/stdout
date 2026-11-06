@@ -1,0 +1,10 @@
+== share on
+sharing: on
+Talon shares nothing while the registry is direct.
+exit 0
+== env:TALON_REGISTRY=direct share on --json
+{"schema":1,"command":"share on","ok":true,"data":{"share":true,"sends":false},"error":null}
+exit 0
+== env:TALON_REGISTRY=https://registry.example.org share off --json
+{"schema":1,"command":"share off","ok":true,"data":{"share":false},"error":null}
+exit 0

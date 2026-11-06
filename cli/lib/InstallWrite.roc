@@ -12,6 +12,7 @@ import Pick
 import Pin
 import Prompt
 import ResolveBase
+import ShareHook
 import Vars
 
 Request : ResolveBase.Request
@@ -82,11 +83,11 @@ InstallWrite :: [].{
 	# | --- | --- |
 	# | `request.no_check` (R-BL6, R-LF3) | No `Fx` call. Prints `check: skipped` (a proposal, TW24) and gives `Skipped` for both steps. A pin is not written (`Pin.decide`, R-H6). |
 	# | Else | Builds `Ladder.run!` input: one `Ladder.Member` for each member file in `facts.changes` (its `kind` and its text from `loaded`, its `ops` from the changes and from the pin write of `facts.decision.writes`), the `Ladder.Owner` of each hash of the candidate header (the uses of `facts.scoped` and the chosen URLs, with `Vars` names), `moved` (the chosen values that move: `Pick.Chosen.change` is `Move` and the new ones), `path_roc` is `request.compiler`, `held` is `facts.decision.held`, `roots` is `request.roots`. Calls `Ladder.run!`. The probes are 3 for an app and 2 for a package or a platform (D12). |
-	ladder! : Fx, ResolveBase.Request, Loaded, { scoped : List(Vars.Scoped), news : List({ name : Str, is_platform : Bool }), chosen : List(Pick.Chosen), changes : List(Edit), decision : Pin.Decision, closures : List({ file : Str, walked : Closure.Walked }), probed : ResolveBase.Probed, candidate : Try(Str, [None]), patch : PatchApply.Done } => Try(Ran, Fail)
+	ladder! : Fx, ResolveBase.Request, Loaded, { scoped : List(Vars.Scoped), news : List({ name : Str, is_platform : Bool }), chosen : List(Pick.Chosen), changes : List(Edit), decision : Pin.Decision, closures : List({ file : Str, walked : Closure.Walked }), probed : ResolveBase.Probed, candidate : Try(Str, [None]), patch : PatchApply.Done, headers : List({ hash : Str, kind : [Package, Platform, App], names : List(Str) }) } => Try({ ran : Ran, built : List(Fail.Built) }, Fail)
 	ladder! = |fx, request, loaded, facts| {
 		if request.no_check {
 			fx.out!("check: skipped\n")
-			Ok({ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] })
+			Ok({ ran: { probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [] }, built: [] })
 		} else {
 			rows = ResolveBase.owner_rows(facts.scoped, facts.news, facts.chosen)
 			files = facts.changes.map(|e| e.file).fold(ResolveBase.no_names, |found, file| if found.contains(file) found else found.append(file))
@@ -108,15 +109,19 @@ InstallWrite :: [].{
 					probe: ResolveBase.probe_settings(request, loaded),
 					no_probe: request.probe.no_probe,
 					closures: facts.closures,
-					loop: { started: facts.probed.started, looked: facts.probed.looked, checks: facts.probed.checks, count: facts.probed.count, base: loop_base(facts.candidate, facts.decision) },
+					loop: { started: facts.probed.started, looked: facts.probed.looked, checks: facts.probed.checks, count: facts.probed.count, base: loop_base(facts.candidate, facts.decision), answer: ResolveBase.answer_of(request), share: ShareHook.ran_of(request, { notes: Bool.False, second: facts.probed.second }).map_ok(|ran| { ..ran, headers: facts.headers }) },
 				},
 			)?
+			# Slice 218 (R-SM1): the builds of step 3 for the smoke build, in `built`.
 			Ok({
-				probes: done.probes,
-				downloads: done.downloads,
-				check: Passed,
-				build: BuildSkip.state({ apps: members.count_if(|m| m.kind == App), skipped: done.skipped }),
-				notes: done.notes,
+				ran: {
+					probes: done.probes,
+					downloads: done.downloads,
+					check: Passed,
+					build: BuildSkip.state({ apps: members.count_if(|m| m.kind == App), skipped: done.skipped }),
+					notes: done.notes,
+				},
+				built: done.built,
 			})
 		}
 	}

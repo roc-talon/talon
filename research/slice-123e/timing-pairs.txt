@@ -1,0 +1,4 @@
+old run 1: 109.5 s, load at start 28.81, w2: 189 passed, 0 failed
+new run 1: 42.8 s, load at start 17.43, w2: 189 passed, 0 failed
+old run 2: 103.7 s, load at start 15.62, w2: 189 passed, 0 failed
+new run 2: 46.8 s, load at start 16.02, w2: 189 passed, 0 failed

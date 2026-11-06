@@ -105,7 +105,7 @@ holder = "x"
 walk! : Fx, Args, XCmd.Plan => Try(Try(I32, [Miss]), Fail)
 walk! = |fx, args, plan| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	now = Clock.now!(fx, env)?
 	home = match env.find_first(|(name, _)| name == "HOME") {
 		Ok((_, dir)) => dir
@@ -142,7 +142,7 @@ table! = |fx, args, plan, seen| {
 			for w in table.warnings {
 				fx.err!("warning: ${w}\n")
 			}
-			run = { env: seen.env, roots: seen.roots, net: Net.from_env(seen.env), now: seen.now, path, text, tools: table.tools }
+			run = { env: seen.env, roots: seen.roots, net: Net.from_env(seen.env), now: seen.now, path, text, tools: table.tools, bins: table.bins }
 			Ok(Ok(exec_hit!(fx, args, plan, { run, hit })?))
 		}
 	}

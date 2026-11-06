@@ -1,0 +1,10 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/github/acme/known/repo.json
+http_get https://api.github.com/repos/acme/known
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/known/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/known/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ae7fcf36e6e344437c63dea9b236a7cd.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ae7fcf36e6e344437c63dea9b236a7cd.meta

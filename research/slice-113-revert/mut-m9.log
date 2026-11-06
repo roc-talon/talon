@@ -1,0 +1,64 @@
+    decide(Ok(active), 100, 11)
+        == Ok({
+            row: { ..active, owner_id: 11 },
+            events: [event(Transfer, Ok(100), Ok(100), Ok(10), Ok(11), Err(None))],
+        })
+}
+
+Mentioned values:
+active = row(Active, Err(None), 1000)
+
+
+── ✗ fail ───────────────────────────────────── tests/unit/IdentityTest.roc:50:1
+
+expect {
+    decide(Ok(active), 101, 10)
+        == Ok({
+            row: { ..active, repository_id: 101 },
+            events: [event(Recreate, Ok(100), Ok(101), Ok(10), Ok(10), Err(None))],
+        })
+}
+
+Mentioned values:
+active = row(Active, Err(None), 1000)
+
+
+── ✗ fail ───────────────────────────────────── tests/unit/IdentityTest.roc:59:1
+
+expect {
+    moved = row(Moved, Ok(99), 2000)
+    missing = row(Missing, Err(None), 2000)
+    decide(Ok(moved), 101, 10)
+        == Ok({ row: { ..moved, repository_id: 101, state: Active, successor: Err(None), state_at: now }, events: [event(Recreate, Ok(100), Ok(101), Ok(10), Ok(10), Err(None))] })
+        and decide(Ok(missing), 101, 10)
+            == Ok({ row: { ..missing, repository_id: 101, state: Active, state_at: now }, events: [event(Recreate, Ok(100), Ok(101), Ok(10), Ok(10), Err(None))] })
+}
+
+Mentioned values:
+now = 5000
+
+
+── ✗ fail ───────────────────────────────────── tests/unit/IdentityTest.roc:69:1
+
+expect {
+    missing = row(Missing, Err(None), 2000)
+    decide(Ok(missing), 100, 10)
+        == Ok({ row: { ..missing, state: Active, state_at: now }, events: [event(Found, Ok(100), Ok(100), Ok(10), Ok(10), Err(None))] })
+        and decide(Ok(missing), 100, 11)
+            == Ok({
+                row: { ..missing, owner_id: 11, state: Active, state_at: now },
+                events: [event(Transfer, Ok(100), Ok(100), Ok(10), Ok(11), Err(None)), event(Found, Ok(100), Ok(100), Ok(11), Ok(11), Err(None))],
+            })
+}
+
+Mentioned values:
+now = 5000
+
+Ran 13 tests in 111.1 ms.:
+    8 passed
+    5 failed
+    0 compiler errors
+PASS identity/tp10-301-followed (1330 ms)
+PASS identity/tp10-rename (1418 ms)
+PASS identity/tp9-four-rows (1553 ms)
+w2: 3 passed, 0 failed

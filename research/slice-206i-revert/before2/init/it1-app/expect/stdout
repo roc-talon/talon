@@ -1,0 +1,100 @@
+== cwd:i1 init
+check: passed
+build: passed
+$PROJECT/i1/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i2 env:CI=true env:TALON_AUTO_INSTALL=no env:HOME={w}/home2 init --ci none
+check: passed
+build: passed
+$PROJECT/i2/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+exit 0
+== cwd:i3 env:HOME={w}/home3 init app --yes
+check: passed
+build: passed
+$PROJECT/i3/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i4 env:CI=true env:HOME={w}/home4 init
+check: passed
+build: passed
+$PROJECT/i4/main.roc
+  + roc: nightly-2026-10-14-4c4c4c4
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i5 env:HOME={w}/home5 init --platform acme/pfx
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: pf 0.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+check: passed
+build: passed
+$PROJECT/i5/main.roc
+  + roc: nightly-2026-10-11-1f1f1f1
+resolved at 2026-10-15T12:00:00Z, 5 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i6 env:HOME={w}/home6 init package
+check: passed
+$PROJECT/i6/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 2 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i7 env:HOME={w}/home7 init
+exit 2
+== cwd:i8/sub env:HOME={w}/home8 init
+check: passed
+build: passed
+$PROJECT/i8/sub/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i9 env:HOME={w}/home9 init --json
+{"schema":1,"command":"init","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":4,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":"nightly-2026-10-12-2a2a2a2","toml":[],"renamed":[],"notes":[],"written":["$PROJECT/i9/main.roc","$PROJECT/i9/.github/workflows/ci.yml"]},"error":null}
+exit 0
+== cwd:i10 env:HOME={w}/home10 init lib
+exit 2
+== cwd:i11 env:HOME={w}/home11 init
+exit 13
+== cwd:i12 env:HOME={w}/home12 init
+check: passed
+build: passed
+$PROJECT/i12/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+note: .github/workflows/ci.yml exists, not written
+exit 0
+== cwd:i13 env:CI=true env:ROC_TOOLCHAIN=nightly-2026-10-10-0e0e0e0 env:HOME={w}/home13 init --allow-downloads
+check: passed
+build: passed
+$PROJECT/i13/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:i14 env:HOME={w}/home15 init --platform acme/young
+exit 2
+== cwd:i15 env:HOME={w}/home14 init --offline
+check: passed
+build: passed
+$PROJECT/i15/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0

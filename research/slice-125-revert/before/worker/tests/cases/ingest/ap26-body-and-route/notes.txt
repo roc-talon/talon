@@ -1,0 +1,12 @@
+1: compat with no token
+2: compat empty list
+3: compat null
+4: no body
+5: {}
+6: url null
+7: url a number
+8: an array
+9: not JSON
+10: text/plain
+11: PATCH
+12: unknown members are ignored (R-AP44)

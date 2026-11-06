@@ -1,0 +1,14 @@
+# R-SH11, R-NI16, R-SH1, R-SH5, R-LY3, R-CC6, R-HF1: share is not set, the registry is a URL, a person is there (tty, TALON_INTERACTIVE=1). The prompt comes before the work of the command (before the output of `cache dir`). The answer y writes share = true (the comment stays) and makes share.json (id, chmod 0600) under their locks. One tty call, and no answer line.
+cache dir
+# R-SH11: share is set now, so Talon does not ask again. The calls are the 2 reads of the first-run step and the command.
+cache dir
+# R-NI16, R-NM12, R-SH11, R-SH1: Enter is the default No: share = false is written (a new config.toml). No share.json. The prompt is the same.
+env:HOME={w}/home/h2 cache dir
+# R-NM12, R-NM10, R-NM8: --yes does not answer the consent prompt: it is asked. The answer n writes share = false.
+env:HOME={w}/home/h3 cache dir --yes
+# R-SH11 (the list of cases has no --offline): --offline asks. The answer no writes share = false.
+env:HOME={w}/home/h5 cache dir --offline
+# R-SH11, R-NM12: the end of input (no more answers). Nothing is written, the command goes on with sharing off, and the output of the command is the same. No answer line.
+env:HOME={w}/home/h4 cache dir
+# R-SH11, R-NI16: nothing was written, so the next interactive run asks again (the end of input again).
+env:HOME={w}/home/h4 cache dir

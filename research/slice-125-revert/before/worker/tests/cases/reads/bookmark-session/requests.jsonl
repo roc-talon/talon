@@ -1,0 +1,6 @@
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases"}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "no-cache", "talon-bookmark": "bookmark-abc-123"}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "no-cache", "talon-bookmark": "  bookmark-abc-123  "}}
+{"method": "GET", "path": "/v1/packages/roc-lang/unicode/releases", "headers": {"cache-control": "no-cache", "talon-bookmark": ""}}
+{"method": "GET", "path": "/v1/artifacts/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE", "headers": {"cache-control": "no-cache", "talon-bookmark": "bookmark-abc-123"}}
+{"method": "GET", "path": "/v1/releases?group=github.com%2Froc-lang%2Funicode%2Freleases%2Fdownload%2F%7Bv%7D%2F", "headers": {"cache-control": "no-cache", "talon-bookmark": "bookmark-abc-123"}}

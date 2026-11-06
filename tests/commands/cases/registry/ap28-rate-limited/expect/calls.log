@@ -1,0 +1,15 @@
+env_all
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"groups":[],"hashes":["6H6Me8pirBss7MtDp3amk1YuWNfyc6v1YMH9ea49Mtpw","58LemxYXCwUUrE6ARDfZACQVCVrXaW23EcYu9DNoUfCX"]}
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/lib/releases/download/8.0.0/6H6Me8pirBss7MtDp3amk1YuWNfyc6v1YMH9ea49Mtpw.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/other/releases/download/9.0.0/58LemxYXCwUUrE6ARDfZACQVCVrXaW23EcYu9DNoUfCX.tar.zst"}

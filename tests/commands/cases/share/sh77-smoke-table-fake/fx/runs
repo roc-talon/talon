@@ -1,0 +1,14 @@
+# R-SM3 row 3, R-TF7 (slice 218, the fake `Fx` of the table `smoke`: the same rules as the real `Fx`, L3 `fx/sq3-real-fx-smoke`): a query of a file that does not exist gives no row and makes no file. A write with no row is no call and no file.
+smoke-get HP:nightly-2026-10-14-38a3029:x64musl
+smoke-add
+# a write to a new file makes the file with the format line and `smoke.tsv`; the rows are in the order of the writes
+smoke-add HP,nightly-2026-10-14-38a3029,x64musl,pass HP,nightly-2026-10-14-38a3029,arm64mac,fail HQ,nightly-2026-10-14-38a3029,x64musl,hang HQ,nightly-2026-10-16-5e6f7a8,x64musl,crash
+# a query gives the rows of the keys that exist: a key of another target, nightly or hash gives no row
+smoke-get HP:nightly-2026-10-14-38a3029:x64musl HQ:nightly-2026-10-16-5e6f7a8:x64musl HP:nightly-2026-10-16-5e6f7a8:x64musl HZ:nightly-2026-10-14-38a3029:x64musl
+smoke-get HP:nightly-2026-10-14-38a3029:arm64win
+# a second write adds its rows and keeps the first ones
+smoke-add HR,nightly-2026-10-14-38a3029,x64musl,pass
+smoke-get HP:nightly-2026-10-14-38a3029:x64musl HR:nightly-2026-10-14-38a3029:x64musl
+# R-SM4, Design Q551: a key that is in the file keeps its first row, also a repeat in the same call
+smoke-add HP,nightly-2026-10-14-38a3029,x64musl,fail HS,nightly-2026-10-14-38a3029,x64musl,crash HS,nightly-2026-10-14-38a3029,x64musl,pass
+smoke-get HP:nightly-2026-10-14-38a3029:x64musl HS:nightly-2026-10-14-38a3029:x64musl

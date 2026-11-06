@@ -8,6 +8,7 @@ import semver.Semver
 import TalonFile
 import Temp
 import Text
+import ToolBinUse
 import ToolsJson
 
 ## The pure decisions of the `x` cache and of build reuse (slice 049, CLI 6.4: R-X2, R-B1 to R-B4, R-B9, R-B10, R-GC7, R-TF1, R-TF3, R-TF6, R-SC4, R-AD7). Part A (TESTING.md 2.2). The command code is `XCacheIo`, `XFlow` (`tln x`) and `XTake` (the take-over of `tln tool install`).
@@ -107,6 +108,37 @@ XCache :: [].{
 		}
 	}
 
+	## Slice 093 (R-PT22, R-B9, R-B10): `read` that also knows a manifest of the source kind `prebuilt` (`ToolBinUse.read_manifest`). Such a manifest is `Use` of `prebuilt_entry`: no warning and no delete (Q6 of slice 093). Every other text is `read`.
+	read_any : { path : Str, text : Str } -> [Use(Entry), Ignore, Delete(Str)]
+	read_any = |facts| match ToolBinUse.read_manifest(facts.text) {
+		Ok(p) => Use(XCache.prebuilt_entry(p))
+		Err(NotPrebuilt) => XCache.read(facts)
+	}
+
+	## Slice 093 (R-PT22): a prebuilt entry as an `Entry`: the source is the release of the full name with the asset URL, `nightly` is `prebuilt` (no build id: a nightly id never has this text), no `hashes`, no `libs`. `is_prebuilt` tells it.
+	prebuilt_entry : ToolBinUse.Prebuilt -> Entry
+	prebuilt_entry = |p| { name: p.name, source: Release({ version: p.version, url: p.url }), hashes: [], nightly: "prebuilt", target: p.target, sha256: p.sha256, libs: [], bundle: p.bundle, last_run: p.last_run }
+
+	## Slice 093 (R-PT22): is the entry a prebuilt entry (`prebuilt_entry`)?
+	is_prebuilt : Entry -> Bool
+	is_prebuilt = |entry| entry.nightly == "prebuilt" and entry.hashes.is_empty()
+
+	## Slice 093 (R-PT22): the text of the manifest of an entry: `ToolBinUse.manifest_text` for a prebuilt entry, else `manifest_text`.
+	manifest_text_any : Entry -> Str
+	manifest_text_any = |entry| if XCache.is_prebuilt(entry) {
+		url = match entry.source {
+			Release(rel) => rel.url
+			Git(_) => ""
+		}
+		version = match entry.source {
+			Release(rel) => rel.version
+			Git(_) => ""
+		}
+		ToolBinUse.manifest_text({ name: entry.name, version, bundle: entry.bundle, target: entry.target, sha256: entry.sha256, url, last_run: entry.last_run })
+	} else {
+		XCache.manifest_text(entry)
+	}
+
 	## R-X2, R-TF3, R-TF6: the entries of the dirs of `talon/x`. `dirs` are the entry dirs (`dirs_of`), `reads` the answers of `Fx.read_files!` for `manifest_of(dir)`, in the same order. A manifest that cannot be read (`NotFound`, `Denied`, `Other`) gives no entry and
 	## no message. `delete` are the dirs of the manifests that `read` gave `Delete` for, `warnings` their texts, both in the order of `dirs`. `found` are the `Use` entries in the order of `dirs`.
 	entries_of : { dirs : List(Str), reads : List(Try(Str, [NotFound, Denied, Other(Str)])) } -> { found : List(Found), warnings : List(Str), delete : List(Str) }
@@ -115,7 +147,7 @@ XCache :: [].{
 		pairs.fold(
 			{ found: [], warnings: [], delete: [] },
 			|kept, (dir, got)| match got {
-				Ok(text) => match XCache.read({ path: XCache.manifest_of(dir), text }) {
+				Ok(text) => match XCache.read_any({ path: XCache.manifest_of(dir), text }) {
 					Use(entry) => { ..kept, found: kept.found.append({ dir, entry, has_bin: Bool.True }) }
 					Ignore => kept
 					Delete(warning) => { ..kept, warnings: kept.warnings.append(warning), delete: kept.delete.append(dir) }
@@ -158,7 +190,7 @@ XCache :: [].{
 		)
 		facts.entries.fold(
 			tools,
-			|kept, f| if kept.any(|e| e.name == f.entry.name) {
+			|kept, f| if kept.any(|e| e.name == f.entry.name) or XCache.is_prebuilt(f.entry) {
 				kept
 			} else {
 				kept.append({
@@ -198,7 +230,7 @@ XCache :: [].{
 		}
 		cached = facts.entries.keep_oks(
 			|f| match f.entry.source {
-				Release(rel) if f.has_bin and f.entry.name == facts.name and f.entry.target == facts.target => Ok({ version: rel.version, found: Cached(f) })
+				Release(rel) if f.has_bin and !XCache.is_prebuilt(f.entry) and f.entry.name == facts.name and f.entry.target == facts.target => Ok({ version: rel.version, found: Cached(f) })
 				_ => Err(NoBuild)
 			},
 		)
@@ -238,7 +270,7 @@ XCache :: [].{
 	expired : { dirs : List(Str), reads : List(Try(Str, [NotFound, Denied, Other(Str)])), now : U64, age : U64, kept : List(Str) } -> List(Str)
 	expired = |facts| facts.dirs.map2(facts.reads, |dir, got| (dir, got)).keep_oks(
 		|(dir, got)| match got {
-			Ok(text) => match XCache.read({ path: XCache.manifest_of(dir), text }) {
+			Ok(text) => match XCache.read_any({ path: XCache.manifest_of(dir), text }) {
 				Use(entry) => if is_expired({ now: facts.now, age: facts.age, kept: facts.kept }, entry) Ok(dir) else Err(Stays)
 				_ => Err(Stays)
 			}

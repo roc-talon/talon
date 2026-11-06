@@ -1,0 +1,31 @@
+args
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/talon/x/0fe8c1132ca440cd534b3ef2cc70fcbf36b13fc107dc7102b1b6d4d36c379dce/manifest.json $HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95/manifest.json $HOME/.cache/roc/talon/x/1b38f31d2df82ca2b9d48ad2ee5a7538dd6ed464bc99da9cb43ca777483c3e5d/manifest.json $HOME/.cache/roc/talon/x/36e49102c95aa2f7383c3a89edc67088331d746a34597ad78744f157390b6e4c/manifest.json $HOME/.cache/roc/talon/x/77863a9bceaefa51c6f34e76e5fc28c1fb5f0bdccbdc2d5b1046fecc1d0db3a2/manifest.json $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a/manifest.json $HOME/.cache/roc/talon/x/99731b0b908b4131dea1433794b8cdde93dcbb6ac0981b0e928ea6fc8a936316/manifest.json $HOME/.cache/roc/talon/x/a5acce34d245881fa85c6b7a3ce6e079f924cfb2fab37cccf751f4d90fabc930/manifest.json $HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b/manifest.json
+tree_info $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a.0123456789abcdef.tmp $HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95 $HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/talon/x/0fe8c1132ca440cd534b3ef2cc70fcbf36b13fc107dc7102b1b6d4d36c379dce/manifest.json $HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95/manifest.json $HOME/.cache/roc/talon/x/1b38f31d2df82ca2b9d48ad2ee5a7538dd6ed464bc99da9cb43ca777483c3e5d/manifest.json $HOME/.cache/roc/talon/x/36e49102c95aa2f7383c3a89edc67088331d746a34597ad78744f157390b6e4c/manifest.json $HOME/.cache/roc/talon/x/77863a9bceaefa51c6f34e76e5fc28c1fb5f0bdccbdc2d5b1046fecc1d0db3a2/manifest.json $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a/manifest.json $HOME/.cache/roc/talon/x/99731b0b908b4131dea1433794b8cdde93dcbb6ac0981b0e928ea6fc8a936316/manifest.json $HOME/.cache/roc/talon/x/a5acce34d245881fa85c6b7a3ce6e079f924cfb2fab37cccf751f4d90fabc930/manifest.json $HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b/manifest.json
+tree_info $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a.0123456789abcdef.tmp $HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95 $HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b
+delete $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a.0123456789abcdef.tmp $HOME/.cache/roc/talon/x/116da0e8e71215669fdc28cf4339bbfbb3baf20ccbdbc392a40ad7263f122c95 $HOME/.cache/roc/talon/x/f89018e69071e7d0bd6e57cf01c8fbfdd6ddef1f93fb4e82193d7e292968230b
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/talon/x/0fe8c1132ca440cd534b3ef2cc70fcbf36b13fc107dc7102b1b6d4d36c379dce/manifest.json $HOME/.cache/roc/talon/x/1b38f31d2df82ca2b9d48ad2ee5a7538dd6ed464bc99da9cb43ca777483c3e5d/manifest.json $HOME/.cache/roc/talon/x/36e49102c95aa2f7383c3a89edc67088331d746a34597ad78744f157390b6e4c/manifest.json $HOME/.cache/roc/talon/x/77863a9bceaefa51c6f34e76e5fc28c1fb5f0bdccbdc2d5b1046fecc1d0db3a2/manifest.json $HOME/.cache/roc/talon/x/9267585330e19bfaf6b34ad329138a4d22e93c63e6410012ec0e01d60431248a/manifest.json $HOME/.cache/roc/talon/x/99731b0b908b4131dea1433794b8cdde93dcbb6ac0981b0e928ea6fc8a936316/manifest.json $HOME/.cache/roc/talon/x/a5acce34d245881fa85c6b7a3ce6e079f924cfb2fab37cccf751f4d90fabc930/manifest.json
+unlock $HOME/.cache/roc/talon/gc

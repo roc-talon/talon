@@ -1,0 +1,30 @@
+== settle entry=https://github.com/acme/lib/releases/download/1.0.0/9oETwoBba7i2t2j7UGbW5ZbcJL2Qcb6fZ38KxdPqcRm.tar.zst entry=https://example.org/lib/releases/download/1.0.0/DrVX2Uz1uvFJ7Bo9MMiji1aHK9L8ueqVChacHXa7EMHk.tar.zst entry=https://github.com/acme/other/releases/download/2.0.0/2EHLWuCuiAS3A5AJAMdoLzeF9zWKP2yRtqmVSt63XdgH.tar.zst entry=https://github.com/acme/lib/releases/download/1.1.0/GTPH27GVhLxn3wU6m9FQUnH7FCRmhtceUkzV24KWAM4v.tar.zst entry=https://github.com/acme/third/releases/download/3.0.0/C9MGpSSZyYJVF6U6EVPEnv7oiPagAvucGHKE6mRHGrjT.tar.zst
+value 9oETwoBba7i2t2j7UGbW5ZbcJL2Qcb6fZ38KxdPqcRm indexed
+value DrVX2Uz1uvFJ7Bo9MMiji1aHK9L8ueqVChacHXa7EMHk archive
+value 2EHLWuCuiAS3A5AJAMdoLzeF9zWKP2yRtqmVSt63XdgH indexed
+value GTPH27GVhLxn3wU6m9FQUnH7FCRmhtceUkzV24KWAM4v label other=FdRL7kDf9DxjCHZMcGe5CgZxxrrLbRaqZJvP5qciePWY
+value C9MGpSSZyYJVF6U6EVPEnv7oiPagAvucGHKE6mRHGrjT indexed
+log_size 25
+releases 4
+unknown DrVX2Uz1uvFJ7Bo9MMiji1aHK9L8ueqVChacHXa7EMHk
+unknown GTPH27GVhLxn3wU6m9FQUnH7FCRmhtceUkzV24KWAM4v
+== settle entry=https://github.com/acme/lib/releases/download/4.0.0/G9uqmydQRU4vQJBsHkzSuBVAYwiyQhWQ7ssp4YnfSHCy.tar.zst entry=https://github.com/acme/other/releases/download/5.0.0/2Go5JhKMcQ88gPhThvnVdLS9MKo1nuL1cyDrSoY8pSgy.tar.zst
+value G9uqmydQRU4vQJBsHkzSuBVAYwiyQhWQ7ssp4YnfSHCy label
+value 2Go5JhKMcQ88gPhThvnVdLS9MKo1nuL1cyDrSoY8pSgy indexed
+log_size 31
+releases 1
+unknown G9uqmydQRU4vQJBsHkzSuBVAYwiyQhWQ7ssp4YnfSHCy
+== settle entry=https://github.com/acme/lib/releases/download/6.0.0/5SbQxfg2bwZtVLVbY8TLBnHzfB5zjiG9Pt3fRYMoSUY1.tar.zst entry=https://github.com/acme/other/releases/download/7.0.0/3i5f2mngSTBunmYR4QzLT7BVdgfdezDj31aUPLeV1bq7.tar.zst
+value 5SbQxfg2bwZtVLVbY8TLBnHzfB5zjiG9Pt3fRYMoSUY1 archive
+value 3i5f2mngSTBunmYR4QzLT7BVdgfdezDj31aUPLeV1bq7 archive
+log_size 40
+releases 0
+unknown 5SbQxfg2bwZtVLVbY8TLBnHzfB5zjiG9Pt3fRYMoSUY1
+unknown 3i5f2mngSTBunmYR4QzLT7BVdgfdezDj31aUPLeV1bq7
+== settle entry=https://github.com/acme/lib/releases/download/10.0.0/5URLGvrvmkTZyhXgBBuXNAsi1WaH4uxev2RbE2MdRRur.tar.zst entry=https://github.com/acme/lib/releases/download/11.0.0/6DWbyFGs2kwj6TYhfvsWXffXcWwrgT4C9JjjjBhbTXRX.tar.zst snapshot-log
+value 5URLGvrvmkTZyhXgBBuXNAsi1WaH4uxev2RbE2MdRRur archive
+value 6DWbyFGs2kwj6TYhfvsWXffXcWwrgT4C9JjjjBhbTXRX label other=CRbsnGoids5YfcUYb2M9TgrXjDANcqNDcrURFWRGDnbu
+log_size 60
+releases 1
+unknown 5URLGvrvmkTZyhXgBBuXNAsi1WaH4uxev2RbE2MdRRur
+unknown 6DWbyFGs2kwj6TYhfvsWXffXcWwrgT4C9JjjjBhbTXRX

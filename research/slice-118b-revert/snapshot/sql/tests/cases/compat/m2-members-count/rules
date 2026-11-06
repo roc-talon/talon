@@ -1,0 +1,5 @@
+Slice 115b, case m2-members-count (the `members` of GET /v1/sweeps/{tag}, Registry R-AP39).
+  R-AP39: `members` is the count of the members of the bot set at the log size now (the bound NULL of prefix.sql), and `missing` the members with no bot row at that bound.
+  R-MX11 row 5, R-AP67: the bot set (see m1-bot-set-missing). Counted by distinct hash: a hash that is the candidate of two groups is one member (R-MX11 row 5, R-AP67, Design Q150).
+  R-MX8: one SQL text serves the triggers and the route: the count and the missing hashes at the log size now are equal to the independent JS reference, on random states.
+  R-MX16: a nightly with no toolchains row has no window.

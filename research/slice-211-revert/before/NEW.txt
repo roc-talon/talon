@@ -1,0 +1,4 @@
+cli/lib/ShortNames.roc
+tests/unit/ShortnamesTest.roc
+docs/slices/211-short-names.md
+tests/commands/cases/registry/sn6-short-names

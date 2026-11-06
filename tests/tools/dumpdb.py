@@ -3,7 +3,7 @@
 
 Usage: python3 -I dumpdb.py <db file>
 The lines are the form of `Db.file_text` (cli/lib/Db.roc): `format<TAB><user_version>`, then a `fact` line for each row of `facts` sorted by
-(hash, nightly, target, closure), then a `pinned` line for each row of `pinned` sorted by (tag, target). Only the columns that Talon knows are printed
+(hash, nightly, target, closure), then a `pinned` line for each row of `pinned` sorted by (tag, target), then (slice 215) a `queue` line for each row of `share_queue` in the order of `seq`: the word `queue` and the 7 columns of R-TF7, then (slice 218) a `smoke` line for each row of `smoke` sorted by key: the word `smoke` and the 4 columns. Only the columns that Talon knows are printed
 (R-TF2: a column that a later Talon added is ignored). A file that does not exist gives no output at all. A file that is not a database gives the
 one line `error<TAB><text>`, so that a comparison shows it.
 """
@@ -29,6 +29,12 @@ def main(path):
             print("fact\t" + "\t".join(r))
         for r in sorted(rows(con, "SELECT tag, target, sha256, source FROM pinned")):
             print("pinned\t" + "\t".join(r))
+        # Slice 215 (R-TF7): the rows of `share_queue` in the order of `seq`, as the word `queue` and the line of `Db.queue_line` (the 7 columns, `seq` first). No table: no line.
+        for r in rows(con, "SELECT seq, hash, nightly, target, result, talon_version, queued_at FROM share_queue ORDER BY seq"):
+            print("queue\t" + "\t".join(str(c) for c in r))
+        # Slice 218 (R-SM4, R-TF7): the rows of `smoke` sorted by key, as the word `smoke` and the line of `Db.smoke_line`. No table: no line.
+        for r in sorted(rows(con, "SELECT hash, nightly, target, outcome FROM smoke")):
+            print("smoke\t" + "\t".join(r))
     except sqlite3.DatabaseError as e:
         print("error\t%s" % e)
 

@@ -1,0 +1,6 @@
+header Content-Type: application/json
+error timeout
+require content-type: application/json
+require talon-contributor: 0123456789abcdeffedcba9876543210
+require-none authorization
+require user-agent: tln/0.0.1

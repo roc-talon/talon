@@ -1,0 +1,1 @@
+R-PUB2 R-EC2 R-AP27 (slice 221): the API answers 404 for the tag: exit 2, the message names the case. The calls end after the release request: no facts query, no token request, no registry request.

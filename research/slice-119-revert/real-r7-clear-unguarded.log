@@ -1,0 +1,14 @@
+All (26) tests passed in 386.8 ms.
+PASS reconcile/pu21-poll-job (2762 ms)
+PASS reconcile/pu23-list (4076 ms)
+PASS reconcile/pu25-reserve (2379 ms)
+PASS reconcile/pu36-overlap (2510 ms)
+FAIL reconcile/pu36-state-guard (2558 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\trepo-missing\t1767000000050","2\tacme/lib\t2.0.0\tedited\t1767000000060"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tedited\t1767000000060"]
+PASS reconcile/pu37-backoff (2883 ms)
+PASS reconcile/pu37-etag-effects (1763 ms)
+PASS webhook/pu13-index-new (1549 ms)
+PASS webhook/pu17-withdraw-clear (1771 ms)
+w2: 8 passed, 1 failed

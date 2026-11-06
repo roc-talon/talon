@@ -1,0 +1,64 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+ask "Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] "
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 echo hi
+  env TALON_SCRIPT=go
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+  env TALON_SHARE_ASKED=1
+args
+env_all
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+exec_in $PROJECT/p1 echo hi
+  env TALON_SCRIPT=go
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+  env TALON_SHARE_ASKED=1
+args
+env_all
+tty
+read_files $HOME/h2/.config/talon/config.toml
+env_all
+clock
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+canonical $PROJECT/p1/main.roc
+lock $HOME/h2/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/h2/.cache/roc/talon
+read_files $HOME/h2/.cache/roc/talon/projects.json
+write_atomic $HOME/h2/.cache/roc/talon/projects.json
+unlock $HOME/h2/.cache/roc/talon/projects.json
+read_files $HOME/h2/.config/talon/config.toml
+exec_in $PROJECT/p1 echo hi
+  env TALON_SCRIPT=go
+  env TALON_SCRIPT_DIR=$PROJECT/p1
+read_files $HOME/h2/.config/talon/config.toml

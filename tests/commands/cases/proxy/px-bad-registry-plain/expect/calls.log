@@ -1,0 +1,11 @@
+args
+env_all
+clock
+cwd
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc version
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1

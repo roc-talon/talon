@@ -1,0 +1,4 @@
+GET https://token.actions.githubusercontent.com/.well-known/jwks
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-30-2222222
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-30-3333333
+GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-30-4444444

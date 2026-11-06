@@ -1,0 +1,6 @@
+registry = "http://127.0.0.1:9"
+share = true
+
+[probe]
+max = 5
+timeout = 7

@@ -1,0 +1,4 @@
+# The n-th db call of the case (query or write, from 1)
+1: busy
+2: failed disk full
+3: version 2

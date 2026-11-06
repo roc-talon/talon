@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT/p1
@@ -23,6 +25,8 @@ exec_in $PROJECT/p1 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc v
   env TALON_SCRIPT_DIR=$PROJECT/p1
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT/p1
@@ -34,6 +38,8 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -69,6 +75,8 @@ exec_in $PROJECT/p1 $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc s
   env TALON_SCRIPT_DIR=$PROJECT/p1
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT/p1
@@ -80,6 +88,8 @@ list_dirs $HOME/.cache/roc/talon
 read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 args
+env_all
+tty
 env_all
 clock
 cwd

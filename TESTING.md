@@ -5,7 +5,7 @@ How Talon is tested, and how an agent goes from the design to a tested feature.
 | Item | Value |
 | --- | --- |
 | Status | Draft 2, 2026-10-15. Draft 2 drops "commands as data" (`Program`): commands are direct-style code over an effect record (section 2). No Talon code exists yet. |
-| Scope | The `tln` CLI and the Talon packages (Design 6.1). The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-app-header`) use the layers L0 and L1 and this workflow in their own repositories (R-GP5). Not the `cloudflare-workers` platform: it has its own `PLAN.md`. |
+| Scope | The `tln` CLI and the Talon packages (Design 6.1). The registry Worker (P2): section 9. The generic packages (`roc-semver`, `roc-base58`, `roc-toml`, `roc-app-header`) use the layers L0 and L1 and this workflow in their own repositories (R-GP5). Not the `cloudflare-workers` platform: it has its own `PLAN.md`. |
 | Spec | The 4 design files. A test checks a design rule. A test never invents behavior that the design does not state. |
 | Evidence | `research/test-fs/` (tmpfs against ext4, container start times), `research/core-shape/` (code shapes and fakes), `research/roc-fuzz-check/` (roc-fuzz on the pinned nightly), `research/roc-http-fetch/` (roc fetch from `http://`, TQ4), `scripts/rules.sh` (rule coverage) |
 
@@ -109,6 +109,7 @@ The real `Fx` keeps the jobs that are about time, processes and the system. L3 t
 | Safe stop on Ctrl-C or a kill. No signal handler (Design 6.2, R-HF8). | Kill `tln` with SIGINT and with SIGKILL during an install and during a probe round. Then the store has no partial item, and the next install and `tln cache gc` remove the stale temps (CLI 7.4, R-CC1, R-CC2) |
 | Locks between processes (CLI 7.4) | 3 proxy runs at once that need one missing fake nightly: 1 download, 3 builds (R-CC4). 2 `tool install` runs at once: `tools.json` has both entries (R-CC6). An edit of the header during `upgrade`: exit code 17 (R-CC7). GC during a fake build: the compiler stays (R-CC10). A lock dir with an old `beat` (set with `touch -d`): the next process takes it (R-CC12). An `ask!` call while the fake `Fx` holds a lock fails the L2 case (R-CC3, point 5). The lock contract (R-CC3, points 1 to 5) is one L3 suite, so a new implementation runs the same cases. |
 | Rename of a running `.exe` (R-S3, R-RM5) | CI on Windows |
+| `http_send!`, `http_all!`, `sleep!` (R-AP23, R-AP34, R-AD35, R-DA8, R-DA9) | Fake HTTP: a POST with a body (the body log), the n-th answer, a request that does not obey a `require` line. 8 slow requests with limit 4: the server sees 4 at the same time (`http.maxconn`), and the results are in the order of the list. `sleep!` waits at least the time. |
 
 ### 2.4 Command tests (L2)
 
@@ -142,7 +143,7 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
   cmd                one command per line, run with sh -e
   given/home/        start state of HOME (config, toolchains, roc cache)
   given/project/     start state of the project (main.roc, talon.toml)
-  given/http/        routes for the fake HTTP server (GitHub API JSON, release assets)
+  given/http/        routes for the fake HTTP server (GitHub API JSON, release assets, the registry), see "Fake HTTP routes"
   given/env          optional: more environment variables, one NAME=value for each line
   given/roc.tsv      answers of the fake roc: argv pattern, exit code, stdout file, stderr file
   expect/stdout      expected output, with paths written as $HOME and $PROJECT
@@ -151,6 +152,8 @@ tests/scenarios/<area>/<id>-<name>/      for example tests/scenarios/add/h3-pin-
   expect/tree.diff   expected change to given/ (a diff of the file trees, temp files and talon/compat.db left out)
   expect/facts.tsv   expected rows of talon/compat.db (optional, from P1)
   expect/roc.log     expected roc calls, in order (optional)
+  expect/http.log    optional: the requests that the fake server got, one line each: the method, the path and query, the status
+  expect/http-bodies/  optional: the body of each request that had one, one file each, with the line number of the request in http.log as its name (from 1). The runner compares the dirs: a missing, an extra or a changed file fails the case.
   tags               optional: real-roc, slow, net, tty, windows, exdev
 ```
 
@@ -164,6 +167,23 @@ File names in a case dir (`given/`, and `fx/` of L2) follow one rule, so that a 
 | `%25` | `%` | The escape character itself |
 
 A name has no other `%XX` with upper case hex digits. A tool that makes fixtures (`tests/tools/mk-*.sh`) writes the encoded names. The order of a tree diff is the order of `LC_ALL=C` (`tree_diff`), so it is the same on each machine (TW30).
+
+#### Fake HTTP routes
+
+The L2 fake `Fx` (`fx/http/`) and the L3 server (`given/http/`) have one route form. One file is one URL: `<host>/<path>`, and `<path>?<query>` for a URL with a query (the server tries the file with the query first). The names are encoded as above (`%3F`, `%3A`).
+
+| Item | Rule |
+| --- | --- |
+| The body | The file. When the path is also a dir, the file `<dir>/@`. |
+| `<file>.meta` | One line for each item: `status <n>`, `header <Name>: <value>`, `error timeout`, `error failed <text>` (L2), `slow <ms>`, `body @<file>` (L3). A status 204 or 304 has no body. A header `ETag` gives 304 for the same `If-None-Match`. |
+| The method | `<file>` answers `GET`. `<file>.POST`, `<file>.PUT` and `<file>.DELETE` answer the other methods. Each has its own `.meta` (`<file>.POST.meta`). |
+| The n-th answer | `<file>.<n>` (n = 2, 3, ...) answers the n-th request of the same method and URL in the case. It has its own `.meta` (`<file>.POST.2`, `<file>.POST.2.meta`). When there is no file for n, `<file>` answers. In L2, n counts the lines of `calls.log`, so it counts across the runs of one case. |
+| `require` | The `.meta` line `require <name>: <value>`: the request must have this header with this exact value (the name in any case). `require-none <name>`: the request must not have this header. A request that does not obey a line gets status 599 and the body `wrong header`. |
+| No file | 404 `{"message":"Not Found"}`, for each method |
+| The request body | L2: the line `  <body> <text>` in `calls.log`, after the header lines, only for a body that is not empty. `\` is `\\`, a new line is `\n` and a carriage return is `\r`, so the body is one line. L3: a file of `expect/http-bodies/`. |
+| `Fx` calls in `calls.log` (L2) | `http_get <url>` for `http_get!`. `http_send <METHOD> <url> timeout=<s>` for `http_send!` and for each request of `http_all!`, after the line `http_all limit=<n>`. `sleep <ms>` for `sleep!`, which does not wait (TW15). The results of `http_all!` are in the order of the list. |
+
+The W2 fake GitHub (section 9, `worker/tests/run.mjs`) has the same idea for the method, the n-th answer and `require`, and is different in 3 items (Design Q227): a path that is also a dir is `<dir>/%2F`, the status and the headers are in `<file>.meta.json`, and a URL with no file gives 599 and fails the case. The 2 harnesses share no code and no fixtures, so the difference costs nothing. The CLI keeps 404, because a 404 is an answer that commands must handle.
 
 | Tag | Meaning | In the fast set |
 | --- | --- | --- |
@@ -183,7 +203,7 @@ A name has no other `%XX` with upper case hex digits. A tool that makes fixtures
 | Paths | Absolute, with no `..`. With `..` in `XDG_CACHE_HOME`, `roc check` reports "No errors found" on an app with a type error, and `roc build` stops with `PathOutsideWorkspace` (`conformance/check-scope/README.md`). |
 | Network | Off (`--network none` in the container, or `bwrap --unshare-net`). A case that reaches the real network fails. |
 | Fake `roc` | `tests/fakes/roc` is first on `PATH`. It writes its argv to `roc.log` and answers from `given/roc.tsv`. With the tag `real-roc` (L4), the runner puts the pinned `roc` there instead. |
-| Fake HTTP | One local server for the run, on `127.0.0.1`. It serves `given/http/` and can answer 404, 403 rate limit, a slow body and a bad hash. Talon reaches its routes through `TALON_GITHUB_API`, `TALON_GITHUB_RAW` and `TALON_ZIG_INDEX` (CLI 1, test hooks). A package with a `github.com` URL is pre-filled in `given/home/` (`packages/<hash>/`). A fetch test uses a loopback package URL. |
+| Fake HTTP | One local server for the run, on `127.0.0.1`. It serves `given/http/` and can answer 404, 403 rate limit, a slow body and a bad hash. Talon reaches its routes through `TALON_GITHUB_API`, `TALON_GITHUB_RAW` and `TALON_ZIG_INDEX` (CLI 1, test hooks). A package with a `github.com` URL is pre-filled in `given/home/` (`packages/<hash>/`). A fetch test uses a loopback package URL. The server answers `GET`, `POST`, `PUT` and `DELETE` with the route form of 3.1, and writes the body of each request to the body log. It counts the requests that are in progress at the same time in `http.maxconn`: a case that checks the limit of parallel requests reads it (`http_all!`, CLI R-AD35 step 3, R-DA8). |
 | Clock | `TALON_NOW` fixes the clock of Talon (CLI 1, test hooks) |
 | TTY | A case with the tag `tty` runs under a pseudo terminal and reads its answers from `given/answers`. The runner sets `TALON_INTERACTIVE=1` for it, because `CI=true` turns on non-interactive mode (CLI 4). Else stdin and stderr are not a TTY (R-NR1). |
 | Compare | stdout, stderr, exit code, tree diff and `roc.log`. A difference fails the case and prints a diff. |
@@ -203,6 +223,7 @@ All settled on 2026-10-15. The design has the test hooks in CLI 1 ("Environment 
 | TQ2 | Fetch from the fake server, with the header URL unchanged | The host is part of the package identity (Design 2, R-H5). So a fixture URL must keep `github.com`. | No fetch map: it would be a second kind of mirror. A case with a `github.com` URL pre-fills `packages/<hash>/` (Design 9 Q2). A test of the fetch path uses a loopback URL, which Talon and roc both fetch. |
 | TQ3 | The clock in L3 | GC uses ages (CLI 6.3), and the compiler cache files expire after 30 days | `TALON_NOW`, a UTC time (RFC 3339). The real `Fx` reads it (TW2). It does not change the clock of roc. |
 | TQ4 | Does `roc` fetch from `http://` URLs? | L4 cases with a fake server | Only from `127.0.0.1`, `::1` and `localhost` (Design 9 Q24, `research/roc-http-fetch/`). L4 follows TQ2. |
+| TQ5 | The GitHub login URLs | `tln share login` posts to `https://github.com/login/device/code` and `/login/oauth/access_token` (CLI R-SH12). `TALON_GITHUB_API` does not cover them. | `TALON_GITHUB_WEB`, a base URL, for these 2 requests only (CLI R-EV28, Design Q206, settled 2026-11-02). The fake server gives `interval` 0. |
 
 ## 4. Property tests and roc-fuzz
 
@@ -340,9 +361,9 @@ R-H3, R-H5, R-C2 (Design 4.2, Resolution 2)
 | TW23 | No commit or push unless the user asks. |
 | TW24 | Output that the design does not give (human text, `data` fields) is not a TW17 question. The scope agent proposes it in the slice file, the test agent writes it in the expected files, and the human accepts it at the review (CLI 3, R-OUT1 to R-OUT5). A fact that the design does not give (what the command decides) is still a TW17 question. |
 | TW25 | The fast set builds the test binaries (`l2`, `tln`, `fxprobe`, `flowprobe`) with `--opt=dev`. `OPT=speed` gives the LLVM build. The merge run and the nightly run use `OPT=speed`. If a case passes in one mode and fails in the other, it is a roc bug: report it. The case keeps the `speed` result. |
-| TW26 | `scripts/test.sh` prints the budget of each step. With `OPT=dev` (the default) it prints a `WARN` line for a step over its budget and for a run over 180 s. With `OPT=speed` it prints no `WARN` line (the LLVM build is slow on purpose). A warning does not fail the run. The budgets (seconds): check 10, fmt 5, l0 10, l1 60, l2 30, l3 60, selftest 20. `BUDGET_<STEP>=<s>` and `BUDGET_TOTAL=<s>` change them for one run. After a warning, the slice removes the cause before the hand-off (a slow case gets the tag `slow`, TW27), or the human changes a budget in this file. |
+| TW26 | `scripts/test.sh` prints the budget of each step. With `OPT=dev` (the default) it prints a `WARN` line for a step over its budget and for a run over 180 s. With `OPT=speed` it prints no `WARN` line (the LLVM build is slow on purpose). A warning does not fail the run. The budgets (seconds): check 10, fmt 5, l0 10, l1 60, l2 30, l3 60, w0 10, w1 15, wbuild 90, w2 45, wtrap 5, selftest 20. `BUDGET_<STEP>=<s>` and `BUDGET_TOTAL=<s>` change them for one run. After a warning, the slice removes the cause before the hand-off (a slow case gets the tag `slow`, TW27), or the human changes a budget in this file. |
 | TW27 | An L3 case with a real wait sets small limits (for example `probe.timeout = 1` in `config.toml`). A case that still takes more than 2 s has the tag `slow`. The fast set skips it. `SLOW=1` runs it. The merge run and the nightly run set `SLOW=1`. |
-| TW28 | CI is in `.github/workflows/`. `ci.yml` runs the fast set (`scripts/test.sh`) on Linux, macOS and Windows for each push and pull request. The Windows job runs `check fmt l0` until a slice adds more. `nightly.yml` runs `OPT=speed SLOW=1 NET=1 REAL_ROC=1 scripts/test.sh` each night and on request (the merge run). The nightly tag of the compiler is `ROC_TAG` of `scripts/env.sh` and nowhere else. A workflow gets the compiler with `scripts/get-roc.sh` and never uses a path of `cloudflare-workers/`. A selftest row reads the workflow files (no runner can run them in the test run). |
+| TW28 | CI is in `.github/workflows/`. `ci.yml` runs the fast set (`scripts/test.sh`) on Linux, macOS and Windows for each push and pull request. The Windows job runs `check fmt l0` until a slice adds more. `nightly.yml` runs `OPT=speed SLOW=1 NET=1 REAL_ROC=1 scripts/test.sh` each night and on request (the merge run). The nightly tags of the compiler are in `scripts/env.sh` and nowhere else: `ROC_TAG` for the CLI and the packages, and `ROC_TAG_WORKER` for `worker/` and its `roc:` pin (Design Q59, Registry R-WH13). `packages/records` builds and passes its tests on both nightlies. A workflow gets the compiler with `scripts/get-roc.sh` and never uses a path of `cloudflare-workers/`. A selftest row reads the workflow files (no runner can run them in the test run). |
 | TW29 | A tracked path must be valid on Windows: no `? * : < > \| "` and no `\` in a name, no trailing dot or space, no name such as `CON`. A fixture name encodes the characters with `%XX` (3.1). `tests/selftest.sh` checks `git ls-files`. |
 | TW30 | A runner never depends on the locale: the order of a file list in an expected file is made with `LC_ALL=C` (`diff -r` in `tree_diff`), so a machine with `en_US.UTF-8` and a runner with `C.UTF-8` give the same expected files. |
 
@@ -355,7 +376,7 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 | P0, generic packages | Their own rules, in their repositories (R-GP5) | First: `roc-app-header` (group key and MVS: Design 2 has the facts and tests), then `roc-semver`, `roc-base58`, `roc-toml`. Each is released before Talon uses it (R-GP3). |
 | P0, Talon | R-H, R-I, R-C, R-RP, R-E, R-EC, R-J, R-OUT, R-NR, R-NM, R-PD, R-DI, R-WS, R-TF, R-VA, R-SP, R-LF, R-DT, R-AL, R-OV, R-LD, R-BL, R-BS, R-RC, R-SL, R-SC, R-AD, R-RV, R-RG, R-LY, R-FE, the P0 parts of R-CM, R-FL and R-EV, the P0 prompts of R-NI (R-NI1 to R-NI3), R-SO7 (rank 7 of Resolution 13), R-HF1, R-HF3, R-HF4, R-HF5, R-HF12, R-DA, R-CR, R-ID, R-PK, R-PL1, R-GA (except R-GA2), R-CF, R-PH, R-SE (each row: the phase of the rules that it names), R-CC1 to R-CC3, R-CC5 to R-CC7, R-CC11, R-CC12 | P0 writes project files, `packages/` and `projects.json` (R-PD9), so it needs the atomic writes and the locks. The P0 commands and the P0 limits of Design 7: `install` (and `add`, `--frozen`), `remove`, `update`, `list`, `why`, `verify`, with `direct` as the index. A P0 test needs no compiler download and no unit probe, so P1 does not change its result. |
 | P1 | R-NS, R-P, R-PP, R-PB, R-EP, R-UM, R-EF, R-PA, R-LB, R-UP, R-IN, R-PX, R-GC, R-CS, R-SO1 to R-SO6 and R-SO8 to R-SO18, the other parts of R-CM, R-FL and R-EV, R-DL, R-CV, R-T, R-X, R-B, R-S, R-IS, R-RM, R-R, R-LK, R-U, R-RU, R-RR, R-D, R-ST, R-CC4, R-CC8 to R-CC10, R-NI4 to R-NI15, R-HF2, R-HF6, R-HF11 | The P1 commands of Design 7: `upgrade`, `init`, `outdated`, `probe`, `patch`, `x`, `tool`, `roc`, `cache`, `setup`, the proxy. R-IS is tested today by `install/test.sh`. |
-| P2 and later | Registry: R-RL, R-SG, R-AP, R-RE, R-IK, R-MX, R-CT, R-PU, R-WH, R-OT, R-PL2, R-GA2. `publish`, `probe --share`, sharing, `tln share` and the smoke build (R-SH, R-SM, R-NM12, R-NI16) (P2), `audit` (P3). | Needs the `cloudflare-workers` platform. Not in this file. The tests of R-WH and R-OT are in `cloudflare-workers/` (`bench/node-test.mjs`). |
+| P2 and later | Registry: R-RL, R-SG, R-AP, R-RE, R-IK, R-MX, R-CT, R-PU, R-WH, R-OT, R-PL2, R-GA2. `publish`, `probe --share`, sharing, `tln share` and the smoke build (R-SH, R-SM, R-NM12, R-NI16) (P2), `audit` (P3). | Needs the `cloudflare-workers` platform. The registry layers W0 to W3: section 9. P3: R-SG4, R-SG7, R-AP11 (Design Q55). The tests of the host rules of R-WH and of R-OT are in `cloudflare-workers/` (`bench/node-test.mjs`). |
 
 ## 8. Order of work
 
@@ -370,3 +391,33 @@ The phases are in Design 7. This map is a first draft. The scope agent checks it
 | 7 | Settle TQ1 to TQ4 in the design | Done (2026-10-15). CLI 1 has the test hooks (section 3.3). |
 | 8 | Subagent definitions in `.claude/agents/` for the scope, test and code agents, and a hook that stops the code agent from editing `tests/` | TW18 is enforced, not only written |
 | 9 | First slice: group key and MVS, in the `roc-app-header` repository (Design 6.1, R-GP2) | L0 cases from the facts of Design 2. The L5 check against `roc` stays in Talon `conformance/` (R-GP5). |
+
+## 9. Registry tests (P2)
+
+The registry Worker (`worker/`), its schema (`sql/`) and the Talon package `packages/records` (Design 6.1, R-PK7) have their own layers, W0 to W3. `docs/registry/PLAN.md` section B has the details: the case form, the parts of the harness and the slices. The workflow of section 7 applies as written. TW18 applies to each registry slice: the test agent and the code agent are two agents, and the code agent does not change a test or a fixture.
+
+```mermaid
+flowchart TB
+    W0["W0 roc test: packages/records, the pure decisions of worker/"]
+    W1["W1 SQL: the schema, the triggers and the queries, on node:sqlite and local D1"]
+    W2["W2 routes: the built app.wasm in Miniflare, local D1, R2 and Queue, fake GitHub"]
+    W3["W3 remote: real D1 and the edge, only when the user asks"]
+    W0 --> W1 --> W2 --> W3
+```
+
+| Layer | What it tests | Tool | Where | Budget (fast set) |
+| --- | --- | --- | --- | --- |
+| W0 | The pure decisions of the Worker (Registry R-WH4) and `packages/records` | `roc test` | `packages/records/`, `worker/*.roc` | 10 s |
+| W1 | The schema, the triggers (`RAISE` texts) and each SQL text of a route, on a seeded state | Node test files with no npm package, on `node:sqlite` and on local D1 | `sql/tests/` | 15 s |
+| W2 | Each route and handler kind: status, problem `type`, body, headers, the D1 rows after, the D1 call count (Registry R-AP41), the GitHub calls, the crons, the queue retries | Miniflare, one for each case, with a fake GitHub service | `worker/tests/cases/` | 45 s for the cases. The build of `app.wasm` is the step `wbuild`: 90 s (TW32) |
+| W2 trap | The `on_trap` answers of the built `app.wasm` against the table of the design (Registry R-AP82). No route of the Worker traps, so no W2 case can see them. Step `wtrap` | `node worker/tests/trap-table.mjs` on the build of `wbuild` | `worker/tests/trap-table.mjs` | 5 s |
+| W3 | Real D1 error texts, read replicas and bookmarks, the closure p50 (Design 7 P2), the load test (Design Q14) | `REMOTE=1`, with a Cloudflare account of the user | `worker/tests/remote/` | Not in the fast set |
+
+| Rule | Text |
+| --- | --- |
+| TW31 | The W layers build with `ROC_TAG_WORKER` (TW28). `packages/records` runs W0 on both nightlies. |
+| TW32 | `scripts/test.sh` has the steps `w0`, `w1`, `wbuild`, `w2` and `wtrap` in its default list (`wbuild` before `w2` and `wtrap`), with the budgets of the table above (TW26): w0 10 s, w1 15 s, wbuild 90 s, w2 45 s, wtrap 5 s. `wbuild` builds `app.wasm` and the test app of slice 111 into `.work/worker/<stamp>/`. The stamp is a checksum of the compiler tag, the build mode and the source files, so `wbuild` does nothing when the stamp is up to date. The build starts at the start of the run with the other builds, and the time of `wbuild` in the table is the time of the build itself. `w2` and `wtrap` never build: they run on the build of `wbuild`, and it fails with a message when that build is missing. `scripts/test.sh w2` puts `wbuild` before `w2`. The mode is always `--opt=speed`, also with `OPT=dev`: the `--opt=dev` backend of wasm32 gives wrong code for some integer conversions (`research/roc-dev-wasm32-narrow/README.md`). Runs at the same time are safe (each run has its own temp dir; the first finished build of a stamp wins). W3 is in no run of section 1: it runs only when the user asks. |
+| TW33 | Each value that changes between runs comes from the case (TW2, TW15): the clock (Registry R-WH4), the settings and secrets as test values (Registry R-WH14), and GitHub as the fake. A W2 case does not reach the network. |
+| TW34 | A missing `node` (26 or later) or Miniflare makes the step fail with a message. No step runs `npm install`. |
+| TW35 | `ci.yml` runs `w0 w1 wbuild w2 wtrap` on Linux (the default list). macOS and Windows run `w0` only, until a slice adds more. |
+| TW36 | A W1 or W2 test names its rule ids as TW13 says. `scripts/rules.sh` also counts the tests in `sql/tests/` and `worker/tests/`. |

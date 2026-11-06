@@ -1,0 +1,20 @@
+M1 third batch sent: l0 fail=1 l2 fail=1
+M2 other versions sent: l0 fail=1 l2 fail=1
+M3 429 leaves: l0 fail=1 l2 fail=1
+M4 4xx counts sent: l0 fail=1 l2 fail=1
+M5 no contributor header: l0 fail=1 l2 fail=6
+M6 no R-SH2 recheck: l0 fail=0 l2 fail=1
+M7 rows leave on Stay: l0 fail=0 l2 fail=1
+M8 first_sent_at overwritten: l0 fail=8 l2 fail=0
+M9 budget off by one: l0 fail=8 l2 fail=0
+M10 stale not unqueued: l0 fail=7 l2 fail=1
+reference deleted; stub back in cli/lib/QueueSend.roc
+M11 second request after Stay: l0=0 l2=1
+M12 totals even if Unqueue failed: l0=0 l2=0
+M13 undecodable body stays: l0=1 l2=0
+M14 times ignore TALON_NOW: l0=0 l2=1
+M15 no id made when file missing: l0=0 l2=0
+M16 status 202 leaves: l0=1 l2=0
+M12 totals even if Unqueue failed: l2=1 (sh20)
+M15 no id made when share.json missing: l2=1 (sh17)
+(M11 to M16 in this block are for Q452 to Q459; M11, M13, M14, M16 caught as listed above; reference and scripts deleted)

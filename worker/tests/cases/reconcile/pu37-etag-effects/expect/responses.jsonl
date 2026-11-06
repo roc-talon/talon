@@ -1,0 +1,2 @@
+{"status":200,"json":{"outcome":"ok"},"queue_sent":[]}
+{"status":200,"json":{"outcome":"ok"},"queue_sent":[{"body":{"event":"poll","action":"published","installation_id":0,"repository_id":500,"release_id":9002,"repository_ids":[]},"delay_s":0}]}

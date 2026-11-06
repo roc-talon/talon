@@ -1,0 +1,146 @@
+== none
+All (11) tests passed in 424.6 ms.
+PASS account/ap45-write-routes (1716 ms)
+PASS account/ct10-tracker (3016 ms)
+PASS account/ct11-login-limit (3035 ms)
+PASS account/ct7-delete (3065 ms)
+PASS account/ct8-login (2865 ms)
+PASS account/ct8-login-refusals (2039 ms)
+PASS account/ct9-token-check (1605 ms)
+PASS account/ct9-tokens-after (1192 ms)
+w2: 8 passed, 0 failed
+== leeway-0
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (1694 ms)
+PASS account/ct10-tracker (2765 ms)
+PASS account/ct11-login-limit (2700 ms)
+PASS account/ct7-delete (2763 ms)
+PASS account/ct8-login (2675 ms)
+PASS account/ct8-login-refusals (1821 ms)
+FAIL account/ct9-token-check (1425 ms)
+PASS account/ct9-tokens-after (1150 ms)
+w2: 7 passed, 1 failed
+== revoked-le
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2388 ms)
+PASS account/ct10-tracker (4260 ms)
+PASS account/ct11-login-limit (4156 ms)
+PASS account/ct7-delete (4301 ms)
+PASS account/ct8-login (4070 ms)
+PASS account/ct8-login-refusals (2695 ms)
+FAIL account/ct9-token-check (2311 ms)
+FAIL account/ct9-tokens-after (1885 ms)
+w2: 6 passed, 2 failed
+== tokens-after-zero
+All (11) tests passed in 352.1 ms.
+PASS account/ap45-write-routes (1972 ms)
+PASS account/ct10-tracker (3510 ms)
+PASS account/ct11-login-limit (3421 ms)
+PASS account/ct7-delete (3509 ms)
+FAIL account/ct8-login (3330 ms)
+FAIL account/ct8-login-refusals (2355 ms)
+PASS account/ct9-token-check (1885 ms)
+FAIL account/ct9-tokens-after (1385 ms)
+    request 20: problem.type: expected "/errors/unauthenticated", got missing
+w2: 5 passed, 3 failed
+== login-resets-tokens-after
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2448 ms)
+PASS account/ct10-tracker (3853 ms)
+PASS account/ct11-login-limit (3843 ms)
+PASS account/ct7-delete (3873 ms)
+FAIL account/ct8-login (3706 ms)
+PASS account/ct8-login-refusals (2845 ms)
+PASS account/ct9-token-check (1871 ms)
+FAIL account/ct9-tokens-after (1348 ms)
+    request 17: body: expected "", got "{\"detail\":\"the token is revoked or its account has no data in this registry: log in again\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+w2: 6 passed, 2 failed
+== move-last-time-keep
+All (11) tests passed in 344.2 ms.
+PASS account/ap45-write-routes (1930 ms)
+PASS account/ct10-tracker (3220 ms)
+PASS account/ct11-login-limit (3208 ms)
+PASS account/ct7-delete (3218 ms)
+FAIL account/ct8-login (3150 ms)
+PASS account/ct8-login-refusals (2249 ms)
+PASS account/ct9-token-check (1642 ms)
+PASS account/ct9-tokens-after (1232 ms)
+w2: 7 passed, 1 failed
+== tracker-last-time-rows-only
+All (11) tests passed in 334.5 ms.
+PASS account/ap45-write-routes (2251 ms)
+FAIL account/ct10-tracker (3790 ms)
+PASS account/ct11-login-limit (3698 ms)
+PASS account/ct7-delete (3788 ms)
+PASS account/ct8-login (3623 ms)
+PASS account/ct8-login-refusals (2624 ms)
+PASS account/ct9-token-check (1995 ms)
+PASS account/ct9-tokens-after (1499 ms)
+w2: 7 passed, 1 failed
+== github-403-refused
+    s500 = Login.github_user(500, "") == upstream("the GitHub user read failed with status 500")
+    s403 = Login.github_user(403, "{\"message\":\"rate limit\"}") == upstream("the GitHub user read failed with status 403")
+    s429 = Login.github_user(429, "") == upstream("the GitHub user read failed with status 429")
+    s404 = Login.github_user(404, "") == upstream("the GitHub user read failed with status 404")
+    s302 = Login.github_user(302, "") == upstream("the GitHub user read failed with status 302")
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2302 ms)
+PASS account/ct10-tracker (3765 ms)
+PASS account/ct11-login-limit (3676 ms)
+PASS account/ct7-delete (3764 ms)
+PASS account/ct8-login (3650 ms)
+PASS account/ct8-login-refusals (2604 ms)
+PASS account/ct9-token-check (1927 ms)
+PASS account/ct9-tokens-after (1530 ms)
+w2: 8 passed, 0 failed
+== limit-before-proof
+All (11) tests passed in 333.2 ms.
+PASS account/ap45-write-routes (2583 ms)
+PASS account/ct10-tracker (4136 ms)
+FAIL account/ct11-login-limit (4013 ms)
+    request 7: problem.type: expected "/errors/unauthenticated", got "/errors/rate-limited"
+    request 11: problem.type: expected "/errors/unauthenticated", got "/errors/rate-limited"
+    request 16: problem.type: expected "/errors/unauthenticated", got missing
+PASS account/ct7-delete (4133 ms)
+PASS account/ct8-login (3955 ms)
+PASS account/ct8-login-refusals (2906 ms)
+PASS account/ct9-token-check (1973 ms)
+PASS account/ct9-tokens-after (1497 ms)
+w2: 7 passed, 1 failed
+== kid-unchecked
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (1981 ms)
+PASS account/ct10-tracker (3423 ms)
+PASS account/ct11-login-limit (3403 ms)
+PASS account/ct7-delete (3421 ms)
+PASS account/ct8-login (3346 ms)
+PASS account/ct8-login-refusals (2312 ms)
+FAIL account/ct9-token-check (1839 ms)
+    request 6: problem.type: expected "/errors/unauthenticated", got missing
+PASS account/ct9-tokens-after (1399 ms)
+w2: 7 passed, 1 failed
+== is-write-no-deleteme
+    10 passed
+    1 failed
+    0 compiler errors
+FAIL account/ap45-write-routes (1840 ms)
+    request 3: problem.type: expected "/errors/unsupported-client", got "/errors/unauthenticated"
+PASS account/ct10-tracker (2993 ms)
+PASS account/ct11-login-limit (2935 ms)
+PASS account/ct7-delete (3026 ms)
+PASS account/ct8-login (2920 ms)
+PASS account/ct8-login-refusals (2127 ms)
+PASS account/ct9-token-check (1483 ms)
+PASS account/ct9-tokens-after (1076 ms)
+w2: 7 passed, 1 failed
+done

@@ -1,0 +1,2 @@
+[tools]
+d = { ref = "acme/foo@1.0.0" }

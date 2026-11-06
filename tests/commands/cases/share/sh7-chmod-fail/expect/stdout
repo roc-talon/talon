@@ -1,0 +1,5 @@
+== share on
+exit 18
+== share on --json
+{"schema":1,"command":"share on","ok":false,"data":null,"error":{"kind":"environment","code":18,"message":"cannot set the mode of $HOME/.local/share/talon/share.json: Exited(1)"}}
+exit 18

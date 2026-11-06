@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 R-SO6 (slice 222, Design Q542): the package has no pin, `config.toml` has `default-roc = N1` and N1 is not installed (nothing is). The note has the words of a pin that is not installed (the same words for a pin, ROC_TOOLCHAIN, default-roc and .roc-version), no `Consent.download_refused` text, no download, no probe. The publish goes on, exit 0.

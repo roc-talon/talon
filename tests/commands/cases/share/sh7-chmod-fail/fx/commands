@@ -1,0 +1,4 @@
+# Q213, R-SH5, R-SE15, R-HF2, R-CC1, R-CC2: `chmod 0600` runs on the temp file before the rename, and a failed chmod (exit code 1) stops share on with kind environment (exit 18). The text names share.json (not the temp). The temp is deleted, share.json is not made (never a file with a wide mode), and config.toml has share = true (it is written first, D4).
+share on
+# R-OUT4, R-EC18: the same with --json: the envelope names the error.
+share on --json

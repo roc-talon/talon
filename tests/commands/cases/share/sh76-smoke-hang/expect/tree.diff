@@ -1,0 +1,30 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -1,2 +1,5 @@
+ format	1
++fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	any	pass		
++fact	9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
++fact	EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt	nightly-2026-10-14-38a3029	any	pass		
+ pinned	nightly-2026-10-14-38a3029	linux_x86_64	abababababababababababababababababababababababababababababababab	registry
+--- home/.cache/roc/talon/index/github/acme/parser/repo.json
++++ home/.cache/roc/talon/index/github/acme/parser/repo.json
+@@ -0,0 +1 @@
++{"id":2,"full_name":"acme/parser","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/u1/main.roc","last_use":1792497600}]}
+--- home/.cache/roc/talon/share_queue.tsv
++++ home/.cache/roc/talon/share_queue.tsv
+@@ -1 +0,0 @@
+-1	HA	nightly-2026-10-14-38a3029	any	pass	0.0.1	2026-10-19T10:00:00Z
+--- home/.cache/roc/talon/smoke.tsv
++++ home/.cache/roc/talon/smoke.tsv
+@@ -0,0 +1 @@
++9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK	nightly-2026-10-14-38a3029	x64musl	hang
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -1 +1 @@
+-{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":0,"counted":0,"first":0,"first_sent_at":null,"last_sent_at":null,"token":null,"token_expires_at":null,"account":null}
++{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":3,"counted":3,"first":2,"first_sent_at":"2026-10-20T12:00:00Z","last_sent_at":"2026-10-20T12:00:00Z","token":null,"token_expires_at":null,"account":null}

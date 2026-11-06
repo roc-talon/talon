@@ -1,0 +1,16 @@
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9001
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9002
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9003
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9004
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9005
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9006
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9007
+GET https://api.github.com/repositories/800
+GET https://api.github.com/repositories/801

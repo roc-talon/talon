@@ -1,0 +1,13 @@
+== probe --share json
+exit 2
+== probe --share json --registry direct
+exit 2
+== probe --share json --json
+{"schema":1,"command":"probe","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"tln probe --share needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml."}}
+exit 2
+== probe --share --registry http://127.0.0.1:9
+exit 2
+== probe --share out/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --registry http://127.0.0.1:9
+exit 2
+== probe --share json --registry http://127.0.0.1:9 --offline
+exit 15

@@ -1,0 +1,7 @@
+{"method":"GET","path":"/__test/send?d=0"}
+{"method":"GET","path":"/__test/send?d=60"}
+{"method":"GET","path":"/__test/timing"}
+{"method":"GET","path":"/__test/json"}
+{"queue":"__test-q","messages":[{"id":"a","body":{}},{"id":"b","attempts":2,"body":{"retry_s":60}},{"id":"c","body":{"retry":true}}]}
+{"method":"GET","path":"/__test/log"}
+{"method": "POST", "path": "/__test/len", "headers": {"content-type": "application/json"}, "body_pad": {"prefix": "{\"zen\":\"", "fill": "a", "suffix": "\"}", "total": 300000}}

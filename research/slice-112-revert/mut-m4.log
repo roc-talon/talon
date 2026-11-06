@@ -1,0 +1,43 @@
+All (43) tests passed in 563.3 ms.
+PASS ingest/ap26-body-and-route (1620 ms)
+FAIL ingest/ik3-id-collision (1744 ms)
+    request 1: status: expected 409, got 201
+    request 1: problem: content-type: expected "application/problem+json", got "application/json"
+    request 1: problem.type: expected "/errors/id-collision", got missing
+    request 1: problem.detail: expected "the hash 3P3QiL6VHAB5RYpMfcyNVKddfP62gsKhEZAGcyfhvdgH has the id -2569884988743550866 of the hash 11111111111111111111111111111111 in the index", got missing
+    request 1: problem.status: expected 201 (the HTTP status), got missing
+    request 2: status: expected 409, got 201
+    request 2: problem: content-type: expected "application/problem+json", got "application/json"
+    request 2: problem.type: expected "/errors/id-collision", got missing
+    request 2: problem.detail: expected "the repository acme/coll2 has the id -3925254045967471780 of the repository someone/else in the index", got missing
+    request 2: problem.status: expected 201 (the HTTP status), got missing
+    d1-calls: request 1: expected 3, got 2 (all,batch)
+    d1-calls: request 2: expected 3, got 2 (all,batch)
+    db: @ SELECT CAST(id AS TEXT), kind, CASE kind WHEN 1 THEN hex(value) ELSE value END FROM names ORDER BY kind, 3: rows differ:
+      expected: ["-2569884988743550866\t1\t0000000000000000000000000000000000000000000000000000000000000000","-3925254045967471780\t3\tsomeone/else"]
+      got:      ["-2569884988743550866\t1\t0000000000000000000000000000000000000000000000000000000000000000","4469800713240684981\t1\tA35B62EF3E987B3BA45F11878B2975DD2EF45ECC4B5A7452392CDC711DBAB2D1","-6724889368319079667\t1\tA4CCB042405EC5DF90A94B4ABB8439A48A924C86F7865F2DD392D4B27E9DE9CB","4539917101119330783\t1\tCE1FAE44699835CB13018DDAB0152D86F94A1C18E9E150B4F92C2170D57241AD","-7163292474072844271\t2\tgithub.com/Karakatiza666/roc-semver/releases/download/{v}/","5493031151883462915\t2\tgithub.com/acme/coll/releases/download/{v}/","-6414028384498270638\t2\tgithub.com/acme/coll2/releases/download/{v}/","-2910594502301859423\t3\tacme/coll","-3925254045967471780\t3\tsomeone/else"]
+    db: @ SELECT CAST(artifact AS TEXT), kind, exposes, CAST(platform AS TEXT), roc_pin, size FROM artifacts ORDER BY kind: rows differ:
+      expected: []
+      got:      ["-2569884988743550866\t1\t[\"Zeta\",\"Alpha\"]\t\\N\t\\N\t365","4539917101119330783\t1\t[\"Zeta\",\"Alpha\"]\t\\N\t\\N\t369"]
+    db: @ SELECT CAST(artifact AS TEXT), alias, CAST(dep AS TEXT), CAST(form AS TEXT), CAST(version AS TEXT), version_text, url FROM deps ORDER BY alias: rows differ:
+      expected: []
+      got:      ["-2569884988743550866\textra\t-6724889368319079667\t\\N\t\\N\t\\N\thttps://example.com/pkgs/C6Jtcve7FRNtkwgmuyRBJnZfJyTrfJWhDcLp6gk4w4Gz.tar.zst","4539917101119330783\textra\t-6724889368319079667\t\\N\t\\N\t\\N\thttps://example.com/pkgs/C6Jtcve7FRNtkwgmuyRBJnZfJyTrfJWhDcLp6gk4w4Gz.tar.zst","-2569884988743550866\tsemver\t4469800713240684981\t-7163292474072844271\t-9223372028264775681\t\thttps://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst","4539917101119330783\tsemver\t4469800713240684981\t-7163292474072844271\t-9223372028264775681\t\thttps://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst"]
+    db: @ SELECT log_index, CAST(form AS TEXT), CAST(version AS TEXT), version_text, CAST(artifact AS TEXT), CAST(repo AS TEXT), url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at FROM releases ORDER BY log_index: rows differ:
+      expected: []
+      got:      ["1\t5493031151883462915\t-9223090561877999617\t\t-2569884988743550866\t-2910594502301859423\thttps://github.com/acme/coll/releases/download/1.0.0/3P3QiL6VHAB5RYpMfcyNVKddfP62gsKhEZAGcyfhvdgH.tar.zst\t1.0.0\t\\N\t1792497600000\t0\t\\N\t\\N","2\t-6414028384498270638\t-9223090561877999617\t\t4539917101119330783\t-3925254045967471780\thttps://github.com/acme/coll2/releases/download/1.0.0/Esd1FbSvJmXGkxvMKx8yeM4SmMBY6rQwM16nuD6Kb2cC.tar.zst\t1.0.0\t\\N\t1792497600000\t0\t\\N\t\\N"]
+    db: @ SELECT idx, grp, version, hash, time FROM log ORDER BY idx: rows differ:
+      expected: []
+      got:      ["1\tgithub.com/acme/coll/releases/download/{v}/\t1.0.0\t3P3QiL6VHAB5RYpMfcyNVKddfP62gsKhEZAGcyfhvdgH\t1767225630000","2\tgithub.com/acme/coll2/releases/download/{v}/\t1.0.0\tEsd1FbSvJmXGkxvMKx8yeM4SmMBY6rQwM16nuD6Kb2cC\t1767225630000"]
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: []
+      got:      ["1\t3\t\\N\t1767225630000","2\t3\t\\N\t1767225630000"]
+    db: @ SELECT CAST(repo AS TEXT), repository_id, repository_owner_id, state, successor, state_at, time FROM repos ORDER BY repository_id: rows differ:
+      expected: []
+      got:      ["-2910594502301859423\t1\t2\t0\t\\N\t1767225630000\t1767225630000","-3925254045967471780\t3\t2\t0\t\\N\t1767225630000\t1767225630000"]
+    db: @ SELECT CAST(repo AS TEXT), etag, checked_at, next_check_at, fail_count, app_installed FROM repo_checks ORDER BY 1: rows differ:
+      expected: []
+      got:      ["-2910594502301859423\t\\N\t\\N\t1767229230000\t0\t0","-3925254045967471780\t\\N\t\\N\t1767229230000\t0\t0"]
+PASS ingest/pu14-pu19-labels (1868 ms)
+PASS ingest/pu4-index-kinds (1890 ms)
+PASS ingest/pu6-not-candidates (1937 ms)
+w2: 4 passed, 1 failed

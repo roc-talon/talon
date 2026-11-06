@@ -1,0 +1,4 @@
+Slice 103, case t5-d1-error-text (D1 only; research/d1-remote/ results: the same text on local and remote D1).
+  R-MX9: the Worker maps a batch error by its kind and the whole message. A trigger RAISE gives "D1_ERROR: <RAISE text>: SQLITE_CONSTRAINT (extended: SQLITE_CONSTRAINT_TRIGGER)", and the D1 module reads the RAISE text from it. The 5 texts: label-conflict (R-MX9 via Q27, 409), sweep-incomplete (422), sweep-bound (400), sweep-smaller (not mapped: 500), hint-quota (429, R-CT13). The text has no other word.
+  R-IK3: an id collision of names is a primary key failure with the message "UNIQUE constraint failed: names.id", and the extended kind is not TRIGGER. The Worker must not take it for a RAISE.
+  R-MX8: the 3 sweep texts are the whole text of the RAISE.

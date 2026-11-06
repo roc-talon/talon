@@ -1,0 +1,46 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+args
+env_all
+clock
+cwd
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc --version
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
+args
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all

@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 (slice 222, Design Q525): roc bump exits 1 with the headline `insufficient version bump`, `must be at least`, and the stdout lines (a MAJOR change, 2.0.0 -> 3.0.0): the warning, and the publish goes on (exit 0, the request is sent).

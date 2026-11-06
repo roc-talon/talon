@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# The fast set (TW20): check, fmt check, L0, L1, L2, L3 fast, and the self-test of the runners.
+# The fast set (TW20): check, fmt check, L0, L1, L2, L3 fast, the registry layers W0 to W2 (TESTING.md 9), and the self-test of the runners.
 # Exit 0 only when every step passes.
-# Usage: scripts/test.sh [step ...]    steps: check fmt l0 l1 l2 l3 selftest (default: all, with l1 last: its builds start at the start and take 30 s, so l1 waits for no build)
+# Usage: scripts/test.sh [step ...]    steps: check fmt l0 l1 l2 l3 w0 w1 wbuild w2 wtrap selftest (default: all, with l1 last: its builds start at the start and take 30 s, so l1 waits for no build)
 #        VERBOSE=1                     print the log of each step, not only of a failed one
 #        ROC=<path>                    another compiler (default: the pinned nightly, scripts/env.sh)
 #        OPT=dev|speed                 build mode of the test binaries (default dev; speed is LLVM; another value: exit 2, TW25)
@@ -10,7 +10,12 @@
 #        L1_RUNS=<n>                   inputs for each roc-fuzz target (default: the line `# l1-runs: <n>` of the target file, else 20000: a fixed count, TW6). L1_SEED=<n>: the seed (default 1).
 #        L1_DIR=<dir>                  the dir of the targets (default tests/fuzz)
 #        L1_HOST=<system>-<arch>       the system for the l1 support check (default: uname -s and uname -m). roc-fuzz has a platform for Linux-x86_64 and Darwin-arm64 only: another system skips l1.
-#        BUDGET_<STEP>=<s>             change the budget of one step for this run (CHECK FMT L0 L1 L2 L3 SELFTEST, TW26)
+#        ROC_WORKER=<path>             the compiler of the registry Worker (default: ROC_TAG_WORKER of scripts/env.sh, TW31). w0 and wbuild use it.
+#        wbuild: builds the Worker and the test app of slice 111 into $WORK/worker/<stamp>/ (app.wasm and .roc-cfw/: the manual path of cloudflare-workers/README.md, no tln, no roc-cfw), safe for runs at the same time,
+#            then `sync --check`. It does nothing when the stamp is up to date. The build starts at the start of the run, with the other builds, and the step waits for it (budget 90 s, TW26).
+#        w2: runs worker/tests/run.mjs on the build of wbuild (W2_DIR is that dir). It never builds. `w2` alone puts `wbuild` before it, so the time of w2 is the time of the cases.
+#        w0 and w1 need Node 26 or later (TW34); w1 and w2 need Miniflare (the global wrangler 4, or MINIFLARE=<dir>).
+#        BUDGET_<STEP>=<s>             change the budget of one step for this run (CHECK FMT L0 L1 L2 L3 W0 W1 WBUILD W2 WTRAP SELFTEST, TW26)
 #        TEST_TIMEOUT=<s>              the time limit of one test process: a `roc test` file (l0), a fuzz run (l1), a case of l2 and of l3 (default: 3 times the budget of its step: l0 30, l1 180, l2 90, l3 180).
 #                                      A process over the limit is killed and fails its step (`l0: <file>: timed out after <s> s`). The builds have no limit. L3 reads CASE_TIMEOUT first (tests/run.sh).
 #        BUDGET_TOTAL=<s>              the budget of the whole run (default 180, TW20)
@@ -29,13 +34,22 @@ prune_roc_objects
 LOGS=$WORK/logs
 mkdir -p "$LOGS"
 STEPS=("$@")
-[ ${#STEPS[@]} -eq 0 ] && STEPS=(check fmt l0 l2 l3 selftest l1)
+[ ${#STEPS[@]} -eq 0 ] && STEPS=(check fmt l0 l2 l3 w0 w1 wbuild w2 wtrap selftest l1)
+# w2 runs the cases on the build of wbuild and never builds. A run with w2 and no wbuild before it gets wbuild, so the build time is the time of its own step.
+# Slice 123d: wtrap (the on_trap table of the manifest, worker/tests/trap-table.mjs) also reads the build of wbuild.
+_s=(); _seen=0
+for _x in "${STEPS[@]}"; do
+    [ "$_x" = wbuild ] && _seen=1
+    if { [ "$_x" = w2 ] || [ "$_x" = wtrap ]; } && [ $_seen = 0 ]; then _s+=(wbuild); _seen=1; fi
+    _s+=("$_x")
+done
+STEPS=("${_s[@]}")
 
 # Roc files with a header: the apps and packages of Talon. The l0 files (UNIT: the drivers of the unit modules in tests/unit, and the tests of the packages, `unit_files` of tests/lib.sh) are not here: `roc test` in the l0 step fails on every error
 # and on every warning that `roc check` reports for them (exit 1 and exit 2, research/check-speed/RESULTS.md), so a second compile in `check` finds nothing new.
 # tests/selftest.sh has the rows that keep this true (slice P1 section 5).
 mapfile -t UNIT < <(unit_files | sort -u)
-mapfile -t APPS < <({ echo cli/main.roc; echo cli/fxprobe.roc; echo cli/flowprobe.roc; echo cli/lib/main.roc; echo tests/commands/main.roc
+mapfile -t APPS < <({ echo cli/main.roc; echo cli/fxprobe.roc; echo cli/flowprobe.roc; echo cli/lib/main.roc; echo tests/commands/main.roc; echo bot/main.roc; echo bot/lib/main.roc
     ls packages/*/main.roc 2> /dev/null; } | sort -u)
 
 # run_limited <s> <cmd...>: run the command with a time limit. Exit 124 when it ran out of time: the TERM signal goes to the process group, and 5 s later a KILL (a fuzz target can ignore TERM).
@@ -71,11 +85,11 @@ step_check() {
     return $rc
 }
 # The files under `given/` and `tests/fixtures/` are fixtures: some are not valid Roc on purpose (a bad header, slice 002; a syntax error, slice 006), and their line numbers are in the expected outputs.
-step_fmt() { "$ROC" fmt --check $(find cli tests $(ls -d packages 2> /dev/null) -name '*.roc' -not -path '*/given/*' -not -path 'tests/fixtures/*' | sort); }
+step_fmt() { "$ROC" fmt --check $(find cli tests bot $(ls -d packages 2> /dev/null) -name '*.roc' -not -path '*/given/*' -not -path 'tests/fixtures/*' | sort); }
 # The files run in parallel (at most JOBS). The report is in the order of UNIT.
 # Slice 036b3: xargs starts the files in the order of the last run, the slowest first ($L0_TIMES, "<ms> <file>"), so the last jobs are short and no job runs alone at the end (12 jobs, the times of one run: alphabetical 7.4 s, slowest first 6.7 s). A file that has no time yet goes first. Each roc process gets L0_THREADS compile threads (default 1, `roc test --jobs`): the default of roc is one thread for each CPU, and 12 processes
 # with 24 threads each spend 2 times the CPU time (docs/slices/036b3-module-split.md).
-# Slice P1 5b (research/l0-time/RESULTS.md): the unit files are modules, and 8 drivers import them, so a process compiles the shared modules of the design once for about 10 files, not once for each file (86 processes: 43 s of CPU, 12 processes: 25 s).
+# Slice P1 5b (research/l0-time/RESULTS.md): the unit files are modules, and 9 drivers import them (slice 223 added l0-9), so a process compiles the shared modules of the design once for about 10 files, not once for each file (86 processes: 43 s of CPU, 12 processes: 25 s).
 # With about 12 processes, 2 threads for each process are faster than 1.
 L0_TIMES=$WORK/l0-times
 L0_THREADS=${L0_THREADS:-2}
@@ -202,6 +216,103 @@ step_l2() {
 }
 # l3: tests/run.sh has the limit of a case already (CASE_TIMEOUT, exit 124), so test.sh gives it the limit of the step.
 step_l3() { wait_build tln && wait_build fxprobe && wait_build flowprobe && CASE_TIMEOUT=${CASE_TIMEOUT:-$(limit_of l3)} TLN=$WORK/bin/tln tests/run.sh; }
+# --- The registry layers W0 to W2 (TESTING.md 9, docs/registry/PLAN.md B). The tests are in worker/tests/, sql/tests/. ---
+ROC_WORKER=${ROC_WORKER:-$ROOT/cloudflare-workers/.cache/nightlies/$ROC_TAG_WORKER/roc}
+need_node() { # TW34: Node 26 or later (JSPI, node:sqlite). No step runs npm install.
+    command -v node > /dev/null 2>&1 || { echo "$1: node is missing (Node 26 or later)"; return 1; }
+    [ "$(node -p 'process.versions.node.split(".")[0]')" -ge 26 ] || { echo "$1: Node 26 or later is needed, this is $(node --version)"; return 1; }
+}
+# records (slice 104, TW31): format and `roc test` of packages/records with the CLI compiler and with the worker compiler (R-PK7).
+step_records() {
+    local rc=0 r
+    for r in "$ROC" "$ROC_WORKER"; do
+        "$r" fmt --check packages/records/*.roc packages/records/tests/*.roc || rc=1
+        run_limited "$(limit_of w0)" "$r" test packages/records/tests/w0.roc --no-cache || rc=1
+    done
+    return $rc
+}
+# w0: the frame checks of worker/, the format of its Roc files, and `roc test` of the pure modules (worker/lib/) with the worker compiler.
+step_w0() {
+    local rc=0
+    worker/tests/frame.sh || rc=1
+    "$ROC_WORKER" fmt --check $(find worker -name '*.roc' -not -path 'worker/.roc-cfw/*' | sort) || rc=1
+    unit_modules_check worker/tests/unit || rc=1
+    run_limited "$(limit_of w0)" "$ROC_WORKER" test worker/tests/unit/w0.roc --no-cache || rc=1
+    step_records || rc=1
+    return $rc
+}
+step_w1() { need_node w1 && run_limited "$(limit_of w1)" node sql/tests/run.mjs; }
+step_wbuild() { need_node wbuild && wait_build "worker.$$"; }
+# wtrap (slice 123d, Registry R-AP82): the on_trap table of app.wasm against the table of the design. No route of the Worker traps, so no W2 case can see it.
+step_wtrap() {
+    [ -f "$LOGS/worker-dir.$$" ] || { echo "wtrap: this run has no Worker build: the step wbuild did not run or failed. wtrap does not build."; return 1; }
+    need_node wtrap && node worker/tests/trap-table.mjs "$(cat "$LOGS/worker-dir.$$")"
+}
+step_w2() {
+    [ -f "$LOGS/worker-dir.$$" ] || { echo "w2: this run has no Worker build: the step wbuild did not run or failed. w2 does not build."; return 1; }
+    need_node w2 && W2_DIR=$(cat "$LOGS/worker-dir.$$") W2_ARCHIVE_WASM=$(cat "$LOGS/worker-archive.$$" 2> /dev/null) run_limited "$(limit_of w2)" node worker/tests/run.mjs
+}
+# worker_build: app.wasm with the worker compiler, the shim copy, and `sync --check` (R-WH12: the same two steps as `tln run build`, without tln and roc-cfw).
+# The mode is always --opt=speed, and OPT does not change it: on nightly 2026-10-31 the wasm32 --opt=dev backend gives wrong code for I128 to_u8_try, to_u16_try, to_i8_try and
+# to_i16_try (3 gives Err(OutOfRange)), so a D1 BLOB or small integer field fails to read (research/roc-dev-wasm32-narrow/README.md). A Worker is never built with dev.
+# Safe for runs at the same time (several agents run this script): the build of one stamp is the dir $WORK/worker/<stamp>/ with app.wasm and .roc-cfw/. The stamp is the checksum of the
+# Roc sources of the Worker and of packages/records, the compiler tag and the mode. A build goes to a dir `.tmp.<run>` and is renamed to its stamp name (worker_publish): a run uses only
+# the dir of its own stamp (W2_DIR), and no run changes a finished dir. Two runs with one stamp: both may build, the first rename wins. A warm run finds the dir and does not build.
+# The 3 newest stamp dirs stay (worker_prune). worker/app.wasm and worker/.roc-cfw/ (for `wrangler dev`) are not written by the tests, and the tests do not read them.
+WORKER_OPT=speed
+worker_build() { # worker_build <run id>: the id (the pid of test.sh) names the files of this run
+    local rid=$1 d=$ROOT/worker hash stamp root=$WORK/worker tmp final out rc chk
+    stamp=$(worker_stamp)
+    final=$root/$stamp
+    mkdir -p "$root"
+    archive_build "$rid" "$stamp" &
+    local apid=$!
+    if [ -f "$final/app.wasm" ] && [ -f "$final/.roc-cfw/index.js" ]; then
+        echo "worker: the build $stamp is up to date, no build"
+    else
+        tmp=$root/.tmp.$rid
+        rm -rf "$tmp"
+        mkdir -p "$tmp"
+        out=$tmp/roc-build.out
+        ( cd "$d" && "$ROC_WORKER" build --target=wasm32 --no-cache --opt="$WORKER_OPT" ${BUILD_THREADS:+--jobs="$BUILD_THREADS"} --output="$tmp/app.wasm" main.roc ) > "$out" 2>&1
+        rc=$?
+        cat "$out"
+        roc_build_ok "$rc" "$out" || { rm -rf "$tmp"; return 1; }
+        rm -f "$out"
+        hash=$(sed -n 's#.*roc-cloudflare-workers/releases/download/[^/]*/\([A-Za-z0-9]*\)\.tar\.zst.*#\1#p' "$d/main.roc" | head -n 1)
+        [ -d "$ROC_CACHE_DIR/packages/$hash/js" ] || { echo "worker: the platform is not in the roc cache: $ROC_CACHE_DIR/packages/$hash"; rm -rf "$tmp"; return 1; }
+        cp -r "$ROC_CACHE_DIR/packages/$hash/js" "$tmp/.roc-cfw"
+        worker_publish "$tmp" "$final" || { echo "worker: could not make $final"; return 1; }
+    fi
+    worker_prune "$root" 3 "$final"
+    echo "$final" > "$LOGS/worker-dir.$rid"
+    wait "$apid"
+    # sync --check in a private copy of the project (the entry file imports ./.roc-cfw/ by a relative path): this run reads only its own stamp dir.
+    chk=$(mktemp -d "$root/.tmp.chk.XXXXXX") || return 1
+    cp -r "$final/.roc-cfw" "$final/app.wasm" "$d/worker.js" "$d/wrangler.toml" "$d/main.roc" "$chk/"
+    ( cd "$chk" && node .roc-cfw/cli.mjs sync --check --file main.roc )
+    rc=$?
+    rm -rf "$chk"
+    return $rc
+}
+# archive_build <run id> <stamp>: the W2 test app of slice 111 (worker/archive-test.roc, the archive cases) in its own stamp dir $WORK/worker-archive/<stamp>/archive-test.wasm,
+# with the compiler and the mode of the Worker, at the same time as the Worker build. The stamp of the Worker covers it (it is a file of worker/). Safe for runs at the same time
+# (worker_publish). A failed build does not fail the Worker build: $LOGS/worker-archive.<run id> is then empty, and run.mjs fails only the cases with the file `app`.
+archive_build() {
+    local rid=$1 root=$WORK/worker-archive final tmp log=$LOGS/worker-archive-build.$1.log
+    final=$root/$2
+    : > "$LOGS/worker-archive.$rid"
+    mkdir -p "$root"
+    if [ ! -f "$final/archive-test.wasm" ]; then
+        tmp=$root/.tmp.$rid
+        rm -rf "$tmp"; mkdir -p "$tmp"
+        ( cd "$ROOT/worker" && "$ROC_WORKER" build --target=wasm32 --no-cache --opt="$WORKER_OPT" ${BUILD_THREADS:+--jobs="$BUILD_THREADS"} --output="$tmp/archive-test.wasm" archive-test.roc ) > "$log" 2>&1
+        roc_build_ok $? "$log" > /dev/null 2>&1 || { echo "worker: the build of archive-test.roc failed (only the cases with the file app fail): $log"; rm -rf "$tmp"; return 0; }
+        worker_publish "$tmp" "$final" || { echo "worker: could not make $final"; return 0; }
+    fi
+    worker_prune "$root" 3 "$final"
+    echo "$final/archive-test.wasm" > "$LOGS/worker-archive.$rid"
+}
 step_selftest() { wait_build l2 && SELFTEST_L2BIN=$WORK/bin/l2 tests/selftest.sh; }
 
 # The slow part of L2, L3 and the self-test is `roc build` of the test apps (LLVM: 90 s each, --opt=dev: 2 to 5 s). So the builds start
@@ -214,6 +325,15 @@ BUILD_LIST=()
 BUILD_RESERVE_MB=0
 build_start() { rm -f "$LOGS/build-$1.rc"; BUILD_WANT[$1]=1; BUILD_LIST+=("$1 $2"); }
 build_one() { # build_one <name> <main.roc>. A name l1-<target> is an L1 target: `roc build --fuzz` in its own dir under $WORK/l1 (LLVM only, it does not follow OPT)
+    if [ "${1#worker.}" != "$1" ]; then # worker.<pid of the run>: the names of the files hold the pid, so runs at the same time do not share them
+        local t0
+        t0=$(date +%s.%N)
+        worker_build "${1#worker.}" > "$LOGS/build-$1.log" 2>&1
+        local rc=$?
+        awk -v a="$(date +%s.%N)" -v b="$t0" 'BEGIN { printf "%.3f\n", a - b }' > "$LOGS/build-$1.sec"
+        echo $rc > "$LOGS/build-$1.rc"
+        return 0
+    fi
     if [ "${1#l1-}" != "$1" ]; then
         l1_build "$2" "$WORK/l1"
         cp "$WORK/l1/${1#l1-}/build.rc" "$LOGS/build-$1.rc"
@@ -229,8 +349,8 @@ build_launch() {
     local n
     n=$(roc_jobs 0 "$BUILD_MB")
     [ "$n" -gt ${#BUILD_LIST[@]} ] && n=${#BUILD_LIST[@]}
-    export -f build_one l1_build
-    export ROC OPT WORK LOGS BUILD_THREADS
+    export -f build_one l1_build worker_build archive_build worker_stamp worker_publish worker_prune roc_build_ok
+    export ROC ROC_WORKER ROC_TAG_WORKER WORKER_OPT ROOT OPT WORK LOGS BUILD_THREADS
     ( printf '%s\n' "${BUILD_LIST[@]}" | xargs -P "$n" -L1 bash -c 'build_one "$@"' _ ) &
     BUILD_PID=$!
 }
@@ -244,7 +364,7 @@ wait_build() {
 }
 
 # The budget of each step in seconds (TW26). BUDGET_<STEP> changes one for this run.
-declare -A BUDGET=([check]=10 [fmt]=5 [l0]=10 [l1]=60 [l2]=30 [l3]=60 [selftest]=20)
+declare -A BUDGET=([check]=10 [fmt]=5 [l0]=10 [l1]=60 [l2]=30 [l3]=60 [w0]=10 [w1]=15 [wbuild]=90 [w2]=45 [wtrap]=5 [selftest]=20)
 for s in "${!BUDGET[@]}"; do
     v=BUDGET_${s^^}
     [ -n "${!v:-}" ] && BUDGET[$s]=${!v}
@@ -261,6 +381,7 @@ plan_builds() {
         l2 | selftest) [ -z "${BUILD_WANT[l2]:-}" ] && build_start l2 tests/commands/main.roc ;;
         l1) rm -rf "$WORK/l1"; mkdir -p "$WORK/l1"
             while read -r t; do [ -n "$t" ] && build_start "l1-$(basename "$t" .roc)" "$t"; done < <(l1_targets) ;;
+        wbuild) build_start "worker.$$" worker/main.roc ;;
         l3) build_start tln cli/main.roc; build_start fxprobe cli/fxprobe.roc; build_start flowprobe cli/flowprobe.roc ;;
         esac
     done
@@ -294,6 +415,8 @@ for s in "${STEPS[@]}"; do
     rc=$?
     [ "$s" = check ] && [ "${STEPS[0]}" = check ] && start_builds
     RAW[$s]=$(awk -v a="$(date +%s.%N)" -v b="$start" 'BEGIN { printf "%.3f", a - b }')
+    # wbuild: the time of the step is the time of the build itself (it runs in the background from the start of the run), not the wait that is left.
+    [ "$s" = wbuild ] && [ -f "$LOGS/build-worker.$$.sec" ] && RAW[$s]=$(cat "$LOGS/build-worker.$$.sec")
     TIME[$s]=$(printf '%.1f' "${RAW[$s]}")
     if [ $rc -eq 0 ]; then
         RESULT[$s]=pass

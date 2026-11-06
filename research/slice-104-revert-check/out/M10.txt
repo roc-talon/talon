@@ -1,0 +1,10 @@
+
+── ✗ fail ────────────────────────── packages/records/tests/ProblemTest.roc:71:1
+
+expect Problem.decode("{\"type\":\"/errors/teapot\",\"title\":\"Teapot\",\"status\":418,\"detail\":\"short\",\"minimum\":\"1.0.0\"}") == Ok({ type_text: "/errors/teapot", title: "Teapot", status: 418, detail: "short", extra: Minimum("1.0.0") })
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 38 tests in 587.7 ms.:
+    37 passed
+    1 failed
+    0 compiler errors

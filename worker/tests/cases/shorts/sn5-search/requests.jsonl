@@ -1,0 +1,8 @@
+{"method": "GET", "path": "/v1/packages?q=ranked"}
+{"method": "GET", "path": "/v1/packages?q=ranked"}
+{"method": "GET", "path": "/v1/packages?q=RANKED&x=1"}
+{"method": "GET", "path": "/v1/packages?q=roc-ranked"}
+{"method": "GET", "path": "/v1/packages?q=zzzq"}
+{"method": "GET", "path": "/v1/packages?q=zzzq", "headers": {"if-none-match": "\"454eea274ef715bed0aef364fec823e0\""}}
+{"method": "GET", "path": "/v1/packages?q=zzzq", "headers": {"if-none-match": "\"454eea274ef715bed0aef364fec823e0\"", "cache-control": "no-cache"}}
+{"method": "GET", "path": "/v1/packages?q=zzzq&unknown=1"}

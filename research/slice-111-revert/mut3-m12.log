@@ -1,0 +1,30 @@
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:300:1
+
+expect
+    [
+        link_member("evil", '2', "/etc/passwd"),
+        link_member("hard", '1', "main.roc"),
+        link_member("dev", '3', ""),
+        link_member("fifo", '6', ""),
+        member("contig", '7', "x".to_utf8()),
+    ].map(|m| read(with_extra(m)))
+        == [
+            Err(NotAFile({ path: "evil", kind: Symlink })),
+            Err(NotAFile({ path: "hard", kind: HardLink })),
+            Err(NotAFile({ path: "dev", kind: Other('3') })),
+            Err(NotAFile({ path: "fifo", kind: Other('6') })),
+            Err(NotAFile({ path: "contig", kind: Other('7') })),
+        ]
+
+Ran 33 tests in 1160.0 ms.:
+    32 passed
+    1 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2701 ms)
+PASS archive/pu38-made-kinds (2608 ms)
+PASS archive/pu38-paths-and-header (2679 ms)
+PASS archive/pu38-real-bundles (2635 ms)
+PASS archive/pu38-size (6599 ms)
+PASS archive/pu38-window (2574 ms)
+w2: 6 passed, 0 failed

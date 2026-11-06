@@ -1,0 +1,5 @@
+GET https://api.github.com/repos/acme/old
+GET https://api.github.com/repositories/100
+GET https://api.github.com/repos/acme/old/releases/tags/1.0.0
+GET https://github.com/acme/old/releases/download/1.0.0/DMz7tEPCZb5DaWENfxQuB2NWFBhRNaSEbYnxKLmnqaqV.tar.zst
+GET https://raw.githubusercontent.com/acme/old/1.0.0/.roc-version

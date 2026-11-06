@@ -52,7 +52,7 @@ CacheClean :: [].{
 clean_flow! : Fx, Args, Clean.Plan => Try(Clean.Done, Fail)
 clean_flow! = |fx, args, plan| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	found = CacheClean.measure!(fx, roots, plan.all)
 	done = { all: plan.all, outcome: Removed, paths: found.paths, sizes: found.sizes }
 	if found.paths.is_empty() {

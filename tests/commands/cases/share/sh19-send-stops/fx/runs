@@ -1,0 +1,5 @@
+# R-SH4, Q458: 501 rows make 2 batches. Runs 1 to 3: the first request gets a 429, a 503 busy, no answer: the send stops, no second request, the rows stay. Run 4: the first gets a 422 (the 500 rows leave, nothing counted), so the second request goes (row 501), a 201: sent 1.
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0

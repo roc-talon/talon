@@ -1,0 +1,46 @@
+── ● unused variable ──────────────────────────────── lib/ArchiveRead.roc:281:16
+
+Variable seen is defined here and then never used.
+
+check_entry = |seen, e| {
+               ^^^^
+
+If you don't need this variable, prefix it with an underscore like _seen to
+suppress this warning.
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:275:1
+
+expect
+    [
+        link_member("evil", '2', "/etc/passwd"),
+        link_member("hard", '1', "main.roc"),
+        link_member("dev", '3', ""),
+        link_member("fifo", '6', ""),
+        file("Zeta.roc", "again"),
+    ].map(|m| read(with_extra(m)))
+        == [
+            Err(NotAFile({ path: "evil", kind: Symlink })),
+            Err(NotAFile({ path: "hard", kind: HardLink })),
+            Err(NotAFile({ path: "dev", kind: Other('3') })),
+            Err(NotAFile({ path: "fifo", kind: Other('6') })),
+            Err(Duplicate("Zeta.roc")),
+        ]
+
+Ran 27 tests in 1300.0 ms.:
+    26 passed
+    1 failed
+    0 compiler errors
+── ● unused variable ──────────────────────────────── lib/ArchiveRead.roc:281:16
+
+Variable seen is defined here and then never used.
+
+check_entry = |seen, e| {
+               ^^^^
+
+If you don't need this variable, prefix it with an underscore like _seen to
+suppress this warning.
+
+0 errors and 1 warning found in 1m 23s while successfully building:
+
+    archive-test.wasm

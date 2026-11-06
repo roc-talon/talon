@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -57,6 +59,8 @@ read_files $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNU
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -102,6 +106,8 @@ probes 1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
 env_all
 clock
 cwd

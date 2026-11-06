@@ -1,0 +1,6 @@
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1,\"first\":1,\"skipped\":[]}"}
+{"status":502,"problem":{"type":"/errors/upstream","status":502,"detail":"the GitHub installation token request failed with status 403"}}
+{"status":502,"problem":{"type":"/errors/upstream","status":502,"detail":"the GitHub installation token answer is not valid"}}
+{"status":502,"problem":{"type":"/errors/upstream","status":502,"detail":"the GitHub installation token request failed with status 500"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"json_len":{"toolchains":5}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1,\"first\":1,\"skipped\":[]}"}

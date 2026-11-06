@@ -1,0 +1,1 @@
+tln: error[network]: the answer of the registry http://127.0.0.1:9 is not a closure answer: the release https://github.com/someone/roc-json/releases/download/1.1.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst has the log index 41, above the log size 40

@@ -1,0 +1,13 @@
+PASS reconcile/pu21-poll-job (2599 ms)
+PASS reconcile/pu23-list (4764 ms)
+PASS reconcile/pu23-pages (3008 ms)
+PASS reconcile/pu24-missing-again (3022 ms)
+PASS reconcile/pu25-reserve (2478 ms)
+PASS reconcile/pu31-repo-etag (2741 ms)
+PASS reconcile/pu36-overlap (2402 ms)
+PASS reconcile/pu36-state-guard (2367 ms)
+PASS reconcile/pu37-backoff (2296 ms)
+PASS reconcile/pu37-etag-effects (2072 ms)
+PASS reconcile/tp18-rename (2103 ms)
+PASS reconcile/tp9-transfer (573 ms)
+w2: 12 passed, 0 failed

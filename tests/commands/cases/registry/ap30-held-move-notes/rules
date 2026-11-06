@@ -1,0 +1,4 @@
+R-AP29 R-AP30 R-AP16 R-SP24 (slice 206e4, Design Q408): run 1 of registry/sp24-update-held-move (a held move: the first answer, then the second query) with `checked` in both answers.
+First answer: acme/json stale 5 hours ago, acme/pfx fresh (2 days old time), acme/yaml stale 12 minutes ago. Second answer: acme/json stale 2 days ago, acme/pfx stale with a null time.
+One note for each repository, from the stale items of both answers: acme/json: the older time (the second answer): `2d`; acme/pfx: the fresh item and the stale item: the stale one, `not checked since its first ingest`; acme/yaml: only in the first answer: `12m`. Sorted by name. Exit code 0.
+Run 2: the same with --json: `data.notes` and `data.index_notes` have the 3 elements in that order (Q407, Q408).

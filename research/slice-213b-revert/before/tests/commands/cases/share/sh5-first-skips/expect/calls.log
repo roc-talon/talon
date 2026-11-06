@@ -1,0 +1,46 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+args
+env_all
+platform
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/share/talon/bin $HOME/.local/bin
+args
+env_all
+clock
+cwd
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+path_roc
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+args
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all
+args
+env_all
+env_all

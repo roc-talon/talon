@@ -1,0 +1,5 @@
+env_all
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-05-2222222","to":"nightly-2026-10-05-2222222"},"groups":[{"group":"github.com/someone/roc-json/releases/download/{v}/","series":"1"},{"group":"github.com/roc-lang/basic-cli/releases/download/{v}/"}],"hashes":["2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp"]}

@@ -1,0 +1,2 @@
+# R-SH9, R-AP38, R-SH13, R-SE15: logout with a live JWT. The clock is read (a JWT past its time is not sent), then DELETE /v1/tokens with Authorization: Bearer <JWT> and no Talon-Contributor. After the 204 the file is written under its lock: token, token_expires_at and account are null; the id, the totals and the times stay. config.toml (share = true) is not changed.
+share logout

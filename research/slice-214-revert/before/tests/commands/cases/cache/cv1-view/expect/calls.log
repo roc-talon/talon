@@ -1,0 +1,45 @@
+args
+env_all
+args
+env_all
+args
+env_all
+args
+env_all
+args
+env_all
+args
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+args
+env_all
+list_dirs $HOME/.cache/roc-builds
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234
+args
+args
+args
+env_all
+list_dirs $HOME/h4/.cache/roc
+tree_info $HOME/h4/.cache/roc/talon/index $HOME/h4/.cache/roc/talon/x $HOME/h4/.cache/roc/packages
+args
+env_all
+list_dirs $HOME/h4/.cache/roc
+tree_info $HOME/h4/.cache/roc/talon/index $HOME/h4/.cache/roc/talon/x $HOME/h4/.cache/roc/packages
+args
+env_all
+list_dirs $HOME/h5/.cache/roc
+tree_info $HOME/h5/.cache/roc/talon/index $HOME/h5/.cache/roc/talon/x $HOME/h5/.cache/roc/packages
+args
+env_all
+list_dirs $HOME/h5/.cache/roc
+tree_info $HOME/h5/.cache/roc/talon/index $HOME/h5/.cache/roc/talon/x $HOME/h5/.cache/roc/packages
+args
+env_all
+list_dirs $HOME/h2/.cache/roc
+tree_info $HOME/h2/.cache/roc/talon/index $HOME/h2/.cache/roc/talon/x $HOME/h2/.cache/roc/packages $HOME/h2/.cache/roc/compat-ten

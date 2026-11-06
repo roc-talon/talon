@@ -1,0 +1,7 @@
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=\"utf-8\""},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=\"UTF-8\""},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; foo=bar"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=utf-8; foo=bar"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; foo=bar; charset=utf-8"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; charset=\"latin-1\""},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json; foo=bar; charset=latin-1"},"body":"{}"}

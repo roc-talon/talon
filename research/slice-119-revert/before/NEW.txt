@@ -1,0 +1,7 @@
+worker/lib/Reconcile.roc
+worker/ReconcileCron.roc
+worker/tests/unit/ReconcileTest.roc
+worker/tests/tools/mk-reconcile.mjs
+worker/tests/cases/reconcile/
+docs/slices/119-reconcile.md
+research/slice-119/claim-probe.mjs

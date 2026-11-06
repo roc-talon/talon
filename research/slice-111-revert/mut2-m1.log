@@ -1,0 +1,15 @@
+FAIL archive/pu38-hash-and-end (2234 ms)
+    request 1: status: expected 422, got 200
+    request 1: problem: content-type: expected "application/problem+json", got "application/json"
+    request 1: problem.type: expected "/errors/not-a-candidate", got missing
+    request 1: problem.detail: expected "the BLAKE3 hash of the asset is EkFUp47m67vbivqsR14Qy8X2eWjUzEScVrzrsAPoBWqk, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got missing
+    request 1: problem.status: expected 200 (the HTTP status), got missing
+    request 2: problem.detail: expected "the BLAKE3 hash of the asset is D3QxgTkm8TZmzbNRkku6cKi4sYBNupYkYkq5kDaFLWP3, not the hash EkFUp47m67vbivqsR14Qy8X2eWjUzEScVrzrsAPoBWqk of the URL", got "the asset is not a valid zstd stream: the stream ends inside a frame"
+    request 8: problem.detail: expected "the BLAKE3 hash of the asset is 7rYJKSRKAMLjwvzfVwJk32Hm1ZyiG5zdtWkmugDZQeaj, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got "the archive has a symbolic link, not a file: evil"
+PASS archive/pu38-made-kinds (2155 ms)
+PASS archive/pu38-paths-and-header (2229 ms)
+PASS archive/pu38-real-bundles (2175 ms)
+FAIL archive/pu38-size (4102 ms)
+    request 3: problem.detail: expected "the BLAKE3 hash of the asset is 5YNMkaSqDHek9Znxz2GosTRNMvBGubPoxAgzQ42qgSw9, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got "the asset is not a valid zstd stream: a damaged frame"
+PASS archive/pu38-window (2152 ms)
+w2: 4 passed, 2 failed

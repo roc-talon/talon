@@ -1,0 +1,1 @@
+R-SH4 R-PUB4 R-SH2 (slice 221, Design Q518): sharing is on (share = true, a registry, no CI, no DO_NOT_TRACK) and the queue has a row, but `tln publish` does not send the queue: the calls end with the publish request (no queue_rows query, no compat request). The run has CI empty, so the first-run gate reads the terminal (`tty`, a fake that is no terminal) and asks nothing.

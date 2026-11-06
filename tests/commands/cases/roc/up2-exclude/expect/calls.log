@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 read_files $HOME/.config/talon/config.toml
 clock
 platform
@@ -44,6 +45,9 @@ write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
 args
 env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
 read_files $HOME2/.config/talon/config.toml
 clock
 platform
@@ -56,7 +60,6 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
-tty
 ask "Download 1 compiler, 73.0 MB: nightly-2026-10-18-5349569? [Y/n] "
 lock $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569 nowait: held
 list_dirs $HOME2/.cache/roc/toolchains
@@ -89,6 +92,7 @@ read_files $HOME2/.config/talon/config.toml
 write_atomic $HOME2/.config/talon/config.toml
 unlock $HOME2/.config/talon/config.toml
 args
+env_all
 env_all
 read_files $HOME3/.config/talon/config.toml
 clock
@@ -134,6 +138,7 @@ write_atomic $HOME3/.config/talon/config.toml
 unlock $HOME3/.config/talon/config.toml
 args
 env_all
+env_all
 read_files $HOME4/.config/talon/config.toml
 clock
 platform
@@ -152,6 +157,7 @@ read_files $HOME4/.config/talon/config.toml
 write_atomic $HOME4/.config/talon/config.toml
 unlock $HOME4/.config/talon/config.toml
 args
+env_all
 env_all
 read_files $HOME5/.config/talon/config.toml
 clock
@@ -196,6 +202,7 @@ read_files $HOME5/.config/talon/config.toml
 write_atomic $HOME5/.config/talon/config.toml
 unlock $HOME5/.config/talon/config.toml
 args
+env_all
 env_all
 read_files $HOME6/.config/talon/config.toml
 clock

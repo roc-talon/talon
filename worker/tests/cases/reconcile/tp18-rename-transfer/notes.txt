@@ -1,0 +1,2 @@
+1: run 1: the claimed row acme/t gets R-TP9 row 2 first (owner id 81, event transfer, seq 2), then moved with the successor acme/t2 (event rename, seq 3). The new row of acme/t2 has the ids of the read (800, 81) and ONE event rename. Its repo_checks row: now + 1 h. 1 + 1 D1 calls
+2: run 2, 1 h later: both rows are due (acme/t moved, acme/t2), the same read: no event, no identity write, only the 2 passes. 1 + 2 D1 calls

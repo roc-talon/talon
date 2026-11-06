@@ -1,0 +1,12 @@
+== closure free-empty group=github.com/someone/roc-json/releases/download/{v}/
+exit 10
+== closure group=github.com/someone/roc-json/releases/download/{v}/
+exit 15
+== closure group=github.com/someone/roc-json/releases/download/{v}/
+exit 1
+== closure group=github.com/someone/roc-json/releases/download/{v}/
+exit 15
+== closure group=github.com/someone/roc-json/releases/download/{v}/
+exit 15
+== closure group=github.com/someone/roc-json/releases/download/{v}/
+exit 15

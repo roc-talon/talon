@@ -1,0 +1,410 @@
+[
+ {
+  "note": "R-AP17 held N3: E is the epoch N3 to N1; nearest: bot over author (R-EF3), then the code results only (R-EP1)",
+  "params": [
+   "[]",
+   "[10,11]",
+   5490578817027,
+   5490578817027
+  ],
+  "expect": {
+   "artifacts": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    }
+   ],
+   "deps": [],
+   "targets": [],
+   "releases": [],
+   "unknown": [],
+   "checked": [],
+   "repos": [],
+   "log_size": [
+    {
+     "log_size": 0
+    }
+   ],
+   "epochs": [
+    {
+     "target": "any",
+     "from": "nightly-2026-01-01-0000003",
+     "to": "nightly-2026-01-01-0000001"
+    }
+   ],
+   "runs": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000003",
+     "to": "nightly-2026-01-01-0000003"
+    },
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 1,
+     "error_digest": "d1",
+     "from": "nightly-2026-01-01-0000001",
+     "to": "nightly-2026-01-01-0000001"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000001",
+     "to": "nightly-2026-01-01-0000001"
+    }
+   ],
+   "nearest": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "nightly": "nightly-2026-01-01-0000002",
+     "side": "before"
+    },
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "nightly": "nightly-2026-01-02-0000004",
+     "side": "after"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 1,
+     "result": 1,
+     "error_digest": "e1",
+     "nightly": "nightly-2025-12-31-0000009",
+     "side": "before"
+    }
+   ],
+   "hints": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "nightly": "nightly-2026-01-01-0000003",
+     "target": "any",
+     "pass_count": 3,
+     "fail_count": 1,
+     "crash_count": 0
+    }
+   ]
+  }
+ },
+ {
+  "note": "R-AP60: a from that is no nightly of toolchains is the start of the domain; P is not in the order",
+  "params": [
+   "[]",
+   "[10,11]",
+   5490578817029,
+   5490578817026
+  ],
+  "expect": {
+   "artifacts": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    }
+   ],
+   "deps": [],
+   "targets": [],
+   "releases": [],
+   "unknown": [],
+   "checked": [],
+   "repos": [],
+   "log_size": [
+    {
+     "log_size": 0
+    }
+   ],
+   "epochs": [],
+   "runs": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2025-12-31-0000009",
+     "to": "nightly-2026-01-01-0000002"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 0,
+     "result": 2,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000002",
+     "to": "nightly-2026-01-01-0000002"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 1,
+     "result": 1,
+     "error_digest": "e1",
+     "from": "nightly-2025-12-31-0000009",
+     "to": "nightly-2025-12-31-0000009"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 1,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000002",
+     "to": "nightly-2026-01-01-0000002"
+    }
+   ],
+   "nearest": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "nightly": "nightly-2026-01-01-0000003",
+     "side": "after"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "nightly": "nightly-2026-01-01-0000001",
+     "side": "after"
+    }
+   ],
+   "hints": []
+  }
+ },
+ {
+  "note": "R-AP61: from after to is an empty window",
+  "params": [
+   "[]",
+   "[10,11]",
+   5490847252484,
+   5490578817026
+  ],
+  "expect": {
+   "artifacts": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    }
+   ],
+   "deps": [],
+   "targets": [],
+   "releases": [],
+   "unknown": [],
+   "checked": [],
+   "repos": [],
+   "log_size": [
+    {
+     "log_size": 0
+    }
+   ],
+   "epochs": [],
+   "runs": [],
+   "nearest": [],
+   "hints": []
+  }
+ },
+ {
+  "note": "R-AP16: no window is all compilers; R-AP58: X passes on N0, N2, N3 with no digest: one run (IS)",
+  "params": [
+   "[]",
+   "[10,11]",
+   null,
+   null
+  ],
+  "expect": {
+   "artifacts": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 1
+    }
+   ],
+   "deps": [],
+   "targets": [],
+   "releases": [],
+   "unknown": [],
+   "checked": [],
+   "repos": [],
+   "log_size": [
+    {
+     "log_size": 0
+    }
+   ],
+   "epochs": [
+    {
+     "target": "any",
+     "from": "nightly-2026-01-01-0000003",
+     "to": "nightly-2026-01-01-0000001"
+    }
+   ],
+   "runs": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2025-12-31-0000009",
+     "to": "nightly-2026-01-01-0000003"
+    },
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 1,
+     "error_digest": "d1",
+     "from": "nightly-2026-01-01-0000001",
+     "to": "nightly-2026-01-01-0000001"
+    },
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-02-0000004",
+     "to": "nightly-2026-01-02-0000004"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 0,
+     "result": 2,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000002",
+     "to": "nightly-2026-01-01-0000002"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 0,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000001",
+     "to": "nightly-2026-01-01-0000001"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 0,
+     "result": 3,
+     "error_digest": null,
+     "from": "nightly-2026-01-02-0000004",
+     "to": "nightly-2026-01-02-0000004"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 1,
+     "result": 1,
+     "error_digest": "e1",
+     "from": "nightly-2025-12-31-0000009",
+     "to": "nightly-2025-12-31-0000009"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 1,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-01-0000002",
+     "to": "nightly-2026-01-01-0000002"
+    },
+    {
+     "hash": "0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B0B",
+     "target": "any",
+     "source": 1,
+     "result": 0,
+     "error_digest": null,
+     "from": "nightly-2026-01-02-0000004",
+     "to": "nightly-2026-01-02-0000004"
+    }
+   ],
+   "nearest": [],
+   "hints": [
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "nightly": "nightly-2026-01-01-0000003",
+     "target": "any",
+     "pass_count": 3,
+     "fail_count": 1,
+     "crash_count": 0
+    },
+    {
+     "hash": "0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A0A",
+     "nightly": "nightly-2026-01-01-0000001",
+     "target": "any",
+     "pass_count": 0,
+     "fail_count": 0,
+     "crash_count": 1
+    }
+   ]
+  }
+ }
+]

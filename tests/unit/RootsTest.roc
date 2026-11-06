@@ -1,3 +1,4 @@
+import lib.Fail
 import lib.Item
 import lib.Lock
 import lib.Roots
@@ -41,6 +42,177 @@ expect {
 		),
 	]
 	bad = rows.keep_if(|(_, env, want)| view(Roots.from_env(env)) != want).map(|(label, env, want)| (label, want, view(Roots.from_env(env))))
+	dbg bad
+	bad == []
+}
+
+# R-LY5 R-LY6 R-LY7 R-CR1 (slice 088): the Windows roots. The cache is `%LOCALAPPDATA%\roc`, the config is `%APPDATA%\talon`, the data is `%LOCALAPPDATA%\talon`.
+# A Windows path has `\` between its parts, and a `\` at the end of a variable is dropped (as `Setup.bin_dir`, R-LY8). `HOME` is not read on Windows: with no HOME the run does not fail.
+# `ROC_CACHE_DIR` gives the build root as on Linux, and the packages root ignores it (R-CR1). Another system (Linux, macOS, or a name that is not known) gives the roots of `from_env`.
+# Not tested (the design does not say, the questions of the slice file): `XDG_*` on Windows, a missing `LOCALAPPDATA` or `APPDATA`, an empty value.
+expect {
+	local = "C:\\Users\\u\\AppData\\Local"
+	roaming = "C:\\Users\\u\\AppData\\Roaming"
+	win = [("LOCALAPPDATA", local), ("APPDATA", roaming), ("USERPROFILE", "C:\\Users\\u")]
+	rows = [
+		(
+			"Windows, no HOME and no XDG",
+			Windows,
+			win,
+			Ok(("${local}\\roc", "${local}\\roc\\packages", "${local}\\roc", "${roaming}\\talon", "${local}\\talon")),
+		),
+		(
+			"Windows, a `\\` at the end of the variables",
+			Windows,
+			[("LOCALAPPDATA", "${local}\\"), ("APPDATA", "${roaming}\\")],
+			Ok(("${local}\\roc", "${local}\\roc\\packages", "${local}\\roc", "${roaming}\\talon", "${local}\\talon")),
+		),
+		(
+			"Windows, ROC_CACHE_DIR: packages ignore it (R-CR1)",
+			Windows,
+			win.append(("ROC_CACHE_DIR", "D:\\build")),
+			Ok(("${local}\\roc", "${local}\\roc\\packages", "D:\\build", "${roaming}\\talon", "${local}\\talon")),
+		),
+		(
+			"Windows, HOME is set (git bash): the Windows form wins",
+			Windows,
+			win.append(("HOME", "/home/u")),
+			Ok(("${local}\\roc", "${local}\\roc\\packages", "${local}\\roc", "${roaming}\\talon", "${local}\\talon")),
+		),
+		(
+			"Windows, XDG_CACHE_HOME is taken as it is, the join is `\\` (R-LY5, as roc)",
+			Windows,
+			win.append(("XDG_CACHE_HOME", "D:\\cache")),
+			Ok(("D:\\cache\\roc", "D:\\cache\\roc\\packages", "D:\\cache\\roc", "${roaming}\\talon", "${local}\\talon")),
+		),
+		(
+			"Linux with the Windows variables set: the form of from_env",
+			Linux,
+			win.append(("HOME", "/home/u")),
+			Ok(("/home/u/.cache/roc", "/home/u/.cache/roc/packages", "/home/u/.cache/roc", "/home/u/.config/talon", "/home/u/.local/share/talon")),
+		),
+		(
+			"macOS and an unknown system have the form of Linux",
+			Macos,
+			[("HOME", "/Users/u"), ("XDG_DATA_HOME", "/x/data")],
+			Ok(("/Users/u/.cache/roc", "/Users/u/.cache/roc/packages", "/Users/u/.cache/roc", "/Users/u/.config/talon", "/x/data/talon")),
+		),
+		(
+			"an unknown system with no HOME is the failure of from_env",
+			Other("plan9"),
+			win,
+			Err(NoRoots),
+		),
+	]
+	bad = rows.keep_if(|(_, os, env, want)| view(Roots.from_env_on(os, env)) != want).map(|(label, os, env, want)| (label, want, view(Roots.from_env_on(os, env))))
+	dbg bad
+	bad == []
+}
+
+# R-LY5 (slice 088, manager answers Q-W1, Q-W3, Q-W4, cache only): the order of the cache root on Windows is as roc (`getRocCacheDir`): `XDG_CACHE_HOME`, then `LOCALAPPDATA`, then `HOME` (`<HOME>\.cache\roc`), else the failure of kind `Environment` with `LOCALAPPDATA is not set`.
+# Only the cache root is checked: the config and data roots with these variables missing are open questions of the slice file.
+expect {
+	cache = |env| match Roots.from_env_on(Windows, env) {
+		Ok(roots) => Ok(roots.cache)
+		Err(fail) => Err(Fail.line(fail))
+	}
+	rows = [
+		("XDG_CACHE_HOME first", [("XDG_CACHE_HOME", "D:\\c"), ("LOCALAPPDATA", "C:\\L"), ("HOME", "C:\\h")], Ok("D:\\c\\roc")),
+		("LOCALAPPDATA before HOME", [("LOCALAPPDATA", "C:\\L"), ("HOME", "C:\\h")], Ok("C:\\L\\roc")),
+		("HOME fallback", [("HOME", "C:\\h")], Ok("C:\\h\\.cache\\roc")),
+	]
+	bad = rows.keep_if(|(_, env, want)| cache(env) != want).map(|(label, env, want)| (label, want, cache(env)))
+	dbg bad
+	none = match Roots.from_env_on(Windows, [("PATH", "C:\\bin")]) {
+		Ok(_) => Bool.False
+		Err(fail) => Fail.line(fail).contains("LOCALAPPDATA is not set")
+	}
+	bad == [] and none
+}
+
+# R-LY10 R-LY5 R-LY6 R-LY7 (slice 088e, Design Q214): on Windows, a root variable that is not absolute counts as not set, as `XDG_CACHE_HOME` on Linux.
+# The variables are `XDG_CACHE_HOME`, `LOCALAPPDATA`, `APPDATA` and `HOME`. Absolute on Windows: a drive letter, `:`, and `\` or `/` (any case of the letter), or a UNC prefix `\\server\share`.
+# A value that is not absolute is skipped, and the next rule of R-LY5 to R-LY7 applies. The row shows (cache, config, data); `Err` is the failure of `from_env_on`.
+# Not tested (questions of the slice file): `ROC_CACHE_DIR` that is not absolute, a UNC prefix with `/`, a value `C:\` with the `\` dropped, `XDG_CONFIG_HOME` and `XDG_DATA_HOME` on Windows.
+expect {
+	local = "C:\\Users\\u\\AppData\\Local"
+	roaming = "C:\\Users\\u\\AppData\\Roaming"
+	three = |env| match Roots.from_env_on(Windows, env) {
+		Ok(roots) => Ok((roots.cache, roots.config, roots.data))
+		Err(fail) => Err(Fail.line(fail))
+	}
+	ok_all = Ok(("${local}\\roc", "${roaming}\\talon", "${local}\\talon"))
+	base = [("LOCALAPPDATA", local), ("APPDATA", roaming)]
+	rows = [
+		("XDG_CACHE_HOME `D:cache` (drive-relative) is not set", base.append(("XDG_CACHE_HOME", "D:cache")), ok_all),
+		("XDG_CACHE_HOME `cache\\x` (relative) is not set", base.append(("XDG_CACHE_HOME", "cache\\x")), ok_all),
+		("XDG_CACHE_HOME `/x/cache` (no drive) is not set", base.append(("XDG_CACHE_HOME", "/x/cache")), ok_all),
+		("XDG_CACHE_HOME with a lower case drive and `/` is absolute: it is kept", base.append(("XDG_CACHE_HOME", "d:/cache")), Ok(("d:/cache\\roc", "${roaming}\\talon", "${local}\\talon"))),
+		(
+			"LOCALAPPDATA `x\\y` is not set: HOME gives the cache and the data (R-LY5, R-LY7)",
+			[("LOCALAPPDATA", "x\\y"), ("APPDATA", roaming), ("HOME", "C:\\h")],
+			Ok(("C:\\h\\.cache\\roc", "${roaming}\\talon", "C:\\h\\.local\\share\\talon")),
+		),
+		(
+			"APPDATA `C:x` is not set: HOME gives the config (R-LY6)",
+			[("LOCALAPPDATA", local), ("APPDATA", "C:x"), ("HOME", "C:\\h")],
+			Ok(("${local}\\roc", "C:\\h\\.config\\talon", "${local}\\talon")),
+		),
+		(
+			"HOME `/home/u` (git bash, no drive) is not set: LOCALAPPDATA and APPDATA are used",
+			[("HOME", "/home/u"), ("LOCALAPPDATA", local), ("APPDATA", roaming)],
+			ok_all,
+		),
+		("HOME `C:h` is not set, and no other variable: the failure", [("HOME", "C:h")], Err("tln: error[environment]: LOCALAPPDATA is not set")),
+		(
+			"a UNC prefix is absolute",
+			[("LOCALAPPDATA", "\\\\srv\\share\\L"), ("APPDATA", "\\\\srv\\share\\R")],
+			Ok(("\\\\srv\\share\\L\\roc", "\\\\srv\\share\\R\\talon", "\\\\srv\\share\\L\\talon")),
+		),
+	]
+	bad = rows.keep_if(|(_, env, want)| three(env) != want).map(|(label, env, want)| (label, want, three(env)))
+	dbg bad
+	# On Linux the rule of `from_env` is unchanged: a value must start with `/`.
+	linux = match Roots.from_env_on(Linux, [("HOME", "/home/u"), ("XDG_CACHE_HOME", "D:\\cache")]) {
+		Ok(roots) => roots.cache == "/home/u/.cache/roc"
+		Err(_) => Bool.False
+	}
+	bad == [] and linux
+}
+
+# R-LY10 R-LY5 R-LY6 R-LY7 R-CR1 (slice 088f, Design Q216): the details of the Windows check. `ROC_CACHE_DIR` is a root variable: a relative value (`x\b`, `/x/b`, `C:b`) is not set, so the build root is the cache root; an absolute value is kept. `//srv/sh` is UNC and absolute, as `\\srv\sh`.
+# The check is before the `\` at the end is dropped: `C:\` is absolute and stays `C:` + `\roc` = `C:\roc` (if the `\` went first, `C:` would not be absolute). The row shows (cache, config, data, build).
+expect {
+	four = |env| match Roots.from_env_on(Windows, env) {
+		Ok(roots) => Ok((roots.cache, roots.config, roots.data, roots.build))
+		Err(fail) => Err(Fail.line(fail))
+	}
+	local = "C:\\Users\\u\\AppData\\Local"
+	roaming = "C:\\Users\\u\\AppData\\Roaming"
+	base = [("LOCALAPPDATA", local), ("APPDATA", roaming)]
+	same = Ok(("${local}\\roc", "${roaming}\\talon", "${local}\\talon", "${local}\\roc"))
+	rows = [
+		("ROC_CACHE_DIR `x\\b` (relative) is not set", base.append(("ROC_CACHE_DIR", "x\\b")), same),
+		("ROC_CACHE_DIR `/x/b` (no drive) is not set", base.append(("ROC_CACHE_DIR", "/x/b")), same),
+		("ROC_CACHE_DIR `C:b` (drive-relative) is not set", base.append(("ROC_CACHE_DIR", "C:b")), same),
+		("ROC_CACHE_DIR `D:\\b` is kept", base.append(("ROC_CACHE_DIR", "D:\\b")), Ok(("${local}\\roc", "${roaming}\\talon", "${local}\\talon", "D:\\b"))),
+		(
+			"`//srv/sh` is UNC and absolute",
+			[("LOCALAPPDATA", "//srv/sh"), ("APPDATA", "//srv/sh")],
+			Ok(("//srv/sh\\roc", "//srv/sh\\talon", "//srv/sh\\talon", "//srv/sh\\roc")),
+		),
+		(
+			"`C:\\` is absolute: the check is before the `\\` is dropped",
+			[("LOCALAPPDATA", "C:\\"), ("APPDATA", "C:\\")],
+			Ok(("C:\\roc", "C:\\talon", "C:\\talon", "C:\\roc")),
+		),
+		(
+			"a bare UNC root with a `\\` at the end is absolute",
+			[("LOCALAPPDATA", "\\\\srv\\sh\\"), ("APPDATA", "\\\\srv\\sh\\")],
+			Ok(("\\\\srv\\sh\\roc", "\\\\srv\\sh\\talon", "\\\\srv\\sh\\talon", "\\\\srv\\sh\\roc")),
+		),
+	]
+	bad = rows.keep_if(|(_, env, want)| four(env) != want).map(|(label, env, want)| (label, want, four(env)))
 	dbg bad
 	bad == []
 }

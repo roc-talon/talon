@@ -1,0 +1,5 @@
+Slice 103, case t2-sweep-guard (B0 to B7 and S2 to S10 of research/bot-set/ and research/d1-sweep/, on the integer tables and the codes of R-IK7).
+  R-MX8, R-MX4: BEFORE INSERT and BEFORE UPDATE triggers on sweeps. RAISE texts sweep-bound (bound above the log size), sweep-incomplete (a member of the bot set has no bot row on (nightly, target)), sweep-smaller (an UPDATE to a smaller bound). The upsert of a smaller bound is a no-op with no error.
+  R-RE8: only a bot row counts. An author row does not.
+  R-MX11: the bot set at a bound for a nightly. The newest live release of each series, in the window of 18 months before the published_at of the nightly, and the newest live release of each group. Packages and platforms only (kind 1 and 2, R-IK7). Live: log_index at most the bound, not yanked, withdrawn IS NULL.
+  R-RE6: a sweeps row changes only to a larger bound. R-RE7: the key is (nightly, target). R-RE4: toolchains has several rows for one nightly (G11).

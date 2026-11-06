@@ -1,0 +1,6 @@
+version	0	Roc compiler version nightly-2026-10-14-38a3029	-	-
+# the unbundle of run 1 gives a platform header; the unbundle of run 2 says that the hash is wrong (R-FE2)
+unbundle CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2.tar.zst	0	-	-	dir:{cwd}/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2;copy:{cwd}/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2/main.roc={w}/fx/pkgs/pfz.hdr
+unbundle 2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst	1	-	Error: Hash mismatch	-
+CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2.0123456789abcdef.tmp/CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2.tar.zst
+2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst	0	-	-	file:{w}/home/.cache/roc/packages/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.0123456789abcdef.tmp/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst

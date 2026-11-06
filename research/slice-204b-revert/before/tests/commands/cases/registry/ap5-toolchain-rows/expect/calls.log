@@ -1,0 +1,38 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+http_get http://127.0.0.1:9/v1/toolchains?after=11
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=14
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=14
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_10/toolchains.json
+http_get http://127.0.0.1:10/v1/toolchains?after=22
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_10/toolchains.json
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_11/toolchains.json
+delete $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_11/toolchains.json
+http_get http://127.0.0.1:11/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_11/toolchains.json
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_12/toolchains.json
+http_get http://127.0.0.1:12/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+http_get http://127.0.0.1:12/v1/toolchains?after=3
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_13/toolchains.json
+http_get http://127.0.0.1:13/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_14/toolchains.json
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_15/toolchains.json
+http_get http://127.0.0.1:15/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_10/toolchains.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_10

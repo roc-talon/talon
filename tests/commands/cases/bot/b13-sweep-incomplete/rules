@@ -1,0 +1,1 @@
+R-MX9 R-MX4 R-MX18 R-RE13 (slice 223, Q572): the first work list has 1 missing hash (log size 8). Probe, post with the sweep up to 8: 422 sweep-incomplete (nothing was written). Read the work list again: missing 2 hashes, log size 9. The hash with a row is not probed again; the new one is. A new token, a second post with both rows and the sweep up to 9: 201. The audit follows.

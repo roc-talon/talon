@@ -1,0 +1,17 @@
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":1}}
+{"status":200,"json_len":{"releases":0}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store","location":"/v1/artifacts/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"release":{"log_index":2,"provenance":["ingest"],"hash":"DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.1.0","url":"https://github.com/acme/lib/releases/download/1.1.0/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb.tar.zst","tag":"1.1.0","roc_version":null,"repo":"acme/lib","published_at":1792497600000,"yanked":false,"yank_reason":null,"withdrawn":null}}}
+{"status":200,"json_len":{"releases":2}}
+{"status":200,"json_len":{"releases":2}}
+{"status":200,"json_len":{"releases":2}}
+{"status":200,"json_len":{"releases":2}}
+{"status":200,"json_len":{"releases":0}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","location":null},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"release":{"log_index":2,"provenance":["ingest"],"hash":"DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.1.0","url":"https://github.com/acme/lib/releases/download/1.1.0/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb.tar.zst","tag":"1.1.0","roc_version":null,"repo":"acme/lib","published_at":1792497600000,"yanked":false,"yank_reason":null,"withdrawn":null}}}
+{"status":200,"json_len":{"releases":2}}

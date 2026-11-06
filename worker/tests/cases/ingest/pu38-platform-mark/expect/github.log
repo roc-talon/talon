@@ -1,0 +1,7 @@
+GET https://api.github.com/repos/acme/pfpkg
+GET https://api.github.com/repos/acme/pfpkg/releases/tags/1.0.0
+GET https://github.com/acme/pfpkg/releases/download/1.0.0/kR2CcAG469xZGavQQPRM7NXWDYzGNvQCdc1bMgKiDMs.tar.zst
+GET https://raw.githubusercontent.com/acme/pfpkg/1.0.0/.roc-version
+GET https://api.github.com/repos/acme/twopf
+GET https://api.github.com/repos/acme/twopf/releases/tags/1.0.0
+GET https://github.com/acme/twopf/releases/download/1.0.0/6sKD8B1jQSY8pG6xCEtTt9TgmrmmVQmeiNPambga1EPH.tar.zst

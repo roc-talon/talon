@@ -1,0 +1,2 @@
+# Q470, R-SH7, R-SH13, R-SH5: no share.json. The first read finds nothing, the file is made under its lock with a new id (3 random numbers: the id and the temp name; chmod 0600 before the rename), before the intro. POST /v1/tokens carries that id. Then the JWT is written to the file (the second write).
+share login

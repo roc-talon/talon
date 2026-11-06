@@ -82,7 +82,7 @@ ToolManageFlow :: [].{
 	machine! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
 	machine! = |fx| {
 		env = fx.env_all!()
-		roots = Roots.from_env(env)?
+		roots = Roots.of_run!(fx, env)?
 		net = Net.from_env(env)
 		now = Clock.now!(fx, env)?
 		machine = fx.platform!()
@@ -140,7 +140,7 @@ entry_of = |tool| { key: tool.key, name: tool.name, source: tool.source }
 # Step 2 of `list!`: the tools of `tools.json`. No clock, no platform.
 listing! : Fx => Try(List(ToolsJson.Tool), Fail)
 listing! = |fx| {
-	roots = Roots.from_env(fx.env_all!())?
+	roots = Roots.of_run!(fx, fx.env_all!())?
 	tools_file = Roots.item(roots, Item.ToolsJson)
 	ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })
 }
@@ -149,7 +149,7 @@ listing! = |fx| {
 removal! : Fx, Ref => Try(Done, Fail)
 removal! = |fx, ref| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	machine = fx.platform!()
 	bin = Setup.bin_dir({ os: machine.os, env })?
 	tools_file = Roots.item(roots, Item.ToolsJson)

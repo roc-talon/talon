@@ -1,0 +1,11 @@
+PASS archive/pu38-hash-and-end (2248 ms)
+PASS archive/pu38-made-kinds (2177 ms)
+PASS archive/pu38-paths-and-header (2223 ms)
+PASS archive/pu38-real-bundles (2185 ms)
+FAIL archive/pu38-size (5061 ms)
+    request 2: status: expected 422, got 200
+    request 2: problem: content-type: expected "application/problem+json", got "application/json"
+    request 2: problem.type: expected "/errors/not-a-candidate", got missing
+    request 2: problem.status: expected 200 (the HTTP status), got missing
+PASS archive/pu38-window (2170 ms)
+w2: 5 passed, 1 failed

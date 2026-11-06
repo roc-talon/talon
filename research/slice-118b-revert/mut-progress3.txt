@@ -1,0 +1,8 @@
+r1 exit=1 1 w2-fail-lines All (17) tests passed in 301.5 ms. w2: 17 passed, 1 failed 
+r2 exit=1 0 w2-fail-lines w2: 18 passed, 0 failed 
+r3 exit=1 0 w2-fail-lines w2: 18 passed, 0 failed 
+r4 exit=1 0 w2-fail-lines w2: 18 passed, 0 failed 
+r5 exit=1 1 w2-fail-lines All (17) tests passed in 294.7 ms. w2: 17 passed, 1 failed 
+r6 exit=1 1 w2-fail-lines All (17) tests passed in 293.8 ms. w2: 17 passed, 1 failed 
+r7 exit=1 1 w2-fail-lines All (17) tests passed in 293.4 ms. w2: 17 passed, 1 failed 
+r8 exit=0 0 w2-fail-lines All (17) tests passed in 251.9 ms. w2: 18 passed, 0 failed 

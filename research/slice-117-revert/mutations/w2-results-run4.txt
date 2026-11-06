@@ -1,0 +1,94 @@
+== totals-last-time-rows-only
+All (11) tests passed in 376.9 ms.
+PASS account/ap45-write-routes (1889 ms)
+FAIL account/ct10-tracker (3067 ms)
+PASS account/ct11-login-limit (2995 ms)
+PASS account/ct7-delete (3089 ms)
+PASS account/ct8-login (2971 ms)
+PASS account/ct8-login-refusals (2138 ms)
+PASS account/ct9-token-check (1597 ms)
+PASS account/ct9-tokens-after (1172 ms)
+w2: 7 passed, 1 failed
+== totals-last-time-keep
+with a compatible error type, but this function's return type is:
+Hint: The error types from all ? operators and the function body must be
+    11 passed
+    0 failed
+    0 compiler errors
+Compilation failed with 3 errors.
+with a compatible error type, but this function's return type is:
+Hint: The error types from all ? operators and the function body must be
+3 errors and 0 warnings found in 1m 57s while successfully building:
+== totals-last-time-incoming
+All (11) tests passed in 339.3 ms.
+PASS account/ap45-write-routes (2299 ms)
+PASS account/ct10-tracker (3377 ms)
+PASS account/ct11-login-limit (3346 ms)
+PASS account/ct7-delete (3375 ms)
+PASS account/ct8-login (3327 ms)
+PASS account/ct8-login-refusals (2515 ms)
+PASS account/ct9-token-check (1501 ms)
+PASS account/ct9-tokens-after (1136 ms)
+w2: 8 passed, 0 failed
+== leeway-0
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2195 ms)
+FAIL account/ct10-tracker (2309 ms)
+FAIL account/ct11-login-limit (2366 ms)
+FAIL account/ct7-delete (2305 ms)
+FAIL account/ct8-login (2306 ms)
+PASS account/ct8-login-refusals (2421 ms)
+FAIL account/ct9-token-check (981 ms)
+PASS account/ct9-tokens-after (990 ms)
+w2: 3 passed, 5 failed
+== limit-before-id
+All (11) tests passed in 399.9 ms.
+PASS account/ap45-write-routes (2690 ms)
+FAIL account/ct10-tracker (2764 ms)
+FAIL account/ct11-login-limit (2764 ms)
+FAIL account/ct7-delete (2763 ms)
+FAIL account/ct8-login (2763 ms)
+PASS account/ct8-login-refusals (2881 ms)
+FAIL account/ct9-token-check (1026 ms)
+PASS account/ct9-tokens-after (1035 ms)
+w2: 3 passed, 5 failed
+== iat-whole-seconds
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (3229 ms)
+FAIL account/ct10-tracker (3315 ms)
+FAIL account/ct11-login-limit (3310 ms)
+FAIL account/ct7-delete (3309 ms)
+FAIL account/ct8-login (3307 ms)
+PASS account/ct8-login-refusals (3417 ms)
+FAIL account/ct9-token-check (1142 ms)
+FAIL account/ct9-tokens-after (1173 ms)
+w2: 2 passed, 6 failed
+== revoked-le
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (3145 ms)
+FAIL account/ct10-tracker (3241 ms)
+FAIL account/ct11-login-limit (3240 ms)
+FAIL account/ct7-delete (3176 ms)
+FAIL account/ct8-login (3173 ms)
+PASS account/ct8-login-refusals (3376 ms)
+FAIL account/ct9-token-check (1218 ms)
+FAIL account/ct9-tokens-after (1289 ms)
+w2: 2 passed, 6 failed
+== totals-first-time-keep
+All (11) tests passed in 556.7 ms.
+PASS account/ap45-write-routes (2561 ms)
+FAIL account/ct10-tracker (2570 ms)
+FAIL account/ct11-login-limit (2579 ms)
+FAIL account/ct7-delete (2578 ms)
+FAIL account/ct8-login (2578 ms)
+PASS account/ct8-login-refusals (2717 ms)
+FAIL account/ct9-token-check (894 ms)
+PASS account/ct9-tokens-after (953 ms)
+w2: 3 passed, 5 failed
+done

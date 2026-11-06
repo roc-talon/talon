@@ -1,0 +1,1 @@
+R-MX4 R-MX1 R-AP10 R-AP39 R-AP6 R-OUT2 (slice 223): PUT of the tag answers 200 (known). The work list has no missing hash and no sweep row: no archive, no probe. POST /v1/compat has no row and the sweep up to the log size 8 (answer 200, written 0). The audit has no pair.

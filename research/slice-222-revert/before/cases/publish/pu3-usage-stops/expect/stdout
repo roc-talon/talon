@@ -1,0 +1,22 @@
+== publish --registry direct
+exit 2
+== publish --registry direct --offline
+exit 2
+== publish --offline
+exit 15
+== publish extra --offline
+exit 15
+== publish extra
+exit 2
+== publish extra env:GITHUB_REPOSITORY=
+exit 2
+== publish env:GITHUB_REPOSITORY=
+exit 2
+== publish env:GITHUB_REPOSITORY=acme/json/x
+exit 2
+== publish env:GITHUB_REF=refs/heads/main
+exit 2
+== publish env:GITHUB_REF=refs/heads/main env:ACTIONS_ID_TOKEN_REQUEST_URL=
+exit 2
+== publish env:ACTIONS_ID_TOKEN_REQUEST_URL=
+exit 2

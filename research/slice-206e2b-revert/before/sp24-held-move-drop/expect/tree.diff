@@ -1,0 +1,9 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,2 @@
++format	1
++fact	7fhUdr5pButQ8RG6Z9DSquPQiRuBsetQgfCa7AebQj7M	nightly-2026-10-14-38a3029	x64musl	pass		e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/u1/main.roc","last_use":1792065600}]}

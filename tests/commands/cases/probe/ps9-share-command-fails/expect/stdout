@@ -1,0 +1,5 @@
+== probe json --share --file p1/main.roc
+unit check of acme/json 2.1.0 on nightly-2026-10-14-38a3029: pass
+shared 0 facts of acme/json 2.1.0: 0 counted, 0 skipped by the registry
+  not shared: nightly-2026-10-14-38a3029 any: not sent
+exit 15

@@ -1,0 +1,4 @@
+== probe parser2 --range --share --file p4/main.roc
+acme/parser 1.2.0: no release of the compiler list has a real pass
+nothing to share
+exit 12

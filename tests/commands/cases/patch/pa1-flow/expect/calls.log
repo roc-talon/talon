@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -20,6 +22,8 @@ copy_tree $HOME/.cache/roc/packages/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm
 write_atomic $PROJECT/p1/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -36,20 +40,7 @@ read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/confi
 list_dirs $PROJECT/p1/.talon/patches/json
 args
 env_all
-clock
-cwd
-canonical $PROJECT/p1/main.roc
-list_dirs $PROJECT/p1
-list_dirs $PROJECT
-read_files $PROJECT/p1/talon.toml
-read_files $PROJECT/p1/main.roc
-canonical $PROJECT/p1/main.roc
-lock $HOME/.cache/roc/talon/projects.json nowait: held
-list_dirs $HOME/.cache/roc/talon
-read_files $HOME/.cache/roc/talon/projects.json
-unlock $HOME/.cache/roc/talon/projects.json
-read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
-args
+tty
 env_all
 clock
 cwd
@@ -66,6 +57,8 @@ unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -80,6 +73,25 @@ read_files $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+tty
 env_all
 clock
 cwd
@@ -98,6 +110,8 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/3nqZet4D6XXs8rmYGGBYJTHAiXPqhEBh6HYtHz6pggi3/main.roc $HOME/.cache/roc/packages/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm/main.roc $PROJECT/ut/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -129,6 +143,8 @@ copy_tree $HOME/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG 
 write_atomic $PROJECT/p2/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -149,6 +165,8 @@ copy_tree $HOME/.cache/roc/packages/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm
 write_atomic $PROJECT/p2/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -167,6 +185,8 @@ list_dirs $HOME/.cache/roc/packages
 list_dirs $HOME/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG $PROJECT/p2/.talon/patches/parser
 read_files $HOME/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/Parse.roc $HOME/.cache/roc/packages/PKAoTAzYaYbj8hqFiTCk2C7cZ1z3Jo6MPFRxt2bVLbG/main.roc $PROJECT/p2/.talon/patches/parser/Parse.roc $PROJECT/p2/.talon/patches/parser/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -195,6 +215,7 @@ sha256_file $PROJECT/p3/.talon/patches/json/keep.bin
 sha256_file $PROJECT/p3/.talon/patches/json/new.bin
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -220,6 +241,7 @@ sha256_file $PROJECT/p3/.talon/patches/json/data.bin
 sha256_file $PROJECT/p3/.talon/patches/json/keep.bin
 sha256_file $PROJECT/p3/.talon/patches/json/new.bin
 args
+env_all
 env_all
 clock
 cwd
@@ -242,6 +264,8 @@ copy_tree $HOME/.cache/roc/packages/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm
 write_atomic $PROJECT/p4/talon.toml
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p5/main.roc
@@ -257,6 +281,8 @@ write_atomic $HOME/.cache/roc/talon/projects.json
 unlock $HOME/.cache/roc/talon/projects.json
 read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME/.config/talon/config.toml
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -276,6 +302,8 @@ random
 list_dirs $HOME/.cache/roc/packages
 list_dirs $HOME/.cache/roc/packages/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm $PROJECT/p6/.talon/patches/json
 args
+env_all
+tty
 env_all
 clock
 cwd

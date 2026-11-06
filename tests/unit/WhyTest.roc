@@ -53,7 +53,7 @@ row_of = |id| match walked.rows.find_first(|r| r.id == id) {
 	Err(_) => crash "no such row"
 }
 
-# R-CM7 R-FL5 R-FL7 R-FL12 R-EC2 R-E4 (Q25): the operand of `why` is one name. No name and 2 names or more are a usage failure. The checks of `Opts.read` come first (the registry). A flag that `why` does not take
+# R-CM7 R-FL5 R-FL7 R-FL12 R-EC2 R-E4 Q499 (Q25): the operand of `why` is one name. No name and 2 names or more are a usage failure. The checks of `Opts.read` come first (the registry). A flag that `why` does not take
 # (`--strategy`, `--frozen`, `--tree`) stops in `Args.parse` (R-FL7): the failure is the one of the parser.
 expect {
 	view = |words| match Args.parse(words) {
@@ -69,7 +69,7 @@ expect {
 		(["why", "json", "--json", "--quiet", "--offline", "--file", "app/main.roc"], Ok("json")),
 		(["why"], Err("tln: error[usage]: tln why takes one name")),
 		(["why", "json", "parser"], Err("tln: error[usage]: tln why takes one name")),
-		(["why", "json", "--registry", "https://r.example"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		(["why", "json", "--registry", "https://r.example"], Ok("json")),
 		(["why", "json", "--strategy", "lowest"], Err("tln: error[usage]: flag '--strategy' is not for 'why'")),
 		(["why", "json", "--frozen"], Err("tln: error[usage]: flag '--frozen' is not for 'why'")),
 		(["why", "json", "--tree"], Err("tln: error[usage]: flag '--tree' is not for 'why'")),

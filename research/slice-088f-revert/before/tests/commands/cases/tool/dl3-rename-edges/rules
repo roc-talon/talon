@@ -1,0 +1,8 @@
+Slice 050c gap step, 2 edges of the `.del` renames of a tool on Windows (R-ST10, D8, Q-R1). The home is that of `tool/dl2-tool-windows`, with 2 tools: `foo` has its data file and its entry (`foo.exe`, the same text), `bar` has neither (a manifest entry whose files are gone). `fx/rename` says `exists .del`: a `rename!` whose target ends with `.del` gives `Exists` and moves nothing.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool rebuild bar` | no file exists, so no `.del` rename and no second `random!` (D8: the one `random!` is for the temp dir of the build). The files of `bar` are made. Exit 0 | R-ST10, D8 |
+| 2 | `tool rebuild foo` | under the lock the first rename (the data file to `foo.<hex>.del`) gives `Exists`: exit 18 `cannot move <from> to <to>: Exists`. Nothing is renamed, the old `foo.exe` files stay, `tools.json` is not written, the temp dir is deleted | R-ST10, R-CC2, R-CC6, Q-R1 |
+
+Slice 088b (test world, 2026-11-02, R-LY5 to R-LY7): the fake Windows has `LOCALAPPDATA` and `APPDATA` in its env (HOME form of the case: `{w}/home` or the `u<n>` dir), so the roots are `<LOCALAPPDATA>\roc` (cache), `<LOCALAPPDATA>\talon` (data) and `<APPDATA>\talon` (config). In the case they are the dirs `AppData/Local\roc`, `AppData/Local\talon` and `AppData/Roaming\talon` (names with `\`, in `AppData/`); the packages dir is `AppData/Local\roc\packages`. The files and the paths in `expect/` follow this. The meaning of the runs did not change.

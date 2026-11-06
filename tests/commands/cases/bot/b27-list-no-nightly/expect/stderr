@@ -1,0 +1,1 @@
+tln: error[network]: the list of nightlies at api.github.com has no nightly tag (7 releases read). The bot stops, and the next run starts again.

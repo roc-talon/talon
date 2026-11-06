@@ -1,0 +1,1 @@
+R-AP34 R-AP22 R-E6 R-J7 (slice 221): 502 for each of the 4 requests (the first and 3 more), with waits of 2 s, 8 s and 30 s. Exit 15 (network), the text of the CLI 3 example: `the registry answered 502 (/errors/upstream) 4 times. Try again later.`

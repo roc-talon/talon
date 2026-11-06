@@ -1,0 +1,13 @@
+GET https://token.actions.githubusercontent.com/.well-known/jwks
+GET https://api.github.com/repos/xfer/repo/releases/tags/1.0.0
+GET https://github.com/xfer/repo/releases/download/1.0.0/4yY1cpT1AFv2vNwjy5t64WFTwVK4eWW1uvwJdrc1RGdE.tar.zst
+GET https://raw.githubusercontent.com/xfer/repo/1.0.0/.roc-version
+GET https://api.github.com/repos/again/repo/releases/tags/1.0.0
+GET https://github.com/again/repo/releases/download/1.0.0/9GHfSapDLJ4Ru7oxRyYHvLFn1qTdZ6ru8yejN4RhWStg.tar.zst
+GET https://raw.githubusercontent.com/again/repo/1.0.0/.roc-version
+GET https://api.github.com/repos/fresh/repo/releases/tags/1.0.0
+GET https://github.com/fresh/repo/releases/download/1.0.0/GLyHBnYgGrmVrD9rz5w1EHbRhyWCbsLjrV5QDRDqsQQA.tar.zst
+GET https://raw.githubusercontent.com/fresh/repo/1.0.0/.roc-version
+GET https://api.github.com/repos/new/repo/releases/tags/1.0.0
+GET https://github.com/new/repo/releases/download/1.0.0/AxmqAiysaytfpf1KAHyw9vDk5idU3hDB8pNVzKnR2bzL.tar.zst
+GET https://raw.githubusercontent.com/new/repo/1.0.0/.roc-version

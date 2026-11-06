@@ -1,0 +1,7 @@
+PASS archive/pu38-hash-and-end (2523 ms)
+PASS archive/pu38-made-kinds (2450 ms)
+PASS archive/pu38-paths-and-header (2504 ms)
+PASS archive/pu38-real-bundles (2475 ms)
+PASS archive/pu38-size (5397 ms)
+PASS archive/pu38-window (2442 ms)
+w2: 6 passed, 0 failed

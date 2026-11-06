@@ -1,0 +1,43 @@
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:275:1
+
+expect
+    [
+        "src/../main.roc",
+        "/abs.roc",
+        "C:x.roc",
+        "src/./A.roc",
+        "src/con.roc",
+        "src /A.roc",
+        "src./A.roc",
+        "src/A<.roc",
+        "src\\A.roc",
+    ].map(|p| read(with_extra(file(p, "x"))))
+        == [
+            Err(BadPath({ path: "src/../main.roc", problem: ParentDir })),
+            Err(BadPath({ path: "/abs.roc", problem: Absolute })),
+            Err(BadPath({ path: "C:x.roc", problem: DriveLetter })),
+            Err(BadPath({ path: "src/./A.roc", problem: DotPart })),
+            Err(BadPath({ path: "src/con.roc", problem: ReservedName })),
+            Err(BadPath({ path: "src /A.roc", problem: EndsWithSpace })),
+            Err(BadPath({ path: "src./A.roc", problem: EndsWithPeriod })),
+            Err(BadPath({ path: "src/A<.roc", problem: ReservedChar('<') })),
+            Err(BadPath({ path: "src\\A.roc", problem: Backslash })),
+        ]
+
+Ran 33 tests in 998.2 ms.:
+    32 passed
+    1 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2358 ms)
+PASS archive/pu38-made-kinds (2271 ms)
+FAIL archive/pu38-paths-and-header (2373 ms)
+    request 7: status: expected 422, got 200
+    request 7: problem: content-type: expected "application/problem+json", got "application/json"
+    request 7: problem.type: expected "/errors/not-a-candidate", got missing
+    request 7: problem.detail: expected "the archive has a path that roc unbundle refuses (a Windows reserved name): src/con.roc", got missing
+    request 7: problem.status: expected 200 (the HTTP status), got missing
+PASS archive/pu38-real-bundles (2315 ms)
+PASS archive/pu38-size (5615 ms)
+PASS archive/pu38-window (2263 ms)
+w2: 5 passed, 1 failed

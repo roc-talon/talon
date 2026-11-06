@@ -1,0 +1,3 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/taken/repo/releases/download/2.0.0/HNt19FZkFT5NtGkcTSQbVjTGnEapS72fBiWsdbVz2gJX.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/taken/repo/releases/download/1.0.0/somD3JV5MwWc6UKY7Xzrrp7fcdgUrqdAsB9ndsowg4H.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/taken/repo/releases/download/2.0.0/HNt19FZkFT5NtGkcTSQbVjTGnEapS72fBiWsdbVz2gJX.tar.zst"},"now":1767225630000}

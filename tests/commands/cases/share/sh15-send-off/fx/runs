@@ -1,0 +1,7 @@
+# R-SH2, R-SH4: the 5 conditions are checked again before the send. Runs 1 to 5: share = false, no registry (direct), --offline, DO_NOT_TRACK=1, CI=true: no query, no request, the rows stay. Run 6: all true: the rows are sent.
+queue-send 0.9.0 off
+queue-send 0.9.0 direct
+queue-send 0.9.0 offline
+queue-send 0.9.0 env:DO_NOT_TRACK=1
+queue-send 0.9.0 env:CI=true
+queue-send 0.9.0

@@ -10,3 +10,5 @@ Run I (R-FE4): a bundle file with no `--range`, in p5 whose pin n3 is installed.
 Run H (R-C7, R-NS3): `min-release-age = "7d"` in p3 with TALON_NOW 2026-10-15: n8, n9 and n10 are younger than 7 days, so they are not asked. Rounds n7 n6 n5, then n1 n3: 5 probes. The range is n1 .. n7: the lower end is the end of D, the upper end is unknown (n8 has no real fact). Exit 12.
 
 Slice 064 (R-FE4, R-SO6): `config.toml` has `default-roc = nightly-2026-10-07-7b7b7b7` (installed, not the newest: n10). Run F (`probe --range <bundle file>`) has no pin: the selected compiler is the default, so `roc unbundle` runs with n7 and not with the newest installed compiler (n10): `ProbeFlow.ranged!` gives `Fetch.selected` of the default to `unbundle_program!`.
+
+Slice 217b (R-PB9, Q581): run E has exit 12, so `error.details.facts` is `[]` (all facts are known, no probe starts), the last key of `details`.

@@ -1,0 +1,14 @@
+== tln cache dir
+Talon can share the results of its probes with the registry.
+For a public package it sends the hash of the package, the compiler, the target, the Talon version and the result (pass, fail or crash). It sends no code, no path and no error text.
+The registry keeps each result with a random id of this machine until you run tln share forget, or until its compiler is 12 months old.
+Reading compatibility data does not need sharing.
+You can turn sharing off at any time with tln share off.
+Share the probe results of public packages? [y/N] $HOME/.cache/roc
+exit 0
+share = true
+-rw-------
+1
+== tln cache dir
+$HOME/.cache/roc
+exit 0

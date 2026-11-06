@@ -1,0 +1,6 @@
+Slice 092 (entry `commands`): R-PT19, R-PT20 step 1, Design Q239. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). The release acme/foo 1.1.0 is in the release list (R-DI2) with the source asset only: no asset `<hash>-<target>`. `gh` is a rule of `fx/jobs` and must not be called.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `update --tool --file p1/main.roc` | step 1 ran and found no binary asset: the check ends there, with no note, no `programs gh`, no download. The `url` moves to 1.1.0 and the entry gets `bin = {}` (not "no key"). The tool is built from source | R-PT19, R-PT20 step 1, Q239 |
+| 2 | `update --tool --file p1/main.roc` | the `url` stays and `bin = {}` has no value: every target is looked for again (R-PT19), still no asset. No call after the release list, `talon.toml` is as it was | R-PT19, R-PT20 step 1, Q239 |

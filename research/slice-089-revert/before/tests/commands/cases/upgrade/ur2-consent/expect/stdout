@@ -1,0 +1,43 @@
+== upgrade roc --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:CI=true env:HOME={w}/home2 upgrade roc --file p2/main.roc
+exit 13
+== env:CI=true env:HOME={w}/home3 upgrade roc --allow-downloads --file p3/main.roc
+check: passed
+build: passed
+$PROJECT/p3/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:HOME={w}/home4 upgrade roc --file p4/main.roc
+exit 13
+== env:CI=true env:TALON_AUTO_INSTALL=no env:HOME={w}/home5 upgrade roc --file p5/main.roc
+exit 13
+== env:HOME={w}/home6 upgrade roc --file p6/main.roc
+check: passed
+build: passed
+$PROJECT/p6/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:HOME={w}/home7 upgrade roc --file p7/main.roc
+exit 13
+== env:CI=true env:TALON_AUTO_INSTALL=no env:HOME={w}/home8 upgrade roc --file p8/main.roc
+check: passed
+build: passed
+$PROJECT/p8/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0
+== env:HOME={w}/home9 upgrade roc --file p9/main.roc
+check: passed
+build: passed
+$PROJECT/p9/main.roc
+  ~ roc: nightly-2026-10-09-9d9d9d9 -> nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 5 probes
+exit 0

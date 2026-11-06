@@ -1,0 +1,45 @@
+@ SELECT label, val FROM probe ORDER BY label, val
+cast_param	1
+column_plus0	1
+cte_join	9223372036854775807
+in_json	-9223372036854775807
+in_json	9223372036854775807
+param_eq	1
+two_params	0
+where	9223372036854775807
+where_min	-9223372036854775808
+@ SELECT CAST(id AS TEXT), typeof(id) FROM names WHERE id IN (9007199254740989, 9007199254740990, 9007199254740991, 9007199254740992, 9007199254740993) ORDER BY id
+9007199254740989	integer
+9007199254740990	integer
+9007199254740991	integer
+9007199254740992	integer
+9007199254740993	integer
+@ SELECT CAST(id AS TEXT), kind, value FROM names WHERE id < -9000000000000000000 OR id > 9000000000000000000 ORDER BY id
+-9223372036854775808	3	k10-min
+-9223372036854775807	3	k10-neg
+9223372036854775807	3	k10-big
+@ SELECT CAST(id AS TEXT), value FROM names WHERE id = -2687166099708853831
+-2687166099708853831	k8-form
+@ SELECT c, v, t FROM (SELECT 'artifacts.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM artifacts UNION ALL SELECT 'artifacts.platform' AS c, CAST(platform AS TEXT) AS v, typeof(platform) AS t FROM artifacts UNION ALL SELECT 'releases.form' AS c, CAST(form AS TEXT) AS v, typeof(form) AS t FROM releases UNION ALL SELECT 'releases.version' AS c, CAST(version AS TEXT) AS v, typeof(version) AS t FROM releases UNION ALL SELECT 'releases.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM releases) ORDER BY c, v
+artifacts.artifact	9223372036854775807	integer
+artifacts.platform	-9223372036854775807	integer
+releases.artifact	9223372036854775807	integer
+releases.form	-2687166099708853831	integer
+releases.version	-9223372036854775808	integer
+@ SELECT c, v, t FROM (SELECT 'releases.repo' AS c, CAST(repo AS TEXT) AS v, typeof(repo) AS t FROM releases UNION ALL SELECT 'compat.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM compat UNION ALL SELECT 'repos.repo' AS c, CAST(repo AS TEXT) AS v, typeof(repo) AS t FROM repos UNION ALL SELECT 'repos.successor' AS c, CAST(successor AS TEXT) AS v, typeof(successor) AS t FROM repos UNION ALL SELECT 'links.machine' AS c, CAST(machine AS TEXT) AS v, typeof(machine) AS t FROM links) ORDER BY c, v
+compat.artifact	-9223372036854775807	integer
+compat.artifact	9223372036854775807	integer
+links.machine	-9223372036854775808	integer
+releases.repo	4611686018427387905	integer
+repos.repo	4611686018427387905	integer
+repos.successor	-9223372036854775807	integer
+@ SELECT c, v, t FROM (SELECT 'contributions.contributor' AS c, CAST(contributor AS TEXT) AS v, typeof(contributor) AS t FROM contributions UNION ALL SELECT 'contributions.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM contributions UNION ALL SELECT 'deps.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM deps UNION ALL SELECT 'deps.dep' AS c, CAST(dep AS TEXT) AS v, typeof(dep) AS t FROM deps UNION ALL SELECT 'deps.form' AS c, CAST(form AS TEXT) AS v, typeof(form) AS t FROM deps) ORDER BY c, v
+contributions.artifact	9223372036854775807	integer
+contributions.contributor	-9223372036854775807	integer
+deps.artifact	9223372036854775807	integer
+deps.dep	-9223372036854775807	integer
+deps.form	-2687166099708853831	integer
+@ SELECT c, v, t FROM (SELECT 'deps.version' AS c, CAST(version AS TEXT) AS v, typeof(version) AS t FROM deps UNION ALL SELECT 'artifact_targets.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM artifact_targets UNION ALL SELECT 'compat_hints.artifact' AS c, CAST(artifact AS TEXT) AS v, typeof(artifact) AS t FROM compat_hints) ORDER BY c, v
+artifact_targets.artifact	9223372036854775807	integer
+compat_hints.artifact	-9223372036854775807	integer
+deps.version	-9223372036854775808	integer

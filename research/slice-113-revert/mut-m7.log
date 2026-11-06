@@ -1,0 +1,13 @@
+All (13) tests passed in 177.6 ms.
+PASS identity/tp10-301-followed (2259 ms)
+FAIL identity/tp10-rename (2454 ms)
+    request 3: json.repos[0].state: expected "moved", got "active"
+    request 3: json.repos[0].successor: expected "acme/lib2", got null
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t100\t10\t2\tacme/lib2\t1767225630000\t1767000000000","acme/lib2\t100\t10\t0\t\\N\t1767225630000\t1767225630000"]
+      got:      ["acme/lib\t100\t10\t0\t\\N\t1767000000000\t1767000000000","acme/lib2\t100\t10\t0\t\\N\t1767225630000\t1767225630000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/lib\t2\t2\t100\t100\t10\t10\tacme/lib2\t\\N\t1767225630000","acme/lib2\t1\t2\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767225630000"]
+      got:      ["acme/lib\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/lib2\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767225630000"]
+PASS identity/tp9-four-rows (2810 ms)
+w2: 2 passed, 1 failed

@@ -1,0 +1,8 @@
+@ SELECT artifact, nightly FROM compat_hints ORDER BY artifact
+101	9400
+@ SELECT contributor, artifact, nightly FROM contributions ORDER BY artifact
+4242	101	9400
+@ SELECT contributor, counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals
+4242	1	1	0	0	1	1700000100000	1700000100000
+@ SELECT day, counted FROM hint_days ORDER BY day
+20453	1

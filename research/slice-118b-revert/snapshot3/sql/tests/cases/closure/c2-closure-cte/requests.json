@@ -1,0 +1,362 @@
+[
+ {
+  "note": "R-AP17 closure: the diamond and the cycles end; A2 is out of the series bounds; R-AP64: the group o/z has no release in its bounds (series 2), and checked still has o/z; G by hashes; 12345 and 777 unknown (the first index of each)",
+  "params": [
+   "[{\"form\":100,\"lo\":-9223090561878065152,\"hi\":-9222809086901354497},{\"form\":200,\"lo\":-9223372036854775808,\"hi\":9223372036854775807},{\"form\":600,\"lo\":-9222809086901354496,\"hi\":-9222527611924643841}]",
+   "[9007199254740993,12345,9007199254740993,777]",
+   null,
+   null
+  ],
+  "expect": {
+   "artifacts": [
+    {
+     "hash": "0101010101010101010101010101010101010101010101010101010101010101",
+     "kind": 1,
+     "exposed_json": "[\"A\"]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 10
+    },
+    {
+     "hash": "0202020202020202020202020202020202020202020202020202020202020202",
+     "kind": 1,
+     "exposed_json": "[\"B\"]",
+     "platform_hash": null,
+     "roc_pin": "nightly-2026-01-01-0000001",
+     "size": 20
+    },
+    {
+     "hash": "0303030303030303030303030303030303030303030303030303030303030303",
+     "kind": 2,
+     "exposed_json": "[\"Pf\"]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 30
+    },
+    {
+     "hash": "0404040404040404040404040404040404040404040404040404040404040404",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 40
+    },
+    {
+     "hash": "0505050505050505050505050505050505050505050505050505050505050505",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 50
+    },
+    {
+     "hash": "0606060606060606060606060606060606060606060606060606060606060606",
+     "kind": 1,
+     "exposed_json": "[]",
+     "platform_hash": null,
+     "roc_pin": null,
+     "size": 60
+    },
+    {
+     "hash": "4747474747474747474747474747474747474747474747474747474747474747",
+     "kind": 0,
+     "exposed_json": "[]",
+     "platform_hash": "0303030303030303030303030303030303030303030303030303030303030303",
+     "roc_pin": null,
+     "size": 80
+    }
+   ],
+   "deps": [
+    {
+     "owner": "0101010101010101010101010101010101010101010101010101010101010101",
+     "alias": "b",
+     "hash": "0202020202020202020202020202020202020202020202020202020202020202",
+     "form": "github.com/o/b/releases/download/{v}/",
+     "version": "-9223090561877999617",
+     "version_text": "",
+     "url": "https://github.com/o/b/releases/download/1.0.0/b.tar.zst"
+    },
+    {
+     "owner": "0101010101010101010101010101010101010101010101010101010101010101",
+     "alias": "c",
+     "hash": "0303030303030303030303030303030303030303030303030303030303030303",
+     "form": null,
+     "version": null,
+     "version_text": null,
+     "url": "https://example.com/c/0303030303030303030303030303030303030303030303030303030303030303.tar.zst"
+    },
+    {
+     "owner": "0101010101010101010101010101010101010101010101010101010101010101",
+     "alias": "x",
+     "hash": "6363636363636363636363636363636363636363636363636363636363636363",
+     "form": null,
+     "version": null,
+     "version_text": null,
+     "url": "https://example.com/x/x.tar.zst"
+    },
+    {
+     "owner": "0202020202020202020202020202020202020202020202020202020202020202",
+     "alias": "d",
+     "hash": "0404040404040404040404040404040404040404040404040404040404040404",
+     "form": "github.com/o/b/releases/download/{v}/",
+     "version": "-9223090557583032321",
+     "version_text": "",
+     "url": "https://github.com/o/b/releases/download/1.1.0/d.tar.zst"
+    },
+    {
+     "owner": "0303030303030303030303030303030303030303030303030303030303030303",
+     "alias": "d",
+     "hash": "0404040404040404040404040404040404040404040404040404040404040404",
+     "form": "github.com/o/b/releases/download/{v}/",
+     "version": "-9223090557583032321",
+     "version_text": "",
+     "url": "https://github.com/o/b/releases/download/1.1.0/d.tar.zst"
+    },
+    {
+     "owner": "0404040404040404040404040404040404040404040404040404040404040404",
+     "alias": "b",
+     "hash": "0202020202020202020202020202020202020202020202020202020202020202",
+     "form": "github.com/o/b/releases/download/{v}/",
+     "version": "-9223090561877999617",
+     "version_text": "",
+     "url": "https://github.com/o/b/releases/download/1.0.0/b.tar.zst"
+    },
+    {
+     "owner": "0505050505050505050505050505050505050505050505050505050505050505",
+     "alias": "f",
+     "hash": "0606060606060606060606060606060606060606060606060606060606060606",
+     "form": "github.com/o/e/releases/download/{v}/",
+     "version": "-9223372019674841089",
+     "version_text": "",
+     "url": "https://github.com/o/e/releases/download/0.4.0/f.tar.zst"
+    },
+    {
+     "owner": "0606060606060606060606060606060606060606060606060606060606060606",
+     "alias": "e",
+     "hash": "0505050505050505050505050505050505050505050505050505050505050505",
+     "form": "github.com/o/e/releases/download/{v}/",
+     "version": "-9223372023969808385",
+     "version_text": "",
+     "url": "https://github.com/o/e/releases/download/0.3.0/e.tar.zst"
+    },
+    {
+     "owner": "4747474747474747474747474747474747474747474747474747474747474747",
+     "alias": "pf",
+     "hash": "0303030303030303030303030303030303030303030303030303030303030303",
+     "form": null,
+     "version": null,
+     "version_text": null,
+     "url": "https://example.com/c/0303030303030303030303030303030303030303030303030303030303030303.tar.zst"
+    }
+   ],
+   "targets": [
+    {
+     "owner": "0303030303030303030303030303030303030303030303030303030303030303",
+     "name": "arm64linux"
+    },
+    {
+     "owner": "0303030303030303030303030303030303030303030303030303030303030303",
+     "name": "x64musl"
+    }
+   ],
+   "releases": [
+    {
+     "log_index": 1,
+     "hash": "0101010101010101010101010101010101010101010101010101010101010101",
+     "form": "github.com/o/a/releases/download/{v}/",
+     "version": "-9223090561877999617",
+     "version_text": "",
+     "url": "https://github.com/o/a/releases/download/1.0.0/a.tar.zst",
+     "tag": "v1.0.0",
+     "roc_version": "0.1",
+     "repo": "o/a",
+     "published_at": 1000,
+     "yanked": 0,
+     "withdrawn": null,
+     "vias": "1,3"
+    },
+    {
+     "log_index": 3,
+     "hash": "0505050505050505050505050505050505050505050505050505050505050505",
+     "form": "github.com/o/e/releases/download/{v}/",
+     "version": "-9223372023969808385",
+     "version_text": "",
+     "url": "https://github.com/o/e/releases/download/0.3.0/e.tar.zst",
+     "tag": "0.3.0",
+     "roc_version": null,
+     "repo": "o/e",
+     "published_at": 3000,
+     "yanked": 0,
+     "withdrawn": null,
+     "vias": "0"
+    },
+    {
+     "log_index": 4,
+     "hash": "0202020202020202020202020202020202020202020202020202020202020202",
+     "form": "github.com/o/b/releases/download/{v}/",
+     "version": "-9223090561877999617",
+     "version_text": "",
+     "url": "https://github.com/o/b/releases/download/1.0.0/b.tar.zst",
+     "tag": "1.0.0",
+     "roc_version": null,
+     "repo": "o/b",
+     "published_at": 4000,
+     "yanked": 0,
+     "withdrawn": null,
+     "vias": "3"
+    },
+    {
+     "log_index": 5,
+     "hash": "0404040404040404040404040404040404040404040404040404040404040404",
+     "form": "github.com/o/b/releases/download/{v}/",
+     "version": "-9223090557583032321",
+     "version_text": "",
+     "url": "https://github.com/o/b/releases/download/1.1.0/d.tar.zst",
+     "tag": "1.1.0",
+     "roc_version": null,
+     "repo": "o/b",
+     "published_at": 5000,
+     "yanked": 0,
+     "withdrawn": "deleted",
+     "vias": "2,3"
+    },
+    {
+     "log_index": 6,
+     "hash": "4747474747474747474747474747474747474747474747474747474747474747",
+     "form": "example.com/g/{v}/",
+     "version": "-9223372032559742977",
+     "version_text": "",
+     "url": "https://example.com/g/0.1.0/g.tar.zst",
+     "tag": null,
+     "roc_version": null,
+     "repo": null,
+     "published_at": 6000,
+     "yanked": 0,
+     "withdrawn": null,
+     "vias": "0,1,2,3"
+    },
+    {
+     "log_index": 7,
+     "hash": "0606060606060606060606060606060606060606060606060606060606060606",
+     "form": "github.com/o/e/releases/download/{v}/",
+     "version": "-9223372019674841089",
+     "version_text": "",
+     "url": "https://github.com/o/e/releases/download/0.4.0/f.tar.zst",
+     "tag": "0.4.0",
+     "roc_version": null,
+     "repo": "o/e",
+     "published_at": 7000,
+     "yanked": 1,
+     "withdrawn": null,
+     "vias": "1"
+    }
+   ],
+   "unknown": [
+    {
+     "idx": 1
+    },
+    {
+     "idx": 3
+    }
+   ],
+   "epochs": [],
+   "runs": [],
+   "nearest": [],
+   "hints": [],
+   "checked": [
+    {
+     "name": "o/a",
+     "checked_at": 1767225000000,
+     "app_installed": 1
+    },
+    {
+     "name": "o/e",
+     "checked_at": null,
+     "app_installed": 0
+    },
+    {
+     "name": "o/z",
+     "checked_at": null,
+     "app_installed": 0
+    }
+   ],
+   "repos": [
+    {
+     "name": "o/a",
+     "state": 0,
+     "successor": null,
+     "state_at": 1000
+    },
+    {
+     "name": "o/b",
+     "state": 2,
+     "successor": "o/b2",
+     "state_at": 2000
+    }
+   ],
+   "log_size": [
+    {
+     "log_size": 9
+    }
+   ]
+  }
+ },
+ {
+  "note": "R-AP17: no groups and no hashes give empty lists and the log size",
+  "params": [
+   "[]",
+   "[]",
+   null,
+   null
+  ],
+  "expect": {
+   "artifacts": [],
+   "deps": [],
+   "targets": [],
+   "releases": [],
+   "unknown": [],
+   "epochs": [],
+   "runs": [],
+   "nearest": [],
+   "hints": [],
+   "checked": [],
+   "repos": [],
+   "log_size": [
+    {
+     "log_size": 9
+    }
+   ]
+  }
+ },
+ {
+  "note": "R-AP28: a hash that is a name of a release form (kind 2) but no artifact is unknown",
+  "params": [
+   "[]",
+   "[100]",
+   null,
+   null
+  ],
+  "expect": {
+   "artifacts": [],
+   "deps": [],
+   "targets": [],
+   "releases": [],
+   "unknown": [
+    {
+     "idx": 0
+    }
+   ],
+   "epochs": [],
+   "runs": [],
+   "nearest": [],
+   "hints": [],
+   "checked": [],
+   "repos": [],
+   "log_size": [
+    {
+     "log_size": 9
+    }
+   ]
+  }
+ }
+]

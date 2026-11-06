@@ -1,0 +1,3 @@
+{"method":"PUT","path":"/"}
+{"method":"DELETE","path":"/v1/nothing"}
+{"method":"PATCH","path":"/v1/nothing"}

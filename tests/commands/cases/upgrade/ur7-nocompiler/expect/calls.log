@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -40,7 +43,6 @@ list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
-tty
 ask "Download 1 compiler, 74.2 MB: nightly-2026-10-12-2a2a2a2? It becomes the default compiler. [Y/n] "
 lock $HOME/.cache/roc/toolchains/nightly-2026-10-12-2a2a2a2 nowait: held
 list_dirs $HOME/.cache/roc/toolchains
@@ -73,6 +75,9 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/FvurZfqoaDrU88tV2HLaPJ6LiLcGRxed3fBFg7twMRYR/main.roc $HOME/.cache/roc/packages/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QMt/main.roc
 args
+env_all
+tty
+read_files $HOME2/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -114,5 +119,4 @@ list_dirs $HOME2/.cache/roc/toolchains
 list_dirs $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME2/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
-tty
 ask "Download 1 compiler, 74.2 MB: nightly-2026-10-12-2a2a2a2? It becomes the default compiler. [Y/n] "

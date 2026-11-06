@@ -1,0 +1,22 @@
+All (17) tests passed in 314.5 ms.
+PASS webhook/ap12-empty-secret (2228 ms)
+PASS webhook/ap12-no-secret (2184 ms)
+PASS webhook/ap12-signature (2593 ms)
+PASS webhook/pu11-events (2698 ms)
+PASS webhook/pu13-index-new (2459 ms)
+PASS webhook/pu13-no-asset-end (2377 ms)
+PASS webhook/pu13-not-candidate (2374 ms)
+PASS webhook/pu13-retry-no-asset (2907 ms)
+PASS webhook/pu14-labels (3062 ms)
+PASS webhook/pu17-withdraw-clear (4106 ms)
+PASS webhook/pu26-app-installed (3593 ms)
+FAIL webhook/pu26-release-installed (3140 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t1","acme/other\t\\N\t\\N\t1767003600000\t0\t1"]
+      got:      ["acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t0","acme/other\t\\N\t\\N\t1767003600000\t0\t1"]
+PASS webhook/pu33-privatized (3868 ms)
+PASS webhook/pu33-publicized (2983 ms)
+PASS webhook/pu33-release-private (2782 ms)
+PASS webhook/pu35-dead-letter (2190 ms)
+PASS webhook/pu35-retry-schedule (2173 ms)
+w2: 16 passed, 1 failed

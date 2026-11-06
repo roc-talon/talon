@@ -1,0 +1,19 @@
+All (13) tests passed in 247.7 ms.
+PASS webhook/ap12-empty-secret (1833 ms)
+PASS webhook/ap12-no-secret (1766 ms)
+FAIL webhook/ap12-signature (2365 ms)
+    request 19: timing_safe: expected 1 calls of timingSafeEqual, got 0
+    request 21: status: expected 401, got 400
+    request 21: problem.type: expected "/errors/unauthenticated", got "/errors/bad-request"
+    request 21: problem.status: expected 401, got 400
+    request 22: status: expected 401, got 400
+    request 22: problem.type: expected "/errors/unauthenticated", got "/errors/bad-request"
+    request 22: problem.status: expected 401, got 400
+    request 22: timing_safe: expected 1 calls of timingSafeEqual, got 0
+PASS webhook/pu11-events (2812 ms)
+PASS webhook/pu26-app-installed (2926 ms)
+PASS webhook/pu33-privatized (3617 ms)
+PASS webhook/pu33-publicized (1883 ms)
+PASS webhook/pu35-dead-letter (1554 ms)
+PASS webhook/pu35-retry-schedule (1309 ms)
+w2: 8 passed, 1 failed

@@ -1,0 +1,68 @@
+args
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+read_files $HOME/.cache/roc/toolchains/zig-0.14.0/.last-use $HOME/.cache/roc/toolchains/zig-0.15.1/.last-use $HOME/.cache/roc/toolchains/zig-0.16.1/.last-use $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
+tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/zig-0.14.0 $HOME/.cache/roc/toolchains/zig-0.16.1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+read_files $HOME/.cache/roc/toolchains/zig-0.14.0/.last-use $HOME/.cache/roc/toolchains/zig-0.15.1/.last-use $HOME/.cache/roc/toolchains/zig-0.16.1/.last-use $HOME/.cache/roc/toolchains/zig-0.17.0/.last-use
+tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/zig-0.14.0 $HOME/.cache/roc/toolchains/zig-0.16.1 $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp
+lock $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa
+lock $HOME/.cache/roc/toolchains/zig-0.14.0 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/zig-0.14.0 $HOME/.cache/roc/toolchains/zig-0.14.0.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/zig-0.14.0.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/zig-0.14.0
+lock $HOME/.cache/roc/toolchains/zig-0.16.1 nowait: busy
+lock $HOME/.cache/roc/toolchains/zig-0.17.0 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/zig-0.17.0 $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/zig-0.17.0
+delete $HOME/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+read_files $HOME/.cache/roc/toolchains/zig-0.15.1/.last-use $HOME/.cache/roc/toolchains/zig-0.16.1/.last-use
+tree_info $HOME/.cache/roc/toolchains/zig-0.16.1
+lock $HOME/.cache/roc/toolchains/zig-0.16.1 nowait: busy
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+clock
+lock $HOME2/.cache/roc/talon/gc nowait: held
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains $HOME2/.cache/roc/packages $HOME2/.cache/roc/talon $HOME2/.cache/roc/talon/tmp $HOME2/.cache/roc/talon/index $HOME2/.cache/roc/talon/x
+list_dirs $HOME2/.cache/roc
+read_files $HOME2/.cache/roc/talon/projects.json
+read_files $HOME2/.cache/roc/toolchains/zig-0.17.0/.last-use
+tree_info $HOME2/.cache/roc/toolchains/zig-0.17.0
+lock $HOME2/.cache/roc/toolchains/zig-0.17.0 nowait: held
+random
+rename $HOME2/.cache/roc/toolchains/zig-0.17.0 $HOME2/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+delete $HOME2/.cache/roc/toolchains/zig-0.17.0.0123456789abcdef.trash
+unlock $HOME2/.cache/roc/toolchains/zig-0.17.0
+unlock $HOME2/.cache/roc/talon/gc

@@ -1,0 +1,2 @@
+fullname acme/all409 env:GITHUB_TOKEN=tok1
+fullname acme/one5xx env:GITHUB_TOKEN=tok1

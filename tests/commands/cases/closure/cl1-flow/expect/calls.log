@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -54,6 +56,8 @@ delete $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L.01
 read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -76,6 +80,8 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -111,6 +117,8 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/GFxDoMVtm3uCVP4qTSN11k2YKtzwLWibi2UNecy1KX6a/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -152,6 +160,8 @@ list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -182,6 +192,8 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/ETHqKvPfSpgiJzvkfaLumTGq3KhTvan7meq82W7wz73L/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd

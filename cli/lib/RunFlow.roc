@@ -54,7 +54,7 @@ Ready : { env : List((Str, Str)), roots : Roots, now : U64, scan : RunSteps.Scan
 flow! : Fx, Args, RunCmd.Cmd, (Fx => I32) => Try(I32, Fail)
 flow! = |fx, args, cmd, tln| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	now = Clock.now!(fx, env)?
 	home = match env.find_first(|(name, _)| name == "HOME") {
 		Ok((_, dir)) => dir

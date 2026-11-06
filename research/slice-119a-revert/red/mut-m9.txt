@@ -1,0 +1,90 @@
+PASS githubtoken/pu25-missing-key (1956 ms)
+FAIL githubtoken/pu25-three-routes (1926 ms)
+    token request: the installation id is 123456, not 654321
+    request 1: status: expected 201, got 502
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: json_len toolchains: expected an array of 5 items, got missing
+    token request: the installation id is 123456, not 654321
+    request 2: status: expected 201, got 502
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header location: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: json_at release.hash: expected "7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J", got missing
+    request 2: json_at release.tag: expected "1.2.0", got missing
+    request 2: json_at release.repo: expected "acme/roc-thing", got missing
+    token request: the installation id is 123456, not 654321
+    db: @ SELECT hex(substr(n.value, 1, 1)) AS h, CAST(c.contributor AS TEXT) AS contributor, c.nightly, c.target, c.result, CAST(c.talon_version AS TEXT) AS talon_version, c.time FROM contributions c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.contributor, c.nightly, c.target: rows differ:
+      expected: ["11\t-6890997442180345381\t5571556846250\t0\t0\t17180000255\t1767225640000"]
+      got:      ["11\t-6890997442180345381\t5571556846250\t0\t0\t0\t1767225640000"]
+    tokens.log differs:
+      expected: ["POST https://api.github.com/app/installations/654321/access_tokens now=1767225630 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["POST https://api.github.com/app/installations/123456/access_tokens now=1767225630 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225635 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225640 ua=talon-registry accept=application/vnd.github+json"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/roc-thing token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    github.log differs:
+      expected: ["GET https://token.actions.githubusercontent.com/.well-known/jwks","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569","GET https://api.github.com/repos/acme/roc-thing","GET https://api.github.com/repos/acme/roc-thing/releases/tags/1.2.0","GET https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","GET https://raw.githubusercontent.com/acme/roc-thing/1.2.0/.roc-version","GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100"]
+      got:      ["GET https://token.actions.githubusercontent.com/.well-known/jwks"]
+FAIL githubtoken/pu25-token-faults (1953 ms)
+    token request: the installation id is 123456, not 654321
+    token request: the installation id is 123456, not 654321
+    request 2: problem.detail: expected "the GitHub installation token request failed with status 403", got "the GitHub installation token request failed with status 404"
+    token request: the installation id is 123456, not 654321
+    request 3: problem.detail: expected "the GitHub installation token answer is not valid", got "the GitHub installation token request failed with status 404"
+    token request: the installation id is 123456, not 654321
+    request 4: problem.detail: expected "the GitHub installation token request failed with status 500", got "the GitHub installation token request failed with status 404"
+    token request: the installation id is 123456, not 654321
+    request 5: status: expected 201, got 502
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json_len toolchains: expected an array of 5 items, got missing
+    token request: the installation id is 123456, not 654321
+    db: @ SELECT hex(substr(n.value, 1, 1)) AS h, CAST(c.contributor AS TEXT) AS contributor, c.nightly, c.target, c.result, CAST(c.talon_version AS TEXT) AS talon_version, c.time FROM contributions c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.contributor, c.nightly, c.target: rows differ:
+      expected: ["11\t-6890997442180345381\t5571556846250\t0\t0\t0\t1767225601000","11\t-6890997442180345381\t5571843177403\t0\t0\t17180000255\t1767225606000"]
+      got:      ["11\t-6890997442180345381\t5571556846250\t0\t0\t0\t1767225601000","11\t-6890997442180345381\t5571843177403\t0\t0\t0\t1767225606000"]
+    tokens.log differs:
+      expected: ["POST https://api.github.com/app/installations/654321/access_tokens now=1767225601 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/654321/access_tokens now=1767225602 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/654321/access_tokens now=1767225603 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/654321/access_tokens now=1767225604 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/654321/access_tokens now=1767225605 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["POST https://api.github.com/app/installations/123456/access_tokens now=1767225601 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225602 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225603 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225604 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225605 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767225606 ua=talon-registry accept=application/vnd.github+json"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569 token=9 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100 token=9 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    github.log differs:
+      expected: ["GET https://token.actions.githubusercontent.com/.well-known/jwks","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569","GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100"]
+      got:      ["GET https://token.actions.githubusercontent.com/.well-known/jwks"]
+FAIL githubtoken/pu25-token-kept (1663 ms)
+    token request: the installation id is 123456, not 654321
+    request 1: status: expected 201, got 502
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: json_len toolchains: expected an array of 5 items, got missing
+    token request: the installation id is 123456, not 654321
+    request 2: status: expected 201, got 502
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: json_len toolchains: expected an array of 5 items, got missing
+    token request: the installation id is 123456, not 654321
+    request 3: status: expected 201, got 502
+    request 3: header content-type: expected "application/json", got "application/problem+json"
+    request 3: header cache-control: expected "no-store", got null
+    request 3: json_len toolchains: expected an array of 5 items, got missing
+    token request: the installation id is 123456, not 654321
+    request 4: status: expected 201, got 502
+    request 4: header content-type: expected "application/json", got "application/problem+json"
+    request 4: header cache-control: expected "no-store", got null
+    request 4: json_len toolchains: expected an array of 5 items, got missing
+    token request: the installation id is 123456, not 654321
+    request 5: status: expected 201, got 502
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json_len toolchains: expected an array of 5 items, got missing
+    tokens.log differs:
+      expected: ["POST https://api.github.com/app/installations/654321/access_tokens now=1767225630 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/654321/access_tokens now=1767228960 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/654321/access_tokens now=1767232320 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["POST https://api.github.com/app/installations/123456/access_tokens now=1767225630 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767228840 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767228960 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767230760 ua=talon-registry accept=application/vnd.github+json","POST https://api.github.com/app/installations/123456/access_tokens now=1767232320 ua=talon-registry accept=application/vnd.github+json"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-22-aaaaaaa token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-23-bbbbbbb token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-24-ccccccc token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-25-ddddddd token=3 ua=talon-registry accept=application/vnd.github+json"]
+      got:      []
+    github.log differs:
+      expected: ["GET https://token.actions.githubusercontent.com/.well-known/jwks","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-21-5349569","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-22-aaaaaaa","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-23-bbbbbbb","GET https://token.actions.githubusercontent.com/.well-known/jwks","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-24-ccccccc","GET https://api.github.com/repos/roc-lang/nightlies/releases/tags/nightly-2026-10-25-ddddddd"]
+      got:      ["GET https://token.actions.githubusercontent.com/.well-known/jwks","GET https://token.actions.githubusercontent.com/.well-known/jwks"]
+w2: 1 passed, 3 failed

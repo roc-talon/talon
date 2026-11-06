@@ -1,0 +1,3 @@
+R-IX6 R-DI11 R-DI12 (Design Q391): --offline with a registry is per group (slice 206, entry registry, the words get and offline).
+Run 1 keeps the group copy of github.com/someone/roc-b/releases/download/v{v}/ (fx/mtimes: 2026-10-14T15:00:00Z). Run 2: someone/roc-b has 2 known URLs, one of each form. The form v{v} uses its copy: candidate 1.0.0. The form {v} has no group copy and the repository has no copy: only this group is missing (the line missing-group), the name is not missing (no line `missing someone/roc-b`).
+The harness prints `missing <name>` for `ResolveBase.Candidates.missing` (no group of the name has a copy) and `missing-group <name> <form>` for each item of the new per-group field (see the slice file: the field name is a proposal for the code agent).

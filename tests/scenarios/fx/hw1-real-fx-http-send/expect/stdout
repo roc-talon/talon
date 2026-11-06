@@ -1,0 +1,24 @@
+== POST with a body: the route requires Content-Type and User-Agent (R-AP23, R-AP45), the answer is the first one (201)
+status 201
+body {"status":"indexed"}
+== the same POST again: the answer is the 2nd one of the route, a 200 (the n-th answer)
+status 200
+body {"status":"known"}
+== a POST with no Content-Type breaks the require line of the route: 599
+status 599
+body wrong header
+== PUT with a body of two lines and a backslash
+status 200
+body {"ok":true}
+== DELETE with no body: 204 and an empty body
+status 204
+body 
+== DELETE with an Authorization header breaks the require-none line of the route (R-RG3: no token to a registry): 599
+status 599
+body wrong header
+== GET is the plain route, not the POST route (R-DA1: a small API answer, no download)
+status 200
+body plain
+== a route with no file: 404 for a write too
+status 404
+body {"message":"Not Found"}

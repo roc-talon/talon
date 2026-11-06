@@ -1,0 +1,6 @@
+PASS publish/pu1-publish-package (2110 ms)
+PASS publish/pu16-after-ingest (1871 ms)
+PASS publish/tp3-claims-vs-url (1745 ms)
+PASS publish/tp9-claim-ids (1899 ms)
+w2: 4 passed, 0 failed
+done

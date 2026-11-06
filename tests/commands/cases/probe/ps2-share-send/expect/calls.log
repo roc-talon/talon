@@ -1,0 +1,23 @@
+env_all
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts_of=HQ
+platform
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-12-2664a27","to":"nightly-2026-10-14-38a3029"},"groups":[],"hashes":["HQ"]}
+read_files $HOME/.local/share/talon/share.json
+http_send POST http://127.0.0.1:9/v1/compat timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Talon-Contributor: 0123456789abcdeffedcba9876543210
+  <body> {"rows":[{"hash":"HQ","nightly":"nightly-2026-10-12-2664a27","result":"pass","target":"any"},{"hash":"HQ","nightly":"nightly-2026-10-14-38a3029","result":"fail","target":"any"}],"talon_version":"0.0.1"}
+clock
+lock $HOME/.local/share/talon/share.json nowait: held
+read_files $HOME/.local/share/talon/share.json
+random
+write_atomic $HOME/.local/share/talon/share.json.0123456789abcdef.tmp
+spawn_all limit=1
+  job - chmod 0600 $HOME/.local/share/talon/share.json.0123456789abcdef.tmp
+rename $HOME/.local/share/talon/share.json.0123456789abcdef.tmp $HOME/.local/share/talon/share.json
+unlock $HOME/.local/share/talon/share.json

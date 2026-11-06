@@ -1,0 +1,2 @@
+# R-SH9, R-SH13, Q483: logout with a JWT whose token_expires_at (2026-10-01) is before the clock: no request; the JWT is removed under the lock; exit 0.
+share logout

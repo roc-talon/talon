@@ -1,0 +1,28 @@
+== kid-unchecked
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2120 ms)
+PASS account/ct10-tracker (3339 ms)
+PASS account/ct11-login-limit (3302 ms)
+PASS account/ct7-delete (3388 ms)
+PASS account/ct8-login (3226 ms)
+PASS account/ct8-login-refusals (2353 ms)
+FAIL account/ct9-token-check (1673 ms)
+    request 6: problem.type: expected "/errors/unauthenticated", got missing
+PASS account/ct9-tokens-after (1311 ms)
+w2: 7 passed, 1 failed
+== iat-whole-seconds
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2485 ms)
+PASS account/ct10-tracker (3802 ms)
+PASS account/ct11-login-limit (3758 ms)
+PASS account/ct7-delete (3845 ms)
+PASS account/ct8-login (3690 ms)
+PASS account/ct8-login-refusals (2918 ms)
+PASS account/ct9-token-check (1875 ms)
+FAIL account/ct9-tokens-after (1321 ms)
+w2: 7 passed, 1 failed
+done

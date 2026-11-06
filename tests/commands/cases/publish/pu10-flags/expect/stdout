@@ -1,0 +1,6 @@
+== publish --file p/main.roc
+published acme/json 2.1.0: 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq, 4 facts sent
+exit 0
+== publish --registry http://127.0.0.1:9 env:TALON_REGISTRY=
+published acme/json 2.1.0: 4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq, 4 facts sent
+exit 0

@@ -1,0 +1,1 @@
+-- R-WH4: only the migrations with the prefix of the file `migrations` run: 0001 makes the tables, and the triggers of 0002 are not made.

@@ -1,0 +1,4 @@
+R-EF3 R-AL7 R-EF1 Q500 (slice 206e3 round 2): `tln update` on H = nightly-2026-10-14-38a3029 with the world of registry/cv1-upgrade-free (the tuple: json 2.2.0, parser 1.2.0, pf 0.1.1 on H, as registry/ef1-rank2-held).
+The answer has 3 pairs where a `bot` row and an `author` row differ: (json 2.2.0, H): `bot` `pass`, `author` `fail`; (parser 1.2.0, nightly-2026-10-16-5e6f7a8): another compiler of E; (parser 1.0.0, H): a release that is not in the chosen tuple.
+Design Q500: the note is for the pairs of the chosen tuple on the compiler of the run only, so one note: `note: acme/json 2.2.0: the bot and the author rows differ on nightly-2026-10-14-38a3029: bot pass, author fail`, on stdout with the other notes of the resolve. The `bot` row wins (R-EF3): json 2.2.0 has a real pass on H and no unit probe; parser 1.2.0 and pf 0.1.1 are probed.
+Run 2: the same with `--json`: the note is an item of `data.notes` (not `index_notes`).

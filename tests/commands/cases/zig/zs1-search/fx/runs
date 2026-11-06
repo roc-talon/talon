@@ -11,7 +11,7 @@
 # 6: ZIG and PATH both fit: ZIG comes first
 0.16.2 offline env:ZIG=/opt/z16/zig
 # 7: a Windows host runs zig.exe
-0.18.1 offline
+0.18.1 offline env:LOCALAPPDATA=C:/AppData/Local env:APPDATA=C:/AppData/Roaming
 # 8: ZIG is used as it is: it prints 0.16.9 and 0.17.0 is needed (R-D1 asks for a matching version only for PATH)
 0.17.0 offline env:ZIG=/opt/z16/zig
 # 9: ZIG names a program that exits with an error: a failure of kind environment that names ZIG, no list, even when PATH has a zig

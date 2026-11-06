@@ -1,0 +1,4 @@
+{"status":422,"problem":{"type":"/errors/sweep-incomplete","detail":"the sweep of nightly-2026-10-29-aaaaaaa up to the log index 8 is incomplete: 3 members of the bot set have no bot row: 3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3, 4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4, 7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":3}"}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the sweep upto_log_index is larger than the log size"}}
+{"status":422,"problem":{"type":"/errors/sweep-incomplete","detail":"the sweep of nightly-2026-10-30-bbbbbbb up to the log index 8 is incomplete: 3 members of the bot set have no bot row: 3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3, 4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4, 7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7"}}

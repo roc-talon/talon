@@ -1,0 +1,2 @@
+R-SH3 R-SH4 R-DI7 R-LD2 (slice 206e4, Design Q450, Q535, Q543): the world of share/sh60-ladder-share, but the answer has NO artifact record for parser 1.2.0 (EiSZ): a release row only. Its header `packages/EiSZ.../main.roc` (a package: target `any`) is there. Filter 7 takes the kind from the kept header text (read once for R-DI7, no second read). The ladder unit facts of parser and platform are queued as in sh60: `queue=2`, the same send of 3 rows.
+Expect files by hand from sh60 plus the one R-DI7 header read of the baseline.

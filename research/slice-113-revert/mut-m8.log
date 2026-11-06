@@ -1,0 +1,38 @@
+All (13) tests passed in 211.4 ms.
+PASS identity/tp10-301-followed (2344 ms)
+PASS identity/tp10-rename (2542 ms)
+FAIL identity/tp9-four-rows (2743 ms)
+    request 2: status: expected 201, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: header location: expected "/v1/artifacts/5cuSC81bMXM66NwVXsMihkUpQ3SYZZ5ssjpf7x4smPq", got null
+    request 2: json.release: expected an object, got missing
+    request 3: status: expected 201, got 500
+    request 3: header talon-bookmark: expected a value, got none
+    request 3: header content-type: expected "application/json", got "application/problem+json"
+    request 3: header cache-control: expected "no-store", got null
+    request 3: header location: expected "/v1/artifacts/CEPWqasbXwRSP1YqPa6tzU4FwvEckyVNNMiVLEb63a9i", got null
+    request 3: json.release: expected an object, got missing
+    request 6: status: expected 201, got 500
+    request 6: header talon-bookmark: expected a value, got none
+    request 6: header content-type: expected "application/json", got "application/problem+json"
+    request 6: header cache-control: expected "no-store", got null
+    request 6: header location: expected "/v1/artifacts/6MZAFPZRc8rMT6X4w2ocpYypSxyFdoYxbcSfQrYkLXrB", got null
+    request 6: json.release: expected an object, got missing
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["again/repo\t3002\t31\t0\t\\N\t1767000000000\t1767000000000","back/repo\t6001\t61\t0\t\\N\t1767225630000\t1767000000000","fresh/repo\t5001\t51\t0\t\\N\t1767225630000\t1767225630000","prov/repo\t7001\t71\t0\t\\N\t1767000000000\t1767000000000","same/repo\t1001\t11\t0\t\\N\t1767000000000\t1767000000000","taken/repo\t4001\t41\t0\t\\N\t1767000000000\t1767000000000","xfer/repo\t2001\t22\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["again/repo\t3001\t31\t0\t\\N\t1767000000000\t1767000000000","back/repo\t6001\t61\t1\t\\N\t1766999995000\t1767000000000","fresh/repo\t5001\t51\t0\t\\N\t1767225630000\t1767225630000","prov/repo\t7001\t71\t0\t\\N\t1767000000000\t1767000000000","same/repo\t1001\t11\t0\t\\N\t1767000000000\t1767000000000","taken/repo\t4001\t41\t0\t\\N\t1767000000000\t1767000000000","xfer/repo\t2001\t21\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["again/repo\t1\t0\t\\N\t3001\t\\N\t31\t\\N\t\\N\t1767000000000","again/repo\t2\t3\t3001\t3002\t31\t31\t\\N\t\\N\t1767225630000","back/repo\t1\t0\t\\N\t6001\t\\N\t61\t\\N\t\\N\t1767000000000","back/repo\t2\t5\t6001\t6001\t61\t61\t\\N\t\\N\t1767225630000","fresh/repo\t1\t0\t\\N\t5001\t\\N\t51\t\\N\t\\N\t1767225630000","prov/repo\t1\t0\t\\N\t7001\t\\N\t71\t\\N\t\\N\t1767000000000","same/repo\t1\t0\t\\N\t1001\t\\N\t11\t\\N\t\\N\t1767000000000","taken/repo\t1\t0\t\\N\t4001\t\\N\t41\t\\N\t\\N\t1767000000000","xfer/repo\t1\t0\t\\N\t2001\t\\N\t21\t\\N\t\\N\t1767000000000","xfer/repo\t2\t1\t2001\t2001\t21\t22\t\\N\t\\N\t1767225630000"]
+      got:      ["again/repo\t1\t0\t\\N\t3001\t\\N\t31\t\\N\t\\N\t1767000000000","back/repo\t1\t0\t\\N\t6001\t\\N\t61\t\\N\t\\N\t1767000000000","fresh/repo\t1\t0\t\\N\t5001\t\\N\t51\t\\N\t\\N\t1767225630000","prov/repo\t1\t0\t\\N\t7001\t\\N\t71\t\\N\t\\N\t1767000000000","same/repo\t1\t0\t\\N\t1001\t\\N\t11\t\\N\t\\N\t1767000000000","taken/repo\t1\t0\t\\N\t4001\t\\N\t41\t\\N\t\\N\t1767000000000","xfer/repo\t1\t0\t\\N\t2001\t\\N\t21\t\\N\t\\N\t1767000000000"]
+    db: @ SELECT r.log_index, n.value, r.tag FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tprov/repo\t1.0.0","2\tsame/repo\t1.0.0","3\txfer/repo\t1.0.0","4\tagain/repo\t1.0.0","5\tfresh/repo\t1.0.0","6\tback/repo\t1.0.0"]
+      got:      ["1\tprov/repo\t1.0.0","2\tsame/repo\t1.0.0","3\tfresh/repo\t1.0.0"]
+    db: @ SELECT value FROM names WHERE kind = 2 ORDER BY value: rows differ:
+      expected: ["github.com/again/repo/releases/download/{v}/","github.com/back/repo/releases/download/{v}/","github.com/fresh/repo/releases/download/{v}/","github.com/prov/repo/releases/download/{v}/","github.com/same/repo/releases/download/{v}/","github.com/xfer/repo/releases/download/{v}/"]
+      got:      ["github.com/fresh/repo/releases/download/{v}/","github.com/prov/repo/releases/download/{v}/","github.com/same/repo/releases/download/{v}/"]
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767000000000","2\t3\t\\N\t1767225630000","3\t3\t\\N\t1767225630000","4\t3\t\\N\t1767225630000","5\t3\t\\N\t1767225630000","6\t3\t\\N\t1767225630000"]
+      got:      ["1\t1\t\\N\t1767000000000","2\t3\t\\N\t1767225630000","3\t3\t\\N\t1767225630000"]
+w2: 2 passed, 1 failed

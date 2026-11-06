@@ -1,0 +1,24 @@
+── ● unused variable ──────────────────────────────────── lib/Reconcile.roc:37:3
+
+Variable same_id is defined here and then never used.
+
+same_id = "SELECT repository_id FROM repos WHERE repos.repo = repo_checks.repo"
+^^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _same_id to
+suppress this warning.
+
+All (26) tests passed in 399.4 ms.
+PASS reconcile/pu21-poll-job (2230 ms)
+FAIL reconcile/pu23-list (3754 ms)
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\tdeleted\t1767225600000","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\tdeleted\t1767225600000","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\tprereleased\t1767225600000","3\tacme/lib\t3.0.0\tdeleted\t1767225600000","4\tacme/lib\t4.0.0\tdeleted\t1767225600000","5\tacme/lib\t5.0.0\tasset-replaced\t1767225600000","6\tacme/lib\t6.0.0\t\\N\t\\N","7\tacme/lib\t7.0.0\trepo-missing\t1767000000020","8\tacme/lib\t11.0.0\tdeleted\t1767000000030","9\tacme/lib-old\t0.9.0\t\\N\t\\N","10\tacme/same\t1.0.0\t\\N\t\\N","11\tacme/gone\t1.0.0\trepo-missing\t1767225600000","12\tacme/gone\t2.0.0\tdeleted\t1767000000040","13\tacme/priv\t1.0.0\trepo-missing\t1767225600000","14\tacme/later\t1.0.0\t\\N\t\\N"]
+PASS reconcile/pu25-reserve (2169 ms)
+PASS reconcile/pu36-overlap (2195 ms)
+PASS reconcile/pu36-state-guard (2210 ms)
+PASS reconcile/pu37-backoff (2500 ms)
+PASS reconcile/pu37-etag-effects (1763 ms)
+PASS webhook/pu13-index-new (1593 ms)
+PASS webhook/pu17-withdraw-clear (1941 ms)
+w2: 8 passed, 1 failed

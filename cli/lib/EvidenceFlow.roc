@@ -1,3 +1,4 @@
+import records.Closure as Wire
 import Closure
 import Compiler
 import Db
@@ -8,6 +9,8 @@ import Fx
 import Github
 import Ident
 import Install
+import Matrix
+import Pin
 import Roots
 import ResolveBase
 import ResolveSelect
@@ -26,6 +29,8 @@ import UnitFlow
 ## | 5 | Slice 068, rank 4 (R-DI8, R-EF1): one `read_files!` of `Github.hint_file` for each package that is shown with a compiler and has a `Github.hint_ref` and a `Github.hint_file` that is `Ok` (the paths in the order of the packages, the same file once). No such package: no call. The text of a file that is there is `Github.hint` of status 200 and that text, so `hint` is `Ok(id)`; a missing, unreadable or empty file, and a text with no id, is `Err(None)`. No request, never: `why` makes no index call (R-DI1, E3) | E3, R-DI8 |
 ## | 6 | A package with a `Local` fail that has modules: the scan of the used modules of its member (`UnitFlow.scan_in!`: one `read_files!` for each level. The text of the member is the one that the load read, so the member file is not read again) and `Evidence.ignored` with the empty baseline. Each entry is a note (`Evidence.note`). No fail row: no call | E5, R-UM1 |
 ## | 7 | `Evidence.of_pair` for each package, the block | R-EF3 |
+##
+## Slice 206e3 (Design Q499, R-EF1 ranks 2 and 6, R-EF3, R-AL8): with an `Answer` index (`Why` sent the closure query), step 3 takes the pin of a hash that the answer has from its artifact record (`roc_pin`, no read), step 7 is `Evidence.of_all` with the rank 2 rows of the answer on the compiler (`Matrix.rows`) and its `hints` (rank 6), and the block notes get `Evidence.differ` after the unit-fail notes.
 ##
 ## Wiring of the slice (the same table):
 ##
@@ -55,11 +60,22 @@ EvidenceFlow :: [].{
 			},
 		)
 		active = items.keep_oks(|item| active_of(item))
-		pins = pins_of!(fx, ctx.request.roots.pkgs, unique(active.map(|a| a.hash)))
+		answer = match ctx.request.index {
+			Answer(a) => Ok(a.answer)
+			_ => Err(None)
+		}
+		pins = pins_with!(fx, ctx.request.roots.pkgs, answer, unique(active.map(|a| a.hash)))
 		keys = active.map(|a| { hash: a.hash, nightly: a.compiler, target: "any" }).fold([], |found, key| if found.contains(key) found else found.append(key))
 		facts = Facts.load!(fx, { roots: ctx.request.roots, keys })?
 		hints = hints_of!(fx, ctx.request.roots, active)
-		lines_of = |a| Evidence.of_pair({ hash: a.hash, compiler: a.compiler, facts, pin: pins.find_first(|(h, _)| h == a.hash).map_ok(|(_, pin)| pin) ?? Err(NoPin), hint: hints.find_first(|(h, _)| h == a.hash).map_ok(|(_, hint)| hint) ?? Err(None) })
+		lines_of = |a| {
+			pin = pins.find_first(|(h, _)| h == a.hash).map_ok(|(_, found_pin)| found_pin) ?? Err(NoPin)
+			hint = hints.find_first(|(h, _)| h == a.hash).map_ok(|(_, found_hint)| found_hint) ?? Err(None)
+			match answer {
+				Ok(got) => Evidence.of_all({ hash: a.hash, compiler: a.compiler, facts, pin, hint, rows: Matrix.rows({ runs: got.runs, nearest: got.nearest, domain: [{ id: a.compiler, published_at: 0, asset: Err(NoAsset) }] }), shared: got.hints })
+				Err(None) => Evidence.of_pair({ hash: a.hash, compiler: a.compiler, facts, pin, hint })
+			}
+		}
 		failing = active.keep_if(|a| lines_of(a).any(|l| l.source == Local and l.result == Fail and !l.modules.is_empty()))
 		scans = scans_of!(fx, ctx, { failing, shown })
 		Ok(
@@ -68,11 +84,12 @@ EvidenceFlow :: [].{
 					(Ok(compiler), Ok(hash)) => {
 						a = { file: item.shown.file, hash, compiler }
 						used = scans.find_first(|scan| scan.file == a.file).map_ok(|scan| scan.used)
-						notes = match used {
+						unit_notes = match used {
 							Ok(found) => Evidence.ignored({ hashes: [hash], facts, nightly: compiler, baseline: [], used: found }).map(|e| Evidence.note({ path: e.path, compiler }))
 							Err(_) => []
 						}
-						{ compiler: item.compiler, lines: lines_of(a), notes }
+						lines = lines_of(a)
+						{ compiler: item.compiler, lines, notes: unit_notes.concat(Evidence.differ({ compiler, lines })) }
 					}
 					_ => { compiler: item.compiler, lines: [], notes: [] }
 				},
@@ -100,6 +117,12 @@ compilers_of! = |fx, ctx, files| {
 		Ok(found) => found
 		Err(_) => Err(Unset)
 	}
+	# Slice 206e3b (Design Q521, R-WS4): the pins of the members that agree are the pin of the workspace: a member with no pin holds it too.
+	pins = ctx.loaded.members.keep_oks(|m| m.locked.roc)
+	shared = match pins {
+		[first, .. as rest] => if rest.all(|id| Pin.same_id(id, first)) Ok(first) else Err(NoPin)
+		[] => Err(NoPin)
+	}
 	var $request = ctx.request
 	var $asked = Bool.False
 	var $found = []
@@ -108,10 +131,11 @@ compilers_of! = |fx, ctx, files| {
 			Ok(member) => member.locked.roc
 			Err(_) => Err(NoPin)
 		}
-		compiler = match (pin, toolchain) {
-			(Ok(id), _) => Ok(id)
-			(Err(NoPin), Ok(id)) => Ok(id)
-			(Err(NoPin), Err(Unset)) => {
+		compiler = match (pin, shared, toolchain) {
+			(Ok(id), _, _) => Ok(id)
+			(Err(NoPin), Ok(id), _) => ResolveSelect.peek_pin!(fx, ctx.request, ctx.loaded, id)
+			(Err(NoPin), Err(NoPin), Ok(id)) => Ok(id)
+			(Err(NoPin), Err(NoPin), Err(Unset)) => {
 				if !$asked {
 					$request = { ..$request, compiler: Install.compiler!(fx, ctx.request.roots, Bool.False) }
 					$asked = Bool.True
@@ -122,6 +146,17 @@ compilers_of! = |fx, ctx, files| {
 		$found = $found.append({ file, compiler })
 	}
 	$found
+}
+
+# Step 3 with a registry (slice 206e3, R-AL8 source 2, Design Q499): the `roc_pin` of the artifact record of the answer for each hash that the answer has (no read), then `pins_of!` for the other hashes.
+pins_with! : Fx, Str, Try(Wire.Answer, [None]), List(Str) => List((Str, Try(Str, [NoPin])))
+pins_with! = |fx, pkgs, answer, hashes| match answer {
+	Ok(got) => {
+		recorded = hashes.keep_oks(|hash| got.artifacts.find_first(|r| r.hash == hash).map_ok(|r| (hash, r.roc_pin.map_err(|_| NoPin))))
+		rest = hashes.keep_if(|hash| !recorded.any(|(h, _)| h == hash))
+		recorded.concat(pins_of!(fx, pkgs, rest))
+	}
+	Err(None) => pins_of!(fx, pkgs, hashes)
 }
 
 # Step 3: the `roc:` pin of the header of each package (one `read_files!`). An unreadable file is no pin.

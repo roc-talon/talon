@@ -1,0 +1,9 @@
+{"outcome":"ok","acked":["m1"],"retried":[]}
+{"outcome":"ok","acked":["m2"],"retried":[]}
+{"outcome":"ok","acked":["m3"],"retried":[]}
+{"outcome":"ok","acked":["m4"],"retried":[]}
+{"outcome":"ok","acked":["m5"],"retried":[]}
+{"outcome":"ok","acked":["m6"],"retried":[]}
+{"outcome":"ok","acked":[],"retried":[{"id":"m7","delay_s":60}]}
+{"outcome":"ok","acked":["d1"],"retried":[]}
+{"outcome":"ok","acked":["d2"],"retried":[]}

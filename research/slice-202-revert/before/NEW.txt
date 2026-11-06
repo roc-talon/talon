@@ -1,0 +1,5 @@
+cli/lib/RegistryCache.roc
+tests/unit/RegcacheTest.roc
+tests/commands/L2Registry.roc
+tests/commands/cases/registry/
+docs/slices/202-read-cache.md

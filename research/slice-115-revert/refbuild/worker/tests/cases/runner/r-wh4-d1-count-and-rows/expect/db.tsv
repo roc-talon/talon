@@ -1,0 +1,5 @@
+@ SELECT v FROM example ORDER BY v
+seed
+written
+@ SELECT count(*) FROM example
+2

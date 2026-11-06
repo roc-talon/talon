@@ -1,0 +1,1 @@
+a dir with a .del name stays

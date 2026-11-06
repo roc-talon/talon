@@ -1,0 +1,4 @@
+status 301
+header Location: http://127.0.0.1:9/v1/packages/acme/lib/releases
+header Cache-Control: max-age=60
+header ETag: "r1"

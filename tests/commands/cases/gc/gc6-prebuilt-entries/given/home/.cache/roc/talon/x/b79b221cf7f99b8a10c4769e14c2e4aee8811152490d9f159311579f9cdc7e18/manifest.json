@@ -1,0 +1,1 @@
+{"format":1,"name":"acme/kg","source":{"kind":"prebuilt","version":"1.0.0","url":"https://github.com/acme/kg/releases/download/1.0.0/5niCnLjJs9ir9xEKcDxSu5nCJprcpVKAjiQ2mWdqWVcp.tar.zst-x64musl"},"target":"x64musl","sha256":"ee2893d7e1dd118960f4dfdfd3f04144707d09bbca039691fe2ae0f038b7a856","bundle":"5niCnLjJs9ir9xEKcDxSu5nCJprcpVKAjiQ2mWdqWVcp","last_run":"2026-10-14T12:00:00Z"}

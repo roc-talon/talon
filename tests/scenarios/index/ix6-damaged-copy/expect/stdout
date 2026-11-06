@@ -1,0 +1,7 @@
+missing acme/json
+missing-group acme/json github.com/acme/json/releases/download/{v}/
+exit 0
+the copy is removed
+missing acme/json
+missing-group acme/json github.com/acme/json/releases/download/{v}/
+exit 0

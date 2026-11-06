@@ -1,0 +1,3 @@
+GET /api/repos/acme/json/releases?per_page=100 200
+GET /api/repos/acme/parser/releases?per_page=100 200
+GET /api/repos/acme/pfx/releases?per_page=100 200

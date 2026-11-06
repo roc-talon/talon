@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/q1/main.roc
@@ -98,6 +99,7 @@ read_files $PROJECT/q1/main.roc
 write_atomic $PROJECT/q1/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/q1j/main.roc
@@ -155,6 +157,7 @@ read_files $HOME/.cache/roc/packages/5AwfSn1s1phXUdQTmrTmyfHxtb5saNGoC4UANmSqGhG
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
 env_all
 clock
 cwd

@@ -1,0 +1,11 @@
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue=2 cap=4
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue=1 cap=4
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue=1 cap=4
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue=6 cap=4
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue=1 cap=10
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue

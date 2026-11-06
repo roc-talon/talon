@@ -1,0 +1,31 @@
+== verify --no-check --registry direct --file u1/main.roc env:TALON_REGISTRY=http://127.0.0.1:9
+fixed: example.org has no index without a registry
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --no-check --file u1/main.roc
+other: fixed: not in the registry index
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.
+exit 0
+== verify --no-check --json --snapshot log:30 --file u1/main.roc
+{"schema":1,"command":"verify","ok":true,"data":{"snapshot":"log:30","log_size":30,"probes":0,"downloads":0,"dry_run":false,"check":"skipped","build":"skipped","added":[],"moved":[{"alias":"json","from":{"name":"acme/json","version":"2.0.0"},"to":{"name":"acme/json","version":"2.1.0"}}],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[]},"error":null}
+exit 0
+== verify --no-check --offline --file u1/main.roc
+other: fixed: not in the registry index
+json: fixed: offline, no cached index
+parser: fixed: offline, no cached index
+pf: fixed: offline, no cached index
+check: skipped
+verified: the tuple passes. No project file was written.
+exit 0

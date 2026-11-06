@@ -1,0 +1,11 @@
+tln: error[usage]: tln publish needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln publish needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[network]: tln publish needs the network: --offline sends no request
+tln: error[network]: tln publish needs the network: --offline sends no request
+tln: error[usage]: tln publish takes no argument: 'extra'
+tln: error[usage]: tln publish takes no argument: 'extra'
+tln: error[usage]: GITHUB_REPOSITORY is not set or is empty. tln publish runs in a GitHub Actions job.
+tln: error[usage]: GITHUB_REPOSITORY is acme/json/x, not of the form owner/repo.
+tln: error[usage]: GITHUB_REF is refs/heads/main, not a tag. The job must run on a tag: tln publish registers the release of the tag.
+tln: error[usage]: GITHUB_REF is refs/heads/main, not a tag. The job must run on a tag: tln publish registers the release of the tag.
+tln: error[usage]: tln publish needs an OIDC token, and ACTIONS_ID_TOKEN_REQUEST_URL is not set. In a GitHub Actions job, set permissions: id-token: write.

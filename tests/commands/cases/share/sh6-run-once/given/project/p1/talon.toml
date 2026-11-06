@@ -1,0 +1,2 @@
+[scripts]
+go = ["tln cache dir", "echo hi", "tln cache dir"]

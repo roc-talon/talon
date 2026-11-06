@@ -1,0 +1,21 @@
+== smoke-get HP:nightly-2026-10-14-38a3029:x64musl
+  none
+== smoke-add
+  ok
+== smoke-add HP,nightly-2026-10-14-38a3029,x64musl,pass HP,nightly-2026-10-14-38a3029,arm64mac,fail HQ,nightly-2026-10-14-38a3029,x64musl,hang HQ,nightly-2026-10-16-5e6f7a8,x64musl,crash
+  ok
+== smoke-get HP:nightly-2026-10-14-38a3029:x64musl HQ:nightly-2026-10-16-5e6f7a8:x64musl HP:nightly-2026-10-16-5e6f7a8:x64musl HZ:nightly-2026-10-14-38a3029:x64musl
+  HP	nightly-2026-10-14-38a3029	x64musl	pass
+  HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
+== smoke-get HP:nightly-2026-10-14-38a3029:arm64win
+  none
+== smoke-add HR,nightly-2026-10-14-38a3029,x64musl,pass
+  ok
+== smoke-get HP:nightly-2026-10-14-38a3029:x64musl HR:nightly-2026-10-14-38a3029:x64musl
+  HP	nightly-2026-10-14-38a3029	x64musl	pass
+  HR	nightly-2026-10-14-38a3029	x64musl	pass
+== smoke-add HP,nightly-2026-10-14-38a3029,x64musl,fail HS,nightly-2026-10-14-38a3029,x64musl,crash HS,nightly-2026-10-14-38a3029,x64musl,pass
+  ok
+== smoke-get HP:nightly-2026-10-14-38a3029:x64musl HS:nightly-2026-10-14-38a3029:x64musl
+  HP	nightly-2026-10-14-38a3029	x64musl	pass
+  HS	nightly-2026-10-14-38a3029	x64musl	crash

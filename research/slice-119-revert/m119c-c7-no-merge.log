@@ -1,0 +1,60 @@
+
+── ✗ fail ─────────────────────────────────── tests/unit/ReconcileTest.roc:231:1
+
+expect {
+    urls = Reconcile.page_url("Acme/Lib", 1) == "https://api.github.com/repos/Acme/Lib/releases?per_page=100"
+        and Reconcile.page_url("Acme/Lib", 2) == "https://api.github.com/repos/Acme/Lib/releases?per_page=100&page=2"
+        and Reconcile.page_url("acme/lib", 10) == "https://api.github.com/repos/acme/lib/releases?per_page=100&page=10"
+    a = final(1, "1.0.0", [zst(h1)])
+    b = final(2, "2.0.0", [zst(h2)])
+    b_later = pre(2, "2.0.0", [zst(h2)])
+    c = final(3, "3.0.0", [zst(h3)])
+    merged = Reconcile.merge_pages([[a, b], [b_later, c], []]) == [a, b, c] and Reconcile.merge_pages([]) == [] and Reconcile.merge_pages([[a]]) == [a]
+    link = "<https://api.github.com/repositories/600/releases?per_page=100&page=2>; rel=\"next\""
+    paged = Reconcile.list_outcome({ status: 200, etag: Ok("W/\"p1\""), link: Ok(link), body: "[]" }) == Ok(Changed({ etag: Ok("W/\"p1\""), list: [] }))
+    urls and merged and paged
+}
+
+Mentioned values:
+h3 = "CktRuQ2mttgRGkXJtyksdKHjUdc2C4TgDzyB98oEzy8"
+h2 = "8qbHbw2BbbTHBW1sbeqakYXVKRQM8Ne7pLK7m6CVfeR"
+h1 = "4vJ9JU1bJJE96FWSJKvHsmmFADCg4gpZQff4P3bkLKi"
+
+Ran 30 tests in 395.1 ms.:
+    29 passed
+    1 failed
+    0 compiler errors
+PASS reconcile/pu21-poll-job (2936 ms)
+PASS reconcile/pu23-list (4996 ms)
+FAIL reconcile/pu23-pages (3304 ms)
+    request 1: queue_sent: expected [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9004,"repository_id":600,"repository_ids":[]},"delay_s":0},{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9005,"repository_id":600,"repository_ids":[]},"delay_s":0}], got [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9004,"repository_id":600,"repository_ids":[]},"delay_s":0},{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9005,"repository_id":600,"repository_ids":[]},"delay_s":0},{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9005,"repository_id":600,"repository_ids":[]},"delay_s":0}]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list has more than 10 pages","fail_count":1,"job":"reconcile","repository_id":610}
+PASS reconcile/pu24-missing-again (3345 ms)
+PASS reconcile/pu25-reserve (2668 ms)
+PASS reconcile/pu31-repo-etag (2930 ms)
+PASS reconcile/pu36-overlap (2432 ms)
+PASS reconcile/pu36-state-guard (2275 ms)
+PASS reconcile/pu37-backoff (2536 ms)
+PASS reconcile/pu37-etag-effects (2328 ms)
+PASS reconcile/tp18-rename (2288 ms)
+PASS reconcile/tp9-transfer (1736 ms)
+PASS webhook/ap12-empty-secret (1754 ms)
+PASS webhook/ap12-no-secret (1616 ms)
+PASS webhook/ap12-signature (1783 ms)
+PASS webhook/pu11-events (1783 ms)
+PASS webhook/pu13-identity-changed (1561 ms)
+PASS webhook/pu13-index-new (2121 ms)
+PASS webhook/pu13-no-asset-end (2046 ms)
+PASS webhook/pu13-not-candidate (1970 ms)
+PASS webhook/pu13-refused (1916 ms)
+PASS webhook/pu13-retry-no-asset (2042 ms)
+PASS webhook/pu14-labels (2167 ms)
+PASS webhook/pu17-withdraw-clear (3608 ms)
+PASS webhook/pu26-app-installed (3032 ms)
+PASS webhook/pu26-release-installed (2973 ms)
+PASS webhook/pu33-privatized (3350 ms)
+PASS webhook/pu33-publicized (2255 ms)
+PASS webhook/pu33-release-private (2418 ms)
+PASS webhook/pu35-dead-letter (1041 ms)
+PASS webhook/pu35-retry-schedule (875 ms)
+w2: 30 passed, 1 failed

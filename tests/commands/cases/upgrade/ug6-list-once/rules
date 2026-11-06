@@ -1,0 +1,2 @@
+R-UP6 R-DI2 R-EP10 R-EP11 (slice 089, 039c review Q3): the compiler list is read at most once for one command. A free nightly (bare `upgrade`) has 2 readers today: `NightlyFlow.plan!` (step 1) and `PickLoop.wide!` (the domain D of the oracle loop). The second reader must reuse the list of the first.
+One run (project `pp`, the pin H, the world of `upgrade/ur4-candidate`: lib 1.1.0 fails on n12, so the pin moves to n11 and the loop needs D). The mark of one read of the list in `calls.log` is `list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies`: it must show once.

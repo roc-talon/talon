@@ -1,0 +1,19 @@
+# R-SH11: none of these asks, with a person there and share not set (no answers are given: an ask would show as an ask call and the end of input). `tln share` and its words set or show the value.
+share
+# R-SH11: `tln setup` never asks (the install scripts run it).
+setup
+# R-SH11: the roc proxy never asks. `--help` and `--version` end before the first-run step.
+@roc --version
+--version
+# R-SH11 table row 5, R-SH2 row 2: the registry is direct.
+env:TALON_REGISTRY=direct cache dir
+# R-SH11, R-SH2 row 4, R-EV26: DO_NOT_TRACK=1.
+env:DO_NOT_TRACK=1 cache dir
+# R-SH11, R-SH2 row 5: CI=true with TALON_INTERACTIVE=1 is interactive, but CI turns sharing off.
+env:CI=true cache dir
+# R-NM12, R-NM1, R-NM3: a non-interactive mode never asks, and writes no answer: --json, TALON_INTERACTIVE=0, and CI=true with no TALON_INTERACTIVE.
+cache dir --json
+env:TALON_INTERACTIVE=0 cache dir
+env:CI=true env:TALON_INTERACTIVE=0 cache dir
+# R-SH11, R-EV29, Design Q215: a parent tln asked already (TALON_SHARE_ASKED=1): no ask, and the run stops at env_all (no tty call, no config read).
+env:TALON_SHARE_ASKED=1 cache dir

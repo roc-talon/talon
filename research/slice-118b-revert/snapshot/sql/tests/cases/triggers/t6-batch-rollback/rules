@@ -1,0 +1,5 @@
+Slice 103, case t6-batch-rollback (P3, S2 of research/d1-sweep/ and Q1 of research/d1-contrib/ as real batches). NEEDS the runner request RR1 of docs/slices/103-triggers.md: the note "-- batch: N".
+  R-MX8: a RAISE rolls back the whole batch. The rows of the request (INSERT OR IGNORE, R-RE13 row 1) go away with the failed sweep, and a sweep that is complete writes them with the sweep.
+  Q27: a publish batch with a new label and a label that conflicts writes nothing: no release, no leaf, not the new label either.
+  R-CT13, R-CT4: the hint-quota abort stops the whole batch: no contribution, no compat_hints row, no hint_days change.
+  R-RE13 row 1: the first write of a bot key wins: INSERT OR IGNORE of a used key changes nothing.

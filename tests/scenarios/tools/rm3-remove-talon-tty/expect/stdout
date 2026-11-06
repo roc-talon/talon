@@ -1,0 +1,36 @@
+== tln tool remove talon
+Remove Talon 0.3.1 (tln and the roc proxy)?
+
+Talon also manages:
+  tools        3 (foo, bar, baz)                       81 B   they run without Talon
+  compilers    2 nightlies, 1 git build, zig 0.17.0   861 B
+  Talon data   index, x cache, compat.db, config      124 B
+
+The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
+
+  1) Remove Talon, the compilers and the data. Keep the tools.   [default]
+  2) Remove Talon and all of the above
+  3) Remove Talon only
+  4) Cancel
+Choose [1-4, default 1] Remove Talon 0.3.1 (tln and the roc proxy)?
+
+Talon also manages:
+  tools        3 (foo, bar, baz)                       81 B   they run without Talon
+  compilers    2 nightlies, 1 git build, zig 0.17.0   861 B
+  Talon data   index, x cache, compat.db, config      124 B
+
+The roc command goes with Talon. A kept compiler stays in toolchains/<id>/roc.
+
+  1) Remove Talon, the compilers and the data. Keep the tools.   [default]
+  2) Remove Talon and all of the above
+  3) Remove Talon only
+  4) Cancel
+Choose [1-4, default 1] Talon        tln, roc, the talon entry of tools.json    27 B   removed
+tools        3 (foo, bar, baz)                          81 B   kept
+compilers    2 nightlies, 1 git build, zig 0.17.0      861 B   removed
+Talon data   index, x cache, compat.db, config         124 B   removed
+moved $HOME/.local/bin/roc.old back to $HOME/.local/bin/roc
+exit 0
+bar  baz  foo  roc
+#!/bin/sh
+echo 'the roc that was here before tln setup'

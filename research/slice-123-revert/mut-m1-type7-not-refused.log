@@ -1,0 +1,6 @@
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:355:1
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:374:1
+- ✗ fail - worker/tests/unit/ArchiveReadTest.roc:382:1
+    445 passed
+    3 failed
+    0 compiler errors

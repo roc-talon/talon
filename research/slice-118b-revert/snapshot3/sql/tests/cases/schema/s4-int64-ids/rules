@@ -1,0 +1,6 @@
+Slice 102, case s4-int64-ids (cases K1, K3, K10, K11, K12 of research/d1-int-keys/ on the real tables).
+  R-IK1, R-IK2: the id columns hold 64-bit integers: bound as text, stored as INTEGER, read with CAST(id AS TEXT), compared in the 4 forms of the rule.
+  R-IK3: names.id takes the K8 id of the rule text, and the ends of the i64 range.
+  R-IK6: releases.log_index is an INTEGER key (the row above has log_index 1). R-IK5: releases.version holds a full-range signed 64-bit key.
+  R-IK8: STRICT: a bad text id, an out of range text id, and an RFC 3339 text in a time column (R-RE26) are errors.
+  R-RE22, R-RE1, R-RE2, R-RE3, R-RE11, R-RE12, R-RE16, R-RE18, R-RE19, R-RE20: the id column of each of these tables takes a 64-bit text id.

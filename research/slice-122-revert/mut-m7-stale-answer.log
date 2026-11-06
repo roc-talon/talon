@@ -1,0 +1,15 @@
+PASS ingest/ap26-body-and-route (1876 ms)
+PASS ingest/ik3-id-collision (1977 ms)
+FAIL ingest/pu14-pu19-labels (2760 ms)
+    request 1: json.release.provenance: expected an array of 2 items, got ["webhook"]
+PASS ingest/pu4-index-kinds (2226 ms)
+PASS ingest/pu6-not-candidates (2974 ms)
+PASS ingest-limits/ap69-cache-drop (3474 ms)
+PASS ingest-limits/pu34-ip (10469 ms)
+PASS ingest-limits/pu34-owner (2698 ms)
+PASS publish/pu1-publish-package (2264 ms)
+PASS publish/pu15-ingest-then-publish (1839 ms)
+PASS publish/pu16-after-ingest (1807 ms)
+PASS publish/tp3-claims-vs-url (1326 ms)
+PASS publish/tp9-claim-ids (734 ms)
+w2: 12 passed, 1 failed

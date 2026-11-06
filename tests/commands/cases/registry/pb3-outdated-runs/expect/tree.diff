@@ -1,0 +1,21 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -1,2 +1,5 @@
+ format	1
+ fact	6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL	nightly-2026-10-13-5e6f7a8	any	fail		
++pinned	nightly-2026-10-11-1a2b3c4	linux_x86_64	3e4ebcdac764d6259eb45a22f647754c94d15d36f0a04ede0cdd83f0ca28a703	registry
++pinned	nightly-2026-10-12-2664a27	linux_x86_64	fc5fa5a2d050ea058f960436a9514119f70d405a8eb17adf3dac6855b127b4e4	registry
++pinned	nightly-2026-10-13-5e6f7a8	linux_x86_64	f0dfb6f8df6a855512b93e5fba9ae0c5a6986106908e9feb75698009a21e8a4e	registry
+--- home/.cache/roc/talon/index/github/acme/parser/repo.json
++++ home/.cache/roc/talon/index/github/acme/parser/repo.json
+@@ -0,0 +1 @@
++{"id":2,"full_name":"acme/parser","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+@@ -0,0 +1 @@
++{"format":1,"rows":[{"tag":"nightly-2026-10-11-1a2b3c4","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-11-1a2b3c4.tar.gz","sha256":"3e4ebcdac764d6259eb45a22f647754c94d15d36f0a04ede0cdd83f0ca28a703","size":1010,"published_at":1791676800000,"log_index":10},{"tag":"nightly-2026-10-12-2664a27","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz","sha256":"fc5fa5a2d050ea058f960436a9514119f70d405a8eb17adf3dac6855b127b4e4","size":1020,"published_at":1791763200000,"log_index":20},{"tag":"nightly-2026-10-13-5e6f7a8","target":"linux_x86_64","asset_name":"roc_nightly-linux_x86_64-2026-10-13-5e6f7a8.tar.gz","sha256":"f0dfb6f8df6a855512b93e5fba9ae0c5a6986106908e9feb75698009a21e8a4e","size":1040,"published_at":1791849600000,"log_index":40}]}
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/u1/main.roc","last_use":1792065600}]}

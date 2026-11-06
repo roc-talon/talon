@@ -1,0 +1,67 @@
+	rate_key = |header| match header {
+		Err(NotFound) => "unknown"
+		Ok(text) => {
+			parts = text.split_on(":")
+			last = parts.last() ?? ""
+			if parts.len() == 1 or last.contains(".") {
+				if last == "" "unknown" else last
+			} else {
+				match groups_of(text) {
+					Ok(g) => "${Str.join_with(g.take_first(4).map(|n| hex_of(n)), ":")}::/64"
+					Err(_) => "unknown"
+				}
+			}
+		}
+	}
+
+	## The 8 groups of an IPv6 text.
+	groups_of : Str -> Try(List(U64), [Bad])
+	groups_of = |text| {
+		sides = text.split_on("::")
+		match sides {
+			[whole] => {
+				g = parse_groups(whole)?
+				if g.len() == 8 Ok(g) else Err(Bad)
+			}
+			[a, b] => {
+				ga = if (a == "") [] else parse_groups(a)?
+				gb = if (b == "") [] else parse_groups(b)?
+				if ga.len() + gb.len() > 7 Err(Bad) else Ok(ga.concat(List.repeat(0, 8 - ga.len() - gb.len())).concat(gb))
+			}
+			_ => Err(Bad)
+		}
+	}
+
+	parse_groups : Str -> Try(List(U64), [Bad])
+	parse_groups = |text| text.split_on(":").map_try(
+		|g| {
+			bytes = g.to_utf8()
+			if bytes.is_empty() or bytes.len() > 4 {
+				Err(Bad)
+			} else {
+				bytes.fold_until(
+					Ok(0),
+					|acc, b| {
+						v = if (b >= 48 and b <= 57) Ok(b - 48) else if (b >= 97 and b <= 102) Ok(b - 87) else if (b >= 65 and b <= 70) Ok(b - 55) else Err(Bad)
+						match (acc, v) {
+							(Ok(a), Ok(n)) => Continue(Ok(a * 16 + n.to_u64()))
+							_ => Break(Err(Bad))
+						}
+					},
+				)
+			}
+		},
+	)
+
+	hex_of : U64 -> Str
+	hex_of = |n| {
+		digits = "0123456789abcdef".to_utf8()
+		var $out = []
+		var $v = n
+		while $v > 0 {
+			$out = [digits.get($v % 16) ?? 48].concat($out)
+			$v = $v // 16
+		}
+		if ($out.is_empty()) "0" else Str.from_utf8($out) ?? "0"
+	}
+

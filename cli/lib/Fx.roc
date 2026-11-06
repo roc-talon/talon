@@ -27,6 +27,9 @@ import Probe
 ## | `lock!`, `unlock!` | The lock interface of CLI 7.4 (R-CC3). The real `Fx` makes the lock directory (R-CC12). |
 ## | `with_lock!` | Not a field. Takes a lock, runs a body, and always releases the lock (R-CC3). |
 ## | `http_get!` | One small HTTP GET with a timeout of 20 s (CLI 7.5, R-DA1, R-CC12). Not for archives. |
+## | `http_send!` | One small HTTP request with a method, a body and a timeout (slice 200: the registry writes, Registry R-AP8 to R-AP10, R-AP23, R-AP45) |
+## | `http_all!` | A list of requests, at most `limit` at the same time, the results in the order of the list (slice 200, CLI 2 R-AD35 step 3, CLI 7.5 R-DA5) |
+## | `sleep!` | Waits some milliseconds (slice 200: the waits of Registry R-AP34, the poll of the device flow) |
 ## | `programs!` | Whether each program is on `PATH` |
 ## | `spawn_all!` | Runs child processes, up to `limit` at the same time, polls them and gives each result (CLI 7.5, R-DA5, R-HF4) |
 ## | `rename!` | Renames a file or a directory (R-FE3) |
@@ -64,6 +67,9 @@ Fx := {
 	lock! : Str, [Wait, NoWait] => [Held(Lock), Busy],
 	unlock! : Lock => {},
 	http_get! : { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)]),
+	http_send! : { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)]),
+	http_all! : { requests : List({ method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 }), limit : U64, tmp_dir : Str } => List(Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])),
+	sleep! : U64 => {},
 	programs! : List(Str) => List(Bool),
 	spawn_all! : { jobs : List({ argv : List(Str), cwd : Try(Str, [Inherit]) }), limit : U64 } => List({ ended : [Exited(I32), Signaled(I32), NotStarted(Str)], stdout : Str, stderr_last : Str }),
 	rename! : { from : Str, to : Str } => Try({}, [NotFound, Exists, Denied, Other(Str)]),
@@ -140,6 +146,25 @@ Fx := {
 	## `Failed(text)`: no answer for another reason (`network error`, `bad body`, `invalid URL`, or the text of the error).
 	http_get! : Fx, { url : Str, headers : List((Str, Str)) } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
 	http_get! = |Fx.{ http_get!: f, .. }, request| f(request)
+
+	## Slice 200. One request. `method` is `Get`, `Post`, `Put` or `Delete`. `body` is the text of the request body (the empty text: no body).
+	## `timeout_s` is the time limit in seconds. The answer and the errors are those of `http_get!`: a status of 400 or more is an answer.
+	## The real `Fx` adds no header: `Content-Type` and `User-Agent` are in `headers` (the pure code of `Registry` makes them, R-AP23, R-AP45).
+	http_send! : Fx, { method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 } => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
+	http_send! = |Fx.{ http_send!: f, .. }, request| f(request)
+
+	## Slice 200. Sends the requests with at most `limit` at the same time (R-AD35 step 3: 4). Each result is the result of `http_send!` for the request
+	## at the same place in the list: the order of the list, not the order in which the requests end. A failed request does not stop the others.
+	## R-DA8, Design Q224 to Q226: the real `Fx` runs `curl` children (only `curl`). A limit of 0 runs 1 at a time. A request has no credential: a request with
+	## the header `Authorization` or `Talon-Contributor` (any case) is not sent, and its result is `Failed("credential")` (proposal, slice 200 Q6: the caller sends such a request with `http_send!`).
+	## `tmp_dir` is the dir for the body files of the children (`talon/tmp/`, R-CC2; the caller knows the roots, TW3): the real `Fx` removes its files at the end. With no `curl` on `PATH`
+	## each result is `Failed(text)` (proposal, Q7: the command asks `programs!(["curl"])` first and stops with exit code 18, R-DA2). The timeout of each request is `--max-time` (R-DA9).
+	http_all! : Fx, { requests : List({ method : [Get, Post, Put, Delete], url : Str, headers : List((Str, Str)), body : Str, timeout_s : U64 }), limit : U64, tmp_dir : Str } => List(Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)]))
+	http_all! = |Fx.{ http_all!: f, .. }, batch| f(batch)
+
+	## Slice 200. Waits `ms` milliseconds. The fake `Fx` waits for no time and writes the line `sleep <ms>` to `calls.log` (TW2, TW15).
+	sleep! : Fx, U64 => {}
+	sleep! = |Fx.{ sleep!: f, .. }, ms| f(ms)
 
 	## Whether each program is on `PATH`, in the order of the list.
 	programs! : Fx, List(Str) => List(Bool)

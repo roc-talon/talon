@@ -1,0 +1,5 @@
+# R-SH4, R-CC8, R-TF3, Q453: the send never changes the output or the exit code. Run 1: the file is busy (db call 1). Run 2: SQLite fails (db call 2). Run 3: a newer format (db call 3, TooNew). All end the send: no request, nothing on stderr, exit 0. Run 4 works.
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0
+queue-send 0.9.0

@@ -1,0 +1,21 @@
+"Parser" matches 2 packages:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: "Parser" matches 2 packages. Use a name from the list.
+Similar names:
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: "pars" matches no indexed package. Use the full name (owner/repo).
+Registry matches for "parser":
+  lukewilliamboswell/roc-parser
+tln: error[usage]: 'parser' matches no installed tool or cached app. Use the full name (owner/repo).
+Registry matches for "Parser":
+  lukewilliamboswell/roc-parser
+  someone/parser
+tln: error[usage]: 'Parser' matches no installed tool or cached app. Use the full name (owner/repo).
+tln: error[usage]: "Parser" matches no indexed package. Use the full name (owner/repo).
+tln: error[usage]: "xx" matches no indexed package. Use the full name (owner/repo).
+tln: error[network]: the registry http://127.0.0.1:9 is not asked (--offline) and Talon has no kept answer for zzz. Run the command with no --offline.
+tln: error[usage]: 51 short names are over the limit of 50: use full names (owner/repo) or run 2 commands
+tln: error[network]: the answer of the registry http://127.0.0.1:9 is not a short-name answer: 0 entries for 1 names
+tln: error[internal]: the registry http://127.0.0.1:9 refused the request (/errors/bad-request): a short value is empty. This is a fault of tln 0.0.1 or a version skew.

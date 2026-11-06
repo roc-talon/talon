@@ -75,7 +75,7 @@ fetch! = |fx, request, list, state| {
 	var $tried = state.tried
 	var $downloads = state.downloads
 	for item in list {
-		match RocInstall.fetch_optional!(fx, { id: item.id, env: request.downloads.env, offline: request.offline }) {
+		match RocInstall.fetch_optional!(fx, { id: item.id, env: request.downloads.env, offline: request.offline, list: ResolveBase.list_later(request) }) {
 			Ok(Present) => {
 				$have = $have.append(item.id)
 			}

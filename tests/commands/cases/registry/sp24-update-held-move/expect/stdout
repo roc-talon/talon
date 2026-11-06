@@ -1,0 +1,17 @@
+== update yaml@1.1.0 --no-check --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/u1/talon.toml: yaml = "=1.1.0"
+resolved at log:40, 0 probes
+dry run: nothing was written
+exit 0
+== update yaml@1.1.0 --no-check --dry-run --snapshot log:30 --file u1/main.roc
+exit 10
+== update yaml@1.2.0 --no-check --dry-run --file u1/main.roc
+exit 10
+== update yaml@1.1.0 --no-check --dry-run --snapshot log:50 --file u2/main.roc
+pf: fixed: not in the registry index
+exit 10

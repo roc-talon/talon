@@ -1,0 +1,4 @@
+{"status":405,"headers":{"allow":"POST"},"problem":{"type":"/errors/method-not-allowed","title":"Method not allowed","status":405,"detail":"GET is not allowed on /v1/closure"}}
+{"status":405,"headers":{"allow":"POST"},"problem":{"type":"/errors/method-not-allowed","title":"Method not allowed","status":405,"detail":"DELETE is not allowed on /v1/closure"}}
+{"status":405,"headers":{"allow":"POST"},"problem":{"type":"/errors/method-not-allowed","title":"Method not allowed","status":405,"detail":"PUT is not allowed on /v1/closure"}}
+{"status":405,"headers":{"allow":"POST"},"problem":{"type":"/errors/method-not-allowed","title":"Method not allowed","status":405,"detail":"PATCH is not allowed on /v1/closure"}}

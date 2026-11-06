@@ -17,7 +17,8 @@ import Report
 import InstallFlow
 import Resolve
 import Roots
-import ToolsPlan
+import ShareHook
+import ToolsStep
 
 ## The command `tln install` (also `add` and `i`, R-CM2, R-CM19, R-CM20): the wiring of a run, in direct style over `Fx` (TESTING.md 2.2, part C). It owns no decision:
 ## `Opts` reads the flags, `Resolve.install!` is the flow of slice 005 and 006 with the add of names, `Report` makes the line of R-DT5 and the `data` of `--json`.
@@ -60,9 +61,10 @@ Install :: [].{
 			match flow!(shown, args, opts) {
 				Ok(done) => {
 					print!(fx, shown, args, opts, done)
+					ShareHook.send!(fx, done.ran, 0)
 					0
 				}
-				Err(fail) => Common.failed!(fx, args, fail)
+				Err(fail) => ShareHook.failed!(fx, args, fail)
 			}
 		}
 	}
@@ -83,7 +85,7 @@ Install :: [].{
 	begin_loose! : Fx, Args => Try({ env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, cwd : Str, project : Try(Project, Fail), found : Try({ project : Project, text : Try(Str, [NoToml]) }, Fail) }, Fail)
 	begin_loose! = |fx, args| {
 		env = fx.env_all!()
-		roots = Roots.from_env(env)?
+		roots = Roots.of_run!(fx, env)?
 		net = Net.from_env(env)
 		now = Clock.now!(fx, env)?
 		home = match env.find_first(|(name, _)| name == "HOME") {
@@ -166,6 +168,9 @@ flow! = |fx, args, opts| {
 			compiler,
 			selected: "",
 			none: Stop,
+			index: Direct,
+			# Slice 206e (R-AL2, R-DI1), slice 206f (R-AD35): `install` and `add` read the registry setting, with names or none. `--frozen` makes no index call (R-AU6, R-RG7 row 6): `Off`.
+			registry: if opts.frozen Off else Setting(args.registry),
 			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: opts.dry_run,
@@ -184,12 +189,12 @@ print! = |fx, shown, args, opts, done| {
 	outcome = done.outcome
 	planned = !outcome.added.is_empty() or !outcome.moved.is_empty() or outcome.pinned.is_ok() or !outcome.toml.is_empty() or !outcome.renamed.is_empty()
 	if planned {
-		shown.out!("${Report.resolved_line({ at: outcome.at, probes: outcome.probes })}\n")
+		shown.out!("${Report.resolved_line({ at: outcome.at, log: outcome.log, probes: outcome.probes })}\n")
 	}
 	if opts.dry_run {
 		shown.out!("dry run: nothing was written\n")
 	}
 	if args.json {
-		fx.out!(Out.json_ok({ command: args.typed, data: ToolsPlan.with_tools({ base: Report.data(outcome), rows: done.tools }) }))
+		fx.out!(Out.json_ok({ command: args.typed, data: ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }) }))
 	}
 }

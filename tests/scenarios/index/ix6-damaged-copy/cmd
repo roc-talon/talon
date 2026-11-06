@@ -1,0 +1,16 @@
+# R-IX6 R-TF6 R-DI11 R-IX5 (Design Q392, slice 206): --offline with a registry and a kept copy that does not decode. The copy is a file that Talon can make again (R-TF3), so it counts as no copy:
+# Talon deletes it (the tree diff shows both files of the copy removed) and prints one warning that names the file (a proposal, R-OUT2). Not exit 15. Then R-IX6 goes on: the repository has no copy, so the group
+# acts as in R-DI11 (`missing`). No request is made (no fake server is needed, offline).
+# The probe `flowprobe registry-index` (slice 206, code agent) runs `PickIndex.index!` with the real Fx and the index Offline(<origin>), and prints `candidate <name> <version> <tag> <published_at> <size> <url>`,
+# `missing <name>` (no group of the name has a copy) and `missing-group <name> <form>` (each group with no copy), as the L2 words `offline` (tests/commands/L2Registry.roc).
+G=$XDG_CACHE_HOME/roc/talon/index/registry/http_127.0.0.1_9/get
+K=d1f9d55195a78856c1060481410244dd
+U=https://github.com/acme/json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst
+st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+
+# The damaged copy: the warning, the copy is removed, the group is missing.
+st flowprobe registry-index --offline --origin http://127.0.0.1:9 --known "$U" acme/json
+test ! -e "$G/$K.json" && test ! -e "$G/$K.meta" && echo "the copy is removed"
+
+# The next run has no copy: no warning, the same result.
+st flowprobe registry-index --offline --origin http://127.0.0.1:9 --known "$U" acme/json

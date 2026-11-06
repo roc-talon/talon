@@ -1,0 +1,25 @@
+Slice 215 revert check (test agent, 2026-11-03).
+A private reference of Db.queue_line, Db.queue_of, ShareQueue.admit, ShareQueue.err, ShareQueue.enqueue! and the Queue arm of cli/RealDb.roc made all new tests green: L0 l0-8 158 of 158, L2 share/ 10 of 10, L3 fx/sq1-real-fx-queue 1 of 1.
+13 hand mutations of the reference, each caught. Then the reference, the mutate script and the stub copies were deleted (TW18). before/ holds the files as they were before the slice (NEW.txt lists the new files).
+M1  filter 5: an author row blocks the fact                       L0 (filter 5 expect)
+M3  tool app: condition 2 (no --resolve, no override) not tested  L0 (tool app expect)
+M4  filter 6: a machine-error fail is queued                      L0 (filter 6 expect)
+M5  filter 3: the recorded sha256 is not needed                   L0 (filter 3 expect)
+M6  filter 5: the target is not part of the pair                  L0 (filter 5 expect)
+M7  filter 5: the nightly compared with == (R-CV1 tag forms)      L0 (filter 5 expect)
+M14 Db.queue_cap 1000                                             L0 (line form and cap expect)
+M15 Db.queue_of accepts an 8th word                               L0 (line form expect)
+M8  SQL: the cap drops the largest seq                            L3 sq1 (rows and facts.tsv)
+M10 SQL: ON CONFLICT DO UPDATE in place of DO NOTHING             L3 sq1 (step 3, the first row stays)
+M11 SQL: the cap drop is off by one                               L3 sq1
+M12 enqueue!: a busy file prints no warning                       L2 sh10-queue-errors
+M13 enqueue!: a call with no row still calls the db               L2 sh8-queue-write (calls.log)
+Not tested (equal or out of reach): the transaction of the Queue write (BEGIN IMMEDIATE ... COMMIT) cannot be seen from outside; the busy timeout of the Queue write is the common open_db! path (db1 step 11 covers it for facts).
+
+Second round (after the design answers Q431 to Q436): a private reference of admit (filters 3, 4, 7 as answered) made all admit expects green (157 of 159, the 2 others are the Db and err stubs). 5 more mutations, each caught by L0:
+M16 filter 4: the hash of a release row is not counted (Q432)
+M17 filter 7: a package may have a real target (Q432)
+M18 filter 7: a platform may have only any (its target_names not read) (Q432)
+M19 filter 3: a release X.Y.Z is allowed (Q431)
+M20 filter 4: the hash of a dep is counted (Q432)
+The reference was deleted (it was in the scratchpad, never in the tree).

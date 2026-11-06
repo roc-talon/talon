@@ -1,0 +1,15 @@
+All (14) tests passed in 119.8 ms.
+PASS identity/q262-row-race (3732 ms)
+PASS identity/tp10-301-followed (3673 ms)
+PASS identity/tp10-rename (4142 ms)
+PASS identity/tp18-301-no-row (3540 ms)
+PASS identity/tp18-rename-back (4174 ms)
+PASS identity/tp9-four-rows (4863 ms)
+FAIL identity/tp9-private-first (1779 ms)
+    request 1: status: expected 422, got 403
+    request 1: problem.type: expected "/errors/not-a-candidate", got "/errors/repository-changed"
+    request 1: problem.detail: expected "repository not found or not public", got "the name taken/repo is bound to another GitHub account (repository id 4001)"
+    request 2: status: expected 422, got 403
+    request 2: problem.type: expected "/errors/not-a-candidate", got "/errors/repository-changed"
+    request 2: problem.detail: expected "repository not found or not public", got "the name taken/repo is bound to another GitHub account (repository id 4001)"
+w2: 6 passed, 1 failed

@@ -1,0 +1,9 @@
+== update --tool --dry-run --file p1/main.roc
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+would build tool foo 1.1.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+dry run: nothing was written
+exit 0
+== update --tool --dry-run --json --file p2/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"tools":[{"key":"foo","name":"acme/foo","action":"kept","ref":"acme/foo@^1","url":"https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst","version":null,"previous":null,"file":"$PROJECT/p2/talon.toml","built":false,"would_build":false,"bin":["x64musl"],"binary":null,"bin_skip":null,"would_check":["arm64mac"]}]},"error":null}
+exit 0

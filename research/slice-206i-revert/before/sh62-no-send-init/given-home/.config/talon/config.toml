@@ -1,0 +1,5 @@
+registry = "http://127.0.0.1:9"
+share = true
+default-roc = "nightly-2026-10-09-9d9d9d9"
+[probe]
+timeout = 9

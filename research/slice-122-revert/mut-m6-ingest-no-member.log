@@ -1,0 +1,848 @@
+PASS ingest/ap26-body-and-route (1942 ms)
+PASS ingest/ik3-id-collision (2043 ms)
+FAIL ingest/pu14-pu19-labels (2407 ms)
+    request 1: status: expected 200, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: json.release: expected an object, got missing
+    request 2: status: expected 200, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: json.release: expected an object, got missing
+    request 3: status: expected 409, got 500
+    request 3: problem.type: expected "/errors/label-conflict", got "/errors/internal"
+    request 3: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 1.0.0 has the hash GhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ in the index, not CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8: release a new version", got "the Worker failed to handle the request"
+    request 4: status: expected 409, got 500
+    request 4: problem.type: expected "/errors/label-conflict", got "/errors/internal"
+    request 4: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 1.0.0 has the hash GhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ in the index, not CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8: release a new version", got "the Worker failed to handle the request"
+    request 5: status: expected 201, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: header location: expected "/v1/artifacts/CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8", got null
+    request 5: json.release: expected an object, got missing
+    request 6: status: expected 409, got 500
+    request 6: problem.type: expected "/errors/label-conflict", got "/errors/internal"
+    request 6: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 2.0.0 has another hash in the index, not 58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g: release a new version", got "the Worker failed to handle the request"
+    request 7: status: expected 422, got 500
+    request 7: problem.type: expected "/errors/not-a-candidate", got "/errors/internal"
+    request 7: problem.detail: expected "repository not found or not public", got "the Worker failed to handle the request"
+    request 8: status: expected 200, got 502
+    request 8: header talon-bookmark: expected a value, got none
+    request 8: header content-type: expected "application/json", got "application/problem+json"
+    request 8: header cache-control: expected "no-store", got null
+    request 8: json.release: expected an object, got missing
+    d1-calls: request 1: expected 2, got 1 (batch)
+    d1-calls: request 8: expected 2, got 1 (batch)
+    db: @ SELECT idx, grp, version, hash, time FROM log ORDER BY idx: rows differ:
+      expected: ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\tGhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ\t1767000000000","2\tgithub.com/acme/lib/releases/download/v{v}/\t1.0.0\tCLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8\t1767225630000","3\tgithub.com/acme/lib/releases/download/{v}/\t2.0.0\t9DE9hna44rZ4E9gKfPtmB6n1Av73eFbi7kzV2iCwdWgQ\t1767225600000","4\tgithub.com/acme/lib/releases/download/{v}/\t3.0.0\t2A52XwkVdjca1B4NvymVGNLRGnFdSZcLoDN26UeRmvsZ\t1767100000000","5\tgithub.com/acme/lib/releases/download/{v}/\t5.0.0\t7o7Rdz2Y1iJ86hB9Jg3p68pPccx7wVmMJ6f2p69bvYvF\t1767225600000"]
+      got:      ["1\tgithub.com/acme/lib/releases/download/{v}/\t1.0.0\tGhNHMVJY6R442LVRqYF74FHPi7uW1AzN8WX36DuhYCuQ\t1767000000000","2\tgithub.com/acme/lib/releases/download/v{v}/\t1.0.0\tCLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8\t1767225630000","3\tgithub.com/acme/lib/releases/download/{v}/\t2.0.0\t58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g\t1767225630000","4\tgithub.com/acme/lib/releases/download/{v}/\t3.0.0\t2A52XwkVdjca1B4NvymVGNLRGnFdSZcLoDN26UeRmvsZ\t1767100000000"]
+    db: @ SELECT log_index, CAST(artifact AS TEXT), tag FROM releases ORDER BY log_index: rows differ:
+      expected: ["1\t-2132199083618042159\t1.0.0","2\t6422947076234556011\tv1.0.0","3\t3833141144405703952\t2.0.0","4\t708415131410218359\t3.0.0","5\t-1707433628184592189\t5.0.0"]
+      got:      ["1\t-2132199083618042159\t1.0.0","2\t6422947076234556011\tv1.0.0","3\t3657304097670840948\t2.0.0","4\t708415131410218359\t3.0.0"]
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t1\t\\N\t1767000000000","1\t3\t\\N\t1767225630000","2\t3\t\\N\t1767225630000","4\t1\t\\N\t1767100000000","5\t3\t\\N\t1767225630000"]
+      got:      ["1\t1\t\\N\t1767000000000","2\t3\t\\N\t1767225630000","3\t3\t\\N\t1767225630000","4\t1\t\\N\t1767100000000"]
+    db: @ SELECT hex(value) FROM names WHERE kind = 1 ORDER BY 1: rows differ:
+      expected: ["112E7787F33A4799B634A786FA4ED10D09C5FA3C990C7F9B1678541442D92CA8","64F61A72375C1223F76C2B5943586997F7FAA832CBD503A01F58C10E42F17C94","79FF557CBBD2843B285344E890A93CBF3D706287F2B219E8B668694DAA805FA1","A35B62EF3E987B3BA45F11878B2975DD2EF45ECC4B5A7452392CDC711DBAB2D1","A4CCB042405EC5DF90A94B4ABB8439A48A924C86F7865F2DD392D4B27E9DE9CB","A8838D0D1363385EA2AF717D528CD8AEEA72112C331A355F4C5980D9A653AF9B","E936998F06017C640D2A6BAE70E058188621A8856221E1719FCDD9AFC2395FC3"]
+      got:      ["112E7787F33A4799B634A786FA4ED10D09C5FA3C990C7F9B1678541442D92CA8","3D6B00F018949C3A8EB508D83EBB0AA5D112BB0AE25AA1951C1767FDC2E92193","79FF557CBBD2843B285344E890A93CBF3D706287F2B219E8B668694DAA805FA1","A35B62EF3E987B3BA45F11878B2975DD2EF45ECC4B5A7452392CDC711DBAB2D1","A4CCB042405EC5DF90A94B4ABB8439A48A924C86F7865F2DD392D4B27E9DE9CB","A8838D0D1363385EA2AF717D528CD8AEEA72112C331A355F4C5980D9A653AF9B","E936998F06017C640D2A6BAE70E058188621A8856221E1719FCDD9AFC2395FC3"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/v1.0.0","GET https://github.com/acme/lib/releases/download/v1.0.0/CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8.tar.zst","GET https://raw.githubusercontent.com/acme/lib/v1.0.0/.roc-version","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0","GET https://github.com/acme/lib/releases/download/2.0.0/58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g.tar.zst","GET https://raw.githubusercontent.com/acme/lib/2.0.0/.roc-version","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/5.0.0","GET https://github.com/acme/lib/releases/download/5.0.0/7o7Rdz2Y1iJ86hB9Jg3p68pPccx7wVmMJ6f2p69bvYvF.tar.zst","GET https://raw.githubusercontent.com/acme/lib/5.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/v1.0.0","GET https://github.com/acme/lib/releases/download/v1.0.0/CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8.tar.zst","GET https://raw.githubusercontent.com/acme/lib/v1.0.0/.roc-version","GET https://api.github.com/repos/acme/lib","GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0","GET https://github.com/acme/lib/releases/download/2.0.0/58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g.tar.zst","GET https://raw.githubusercontent.com/acme/lib/2.0.0/.roc-version","GET https://api.github.com/repos/acme/lib"]
+FAIL ingest/pu4-index-kinds (2197 ms)
+    request 1: status: expected 201, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: header location: expected "/v1/artifacts/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J", got null
+    request 1: json.release: expected an object, got missing
+    request 2: status: expected 201, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: header location: expected "/v1/artifacts/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk", got null
+    request 2: json.release: expected an object, got missing
+    request 3: status: expected 201, got 500
+    request 3: header talon-bookmark: expected a value, got none
+    request 3: header content-type: expected "application/json", got "application/problem+json"
+    request 3: header cache-control: expected "no-store", got null
+    request 3: header location: expected "/v1/artifacts/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6", got null
+    request 3: json.release: expected an object, got missing
+    request 4: status: expected 200, got 500
+    request 4: header talon-bookmark: expected a value, got none
+    request 4: header content-type: expected "application/json", got "application/problem+json"
+    request 4: header cache-control: expected "no-store", got null
+    request 4: json.release: expected an object, got missing
+PASS ingest/pu6-not-candidates (2699 ms)
+FAIL ingest-limits/ap69-cache-drop (3460 ms)
+    request 10: status: expected 201, got 500
+    request 10: header talon-bookmark: expected a value, got none
+    request 10: header content-type: expected "application/json", got "application/problem+json"
+    request 10: header cache-control: expected "no-store", got null
+    request 10: header location: expected "/v1/artifacts/DrbaKEh2keccp1sePbPgCmJ78Sx6amA62itckpDmzzMb", got null
+    request 10: json.release: expected an object, got missing
+    request 11: json_len releases: expected an array of 2 items, got 1 items
+    request 12: json_len releases: expected an array of 2 items, got 1 items
+    request 13: json_len releases: expected an array of 2 items, got 1 items
+    request 14: json_len releases: expected an array of 2 items, got 1 items
+    request 16: status: expected 200, got 500
+    request 16: header talon-bookmark: expected a value, got none
+    request 16: header content-type: expected "application/json", got "application/problem+json"
+    request 16: header cache-control: expected "no-store", got null
+    request 16: json.release: expected an object, got missing
+    request 17: json_len releases: expected an array of 2 items, got 1 items
+    d1-calls: request 11: expected 1, got 0 (no call)
+    d1-calls: request 12: expected 1, got 0 (no call)
+    d1-calls: request 13: expected 1, got 0 (no call)
+    d1-calls: request 14: expected 1, got 0 (no call)
+FAIL ingest-limits/pu34-ip (25099 ms)
+    request 1: status: expected 200, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: json.release: expected an object, got missing
+    request 2: status: expected 200, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: json.release: expected an object, got missing
+    request 3: status: expected 200, got 500
+    request 3: header talon-bookmark: expected a value, got none
+    request 3: header content-type: expected "application/json", got "application/problem+json"
+    request 3: header cache-control: expected "no-store", got null
+    request 3: json.release: expected an object, got missing
+    request 4: status: expected 200, got 500
+    request 4: header talon-bookmark: expected a value, got none
+    request 4: header content-type: expected "application/json", got "application/problem+json"
+    request 4: header cache-control: expected "no-store", got null
+    request 4: json.release: expected an object, got missing
+    request 5: status: expected 200, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json.release: expected an object, got missing
+    request 6: status: expected 200, got 500
+    request 6: header talon-bookmark: expected a value, got none
+    request 6: header content-type: expected "application/json", got "application/problem+json"
+    request 6: header cache-control: expected "no-store", got null
+    request 6: json.release: expected an object, got missing
+    request 7: status: expected 200, got 500
+    request 7: header talon-bookmark: expected a value, got none
+    request 7: header content-type: expected "application/json", got "application/problem+json"
+    request 7: header cache-control: expected "no-store", got null
+    request 7: json.release: expected an object, got missing
+    request 8: status: expected 200, got 500
+    request 8: header talon-bookmark: expected a value, got none
+    request 8: header content-type: expected "application/json", got "application/problem+json"
+    request 8: header cache-control: expected "no-store", got null
+    request 8: json.release: expected an object, got missing
+    request 9: status: expected 200, got 500
+    request 9: header talon-bookmark: expected a value, got none
+    request 9: header content-type: expected "application/json", got "application/problem+json"
+    request 9: header cache-control: expected "no-store", got null
+    request 9: json.release: expected an object, got missing
+    request 10: status: expected 200, got 500
+    request 10: header talon-bookmark: expected a value, got none
+    request 10: header content-type: expected "application/json", got "application/problem+json"
+    request 10: header cache-control: expected "no-store", got null
+    request 10: json.release: expected an object, got missing
+    request 11: status: expected 200, got 500
+    request 11: header talon-bookmark: expected a value, got none
+    request 11: header content-type: expected "application/json", got "application/problem+json"
+    request 11: header cache-control: expected "no-store", got null
+    request 11: json.release: expected an object, got missing
+    request 12: status: expected 200, got 500
+    request 12: header talon-bookmark: expected a value, got none
+    request 12: header content-type: expected "application/json", got "application/problem+json"
+    request 12: header cache-control: expected "no-store", got null
+    request 12: json.release: expected an object, got missing
+    request 13: status: expected 200, got 500
+    request 13: header talon-bookmark: expected a value, got none
+    request 13: header content-type: expected "application/json", got "application/problem+json"
+    request 13: header cache-control: expected "no-store", got null
+    request 13: json.release: expected an object, got missing
+    request 14: status: expected 200, got 500
+    request 14: header talon-bookmark: expected a value, got none
+    request 14: header content-type: expected "application/json", got "application/problem+json"
+    request 14: header cache-control: expected "no-store", got null
+    request 14: json.release: expected an object, got missing
+    request 15: status: expected 200, got 500
+    request 15: header talon-bookmark: expected a value, got none
+    request 15: header content-type: expected "application/json", got "application/problem+json"
+    request 15: header cache-control: expected "no-store", got null
+    request 15: json.release: expected an object, got missing
+    request 16: status: expected 200, got 500
+    request 16: header talon-bookmark: expected a value, got none
+    request 16: header content-type: expected "application/json", got "application/problem+json"
+    request 16: header cache-control: expected "no-store", got null
+    request 16: json.release: expected an object, got missing
+    request 17: status: expected 200, got 500
+    request 17: header talon-bookmark: expected a value, got none
+    request 17: header content-type: expected "application/json", got "application/problem+json"
+    request 17: header cache-control: expected "no-store", got null
+    request 17: json.release: expected an object, got missing
+    request 18: status: expected 200, got 500
+    request 18: header talon-bookmark: expected a value, got none
+    request 18: header content-type: expected "application/json", got "application/problem+json"
+    request 18: header cache-control: expected "no-store", got null
+    request 18: json.release: expected an object, got missing
+    request 19: status: expected 200, got 500
+    request 19: header talon-bookmark: expected a value, got none
+    request 19: header content-type: expected "application/json", got "application/problem+json"
+    request 19: header cache-control: expected "no-store", got null
+    request 19: json.release: expected an object, got missing
+    request 20: status: expected 200, got 500
+    request 20: header talon-bookmark: expected a value, got none
+    request 20: header content-type: expected "application/json", got "application/problem+json"
+    request 20: header cache-control: expected "no-store", got null
+    request 20: json.release: expected an object, got missing
+    request 21: status: expected 200, got 500
+    request 21: header talon-bookmark: expected a value, got none
+    request 21: header content-type: expected "application/json", got "application/problem+json"
+    request 21: header cache-control: expected "no-store", got null
+    request 21: json.release: expected an object, got missing
+    request 22: status: expected 200, got 500
+    request 22: header talon-bookmark: expected a value, got none
+    request 22: header content-type: expected "application/json", got "application/problem+json"
+    request 22: header cache-control: expected "no-store", got null
+    request 22: json.release: expected an object, got missing
+    request 23: status: expected 200, got 500
+    request 23: header talon-bookmark: expected a value, got none
+    request 23: header content-type: expected "application/json", got "application/problem+json"
+    request 23: header cache-control: expected "no-store", got null
+    request 23: json.release: expected an object, got missing
+    request 24: status: expected 200, got 500
+    request 24: header talon-bookmark: expected a value, got none
+    request 24: header content-type: expected "application/json", got "application/problem+json"
+    request 24: header cache-control: expected "no-store", got null
+    request 24: json.release: expected an object, got missing
+    request 25: status: expected 200, got 500
+    request 25: header talon-bookmark: expected a value, got none
+    request 25: header content-type: expected "application/json", got "application/problem+json"
+    request 25: header cache-control: expected "no-store", got null
+    request 25: json.release: expected an object, got missing
+    request 26: status: expected 200, got 500
+    request 26: header talon-bookmark: expected a value, got none
+    request 26: header content-type: expected "application/json", got "application/problem+json"
+    request 26: header cache-control: expected "no-store", got null
+    request 26: json.release: expected an object, got missing
+    request 27: status: expected 200, got 500
+    request 27: header talon-bookmark: expected a value, got none
+    request 27: header content-type: expected "application/json", got "application/problem+json"
+    request 27: header cache-control: expected "no-store", got null
+    request 27: json.release: expected an object, got missing
+    request 28: status: expected 200, got 500
+    request 28: header talon-bookmark: expected a value, got none
+    request 28: header content-type: expected "application/json", got "application/problem+json"
+    request 28: header cache-control: expected "no-store", got null
+    request 28: json.release: expected an object, got missing
+    request 29: status: expected 200, got 500
+    request 29: header talon-bookmark: expected a value, got none
+    request 29: header content-type: expected "application/json", got "application/problem+json"
+    request 29: header cache-control: expected "no-store", got null
+    request 29: json.release: expected an object, got missing
+    request 30: status: expected 200, got 500
+    request 30: header talon-bookmark: expected a value, got none
+    request 30: header content-type: expected "application/json", got "application/problem+json"
+    request 30: header cache-control: expected "no-store", got null
+    request 30: json.release: expected an object, got missing
+    request 32: status: expected 200, got 500
+    request 32: header talon-bookmark: expected a value, got none
+    request 32: header content-type: expected "application/json", got "application/problem+json"
+    request 32: header cache-control: expected "no-store", got null
+    request 32: json.release: expected an object, got missing
+    request 33: status: expected 200, got 500
+    request 33: header talon-bookmark: expected a value, got none
+    request 33: header content-type: expected "application/json", got "application/problem+json"
+    request 33: header cache-control: expected "no-store", got null
+    request 33: json.release: expected an object, got missing
+    request 34: status: expected 200, got 500
+    request 34: header talon-bookmark: expected a value, got none
+    request 34: header content-type: expected "application/json", got "application/problem+json"
+    request 34: header cache-control: expected "no-store", got null
+    request 34: json.release: expected an object, got missing
+    request 35: status: expected 200, got 500
+    request 35: header talon-bookmark: expected a value, got none
+    request 35: header content-type: expected "application/json", got "application/problem+json"
+    request 35: header cache-control: expected "no-store", got null
+    request 35: json.release: expected an object, got missing
+    request 36: status: expected 200, got 500
+    request 36: header talon-bookmark: expected a value, got none
+    request 36: header content-type: expected "application/json", got "application/problem+json"
+    request 36: header cache-control: expected "no-store", got null
+    request 36: json.release: expected an object, got missing
+    request 37: status: expected 200, got 500
+    request 37: header talon-bookmark: expected a value, got none
+    request 37: header content-type: expected "application/json", got "application/problem+json"
+    request 37: header cache-control: expected "no-store", got null
+    request 37: json.release: expected an object, got missing
+    request 38: status: expected 200, got 500
+    request 38: header talon-bookmark: expected a value, got none
+    request 38: header content-type: expected "application/json", got "application/problem+json"
+    request 38: header cache-control: expected "no-store", got null
+    request 38: json.release: expected an object, got missing
+    request 39: status: expected 200, got 500
+    request 39: header talon-bookmark: expected a value, got none
+    request 39: header content-type: expected "application/json", got "application/problem+json"
+    request 39: header cache-control: expected "no-store", got null
+    request 39: json.release: expected an object, got missing
+    request 40: status: expected 200, got 500
+    request 40: header talon-bookmark: expected a value, got none
+    request 40: header content-type: expected "application/json", got "application/problem+json"
+    request 40: header cache-control: expected "no-store", got null
+    request 40: json.release: expected an object, got missing
+    request 41: status: expected 200, got 500
+    request 41: header talon-bookmark: expected a value, got none
+    request 41: header content-type: expected "application/json", got "application/problem+json"
+    request 41: header cache-control: expected "no-store", got null
+    request 41: json.release: expected an object, got missing
+    request 42: status: expected 200, got 500
+    request 42: header talon-bookmark: expected a value, got none
+    request 42: header content-type: expected "application/json", got "application/problem+json"
+    request 42: header cache-control: expected "no-store", got null
+    request 42: json.release: expected an object, got missing
+    request 43: status: expected 200, got 500
+    request 43: header talon-bookmark: expected a value, got none
+    request 43: header content-type: expected "application/json", got "application/problem+json"
+    request 43: header cache-control: expected "no-store", got null
+    request 43: json.release: expected an object, got missing
+    request 44: status: expected 200, got 500
+    request 44: header talon-bookmark: expected a value, got none
+    request 44: header content-type: expected "application/json", got "application/problem+json"
+    request 44: header cache-control: expected "no-store", got null
+    request 44: json.release: expected an object, got missing
+    request 45: status: expected 200, got 500
+    request 45: header talon-bookmark: expected a value, got none
+    request 45: header content-type: expected "application/json", got "application/problem+json"
+    request 45: header cache-control: expected "no-store", got null
+    request 45: json.release: expected an object, got missing
+    request 46: status: expected 200, got 500
+    request 46: header talon-bookmark: expected a value, got none
+    request 46: header content-type: expected "application/json", got "application/problem+json"
+    request 46: header cache-control: expected "no-store", got null
+    request 46: json.release: expected an object, got missing
+    request 47: status: expected 200, got 500
+    request 47: header talon-bookmark: expected a value, got none
+    request 47: header content-type: expected "application/json", got "application/problem+json"
+    request 47: header cache-control: expected "no-store", got null
+    request 47: json.release: expected an object, got missing
+    request 48: status: expected 200, got 500
+    request 48: header talon-bookmark: expected a value, got none
+    request 48: header content-type: expected "application/json", got "application/problem+json"
+    request 48: header cache-control: expected "no-store", got null
+    request 48: json.release: expected an object, got missing
+    request 49: status: expected 200, got 500
+    request 49: header talon-bookmark: expected a value, got none
+    request 49: header content-type: expected "application/json", got "application/problem+json"
+    request 49: header cache-control: expected "no-store", got null
+    request 49: json.release: expected an object, got missing
+    request 50: status: expected 200, got 500
+    request 50: header talon-bookmark: expected a value, got none
+    request 50: header content-type: expected "application/json", got "application/problem+json"
+    request 50: header cache-control: expected "no-store", got null
+    request 50: json.release: expected an object, got missing
+    request 51: status: expected 200, got 500
+    request 51: header talon-bookmark: expected a value, got none
+    request 51: header content-type: expected "application/json", got "application/problem+json"
+    request 51: header cache-control: expected "no-store", got null
+    request 51: json.release: expected an object, got missing
+    request 52: status: expected 200, got 500
+    request 52: header talon-bookmark: expected a value, got none
+    request 52: header content-type: expected "application/json", got "application/problem+json"
+    request 52: header cache-control: expected "no-store", got null
+    request 52: json.release: expected an object, got missing
+    request 53: status: expected 200, got 500
+    request 53: header talon-bookmark: expected a value, got none
+    request 53: header content-type: expected "application/json", got "application/problem+json"
+    request 53: header cache-control: expected "no-store", got null
+    request 53: json.release: expected an object, got missing
+    request 54: status: expected 200, got 500
+    request 54: header talon-bookmark: expected a value, got none
+    request 54: header content-type: expected "application/json", got "application/problem+json"
+    request 54: header cache-control: expected "no-store", got null
+    request 54: json.release: expected an object, got missing
+    request 55: status: expected 200, got 500
+    request 55: header talon-bookmark: expected a value, got none
+    request 55: header content-type: expected "application/json", got "application/problem+json"
+    request 55: header cache-control: expected "no-store", got null
+    request 55: json.release: expected an object, got missing
+    request 56: status: expected 200, got 500
+    request 56: header talon-bookmark: expected a value, got none
+    request 56: header content-type: expected "application/json", got "application/problem+json"
+    request 56: header cache-control: expected "no-store", got null
+    request 56: json.release: expected an object, got missing
+    request 57: status: expected 200, got 500
+    request 57: header talon-bookmark: expected a value, got none
+    request 57: header content-type: expected "application/json", got "application/problem+json"
+    request 57: header cache-control: expected "no-store", got null
+    request 57: json.release: expected an object, got missing
+    request 58: status: expected 200, got 500
+    request 58: header talon-bookmark: expected a value, got none
+    request 58: header content-type: expected "application/json", got "application/problem+json"
+    request 58: header cache-control: expected "no-store", got null
+    request 58: json.release: expected an object, got missing
+    request 59: status: expected 200, got 500
+    request 59: header talon-bookmark: expected a value, got none
+    request 59: header content-type: expected "application/json", got "application/problem+json"
+    request 59: header cache-control: expected "no-store", got null
+    request 59: json.release: expected an object, got missing
+    request 60: status: expected 200, got 500
+    request 60: header talon-bookmark: expected a value, got none
+    request 60: header content-type: expected "application/json", got "application/problem+json"
+    request 60: header cache-control: expected "no-store", got null
+    request 60: json.release: expected an object, got missing
+    request 61: status: expected 200, got 500
+    request 61: header talon-bookmark: expected a value, got none
+    request 61: header content-type: expected "application/json", got "application/problem+json"
+    request 61: header cache-control: expected "no-store", got null
+    request 61: json.release: expected an object, got missing
+    request 64: status: expected 200, got 500
+    request 64: header talon-bookmark: expected a value, got none
+    request 64: header content-type: expected "application/json", got "application/problem+json"
+    request 64: header cache-control: expected "no-store", got null
+    request 64: json.release: expected an object, got missing
+    request 65: status: expected 200, got 500
+    request 65: header talon-bookmark: expected a value, got none
+    request 65: header content-type: expected "application/json", got "application/problem+json"
+    request 65: header cache-control: expected "no-store", got null
+    request 65: json.release: expected an object, got missing
+    request 66: status: expected 200, got 500
+    request 66: header talon-bookmark: expected a value, got none
+    request 66: header content-type: expected "application/json", got "application/problem+json"
+    request 66: header cache-control: expected "no-store", got null
+    request 66: json.release: expected an object, got missing
+    request 67: status: expected 200, got 500
+    request 67: header talon-bookmark: expected a value, got none
+    request 67: header content-type: expected "application/json", got "application/problem+json"
+    request 67: header cache-control: expected "no-store", got null
+    request 67: json.release: expected an object, got missing
+    request 68: status: expected 200, got 500
+    request 68: header talon-bookmark: expected a value, got none
+    request 68: header content-type: expected "application/json", got "application/problem+json"
+    request 68: header cache-control: expected "no-store", got null
+    request 68: json.release: expected an object, got missing
+    request 69: status: expected 200, got 500
+    request 69: header talon-bookmark: expected a value, got none
+    request 69: header content-type: expected "application/json", got "application/problem+json"
+    request 69: header cache-control: expected "no-store", got null
+    request 69: json.release: expected an object, got missing
+    request 70: status: expected 200, got 500
+    request 70: header talon-bookmark: expected a value, got none
+    request 70: header content-type: expected "application/json", got "application/problem+json"
+    request 70: header cache-control: expected "no-store", got null
+    request 70: json.release: expected an object, got missing
+    request 71: status: expected 200, got 500
+    request 71: header talon-bookmark: expected a value, got none
+    request 71: header content-type: expected "application/json", got "application/problem+json"
+    request 71: header cache-control: expected "no-store", got null
+    request 71: json.release: expected an object, got missing
+    request 72: status: expected 200, got 500
+    request 72: header talon-bookmark: expected a value, got none
+    request 72: header content-type: expected "application/json", got "application/problem+json"
+    request 72: header cache-control: expected "no-store", got null
+    request 72: json.release: expected an object, got missing
+    request 73: status: expected 200, got 500
+    request 73: header talon-bookmark: expected a value, got none
+    request 73: header content-type: expected "application/json", got "application/problem+json"
+    request 73: header cache-control: expected "no-store", got null
+    request 73: json.release: expected an object, got missing
+    request 74: status: expected 200, got 500
+    request 74: header talon-bookmark: expected a value, got none
+    request 74: header content-type: expected "application/json", got "application/problem+json"
+    request 74: header cache-control: expected "no-store", got null
+    request 74: json.release: expected an object, got missing
+    request 75: status: expected 200, got 500
+    request 75: header talon-bookmark: expected a value, got none
+    request 75: header content-type: expected "application/json", got "application/problem+json"
+    request 75: header cache-control: expected "no-store", got null
+    request 75: json.release: expected an object, got missing
+    request 76: status: expected 200, got 500
+    request 76: header talon-bookmark: expected a value, got none
+    request 76: header content-type: expected "application/json", got "application/problem+json"
+    request 76: header cache-control: expected "no-store", got null
+    request 76: json.release: expected an object, got missing
+    request 77: status: expected 200, got 500
+    request 77: header talon-bookmark: expected a value, got none
+    request 77: header content-type: expected "application/json", got "application/problem+json"
+    request 77: header cache-control: expected "no-store", got null
+    request 77: json.release: expected an object, got missing
+    request 78: status: expected 200, got 500
+    request 78: header talon-bookmark: expected a value, got none
+    request 78: header content-type: expected "application/json", got "application/problem+json"
+    request 78: header cache-control: expected "no-store", got null
+    request 78: json.release: expected an object, got missing
+    request 79: status: expected 200, got 500
+    request 79: header talon-bookmark: expected a value, got none
+    request 79: header content-type: expected "application/json", got "application/problem+json"
+    request 79: header cache-control: expected "no-store", got null
+    request 79: json.release: expected an object, got missing
+    request 80: status: expected 200, got 500
+    request 80: header talon-bookmark: expected a value, got none
+    request 80: header content-type: expected "application/json", got "application/problem+json"
+    request 80: header cache-control: expected "no-store", got null
+    request 80: json.release: expected an object, got missing
+    request 81: status: expected 200, got 500
+    request 81: header talon-bookmark: expected a value, got none
+    request 81: header content-type: expected "application/json", got "application/problem+json"
+    request 81: header cache-control: expected "no-store", got null
+    request 81: json.release: expected an object, got missing
+    request 82: status: expected 200, got 500
+    request 82: header talon-bookmark: expected a value, got none
+    request 82: header content-type: expected "application/json", got "application/problem+json"
+    request 82: header cache-control: expected "no-store", got null
+    request 82: json.release: expected an object, got missing
+    request 83: status: expected 200, got 500
+    request 83: header talon-bookmark: expected a value, got none
+    request 83: header content-type: expected "application/json", got "application/problem+json"
+    request 83: header cache-control: expected "no-store", got null
+    request 83: json.release: expected an object, got missing
+    request 84: status: expected 200, got 500
+    request 84: header talon-bookmark: expected a value, got none
+    request 84: header content-type: expected "application/json", got "application/problem+json"
+    request 84: header cache-control: expected "no-store", got null
+    request 84: json.release: expected an object, got missing
+    request 85: status: expected 200, got 500
+    request 85: header talon-bookmark: expected a value, got none
+    request 85: header content-type: expected "application/json", got "application/problem+json"
+    request 85: header cache-control: expected "no-store", got null
+    request 85: json.release: expected an object, got missing
+    request 86: status: expected 200, got 500
+    request 86: header talon-bookmark: expected a value, got none
+    request 86: header content-type: expected "application/json", got "application/problem+json"
+    request 86: header cache-control: expected "no-store", got null
+    request 86: json.release: expected an object, got missing
+    request 87: status: expected 200, got 500
+    request 87: header talon-bookmark: expected a value, got none
+    request 87: header content-type: expected "application/json", got "application/problem+json"
+    request 87: header cache-control: expected "no-store", got null
+    request 87: json.release: expected an object, got missing
+    request 88: status: expected 200, got 500
+    request 88: header talon-bookmark: expected a value, got none
+    request 88: header content-type: expected "application/json", got "application/problem+json"
+    request 88: header cache-control: expected "no-store", got null
+    request 88: json.release: expected an object, got missing
+    request 89: status: expected 200, got 500
+    request 89: header talon-bookmark: expected a value, got none
+    request 89: header content-type: expected "application/json", got "application/problem+json"
+    request 89: header cache-control: expected "no-store", got null
+    request 89: json.release: expected an object, got missing
+    request 90: status: expected 200, got 500
+    request 90: header talon-bookmark: expected a value, got none
+    request 90: header content-type: expected "application/json", got "application/problem+json"
+    request 90: header cache-control: expected "no-store", got null
+    request 90: json.release: expected an object, got missing
+    request 91: status: expected 200, got 500
+    request 91: header talon-bookmark: expected a value, got none
+    request 91: header content-type: expected "application/json", got "application/problem+json"
+    request 91: header cache-control: expected "no-store", got null
+    request 91: json.release: expected an object, got missing
+    request 92: status: expected 200, got 500
+    request 92: header talon-bookmark: expected a value, got none
+    request 92: header content-type: expected "application/json", got "application/problem+json"
+    request 92: header cache-control: expected "no-store", got null
+    request 92: json.release: expected an object, got missing
+    request 93: status: expected 200, got 500
+    request 93: header talon-bookmark: expected a value, got none
+    request 93: header content-type: expected "application/json", got "application/problem+json"
+    request 93: header cache-control: expected "no-store", got null
+    request 93: json.release: expected an object, got missing
+    request 94: status: expected 200, got 500
+    request 94: header talon-bookmark: expected a value, got none
+    request 94: header content-type: expected "application/json", got "application/problem+json"
+    request 94: header cache-control: expected "no-store", got null
+    request 94: json.release: expected an object, got missing
+    request 95: status: expected 200, got 500
+    request 95: header talon-bookmark: expected a value, got none
+    request 95: header content-type: expected "application/json", got "application/problem+json"
+    request 95: header cache-control: expected "no-store", got null
+    request 95: json.release: expected an object, got missing
+    request 96: status: expected 200, got 500
+    request 96: header talon-bookmark: expected a value, got none
+    request 96: header content-type: expected "application/json", got "application/problem+json"
+    request 96: header cache-control: expected "no-store", got null
+    request 96: json.release: expected an object, got missing
+    request 97: status: expected 200, got 500
+    request 97: header talon-bookmark: expected a value, got none
+    request 97: header content-type: expected "application/json", got "application/problem+json"
+    request 97: header cache-control: expected "no-store", got null
+    request 97: json.release: expected an object, got missing
+    request 98: status: expected 200, got 500
+    request 98: header talon-bookmark: expected a value, got none
+    request 98: header content-type: expected "application/json", got "application/problem+json"
+    request 98: header cache-control: expected "no-store", got null
+    request 98: json.release: expected an object, got missing
+    request 99: status: expected 200, got 500
+    request 99: header talon-bookmark: expected a value, got none
+    request 99: header content-type: expected "application/json", got "application/problem+json"
+    request 99: header cache-control: expected "no-store", got null
+    request 99: json.release: expected an object, got missing
+    request 100: status: expected 200, got 500
+    request 100: header talon-bookmark: expected a value, got none
+    request 100: header content-type: expected "application/json", got "application/problem+json"
+    request 100: header cache-control: expected "no-store", got null
+    request 100: json.release: expected an object, got missing
+    request 101: status: expected 200, got 500
+    request 101: header talon-bookmark: expected a value, got none
+    request 101: header content-type: expected "application/json", got "application/problem+json"
+    request 101: header cache-control: expected "no-store", got null
+    request 101: json.release: expected an object, got missing
+    request 102: status: expected 200, got 500
+    request 102: header talon-bookmark: expected a value, got none
+    request 102: header content-type: expected "application/json", got "application/problem+json"
+    request 102: header cache-control: expected "no-store", got null
+    request 102: json.release: expected an object, got missing
+    request 103: status: expected 200, got 500
+    request 103: header talon-bookmark: expected a value, got none
+    request 103: header content-type: expected "application/json", got "application/problem+json"
+    request 103: header cache-control: expected "no-store", got null
+    request 103: json.release: expected an object, got missing
+    request 104: status: expected 200, got 500
+    request 104: header talon-bookmark: expected a value, got none
+    request 104: header content-type: expected "application/json", got "application/problem+json"
+    request 104: header cache-control: expected "no-store", got null
+    request 104: json.release: expected an object, got missing
+    request 105: status: expected 200, got 500
+    request 105: header talon-bookmark: expected a value, got none
+    request 105: header content-type: expected "application/json", got "application/problem+json"
+    request 105: header cache-control: expected "no-store", got null
+    request 105: json.release: expected an object, got missing
+    request 106: status: expected 200, got 500
+    request 106: header talon-bookmark: expected a value, got none
+    request 106: header content-type: expected "application/json", got "application/problem+json"
+    request 106: header cache-control: expected "no-store", got null
+    request 106: json.release: expected an object, got missing
+    request 107: status: expected 200, got 500
+    request 107: header talon-bookmark: expected a value, got none
+    request 107: header content-type: expected "application/json", got "application/problem+json"
+    request 107: header cache-control: expected "no-store", got null
+    request 107: json.release: expected an object, got missing
+    request 108: status: expected 200, got 500
+    request 108: header talon-bookmark: expected a value, got none
+    request 108: header content-type: expected "application/json", got "application/problem+json"
+    request 108: header cache-control: expected "no-store", got null
+    request 108: json.release: expected an object, got missing
+    request 109: status: expected 200, got 500
+    request 109: header talon-bookmark: expected a value, got none
+    request 109: header content-type: expected "application/json", got "application/problem+json"
+    request 109: header cache-control: expected "no-store", got null
+    request 109: json.release: expected an object, got missing
+    request 110: status: expected 200, got 500
+    request 110: header talon-bookmark: expected a value, got none
+    request 110: header content-type: expected "application/json", got "application/problem+json"
+    request 110: header cache-control: expected "no-store", got null
+    request 110: json.release: expected an object, got missing
+    request 111: status: expected 200, got 500
+    request 111: header talon-bookmark: expected a value, got none
+    request 111: header content-type: expected "application/json", got "application/problem+json"
+    request 111: header cache-control: expected "no-store", got null
+    request 111: json.release: expected an object, got missing
+    request 112: status: expected 200, got 500
+    request 112: header talon-bookmark: expected a value, got none
+    request 112: header content-type: expected "application/json", got "application/problem+json"
+    request 112: header cache-control: expected "no-store", got null
+    request 112: json.release: expected an object, got missing
+    request 113: status: expected 200, got 500
+    request 113: header talon-bookmark: expected a value, got none
+    request 113: header content-type: expected "application/json", got "application/problem+json"
+    request 113: header cache-control: expected "no-store", got null
+    request 113: json.release: expected an object, got missing
+    request 114: status: expected 200, got 500
+    request 114: header talon-bookmark: expected a value, got none
+    request 114: header content-type: expected "application/json", got "application/problem+json"
+    request 114: header cache-control: expected "no-store", got null
+    request 114: json.release: expected an object, got missing
+    request 115: status: expected 200, got 500
+    request 115: header talon-bookmark: expected a value, got none
+    request 115: header content-type: expected "application/json", got "application/problem+json"
+    request 115: header cache-control: expected "no-store", got null
+    request 115: json.release: expected an object, got missing
+    request 116: status: expected 200, got 500
+    request 116: header talon-bookmark: expected a value, got none
+    request 116: header content-type: expected "application/json", got "application/problem+json"
+    request 116: header cache-control: expected "no-store", got null
+    request 116: json.release: expected an object, got missing
+    request 117: status: expected 200, got 500
+    request 117: header talon-bookmark: expected a value, got none
+    request 117: header content-type: expected "application/json", got "application/problem+json"
+    request 117: header cache-control: expected "no-store", got null
+    request 117: json.release: expected an object, got missing
+    request 118: status: expected 200, got 500
+    request 118: header talon-bookmark: expected a value, got none
+    request 118: header content-type: expected "application/json", got "application/problem+json"
+    request 118: header cache-control: expected "no-store", got null
+    request 118: json.release: expected an object, got missing
+    request 119: status: expected 200, got 500
+    request 119: header talon-bookmark: expected a value, got none
+    request 119: header content-type: expected "application/json", got "application/problem+json"
+    request 119: header cache-control: expected "no-store", got null
+    request 119: json.release: expected an object, got missing
+    request 120: status: expected 200, got 500
+    request 120: header talon-bookmark: expected a value, got none
+    request 120: header content-type: expected "application/json", got "application/problem+json"
+    request 120: header cache-control: expected "no-store", got null
+    request 120: json.release: expected an object, got missing
+    request 121: status: expected 200, got 500
+    request 121: header talon-bookmark: expected a value, got none
+    request 121: header content-type: expected "application/json", got "application/problem+json"
+    request 121: header cache-control: expected "no-store", got null
+    request 121: json.release: expected an object, got missing
+    request 122: status: expected 200, got 500
+    request 122: header talon-bookmark: expected a value, got none
+    request 122: header content-type: expected "application/json", got "application/problem+json"
+    request 122: header cache-control: expected "no-store", got null
+    request 122: json.release: expected an object, got missing
+    request 123: status: expected 200, got 500
+    request 123: header talon-bookmark: expected a value, got none
+    request 123: header content-type: expected "application/json", got "application/problem+json"
+    request 123: header cache-control: expected "no-store", got null
+    request 123: json.release: expected an object, got missing
+    request 124: status: expected 200, got 500
+    request 124: header talon-bookmark: expected a value, got none
+    request 124: header content-type: expected "application/json", got "application/problem+json"
+    request 124: header cache-control: expected "no-store", got null
+    request 124: json.release: expected an object, got missing
+    request 126: status: expected 200, got 500
+    request 126: header talon-bookmark: expected a value, got none
+    request 126: header content-type: expected "application/json", got "application/problem+json"
+    request 126: header cache-control: expected "no-store", got null
+    request 126: json.release: expected an object, got missing
+FAIL ingest-limits/pu34-owner (2574 ms)
+    request 1: status: expected 201, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: header location: expected "/v1/artifacts/2XtGC6VimVDoEcSTWMGDK4WmcEcCjGyQAPWN1ERudubk", got null
+    request 1: json.release: expected an object, got missing
+    request 5: status: expected 201, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: header location: expected "/v1/artifacts/C37zRYpnSu4JSmmuVR5pT6DwCCZA1fogPuKTeuqbsSrT", got null
+    request 5: json.release: expected an object, got missing
+    request 6: status: expected 201, got 500
+    request 6: header talon-bookmark: expected a value, got none
+    request 6: header content-type: expected "application/json", got "application/problem+json"
+    request 6: header cache-control: expected "no-store", got null
+    request 6: header location: expected "/v1/artifacts/HL9tmuoKPgZ1ULuLGdqDBoSfwaGCka6UX8fK4Hx3U977", got null
+    request 6: json.release: expected an object, got missing
+FAIL publish/pu1-publish-package (2383 ms)
+    request 2: status: expected 201, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: header location: expected "/v1/artifacts/GDEmHbkSpoRbt2HmNveu99RfF3CwmLgnGYn9vHFPsnk1", got null
+    request 2: json.release: expected an object, got missing
+    request 3: json_len releases: expected an array of 1 items, got 0 items
+    request 4: status: expected 200, got 500
+    request 4: header talon-bookmark: expected a value, got none
+    request 4: header content-type: expected "application/json", got "application/problem+json"
+    request 4: header cache-control: expected "no-store", got null
+    request 4: json.release: expected an object, got missing
+    request 5: status: expected 200, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json.release: expected an object, got missing
+    request 6: status: expected 200, got 500
+    request 6: header talon-bookmark: expected a value, got none
+    request 6: header content-type: expected "application/json", got "application/problem+json"
+    request 6: header cache-control: expected "no-store", got null
+    request 6: json.release: expected an object, got missing
+    d1-calls: request 3: expected 1, got 0 (no call)
+    d1-calls: request 4: expected 2, got 1 (batch)
+    d1-calls: request 6: expected 2, got 1 (batch)
+    db: @ SELECT CAST(artifact AS TEXT), nightly, target, source, result, error_digest, time, log_index FROM compat ORDER BY nightly, target, source: rows differ:
+      expected: ["-4615891099891934445\t5566048545575\t0\t1\t3\tx\t1767225635000\t1","-4615891099891934445\t5567410745385\t0\t1\t1\tboom: E0001\t1767225630000\t1","-4615891099891934445\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t1"]
+      got:      ["-4615891099891934445\t5567410745385\t0\t1\t1\tboom: E0001\t1767225630000\t1","-4615891099891934445\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t1"]
+FAIL publish/pu15-ingest-then-publish (1932 ms)
+    request 1: status: expected 201, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: header location: expected "/v1/artifacts/GDEmHbkSpoRbt2HmNveu99RfF3CwmLgnGYn9vHFPsnk1", got null
+    request 1: json.release: expected an object, got missing
+    request 3: status: expected 200, got 500
+    request 3: header talon-bookmark: expected a value, got none
+    request 3: header content-type: expected "application/json", got "application/problem+json"
+    request 3: header cache-control: expected "no-store", got null
+    request 3: json.release: expected an object, got missing
+    request 4: json.releases[0].provenance: expected an array of 2 items, got ["ingest"]
+    request 5: status: expected 200, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json.release: expected an object, got missing
+    request 6: json.releases[0].provenance: expected an array of 2 items, got ["ingest"]
+    request 7: json.releases[0].provenance: expected an array of 2 items, got ["ingest"]
+    request 8: status: expected 200, got 500
+    request 8: header talon-bookmark: expected a value, got none
+    request 8: header content-type: expected "application/json", got "application/problem+json"
+    request 8: header cache-control: expected "no-store", got null
+    request 8: json.release: expected an object, got missing
+    d1-calls: request 3: expected 2, got 1 (batch)
+    d1-calls: request 4: expected 1, got 0 (no call)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"push\",\"run_id\":\"77\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t1767225640000","1\t3\t\\N\t1767225630000"]
+      got:      ["1\t3\t\\N\t1767225630000"]
+FAIL publish/pu16-after-ingest (1939 ms)
+    request 1: status: expected 200, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: json.release: expected an object, got missing
+    request 2: status: expected 200, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: json.release: expected an object, got missing
+    request 3: status: expected 409, got 500
+    request 3: problem.type: expected "/errors/label-conflict", got "/errors/internal"
+    request 3: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 1.0.0 has the hash 3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg in the index, not FfhdJC6hjGYxLT2it8N1ipqaofCXs4K6AQLt9zzEKNLG: release a new version", got "the Worker failed to handle the request"
+    request 5: status: expected 200, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: json.release: expected an object, got missing
+    d1-calls: request 1: expected 2, got 1 (batch)
+    d1-calls: request 5: expected 2, got 1 (batch)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"release\",\"run_id\":\"201\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t1767225630000","1\t3\t\\N\t1767000000000"]
+      got:      ["1\t3\t\\N\t1767000000000"]
+    db: @ SELECT CAST(artifact AS TEXT), nightly, target, source, result, error_digest, time, log_index FROM compat ORDER BY nightly, target, source: rows differ:
+      expected: ["6019566045123923087\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t1"]
+      got:      []
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t900\t777\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["acme/lib\t900\t9100\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t900\t\\N\t9100\t\\N\t\\N\t1767000000000","acme/lib\t2\t1\t900\t900\t9100\t777\t\\N\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"push\",\"run_id\":\"203\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t1767225630000"]
+      got:      ["acme/lib\t1\t0\t\\N\t900\t\\N\t9100\t\\N\t\\N\t1767000000000"]
+PASS publish/tp3-claims-vs-url (1264 ms)
+FAIL publish/tp9-claim-ids (809 ms)
+    request 1: status: expected 201, got 500
+    request 1: header talon-bookmark: expected a value, got none
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: header cache-control: expected "no-store", got null
+    request 1: header location: expected "/v1/artifacts/4yY1cpT1AFv2vNwjy5t64WFTwVK4eWW1uvwJdrc1RGdE", got null
+    request 1: json.release: expected an object, got missing
+    request 2: status: expected 201, got 500
+    request 2: header talon-bookmark: expected a value, got none
+    request 2: header content-type: expected "application/json", got "application/problem+json"
+    request 2: header cache-control: expected "no-store", got null
+    request 2: header location: expected "/v1/artifacts/9GHfSapDLJ4Ru7oxRyYHvLFn1qTdZ6ru8yejN4RhWStg", got null
+    request 2: json.release: expected an object, got missing
+    request 4: status: expected 201, got 500
+    request 4: header talon-bookmark: expected a value, got none
+    request 4: header content-type: expected "application/json", got "application/problem+json"
+    request 4: header cache-control: expected "no-store", got null
+    request 4: header location: expected "/v1/artifacts/GLyHBnYgGrmVrD9rz5w1EHbRhyWCbsLjrV5QDRDqsQQA", got null
+    request 4: json.release: expected an object, got missing
+    request 5: status: expected 201, got 500
+    request 5: header talon-bookmark: expected a value, got none
+    request 5: header content-type: expected "application/json", got "application/problem+json"
+    request 5: header cache-control: expected "no-store", got null
+    request 5: header location: expected "/v1/artifacts/AxmqAiysaytfpf1KAHyw9vDk5idU3hDB8pNVzKnR2bzL", got null
+    request 5: json.release: expected an object, got missing
+w2: 4 passed, 9 failed

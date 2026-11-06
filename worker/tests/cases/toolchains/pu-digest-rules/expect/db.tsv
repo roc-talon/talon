@@ -1,0 +1,8 @@
+@ SELECT nightly, target, tag, asset_name, sha256, size, published_at, log_index FROM toolchains ORDER BY log_index
+5572004238677	linux_x86_64	nightly-2026-10-31-5555555	roc_nightly-linux_x86_64-2026-10-30-6666666.tar.gz	bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb	1002	1793448000000	1
+5572004238677	macos_x86_64	nightly-2026-10-31-5555555	roc_nightly-macos_x86_64-2026-10-31-5555555.tar.gz	dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd	1004	1793448000000	2
+5572004238677	windows_x86_64	nightly-2026-10-31-5555555	roc_nightly-windows_x86_64-2026-10-31-5555555.zip	ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff	1006	1793448000000	3
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	roc-lang/nightlies:linux_x86_64	nightly-2026-10-31-5555555	sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb	1767225600000
+2	roc-lang/nightlies:macos_x86_64	nightly-2026-10-31-5555555	sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd	1767225600000
+3	roc-lang/nightlies:windows_x86_64	nightly-2026-10-31-5555555	sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff	1767225600000

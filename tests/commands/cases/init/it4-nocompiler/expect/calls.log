@@ -1,11 +1,14 @@
 args
 env_all
+tty
+read_files $HOME9/.config/talon/config.toml
+env_all
 clock
 cwd
 read_files $PROJECT/t9/main.roc
+read_files $HOME9/.config/talon/config.toml
 list_dirs $HOME9/.cache/roc/talon/index/github/acme/wpf
 read_files $HOME9/.cache/roc/talon/index/github/acme/wpf/1.meta $HOME9/.cache/roc/talon/index/github/acme/wpf/1.json
-read_files $HOME9/.config/talon/config.toml
 random
 list_dirs $HOME9/.cache/roc/packages
 programs curl wget

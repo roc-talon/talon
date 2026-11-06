@@ -1,0 +1,1 @@
+fullname acme/snap log=40 env:GITHUB_TOKEN=tok1

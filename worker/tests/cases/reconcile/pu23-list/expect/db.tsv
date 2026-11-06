@@ -1,0 +1,38 @@
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/gone	\N	1767225600000	1767229200000	0	0
+acme/later	\N	\N	1767225600001	0	0
+acme/lib	W/"e-lib-2"	1767225600000	1767312000000	0	1
+acme/lib-old	\N	\N	1767312000000	0	0
+acme/priv	\N	1767225600000	1767229200000	0	0
+acme/same	W/"e-same"	1767225600000	1767229200000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	\N	\N
+2	acme/lib	2.0.0	prereleased	1767225600000
+3	acme/lib	3.0.0	deleted	1767225600000
+4	acme/lib	4.0.0	deleted	1767225600000
+5	acme/lib	5.0.0	asset-replaced	1767225600000
+6	acme/lib	6.0.0	\N	\N
+7	acme/lib	7.0.0	\N	\N
+8	acme/lib	11.0.0	deleted	1767000000030
+9	acme/lib-old	0.9.0	deleted	1767225600000
+10	acme/same	1.0.0	\N	\N
+11	acme/gone	1.0.0	repo-missing	1767225600000
+12	acme/gone	2.0.0	deleted	1767000000040
+13	acme/priv	1.0.0	repo-missing	1767225600000
+14	acme/later	1.0.0	\N	\N
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/gone	700	70	1	\N	1767225600000	1767000000000
+acme/later	900	90	0	\N	1767000000000	1767000000000
+acme/lib	600	60	0	\N	1767000000000	1767000000000
+acme/lib-old	600	60	2	acme/lib	1767000000000	1767000000000
+acme/priv	800	80	1	\N	1767225600000	1767000000000
+acme/same	500	50	0	\N	1767000000000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/gone	1	0	\N	700	\N	70	\N	\N	1767000000000
+acme/gone	2	4	700	700	70	70	\N	\N	1767225600000
+acme/later	1	0	\N	900	\N	90	\N	\N	1767000000000
+acme/lib	1	0	\N	600	\N	60	\N	\N	1767000000000
+acme/lib-old	1	0	\N	600	\N	60	\N	\N	1767000000000
+acme/priv	1	0	\N	800	\N	80	\N	\N	1767000000000
+acme/priv	2	4	800	800	80	80	\N	\N	1767225600000
+acme/same	1	0	\N	500	\N	50	\N	\N	1767000000000

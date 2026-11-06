@@ -1,0 +1,6 @@
+status 200
+header Content-Type: application/json
+header Cache-Control: no-store
+require authorization: Bearer jwt4
+require user-agent: tln/0.0.1
+require-none content-type

@@ -1,0 +1,1 @@
+{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":7,"counted":5,"first":2,"first_sent_at":"2026-10-01T10:00:00Z","last_sent_at":"2026-10-02T11:30:00Z","token":"old.jwt","token_expires_at":"2026-10-20T00:00:00Z","account":{"id":1,"login":"old"}}

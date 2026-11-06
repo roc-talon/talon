@@ -1,0 +1,39 @@
+── ● unconditional condition ─────────────────────────── lib/Identity.roc:104:19
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+.concat(if (found) [event(row.repo, Found, Ok(mid), mid, back.successor)] else [])
+            ^^^^^
+
+
+── ✗ fail ───────────────────────────────────── tests/unit/IdentityTest.roc:69:1
+
+expect {
+    missing = row(Missing, Err(None), 2000)
+    decide(Ok(missing), 100, 10)
+        == Ok({ row: { ..missing, state: Active, state_at: now }, events: [event(Found, Ok(100), Ok(100), Ok(10), Ok(10), Err(None))] })
+        and decide(Ok(missing), 100, 11)
+            == Ok({
+                row: { ..missing, owner_id: 11, state: Active, state_at: now },
+                events: [event(Transfer, Ok(100), Ok(100), Ok(10), Ok(11), Err(None)), event(Found, Ok(100), Ok(100), Ok(11), Ok(11), Err(None))],
+            })
+}
+
+Mentioned values:
+now = 5000
+
+Ran 13 tests in 222.7 ms.:
+    12 passed
+    1 failed
+    0 compiler errors
+PASS identity/tp10-301-followed (1813 ms)
+PASS identity/tp10-rename (1984 ms)
+FAIL identity/tp9-four-rows (2172 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["again/repo\t3002\t31\t0\t\\N\t1767000000000\t1767000000000","back/repo\t6001\t61\t0\t\\N\t1767225630000\t1767000000000","fresh/repo\t5001\t51\t0\t\\N\t1767225630000\t1767225630000","prov/repo\t7001\t71\t0\t\\N\t1767000000000\t1767000000000","same/repo\t1001\t11\t0\t\\N\t1767000000000\t1767000000000","taken/repo\t4001\t41\t0\t\\N\t1767000000000\t1767000000000","xfer/repo\t2001\t22\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["again/repo\t3002\t31\t0\t\\N\t1767000000000\t1767000000000","back/repo\t6001\t61\t1\t\\N\t1766999995000\t1767000000000","fresh/repo\t5001\t51\t0\t\\N\t1767225630000\t1767225630000","prov/repo\t7001\t71\t0\t\\N\t1767000000000\t1767000000000","same/repo\t1001\t11\t0\t\\N\t1767000000000\t1767000000000","taken/repo\t4001\t41\t0\t\\N\t1767000000000\t1767000000000","xfer/repo\t2001\t22\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["again/repo\t1\t0\t\\N\t3001\t\\N\t31\t\\N\t\\N\t1767000000000","again/repo\t2\t3\t3001\t3002\t31\t31\t\\N\t\\N\t1767225630000","back/repo\t1\t0\t\\N\t6001\t\\N\t61\t\\N\t\\N\t1767000000000","back/repo\t2\t5\t6001\t6001\t61\t61\t\\N\t\\N\t1767225630000","fresh/repo\t1\t0\t\\N\t5001\t\\N\t51\t\\N\t\\N\t1767225630000","prov/repo\t1\t0\t\\N\t7001\t\\N\t71\t\\N\t\\N\t1767000000000","same/repo\t1\t0\t\\N\t1001\t\\N\t11\t\\N\t\\N\t1767000000000","taken/repo\t1\t0\t\\N\t4001\t\\N\t41\t\\N\t\\N\t1767000000000","xfer/repo\t1\t0\t\\N\t2001\t\\N\t21\t\\N\t\\N\t1767000000000","xfer/repo\t2\t1\t2001\t2001\t21\t22\t\\N\t\\N\t1767225630000"]
+      got:      ["again/repo\t1\t0\t\\N\t3001\t\\N\t31\t\\N\t\\N\t1767000000000","again/repo\t2\t3\t3001\t3002\t31\t31\t\\N\t\\N\t1767225630000","back/repo\t1\t0\t\\N\t6001\t\\N\t61\t\\N\t\\N\t1767000000000","fresh/repo\t1\t0\t\\N\t5001\t\\N\t51\t\\N\t\\N\t1767225630000","prov/repo\t1\t0\t\\N\t7001\t\\N\t71\t\\N\t\\N\t1767000000000","same/repo\t1\t0\t\\N\t1001\t\\N\t11\t\\N\t\\N\t1767000000000","taken/repo\t1\t0\t\\N\t4001\t\\N\t41\t\\N\t\\N\t1767000000000","xfer/repo\t1\t0\t\\N\t2001\t\\N\t21\t\\N\t\\N\t1767000000000","xfer/repo\t2\t1\t2001\t2001\t21\t22\t\\N\t\\N\t1767225630000"]
+w2: 2 passed, 1 failed

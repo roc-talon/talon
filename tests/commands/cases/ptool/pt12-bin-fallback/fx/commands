@@ -1,0 +1,3 @@
+install --frozen --file p1/main.roc
+env:HOME={w}/home2 install --frozen --file p2/main.roc
+env:HOME={w}/home3 install --frozen --file p3/main.roc

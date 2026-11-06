@@ -1,0 +1,4 @@
+R-EF3 R-EF1 R-EP8 R-UM1 Q393 (slice 206e3): run 1 of registry/cv1-upgrade-free (`tln upgrade roc`, N = nightly-2026-10-16-5e6f7a8) with `bot` and `author` rows of 2 header hashes on N.
+parser 1.0.0: an `author` `fail`, then a `bot` `pass`. The `bot` row wins (R-EF3, also when the author row comes first): a real pass, no unit probe.
+json 2.0.0: a `bot` `fail` and an `author` `pass`. The `bot` row wins: a rank 2 fail, which has an unknown set of modules (Q393). It does not decide alone (R-EP8): the solver asks for the local unit probe of (json 2.0.0, N). The fake probe passes, so N is chosen.
+pf 0.1.0 has no row: its unit probe runs. So one round with 2 unit probes (json, pf), not 3, and no probe of parser. If the author row won, json would need no probe and parser would.

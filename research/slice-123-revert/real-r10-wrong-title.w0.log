@@ -1,0 +1,41 @@
+- ✗ fail - worker/tests/unit/ProblemTest.roc:31:1
+	(BadRequest, "/errors/bad-request", 400, "Bad request"),
+	(Unauthenticated, "/errors/unauthenticated", 401, "Unauthenticated"),
+	(Forbidden, "/errors/forbidden", 403, "Forbidden"),
+	(RepositoryChanged, "/errors/repository-changed", 403, "Repository changed"),
+	(NotFound, "/errors/not-found", 404, "Not found"),
+	(MethodNotAllowed, "/errors/method-not-allowed", 405, "Method not allowed"),
+	(LabelConflict, "/errors/label-conflict", 409, "Label conflict"),
+	(IdCollision, "/errors/id-collision", 409, "Id collision"),
+	(UnsupportedClient, "/errors/unsupported-client", 400, "Unsupported client"),
+	(TooLarge, "/errors/too-large", 413, "Too large"),
+	(UnsupportedMediaType, "/errors/unsupported-media-type", 415, "Unsupported
+	(NotACandidate, "/errors/not-a-candidate", 422, "Not a candidate"),
+	(SuccessorMismatch, "/errors/successor-mismatch", 422, "Successor mismatch"),
+	(SweepIncomplete, "/errors/sweep-incomplete", 422, "Sweep incomplete"),
+	(RateLimited, "/errors/rate-limited", 429, "Rate limited"),
+	(Internal, "/errors/internal", 500, "Internal error"),
+	(Upstream, "/errors/upstream", 502, "Upstream error"),
+	(Busy, "/errors/busy", 503, "Busy"),
+- ✗ fail - worker/tests/unit/ProblemTest.roc:42:1
+	(BadRequest, "/errors/bad-request", 400, "Bad request"),
+	(Unauthenticated, "/errors/unauthenticated", 401, "Unauthenticated"),
+	(Forbidden, "/errors/forbidden", 403, "Forbidden"),
+	(RepositoryChanged, "/errors/repository-changed", 403, "Repository changed"),
+	(NotFound, "/errors/not-found", 404, "Not found"),
+	(MethodNotAllowed, "/errors/method-not-allowed", 405, "Method not allowed"),
+	(LabelConflict, "/errors/label-conflict", 409, "Label conflict"),
+	(IdCollision, "/errors/id-collision", 409, "Id collision"),
+	(UnsupportedClient, "/errors/unsupported-client", 400, "Unsupported client"),
+	(TooLarge, "/errors/too-large", 413, "Too large"),
+	(UnsupportedMediaType, "/errors/unsupported-media-type", 415, "Unsupported
+	(NotACandidate, "/errors/not-a-candidate", 422, "Not a candidate"),
+	(SuccessorMismatch, "/errors/successor-mismatch", 422, "Successor mismatch"),
+	(SweepIncomplete, "/errors/sweep-incomplete", 422, "Sweep incomplete"),
+	(RateLimited, "/errors/rate-limited", 429, "Rate limited"),
+	(Internal, "/errors/internal", 500, "Internal error"),
+	(Upstream, "/errors/upstream", 502, "Upstream error"),
+	(Busy, "/errors/busy", 503, "Busy"),
+    447 passed
+    2 failed
+    0 compiler errors

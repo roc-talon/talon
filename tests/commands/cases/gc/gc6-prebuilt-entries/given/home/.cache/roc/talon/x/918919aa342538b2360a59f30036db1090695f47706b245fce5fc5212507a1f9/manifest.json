@@ -1,0 +1,1 @@
+{"format":1,"name":"acme/kf","source":{"kind":"prebuilt","version":"1.0.0","url":"https://github.com/acme/kf/releases/download/1.0.0/4vZMX41ycpMy8qHC3QhfyB5cs2eYGnc6ca3pCbCCyHjq.tar.zst-x64musl"},"target":"x64musl","sha256":"03781b967987eba268f538d40eade129ed7febf5c9fd3fe1f80e320f03691dee","bundle":"4vZMX41ycpMy8qHC3QhfyB5cs2eYGnc6ca3pCbCCyHjq","last_run":"2020-01-01T00:00:00Z"}

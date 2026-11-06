@@ -1,0 +1,48 @@
+== short install parser
+parser: use lukewilliamboswell/roc-parser
+matched "parser": lukewilliamboswell/roc-parser
+== short install parser json
+parser: use lukewilliamboswell/roc-parser
+matched "parser": lukewilliamboswell/roc-parser
+json: use acme/roc-json
+matched "json": acme/roc-json (moved from olduser/roc-json)
+== short install Parser
+exit 2
+== short install pars
+exit 2
+== short tool parser
+exit 2
+== short x Parser
+exit 2
+== short install Parser log=5
+Parser: use lukewilliamboswell/roc-parser
+matched "Parser": lukewilliamboswell/roc-parser
+== short install Parser log=0
+exit 2
+== short install parser parser
+parser: use lukewilliamboswell/roc-parser
+matched "parser": lukewilliamboswell/roc-parser
+parser: use lukewilliamboswell/roc-parser
+matched "parser": lukewilliamboswell/roc-parser
+== short install json xx alias:json
+json: no search
+exit 2
+== short install zzz offline
+exit 15
+== short install parser offline
+parser: use lukewilliamboswell/roc-parser
+matched "parser": lukewilliamboswell/roc-parser
+== short install s1 s2 s3 s4 s5 s6 s7 s8 s9 s10 s11 s12 s13 s14 s15 s16 s17 s18 s19 s20 s21 s22 s23 s24 s25 s26 s27 s28 s29 s30 s31 s32 s33 s34 s35 s36 s37 s38 s39 s40 s41 s42 s43 s44 s45 s46 s47 s48 s49 s50 s51
+exit 2
+== short install bad2
+exit 15
+== short install bad3
+exit 1
+== short install json parser alias:json alias:parser
+json: no search
+parser: no search
+== short install own/lib example.com/pkg/x parser
+own/lib: no search
+example.com/pkg/x: no search
+parser: use lukewilliamboswell/roc-parser
+matched "parser": lukewilliamboswell/roc-parser

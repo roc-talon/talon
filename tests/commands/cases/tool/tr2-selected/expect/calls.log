@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 platform
 read_files $HOME/.local/share/talon/tools.json

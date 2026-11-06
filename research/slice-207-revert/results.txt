@@ -1,0 +1,8 @@
+reference: l0 failing=0 l2 failing=0
+M1 hide_above ignores the keep list (Q403): l0 failing=1 l2 failing=2
+M2 hide_above drops the row equal to N: l0 failing=3 l2 failing=1
+M3 second_cut ignores the user N (Q404): l0 failing=1 l2 failing=1
+M4 second_cut takes the user N even when larger: l0 failing=1 l2 failing=0
+M5 second! has no keep list on the second answer (Q403): l0 failing=0 l2 failing=1
+M6 hide_above clears the unknown list (Q405): l0 failing=1 l2 failing=0
+M7 second! hides before the one-state check (R-AP18): l0 failing=0 l2 failing=1

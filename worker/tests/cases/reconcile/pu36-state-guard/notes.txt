@@ -1,0 +1,1 @@
+1: the claim saw 1.0.0 as unpublished and 2.0.0 with no value. Before the list answer, other jobs set 1.0.0 to repo-missing and 2.0.0 to edited. The list has 1.0.0 (a candidate: the run wants to clear it) and not 2.0.0 (the run wants deleted). Both writes are guarded by state: repo-missing and edited stay with their times. The etag and the pass are written

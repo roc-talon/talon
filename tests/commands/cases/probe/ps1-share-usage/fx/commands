@@ -1,0 +1,6 @@
+probe --share json
+probe --share json --registry direct
+probe --share json --json
+probe --share --registry http://127.0.0.1:9
+probe --share out/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --registry http://127.0.0.1:9
+probe --share json --registry http://127.0.0.1:9 --offline

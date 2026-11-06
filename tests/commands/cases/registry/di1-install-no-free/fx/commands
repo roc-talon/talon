@@ -1,0 +1,3 @@
+install --no-check --dry-run --json --file u1/main.roc
+install --frozen --file u1/main.roc
+install --no-check --dry-run --json --file u2/main.roc

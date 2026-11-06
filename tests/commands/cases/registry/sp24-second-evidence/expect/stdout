@@ -1,0 +1,11 @@
+== update yaml@1.1.0 --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ yaml: acme/yaml 1.0.0 -> 1.1.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+$PROJECT/u1/talon.toml: yaml = "=1.1.0"
+resolved at log:40, 5 probes
+dry run: nothing was written
+exit 0

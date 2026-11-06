@@ -1,0 +1,4 @@
+tests/unit/RootsTest.roc rows only (before copy in before/tests/unit)
+docs/slices/088-windows-roots.md
+docs/slices/089-list-once.md
+docs/slices/090-tool-rm-talon-tty.md

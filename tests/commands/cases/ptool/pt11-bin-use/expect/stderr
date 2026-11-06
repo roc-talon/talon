@@ -1,0 +1,5 @@
+the header satisfies talon.toml
+foo 1.1.0: prebuilt x64musl binary, sha256 7125e547ae30 (talon.toml)
+tln: error[integrity]: the x64musl binary of foo 1.1.0 has the sha256 7125e547ae305ff476a89009d3b2b9643f2d5da34c55c2914ca15262b686a238, but talon.toml has bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb. Talon deleted the file. To build from source, remove x64musl from bin of foo in talon.toml.
+platform https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst (hash CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA)
+building acme/foo 1.1.0 with nightly-2026-10-14-38a3029

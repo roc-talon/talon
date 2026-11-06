@@ -42,6 +42,14 @@ import FakeJobs
 ## file (slice 046: when the route is a directory, the file `<dir>/@`, for a URL that is also the parent of other routes). `<file>.meta` has the lines `status <n>`, `header <Name>: <value>`, `error timeout` and `error failed <text>` (a transport error). A route that has a
 ## header `ETag` answers 304 with no body to a request with the same `If-None-Match`. No file: status 404 and the body `{"message":"Not Found"}`.
 ## The log has the line `http_get <url>` and then one line `  <Name>: <value>` for each header of the request, in order.
+## Slice 200 (`http_send!`, `http_all!`, `sleep!`), the route form of TESTING 3.1: the same files, with three additions.
+##   - The method is in the file name: `<route>` is for `Get`, `<route>.POST`, `<route>.PUT` and `<route>.DELETE` are for the other methods (`<route>.POST.meta` is its meta).
+##   - `<file>.<n>` (n = 2, 3, ...) is the answer to the n-th request of the same method and URL in the case (the first answer is `<file>`; no `<file>.<n>`: the answer is `<file>`). It has its own `.meta`: `x.POST.2`, `x.POST.2.meta`.
+##     The n counts the lines of `calls.log` of that method and URL (`http_get` and `http_send GET` are both `GET`), so it counts across the runs of one case.
+##   - `<file>.meta` can have `require <name>: <value>` (the request has this header with this exact value, the name in any case) and `require-none <name>` (it has not). A request that breaks a line gets status 599 and the body `wrong header`.
+##   - A status 304 or 204 in the meta gives an empty body. No file for the route (any method): 404, as for `http_get!`.
+## The log of `http_send!`: the line `http_send <METHOD> <url> timeout=<s>`, the header lines as for `http_get!`, and, when the body is not empty, the line `  <body> <text>` (`\` is `\\`, a new line is `\n`, a carriage return is `\r`).
+## `http_all!`: the line `http_all limit=<n> tmp=<dir>`, then the lines of each request as `http_send!` writes them, in the order of the list. The results are in the order of the list. `sleep!`: the line `sleep <ms>`, and no wait.
 ##
 ## `jobs` (slice 003): one rule for each line, with 5 fields split by a TAB: `needle`, `code`, `stdout`, `stderr_last`, `creates`. The first rule whose
 ## `needle` is in the arguments of the job (joined by one space) answers. `code` is `<n>` (exit), `signal:<n>`, or `notstarted:<text>`. `stdout` and
@@ -172,6 +180,9 @@ FakeFx :: [].{
 		},
 		unlock!: |lock| FakeBase.log!(w, "unlock ${lock.item}"),
 		http_get!: |request| FakeJobs.http_get!(w, request),
+		http_send!: |request| FakeJobs.http_send!(w, request),
+		http_all!: |batch| FakeJobs.http_all!(w, batch),
+		sleep!: |ms| FakeJobs.sleep!(w, ms),
 		programs!: |names| {
 			FakeBase.log!(w, "programs ${Str.join_with(names, " ")}")
 			have = FakeBase.lines(FakeBase.read_or_empty!("${w}/fx/programs"))

@@ -1,0 +1,52 @@
+
+── ✗ fail ──────────────────────────────────── tests/unit/ReconcileTest.roc:70:1
+
+expect {
+    no_app = [
+        (0, t0 + hour),
+        (1, t0 + 5 * minute),
+        (2, t0 + 10 * minute),
+        (3, t0 + 20 * minute),
+        (4, t0 + 40 * minute),
+        (5, t0 + hour),
+        (6, t0 + hour),
+        (64, t0 + hour),
+        (4_000_000_000, t0 + hour),
+    ]
+    with_app = [
+        (0, t0 + day),
+        (1, t0 + 5 * minute),
+        (9, t0 + 1280 * minute),
+        (10, t0 + day),
+        (200, t0 + day),
+    ]
+    no_app.all(|(n, want)| Reconcile.next_check(t0, hour, n) == want) and with_app.all(|(n, want)| Reconcile.next_check(t0, day, n) == want)
+}
+
+Mentioned values:
+day = 86_400_000
+t0 = 1_767_225_600_000
+minute = 60_000
+hour = 3_600_000
+
+Ran 26 tests in 376.9 ms.:
+    25 passed
+    1 failed
+    0 compiler errors
+PASS reconcile/pu21-poll-job (2358 ms)
+PASS reconcile/pu23-list (3165 ms)
+PASS reconcile/pu25-reserve (2313 ms)
+FAIL reconcile/pu36-overlap (2202 ms)
+    runner fault: TypeError: Body is unusable: Body has already been read |     at consumeBody (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/body.js:430:27) |     at _Response.text (/home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/body.js:337:14) |     at file:///home/george/dev/Karakatiza666/talon/research/slice-119-revert/refbuild-m3-no-cap/worker/tests/run.mjs:327:179
+FAIL reconcile/pu37-backoff (2528 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/a\tW/\"b\"\t1767225600000\t1767229200000\t0\t0","acme/b\tW/\"c\"\t1767225600000\t1767229200000\t0\t0","acme/c\t\\N\t1767000000000\t1767229200000\t5\t0","acme/d\tW/\"a3\"\t1767226500000\t1767230100000\t0\t0","acme/e\tW/\"e\"\t1767225900000\t1767229500000\t0\t0"]
+      got:      ["acme/a\tW/\"b\"\t1767225600000\t1767229200000\t0\t0","acme/b\tW/\"c\"\t1767225600000\t1767229200000\t0\t0","acme/c\t\\N\t1767000000000\t1767230400000\t5\t0","acme/d\tW/\"a3\"\t1767226500000\t1767230100000\t0\t0","acme/e\tW/\"e\"\t1767225900000\t1767229500000\t0\t0"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":1,"job":"reconcile","repository_id":501}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":5,"job":"reconcile","repository_id":504}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 502","fail_count":1,"job":"reconcile","repository_id":505}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":2,"job":"reconcile","repository_id":501}
+PASS reconcile/pu37-etag-effects (2504 ms)
+PASS webhook/pu13-index-new (1238 ms)
+PASS webhook/pu17-withdraw-clear (1349 ms)
+w2: 6 passed, 2 failed

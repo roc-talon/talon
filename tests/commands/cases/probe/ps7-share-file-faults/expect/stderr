@@ -1,0 +1,2 @@
+tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon
+tln: error[input]: $HOME/.local/share/talon/share.json: the content does not parse

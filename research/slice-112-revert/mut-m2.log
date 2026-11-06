@@ -1,0 +1,10 @@
+All (43) tests passed in 640.8 ms.
+PASS ingest/ap26-body-and-route (1927 ms)
+PASS ingest/ik3-id-collision (2054 ms)
+FAIL ingest/pu14-pu19-labels (2193 ms)
+    request 6: status: expected 409, got 500
+    request 6: problem.type: expected "/errors/label-conflict", got "/errors/internal"
+    request 6: problem.detail: expected "the label github.com/acme/lib/releases/download/{v}/ 2.0.0 has another hash in the index, not 58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g: release a new version", got "the Worker failed to handle the request"
+PASS ingest/pu4-index-kinds (2203 ms)
+PASS ingest/pu6-not-candidates (2306 ms)
+w2: 4 passed, 1 failed

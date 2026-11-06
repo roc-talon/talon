@@ -1,0 +1,41 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+random
+programs curl wget
+make_dirs $HOME/.local/share/talon/bin $HOME/.cache/roc/talon/tmp/0123456789abcdef
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp https://github.com/roc-talon/talon/releases/download/v0.3.5/tln-x64musl
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt https://github.com/roc-talon/talon/releases/download/v0.3.5/sha256sums.txt
+sha256_file $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+read_files $HOME/.cache/roc/talon/tmp/0123456789abcdef/sha256sums.txt
+programs gh
+spawn_all limit=1
+  job - chmod 0755 $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp
+spawn_all limit=1
+  job - $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp --version
+lock $HOME/.local/share/talon/tools.json nowait: held
+read_files $HOME/.local/share/talon/tools.json
+list_dirs $HOME/.local/bin
+sha256_file $HOME/.local/share/talon/bin/tln
+sha256_file $HOME/.local/bin/tln
+sha256_file $HOME/.local/bin/roc
+rename $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.local/share/talon/bin/tln
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/tln.0123456789abcdef.tmp
+rename $HOME/.local/bin/tln.0123456789abcdef.tmp $HOME/.local/bin/tln
+hard_link $HOME/.local/share/talon/bin/tln $HOME/.local/bin/roc.0123456789abcdef.tmp
+rename $HOME/.local/bin/roc.0123456789abcdef.tmp $HOME/.local/bin/roc
+write_atomic $HOME/.local/share/talon/tools.json
+unlock $HOME/.local/share/talon/tools.json
+delete $HOME/.local/share/talon/bin/tln.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef

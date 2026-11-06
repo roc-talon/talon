@@ -32,6 +32,8 @@ request = |cmd, dir| {
 		compiler: Err(NoCompiler),
 		selected: "",
 		none: Stop,
+		index: Direct,
+		registry: Off,
 		toolchain: Err(Unset),
 		snapshot: Err(Unset),
 		dry_run: Bool.False,

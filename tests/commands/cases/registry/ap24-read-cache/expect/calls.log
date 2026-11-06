@@ -1,0 +1,82 @@
+env_all
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/lib/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json
+http_get http://127.0.0.1:9/v1/packages/acme/lib/releases
+  User-Agent: tln/0.0.1
+  If-None-Match: "e1"
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta
+http_get http://127.0.0.1:9/v1/packages/acme/lib/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta
+http_get http://127.0.0.1:9/v1/packages/acme/lib/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+  Talon-Bookmark: b123
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/gone/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/gone/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/contributors/me
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/contributors/me
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5729006e59ab0441482f6a7a40166c7a.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/slow/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/low/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d36b5e471dc035c03a701306e9ab4819.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/releases?group=example.com%2Fpkg%2F%7Bv%7D%2F
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5a08b6a899d7261cdcf368c8344726e9.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5a08b6a899d7261cdcf368c8344726e9.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/noetag/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.json
+http_get http://127.0.0.1:9/v1/packages/acme/noetag/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/f0863d8a5165c478d126261cd6d6aab5.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/noage/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.json
+http_get http://127.0.0.1:9/v1/packages/acme/noage/releases
+  User-Agent: tln/0.0.1
+  If-None-Match: "n1"
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/20e009a00363692d5b52a951235480fb.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/redir/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/redir/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/nm304/releases
+  User-Agent: tln/0.0.1

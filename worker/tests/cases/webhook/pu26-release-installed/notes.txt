@@ -1,0 +1,4 @@
+1: published 700 with installation 55 (the same hash as the index: the provenance row is added): app_installed is 1 for BOTH rows of the repository (acme/new and the moved acme/old); next_check_at does not change
+2: published 701 with no installation in the message (id 0): app_installed stays 0
+3: the same event again for 701, now with installation 55 (nothing to write for the release): app_installed becomes 1
+4: published 702 with installation 55, and the release has no package asset yet (attempt 1): the work fails, the message is retried after 60 s, and app_installed is 1 all the same (Design Q362: whatever the release read gives)

@@ -1,0 +1,8 @@
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","headers":{"authorization":"Basic dXNlcjpwYXNz"}}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","headers":{"authorization":"Bearer "}}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"two"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"array"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"hs256"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"none"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"noalg"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"nokid"}

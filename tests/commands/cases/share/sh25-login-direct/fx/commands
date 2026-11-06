@@ -1,0 +1,3 @@
+# R-SH10, R-EC2: share login with the registry direct (the default: no flag, no variable, no key) stops with exit 2 (usage). The calls end after the read of config.toml: no share.json read, no request, no write. The same with --json and with TALON_REGISTRY=direct.
+share login
+env:TALON_REGISTRY=direct share login --json

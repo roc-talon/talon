@@ -1,0 +1,2 @@
+tln: error[usage]: tln share login needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln share login needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.

@@ -1,0 +1,7 @@
+format	1
+smoke	HP	nightly-2026-10-14-38a3029	arm64mac	fail
+smoke	HP	nightly-2026-10-14-38a3029	x64musl	pass
+smoke	HQ	nightly-2026-10-14-38a3029	x64musl	hang
+smoke	HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
+smoke	HR	nightly-2026-10-14-38a3029	x64musl	pass
+smoke	HS	nightly-2026-10-14-38a3029	x64musl	crash

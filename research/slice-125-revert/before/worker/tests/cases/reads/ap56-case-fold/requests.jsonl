@@ -1,0 +1,6 @@
+{"method": "GET", "path": "/v1/packages/Roc-Lang/Unicode/releases"}
+{"method": "GET", "path": "/v1/packages/Roc-Lang/Unicode/releases"}
+{"method": "GET", "path": "/v1/packages/ROC-LANG/unicode/releases"}
+{"method": "GET", "path": "/v1/packages/Roc-Lang/Nope/releases"}
+{"method": "GET", "path": "/v1/releases?group=GITHUB.COM%2FROC-LANG%2FUNICODE%2FRELEASES%2FDOWNLOAD%2F%7BV%7D%2F"}
+{"method": "GET", "path": "/v1/releases?group=GitHub.com%2Froc-lang%2Funicode%2Freleases%2Fdownload%2F%7Bv%7D%2F"}

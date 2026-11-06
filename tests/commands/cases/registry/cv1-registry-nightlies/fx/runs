@@ -1,0 +1,9 @@
+# T = 1792065600. Origin 9: no file. 10: the sha256 of nightly-2026-10-18-1df370f is recorded (a GitHub digest) with another value.
+nightlies linux_x86_64
+nightlies linux_x86_64
+nightlies macos_x86_64
+nightlies linux_x86_64 log=2
+nightlies linux_x86_64 offline
+nightlies linux_x86_64 origin=http://127.0.0.1:10
+# 11: rows for Q340 and Q222. Log 1 and 3 are one tag and target with 2 sha256 (the later row is the R-CV6 mismatch). Log 2 has size 0 (no asset). Log 4 and 5 are one tag and target with one sha256 (the first row counts: its size).
+nightlies linux_x86_64 origin=http://127.0.0.1:11

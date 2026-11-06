@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -72,6 +75,9 @@ read_files $PROJECT/p1/main.roc
 write_atomic $PROJECT/p1/main.roc
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -94,6 +100,9 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
   User-Agent: tln/0.0.1
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -115,6 +124,9 @@ programs gh
 http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
   User-Agent: tln/0.0.1
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 cwd
@@ -160,6 +172,7 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/p4/main.roc
 write_atomic $PROJECT/p4/main.roc
 args
+env_all
 env_all
 clock
 cwd
@@ -210,3 +223,6 @@ read_files $HOME/.cache/roc/packages/ETX49rRcEPgWszPhqs7vdTKdSKuJuCJHiWWzw8BF5QM
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml

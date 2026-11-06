@@ -1,2 +1,2 @@
 install --frozen --json --file p12/main.roc
-install --frozen --file p13/main.roc
+env:LOCALAPPDATA=C:/AppData/Local env:APPDATA=C:/AppData/Roaming install --frozen --file p13/main.roc

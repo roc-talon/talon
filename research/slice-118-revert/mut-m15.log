@@ -1,0 +1,14 @@
+All (13) tests passed in 230.6 ms.
+PASS webhook/ap12-empty-secret (2458 ms)
+PASS webhook/ap12-no-secret (2403 ms)
+PASS webhook/ap12-signature (3021 ms)
+PASS webhook/pu11-events (3397 ms)
+PASS webhook/pu26-app-installed (3604 ms)
+PASS webhook/pu33-privatized (4382 ms)
+FAIL webhook/pu33-publicized (2048 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/new\t\\N\t\\N\t1767225600000\t0\t0","acme/old\t\\N\t\\N\t1767830400000\t0\t0","back/pkg\t\\N\t\\N\t1767225600000\t0\t0","other/pkg\t\\N\t\\N\t1767830400000\t0\t0"]
+      got:      ["acme/new\t\\N\t\\N\t1767225600000\t0\t0","acme/old\t\\N\t\\N\t1767225600000\t0\t0","back/pkg\t\\N\t\\N\t1767225600000\t0\t0","other/pkg\t\\N\t\\N\t1767830400000\t0\t0"]
+PASS webhook/pu35-dead-letter (1605 ms)
+PASS webhook/pu35-retry-schedule (1468 ms)
+w2: 8 passed, 1 failed

@@ -1,0 +1,3 @@
+@ SELECT contributor, login, tokens_after, first_time, last_time FROM contributors ORDER BY contributor
+4242	someone	1767225641000	1767225641000	1767225641000
+@ SELECT CAST(machine AS TEXT), contributor, time FROM links ORDER BY machine

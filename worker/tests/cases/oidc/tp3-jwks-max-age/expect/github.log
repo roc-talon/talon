@@ -1,0 +1,2 @@
+GET https://token.actions.githubusercontent.com/.well-known/jwks
+GET https://token.actions.githubusercontent.com/.well-known/jwks

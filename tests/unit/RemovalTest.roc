@@ -32,8 +32,10 @@ expect {
 		(["remove"], Err("tln: error[usage]: tln remove needs one name or more")),
 		(["rm", "--dry-run"], Err("tln: error[usage]: tln remove needs one name or more")),
 		(["remove", "json", "--strategy", "middle"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
-		(["remove", "json", "--registry", "https://registry.example"], Err("tln: error[usage]: --registry 'https://registry.example': no registry exists in this version of tln. Use --registry direct.")),
-		(["remove", "--registry", "https://r.example", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		# Slice 206f (R-RG7 row 6): `remove` uses no registry, so a registry flag, also a bad one, is no failure here. The next check is the first failure.
+		(["remove", "json", "--registry", "https://registry.example"], Ok((["json"], [Bool.False, Bool.False, Bool.False]))),
+		(["remove", "json", "--registry", "ftp://bad"], Ok((["json"], [Bool.False, Bool.False, Bool.False]))),
+		(["remove", "--registry", "https://r.example", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
 		(["remove", "--strategy", "middle", "--frozen"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
 	]
 	bad = rows.keep_if(|(words, want)| view(words) != want).map(|(words, _)| (words, view(words)))
@@ -166,7 +168,8 @@ expect {
 		(["patch", "json", "http"], Err("tln: error[usage]: tln patch takes one name")),
 		(["patch", "json", "--commit"], Err("tln: error[usage]: flag '--commit' is not for 'patch'")),
 		(["patch", "json", "--dry-run"], Err("tln: error[usage]: flag '--dry-run' is not for 'patch'")),
-		(["patch", "json", "--registry", "https://r.example"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		# Slice 206f (R-RG7 row 6): `patch` uses no registry, so the flag is no failure.
+		(["patch", "json", "--registry", "https://r.example"], Ok(("json", Bool.False))),
 		(["list", "--diff"], Err("tln: error[usage]: flag '--diff' is not for 'list'")),
 	]
 	bad = rows.keep_if(|(words, want)| patch_line(words) != want).map(|(words, _)| (words, patch_line(words)))

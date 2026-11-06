@@ -1,0 +1,2 @@
+get /v1/releases?group=github.com%2Fsomeone%2Froc-b%2Freleases%2Fdownload%2Fv%7Bv%7D%2F
+offline name=someone/roc-b known=https://github.com/someone/roc-b/releases/download/v1.0.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst known=https://github.com/someone/roc-b/releases/download/2.0.0/6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6.tar.zst

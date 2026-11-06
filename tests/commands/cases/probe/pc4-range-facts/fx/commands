@@ -1,0 +1,5 @@
+probe parser --range --file p2/main.roc
+probe parser --range --json --file p1/main.roc
+probe --range {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --json --file p1/main.roc
+probe --range {w}/project/bundles/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst --json --file p1/main.roc
+probe --range {w}/project/bundles/AJn26sZEXCwpyJNwjCgzYyLBXVC8HdvXhGWVD6bknvkq.tar.zst --json --file p1/main.roc

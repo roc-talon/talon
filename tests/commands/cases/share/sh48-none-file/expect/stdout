@@ -1,0 +1,6 @@
+== share forget
+There is nothing to forget on this machine.
+exit 0
+== share logout
+There is no login on this machine.
+exit 0

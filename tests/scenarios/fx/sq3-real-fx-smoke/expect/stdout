@@ -1,0 +1,47 @@
+== 1. a file that does not exist: a query and a query with no key give no row, a write with no row is ok, and none of them makes a file or a dir
+none
+none
+ok
+nothing was made
+== 2. R-TF7: a write to a new file makes the file with the 2 tables of format 1 and the table smoke, user_version 1, and no share_queue
+ok
+user_version 1
+tables ['facts', 'pinned', 'smoke']
+== 3. R-SM3 row 3: a query gives the rows of the keys that exist (the 4 outcome words), with the key of the row: another target, nightly or hash gives no row
+HP	nightly-2026-10-14-38a3029	arm64mac	fail
+HP	nightly-2026-10-14-38a3029	x64musl	pass
+HQ	nightly-2026-10-14-38a3029	x64musl	hang
+HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
+none
+HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
+== 4. a second write adds its rows and keeps the first ones
+ok
+HP	nightly-2026-10-14-38a3029	x64musl	pass
+HR	nightly-2026-10-14-38a3029	x64musl	pass
+user_version 1
+tables ['facts', 'pinned', 'smoke']
+== 4b. R-SM4, Q551: a key that is in the table keeps its first row (the repeat of HP has another outcome), and a repeat in the same call keeps the first row of the call
+ok
+HP	nightly-2026-10-14-38a3029	x64musl	pass
+HS	nightly-2026-10-14-38a3029	x64musl	crash
+== 5. R-TF7, Q433: a file of an older Talon (format 1, facts and pinned, no smoke). A query gives no row and makes no table. A write makes the table, keeps user_version 1 and the facts.
+none
+user_version 1
+tables ['facts', 'pinned']
+ok
+user_version 1
+tables ['facts', 'pinned', 'smoke']
+HP	nightly-2026-10-14-38a3029	x64musl	pass
+fact	old	n	any	pass		
+== 6. a file with user_version 0 (no Talon table): a query gives no row and makes no table
+none
+user_version 0
+tables ['other']
+== 7. R-TF3: a file with a newer format (2). The query and the write give TooNew, and the bytes of the file stay the same
+err TooNew(2)
+err TooNew(2)
+the file is the same
+== 8. a file that is not a database: Failed for both calls, and the text file is the same
+err Failed(...)
+err Failed(...)
+the text file is the same

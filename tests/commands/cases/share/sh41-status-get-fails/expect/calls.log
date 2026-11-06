@@ -1,0 +1,27 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+clock
+http_send GET http://127.0.0.1:9/v1/contributors/me timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer eyJ.jwt.sig
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+clock
+http_send GET http://127.0.0.1:9/v1/contributors/me timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer eyJ.jwt.sig
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 queue
+clock
+http_send GET http://127.0.0.1:9/v1/contributors/me timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer eyJ.jwt.sig

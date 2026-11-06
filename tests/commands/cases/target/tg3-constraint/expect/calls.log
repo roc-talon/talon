@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -62,6 +63,7 @@ read_files $PROJECT/p1/main.roc
 write_atomic $PROJECT/p1/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p2/main.roc
@@ -111,6 +113,7 @@ read_files $PROJECT/p2/main.roc
 write_atomic $PROJECT/p2/main.roc
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -130,7 +133,10 @@ read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/confi
 random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/4yCsyoWLwRZwMTMjDKTv2VHHwawgwHQM8WEMaoAsaSPz/main.roc
+list_dirs $HOME/.cache/roc/talon/index/github/acme/pf
+read_files $HOME/.cache/roc/talon/index/github/acme/pf/1.meta $HOME/.cache/roc/talon/index/github/acme/pf/1.json
 args
+env_all
 env_all
 clock
 cwd
@@ -157,6 +163,7 @@ random
 list_dirs $HOME/.cache/roc/packages
 read_files $HOME/.cache/roc/packages/5NwyVxdk4pT2waoGp8QkXGjrBTRTEBZZBdbrq6Z32gZP/main.roc
 args
+env_all
 env_all
 clock
 cwd

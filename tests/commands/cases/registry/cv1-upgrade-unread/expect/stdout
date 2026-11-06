@@ -1,0 +1,14 @@
+== upgrade --dry-run --file u1/main.roc
+note: the compiler list could not be read; roc stays nightly-2026-10-14-38a3029
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 3.0.0 new series
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at log:50, 6 probes
+dry run: nothing was written
+exit 0
+== upgrade roc --dry-run --file u1/main.roc
+exit 15

@@ -1,0 +1,1 @@
+tln: error[network]: the registry http://127.0.0.1:9 did not take the get sweeps nightly-2026-10-29-aaaaaaa after 4 requests (no answer). The bot stops, and the next run starts again.

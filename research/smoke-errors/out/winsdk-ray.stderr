@@ -1,0 +1,16 @@
+── ● roc version mismatch ─ ../../../conformance/host-link/xdg/roc/packages/5xecDmRJroKT9fnSiYsGdCKEzNWLnRKGtHJ5CxuCnpb9/main.roc:66:3
+
+This header pins Roc version nightly-2026-09-27-a3ce7f1, but you are running
+nightly-2026-10-06-c34079d.
+
+roc: "nightly-2026-09-27-a3ce7f1",
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Run roc fmt to update the pin, or switch to the pinned version of the compiler.
+
+── ✗ linker failed ─────────────────────────────────────────────────────────────
+
+The linker failed while building for target x64win.
+
+Error: WindowsSDKNotFound
+

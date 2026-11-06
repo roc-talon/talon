@@ -1,0 +1,5 @@
+@ SELECT hex(substr(n.value, 1, 1)) AS h, c.nightly, c.target, c.source, c.result, c.error_digest, c.time, c.log_index FROM compat c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.nightly, c.target, c.source
+33	5571556846250	0	0	0	\N	1767225608000	\N
+33	5571556846250	8	0	0	\N	1767225607000	\N
+33	5571556846250	34	0	3	link	1767225607000	\N
+33	5571556846250	36	0	1	e	1767225608000	\N

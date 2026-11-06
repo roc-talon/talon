@@ -1,0 +1,6 @@
+1: a new name with 19 rows today: 201
+2: a new name with 20 rows today: 429
+3: the owner in upper case is the same owner: 429
+4: 1 ms before the next day: Retry-After 1
+5: a known name of the owner: 201
+6: the next day: 201

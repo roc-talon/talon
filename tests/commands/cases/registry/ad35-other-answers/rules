@@ -1,0 +1,3 @@
+R-AD35 R-AD2 R-AP28 R-AP41 R-AP43 R-AP34 (slice 212, Design Q398, Q421, entry registry, the word fullname): the ingest answers that the rule of step 3 does not name.
+5 candidates, newest first: 5.0.0 gets 201 (indexed), 4.0.0 a 502 (skip, a warning with the status), 3.0.0 a 403 (another 4xx: skip, NO warning), 2.0.0 no answer (a timeout: skip, a warning with `no answer`), 1.0.0 a 202 (skip, a warning with the status).
+One ingest indexed, so R-AP1 is read again (Q399) with the bookmark of the 201. Exit 0. No ingest is sent again (R-AP34). The text of the warning is a proposal (R-OUT2): FullName.unindexed_warning.

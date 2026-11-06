@@ -10,6 +10,9 @@ import Github
 import Help
 import Ident
 import Index
+import IndexQuery
+import FullName
+import ClosureIndex
 import InitStub
 import InitText
 import Locked
@@ -19,6 +22,7 @@ import Net
 import Opts
 import RocInstall
 import Roots
+import ShareHook
 import Selector
 import Start
 import Text
@@ -129,7 +133,7 @@ Init :: [].{
 		Err(fail) => Common.failed!(fx, args, fail)
 		Ok(plan) => match make!(fx, args, plan) {
 			Ok({}) => 0
-			Err(fail) => Common.failed!(fx, args, fail)
+			Err(fail) => ShareHook.failed!(fx, args, fail)
 		}
 	}
 }
@@ -138,7 +142,7 @@ Init :: [].{
 make! : Fx, Args, Init.Plan => Try({}, Fail)
 make! = |fx, args, plan| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
 	now = Clock.now!(fx, env)?
 	cwd = fx.cwd!()
@@ -152,7 +156,7 @@ make! = |fx, args, plan| {
 		Package => { text: InitText.package_file, start_note: Err(None) }
 		App => {
 			name = plan.named ?? InitText.default_platform
-			started = start_url!(fx, { net, roots, now, offline: args.offline, name, version: plan.version })?
+			started = start_url!(fx, { net, roots, now, offline: args.offline, name, version: plan.version, flag: args.registry })?
 			url = started.url
 			text =
 				if name == InitText.default_platform {
@@ -180,22 +184,21 @@ make! = |fx, args, plan| {
 }
 
 # Steps 4 (app): the release that the template starts at, as a URL. `note` is the R-C16 note of a start release that only a pattern kept (no version). The R-T9 age note of a named version goes to stderr here.
-start_url! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]) } => Try({ url : Str, default_roc : Str, note : Try(Str, [None]) }, Fail)
+start_url! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) } => Try({ url : Str, default_roc : Str, note : Try(Str, [None]) }, Fail)
 start_url! = |fx, facts| {
 	(owner, repo) = match facts.name.split_on("/") {
 		[o, r] => (o, r)
 		_ => return Err(Fail.new(Usage, "'${facts.name}' is not a platform name: use owner/repo"))
 	}
-	# The line `index: cached at <time>` (R-DI12) is not printed here: the flow of step 6 reads the same list and prints it once.
-	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.now, offline: facts.offline })?
-	listed = match Index.candidates({ owner, repo, pages: fetched.pages, known: [] }) {
-		Ok(got) => got
-		Err(BadPage(n)) => return Err(Fail.new(Network, "the release list of ${facts.name} (page ${n.to_str()}) is not a list of releases"))
+	# Slice 206i (Q560): `config.toml` is read first, because its key `registry` decides where the release list comes from.
+	config = RocInstall.read_config!(fx, facts.roots)?
+	listed = match IndexQuery.setting({ flag: facts.flag, env: facts.net.registry, config: config.registry })? {
+		Direct => github_list!(fx, facts, owner, repo)?
+		Registry(origin) => registry_list!(fx, facts, origin)?
 	}
 	for w in listed.warnings {
 		fx.err!("warning: ${w}\n")
 	}
-	config = RocInstall.read_config!(fx, facts.roots)?
 	min_age = config.min_release_age ?? 172800
 	exclude = config.min_release_age_exclude
 	default_roc = config.default_roc ?? ""
@@ -214,6 +217,31 @@ start_url! = |fx, facts| {
 			Ok(chosen) => Ok({ url: chosen.url, default_roc, note: Init.start_note({ name: facts.name, chosen, now: facts.now, min_age, exclude }) })
 			Err(NoRelease) => Err(Fail.new(Usage, "no release of ${facts.name} is old enough for min-release-age"))
 		}
+	}
+}
+
+# The GitHub release list of the platform (`direct`). The line `index: cached at <time>` (R-DI12) is not printed here: the flow of step 6 reads the same list and prints it once.
+github_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
+github_list! = |fx, facts, owner, repo| {
+	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.now, offline: facts.offline })?
+	match Index.candidates({ owner, repo, pages: fetched.pages, known: [] }) {
+		Ok(got) => Ok({ list: got.list, warnings: got.warnings })
+		Err(BadPage(n)) => Err(Fail.new(Network, "the release list of ${facts.name} (page ${n.to_str()}) is not a list of releases"))
+	}
+}
+
+# Slice 206i (R-IN1, R-IN9, Q560, Q565): with a registry the list is the R-AP1 read of `add` (`FullName.read!`: the guard, the ingest of a 404). A name with no release is the failure of R-IN9 (2) for a version, else R-AD35 step 2.
+registry_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
+registry_list! = |fx, facts, origin| {
+	typed = match facts.version {
+		Ok(version) => Ok({ selector: Exact(version), text: version })
+		Err(Unset) => Err(None)
+	}
+	read = FullName.read!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: facts.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [] })?
+	match read {
+		Found(releases) => Ok({ list: ClosureIndex.candidates({ releases: releases.releases.keep_if(|r| !r.yanked), artifacts: [], name: facts.name }), warnings: [] })
+		NoMatch => Ok({ list: [], warnings: [] })
+		SourceBuild => Err(Fail.new(Internal, "${facts.name}: a source build is not read from the registry"))
 	}
 }
 
@@ -282,6 +310,8 @@ after_first! = |fx, args, plan, here| {
 		Exists => shown.out!("note: .github/workflows/ci.yml exists, not written\n")
 		Skipped => {}
 	}
+	# Slice 206i (R-SH4 detail 11, Q541): `init` with a platform sent a closure query, so it sends the queue after its output (the smoke build runs first, R-SM3).
+	ShareHook.send!(fx, done.ran, 0)
 	Ok({})
 }
 

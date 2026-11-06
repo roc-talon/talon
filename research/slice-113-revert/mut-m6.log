@@ -1,0 +1,8 @@
+All (13) tests passed in 133.9 ms.
+PASS identity/tp10-301-followed (2288 ms)
+FAIL identity/tp10-rename (2382 ms)
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/lib\t2\t2\t100\t100\t10\t10\tacme/lib2\t\\N\t1767225630000","acme/lib2\t1\t2\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767225630000"]
+      got:      ["acme/lib\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/lib\t2\t2\t100\t100\t10\t10\tacme/lib2\t\\N\t1767225630000","acme/lib2\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767225630000"]
+PASS identity/tp9-four-rows (2612 ms)
+w2: 2 passed, 1 failed

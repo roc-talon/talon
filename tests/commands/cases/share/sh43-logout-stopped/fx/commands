@@ -1,0 +1,2 @@
+# R-SH9, R-AP38, Q481: logout when the registry answers 401 (the token is already of no use): the JWT is removed under the lock, the text is the text of a logout, exit 0.
+share logout

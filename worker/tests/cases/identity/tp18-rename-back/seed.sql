@@ -1,0 +1,14 @@
+INSERT INTO names (id, kind, value) VALUES (-6698799873295345079, 3, 'acme/a');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (-6698799873295345079, 100, 10, 2, -6587368247951127810, 1767000000000, 1767000000000);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (-6698799873295345079, NULL, NULL, 1767003600000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-6698799873295345079, 1, 0, NULL, 100, NULL, 10, NULL, NULL, 1767000000000);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-6698799873295345079, 2, 2, 100, 100, 10, 10, -6587368247951127810, NULL, 1767000000000);
+INSERT INTO names (id, kind, value) VALUES (-6587368247951127810, 3, 'acme/b');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (-6587368247951127810, 100, 10, 2, -5543532275224752874, 1767000000000, 1767000000000);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (-6587368247951127810, NULL, NULL, 1767003600000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-6587368247951127810, 1, 2, NULL, 100, NULL, 10, NULL, NULL, 1767000000000);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-6587368247951127810, 2, 2, 100, 100, 10, 10, -5543532275224752874, NULL, 1767000000000);
+INSERT INTO names (id, kind, value) VALUES (-5543532275224752874, 3, 'acme/c');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (-5543532275224752874, 100, 10, 0, NULL, 1767000000000, 1767000000000);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (-5543532275224752874, NULL, NULL, 1767003600000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-5543532275224752874, 1, 2, NULL, 100, NULL, 10, NULL, NULL, 1767000000000);

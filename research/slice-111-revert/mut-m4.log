@@ -1,0 +1,26 @@
+Roc application crashed with this message:
+
+	count 2
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:141:1
+
+expect {
+    s1 = ArchiveRead.empty().count(60000000) ?? crash "count 1"
+    s2 = s1.count(40000000)
+    s3 = (s2 ?? crash "count 2").count(1)
+    (s2.is_ok(), s3.map_ok(|_| {})) == (Bool.True, Err(TooLarge({ bytes: 100000001, from: Count })))
+}
+
+Ran 27 tests in 1280.4 ms.:
+    26 passed
+    1 failed
+    0 compiler errors
+PASS archive/pu38-hash-and-end (2968 ms)
+PASS archive/pu38-made-kinds (2870 ms)
+PASS archive/pu38-paths-and-header (2952 ms)
+PASS archive/pu38-real-bundles (2889 ms)
+FAIL archive/pu38-size (5788 ms)
+    request 3: problem.detail: expected "the BLAKE3 hash of the asset is 5YNMkaSqDHek9Znxz2GosTRNMvBGubPoxAgzQ42qgSw9, not the hash GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t of the URL", got "the asset has more than the limit of 100000000 bytes (the read stopped at 100000000 bytes)"
+PASS archive/pu38-window (2841 ms)
+w2: 5 passed, 1 failed

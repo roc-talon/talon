@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 list_dirs $PROJECT/p1
@@ -35,6 +37,8 @@ db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=4
 delete $HOME/.cache/roc/packages/8bp2yxDtY2ayou722hzyv51Ts1yBaFshmVGtLXpkDy8r.0123456789abcdef.tmp
 args
+env_all
+tty
 env_all
 clock
 cwd

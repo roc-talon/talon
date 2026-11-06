@@ -1,0 +1,9 @@
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: acme/json 2.2.0: the bot and the author rows differ on nightly-2026-10-14-38a3029: bot pass, author fail
+check: passed
+build: skipped (recorded pass)
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+verified: the tuple passes. No project file was written.

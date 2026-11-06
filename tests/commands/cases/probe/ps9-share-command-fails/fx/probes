@@ -1,0 +1,5 @@
+# probe 1 and 2: p1 check and build. 3: p2 check (errors, no build). 4: p3 check (a package: no build)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+1	../fixtures/check/out/app-errors.stdout	../fixtures/check/out/app-errors.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr

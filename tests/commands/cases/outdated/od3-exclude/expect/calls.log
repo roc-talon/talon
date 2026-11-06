@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -49,6 +51,7 @@ db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=6
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=24
 args
+env_all
 env_all
 clock
 cwd

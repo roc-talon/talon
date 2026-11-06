@@ -1,0 +1,27 @@
+Slice 209 revert check (test step, 2026-11-03).
+
+before/: the stubs of cli/lib/Matrix.roc, Evidence.roc, PairOrder.roc as handed to the code agent.
+A private reference was written, made green (L0: l0-4 and l0-5 all pass; scripts/test.sh l0 pass), then 9 hand mutations were run, then the reference was deleted (TW18).
+
+| # | Mutation | Caught by |
+| --- | --- | --- |
+| M1 | Matrix.real: the author row wins over the bot row (R-EF3) | MatrixTest real |
+| M2 | Matrix.real: rank 2 over rank 1 (R-EF3) | MatrixTest real |
+| M3 | Matrix.intervals: case (b) with 1 changed hash (R-EP3) | MatrixTest intervals |
+| M4 | Matrix.intervals: a hang is compared (R-EP5) | MatrixTest intervals |
+| M5 | Matrix.intervals: 2 adjacent epochs of the answer joined (R-EP3) | MatrixTest intervals |
+| M6 | Matrix.rows: an end that D does not have gives nothing (R-AP19) | MatrixTest rows, intervals |
+| M7 | Matrix.shared: equal counts give a pass (R-EF3) | MatrixTest shared, order_shared |
+| M8 | PairOrder.order_shared: rank 6 before rank 4 (R-AL4) | MatrixTest order_shared |
+| M9 | Evidence.of_all: the author line before the bot line (R-EF3) | EvidenceTest of_all |
+
+Result: 9 of 9 caught.
+
+After the design answers Q393 to Q395 (2026-11-03): 3 new tests (Matrix.unknown_sets, order_shared with a rank 6 fail hint, differ with 2 digests). before/ now has the stub `unknown_sets`. A new private reference was green (l0-4 111 of 111, l0-5 93 of 93), then 4 more mutations, then the reference was deleted:
+
+| M10 | unknown_sets: the rank 2 fail keeps source Real (Q393) | MatrixTest unknown_sets |
+| M11 | unknown_sets: no R-EF3 precedence (an author fail wins over a bot pass) | MatrixTest unknown_sets |
+| M12 | order_shared: a rank 6 fail hint is with the pairs with no hint (Q395) | MatrixTest Q395 |
+| M13 | differ: a different digest is a different result (Q394) | EvidenceTest differ |
+
+Result: 13 of 13 caught.

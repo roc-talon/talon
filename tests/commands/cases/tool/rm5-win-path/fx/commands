@@ -1,2 +1,2 @@
-env:HOME={w}/home/u3 env:USERPROFILE={w}/home/u3 tool rm talon
-env:HOME={w}/home/u4 env:USERPROFILE={w}/home/u4 tool rm talon --remove-tools
+env:HOME=C:/u3 env:USERPROFILE={w}/home/u3 env:LOCALAPPDATA=C:/u3/AppData/Local env:APPDATA=C:/u3/AppData/Roaming tool rm talon
+env:HOME=C:/u4 env:USERPROFILE={w}/home/u4 env:LOCALAPPDATA=C:/u4/AppData/Local env:APPDATA=C:/u4/AppData/Roaming tool rm talon --remove-tools

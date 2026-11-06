@@ -1,0 +1,2 @@
+{"level":"warn","msg":"index job refused","repository_id":500,"release_id":9001,"type":"/errors/not-a-candidate"}
+{"level":"warn","msg":"index job failed","attempts":1}

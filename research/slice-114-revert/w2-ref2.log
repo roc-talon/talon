@@ -1,0 +1,7 @@
+All (11) tests passed in 325.0 ms.
+PASS publish/pu1-publish-package (2221 ms)
+PASS publish/pu16-after-ingest (2022 ms)
+PASS publish/tp3-claims-vs-url (1894 ms)
+PASS publish/tp9-claim-ids (2047 ms)
+w2: 4 passed, 0 failed
+DONE

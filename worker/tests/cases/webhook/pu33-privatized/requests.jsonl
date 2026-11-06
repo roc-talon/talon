@@ -1,0 +1,6 @@
+{"queue":"talon-index","messages":[{"id":"m1","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":100,"release_id":0,"repository_ids":[]}}]}
+{"queue":"talon-index","now":1767225601000,"messages":[{"id":"m2","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":100,"release_id":0,"repository_ids":[]}},{"id":"m3","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":600,"release_id":0,"repository_ids":[]}}]}
+{"queue":"talon-index","messages":[{"id":"m4","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":300,"release_id":0,"repository_ids":[]}}]}
+{"queue":"talon-index","now":1767225601000,"messages":[{"id":"m5","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":400,"release_id":0,"repository_ids":[]}}]}
+{"queue":"talon-index","messages":[{"id":"m6","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":999,"release_id":0,"repository_ids":[]}}]}
+{"queue":"talon-index","messages":[{"id":"m7","attempts":1,"body":{"event":"repository","action":"privatized","installation_id":55,"repository_id":500,"release_id":0,"repository_ids":[]}}]}

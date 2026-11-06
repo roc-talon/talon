@@ -1,0 +1,7 @@
+PASS shorts/ap7-query-forms (692 ms)
+w2: 1 passed, 0 failed
+FAIL wtrap crash: body {"detail":"a fault in the Worker","status":500,"title":"Internal Server Error","type":"/errors/internal"}, expected {"type":"/errors/internal","title":"Internal error","status":500,"detail":"a fault in the Worker"}
+FAIL wtrap event: body {"detail":"a fault in the Worker","status":500,"title":"Internal Server Error","type":"/errors/internal"}, expected {"type":"/errors/internal","title":"Internal error","status":500,"detail":"a fault in the Worker"}
+FAIL wtrap failed: body {"detail":"a fault in the Worker","status":500,"title":"Internal Server Error","type":"/errors/internal"}, expected {"type":"/errors/internal","title":"Internal error","status":500,"detail":"a fault in the Worker"}
+wtrap: 9 causes, 3 failures
+done

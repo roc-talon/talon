@@ -1,0 +1,3 @@
+cli/lib/ToolBinCheck.roc
+tests/unit/ToolbincheckTest.roc
+docs/slices/092-prebuilt-bin-check.md

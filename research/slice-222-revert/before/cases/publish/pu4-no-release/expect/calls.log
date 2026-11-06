@@ -1,0 +1,7 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/json/releases/tags/2.1.0
+  User-Agent: tln/0.0.1
+  Authorization: Bearer gh1

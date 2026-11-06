@@ -1,0 +1,41 @@
+--- ../../worker/tests/run.mjs	2026-11-01 21:59:25.687638758 +0400
++++ runner/run.mjs	2026-11-01 22:29:33.577981577 +0400
+@@ -7,6 +7,7 @@
+ // A case is a dir `worker/tests/cases/<area>/<id>-<name>/`:
+ //   requests.jsonl        one request in each line: {"method","path","headers":{..},"body":"text" | "json":{..},"now":ms}, or a cron run {"cron":"..","time":ms}.
+ //                         The clock of the Worker is `now` (default 1767225600000, 2026-01-01T00:00:00Z): a case never reads the real clock.
++//                         A line {"sql":["statement", ...]} is not a request: the statements run on the DB between the requests (slice 106, RR1). It has no line in expect/.
+ //   seed.sql              optional. Statements that run after the migrations (`sql/0001_init.sql`, ... when they exist). The statements may be DDL.
+ //   github/               optional. The fake GitHub: one file for each URL: `github/<host>/<path>` (and `%3F<query>` at the end), with the names encoded as TESTING.md 3.1.
+ //                         The body of the file is the answer (status 200, `application/json`; `application/octet-stream` for a name that ends in .zst or .tar).
+@@ -177,7 +178,8 @@
+   const specs = lines(join(c.dir, 'requests.jsonl')).map((l) => JSON.parse(l));
+   const expected = lines(join(c.dir, 'expect', 'responses.jsonl')).map((l) => JSON.parse(l));
+   if (specs.length === 0) return { errs: ['requests.jsonl has no request'], logs };
+-  if (expected.length !== specs.length) return { errs: [`expect/responses.jsonl has ${expected.length} lines for ${specs.length} requests`], logs };
++  const nreq = specs.filter((s) => s.sql === undefined).length;
++  if (expected.length !== nreq) return { errs: [`expect/responses.jsonl has ${expected.length} lines for ${nreq} requests`], logs };
+   const persist = join(runDir, c.name.replace(/\W/g, '_'));
+   const mf = new Miniflare(convertV4MiniflareOptions({
+     modules,
+@@ -197,14 +199,17 @@
+     for (const sql of migrations) for (const s of splitSql(sql)) await db.prepare(s.sql).run();
+     for (const s of splitSql(read(join(c.dir, 'seed.sql')))) await db.prepare(s.sql).run();
+     const counts = [];
+-    for (let i = 0; i < specs.length; i++) {
+-      const res = await request(mf, specs[i], c);
++    let i = 0;
++    for (const spec of specs) {
++      if (spec.sql !== undefined) { for (const st of spec.sql) await db.prepare(st).run(); continue; }
++      const res = await request(mf, spec, c);
+       counts.push({ calls: Number(res.headers['x-d1-calls'] ?? NaN), ops: res.headers['x-d1-ops'] ?? '' });
+       checkResponse(i + 1, expected[i], res, errs);
++      i++;
+     }
+     const want = lines(join(c.dir, 'expect', 'd1-calls'));
+     if (want.length) {
+-      if (want.length !== specs.length) errs.push(`expect/d1-calls has ${want.length} lines for ${specs.length} requests`);
++      if (want.length !== nreq) errs.push(`expect/d1-calls has ${want.length} lines for ${nreq} requests`);
+       want.forEach((w, i) => {
+         if (w.trim() !== '-' && counts[i] && Number(w) !== counts[i].calls) errs.push(`d1-calls: request ${i + 1}: expected ${w.trim()}, got ${counts[i].calls} (${counts[i].ops || 'no call'})`);
+       });

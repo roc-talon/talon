@@ -1,0 +1,27 @@
+All (26) tests passed in 387.1 ms.
+PASS reconcile/pu21-poll-job (3053 ms)
+PASS reconcile/pu23-list (4105 ms)
+PASS reconcile/pu25-reserve (2849 ms)
+PASS reconcile/pu36-overlap (2925 ms)
+PASS reconcile/pu36-state-guard (2912 ms)
+PASS reconcile/pu37-backoff (3212 ms)
+FAIL reconcile/pu37-etag-effects (4680 ms)
+    request 2: queue_sent: expected [{"body":{"action":"published","event":"poll","installation_id":0,"release_id":9002,"repository_id":500,"repository_ids":[]},"delay_s":0}], got []
+    d1-calls: request 2: expected 3, got 2 (all,batch)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\tW/\"new\"\t1767225900000\t1767229500000\t0\t0","acme/two\tW/\"boom\"\t1767225900000\t1767229500000\t0\t0"]
+      got:      ["acme/lib\tW/\"new\"\t1767225600000\t1767229200000\t0\t0","acme/two\tW/\"boom\"\t1767225900000\t1767229500000\t0\t0"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\tdeleted\t1767225900000","2\tacme/two\t1.0.0\tdeleted\t1767225900000"]
+      got:      ["1\tacme/lib\t1.0.0\tdeleted\t1767225600000","2\tacme/two\t1.0.0\tdeleted\t1767225900000"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+    logs: no Worker log line has {"level":"warn","msg":"reconcile row failed","job":"reconcile","repository_id":500,"fail_count":1}; the lines are [{"level":"warn","msg":"reconcile row failed","error":"Constraint({ kind: Trigger, message: \"test: the etag write is refused\" })","fail_count":1,"job":"reconcile","repository_id":600}]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/600","GET https://api.github.com/repos/acme/two/releases?per_page=100"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"Constraint({ kind: Trigger, message: \"test: the etag write is refused\" })","fail_count":1,"job":"reconcile","repository_id":600}
+PASS webhook/pu13-index-new (1373 ms)
+PASS webhook/pu17-withdraw-clear (1735 ms)
+w2: 8 passed, 1 failed

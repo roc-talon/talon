@@ -1,0 +1,21 @@
+== cache dir
+$HOME/.cache/roc
+exit 0
+== cache dir
+$HOME/.cache/roc
+exit 0
+== env:HOME={w}/home/h2 cache dir
+$HOME/h2/.cache/roc
+exit 0
+== env:HOME={w}/home/h3 cache dir --yes
+$HOME/h3/.cache/roc
+exit 0
+== env:HOME={w}/home/h5 cache dir --offline
+$HOME/h5/.cache/roc
+exit 0
+== env:HOME={w}/home/h4 cache dir
+$HOME/h4/.cache/roc
+exit 0
+== env:HOME={w}/home/h4 cache dir
+$HOME/h4/.cache/roc
+exit 0

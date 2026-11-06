@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 platform
 read_files $HOME/h1/.local/share/talon/tools.json
 list_dirs $HOME/h1/.cache/roc/toolchains $HOME/h1/.local/bin
@@ -50,6 +51,7 @@ delete $HOME/h1/.local/bin/roc
 rename $HOME/h1/.local/bin/roc.old $HOME/h1/.local/bin/roc
 delete $HOME/h1/.local/bin/tln $HOME/h1/.local/share/talon/bin/tln
 args
+env_all
 env_all
 platform
 read_files $HOME/h2/.local/share/talon/tools.json

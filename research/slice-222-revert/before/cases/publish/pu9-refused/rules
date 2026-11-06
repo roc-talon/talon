@@ -1,0 +1,1 @@
+R-E6 R-AP22 R-AP34 R-J7 (slice 221): a refused write is exit 20 (rejected), one request each, no wait, no new token (only a 401 gets one). The texts are the first 2 lines of the CLI 3 R-E6 example: 409 label-conflict, then 403 forbidden.

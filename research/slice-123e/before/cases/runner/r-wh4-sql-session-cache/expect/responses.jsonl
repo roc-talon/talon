@@ -1,0 +1,6 @@
+{"status":200,"json":{"count":0}}
+{"status":200,"json":{"count":2}}
+{"status":200,"headers":{"x-d1-session":"first-unconstrained"}}
+{"status":200,"headers":{"x-d1-session":"bookmark-abc-123"}}
+{"status":200,"headers":{"x-d1-session":null}}
+{"status":200,"json":{"cache-control":null,"pragma":null}}

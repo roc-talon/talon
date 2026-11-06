@@ -1,0 +1,7 @@
+status 201
+header Content-Type: application/json
+header Cache-Control: no-store
+require content-type: application/json
+require talon-contributor: 0123456789abcdef0123456789abcdef
+require-none authorization
+require user-agent: tln/0.0.1

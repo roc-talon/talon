@@ -1,0 +1,1 @@
+warning: the kept answer $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/d1f9d55195a78856c1060481410244dd.json of the registry http://127.0.0.1:9 does not decode (InvalidJson("Invalid JSON")); removed

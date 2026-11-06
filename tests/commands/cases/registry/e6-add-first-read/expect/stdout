@@ -1,0 +1,6 @@
+== add acme/e1 --no-check --dry-run --file p1/main.roc
+exit 15
+== add acme/e2 --no-check --dry-run --file p1/main.roc
+exit 15
+== add acme/e3 --no-check --dry-run --file p1/main.roc
+exit 15

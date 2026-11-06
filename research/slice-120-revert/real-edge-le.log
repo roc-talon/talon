@@ -1,0 +1,16 @@
+FAIL cron/ct15-trim (1388 ms)
+    db: @ SELECT contributor, counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor: rows differ:
+      expected: ["-5\t1\t1\t0\t0\t1\t1700000600000\t1700000600000","77\t2\t1\t0\t1\t1\t1700000200000\t1720000200000","88\t3\t1\t1\t1\t1\t1690000000100\t1690000000900","4242\t14\t7\t4\t2\t8\t1690000000000\t1730000100000"]
+      got:      ["-5\t1\t1\t0\t0\t1\t1700000600000\t1700000600000","77\t2\t1\t0\t1\t1\t1700000200000\t1720000200000","88\t3\t1\t1\t1\t1\t1690000000100\t1690000000900","4242\t15\t8\t4\t2\t9\t1690000000000\t1735689700000"]
+    db: @ SELECT contributor, artifact, nightly FROM contributions ORDER BY contributor, artifact, nightly: rows differ:
+      expected: ["77\t102\t9400","4242\t101\t9300","4242\t102\t9400"]
+      got:      ["77\t102\t9400","4242\t102\t9400"]
+    db: @ SELECT artifact, nightly, target, talon_version FROM compat_hints ORDER BY artifact, nightly: rows differ:
+      expected: ["101\t9300\t0\t1","102\t9400\t0\t1"]
+      got:      ["102\t9400\t0\t1"]
+    db: @ SELECT nightly FROM probe GROUP BY nightly ORDER BY MIN(n): rows differ:
+      expected: ["9100","9050","9200"]
+      got:      ["9100","9050","9200","9300"]
+PASS cron/ct15-trim-failure (1241 ms)
+PASS cron/pu35-hint-cleanup (1208 ms)
+w2: 2 passed, 1 failed

@@ -1,0 +1,15 @@
+All (14) tests passed in 153.5 ms.
+FAIL identity/q262-row-race (2457 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["race/repo\t1\t11\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["race/repo\t1\t12\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["race/repo\t1\t0\t\\N\t1\t\\N\t10\t\\N\t\\N\t1767000000000","race/repo\t2\t1\t1\t1\t10\t11\t\\N\t\\N\t1767225630000"]
+      got:      ["race/repo\t1\t0\t\\N\t1\t\\N\t10\t\\N\t\\N\t1767000000000","race/repo\t2\t1\t1\t1\t10\t11\t\\N\t\\N\t1767225630000","race/repo\t3\t1\t1\t1\t10\t12\t\\N\t\\N\t1767225630000"]
+PASS identity/tp10-301-followed (2403 ms)
+PASS identity/tp10-rename (2779 ms)
+PASS identity/tp18-301-no-row (2443 ms)
+PASS identity/tp18-rename-back (2759 ms)
+PASS identity/tp9-four-rows (3220 ms)
+PASS identity/tp9-private-first (1045 ms)
+w2: 6 passed, 1 failed

@@ -1,0 +1,25 @@
+All (17) tests passed in 294.7 ms.
+PASS webhook/ap12-empty-secret (1707 ms)
+PASS webhook/ap12-no-secret (1842 ms)
+PASS webhook/ap12-signature (2008 ms)
+PASS webhook/pu11-events (2054 ms)
+PASS webhook/pu13-index-new (1902 ms)
+PASS webhook/pu13-no-asset-end (1675 ms)
+PASS webhook/pu13-not-candidate (1836 ms)
+FAIL webhook/pu13-refused (5430 ms)
+    request 2: queue acked: expected [], got ["m2"]
+    request 2: queue retried: expected [{"delay_s":60,"id":"m2"}], got []
+    logs: no Worker log line has {"level":"warn","msg":"index job failed","attempts":1}; the lines are [{"level":"warn","msg":"index job refused","release_id":9001,"repository_id":500,"type":"/errors/not-a-candidate"},{"level":"warn","msg":"index job refused","release_id":9002,"repository_id":500,"type":"/errors/upstream"}]
+    worker log: {"level":"warn","msg":"index job refused","release_id":9001,"repository_id":500,"type":"/errors/not-a-candidate"}
+    worker log: {"level":"warn","msg":"index job refused","release_id":9002,"repository_id":500,"type":"/errors/upstream"}
+PASS webhook/pu13-retry-no-asset (1789 ms)
+PASS webhook/pu14-labels (1936 ms)
+PASS webhook/pu17-withdraw-clear (2834 ms)
+PASS webhook/pu26-app-installed (2152 ms)
+PASS webhook/pu26-release-installed (1631 ms)
+PASS webhook/pu33-privatized (2380 ms)
+PASS webhook/pu33-publicized (1652 ms)
+PASS webhook/pu33-release-private (1660 ms)
+PASS webhook/pu35-dead-letter (1047 ms)
+PASS webhook/pu35-retry-schedule (910 ms)
+w2: 17 passed, 1 failed

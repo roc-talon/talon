@@ -1,0 +1,6 @@
+== share logout
+There is no login on this machine.
+exit 0
+== share logout --json
+{"schema":1,"command":"share logout","ok":true,"data":{"logged_out":false},"error":null}
+exit 0

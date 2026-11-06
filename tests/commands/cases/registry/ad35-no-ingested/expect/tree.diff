@@ -1,0 +1,28 @@
+--- home/.cache/roc/talon/index/github/acme/all409/1.json
++++ home/.cache/roc/talon/index/github/acme/all409/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-06-01T12:00:00Z","assets":[{"name":"Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/all409/releases/download/1.0.0/Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY.tar.zst"}]},{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-07-01T12:00:00Z","assets":[{"name":"2om9WSAiD2RUfbAGZU7F2LzitJE9ipfqe8SBmA3aWjDv.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/all409/releases/download/2.0.0/2om9WSAiD2RUfbAGZU7F2LzitJE9ipfqe8SBmA3aWjDv.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/all409/1.meta
++++ home/.cache/roc/talon/index/github/acme/all409/1.meta
+@@ -0,0 +1 @@
++etag "g1"
+--- home/.cache/roc/talon/index/github/acme/all409/repo.json
++++ home/.cache/roc/talon/index/github/acme/all409/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/all409","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/one5xx/1.json
++++ home/.cache/roc/talon/index/github/acme/one5xx/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-06-01T12:00:00Z","assets":[{"name":"7bJEr9pTNzmDD7nivz6BkT6r9QgJCR2q5Tqn3wJugemN.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/one5xx/releases/download/1.0.0/7bJEr9pTNzmDD7nivz6BkT6r9QgJCR2q5Tqn3wJugemN.tar.zst"}]},{"tag_name":"2.0.0","draft":false,"prerelease":false,"published_at":"2026-07-01T12:00:00Z","assets":[{"name":"7ALEYjKjFrGbxdizoYuiYdHbrgUL3s5hUGPDBny5XhS1.tar.zst","size":1000,"browser_download_url":"https://github.com/acme/one5xx/releases/download/2.0.0/7ALEYjKjFrGbxdizoYuiYdHbrgUL3s5hUGPDBny5XhS1.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/one5xx/1.meta
++++ home/.cache/roc/talon/index/github/acme/one5xx/1.meta
+@@ -0,0 +1 @@
++etag "g1"
+--- home/.cache/roc/talon/index/github/acme/one5xx/repo.json
++++ home/.cache/roc/talon/index/github/acme/one5xx/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/one5xx","private":false,"fork":false}
+\ No newline at end of file

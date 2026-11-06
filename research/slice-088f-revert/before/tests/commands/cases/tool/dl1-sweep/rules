@@ -1,0 +1,14 @@
+Slice 050c, the sweep of `.del` files at each start of `tln` on Windows (R-ST10). The fake machine is `os=windows arch=x64`. The bin dir of Windows is `<USERPROFILE>\.local\bin` (R-LY8): in the case it is the dir `home/u\.local\bin` (a name with `\`, in `home/`, so the tree diff shows it). The data bin dir is `home/AppData/Local\talon/bin` (slice 088c). Start state: the bin dir has `tln.exe`, `roc.exe`, 2 `.del` files (`foo.0123456789abcdef.del`, `tln.fedcba9876543210.del`), 3 names that are no `.del` file (`notes.del`, `up.0123456789ABCDEF.del` with upper case, `old.0123456789abcdef.del.tmp`) and a dir `dirdel.0123456789abcdef.del`. The data bin dir has `tln.exe`, `foo.exe` and 2 `.del` files (`tln.1111111111111111.del`, `roc.old.2222222222222222.del`).
+
+The sweep is the first thing of each run: `env_all`, one `list_dirs` with the dirs (the bin dir, then the data bin dir), one `delete` with the files (in the order of the dirs, byte order in each dir), then the `args` of the command. `windows!` is not in `calls.log`. The sweep prints nothing and never changes the exit code.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `--version` with `USERPROFILE={w}/nowhere` | the bin dir is not there (`list_dirs` gives `NotFound`): no failure. The 2 `.del` files of the data bin dir go. Exit 0 | R-ST10 |
+| 2 | `--version` with an empty `HOME` | no data bin dir (the roots need `HOME`): only the bin dir is listed. Its 2 `.del` files go, the 3 other names and the dir stay | R-ST10 |
+| 3 | `--version` | both dirs are listed, nothing is left to delete: no `delete` call | R-ST10 |
+| 4 | `tool list` | the sweep is first, also for a command (no `.del` file: no `delete` call) | R-ST10 |
+| 5 | `@roc +nightly-2026-10-14-38a3029 --version` with `CI=true` | the `roc` proxy is a start of `tln` too (R-ST8): the sweep runs before the proxy. The compiler of rank 1 is not installed and there is no person, so the proxy stops with exit 13 before any request (R-DL8). Slice 072e: the run was `@roc --version` with no compiler selected, which stopped with exit 18 (R-SO14); now the proxy picks a compiler and reads the list (case `proxy/px5-no-rank`) | R-ST10, R-ST8, R-DL8 |
+| 6 | `no-such-command` | a usage failure (exit 2) is also a start | R-ST10 |
+
+Slice 088b (test world) and 088c: the fake Windows has `LOCALAPPDATA` and `APPDATA` in its env, as the other Windows cases. The data bin dir of the sweep is `home/AppData/Local\talon/bin` (R-LY7, slice 088c: `Del.dirs` uses the roots of Windows). Run 5 reads `tools.json` from `AppData/Local\talon`.

@@ -1,0 +1,13 @@
+{"method":"GET","path":"/v1/toolchains?after=abc"}
+{"method":"GET","path":"/v1/toolchains?after=-1"}
+{"method":"GET","path":"/v1/toolchains?after="}
+{"method":"GET","path":"/v1/toolchains?after=1.5"}
+{"method":"GET","path":"/v1/toolchains?after=007"}
+{"method":"GET","path":"/v1/toolchains?after=00"}
+{"method":"GET","path":"/v1/toolchains?after=9223372036854775808"}
+{"method":"GET","path":"/v1/toolchains?after=18446744073709551615"}
+{"method":"GET","path":"/v1/toolchains?after=99999999999999999999"}
+{"method":"GET","path":"/v1/toolchains?target=linux_x86_64&after=x"}
+{"method":"POST","path":"/v1/toolchains"}
+{"method":"PUT","path":"/v1/toolchains"}
+{"method":"DELETE","path":"/v1/toolchains"}

@@ -1,0 +1,3 @@
+1: the message of the reconcile for 1.0.0, which an ingest indexed with the same hash: the job reads the repository by id and the release by id, then adds ONLY the provenance row poll (via 2). Acked
+2: the same message again (a message sent 2 times is not a fault, R-PU14): the row of via 2 exists, nothing is written. Acked
+3: the message for a new candidate 2.0.0: the shared flow indexes it with the provenance poll (via 2), no installation: repo_checks stays. Acked

@@ -1,0 +1,2 @@
+R-AD35 R-DA8 R-EC18 R-AP28 (slice 212, entry registry, the word fullname): no `curl` for the ingests (Design Q229).
+One candidate. The command asks `programs curl` before `http_all!` (the Fx call has no exit code): no `curl` is exit 18 (kind environment) that names curl. No request of an ingest, no second read. The text is the one of slice 208 (UnknownValues.settle!).

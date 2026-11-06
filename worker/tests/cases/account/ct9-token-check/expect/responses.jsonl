@@ -1,0 +1,26 @@
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the request has no Authorization header: this route needs a registry token"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the Authorization header must be \"Bearer <token>\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is not a valid JWT"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token alg is \"RS256\", expected \"EdDSA\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token alg is \"none\", expected \"EdDSA\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token kid \"key-2\" is not the key of this registry"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim iss is \"https://other.example\", expected \"https://registry.example\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim aud is \"https://other.example\", expected \"https://registry.example\""}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim exp is 1767226540: the token expired (now is 1767226600, leeway 60 s)"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim iat is 1767226660: the token is issued in the future (now is 1767226600, leeway 60 s)"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim sub is \"abc\", expected a GitHub user id"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim sub is \"0\", expected a GitHub user id"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim sub is \"-5\", expected a GitHub user id"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim sub is \"+7\", expected a GitHub user id"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim sub is \"12.5\", expected a GitHub user id"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim sub is \"\", expected a GitHub user id"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the account of the token has no data in this registry: log in again"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token was issued before the last revoke of the tokens of its account: log in again"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":1,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}

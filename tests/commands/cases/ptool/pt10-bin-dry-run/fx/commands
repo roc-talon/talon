@@ -1,0 +1,2 @@
+update --tool --dry-run --file p1/main.roc
+update --tool --dry-run --json --file p2/main.roc

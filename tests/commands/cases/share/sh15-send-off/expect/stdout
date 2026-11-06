@@ -1,0 +1,12 @@
+== queue-send 0.9.0 off
+  done
+== queue-send 0.9.0 direct
+  done
+== queue-send 0.9.0 offline
+  done
+== queue-send 0.9.0 env:DO_NOT_TRACK=1
+  done
+== queue-send 0.9.0 env:CI=true
+  done
+== queue-send 0.9.0
+  done

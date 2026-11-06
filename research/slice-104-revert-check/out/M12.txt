@@ -1,0 +1,14 @@
+
+── ✗ fail ──────────────────────────── packages/records/tests/WireTest.roc:177:1
+
+expect {
+    r1 = { name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"), state_at: 1760000001000 }
+    r2 = { name: "a/b", state: Active, successor: Err(None), state_at: 5 }
+    r3 = { name: "c/d", state: Missing, successor: Err(None), state_at: 0 }
+    Closure.encode_repo(r1) == js("{'name':'roc-lang/unicode','state':'moved','state_at':1760000001000,'successor':'acme/unicode'}") and Closure.encode_repo(r2) == js("{'name':'a/b','state':'active','state_at':5,'successor':null}") and [r1, r2, r3].all(|r| Closure.decode_repo(Closure.encode_repo(r)) == Ok(r)) and Closure.decode_repo(js("{'name':'a/b','state':'active','state_at':5}")) == Ok(r2)
+}
+
+Ran 38 tests in 591.5 ms.:
+    37 passed
+    1 failed
+    0 compiler errors

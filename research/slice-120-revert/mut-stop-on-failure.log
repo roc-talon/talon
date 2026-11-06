@@ -1,0 +1,15 @@
+PASS cron/ct15-trim (1628 ms)
+FAIL cron/ct15-trim-failure (1512 ms)
+    db: @ SELECT contributor, counted FROM snap_totals: rows differ:
+      expected: ["4242\t1"]
+      got:      []
+    db: @ SELECT contributor, artifact, nightly FROM snap_rows ORDER BY artifact: rows differ:
+      expected: ["4242\t101\t9100","4242\t103\t9300"]
+      got:      ["4242\t101\t9100","4242\t102\t9050","4242\t103\t9300"]
+    db: @ SELECT artifact, nightly FROM snap_hints ORDER BY artifact: rows differ:
+      expected: ["101\t9100","103\t9300"]
+      got:      ["101\t9100","102\t9050","103\t9300"]
+    worker log: {"level":"warn","msg":"trim failed","error":"Constraint({ kind: Trigger, message: \"boom\" })","nightly":"9100"}
+    worker log: {"level":"warn","msg":"trim failed","error":"Constraint({ kind: Trigger, message: \"boom\" })","nightly":"9100"}
+PASS cron/pu35-hint-cleanup (1488 ms)
+w2: 2 passed, 1 failed

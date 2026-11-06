@@ -1,0 +1,8 @@
+{"method":"GET","path":"/v1/toolchains"}
+{"method":"GET","path":"/v1/toolchains?after=1000"}
+{"method":"GET","path":"/v1/toolchains?after=2000"}
+{"method":"GET","path":"/v1/toolchains?after=2500"}
+{"method":"GET","path":"/v1/toolchains?after=1500"}
+{"method":"GET","path":"/v1/toolchains?after=1499"}
+{"method":"GET","path":"/v1/toolchains?after=0&target=linux_arm64&unknown=1"}
+{"method":"GET","path":"/v1/toolchains?after=499&target=macos_apple_silicon"}

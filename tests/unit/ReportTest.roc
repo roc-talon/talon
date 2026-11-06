@@ -4,7 +4,7 @@ ReportTest :: [].{}
 
 # R-DT5 (slice 007, question Q4): the line that a resolve prints. With no registry it names the time. One probe is `1 probe`.
 expect {
-	line = |probes| Report.resolved_line({ at: "2026-10-15T12:00:00Z", probes })
+	line = |probes| Report.resolved_line({ at: "2026-10-15T12:00:00Z", log: Err(None), probes })
 	rows = [
 		(line(4), "resolved at 2026-10-15T12:00:00Z, 4 probes"),
 		(line(3), "resolved at 2026-10-15T12:00:00Z, 3 probes"),
@@ -20,6 +20,7 @@ expect {
 expect {
 	full = {
 		at: "2026-10-15T12:00:00Z",
+		log: Err(None),
 		probes: 3,
 		downloads: 1,
 		dry_run: Bool.False,
@@ -36,6 +37,7 @@ expect {
 	}
 	skipped = {
 		at: "2026-10-15T12:00:00Z",
+		log: Err(None),
 		probes: 0,
 		downloads: 0,
 		dry_run: Bool.True,
@@ -121,4 +123,43 @@ expect {
 	bad = rows.keep_if(|(got, want)| got != want).map(|(got, _)| got)
 	dbg bad
 	bad == []
+}
+
+# R-DT5 R-J3 (slice 206d2, Design Q438, a proposal): a run with a registry answer and a time snapshot. The line names the time and the log size: `resolved at <time> (log:<n>), <probes> probes`.
+# With `at` = `log:<n>` (no time snapshot) the log is not named twice. With no answer (`log` is `Err(None)`) the line is as before.
+expect {
+	rows = [
+		(Report.resolved_line({ at: "2026-10-01T00:00:00Z", log: Ok(50), probes: 0 }), "resolved at 2026-10-01T00:00:00Z (log:50), 0 probes"),
+		(Report.resolved_line({ at: "2026-10-01T00:00:00Z", log: Ok(50), probes: 1 }), "resolved at 2026-10-01T00:00:00Z (log:50), 1 probe"),
+		(Report.resolved_line({ at: "log:30", log: Ok(30), probes: 0 }), "resolved at log:30, 0 probes"),
+		(Report.resolved_line({ at: "2026-10-01T00:00:00Z", log: Err(None), probes: 0 }), "resolved at 2026-10-01T00:00:00Z, 0 probes"),
+	]
+	bad = rows.keep_if(|(got, want)| got != want).map(|(got, _)| got)
+	dbg bad
+	bad == []
+}
+
+# R-J3 R-J6 R-OUT4 R-DT5 (slice 206d2, Design Q438, a proposal): `--json` gives the time and the log size apart. `snapshot` is the snapshot as given (the time), and `log_size` is a number key of its own, right after `snapshot`.
+# A run with no answer has no `log_size` key (the rows above, R-J6: a new field changes no `schema`).
+expect {
+	out = {
+		at: "2026-10-01T00:00:00Z",
+		log: Ok(50),
+		probes: 0,
+		downloads: 0,
+		dry_run: Bool.True,
+		check: Skipped,
+		build: Skipped,
+		added: [],
+		moved: [],
+		kept: [],
+		pinned: Err(None),
+		toml: [],
+		renamed: [],
+		notes: [],
+		written: [],
+	}
+	got = Report.data(out).render()
+	dbg got
+	got == "{\"snapshot\":\"2026-10-01T00:00:00Z\",\"log_size\":50,\"probes\":0,\"downloads\":0,\"dry_run\":true,\"check\":\"skipped\",\"build\":\"skipped\",\"added\":[],\"moved\":[],\"kept\":[],\"pinned\":null,\"toml\":[],\"renamed\":[],\"notes\":[],\"written\":[]}"
 }

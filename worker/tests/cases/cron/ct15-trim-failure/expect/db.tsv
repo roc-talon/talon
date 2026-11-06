@@ -1,0 +1,14 @@
+@ SELECT contributor, counted FROM snap_totals
+4242	1
+@ SELECT contributor, artifact, nightly FROM snap_rows ORDER BY artifact
+4242	101	9100
+4242	103	9300
+@ SELECT artifact, nightly FROM snap_hints ORDER BY artifact
+101	9100
+103	9300
+@ SELECT contributor, counted, first, agreed, disagreed, unconfirmed, first_time, last_time FROM contributor_totals ORDER BY contributor
+4242	2	2	0	0	2	1700000100000	1720000100000
+@ SELECT contributor, artifact, nightly FROM contributions ORDER BY artifact
+4242	103	9300
+@ SELECT artifact, nightly FROM compat_hints ORDER BY artifact
+103	9300

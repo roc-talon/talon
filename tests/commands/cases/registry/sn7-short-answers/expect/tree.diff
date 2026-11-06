@@ -1,0 +1,64 @@
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/0a8eb6471c886ef3d869244d78128901.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/0a8eb6471c886ef3d869244d78128901.json
+@@ -0,0 +1 @@
++{"packages":[{"first_log_index":1,"name":"lukewilliamboswell/roc-parser","state":"active"},{"first_log_index":6,"name":"someone/parser","state":"active"}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/0a8eb6471c886ef3d869244d78128901.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/0a8eb6471c886ef3d869244d78128901.meta
+@@ -0,0 +1,3 @@
++url /v1/packages?q=pars
++etag "q1"
++max-age 300
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/4cd0b9866f1b180bffcc6087f0f97005.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/4cd0b9866f1b180bffcc6087f0f97005.json
+@@ -0,0 +1 @@
++{"matches":[{"matches":[{"first_log_index":1,"name":"lukewilliamboswell/roc-parser","state":"active"},{"first_log_index":6,"name":"someone/parser","state":"active"}],"short":"Parser"},{"matches":[],"short":"pars"},{"matches":[{"first_log_index":5,"moved_from":"olduser/roc-json","name":"acme/roc-json","state":"active"}],"short":"json"},{"matches":[],"short":"xx"}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/4cd0b9866f1b180bffcc6087f0f97005.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/4cd0b9866f1b180bffcc6087f0f97005.meta
+@@ -0,0 +1,3 @@
++url /v1/packages?short=Parser&short=pars&short=json&short=xx
++etag "s2"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5821484bb50ea5dcff17fa52629adbbf.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5821484bb50ea5dcff17fa52629adbbf.json
+@@ -0,0 +1 @@
++{"matches":[{"matches":[{"first_log_index":1,"name":"lukewilliamboswell/roc-parser","state":"active"}],"short":"parser"},{"matches":[{"first_log_index":1,"name":"lukewilliamboswell/roc-parser","state":"active"},{"first_log_index":6,"name":"someone/parser","state":"active"}],"short":"Parser"}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5821484bb50ea5dcff17fa52629adbbf.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5821484bb50ea5dcff17fa52629adbbf.meta
+@@ -0,0 +1,3 @@
++url /v1/packages?short=parser&short=Parser
++etag "s2"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5c9cd22e847f0ce2e5d93bdb96a93396.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5c9cd22e847f0ce2e5d93bdb96a93396.json
+@@ -0,0 +1 @@
++{"packages":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5c9cd22e847f0ce2e5d93bdb96a93396.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/5c9cd22e847f0ce2e5d93bdb96a93396.meta
+@@ -0,0 +1 @@
++url /v1/packages?q=xx
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/c6cd0382a87bf499a3660bd6ff2417d0.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/c6cd0382a87bf499a3660bd6ff2417d0.json
+@@ -0,0 +1 @@
++{"matches":[{"matches":[],"short":"qf"},{"matches":[],"short":"pars"}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/c6cd0382a87bf499a3660bd6ff2417d0.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/c6cd0382a87bf499a3660bd6ff2417d0.meta
+@@ -0,0 +1,3 @@
++url /v1/packages?short=qf&short=pars
++etag "s2"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ee2390d46b02355601fed38e83c39974.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ee2390d46b02355601fed38e83c39974.json
+@@ -0,0 +1 @@
++{"matches":[{"matches":[{"first_log_index":1,"name":"lukewilliamboswell/roc-parser","state":"active"}],"short":"parser"},{"matches":[{"first_log_index":5,"moved_from":"olduser/roc-json","name":"acme/roc-json","state":"active"}],"short":"json"}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ee2390d46b02355601fed38e83c39974.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ee2390d46b02355601fed38e83c39974.meta
+@@ -0,0 +1,3 @@
++url /v1/packages?short=parser&short=json
++etag "s2"
++max-age 60

@@ -1,0 +1,10 @@
+{"method": "GET", "path": "/v1/packages?short=parser"}
+{"method": "GET", "path": "/v1/packages?short=parser"}
+{"method": "GET", "path": "/v1/packages?short=roc-parser"}
+{"method": "GET", "path": "/v1/packages?short=pars"}
+{"sql": ["INSERT OR IGNORE INTO names (id, kind, value) VALUES\n  (202421725237061510, 3, 'someone/parser'),\n  (-4986264343711199879, 1, X'd2723d41dc38888a239bf9fd03c82d7d6edc884e7ac96a840b6c061f5886e593'),\n  (3851585196069220251, 2, 'github.com/someone/parser/releases/download/{v}/');", "INSERT INTO artifacts (artifact, kind, exposes, platform, roc_pin, size) VALUES (-4986264343711199879, 1, '[\"M\"]', NULL, NULL, 100);", "INSERT INTO log (idx, grp, version, hash, time) VALUES (6, 'github.com/someone/parser/releases/download/{v}/', '1.6.0', 'FAVeiiugpdhfVxV3iWqLb76Hd9s9HrJ86KPWifC2PNAv', 1767139200000);", "INSERT INTO releases (log_index, form, version, version_text, artifact, repo, url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at) VALUES (6, 3851585196069220251, -9223090536108195841, '', -4986264343711199879, 202421725237061510, 'https://github.com/someone/parser/releases/download/1.6.0/FAVeiiugpdhfVxV3iWqLb76Hd9s9HrJ86KPWifC2PNAv.tar.zst', '1.6.0', NULL, 1700000000006, 0, NULL, NULL);", "INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time) VALUES (202421725237061510, 2459, 2000, 0, NULL, 1699999000000, 1699999000000);"]}
+{"method": "GET", "path": "/v1/packages?short=Parser"}
+{"sql": ["UPDATE repos SET state = 1 WHERE repo = 3202109884675247741", "UPDATE releases SET withdrawn = 'repo-missing', withdrawn_at = 1767225599500 WHERE repo = 3202109884675247741"]}
+{"method": "GET", "path": "/v1/packages?short=parser&n=1"}
+{"method": "GET", "path": "/v1/packages?short=parser&short=json&short=pars&short=Parser"}
+{"method": "GET", "path": "/v1/packages?short=parser&short=json&short=pars&short=Parser", "headers": {"if-none-match": "\"ecc0e1419747740abcd9af968f976fa4\""}}

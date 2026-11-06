@@ -1,0 +1,22 @@
+Slice 208 revert check (test step). A private reference (reference/tree, a copy of cli, packages, scripts and the tests, deleted after) and 10 hand mutations. Each line: failing L0 expects of l0-1.roc, and the result of the 3 L2 cases registry/ap28-*.
+reference: l0 failing=0, l2 3 passed 0 failed
+M1 largest takes the first bookmark: l0 2 failed, l2 1 failed
+M2 classify ignores the snapshot: l0 1 failed, l2 1 failed
+M3 label is tested after the ingest case (a github URL is never Label): l0 1 failed, l2 1 failed
+M4 label ignores the version: l0 2 failed, l2 1 failed
+M5 a 409 label-conflict is archive (R-AP65 source 2 lost): l0 2 failed, l2 1 failed
+M6 a 429 is archive (no stop): l0 1 failed, l2 1 failed
+M7 the second query is sent when no ingest is indexed: l0 0 failed, l2 1 failed
+M8 the ingests run one at a time (limit 1): l0 0 failed, l2 2 failed
+M9 an ingest carries Talon-Contributor: l0 2 failed, l2 2 failed
+M10 the second query has no Cache-Control no-cache: l0 1 failed, l2 1 failed
+
+M11 anchor_note ignores the rows of the group (a reference of only this function: the 4 anchor expects pass; with M11 one fails): caught
+All 11 caught.
+
+Second round (Design Q420 to Q425): a private reference again (deleted), 4 more mutations, all caught:
+N1 a 5xx ingest is archive with no warning (Q421): l0 3 failed, l2 1 failed
+N2 an indexed value that is still in `unknown` after the second query stays indexed (Q423): l0 0 failed, l2 1 failed
+N3 a 429 gives no time (Q424): l0 4 failed (2 in UnknownvaluesTest, 2 in RegistryTest), l2 1 failed
+N4 the second query has an extra Talon-Bookmark header: l0 1 failed, l2 1 failed
+`largest` by byte order only (Q422) failed 2 expects of the reference at first, so the length rule is tested.

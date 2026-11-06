@@ -1,0 +1,156 @@
+ld64.lld: error: library not found for -lSystem
+ld64.lld: error: undefined symbol: _free
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvNtCsgpgvoWC1HI_9addr2line4line9path_push+0x159)
+>>> referenced by unix.rs:48 (library/std/src/sys/alloc/unix.rs:48)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMNtCsl2jJwwz0T1e_5alloc6stringNtB2_6String15from_utf8_lossy+0x21e)
+>>> referenced by mod.rs:0 (library/alloc/src/raw_vec/mod.rs:0)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs_NtNtCsl2jJwwz0T1e_5alloc3ffi5c_strNtB4_7CString19__from_vec_unchecked+0xb8)
+>>> referenced 396 more times
+
+ld64.lld: error: undefined symbol: _memcpy
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvNtCsgpgvoWC1HI_9addr2line4line9path_push+0x10d)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvNtCsgpgvoWC1HI_9addr2line4line9path_push+0xe4)
+>>> referenced by mod.rs:551 (library/core/src/ptr/mod.rs:551)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMNtCsl2jJwwz0T1e_5alloc6stringNtB2_6String15from_utf8_lossy+0x131)
+>>> referenced 104 more times
+
+ld64.lld: error: undefined symbol: _malloc
+>>> referenced by unix.rs:14 (library/std/src/sys/alloc/unix.rs:14)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs4_NtCsl2jJwwz0T1e_5alloc7raw_vecNtB5_11RawVecInner11finish_growB7_+0x45)
+>>> referenced by unix.rs:14 (library/std/src/sys/alloc/unix.rs:14)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMNtCsl2jJwwz0T1e_5alloc6stringNtB2_6String15from_utf8_lossy+0x4d)
+>>> referenced by unix.rs:14 (library/std/src/sys/alloc/unix.rs:14)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvXs_NvMs_NtNtCsl2jJwwz0T1e_5alloc3ffi5c_strNtB9_7CString3newRShNtB4_11SpecNewImpl13spec_new_impl+0x2a)
+>>> referenced 48 more times
+
+ld64.lld: error: undefined symbol: _realloc
+>>> referenced by unix.rs:54 (library/std/src/sys/alloc/unix.rs:54)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs4_NtCsl2jJwwz0T1e_5alloc7raw_vecNtB5_11RawVecInner11finish_growB7_+0x27)
+>>> referenced by unix.rs:54 (library/std/src/sys/alloc/unix.rs:54)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs_NtNtCsl2jJwwz0T1e_5alloc3ffi5c_strNtB4_7CString19__from_vec_unchecked+0x3a)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvCs9wFQrvczXsK_7___rustc14___rust_realloc+0x17)
+>>> referenced 8 more times
+
+ld64.lld: error: undefined symbol: __Unwind_Resume
+>>> referenced by unix.rs:0 (library/std/src/sys/alloc/unix.rs:0)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMNtCsl2jJwwz0T1e_5alloc6stringNtB2_6String15from_utf8_lossy+0x226)
+>>> referenced by mod.rs:0 (library/alloc/src/raw_vec/mod.rs:0)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs_NtNtCsl2jJwwz0T1e_5alloc3ffi5c_strNtB4_7CString19__from_vec_unchecked+0xc0)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs4_NtNtCs6BbAzR0YYqL_5gimli4read6abbrevNtB5_13Abbreviations6insert+0x923)
+>>> referenced 106 more times
+
+ld64.lld: error: undefined symbol: _memcmp
+>>> referenced by cmp.rs:157 (library/core/src/slice/cmp.rs:157)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsu_NtNtCsbAqs9W1eE8G_4core3str7patternNtB5_11StrSearcher3new+0x76)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsf_NtNtCsbAqs9W1eE8G_4core3str4iterINtB5_13SplitInternalcE4nextCslVYqVqmRAcp_14rustc_demangle+0xdb)
+>>> referenced by cmp.rs:157 (library/core/src/slice/cmp.rs:157)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNCNvNtNtCsgejaSCmAoRz_3std3sys9backtrace10__print_fmts_0B7_+0x28e3)
+>>> referenced 37 more times
+
+ld64.lld: error: undefined symbol: _posix_memalign
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvCs9wFQrvczXsK_7___rustc12___rust_alloc+0x4e)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvCs9wFQrvczXsK_7___rustc14___rust_realloc+0x58)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMs3I_NtCsgXefw0vh0G2_4host16roc_platform_abiNtB6_17DefaultAllocators11roc_realloc+0x6a)
+>>> referenced 5 more times
+
+ld64.lld: error: undefined symbol: _memmove
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsJ_NtNtNtCsl2jJwwz0T1e_5alloc11collections5btree4nodeINtB5_6HandleINtB5_7NodeRefNtNtB5_6marker3MutyNtNtNtCs6BbAzR0YYqL_5gimli4read6abbrev12AbbreviationNtB1m_4LeafENtB1m_4EdgeE10insert_fitB1J_+0xb7)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsJ_NtNtNtCsl2jJwwz0T1e_5alloc11collections5btree4nodeINtB5_6HandleINtB5_7NodeRefNtNtB5_6marker3MutyNtNtNtCs6BbAzR0YYqL_5gimli4read6abbrev12AbbreviationNtB1m_4LeafENtB1m_4EdgeE10insert_fitB1J_+0x7d)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsM_NtNtNtCsl2jJwwz0T1e_5alloc11collections5btree4nodeINtB5_6HandleINtB5_7NodeRefNtNtB5_6marker3MutyNtNtNtCs6BbAzR0YYqL_5gimli4read6abbrev12AbbreviationNtB1m_8InternalENtB1m_4EdgeE10insert_fitB1J_+0xf3)
+>>> referenced 4 more times
+
+ld64.lld: error: undefined symbol: _pthread_cond_destroy
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RINvMNtNtNtCsgejaSCmAoRz_3std3sys4sync8once_boxINtB3_7OnceBoxNtNtNtNtNtB7_3pal4unix4sync7condvar7CondvarE10initializeNCNvMNtNtB5_7condvar7pthreadNtB1W_7Condvar3get0ECsgXefw0vh0G2_4host+0x5b)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x14b)
+
+ld64.lld: error: undefined symbol: _pthread_mutex_destroy
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x1ad)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x186)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x5e)
+>>> referenced 5 more times
+
+ld64.lld: error: undefined symbol: _pthread_mutex_unlock
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x17e)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x35)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0x6bf)
+>>> referenced 14 more times
+
+ld64.lld: error: undefined symbol: _pthread_mutex_trylock
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x172)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvMsn_NtCsl2jJwwz0T1e_5alloc4syncINtB5_3ArcNtNtCsgXefw0vh0G2_4host15process_service6SharedE9drop_slowBK_+0x29)
+>>> referenced by mutex.rs:90 (library/std/src/sys/pal/unix/sync/mutex.rs:90)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNCINvMs0_NtNtCsgejaSCmAoRz_3std4sync4onceNtB8_4Once9call_onceNCNvNtBc_2rt7cleanup0E0Bc_+0x22a)
+>>> referenced 1 more times
+
+ld64.lld: error: undefined symbol: _pthread_mutex_lock
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0xb17)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0xaaf)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0x7ff)
+>>> referenced 13 more times
+
+ld64.lld: error: undefined symbol: _strlen
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0x87c)
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0xc0)
+>>> referenced by c_str.rs:767 (library/core/src/ffi/c_str.rs:767)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvXs5_NtNtCsgejaSCmAoRz_3std2io5errorNtB5_5ErrorNtNtCsbAqs9W1eE8G_4core3fmt7Display3fmt+0xae)
+>>> referenced 4 more times
+
+ld64.lld: error: undefined symbol: _pthread_cond_wait
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0x560)
+
+ld64.lld: error: undefined symbol: _signal
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _main+0x24)
+
+ld64.lld: error: undefined symbol: ___bzero
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNvXs0_NtCslVYqVqmRAcp_14rustc_demangle2v0NtB5_5IdentNtNtCsbAqs9W1eE8G_4core3fmt7Display3fmt+0x27)
+>>> referenced by panicking.rs:268 (library/std/src/panicking.rs:268)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNCINvNtNtCsgejaSCmAoRz_3std6thread7current17with_current_nameNCNCNvNtB8_9panicking12default_hook00uE0B8_+0xd2)
+>>> referenced by profiling.rs:13 (library/core/src/profiling.rs:13)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RNCNvNtNtCsgejaSCmAoRz_3std3sys9backtrace10__print_fmts_0B7_+0x1770)
+>>> referenced 1 more times
+
+ld64.lld: error: undefined symbol: _CCRandomGenerateBytes
+>>> referenced by /rustc/8bab26f4f68e0e26f0bb7960be334d5b520ea452/library/alloc/src/lib.rs/@/alloc.f509177cb32da4da-cgu.0
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol __RINvMs0_NtNtNtNtCsgejaSCmAoRz_3std3sys12thread_local6native4lazyINtB6_7StorageINtNtCsbAqs9W1eE8G_4core4cell4CellTyyEEzE16get_or_init_slowNvNvNvMNtNtBe_4hash6randomNtB2i_11RandomState3new4KEYS27___rust_std_internal_init_fnECsE0SP7oZC3p_6rustls+0x38)
+
+ld64.lld: error: undefined symbol: __Unwind_SetIP
+>>> referenced by gcc.rs:242 (library/std/src/sys/personality/gcc.rs:242)
+>>>               /home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrSTLEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/targets/x64mac/libhost.a(host-010ef205097706c6.host.c57d35a12b1c8f18-cgu.07.rcgu.o):(symbol _rust_eh_personality+0x542)
+
+ld64.lld: error: too many errors emitted, stopping now (use --error-limit=0 to see all errors)
+── ✗ linker failed ─────────────────────────────────────────────────────────────
+
+The linker failed while building for target x64mac.
+
+Error: LinkFailed
+

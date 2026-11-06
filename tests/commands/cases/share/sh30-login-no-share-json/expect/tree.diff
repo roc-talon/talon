@@ -1,0 +1,4 @@
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -0,0 +1 @@
++{"format":1,"id":"0123456789abcdef0123456789abcdef","sent":0,"counted":0,"first":0,"first_sent_at":null,"last_sent_at":null,"token":"eyJ.jwt.sig","token_expires_at":"2026-11-14T12:00:00Z","account":{"id":583231,"login":"octocat"}}

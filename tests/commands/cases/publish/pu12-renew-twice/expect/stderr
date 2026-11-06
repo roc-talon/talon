@@ -1,0 +1,2 @@
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[rejected]: D (/errors/unauthenticated): the registry refused the new token too.

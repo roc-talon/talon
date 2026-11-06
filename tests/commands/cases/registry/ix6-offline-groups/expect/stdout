@@ -1,0 +1,7 @@
+== get /v1/releases?group=github.com%2Fsomeone%2Froc-b%2Freleases%2Fdownload%2Fv%7Bv%7D%2F
+status: 200
+source: live
+body: {"releases":[{"log_index":4,"hash":"6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","group":"github.com/someone/roc-b/releases/download/v{v}/","series":"1","version":"1.0.0","url":"https://github.com/someone/roc-b/releases/download/v1.0.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst","tag":"v1.0.0","roc_version":null,"repo":"someone/roc-b","published_at":1790000000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]}],"checked":null,"repos":[]}
+== offline name=someone/roc-b known=https://github.com/someone/roc-b/releases/download/v1.0.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst known=https://github.com/someone/roc-b/releases/download/2.0.0/6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6.tar.zst
+candidate someone/roc-b 1.0.0 v1.0.0 1790000000 0 https://github.com/someone/roc-b/releases/download/v1.0.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst
+missing-group someone/roc-b github.com/someone/roc-b/releases/download/{v}/

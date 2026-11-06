@@ -139,8 +139,8 @@
 +++ project/p1/talon.toml
 @@ -0,0 +1,3 @@
 +[tools]
-+foo = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
-+snap = { ref = "acme/snap@^1.0.0", url = "https://github.com/acme/snap/releases/download/1.0.0/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst" }
++foo = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", bin = {} }
++snap = { ref = "acme/snap@^1.0.0", url = "https://github.com/acme/snap/releases/download/1.0.0/3DNhgaENdunLHvSYVvfrBVeXXeUzbeTDXoHbzAidYqJf.tar.zst", bin = {} }
 --- project/p2/talon.toml
 +++ project/p2/talon.toml
 @@ -3,3 +3,6 @@
@@ -149,9 +149,9 @@
  # end
 +
 +[tools]
-+bar = { ref = "acme/bar@^1.1.0", url = "https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst" }
++bar = { ref = "acme/bar@^1.1.0", url = "https://github.com/acme/bar/releases/download/1.1.0/ihrX4zNDRchAhFbrVWgzjPwLrkVAjkMFErXcrtU8hC3.tar.zst", bin = {} }
 --- project/talon.toml
 +++ project/talon.toml
 @@ -0,0 +1,2 @@
 +[tools]
-+nf = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
++nf = { ref = "acme/foo@^1.1.0", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", bin = {} }

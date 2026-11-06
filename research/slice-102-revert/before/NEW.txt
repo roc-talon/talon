@@ -1,0 +1,4 @@
+docs/slices/102-schema-tables.md
+sql/0001_init.sql
+sql/tests/cases/schema/ (s1-tables, s2-targets, s3-names, s4-int64-ids, s5-keys-and-checks)
+research/slice-102-revert/ (reference/, run-ref.sh, mutate.sh, gen-shape.mjs)

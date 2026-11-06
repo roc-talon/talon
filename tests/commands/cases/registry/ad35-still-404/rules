@@ -1,0 +1,3 @@
+R-AD35 R-AD2 R-AP1 R-AP43 R-AP41 R-E6 (slice 212, entry registry, the word fullname): step 4 of R-AD35: R-AP1 is still 404 after the ingests.
+One candidate. Its ingest answers 201 (so it is indexed), but the read after it, with no-cache and the bookmark, is still 404 (R-AD35 step 4: a queue of Q30, or a slow colo). Talon stops with exit 15 (kind network), and the message says that the registry indexes the repository and to run the command again. No third read, no second ingest (R-AP34).
+Nothing of R-AP1 is kept (a 404 is not a copy, R-IX3). The text is a proposal (R-OUT2): FullName.still_missing.

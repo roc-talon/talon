@@ -1,0 +1,4 @@
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[rejected]: the registry has roc-lang/json 2.1.0 with another hash (/errors/label-conflict). The tag was released again. Release a new version.
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[rejected]: token claim ref is refs/heads/main, the asset URL has the tag 2.1.0 (/errors/forbidden). Run tln publish in a job for the tag.

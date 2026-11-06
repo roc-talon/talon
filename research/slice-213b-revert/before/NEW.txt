@@ -1,0 +1,5 @@
+docs/slices/213b-share-followups.md
+tests/commands/cases/share/sh6-run-once
+tests/commands/cases/share/sh7-chmod-fail
+tests/commands/cases/share/sh1-flow/fx/jobs
+tests/commands/cases/share/sh2-direct/fx/jobs

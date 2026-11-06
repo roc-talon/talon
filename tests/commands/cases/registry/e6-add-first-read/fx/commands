@@ -1,0 +1,3 @@
+add acme/e1 --no-check --dry-run --file p1/main.roc
+add acme/e2 --no-check --dry-run --file p1/main.roc
+add acme/e3 --no-check --dry-run --file p1/main.roc

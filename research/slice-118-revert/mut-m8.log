@@ -1,0 +1,52 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:235:1
+
+expect {
+    repo = |visibility| "{\"id\":100,\"name\":\"lib\",\"full_name\":\"acme/lib\",\"private\":false,\"owner\":{\"login\":\"acme\",\"id\":10},\"description\":null,\"visibility\":\"${visibility}\"}"
+    out = |status, body| match Webhook.repository_outcome({ status, body }) {
+        Ok(Withdraw) => "withdraw"
+        Ok(Stale) => "stale"
+        Err(Upstream(_)) => "upstream"
+    }
+    out(404, "{\"message\":\"Not Found\"}") == "withdraw"
+        and out(404, "") == "withdraw"
+        and out(200, repo("public")) == "stale"
+        and out(200, repo("private")) == "withdraw"
+        and out(200, repo("internal")) == "withdraw"
+        and out(200, "{\"id\":100}") == "upstream"
+        and out(200, "not json") == "upstream"
+        and out(200, "") == "upstream"
+        and out(500, "") == "upstream"
+        and out(502, repo("private")) == "upstream"
+        and out(403, repo("private")) == "upstream"
+        and out(304, "") == "upstream"
+        and out(301, "") == "upstream"
+}
+
+Ran 12 tests in 245.8 ms.:
+    11 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (2062 ms)
+PASS webhook/ap12-no-secret (2059 ms)
+PASS webhook/ap12-signature (2511 ms)
+PASS webhook/pu11-events (2778 ms)
+PASS webhook/pu26-app-installed (2569 ms)
+FAIL webhook/pu33-privatized (4075 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t100\t10\t1\t\\N\t1767225600000\t1767000000000","acme/old\t100\t10\t2\tacme/lib\t1767000000000\t1767000000000","already/pkg\t600\t60\t1\t\\N\t1767000000500\t1767000000000","boom/pkg\t500\t50\t0\t\\N\t1767000000000\t1767000000000","gone/pkg\t400\t40\t1\t\\N\t1767225601000\t1767000000000","other/pkg\t200\t20\t0\t\\N\t1767000000000\t1767000000000","stale/pkg\t300\t30\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["acme/lib\t100\t10\t1\t\\N\t1767225600000\t1767000000000","acme/old\t100\t10\t2\tacme/lib\t1767000000000\t1767000000000","already/pkg\t600\t60\t1\t\\N\t1767000000500\t1767000000000","boom/pkg\t500\t50\t0\t\\N\t1767000000000\t1767000000000","gone/pkg\t400\t40\t1\t\\N\t1767225601000\t1767000000000","other/pkg\t200\t20\t0\t\\N\t1767000000000\t1767000000000","stale/pkg\t300\t30\t1\t\\N\t1767225600000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/lib\t2\t4\t100\t100\t10\t10\t\\N\t\\N\t1767225600000","acme/old\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","already/pkg\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","boom/pkg\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","gone/pkg\t1\t0\t\\N\t400\t\\N\t40\t\\N\t\\N\t1767000000000","gone/pkg\t2\t4\t400\t400\t40\t40\t\\N\t\\N\t1767225601000","other/pkg\t1\t0\t\\N\t200\t\\N\t20\t\\N\t\\N\t1767000000000","stale/pkg\t1\t0\t\\N\t300\t\\N\t30\t\\N\t\\N\t1767000000000"]
+      got:      ["acme/lib\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","acme/lib\t2\t4\t100\t100\t10\t10\t\\N\t\\N\t1767225600000","acme/old\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","already/pkg\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","boom/pkg\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","gone/pkg\t1\t0\t\\N\t400\t\\N\t40\t\\N\t\\N\t1767000000000","gone/pkg\t2\t4\t400\t400\t40\t40\t\\N\t\\N\t1767225601000","other/pkg\t1\t0\t\\N\t200\t\\N\t20\t\\N\t\\N\t1767000000000","stale/pkg\t1\t0\t\\N\t300\t\\N\t30\t\\N\t\\N\t1767000000000","stale/pkg\t2\t4\t300\t300\t30\t30\t\\N\t\\N\t1767225600000"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\trepo-missing\t1767225600000","2\tacme/lib\t1.1.0\tdeleted\t1767000000100","3\tacme/old\t0.9.0\trepo-missing\t1767225600000","4\tother/pkg\t1.0.0\t\\N\t\\N","5\tstale/pkg\t1.0.0\t\\N\t\\N","6\tgone/pkg\t1.0.0\trepo-missing\t1767225601000","7\tboom/pkg\t1.0.0\t\\N\t\\N","8\talready/pkg\t1.0.0\trepo-missing\t1767000000500"]
+      got:      ["1\tacme/lib\t1.0.0\trepo-missing\t1767225600000","2\tacme/lib\t1.1.0\tdeleted\t1767000000100","3\tacme/old\t0.9.0\trepo-missing\t1767225600000","4\tother/pkg\t1.0.0\t\\N\t\\N","5\tstale/pkg\t1.0.0\trepo-missing\t1767225600000","6\tgone/pkg\t1.0.0\trepo-missing\t1767225601000","7\tboom/pkg\t1.0.0\t\\N\t\\N","8\talready/pkg\t1.0.0\trepo-missing\t1767000000500"]
+    db: @ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance): rows differ:
+      expected: ["7\t7\t7\t9\t8\t8\t8"]
+      got:      ["7\t7\t7\t10\t8\t8\t8"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the GitHub repository read failed with status 500"}
+PASS webhook/pu33-publicized (2074 ms)
+PASS webhook/pu35-dead-letter (1734 ms)
+PASS webhook/pu35-retry-schedule (1639 ms)
+w2: 8 passed, 1 failed

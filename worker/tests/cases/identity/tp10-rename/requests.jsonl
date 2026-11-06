@@ -1,0 +1,4 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib2/releases/download/2.0.0/4n6KbS1xFZ9QbFagoLBnwmEouetAuxm6bwcyvX7WySHD.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib2/releases/download/2.1.0/G9SwmDFYQdrgXsoGnznwmYQbwwMeV8xg9JFcRXY9Z5G1.tar.zst"},"now":1767225635000}
+{"method":"GET","path":"/v1/packages/acme/lib/releases","now":1767225636000}
+{"method":"GET","path":"/v1/packages/acme/lib2/releases","now":1767225636000}

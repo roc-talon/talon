@@ -1,0 +1,2 @@
+@ SELECT hex(substr(n.value, 1, 1)) AS h, CAST(c.contributor AS TEXT) AS contributor, c.nightly, c.target, c.result, CAST(c.talon_version AS TEXT) AS talon_version, c.time FROM contributions c JOIN names n ON n.id = c.artifact ORDER BY n.value, c.contributor, c.nightly, c.target
+11	-6890997442180345381	5571556846250	0	0	17180000255	1767225640000

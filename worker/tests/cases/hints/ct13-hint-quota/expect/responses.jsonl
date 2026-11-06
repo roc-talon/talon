@@ -1,0 +1,5 @@
+{"status":429,"headers":{"retry-after":"43200"},"problem":{"type":"/errors/rate-limited"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1,\"first\":1,\"skipped\":[]}"}
+{"status":429,"headers":{"retry-after":"1"},"problem":{"type":"/errors/rate-limited"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":0,\"first\":0,\"skipped\":[{\"row\":1,\"reason\":\"unknown-hash\"}]}"}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"body":"{\"written\":1,\"first\":1,\"skipped\":[]}"}

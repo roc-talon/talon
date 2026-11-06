@@ -1,0 +1,18 @@
+# Files that slice 108 adds (the copies of the files it changes are beside this file, under their own paths).
+docs/slices/108-oidc.md
+worker/lib/Oidc.roc
+worker/Auth.roc
+worker/tests/unit/OidcTest.roc
+worker/tests/oidc.mjs
+worker/tests/oidc/claims-bot.json
+worker/tests/oidc/claims-publish.json
+worker/tests/oidc/jwks.json
+worker/tests/oidc/settings.json
+worker/tests/cases/oidc/tp3-jwks-max-age/
+worker/tests/cases/oidc/tp3-jwks-upstream/
+worker/tests/cases/oidc/tp3-key-rotation/
+worker/tests/cases/oidc/tp3-signature-and-kid/
+worker/tests/cases/oidc/tp3-token-form/
+worker/tests/cases/oidc/tp3-tp7-claims/
+worker/tests/cases/oidc/tp7-bot-token-pass/
+research/slice-108-revert/

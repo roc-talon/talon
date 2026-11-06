@@ -1,0 +1,2 @@
+R-AD37 R-AD35 R-DI12 R-IX6 R-RG4 (slice 212, entry registry, the word fullname): `--offline` sends no request.
+No kept copy of R-AP1 for acme/off. With --offline the guard makes no request (R-RG4), the read of R-AP1 uses the copies only, and with no copy the command stops with exit 15 (R-DI12: a new name with no cached page, as R-IX6). No GitHub read, no ingest. The text is the one of Github.no_page_failure.

@@ -8,12 +8,14 @@ import DownloadTest
 import EpochsTest
 import FrozenTest
 import GitTest
+import IndexnotesTest
 import InitTest
 import IntentTest
 import LockTest
 import NightliesTest
 import NightlyplanTest
 import RangesTest
+import RegtoolchainsTest
 import TalonfileTest
 import ToolManageTest
 

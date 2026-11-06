@@ -1,0 +1,4 @@
+why json --file u1/main.roc
+why json --json --file u1/main.roc
+why json --registry direct --file u1/main.roc
+why json --offline --file u1/main.roc

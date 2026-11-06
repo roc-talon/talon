@@ -1,0 +1,18 @@
+== 1. a file that does not exist: FactsOf gives no row, and the read makes no file and no dir
+none
+nothing was made
+== 2. rows of 2 hashes. H1 has a unit pass, a build pass with its closure digest, a hang of a release and a fail of another target with 2 modules. H2 has one pass. FactsOf H1 gives the 4 rows of H1 and no row of H2, sorted by the line (the modules are sorted). H2 gives its row. H3 has none.
+ok
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	0.1.0	any	hang		
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	any	pass		
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	linux_x86_64	pass		c0ffee
+fact	9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17	nightly-2026-10-14-38a3029	other	fail	Json.roc,Yaml.roc	
+fact	Bz7g9mTqU2oV4tG3a1kKfWm5cD8xNqL6RrPjYsHe2vZu	nightly-2026-10-14-38a3029	any	pass		
+none
+== 3. a file with user_version 0 (no Talon table): no row and no table made
+none
+user_version 0
+tables ['other']
+== 4. R-TF3: a file with a newer format (2): TooNew, and the bytes of the file stay the same
+err TooNew(2)
+the file is the same

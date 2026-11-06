@@ -1,0 +1,3 @@
+tool install acme/foo
+tool install acme/zed@2.0.0
+tool install acme/qux@2.0.0

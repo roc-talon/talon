@@ -1,0 +1,2 @@
+R-SC4 R-AD35 R-AD2 R-RG4 R-RG5 R-AP1 R-DI14 R-X1 R-X2 R-X3 R-X4 R-B9 R-E1 (slice 206f): `tln x acme/foo -- a b` with a registry (entry `commands`). The home, the fakes, the build and the output are run 1 of x/x1-run: no entry matches, the newest release 1.1.0 is built, the app runs with `a b`, exit 3 is the exit code.
+The only change: the release list is the registry list (R-SC4). The guard and R-AP1 replace the 3 calls of the GitHub list (see registry/sc3-tool-install). No ingest (R-AP1 answers 200).

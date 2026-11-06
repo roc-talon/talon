@@ -1,0 +1,58 @@
+== cwd:v1 env:HOME={w}/home1 init --platform acme/pfx@1.2.0
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-11-1f1f1f1 is chosen: pf 1.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+check: passed
+build: passed
+$PROJECT/v1/main.roc
+  + roc: nightly-2026-10-11-1f1f1f1
+resolved at 2026-10-15T12:00:00Z, 5 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:v2 env:HOME={w}/home2 init --platform acme/pfy@1.2.0
+check: passed
+build: passed
+$PROJECT/v2/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:v3 env:HOME={w}/home3 init --platform acme/pfy@1.2.0
+check: passed
+build: passed
+$PROJECT/v3/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:v4a env:HOME={w}/home1 init --platform acme/pfx@1.2
+exit 2
+== cwd:v4b env:HOME={w}/home1 init --platform acme/pfx@^1
+exit 2
+== cwd:v4c env:HOME={w}/home1 init --platform acme/pfx@latest
+exit 2
+== cwd:v5a env:HOME={w}/home1 init --platform acme/pfx@nightly-2026-10-09-258ab27
+exit 2
+== cwd:v5b env:HOME={w}/home1 init --platform acme/pfx@-1
+exit 2
+== cwd:v5c env:HOME={w}/home1 init --platform acme/pfx@
+exit 2
+== cwd:v6 env:HOME={w}/home1 init --platform acme/pfx@9.9.9
+exit 2
+== cwd:v7 env:HOME={w}/home7 init --platform acme/pfz@1.2.0
+note: roc nightly-2026-10-12-2a2a2a2 is not used, nightly-2026-10-09-9d9d9d9 is chosen: pf 1.2.0 fails the unit check on nightly-2026-10-12-2a2a2a2
+note: tuple dropped: the unit check on nightly-2026-10-09-9d9d9d9 fails for the platform acme/pfz 1.2.0 (no module is named)
+exit 10
+== cwd:v8 env:HOME={w}/home8 init --platform roc-lang/basic-cli@0.25.0
+check: passed
+build: passed
+$PROJECT/v8/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0
+== cwd:v9 env:HOME={w}/home9 init --json --platform acme/pfy@1.2.0
+{"schema":1,"command":"init","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":4,"downloads":0,"dry_run":false,"check":"passed","build":"passed","added":[],"moved":[],"kept":[],"pinned":"nightly-2026-10-12-2a2a2a2","toml":[],"renamed":[],"notes":[],"written":["$PROJECT/v9/main.roc","$PROJECT/v9/.github/workflows/ci.yml"]},"error":null}
+exit 0

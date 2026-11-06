@@ -1,0 +1,58 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:342:1
+
+expect {
+    row = |log_index, hash, withdrawn| { log_index, hash, withdrawn }
+    none = Err(None)
+    fin = |assets| Final({ assets, candidate: Bool.True })
+    not_candidate = |assets| Final({ assets, candidate: Bool.False })
+    with_h1 = ["${h1}.tar.zst", "notes.txt"]
+    Webhook.row_changes({ state: Withdrawn("unpublished"), rows: [row(1, h1, none), row(2, h2, none)] }) == [{ log_index: 1, to: Ok("unpublished") }, { log_index: 2, to: Ok("unpublished") }]
+        and Webhook.row_changes({ state: Withdrawn("edited"), rows: [row(7, h3, none)] }) == [{ log_index: 7, to: Ok("edited") }]
+        and Webhook.row_changes({ state: Withdrawn("prereleased"), rows: [] }) == []
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(1, h1, Ok("unpublished"))] }) == [{ log_index: 1, to: Err(Clear) }]
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(1, h1, Ok("edited"))] }) == [{ log_index: 1, to: Err(Clear) }]
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(1, h1, Ok("asset-replaced"))] }) == [{ log_index: 1, to: Err(Clear) }]
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(1, h1, none)] }) == []
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(2, h2, none)] }) == [{ log_index: 2, to: Ok("asset-replaced") }]
+        and Webhook.row_changes({ state: fin([]), rows: [row(2, h2, none)] }) == [{ log_index: 2, to: Ok("asset-replaced") }]
+        and Webhook.row_changes({ state: fin(["${h1}.tar.zst.intoto.jsonl", "x${h1}.tar.zst"]), rows: [row(1, h1, none)] }) == [{ log_index: 1, to: Ok("asset-replaced") }]
+        and Webhook.row_changes({ state: fin(["${h1}.tar.zst", "${h3}.tar.zst"]), rows: [row(1, h1, none), row(2, h2, none), row(3, h3, Ok("deleted")), row(4, h2, Ok("asset-replaced"))] }) == [{ log_index: 2, to: Ok("asset-replaced") }, { log_index: 3, to: Err(Clear) }]
+        and Webhook.row_changes({ state: not_candidate(["${h1}.tar.zst", "${h2}.tar.zst"]), rows: [row(1, h1, Ok("unpublished"))] }) == []
+        and Webhook.row_changes({ state: not_candidate(["${h1}.tar.zst", "${h2}.tar.zst"]), rows: [row(1, h1, Ok("asset-replaced"))] }) == []
+        and Webhook.row_changes({ state: not_candidate(["${h1}.tar.zst", "${h2}.tar.zst"]), rows: [row(3, h3, none)] }) == [{ log_index: 3, to: Ok("asset-replaced") }]
+        and Webhook.row_changes({ state: not_candidate([]), rows: [row(2, h2, none), row(1, h1, Ok("edited"))] }) == [{ log_index: 2, to: Ok("asset-replaced") }]
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(1, h1, Ok("repo-missing"))] }) == []
+        and Webhook.row_changes({ state: fin(with_h1), rows: [row(1, h1, Ok("repo-missing")), row(2, h2, Ok("deleted"))] }) == []
+        and Webhook.row_changes({ state: Withdrawn("edited"), rows: [row(1, h1, Ok("deleted")), row(2, h2, none)] }) == [{ log_index: 2, to: Ok("edited") }]
+        and Webhook.row_changes({ state: fin(["${h3}.tar.zst"]), rows: [row(1, h1, Ok("unpublished")), row(3, h3, Ok("unpublished"))] }) == [{ log_index: 3, to: Err(Clear) }]
+}
+
+Mentioned values:
+h1 = "7o7Rdz2Y1iJ86hB9Jg3p68pPccx7wVmMJ6f2p69bvYvF"
+h3 = "58kWEwvZAekXEePbtrjLPob7CPmx2JQJzhLqdjn6pQ5g"
+h2 = "CLoqacYwy459wZNHBVaKGZ7ivzZfnTr8e6BYmCfBvJu8"
+
+Ran 17 tests in 304.7 ms.:
+    16 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (1970 ms)
+PASS webhook/ap12-no-secret (1744 ms)
+PASS webhook/ap12-signature (2211 ms)
+PASS webhook/pu11-events (2298 ms)
+PASS webhook/pu13-index-new (1930 ms)
+PASS webhook/pu13-no-asset-end (1917 ms)
+PASS webhook/pu13-not-candidate (1665 ms)
+PASS webhook/pu13-refused (2135 ms)
+PASS webhook/pu13-retry-no-asset (2301 ms)
+PASS webhook/pu14-labels (2543 ms)
+PASS webhook/pu17-withdraw-clear (4175 ms)
+PASS webhook/pu26-app-installed (3025 ms)
+PASS webhook/pu26-release-installed (2979 ms)
+PASS webhook/pu33-privatized (3027 ms)
+PASS webhook/pu33-publicized (2393 ms)
+PASS webhook/pu33-release-private (2371 ms)
+PASS webhook/pu35-dead-letter (1474 ms)
+PASS webhook/pu35-retry-schedule (801 ms)
+w2: 18 passed, 0 failed

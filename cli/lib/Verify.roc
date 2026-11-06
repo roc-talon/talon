@@ -11,6 +11,7 @@ import Opts
 import Out
 import Report
 import Resolve
+import ShareHook
 
 ## The command `tln verify` (R-CM11, R-LB2): resolve in memory, run the probe ladder on the tuple, print the result. It writes no header and no `talon.toml`. Part C (direct style over `Fx`): the wiring of
 ## `Install.run!`, with `Resolve.verify!` as the flow. `Run.run!` calls it for the command `verify`.
@@ -63,21 +64,22 @@ Verify :: [].{
 		Ok(opts) => {
 			shown = Common.shown_fx(fx, args)
 			match flow!(shown, args, opts) {
-				Ok(outcome) => {
+				Ok(done) => {
 					shown.out!("verified: the tuple passes. No project file was written.\n")
 					if args.json {
-						fx.out!(Out.json_ok({ command: args.typed, data: Report.data(outcome) }))
+						fx.out!(Out.json_ok({ command: args.typed, data: Report.data(done.outcome) }))
 					}
+					ShareHook.send!(fx, done.ran, 0)
 					0
 				}
-				Err(fail) => Common.failed!(fx, args, fail)
+				Err(fail) => ShareHook.failed!(fx, args, fail)
 			}
 		}
 	}
 }
 
 # Steps 2 to 8: the environment, the project, the record, the compiler, and `Resolve.verify!`.
-flow! : Fx, Args, Opts => Try(Report.Outcome, Fail)
+flow! : Fx, Args, Opts => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
 flow! = |fx, args, opts| {
 	start = Install.begin!(fx, args)?
 	Install.check_member(Bool.False, start.project)?
@@ -102,6 +104,9 @@ flow! = |fx, args, opts| {
 			compiler,
 			selected: "",
 			none: Stop,
+			index: Direct,
+			# Slice 206e (R-AL2, R-CM11): `verify` reads the registry setting.
+			registry: Setting(args.registry),
 			toolchain,
 			snapshot: opts.snapshot,
 			dry_run: Bool.False,

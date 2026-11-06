@@ -1,0 +1,12 @@
+== cwd:t7 init --platform acme/mov
+note: platform changes: acme/mov 0.2.0 -> acme/mov 0.1.0
+note: pf 0.2.0 is not used, 0.1.0 is chosen: it does not fit the closure of the tuple
+check: passed
+build: passed
+$PROJECT/t7/main.roc
+  ~ pf: acme/mov 0.2.0 -> 0.1.0 new series
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+exit 0

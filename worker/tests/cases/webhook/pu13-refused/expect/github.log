@@ -1,0 +1,8 @@
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9001
+GET https://api.github.com/repos/acme/lib/releases/tags/1.0.0
+GET https://github.com/acme/lib/releases/download/1.0.0/46BBrLCSwuGWfjLtiWwrk87weqNUmg3VuULmXNTziNNp.tar.zst
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases/9002
+GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0
+GET https://github.com/acme/lib/releases/download/2.0.0/6GwaBYUSTP1thRiPg3dgkBvHRV3jbutdRVLCP2xdp8wX.tar.zst

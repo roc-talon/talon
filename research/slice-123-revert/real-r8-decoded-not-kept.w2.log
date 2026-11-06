@@ -1,0 +1,5 @@
+FAIL archive/pu38-zero-run (60047 ms)
+    timed out after 60 s
+w2: 0 passed, 1 failed
+wtrap: 9 causes, 0 failures
+done

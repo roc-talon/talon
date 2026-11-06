@@ -1,7 +1,7 @@
 roc install nightly-2026-10-09-258ab27
 roc i nightly-2026-10-09-258ab27
 roc install nightly-2026-10-10-abcdef0 --offline
-roc install nightly-2026-10-11-1a2b3c4
+roc install nightly-2026-10-11-1a2b3c4 env:LOCALAPPDATA=C:/AppData/Local env:APPDATA=C:/AppData/Roaming
 roc install nightly-2026-10-12-2664a27
 roc add nightly-2026-10-13-91fa0c2
 roc install nightly-2026-10-14-38a3029 --yes

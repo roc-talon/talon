@@ -1,0 +1,4 @@
+@ SELECT count(*) FROM compat
+130
+@ SELECT nightly, target, upto_log_index, time FROM sweeps ORDER BY nightly, target
+5571556846250	0	131	1767225604000

@@ -1,0 +1,7 @@
+cli/lib/ShareQueue.roc
+tests/unit/SharequeueTest.roc
+tests/commands/cases/share/sh8-queue-write
+tests/commands/cases/share/sh9-queue-cap
+tests/commands/cases/share/sh10-queue-errors
+tests/scenarios/fx/sq1-real-fx-queue
+docs/slices/215-share-queue.md

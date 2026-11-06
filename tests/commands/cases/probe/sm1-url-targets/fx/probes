@@ -1,0 +1,5 @@
+# the 4 smoke builds of run 1, in the order of the header targets: x64musl pass, arm64musl fail, x64glibc no end in probe.timeout, wasm32 SIGSEGV
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+1	-	../fixtures/check/out/build-target.stderr
+timeout	-	-
+signal:11	-	-

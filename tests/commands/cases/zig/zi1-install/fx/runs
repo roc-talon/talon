@@ -3,7 +3,7 @@
 # 2: now installed: found, no request, no lock
 0.17.0
 # 3: a Windows host (.zip, zig.exe, no chmod, no xz), --yes
-0.16.2 yes
+0.16.2 yes env:LOCALAPPDATA=C:/AppData/Local env:APPDATA=C:/AppData/Roaming
 # 4: the person answers n: exit 13, no lock, nothing downloaded
 0.15.1
 # 5: a busy lock, the holder makes the dir: found under the lock, no download (R-CC4 step 4)

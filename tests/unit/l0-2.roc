@@ -10,8 +10,12 @@ import MembersTest
 import OracleTest
 import PathrocTest
 import PickerTest
+import PrivacyTest
+import ProbesmokeTest
+import RegcacheTest
 import RemovalTest
 import SelectorTest
+import ShortnamesTest
 import UnitsTest
 import VarsTest
 

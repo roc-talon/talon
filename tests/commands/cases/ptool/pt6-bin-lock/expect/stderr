@@ -1,0 +1,9 @@
+foo 1.1.0: attested binaries for x64musl (commit 1a2b3c4d, .github/workflows/release.yml)
+note: foo 1.1.0 arm64mac: no valid attestation (the bundle was attested at commit 1a2b3c4d and the binary at commit ffffffff). It builds from source.
+note: foo 1.1.0 x64mac: no valid attestation (gh exit 1: Error: no attestations found). It builds from source.
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+note: foo 1.1.0 arm64mac: no valid attestation (the bundle was attested at commit 1a2b3c4d and the binary at commit ffffffff). It builds from source.
+note: foo 1.1.0 x64mac: no valid attestation (gh exit 1: Error: no attestations found). It builds from source.
+foo 1.1.0: attested binaries for arm64mac (commit 1a2b3c4d, .github/workflows/release.yml)
+note: foo 1.1.0 x64mac: no valid attestation (gh exit 1: Error: no attestations found). It builds from source.

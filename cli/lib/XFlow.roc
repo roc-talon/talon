@@ -87,7 +87,7 @@ flow! = |fx, args, plan| {
 	if args.offline {
 		return offline!(fx, args, plan, { known, why: Err(None) })
 	}
-	list = match ToolFlow.release_list_for!(fx, args, facts) {
+	list = match ToolFlow.release_list_with_for!(fx, args, facts, { selector: plan.ref.selector, registry: machine.registry }) {
 		Ok(got) => got
 		Err(fail) => match fail.kind {
 			Network => return offline!(fx, args, plan, { known, why: Ok(fail) })

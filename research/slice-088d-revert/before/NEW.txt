@@ -1,0 +1,6 @@
+docs/slices/088d-proxy-path-clean.md
+tests/commands/cases/ptool/pt4-bin-file/given/home/AppData/Local/.keep
+tests/commands/cases/tool/dl2-tool-windows/given/home/AppData/Local/.keep
+tests/commands/cases/tool/dl3-rename-edges/given/home/AppData/Local/.keep
+tests/commands/cases/tool/dx2-source-windows/given/home/u1/AppData/Local/.keep
+tests/commands/cases/tool/dx2-source-windows/given/home/u2/AppData/Local/.keep

@@ -1,0 +1,8 @@
+check: passed
+build: passed
+$PROJECT/x1j/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+note: acme/pfy 1.2.0 is 1d old (min-release-age 2d), not hidden by min-release-age-exclude: acme/*
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml

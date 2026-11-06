@@ -1,4 +1,5 @@
 app [main!] {
+	bot: "../../bot/lib/main.roc",
 	lib: "../../cli/lib/main.roc",
 	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
 }
@@ -7,10 +8,14 @@ import pf.Path
 import FakeFx
 import L2Db
 import L2Harness
+import L2Http
 import L2NoRank
+import L2ProbeShare
 import L2Prompt
+import L2Registry
 import L2Resolve
 import L2Util
+import bot.BotFlow
 import lib.Consent
 import lib.Fetch
 import lib.Fx
@@ -39,6 +44,10 @@ import lib.ZigInstall
 ## | `commands` | `Run.run!` (the whole command code) for each line of `fx/commands` (slice 007). The line is the words after `tln`. Before the first run it makes an empty `.git` directory in each dir that `fx/gitdirs` lists (as `project` does). For each line it writes the words to `fx/args`, prints `== <line>`, runs, and prints `exit <code>` (stdout). Use `{w}` in `fx/env` for the paths of the case (`HOME={w}/home`). Slice 023: a line that starts with `@roc` runs as the `roc` proxy (`fx/program` is `roc` for this run, the other words are the arguments of `roc`). A word `env:<NAME>=<value>` (before or after `@roc`, not an argument) sets the variable for this run only (it replaces a line of `fx/env` with the same name). Slice 041: a word `cwd:<dir>` (not an argument) sets the current directory of this run to `project/<dir>` (the fake `cwd!` reads `fx/cwd`; no word is `project`). |
 ## | `db` | `Facts.load!`, `Facts.save!` and `Facts.pin!` for each line of `fx/runs` (slice 030). The line is `load <hash>:<nightly>:<target>...`, `save <replace or keep> <hash>:<nightly>:<target>:<outcome>:<modules>:<closure>...` (`modules` are split with `,`, both `modules` and `closure` can be empty) or `pin <tag>:<target>:<sha256>:<github-digest or registry>`. The roots are the dirs of the case (`<w>/home/.cache/roc`). It prints `== <line>`, then for a `load` each fact as a line of `Db.fact_line` (2 spaces first) or `  none`, for a `save` `Saved` or `Kept`, for a `pin` `New` or `Same`. A failure prints `exit <code>` to stdout and the line of the failure to stderr. The exit code of the entry is 0. |
 ## | `zig` | `ZigInstall.ensure!` for each line of `fx/runs` (slice 044). The line is `<need> [yes] [quiet] [json] [offline] [llvm=<target>:<size>] [env:<NAME>=<value>]...`: `need` is the text of `minimum_zig_version` (`0.17.0`), `llvm` is the LLVM line of the dependency list (`<size>` is a number of bytes, or `?` for an unknown size; default `x86_64-linux-musl:45000000`), a word `env:<NAME>=<value>` sets the variable for this run only (it replaces a line of `fx/env` with the same name, as for `commands`). It prints `== <line>`, then `zig <version> <how> <path>` (`how` is `found-env`, `found-path`, `found-installed`, `installed` or `present`) and `exit 0` on stdout, or the failure line on stderr and `exit <code>` on stdout. The entry calls `env_all!` once for each line (it is in `calls.log`). Exit code 0. |
+## | `registry` | `RegistryCache.get!` and `PrivacyGuard.check!` for each line of `fx/runs` (slices 202 and 203). The words are in the doc of `L2Registry.roc`. |
+## | `http` | `http_send!`, `http_all!` and `sleep!` for each line of `fx/runs` (slice 200). The words are in `L2Http.roc`. |
+## | `probe-share` | `ProbeShareFlow.send!` for each line of `fx/runs` (slice 217, R-PB6). The words are in the doc of `L2ProbeShare.roc`. |
+## | `bot` | `BotFlow.run!` (slice 223, the compat bot): one run, with `fx/args` (the nightly tags) and `fx/env` |
 ## | `harness` | Calls each `Fx` function once. It tests the fake and the runner, not Talon. Exit code 3. |
 main! = |args| {
 	match args.map(|a| a.display()) {
@@ -56,6 +65,10 @@ main! = |args| {
 				"commands" => commands_entry!(fx, w)
 				"zig" => zig_entry!(fx, w)
 				"db" => L2Db.entry!(fx, w)
+				"registry" => L2Registry.entry!(fx, w)
+				"http" => L2Http.entry!(fx, w)
+				"probe-share" => L2ProbeShare.entry!(fx, w)
+				"bot" => BotFlow.run!(fx)
 				"harness" => L2Harness.entry!(fx)
 				_ => {
 					fx.err!("unknown entry ${entry}\n")

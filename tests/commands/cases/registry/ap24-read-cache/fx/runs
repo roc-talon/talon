@@ -1,0 +1,28 @@
+# T = 1792065600. The max-age of each answer is 60.
+get /v1/packages/acme/lib/releases now=1792065600
+get /v1/packages/acme/lib/releases now=1792065630
+get /v1/packages/acme/lib/releases now=1792065690
+get /v1/packages/acme/lib/releases now=1792065690 newest
+get /v1/packages/acme/lib/releases now=1792065630 bookmark=b123
+get /v1/packages/acme/gone/releases now=1792065600
+get /v1/packages/acme/gone/releases now=1792065600
+get /v1/contributors/me now=1792065600
+get /v1/contributors/me now=1792065601
+get /v1/packages/acme/lib/releases now=1792099999 offline
+get /v1/packages/acme/none/releases offline
+get /v1/packages/acme/slow/releases
+get /v1/packages/acme/low/releases now=1792065600
+get /v1/packages/acme/low/releases now=1792065630
+get /v1/releases?group=example.com%2Fpkg%2F%7Bv%7D%2F now=1792065600
+# G-C38 (Q218). acme/noetag: max-age=60 (also s-maxage=600 and stale-while-revalidate=30, not read), no ETag.
+get /v1/packages/acme/noetag/releases now=1792065600
+get /v1/packages/acme/noetag/releases now=1792065630
+get /v1/packages/acme/noetag/releases now=1792065690
+# acme/noage: an ETag and only s-maxage=600, so no max-age: never fresh.
+get /v1/packages/acme/noage/releases now=1792065600
+get /v1/packages/acme/noage/releases now=1792065600
+get /v1/packages/acme/noage/releases now=1792099999 offline
+# acme/redir: a 301 (with an ETag and a max-age). acme/nm304: a 304 to a request with no If-None-Match. Exit 15, nothing kept.
+get /v1/packages/acme/redir/releases now=1792065600
+get /v1/packages/acme/redir/releases now=1792065600
+get /v1/packages/acme/nm304/releases now=1792065600

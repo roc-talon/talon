@@ -1,0 +1,6 @@
+cli/lib/ShareJson.roc
+cli/lib/Share.roc
+cli/lib/ShareFlow.roc
+tests/unit/ShareTest.roc
+tests/commands/cases/share/
+docs/slices/213-share-settings.md

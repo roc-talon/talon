@@ -1,0 +1,6 @@
+1: package: 201
+2: platform: 201
+3: app: 201
+4: package again: 200
+5: read the app artifact
+6: read the package artifact

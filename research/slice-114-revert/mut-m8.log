@@ -1,0 +1,11 @@
+PASS publish/pu1-publish-package (2666 ms)
+FAIL publish/pu16-after-ingest (2525 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t900\t777\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["acme/lib\t900\t9100\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t900\t\\N\t9100\t\\N\t\\N\t1767000000000","acme/lib\t2\t1\t900\t900\t9100\t777\t\\N\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"push\",\"run_id\":\"203\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t1767225630000"]
+      got:      ["acme/lib\t1\t0\t\\N\t900\t\\N\t9100\t\\N\t\\N\t1767000000000"]
+PASS publish/tp3-claims-vs-url (2311 ms)
+PASS publish/tp9-claim-ids (2561 ms)
+w2: 3 passed, 1 failed

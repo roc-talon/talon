@@ -1,0 +1,6 @@
+tln: error[no_tuple]: no compiler is left: the compiler list of the registry is empty
+tln: error[network]: the registry http://127.0.0.1:9 gave no answer: no answer in 20 s. Try again later.
+tln: error[internal]: the registry http://127.0.0.1:9 refused the request (/errors/bad-request): groups is not a list. This is a fault of tln 0.0.1 or a version skew.
+tln: error[network]: the registry answered 502 (/errors/upstream). Try again later.
+tln: error[network]: the answer of the registry http://127.0.0.1:9 is not a closure answer: MissingRequiredField("artifacts")
+tln: error[network]: http://127.0.0.1:9 answered 429 and the answer is not problem details. Check the registry setting.

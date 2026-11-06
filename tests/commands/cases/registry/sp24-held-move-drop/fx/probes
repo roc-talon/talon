@@ -1,0 +1,4 @@
+# the baseline of tuple 1 passes
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+# the check of tuple 1: a new error in acme/json 2.0.0 (the ladder drops the tuple)
+1	out/empty	out/new-json0.stderr

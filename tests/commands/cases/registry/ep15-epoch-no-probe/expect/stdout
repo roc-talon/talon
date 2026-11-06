@@ -1,0 +1,5 @@
+== upgrade roc --no-probe --dry-run --file u1/main.roc
+note: roc nightly-2026-10-16-5e6f7a8 is not used, nightly-2026-10-14-38a3029 is chosen: json 2.0.0 fails the unit check on nightly-2026-10-16-5e6f7a8 (inferred)
+nothing to change
+dry run: nothing was written
+exit 0

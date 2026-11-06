@@ -1,0 +1,6 @@
+# R-SH11, R-EV29, Design Q215, G-C35: share is not set, a person is there, and there is no answer (end of input). The first command (`tln run`) asks once, and writes nothing. Its 2 `tln` steps run in the same process (RunFlow calls Run.tln!): they do not ask, because the env that they get has TALON_SHARE_ASKED=1 (one ask in all, and no more tty call). The step `echo hi` is a real child: its env has TALON_SHARE_ASKED=1 (last).
+run go cwd:p1
+# R-SH11, R-EV29: the parent of this tln asked already (the variable is in its env): no ask, no tty call. The child of the step has the variable (it is in its env already, and the child env says it).
+env:TALON_SHARE_ASKED=1 run go cwd:p1
+# R-SH11, R-EV29: share is set (true), so no tln asks. The variable is not set for the child: only a tln that asked, or that saw it, sets it.
+env:HOME={w}/home/h2 run go cwd:p1

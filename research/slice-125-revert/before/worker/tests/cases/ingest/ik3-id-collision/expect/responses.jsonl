@@ -1,0 +1,2 @@
+{"status":409,"problem":{"type":"/errors/id-collision","detail":"the hash 3P3QiL6VHAB5RYpMfcyNVKddfP62gsKhEZAGcyfhvdgH has the id -2569884988743550866 of the hash 11111111111111111111111111111111 in the index"}}
+{"status":409,"problem":{"type":"/errors/id-collision","detail":"the repository acme/coll2 has the id -3925254045967471780 of the repository someone/else in the index"}}

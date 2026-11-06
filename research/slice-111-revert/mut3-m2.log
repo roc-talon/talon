@@ -1,0 +1,18 @@
+All (33) tests passed in 1125.6 ms.
+PASS archive/pu38-hash-and-end (2460 ms)
+PASS archive/pu38-made-kinds (2361 ms)
+PASS archive/pu38-paths-and-header (2462 ms)
+PASS archive/pu38-real-bundles (2434 ms)
+PASS archive/pu38-size (5483 ms)
+FAIL archive/pu38-window (2338 ms)
+    request 1: status: expected 200, got 422
+    request 1: header content-type: expected "application/json", got "application/problem+json"
+    request 1: json.hash: expected "GFy4ewJZyN56nn872WSfz6hSGEGi6wKAX33dpL2bjPFe", got missing
+    request 1: json.kind: expected "package", got missing
+    request 1: json.exposed: expected an array of 2 items, got missing
+    request 1: json.platform_hash: expected null, got missing
+    request 1: json.roc_pin: expected null, got missing
+    request 1: json.size: expected 5129, got missing
+    request 1: json.deps: expected an array of 1 items, got missing
+    request 1: json.target_names: expected an array of 0 items, got missing
+w2: 5 passed, 1 failed

@@ -1,0 +1,20 @@
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the login request body is not valid: github_token is missing"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is not a valid JWT"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the header Talon-Contributor must be 32 characters, each one of 0 to 9 and a to f"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}
+{"status":429,"problem":{"type":"/errors/rate-limited","detail":"too many login requests from this address: try again in a minute"},"headers":{"retry-after":"60"}}
+{"status":429,"problem":{"type":"/errors/rate-limited","detail":"too many login requests from this address: try again in a minute"},"headers":{"retry-after":"60"}}
+{"status":429,"problem":{"type":"/errors/rate-limited","detail":"too many login requests from this address: try again in a minute"},"headers":{"retry-after":"60"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is not a valid JWT"}}
+{"status":200}
+{"status":204}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"json":{"account":{"id":77,"login":"other"},"expires_at":1769817600000},"jwt":{"at":"token","key":"t1","header":{"alg":"EdDSA","kid":"key-1","typ":"JWT"},"claims":{"iss":"https://registry.example","aud":"https://registry.example","sub":"77","iat":1767225600,"exp":1769817600}}}
+{"status":429,"problem":{"type":"/errors/rate-limited","detail":"too many login requests from this address: try again in a minute"},"headers":{"retry-after":"60"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}
+{"status":429,"problem":{"type":"/errors/rate-limited","detail":"too many login requests from this address: try again in a minute"},"headers":{"retry-after":"60"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}

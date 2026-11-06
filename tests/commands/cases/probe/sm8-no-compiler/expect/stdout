@@ -1,0 +1,9 @@
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst
+exit 13
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst env:TALON_AUTO_INSTALL=yes
+smoke build of the platform acme/pfx 0.1.1 on nightly-2026-10-12-2a2a2a2:
+  x64musl: pass
+  arm64musl: pass
+  x64glibc: pass
+  wasm32: pass
+exit 0

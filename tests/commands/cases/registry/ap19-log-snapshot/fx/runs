@@ -1,0 +1,4 @@
+closure group=github.com/someone/roc-json/releases/download/{v}/ name=someone/roc-json snapshot=30 resolved
+closure group=github.com/someone/roc-json/releases/download/{v}/ name=someone/roc-json resolved
+closure group=github.com/someone/roc-json/releases/download/{v}/ name=someone/roc-json snapshot=900 resolved
+closure group=github.com/someone/roc-json/releases/download/{v}/ name=someone/roc-json entry=json=https://github.com/someone/roc-json/releases/download/1.2.0/3zDZDG7iHnTKLRPPd5KSrCj4pJq6CPjeT1HyqHAFp6Wm.tar.zst snapshot=30 resolved

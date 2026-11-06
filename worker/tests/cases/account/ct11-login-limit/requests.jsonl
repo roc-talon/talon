@@ -1,0 +1,21 @@
+{"window_s":60,"need_ms":8000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"1.2.3.4"},"body":"{}","now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"cf-connecting-ip":"1.2.3.4"},"now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"authorization":"Bearer garbage","cf-connecting-ip":"1.2.3.4"},"now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"talon-contributor":"abc","cf-connecting-ip":"1.2.3.4"},"now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"1.2.3.4"},"body":"{\"github_token\":\"ghu_a\"}","now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"talon-contributor":"0123456789abcdef0123456789abcdef","cf-connecting-ip":"1.2.3.4"},"now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"1.2.3.4"},"body":"{\"github_token\":\"ghu_b\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"1.2.3.4"},"body":"{\"github_token\":\"ghu_c\"}","now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"talon-contributor":"0123456789abcdef0123456789abcdef","cf-connecting-ip":"1.2.3.4"},"now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"cf-connecting-ip":"1.2.3.4"},"token":"good","now":1767225600000}
+{"method":"DELETE","path":"/v1/contributors/me","headers":{"authorization":"Bearer garbage","cf-connecting-ip":"1.2.3.4"},"now":1767225600000}
+{"method":"GET","path":"/v1/contributors/me","headers":{"cf-connecting-ip":"1.2.3.4"},"token":"good","now":1767225600000}
+{"method":"DELETE","path":"/v1/tokens","headers":{"cf-connecting-ip":"1.2.3.4"},"token":"good","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"5.6.7.8"},"body":"{\"github_token\":\"ghu_d\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"::ffff:1.2.3.4"},"body":"{\"github_token\":\"ghu_e\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"2001:db8::1"},"body":"{\"github_token\":\"ghu_f\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"2001:DB8:0:0:ffff::2"},"body":"{\"github_token\":\"ghu_g\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"2001:db8:0:0:1:2:3:4"},"body":"{\"github_token\":\"ghu_h\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"2001:db8:0:0::9"},"body":"{\"github_token\":\"ghu_i\"}","now":1767225600000}
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json","cf-connecting-ip":"2001:db8:0:1::1"},"body":"{\"github_token\":\"ghu_j\"}","now":1767225600000}

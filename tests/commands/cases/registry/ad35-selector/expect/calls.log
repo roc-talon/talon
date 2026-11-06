@@ -1,0 +1,66 @@
+env_all
+read_files $HOME/.cache/roc/talon/index/github/acme/sel1/repo.json
+http_get https://api.github.com/repos/acme/sel1
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/sel1/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/sel1/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/sel1
+http_get https://api.github.com/repos/acme/sel1/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/sel1/1.json $HOME/.cache/roc/talon/index/github/acme/sel1/1.meta
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/sel1/releases/download/1.5.0/6mugWz1EaENQNEgsATdSLDrc1RZCHSXGcVYLVsXnpABy.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/sel1/releases/download/1.0.0/BUbY7Mz6fbDJCHBJXShH9Kk5PzCMCDFKxhBHhPEV4fye.tar.zst"}
+http_get http://127.0.0.1:9/v1/packages/acme/sel1/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+  Talon-Bookmark: 00000002-00000010-00004c60-8e61
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9adac3f8d5d48323067dbe292c403b6c.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/9adac3f8d5d48323067dbe292c403b6c.meta
+read_files $HOME/.cache/roc/talon/index/github/acme/sel2/repo.json
+http_get https://api.github.com/repos/acme/sel2
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/sel2/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/sel2/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/sel2
+http_get https://api.github.com/repos/acme/sel2/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/sel2/1.json $HOME/.cache/roc/talon/index/github/acme/sel2/1.meta
+programs curl
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"url":"https://github.com/acme/sel2/releases/download/1.0.0/9TRgzWg1QD2PyWWDQ15VhA7PbcN4vMj2e98oLrbMDk9e.tar.zst"}
+http_get http://127.0.0.1:9/v1/packages/acme/sel2/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+  Talon-Bookmark: 00000003-00000010-00004c60-8e61
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/1a14d7a5b639a7eff6450facf57716c6.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/1a14d7a5b639a7eff6450facf57716c6.meta
+read_files $HOME/.cache/roc/talon/index/github/acme/sel3/repo.json
+http_get https://api.github.com/repos/acme/sel3
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/sel3/repo.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/acme/sel3/releases
+  User-Agent: tln/0.0.1
+list_dirs $HOME/.cache/roc/talon/index/github/acme/sel3
+http_get https://api.github.com/repos/acme/sel3/releases?per_page=100
+  User-Agent: tln/0.0.1
+  Authorization: Bearer tok1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/sel3/1.json $HOME/.cache/roc/talon/index/github/acme/sel3/1.meta

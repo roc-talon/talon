@@ -1,0 +1,9 @@
+{"queue":"talon-index","messages":[{"id":"i1","attempts":1,"body":{"event":"installation","action":"created","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[100,101,999]}}]}
+{"queue":"talon-index","messages":[{"id":"i2","attempts":1,"body":{"event":"installation_repositories","action":"removed","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[101]}}]}
+{"queue":"talon-index","messages":[{"id":"i3","attempts":1,"body":{"event":"installation_repositories","action":"added","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[200]}}]}
+{"queue":"talon-index","messages":[{"id":"i4","attempts":1,"body":{"event":"installation","action":"deleted","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[100,300]}}]}
+{"queue":"talon-index","messages":[{"id":"i5","attempts":1,"body":{"event":"installation","action":"created","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[]}}]}
+{"queue":"talon-index","messages":[{"id":"i6","attempts":1,"body":{"event":"installation","action":"suspend","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[200]}}]}
+{"queue":"talon-index","messages":[{"id":"i7","attempts":1,"body":{"event":"installation","action":"unsuspend","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[300]}}]}
+{"queue":"talon-index","messages":[{"id":"i8","attempts":1,"body":{"event":"installation","action":"created","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[700]}}]}
+{"queue":"talon-index","messages":[{"id":"i9","attempts":1,"body":{"event":"installation_repositories","action":"removed","installation_id":55,"repository_id":0,"release_id":0,"repository_ids":[701]}}]}

@@ -1,0 +1,4 @@
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+@ SELECT CAST(artifact AS TEXT), nightly, target, source, result, error_digest, time, log_index FROM compat ORDER BY nightly, target, source
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value

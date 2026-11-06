@@ -1,0 +1,44 @@
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA/main.roc
+platform
+list_dirs $HOME/.cache/roc/talon/x
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-x64musl https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-x64musl
+sha256_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-x64musl
+random
+make_dirs $HOME/.cache/roc/talon/x/fecaf355d6f7e0b37dd780aa7b3b0e1b45c814fef7c6a3a0b768802f4df6d0d4.0123456789abcdef.tmp
+rename $HOME/.cache/roc/talon/tmp/0123456789abcdef/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-x64musl $HOME/.cache/roc/talon/x/fecaf355d6f7e0b37dd780aa7b3b0e1b45c814fef7c6a3a0b768802f4df6d0d4.0123456789abcdef.tmp/foo
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/talon/x/fecaf355d6f7e0b37dd780aa7b3b0e1b45c814fef7c6a3a0b768802f4df6d0d4.0123456789abcdef.tmp/foo
+write_atomic $HOME/.cache/roc/talon/x/fecaf355d6f7e0b37dd780aa7b3b0e1b45c814fef7c6a3a0b768802f4df6d0d4.0123456789abcdef.tmp/manifest.json
+rename $HOME/.cache/roc/talon/x/fecaf355d6f7e0b37dd780aa7b3b0e1b45c814fef7c6a3a0b768802f4df6d0d4.0123456789abcdef.tmp $HOME/.cache/roc/talon/x/fecaf355d6f7e0b37dd780aa7b3b0e1b45c814fef7c6a3a0b768802f4df6d0d4
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+programs curl wget
+random
+make_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/talon/tmp/0123456789abcdef/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN-x64musl https://github.com/acme/bar/releases/download/1.0.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN-x64musl
+sha256_file $HOME/.cache/roc/talon/tmp/0123456789abcdef/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN-x64musl
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef

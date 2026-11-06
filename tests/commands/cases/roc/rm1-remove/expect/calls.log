@@ -1,14 +1,29 @@
 args
 env_all
+tty
 read_files $HOME/.config/talon/config.toml
-list_dirs $HOME/.cache/roc/toolchains
-args
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
@@ -21,6 +36,9 @@ rename $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27 $HOME/.cache/roc/t
 delete $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.trash $HOME/.cache/roc/compat-258ab27
 unlock $HOME/.cache/roc/toolchains/nightly-2026-10-09-258ab27
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
@@ -39,6 +57,9 @@ write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/talon/projects.json
@@ -56,6 +77,9 @@ write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/talon/projects.json
@@ -68,6 +92,7 @@ rename $HOME/.cache/roc/toolchains/link-dev $HOME/.cache/roc/toolchains/link-dev
 delete $HOME/.cache/roc/toolchains/link-dev.0123456789abcdef.trash
 unlock $HOME/.cache/roc/toolchains/link-dev
 args
+env_all
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains

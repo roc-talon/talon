@@ -1,0 +1,5 @@
+# R-SH4, R-TF7: run 1: the rows 1 and 3 are of tln 0.8.0: they leave with no send (one Unqueue, before the request); rows 2 and 4 are sent. Run 2: the queue is empty, only the query. Run 3: a row of 0.8.0 only: it leaves, share.json is not read, no request.
+queue-send 0.9.0
+queue-send 0.9.0
+queue-add 10000 X,n,any,pass,0.8.0,t
+queue-send 0.9.0

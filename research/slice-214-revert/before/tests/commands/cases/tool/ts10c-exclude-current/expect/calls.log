@@ -1,0 +1,10 @@
+args
+env_all
+clock
+platform
+read_files $HOME/.local/share/talon/tools.json
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/talon/index/github/roc-talon/talon
+http_get https://api.github.com/repos/roc-talon/talon/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.json $HOME/.cache/roc/talon/index/github/roc-talon/talon/1.meta

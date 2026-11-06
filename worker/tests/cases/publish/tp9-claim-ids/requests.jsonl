@@ -1,0 +1,5 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/xfer/repo/releases/download/1.0.0/4yY1cpT1AFv2vNwjy5t64WFTwVK4eWW1uvwJdrc1RGdE.tar.zst"},"token":"xfer/repo","now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/again/repo/releases/download/1.0.0/9GHfSapDLJ4Ru7oxRyYHvLFn1qTdZ6ru8yejN4RhWStg.tar.zst"},"token":"again/repo","now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/taken/repo/releases/download/1.0.0/AHyeg4EoHHN6BbCr9x42Rnvb6brDJrzAguSqTxbAqiQt.tar.zst"},"token":"taken/repo","now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/fresh/repo/releases/download/1.0.0/GLyHBnYgGrmVrD9rz5w1EHbRhyWCbsLjrV5QDRDqsQQA.tar.zst"},"token":"fresh/repo","now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/new/repo/releases/download/1.0.0/AxmqAiysaytfpf1KAHyw9vDk5idU3hDB8pNVzKnR2bzL.tar.zst"},"token":"new/repo","now":1767225630000}

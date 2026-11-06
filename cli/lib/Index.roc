@@ -58,6 +58,10 @@ Index :: [].{
 			)
 	}
 
+	## Slice 221 (R-PUB2, R-DI4): the package assets of one release object (the pairs of its JSON object): the assets named `<hash>.tar.zst` with a base58 hash of 32 bytes, in the order of the assets. `tln publish` reads one release, not a page.
+	assets_of : List((Str, JsonDoc)) -> List({ name : Str, hash : Str, size : U64 })
+	assets_of = |pairs| package_assets(pairs)
+
 	## The candidates of one group (R-DI6): those whose `ident.group` equals `group`. The order stays.
 	in_group : { list : List(Candidate), group : { form : Str, series : Str } } -> List(Candidate)
 	in_group = |facts| facts.list.keep_if(|c| c.ident.group == facts.group)

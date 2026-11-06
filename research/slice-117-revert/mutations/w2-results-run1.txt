@@ -1,0 +1,122 @@
+== tokens-after-zero
+All (11) tests passed in 360.6 ms.
+PASS account/ap45-write-routes (1660 ms)
+PASS account/ct10-tracker (2803 ms)
+PASS account/ct11-login-limit (2793 ms)
+PASS account/ct7-delete (2830 ms)
+FAIL account/ct8-login (2708 ms)
+FAIL account/ct8-login-refusals (1876 ms)
+PASS account/ct9-token-check (1446 ms)
+FAIL account/ct9-tokens-after (1167 ms)
+    request 20: problem.type: expected "/errors/unauthenticated", got missing
+w2: 5 passed, 3 failed
+== or-replace
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2541 ms)
+PASS account/ct10-tracker (3951 ms)
+PASS account/ct11-login-limit (7461 ms)
+PASS account/ct7-delete (3985 ms)
+FAIL account/ct8-login (3868 ms)
+PASS account/ct8-login-refusals (2803 ms)
+PASS account/ct9-token-check (1938 ms)
+FAIL account/ct9-tokens-after (1503 ms)
+    request 17: body: expected "", got "{\"detail\":\"the token is revoked or its account has no data in this registry: log in again\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+w2: 6 passed, 2 failed
+== kid-unchecked
+    10 passed
+    1 failed
+    0 compiler errors
+0 errors and 2 warnings found in 2m 11s while successfully building:
+== iat-whole-seconds
+    10 passed
+    1 failed
+    0 compiler errors
+0 errors and 1 warning found in 2m 14s while successfully building:
+== revoked-le
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (2728 ms)
+PASS account/ct10-tracker (4520 ms)
+PASS account/ct11-login-limit (4448 ms)
+PASS account/ct7-delete (4588 ms)
+PASS account/ct8-login (4406 ms)
+PASS account/ct8-login-refusals (3252 ms)
+FAIL account/ct9-token-check (2299 ms)
+FAIL account/ct9-tokens-after (1631 ms)
+w2: 6 passed, 2 failed
+== delete-no-guard
+    10 passed
+    1 failed
+    0 compiler errors
+PASS account/ap45-write-routes (3014 ms)
+PASS account/ct10-tracker (4613 ms)
+PASS account/ct11-login-limit (4549 ms)
+FAIL account/ct7-delete (4638 ms)
+    request 7: body: expected "", got "{\"detail\":\"the Worker failed to handle the request\",\"status\":500,\"title\":\"Internal error\",\"type\":\"/errors/internal\"}"
+    request 8: body: expected "", got "{\"detail\":\"the Worker failed to handle the request\",\"status\":500,\"title\":\"Internal error\",\"type\":\"/errors/internal\"}"
+    request 9: problem.type: expected "/errors/unauthenticated", got "/errors/internal"
+    request 9: problem.detail: expected "the token is revoked or its account has no data in this registry: log in again", got "the Worker failed to handle the request"
+    request 11: body: expected "", got "{\"detail\":\"the Worker failed to handle the request\",\"status\":500,\"title\":\"Internal error\",\"type\":\"/errors/internal\"}"
+    request 12: body: expected "", got "{\"detail\":\"the Worker failed to handle the request\",\"status\":500,\"title\":\"Internal error\",\"type\":\"/errors/internal\"}"
+PASS account/ct8-login (4520 ms)
+PASS account/ct8-login-refusals (3288 ms)
+PASS account/ct9-token-check (2130 ms)
+FAIL account/ct9-tokens-after (1712 ms)
+    request 17: body: expected "", got "{\"detail\":\"the Worker failed to handle the request\",\"status\":500,\"title\":\"Internal error\",\"type\":\"/errors/internal\"}"
+    request 18: problem.type: expected "/errors/unauthenticated", got missing
+    request 20: problem.type: expected "/errors/unauthenticated", got missing
+w2: 6 passed, 2 failed
+== totals-first-time-keep
+All (11) tests passed in 344.5 ms.
+PASS account/ap45-write-routes (2807 ms)
+PASS account/ct10-tracker (4279 ms)
+PASS account/ct11-login-limit (4232 ms)
+PASS account/ct7-delete (4332 ms)
+FAIL account/ct8-login (4179 ms)
+PASS account/ct8-login-refusals (3070 ms)
+PASS account/ct9-token-check (1975 ms)
+PASS account/ct9-tokens-after (1543 ms)
+w2: 7 passed, 1 failed
+== tracker-first-le
+All (11) tests passed in 344.2 ms.
+PASS account/ap45-write-routes (2602 ms)
+FAIL account/ct10-tracker (4017 ms)
+PASS account/ct11-login-limit (3957 ms)
+PASS account/ct7-delete (4101 ms)
+PASS account/ct8-login (3931 ms)
+PASS account/ct8-login-refusals (2875 ms)
+PASS account/ct9-token-check (1909 ms)
+PASS account/ct9-tokens-after (1498 ms)
+w2: 7 passed, 1 failed
+== limit-before-proof
+All (11) tests passed in 335.0 ms.
+PASS account/ap45-write-routes (2010 ms)
+PASS account/ct10-tracker (3212 ms)
+FAIL account/ct11-login-limit (3226 ms)
+    request 6: problem.type: expected "/errors/unauthenticated", got "/errors/rate-limited"
+    request 10: problem.type: expected "/errors/unauthenticated", got "/errors/rate-limited"
+    request 15: problem.type: expected "/errors/unauthenticated", got missing
+PASS account/ct7-delete (3250 ms)
+PASS account/ct8-login (3098 ms)
+PASS account/ct8-login-refusals (2172 ms)
+PASS account/ct9-token-check (1652 ms)
+PASS account/ct9-tokens-after (1408 ms)
+w2: 7 passed, 1 failed
+== limit-after-github
+All (11) tests passed in 373.0 ms.
+PASS account/ap45-write-routes (2003 ms)
+PASS account/ct10-tracker (3322 ms)
+FAIL account/ct11-login-limit (3290 ms)
+    request 7: problem.type: expected "/errors/rate-limited", got missing
+    request 14: problem.type: expected "/errors/rate-limited", got "/errors/unauthenticated"
+    request 18: problem.type: expected "/errors/rate-limited", got "/errors/unauthenticated"
+PASS account/ct7-delete (3344 ms)
+PASS account/ct8-login (3289 ms)
+PASS account/ct8-login-refusals (2368 ms)
+PASS account/ct9-token-check (1758 ms)
+PASS account/ct9-tokens-after (1307 ms)
+w2: 7 passed, 1 failed
+done

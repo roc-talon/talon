@@ -28,17 +28,33 @@ jobs:
         run: |
           . scripts/env.sh
           echo "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"
+          echo "ROC_TAG_WORKER=$ROC_TAG_WORKER" >> "$GITHUB_ENV"
 
       - name: Cache of the compiler
         uses: actions/cache@v4
         with:
           path: .work/nightlies
-          key: roc-${{ runner.os }}-${{ runner.arch }}-${{ env.ROC_TAG }}
+          key: roc-${{ runner.os }}-${{ runner.arch }}-${{ env.ROC_TAG }}-${{ env.ROC_TAG_WORKER }}
 
       - name: Install the compiler
         env:
           GH_TOKEN: ${{ github.token }}
         run: echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
+
+      # The registry Worker (worker/) builds with its own compiler, ROC_TAG_WORKER (TW28, TW31, R-WH13). The steps w0 and wbuild read ROC_WORKER.
+      - name: Install the compiler of the Worker
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: echo "ROC_WORKER=$(scripts/get-roc.sh worker)" >> "$GITHUB_ENV"
+
+      # The steps w1 and w2 need Node 26 or later (JSPI, node:sqlite) and a global wrangler 4 with Miniflare (TW34).
+      - name: Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '26'
+
+      - name: Wrangler
+        run: npm install --global wrangler@4.151.0
 
       # Slice 067 (053 Q2): a real roc cache for the case exit/ex2-gc-real-cache. The runner has none, so the case would skip.
       # The script runs 4 nightlies from before 2026-10-05 (legacy dirs) and 4 from 2026-10-11 on (compat dirs) on one app (packages).

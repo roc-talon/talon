@@ -1,0 +1,9 @@
+tln: error[usage]: GitHub repository acme/priv is private or does not exist. Private packages are not supported.
+tln: error[usage]: GitHub repository acme/none: not found, or private. Private packages are not supported. With no token GitHub answers 404 for a private repository: set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login), and run the command again.
+tln: error[usage]: GitHub repository acme/none2 is private or does not exist. Private packages are not supported.
+tln: error[network]: GitHub API rate limit reached. It resets at 2026-10-16T12:00:00Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login).
+tln: error[network]: cannot reach https://api.github.com/repos/acme/slow: no answer in 20 s. Use --offline to work with the cached index.
+tln: error[usage]: '../lib' is not a GitHub repository name
+tln: error[network]: the answer of GitHub for https://api.github.com/repos/acme/nobool is not a repository answer: it has no member private that is true or false. Try again later.
+tln: error[network]: the answer of GitHub for https://api.github.com/repos/acme/nojson is not a repository answer: it has no member private that is true or false. Try again later.
+tln: error[usage]: GitHub repository acme/priv2 is private or does not exist. Private packages are not supported.

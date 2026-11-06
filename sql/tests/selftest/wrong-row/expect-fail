@@ -1,0 +1,1 @@
+rows differ for "SELECT id, amount, label FROM example ORDER BY id"

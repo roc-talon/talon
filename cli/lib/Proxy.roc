@@ -10,6 +10,7 @@ import Fx
 import Install
 import Intent
 import Known
+import IndexQuery
 import Launch
 import Locked
 import Mode
@@ -206,7 +207,7 @@ go! : Fx => Try([Exited(I32), Signaled(I32)], Fail)
 go! = |fx| {
 	words = fx.args!()
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	toolchain = Compiler.toolchain_of(env)?
 	split = Proxy.split(words)
 	off = Proxy.opted_out(env)
@@ -273,7 +274,7 @@ install_missing! = |fx, run| {
 
 # Steps 9c to 9f. The prompt comes after the offer (it needs the size) and before the lock (R-CC3 point 5).
 offer_and_install! : Fx, { id : Str, rank : Proxy.Rank, env : List((Str, Str)) }, { mode : Mode, flag : Try(Answer, [NoFlag]) } => Try(Str, Fail)
-offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, env: run.env, offline: Bool.False })? {
+offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, env: run.env, offline: Bool.False, registry: if run.rank == Range or run.rank == Picked Later(Err(Unset)) else First(Err(Unset)) })? {
 	Present(found) => Ok(found.id)
 	Download(offer) => {
 		prompt = Consent.proxy_download({ id: offer.id, source: source_text({ id: run.id, rank: run.rank }), size: offer.size })
@@ -291,7 +292,9 @@ offer_and_install! = |fx, run, how| match RocInstall.offer!(fx, { id: run.id, en
 # else the latest. The proxy runs no probe (R-PX2). A pick that is not installed is `Missing`, and `install_missing!` applies the consent rules of the proxy.
 picked! : Fx, { loaded : Base.Loaded, roots : Roots, env : List((Str, Str)), known : List(Str) } => Try(Base.Selected, Fail)
 picked! = |fx, run| {
-	id = NoRank.pick_id!(fx, { roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), exclude: run.loaded.exclude, toml: { min_age: Ok(run.loaded.min_age), nightly: run.loaded.toml_nightly }, listed: run.known })?
+	# Slice 206g (R-CV1, Design Q561): the registry form is checked here, when the list is needed.
+	list = IndexQuery.list_source({ flag: Err(Unset), env: Net.from_env(run.env).registry, config: run.loaded.config_registry, offline: Bool.False, kept: Bool.False })?
+	id = NoRank.pick_id!(fx, { list, roots: run.roots, env: run.env, offline: Bool.False, scope: Project(run.loaded.hashes), exclude: run.loaded.exclude, toml: { min_age: Ok(run.loaded.min_age), nightly: run.loaded.toml_nightly }, listed: run.known })?
 	Ok({ id, rank: Picked, state: if run.known.contains(id) Installed else Missing })
 }
 
@@ -309,6 +312,6 @@ ranged! = |fx, run| {
 	}
 	now = if run.off Clock.now!(fx, run.env)? else run.now
 	switch = Pin.switch({ env: Common.nightly_of(run.env), toml: loaded.toml_nightly, config: loaded.config_nightly })
-	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, exclude: loaded.exclude, snapshot: Err(None), switch })?.id
+	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, exclude: loaded.exclude, snapshot: Err(None), switch, registry: Err(None), config: loaded.config_registry })?.id
 	Ok({ id, rank: Range, state: Missing })
 }

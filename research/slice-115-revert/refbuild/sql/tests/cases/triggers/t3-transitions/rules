@@ -1,0 +1,6 @@
+Slice 103, case t3-transitions (T0 to T4 of research/bot-set/ on the codes of R-IK7: hang 2, crash 3; the prototype had crash 2).
+  R-MX12, R-RE23: an AFTER INSERT and an AFTER UPDATE trigger on sweeps write one transitions row for each nightly next to the swept nightly that is also swept (same target). The row has the key of the later nightly: previous, compared, changed.
+  R-MX12: compared counts the hashes with a bot row with a code result (pass 0, fail 1) on both nightlies. A hang (2), a crash (3), a missing row and an author row are not compared. The hashes outside the bot set count.
+  R-MX12, R-NS1: the order of nightlies is the published_at of the nightly, then its id. It is not the order of the ids. A nightly has one toolchains row for each target (R-RE4, G11): the order is over the distinct nightlies.
+  R-MX12: a row changes only when a sweep of one of its 2 nightlies is written (an UPSERT that raises the bound is an UPDATE). A bot row that comes later changes no transition. A sweep that is not larger changes nothing.
+  R-RE23, R-RE7: the key is (nightly, target).

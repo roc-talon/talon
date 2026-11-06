@@ -1,0 +1,4 @@
+start   1130   927   628   697   727  mean 821 ms
+fetch     75    59    67    67    67  mean 67 ms
+reset    515   271   301   264   282  mean 327 ms
+close     28    14    12    14    16  mean 17 ms

@@ -1,0 +1,3 @@
+R-AP20 R-AP34 R-AP74 R-E6 R-AP3 R-IX3 R-AP51: the failures of ClosureIndex.query! (slice 206, entry registry, the word closure). Each run sends at most ONE request: no second try after an error (R-AP34: only publish, yank and move try again; R-AP20: the query changes no state, so the next command can send it again).
+Run 1 (R-AP74 row 4): a Free window with an empty compiler list: no request, exit 10. Run 2: no answer (error timeout): exit 15, the text of Registry.no_answer. Run 3: 400 bad-request: exit 1 (R-AP74 row 1: a query is a read). Run 4: 502 upstream: exit 15. Run 5: 200 with a body that is not a closure answer: exit 15 (R-AP51). Run 6: 429 with a body that is not problem details: exit 15.
+No file is written (R-IX3): tree.diff is empty.

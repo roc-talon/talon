@@ -1,0 +1,8 @@
+POST /x/w 201
+POST /x/w 200
+POST /x/w 599
+PUT /x/w 200
+DELETE /x/w 204
+DELETE /x/w 599 authorization
+GET /x/w 200
+POST /x/none 404

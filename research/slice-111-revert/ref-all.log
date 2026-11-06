@@ -1,0 +1,8 @@
+All (33) tests passed in 805.4 ms.
+PASS archive/pu38-hash-and-end (1968 ms)
+PASS archive/pu38-made-kinds (1897 ms)
+PASS archive/pu38-paths-and-header (1964 ms)
+PASS archive/pu38-real-bundles (1929 ms)
+PASS archive/pu38-size (4756 ms)
+PASS archive/pu38-window (1890 ms)
+w2: 6 passed, 0 failed

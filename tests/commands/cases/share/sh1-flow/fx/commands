@@ -1,0 +1,10 @@
+# R-CM23, R-SH1, R-SH5, R-SH6, R-SH13, R-LY3, R-LY7, R-CC6, R-TF1, R-SE15: share on with no `share` key. config.toml: the line is added, the comment stays (span edit, under the lock of config.toml). share.json is missing, so it is made under its lock: 2 random numbers make the id. The id is not in config.toml. The registry is a URL, so the output has no note.
+share on
+# R-SH1, R-SH5, R-CC6: share is true already. No write of config.toml. share.json is there: it is read and not written, so no new id (no random call).
+share on
+# R-SH1, R-SH4, R-SH5, R-SH6, R-LY3: off writes false (the span edit replaces the value). share.json is not read and not written: the id and the totals stay. The queue is emptied: one db_write with ClearQueue (3 rows in the given tree).
+share off
+# R-SH5: on again after off. The id stays: share.json is read, not written.
+share on
+# R-SH1, R-SH4: off again. The queue is empty already, and the call is still made. The final tree: share = false, share.json, an empty queue.
+share off

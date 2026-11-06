@@ -1,0 +1,8 @@
+== update json --dry-run --file u1/main.roc
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.2.0
+resolved at log:50, 3 probes
+dry run: nothing was written
+exit 0

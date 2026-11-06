@@ -1,0 +1,2 @@
+[tools]
+a = { ref = "acme/foo@^1" }

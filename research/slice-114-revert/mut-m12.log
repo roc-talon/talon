@@ -1,0 +1,9 @@
+PASS publish/pu1-publish-package (2148 ms)
+PASS publish/pu16-after-ingest (1960 ms)
+FAIL publish/tp3-claims-vs-url (1809 ms)
+    request 21: status: expected 400, got 422
+    request 21: problem.type: expected "/errors/bad-request", got "/errors/not-a-candidate"
+    request 21: problem.detail: expected "the result bogus of a fact is not pass, fail, hang or crash", got "the url is not a GitHub release asset URL with a version and a hash (https://github.com/<owner>/<repo>/releases/download/<tag>/<hash>.tar.zst): https://gitlab.com/acme/lib/-/releases/1.0.0/downloads/4RFVEvYtVAcjwGo8qYU9PwdMjpeLN2fM2VVbtXSKTJEA.tar.zst"
+PASS publish/tp9-claim-ids (2004 ms)
+w2: 3 passed, 1 failed
+DONE

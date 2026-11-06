@@ -1,0 +1,3 @@
+# R-SH8, Q478: share with a live JWT and --offline, then with the registry direct: the status shows sharing off, sends no GET (no clock call), exit 0, the JWT stays in the file.
+share --offline
+env:TALON_REGISTRY=direct share

@@ -1,0 +1,13 @@
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"not json"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"[]"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"hashes\":[]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":{},\"hashes\":[]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[{\"group\":null}],\"hashes\":[]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[],\"hashes\":[1]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[{\"group\":\"github.com/o/a/releases/download/{v}/\",\"series\":\"0\"}],\"hashes\":[]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[{\"group\":\"github.com/o/a/releases/download/{v}/\",\"range\":\"abc\"}],\"hashes\":[]}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[],\"hashes\":[],\"compilers\":{\"from\":5}}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":"{\"groups\":[],\"hashes\":[],\"compilers\":{\"to\":{}}}"}
+{"method":"POST","path":"/v1/closure","headers":{"content-type":"application/json"},"body":""}

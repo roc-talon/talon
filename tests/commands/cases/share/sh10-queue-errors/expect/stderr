@@ -1,0 +1,3 @@
+warning: compat.db is busy: the shared results are not queued
+warning: cannot use $HOME/.cache/roc/talon/compat.db (disk full): the shared results are not queued
+tln: error[input]: $HOME/.cache/roc/talon/compat.db has format 2. This tln writes format 1. Run: tln tool update talon

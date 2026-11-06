@@ -1,0 +1,16 @@
+downloading nightly-2026-10-12-2a2a2a2 (74.2 MB)
+downloading nightly-2026-10-12-2a2a2a2 (74.2 MB)
+downloading nightly-2026-10-14-4c4c4c4 (74.4 MB)
+tln: error[usage]: main.roc is in $PROJECT/i7 already. tln init never overwrites a file.
+check: passed
+build: passed
+$PROJECT/i9/main.roc
+  + roc: nightly-2026-10-12-2a2a2a2
+resolved at 2026-10-15T12:00:00Z, 4 probes
+created main.roc
+created .github/workflows/ci.yml
+tln: error[usage]: unknown template 'lib': use app or package
+tln: error[consent]: nightly-2026-10-12-2a2a2a2 is not installed. Nothing was downloaded.
+downloading 2 compilers (148.2 MB)
+tln: error[usage]: no release of acme/young is old enough for min-release-age
+index: cached at 2026-10-15T11:59:50Z

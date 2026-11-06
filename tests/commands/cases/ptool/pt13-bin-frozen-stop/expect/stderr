@@ -1,0 +1,2 @@
+foo 1.1.0: prebuilt x64musl binary, sha256 7125e547ae30 (talon.toml)
+tln: error[integrity]: the x64musl binary of bar 1.0.0 has the sha256 b76571791fe1915f595d53ddb328ff4e4c05ce6a21bc7f4f3748dce08293e6e6, but talon.toml has cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc. Talon deleted the file. To build from source, remove x64musl from bin of bar in talon.toml.

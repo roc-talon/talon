@@ -1,0 +1,11 @@
+{"status":415,"problem":{"type":"/errors/unsupported-media-type"}}
+{"status":413,"problem":{"type":"/errors/too-large","detail":"the body of the login request is larger than its limit of 262144","field":"body","limit":262144}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the header Talon-Contributor must be 32 characters, each one of 0 to 9 and a to f"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the header Talon-Contributor must be 32 characters, each one of 0 to 9 and a to f"}}
+{"status":400,"problem":{"type":"/errors/bad-request"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the login request body is not valid: github_token is missing"}}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the login request body is not valid: github_token has a byte that is not allowed in a token"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"GitHub refused the token"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub user read failed with status 500"}}
+{"status":502,"problem":{"type":"/errors/upstream","detail":"the GitHub user read gave an answer that is not a user"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"json":{"account":{"id":77,"login":"other"},"expires_at":1769817600000},"jwt":{"at":"token","key":"t1","header":{"alg":"EdDSA","kid":"key-1","typ":"JWT"},"claims":{"iss":"https://registry.example","aud":"https://registry.example","sub":"77","iat":1767225600,"exp":1769817600}}}

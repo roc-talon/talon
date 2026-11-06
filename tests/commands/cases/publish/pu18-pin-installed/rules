@@ -1,0 +1,1 @@
+R-PU39 R-PUB4 (slice 222, Design Q523, Q524): the pin nightly-2026-10-14-38a3029 is installed, and a newer compiler too (the selected one). The probe of `roc bump` uses the pin: the program is the roc of the pin, in the dir of the package, the 6 words `bump --old <URL> --expect 2.1.0 <file>`. Exit 0 passes: no line.

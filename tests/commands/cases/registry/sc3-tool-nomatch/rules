@@ -1,0 +1,1 @@
+R-SC3 R-AD35 R-SL3 R-T10 R-EC2 Q430 (slice 206f): `tln tool install acme/foo@9.9.9` with a registry: R-AP1 answers 200, the selector keeps no candidate (`FullName.read!` gives `NoMatch`). The text is the text of the command, as in `direct` (Q430): `acme/foo has no release 9.9.9`, exit 2. The guard and R-AP1 only: no GitHub list, no ingest, no download.

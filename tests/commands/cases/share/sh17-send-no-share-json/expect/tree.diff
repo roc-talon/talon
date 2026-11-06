@@ -1,0 +1,9 @@
+--- home/.cache/roc/talon/share_queue.tsv
++++ home/.cache/roc/talon/share_queue.tsv
+@@ -1,2 +0,0 @@
+-1	HA	nightly-2026-10-14-38a3029	any	pass	0.9.0	t
+-2	HB	nightly-2026-10-14-38a3029	any	fail	0.9.0	t
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -0,0 +1 @@
++{"format":1,"id":"0123456789abcdef0123456789abcdef","sent":2,"counted":2,"first":2,"first_sent_at":"2026-10-15T12:00:00Z","last_sent_at":"2026-10-15T12:00:00Z","token":null,"token_expires_at":null,"account":null}

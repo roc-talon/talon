@@ -1,0 +1,49 @@
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  Content-Type: application/json
+  User-Agent: tln/0.4.1
+  <body> {"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  Content-Type: application/json
+  User-Agent: tln/0.4.1
+  <body> {"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  Content-Type: application/json
+  User-Agent: tln/0.4.1
+  <body> {"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  Content-Type: application/json
+  User-Agent: tln/0.4.1
+  <body> {"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  <body> {}
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  Content-Type: application/json
+  User-Agent: tln/0.4.1
+  Authorization: Bearer-x
+  <body> {}
+http_send GET http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.4.1
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-x timeout=20
+  Content-Type: application/json
+  <body> {"a":1,\n"b":"x\\y"}
+http_send DELETE http://127.0.0.1:9/v1/tokens timeout=20
+  Authorization: Bearer-t
+http_send DELETE http://127.0.0.1:9/v1/nothing timeout=20
+http_send GET http://127.0.0.1:9/v1/ping timeout=20
+http_send GET http://127.0.0.1:9/v1/ping timeout=20
+http_send GET http://127.0.0.1:9/v1/ping timeout=3
+http_send POST http://127.0.0.1:9/v1/slow timeout=5
+  <body> {}
+http_all limit=2 tmp=$HOME/.cache/roc/talon/tmp
+http_send GET http://127.0.0.1:9/v1/n/c timeout=20
+http_send GET http://127.0.0.1:9/v1/n/a timeout=20
+http_send GET http://127.0.0.1:9/v1/n/missing timeout=20
+http_send GET http://127.0.0.1:9/v1/n/slow timeout=20
+http_all limit=4 tmp=$HOME/.cache/roc/talon/tmp
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+http_send GET http://127.0.0.1:9/v1/n/b timeout=20
+http_all limit=0 tmp=$HOME/.cache/roc/talon/tmp
+http_send GET http://127.0.0.1:9/v1/n/a timeout=20
+http_send GET http://127.0.0.1:9/v1/n/b timeout=20
+sleep 2000
+sleep 8000

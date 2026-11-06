@@ -1,0 +1,17 @@
+── ✗ unsupported target ────────────────────────────────────────────────────────
+
+The platform at
+/home/george/dev/Karakatiza666/talon/conformance/host-link/xdg/roc/packages/GrST
+LEKd6yw8orQ5ByQQVY3Htg59vZYaoHBvQELueiMB/main.roc does not support the
+arm64glibc target.
+
+Supported targets:
+  - x64mac
+  - arm64mac
+  - x64win
+  - x64musl
+  - arm64musl
+
+To add support, update the targets section in the platform header.
+
+

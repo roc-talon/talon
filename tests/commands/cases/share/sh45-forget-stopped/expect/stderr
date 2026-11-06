@@ -1,0 +1,3 @@
+tln: error[rejected]: the registry http://127.0.0.1:9 refused the account delete (/errors/unauthenticated): D. Run tln share login, and then tln share forget.
+tln: error[network]: tln share forget needs the network, and --offline is set.
+tln: error[network]: tln share logout needs the network, and --offline is set.

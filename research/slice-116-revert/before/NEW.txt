@@ -1,0 +1,8 @@
+worker/lib/Hints.roc
+worker/lib/Client.roc
+worker/HintRoutes.roc
+worker/tests/unit/HintsTest.roc
+worker/tests/unit/ClientTest.roc
+worker/tests/cases/hints/
+docs/slices/116a-user-hints.md
+docs/slices/116b-hint-limits.md

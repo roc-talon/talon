@@ -1,0 +1,2 @@
+[tools]
+foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", bin = { arm64mac = "4c312d7655a95c10d6419304e256a8a56390294042fc39c95bd87ac56ba3f897" } }

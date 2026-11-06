@@ -1,0 +1,13 @@
+All (26) tests passed in 343.0 ms.
+FAIL reconcile/pu21-poll-job (2692 ms)
+    db: @ SELECT release, via, claims, time FROM provenance ORDER BY release, via: rows differ:
+      expected: ["1\t2\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t2\t\\N\t1767225600000"]
+      got:      ["1\t1\t\\N\t1767225600000","1\t3\t\\N\t1767000000000","2\t1\t\\N\t1767225600000"]
+PASS reconcile/pu23-list (3722 ms)
+PASS reconcile/pu25-reserve (2545 ms)
+PASS reconcile/pu36-overlap (2697 ms)
+PASS reconcile/pu37-backoff (2923 ms)
+PASS reconcile/pu37-etag-effects (2845 ms)
+PASS webhook/pu13-index-new (1193 ms)
+PASS webhook/pu17-withdraw-clear (1407 ms)
+w2: 7 passed, 1 failed

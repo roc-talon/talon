@@ -1,0 +1,12 @@
+Slice 050, `tln tool update talon` on Windows (R-ST10, R-S3). The fake machine is `os=windows arch=x64`, so the asset is `tln-x64win.exe` and the files have `.exe`. The bin dir of Windows is `<USERPROFILE>\.local\bin` (R-LY8): in the case it is the dir `home\.local\bin` (a name with `\`). `tln.exe` and `roc.exe` of it and `<data>/bin/tln.exe` have the text `old tln`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update talon` | no `chmod` job. Under the lock, before the rename over the file: `rename!` of `<data>/bin/tln.exe`, then of the entries `tln.exe` and `roc.exe` to `<name>.<hex>.del` (the hex of the one `random!`), then the rename of the temp file, then the entries again (hard link to a temp name, rename). The 3 `.del` files stay in this run (the old `tln` runs, so no delete) | R-ST10, R-S3, R-ST9, R-HF2 |
+| 2 | `tool update talon` | up to date. Slice 050c: the sweep at the start of this run deletes the 2 `.del` files of the bin dir (one `delete` call). The `.del` file of the data bin dir stays in the tree (known gap, below) | R-S2, R-ST10 |
+
+Slice 074 (R-S2, R-IS3): a run that gets to the use of the downloaded file also calls `programs gh` after the sha256 check. `fx/programs` has no `gh`, so the run prints `note: attestation not checked (needs gh, logged in)` on stderr and goes on. The cases of `ts8-attest` have `gh`.
+
+Slice 088b (test world, 2026-11-02, R-LY5 to R-LY7): the fake Windows has `LOCALAPPDATA` and `APPDATA` in its env (HOME form of the case: `{w}/home` or the `u<n>` dir), so the roots are `<LOCALAPPDATA>\roc` (cache), `<LOCALAPPDATA>\talon` (data) and `<APPDATA>\talon` (config). In the case they are the dirs `AppData/Local\roc`, `AppData/Local\talon` and `AppData/Roaming\talon` (names with `\`, in `AppData/`); the packages dir is `AppData/Local\roc\packages`. The files and the paths in `expect/` follow this. The meaning of the runs did not change.
+
+Known gap (slice 088b section 7): the sweep of the `.del` files still lists the data bin dir with the Linux form of the roots (`Del.dirs` uses `Roots.from_env`), so `calls.log` shows `list_dirs <bin dir> $HOME/.local/share/talon/bin`. Under R-LY6 and R-ST10 it must list `<LOCALAPPDATA>\talon\bin`. Until the code is fixed, the expected files keep the current output, and a `.del` file in `AppData/Local\talon/bin` stays in the tree.

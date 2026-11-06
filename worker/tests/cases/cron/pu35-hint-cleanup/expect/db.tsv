@@ -1,0 +1,12 @@
+@ SELECT artifact, nightly, target, talon_version FROM compat_hints ORDER BY artifact, nightly, target, talon_version
+101	9400	8	1
+102	9400	0	1
+104	9400	0	1
+@ SELECT COUNT(*) FROM contributions
+6
+@ SELECT COUNT(*) FROM compat
+4
+@ SELECT day, counted FROM hint_days ORDER BY day
+20452	7
+20453	5
+20454	1

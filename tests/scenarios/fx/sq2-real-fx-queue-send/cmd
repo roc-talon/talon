@@ -1,0 +1,101 @@
+# R-SH4 R-TF7 R-TF3 R-CC8 TW4 (slice 216): db_query! QueueRows and db_write! Unqueue of the real Fx, with `fxprobe`. The send reads all rows of the queue, the smallest seq first, and removes the rows that it is done with by seq. Q433: a read of a missing table gives no rows; Q451: a delete makes the table first.
+# QueueRows has no limit: the plan of the send (QueueSend.plan, L0) takes the first 500 rows of the running version and at most 2 requests.
+FX=$(command -v fxprobe)
+DB=$HOME/.cache/roc/talon/compat.db
+NT=nightly-2026-10-14-38a3029
+V=0.9.0
+V2=0.8.0
+T1=2026-11-03T10:00:00Z
+mkdir -p t
+sha() { if command -v sha256sum > /dev/null; then sha256sum "$1"; else shasum -a 256 "$1"; fi | cut -d' ' -f1; }
+tables() {
+python3 -I - "$1" <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+print("user_version", c.execute("PRAGMA user_version").fetchone()[0])
+print("tables", sorted(r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type = 'table'")))
+PY
+}
+
+echo "== 1. a file that does not exist: QueueRows gives no row, Unqueue and Unqueue with no seq are ok, and none of them makes a file or a dir"
+$FX db-query $DB 5000 queue-rows
+$FX db-write $DB 5000 unqueue 1 2
+$FX db-write $DB 5000 unqueue
+test ! -e $HOME/.cache && echo "nothing was made"
+
+echo "== 2. 5 rows of 2 versions: QueueRows gives all of them, the smallest seq first, also the rows of another version (the plan sorts them out)"
+$FX db-write $DB 5000 queue 10000 H1,$NT,any,pass,$V,$T1 H2,$NT,any,fail,$V2,$T1 H3,$NT,any,crash,$V,$T1 H4,$NT,linux_x86_64,pass,$V2,$T1 H5,$NT,any,pass,$V,$T1
+$FX db-query $DB 5000 queue-rows
+
+echo "== 3. Unqueue 2 and 4 (the rows of 0.8.0): only the rows with these seq go, the others keep their seq and their order"
+$FX db-write $DB 5000 unqueue 2 4
+$FX db-query $DB 5000 queue-rows
+$FX db-query $DB 5000 queue-count
+
+echo "== 4. a seq that is not in the table is no error, and the other seq in the call still goes"
+$FX db-write $DB 5000 unqueue 99 3
+$FX db-query $DB 5000 queue-rows
+
+echo "== 5. Unqueue with no seq changes nothing. A new row has the seq after the largest one (6), so the order is still the order of seq"
+$FX db-write $DB 5000 unqueue
+$FX db-write $DB 5000 queue 10000 H2,$NT,any,pass,$V2,$T1
+$FX db-query $DB 5000 queue-rows
+
+echo "== 6. Unqueue of all rows: the table stays (empty), QueueRows gives no row, the count is 0, user_version is 1"
+$FX db-write $DB 5000 unqueue 1 5 6
+$FX db-query $DB 5000 queue-rows
+$FX db-query $DB 5000 queue-count
+tables $DB
+
+echo "== 7. R-TF7, Q433, Q451: a file of an older Talon (format 1, facts and pinned, no share_queue). QueueRows gives no row and makes no table. Unqueue makes the table (ok), and keeps user_version 1 and the facts."
+python3 -I - t/old.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target, closure)) WITHOUT ROWID")
+c.execute("CREATE TABLE pinned (tag TEXT NOT NULL, target TEXT NOT NULL, sha256 TEXT NOT NULL, source TEXT NOT NULL, PRIMARY KEY (tag, target)) WITHOUT ROWID")
+c.execute("INSERT INTO facts VALUES ('old', 'n', 'any', 'pass', '', '')")
+c.execute("PRAGMA user_version = 1")
+c.commit()
+c.close()
+PY
+$FX db-query t/old.db 5000 queue-rows
+tables t/old.db
+$FX db-write t/old.db 5000 unqueue 1
+tables t/old.db
+$FX db-query t/old.db 5000 queue-rows
+$FX db-query t/old.db 5000 facts old:n:any
+
+echo "== 8. a file with user_version 0 (no Talon table): QueueRows gives no row and makes no table"
+python3 -I - t/zero.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE other (a TEXT)")
+c.commit()
+c.close()
+PY
+$FX db-query t/zero.db 5000 queue-rows
+tables t/zero.db
+
+echo "== 9. R-TF3: a file with a newer format (2). QueueRows and Unqueue give TooNew, and the bytes of the file stay the same"
+python3 -I - t/new.db <<'PY'
+import sqlite3, sys
+c = sqlite3.connect(sys.argv[1])
+c.execute("CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target)) WITHOUT ROWID")
+c.execute("PRAGMA user_version = 2")
+c.commit()
+c.close()
+PY
+before=$(sha t/new.db)
+$FX db-query t/new.db 5000 queue-rows
+$FX db-write t/new.db 5000 unqueue 1
+after=$(sha t/new.db)
+test "$before" = "$after" && echo "the file is the same"
+
+echo "== 10. a file that is not a database: Failed for both calls, and the text file is the same"
+printf 'this is not a database file, only text, padding padding padding padding padding padding padding padding' > t/text.db
+before=$(sha t/text.db)
+$FX db-query t/text.db 5000 queue-rows | sed -e 's/Failed(.*/Failed(...)/'
+$FX db-write t/text.db 5000 unqueue 1 | sed -e 's/Failed(.*/Failed(...)/'
+after=$(sha t/text.db)
+test "$before" = "$after" && echo "the text file is the same"
+rm -rf t

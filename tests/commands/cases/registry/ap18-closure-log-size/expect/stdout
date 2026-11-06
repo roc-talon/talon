@@ -1,0 +1,7 @@
+== closure group=github.com/someone/roc-json/releases/download/{v}/ name=someone/roc-json
+log_size 40
+releases 1
+artifacts 1
+candidate someone/roc-json 1.1.0 1.1.0 1791194400 3400 https://github.com/someone/roc-json/releases/download/1.1.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst
+== closure group=github.com/someone/roc-json/releases/download/{v}/ name=someone/roc-json
+exit 15

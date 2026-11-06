@@ -1,0 +1,14 @@
+Slice 210 revert check (test step). Private reference of cli/lib/IndexNotes.roc (4 bodies), deleted after the run.
+Reference: l0-3 113 of 113 pass.
+M1 no hour unit in age_text             caught: IndexnotesTest lines 24, 32, 57
+M2 note ignores `stale`                 caught: lines 45, 57, 63, 70, 81
+M3 checked_at (ms) not divided by 1000  caught: lines 32, 57, 70
+M4 json checked_at in seconds           caught: line 70
+M5 notes in reverse order               caught: line 57
+M6 future checked_at wraps (no saturate) caught: line 54
+After Q407, Q408 (notes over a list of answers, index_notes member): reference 118 of 118 pass.
+M7 newer checked_at wins        caught: lines 90, 114
+M8 null not oldest              caught: lines 98, 121
+M9 no sort by name              caught: line 114
+M10 fresh item counts           caught after the test of line 107 was changed (fresh item older than the stale one)
+M11 member present when empty   caught: line 121

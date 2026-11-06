@@ -1,0 +1,6 @@
+PASS shorts/ap7-query-forms (997 ms)
+w2: 1 passed, 0 failed
+FAIL wtrap cpu: retry-after 1, expected none
+FAIL wtrap cpu: the app gives retry-after
+wtrap: 9 causes, 2 failures
+done

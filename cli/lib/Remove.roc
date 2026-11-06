@@ -77,6 +77,8 @@ flow! = |fx, args, opts| {
 			compiler,
 			selected: "",
 			none: Stop,
+			index: Direct,
+			registry: Off,
 			toolchain,
 			snapshot: Err(Unset),
 			dry_run: opts.dry_run,

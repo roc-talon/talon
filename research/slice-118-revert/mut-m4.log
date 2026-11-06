@@ -1,0 +1,38 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:218:1
+
+expect {
+    Webhook.retry_delay_ms(1) == Ok(60_000)
+        and Webhook.retry_delay_ms(2) == Ok(300_000)
+        and Webhook.retry_delay_ms(3) == Ok(900_000)
+        and Webhook.retry_delay_ms(4) == Ok(3_600_000)
+        and Webhook.retry_delay_ms(5) == Err(GiveUp)
+        and Webhook.retry_delay_ms(6) == Err(GiveUp)
+        and Webhook.retry_delay_ms(100) == Err(GiveUp)
+        and Webhook.max_attempts == 5
+        and Webhook.queue_name == "talon-index"
+        and Webhook.dlq_name == "talon-index-dlq"
+}
+
+Ran 12 tests in 240.6 ms.:
+    11 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (1815 ms)
+PASS webhook/ap12-no-secret (1707 ms)
+PASS webhook/ap12-signature (2153 ms)
+PASS webhook/pu11-events (2697 ms)
+PASS webhook/pu26-app-installed (2516 ms)
+PASS webhook/pu33-privatized (3521 ms)
+PASS webhook/pu33-publicized (1772 ms)
+PASS webhook/pu35-dead-letter (1508 ms)
+FAIL webhook/pu35-retry-schedule (1390 ms)
+    request 3: queue retried: expected [{"delay_s":900,"id":"a3"}], got [{"delay_s":600,"id":"a3"}]
+    request 8: queue retried: expected [{"delay_s":900,"id":"u2"}], got [{"delay_s":600,"id":"u2"}]
+    request 9: queue retried: expected [{"delay_s":60,"id":"b1"},{"delay_s":900,"id":"b2"},{"delay_s":null,"id":"b3"}], got [{"delay_s":60,"id":"b1"},{"delay_s":600,"id":"b2"},{"delay_s":null,"id":"b3"}]
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the body is not a message"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the message is of an unknown event or action"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the GitHub repository read failed with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the GitHub repository read failed with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"the GitHub repository read failed with status 500"}
+w2: 8 passed, 1 failed

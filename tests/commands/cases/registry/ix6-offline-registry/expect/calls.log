@@ -1,0 +1,22 @@
+env_all
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/releases?group=github.com%2Fsomeone%2Froc-json%2Freleases%2Fdownload%2F%7Bv%7D%2F
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/someone/roc-b/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+http_get http://127.0.0.1:9/v1/packages/someone/roc-d/releases
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.json $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.meta
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.json
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.json

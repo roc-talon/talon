@@ -1,0 +1,2 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/a/releases/download/3.0.0/G3dVeH2VmoYnd8T7mpEnsGbjxdhorQCoNLjYbKpcLPt3.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/a/releases/download/3.1.0/CdrDWgU6gDCr1QbWB6NmSTLrrPyDMNzJRRCiUzzugcrP.tar.zst"},"now":1767225635000}

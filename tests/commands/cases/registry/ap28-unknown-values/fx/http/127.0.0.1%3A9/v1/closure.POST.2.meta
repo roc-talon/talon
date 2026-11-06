@@ -1,0 +1,5 @@
+status 200
+header Content-Type: application/json
+require content-type: application/json
+require-none authorization
+require-none talon-contributor

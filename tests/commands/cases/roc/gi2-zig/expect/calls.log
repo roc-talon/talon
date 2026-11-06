@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 programs gh
@@ -29,10 +32,12 @@ programs zig
 list_dirs $HOME/.cache/roc/toolchains
 clock
 http_get https://ziglang.org/download/index.json
-tty
 ask "Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] "
 delete $HOME/.cache/roc/toolchains/git-3b9f7c1d.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform
@@ -59,7 +64,6 @@ programs zig
 list_dirs $HOME/.cache/roc/toolchains
 clock
 http_get https://ziglang.org/download/index.json
-tty
 ask "Install zig 0.17.0 (54.2 MB) for Talon builds? [Y/n] "
 lock $HOME/.cache/roc/toolchains/zig-0.17.0 nowait: held
 list_dirs $HOME/.cache/roc/toolchains
@@ -100,6 +104,9 @@ unlock $HOME/.config/talon/config.toml
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 programs gh
@@ -132,6 +139,9 @@ spawn_all limit=1
 unlock $HOME/.cache/roc/toolchains/git-5349569a
 delete $HOME/.cache/roc/toolchains/git-5349569a.0123456789abcdef.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform

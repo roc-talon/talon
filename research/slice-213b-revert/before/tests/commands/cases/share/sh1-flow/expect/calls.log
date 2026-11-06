@@ -1,0 +1,49 @@
+args
+env_all
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+lock $HOME/.local/share/talon/share.json nowait: held
+read_files $HOME/.local/share/talon/share.json
+random
+random
+write_atomic $HOME/.local/share/talon/share.json
+spawn_all limit=1
+  job - chmod 0600 $HOME/.local/share/talon/share.json
+unlock $HOME/.local/share/talon/share.json
+args
+env_all
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+lock $HOME/.local/share/talon/share.json nowait: held
+read_files $HOME/.local/share/talon/share.json
+unlock $HOME/.local/share/talon/share.json
+args
+env_all
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 clear_queue
+args
+env_all
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+lock $HOME/.local/share/talon/share.json nowait: held
+read_files $HOME/.local/share/talon/share.json
+unlock $HOME/.local/share/talon/share.json
+args
+env_all
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 clear_queue

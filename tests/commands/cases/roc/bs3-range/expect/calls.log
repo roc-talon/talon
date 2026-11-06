@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 read_files $HOME/.config/talon/config.toml
@@ -29,6 +32,9 @@ read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
 args
+env_all
+tty
+read_files $HOME2/.config/talon/config.toml
 env_all
 clock
 platform

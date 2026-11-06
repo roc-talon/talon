@@ -1,0 +1,5 @@
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1 +1,2 @@
+ # my settings
++share = true

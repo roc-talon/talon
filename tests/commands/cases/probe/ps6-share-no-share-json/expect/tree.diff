@@ -1,0 +1,4 @@
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -0,0 +1 @@
++{"format":1,"id":"0123456789abcdef0123456789abcdef","sent":1,"counted":1,"first":1,"first_sent_at":"2026-10-15T12:00:00Z","last_sent_at":"2026-10-15T12:00:00Z","token":null,"token_expires_at":null,"account":null}

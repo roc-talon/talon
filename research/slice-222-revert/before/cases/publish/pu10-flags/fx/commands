@@ -1,0 +1,2 @@
+publish --file p/main.roc
+publish --registry http://127.0.0.1:9 env:TALON_REGISTRY=

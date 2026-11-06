@@ -1,5 +1,6 @@
 import Args
 import Db
+import Epochs
 import Fail
 import Ident
 import Index
@@ -74,8 +75,9 @@ Outdated :: [].{
 	}
 
 	## The nightly range of the hash on the compiler list `domain` (R-PB3): `ProbeRange.found` with no askable release, so it reads facts only. An empty `domain` is `Unread`.
-	range_of : { hash : Str, domain : List(Str), facts : List(Db.Fact) } -> Outdated.Range
-	range_of = |x| if x.domain.is_empty() Unread else Known(ProbeRange.found({ hash: x.hash, domain: x.domain, askable: [], facts: x.facts }))
+	## Slice 206e3 (R-EP15): `epochs` go to `ProbeRange.Input.epochs` (`[]` with no registry answer).
+	range_of : { hash : Str, domain : List(Str), facts : List(Db.Fact), epochs : List(Epochs.Interval) } -> Outdated.Range
+	range_of = |x| if x.domain.is_empty() Unread else Known(ProbeRange.found({ hash: x.hash, domain: x.domain, askable: [], facts: x.facts, epochs: x.epochs }))
 
 	## The cell of the range. `<from> .. <to>`, with a `?` after an end that is not a real fact (R-PB4). No real pass: `none known`. No list: `-`.
 	range_text : Outdated.Range -> Str

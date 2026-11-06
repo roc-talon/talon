@@ -1,0 +1,1 @@
+R-AP34 R-AP10 R-MX4 R-TP2 (slice 223): as b2, the first POST answers 503 /errors/busy: sleep 2000 and the same request with the same token, then 200. The reads and the PUT are not retried here.

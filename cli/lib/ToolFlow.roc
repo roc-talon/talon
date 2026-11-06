@@ -2,15 +2,19 @@ import Args
 import BuildSkip
 import BuildTarget
 import Clock
+import ClosureIndex
 import Common
 import Compiler
 import Consent
 import Fail
 import Fetch
 import Fx
+import FullName
 import Github
+import Help
 import Ident
 import Index
+import IndexQuery
 import Item
 import Launch
 import Lookup
@@ -21,6 +25,7 @@ import Out
 import RocInstall
 import Roots
 import Scope
+import Selector
 import Setup
 import SetupIo
 import Start
@@ -56,7 +61,7 @@ import XTake
 ToolFlow :: [].{
 
 	## What steps 2 and 3 found (slice 049, `tln x`): the machine, `tools.json` with all fields of each tool, `config.toml`. `ToolBuild.Facts` is this and the name of the app.
-	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str }
+	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]) }
 
 	## Steps 1 to 13.
 	run! : Fx, Args => I32
@@ -91,7 +96,15 @@ ToolFlow :: [].{
 	gather_for! = |fx, plan| gather!(fx, plan)
 
 	release_list_for! : Fx, Args, ToolBuild.Facts => Try(List(Index.Candidate), Fail)
-	release_list_for! = |fx, args, facts| release_list!(fx, args, facts)
+	release_list_for! = |fx, args, facts| release_list!(fx, args, facts).map_ok(|got| got.list)
+
+	## Slice 092 (R-PT20 step 1, Q9): `release_list_for!` with the texts of the pages of the R-DI2 list that it read (the asset digests of the check come from them, no other call).
+	## Slice 206f (R-SC3, R-SC4, R-AD35, Design Q547): `release_list_for!` for `tln tool install` and `tln x`: with a registry (`IndexQuery.setting` of `--registry`, `TALON_REGISTRY` and `registry` of `config.toml`) the list is the R-AP1 read of `FullName.read!`, else the GitHub list.
+	release_list_with_for! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try(List(Index.Candidate), Fail)
+	release_list_with_for! = |fx, args, facts, via| release_list_with!(fx, args, facts, via).map_ok(|got| got.list)
+
+	release_pages_for! : Fx, Args, ToolBuild.Facts => Try({ list : List(Index.Candidate), pages : List(Str) }, Fail)
+	release_pages_for! = |fx, args, facts| release_list!(fx, args, facts)
 
 	notes_for! : Fx, Args, ToolBuild.Facts, ToolInstall.Picked, Index.Candidate => {}
 	notes_for! = |fx, args, facts, picked, newest| notes!(fx, args, facts, picked, newest)
@@ -115,7 +128,8 @@ ToolFlow :: [].{
 # Steps 2 to 13.
 flow! : Fx, Args, ToolInstall.Plan => Try(ToolBuild.Done, Fail)
 flow! = |fx, args, plan| {
-	facts = gather!(fx, plan)?
+	gathered = gather_with!(fx, plan)?
+	facts = gathered.facts
 	# Slice 049 (R-B7): with `--offline` a matching `x` entry is taken first, and no list is read.
 	if args.offline {
 		match XTake.offline!(fx, args, { facts, selector: plan.ref.selector })? {
@@ -123,8 +137,8 @@ flow! = |fx, args, plan| {
 			Err(NoMatch) => {}
 		}
 	}
-	list = match release_list!(fx, args, facts) {
-		Ok(got) => got
+	list = match release_list_with!(fx, args, facts, { selector: plan.ref.selector, registry: gathered.registry }) {
+		Ok(got) => got.list
 		Err(fail) => return no_list!(fx, args, { plan, facts, fail })
 	}
 	picked = ToolInstall.pick({ name: facts.name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
@@ -153,7 +167,11 @@ flow! = |fx, args, plan| {
 
 # Steps 2 to 5: the machine, `tools.json`, `config.toml`, the full name, the binary name.
 gather! : Fx, ToolInstall.Plan => Try(ToolBuild.Facts, Fail)
-gather! = |fx, plan| {
+gather! = |fx, plan| Ok(gather_with!(fx, plan)?.facts)
+
+# Slice 206f: `gather!` and the `registry` key of `config.toml` that step 3 read (`IndexQuery.setting`, no new call).
+gather_with! : Fx, ToolInstall.Plan => Try({ facts : ToolBuild.Facts, registry : Try({ text : Str, at : Str }, [Unset]) }, Fail)
+gather_with! = |fx, plan| {
 	m = machine!(fx)?
 	entries = m.tools.map(|t| { key: t.key, name: t.name, source: t.source })
 	name = full_name!(fx, plan, entries)?
@@ -169,7 +187,7 @@ gather! = |fx, plan| {
 		Elsewhere(other) => return Err(ToolInstall.elsewhere_failure({ key: other.key, name }))
 		_ => {}
 	}
-	Ok({ env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) })
+	Ok({ facts: { env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) }, registry: m.registry })
 }
 
 # Slice 049 (R-B7): a release list that fails with the kind `Network` (no network, and no `--offline`) is the offline case: a matching `x` entry is offered. No match, or another kind: the failure of the list.
@@ -186,7 +204,7 @@ no_list! = |fx, args, run| match run.fail.kind {
 machine! : Fx => Try(ToolFlow.Machine, Fail)
 machine! = |fx| {
 	env = fx.env_all!()
-	roots = Roots.from_env(env)?
+	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
 	now = Clock.now!(fx, env)?
 	host = fx.platform!()
@@ -198,7 +216,7 @@ machine! = |fx| {
 	tools_file = Roots.item(roots, Item.ToolsJson)
 	tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
 	config = RocInstall.read_config!(fx, roots)?
-	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "" })
+	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry })
 }
 
 # Step 4 (R-SC3, R-AD7): an installed tool by its name or short name, else the name as typed. A failure prints its block first.
@@ -213,7 +231,7 @@ full_name! = |fx, plan, entries| match Lookup.find(Scope.Tool, plan.ref, ToolsJs
 }
 
 # Step 6 (R-DI2, R-DI12, R-T10): the candidates of the repo. No candidate is the failure of R-T10.
-release_list! : Fx, Args, ToolBuild.Facts => Try(List(Index.Candidate), Fail)
+release_list! : Fx, Args, ToolBuild.Facts => Try({ list : List(Index.Candidate), pages : List(Str) }, Fail)
 release_list! = |fx, args, facts| {
 	(owner, repo) = match facts.name.split_on("/") {
 		[o, r] => (o, r)
@@ -235,7 +253,7 @@ release_list! = |fx, args, facts| {
 	if listed.list.is_empty() {
 		return Err(ToolInstall.no_candidate({ name: facts.name, newest: Err(None), branch: default_branch!(fx, args, facts) }))
 	}
-	Ok(listed.list)
+	Ok({ list: listed.list, pages: fetched.pages })
 }
 
 # R-T10: the default branch of a repo with no release. One request, never with `--offline`, with the token of the other GitHub requests (R-RG3). Any problem is `Err(None)`.
@@ -253,6 +271,40 @@ default_branch! = |fx, args, facts| if args.offline {
 		Ok(answer) => ToolInstall.branch_of({ status: answer.status, body: answer.body })
 		Err(_) => Err(None)
 	}
+}
+
+# Slice 206f (R-SC3, R-SC4, R-AD35, R-AD36, R-AD37, Design Q430, Q547): step 6 with a registry. `direct` is `release_list!`. With a registry the list is the answer of R-AP1 (`FullName.read!`: the guard, the ingest of a 404, `--offline` with the kept copy).
+# The kind of a candidate comes from the archive header (R-T10), so there is no closure query. A selector that keeps no release is an empty list: `ToolInstall.pick` gives the text of the command (`<name> has no release <v>`). A list with no release: R-T10 as `release_list!`.
+release_list_with! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try({ list : List(Index.Candidate), pages : List(Str) }, Fail)
+release_list_with! = |fx, args, facts, via| match IndexQuery.setting({ flag: args.registry, env: facts.net.registry, config: via.registry })? {
+	Direct => release_list!(fx, args, facts)
+	Registry(origin) => {
+		typed = match via.selector {
+			Ok(selector) => Ok({ selector, text: selector_text(selector) })
+			Err(None) => Err(None)
+		}
+		read = FullName.read!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: args.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [] })?
+		match read {
+			NoMatch => Ok({ list: [], pages: [] })
+			SourceBuild => Err(Fail.new(Internal, "${facts.name}: a source build is not read from the registry"))
+			Found(releases) => {
+				list = ClosureIndex.candidates({ releases: releases.releases.keep_if(|r| !r.yanked), artifacts: [], name: facts.name })
+				if list.is_empty() {
+					Err(ToolInstall.no_candidate({ name: facts.name, newest: Err(None), branch: default_branch!(fx, args, facts) }))
+				} else {
+					Ok({ list, pages: [] })
+				}
+			}
+		}
+	}
+}
+
+# The text after `@` of a selector, for the message of `FullName.compiler_only` (a nightly tag or a step).
+selector_text : Selector -> Str
+selector_text = |selector| match selector {
+	Exact(text) | Range(text) | Nightly(text) | GitSha(text) | GitRef(text) => text
+	Latest => "latest"
+	Step(n) => if n >= 0 "+${n.to_str()}" else n.to_str()
 }
 
 # Step 7 (R-T9, R-C16): the notes on stderr for a build. The note of a release that only a pattern kept is hidden by `--quiet` (R-FL4).

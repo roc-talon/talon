@@ -1,0 +1,3 @@
+tln: error[usage]: GitHub repository acme/priv is private or does not exist. Private packages are not supported.
+tln: error[usage]: GitHub repository acme/none is private or does not exist. Private packages are not supported.
+tln: error[usage]: acme/empty has no release that Talon can use. A release needs one <hash>.tar.zst asset and must not be a draft or a prerelease.

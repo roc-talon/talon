@@ -1,0 +1,71 @@
+All (30) tests passed in 511.5 ms.
+PASS reconcile/pu21-poll-job (3420 ms)
+PASS reconcile/pu23-list (5658 ms)
+PASS reconcile/pu23-pages (3751 ms)
+FAIL reconcile/pu24-missing-again (4184 ms)
+    github: GET https://api.github.com/repositories/500: the header if-none-match is missing, expected "W/\"r\""
+    github: GET https://api.github.com/repos/acme/lib/releases?per_page=100: the header if-none-match is "W/\"l\"", expected null
+    github: GET https://api.github.com/repositories/500: the header if-none-match is missing, expected "W/\"r2\""
+    db: @ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\tW/\"l2\"\tW/\"r2\"\t1767232800000\t1767236400000\t0\t0","acme/lib-old\t\\N\t\\N\t\\N\t1769817600000\t0\t0","acme/priv\t\\N\t\\N\t\\N\t1769817600000\t0\t0"]
+      got:      ["acme/lib\tW/\"l\"\tW/\"r\"\t1767000000000\t1767234000000\t3\t0","acme/lib-old\tW/\"o\"\t\\N\t\\N\t1769817600000\t0\t0","acme/priv\t\\N\t\\N\t\\N\t1769817600000\t0\t0"]
+    db: @ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index: rows differ:
+      expected: ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\trepo-missing\t1767225600000","3\tacme/lib-old\t0.9.0\t\\N\t\\N"]
+      got:      ["1\tacme/lib\t1.0.0\t\\N\t\\N","2\tacme/lib\t2.0.0\t\\N\t\\N","3\tacme/lib-old\t0.9.0\t\\N\t\\N"]
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t500\t50\t0\t\\N\t1767229200000\t1767000000000","acme/lib-old\t500\t50\t2\tacme/lib\t1767000000000\t1767000000000","acme/priv\t800\t80\t1\t\\N\t1767225600000\t1767000000000"]
+      got:      ["acme/lib\t500\t50\t0\t\\N\t1767000000000\t1767000000000","acme/lib-old\t500\t50\t2\tacme/lib\t1767000000000\t1767000000000","acme/priv\t800\t80\t1\t\\N\t1767225600000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t4\t500\t500\t50\t50\t\\N\t\\N\t1767225600000","acme/lib\t3\t5\t500\t500\t50\t50\t\\N\t\\N\t1767229200000","acme/lib-old\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/priv\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/priv\t2\t4\t800\t800\t80\t80\t\\N\t\\N\t1767225600000"]
+      got:      ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib-old\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/priv\t1\t0\t\\N\t800\t\\N\t80\t\\N\t\\N\t1767000000000","acme/priv\t2\t4\t800\t800\t80\t80\t\\N\t\\N\t1767225600000"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=3 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=3 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=2 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=3 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/800","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/800","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/500"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 599","fail_count":1,"job":"reconcile","repository_id":500}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 599","fail_count":2,"job":"reconcile","repository_id":500}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 599","fail_count":3,"job":"reconcile","repository_id":500}
+PASS reconcile/pu25-reserve (3149 ms)
+FAIL reconcile/pu31-repo-etag (3356 ms)
+    github: GET https://api.github.com/repositories/500: the header if-none-match is missing, expected "W/\"r-a\""
+    github: GET https://api.github.com/repositories/800: the header if-none-match is missing, expected "W/\"r-d\""
+    db: @ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\tW/\"l-a\"\tW/\"r-a\"\t1767225600000\t1767229200000\t0\t0","acme/new\t\\N\t\\N\t\\N\t1767312000000\t0\t0","acme/old\tW/\"l-c\"\t\\N\t1767225600000\t1767229200000\t0\t0","acme/priv\t\\N\t\\N\t1767225600000\t1767229200000\t0\t0","acme/two\tW/\"l-b\"\tW/\"r-b\"\t1767225600000\t1767229200000\t0\t0"]
+      got:      ["acme/lib\tW/\"l-a\"\tW/\"r-a\"\t1767000000000\t1767225900000\t1\t0","acme/new\t\\N\t\\N\t\\N\t1767312000000\t0\t0","acme/old\tW/\"l-c\"\t\\N\t1767225600000\t1767229200000\t0\t0","acme/priv\tW/\"l-d\"\tW/\"r-d\"\t1767000000000\t1767225900000\t1\t0","acme/two\tW/\"l-b\"\tW/\"r-b\"\t1767225600000\t1767229200000\t0\t0"]
+    auth.log differs:
+      expected: ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/Two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/lib/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/new/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+      got:      ["GET https://api.github.com/repositories/600 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/Acme/Two/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/500 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/800 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repositories/700 token=1 ua=talon-registry accept=application/vnd.github+json","GET https://api.github.com/repos/acme/new/releases?per_page=100 token=1 ua=talon-registry accept=application/vnd.github+json"]
+    github.log differs:
+      expected: ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/Acme/Two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repos/acme/lib/releases?per_page=100","GET https://api.github.com/repositories/800","GET https://api.github.com/repositories/700","GET https://api.github.com/repos/acme/new/releases?per_page=100"]
+      got:      ["GET https://api.github.com/repositories/600","GET https://api.github.com/repos/Acme/Two/releases?per_page=100","GET https://api.github.com/repositories/500","GET https://api.github.com/repositories/800","GET https://api.github.com/repositories/700","GET https://api.github.com/repos/acme/new/releases?per_page=100"]
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 599","fail_count":1,"job":"reconcile","repository_id":500}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 599","fail_count":1,"job":"reconcile","repository_id":800}
+PASS reconcile/pu36-overlap (2490 ms)
+PASS reconcile/pu36-state-guard (2406 ms)
+PASS reconcile/pu37-backoff (2660 ms)
+PASS reconcile/pu37-etag-effects (2331 ms)
+PASS reconcile/tp18-rename (2347 ms)
+PASS reconcile/tp18-rename-transfer (2225 ms)
+PASS reconcile/tp9-transfer (2273 ms)
+PASS webhook/ap12-empty-secret (1889 ms)
+PASS webhook/ap12-no-secret (1706 ms)
+PASS webhook/ap12-signature (2151 ms)
+PASS webhook/pu11-events (1798 ms)
+PASS webhook/pu13-identity-changed (2211 ms)
+PASS webhook/pu13-index-new (2376 ms)
+PASS webhook/pu13-no-asset-end (2234 ms)
+PASS webhook/pu13-not-candidate (2220 ms)
+PASS webhook/pu13-refused (2225 ms)
+PASS webhook/pu13-retry-no-asset (2397 ms)
+PASS webhook/pu14-labels (2744 ms)
+PASS webhook/pu17-withdraw-clear (4795 ms)
+PASS webhook/pu26-app-installed (3965 ms)
+PASS webhook/pu26-release-installed (3561 ms)
+PASS webhook/pu33-privatized (4512 ms)
+PASS webhook/pu33-publicized (2983 ms)
+PASS webhook/pu33-release-private (2309 ms)
+PASS webhook/pu35-dead-letter (1476 ms)
+PASS webhook/pu35-retry-schedule (1539 ms)
+w2: 30 passed, 2 failed

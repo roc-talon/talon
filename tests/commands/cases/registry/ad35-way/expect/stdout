@@ -1,0 +1,6 @@
+== fullname acme/way sel=nightly-2026-10-09-258ab27 env:GITHUB_TOKEN=tok1
+exit 2
+== fullname acme/way sel=-1 env:GITHUB_TOKEN=tok1
+exit 2
+== fullname acme/way sel=dd03c09e env:GITHUB_TOKEN=tok1
+source build

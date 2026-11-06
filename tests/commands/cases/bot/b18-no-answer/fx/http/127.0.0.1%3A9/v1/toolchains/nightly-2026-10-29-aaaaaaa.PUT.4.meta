@@ -1,0 +1,4 @@
+error timeout
+require authorization: Bearer jwt1
+require user-agent: tln/0.0.1
+require-none content-type

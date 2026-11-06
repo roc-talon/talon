@@ -1,0 +1,61 @@
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/u1/main.roc
+list_dirs $PROJECT/u1
+list_dirs $PROJECT
+read_files $PROJECT/u1/talon.toml
+read_files $PROJECT/u1/main.roc
+canonical $PROJECT/u1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/u1/main.roc $PROJECT/u1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+platform
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=0
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+read_files $HOME/.cache/roc/talon/index/github/acme/json/repo.json $HOME/.cache/roc/talon/index/github/acme/parser/repo.json $HOME/.cache/roc/talon/index/github/acme/pfx/repo.json
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-13-5e6f7a8","to":"nightly-2026-10-13-5e6f7a8"},"groups":[{"group":"github.com/acme/json/releases/download/{v}/","range":">=2.0.0, <3.0.0","series":"2"},{"group":"github.com/acme/parser/releases/download/{v}/","range":">=1.0.0, <2.0.0","series":"1"},{"group":"github.com/acme/pfx/releases/download/{v}/","range":">=0.1.0, <0.2.0","series":"0.1"}],"hashes":["6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21","EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"]}
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/u1/main.roc
+list_dirs $PROJECT/u1
+list_dirs $PROJECT
+read_files $PROJECT/u1/talon.toml
+read_files $PROJECT/u1/main.roc
+canonical $PROJECT/u1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/u1/main.roc $PROJECT/u1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+platform
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/toolchains.json
+http_get http://127.0.0.1:9/v1/toolchains?after=40
+  User-Agent: tln/0.0.1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2
+read_files $HOME/.cache/roc/talon/index/github/acme/json/repo.json $HOME/.cache/roc/talon/index/github/acme/parser/repo.json $HOME/.cache/roc/talon/index/github/acme/pfx/repo.json
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-12-2664a27","to":"nightly-2026-10-12-2664a27"},"groups":[{"group":"github.com/acme/json/releases/download/{v}/","range":">=2.0.0, <3.0.0","series":"2"},{"group":"github.com/acme/parser/releases/download/{v}/","range":">=1.0.0, <2.0.0","series":"1"},{"group":"github.com/acme/pfx/releases/download/{v}/","range":">=0.1.0, <0.2.0","series":"0.1"}],"hashes":["6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21","EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"]}

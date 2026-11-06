@@ -1,0 +1,43 @@
+
+── ✗ fail ────────────────────────────────────── tests/unit/IngestTest.roc:136:1
+
+expect {
+    repo = |vis| "{\"id\":501,\"name\":\"r\",\"description\":null,\"owner\":{\"login\":\"t\",\"id\":9001},\"visibility\":\"${vis}\",\"private\":false}"
+    got = [
+        Ingest.parse_repo(repo("public")),
+        Ingest.parse_repo(repo("private")),
+        Ingest.parse_repo(repo("internal")),
+        Ingest.parse_repo(repo("Public")),
+        Ingest.parse_repo("{\"id\":501,\"owner\":{\"id\":9001}}"),
+        Ingest.parse_repo("{\"id\":501,\"visibility\":\"public\"}"),
+        Ingest.parse_repo("not json"),
+    ]
+    got
+        == [
+            Ok({ id: 501, owner_id: 9001, public: Bool.True }),
+            Ok({ id: 501, owner_id: 9001, public: Bool.False }),
+            Ok({ id: 501, owner_id: 9001, public: Bool.False }),
+            Ok({ id: 501, owner_id: 9001, public: Bool.False }),
+            Err(BadRepo),
+            Err(BadRepo),
+            Err(BadRepo),
+        ]
+}
+
+Ran 43 tests in 632.9 ms.:
+    42 passed
+    1 failed
+    0 compiler errors
+PASS ingest/ap26-body-and-route (1325 ms)
+PASS ingest/ik3-id-collision (1391 ms)
+PASS ingest/pu14-pu19-labels (1528 ms)
+PASS ingest/pu4-index-kinds (1521 ms)
+FAIL ingest/pu6-not-candidates (1561 ms)
+    github: no fake route for GET https://api.github.com/repos/t/inner/releases/tags/1.0.0 (expected the file github/api.github.com/repos/t/inner/releases/tags/1.0.0)
+    request 12: status: expected 422, got 502
+    request 12: problem.type: expected "/errors/not-a-candidate", got "/errors/upstream"
+    request 12: problem.detail: expected "repository not found or not public", got "the GitHub release read failed with status 599"
+    github.log differs:
+      expected: ["GET https://api.github.com/repos/t/gone","GET https://api.github.com/repos/t/secret","GET https://api.github.com/repos/t/inner","GET https://api.github.com/repos/t/flaky","GET https://api.github.com/repos/t/nr","GET https://api.github.com/repos/t/nr/releases/tags/1.0.0","GET https://api.github.com/repos/t/dr","GET https://api.github.com/repos/t/dr/releases/tags/1.0.0","GET https://api.github.com/repos/t/pr","GET https://api.github.com/repos/t/pr/releases/tags/1.0.0","GET https://api.github.com/repos/t/na","GET https://api.github.com/repos/t/na/releases/tags/1.0.0","GET https://api.github.com/repos/t/two","GET https://api.github.com/repos/t/two/releases/tags/1.0.0","GET https://api.github.com/repos/t/other","GET https://api.github.com/repos/t/other/releases/tags/1.0.0","GET https://api.github.com/repos/t/nopub","GET https://api.github.com/repos/t/nopub/releases/tags/1.0.0","GET https://api.github.com/repos/t/rel500","GET https://api.github.com/repos/t/rel500/releases/tags/1.0.0","GET https://api.github.com/repos/t/hm","GET https://api.github.com/repos/t/hm/releases/tags/1.0.0","GET https://github.com/t/hm/releases/download/1.0.0/HC9DSdbmGx5JD46eh7PbaZ95QCW82L9JEYE2jh52Pa8U.tar.zst","GET https://api.github.com/repos/t/rv","GET https://api.github.com/repos/t/rv/releases/tags/1.0.0","GET https://github.com/t/rv/releases/download/1.0.0/AsHcF5YRKcBNiXnMpAQ4QPkqLEpuAJtLyooT4JU5KBkX.tar.zst","GET https://raw.githubusercontent.com/t/rv/1.0.0/.roc-version"]
+      got:      ["GET https://api.github.com/repos/t/gone","GET https://api.github.com/repos/t/secret","GET https://api.github.com/repos/t/inner","GET https://api.github.com/repos/t/inner/releases/tags/1.0.0","GET https://api.github.com/repos/t/flaky","GET https://api.github.com/repos/t/nr","GET https://api.github.com/repos/t/nr/releases/tags/1.0.0","GET https://api.github.com/repos/t/dr","GET https://api.github.com/repos/t/dr/releases/tags/1.0.0","GET https://api.github.com/repos/t/pr","GET https://api.github.com/repos/t/pr/releases/tags/1.0.0","GET https://api.github.com/repos/t/na","GET https://api.github.com/repos/t/na/releases/tags/1.0.0","GET https://api.github.com/repos/t/two","GET https://api.github.com/repos/t/two/releases/tags/1.0.0","GET https://api.github.com/repos/t/other","GET https://api.github.com/repos/t/other/releases/tags/1.0.0","GET https://api.github.com/repos/t/nopub","GET https://api.github.com/repos/t/nopub/releases/tags/1.0.0","GET https://api.github.com/repos/t/rel500","GET https://api.github.com/repos/t/rel500/releases/tags/1.0.0","GET https://api.github.com/repos/t/hm","GET https://api.github.com/repos/t/hm/releases/tags/1.0.0","GET https://github.com/t/hm/releases/download/1.0.0/HC9DSdbmGx5JD46eh7PbaZ95QCW82L9JEYE2jh52Pa8U.tar.zst","GET https://api.github.com/repos/t/rv","GET https://api.github.com/repos/t/rv/releases/tags/1.0.0","GET https://github.com/t/rv/releases/download/1.0.0/AsHcF5YRKcBNiXnMpAQ4QPkqLEpuAJtLyooT4JU5KBkX.tar.zst","GET https://raw.githubusercontent.com/t/rv/1.0.0/.roc-version"]
+w2: 4 passed, 1 failed

@@ -1,0 +1,12 @@
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-29-aaaaaaa","now":1767225600000}
+{"sql":["INSERT INTO compat (artifact, nightly, target, source, result, error_digest, time, log_index) VALUES (9041074906827287096, 5571556846250, 0, 0, 0, NULL, 1767225600000, NULL);","INSERT INTO compat (artifact, nightly, target, source, result, error_digest, time, log_index) VALUES (6637059302034951433, 5571556846250, 0, 0, 1, 'x', 1767225600000, NULL);","INSERT INTO compat (artifact, nightly, target, source, result, error_digest, time, log_index) VALUES (4652512588506025103, 5571556846250, 0, 1, 0, NULL, 1767225600000, 6);"]}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-29-aaaaaaa","now":1767225600000}
+{"sql":["INSERT INTO compat (artifact, nightly, target, source, result, error_digest, time, log_index) VALUES (4652512588506025103, 5571556846250, 0, 0, 0, NULL, 1767225600000, NULL);","INSERT INTO sweeps (nightly, target, upto_log_index, time) VALUES (5571556846250, 0, 8, 1767225609000);"]}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-29-aaaaaaa","now":1767225600000}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-31-ccccccc","now":1767225600000}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-01-1234567","now":1767225600000}
+{"method":"GET","path":"/v1/sweeps/latest","now":1767225600000}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-29-aaaaaaa?target=x64glibc","now":1767225600000}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-29-aaaaaaa?target=any","now":1767225600000}
+{"sql":["UPDATE releases SET yanked = 1 WHERE log_index = 5"]}
+{"method":"GET","path":"/v1/sweeps/nightly-2026-10-29-aaaaaaa","now":1767225600000}

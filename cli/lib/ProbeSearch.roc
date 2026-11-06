@@ -58,8 +58,8 @@ ProbeSearch :: [].{
 		mode : Mode,
 	}
 
-	## What the search found: the range, the number of probes that started, the failure of the budget when `probe.max` cut a round, the number of releases of D with no fact (for `ProbeCmd.stop`), and the number of compilers that the search downloaded.
-	Found : { found : ProbeRange.Found, probes : U64, cut : Try(Fail, [None]), unseen : U64, downloads : U64 }
+	## What the search found: the range, `facts` (R-PB9: only the facts that this run probed, in the probe order, not the stored rows), the number of probes that started, the failure of the budget when `probe.max` cut a round, the number of releases of D with no fact (for `ProbeCmd.stop`), and the number of compilers that the search downloaded.
+	Found : { found : ProbeRange.Found, probes : U64, cut : Try(Fail, [None]), unseen : U64, downloads : U64, facts : List(Db.Fact) }
 
 	run! : Fx, ProbeSearch.Run => Try(ProbeSearch.Found, Fail)
 	run! = |fx, run| {
@@ -80,13 +80,14 @@ ProbeSearch :: [].{
 		if run.probe.max_toolchains > 0 and last.dropped > 0 {
 			fx.err!("${Consent.optional_capped({ cap: run.probe.max_toolchains, dropped: last.dropped })}\n")
 		}
-		input = { hash, domain, askable, facts: last.facts }
+		input = { hash, domain, askable, facts: last.facts, epochs: [] }
 		Ok({
 			found: ProbeRange.found(input),
 			probes: last.probes,
 			cut: last.cut,
 			unseen: domain.count_if(|id| !last.facts.any(|f| f.hash == hash and f.nightly == id and f.target == "any")),
 			downloads: last.downloads,
+			facts: last.facts.drop_first(rows.len()),
 		})
 	}
 }
@@ -97,7 +98,7 @@ State : { facts : List(Db.Fact), probes : U64, cut : Try(Fail, [None]) }
 
 # One round and the next, until `step` is done or the budget cuts a round.
 rounds! : Fx, ProbeSearch.Run, World, State => Try(State, Fail)
-rounds! = |fx, run, world, state| match ProbeRange.step({ hash: run.node.hash, domain: world.domain, askable: world.askable, facts: state.facts }) {
+rounds! = |fx, run, world, state| match ProbeRange.step({ hash: run.node.hash, domain: world.domain, askable: world.askable, facts: state.facts, epochs: [] }) {
 	Done(_) => Ok(state)
 	Need(ids) => {
 		room = Units.budget({ max: run.probe.max, started: state.probes, fixed: 0, wanted: ids.len() }) ?? { run: 0, cut: Bool.True }
@@ -152,7 +153,7 @@ sizes_of = |releases| releases.keep_oks(
 more! : Fx, ProbeSearch.Run, World, Wide, More => Try(More, Fail)
 more! = |fx, run, world, wide, state| {
 	askable = wide.allowed.keep_if(|id| !state.removed.contains(id))
-	match ProbeRange.step({ hash: run.node.hash, domain: world.domain, askable, facts: state.facts }) {
+	match ProbeRange.step({ hash: run.node.hash, domain: world.domain, askable, facts: state.facts, epochs: [] }) {
 		Done(_) => Ok(state)
 		Need(ids) => {
 			room = Units.budget({ max: run.probe.max, started: state.probes, fixed: 0, wanted: ids.len() }) ?? { run: 0, cut: Bool.True }

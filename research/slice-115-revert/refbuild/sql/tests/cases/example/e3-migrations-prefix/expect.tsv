@@ -1,0 +1,4 @@
+@ SELECT count(*) FROM sqlite_master WHERE type = 'table' AND name = 'names'
+1
+@ SELECT count(*) FROM sqlite_master WHERE type = 'trigger'
+0

@@ -1,0 +1,8 @@
+@ SELECT count(*) FROM releases
+1
+@ SELECT count(*) FROM toolchains
+1
+@ SELECT nightly, upto_log_index FROM sweeps
+1	2
+@ SELECT count(*) FROM contributions
+0

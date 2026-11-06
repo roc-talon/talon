@@ -1,0 +1,2 @@
+tln: error[usage]: 'json' is not a platform: tln probe --smoke builds the smoke app of a platform
+tln: error[usage]: 'nope' is not in the project

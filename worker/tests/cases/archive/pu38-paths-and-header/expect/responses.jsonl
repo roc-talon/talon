@@ -1,0 +1,13 @@
+{"status":200,"headers":{"content-type":"application/json"},"json":{"hash":"eHjNsgi2XxkkibxNF7kfGTRZQQujVH62NrB1vySvAZH","kind":"package","exposed":["Zeta","Alpha"],"platform_hash":null,"roc_pin":null,"size":384,"deps":[{"alias":"semver","group":"github.com/Karakatiza666/roc-semver/releases/download/{v}/","hash":"BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i","is_platform":false,"series":"0.2","url":"https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst","version":"0.2.0"}],"target_names":[]}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has a path that roc unbundle refuses (a .. part): src/../main.roc"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has a symbolic link, not a file: evil"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has a hard link, not a file: hard"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has a member of type 3, not a file: dev"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has the path Zeta.roc two times"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has a path that roc unbundle refuses (a Windows reserved name): src/con.roc"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has the path MAIN.ROC two times"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"tar: the path or link of the member at offset 4096 has 256 bytes, more than the limit 255"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"the archive has no main.roc at its root"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"main.roc has no valid header: it starts with no app, package or platform header"}}
+{"status":422,"problem":{"type":"/errors/not-a-candidate","detail":"tar: the member at offset 0 has 1048577 bytes, more than the collect limit 1048576"}}
+{"status":200,"headers":{"content-type":"application/json"},"json":{"hash":"C9WQhcXkkNWEqHPm8SHFDZ3rQSwzuBDgpmhXEynQsE5t","kind":"package","exposed":["Zeta","Alpha"],"platform_hash":null,"roc_pin":null,"size":413,"deps":[{"alias":"semver","group":"github.com/Karakatiza666/roc-semver/releases/download/{v}/","hash":"BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i","is_platform":false,"series":"0.2","url":"https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst","version":"0.2.0"}],"target_names":[]}}

@@ -1,5 +1,6 @@
 args
 env_all
+env_all
 platform
 read_files $HOME/h1/.local/share/talon/tools.json
 list_dirs $HOME/h1/.cache/roc/toolchains $HOME/h1/.local/bin
@@ -51,6 +52,7 @@ rename $HOME/h1/.local/bin/roc.old $HOME/h1/.local/bin/roc
 delete $HOME/h1/.local/bin/tln $HOME/h1/.local/share/talon/bin/tln
 args
 env_all
+env_all
 platform
 read_files $HOME/h2/.local/share/talon/tools.json
 list_dirs $HOME/h2/.cache/roc/toolchains $HOME/h2/.local/bin
@@ -67,7 +69,11 @@ delete $HOME/h2/.local/bin/roc
 rename $HOME/h2/.local/bin/roc.old $HOME/h2/.local/bin/roc
 delete $HOME/h2/.local/share/talon/bin/tln
 args
+env_all
 args
+env_all
+tty
+read_files $HOME/h4/.config/talon/config.toml
 env_all
 platform
 read_files $HOME/h4/.local/share/talon/tools.json
@@ -109,6 +115,9 @@ unlock $HOME/h4/.local/share/talon/tools.json
 delete $HOME/h4/.cache/roc/talon $HOME/h4/.config/talon/config.toml $HOME/h4/.local/share/talon/share.json
 delete $HOME/h4/.local/bin/tln $HOME/h4/.local/share/talon/bin/tln
 args
+env_all
+tty
+read_files $HOME/h5/.config/talon/config.toml
 env_all
 platform
 read_files $HOME/h5/.local/share/talon/tools.json

@@ -1,0 +1,2 @@
+outdated --file u1/main.roc
+env:TALON_NIGHTLY=0 outdated --json --file u1/main.roc

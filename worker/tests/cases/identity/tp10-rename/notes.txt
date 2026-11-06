@@ -1,0 +1,4 @@
+1: new name, known repository id: 201
+2: second release of the new name: 201
+3: read the old name
+4: read the new name

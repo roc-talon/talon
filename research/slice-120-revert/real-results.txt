@@ -1,0 +1,7 @@
+order-by-id: FAIL cron/ct15-trim (1251 ms)  2 pass
+edge-le: FAIL cron/ct15-trim (1388 ms)  2 pass
+stop-on-failure: FAIL cron/ct15-trim-failure (1183 ms)  2 pass
+smoke-as-bot: FAIL cron/pu35-hint-cleanup (1193 ms)  2 pass
+days-edge-le: FAIL cron/pu35-hint-cleanup (1175 ms)  2 pass
+last-time-min: FAIL cron/ct15-trim (1263 ms) FAIL cron/ct15-trim-failure (1176 ms)  1 pass
+delete-fail-silent:  3 pass

@@ -1,0 +1,22 @@
+1: static: no url (400)
+2: static: 501 facts (413)
+3: static: hash in a fact (400)
+4: static: an escaped source key in a fact (400)
+5: static: a bad result (400)
+6: static: target not any (400)
+7: static: another host (422)
+8: Basic: 401
+9: not a JWT: 401
+10: bad signature: 401
+11: aud with /: 401
+12: other repository: 403
+13: bot token: 403
+14: private: 403
+15: branch: 403
+16: other tag: 403
+17: pull_request_target: 403
+18: schedule: 403
+19: repository_id not a number: 403
+20: repository_owner_id missing: 403
+21: static: a bad result and another host (400)
+22: ref wrong and id not a number: 403 of ref

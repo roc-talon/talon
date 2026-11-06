@@ -1,0 +1,24 @@
+All (17) tests passed in 301.2 ms.
+PASS webhook/ap12-empty-secret (1886 ms)
+PASS webhook/ap12-no-secret (1876 ms)
+PASS webhook/ap12-signature (2238 ms)
+PASS webhook/pu11-events (2378 ms)
+PASS webhook/pu13-index-new (2137 ms)
+PASS webhook/pu13-no-asset-end (2057 ms)
+PASS webhook/pu13-not-candidate (2026 ms)
+PASS webhook/pu13-refused (2232 ms)
+PASS webhook/pu13-retry-no-asset (2355 ms)
+PASS webhook/pu14-labels (2641 ms)
+FAIL webhook/pu17-withdraw-clear (4150 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/del\t\\N\t\\N\t1767225600000\t0\t0","acme/del-old\t\\N\t\\N\t1767830400000\t0\t0","acme/lib\t\\N\t\\N\t1767003600000\t0\t0"]
+      got:      ["acme/del\t\\N\t\\N\t1767225600000\t0\t0","acme/del-old\t\\N\t\\N\t1767225600000\t0\t0","acme/lib\t\\N\t\\N\t1767003600000\t0\t0"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the release has no package asset"}
+PASS webhook/pu26-app-installed (3233 ms)
+PASS webhook/pu26-release-installed (2500 ms)
+PASS webhook/pu33-privatized (3256 ms)
+PASS webhook/pu33-publicized (2340 ms)
+PASS webhook/pu33-release-private (2168 ms)
+PASS webhook/pu35-dead-letter (1474 ms)
+PASS webhook/pu35-retry-schedule (1018 ms)
+w2: 17 passed, 1 failed

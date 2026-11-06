@@ -1,0 +1,6 @@
+Slice 092 (entry `commands`): R-PT20 step 4, R-PT24, R-SE20, R-DA4, R-CV4, Design Q231. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). `gh` is a rule of `fx/jobs` (no real `gh`). The release acme/foo 1.1.0 (`tags/1.1.0`, the one call of R-PT20 step 1) has binary assets `<hash>-<target>` with a `digest`; the files of the assets are in `fx/src/bin-<target>`. The commit of the bundle is `1a2b3c4d...`, its workflow is `.github/workflows/release.yml`. The host is Linux x64 (`x64musl`).
+The `digest` of the asset x64musl in the release is not the sha256 of its file.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `update --tool --file p1/main.roc` | the bundle verify passes, the 2 binaries are downloaded, the sha256 of x64musl is not its digest: exit 16 (`integrity`), the temp dir is deleted, no verify run of a binary, no `x` entry, `talon.toml` is not written | R-PT20 step 4, R-PT24, R-SE20, R-DA4 |

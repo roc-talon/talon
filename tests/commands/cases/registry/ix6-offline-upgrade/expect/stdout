@@ -1,0 +1,11 @@
+== upgrade --dry-run --offline --file u1/main.roc
+other: fixed: not in the registry index
+pf: fixed: offline, no cached index
+check: passed
+build: passed
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+resolved at 2026-10-20T12:00:00Z, 7 probes
+dry run: nothing was written
+exit 0

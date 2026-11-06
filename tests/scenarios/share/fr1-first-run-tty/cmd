@@ -1,0 +1,13 @@
+# R-SH11 R-NI16 R-NM12 R-SH1 R-SH5 R-SE15 R-HF1 R-NR1 (slice 214): a person is there (a pseudo terminal, given/answers is `y`). share is not set, and the registry is a URL, and CI is not set (the runner sets CI=true: R-SH2 row 5 turns the prompt off, so the cmd sets CI=false).
+# stdout and stderr are one stream, so the screen of the prompt shows in expect/stdout (the typed answer does not). The prompt comes before the output of the command (the cache root).
+# The answer y writes `share = true` and makes share.json with the mode 0600 (the real chmod). The second run does not ask (no second answer is typed).
+export CI=false TALON_REGISTRY=https://registry.example.org
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st tln cache dir
+cat $XDG_CONFIG_HOME/talon/config.toml
+J=$XDG_DATA_HOME/talon/share.json
+ls -l $J | cut -c1-10
+# The id is random (R-SH5: 16 random bytes in hex). The case checks its form, then fixes it, so the tree diff is the same in each run.
+grep -c '"id":"[0-9a-f]\{32\}"' $J
+sed 's/"id":"[0-9a-f]*"/"id":"ID"/' $J > $J.new && mv $J.new $J
+st tln cache dir

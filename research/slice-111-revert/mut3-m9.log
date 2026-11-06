@@ -1,0 +1,9 @@
+All (33) tests passed in 1208.3 ms.
+PASS archive/pu38-hash-and-end (2502 ms)
+PASS archive/pu38-made-kinds (2415 ms)
+PASS archive/pu38-paths-and-header (2500 ms)
+PASS archive/pu38-real-bundles (2443 ms)
+FAIL archive/pu38-size (6929 ms)
+    request 1: problem.detail: expected "the asset has 100000001 bytes (Content-Length), more than the limit of 100000000 bytes", got "the asset has more than the limit of 100000000 bytes (the read stopped at 100000001 bytes)"
+PASS archive/pu38-window (2416 ms)
+w2: 5 passed, 1 failed

@@ -58,15 +58,83 @@ Db :: [].{
 	## What an `Fx` db call needs to open the file. `path` is `Roots.item(roots, CompatDb)`. `busy_ms` is `Db.busy_ms`. `format` is `Db.format`.
 	Open : { path : Str, busy_ms : U64, format : U64 }
 
+	## Slice 213 (R-SH4, R-SH8, R-TF7): the table `share_queue` (columns in R-TF7: `seq`, `hash`, `nightly`, `target`, `result`, `talon_version`, `queued_at`). Slice 215 adds the rows.
+	## `QueueCount` asks for the number of rows. A file that does not exist, a file with `user_version` 0 and a file with no table `share_queue` give `QueueCount(0)`: the call makes no file and no table.
+	## `ClearQueue` removes all rows (`tln share off`, R-SH4). The real `Fx` opens the file as for each write (busy timeout, WAL, version check: `TooNew` writes nothing), and in one transaction runs
+	## `CREATE TABLE IF NOT EXISTS share_queue (...)` (R-TF7: Talon makes the table when it opens the file to write) and `DELETE FROM share_queue`. A file that does not exist is not made: `Ok` and no change
+	## (nothing is queued). `user_version` stays 1 (R-TF7). The fake `Fx` keeps the rows in the text file `share_queue.tsv` next to `compat.tsv` (one row for each line, no format: slice 215 gives the form).
+
 	## What `db_query!` asks for: the rows of these keys (the rows that exist, in any order). A key can have more than one row (one for each `closure`, slice 032).
-	Query : [Facts(List(Key)), Pinned(List(PinKey))]
+	## Slice 217 (R-PB6): `FactsOf(hash)` asks for all rows of `facts` with this hash, each nightly, each target and each `closure` (the rows of `tln probe --share`). The answer is `Facts(rows)` in any order (the caller sorts).
+	## A file that does not exist, a file with `user_version` 0 and a file with no table give `Facts([])`: the call makes no file. The fake `Fx` log word is `facts_of=<hash>`.
+	Query : [Facts(List(Key)), FactsOf(Str), Pinned(List(PinKey)), QueueCount, QueueRows, Smoke(List(Key))]
 
 	## What `db_query!` gives.
-	Answer : [Facts(List(Fact)), Pinned(List(Pinned))]
+	Answer : [Facts(List(Fact)), Pinned(List(Pinned)), QueueCount(U64), QueueRows(List(QueueItem)), Smoke(List(SmokeRow))]
 
 	## What `db_write!` writes, in one transaction (R-CC8). `Facts` with `existing`: for a row with the same key and the same `closure` (the primary key), `Replace` changes the known columns of that row, `Keep` leaves it. A row with another `closure` is a new row.
 	## `Pinned` always keeps the first row of a key (R-CV6: the first sha256 that was seen stays).
-	Write : [Facts({ rows : List(Fact), existing : [Replace, Keep] }), Pinned(List(Pinned))]
+	Write : [Facts({ rows : List(Fact), existing : [Replace, Keep] }), Pinned(List(Pinned)), ClearQueue, Queue({ rows : List(Queued), cap : U64 }), Unqueue(List(U64)), Smoke(List(SmokeRow))]
+
+	## Slice 216 (R-SH4, R-TF7): a row of `share_queue` with its `seq`.
+	QueueItem : { seq : U64, row : Queued }
+
+	## Slice 218 (R-SM3 row 3, R-SM4, R-TF7, Design Q201): the table `smoke` of `compat.db`: the result of a smoke build, `PRIMARY KEY (hash, nightly, target)`. `hash` is the platform hash, `nightly` the compiler id, `target` the real target of the build. `outcome` is `Pass`, `Fail`, `Hang` or `Crash`
+	## (a machine error, R-SM7, and a result with no fact, R-P3, write no row).
+	## `Query` `Smoke(keys)`: the rows of these keys that exist, in any order (as `Facts`). A file that does not exist, a file with `user_version` 0 and a file with no table `smoke` give `Smoke([])`: the call makes no file and no table (R-TF7, Design Q433). The fake `Fx` log word is `smoke=<count of keys>`.
+	## `Write` `Smoke(rows)`: the real `Fx` opens the file as for each write (busy timeout, WAL, version check: `TooNew` writes nothing; a file that does not exist is made with its tables and `user_version` 1) and in one transaction runs `CREATE TABLE IF NOT EXISTS smoke (...)` (R-TF7) and one `INSERT` for each row.
+	## No row: `Ok` and no change (no file is made). Each row is `INSERT ... ON CONFLICT DO NOTHING`: a key that is in the table already keeps its first row, also a repeat in the same call (R-SM4, Design Q551). The fake `Fx` keeps the rows in the text file `smoke.tsv` next to `compat.tsv` (one `Db.smoke_line` for each row, in the order of the writes). The fake `Fx` log word is `smoke=<count of rows>`.
+	SmokeRow : { hash : Str, nightly : Str, target : Str, outcome : Outcome }
+
+	## Slice 218 (R-TF7): the line of a row of `smoke` for the text form: `hash<TAB>nightly<TAB>target<TAB>outcome` (the word of `Db.outcome_word`), no table word, no line end. The fake `Fx` (`smoke.tsv`) and `tests/tools/dumpdb.py` (the L3 dump: the word `smoke`, a TAB, and this line) use it.
+	smoke_line : SmokeRow -> Str
+	smoke_line = |row| Str.join_with([row.hash, row.nightly, row.target, Db.outcome_word(row.outcome)], "\t")
+
+	## The reverse of `smoke_line`. A wrong word count or a wrong `outcome` word is `Err(BadLine)`.
+	smoke_of : Str -> Try(SmokeRow, [BadLine])
+	smoke_of = |line| match line.split_on("\t") {
+		[hash, nightly, target, outcome_text] => match Db.outcome_of(outcome_text) {
+			Ok(outcome) => Ok({ hash, nightly, target, outcome })
+			Err(BadWord) => Err(BadLine)
+		}
+		_ => Err(BadLine)
+	}
+
+	## Slice 216 (R-SH4), `Query` `QueueRows`: all rows of `share_queue`, the smallest `seq` first (oldest first). A file that does not exist, a file with `user_version` 0 and a file with no table
+	## `share_queue` give `QueueRows([])`: the call makes no file and no table (as `QueueCount`). The fake `Fx` log word is `queue_rows`.
+	## Slice 216, `Write` `Unqueue(seqs)`: removes the rows with these `seq` (the rows that a send is done with: R-SH4). A `seq` that is not in the table is no error. No `seq`: no change. The real `Fx` opens the file as for each write
+	## (busy timeout, WAL, version check: `TooNew` writes nothing) and runs the `DELETE` in one transaction. A file that does not exist is not made (nothing is queued). The fake `Fx` log word is `unqueue=<count of seq>`.
+
+	## Slice 215 (R-SH3, R-SH4, R-TF7): at most this many rows wait in `share_queue` (first guess of the design). The command gives it to the `Fx` in `Queue` (the real `Fx` has no Talon constant, TW4).
+	queue_cap : U64
+	queue_cap = 10000
+
+	## Slice 215 (R-TF7): the columns of a row of `share_queue` except `seq` (SQLite gives it). `result` is `Pass`, `Fail` or `Crash` (R-SH3 filter 6: the filters never give a `Hang`). `queued_at` is RFC 3339 UTC text (R-EV22).
+	Queued : { hash : Str, nightly : Str, target : Str, result : Outcome, talon_version : Str, queued_at : Str }
+
+	## Slice 215 (R-SH3, R-SH4, R-TF7): `Queue` adds rows to `share_queue` in one transaction (R-CC8), in the order of `rows`. The real `Fx` opens the file as for each write (busy timeout, WAL, version check: `TooNew` writes nothing;
+	## a file that does not exist is made with its tables, `user_version` 1) and runs `CREATE TABLE IF NOT EXISTS share_queue (...)` (R-TF7). Then, for each row in order:
+	## `INSERT ... ON CONFLICT DO NOTHING` (the key `UNIQUE (hash, nightly, target, talon_version)`: a row that is in the queue already stays as it is, with its first `result` and `queued_at`, also when the repeat is in the same call).
+	## Then, when the table has more than `cap` rows, the rows with the smallest `seq` are deleted until it has `cap` (R-SH4: "Talon drops the oldest rows"). So a call with more than `cap` new rows keeps the last `cap` of them.
+	## No row: `Ok` and no change (no file is made). The fake `Fx` keeps the rows in the text file `share_queue.tsv`, one line `Db.queue_line` for each row in the order of `seq`.
+
+	## R-TF7 (slice 215): the line of a row of `share_queue` for the text form: the columns in the order of R-TF7, `seq` first, no table word: `<seq><TAB>hash<TAB>nightly<TAB>target<TAB>result<TAB>talon_version<TAB>queued_at`, no line end
+	## (the form that the cases of slice 213 already use). The `result` word is `Db.outcome_word`. The fake `Fx` (`share_queue.tsv`, one line for each row in the order of `seq`) and `tests/tools/dumpdb.py` (the L3 dump: the word `queue`, a TAB, and this line) use this form.
+	queue_line : { seq : U64, row : Queued } -> Str
+	queue_line = |item| {
+		row = item.row
+		"${U64.to_str(item.seq)}\t${row.hash}\t${row.nightly}\t${row.target}\t${Db.outcome_word(row.result)}\t${row.talon_version}\t${row.queued_at}"
+	}
+
+	## The reverse of `queue_line`. A wrong word count, a `seq` that is not a number or a wrong `result` word is `Err(BadLine)`.
+	queue_of : Str -> Try({ seq : U64, row : Queued }, [BadLine])
+	queue_of = |line| match line.split_on("\t") {
+		[seq_text, hash, nightly, target, result_text, talon_version, queued_at] => match (U64.from_str(seq_text), Db.outcome_of(result_text)) {
+			(Ok(seq), Ok(result)) => Ok({ seq, row: { hash, nightly, target, result, talon_version, queued_at } })
+			_ => Err(BadLine)
+		}
+		_ => Err(BadLine)
+	}
 
 	## What a call can fail with. `Busy`: another process held the lock for `busy_ms` (R-CC8). `TooNew(n)`: the file has the format `n`, which is larger than `format` (R-TF3): nothing was
 	## read from it and nothing was written. `Failed(text)`: anything else (the file is not a database, the dir cannot be made, a disk error).

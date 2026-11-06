@@ -1,0 +1,6 @@
+@ SELECT id, amount FROM example ORDER BY id
+1	5
+2	7
+6	6
+@ SELECT count(*) FROM example WHERE id IN (3, 4, 5)
+0

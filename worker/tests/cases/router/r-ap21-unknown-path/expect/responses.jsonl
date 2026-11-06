@@ -1,0 +1,3 @@
+{"status":404,"problem":{"type":"/errors/not-found","title":"Not found","status":404,"detail":"no route for GET /v1/nothing"}}
+{"status":404,"problem":{"type":"/errors/not-found","title":"Not found","status":404,"detail":"no route for GET /"}}
+{"status":404,"problem":{"type":"/errors/not-found","title":"Not found","status":404,"detail":"no route for GET /v1/closure/extra/segments"}}

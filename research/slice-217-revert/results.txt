@@ -1,0 +1,28 @@
+Slice 217 revert check (private reference in ref/, deleted after). Each mutation made one change in the reference; the new tests caught each.
+M1 filter 1 applied (origin Registry)         L0 7 fail, L2 ps2 to ps7
+M2 a build row counted as a unit check        L0 1 fail, L2 ps2
+M3 every compiler counts as recorded          L0 1 fail, L2 ps2
+M4 rows in the reverse order                  L0 4 fail, L2 ps2
+M5 at most 2 requests (as the queue)          L0 1 fail (batches)
+M6 guard never runs                           L2 ps3
+M7 totals only when no request failed         L2 ps5
+M8 request timeout 5 s, not 20 s              L2 ps2 to ps6
+M9 refuse as a read (Get): 4xx is exit 15     L0 answer, L2 ps4
+M11 TooNew of compat.db is only a warning     L2 ps7
+M12 no operand with --share is allowed        L2 ps1
+M13 no registry flag for probe --share        L2 ps1
+M14 direct registry is allowed                L2 ps1
+M16 4xx answers are exit 15                   L0 answer, L2 ps4
+Green with the reference: L0 l0-7 132 of 132, L2 probe/ps 7 of 7, L2 probe/pc1 and share/ 49 of 49, L3 fx/ps1 (with the reference fxprobe) passes.
+
+Round 2 (Q491 to Q498), reference deleted after. Green: L0 l0-7 136 of 136, L2 probe/ps 12 of 12.
+N1 cap 21 requests                 L0 1, L2 ps10
+N2 pinned target of any machine    L2 ps2 and others
+N3 no compilers in the closure body L0 1, L2 10 cases
+N4 totals only when no request failed L2 ps5
+N5 no warning for a failed totals write L2 ps12
+N6 --offline ignored               L2 ps1
+N7 the cap is not exit 15          L2 ps10
+N8 share step does not run         L2 ps8, ps9
+N9 guard never runs                L2 ps3, ps8, ps9
+N10 build rows count for the window L0 1

@@ -1,5 +1,8 @@
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 programs gh
@@ -49,6 +52,9 @@ unlock $HOME/.config/talon/config.toml
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 programs gh
@@ -57,6 +63,9 @@ http_get https://api.github.com/repos/Karakatiza666/roc/commits/my-branch
   Accept: application/vnd.github.sha
 list_dirs $HOME/.cache/roc/toolchains
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform
@@ -103,6 +112,7 @@ unlock $HOME/.config/talon/config.toml
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+env_all
 clock
 platform
 http_get http://127.0.0.1:9/api/repos/roc-lang/roc/commits/dd03c09e
@@ -147,9 +157,15 @@ unlock $HOME/.config/talon/config.toml
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 clock
 platform
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform
@@ -158,6 +174,9 @@ http_get https://api.github.com/repos/roc-lang/roc/commits/nosuch
   User-Agent: tln/0.0.1
   Accept: application/vnd.github.sha
 args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform
@@ -169,14 +188,8 @@ list_dirs $HOME/.cache/roc/toolchains
 programs curl wget
 args
 env_all
-list_dirs $HOME/.cache/roc/toolchains
-read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
-lock $HOME/.config/talon/config.toml nowait: held
+tty
 read_files $HOME/.config/talon/config.toml
-read_files $HOME/.config/talon/config.toml
-write_atomic $HOME/.config/talon/config.toml
-unlock $HOME/.config/talon/config.toml
-args
 env_all
 list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
@@ -187,6 +200,9 @@ write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
 args
 env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
 list_dirs $HOME/.cache/roc/toolchains
 read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
 lock $HOME/.config/talon/config.toml nowait: held
@@ -195,6 +211,19 @@ read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
 args
+env_all
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/git-0a1b2c3d/.talon.json $HOME/.cache/roc/toolchains/git-3b9f7c1d/.talon.json $HOME/.cache/roc/toolchains/git-5349569a/.talon.json $HOME/.cache/roc/toolchains/git-5a5a5a5a/.talon.json $HOME/.cache/roc/toolchains/git-7e7e7e7e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
 env_all
 clock
 platform

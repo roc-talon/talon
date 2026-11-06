@@ -1,0 +1,9 @@
+Slice 093 (entry `commands`), the use of a locked binary: R-PT6, R-PT7, R-PT9, R-PT21, R-PT22, R-PT23, R-DA4, R-DL7, Design Q237. One home with the compiler `nightly-2026-10-14-38a3029` installed, the platform in the package cache, `TALON_NOW=2026-10-15T12:00:00Z`, no `config.toml` (`tool-binaries` is true). `gh` is a rule of `fx/jobs` (no real `gh`). The release acme/foo 1.1.0 (`tags/1.1.0`, the one call of R-PT20 step 1) has binary assets `<hash>-<target>` with a `digest`; the files of the assets are in `fx/src/bin-<target>`. The commit of the bundle is `1a2b3c4d...`, its workflow is `.github/workflows/release.yml`. The host is Linux x64 (`x64musl`).
+Each run is `install --frozen`. No `x` entry at the start, no index call, no compiler call, no closure fetch for the tool.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `install --frozen --file p1/main.roc` | `bin` has x64musl: the asset is downloaded (one `spawn_all`), its sha256 is the lock, the file is renamed into a new `x` dir and `chmod 0755`, the manifest has the source kind `prebuilt`. The line `foo 1.1.0: prebuilt x64musl binary, sha256 <12 hex> (talon.toml)` on stderr. No `unbundle`, no build | R-PT21, R-PT22, R-PT23, R-PT6, R-PT7, R-DL7 |
+| 2 | `install --frozen --file p1/main.roc` | the `x` entry is the prebuilt one with the sha256 of the lock: no download, no line | R-PT9 step 1, R-PT22 |
+| 3 | `install --frozen --file p2/main.roc` | the lock has another sha256: the prebuilt entry of run 1 is not used (its sha256 is not the lock), the asset is downloaded and is not the lock: exit 16, the file is deleted, no build, no new entry | R-PT21, R-PT22, R-PT9, R-DA4 |
+| 4 | `install --frozen --file p3/main.roc` | `bin` has no value for the host (only arm64mac): no download, the tool is built from source, also though the release has a binary for it | R-PT7, R-PT21, R-PT6 |

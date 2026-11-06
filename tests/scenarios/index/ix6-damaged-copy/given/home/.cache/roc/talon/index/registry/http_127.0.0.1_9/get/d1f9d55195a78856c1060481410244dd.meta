@@ -1,0 +1,3 @@
+url /v1/releases?group=github.com%2Facme%2Fjson%2Freleases%2Fdownload%2F%7Bv%7D%2F
+etag "e1"
+max-age 60

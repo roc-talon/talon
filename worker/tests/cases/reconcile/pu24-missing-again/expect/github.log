@@ -1,0 +1,6 @@
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repositories/800
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases?per_page=100
+GET https://api.github.com/repositories/500
+GET https://api.github.com/repos/acme/lib/releases?per_page=100

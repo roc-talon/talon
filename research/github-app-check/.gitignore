@@ -1,0 +1,11 @@
+# Never commit a key or a secret of the App.
+*.pem
+*.key
+*.secret
+*secret*
+private-key*
+client_secret*
+webhook_secret*
+.env
+# A dry run output
+RESULT-dry.md

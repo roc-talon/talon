@@ -1,0 +1,3 @@
+== share forget --json
+{"schema":1,"command":"share forget","ok":true,"data":{"removed":"account"},"error":null}
+exit 0

@@ -1,0 +1,25 @@
+All (12) tests passed in 270.7 ms.
+FAIL webhook/ap12-empty-secret (2516 ms)
+    request 1: status: expected 500, got 401
+    request 1: problem.type: expected "/errors/internal", got "/errors/unauthenticated"
+    request 1: problem.status: expected 500, got 401
+    request 2: status: expected 500, got 202
+    request 2: body is not JSON: 
+    request 2: problem: content-type: expected "application/problem+json", got null
+    request 2: queue_sent: expected [], got [{"body":{"action":"published","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}]
+FAIL webhook/ap12-no-secret (2462 ms)
+    request 1: status: expected 500, got 401
+    request 1: problem.type: expected "/errors/internal", got "/errors/unauthenticated"
+    request 1: problem.status: expected 500, got 401
+    request 2: status: expected 500, got 202
+    request 2: body is not JSON: 
+    request 2: problem: content-type: expected "application/problem+json", got null
+    request 2: queue_sent: expected [], got [{"body":{"action":"published","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}]
+PASS webhook/ap12-signature (2892 ms)
+PASS webhook/pu11-events (3218 ms)
+PASS webhook/pu26-app-installed (3060 ms)
+PASS webhook/pu33-privatized (4334 ms)
+PASS webhook/pu33-publicized (1864 ms)
+PASS webhook/pu35-dead-letter (1515 ms)
+PASS webhook/pu35-retry-schedule (1492 ms)
+w2: 7 passed, 2 failed

@@ -1,0 +1,44 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:123:1
+
+expect {
+    event("release", release_json("created", Bool.True)) == Ok(Ignore)
+        and event("release", release_json("something-new", Bool.True)) == Ok(Ignore)
+        and event("release", release_json("published", Bool.False)) == Ok(Send(message("release", "published", 0, 100, 9001, [])))
+}
+
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:197:1
+
+expect {
+    job = |event_name, action, repository_id, release_id, ids| Webhook.job_of(message(event_name, action, 55, repository_id, release_id, ids))
+    job("release", "published", 100, 9001, []) == Ok(Release({ action: "published", repository_id: 100, release_id: 9001 }))
+        and job("release", "deleted", 100, 9001, []) == Ok(Release({ action: "deleted", repository_id: 100, release_id: 9001 }))
+        and job("repository", "privatized", 100, 0, []) == Ok(Privatized(100))
+        and job("repository", "publicized", 100, 0, []) == Ok(Publicized(100))
+        and job("installation", "created", 0, 0, [100, 101]) == Ok(AppInstalled({ repository_ids: [100, 101], installed: Bool.True }))
+        and job("installation", "deleted", 0, 0, [100]) == Ok(AppInstalled({ repository_ids: [100], installed: Bool.False }))
+        and job("installation_repositories", "added", 0, 0, [200]) == Ok(AppInstalled({ repository_ids: [200], installed: Bool.True }))
+        and job("installation_repositories", "removed", 0, 0, [300]) == Ok(AppInstalled({ repository_ids: [300], installed: Bool.False }))
+        and job("release", "created", 100, 9001, []) == Err(Unknown)
+        and job("repository", "archived", 100, 0, []) == Err(Unknown)
+        and job("ping", "", 0, 0, []) == Err(Unknown)
+        and job("installation", "added", 0, 0, [1]) == Err(Unknown)
+        and job("installation_repositories", "created", 0, 0, [1]) == Err(Unknown)
+}
+
+Ran 12 tests in 211.3 ms.:
+    10 passed
+    2 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (1849 ms)
+PASS webhook/ap12-no-secret (1763 ms)
+PASS webhook/ap12-signature (2168 ms)
+FAIL webhook/pu11-events (2539 ms)
+    request 7: queue_sent: expected [], got [{"body":{"action":"created","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}]
+PASS webhook/pu26-app-installed (2336 ms)
+PASS webhook/pu33-privatized (3294 ms)
+PASS webhook/pu33-publicized (1519 ms)
+PASS webhook/pu35-dead-letter (1233 ms)
+PASS webhook/pu35-retry-schedule (1151 ms)
+w2: 8 passed, 1 failed

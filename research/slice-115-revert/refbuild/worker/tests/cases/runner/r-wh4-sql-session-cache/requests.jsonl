@@ -1,0 +1,7 @@
+{"method":"GET","path":"/__test/count"}
+{"sql":["INSERT INTO example (v) VALUES ('a')","INSERT INTO example (v) VALUES ('b')"]}
+{"method":"GET","path":"/__test/count"}
+{"method":"GET","path":"/__test/session"}
+{"method":"GET","path":"/__test/session?id=bookmark-abc-123"}
+{"method":"GET","path":"/__test/json"}
+{"method":"GET","path":"/__test/headers","headers":{"if-none-match":"\"abc\""}}

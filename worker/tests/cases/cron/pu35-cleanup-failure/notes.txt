@@ -1,0 +1,1 @@
+1: the hint cleanup DELETE fails (trigger). The run is ok, one warn line "hint cleanup failed" is written, and the next steps still run: the old hint_days row goes and the old compiler is trimmed (Q344).

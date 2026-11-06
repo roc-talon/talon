@@ -1,0 +1,2 @@
+# R-SH9, R-SH13, Q483: forget with a JWT whose token_expires_at (2026-10-01) is before the clock: exit 2 (usage), no request (not the machine form), share.json is not changed; the message says to run tln share login and then tln share forget.
+share forget

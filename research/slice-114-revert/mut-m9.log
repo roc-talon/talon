@@ -1,0 +1,7 @@
+FAIL publish/pu1-publish-package (2680 ms)
+    request 3: json_len releases: expected an array of 1 items, got 0 items
+    d1-calls: request 3: expected 1, got 0 (no call)
+PASS publish/pu16-after-ingest (2539 ms)
+PASS publish/tp3-claims-vs-url (2302 ms)
+PASS publish/tp9-claim-ids (2546 ms)
+w2: 3 passed, 1 failed

@@ -1,0 +1,3 @@
+== share login --quiet
+Logged in as octocat.
+exit 0

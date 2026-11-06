@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/pa/main.roc
@@ -70,6 +72,8 @@ read_files $PROJECT/pa/main.roc $PROJECT/pa/talon.toml
 write_atomic $PROJECT/pa/talon.toml $PROJECT/pa/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/pn/main.roc
@@ -97,6 +101,8 @@ read_files $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9j
 read_files $PROJECT/pn/main.roc $PROJECT/pn/talon.toml
 write_atomic $PROJECT/pn/talon.toml $PROJECT/pn/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -151,6 +157,8 @@ read_files $PROJECT/pi/main.roc
 write_atomic $PROJECT/pi/main.roc
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/pu/main.roc
@@ -198,6 +206,8 @@ delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 read_files $PROJECT/pu/main.roc
 write_atomic $PROJECT/pu/main.roc
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -249,6 +259,8 @@ probes 1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
 args
+env_all
+tty
 env_all
 clock
 cwd

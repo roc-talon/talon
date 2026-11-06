@@ -6,14 +6,19 @@ import EvidenceFlow
 import Fail
 import Fx
 import Install
+import InstallFlow
 import JsonDoc
 import Listing
 import Lookup
 import Ls
 import Opts
+import Pin
 import Out
+import ResolveBase
+import PickFlow
 import Ref
 import Scope
+import ShareHook
 
 ## The command `tln why <name>` (R-CM7, R-PH12, R-SC1, R-SC6 to R-SC8, R-SC14, R-SC15, R-H4, R-H7, R-C8; slice 011).
 ## It shows the paths from the app to one package of the closure. P0 has no evidence (R-PH12), so it does not say why a version was chosen, except the mark `raised from <version>` (R-C2).
@@ -28,6 +33,7 @@ import Scope
 ## | --- | --- | --- |
 ## | 1 | `Why.read(args)`. A failure is printed with `Out.fail` (no `Fx` call). | R-CM7, R-FL7, R-EC2 |
 ## | 2 to 8 | The steps 2 to 8 of `Ls.run!`: `Install.begin!`, `Known.record!`, the load of the members, the walk of the current member (else all members). No compiler call, no write except `projects.json`. A failure of the walk is the failure of the run (nothing on stdout). The code is `Ls.walk_full!` (with `notes` false): it also gives the `ResolveBase.Request` and the `ResolveBase.Loaded` for step 9b. It is in `Ls`, not in `ResolveBase`: `ResolveBase` cannot import `Install` (`Install` imports `Resolve`, which imports `ResolveBase`). | R-PD1 to R-PD9, R-H7, R-FE7, R-EC10 |
+## | 8b | Slice 206e3 (Design Q499, R-DI1): `walk_indexed!`. With a registry, between the load and the walk: the guard and one closure query (no `groups`, the header hashes, the held window). `direct` and `--offline`: no query | R-DI1, R-RG4, Q499 |
 ## | 9 | For each member: `Why.find` over the rows of its walk. A member with no match is left out (question Q23). A failure of `find` is printed with `Out.fail`: its `block` goes to stderr first, then the failure line (R-E4: the failure line is the last line). With no match in any member the failure is `Why.find` of the first member. | R-SC1, R-SC8, R-SC14 |
 ## | 9b | `EvidenceFlow.blocks!` for the found packages (slice 032b, R-EF1, R-EF3): one `Evidence.Block` for each. A failure (`compat.db` too new, exit 19) is the failure of the run. | R-CM7, R-PH12, R-TF3 |
 ## | 10 | The output: `Why.show` of each member in the order of the members (`Why.text` and the block), or with `--json` only the envelope `Out.json_ok({ command: args.typed, data: Why.shown_data(shown) })` (`command` is `why`). The answer is not hidden by `--quiet` (R-FL4). `why` prints no R-C8 line (question Q24). | R-J1 to R-J6, R-OUT4 |
@@ -151,25 +157,30 @@ Why :: [].{
 	run! : Fx, Args => I32
 	run! = |fx, args| match Why.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok(opts) => match Ls.walk_full!(fx, args, Bool.False) {
-			Err(fail) => Common.failed!(fx, args, fail)
-			Ok(walk) => match answers(opts.name, walk.closures) {
-				Err({ fail, block }) => {
-					if !block.is_empty() fx.err!(block)
-					Common.failed!(fx, args, fail)
-				}
-				Ok(found) => match EvidenceFlow.blocks!(fx, { request: walk.request, loaded: walk.loaded }, found) {
-					Err(fail) => Common.failed!(fx, args, fail)
-					Ok(blocks) => {
-						shown = found.map2(blocks, |f, evidence| { found: f, evidence })
-						if args.json {
-							fx.out!(Out.json_ok({ command: args.typed, data: Why.shown_data(shown) }))
-						} else {
-							for s in shown {
-								fx.out!(Why.show(s))
+		Ok(opts) => match walk_indexed!(fx, args) {
+			Err(fail) => ShareHook.failed!(fx, args, fail)
+			Ok(walk) => {
+				# Slice 206e4 (R-SH4, Design Q533, Q537): `why` prints no index note. A run that sent a closure query sends the queue at its end, also after a failure.
+				ran = ShareHook.ran_of(walk.request, { notes: Bool.False, second: Err(NotRead) })
+				match answers(opts.name, walk.closures) {
+					Err({ fail, block }) => {
+						if !block.is_empty() fx.err!(block)
+						ShareHook.failed!(fx, args, ShareHook.attach(fail, ran, Bool.False))
+					}
+					Ok(found) => match EvidenceFlow.blocks!(fx, { request: walk.request, loaded: walk.loaded }, found) {
+						Err(fail) => ShareHook.failed!(fx, args, ShareHook.attach(fail, ran, Bool.False))
+						Ok(blocks) => {
+							shown = found.map2(blocks, |f, evidence| { found: f, evidence })
+							if args.json {
+								fx.out!(Out.json_ok({ command: args.typed, data: Why.shown_data(shown) }))
+							} else {
+								for s in shown {
+									fx.out!(Why.show(s))
+								}
 							}
+							ShareHook.send!(fx, ran, 0)
+							0
 						}
-						0
 					}
 				}
 			}
@@ -265,4 +276,27 @@ answers = |name, closures| {
 	} else {
 		Ok(found)
 	}
+}
+
+# Slice 206e3 (Design Q499, CLI R-DI1, R-RG4, R-AL8): the load of `Ls`, then with a registry (the setting of `--registry`, `TALON_REGISTRY`, `config.toml`) one closure query with no `groups`, the hashes of the header
+# and the held nightly as the window (Q502: the `roc:` pin of the members when they agree, else no window), then the walk with the index of the answer. `direct` and `--offline` send no query: the walk is as before.
+walk_indexed! : Fx, Args => Try({ closures : List({ file : Str, walked : Closure.Walked }), request : ResolveBase.Request, loaded : ResolveBase.Loaded }, Fail)
+walk_indexed! = |fx, args| {
+	read = Ls.load_full!(fx, args)?
+	set = InstallFlow.setting_of({ ..read.request, registry: Setting(args.registry) }, read.loaded)?
+	request = match set.registry {
+		Read(query) => {
+			window = pin_window(read.loaded.members.keep_oks(|m| m.locked.roc))
+			PickFlow.report_query!(fx, { ..set, registry: Read({ ..query, window }) }, read.loaded, [])?
+		}
+		_ => read.request
+	}
+	Ls.walk_loaded!(fx, { ..read, request }, Bool.False).map_err(|fail| ShareHook.attach(fail, ShareHook.ran_of(request, { notes: Bool.False, second: Err(NotRead) }), Bool.False))
+}
+
+# Slice 206e3b (Design Q502): the window of the query is the nightly of the workspace when the pins of the members agree. Different pins give no window (no `compilers` member, Q437): each block shows the facts of its own pin. No pin: no window.
+pin_window : List(Str) -> [Held(Str), None]
+pin_window = |pins| match pins {
+	[first, .. as rest] => if rest.all(|id| Pin.same_id(id, first)) Held(first) else None
+	[] => None
 }

@@ -1,0 +1,1 @@
+1: run 1: the visibility answer of acme/r says 499 of 5000 remain (under 10 %). Design Q377: acme/r still does all its work (its list read, the etag, the interval), then the 2 rows that were not started move to the reset time (1767229800 s), with their fail_count (2 stays), and are not read. 1 claim + 1 batch + 1 move

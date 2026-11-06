@@ -52,7 +52,9 @@ expect {
 		(["ls", "--tree", "--json", "--quiet", "--offline", "--file", "app/main.roc"], Ok(Bool.True)),
 		(["list", "json"], Err("tln: error[usage]: tln list takes no name")),
 		(["ls", "--tree", "json", "parser"], Err("tln: error[usage]: tln list takes no name")),
-		(["list", "--registry", "https://r.example", "json"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		# Slice 206f (R-RG7 row 6): `list` uses no registry, so the flag is no failure. The next check (a name) is the failure.
+		(["list", "--registry", "https://r.example", "json"], Err("tln: error[usage]: tln list takes no name")),
+		(["list", "--registry", "ftp://bad"], Ok(Bool.False)),
 	]
 	bad = rows.keep_if(|(words, want)| view(words) != want).map(|(words, _)| (words, view(words)))
 	dbg bad

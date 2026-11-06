@@ -6,17 +6,17 @@ Dependencies:
   [x] zig 0.17.x            found zig 0.17.0 installed by Talon
   [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
 Dependencies:
-  [ ] zig 0.16.x            found zig 0.17.0 installed by Talon
+  [ ] zig 0.16.x            zig not found
   [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
 
 installing zig 0.16.2 (79.0 MB)
 Dependencies:
-  [ ] zig 0.15.x            found zig 0.16.2 installed by Talon
+  [ ] zig 0.15.x            found zig 0.17.0 installed by Talon
   [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
 
 tln: error[consent]: zig 0.15.1 is not installed. Nothing was downloaded.
 Dependencies:
-  [ ] zig 0.14.x            found zig 0.16.2 installed by Talon
+  [ ] zig 0.14.x            found zig 0.17.0 installed by Talon
   [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
 
 installing zig 0.14.1 (54.2 MB)

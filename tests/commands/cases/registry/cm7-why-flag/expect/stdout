@@ -1,0 +1,10 @@
+== why json --registry http://127.0.0.1:9 --file u1/main.roc
+$PROJECT/u1/main.roc
+  acme/json 2.0.0 (direct)
+    json
+    evidence on nightly-2026-10-13-5e6f7a8:
+      * 2 bot: fail
+        2 author: pass
+        6 shared: pass (5 pass, 1 fail, 0 crash)
+    note: the bot and the author rows differ on nightly-2026-10-13-5e6f7a8: bot fail, author pass
+exit 0

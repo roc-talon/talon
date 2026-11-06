@@ -1,0 +1,7 @@
+Slice 115a, case m1-bot-set-missing (the SQL of the 422 `sweep-incomplete`, Registry R-MX9, R-AP39).
+  R-MX11: the bot set at a bound for a nightly: the newest live release of each series and form, in the window of 548 days before the published_at of the nightly (the edge included), or the newest live release of its form; packages and platforms only; live is a log_index at most the bound, not yanked, not withdrawn.
+  R-MX8: one SQL text serves the triggers of sql/0002_triggers.sql and the route (the 422 and R-AP39): the statement `missing` (worker/sql/compat/prefix.sql and missing.sql) gives the members that the trigger `sweeps_guard_insert` finds without a bot row. For each random state, nightly and bound: `missing` is empty if and only if the sweep insert passes, and `missing` is equal to the members of an independent JS reference (no SQL) minus the artifacts with a `bot` row (an `author` row does not count, R-RE8).
+  R-MX16: t of a nightly is MIN(published_at) of its toolchains rows; a nightly with no row has no window (only the newest live release of each form is a member).
+  R-IK2: 64-bit ids; the hash is the BLOB names.value; the rows are in byte order of the hash (R-AP24).
+  The bound NULL is the log size now (R-AP39 uses it).
+  R-RE13: the first write of a compat key wins (the bot rows are inserted with ON CONFLICT DO NOTHING).

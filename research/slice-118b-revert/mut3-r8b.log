@@ -1,0 +1,25 @@
+All (17) tests passed in 341.6 ms.
+PASS webhook/ap12-empty-secret (2268 ms)
+PASS webhook/ap12-no-secret (2244 ms)
+PASS webhook/ap12-signature (2637 ms)
+PASS webhook/pu11-events (2758 ms)
+PASS webhook/pu13-identity-changed (2427 ms)
+PASS webhook/pu13-index-new (2557 ms)
+PASS webhook/pu13-no-asset-end (2237 ms)
+PASS webhook/pu13-not-candidate (2222 ms)
+PASS webhook/pu13-refused (2052 ms)
+PASS webhook/pu13-retry-no-asset (2328 ms)
+PASS webhook/pu14-labels (2412 ms)
+PASS webhook/pu17-withdraw-clear (4049 ms)
+PASS webhook/pu26-app-installed (3433 ms)
+FAIL webhook/pu26-release-installed (3324 ms)
+    db: @ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value: rows differ:
+      expected: ["acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t1","acme/other\t\\N\t\\N\t1767003600000\t0\t1","acme/slow\t\\N\t\\N\t1767003600000\t0\t1"]
+      got:      ["acme/new\t\\N\t\\N\t1767003600000\t0\t1","acme/old\t\\N\t\\N\t1767003600000\t0\t1","acme/other\t\\N\t\\N\t1767003600000\t0\t1","acme/slow\t\\N\t\\N\t1767003600000\t0\t0"]
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the release has no package asset yet"}
+PASS webhook/pu33-privatized (3924 ms)
+PASS webhook/pu33-publicized (2670 ms)
+PASS webhook/pu33-release-private (2678 ms)
+PASS webhook/pu35-dead-letter (1309 ms)
+PASS webhook/pu35-retry-schedule (915 ms)
+w2: 18 passed, 1 failed

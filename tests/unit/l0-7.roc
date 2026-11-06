@@ -11,9 +11,12 @@ import OkexitTest
 import PathcmdTest
 import PickmovesTest
 import ProberangeTest
+import ProbeshareTest
 import RefTest
 import RunscriptTest
 import ScanTest
+import ShareaccountTest
+import ShareloginTest
 import UpdateTest
 import XCmdTest
 

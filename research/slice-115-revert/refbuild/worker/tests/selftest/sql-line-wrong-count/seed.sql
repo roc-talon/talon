@@ -1,0 +1,1 @@
+CREATE TABLE example (v TEXT) STRICT;

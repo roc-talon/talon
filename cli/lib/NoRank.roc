@@ -106,9 +106,10 @@ NoRank :: [].{
 	##
 	## The picked id is a dir of `toolchains/`: `Present`. Else `Download` with the size of the asset. `RocInstall.offer!` has the shared steps and private helpers (`toolchain_entries!`, `has_dir`, `asset_of`, `published_of`, `env_var`). `RocInstall.roc` has about 420 lines: the code agent makes the helpers public or moves them into a module that both use (each module at most 490 lines).
 	## Slice 086: `toml` comes before `config.toml` for the age (R-C7, R-LY4) and the switch (R-NS9). The environment comes first for the switch (R-NS8).
-	offer! : Fx, { env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, exclude : List(Str), toml : NoRank.Toml } => Try(RocInstall.Offer, Fail)
+	## Slice 206e2 (R-CV1, R-SO23, R-CV5): `list` is the source of the list (`Nightlies.list_of!`). Left out: `Direct`.
+	offer! : Fx, { env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, exclude : List(Str), toml : NoRank.Toml, list ?: Nightlies.Source } => Try(RocInstall.Offer, Fail)
 	offer! = |fx, run| {
-		roots = Roots.from_env(run.env)?
+		roots = Roots.of_run!(fx, run.env)?
 		real = fx.clock!()
 		now = match Clock.now({ talon_now: RocInstall.env_var(run.env, "TALON_NOW"), real }) {
 			Ok(t) => t
@@ -118,7 +119,8 @@ NoRank :: [].{
 		config = RocInstall.read_config!(fx, roots)?
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: run.toml.nightly, config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
-		found = Nightlies.list!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system })?
+		list = run.?list ?? Direct
+		found = Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list })?
 		for change in found.changed {
 			fx.err!("warning: ${Toolchain.changed_warning(change)}\n")
 		}
@@ -142,7 +144,7 @@ NoRank :: [].{
 		# R-C16 (slice 084): the pick of a young compiler that only a pattern kept gets the note, before the download line.
 		RocInstall.print_note!(fx, Bool.False, Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }))
 		item = Roots.item(roots, Item.Toolchain(id))
-		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: id, id, item, asset, sha, system }
+		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: id, id, item, asset, sha, system, source: Nightlies.digest_source(list) }
 		Ok(Download({ id, size: asset.size, ctx }))
 	}
 
@@ -185,8 +187,9 @@ NoRank :: [].{
 
 	## R-SO19, R-SO23, R-SL7 (slice 072e): the compiler of a command as an id, with no gate, no prompt, no download and no default. A command that runs a probe, and the proxy, use it when no compiler is selected: the download is at the first probe (R-SO22) or at the consent rules of the proxy.
 	## `listed` is the list of `<cache>/toolchains` that the caller read (empty by R-SO24: no compiler is selected only when nothing is installed). Slice 080: there is no installed-first step, so the only calls are those of `offer!` (the id of `Present` or of `Download`).
-	pick_id! : Fx, { roots : Roots, env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, exclude : List(Str), toml : NoRank.Toml, listed : List(Str) } => Try(Str, Fail)
-	pick_id! = |fx, facts| match NoRank.offer!(fx, { env: facts.env, offline: facts.offline, scope: facts.scope, exclude: facts.exclude, toml: facts.toml })? {
+	## Slice 206e2: `list` as in `offer!`.
+	pick_id! : Fx, { roots : Roots, env : List((Str, Str)), offline : Bool, scope : NoRank.Scope, exclude : List(Str), toml : NoRank.Toml, listed : List(Str), list ?: Nightlies.Source } => Try(Str, Fail)
+	pick_id! = |fx, facts| match NoRank.offer!(fx, { env: facts.env, offline: facts.offline, scope: facts.scope, exclude: facts.exclude, toml: facts.toml, list: facts.?list ?? Direct })? {
 		Present(found) => Ok(found.id)
 		Download(offer) => Ok(offer.id)
 	}

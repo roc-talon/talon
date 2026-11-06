@@ -1,0 +1,9 @@
+# run 1: baseline, whole-app check, build, then the smoke build: a machine error on stderr (a check probe would still pass: the summary line decides)
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+0	../fixtures/check/out/pass.stdout	smoke-sdk.stderr
+# run 2: baseline, whole-app check (the build is skipped), then the smoke build again: a pass
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

@@ -1,0 +1,1 @@
+R-AP34 R-AP82 R-DA9 R-TP2 (slice 221): the request is sent again after 429, 503 and no answer: the waits are the Retry-After of the first answer (7 s), then 8 s and 30 s (the schedule, no header). The 4th request gets 201. The OIDC token is fetched once (a new one is for a 401 only). `sleep` is a call of the fake Fx.

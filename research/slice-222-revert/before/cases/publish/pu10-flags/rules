@@ -1,0 +1,1 @@
+R-PUB4 R-FL5 R-RG1 R-PD14 (slice 221, Design Q508, Q520): `--file` is accepted and has no other effect; `--registry <url>` is read (the registry is the target of the request) with no TALON_REGISTRY. Both runs publish (201).

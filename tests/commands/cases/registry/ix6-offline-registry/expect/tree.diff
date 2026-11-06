@@ -1,0 +1,33 @@
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":4,"hash":"6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL","group":"github.com/someone/roc-b/releases/download/v{v}/","series":"1","version":"1.0.0","url":"https://github.com/someone/roc-b/releases/download/v1.0.0/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL.tar.zst","tag":"v1.0.0","roc_version":null,"repo":"someone/roc-b","published_at":1790000000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]},{"log_index":5,"hash":"6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6","group":"github.com/someone/roc-b/releases/download/{v}/","series":"2","version":"2.0.0","url":"https://github.com/someone/roc-b/releases/download/2.0.0/6k78AbasGMFFrhG95Pj6jQbqkVt7FQMhVgemxJovWKR6.tar.zst","tag":"2.0.0","roc_version":null,"repo":"someone/roc-b","published_at":1790100000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/446d50a5d770fe488ac614baacaa4501.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/someone/roc-b/releases
++etag "e1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":6,"hash":"6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS","group":"github.com/someone/roc-d/releases/download/{v}/","series":"0.3","version":"0.3.0","url":"https://github.com/someone/roc-d/releases/download/0.3.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst","tag":"0.3.0","roc_version":null,"repo":"someone/roc-d","published_at":1790200000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/7eec12bb5977b593b4577a9f14fc4274.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/someone/roc-d/releases
++etag "e1"
++max-age 60
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":3,"hash":"2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp","group":"github.com/someone/roc-json/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/someone/roc-json/releases/download/1.0.0/2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp.tar.zst","tag":"1.0.0","roc_version":"nightly-2026-10-05-2222222","repo":"someone/roc-json","published_at":1790848800000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]},{"log_index":7,"hash":"2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN","group":"github.com/someone/roc-json/releases/download/{v}/","series":"1","version":"1.1.0","url":"https://github.com/someone/roc-json/releases/download/1.1.0/2CLmeph6kVSdi6orXdVymPEDaudFDtB28sm3zpnsvmGN.tar.zst","tag":"1.1.0","roc_version":null,"repo":"someone/roc-json","published_at":1791194400000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/db96277339eac5e40a5e9ace5c23da23.meta
+@@ -0,0 +1,3 @@
++url /v1/releases?group=github.com%2Fsomeone%2Froc-json%2Freleases%2Fdownload%2F%7Bv%7D%2F
++etag "e1"
++max-age 60

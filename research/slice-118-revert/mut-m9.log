@@ -1,0 +1,22 @@
+All (12) tests passed in 223.3 ms.
+PASS webhook/ap12-empty-secret (2129 ms)
+PASS webhook/ap12-no-secret (1984 ms)
+PASS webhook/ap12-signature (2419 ms)
+PASS webhook/pu11-events (2779 ms)
+PASS webhook/pu26-app-installed (2582 ms)
+PASS webhook/pu33-privatized (3808 ms)
+PASS webhook/pu33-publicized (1880 ms)
+PASS webhook/pu35-dead-letter (1542 ms)
+FAIL webhook/pu35-retry-schedule (1460 ms)
+    request 5: queue acked: expected [], got ["a5"]
+    request 5: queue retried: expected [{"delay_s":null,"id":"a5"}], got []
+    request 6: queue acked: expected [], got ["a6"]
+    request 6: queue retried: expected [{"delay_s":null,"id":"a6"}], got []
+    request 9: queue acked: expected [], got ["b3"]
+    request 9: queue retried: expected [{"delay_s":60,"id":"b1"},{"delay_s":900,"id":"b2"},{"delay_s":null,"id":"b3"}], got [{"delay_s":60,"id":"b1"},{"delay_s":900,"id":"b2"}]
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the body is not a message"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the message is of an unknown event or action"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the GitHub repository read failed with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the GitHub repository read failed with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"the GitHub repository read failed with status 500"}
+w2: 8 passed, 1 failed

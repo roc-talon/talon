@@ -11,7 +11,7 @@ import Epochs
 ## | --- | --- |
 ## | real pass, real fail | a row of `facts` with the outcome `Pass` or `Fail` |
 ## | fault | a row with `Hang` or `Crash` (R-EP5: it is a fact, so the release is not asked again. It is no pass, no fail, and gives no inferred fact) |
-## | inferred pass, inferred fail | `Epochs.epochs` of D and `facts` (R-EP6, R-EP14) |
+## | inferred pass, inferred fail | `Epochs.infer` of D, `epochs` and `facts` (R-EP6, R-EP14, R-EP15) |
 ## | unknown | none of the above |
 ##
 ## `step` (the tested reading, questions S1 and S2 of the slice file). Let p be the newest release of D with a real pass.
@@ -36,7 +36,9 @@ ProbeRange :: [].{
 	Round : [Need(List(Str)), Done(ProbeRange.Found)]
 
 	## `hash` is the target. A row of `facts` of another hash is not read.
-	Input : { hash : Str, domain : List(Str), askable : List(Str), facts : List(Db.Fact) }
+	## Slice 206e3 (R-EP15, R-EP4, R-EP13): `epochs` are the epochs of D that the caller has (`Matrix.intervals` of a closure answer). A release of D that no interval holds is an epoch of its own, so `[]` is the partition of P1 (`Epochs.partition`).
+	## The inferred cells are `Epochs.infer` with these epochs (case (a) of R-EP6 inside an epoch).
+	Input : { hash : Str, domain : List(Str), askable : List(Str), facts : List(Db.Fact), epochs : List(Epochs.Interval) }
 
 	## The table above.
 	step : ProbeRange.Input -> ProbeRange.Round
@@ -78,7 +80,7 @@ world_of : ProbeRange.Input -> World
 world_of = |input| {
 	rows = input.facts.keep_if(|f| f.hash == input.hash and f.target == "any" and input.domain.contains(f.nightly))
 	releases = input.domain.map(|id| { id, published_at: 0, asset: Err(NoAsset) })
-	inferred = Epochs.epochs(releases, rows).inferred
+	inferred = Epochs.infer({ domain: releases, epochs: input.epochs, facts: rows })
 	cell_of = |id| match rows.find_first(|f| f.nightly == id) {
 		Ok(f) => match f.outcome {
 			Pass => Pass

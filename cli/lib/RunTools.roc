@@ -1,4 +1,5 @@
 import Args
+import ConfigToml
 import Fail
 import Fetch
 import Fx
@@ -9,8 +10,9 @@ import Roots
 import Setup
 import Text
 import TomlKeys
+import ToolBin
+import ToolBinFlow
 import ToolBuild
-import ToolsPlan
 import ToolsStep
 import ToolsToml
 import XCache
@@ -26,12 +28,13 @@ import toml.Toml
 ## | Step | Does | Rule |
 ## | --- | --- | --- |
 ## | `load!` | `ToolsStep.machine!` (`platform!`), `XCacheIo.entries!` (its doc table: `list_dirs!` of `talon/x`, `read_files!` of the manifests, `list_dirs!` of the entries) | R-X2, R-B9 |
-## | `bin!` 1 | `ToolsPlan.cached` for the bundle hash of the `url` and the target. A hit gives the binary: no more call (no `last_run` write: a design gap, Q4 of the review of slice 057) | R-PT9 (1) |
-## | `bin!` 2 | No hit: `RocInstall.read_config!` (one `read_files!` of `config.toml`: the probe timeout), then `ToolsStep.ensure!` with a `Ctx` that has `allow: false`, `dry_run: false`, `args` of the run and the environment of the run: the bundle (fetched or in the cache), the platform check (R-PT16), the compiler and the consent (R-DL7: a required download, exit 13 with no consent), the build, the entry. `--offline` as in `ToolsStep.ensure!` (R-PT15) | R-PT9 (2), R-PT6, R-DL7 |
+## | `bin!` 1 | `ToolBinFlow.hit` for the bundle hash of the `url` and the target (slice 093: a prebuilt entry with the `bin` value wins, Q237; only then one `read_files!` of `config.toml` for `tool-binaries`, R-PT25), else `ToolsPlan.cached` of the source entries. A hit gives the binary: no more call (no `last_run` write: a design gap, Q4 of the review of slice 057) | R-PT9 (1), R-PT22 |
+## | `bin!` 2 | No hit: `RocInstall.read_config!` (one `read_files!` of `config.toml`: the probe timeout), then `ToolsStep.ensure!` with a `Ctx` that has `allow: false`, `dry_run: false`, `args` of the run and the environment of the run: the bundle (fetched or in the cache), the platform check (R-PT16), the compiler and the consent (R-DL7: a required download, exit 13 with no consent), the build, the entry. `--offline` as in `ToolsStep.ensure!` (R-PT15). Slice 093: `ensure!` tries the prebuilt binary of `bin` first (R-PT21) | R-PT9 (2), R-PT6, R-DL7, R-PT21 |
 RunTools :: [].{
 
 	## The `[tools]` table of the run: the entries (in the order of their lines) and the warnings (each one `<path>:<line>: <message>`).
-	Table : { tools : List(ToolsToml.Entry), warnings : List(Str) }
+	## Slice 093: `bins` are the `bin` keys of the entries (R-PT18).
+	Table : { tools : List(ToolsToml.Entry), warnings : List(Str), bins : List({ key : Str, bin : ToolBin.Lock }) }
 
 	## R-RUN3 point 2, R-PT1, R-PT2, OP4: the entries of the table `[tools]` of the file `path` with the text `text` (the `talon.toml` of the workspace root, or of the standalone project, that holds the script). `ToolsToml.read_table`: the first issue by line is a failure of kind `Input` (exit 19):
 	## `<path>:<line>: <message>`. Text that is not TOML: `<path>:<line>: not valid TOML`. No `[tools]` table: no entry. The other tables of the file are not read.
@@ -42,7 +45,7 @@ RunTools :: [].{
 			found = ToolsToml.read_table(doc)
 			match found.issues.first() {
 				Ok(issue) => Err(Fail.new(Input, "${facts.path}:${issue.line.to_str()}: ${issue.message}"))
-				Err(_) => Ok({ tools: found.value, warnings: found.warnings.map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
+				Err(_) => Ok({ tools: found.value, warnings: found.warnings.map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}"), bins: found.bins })
 			}
 		}
 	}
@@ -69,7 +72,7 @@ RunTools :: [].{
 	Know : { os : Setup.Os, target : Str, found : List(XCache.Found) }
 
 	## What a run has: the environment, the roots, the network settings, the clock, the file of `[tools]` (its path and text) and its entries.
-	Run : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, path : Str, text : Str, tools : List(ToolsToml.Entry) }
+	Run : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, path : Str, text : Str, tools : List(ToolsToml.Entry), bins : List({ key : Str, bin : ToolBin.Lock }) }
 
 	## `load!` (see the table above).
 	load! : Fx, Roots => Try(RunTools.Know, Fail)
@@ -91,17 +94,30 @@ RunTools :: [].{
 			Ok(found) => found
 			Err(Foreign) => return Err(Fail.new(Input, "tools.${entry.key}.url: '${url}' is not a release URL with a version and a hash"))
 		}
-		match ToolsPlan.cached({ entries: know.found, bundle: ident.hash, target: know.target }) {
+		bin = match run.bins.find_first(|b| b.key == entry.key) {
+			Ok(b) => Ok(b.bin)
+			Err(_) => Err(Unset)
+		}
+		# Slice 093 (R-PT9 step 1, R-PT25, Q237): a prebuilt entry with the `bin` value wins, when `tool-binaries` allows it. `config.toml` is read only when there is such an entry.
+		config = if ToolBinFlow.prebuilt_there({ found: know.found, bundle: ident.hash, target: know.target, bin }) Ok(RocInstall.read_config!(fx, run.roots)?) else Err(NotRead)
+		machine = match config {
+			Ok(c) => c.tool_binaries
+			Err(NotRead) => Err(Unset)
+		}
+		match ToolBinFlow.hit({ found: know.found, bundle: ident.hash, target: know.target, bin, machine }) {
 			Ok(hit) => Ok({ bin: XCacheIo.bin_of({ found: hit, os: know.os }), know })
-			Err(None) => build!(fx, args, run, know, { entry, url, ident })
+			Err(None) => build!(fx, args, run, know, { entry, url, ident, bin, config })
 		}
 	}
 }
 
 # R-PT9 (2), R-PT6, R-DL7: no `x` entry for the bundle of the `url`: the build of `ToolsStep.ensure!`, with no consent flag (`allow: false`). The entry that it made is in the `Know` that is given back.
-build! : Fx, Args, RunTools.Run, RunTools.Know, { entry : ToolsToml.Entry, url : Str, ident : Ident } => Try({ bin : Str, know : RunTools.Know }, Fail)
+build! : Fx, Args, RunTools.Run, RunTools.Know, { entry : ToolsToml.Entry, url : Str, ident : Ident, bin : Try(ToolBin.Lock, [Unset]), config : Try(ConfigToml.Config, [NotRead]) } => Try({ bin : Str, know : RunTools.Know }, Fail)
 build! = |fx, args, run, know, what| {
-	config = RocInstall.read_config!(fx, run.roots)?
+	config = match what.config {
+		Ok(c) => c
+		Err(NotRead) => RocInstall.read_config!(fx, run.roots)?
+	}
 	ctx = {
 		args,
 		env: run.env,
@@ -118,15 +134,17 @@ build! = |fx, args, run, know, what| {
 		home_text: run.text,
 		tools: run.tools,
 		selected: Fetch.selected({ held: "", default: config.default_roc ?? "" }),
+		machine_bins: config.tool_binaries,
+		bins: run.bins,
 	}
 	facts = ToolsStep.facts_of(ctx, { os: know.os, target: know.target }, ToolsToml.app_of(what.entry.ref))
 	rel = { version: what.ident.version, url: what.url, hash: what.ident.hash }
-	ensured = match ToolsStep.ensure!(fx, ctx, { facts, rel, bundle: Err(Read), found: know.found }) {
+	ensured = match ToolsStep.ensure!(fx, ctx, { key: what.entry.key, facts, rel, bundle: Err(Read), found: know.found, bin: what.bin }) {
 		Ok(done) => done
 		Err(fail) => return Err(RunTools.stop(fail))
 	}
 	found = know.found.concat(ensured.added)
-	match ToolsPlan.cached({ entries: found, bundle: what.ident.hash, target: know.target }) {
+	match ToolBinFlow.hit({ found, bundle: what.ident.hash, target: know.target, bin: what.bin, machine: config.tool_binaries }) {
 		Ok(hit) => Ok({ bin: XCacheIo.bin_of({ found: hit, os: know.os }), know: { ..know, found } })
 		Err(None) => Err(Fail.new(Internal, "the build of tools.${what.entry.key} made no entry"))
 	}

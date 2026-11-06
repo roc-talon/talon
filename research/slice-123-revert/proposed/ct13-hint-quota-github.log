@@ -1,0 +1,2 @@
+GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100
+GET https://api.github.com/repos/roc-talon/talon/tags?per_page=100

@@ -1,0 +1,7 @@
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst
+smoke build of the platform acme/pfx 0.1.1 on nightly-2026-10-14-38a3029:
+  x64musl: pass
+  arm64musl: fail
+  x64glibc: hang
+  wasm32: crash
+exit 0

@@ -36,9 +36,9 @@ import Vars
 ## | any | missing | `Consent.use_download` for the missing ones, default Yes, one prompt (R-DL1). `Consent.required_want` for H decides (as `roc use`): flags answer, a person is asked, no person exits 13 (`Consent.download_stop`), `TALON_AUTO_INSTALL=no` is `Consent.download_refused` | R-NI5, R-DL1, R-DL5, R-BL3 |
 NightlyFlow :: [].{
 
-	## `free` are the values of the compiler slot (`NightlyPlan.pick.askable`), `Err(Held)` when the slot is not free (also when only H can be asked, or when the list could not be read: Q1). `downloads` is the number of compilers that this command installed. `note` is a line
+	## `free` are the values of the compiler slot (`NightlyPlan.pick.askable`), `Err(Held)` when the slot is not free (also when only H can be asked, or when the list could not be read: Q1). `releases` is the compiler list that `plan!` read (slice 089): `Ok([])` when it could not be read, `Err(NotRead)` for a plan that read nothing. The oracle loop starts with it (`Probed.listed`), so the command reads the list once. `downloads` is the number of compilers that this command installed. `note` is a line
 	## for stdout and `data.notes` (the list could not be read, or R-C16: the young N that only a pattern of `min-release-age-exclude` keeps visible).
-	Plan : { free : Try(List(Str), [Held]), newest : Try(Str, [NoneKnown]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, downloads : U64, note : Try(Str, [None]) }
+	Plan : { free : Try(List(Str), [Held]), releases : Try(List(Nightlies.Release), [NotRead]), newest : Try(Str, [NoneKnown]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, downloads : U64, note : Try(Str, [None]) }
 
 	## R-WS4, Q3: `NightlyPlan.unify` for a request (`free` is `request.command == Upgrade` and `NightlyPlan.scope(request.names).nightly == Free`): the rows for `Pin.decide` and `differ`.
 	unify : ResolveBase.Request, List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }) -> { members : List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }), differ : Bool }
@@ -69,7 +69,7 @@ NightlyFlow :: [].{
 	plan! : Fx, ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings, { held : Str, snapshot : Try(U64, [None]) } => Try(NightlyFlow.Plan, Fail)
 	plan! = |fx, request, loaded, settings, facts| match listed!(fx, request) {
 		Ok(releases) => known!(fx, request, { loaded, settings }, { held: facts.held, snapshot: facts.snapshot, releases })
-		Err(fail) => if request.names.contains("roc") Err(fail) else Ok({ free: Err(Held), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Ok("the compiler list could not be read; roc stays ${facts.held}") })
+		Err(fail) => if request.names.contains("roc") Err(fail) else Ok({ free: Err(Held), releases: Ok([]), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Ok("the compiler list could not be read; roc stays ${facts.held}") })
 	}
 }
 
@@ -78,10 +78,11 @@ is_free : ResolveBase.Request -> Bool
 is_free = |request| request.command == Upgrade and NightlyPlan.scope(request.names).nightly == Free
 
 # Step 1: the list of the host. `--offline` with no cached page is a failure.
+# Slice 206e2 (R-CV1, R-AP19, Design Q489): with a registry the list is the registry list (`ResolveBase.list_first`, `log:N` hides the rows above N). A list that cannot be read acts as in `direct`.
 listed! : Fx, ResolveBase.Request => Try(List(Nightlies.Release), Fail)
 listed! = |fx, request| {
 	host = Toolchain.host(fx.platform!())?
-	found = Nightlies.list!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host })?
+	found = Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host, source: ResolveBase.list_first(request) })?
 	if found.source == Missing return Err(Toolchain.offline_no_list({}))
 	Ok(found.releases)
 }
@@ -127,15 +128,17 @@ known! = |fx, request, ctx, run| {
 	only_held = picked.askable.all(|id| Pin.same_id(id, run.held))
 	# R-C16 (slice 084): N is a new choice when it is not H. A young N that only a pattern kept gets the note.
 	note = if Pin.same_id(newest, run.held) Err(None) else Toolchain.kept_note({ id: newest, releases: run.releases, now: request.now, min_age: ctx.settings.min_age, exclude: ctx.settings.exclude })
-	Ok({ free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note })
+	Ok({ releases: Ok(run.releases), free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note })
 }
 
 # Step 3: `RocInstall.offer!` for each id, in order. An id that is installed after all (`Present`) is no download.
+# Slice 206e2 (R-IX4, R-CV3, R-CV5): the offer uses the list of step 1 (with a registry: its kept file, no second request).
 offers! : Fx, ResolveBase.Request, List(Str) => Try(List(RocInstall.Offer), Fail)
 offers! = |fx, request, ids| {
 	var $found = no_offers
+	list = ResolveBase.list_later(ResolveBase.listed(request))
 	for id in ids {
-		match RocInstall.offer!(fx, { id, env: request.downloads.env, offline: request.offline })? {
+		match RocInstall.offer!(fx, { id, env: request.downloads.env, offline: request.offline, list })? {
 			Download(offer) => {
 				$found = $found.append(Download(offer))
 			}

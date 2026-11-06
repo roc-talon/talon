@@ -1,0 +1,19 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/a	100	10	0	\N	1767225630000	1767000000000
+acme/b	100	10	2	acme/c	1767000000000	1767000000000
+acme/c	100	10	2	acme/a	1767225630000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/a	1	0	\N	100	\N	10	\N	\N	1767000000000
+acme/a	2	2	100	100	10	10	acme/b	\N	1767000000000
+acme/a	3	2	100	100	10	10	\N	\N	1767225630000
+acme/b	1	2	\N	100	\N	10	\N	\N	1767000000000
+acme/b	2	2	100	100	10	10	acme/c	\N	1767000000000
+acme/c	1	2	\N	100	\N	10	\N	\N	1767000000000
+acme/c	2	2	100	100	10	10	acme/a	\N	1767225630000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/a	\N	\N	1767003600000	0	0
+acme/b	\N	\N	1767003600000	0	0
+acme/c	\N	\N	1767003600000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/a	3.0.0	\N	\N
+2	acme/a	3.1.0	\N	\N

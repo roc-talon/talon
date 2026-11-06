@@ -1,0 +1,20 @@
+--- home/.cache/roc/talon/index/github/acme/known/repo.json
++++ home/.cache/roc/talon/index/github/acme/known/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/known","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ae7fcf36e6e344437c63dea9b236a7cd.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ae7fcf36e6e344437c63dea9b236a7cd.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":1,"hash":"5UVYbRk4zTJP7MLG5AAaTwK2TmX3U1bdndvNzddMyTaV","group":"github.com/acme/known/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/acme/known/releases/download/1.0.0/5UVYbRk4zTJP7MLG5AAaTwK2TmX3U1bdndvNzddMyTaV.tar.zst","tag":"1.0.0","roc_version":null,"repo":"acme/known","published_at":1790848800000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":2,"hash":"24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL","group":"github.com/acme/known/releases/download/{v}/","series":"1","version":"1.1.0","url":"https://github.com/acme/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst","tag":"1.1.0","roc_version":null,"repo":"acme/known","published_at":1790848800000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":3,"hash":"AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc","group":"github.com/acme/known/releases/download/lib-{v}/","series":"2","version":"2.0.0","url":"https://github.com/acme/known/releases/download/lib-2.0.0/AuoSBcU9ixCmSt4rKTZpZ4eVbXY1E4Qqh4Kpw2odg7Gc.tar.zst","tag":"lib-2.0.0","roc_version":null,"repo":"acme/known","published_at":1790900000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["ingest"]},{"log_index":4,"hash":"GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R","group":"github.com/acme/known/releases/download/lib-{v}/","series":"2","version":"2.1.0","url":"https://github.com/acme/known/releases/download/lib-2.1.0/GBpEiN5EZocwzciidF98rcP3ADa2Auqako4sfwRm6R7R.tar.zst","tag":"lib-2.1.0","roc_version":null,"repo":"acme/known","published_at":1790950000000,"yanked":false,"yank_reason":null,"withdrawn":"prereleased","provenance":["ingest"]}],"checked":null,"repos":[]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ae7fcf36e6e344437c63dea9b236a7cd.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/ae7fcf36e6e344437c63dea9b236a7cd.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/known/releases
++etag "r1"
++max-age 60
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600}]}

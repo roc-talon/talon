@@ -1,0 +1,5 @@
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"bot"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"dispatch"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b"}
+{"method":"GET","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"bot"}
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-31-f7bef6b","token":"bot"}

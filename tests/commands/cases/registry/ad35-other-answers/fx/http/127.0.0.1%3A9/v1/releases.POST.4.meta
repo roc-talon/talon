@@ -1,0 +1,4 @@
+error timeout
+require content-type: application/json
+require-none authorization
+require-none talon-contributor

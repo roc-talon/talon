@@ -47,10 +47,28 @@ expect {
 		(["add", "--platform"], Err("tln: error[usage]: flag '--platform' names one entry: got 0 names")),
 		(["add", "--platform", "a/b", "c/d"], Err("tln: error[usage]: flag '--platform' names one entry: got 2 names")),
 		(["install", "--strategy", "middle"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
-		(["install", "--registry", "https://registry.example"], Err("tln: error[usage]: --registry 'https://registry.example': no registry exists in this version of tln. Use --registry direct.")),
-		(["install", "--registry", "https://r.example", "--strategy", "middle", "--frozen", "a/b"], Err("tln: error[usage]: --registry 'https://r.example': no registry exists in this version of tln. Use --registry direct.")),
+		# Slice 206f (R-RG7 row 6, R-FL5): `Opts.read` has no registry check any more, so the next check (the strategy) is the first failure.
+		(["install", "--registry", "https://r.example", "--strategy", "middle", "--frozen", "a/b"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
 		(["install", "--strategy", "middle", "--frozen", "a/b"], Err("tln: error[usage]: --strategy must be highest or lowest, not 'middle'")),
 		(["install", "--frozen", "--platform"], Err("tln: error[usage]: flag '--platform' names one entry: got 0 names")),
+	]
+	bad = rows.keep_if(|(words, want)| view(words) != want).map(|(words, _)| (words, view(words)))
+	dbg bad
+	bad == []
+}
+
+# R-FL5 R-RG1 R-RG7 R-AD2 R-AD34 R-AD35 R-AL2 R-DI1 (slices 206e, 206f): a registry flag is never a failure of `Opts.read`, for each command line of the install family: with no names, with names (`install <names>`, `add <names>`) and with `--frozen`.
+# `Opts.read` does not check the text: the flow reads the setting with `config.toml` (`IndexQuery.setting`, slice 206b), so a bad text is the failure of the flow when the command uses a registry, and no failure when it does not (R-RG7 row 6). Slice 206f removes the P0 refusal and `Opts.reads_registry`.
+expect {
+	rows = [
+		(["install", "--registry", "https://registry.example"], Ok(([], none, Err(Unset), Err(Unset), Err(Unset), [Err(NoFlag), Err(NoFlag)]))),
+		(["i", "--registry", "http://127.0.0.1:9", "--snapshot", "log:30"], Ok(([], none, Err(Unset), Err(Unset), Ok("log:30"), [Err(NoFlag), Err(NoFlag)]))),
+		(["install", "--registry", "ftp://bad", "--no-check"], Ok(([], [Bool.False, Bool.False, Bool.True, Bool.False, Bool.False, Bool.False], Err(Unset), Err(Unset), Err(Unset), [Err(NoFlag), Err(NoFlag)]))),
+		(["install", "--registry", "https://r.example", "acme/json"], Ok((["acme/json"], none, Err(Unset), Err(Unset), Err(Unset), [Err(NoFlag), Err(NoFlag)]))),
+		(["add", "acme/json", "--registry", "https://r.example"], Ok((["acme/json"], none, Err(Unset), Err(Unset), Err(Unset), [Err(NoFlag), Err(NoFlag)]))),
+		(["install", "parser", "--registry", "ftp://bad", "--snapshot", "log:30"], Ok((["parser"], none, Err(Unset), Err(Unset), Ok("log:30"), [Err(NoFlag), Err(NoFlag)]))),
+		(["install", "--frozen", "--registry", "https://r.example"], Ok(([], [Bool.True, Bool.False, Bool.False, Bool.False, Bool.False, Bool.False], Err(Unset), Err(Unset), Err(Unset), [Err(NoFlag), Err(NoFlag)]))),
+		(["install", "--frozen", "--registry", "direct"], Ok(([], [Bool.True, Bool.False, Bool.False, Bool.False, Bool.False, Bool.False], Err(Unset), Err(Unset), Err(Unset), [Err(NoFlag), Err(NoFlag)]))),
 	]
 	bad = rows.keep_if(|(words, want)| view(words) != want).map(|(words, _)| (words, view(words)))
 	dbg bad

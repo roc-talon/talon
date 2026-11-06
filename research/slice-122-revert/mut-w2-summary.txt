@@ -1,0 +1,5 @@
+m3-join-duplicates: w2: 7 passed, 9 failed FAILED: reads/ap1-body-etag-cache reads/ap13-group-series-after reads/ap14-pages reads/ap2-artifact reads/ap24-conditional-first reads/ap43-cache-refresh reads/ap43-not-found-uncached reads/ap56-case-fold reads/bookmark-session 
+m5-only-strongest: w2: 7 passed, 9 failed FAILED: reads/ap1-body-etag-cache reads/ap13-group-series-after reads/ap14-pages reads/ap2-artifact reads/ap24-conditional-first reads/ap43-cache-refresh reads/ap43-not-found-uncached reads/ap56-case-fold reads/bookmark-session 
+m6-ingest-no-member: w2: 4 passed, 9 failed FAILED: ingest/pu14-pu19-labels ingest/pu4-index-kinds ingest-limits/ap69-cache-drop ingest-limits/pu34-ip ingest-limits/pu34-owner publish/pu1-publish-package publish/pu15-ingest-then-publish publish/pu16-after-ingest publish/tp9-claim-ids 
+m7-stale-answer: w2: 12 passed, 1 failed FAILED: ingest/pu14-pu19-labels 
+m4-closure-no-member: w2: 3 passed, 1 failed FAILED: closure/ap17-answer 

@@ -1,0 +1,2 @@
+status 502
+header Content-Type: application/problem+json

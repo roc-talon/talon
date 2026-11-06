@@ -1,0 +1,6 @@
+1: privatized 100: GitHub shows it private. acme/lib becomes missing (state_at = the clock, event Missing seq 2), the releases of BOTH names of the repository (acme/lib 1.0.0 and acme/old 0.9.0) get repo-missing, 1.1.0 keeps its value deleted, the moved row acme/old keeps its state and gets no event
+2: the same message again later, and 600 (already missing, GitHub shows internal): no row, no event and no release changes (the old state_at and withdrawn_at stay)
+3: privatized 300: GitHub shows it public (an old event): nothing is written
+4: privatized 400: GitHub answers 404 (deleted, or private and not readable): withdrawn like the private case
+5: privatized 999: no repos row (R-PU32). GitHub answers 404. Nothing is written, no row is added
+6: privatized 500: GitHub answers 500. The job failed: retried after 60 s (attempt 1), nothing written, not acked

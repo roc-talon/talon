@@ -1,0 +1,3 @@
+@ SELECT count(*) FROM compat
+0
+@ SELECT nightly, target, upto_log_index, time FROM sweeps ORDER BY nightly, target

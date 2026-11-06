@@ -1,0 +1,1 @@
+{"method":"PUT","path":"/v1/toolchains/nightly-2026-10-22-1a2b3c4","token":"bot","headers":{"content-type":"application/json"},"json":{"sha256":"ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff","tag":"other"}}

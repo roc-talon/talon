@@ -1,0 +1,7 @@
+# R-DA3 the download, R-HF5 the extract, R-HF2 the chmod. The first rule whose needle is in the arguments answers.
+0.7.0.tar.xz https://	22	-	curl: (22) The requested URL returned error: 404	-
+zig-x86_64-linux-0.8.0.tar.xz -C	2	-	tar: Removing leading `/' from member names: bad archive	-
+curl --fail	0	-	-	file:{out}
+zig-x86_64-windows-0.16.2.zip -C	0	-	-	file:{dir}/zig.exe;file:{dir}/LICENSE;dir:{dir}/lib
+tar -xf	0	-	-	file:{dir}/zig;file:{dir}/LICENSE;dir:{dir}/lib
+chmod 0755	0	-	-	-

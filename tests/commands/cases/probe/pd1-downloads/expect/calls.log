@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -63,6 +65,7 @@ probes 2
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -87,6 +90,7 @@ db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=10
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=10
 canonical $HOME/.cache $HOME/.cache/roc
 args
+env_all
 env_all
 clock
 cwd
@@ -150,6 +154,7 @@ probes 1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 args
 env_all
+env_all
 clock
 cwd
 canonical $PROJECT/p1/main.roc
@@ -201,6 +206,8 @@ probes 1
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -263,6 +270,8 @@ probes 1
     env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
 db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -362,6 +371,8 @@ probes 1
 db_write $HOME2/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=1 existing=replace
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p3/main.roc
@@ -425,6 +436,7 @@ probes 2
     env XDG_CACHE_HOME=$HOME3/.cache ROC_CACHE_DIR=$HOME3/.cache/roc TALON_IN_PROXY=1
 db_write $HOME3/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
 env_all
 clock
 cwd
@@ -505,6 +517,8 @@ delete $HOME4/.cache/roc/toolchains/nightly-2026-10-04-4e4e4e4.0123456789abcdef.
 unlock $HOME4/.cache/roc/toolchains/nightly-2026-10-04-4e4e4e4
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/p4/main.roc
@@ -568,6 +582,8 @@ probes 2
     env XDG_CACHE_HOME=$HOME5/.cache ROC_CACHE_DIR=$HOME5/.cache/roc TALON_IN_PROXY=1
 db_write $HOME5/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts=2 existing=replace
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -671,6 +687,8 @@ spawn_all limit=8
 delete $HOME6/.cache/roc/toolchains/nightly-2026-10-06-6a6a6a6.0123456789abcdef.tmp $HOME6/.cache/roc/talon/tmp/0123456789abcdef
 unlock $HOME6/.cache/roc/toolchains/nightly-2026-10-06-6a6a6a6
 args
+env_all
+tty
 env_all
 clock
 cwd

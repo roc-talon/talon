@@ -1,0 +1,8 @@
+== probe --smoke pf --target x64musl --file p1/main.roc
+smoke build of the platform acme/pfx 0.1.1 on nightly-2026-10-14-38a3029:
+  x64musl: pass
+exit 0
+== probe --smoke json --file p1/main.roc
+exit 2
+== probe --smoke nope --file p1/main.roc
+exit 2

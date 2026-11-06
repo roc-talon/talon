@@ -1,0 +1,3 @@
+# R-SH7, R-SH5, R-TF6, R-EC19: share.json does not parse: share login stops with exit 19 (input) after reading it and before the intro and any request. The file is not changed.
+share login
+share login --json

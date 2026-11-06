@@ -1,0 +1,4 @@
+== HQ
+  nothing to share
+    not shared: nightly-2026-10-10-aaaaaaa any: the compiler has no recorded sha256 or is not a nightly
+    not shared: nightly-2026-10-13-bbbbbbb any: a hang, or a machine error

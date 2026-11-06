@@ -31,6 +31,7 @@
 #     starts one server for the case (tests/tools/with-http.sh), in the namespace of the case (the network is off, but the loopback
 #     works in it). The cmd sees TALON_GITHUB_API, TALON_GITHUB_RAW and TALON_HTTP. `$PORT` stands for the port in all output and in
 #     the tree diff. expect/http.log (optional) is the log of the requests: one line for each, in the order of arrival.
+#     expect/http-bodies/ (optional, slice 200) has one file for each request that had a body, named by the line number of the request in http.log (from 1).
 #   - the fake roc can run the pinned roc for a rule (the exit field `real`, tests/fakes/roc): `roc unbundle` has no fake.
 set -u
 SELF=$(cd "$(dirname "$0")" && pwd)
@@ -134,6 +135,11 @@ run_case() {
     dump_facts "$W" | $back > "$W/out/facts.tsv"
     if [ -f "$W/roc.log" ]; then normalize "$W" < "$W/roc.log" | hexnorm | $back > "$W/out/roc.log"; else : > "$W/out/roc.log"; fi
     if [ -f "$W/http.log" ]; then normalize "$W" < "$W/http.log" | $back > "$W/out/http.log"; else : > "$W/out/http.log"; fi
+    # Slice 200: the request bodies of the fake server, one file for each request that had a body, named by its line number in http.log. Normalized as http.log is (the port is $PORT).
+    mkdir -p "$W/out/http-bodies"
+    if [ -d "$W/http-bodies" ]; then
+        for f in "$W"/http-bodies/*; do [ -f "$f" ] && normalize "$W" < "$f" > "$W/out/http-bodies/${f##*/}"; done
+    fi
 
     local ex=$dir/expect
     if [ "${UPDATE:-0}" = 1 ]; then
@@ -144,6 +150,8 @@ run_case() {
         update_file "$ex/roc.log" "$W/out/roc.log" optional
         update_file "$ex/facts.tsv" "$W/out/facts.tsv" optional
         update_file "$ex/http.log" "$W/out/http.log" optional
+        # Slice 200: expect/http-bodies/ is kept only when the case has it (or when a request had a body and the dir is asked for with HTTP_BODIES=1).
+        if [ -d "$ex/http-bodies" ] || [ "${HTTP_BODIES:-0}" = 1 ]; then rm -rf "$ex/http-bodies"; cp -a "$W/out/http-bodies" "$ex/http-bodies"; fi
         return 0
     fi
     [ -f "$ex/exit" ] || echo 0 > "$W/out/exit.expected"
@@ -162,6 +170,13 @@ run_case() {
     fi
     [ -f "$ex/facts.tsv" ] && { compare_file "compat.db rows" "$ex/facts.tsv" "$W/out/facts.tsv" >> "$report" || fail=1; }
     [ -f "$ex/http.log" ] && { compare_file "http requests" "$ex/http.log" "$W/out/http.log" >> "$report" || fail=1; }
+    # Slice 200: optional expect/http-bodies/ (one file for each request with a body, named by its line number in http.log). A missing or extra file, or another content, fails the case.
+    if [ -d "$ex/http-bodies" ]; then
+        if ! diff -r -u --label expected --label actual "$ex/http-bodies" "$W/out/http-bodies" > "$W/out/http-bodies.diff"; then
+            { echo "  http request bodies differ (- expected, + actual):"; sed -e 's/^/    /' "$W/out/http-bodies.diff"; } >> "$report"
+            fail=1
+        fi
+    fi
     if [ $fail = 1 ]; then cat "$report"; return 1; fi
     return 0
 }

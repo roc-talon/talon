@@ -1,0 +1,4 @@
+R-AD35 R-RG4 R-RG6 R-EC2 R-DI3 R-DI4 R-T10 (slice 212, entry registry, the word fullname): the stop cases of R-AD35 step 2.
+Run 1, acme/priv: GitHub says `private: true`. The guard stops the command with exit 2 (R-RG6, private packages are not supported) BEFORE the first request that carries the name: NO GET of R-AP1 at all. Run 2, acme/none: GitHub answers 404 for the name: the same stop, with the text for a request with a token.
+Run 3, acme/empty: public, R-AP1 answers 404, GitHub has 3 releases and none is a candidate (a draft, a prerelease, a release with no package asset): exit 2 (R-AD35 step 2, as R-T10). No `programs curl`, no POST, no second read.
+The text of run 3 is a proposal (R-OUT2): FullName.no_candidate. The texts of runs 1 and 2 are those of slice 203.

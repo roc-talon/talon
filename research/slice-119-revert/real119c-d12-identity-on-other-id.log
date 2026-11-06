@@ -1,0 +1,40 @@
+All (30) tests passed in 363.3 ms.
+PASS reconcile/pu21-poll-job (2951 ms)
+PASS reconcile/pu23-list (5158 ms)
+PASS reconcile/pu23-pages (3344 ms)
+PASS reconcile/pu24-missing-again (3410 ms)
+PASS reconcile/pu25-reserve (2684 ms)
+PASS reconcile/pu31-repo-etag (2939 ms)
+PASS reconcile/pu36-overlap (2620 ms)
+PASS reconcile/pu36-state-guard (2539 ms)
+PASS reconcile/pu37-backoff (2793 ms)
+PASS reconcile/pu37-etag-effects (2394 ms)
+FAIL reconcile/tp18-rename (2632 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/lib\t500\t50\t2\tacme/lib2\t1767225600000\t1767000000000","acme/lib2\t500\t50\t0\t\\N\t1767225600000\t1767225600000","acme/p\t700\t70\t0\t\\N\t1767000000000\t1767000000000","acme/q\t999\t99\t0\t\\N\t1767000000000\t1767000000000","acme/x\t600\t60\t2\tacme/y\t1767225600000\t1767000000000","acme/y\t600\t60\t0\t\\N\t1767225600000\t1767000000000"]
+      got:      ["acme/lib\t500\t50\t2\tacme/lib2\t1767225600000\t1767000000000","acme/lib2\t500\t50\t0\t\\N\t1767225600000\t1767225600000","acme/p\t700\t70\t2\tacme/q\t1767225600000\t1767000000000","acme/q\t999\t99\t0\t\\N\t1767000000000\t1767000000000","acme/x\t600\t60\t2\tacme/y\t1767225600000\t1767000000000","acme/y\t600\t60\t0\t\\N\t1767225600000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t2\t500\t500\t50\t50\tacme/lib2\t\\N\t1767225600000","acme/lib2\t1\t2\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767225600000","acme/p\t1\t0\t\\N\t700\t\\N\t70\t\\N\t\\N\t1767000000000","acme/q\t1\t0\t\\N\t999\t\\N\t99\t\\N\t\\N\t1767000000000","acme/x\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/x\t2\t2\t600\t600\t60\t60\tacme/y\t\\N\t1767225600000","acme/y\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/y\t2\t2\t600\t600\t60\t60\t\\N\t\\N\t1767225600000"]
+      got:      ["acme/lib\t1\t0\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767000000000","acme/lib\t2\t2\t500\t500\t50\t50\tacme/lib2\t\\N\t1767225600000","acme/lib2\t1\t2\t\\N\t500\t\\N\t50\t\\N\t\\N\t1767225600000","acme/p\t1\t0\t\\N\t700\t\\N\t70\t\\N\t\\N\t1767000000000","acme/p\t2\t2\t700\t700\t70\t70\tacme/q\t\\N\t1767225600000","acme/q\t1\t0\t\\N\t999\t\\N\t99\t\\N\t\\N\t1767000000000","acme/x\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/x\t2\t2\t600\t600\t60\t60\tacme/y\t\\N\t1767225600000","acme/y\t1\t0\t\\N\t600\t\\N\t60\t\\N\t\\N\t1767000000000","acme/y\t2\t2\t600\t600\t60\t60\t\\N\t\\N\t1767225600000"]
+PASS reconcile/tp18-rename-transfer (2170 ms)
+PASS reconcile/tp9-transfer (2143 ms)
+PASS webhook/ap12-empty-secret (1806 ms)
+PASS webhook/ap12-no-secret (1711 ms)
+PASS webhook/ap12-signature (2124 ms)
+PASS webhook/pu11-events (1761 ms)
+PASS webhook/pu13-identity-changed (2202 ms)
+PASS webhook/pu13-index-new (2367 ms)
+PASS webhook/pu13-no-asset-end (2464 ms)
+PASS webhook/pu13-not-candidate (2459 ms)
+PASS webhook/pu13-refused (2478 ms)
+PASS webhook/pu13-retry-no-asset (2680 ms)
+PASS webhook/pu14-labels (2621 ms)
+PASS webhook/pu17-withdraw-clear (4429 ms)
+PASS webhook/pu26-app-installed (3578 ms)
+PASS webhook/pu26-release-installed (3257 ms)
+PASS webhook/pu33-privatized (4136 ms)
+PASS webhook/pu33-publicized (2740 ms)
+PASS webhook/pu33-release-private (2301 ms)
+PASS webhook/pu35-dead-letter (1345 ms)
+PASS webhook/pu35-retry-schedule (1381 ms)
+w2: 31 passed, 1 failed

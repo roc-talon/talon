@@ -1,0 +1,6 @@
+worker/lib/Identity.roc
+worker/tests/unit/IdentityTest.roc
+worker/tests/tools/mk-identity.mjs
+worker/tests/cases/identity/
+docs/slices/113-repo-identity.md
+research/slice-113-revert/

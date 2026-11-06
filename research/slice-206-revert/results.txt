@@ -1,0 +1,11 @@
+reference: green
+M1 caught by l0+l2: candidates keeps a withdrawn release
+M2 caught by l0+l2: candidates compares the name with no lower case
+M3 caught by l0: candidates keeps published_at in milliseconds
+M4 caught by l0: header finds the record by the url of a release row, not by the hash
+M5 caught by al8: Gather.facts! reads every id from the archive (no source 2)
+M6 caught by al8: the walk ignores the index (archive reads of the winners)
+M7 caught by ap20: query! sends the query again after no answer
+M8 caught by al8: hints! with an answer asks GitHub for .roc-version
+M9 caught by ix6: offline!: the repository copy gives the rows of every form, not only of the forms with no copy
+M10 caught by ix6: offline: the line names the newest copy, not the oldest

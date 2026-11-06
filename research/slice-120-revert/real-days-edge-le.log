@@ -1,0 +1,7 @@
+PASS cron/ct15-trim (1271 ms)
+PASS cron/ct15-trim-failure (1211 ms)
+FAIL cron/pu35-hint-cleanup (1175 ms)
+    db: @ SELECT day, counted FROM hint_days ORDER BY day: rows differ:
+      expected: ["20452\t7","20453\t5","20454\t1"]
+      got:      ["20453\t5","20454\t1"]
+w2: 2 passed, 1 failed

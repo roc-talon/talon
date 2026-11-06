@@ -1,0 +1,6 @@
+@ SELECT n.value, c.etag, c.repo_etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/lib	W/"l-a"	W/"r-a"	1767225600000	1767229200000	0	0
+acme/new	\N	\N	\N	1767312000000	0	0
+acme/old	W/"l-c"	\N	1767225600000	1767229200000	0	0
+acme/priv	\N	\N	1767225600000	1767229200000	0	0
+acme/two	W/"l-b"	W/"r-b"	1767225600000	1767229200000	0	0

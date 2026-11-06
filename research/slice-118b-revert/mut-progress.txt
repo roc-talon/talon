@@ -1,0 +1,4 @@
+n1 exit=1 4 w2-fail-lines w2: 13 passed, 4 failed 
+n2 exit=1 0 w2-fail-lines w2: 17 passed, 0 failed 
+n3 exit=1 0 w2-fail-lines 
+n4 exit=1 1 w2-fail-lines w2: 16 passed, 1 failed 

@@ -1,0 +1,1 @@
+tln: error[rejected]: the registry http://127.0.0.1:9 refused the get sweeps nightly-2026-10-29-aaaaaaa (/errors/not-found): D. The bot stops. This is a fault of the bot or of the registry data, not of the run.

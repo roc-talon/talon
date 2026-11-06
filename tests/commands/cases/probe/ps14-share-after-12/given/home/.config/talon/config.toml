@@ -1,0 +1,4 @@
+registry = "http://127.0.0.1:9"
+default-roc = "nightly-2026-10-07-7b7b7b7"
+[probe]
+timeout = 9

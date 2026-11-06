@@ -46,11 +46,11 @@ Base :: [].{
 	## What the ranks 3 to 6 read (step 6 of the table of `Proxy`). `req_text` is the text of the range, for the failure of `NoneInRange`.
 	## Slice 043 (R-PX5, R-PA6, R-PA10): `patch` has the patches of the header of the target file (`Patched.entries`: its rows and the `[patch]` table of the `talon.toml` that the step reads): `replace` are the `--replace-dep` pairs, `stale` are the entries whose `base` is not the hash of the header entry.
 	## A target with no header, no `talon.toml` or no patch has both lists empty.
-	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), min_age : U64, exclude : List(Str), has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
+	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), config_registry : Try({ text : Str, at : Str }, [Unset]), min_age : U64, exclude : List(Str), has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
 
 	## What `load!` reads when there is nothing to read (`ROC_TOOLCHAIN` or `roc +<id>` is used: no file counts).
 	no_facts : Base.Loaded
-	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), min_age: 172800, exclude: [], has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
+	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), config_registry: Err(Unset), min_age: 172800, exclude: [], has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
 
 	## R-EV17, R-SO9: `TALON_IN_PROXY=1` is set. Any other value, and no variable, is false. A proxy that sees it does not look at `PATH` (rank 7).
 	in_proxy : List((Str, Str)) -> Bool
@@ -281,7 +281,7 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: toml.age, user: config.min_release_age }) ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
+		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, config_registry: config.registry, min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: toml.age, user: config.min_release_age }) ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
 	}
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
@@ -398,7 +398,7 @@ patch_of = |locked, toml| match locked {
 }
 
 no_config : ConfigToml.Config
-no_config = { nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) } }
+no_config = { nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), tool_binaries: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }, registry: Err(Unset), share: Err(Unset) }
 
 # R-SO6, R-TF4: `default-roc` and the settings of `config.toml`. A missing file gives no setting.
 read_config : Reads, Str -> Try(ConfigToml.Config, Fail)

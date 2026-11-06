@@ -1,0 +1,40 @@
+
+── ✗ fail ───────────────────────────────────── tests/unit/WebhookTest.roc:355:1
+
+expect {
+    Webhook.after_no_asset(1) == Retry(60_000)
+        and Webhook.after_no_asset(2) == Retry(300_000)
+        and Webhook.after_no_asset(3) == Retry(900_000)
+        and Webhook.after_no_asset(4) == Retry(3_600_000)
+        and Webhook.after_no_asset(5) == Done
+        and Webhook.after_no_asset(6) == Done
+}
+
+Ran 17 tests in 303.4 ms.:
+    16 passed
+    1 failed
+    0 compiler errors
+PASS webhook/ap12-empty-secret (2238 ms)
+PASS webhook/ap12-no-secret (2192 ms)
+PASS webhook/ap12-signature (2525 ms)
+PASS webhook/pu11-events (2590 ms)
+PASS webhook/pu13-index-new (2429 ms)
+FAIL webhook/pu13-no-asset-end (7042 ms)
+    request 2: queue acked: expected ["m5"], got []
+    request 2: queue retried: expected [], got [{"delay_s":null,"id":"m5"}]
+    logs: no Worker log line has {"level":"info","msg":"index job no asset","repository_id":500,"release_id":9001}; the lines are [{"level":"warn","msg":"index job failed","attempts":4,"error":"the release has no package asset"},{"level":"warn","msg":"index job failed","attempts":5,"error":"the release has no package asset"},{"level":"warn","msg":"index job failed","attempts":5,"error":"GitHub answered with status 500"}]
+    worker log: {"level":"warn","msg":"index job failed","attempts":4,"error":"the release has no package asset"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"the release has no package asset"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"GitHub answered with status 500"}
+PASS webhook/pu13-not-candidate (2273 ms)
+PASS webhook/pu13-retry-no-asset (2433 ms)
+PASS webhook/pu14-labels (2432 ms)
+PASS webhook/pu17-withdraw-clear (3443 ms)
+PASS webhook/pu26-app-installed (2959 ms)
+PASS webhook/pu26-release-installed (2391 ms)
+PASS webhook/pu33-privatized (3371 ms)
+PASS webhook/pu33-publicized (2745 ms)
+PASS webhook/pu33-release-private (2318 ms)
+PASS webhook/pu35-dead-letter (1778 ms)
+PASS webhook/pu35-retry-schedule (1255 ms)
+w2: 16 passed, 1 failed

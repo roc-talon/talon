@@ -1,0 +1,5 @@
+ba391876f37035c08502470a034499e8fa9d44042c35be7474a3aa173935ae75  cli/lib/FirstRun.roc
+3c25e29a0545622885da087f47200d6dbc6ef465b45cbe5cc61f9a7144e5fbbb  cli/lib/FirstRunFlow.roc
+b8f3ab6352eb86ad53dce4c19f4feca7def94903aeba284e1dfda798c8bb15a2  cli/lib/ShareFlow.roc
+fece99f03dc2a7569edaa4316a274cff8737f2a72dcfba88a4b287cd6fe5a042  cli/lib/ShareJson.roc
+678cbf6ceb2c2b9a80cfc0b1e990a13c69df30f5195773bdd890c5435bfb9970  cli/lib/Share.roc

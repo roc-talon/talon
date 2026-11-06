@@ -8,6 +8,7 @@ import Launch
 import Probe
 import Roots
 import Scan
+import ShareRound
 import Start
 import Text
 import Units
@@ -41,6 +42,9 @@ UnitFlow :: [].{
 		walked : Closure.Walked,
 		nodes : List(Units.Node),
 		facts : List(Db.Fact),
+
+		## Slice 206e4 (R-SH3, Design Q543): the run that sent a closure query. The unit facts of each round of the ladder go into the share queue right after their write (`ShareRound.enqueue!`).
+		share : Try(Fail.Ran, [None]),
 	}
 
 	## The result of round 1. `baseline` is the output of the baseline check. `count` is the number of probes that this command started, with this round. `facts` are the facts after this round. `failure` is the first unit probe with no fact.
@@ -75,6 +79,10 @@ UnitFlow :: [].{
 		if outputs.len() != 1 + nodes.len() return Err(Fail.new(Internal, "the probes gave no result for each probe"))
 		results = Units.results({ nodes, outputs: outputs.drop_first(1), nightly: ctx.started.id, compiler: ctx.held, pkgs })
 		_ = Facts.save!(fx, { roots: ctx.roots, rows: results.facts, existing: Replace })?
+		match ctx.share {
+			Ok(ran) => ShareRound.enqueue!(fx, { roots: ctx.roots, ran, probe: Unit, facts: results.facts, headers: ran.headers, domain: [{ id: ctx.started.id, published_at: 0, asset: Err(NoAsset) }] })?
+			Err(None) => {}
+		}
 		Ok({
 			baseline: outputs.first() ?? { ended: NotStarted("not run"), stdout: "", stderr: "" },
 			count: run.count + 1 + nodes.len(),

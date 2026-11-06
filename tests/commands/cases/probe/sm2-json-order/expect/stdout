@@ -1,0 +1,7 @@
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --target arm64musl --target x64musl --json env:ROC_TOOLCHAIN=nightly-2026-10-12-2664a27
+{"schema":1,"command":"probe","ok":true,"data":{"smoke":[{"target":"arm64musl","result":"hang"},{"target":"x64musl","result":"pass"}]},"error":null}
+exit 0
+== probe --smoke https://github.com/acme/pfx/releases/download/0.1.1/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK.tar.zst --target wasm32 env:ROC_TOOLCHAIN=nightly-2026-10-12-2664a27
+smoke build of the platform acme/pfx 0.1.1 on nightly-2026-10-12-2664a27:
+  wasm32: pass
+exit 0

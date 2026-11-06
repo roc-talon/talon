@@ -1,0 +1,2 @@
+1: run 1 deletes the hints of P1 (both talon_version rows) and the hint_days rows of day 20451, 20424, 20400. The hints of P2, P4, P5 and P3 stay. contributions and compat stay.
+2: a bot row for P3 comes after run 1: run 2 deletes the hint of P3 (the work is selected by state, R-PU35). Run 3 changes nothing (R-PU36). The day rows of 20453 and 20454 stay: the quota counter of R-CT13 is not reset.

@@ -1,0 +1,7 @@
+{"status":400,"problem":{"type":"/errors/bad-request","title":"Bad request","status":400}}
+{"status":400,"problem":{"type":"/errors/bad-request","title":"Bad request","status":400}}
+{"status":400,"problem":{"type":"/errors/bad-request","title":"Bad request","status":400}}
+{"status":400,"problem":{"type":"/errors/bad-request","title":"Bad request","status":400}}
+{"status":400,"problem":{"type":"/errors/bad-request","title":"Bad request","status":400}}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type","title":"Unsupported media type","status":415,"detail":"the request body must be application/json, got application/json; charset=\"latin-1\""}}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type","title":"Unsupported media type","status":415,"detail":"the request body must be application/json, got application/json; foo=bar; charset=latin-1"}}

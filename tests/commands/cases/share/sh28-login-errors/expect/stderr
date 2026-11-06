@@ -1,0 +1,39 @@
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+tln: error[internal]: GitHub refused the login (device_flow_disabled). The client id or the code of tln is wrong.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[internal]: GitHub refused the login (incorrect_device_code). The client id or the code of tln is wrong.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[rejected]: the registry http://127.0.0.1:9 refused the login (/errors/unauthenticated): D. Run tln share login again.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[rejected]: the registry http://127.0.0.1:9 refused the login (/errors/unauthenticated): D. Run tln share login again.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[internal]: the registry http://127.0.0.1:9 refused the request (/errors/bad-request): D. This is a fault of tln 0.0.1 or a version skew.
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: the registry answered 429 (/errors/rate-limited). Try again later.

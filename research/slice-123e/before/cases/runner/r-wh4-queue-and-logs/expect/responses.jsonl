@@ -1,0 +1,7 @@
+{"status":200,"queue_sent":[{"body":{"n":1},"delay_s":0}],"timing_safe":0}
+{"status":200,"queue_sent":[{"body":{"n":1},"delay_s":60}]}
+{"status":200,"queue_sent":[],"timing_safe":1}
+{"status":200,"queue_sent":[],"timing_safe":0}
+{"outcome":"ok","acked":["a"],"retried":[{"id":"b","delay_s":60},{"id":"c","delay_s":null}]}
+{"status":200}
+{"status": 200, "json": {"len": 300000}}

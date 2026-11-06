@@ -1,0 +1,4 @@
+R-EP15 R-EP6 R-EP9 R-EP2 R-EP3 R-EP4 R-EF3 Q393 (slice 206e3): `tln upgrade roc --no-probe` (probe mode Off) with the world of registry/cv1-upgrade-free.
+The answer has the epoch nightly-2026-10-12-2664a27 .. nightly-2026-10-16-5e6f7a8 (target `any`, R-AP17) and one run: a `bot` `fail` of json 2.0.0 (the header value) on nightly-2026-10-12-2664a27 only.
+D is the registry list. With the matrix (R-EP15), the epoch holds 2026-10-12, H and N, and case (a) of R-EP6 infers a fail of json 2.0.0 on H and on N (an unknown set, Q393: it touches each used module). One hash only gives no case (b) boundary (R-EP3).
+With `--no-probe` an inferred fact decides (R-EP9): N fails for json, so the compiler stays H (the assumed pass of the header value on H wins over an inferred fact). With no matrix each release is its own epoch (R-EP4) and N has no fact, so N would be fit and chosen.

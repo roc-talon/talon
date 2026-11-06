@@ -1,0 +1,4 @@
+# R-SH7, R-SH12 rows 6 and 7, R-EC13: run 1: pending, then access_denied: exit 13. Run 2: expired_token: exit 13. Run 3: expires_in 0 (the fake clock does not move): after the wait the end time is reached, exit 13 and no poll is sent. share.json is not changed and no request goes to the registry.
+share login
+share login
+share login

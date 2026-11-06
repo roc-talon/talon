@@ -1,0 +1,2 @@
+tool rebuild foo
+tool rm foo

@@ -1,0 +1,1 @@
+tests/commands/cases/upgrade/ug6-list-once/ (whole dir, new)

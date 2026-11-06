@@ -1,12 +1,17 @@
 args
 env_all
-clock
-lock $HOME/.cache/roc/talon/gc nowait: busy
-args
+tty
 env_all
 clock
 lock $HOME/.cache/roc/talon/gc nowait: busy
 args
+env_all
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: busy
+args
+env_all
+tty
 env_all
 clock
 read_files $HOME/.config/talon/config.toml
@@ -16,3 +21,5 @@ read_files $HOME/.cache/roc/talon/projects.json
 read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
 tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/compat-aaaaaaa
 args
+env_all
+tty

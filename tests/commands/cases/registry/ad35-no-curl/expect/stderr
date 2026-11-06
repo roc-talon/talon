@@ -1,0 +1,1 @@
+tln: error[environment]: curl is not on PATH. Talon needs curl to send the ingests at the same time.

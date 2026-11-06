@@ -1,0 +1,11 @@
+FAIL publish/pu1-publish-package (2342 ms)
+    db: @ SELECT CAST(artifact AS TEXT), nightly, target, source, result, error_digest, time, log_index FROM compat ORDER BY nightly, target, source: rows differ:
+      expected: ["-4615891099891934445\t5566048545575\t0\t1\t3\tx\t1767225635000\t1","-4615891099891934445\t5567410745385\t0\t1\t1\tboom: E0001\t1767225630000\t1","-4615891099891934445\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t1"]
+      got:      ["-4615891099891934445\t5566048545575\t0\t1\t3\tx\t1767225635000\t\\N","-4615891099891934445\t5567410745385\t0\t1\t1\tboom: E0001\t1767225630000\t\\N","-4615891099891934445\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t\\N"]
+FAIL publish/pu16-after-ingest (2042 ms)
+    db: @ SELECT CAST(artifact AS TEXT), nightly, target, source, result, error_digest, time, log_index FROM compat ORDER BY nightly, target, source: rows differ:
+      expected: ["6019566045123923087\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t1"]
+      got:      ["6019566045123923087\t5572174540651\t0\t1\t0\t\\N\t1767225630000\t\\N"]
+PASS publish/tp3-claims-vs-url (1919 ms)
+PASS publish/tp9-claim-ids (2073 ms)
+w2: 2 passed, 2 failed

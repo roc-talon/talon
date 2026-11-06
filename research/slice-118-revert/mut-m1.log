@@ -1,0 +1,55 @@
+All (12) tests passed in 238.1 ms.
+PASS webhook/ap12-empty-secret (2541 ms)
+PASS webhook/ap12-no-secret (2495 ms)
+FAIL webhook/ap12-signature (2901 ms)
+    request 1: status: expected 202, got 401
+    request 1: header cache-control: expected "no-store", got null
+    request 1: queue_sent: expected [{"body":{"action":"published","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 1: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 11: status: expected 400, got 401
+    request 11: problem.type: expected "/errors/bad-request", got "/errors/unauthenticated"
+    request 11: problem.status: expected 400, got 401
+FAIL webhook/pu11-events (3182 ms)
+    request 1: status: expected 202, got 401
+    request 1: header cache-control: expected "no-store", got null
+    request 1: queue_sent: expected [{"body":{"action":"published","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 1: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 2: status: expected 202, got 401
+    request 2: header cache-control: expected "no-store", got null
+    request 2: queue_sent: expected [{"body":{"action":"released","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 2: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 3: status: expected 202, got 401
+    request 3: header cache-control: expected "no-store", got null
+    request 3: queue_sent: expected [{"body":{"action":"edited","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 3: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 4: status: expected 202, got 401
+    request 4: header cache-control: expected "no-store", got null
+    request 4: queue_sent: expected [{"body":{"action":"prereleased","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 4: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 5: status: expected 202, got 401
+    request 5: header cache-control: expected "no-store", got null
+    request 5: queue_sent: expected [{"body":{"action":"unpublished","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 5: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 6: status: expected 202, got 401
+    request 6: header cache-control: expected "no-store", got null
+    request 6: queue_sent: expected [{"body":{"action":"deleted","event":"release","installation_id":55,"release_id":9001,"repository_id":100,"repository_ids":[]},"delay_s":0}], got []
+    request 6: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 7: status: expected 202, got 401
+    request 7: header cache-control: expected "no-store", got null
+    request 7: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 8: status: expected 202, got 401
+    request 8: header cache-control: expected "no-store", got null
+    request 8: queue_sent: expected [{"body":{"action":"published","event":"release","installation_id":0,"release_id":9002,"repository_id":101,"repository_ids":[]},"delay_s":0}], got []
+    request 8: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 17: status: expected 202, got 401
+    request 17: header cache-control: expected "no-store", got null
+    request 17: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+    request 18: status: expected 202, got 401
+    request 18: header cache-control: expected "no-store", got null
+    request 18: body: expected "", got "{\"detail\":\"the signature of the webhook is missing or not valid\",\"status\":401,\"title\":\"Unauthenticated\",\"type\":\"/errors/unauthenticated\"}"
+PASS webhook/pu26-app-installed (3180 ms)
+PASS webhook/pu33-privatized (4676 ms)
+PASS webhook/pu33-publicized (2152 ms)
+PASS webhook/pu35-dead-letter (1830 ms)
+PASS webhook/pu35-retry-schedule (1804 ms)
+w2: 7 passed, 2 failed

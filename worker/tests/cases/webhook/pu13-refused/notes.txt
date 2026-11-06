@@ -1,0 +1,2 @@
+1: the asset bytes do not have the hash of the name (422 not-a-candidate): a refusal with a 4xx problem is final. Acked, one warn line with the ids and the problem type, nothing written
+2: the asset read answers 500 (502 upstream): a failed job. Retried after 60 s, nothing written

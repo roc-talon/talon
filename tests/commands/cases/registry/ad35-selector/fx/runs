@@ -1,0 +1,3 @@
+fullname acme/sel1 sel=^1 env:GITHUB_TOKEN=tok1
+fullname acme/sel2 sel=1.0.0 env:GITHUB_TOKEN=tok1
+fullname acme/sel3 sel=9.9.9 env:GITHUB_TOKEN=tok1

@@ -1,0 +1,46 @@
+== toolchains
+source: live
+row 10 nightly-2026-10-09-258ab27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792065600000 1010
+row 11 nightly-2026-10-09-258ab27 macos_apple_silicon roc_nightly-macos_apple_silicon-2026-10-09-258ab27.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792065600001 1011
+row 14 nightly-2026-10-12-2664a27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792152000000 1014
+== toolchains
+source: live
+row 10 nightly-2026-10-09-258ab27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792065600000 1010
+row 11 nightly-2026-10-09-258ab27 macos_apple_silicon roc_nightly-macos_apple_silicon-2026-10-09-258ab27.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792065600001 1011
+row 14 nightly-2026-10-12-2664a27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792152000000 1014
+== toolchains offline
+source: cached 1792065600
+row 10 nightly-2026-10-09-258ab27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792065600000 1010
+row 11 nightly-2026-10-09-258ab27 macos_apple_silicon roc_nightly-macos_apple_silicon-2026-10-09-258ab27.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792065600001 1011
+row 14 nightly-2026-10-12-2664a27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792152000000 1014
+== toolchains log=11
+source: live
+row 10 nightly-2026-10-09-258ab27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792065600000 1010
+row 11 nightly-2026-10-09-258ab27 macos_apple_silicon roc_nightly-macos_apple_silicon-2026-10-09-258ab27.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792065600001 1011
+== toolchains origin=http://127.0.0.1:10
+source: live
+row 20 nightly-2026-10-14-38a3029 linux_x86_64 roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792238400000 1020
+row 22 nightly-2026-10-15-38e6c42 linux_x86_64 roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792324800000 1022
+row 25 nightly-2026-10-18-1df370f linux_x86_64 roc_nightly-linux_x86_64-2026-10-18-1df370f.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792584000000 1025
+== toolchains origin=http://127.0.0.1:11
+source: live
+row 1 nightly-2026-10-09-258ab27 linux_x86_64 roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792065600000 1001
+== toolchains origin=http://127.0.0.1:12
+exit 15
+== toolchains origin=http://127.0.0.1:13
+exit 1
+== toolchains offline origin=http://127.0.0.1:14
+source: missing
+== toolchains origin=http://127.0.0.1:15
+exit 15
+== toolchains offline log=10 origin=http://127.0.0.1:10
+source: cached 1792065700
+== toolchains origin=http://127.0.0.1:16
+source: live
+row 30 nightly-2026-10-14-38a3029 linux_x86_64 roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef 1792238400000 1030
+row 31 nightly-2026-10-15-38e6c42 linux_x86_64 roc_nightly-linux_x86_64-2026-10-15-38e6c42.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792324800000 1031
+== toolchains origin=http://127.0.0.1:17
+source: live
+row 40 nightly-2026-10-16-aaaaaaa linux_x86_64 roc_nightly-linux_x86_64-2026-10-16-aaaaaaa.tar.gz fedcba9876543210fedcba9876543210fedcba9876543210fedcba9876543210 1792411200000 1040
+== toolchains offline origin=http://127.0.0.1:17
+source: missing

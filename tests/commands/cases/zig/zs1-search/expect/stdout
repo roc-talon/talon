@@ -15,8 +15,8 @@ exit 0
 == 0.16.2 offline env:ZIG=/opt/z16/zig
 zig 0.16.9 found-env /opt/z16/zig
 exit 0
-== 0.18.1 offline
-zig 0.18.10 found-installed $HOME/.cache/roc/toolchains/zig-0.18.10/zig.exe
+== 0.18.1 offline env:LOCALAPPDATA=C:/AppData/Local env:APPDATA=C:/AppData/Roaming
+zig 0.18.10 found-installed C:/AppData/Local\roc/toolchains/zig-0.18.10/zig.exe
 exit 0
 == 0.17.0 offline env:ZIG=/opt/z16/zig
 zig 0.16.9 found-env /opt/z16/zig

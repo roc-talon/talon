@@ -1,0 +1,2 @@
+== fullname acme/nocurl env:GITHUB_TOKEN=tok1
+exit 18

@@ -1,0 +1,3 @@
+R-AD35 R-SL6 R-SL7 R-SL8 R-SL10 R-SL11 R-SL13 (slice 212, Design Q397, entry registry, the word fullname): the selector forms that have no registry path. There is no fixture and no `programs` file: any call would be seen in calls.log (and the fake answers 404).
+Run 1, a nightly tag, and run 2, a relative step: for a compiler only: exit 2 before any request (no guard, no read). Run 3, a sha that is not a version, a range or a series: a source build: no registry path, no request, no ingest (the result is `source build`).
+The text of the stop is a proposal (R-OUT2): FullName.compiler_only. The forms that keep the matches are in ad35-selector and in the L0 file.

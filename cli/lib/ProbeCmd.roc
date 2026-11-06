@@ -8,6 +8,7 @@ import Lookup
 import Opts
 import Probe
 import ProbeRange
+import ProbeShare
 import ProbeShow
 import Project
 import Ref
@@ -33,34 +34,39 @@ ProbeCmd :: [].{
 	Target : [Alias(Str), Bundle(Str), Project]
 
 	## What `read` gives. `opts` is the result of `Opts.read` of the line (`--slots`, `--allow-downloads`, `--probe-downloads`, `--registry`).
-	Plan : { target : ProbeCmd.Target, range : Bool, opts : Opts }
+	Plan : { target : ProbeCmd.Target, range : Bool, share : Bool, opts : Opts }
 
 	## The operand and the flags of a `probe` line. `Args.parse` has checked that each flag is allowed for the command (R-FL7, R-FL12). The checks, in this order (kind `Usage`, exit 2; the texts are a proposal, TW24):
 	##
 	## | # | Case | Message | Rule |
 	## | --- | --- | --- | --- |
 	## | 1 | The failures of `Opts.read` | the texts of `Opts.read` | R-FL5, R-FL11 |
-	## | 2 | `--share` (a registry is needed, and `direct` has none: P1 has only `direct`) | `tln probe --share needs a registry, and this version of tln has only --registry direct` | R-PB6 |
-	## | 3 | 2 operands or more | `tln probe takes one name or one bundle file` | R-CM8 |
+	## | 2 | 2 operands or more | `tln probe takes one name or one bundle file` | R-CM8 |
+	## | 3 | `--share` with no operand, or with a bundle file (slice 217) | `ProbeShare.no_hash`, `ProbeShare.bundle` | R-PB6 |
 	## | 4 | `--range` with no operand (question R1) | `tln probe --range needs a header alias or a bundle file: the project file has no hash` | R-PB1 |
 	##
-	## `--share` is rule 2 before any other rule: R-PB6 gives exit 2 for each of its 3 forms (no registry, no hash, a bundle file).
+	## `--share` with `direct` is stopped in the flow (`ProbeFlow`), not here (R-PB6).
 	read : Args -> Try(ProbeCmd.Plan, Fail)
 	read = |args| {
 		opts = Opts.read(args)?
-		if args.options.any(|(name, _)| name == "--share") {
-			return Err(Fail.new(Usage, "tln probe --share needs a registry, and this version of tln has only --registry direct"))
-		}
+		share = args.options.any(|(name, _)| name == "--share")
 		target = match args.operands {
 			[] => Project
 			[one] => if one.ends_with(".tar.zst") Bundle(one) else Alias(one)
 			_ => return Err(Fail.new(Usage, "tln probe takes one name or one bundle file"))
 		}
+		if share {
+			match target {
+				Project => return Err(ProbeShare.no_hash({}))
+				Bundle(_) => return Err(ProbeShare.bundle({}))
+				Alias(_) => {}
+			}
+		}
 		range = args.options.any(|(name, _)| name == "--range")
 		if range and target == Project {
 			return Err(Fail.new(Usage, "tln probe --range needs a header alias or a bundle file: the project file has no hash"))
 		}
-		Ok({ target, range, opts })
+		Ok({ target, range, share, opts })
 	}
 
 	## R-PB1, R-SC1, R-SC6 to R-SC8, R-SC16, R-SC14, R-WS8: the header entry that a name selects. `rows` are the entries of the header of each member that the command works on (the current member, else all members, as `tln why` does). A row that another row
@@ -110,11 +116,11 @@ ProbeCmd :: [].{
 	## | --- | --- |
 	## | `Unit` | An alias or a bundle without `--range`: the node, the compiler id, and the fact that was written (`Db.Fact`: the hash, the compiler, the target `any`, the outcome and the failing modules) |
 	## | `Project` | The project file, its kind, the compiler id, the check and the build. `build` is `Err(NotRun)` when the check did not pass, or the file is a package or a platform |
-	## | `Range` | The node, `ProbeRange.Found`, the number of probes, and the number of compilers that the search downloaded (slice 037c) |
+	## | `Range` | The node, `ProbeRange.Found`, the number of probes, the number of compilers that the search downloaded (slice 037c), and the facts of this run (slice 217b) |
 	Shown : [
 		Unit({ node : Units.Node, compiler : Str, fact : Db.Fact, probes : U64 }),
 		Project({ file : Str, kind : [App, Package, Platform], compiler : Str, check : ProbeCmd.Done, build : Try(ProbeCmd.Done, [NotRun]), probes : U64 }),
-		Range({ node : Units.Node, found : ProbeRange.Found, probes : U64, downloads : U64 }),
+		Range({ node : Units.Node, found : ProbeRange.Found, probes : U64, downloads : U64, facts : List(Db.Fact) }),
 	]
 
 	## R-PB4, R-UP7, R-EC12: the failure that gives exit 12 (kind `Budget`) for a range, or none. `found` is the result (`ProbeRange.found` for a search that the budget cut). `cut` is the failure of the budget (`Units.spent`) when `probe.max` cut a round.
@@ -181,7 +187,7 @@ ProbeCmd :: [].{
 	## | --- | --- |
 	## | `Unit` | `kind` (`"unit"`), `hash`, `label`, `compiler`, `outcome` (`"pass"`, `"fail"`, `"hang"`, `"crash"`), `modules` (a list of texts), `probes` |
 	## | `Project` | `kind` (`"project"`), `file`, `compiler`, `check`, `build` (null when not run), `probes`. `check` and `build` are `{ "outcome", "errors": [{ "place", "title" }] }` with `outcome` as above |
-	## | `Range` | `kind` (`"range"`), `hash`, `label`, `range` (null for `NoPass`, else `{ "from": { "id", "real" }, "to": { "id", "real" } }`), `probes`, `downloads` (slice 037c: the number of compilers that the search downloaded, as `data.downloads` of slice 025) |
+	## | `Range` | `kind` (`"range"`), `hash`, `label`, `range` (null for `NoPass`, else `{ "from": { "id", "real" }, "to": { "id", "real" } }`), `probes`, `downloads` (slice 037c: the number of compilers that the search downloaded, as `data.downloads` of slice 025), `facts` (slice 217b, R-PB9: the facts of this run, last key) |
 	data : ProbeCmd.Shown -> JsonDoc
 	data = |shown| match shown {
 		Unit({ node, compiler, fact, probes }) => JsonDoc.Obj([
@@ -207,7 +213,7 @@ ProbeCmd :: [].{
 			),
 			("probes", Num(probes.to_i64_wrap())),
 		])
-		Range({ node, found, probes, downloads }) => JsonDoc.Obj([
+		Range({ node, found, probes, downloads, facts }) => JsonDoc.Obj([
 			("kind", Text("range")),
 			("hash", Text(node.hash)),
 			("label", Text(ProbeShow.label_of(node))),
@@ -220,6 +226,7 @@ ProbeCmd :: [].{
 			),
 			("probes", Num(probes.to_i64_wrap())),
 			("downloads", Num(downloads.to_i64_wrap())),
+			("facts", ProbeShow.facts_doc(facts)),
 		])
 	}
 }

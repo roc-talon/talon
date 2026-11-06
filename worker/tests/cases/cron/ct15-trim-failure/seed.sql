@@ -1,0 +1,11 @@
+-- 9100 is the oldest old compiler and its batch fails (the trigger boom); 9050 is old and its batch works; 9300 is new. No bot rows, so the hint cleanup never deletes a hint of 9100.
+INSERT INTO log (idx, grp, version, hash, time) VALUES (1, 'roc-lang/nightlies:linux_x86_64', 'nightly-2023-11-14-aaaaaaa', 'sha256:1111111111111111111111111111111111111111111111111111111111111111', 1690000000000);
+INSERT INTO toolchains (nightly, target, tag, asset_name, sha256, size, published_at, log_index) VALUES (9100, 'linux_x86_64', 'nightly-2023-11-14-aaaaaaa', 'roc_nightly-linux_x86_64.tar.gz', '1111111111111111111111111111111111111111111111111111111111111111', 1000, 1700000000000, 1);
+INSERT INTO log (idx, grp, version, hash, time) VALUES (2, 'roc-lang/nightlies:linux_x86_64', 'nightly-2024-07-03-bbbbbbb', 'sha256:2222222222222222222222222222222222222222222222222222222222222222', 1690000000000);
+INSERT INTO toolchains (nightly, target, tag, asset_name, sha256, size, published_at, log_index) VALUES (9050, 'linux_x86_64', 'nightly-2024-07-03-bbbbbbb', 'roc_nightly-linux_x86_64.tar.gz', '2222222222222222222222222222222222222222222222222222222222222222', 1000, 1720000000000, 2);
+INSERT INTO log (idx, grp, version, hash, time) VALUES (3, 'roc-lang/nightlies:linux_x86_64', 'nightly-2025-12-30-ccccccc', 'sha256:3333333333333333333333333333333333333333333333333333333333333333', 1690000000000);
+INSERT INTO toolchains (nightly, target, tag, asset_name, sha256, size, published_at, log_index) VALUES (9300, 'linux_x86_64', 'nightly-2025-12-30-ccccccc', 'roc_nightly-linux_x86_64.tar.gz', '3333333333333333333333333333333333333333333333333333333333333333', 1000, 1767000000000, 3);
+CREATE TRIGGER boom BEFORE DELETE ON compat_hints WHEN OLD.nightly = 9100 BEGIN SELECT RAISE(ABORT, 'boom'); END;
+INSERT INTO contributions (contributor, artifact, nightly, target, result, talon_version, time) VALUES (4242, 101, 9100, 0, 0, 1, 1700000100000);
+INSERT INTO contributions (contributor, artifact, nightly, target, result, talon_version, time) VALUES (4242, 102, 9050, 0, 1, 1, 1720000100000);
+INSERT INTO contributions (contributor, artifact, nightly, target, result, talon_version, time) VALUES (4242, 103, 9300, 0, 0, 1, 1767224000000);

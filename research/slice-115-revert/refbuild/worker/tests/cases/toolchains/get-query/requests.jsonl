@@ -1,0 +1,12 @@
+{"method":"GET","path":"/v1/toolchains"}
+{"method":"GET","path":"/v1/toolchains?after=0"}
+{"method":"GET","path":"/v1/toolchains?after=3"}
+{"method":"GET","path":"/v1/toolchains?after=6"}
+{"method":"GET","path":"/v1/toolchains?after=99"}
+{"method":"GET","path":"/v1/toolchains?target=windows_x86_64"}
+{"method":"GET","path":"/v1/toolchains?target=linux_x86_64&after=2"}
+{"method":"GET","path":"/v1/toolchains?target=macos_x86_64"}
+{"method":"GET","path":"/v1/toolchains?target="}
+{"method":"GET","path":"/v1/toolchains?target=x64musl"}
+{"method":"GET","path":"/v1/toolchains?after=1&target=Linux_x86_64"}
+{"method":"GET","path":"/v1/toolchains?after=1&unknown=1&target=linux_arm64&more=yes"}

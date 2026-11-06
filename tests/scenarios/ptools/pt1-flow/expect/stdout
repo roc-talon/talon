@@ -4,7 +4,7 @@ added tool app 1.1.0 (acme/app)
 $PROJECT/app/talon.toml: tools.app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
 exit 0
 [tools]
-app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst", bin = {} }
 3c02aea2d6e909ffd1ff69e9a6b5b9e111212101a0fb873f59d6fa8efbe899fa
 cannot access '$HOME/.local/share/talon': No such file or directory
 cannot access '$HOME/.local/bin': No such file or directory
@@ -15,8 +15,8 @@ added tool old 1.0.0 (acme/app)
 $PROJECT/app/talon.toml: tools.old = { ref = "acme/app@1.0.0", url = "https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst" }
 exit 0
 [tools]
-app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
-old = { ref = "acme/app@1.0.0", url = "https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst" }
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst", bin = {} }
+old = { ref = "acme/app@1.0.0", url = "https://github.com/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst", bin = {} }
 x: 2 entries, api: 1, downloads: 2, builds: 2
 -- 3: the machine has no x cache (a CI job). tln install --frozen checks the entries (R-PT7), makes no index call (R-AU6) and builds each tool that has no binary (R-PT6, R-SO22). It writes nothing.
 == tln install --frozen --file app/main.roc
@@ -40,7 +40,7 @@ removed tool old (acme/app)
 $PROJECT/app/talon.toml: tools.old removed
 exit 0
 [tools]
-app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst" }
+app = { ref = "acme/app@^1.1.0", url = "https://github.com/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst", bin = {} }
 == tln cache gc
 removed $HOME/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586cf9a457aa467c4269 (499 B)
 freed 499 B

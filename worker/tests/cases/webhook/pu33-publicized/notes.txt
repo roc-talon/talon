@@ -1,0 +1,3 @@
+1: publicized 100: next_check_at of the row becomes the clock. The state stays missing, the release stays repo-missing (the next reconcile clears them, R-PU24), no event. No GitHub read
+2: publicized 999 (no row): nothing is written
+3: publicized 700 (a rename: acme/new is active, acme/old is moved with the same repository id): next_check_at of acme/new becomes the clock, the moved row keeps its value (Design Q324)

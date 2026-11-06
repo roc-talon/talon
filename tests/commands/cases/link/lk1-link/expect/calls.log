@@ -1,5 +1,7 @@
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/roc-src/zig-out/bin/roc
@@ -11,6 +13,8 @@ rename $HOME/.cache/roc/toolchains/link-dev.0123456789abcdef.tmp $HOME/.cache/ro
 unlock $HOME/.cache/roc/toolchains/link-dev
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/roc-src/zig-out/bin/roc
@@ -19,6 +23,8 @@ list_dirs $HOME/.cache/roc/toolchains
 unlock $HOME/.cache/roc/toolchains/link-dev
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/roc-src/zig-out/bin/roc
@@ -26,6 +32,8 @@ lock $HOME/.cache/roc/toolchains/copy-fix-1 nowait: held
 list_dirs $HOME/.cache/roc/toolchains
 unlock $HOME/.cache/roc/toolchains/copy-fix-1
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -38,6 +46,7 @@ write_atomic $HOME/.cache/roc/toolchains/copy-fix-2.0123456789abcdef.tmp/.talon.
 rename $HOME/.cache/roc/toolchains/copy-fix-2.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/copy-fix-2
 unlock $HOME/.cache/roc/toolchains/copy-fix-2
 args
+env_all
 env_all
 clock
 cwd
@@ -52,15 +61,27 @@ rename $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.tmp $HOME/.cache/
 delete $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.trash
 unlock $HOME/.cache/roc/toolchains/copy-fix-1
 args
+env_all
+tty
 args
+env_all
+tty
 args
+env_all
+tty
 args
+env_all
+tty
 args
+env_all
+tty
 env_all
 clock
 cwd
 canonical $PROJECT/roc-src/missing
 args
+env_all
+tty
 env_all
 clock
 cwd
@@ -73,6 +94,8 @@ delete $HOME/.cache/roc/toolchains/copy-dev5.0123456789abcdef.tmp
 unlock $HOME/.cache/roc/toolchains/copy-dev5
 args
 env_all
+tty
+env_all
 clock
 cwd
 canonical $PROJECT/roc-src/zig-out/bin/roc
@@ -84,6 +107,8 @@ write_atomic $HOME/.cache/roc/toolchains/link-dev6.0123456789abcdef.tmp/.talon.j
 rename $HOME/.cache/roc/toolchains/link-dev6.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/link-dev6
 unlock $HOME/.cache/roc/toolchains/link-dev6
 args
+env_all
+tty
 env_all
 read_files $HOME/.config/talon/config.toml
 list_dirs $HOME/.cache/roc/toolchains

@@ -1,0 +1,21 @@
+PASS reconcile/pu21-poll-job (2532 ms)
+PASS reconcile/pu23-list (4703 ms)
+PASS reconcile/pu23-pages (2844 ms)
+PASS reconcile/pu24-missing-again (3214 ms)
+PASS reconcile/pu25-reserve (2350 ms)
+PASS reconcile/pu31-repo-etag (2571 ms)
+PASS reconcile/pu36-overlap (2329 ms)
+PASS reconcile/pu36-state-guard (2215 ms)
+PASS reconcile/pu37-backoff (2419 ms)
+PASS reconcile/pu37-etag-effects (2166 ms)
+FAIL reconcile/tp18-other-id (1847 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/b\t900\t90\t0\t\\N\t1767225600000\t1767000000000","acme/c\t900\t90\t2\tacme/b\t1767225600000\t1767000000000","acme/r\t810\t81\t0\t\\N\t1767000000000\t1767000000000","acme/s\t998\t98\t0\t\\N\t1767000000000\t1767000000000"]
+      got:      ["acme/b\t900\t90\t0\t\\N\t1767225600000\t1767000000000","acme/c\t900\t90\t2\tacme/b\t1767225600000\t1767000000000","acme/r\t810\t80\t0\t\\N\t1767000000000\t1767000000000","acme/s\t998\t98\t0\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/b\t1\t0\t\\N\t900\t\\N\t90\t\\N\t\\N\t1767000000000","acme/b\t2\t2\t900\t900\t90\t90\t\\N\t\\N\t1767225600000","acme/c\t1\t0\t\\N\t900\t\\N\t90\t\\N\t\\N\t1767000000000","acme/c\t2\t2\t900\t900\t90\t90\tacme/b\t\\N\t1767225600000","acme/r\t1\t0\t\\N\t810\t\\N\t80\t\\N\t\\N\t1767000000000","acme/r\t2\t1\t810\t810\t80\t81\t\\N\t\\N\t1767225600000","acme/s\t1\t0\t\\N\t998\t\\N\t98\t\\N\t\\N\t1767000000000"]
+      got:      ["acme/b\t1\t0\t\\N\t900\t\\N\t90\t\\N\t\\N\t1767000000000","acme/b\t2\t2\t900\t900\t90\t90\t\\N\t\\N\t1767225600000","acme/c\t1\t0\t\\N\t900\t\\N\t90\t\\N\t\\N\t1767000000000","acme/c\t2\t2\t900\t900\t90\t90\tacme/b\t\\N\t1767225600000","acme/r\t1\t0\t\\N\t810\t\\N\t80\t\\N\t\\N\t1767000000000","acme/s\t1\t0\t\\N\t998\t\\N\t98\t\\N\t\\N\t1767000000000"]
+PASS reconcile/tp18-rename (1399 ms)
+PASS reconcile/tp18-rename-transfer (1313 ms)
+PASS reconcile/tp9-transfer (1323 ms)
+w2: 13 passed, 1 failed

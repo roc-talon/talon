@@ -1,0 +1,90 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/zig-out/bin/roc
+lock $HOME/.cache/roc/toolchains/link-dev nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+write_atomic $HOME/.cache/roc/toolchains/link-dev.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/link-dev.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/link-dev
+unlock $HOME/.cache/roc/toolchains/link-dev
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/zig-out/bin/roc
+lock $HOME/.cache/roc/toolchains/link-dev nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+unlock $HOME/.cache/roc/toolchains/link-dev
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/zig-out/bin/roc
+lock $HOME/.cache/roc/toolchains/copy-fix-1 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+unlock $HOME/.cache/roc/toolchains/copy-fix-1
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/zig-out/bin/roc
+lock $HOME/.cache/roc/toolchains/copy-fix-2 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+copy_file $PROJECT/roc-src/zig-out/bin/roc $HOME/.cache/roc/toolchains/copy-fix-2.0123456789abcdef.tmp/roc
+write_atomic $HOME/.cache/roc/toolchains/copy-fix-2.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/copy-fix-2.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/copy-fix-2
+unlock $HOME/.cache/roc/toolchains/copy-fix-2
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/other/roc
+lock $HOME/.cache/roc/toolchains/copy-fix-1 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+copy_file $PROJECT/roc-src/other/roc $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.tmp/roc
+write_atomic $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/copy-fix-1 $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.trash
+rename $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/copy-fix-1
+delete $HOME/.cache/roc/toolchains/copy-fix-1.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/copy-fix-1
+args
+args
+args
+args
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/missing
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src
+lock $HOME/.cache/roc/toolchains/copy-dev5 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+copy_file $PROJECT/roc-src $HOME/.cache/roc/toolchains/copy-dev5.0123456789abcdef.tmp/roc
+delete $HOME/.cache/roc/toolchains/copy-dev5.0123456789abcdef.tmp
+unlock $HOME/.cache/roc/toolchains/copy-dev5
+args
+env_all
+clock
+cwd
+canonical $PROJECT/roc-src/zig-out/bin/roc
+lock $HOME/.cache/roc/toolchains/link-dev6 nowait: busy
+lock $HOME/.cache/roc/toolchains/link-dev6 wait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+write_atomic $HOME/.cache/roc/toolchains/link-dev6.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/link-dev6.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/link-dev6
+unlock $HOME/.cache/roc/toolchains/link-dev6
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/copy-fix-2/.talon.json $HOME/.cache/roc/toolchains/copy-fix-2/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/link-dev6/.talon.json $HOME/.cache/roc/toolchains/link-dev6/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use

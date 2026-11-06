@@ -1,0 +1,6 @@
+m1 CAUGHT R-PT20 step 2: an old gh is no-gh
+m2 CAUGHT R-PT20 step 5: the workflow file is not compared
+m3 CAUGHT R-PT20 step 1: a bare hex digest counts
+m4 CAUGHT R-PT20: an empty array passes
+m5 CAUGHT Q235: two commits in the bundle pass
+m6 CAUGHT R-PT20 step 4: a digest mismatch passes

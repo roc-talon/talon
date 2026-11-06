@@ -1,0 +1,81 @@
+
+Mentioned values:
+target_paths = [
+	"main.roc",
+	"targets/",
+	"targets/x64mac/libhost.a",
+	"targets/x64mac/crt1.o",
+	"targets/arm64musl/libhost.a",
+	"targets/wasm32/",
+	"targets/newtarget1/host.o",
+	"targets/macos-sysroot/usr/lib/libSystem.tbd",
+	"targets/Upper/x",
+	long_target,
+	"targets/README.md",
+	"src/targets/x64win/a",
+]
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:291:1
+
+expect {
+    t = with_extra(link_member("src/", '5', "").concat(file("zeta.roc", "x")))
+    read(t) == pkg_row(t)
+}
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:297:1
+
+expect {
+    p155 = "d".repeat(154)
+    ok = with_extra(split_member(p155, "${"e".repeat(94)}/A.roc", "x"))
+    bad = with_extra(split_member("d".repeat(155), "${"e".repeat(94)}/A.roc", "x"))
+    (read(ok), read(bad)) == (pkg_row(ok), Err(BadTar(PathTooLong({ offset: pkg_members.len(), bytes: 256, limit: 255 }))))
+}
+
+Mentioned values:
+pkg_members = file("main.roc", pkg_header).concat(file("Zeta.roc",
+mod_text("Zeta"))).concat(file("Alpha.roc",
+mod_text("Alpha"))).concat(file("targets/x64mac/libhost.a", "not a target"))
+
+
+── ✗ fail ───────────────────────────────── tests/unit/ArchiveReadTest.roc:331:1
+
+expect {
+    one = pkg_members.concat(List.repeat(0, 512))
+    none = pkg_members
+    padded = pkg_tar.concat(List.repeat(0, 10240 - (pkg_tar.len() % 10240))).concat(List.repeat(0, 300000))
+    [read(one), read(none), read(padded)] == [pkg_row(one), pkg_row(none), pkg_row(padded)]
+}
+
+Mentioned values:
+pkg_tar = pkg_members.concat(end2)
+pkg_members = file("main.roc", pkg_header).concat(file("Zeta.roc",
+mod_text("Zeta"))).concat(file("Alpha.roc",
+mod_text("Alpha"))).concat(file("targets/x64mac/libhost.a", "not a target"))
+
+Ran 27 tests in 1404.5 ms.:
+    23 passed
+    4 failed
+    0 compiler errors
+── ● unused variable ──────────────────────────────── lib/ArchiveRead.roc:245:18
+
+Variable kind is defined here and then never used.
+
+target_names = |kind, paths| {
+                ^^^^
+
+If you don't need this variable, prefix it with an underscore like _kind to
+suppress this warning.
+
+── ● unconditional condition ───────────────────────── lib/ArchiveRead.roc:246:6
+
+This if condition is known at compile time, so this conditional will always
+make the same choice.
+
+if Bool.False {
+   ^^^^^^^^^^
+
+0 errors and 2 warnings found in 1m 10s while successfully building:
+
+    archive-test.wasm

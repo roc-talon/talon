@@ -1,0 +1,5 @@
+== upgrade --dry-run --offline --file u1/main.roc
+pf: fixed: offline, no cached index
+nothing to change
+dry run: nothing was written
+exit 0

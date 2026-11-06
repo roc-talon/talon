@@ -5,6 +5,7 @@ import Fail
 import Fx
 import Launch
 import Mode
+import Nightlies
 import NoRankPure
 import Prompt
 import RocInstall
@@ -25,7 +26,8 @@ import Roots
 Start :: [].{
 
 	## The facts of the consent rules (R-DL5). `auto` is `TALON_AUTO_INSTALL`. `allow` is `--allow-downloads`. `yes`, `mode` and `quiet` are the facts of the prompt. `offline` is `--offline`. `env` is the environment of the process.
-	Downloads : { auto : [Ask, Yes, No], allow : Try(Answer, [NoFlag]), yes : Bool, mode : Mode, quiet : Bool, offline : Bool, env : List((Str, Str)) }
+	## Slice 206e2 (R-CV1, R-IX4, R-CV5): `list` is the source of the compiler list of the offer (`RocInstall.offer!`). Left out: `Direct`.
+	Downloads : { auto : [Ask, Yes, No], allow : Try(Answer, [NoFlag]), yes : Bool, mode : Mode, quiet : Bool, offline : Bool, env : List((Str, Str)), list ?: Nightlies.Source }
 
 	## `id` is the compiler that runs. `installed` has the ids of `<cache>/toolchains` (also the id of a download), so `Ladder` writes `.last-use` for it (R-CC9). `downloads` is 1 after a download, else 0.
 	Started : { id : Str, installed : List(Str), program : Str, env : List((Str, Str)), downloads : U64 }
@@ -79,7 +81,7 @@ download! = |fx, run, listed, picked| {
 offered! : Fx, Run, List(Str), { decided : [Refuse, AutoNo, NeedsConsent, Install, Ask, NeedTty], mode : Mode, picked : Bool } => Try(Have, Fail)
 offered! = |fx, run, listed, how| {
 	facts = run.downloads
-	match RocInstall.offer!(fx, { id: run.held, env: facts.env, offline: facts.offline })? {
+	match RocInstall.offer!(fx, { id: run.held, env: facts.env, offline: facts.offline, list: facts.?list ?? Direct })? {
 		Present(found) => Ok({ id: found.id, installed: listed.append(found.id), downloads: 0 })
 		Download(offer) => {
 			if how.decided == NeedsConsent return Err(Consent.download_stop({ count: 1, size: offer.size }))

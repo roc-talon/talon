@@ -1,0 +1,2 @@
+install --frozen --json --file p12/main.roc
+install --frozen --file p13/main.roc

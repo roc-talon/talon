@@ -1,0 +1,1 @@
+R-AP39 R-MX18 R-E6 (slice 223, Q594, Q585): GET /v1/sweeps/<tag> answers 404 not-found: exit 20, no retry, the fault text of Bot.failure for the step `get sweeps <tag>`.

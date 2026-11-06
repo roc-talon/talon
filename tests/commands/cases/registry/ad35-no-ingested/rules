@@ -1,0 +1,3 @@
+R-AD35 R-AP65 R-AP41 R-AP43 R-AP34 R-E6 (slice 212, Design Q399, entry registry, the word fullname): step 4 asks R-AP1 again only after a 200 or 201.
+Run 1, acme/all409: 2 candidates, 2.0.0 gets 409 and 1.0.0 gets 422: each is skipped with its warning (type in it), nothing is indexed, NO second read: exit 2 with the text of no candidate.
+Run 2, acme/one5xx: 2.0.0 gets 409 (skip with a warning) and 1.0.0 gets 502 (skip with a warning with the status): no 200 or 201, NO second read: exit 15, and the message says that the registry did not index the name now and to run the command again (a proposal, R-OUT2: FullName.not_indexed).

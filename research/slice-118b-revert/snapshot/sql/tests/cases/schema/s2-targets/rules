@@ -1,0 +1,5 @@
+Slice 102, case s2-targets.
+  R-IK7: the targets rows 0 to 35 (0 any, 1 to 35 the RocTarget values, in the order of the rule). A new target is added with the next code (36).
+  R-RE21: targets (target INTEGER key, name TEXT UNIQUE). Codes and names are unique.
+  R-RE6: a targets row is only added. The schema part: the key and UNIQUE reject a second row for a code or a name.
+The expect file is made by research/slice-102-revert/gen-shape.mjs from cli/lib/BuildTarget.roc (R-TG3 names, the same list).

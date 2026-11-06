@@ -1,0 +1,8 @@
+GET https://api.github.com/repos/acme/lib2
+GET https://api.github.com/repos/acme/lib2/releases/tags/2.0.0
+GET https://github.com/acme/lib2/releases/download/2.0.0/4n6KbS1xFZ9QbFagoLBnwmEouetAuxm6bwcyvX7WySHD.tar.zst
+GET https://raw.githubusercontent.com/acme/lib2/2.0.0/.roc-version
+GET https://api.github.com/repos/acme/lib2
+GET https://api.github.com/repos/acme/lib2/releases/tags/2.1.0
+GET https://github.com/acme/lib2/releases/download/2.1.0/G9SwmDFYQdrgXsoGnznwmYQbwwMeV8xg9JFcRXY9Z5G1.tar.zst
+GET https://raw.githubusercontent.com/acme/lib2/2.1.0/.roc-version

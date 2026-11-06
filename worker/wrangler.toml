@@ -1,0 +1,71 @@
+name = "talon-registry"
+main = "worker.js"
+compatibility_date = "2026-10-01"
+# enable_request_signal and global_fetch_strictly_public: cloudflare-workers/README.md "Use it in your project", step 4.
+compatibility_flags = ["enable_request_signal", "global_fetch_strictly_public"]
+
+# D1 (slice 101: the binding that main.roc declares). The id is the remote database (slice 121, `wrangler d1 create talon-registry`, 2026-11-06). A local run makes its own empty database.
+# The migrations are in ../sql (slice 102).
+[[d1_databases]]
+binding = "DB"
+database_name = "talon-registry"
+database_id = "2e64cef7-cb86-4dde-aa55-2fd0479a8f28"
+migrations_dir = "../sql"
+
+# Rate limit bindings (Registry R-WH14). RL_HINTS: user hints, 30 a minute for each rate key (R-CT11, slice 116b). RL_INGEST: ingests, 60 a minute (R-PU34 row 1, slice 112b).
+# main.roc declares each one, so `roc-cfw sync --check` finds it. The namespace ids are local numbers.
+[[ratelimits]]
+name = "RL_HINTS"
+namespace_id = "1001"
+simple = { limit = 30, period = 60 }
+
+[[ratelimits]]
+name = "RL_INGEST"
+namespace_id = "1002"
+simple = { limit = 60, period = 60 }
+
+# RL_LOGIN: POST /v1/tokens and DELETE /v1/contributors/me, 10 a minute for each rate key (R-CT11, slice 117).
+[[ratelimits]]
+name = "RL_LOGIN"
+namespace_id = "1003"
+simple = { limit = 10, period = 60 }
+
+# The client version (R-AP45, slice 116b): the oldest `tln` that the registry accepts. An empty text means no check.
+# MIN_TLN covers all routes, MIN_TLN_WRITE the write routes (R-AP41).
+# The other settings (R-WH14, slice 121). The secrets CONTRIBUTOR_KEY, TOKEN_KEY, GITHUB_WEBHOOK_SECRET and GITHUB_APP_KEY are set with `wrangler secret put`.
+[vars]
+MIN_TLN = ""
+MIN_TLN_WRITE = ""
+AUDIENCE = "https://registry.roc-talon.org"
+ISSUES_URL = "https://github.com/roc-talon/talon/issues"
+BOT_REPOSITORY_ID = "1434744226"
+BOT_WORKFLOW_REF = "roc-talon/talon/.github/workflows/compat-bot.yml@refs/heads/main"
+GITHUB_APP_ID = "5572595"
+GITHUB_APP_INSTALLATION_ID = "177657685"
+
+# Later slices add their entries here (the names are in Registry 8, R-WH14), and main.roc declares each one in `Worker.new({ bindings })`, so `roc-cfw sync` checks it:
+# - R2 `LOG` (the log tiles, P3, slice 130)
+# - queues `INDEX` and `INDEX_DLQ` (slice 118), and the consumer
+# - rate limit bindings `RL_INGEST`, `RL_HINTS`, `RL_LOGIN` (slices 112, 116, 117)
+# - [triggers] crons (slices 119, 120)
+# - [vars] AUDIENCE, BOT_REPOSITORY_ID, BOT_WORKFLOW_REF, ISSUES_URL, MIN_TLN, MIN_TLN_WRITE (the secrets are set with `wrangler secret put`)
+
+# The index queue (Registry R-WH14 INDEX, INDEX_DLQ; R-PU11, R-PU13, R-PU35; slice 118). The producer is the binding INDEX that main.roc declares (IndexQueue.index).
+# The consumer of talon-index has max_retries = 4: the first delivery and 4 retries, with the delays 1, 5, 15, 60 min that the Worker sets (Webhook.retry_delay_ms).
+# A message that fails the last attempt goes to talon-index-dlq, whose consumer writes a log line. The queue names are a proposal (docs/slices/118-webhook.md section 5).
+[[queues.producers]]
+binding = "INDEX"
+queue = "talon-index"
+
+[[queues.consumers]]
+queue = "talon-index"
+max_retries = 4
+dead_letter_queue = "talon-index-dlq"
+
+[[queues.consumers]]
+queue = "talon-index-dlq"
+
+# The daily job (slice 120, R-CT5, R-CT15, R-PU35): 03:00 UTC. The text is `Daily.cron`; `roc-cfw sync --check` compares it with the manifest.
+# The reconcile (slice 119b, R-PU23): every 5 min. The text is `Reconcile.cron`.
+[triggers]
+crons = ["0 3 * * *", "*/5 * * * *"]

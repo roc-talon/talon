@@ -1,0 +1,4 @@
+GET /api/repos/acme/lib 200
+GET /v1/packages/acme/lib/releases 404
+GET /api/repos/acme/lib/releases?per_page=100 200
+POST /v1/releases 409

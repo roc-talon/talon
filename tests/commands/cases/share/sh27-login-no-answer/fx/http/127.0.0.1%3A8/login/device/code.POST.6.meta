@@ -1,0 +1,7 @@
+header Content-Type: application/json
+error timeout
+require accept: application/json
+require user-agent: tln/0.0.1
+require content-type: application/x-www-form-urlencoded
+require-none authorization
+require-none talon-contributor
