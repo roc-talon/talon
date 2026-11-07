@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Makes the 27 L2 cases of the compat bot (slice 223): tests/commands/cases/bot/b1 to b27. The expected files are written by hand (no reference code existed): this script is the record of how the cases are made.
+# Makes the 30 L2 cases of the compat bot (slice 223): tests/commands/cases/bot/b1 to b30 (b28 to b30: slice 229). The expected files are written by hand (no reference code existed): this script is the record of how the cases are made.
 # Usage: tests/tools/mk-bot.sh      (run in the root of the repo; it replaces tests/commands/cases/bot/)
 set -eu
 ROOT=$(cd "$(dirname "$0")/../.." && pwd)
@@ -573,5 +573,131 @@ w "$C/expect/exit" 15
 : > "$C/expect/stdout"
 w "$C/expect/stderr" "tln: error[network]: the list of nightlies at api.github.com has no nightly tag (7 releases read). $RETRY_TXT"
 
+# --- Slice 229 (Design Q606): the stats of the probes. The stats are on when COMPAT_STATS_DIR is set (a proposal): the cases b1 to b27 do not set it and are not changed. The stats dir is {w}/home/stats (the file tree
+# compare leaves out the dir `tmp`, so RUNNER_TEMP could not hold it). The time files are in RUNNER_TEMP: the fake job writes each one with `copy:` from fx/times/<hash> (no rule copy: no time file).
+STATS_PROBES='run,time,nightly,hash,repo,target,result,wall_ms,cpu_ms,rss_kb'
+STATS_RUNS='run,time,tags,probes,no_stats,wall_ms,cpu_ms,rss_kb'
+NOW=2026-10-15T12:00:00Z
+statsenv() { printf '%s\n' 'COMPAT_STATS_DIR={w}/home/stats' 'GITHUB_RUN_ID=9001' >> "$C/fx/env"; }
+# timefile <hash> <text>: the GNU time file of the fake probe of that hash.
+timefile() { mkdir -p "$C/fx/times"; printf '%s' "$2" > "$C/fx/times/$1"; }
+# timed_probe_job <tag> <hash>: the log line of a probe job under GNU time.
+timed_probe_job() { echo "  job - /usr/bin/time -f %e %U %S %M -o \$HOME/tmp/$2.time env ROC_TOOLCHAIN=$1 tln probe --json --yes \$HOME/tmp/$2.tar.zst"; }
+# stats_tree <probe csv text> <run csv text>: the expected `tree.diff` of the 2 new files (diff -rNu, sorted by name).
+stats_tree() {
+    local f text n
+    for f in 2026-10.csv runs.csv; do
+        if [ $f = runs.csv ]; then text=$2; else text=$1; fi
+        n=$(printf '%s\n' "$text" | wc -l)
+        printf '%s\n' "--- home/stats/$f" "+++ home/stats/$f" "@@ -0,0 +1,$n @@"
+        printf '%s\n' "$text" | sed 's/^/+/'
+    done
+}
+# stats_calls_tail: the last call of a run with stats.
+STATS_WRITE='write_atomic $HOME/stats/2026-10.csv $HOME/stats/runs.csv'
+
+# --- b28: stats on. 2 missing hashes as b1 (pass and fail). The probe jobs run under GNU time (the job text is changed, not the probe), after the probes ONE read of the 2 time files, the rows go to the registry as in b1
+# (the stats never change a post), and at the end ONE write of the monthly file and the runs file. `clock` is called once, after `env_all`. The repo is the `repo` of the release of the artifact answer.
+newcase b28-stats 'Q606 R-MX18 R-MX15 R-MX1 R-MX17 R-OUT2 (slice 229): as b1 with COMPAT_STATS_DIR and GITHUB_RUN_ID=9001. The probe jobs run under /usr/bin/time (the file is RUNNER_TEMP/<hash>.time), one read_files of the 2 time files after the probe batch, the post is the same as b1, one write_atomic of <stats dir>/2026-10.csv and <stats dir>/runs.csv at the end. The run time is the clock of the start. Exit 0, the same stdout as b1.'
+statsenv
+token 1 jwt1; token 2 jwt2
+put_route 201
+sweeps_route "$(sweep_body "\"$HA\",\"$HB\"")"
+artifact $HA; artifact $HB
+audit_route '{"pairs":[]}'
+route compat.POST 201 '{"written":2}' 'require authorization: Bearer jwt2' "${WRITE_REQ[@]}"
+timefile $HA '12.34 5.67 0.89 123456
+'
+timefile $HB '3.00 1.00 0.50 2048
+'
+printf '%s\n' "# the download, then one rule for each hash" > "$C/fx/jobs"
+printf 'curl\t0\t-\t-\t-\n%s\t0\t%s\t-\tcopy:{w}/home/tmp/%s.time={w}/fx/times/%s\n%s\t0\t%s\t-\tcopy:{w}/home/tmp/%s.time={w}/fx/times/%s\n' "$HA.tar.zst" "$(unit_doc $HA $T pass)" $HA $HA "$HB.tar.zst" "$(unit_doc $HB $T fail)" $HB $HB >> "$C/fx/jobs"
+{
+    printf '%s\n' args env_all clock "$TOKEN_REQ" "$PUTLINES" "$GET_SWEEPS"
+    get_artifact $HA; get_artifact $HB
+    echo "spawn_all limit=4"; fetch_job $HA; fetch_job $HB
+    echo "spawn_all limit=4"; timed_probe_job $T $HA; timed_probe_job $T $HB
+    echo "read_files \$HOME/tmp/$HA.time \$HOME/tmp/$HB.time"
+    printf '%s\n' "$TOKEN_REQ"
+} > "$C/expect/calls.log"
+post_lines jwt2 "{\"rows\":[$(row $HA $T pass),$(row $HB $T fail)],\"sweep\":{\"nightly\":\"$T\",\"target\":\"any\",\"upto_log_index\":8}}" >> "$C/expect/calls.log"
+printf '%s\n' "$GET_AUDIT" "$STATS_WRITE" >> "$C/expect/calls.log"
+w "$C/expect/exit" 0
+printf '%s\n' "put $T: new" "sweep $T: 2 of 3 members to probe" "probe $HA on $T: pass" "probe $HB on $T: fail" "posted $T: 2 rows, sweep up to 8" "audit: 0 pairs" > "$C/expect/stdout"
+: > "$C/expect/stderr"
+stats_tree "$STATS_PROBES
+9001,$NOW,$T,$HA,acme/json,any,pass,12340,6560,123456
+9001,$NOW,$T,$HB,acme/json,any,fail,3000,1500,2048" "$STATS_RUNS
+9001,$NOW,1,2,0,15340,8060,123456" > "$C/expect/tree.diff"
+
+# --- b29: stats on, the time output is bad. The probe of HA left no time file (read_files gives NotFound), the file of HB has text that is not GNU time output. Both rows go to the registry and the sweep is complete (no
+# change of exit 0), each stats row has 3 empty numbers, the run row counts 2 probes and 2 no_stats, and each hash gets one warning on stderr. A bad time output never stops the run.
+newcase b29-stats-bad-time 'Q606 R-MX18 R-MX4 R-OUT2 (slice 229): as b28, but no time file for the first hash and a text that is not GNU time output for the second. The rows and the sweep are posted as in b28 and the exit is 0. The stats rows have empty wall_ms, cpu_ms and rss_kb. The run row has probes 2 and no_stats 2 and sums 0. One warning for each hash on stderr (proposal text).'
+statsenv
+token 1 jwt1; token 2 jwt2
+put_route 201
+sweeps_route "$(sweep_body "\"$HA\",\"$HB\"")"
+artifact $HA; artifact $HB
+audit_route '{"pairs":[]}'
+route compat.POST 201 '{"written":2}' 'require authorization: Bearer jwt2' "${WRITE_REQ[@]}"
+timefile $HB 'not a time text
+'
+printf '%s\n' "# the download, then one rule for each hash" > "$C/fx/jobs"
+printf 'curl\t0\t-\t-\t-\n%s\t0\t%s\t-\t-\n%s\t0\t%s\t-\tcopy:{w}/home/tmp/%s.time={w}/fx/times/%s\n' "$HA.tar.zst" "$(unit_doc $HA $T pass)" "$HB.tar.zst" "$(unit_doc $HB $T fail)" $HB $HB >> "$C/fx/jobs"
+{
+    printf '%s\n' args env_all clock "$TOKEN_REQ" "$PUTLINES" "$GET_SWEEPS"
+    get_artifact $HA; get_artifact $HB
+    echo "spawn_all limit=4"; fetch_job $HA; fetch_job $HB
+    echo "spawn_all limit=4"; timed_probe_job $T $HA; timed_probe_job $T $HB
+    echo "read_files \$HOME/tmp/$HA.time \$HOME/tmp/$HB.time"
+    printf '%s\n' "$TOKEN_REQ"
+} > "$C/expect/calls.log"
+post_lines jwt2 "{\"rows\":[$(row $HA $T pass),$(row $HB $T fail)],\"sweep\":{\"nightly\":\"$T\",\"target\":\"any\",\"upto_log_index\":8}}" >> "$C/expect/calls.log"
+printf '%s\n' "$GET_AUDIT" "$STATS_WRITE" >> "$C/expect/calls.log"
+w "$C/expect/exit" 0
+printf '%s\n' "put $T: new" "sweep $T: 2 of 3 members to probe" "probe $HA on $T: pass" "probe $HB on $T: fail" "posted $T: 2 rows, sweep up to 8" "audit: 0 pairs" > "$C/expect/stdout"
+printf '%s\n' "warning: no time stats for $HA on $T" "warning: no time stats for $HB on $T" > "$C/expect/stderr"
+stats_tree "$STATS_PROBES
+9001,$NOW,$T,$HA,acme/json,any,pass,,,
+9001,$NOW,$T,$HB,acme/json,any,fail,,," "$STATS_RUNS
+9001,$NOW,1,2,2,0,0,0" > "$C/expect/tree.diff"
+
+# --- b30: stats on, an audit probe. Nothing missing for the tag (as b2) and one unit pair of the older nightly N2 in the audit (as b3, one hash). The audit probe runs under GNU time on ROC_TOOLCHAIN=N2, its stats row has the
+# nightly N2 and the run row counts it (tags 1: the audit is not a tag; probes 1). The calls of the audit part have the same order as b3, with the time read after the probe batch.
+newcase b30-stats-audit 'Q606 R-MX13 R-MX10 R-MX18 R-OUT2 (slice 229): the tag has nothing missing (post with the sweep only, as b2). The audit has one unit pair of the nightly nightly-2026-10-20-bbbbbbb: the probe under /usr/bin/time, one read_files of its time file, a post with the row and no sweep, then the one write_atomic. The stats row has the nightly of the audit group. The run row: tags 1, probes 1.'
+statsenv
+token 1 jwt1; token 2 jwt2; token 3 jwt3
+put_route 200
+sweeps_route "$(sweep_body "")"
+artifact $HC
+audit_route "{\"pairs\":[{\"crash_count\":0,\"fail_count\":1,\"hash\":\"$HC\",\"nightly\":\"$N2\",\"pass_count\":5,\"target\":\"any\"}]}"
+route compat.POST 200 '{"written":0}' 'require authorization: Bearer jwt2' "${WRITE_REQ[@]}"
+route compat.POST.2 201 '{"written":1}' 'require authorization: Bearer jwt3' "${WRITE_REQ[@]}"
+timefile $HC '1.50 1.00 0.25 4096
+'
+printf '%s\n' "# the download, then one rule for the hash" > "$C/fx/jobs"
+printf 'curl\t0\t-\t-\t-\n%s\t0\t%s\t-\tcopy:{w}/home/tmp/%s.time={w}/fx/times/%s\n' "$HC.tar.zst" "$(unit_doc $HC $N2 pass)" $HC $HC >> "$C/fx/jobs"
+{
+    printf '%s\n' args env_all clock "$TOKEN_REQ" "$PUTLINES" "$GET_SWEEPS" "$TOKEN_REQ"
+    post_lines jwt2 "{\"rows\":[],\"sweep\":{\"nightly\":\"$T\",\"target\":\"any\",\"upto_log_index\":8}}"
+    printf '%s\n' "$GET_AUDIT"
+    get_artifact $HC
+    echo "spawn_all limit=4"; fetch_job $HC
+    echo "spawn_all limit=4"; timed_probe_job $N2 $HC
+    echo "read_files \$HOME/tmp/$HC.time"
+    printf '%s\n' "$TOKEN_REQ"
+    post_lines jwt3 "{\"rows\":[$(row $HC $N2 pass)]}"
+    printf '%s\n' "$STATS_WRITE"
+} > "$C/expect/calls.log"
+w "$C/expect/exit" 0
+printf '%s\n' "put $T: known" "sweep $T: 0 of 3 members to probe" "posted $T: 0 rows, sweep up to 8" "audit: 1 pair" "probe $HC on $N2: pass" "posted audit $N2: 1 row" > "$C/expect/stdout"
+: > "$C/expect/stderr"
+stats_tree "$STATS_PROBES
+9001,$NOW,$N2,$HC,acme/json,any,pass,1500,1250,4096" "$STATS_RUNS
+9001,$NOW,1,1,0,1500,1250,4096" > "$C/expect/tree.diff"
+
+# --- b31 and b32 (slice 229, answers Q-B and Q-C) are not made here: they were made by hand from the committed cases b5-no-fact (b31: COMPAT_STATS_DIR, GITHUB_RUN_ID, time files, the clock, the timed jobs, read_files, write_atomic, the 2 files in tree.diff)
+# and b28-stats with the 401 routes of b12-renew-twice (b32: exit 20 after the probes, stats still written). Re-running this script removes them: copy them first.
+
 find "$OUT" -type f | wc -l | sed 's/^/files: /'
-echo "made 27 cases in $OUT"
+echo "made 30 cases in $OUT"

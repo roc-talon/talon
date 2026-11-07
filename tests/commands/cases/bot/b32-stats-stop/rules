@@ -1,0 +1,1 @@
+Q606 R-AP34 R-MX18 R-OUT2 (slice 229, answer Q-C): as b28, but the post answers 401 with the first token and with the renewed token (as b12): exit 20, no audit read. Stats are written on every exit after probes ran: one write_atomic at the end, with the rows of the 2 probes and the run row. The post is not in the stats. Exit 20 text is the one of b12.

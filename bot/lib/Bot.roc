@@ -1,3 +1,4 @@
+import lib.Clock
 import lib.Fail
 import lib.JsonDoc
 import lib.Nightlies
@@ -66,6 +67,101 @@ Bot :: [].{
 	## The job that is one unit probe (R-MX15, R-PB1, R-PB7): `env ROC_TOOLCHAIN=<tag> tln probe --json --yes <dir>/<hash>.tar.zst` (R-MX18 item 1).
 	probe_job : { dir : Str, tag : Str, hash : Str } -> List(Str)
 	probe_job = |x| ["env", "ROC_TOOLCHAIN=${x.tag}", "tln", "probe", "--json", "--yes", "${x.dir}/${x.hash}.tar.zst"]
+
+	## Slice 229 (Design Q606): the stats of one probe from the text of GNU `time -f "%e %U %S %M"`: the last line has the 4 numbers. `%e` is the wall time in seconds with 2 decimals, `%U` and `%S` the user and system CPU seconds,
+	## `%M` the peak RSS in KB. `wall_ms` is `%e` in ms, `cpu_ms` is `%U` plus `%S` in ms. GNU time can put a first line `Command exited with non-zero status <n>` or `Command terminated by signal <n>`: it is not the last line, so it is ignored.
+	## Empty text, a last line that is not 4 numbers: `Err(why)`.
+	time_stats : Str -> Try({ wall_ms : U64, cpu_ms : U64, rss_kb : U64 }, Str)
+	time_stats = |text| {
+		lines = text.split_on("\n").keep_if(|l| !l.trim().is_empty())
+		last = match lines.last() {
+			Ok(l) => l.trim()
+			Err(_) => return Err("the time text is empty")
+		}
+		match last.split_on(" ") {
+			[wall, user, sys, rss] => {
+				wall_ms = dec_ms(wall)?
+				cpu_ms = dec_ms(user)? + dec_ms(sys)?
+				rss_kb = U64.from_str(rss).map_err(|_| "the peak RSS is not a number")?
+				Ok({ wall_ms, cpu_ms, rss_kb })
+			}
+			_ => Err("the last line of the time text is not 4 numbers")
+		}
+	}
+
+	## Slice 229 (Q606): the job of `argv` under GNU time: `/usr/bin/time -f "%e %U %S %M" -o <time_file> <argv...>`. `-o` keeps the time text out of the stdout that the bot parses.
+	timed_job : { time_file : Str, argv : List(Str) } -> List(Str)
+	timed_job = |x| ["/usr/bin/time", "-f", "%e %U %S %M", "-o", x.time_file].concat(x.argv)
+
+	## Slice 229 (Q606): the file that GNU time writes for the probe of `hash`: `<dir>/<hash>.time`.
+	time_file : { dir : Str, hash : Str } -> Str
+	time_file = |x| "${x.dir}/${x.hash}.time"
+
+	## Slice 229 (Q606): the `repo` of the first release of an artifact answer that is not withdrawn (the same release as `release_url`), for example `acme/json`. The empty text when there is none or the member is `null`.
+	release_repo : Str -> Str
+	release_repo = |text| match JsonDoc.parse(text) {
+		Err(BadJson) => ""
+		Ok(doc) => {
+			releases = match field(doc, "releases") {
+				Ok(Arr(items)) => items
+				_ => return ""
+			}
+			live = releases.keep_if(
+				|r| match field(r, "withdrawn") {
+					Ok(Null) | Err(None) => Bool.True
+					Ok(_) => Bool.False
+				},
+			)
+			match live.first() {
+				Ok(first) => match field(first, "repo") {
+					Ok(Text(repo)) => repo
+					_ => ""
+				}
+				Err(_) => ""
+			}
+		}
+	}
+
+	## Slice 229 (Q606): the header line of a stats file, with no new line at the end. `Probes` is `stats/compat/<YYYY-MM>.csv`, `Runs` is `stats/compat/runs.csv`.
+	header : [Probes, Runs] -> Str
+	header = |which| match which {
+		Probes => "run,time,nightly,hash,repo,target,result,wall_ms,cpu_ms,rss_kb"
+		Runs => "run,time,tags,probes,no_stats,wall_ms,cpu_ms,rss_kb"
+	}
+
+	## Slice 229 (Q606): the name of the monthly probe file for a time (seconds since the epoch, UTC): `<YYYY-MM>.csv`.
+	month_file : U64 -> Str
+	month_file = |time| match Clock.format_utc(time).split_on("T") {
+		[date, _] => match date.split_on("-") {
+			[year, month, _] => "${year}-${month}.csv"
+			_ => ""
+		}
+		_ => ""
+	}
+
+	## Slice 229 (Q606): one CSV line (no new line at the end) of a probe, in the order of `header(Probes)`. `time` is `Clock.format_utc`. A `stats` of `Err` gives empty `wall_ms`, `cpu_ms` and `rss_kb`.
+	## A field with a comma, a double quote or a new line is in double quotes, and a double quote in it is doubled (RFC 4180).
+	probe_line : { run : Str, time : U64, nightly : Str, hash : Str, repo : Str, target : Str, result : Str, stats : Try({ wall_ms : U64, cpu_ms : U64, rss_kb : U64 }, Str) } -> Str
+	probe_line = |x| {
+		nums = match x.stats {
+			Ok(s) => "${s.wall_ms.to_str()},${s.cpu_ms.to_str()},${s.rss_kb.to_str()}"
+			Err(_) => ",,"
+		}
+		fields = [x.run, Clock.format_utc(x.time), x.nightly, x.hash, x.repo, x.target, x.result].map(csv_field)
+		"${Str.join_with(fields, ",")},${nums}"
+	}
+
+	## Slice 229 (Q606): one CSV line (no new line at the end) of a run, in the order of `header(Runs)`: `run`, `time`, `tags` (nightlies swept, not the audit), `probes` (the number of items of `probes`),
+	## `no_stats` (the items that are `Err`), `wall_ms` (the sum over the `Ok` items), `cpu_ms` (the sum), `rss_kb` (the largest, 0 when there is none).
+	run_line : { run : Str, time : U64, tags : U64, probes : List(Try({ wall_ms : U64, cpu_ms : U64, rss_kb : U64 }, Str)) } -> Str
+	run_line = |x| {
+		oks = x.probes.keep_oks(|p| p)
+		wall = oks.fold(0.U64, |sum, s| sum + s.wall_ms)
+		cpu = oks.fold(0.U64, |sum, s| sum + s.cpu_ms)
+		rss = oks.fold(0.U64, |top, s| if s.rss_kb > top s.rss_kb else top)
+		no_stats = x.probes.len() - oks.len()
+		"${csv_field(x.run)},${Clock.format_utc(x.time)},${x.tags.to_str()},${x.probes.len().to_str()},${no_stats.to_str()},${wall.to_str()},${cpu.to_str()},${rss.to_str()}"
+	}
 
 	## R-MX17, R-AP10: the matrix row of one probe from the `stdout` of `tln probe --json` (`data` of CLI 3 R-J3, R-J4; ProbeCmd `Unit`). `target` is `any`, `result` is `data.outcome`
 	## (`pass`, `fail`, `hang`, `crash`), `error_digest` is null (Q569). `Err(why)` when the document is not JSON, has `ok` false, is not `kind` `unit`, has another `hash`, or a `compiler` with another nightly id than `tag`
@@ -225,3 +321,28 @@ is_list = |step| match step {
 	List => Bool.True
 	_ => Bool.False
 }
+
+# Seconds with up to 3 decimals as ms. GNU time gives 2 decimals.
+dec_ms : Str -> Try(U64, Str)
+dec_ms = |text| {
+	bad = |_| "'${text}' is not a time in seconds"
+	match text.split_on(".") {
+		[whole] => Ok(U64.from_str(whole).map_err(bad)? * 1000)
+		[whole, frac] => {
+			scale = match frac.count_utf8_bytes() {
+				1 => 100
+				2 => 10
+				3 => 1
+				_ => return Err(bad({}))
+			}
+			Ok(U64.from_str(whole).map_err(bad)? * 1000 + U64.from_str(frac).map_err(bad)? * scale)
+		}
+		_ => Err(bad({}))
+	}
+}
+
+# RFC 4180: a field with a comma, quote or new line is in double quotes, a quote is doubled.
+csv_field : Str -> Str
+csv_field = |text| if text.contains(",") or text.contains("\"") or text.contains("\n") or text.contains("\r") {
+	"\"${text.replace_each("\"", "\"\"")}\""
+} else text

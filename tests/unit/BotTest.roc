@@ -169,3 +169,48 @@ expect {
 	no_token = [a, b, c, d, e, f, g].all(|(_, _, m)| !m.contains("Bearer") and !m.contains("jwt") and !m.contains("eyJ"))
 	a == ("network", 15, gave_up("get sweeps ${tag}", "no answer")) and b == ("network", 15, gave_up("get audit", "429")) and c == ("network", 15, gave_up("get artifact ${ha}", "503")) and d == ("network", 15, gave_up("get sweeps ${tag}", "502")) and e == ("rejected", 20, fault("get sweeps ${tag}", "not-found")) and f == ("rejected", 20, fault("get audit", "bad-request")) and g == ("rejected", 20, fault("get artifact ${ha}", "not-found")) and no_token
 }
+
+# Slice 229 (Design Q606, Registry R-MX18): the stats of the probes of the bot.
+
+st = |wall_ms, cpu_ms, rss_kb| { wall_ms, cpu_ms, rss_kb }
+
+# Q606 item 1: the numbers of GNU time (`%e %U %S %M`): wall ms, CPU ms (user plus system), RSS KB. The first line of a failed command is ignored. 2 decimals are exact ms.
+expect {
+	Bot.time_stats("12.34 5.67 0.89 123456\n") == Ok(st(12340, 6560, 123456)) and Bot.time_stats("0.07 0.00 0.01 9") == Ok(st(70, 10, 9)) and Bot.time_stats("Command exited with non-zero status 1\n3.00 1.00 0.50 2048\n") == Ok(st(3000, 1500, 2048)) and Bot.time_stats("Command terminated by signal 9\n0.10 0.00 0.00 100\n") == Ok(st(100, 0, 100))
+}
+
+# Q606 item 1, the bad text: a missing or bad time file gives `Err`, never a crash.
+expect {
+	bad = |text| Bot.time_stats(text).is_err()
+	bad("") and bad("\n") and bad("garbage") and bad("Command exited with non-zero status 1\n") and bad("1.00 2.00 3.00") and bad("1.00 x 3.00 4") and bad("1.00 2.00 3.00 4 5") and bad("-1.00 2.00 3.00 4")
+}
+
+# Q606 item 1: the probe job runs under GNU time, `-o` keeps the stats out of stdout. The job of R-MX15 is the tail, not changed.
+expect {
+	argv = Bot.probe_job({ dir: "/t", tag, hash: ha })
+	Bot.timed_job({ time_file: "/t/${ha}.time", argv }) == ["/usr/bin/time", "-f", "%e %U %S %M", "-o", "/t/${ha}.time"].concat(argv) and Bot.time_file({ dir: "/t", hash: ha }) == "/t/${ha}.time" and Bot.probe_job({ dir: "/t", tag, hash: ha }) == ["env", "ROC_TOOLCHAIN=${tag}", "tln", "probe", "--json", "--yes", "/t/${ha}.tar.zst"]
+}
+
+# Q606 item 3 (proposal, R-OUT2): the `repo` column is the `repo` of the release that `release_url` picks. A withdrawn first release is skipped. No release or no `repo`: the empty text.
+expect {
+	rel = |repo, withdrawn| "{'url':'https://x/${repo}','repo':'${repo}','withdrawn':${withdrawn},'yanked':false}"
+	body = js("{'artifact':{},'releases':[${rel("gone/one", "1792065600000")},${rel("acme/json", "null")},${rel("other/two", "null")}],'repos':[]}")
+	Bot.release_repo(body) == "acme/json" and Bot.release_repo(js("{'artifact':{},'releases':[],'repos':[]}")) == "" and Bot.release_repo(js("{'artifact':{},'releases':[{'url':'https://x/y','withdrawn':null}],'repos':[]}")) == "" and Bot.release_repo(js("{'artifact':{},'releases':[{'url':'https://x/y','repo':null,'withdrawn':null}],'repos':[]}")) == "" and Bot.release_repo("x") == ""
+}
+
+# Q606 item 3 (proposal, R-OUT2): the 2 header lines and the monthly file name (UTC, the month of the time).
+expect {
+	Bot.header(Probes) == "run,time,nightly,hash,repo,target,result,wall_ms,cpu_ms,rss_kb" and Bot.header(Runs) == "run,time,tags,probes,no_stats,wall_ms,cpu_ms,rss_kb" and Bot.month_file(1792065600) == "2026-10.csv" and Bot.month_file(1793491199) == "2026-10.csv" and Bot.month_file(1793491200) == "2026-11.csv" and Bot.month_file(0) == "1970-01.csv"
+}
+
+# Q606 item 3 (proposal): the CSV line of a probe. `Err` stats give 3 empty fields. A field with a comma or a quote is quoted (RFC 4180).
+expect {
+	line = |repo, stats| Bot.probe_line({ run: "9001", time: 1792065600, nightly: tag, hash: ha, repo, target: "any", result: "pass", stats })
+	line("acme/json", Ok(st(12340, 6560, 123456))) == "9001,2026-10-15T12:00:00Z,${tag},${ha},acme/json,any,pass,12340,6560,123456" and line("acme/json", Err("no time file")) == "9001,2026-10-15T12:00:00Z,${tag},${ha},acme/json,any,pass,,," and line("", Ok(st(1, 2, 3))) == "9001,2026-10-15T12:00:00Z,${tag},${ha},,any,pass,1,2,3" and line("a,b\"c", Ok(st(1, 2, 3))) == "9001,2026-10-15T12:00:00Z,${tag},${ha},\"a,b\"\"c\",any,pass,1,2,3"
+}
+
+# Q606 item 3 (proposal): the CSV line of a run: the counts, the sums over the probes that have stats, the largest RSS. No probe: zeros.
+expect {
+	run = |probes| Bot.run_line({ run: "9001", time: 1792065600, tags: 1, probes })
+	run([Ok(st(12340, 6560, 123456)), Err("none"), Ok(st(3000, 1500, 2048))]) == "9001,2026-10-15T12:00:00Z,1,3,1,15340,8060,123456" and run([]) == "9001,2026-10-15T12:00:00Z,1,0,0,0,0,0" and run([Err("none")]) == "9001,2026-10-15T12:00:00Z,1,1,1,0,0,0"
+}

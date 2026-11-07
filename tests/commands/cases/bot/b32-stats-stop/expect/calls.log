@@ -1,0 +1,39 @@
+args
+env_all
+clock
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send PUT http://127.0.0.1:9/v1/toolchains/nightly-2026-10-29-aaaaaaa timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer jwt1
+http_get http://127.0.0.1:9/v1/sweeps/nightly-2026-10-29-aaaaaaa
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+http_get http://127.0.0.1:9/v1/artifacts/3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+http_get http://127.0.0.1:9/v1/artifacts/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+spawn_all limit=4
+  job - curl -fsSL --output $HOME/tmp/3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3.tar.zst https://github.com/acme/json/releases/download/2.1.0/3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3.tar.zst
+  job - curl -fsSL --output $HOME/tmp/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.tar.zst https://github.com/acme/json/releases/download/2.1.0/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.tar.zst
+spawn_all limit=4
+  job - /usr/bin/time -f %e %U %S %M -o $HOME/tmp/3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3.time env ROC_TOOLCHAIN=nightly-2026-10-29-aaaaaaa tln probe --json --yes $HOME/tmp/3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3.tar.zst
+  job - /usr/bin/time -f %e %U %S %M -o $HOME/tmp/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.time env ROC_TOOLCHAIN=nightly-2026-10-29-aaaaaaa tln probe --json --yes $HOME/tmp/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.tar.zst
+read_files $HOME/tmp/3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3.time $HOME/tmp/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.time
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send POST http://127.0.0.1:9/v1/compat timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt2
+  <body> {"rows":[{"error_digest":null,"hash":"3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3","nightly":"nightly-2026-10-29-aaaaaaa","result":"pass","target":"any"},{"error_digest":null,"hash":"4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4","nightly":"nightly-2026-10-29-aaaaaaa","result":"fail","target":"any"}],"sweep":{"nightly":"nightly-2026-10-29-aaaaaaa","target":"any","upto_log_index":8}}
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send POST http://127.0.0.1:9/v1/compat timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt3
+  <body> {"rows":[{"error_digest":null,"hash":"3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3","nightly":"nightly-2026-10-29-aaaaaaa","result":"pass","target":"any"},{"error_digest":null,"hash":"4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4","nightly":"nightly-2026-10-29-aaaaaaa","result":"fail","target":"any"}],"sweep":{"nightly":"nightly-2026-10-29-aaaaaaa","target":"any","upto_log_index":8}}
+write_atomic $HOME/stats/2026-10.csv $HOME/stats/runs.csv

@@ -1,0 +1,1 @@
+Q606 R-MX4 R-MX17 R-P3 R-OUT2 (slice 229, answer Q-B): as b5 (the probe of the second hash exits 1 with no fact) with COMPAT_STATS_DIR. The probe has a stats row with the result no-fact and the numbers of its time file (its first line Command exited with non-zero status 1 is ignored). Exit 1, posts, stdout and stderr as b5. The run row has probes 2 and no_stats 0.

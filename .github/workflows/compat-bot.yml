@@ -2,7 +2,9 @@
 # It runs on one Linux runner, on `schedule` and `workflow_dispatch` only (R-TP7: the Worker checks `event_name`).
 # The Worker setting BOT_WORKFLOW_REF is `roc-talon/talon/.github/workflows/compat-bot.yml@refs/heads/<default branch>`: do not rename this file (R-MX15).
 # The GitHub list of nightlies is read with no token (Q567): the sweep step has no GitHub token variable. Only the install of the compiler has one (scripts/get-roc.sh).
-# The job needs `id-token: write` for the OIDC token (R-TP2). Nothing else of the job writes (no `contents: write`).
+# The job `bot` needs `id-token: write` for the OIDC token (R-TP2). Nothing else of that job writes (no `contents: write`).
+# Slice 229 (Design Q606): the job `bot` sets COMPAT_STATS_DIR, so the bot writes the stats files of the probes there, and it uploads them as the artifact `compat-stats`.
+# The job `stats` has `contents: write` and no OIDC token. It merges the artifact into stats/compat/ on the branch `compat-stats` (scripts/compat-stats-merge.sh) and pushes that branch. It writes nothing else.
 # The registry is the repository variable TALON_REGISTRY, in the base URL form of CLI 1, R-RG7. The OIDC audience is that text (R-TP17).
 # The compiler of the bot is ROC_TAG of scripts/env.sh (TW28). The probes use the compilers that `tln probe` downloads (CLI 6.2, R-MX15).
 name: compat-bot
@@ -55,7 +57,56 @@ jobs:
           "$ROC" build bot/main.roc --opt=speed --output="$RUNNER_TEMP/bin/bot"
           echo "$RUNNER_TEMP/bin" >> "$GITHUB_PATH"
 
+      - name: Stats directory
+        run: |
+          # The bot runs each probe under GNU time (Q606).
+          [ -x /usr/bin/time ] || { sudo apt-get update -q && sudo apt-get install -y -q time; }
+          mkdir -p "$RUNNER_TEMP/compat-stats"
+
       - name: Sweep
         env:
           TAGS: ${{ inputs.tags }}
+          COMPAT_STATS_DIR: ${{ runner.temp }}/compat-stats
         run: bot $TAGS
+
+      - name: Upload the stats
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: compat-stats
+          path: ${{ runner.temp }}/compat-stats
+          if-no-files-found: ignore
+
+  stats:
+    needs: bot
+    if: ${{ !cancelled() && github.repository == 'roc-talon/talon' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download the stats
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: compat-stats
+          path: ${{ runner.temp }}/compat-stats-in
+
+      - name: Merge into the branch compat-stats
+        run: |
+          # A bot run that wrote no stats leaves no artifact: nothing to commit.
+          ls "$RUNNER_TEMP"/compat-stats-in/*.csv > /dev/null 2>&1 || { echo "no stats in this run"; exit 0; }
+          if git ls-remote --exit-code --heads origin compat-stats > /dev/null; then
+            git fetch --depth=1 origin compat-stats
+            git worktree add -B compat-stats "$RUNNER_TEMP/branch" FETCH_HEAD
+          else
+            git worktree add --orphan -b compat-stats "$RUNNER_TEMP/branch"
+          fi
+          scripts/compat-stats-merge.sh "$RUNNER_TEMP/compat-stats-in" "$RUNNER_TEMP/branch"
+          cd "$RUNNER_TEMP/branch"
+          git add stats
+          git diff --cached --quiet && { echo "no change"; exit 0; }
+          git -c user.name=compat-bot -c user.email=compat-bot@users.noreply.github.com commit -m "compat stats: run $GITHUB_RUN_ID"
+          git push origin compat-stats

@@ -31,11 +31,25 @@ BotFlow :: [].{
 	}
 }
 
-Run : { origin : Str, oidc : Publish.Oidc, dir : Str }
+# `stats` is `Ok` when COMPAT_STATS_DIR is set (slice 229): the dir of the files, the run id and the start time of the run.
+Run : { origin : Str, oidc : Publish.Oidc, dir : Str, stats : Try({ dir : Str, id : Str, time : U64 }, [Off]) }
+
+Stat : { wall_ms : U64, cpu_ms : U64, rss_kb : U64 }
+
+# The stats lines of the run so far: the probe lines, the stats of each probe, the nightlies started.
+Acc : { lines : List(Str), probes : List(Try(Stat, Str)), tags : U64 }
+
+# The result of a step that can stop: the problems of the run, or the failure. Both keep the stats so far (they are written on every end).
+Out : { acc : Acc, problems : List(Str) }
+
+Halt : { fail : Fail, acc : Acc }
+
+halt : Acc -> (Fail -> Halt)
+halt = |acc| |fail| { fail, acc }
 
 Sent : { status : U16, body : Str }
 
-Unit : { rows : List(Compat.Row), nofact : U64 }
+Unit : { rows : List(Compat.Row), nofact : U64, lines : List(Str), probes : List(Try(Stat, Str)) }
 
 # One write request: the step names it in a failure, `soft` lets a 422 come back as an answer.
 Write : { step : [Put(Str), Post(Str), PostAudit(Str), List, GetSweeps(Str), GetAudit, GetArtifact(Str)], method : [Get, Post, Put, Delete], url : Str, body : Str, soft : Bool }
@@ -52,15 +66,56 @@ flow! = |fx| {
 		Ok(text) => text
 		Err(Unset) => return Err(Fail.new(Usage, "the compat bot needs a directory for the archives, and RUNNER_TEMP is not set. Run it in a GitHub Actions job."))
 	}
-	run = { origin, oidc, dir }
+	stats = match Publish.env_var(env, "COMPAT_STATS_DIR") {
+		Ok(stats_dir) => Ok({ dir: stats_dir, id: Publish.env_var(env, "GITHUB_RUN_ID") ?? "", time: fx.clock!() })
+		Err(Unset) => Err(Off)
+	}
+	run = { origin, oidc, dir, stats }
 	tags = if operands.is_empty() listed!(fx)? else named(operands)?
+	finished = sweeps!(fx, run, tags)
+	acc = match finished {
+		Ok(out) => out.acc
+		Err(stop) => stop.acc
+	}
+	write_stats!(fx, run, acc)
+	match finished {
+		Ok(out) => Ok(out.problems)
+		Err(stop) => Err(stop.fail)
+	}
+}
+
+# Steps 2 to 7: the sweep of each tag, then the audit.
+sweeps! : Fx, Run, List(Str) => Try(Out, Halt)
+sweeps! = |fx, run, tags| {
+	var $acc = { lines: [], probes: [], tags: 0 }
 	var $problems = []
 	for tag in tags {
-		found = sweep_tag!(fx, run, tag)?
-		$problems = $problems.concat(found)
+		found = sweep_tag!(fx, run, tag, $acc)?
+		$acc = found.acc
+		$problems = $problems.concat(found.problems)
 	}
-	audited = audit!(fx, run)?
-	Ok($problems.concat(audited))
+	audited = audit!(fx, run, $acc)?
+	Ok({ acc: audited.acc, problems: $problems.concat(audited.problems) })
+}
+
+# Step 6 of the stats (slice 229): when the stats are on and a probe ran, the monthly file and runs.csv, in one write. A failed write is a warning: it never changes the exit code.
+write_stats! : Fx, Run, Acc => {}
+write_stats! = |fx, run, acc| match run.stats {
+	Err(Off) => {}
+	Ok(stats) => if acc.lines.is_empty() {
+		{}
+	} else {
+		lines = |head, rows| "${Str.join_with([head].concat(rows), "\n")}\n"
+		run_row = Bot.run_line({ run: stats.id, time: stats.time, tags: acc.tags, probes: acc.probes })
+		files = [
+			{ path: "${stats.dir}/${Bot.month_file(stats.time)}", content: lines(Bot.header(Probes), acc.lines) },
+			{ path: "${stats.dir}/runs.csv", content: lines(Bot.header(Runs), [run_row]) },
+		]
+		match fx.write_atomic!(files) {
+			Ok(_) => {}
+			Err(bad) => fx.err!("warning: no stats written: ${bad.path}\n")
+		}
+	}
 }
 
 # Step 1: `TALON_REGISTRY` only (R-MX18 item 10), the base URL form of CLI R-RG7.
@@ -119,67 +174,74 @@ listed! = |fx| {
 }
 
 # Steps 2 to 6 for one tag. The result is the problems of the tag, which the run reports at its end.
-sweep_tag! : Fx, Run, Str => Try(List(Str), Fail)
-sweep_tag! = |fx, run, tag| {
-	put = write!(fx, run, { step: Put(tag), method: Put, url: Bot.url({ origin: run.origin, route: Put(tag) }), body: "", soft: Bool.True })?
+sweep_tag! : Fx, Run, Str, Acc => Try(Out, Halt)
+sweep_tag! = |fx, run, tag, before| {
+	acc = { ..before, tags: before.tags + 1 }
+	put = write!(fx, run, { step: Put(tag), method: Put, url: Bot.url({ origin: run.origin, route: Put(tag) }), body: "", soft: Bool.True }).map_err(halt(acc))?
 	if put.status == 422 {
 		fx.err!("warning: skipping ${tag}: the registry refused the nightly (422). ${put.body}\n")
-		return Ok([])
+		return Ok({ acc, problems: [] })
 	}
 	fx.out!("put ${tag}: ${if put.status == 201 "new" else "known"}\n")
-	work = read_work!(fx, run, tag)?
+	work = read_work!(fx, run, tag).map_err(halt(acc))?
 	if Bot.done(work) {
 		fx.out!("sweep ${tag}: done\n")
-		Ok([])
+		Ok({ acc, problems: [] })
 	} else {
-		round!(fx, run, tag, { work, held: [], nofact: 0, n: 1 })
+		round!(fx, run, tag, { work, held: [], nofact: 0, n: 1, acc })
 	}
 }
 
 # Steps 3 to 6: one round of a tag. After a 422 `sweep-incomplete`: one more round (at most 2 sweep requests, R-MX18 item 7).
-round! : Fx, Run, Str, { work : Work.Answer, held : List(Compat.Row), nofact : U64, n : U64 } => Try(List(Str), Fail)
+round! : Fx, Run, Str, { work : Work.Answer, held : List(Compat.Row), nofact : U64, n : U64, acc : Acc } => Try(Out, Halt)
 round! = |fx, run, tag, state| {
 	todo = state.work.missing.keep_if(|hash| !state.held.any(|row| row.hash == hash))
 	fx.out!("sweep ${tag}: ${todo.len().to_str()} of ${state.work.members.to_str()} members to probe\n")
-	probed = probe!(fx, run, tag, todo)?
+	probed = probe!(fx, run, tag, todo).map_err(halt(state.acc))?
+	acc = add_stats(state.acc, probed)
 	rows = state.held.concat(probed.rows)
 	nofact = state.nofact + probed.nofact
 	sweep = Bot.sweep({ tag, work: state.work, rowed: rows.map(|row| row.hash) })
-	posted = post_all!(fx, run, { tag, audit: Bool.False, posts: Bot.chunks({ rows, sweep }) })?
+	posted = post_all!(fx, run, { tag, audit: Bool.False, posts: Bot.chunks({ rows, sweep }) }).map_err(halt(acc))?
 	missing_text = if nofact == 0 [] else ["${count_text(nofact, "probe")} gave no fact, so there is no sweep for ${tag}"]
 	match posted {
-		Done => Ok(missing_text)
+		Done => Ok({ acc, problems: missing_text })
 		Stale => if state.n >= 2 {
 			fx.err!("warning: no sweep for ${tag}: the registry answered 422 sweep-incomplete after 2 sweep requests\n")
-			Ok(missing_text.append("no sweep for ${tag}"))
+			Ok({ acc, problems: missing_text.append("no sweep for ${tag}") })
 		} else {
 			fx.out!("sweep ${tag}: not complete (422), reading the work list again\n")
-			work = read_work!(fx, run, tag)?
-			round!(fx, run, tag, { work, held: rows, nofact, n: state.n + 1 })
+			work = read_work!(fx, run, tag).map_err(halt(acc))?
+			round!(fx, run, tag, { work, held: rows, nofact, n: state.n + 1, acc })
 		}
 	}
 }
 
 # Step 7: the hint audit (R-MX13). The unit pairs are grouped by nightly: steps 4 and 5 for each group, then one post with no sweep.
-audit! : Fx, Run => Try(List(Str), Fail)
-audit! = |fx, run| {
-	answer = read!(fx, run, { url: Bot.url({ origin: run.origin, route: Audit(200) }), step: GetAudit })?
+audit! : Fx, Run, Acc => Try(Out, Halt)
+audit! = |fx, run, before| {
+	answer = read!(fx, run, { url: Bot.url({ origin: run.origin, route: Audit(200) }), step: GetAudit }).map_err(halt(before))?
 	pairs = match Audit.decode(answer.body) {
 		Ok(decoded) => decoded.pairs
-		Err(BadJson(why)) => return Err(Fail.new(Network, "the answer of the registry ${run.origin} is not an audit list: ${why}"))
+		Err(BadJson(why)) => return Err({ fail: Fail.new(Network, "the answer of the registry ${run.origin} is not an audit list: ${why}"), acc: before })
 	}
 	fx.out!("audit: ${count_text(pairs.len(), "pair")}\n")
+	var $acc = before
 	var $problems = []
 	for group in Bot.audit_groups(pairs) {
-		probed = probe!(fx, run, group.nightly, group.hashes)?
+		probed = probe!(fx, run, group.nightly, group.hashes).map_err(halt($acc))?
+		$acc = add_stats($acc, probed)
 		posts = Bot.chunks({ rows: probed.rows, sweep: Err(None) })
-		_ = post_all!(fx, run, { tag: group.nightly, audit: Bool.True, posts })?
+		_ = post_all!(fx, run, { tag: group.nightly, audit: Bool.True, posts }).map_err(halt($acc))?
 		if probed.nofact > 0 {
 			$problems = $problems.append("${count_text(probed.nofact, "probe")} gave no fact on ${group.nightly}")
 		}
 	}
-	Ok($problems)
+	Ok({ acc: $acc, problems: $problems })
 }
+
+add_stats : Acc, Unit -> Acc
+add_stats = |acc, probed| { ..acc, lines: acc.lines.concat(probed.lines), probes: acc.probes.concat(probed.probes) }
 
 # Steps 4 and 5: the archive and the probe of each hash on the tag, in two batches of 4 (R-MX18 item 1). A hash with no row is a warning and a count.
 probe! : Fx, Run, Str, List(Str) => Try(Unit, Fail)
@@ -188,8 +250,8 @@ probe! = |fx, run, tag, hashes| {
 	var $found = []
 	for hash in hashes {
 		match release!(fx, run, hash) {
-			Ok(url) => {
-				$found = $found.append({ hash, url })
+			Ok(release) => {
+				$found = $found.append({ hash, url: release.url, repo: release.repo })
 			}
 			Err(Warn(why)) => {
 				$nofact = $nofact + 1
@@ -203,7 +265,7 @@ probe! = |fx, run, tag, hashes| {
 	for (item, result) in $found.map2(downloaded, |item, result| (item, result)) {
 		match result.ended {
 			Exited(0) => {
-				$ready = $ready.append(item.hash)
+				$ready = $ready.append(item)
 			}
 			other => {
 				$nofact = $nofact + 1
@@ -211,10 +273,43 @@ probe! = |fx, run, tag, hashes| {
 			}
 		}
 	}
-	probes = batch!(fx, $ready.map(|hash| Bot.probe_job({ dir: run.dir, tag, hash })))
+	jobs = $ready.map(
+		|item| {
+			argv = Bot.probe_job({ dir: run.dir, tag, hash: item.hash })
+			match run.stats {
+				Ok(_) => Bot.timed_job({ time_file: Bot.time_file({ dir: run.dir, hash: item.hash }), argv })
+				Err(Off) => argv
+			}
+		},
+	)
+	probes = batch!(fx, jobs)
+	times = match run.stats {
+		Ok(_) => if $ready.is_empty() [] else fx.read_files!($ready.map(|item| Bot.time_file({ dir: run.dir, hash: item.hash })))
+		Err(Off) => []
+	}
 	var $rows = []
-	for (hash, result) in $ready.map2(probes, |hash, result| (hash, result)) {
-		match Bot.row({ tag, hash, stdout: result.stdout }) {
+	var $lines = []
+	var $stats = []
+	for (i, (item, result)) in $ready.map2(probes, |item, result| (item, result)).map_with_index(|pair, i| (i, pair)) {
+		hash = item.hash
+		verdict = Bot.row({ tag, hash, stdout: result.stdout })
+		match run.stats {
+			Err(Off) => {}
+			Ok(stats) => {
+				timed = match times.get(i) {
+					Ok(Ok(text)) => Bot.time_stats(text)
+					_ => Err("no time file")
+				}
+				if timed.is_err() fx.err!("warning: no time stats for ${hash} on ${tag}\n")
+				$stats = $stats.append(timed)
+				result_text = match verdict {
+					Ok(row) => row.result
+					Err(_) => "no-fact"
+				}
+				$lines = $lines.append(Bot.probe_line({ run: stats.id, time: stats.time, nightly: tag, hash, repo: item.repo, target: "any", result: result_text, stats: timed }))
+			}
+		}
+		match verdict {
 			Ok(row) => {
 				$rows = $rows.append(row)
 				fx.out!("probe ${hash} on ${tag}: ${row.result}\n")
@@ -229,7 +324,7 @@ probe! = |fx, run, tag, hashes| {
 			}
 		}
 	}
-	Ok({ rows: $rows, nofact: $nofact })
+	Ok({ rows: $rows, nofact: $nofact, lines: $lines, probes: $stats })
 }
 
 ended_text : [Exited(I32), Signaled(I32), NotStarted(Str)] -> Str
@@ -244,7 +339,7 @@ batch! : Fx, List(List(Str)) => List({ ended : [Exited(I32), Signaled(I32), NotS
 batch! = |fx, argvs| if argvs.is_empty() [] else fx.spawn_all!({ jobs: argvs.map(|argv| { argv, cwd: Err(Inherit) }), limit: 4 })
 
 # The URL of the first release that is not withdrawn (R-AP2). `Warn` has the reason of the warning for that hash (a 4xx other than 429, R-MX18 item 14); `Stop` ends the run.
-release! : Fx, Run, Str => Try(Str, [Warn(Str), Stop(Fail)])
+release! : Fx, Run, Str => Try({ url : Str, repo : Str }, [Warn(Str), Stop(Fail)])
 release! = |fx, run, hash| match get!(fx, run, { url: Bot.url({ origin: run.origin, route: Artifact(hash) }), step: GetArtifact(hash) }) {
 	Err(Refused(answer)) => if answer.status < 500 and answer.status != 429 {
 		Err(Warn("the registry did not give the artifact (${answer.status.to_str()})"))
@@ -253,7 +348,7 @@ release! = |fx, run, hash| match get!(fx, run, { url: Bot.url({ origin: run.orig
 	}
 	Err(Silent(why)) => Err(Stop(Bot.failure({ origin: run.origin, step: GetArtifact(hash), reply: Err(NoAnswer(why)) })))
 	Ok(answer) => match Bot.release_url(answer.body) {
-		Ok(url) => Ok(url)
+		Ok(url) => Ok({ url, repo: Bot.release_repo(answer.body) })
 		Err(NoRelease) => Err(Warn("the artifact has no release that is not withdrawn"))
 		Err(BadJson(why)) => Err(Warn(why))
 	}

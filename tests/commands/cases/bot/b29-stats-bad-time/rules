@@ -1,0 +1,1 @@
+Q606 R-MX18 R-MX4 R-OUT2 (slice 229): as b28, but no time file for the first hash and a text that is not GNU time output for the second. The rows and the sweep are posted as in b28 and the exit is 0. The stats rows have empty wall_ms, cpu_ms and rss_kb. The run row has probes 2 and no_stats 2 and sums 0. One warning for each hash on stderr (proposal text).

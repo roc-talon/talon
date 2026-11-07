@@ -647,10 +647,11 @@ def check_compatbot(root, fails):
     if perm != {"contents": "read"}:
         fails.append("%s: the top-level permissions must be exactly `contents: read`" % name)
     js = jobs(doc)
-    if len(js) != 1:
-        fails.append("%s: one job (one Linux runner, R-MX10, R-MX15), found %d" % (name, len(js)))
+    # Slice 229 (Design Q606): the job `bot` (one Linux runner, R-MX10, R-MX15, read-only, has the OIDC token) and the job `stats` (commits the stats, no OIDC token).
+    if set(js) != {"bot", "stats"}:
+        fails.append("%s: two jobs, `bot` and `stats` (Q606), found %s" % (name, sorted(js)))
         return
-    jn, job = list(js.items())[0]
+    jn, job = "bot", js["bot"]
     if not str(job.get("runs-on", "")).startswith("ubuntu"):
         fails.append("%s: job %s must run on ubuntu (one Linux runner, R-MX10)" % (name, jn))
     if job.get("permissions") != {"contents": "read", "id-token": "write"}:
@@ -708,6 +709,39 @@ def check_compatbot(root, fails):
             fails.append("%s: the step that runs `bot` has no TALON_REGISTRY" % name)
         if "GH_TOKEN" in env_of(ss[i_run]) or "GH_TOKEN" in run[i_run]:
             fails.append("%s: the step that runs `bot` has no GH_TOKEN" % name)
+    # Slice 229 (Design Q606): the stats. The bot job stays read-only, sets COMPAT_STATS_DIR and gives the files as an Actions artifact. The job `stats` commits them to the branch `compat-stats`.
+    if "COMPAT_STATS_DIR" not in str(env_of(doc, job, *ss)):
+        fails.append("%s: job %s must set COMPAT_STATS_DIR (Q606: without it the bot writes no stats)" % (name, jn))
+    uses = [str(x.get("uses", "")) for x in ss]
+    i_up = None
+    for n, u in enumerate(uses):
+        if u.startswith("actions/upload-artifact@"):
+            i_up = n
+    if i_up is None:
+        fails.append("%s: job %s must upload the stats as an Actions artifact with actions/upload-artifact (Q606)" % (name, jn))
+    elif i_run is not None and i_up < i_run:
+        fails.append("%s: the upload of the stats must come after the step that runs `bot` (Q606)" % name)
+    elif "!cancelled()" not in str(ss[i_up].get("if", "")):
+        fails.append("%s: the upload step must have `if: ${{ !cancelled() }}`: stats of a failed bot run are kept, a cancelled run is not (Q606, answer Q-C)" % name)
+    st = js["stats"]
+    if st.get("permissions") != {"contents": "write"}:
+        fails.append("%s: job stats needs exactly `contents: write` (Q606: no `id-token`, so no OIDC token)" % name)
+    if "id-token" in str(st) or "ACTIONS_ID_TOKEN" in str(st):
+        fails.append("%s: job stats must not have `id-token` or an OIDC variable (Q606)" % name)
+    if "!cancelled()" not in str(st.get("if", "")):
+        fails.append("%s: job stats must have `if: ${{ !cancelled() }}`: it runs when `bot` fails, not when cancelled (Q606, answer Q-C)" % name)
+    needs = st.get("needs")
+    if needs not in ("bot", ["bot"]):
+        fails.append("%s: job stats must have `needs: bot` (it commits the artifact of the bot job, Q606)" % name)
+    if not str(st.get("runs-on", "")).startswith("ubuntu"):
+        fails.append("%s: job stats must run on ubuntu" % name)
+    sst = steps(st)
+    if not any(str(x.get("uses", "")).startswith("actions/download-artifact@") for x in sst):
+        fails.append("%s: job stats must download the artifact of the bot job with actions/download-artifact (Q606)" % name)
+    if "compat-stats" not in str(sst):
+        fails.append("%s: job stats must commit to the branch `compat-stats`, not to the default branch (Q606)" % name)
+    if any(re.search(r"^[ \t]*bot(\s|$)", str(x.get("run", "")), re.M) for x in sst):
+        fails.append("%s: job stats must not run `bot`" % name)
 
 
 CHECKS = {"yaml": check_yaml, "fast": check_fast, "nightly": check_nightly, "pin": check_pin, "portable": check_portable, "release": check_release, "compatbot": check_compatbot}

@@ -1,0 +1,6 @@
+put nightly-2026-10-29-aaaaaaa: known
+sweep nightly-2026-10-29-aaaaaaa: 0 of 3 members to probe
+posted nightly-2026-10-29-aaaaaaa: 0 rows, sweep up to 8
+audit: 1 pair
+probe 7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7 on nightly-2026-10-20-bbbbbbb: pass
+posted audit nightly-2026-10-20-bbbbbbb: 1 row
