@@ -1,4 +1,5 @@
 import tar.Tar
+import records.Sorted
 import header.Header
 import header.PackageUrl
 import base58.Base58
@@ -310,7 +311,7 @@ ArchiveRead :: {
 				Err(None) => set
 			},
 		)
-		names.to_list().sort_with(Artifact.compare)
+		Sorted.sort_with(names.to_list(), Artifact.compare)
 	}
 
 	## The problem of a refusal (R-AP21): 422 `not-a-candidate` with the `detail` of the slice file (section 5) for each refusal. `HashMismatch` too (row 8).

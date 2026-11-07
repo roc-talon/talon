@@ -37,6 +37,7 @@
 ## - The clear of `repo-missing` (R-PU24, Q379) comes from `list_work`. The guard of a clear changes: it is the value that the claim saw, `WHERE log_index = ?1 AND withdrawn = ?2` (R-PU36: a job
 ##   `privatized` can set `repo-missing` during the run, and that value must stay; test `pu36-state-guard`).
 ## 3. The result is `Ok({})` when the run ran (R-PU37 row 2: one failed row is a log line, not an `Err`). A trap stops the run; the claim makes the rows due again after 15 min (R-PU37 row 1).
+import records.Sorted
 import pf.Worker
 import pf.D1
 import pf.Log
@@ -62,7 +63,7 @@ ReconcileCron :: [].{
 		claimed = db.all!(Reconcile.claim_sql(), (now, Reconcile.max_rows))
 		match claimed {
 			Err(e) => Log.warn!("reconcile claim failed", { error: Str.inspect(e) })
-			Ok(rows) => rows!(now, rows.sort_with(by_repo))
+			Ok(rows) => rows!(now, Sorted.sort_with(rows, by_repo))
 		}
 		Ok({})
 	}

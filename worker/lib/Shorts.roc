@@ -3,6 +3,7 @@
 ## The tests are in `worker/tests/unit/ShortsTest.roc` (W0) and `worker/tests/cases/shorts/` (W2).
 ## The texts of the `detail` of a problem and the members of the answer that the design does not give are proposals (TW24): `docs/slices/107-short-names.md` section 6.
 ## Every body is built here as text, so that two answers of one state have the same bytes and the same ETag (R-AP24, R-AP53, R-AP54).
+import records.Sorted
 import records.Artifact
 import records.Short
 import Problem
@@ -184,7 +185,7 @@ Shorts :: [].{
 	target_of = |row, rows| if (row.state == 2) chain_end(row.name, rows) else row.name
 
 	sorted_names : List(Str) -> List(Str)
-	sorted_names = |names| names.sort_with(|a, b| Artifact.compare(a, b)).fold([], |acc, n| if (acc.contains(n)) acc else acc.append(n))
+	sorted_names = |names| Sorted.sort_with(names, |a, b| Artifact.compare(a, b)).fold([], |acc, n| if (acc.contains(n)) acc else acc.append(n))
 
 	## The item for one end: the end row and the old names (matched moved rows) that it replaces.
 	item_of : Str, List((Shorts.Row, Str)), List(Shorts.Row) -> Try(Shorts.Item, [BadRow(Str)])
@@ -219,7 +220,7 @@ Shorts :: [].{
 	rank = |text, names| {
 		t = text.with_ascii_lowercased()
 		ranked = names.map(|n| (rank_of(t, n), n)).keep_if(|p| p.0 > 0)
-		ranked.sort_with(|a, b| if (a.0 < b.0) Before else if (a.0 > b.0) After else Artifact.compare(a.1, b.1)).take_first(search_limit).map(|p| p.1)
+		Sorted.sort_with(ranked, |a, b| if (a.0 < b.0) Before else if (a.0 > b.0) After else Artifact.compare(a.1, b.1)).take_first(search_limit).map(|p| p.1)
 	}
 
 	## 1 exact, 2 prefix, 3 substring of the name, 0 no match (R-SN10).

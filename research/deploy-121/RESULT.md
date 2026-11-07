@@ -63,3 +63,8 @@ The user asked for the primary in Barcelona and a replica in San Jose. D1 gives 
 Closure from ATH after the move: p50 108 ms, p90 123 ms (40 requests). It was 77 ms with the EEUR primary. WEUR is farther from Greece than EEUR, so this is expected. One colo only.
 
 Fault found: about 1 to 2 percent of requests on all routes get 503 with the Cloudflare body `error code: 500` (5 of 400, 1 of 300, 1 of 40). Worker analytics show 0 errors for the same time, so the requests do not get to the Worker code. Reported to the platform session (start of a cold isolate with the 6 MB wasm is one possible cause, not verified).
+
+## Deploy of platform 0.0.8 with slices 227 and 228 (2026-11-07)
+
+Version fb9bc036 at 14:27 UTC. wasm 6,361,855 to 3,393,205 bytes, largest function 1,246,912 to 176,616 bytes (research/bigfn, cloudflare-workers/research/bigfn2). Wrangler: "Worker Startup Time: 15 ms". Checks after the deploy: 5 routes as expected, 462 requests of mixed-ro and closure with 0 mismatches and 0 503s.
+The old bench database `talon-registry-bench` is deleted (the bench uses `talon-registry-bench-2`).

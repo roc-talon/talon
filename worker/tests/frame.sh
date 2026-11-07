@@ -40,4 +40,11 @@ T=$HERE/../../scripts/test.sh
 grep -Eq '^WORKER_OPT=speed$' "$T" || bad "scripts/test.sh: needs the line WORKER_OPT=speed"
 grep -Eq 'ROC_WORKER" build .*--opt="\$WORKER_OPT"' "$T" || bad "scripts/test.sh: the Worker build line needs --opt=\"\$WORKER_OPT\" (not OPT, never dev)"
 grep -E 'ROC_WORKER" build ' "$T" | grep -Eq -- '--opt="?\$OPT"?|--opt=dev' && bad "scripts/test.sh: the Worker build line must not follow OPT or use dev"
+# Slice 228 (docs/slices/228-own-sort.md, no rule id: a build-size change): the Worker build has no call of the builtin `sort_with`, `sort_by` or `sort`. Each call site makes a full copy of the sort of the compiler (140 to 250 KB of wasm).
+# The sort is `Sorted.sort_with` of packages/records. The tests are not in the build. packages/records/Sorted.roc is the one file that may name the builtin (in a comment).
+# There are 12 call sites at the start of the slice (3 in packages/records, 9 in worker/): the count of `Sorted.sort_with(` must not go below 12.
+S=$ROOT/packages/records
+mapfile -t src < <(find "$W" "$S" -name '*.roc' -not -path "$W/.roc-cfw/*" -not -path "$W/tests/*" -not -path "$S/tests/*" -not -path "$S/Sorted.roc" | sort)
+while IFS=: read -r f n; do f=${f#"$ROOT"/}; bad "${f/tests\/..\//}:$n: use Sorted.sort_with, not the sort of the compiler (slice 228)"; done < <(awk '{ t = $0; gsub(/Sorted\.sort_with\(/, "", t) } t !~ /^[ \t]*#/ && t ~ /\.sort(_with|_by)?\(|List\.sort/ { print FILENAME ":" FNR }' "${src[@]}")
+[ "$(cat "${src[@]}" | grep -o 'Sorted\.sort_with(' | wc -l)" -ge 12 ] || bad "fewer than 12 uses of Sorted.sort_with( in worker/ and packages/records/ (slice 228)"
 exit $rc

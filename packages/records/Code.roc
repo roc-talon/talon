@@ -1,4 +1,5 @@
 ## The codes of the closed sets (Registry 5.1, R-IK7): the position of a value in the list of its rule, from 0. Pure.
+import Sorted
 Code :: [].{
 
 	## `result` of R-RE3 (Resolution 4, R-RC1 to R-RC4): `pass` 0, `fail` 1, `hang` 2, `crash` 3. The wire text is the lower-case name.
@@ -109,7 +110,7 @@ Code :: [].{
 	via_sort = |vias| {
 		known = ["oidc", "webhook", "poll", "ingest"]
 		# Q342: the unknown texts follow the known ones, in ascending UTF-8 byte order.
-		known.join_map(|k| vias.keep_if(|v| v == k)).concat(vias.keep_if(|v| !known.contains(v)).sort_with(|a, b| compare_bytes(a.to_utf8(), b.to_utf8())))
+		known.join_map(|k| vias.keep_if(|v| v == k)).concat(Sorted.sort_with(vias.keep_if(|v| !known.contains(v)), |a, b| compare_bytes(a.to_utf8(), b.to_utf8())))
 	}
 
 	compare_bytes : List(U8), List(U8) -> [Before, Same, After]

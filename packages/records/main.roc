@@ -14,6 +14,7 @@ package
 		Problem,
 		Release,
 		Short,
+		Sorted,
 		Toolchain,
 		Work,
 	]

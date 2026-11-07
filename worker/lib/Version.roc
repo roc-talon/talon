@@ -3,6 +3,7 @@
 ## Its value is 2^53 or more in most rows, so it goes to D1 as decimal text and comes back through `CAST(version AS TEXT)` (R-IK2).
 ## So every value of this module that goes to SQL is a `Str` with the decimal form of an `I64`.
 ## The tests are in `worker/tests/unit/VersionTest.roc` (W0) and `sql/tests/cases/versions/` (W1).
+import records.Sorted
 import semver.Semver
 import semver.VersionReq
 
@@ -95,7 +96,7 @@ Version :: [].{
 	## The precedence order (`Semver.order_relative_to`, R-IK5 property 3). The rows come from `ORDER BY version`, which is
 	## the order of the keys: versions with one key can be out of order, and this function puts them right. Stable for `Same`.
 	sort_precedence : List(Semver) -> List(Semver)
-	sort_precedence = |versions| versions.sort_with(|a, b| a.order_relative_to(b))
+	sort_precedence = |versions| Sorted.sort_with(versions, |a, b| a.order_relative_to(b))
 
 	sign_bit : U64
 	sign_bit = 0x8000000000000000

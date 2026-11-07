@@ -1,4 +1,5 @@
 import Code
+import Sorted
 import Nullable
 
 ## One artifact on the wire (Registry R-RE1, R-RE19, R-RE20, R-AP2, R-AP17). Pure.
@@ -58,8 +59,8 @@ Artifact :: [].{
 		platform_hash: Nullable.write(r.platform_hash),
 		roc_pin: Nullable.write(r.roc_pin),
 		size: r.size,
-		deps: r.deps.sort_with(|a, b| compare(a.alias, b.alias)).map(|d| { alias: d.alias, hash: d.hash, group: d.group, series: Nullable.write(d.series), version: Nullable.write(d.version), url: d.url, is_platform: d.is_platform }),
-		target_names: r.target_names.sort_with(compare),
+		deps: Sorted.sort_with(r.deps, |a, b| compare(a.alias, b.alias)).map(|d| { alias: d.alias, hash: d.hash, group: d.group, series: Nullable.write(d.series), version: Nullable.write(d.version), url: d.url, is_platform: d.is_platform }),
+		target_names: Sorted.sort_with(r.target_names, compare),
 	}
 
 	from_wire : Artifact.Wire -> Try(Artifact.Row, [BadJson(Str)])

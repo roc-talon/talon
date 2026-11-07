@@ -3,6 +3,7 @@
 ## The effects (the body read, the D1 session and its calls, the GitHub reads, the archive read, the clock) are in `worker/IngestRoutes.roc`.
 ## The tests are in `worker/tests/unit/IngestTest.roc` (W0) and `worker/tests/cases/ingest/` (W2).
 ## The texts of the `detail` of a problem and the body form are proposals (TW24): `docs/slices/112-ingest.md` section 5.
+import records.Sorted
 import base58.Base58
 import header.PackageUrl
 import records.Artifact
@@ -279,7 +280,7 @@ Ingest :: [].{
 		a = input.artifact
 		hash_name = |h| { id: 0, kind: 1, value: hash_bytes(h) ?? [] }
 		text_name = |kind, text| { id: 0, kind, value: text.to_utf8() }
-		deps = a.deps.sort_with(|x, y| Artifact.compare(x.alias, y.alias))
+		deps = Sorted.sort_with(a.deps, |x, y| Artifact.compare(x.alias, y.alias))
 		dep_names = deps.join_map(
 			|d| match d.version {
 				Ok(_) => [hash_name(d.hash), text_name(2, d.group)]
@@ -291,10 +292,10 @@ Ingest :: [].{
 			Err(None) => []
 		}
 		all = [hash_name(a.hash)].concat(platform_names).concat(dep_names).concat([text_name(2, t.form), text_name(3, t.name)])
-		names = all
+		unique = all
 			.map(|n| { ..n, id: Id.name_id(n.kind, n.value) })
 			.fold([], |acc, n| if (acc.any(|m| m.id == n.id)) acc else acc.append(n))
-			.sort_with(|x, y| x.id.order_relative_to(y.id))
+		names = Sorted.sort_with(unique, |x, y| x.id.order_relative_to(y.id))
 		id_of_hash = |h| Id.name_id(1, hash_bytes(h) ?? [])
 		artifact_id = id_of_hash(a.hash)
 		repo = Id.name_id(3, t.name.to_utf8())
@@ -318,7 +319,7 @@ Ingest :: [].{
 					}
 				},
 			),
-			target_names: a.target_names.sort_with(Artifact.compare),
+			target_names: Sorted.sort_with(a.target_names, Artifact.compare),
 			leaf: { grp: t.form, version: t.version.to_str(), hash: t.hash, time: input.now_ms },
 			release: {
 				form: Reads.form_id(t.form),

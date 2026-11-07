@@ -11,5 +11,6 @@ import ProblemTest
 import WireTest
 import WorkTest
 import AuditTest
+import SortedTest
 
 main! = |_args| Ok({})

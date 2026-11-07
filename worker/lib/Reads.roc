@@ -4,6 +4,7 @@
 ## The ETag, the conditional request and the cache rules are design facts: R-AP53 (answers), R-AP54 (ETag, 304, 200), R-AP55 (Cache API, `Talon-Bookmark`), R-AP56 (path and query).
 ## The texts of the `detail` of a problem are proposals, accepted at the review (TW24): `docs/slices/106-read-routes.md` section 6.
 ## Every body is built here as text, so that two answers of one state have the same bytes and the same ETag (R-AP24, R-AP49).
+import records.Sorted
 import records.Artifact
 import records.Closure
 import records.Code
@@ -368,5 +369,5 @@ Reads :: [].{
 
 	## R-AP53: `repos` sorted by `name` (bytes).
 	sorted_repos : List(Reads.RepoItem) -> List(Reads.RepoItem)
-	sorted_repos = |repos| repos.sort_with(|a, b| Artifact.compare(a.name, b.name))
+	sorted_repos = |repos| Sorted.sort_with(repos, |a, b| Artifact.compare(a.name, b.name))
 }

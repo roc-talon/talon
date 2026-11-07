@@ -9,8 +9,8 @@ workers_dev = true
 
 [[d1_databases]]
 binding = "DB"
-database_name = "talon-registry-bench"
-database_id = "251251cc-ba1f-469c-8192-ff06428d3b0b"
+database_name = "talon-registry-bench-2"
+database_id = "ddcc66e8-a4df-4e4b-aee9-ac4a5fb1ebaa"
 migrations_dir = "../sql"
 
 # The namespace ids are unique in the account, so they are not the prod ids.

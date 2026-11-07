@@ -64,8 +64,17 @@ const windows = (xs, size, n) => Array.from({ length: Math.min(n, Math.ceil(xs.l
 });
 
 const latest = tags.slice(-1)[0];
-// A hint on a pair that has a bot row is skipped (R-CT14, `bot-row`). The live registry and local.mjs put bot rows on the newest nightlies, so hints use the older ones.
+// A hint on a pair that has a bot row is skipped (R-CT14, `bot-row`). So the hint hashes are the hashes with no bot run at all (GET /v1/artifacts/{hash}/compat:
+// no `runs` item with `source` bot). The bot set (R-MX11) does not hold every hash, so such hashes exist. The hint tags are up to 5 of the older nightlies.
 const hintTags = tags.length > 4 ? tags.slice(0, -3).slice(-5) : tags;
+const hintPairs = [];
+for (const h of hashes) {
+  const res = await fetch(`${base}/v1/artifacts/${h}/compat`);
+  if (res.status !== 200) continue;
+  if (((await res.json()).runs ?? []).some((r) => r.source === 'bot')) continue;
+  for (const tag of hintTags) hintPairs.push({ hash: h, nightly: tag });
+}
+if (hintPairs.length === 0) console.error('warning: every (hash, nightly) pair has a bot row: the hint posts give 200 written 0');
 const window2 = { from: tags[Math.max(0, tags.length - 3)], to: latest };
 const grp = (g) => ({ group: g });
 
@@ -87,7 +96,7 @@ const reqs = {
   closureAll: post('/v1/closure', { groups: groups.slice(0, 300).map(grp), hashes: [], compilers: window2 }, 200),
   audit: get('/v1/compat_hints?audit=100'),
   sweeps: tags.slice(-CAP.sweeps).reverse().map((t) => get(`/v1/sweeps/${t}`)),
-  hint: (n, k) => post('/v1/compat', { talon_version: '0.4.1', rows: Array.from({ length: n }, (_, i) => ({ hash: hashes[(k + i) % hashes.length], nightly: hintTags[(k + i) % hintTags.length], target: 'any', result: 'pass' })) }, 201, { 'content-type': 'application/json', 'talon-contributor': '{{uniq}}' }),
+  hint: (n, k) => post('/v1/compat', { talon_version: '0.4.1', rows: Array.from({ length: n }, (_, i) => { const p = hintPairs.length ? hintPairs[(k * 7 + i) % hintPairs.length] : { hash: hashes[(k + i) % hashes.length], nightly: hintTags[(k + i) % hintTags.length] }; return { hash: p.hash, nightly: p.nightly, target: 'any', result: 'pass' }; }) }, 201, { 'content-type': 'application/json', 'talon-contributor': '{{uniq}}' }),
 };
 
 const files = {};
