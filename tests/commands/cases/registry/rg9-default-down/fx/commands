@@ -1,0 +1,1 @@
+update --no-check --dry-run --json --quiet --file u1/main.roc

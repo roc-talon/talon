@@ -1,0 +1,7 @@
+matched "known": acme/known
+check: skipped
+$PROJECT/p1/main.roc
+  + known: acme/known 1.1.0
+$PROJECT/p1/talon.toml: known = "=1.1.0"
+resolved at log:50, 0 probes
+dry run: nothing was written

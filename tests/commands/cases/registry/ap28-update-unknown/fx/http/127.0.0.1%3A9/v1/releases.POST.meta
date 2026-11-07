@@ -1,4 +1,5 @@
 status 201
+header Location: /v1/artifacts/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
 header Content-Type: application/json
 header Talon-Bookmark: 00000033-00000010-00004c60-8e61
 require content-type: application/json

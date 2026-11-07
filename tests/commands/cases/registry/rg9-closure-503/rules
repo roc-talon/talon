@@ -1,0 +1,1 @@
+R-RG9 R-RG2 R-AP22 (slice 225, Q601 item 1): the default answers 503 to the first registry request: a 5xx is no answer, so the run falls back to direct (exit 0, the warning with the cause 503 busy). The expected files are the direct run after the failed POST (a proposal).

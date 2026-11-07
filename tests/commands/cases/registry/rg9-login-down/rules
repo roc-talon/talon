@@ -1,0 +1,1 @@
+R-RG9 R-SH10 R-SH7 R-E6 (slice 225, Q601 item 4): tln share login with the default and no answer to POST /v1/tokens: no fall back (direct cannot log in): exit 15, the message of R-RG9 (a proposal). The GitHub device flow (as registry/../share/sh23-login-flow) ends before it.

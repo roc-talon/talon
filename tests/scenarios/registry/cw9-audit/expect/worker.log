@@ -1,0 +1,3 @@
+GET /v1/compat_hints?audit=200 200
+GET /v1/compat_hints 400
+GET /v1/compat_hints?audit=0 200

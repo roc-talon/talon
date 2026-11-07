@@ -76,21 +76,21 @@ ShareAccount :: [].{
 		} else if answer.status == 401 {
 			Ok(Stopped)
 		} else {
-			Err(refused(facts.origin, facts.version, Get, answer))
+			Err(refused(facts.origin, facts.version, Get, answer, ""))
 		}
 	}
 
 	## R-AP36, R-AP38, R-E6: the answer of a `DELETE`. A 2xx status (the design names 204): `Ok(Done)`. 401: `Ok(Stopped)`. No answer: `Registry.no_answer` (15). Another status: `Registry.refuse` with the method `Delete` (400: 1, 429 and 5xx: 15).
-	delete_answer : { origin : Str, version : Str, reply : ShareAccount.Reply } -> Try([Done, Stopped], Fail)
+	delete_answer : { origin : Str, version : Str, reply : ShareAccount.Reply, source ?: Str } -> Try([Done, Stopped], Fail)
 	delete_answer = |facts| match facts.reply {
-		Err(Timeout) => Err(Registry.no_answer({ origin: facts.origin, why: "no answer in ${ShareAccount.timeout_s.to_str()} s" }))
-		Err(Failed(why)) => Err(Registry.no_answer({ origin: facts.origin, why }))
+		Err(Timeout) => Err(Registry.no_answer({ origin: facts.origin, why: "no answer in ${ShareAccount.timeout_s.to_str()} s", source: facts.?source ?? "", needs: Bool.True }))
+		Err(Failed(why)) => Err(Registry.no_answer({ origin: facts.origin, why, source: facts.?source ?? "", needs: Bool.True }))
 		Ok(answer) => if answer.status >= 200 and answer.status <= 299 {
 			Ok(Done)
 		} else if answer.status == 401 {
 			Ok(Stopped)
 		} else {
-			Err(refused(facts.origin, facts.version, Delete, answer))
+			Err(refused(facts.origin, facts.version, Delete, answer, facts.?source ?? ""))
 		}
 	}
 
@@ -258,5 +258,5 @@ time_text = |ms| match ms {
 }
 
 # Another status than 2xx and 401: `Registry.refuse` with the `Retry-After` of the answer.
-refused : Str, Str, Registry.Method, { status : U16, headers : List((Str, Str)), body : Str } -> Fail
-refused = |origin, version, method, answer| Registry.refuse({ origin, version, method, reply: { status: answer.status, body: answer.body }, retry_after: Registry.retry_after_of(answer.headers) })
+refused : Str, Str, Registry.Method, { status : U16, headers : List((Str, Str)), body : Str }, Str -> Fail
+refused = |origin, version, method, answer, source| Registry.refuse({ origin, version, method, reply: { status: answer.status, body: answer.body }, retry_after: Registry.retry_after_of(answer.headers), source, needs: Bool.True })

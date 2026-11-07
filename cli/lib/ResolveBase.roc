@@ -12,6 +12,7 @@ import Consent
 import Db
 import Epochs
 import Fail
+import Fallback
 import Fx
 import Gather
 import Help
@@ -74,7 +75,7 @@ ResolveBase :: [].{
 		none : NoRank.Fallback,
 		index : ClosureIndex.Source,
 		# Slice 206g (Design Q560): `Compilers` is a registry for the compiler list only (`init`: the platform and package lists stay GitHub lists).
-		registry : [Off, Setting(Try(Str, [Unset])), Read(ResolveBase.Query), Compilers(ResolveBase.Query)],
+		registry : [Off, Setting(Try(Str, [Unset])), Read(ResolveBase.Query), Compilers(ResolveBase.Query), Fell({ registry : Str, cause : Str })],
 		toolchain : Try(Str, [Unset]),
 		snapshot : Try(Str, [Unset]),
 		dry_run : Bool,
@@ -127,19 +128,41 @@ ResolveBase :: [].{
 		Download({ scope: Project(hashes), exclude: loaded.intent.resolution.min_release_age_exclude, toml, downloads: ResolveBase.ladder_downloads(request) })
 	}
 
+	## Slice 225 (R-RG9, R-DI14): the request of a run that fell back to `direct` (`fell` `Ok`): no registry, the index of `direct`. Else the request as it is. The one place that makes it (`PickFlow`, `OutdatedFlow`).
+	routed : ResolveBase.Request, Try(Fallback.Fell, [None]) -> ResolveBase.Request
+	routed = |request, fell| match fell {
+		Ok(f) => { ..request, registry: Fell(f), index: Direct }
+		Err(None) => request
+	}
+
+	## Slice 225 (R-RG9 row 2): true while no registry answer was used by the run: the index of the request is not an `Answer`.
+	no_answer_yet : ResolveBase.Request -> Bool
+	no_answer_yet = |request| match request.index {
+		Answer(_) => Bool.False
+		_ => Bool.True
+	}
+
+	## Slice 225 (R-RG9): `Ok` when the run fell back to `direct` (the registry of the request is `Fell`), for the note and for `Fail.with_fell`.
+	fell_of : ResolveBase.Request -> Try({ registry : Str, cause : Str }, [None])
+	fell_of = |request| match request.registry {
+		Fell(f) => Ok(f)
+		_ => Err(None)
+	}
+
 	## Slice 206b: the registry of a run after the setting was read. `origin` is the base URL form (R-RG7). `snapshot` is `IndexQuery.snapshot` with a registry.
 	## Slice 206e2: `window` is the `compilers` window of the first query (R-AP16): `Held(id)` for the held compiler (`Pin.Decision.held`), `Free(domain)` for the free nightly of `upgrade`, `None` for no window (Q437).
 	## `listed` is true when the command has read the registry compiler list (R-IX4: the later reads use the kept file, `list_later`).
 	## Slice 206e4 (R-SH1, R-SH2): `share` is the key `share` of `config.toml`, for the share hooks (`ShareHook`).
-	Query : { origin : Str, snapshot : [None, Time(U64), Log(U64)], window : ClosureRequest.Window, listed : Bool, share : Try(Bool, [Unset]) }
+	## R-RG9: `source` is the place of the registry setting (`IndexQuery.source`), for the text of a failure with no answer.
+	Query : { origin : Str, snapshot : [None, Time(U64), Log(U64)], window : ClosureRequest.Window, listed : Bool, share : Try(Bool, [Unset]), source : Str }
 
 	## Slice 206e2b (R-CV1, R-IX4, R-IX6): the source of the first compiler list read of a command (`HeldRoc.picked!`, `NightlyFlow.plan!`, `PickLoop.releases!`): the registry of a `Read` (the kept file when `listed`), the kept file of the registry with `--offline` (`Offline`, any age, no request), else `Direct`.
 	list_first : ResolveBase.Request -> Nightlies.Source
 	list_first = |request| match request.registry {
-		Read(query) => Registry({ origin: query.origin, version: Help.version, log: log_of(query), kept: query.listed })
-		Compilers(query) => Registry({ origin: query.origin, version: Help.version, log: Err(None), kept: query.listed or request.offline })
+		Read(query) => Registry({ origin: query.origin, version: Help.version, log: log_of(query), kept: query.listed, source: query.source, first: ResolveBase.no_answer_yet(request) })
+		Compilers(query) => Registry({ origin: query.origin, version: Help.version, log: Err(None), kept: query.listed or request.offline, source: query.source, first: ResolveBase.no_answer_yet(request) })
 		_ => match request.index {
-			Offline(origin) => Registry({ origin, version: Help.version, log: Err(None), kept: Bool.True })
+			Offline(origin) => Registry({ origin, version: Help.version, log: Err(None), kept: Bool.True, source: "", first: Bool.False })
 			_ => Direct
 		}
 	}
@@ -147,8 +170,8 @@ ResolveBase :: [].{
 	## Slice 206e2b (R-IX4): the source of each later read (the offers, the optional compilers): the kept file of the registry (no request: the first read of the command asked once), else `Direct`.
 	list_later : ResolveBase.Request -> Nightlies.Source
 	list_later = |request| match request.registry {
-		Read(query) => Registry({ origin: query.origin, version: Help.version, log: log_of(query), kept: Bool.True })
-		Compilers(query) => Registry({ origin: query.origin, version: Help.version, log: Err(None), kept: Bool.True })
+		Read(query) => Registry({ origin: query.origin, version: Help.version, log: log_of(query), kept: Bool.True, source: query.source, first: Bool.False })
+		Compilers(query) => Registry({ origin: query.origin, version: Help.version, log: Err(None), kept: Bool.True, source: query.source, first: Bool.False })
 		_ => list_first(request)
 	}
 
@@ -216,7 +239,7 @@ ResolveBase :: [].{
 	# A new name of `add`: `range` is what the pick uses (`*` with no selector, the held version for a group that another member holds, Q9).
 	Fresh : { name : Str, selector : Try(Selector, [None]), text : Str, range : Str, key : Str, is_platform : Bool }
 
-	Asked : { names : List(Str), picks : List({ alias : Str, selector : Selector }), kept : List(Kept), fresh : List(Fresh) }
+	Asked : { names : List(Str), picks : List({ alias : Str, selector : Selector }), kept : List(Kept), fresh : List(Fresh), fell : Try({ registry : Str, cause : Str }, [None]), answered : Bool }
 
 	Row : { alias : Str, url : Str, is_platform : Bool }
 

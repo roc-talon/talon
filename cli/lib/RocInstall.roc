@@ -123,7 +123,7 @@ RocInstall :: [].{
 		sha = Toolchain.require_digest({ id, asset })?
 		if run.offline return Err(Toolchain.offline_missing(id))
 		item = Roots.item(roots, Item.Toolchain(id))
-		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: Nightlies.digest_source(list) }
+		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: Nightlies.digest_source(found.via) }
 		Ok({ offer: Download({ id, size: asset.size, ctx }), note })
 	}
 
@@ -140,20 +140,20 @@ RocInstall :: [].{
 	## | `range_pick` gives `Err(NoneKnown)` | `Toolchain.range_failed` (kind `NoTuple`, exit 10) |
 	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the pick (rank 4 selects by itself).
 	## Slice 206d2 (R-CV1, R-AP19, R-DT3): `registry` `Ok({ origin, version, log })` (a run with a registry): the list is `Nightlies.list_registry!` (the registry list, the rows above `log:N` hidden) in place of `Nightlies.list!`. `Err(None)`: as before.
-	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]) }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
+	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]), source : Str }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
 	range_id! = |fx, run| {
 		system = Toolchain.host(fx.platform!())?
 		# Slice 206g (Design Q561): the proxy gives the `registry` key of `config.toml` in `config`; the form is checked here, after `platform!`, when the list is needed (exit 19 for a bad value).
 		registry = match run.?config {
 			Ok(config) => match IndexQuery.list_source({ flag: Err(Unset), env: run.net.registry, config, offline: run.offline, kept: Bool.False })? {
 				Direct => Err(None)
-				Registry(r) => Ok({ origin: r.origin, version: r.version, log: r.log })
+				Registry(r) => Ok({ origin: r.origin, version: r.version, log: r.log, source: r.source })
 			}
 			Err(_) => run.registry
 		}
 		found = match registry {
 			Ok(r) => {
-				listed = Nightlies.list_registry!(fx, { roots: run.roots, origin: r.origin, version: r.version, offline: run.offline, host: system, log: r.log })?
+				listed = Nightlies.list_registry!(fx, { roots: run.roots, origin: r.origin, version: r.version, offline: run.offline, host: system, log: r.log, source: r.source })?
 				# Design Q489 (changes Q467): offline with no kept rows (`Missing`) the list cannot be read: the failure of `direct` (`Toolchain.offline_no_list`, exit 15).
 				if listed.source == Missing return Err(Toolchain.offline_no_list({}))
 				# R-AP74 row 4: a list that was read and has no row is empty: the first cause of `ClosureRequest.no_compiler` (exit 10).

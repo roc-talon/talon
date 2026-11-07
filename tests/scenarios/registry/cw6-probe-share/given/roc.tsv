@@ -1,0 +1,3 @@
+version	0	version.stdout	-
+check *	0	pass.stdout	-
+build *	0	build-pass.stdout	-

@@ -1,0 +1,6 @@
+# R-AP9 R-AP1 R-AP3 R-AP41 R-AD35 R-DA8 R-RG4 R-PU4 (slice 224, the contract run, tag worker): `tln add acme/roc-thing` against the real Worker, an ingest of a repository that the registry does not know.
+# No exact twin: no L2 `commands` case has an ingest that the registry accepts (201). The nearest are tests/commands/cases/registry/ad35-ingest (the same request order, module level, fake routes) and ad35-add-ingest-429 (the same command shape, the answer 429).
+# Order of the requests of tln: the guard (GitHub of tln, given/http), R-AP1 (404: the seed has only the platform acme/pfx), the GitHub release list (given/http), one ingest POST /v1/releases (R-AP9), R-AP1 again, then one closure query.
+# The Worker reads GitHub for the ingest (worker/github/ is the W2 case ingest/pu4-index-kinds for acme/roc-thing: repository, release, archive, .roc-version; expect/worker-github.log).
+st() { echo "== $*"; if tln "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st add acme/roc-thing --no-check --dry-run

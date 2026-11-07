@@ -1,0 +1,25 @@
+--- home/.cache/roc/talon/index/github/acme/lib/repo.json
++++ home/.cache/roc/talon/index/github/acme/lib/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/lib","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pfx/repo.json
++++ home/.cache/roc/talon/index/github/acme/pfx/repo.json
+@@ -0,0 +1 @@
++{"id":2,"full_name":"acme/pfx","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/5729006e59ab0441482f6a7a40166c7a.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/5729006e59ab0441482f6a7a40166c7a.json
+@@ -0,0 +1 @@
++{"releases":[{"group":"github.com/acme/lib/releases/download/{v}/","hash":"Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY","log_index":1,"provenance":["ingest"],"published_at":1780315200000,"repo":"acme/lib","roc_version":null,"series":"1","tag":"1.0.0","url":"https://github.com/acme/lib/releases/download/1.0.0/Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY.tar.zst","version":"1.0.0","withdrawn":null,"yank_reason":null,"yanked":false}],"checked":{"checked_at":1792062000000,"name":"acme/lib","stale":false},"repos":[{"name":"acme/lib","state":"active","state_at":1792062000000,"successor":null}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/5729006e59ab0441482f6a7a40166c7a.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/5729006e59ab0441482f6a7a40166c7a.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/lib/releases
++etag "328fdfc82b79404513ab4f49efb75cc8"
++max-age 60
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1792065600}]}

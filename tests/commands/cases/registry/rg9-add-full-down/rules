@@ -1,0 +1,1 @@
+R-RG9 R-RG2 R-AD35 R-AP1 R-DI2 (slice 225, Q601 item 1): tln add with a full name and the default registry: the guard (GitHub) runs, then the R-AP1 read is the first registry request and has no answer: the run falls back to direct. The fake GitHub has no release list of acme/known, so direct stops with its text (no candidate, exit 2) after the warning.

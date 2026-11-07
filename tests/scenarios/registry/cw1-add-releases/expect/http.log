@@ -1,0 +1,2 @@
+GET /api/repos/acme/lib 200
+GET /api/repos/acme/pfx 200

@@ -1,19 +1,21 @@
 == send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
 status 201
+header Location: /v1/artifacts/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
 header Content-Type: application/json
-body {"status":"indexed"}
+body {"release":{"log_index":1,"provenance":["ingest"],"hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/acme/lib/releases/download/1.0.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","tag":"1.0.0","roc_version":null,"repo":"acme/lib","published_at":1792065600000,"yanked":false,"yank_reason":null,"withdrawn":null}}
 == send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
 status 200
 header Content-Type: application/json
-body {"status":"known"}
+body {"release":{"log_index":1,"provenance":["ingest"],"hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/acme/lib/releases/download/1.0.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","tag":"1.0.0","roc_version":null,"repo":"acme/lib","published_at":1792065600000,"yanked":false,"yank_reason":null,"withdrawn":null}}
 == send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
 status 409
 header Content-Type: application/problem+json
 body {"type":"/errors/label-conflict","title":"Conflict","status":409,"detail":"x"}
 == send POST http://127.0.0.1:9/v1/releases h:Content-Type=application/json h:User-Agent=tln/0.4.1 body={"url":"https://github.com/o/r/releases/download/v1/a.tar.zst"}
 status 201
+header Location: /v1/artifacts/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
 header Content-Type: application/json
-body {"status":"indexed"}
+body {"release":{"log_index":1,"provenance":["ingest"],"hash":"4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.0.0","url":"https://github.com/acme/lib/releases/download/1.0.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst","tag":"1.0.0","roc_version":null,"repo":"acme/lib","published_at":1792065600000,"yanked":false,"yank_reason":null,"withdrawn":null}}
 == send POST http://127.0.0.1:9/v1/releases body={}
 status 599
 body wrong header

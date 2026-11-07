@@ -8,7 +8,7 @@ SELF=$(cd "$(dirname "$0")" && pwd)
 # The flags of the caller must not change the rows: a merge run has OPT=speed and SLOW=1 (slice 018).
 # The L2 app of a standalone run is built with the same OPT rule as the runners (default dev, TW25).
 SELFTEST_OPT=${OPT:-dev}
-unset OPT SLOW NET JOBS VERBOSE TAIL REAL_ROC TLN L2BIN BUILD_THREADS L0_THREADS ${!BUDGET_@}
+unset OPT SLOW NET JOBS VERBOSE TAIL REAL_ROC TLN L2BIN BUILD_THREADS L0_THREADS L3W_DIR L3W_ONLY ${!BUDGET_@}
 # The groups have their own TMPDIR, so the runners use it as it is (the short work dir of macOS, tests/lib.sh set_caseroot, is off).
 export CASE_SHORT_ROOT=0
 # The real path of TMPDIR: macOS has a trailing slash (`T//`) and the link /var -> /private/var, so the path that a process reports (getcwd) would not be the path that normalize replaces.
@@ -658,6 +658,59 @@ if [ $rc = 1 ] && grep -Eq '^l3 +FAIL ' $T/lim-l3.out && grep -q 'FAIL runner/ha
 else bad "limit l3: TEST_TIMEOUT=1 kills an L3 case that sleeps 10 s (exit code 124, step exit 1). The quick case passes."; cat $T/lim-l3.out; fi
 }
 sec limit_l3 s_limit_l3
+
+# --- Slice 224: the tag worker of L3 (the step l3w, docs/slices/224-contract-run.md). The rows need the Worker build of the run (SELFTEST_W_DIR, given by `scripts/test.sh wbuild ... selftest`)
+# and node; else they are skipped. The cases use curl, not tln. They run one after the other in one group: without bwrap the port 8787 of with-worker.sh is shared.
+s_l3w() {
+if [ -z "${SELFTEST_W_DIR:-}" ] || [ ! -f "$SELFTEST_W_DIR/app.wasm" ] || ! command -v node > /dev/null 2>&1; then skip "l3w rows: no Worker build in this run (scripts/test.sh wbuild selftest gives one)"; return; fi
+local R=$T/l3w out seed=$ROOT/tests/scenarios/registry/cw1-add-releases/worker/seed.sql
+local get='curl -s -o /dev/null -w "%{http_code}\n" "$TALON_REGISTRY/v1/packages/acme/none/releases"; curl -s -o /dev/null -w "%{http_code}\n" "$TALON_REGISTRY/v1/packages/acme/lib/releases"'
+lw() { SCENARIOS=$1 TLN=$T/bin/tln TMPDIR=$ST L3W_DIR=$SELFTEST_W_DIR L3W_ONLY=1 "$SELF/run.sh" 2>&1; }
+# Row 1: the seed of the case is in D1 (acme/lib 200), a name with no row is 404 (R-AP1), and expect/worker.log is compared: the case passes.
+mk $R/ok runner/w-seed "$get"
+put $R/ok runner/w-seed tags $'worker\n'
+put $R/ok runner/w-seed worker/seed.sql "$(cat "$seed")"
+put $R/ok runner/w-seed expect/stdout $'404\n200\n'
+put $R/ok runner/w-seed expect/worker.log $'GET /v1/packages/acme/none/releases 404\nGET /v1/packages/acme/lib/releases 200\n'
+put $R/ok runner/w-seed expect/worker-github.log ''
+out=$(lw $R/ok)
+if echo "$out" | grep -q 'scenarios: 1 passed, 0 failed'; then ok; else bad "l3w: a worker case with its seed and the right worker.log must pass"; echo "$out"; fi
+# Row 2: a wrong expect/worker.log (the status 200 for the name with no row) fails the case.
+mk $R/log runner/w-log "$get"
+put $R/log runner/w-log tags $'worker\n'
+put $R/log runner/w-log worker/seed.sql "$(cat "$seed")"
+put $R/log runner/w-log expect/stdout $'404\n200\n'
+put $R/log runner/w-log expect/worker.log $'GET /v1/packages/acme/none/releases 200\nGET /v1/packages/acme/lib/releases 200\n'
+out=$(lw $R/log)
+if echo "$out" | grep -q 'FAIL runner/w-log' && echo "$out" | grep -q 'worker requests differs' && echo "$out" | grep -q '1 failed'; then ok; else bad "l3w: a wrong expect/worker.log must fail with 'worker requests differs'"; echo "$out"; fi
+# Row 3: no seed: the same expected stdout fails (acme/lib is 404 too), so the seed of row 1 is what made the 200.
+mk $R/noseed runner/w-noseed "$get"
+put $R/noseed runner/w-noseed tags $'worker\n'
+put $R/noseed runner/w-noseed expect/stdout $'404\n200\n'
+out=$(lw $R/noseed)
+if echo "$out" | grep -q 'FAIL runner/w-noseed' && echo "$out" | grep -q 'stdout differs' && echo "$out" | grep -q '^ *+404$'; then ok; else bad "l3w: with no worker/seed.sql the seeded name must be 404 and the case must fail"; echo "$out"; fi
+# Row 4: the Worker reads GitHub (an ingest, R-AP9) and the case has no fake route for it: the case fails with the text of the fake GitHub and the exit code 98, also when the cmd itself exits 0.
+mk $R/gh runner/w-github 'curl -s -o /dev/null -X POST -H "content-type: application/json" -d "{\"url\":\"https://github.com/acme/lib/releases/download/1.0.0/Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY.tar.zst\"}" "$TALON_REGISTRY/v1/releases"'
+put $R/gh runner/w-github tags $'worker\n'
+out=$(lw $R/gh)
+if echo "$out" | grep -q 'FAIL runner/w-github' && echo "$out" | grep -q 'worker: github: no fake route for GET https://api.github.com/repos/acme/lib' && echo "$out" | grep -q '^ *+98$'; then ok
+else bad "l3w: a GitHub request of the Worker with no fake route must fail the case (worker: github: no fake route, exit 98)"; echo "$out"; fi
+# Row 5: without L3W_DIR a worker case is skipped (the fast l3 does not start a Worker), and L3W_ONLY=1 selects only the cases with the tag worker.
+mk $R/sel runner/plain 'true'
+mk $R/sel runner/w-only 'echo "$TALON_REGISTRY"'
+put $R/sel runner/w-only tags $'worker\n'
+put $R/sel runner/w-only expect/stdout $'http://127.0.0.1:8787\n'
+out=$(l3 $R/sel)
+local out2
+out2=$(lw $R/sel)
+if echo "$out" | grep -q 'scenarios: 1 passed, 0 failed, 1 skipped' && echo "$out2" | grep -q 'scenarios: 1 passed, 0 failed, 0 skipped'; then ok
+else bad "l3w: without L3W_DIR the worker case is skipped; with L3W_DIR and L3W_ONLY=1 only the worker case runs, and it sees TALON_REGISTRY"; echo "$out"; echo "$out2"; fi
+# Row 6: scripts/test.sh has the step l3w with its budget (15 s, a proposal of slice 224), l3w puts wbuild before it, and step_l3w never builds the Worker.
+if grep -Eq '^declare -A BUDGET=\(.*\[l3w\]=15 ' "$ROOT/scripts/test.sh" && grep -q '\[ "\$_x" = l3w \]' "$ROOT/scripts/test.sh" &&
+    sed -n '/^step_l3w()/,/^}/p' "$ROOT/scripts/test.sh" | grep -q 'L3W_ONLY=1' && ! sed -n '/^step_l3w()/,/^}/p' "$ROOT/scripts/test.sh" | grep -q 'wait_build "worker'; then ok
+else bad "l3w: scripts/test.sh has the budget l3w 15, puts wbuild before l3w, and step_l3w runs tests/run.sh with L3W_ONLY=1 and does not wait for a Worker build"; fi
+}
+sec l3w s_l3w
 
 # --- Slice 033: the l1 step (TESTING.md 4, TW6, TW26). A fake roc makes a fake roc-fuzz target (see the fake roc above). The rows read the calls of the step and its text. ---
 # The step: one `roc build --fuzz --opt=speed` for each tests/fuzz/*.roc (LLVM only: it does not follow OPT), one run of each target in $WORK/l1/<name>/ (never in the repo) with a fixed count and seed,

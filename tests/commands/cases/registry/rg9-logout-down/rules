@@ -1,0 +1,1 @@
+R-RG9 R-SH9 R-AP38 R-E6 (slice 225, Q601 item 4): share logout with the default and no answer to DELETE /v1/tokens: no fall back (direct cannot log out): exit 15, the stop message with the URL, the source (the built-in default) and the fix. share.json is not changed.

@@ -1,0 +1,2 @@
+tln: error[network]: the registry https://registry.roc-talon.org (TALON_REGISTRY) gave no answer: could not resolve host: registry.roc-talon.org. Use --registry direct, or registry = "direct" in config.toml, to read GitHub in place of it.
+tln: error[network]: the registry https://registry.roc-talon.org (--registry) gave no answer: could not resolve host: registry.roc-talon.org. Use --registry direct, or registry = "direct" in config.toml, to read GitHub in place of it.

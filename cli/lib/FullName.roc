@@ -183,8 +183,12 @@ FullName :: [].{
 	## | 6 | One `programs!(["curl"])` (Design Q229). No `curl`: kind `Environment` (exit 18) with the text of `UnknownValues.settle!`, and no request. Then one `http_all!` with `UnknownValues.ingest_requests` of the `select` order, `limit` 4, `tmp_dir` `<roots.cache>/talon/tmp` |
 	## | 7 | For each result in order: `skip_warning` (409, 422) is on stderr, counted as `skipped`. Else `UnknownValues.ingest_verdict`: `Indexed({ bookmark })` keeps the bookmark and counts `indexed`. `Err` (429): the failure at once (exit 15, `Try again in <n> s.`), no step 8. `Unindexed({ what })`: `unindexed_warning` on stderr, counted as `other`. `Archive` (another 4xx): no text, counted as `other` (Design Q398) |
 	## | 8 | `after_ingests`. `NotIndexed`: `Err(not_indexed)`. `NoCandidate`: `Err(no_candidate)`. `Ask`: `RegistryCache.get!` of the same path with `newest` and the `bookmark` of `UnknownValues.largest` of the kept bookmarks (`Err(None)`: `no-cache` only). 200: decoded, `Found`. 404: `still_missing`. Any other status: `Registry.refuse` |
+	## Slice 225 (R-RG9): `read!` with the source of the registry setting (`""` for none). The source goes to the text of a failure with no answer.
 	read! : Fx, { net : Net.Settings, roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, name : Str, selector : FullName.Typed, snapshot : Try(U64, [None]), known : List(Str) } => Try([Found(WireIndex.Releases), NoMatch, SourceBuild], Fail)
-	read! = |fx, facts| {
+	read! = |fx, facts| read_via!(fx, { net: facts.net, roots: facts.roots, origin: facts.origin, version: facts.version, now: facts.now, offline: facts.offline, name: facts.name, selector: facts.selector, snapshot: facts.snapshot, known: facts.known, source: "" })
+
+	read_via! : Fx, { net : Net.Settings, roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, name : Str, selector : FullName.Typed, snapshot : Try(U64, [None]), known : List(Str), source : Str } => Try([Found(WireIndex.Releases), NoMatch, SourceBuild], Fail)
+	read_via! = |fx, facts| {
 		chosen = facts.selector.map_ok(|t| t.selector)
 		match FullName.way(chosen) {
 			Compiler => return Err(FullName.compiler_only({ name: facts.name, text: facts.selector.map_ok(|t| t.text) ?? "" }))
@@ -197,7 +201,7 @@ FullName :: [].{
 		}
 		PrivacyGuard.check!(fx, { net: facts.net, roots: facts.roots, sources: [Repo(facts.name)], offline: facts.offline, frozen: Bool.False })?
 		path = Registry.releases_of_repo_url({ origin: facts.origin, owner, repo }).drop_prefix(facts.origin)
-		first = RegistryCache.get!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path, now: facts.now, offline: facts.offline, newest: Bool.False, bookmark: Err(None) })?
+		first = RegistryCache.get_via!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path, now: facts.now, offline: facts.offline, newest: Bool.False, bookmark: Err(None), source: facts.source })?
 		match first {
 			NoCopy => return Err(Github.no_page_failure(facts.name))
 			Answer(answer) => {
@@ -277,7 +281,7 @@ FullName :: [].{
 			NotIndexed => Err(FullName.not_indexed({ name: facts.name }))
 			NoCandidate => Err(FullName.no_candidate({ name: facts.name }))
 			Ask => {
-				again = RegistryCache.get!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path, now: facts.now, offline: facts.offline, newest: Bool.True, bookmark: UnknownValues.largest($marks) })?
+				again = RegistryCache.get_via!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path, now: facts.now, offline: facts.offline, newest: Bool.True, bookmark: UnknownValues.largest($marks), source: facts.source })?
 				match again {
 					NoCopy => Err(Github.no_page_failure(facts.name))
 					Answer(answer) => if answer.status == 200 {

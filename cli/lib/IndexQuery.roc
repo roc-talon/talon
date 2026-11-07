@@ -15,7 +15,7 @@ import Vars
 ## and sets `Request.index` to `Answer`. L0: `tests/unit/IndexqueryTest.roc`. L2: `tests/commands/cases/registry/al2-update-query`.
 IndexQuery :: [].{
 
-	## R-RG1, R-RG2, R-RG7 (rows 1 to 3, 6): the registry of a run. The first of `flag` (`--registry`), `env` (`TALON_REGISTRY`) and `config` (the key `registry` of `config.toml`) that is set wins. None set: `Direct` (the built-in default, R-RG2).
+	## R-RG1, R-RG2, R-RG7 (rows 1 to 3, 6): the registry of a run. The first of `flag` (`--registry`), `env` (`TALON_REGISTRY`) and `config` (the key `registry` of `config.toml`) that is set wins. None set: `Registry(default_registry)` (the built-in default, R-RG2, Design Q208).
 	## The text `direct` is `Direct`. Another text is read with `Registry.base`: `Registry(<base URL form>)`. `config.at` is `<path>:<line>` of the key.
 	##
 	## | Case | Result | Rule |
@@ -40,9 +40,18 @@ IndexQuery :: [].{
 			Ok(text) => read_named(text, "--registry")
 			Err(Unset) => match facts.env {
 				Ok(text) => read_named(text, "TALON_REGISTRY")
-				Err(Unset) => Ok(config ?? Direct)
+				Err(Unset) => Ok(config ?? Registry(Help.default_registry))
 			}
 		}
+	}
+
+	## R-RG1, R-RG9: the place that gave the registry setting of a run, in the order of `setting`: `--registry`, `TALON_REGISTRY`, `config.toml`, else `the built-in default`.
+	source : { flag : Try(Str, [Unset]), env : Try(Str, [Unset]), config : Try(a, [Unset]) } -> Str
+	source = |facts| match (facts.flag, facts.env, facts.config) {
+		(Ok(_), _, _) => "--registry"
+		(_, Ok(_), _) => "TALON_REGISTRY"
+		(_, _, Ok(_)) => "config.toml"
+		_ => Help.default_source
 	}
 
 	## Slice 206g (R-CV1, R-IX4, R-IX6, R-RG1): the source of the compiler list of a roc command (no `--snapshot`: `log` is `Err(None)`). `setting` as above; `direct` is `Direct`.
@@ -50,7 +59,7 @@ IndexQuery :: [].{
 	list_source : { flag : Try(Str, [Unset]), env : Try(Str, [Unset]), config : Try({ text : Str, at : Str }, [Unset]), offline : Bool, kept : Bool } -> Try(Nightlies.Source, Fail)
 	list_source = |facts| match IndexQuery.setting({ flag: facts.flag, env: facts.env, config: facts.config })? {
 		Direct => Ok(Direct)
-		Registry(origin) => Ok(Registry({ origin, version: Help.version, log: Err(None), kept: facts.offline or facts.kept }))
+		Registry(origin) => Ok(Registry({ origin, version: Help.version, log: Err(None), kept: facts.offline or facts.kept, source: IndexQuery.source({ flag: facts.flag, env: facts.env, config: facts.config }), first: Bool.True }))
 	}
 
 	## R-AP16, R-DI1, R-AP74 row 3: the `groups` of the first closure query. One group for each scoped variable that is `free` and has a `name` (the variables whose releases `direct` lists in the first search, `PickFlow.prepare!`), in the order of `scoped` (the order of the variables, R-VA6).

@@ -1,0 +1,3 @@
+== outdated --json --file u1/main.roc
+{"schema":1,"command":"outdated","ok":true,"data":{"members":[{"file":"$PROJECT/u1/main.roc","packages":[{"alias":"json","name":"acme/json","current":"2.0.0","wanted":"2.1.0","latest":"2.1.0","new_series":false,"nightly_range":{"state":"unread"}},{"alias":"parser","name":"acme/parser","current":"1.0.0","wanted":"1.2.0","latest":"1.2.0","new_series":false,"nightly_range":{"state":"unread"}},{"alias":"pf","name":"acme/pfx","current":"0.1.0","wanted":"0.1.1","latest":"0.1.1","new_series":false,"nightly_range":{"state":"unread"}}],"fixed":[]}],"notes":[{"kind":"registry-direct","registry":"https://registry.roc-talon.org","cause":"could not resolve host: registry.roc-talon.org"}]},"error":null}
+exit 0

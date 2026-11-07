@@ -68,10 +68,10 @@ LogSnapshot :: [].{
 	## | 3 | R-AP16, Q404: `hide_above` with `n` = `second_cut({ user, first })` and `keep` (the `hashes` of the first request: the second request has none). The second answer shows the state of the first one. |
 	##
 	## The result is the second answer after step 3. `user` is the N of `--snapshot log:N`, `Err(None)` for none.
-	second! : Fx, { origin : Str, version : Str, first : Wire.Answer, compilers : Try(Wire.Window, [None]), groups : List(ClosureRequest.Group), keep : List(Str), user : Try(U64, [None]) } => Try(Wire.Answer, Fail)
+	second! : Fx, { origin : Str, version : Str, first : Wire.Answer, compilers : Try(Wire.Window, [None]), groups : List(ClosureRequest.Group), keep : List(Str), user : Try(U64, [None]), source ?: Str } => Try(Wire.Answer, Fail)
 	second! = |fx, facts| {
 		request = LogSnapshot.second_request({ groups: facts.groups, compilers: facts.compilers })
-		checked = ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: Registry.headers({ version: facts.version, body: Json }) })?
+		checked = ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: Registry.headers({ version: facts.version, body: Json }), source: facts.?source ?? "" })?
 		Ok(LogSnapshot.hide_above(checked, { n: LogSnapshot.second_cut({ user: facts.user, first: facts.first }), keep: facts.keep }))
 	}
 }

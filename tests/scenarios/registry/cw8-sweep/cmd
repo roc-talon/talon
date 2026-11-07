@@ -1,0 +1,23 @@
+# R-AP39 R-AP67 R-MX1 R-MX4 R-MX11 (slice 224, the contract run, tag worker): `GET /v1/sweeps/{tag}` of the real Worker, the work list that the compat bot reads (bot/lib/BotFlow.roc, step 3).
+# No tln command sends this route (only the bot app does: it needs an OIDC token for its first request and is not a tln command), so the case uses `curl` as rn3-routes does, and has no tln twin.
+# The twin is the fake route of the L2 cases tests/commands/cases/bot/b1-sweep (2 missing, no sweep row) and b15-done (a sweep row): the bodies and the `.meta` are copied to given/fake/. The case prints the status, the headers that the bot depends on, and a diff of the sorted members
+# (the text is cut at each brace, bracket and comma, one member for each line; `<` is the Worker, `>` is the fake route). The values of the seed differ from the values of the fake body (log size, tag, time): only a line with a member name that is not a value is a finding.
+# The seed (worker/seed.json, worker/extra.sql): 3 package releases (log 1 to 3), 2 toolchain leaves (log 4 and 5), a bot row for one member at aaaaaaa, a bot row for each member and a sweep row at ddddddd.
+D=$TALON_TEST_DIR
+split() { sed 's/{v}/(v)/g' "$1" | tr '{}[],' '\n\n\n\n\n' | grep -v '^$' | sort; }
+get() { curl -sS -m 30 -D "$2.head" -o "$2" -w '%{http_code}' "$1"; }
+echo "missing: $(get $TALON_REGISTRY/v1/sweeps/nightly-2026-10-29-aaaaaaa $D/real.json)"
+grep -i '^content-type:\|^cache-control:' $D/real.json.head | tr -d '\r'
+echo "etag: $(grep -ic '^etag:' $D/real.json.head)"
+echo "fake meta:"; cat $D/fake/sweep.meta
+cat $D/real.json; echo
+split $D/real.json > $D/real.lines; split $D/fake/sweep-missing.json > $D/fake.lines
+echo "diff of the body (real <, fake >):"
+diff $D/real.lines $D/fake.lines || true
+echo "done: $(get $TALON_REGISTRY/v1/sweeps/nightly-2026-10-30-ddddddd $D/real.json)"
+cat $D/real.json; echo
+split $D/real.json > $D/real.lines; split $D/fake/sweep-done.json > $D/fake.lines
+echo "diff of the body (real <, fake >):"
+diff $D/real.lines $D/fake.lines || true
+echo "no tag: $(get $TALON_REGISTRY/v1/sweeps/nightly-2026-10-31-eeeeeee $D/real.json)"
+cat $D/real.json; echo

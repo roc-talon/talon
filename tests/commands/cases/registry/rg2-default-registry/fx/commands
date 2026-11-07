@@ -1,0 +1,3 @@
+update --no-check --dry-run --json --snapshot log:30 --file u1/main.roc
+update --no-check --dry-run --file u1/main.roc env:TALON_REGISTRY=direct
+update --no-check --dry-run --json --snapshot log:30 --file u1/main.roc env:TALON_REGISTRY=https://REGISTRY.roc-talon.org:443/

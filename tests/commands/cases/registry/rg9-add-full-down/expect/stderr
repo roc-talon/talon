@@ -1,0 +1,2 @@
+warning: the default registry https://registry.roc-talon.org does not answer (could not resolve host: registry.roc-talon.org): this run uses GitHub (direct)
+tln: error[usage]: no GitHub repository acme/known (a private repository needs a token)

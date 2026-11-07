@@ -1,1 +1,1 @@
-tln: error[network]: the registry is busy (503). Try again later.
+tln: error[network]: the registry http://127.0.0.1:9 (config.toml) answered 503: the registry is busy.

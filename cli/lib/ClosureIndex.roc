@@ -153,7 +153,7 @@ ClosureIndex :: [].{
 	## | 5 | R-AP18 (reader, Design Q390): a release with a `log_index` above `log_size` makes the answer unused (`one_state`, exit 15). |
 	##
 	## No file is written: the answer is `no-store` and Talon keeps no copy of it (R-IX3).
-	query! : Fx, { origin : Str, version : Str, facts : ClosureRequest.Facts } => Try(Wire.Answer, Fail)
+	query! : Fx, { origin : Str, version : Str, facts : ClosureRequest.Facts, source ?: Str } => Try(Wire.Answer, Fail)
 	query! = |fx, facts| {
 		request = match ClosureRequest.request(facts.facts) {
 			Ok(r) => r
@@ -164,23 +164,23 @@ ClosureIndex :: [].{
 				},
 			)
 		}
-		ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: Registry.headers({ version: facts.version, body: Json }) })
+		ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: Registry.headers({ version: facts.version, body: Json }), source: facts.?source ?? "" })
 	}
 
 	## The one shared step of a closure query (steps 2 to 5 of `query!`): `ClosureRequest.check` of the body, one `http_send!` (`Post`, `Registry.closure_url`, `headers` as given, `timeout_s` `query_timeout_s`), the errors (no answer, `Registry.refuse` with method `Query` and the `Retry-After` of the answer),
 	## the decode and `one_state`. Used by `query!`, `LogSnapshot.second!` and `UnknownValues.settle!`. No second try.
-	send! : Fx, { origin : Str, version : Str, request : Wire.Request, headers : List((Str, Str)) } => Try(Wire.Answer, Fail)
+	send! : Fx, { origin : Str, version : Str, request : Wire.Request, headers : List((Str, Str)), source ?: Str } => Try(Wire.Answer, Fail)
 	send! = |fx, facts| {
 		body = Wire.encode_request(facts.request)
 		ClosureRequest.check({ groups: facts.request.groups.len(), hashes: facts.request.hashes.len(), bytes: body.count_utf8_bytes() })?
 		sent = fx.http_send!({ method: Post, url: Registry.closure_url(facts.origin), headers: facts.headers, body, timeout_s: ClosureIndex.query_timeout_s })
 		reply = match sent {
 			Ok(r) => r
-			Err(Timeout) => return Err(Registry.no_answer({ origin: facts.origin, why: "no answer in ${ClosureIndex.query_timeout_s.to_str()} s" }))
-			Err(Failed(text)) => return Err(Registry.no_answer({ origin: facts.origin, why: text }))
+			Err(Timeout) => return Err(Registry.no_answer({ origin: facts.origin, why: "no answer in ${ClosureIndex.query_timeout_s.to_str()} s", source: facts.?source ?? "" }))
+			Err(Failed(text)) => return Err(Registry.no_answer({ origin: facts.origin, why: text, source: facts.?source ?? "" }))
 		}
 		if reply.status != 200 {
-			return Err(Registry.refuse({ origin: facts.origin, version: facts.version, method: Query, reply: { status: reply.status, body: reply.body }, retry_after: Registry.retry_after_of(reply.headers) }))
+			return Err(Registry.refuse({ origin: facts.origin, version: facts.version, method: Query, reply: { status: reply.status, body: reply.body }, retry_after: Registry.retry_after_of(reply.headers), source: facts.?source ?? "" }))
 		}
 		answer = Registry.closure_answer({ origin: facts.origin, body: reply.body })?
 		ClosureIndex.one_state(facts.origin, answer)

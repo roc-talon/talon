@@ -194,7 +194,7 @@ start_url! = |fx, facts| {
 	config = RocInstall.read_config!(fx, facts.roots)?
 	listed = match IndexQuery.setting({ flag: facts.flag, env: facts.net.registry, config: config.registry })? {
 		Direct => github_list!(fx, facts, owner, repo)?
-		Registry(origin) => registry_list!(fx, facts, origin)?
+		Registry(origin) => registry_list!(fx, facts, origin, IndexQuery.source({ flag: facts.flag, env: facts.net.registry, config: config.registry }))?
 	}
 	for w in listed.warnings {
 		fx.err!("warning: ${w}\n")
@@ -231,13 +231,13 @@ github_list! = |fx, facts, owner, repo| {
 }
 
 # Slice 206i (R-IN1, R-IN9, Q560, Q565): with a registry the list is the R-AP1 read of `add` (`FullName.read!`: the guard, the ingest of a 404). A name with no release is the failure of R-IN9 (2) for a version, else R-AD35 step 2.
-registry_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
-registry_list! = |fx, facts, origin| {
+registry_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
+registry_list! = |fx, facts, origin, setting| {
 	typed = match facts.version {
 		Ok(version) => Ok({ selector: Exact(version), text: version })
 		Err(Unset) => Err(None)
 	}
-	read = FullName.read!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: facts.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [] })?
+	read = FullName.read_via!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: facts.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: setting })?
 	match read {
 		Found(releases) => Ok({ list: ClosureIndex.candidates({ releases: releases.releases.keep_if(|r| !r.yanked), artifacts: [], name: facts.name }), warnings: [] })
 		NoMatch => Ok({ list: [], warnings: [] })

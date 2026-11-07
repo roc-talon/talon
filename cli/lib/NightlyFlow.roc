@@ -2,6 +2,7 @@ import Compiler
 import Consent
 import DownloadAsk
 import Fail
+import Fallback
 import Fx
 import Launch
 import Nightlies
@@ -38,7 +39,7 @@ NightlyFlow :: [].{
 
 	## `free` are the values of the compiler slot (`NightlyPlan.pick.askable`), `Err(Held)` when the slot is not free (also when only H can be asked, or when the list could not be read: Q1). `releases` is the compiler list that `plan!` read (slice 089): `Ok([])` when it could not be read, `Err(NotRead)` for a plan that read nothing. The oracle loop starts with it (`Probed.listed`), so the command reads the list once. `downloads` is the number of compilers that this command installed. `note` is a line
 	## for stdout and `data.notes` (the list could not be read, or R-C16: the young N that only a pattern of `min-release-age-exclude` keeps visible).
-	Plan : { free : Try(List(Str), [Held]), releases : Try(List(Nightlies.Release), [NotRead]), newest : Try(Str, [NoneKnown]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, downloads : U64, note : Try(Str, [None]) }
+	Plan : { free : Try(List(Str), [Held]), releases : Try(List(Nightlies.Release), [NotRead]), newest : Try(Str, [NoneKnown]), optional : { ids : List(Str), sizes : List({ id : Str, size : U64 }) }, downloads : U64, note : Try(Str, [None]), fell : Try(Fallback.Fell, [None]) }
 
 	## R-WS4, Q3: `NightlyPlan.unify` for a request (`free` is `request.command == Upgrade` and `NightlyPlan.scope(request.names).nightly == Free`): the rows for `Pin.decide` and `differ`.
 	unify : ResolveBase.Request, List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }) -> { members : List({ file : Str, pin : Try(Str, [NoPin]), changes : Bool }), differ : Bool }
@@ -68,8 +69,9 @@ NightlyFlow :: [].{
 	## `held` is H, the compiler of the header (`Pin.Decision.held`). `snapshot` is the time of `--snapshot` (R-C7). The steps and the prompt table are in the comment above.
 	plan! : Fx, ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings, { held : Str, snapshot : Try(U64, [None]) } => Try(NightlyFlow.Plan, Fail)
 	plan! = |fx, request, loaded, settings, facts| match listed!(fx, request) {
-		Ok(releases) => known!(fx, request, { loaded, settings }, { held: facts.held, snapshot: facts.snapshot, releases })
-		Err(fail) => if request.names.contains("roc") Err(fail) else Ok({ free: Err(Held), releases: Ok([]), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Ok("the compiler list could not be read; roc stays ${facts.held}") })
+		# R-RG9: a list read that fell back makes the rest of the plan `direct` (the offers read the GitHub list), and `fell` goes to the caller.
+		Ok(read) => known!(fx, ResolveBase.routed(request, read.fell), { loaded, settings }, { held: facts.held, snapshot: facts.snapshot, releases: read.releases, fell: read.fell })
+		Err(fail) => if request.names.contains("roc") Err(fail) else Ok({ free: Err(Held), releases: Ok([]), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Ok("the compiler list could not be read; roc stays ${facts.held}"), fell: Err(None) })
 	}
 }
 
@@ -79,16 +81,16 @@ is_free = |request| request.command == Upgrade and NightlyPlan.scope(request.nam
 
 # Step 1: the list of the host. `--offline` with no cached page is a failure.
 # Slice 206e2 (R-CV1, R-AP19, Design Q489): with a registry the list is the registry list (`ResolveBase.list_first`, `log:N` hides the rows above N). A list that cannot be read acts as in `direct`.
-listed! : Fx, ResolveBase.Request => Try(List(Nightlies.Release), Fail)
+listed! : Fx, ResolveBase.Request => Try({ releases : List(Nightlies.Release), fell : Try(Fallback.Fell, [None]) }, Fail)
 listed! = |fx, request| {
 	host = Toolchain.host(fx.platform!())?
 	found = Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host, source: ResolveBase.list_first(request) })?
 	if found.source == Missing return Err(Toolchain.offline_no_list({}))
-	Ok(found.releases)
+	Ok({ releases: found.releases, fell: found.fell })
 }
 
 # Steps 2 to 4 with a list of compilers.
-known! : Fx, ResolveBase.Request, { loaded : ResolveBase.Loaded, settings : ResolveBase.Settings }, { held : Str, snapshot : Try(U64, [None]), releases : List(Nightlies.Release) } => Try(NightlyFlow.Plan, Fail)
+known! : Fx, ResolveBase.Request, { loaded : ResolveBase.Loaded, settings : ResolveBase.Settings }, { held : Str, snapshot : Try(U64, [None]), releases : List(Nightlies.Release), fell : Try(Fallback.Fell, [None]) } => Try(NightlyFlow.Plan, Fail)
 known! = |fx, request, ctx, run| {
 	toolchains = Launch.toolchains!(fx, request.roots)
 	intent = ctx.loaded.intent.toolchain
@@ -128,7 +130,7 @@ known! = |fx, request, ctx, run| {
 	only_held = picked.askable.all(|id| Pin.same_id(id, run.held))
 	# R-C16 (slice 084): N is a new choice when it is not H. A young N that only a pattern kept gets the note.
 	note = if Pin.same_id(newest, run.held) Err(None) else Toolchain.kept_note({ id: newest, releases: run.releases, now: request.now, min_age: ctx.settings.min_age, exclude: ctx.settings.exclude })
-	Ok({ releases: Ok(run.releases), free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note })
+	Ok({ releases: Ok(run.releases), free: if only_held Err(Held) else Ok(picked.askable), newest: picked.newest, optional: if only_held { ids: [], sizes: [] } else optional, downloads: $installed, note, fell: run.fell })
 }
 
 # Step 3: `RocInstall.offer!` for each id, in order. An id that is installed after all (`Present`) is no download.

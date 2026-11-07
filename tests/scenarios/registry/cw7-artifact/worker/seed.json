@@ -1,0 +1,6 @@
+{ "now": "2026-10-15T11:00:00Z",
+  "releases": [
+    {"owner":"pad","repo":"p1","tag":"1.0.0","version":"1.0.0","hash":"3YnDaRFjJ6px2w57yFHwnWDw4cBocmSfE3uRAgVHFgcW","published_at":"2026-08-01T12:00:00Z","exposes":[],"repository_id":101,"owner_id":9002},
+    {"owner":"pad","repo":"p2","tag":"1.0.0","version":"1.0.0","hash":"B1GYnRhmGHFa3XAzkbqCDDCfiFJvAtF5Rkefag2ZjzVW","published_at":"2026-08-01T12:00:00Z","exposes":[],"repository_id":102,"owner_id":9002},
+    { "owner": "acme", "repo": "json", "tag": "2.1.0", "version": "2.1.0", "hash": "3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3", "published_at": "2026-10-15T12:00:00Z", "exposes": ["Json"], "size": 222, "repository_id": 1, "owner_id": 9001 }
+  ] }

@@ -5,6 +5,7 @@ import Common
 import Fail
 import Fx
 import Help
+import IndexQuery
 import Item
 import JsonDoc
 import Net
@@ -182,10 +183,10 @@ ShareLogin :: [].{
 
 	## R-AP37, R-E6, R-SH7: the answer of step 7. 201 with a body `{token, expires_at, account}` (`records.Account.decode_token`): `Ok`. No answer: `Registry.no_answer` (15). An error status: `Registry.refuse` with the method `Post`
 	## (400: 1, 401: 20, 429 and 5xx: 15). A 2xx body that does not decode (also with no `token`): kind `Network` (15), R-E6 last row, the message has `registry login` (Q475).
-	token_answer : { origin : Str, version : Str, reply : Reply } -> Try(Granted, Fail)
+	token_answer : { origin : Str, version : Str, reply : Reply, source ?: Str } -> Try(Granted, Fail)
 	token_answer = |facts| match facts.reply {
-		Err(Timeout) => Err(Registry.no_answer({ origin: facts.origin, why: "no answer in ${ShareLogin.timeout_s.to_str()} s" }))
-		Err(Failed(why)) => Err(Registry.no_answer({ origin: facts.origin, why }))
+		Err(Timeout) => Err(Registry.no_answer({ origin: facts.origin, why: "no answer in ${ShareLogin.timeout_s.to_str()} s", source: facts.?source ?? "", needs: Bool.True }))
+		Err(Failed(why)) => Err(Registry.no_answer({ origin: facts.origin, why, source: facts.?source ?? "", needs: Bool.True }))
 		Ok(answer) => if answer.status >= 200 and answer.status <= 299 {
 			match Account.decode_token(answer.body) {
 				Ok(granted) => Ok(granted)
@@ -328,6 +329,7 @@ login_flow! = |fx, args| {
 	granted = ShareLogin.token_answer({
 		origin,
 		version,
+		source: IndexQuery.source({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }),
 		reply: fx.http_send!(ShareLogin.token_request({ origin, version, contributor: doc.id, github_token })),
 	})?
 	ShareFlow.totals_write!(fx, json_path, |current| ShareLogin.stored({ doc: current, granted }))?

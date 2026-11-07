@@ -9,6 +9,7 @@ import Fx
 import Github
 import HeldRoc
 import Help
+import IndexQuery
 import Ident
 import Install
 import Item
@@ -66,7 +67,7 @@ PublishFlow :: [].{
 
 Report : { owner : Str, repo : Str, tag : Str, hash : Str, created : Bool, facts : U64 }
 
-Run : { origin : Str, net : Net.Settings, oidc : Publish.Oidc }
+Run : { origin : Str, setting : Str, net : Net.Settings, oidc : Publish.Oidc }
 
 flow! : Fx, Args => Try({ report : Report }, Fail)
 flow! = |fx, args| {
@@ -91,8 +92,8 @@ flow! = |fx, args| {
 		Err(Foreign) => return Err(Fail.new(Internal, "the asset URL ${url} is not a package URL"))
 	}
 	found = facts!(fx, roots, hash)?
-	check!(fx, args, { roots, origin, url })
-	run = { origin, net, oidc }
+	check!(fx, args, { roots, origin, setting: IndexQuery.source({ flag: args.registry, env: net.registry, config: config.registry }), url })
+	run = { origin, setting: IndexQuery.source({ flag: args.registry, env: net.registry, config: config.registry }), net, oidc }
 	token = token!(fx, run)?
 	sent = post!(fx, run, { url, facts: found.list }, { token, retries: 0, tries: 0, renewed: Bool.False })?
 	Ok({ report: { owner: job.owner, repo: job.repo, tag: job.tag, hash, created: sent.created, facts: found.list.len() } })
@@ -149,7 +150,7 @@ facts! = |fx, roots, hash| {
 }
 
 # Step 5b (slice 222): the API check. It never stops and never changes the exit code (R-PU39). Notes and the warning go to stderr.
-check! : Fx, Args, { roots : Roots, origin : Str, url : Str } => {}
+check! : Fx, Args, { roots : Roots, origin : Str, setting : Str, url : Str } => {}
 check! = |fx, args, run| match Ident.of_url(run.url) {
 	Err(Foreign) => {}
 	Ok(ident) => {
@@ -174,10 +175,10 @@ check! = |fx, args, run| match Ident.of_url(run.url) {
 }
 
 # Step 5b (a): the releases of the group, `newest`, no token, no series (R-AP13, R-RG3, Q527). `Err` has the cause for `PublishCheck.read_failed`. The clock is not read: `now` is 0 (`newest` has no age).
-group! : Fx, { roots : Roots, origin : Str, url : Str }, Str => Try(List(Release.Row), Str)
+group! : Fx, { roots : Roots, origin : Str, setting : Str, url : Str }, Str => Try(List(Release.Row), Str)
 group! = |fx, run, form| {
 	path = Registry.releases_url({ origin: "", group: form, series: Err(None) })
-	got = RegistryCache.get!(fx, { roots: run.roots, origin: run.origin, version: Help.version, path, now: 0, offline: Bool.False, newest: Bool.True, bookmark: Err(None) })
+	got = RegistryCache.get_via!(fx, { roots: run.roots, origin: run.origin, version: Help.version, path, now: 0, offline: Bool.False, newest: Bool.True, bookmark: Err(None), source: run.setting })
 	match got {
 		Err(fail) => Err(fail.message)
 		Ok(NoCopy) => Err("no answer")
@@ -285,6 +286,6 @@ post! = |fx, run, body, state| {
 			fx.sleep!(ms)
 			post!(fx, run, body, { ..state, retries: state.retries + 1, tries })
 		}
-		Stop => Err(Publish.failure({ origin: run.origin, version: Help.version, tries, renewed: state.renewed, reply }))
+		Stop => Err(Publish.failure({ origin: run.origin, version: Help.version, tries, renewed: state.renewed, reply, source: run.setting }))
 	}
 }

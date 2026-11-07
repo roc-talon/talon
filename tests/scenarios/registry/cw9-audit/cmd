@@ -1,0 +1,18 @@
+# R-AP40 R-AP67 R-MX13 (slice 224, the contract run, tag worker): `GET /v1/compat_hints?audit=<n>` of the real Worker, the work list of the hint audit that the compat bot reads (bot/lib/BotFlow.roc, the audit step).
+# No tln command sends this route (only the bot app does: it needs an OIDC token for its first request and is not a tln command), so the case uses `curl` as rn3-routes does, and has no tln twin.
+# The twin is the fake route of the L2 case tests/commands/cases/bot/b3-audit (2 pairs): the body and the `.meta` are copied to given/fake/. The case prints the status, the headers that the bot depends on, and a diff of the sorted members
+# (the text is cut at each brace, bracket and comma, one member for each line; `<` is the Worker, `>` is the fake route). The seed (worker/seed.json, worker/extra.sql) has the same 2 pairs, so a line in the diff is a finding.
+D=$TALON_TEST_DIR
+split() { tr '{}[],' '\n\n\n\n\n' < "$1" | grep -v '^$' | sort; }
+get() { curl -sS -m 30 -D "$2.head" -o "$2" -w '%{http_code}' "$1"; }
+echo "audit=200: $(get "$TALON_REGISTRY/v1/compat_hints?audit=200" $D/real.json)"
+grep -i '^content-type:\|^cache-control:' $D/real.json.head | tr -d '\r'
+echo "etag: $(grep -ic '^etag:' $D/real.json.head)"
+echo "fake meta:"; cat $D/fake/audit.meta
+cat $D/real.json; echo
+split $D/real.json > $D/real.lines; split $D/fake/audit.json > $D/fake.lines
+echo "diff of the body (real <, fake >):"
+diff $D/real.lines $D/fake.lines || true
+echo "no audit: $(get "$TALON_REGISTRY/v1/compat_hints" $D/real.json)"
+echo "audit=0: $(get "$TALON_REGISTRY/v1/compat_hints?audit=0" $D/real.json)"
+cat $D/real.json; echo

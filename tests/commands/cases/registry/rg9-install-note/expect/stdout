@@ -1,0 +1,3 @@
+== install --no-check --dry-run --json --file u1/main.roc
+{"schema":1,"command":"install","ok":true,"data":{"snapshot":"2026-10-15T12:00:00Z","probes":0,"downloads":0,"dry_run":true,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[{"kind":"registry-direct","registry":"https://registry.roc-talon.org","cause":"could not resolve host: registry.roc-talon.org"}],"written":[]},"error":null}
+exit 0

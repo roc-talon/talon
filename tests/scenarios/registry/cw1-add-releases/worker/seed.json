@@ -1,0 +1,5 @@
+{ "now": "2026-10-15T11:00:00Z",
+  "releases": [
+    { "owner": "acme", "repo": "lib", "tag": "1.0.0", "version": "1.0.0", "hash": "Gt6QgYBLhpiVZhWCzVSujEvg9njznzjZKjEMpZTLbCEY", "published_at": "2026-06-01T12:00:00Z", "exposes": ["Lib"], "repository_id": 1, "owner_id": 9001 },
+    { "owner": "acme", "repo": "pfx", "tag": "0.1.0", "version": "0.1.0", "hash": "6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL", "published_at": "2026-07-01T12:00:00Z", "kind": 2, "repository_id": 2, "owner_id": 9001 }
+  ] }

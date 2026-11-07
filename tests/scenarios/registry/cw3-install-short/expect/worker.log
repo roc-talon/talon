@@ -1,0 +1,3 @@
+GET /v1/packages?short=known 200
+GET /v1/packages/acme/known/releases 200
+POST /v1/closure 200

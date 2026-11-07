@@ -6,6 +6,7 @@ import Db
 import Fail
 import Fx
 import Help
+import IndexQuery
 import Item
 import Net
 import Nightlies
@@ -39,11 +40,12 @@ import Toolchain
 ProbeShareFlow :: [].{
 
 	## What the caller gives.
-	Input : { roots : Roots, net : Net.Settings, origin : Str, source : Str, hash : Str, env : List((Str, Str)) }
+	## Slice 225 (R-RG9): `setting` is the place of the registry setting (`IndexQuery.source`) for the text of a stop with no answer. Not given (`""`): the short text.
+	Input : { roots : Roots, net : Net.Settings, origin : Str, source : Str, hash : Str, env : List((Str, Str)), setting ?: Str }
 
 	## R-PB6 (1), R-FL5, Q494: the first step of `tln probe --share`, right after `ProbeCmd.read` and before any project read. `env_all!`, `Roots.of_run!`, the read of `config.toml`, `Net.registry` with the flag, the environment and the config
 	## (the calls of `tln share logout`, slice 220). `Direct`: `ProbeShare.direct` (exit 2). `--offline` with a registry: `ProbeShare.offline` (exit 15). Else the origin of the registry.
-	check! : Fx, Args => Try(Str, Fail)
+	check! : Fx, Args => Try({ origin : Str, setting : Str }, Fail)
 	check! = |fx, args| {
 		env = fx.env_all!()
 		roots = Roots.of_run!(fx, env)?
@@ -51,7 +53,7 @@ ProbeShareFlow :: [].{
 		config = Share.setting({ path: config_path, text: RocInstall.read_text!(fx, config_path)? })?
 		match Net.registry({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }) {
 			Direct => Err(ProbeShare.direct({}))
-			Url(origin) => if args.offline Err(ProbeShare.offline({})) else Ok(origin)
+			Url(origin) => if args.offline Err(ProbeShare.offline({})) else Ok({ origin, setting: IndexQuery.source({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }) })
 		}
 	}
 
@@ -80,7 +82,7 @@ ProbeShareFlow :: [].{
 		# Q503: no fact passes the filters 2, 3 and 6 (no `compilers`): no request, and no hash in an answer.
 		answer = match request.compilers {
 			Err(None) => None
-			Ok(_) => Some(ClosureIndex.send!(fx, { origin: input.origin, version: Help.version, request, headers: Registry.headers({ version: Help.version, body: Json }) })?)
+			Ok(_) => Some(ClosureIndex.send!(fx, { origin: input.origin, version: Help.version, request, headers: Registry.headers({ version: Help.version, body: Json }), source: input.?setting ?? "" })?)
 		}
 		answers = match answer {
 			None => []
@@ -94,7 +96,7 @@ ProbeShareFlow :: [].{
 		json_path = Roots.item(input.roots, Item.ShareJson)
 		contributor = contributor!(fx, json_path)?
 		batches = ProbeShare.batches(plan.rows)
-		sent = send_batches!(fx, { origin: input.origin, contributor, batches: batches.send })
+		sent = send_batches!(fx, { origin: input.origin, setting: input.?setting ?? "", contributor, batches: batches.send })
 		unsent = sent.unsent.concat(batches.unsent)
 		if sent.shared.requests > 0 {
 			totals!(fx, input, json_path, sent.shared)
@@ -146,7 +148,7 @@ contributor! = |fx, path| match fx.read_files!([path]) {
 # Step 7: the requests, one after another. The first failure stops the loop.
 Sent : { shared : ProbeShare.Shared, unsent : List(Db.Queued), stop : Try(Fail, [None]) }
 
-send_batches! : Fx, { origin : Str, contributor : Str, batches : List(List(Db.Queued)) } => Sent
+send_batches! : Fx, { origin : Str, setting : Str, contributor : Str, batches : List(List(Db.Queued)) } => Sent
 send_batches! = |fx, run| {
 	var $shared = none.shared
 	var $unsent = []
@@ -154,7 +156,7 @@ send_batches! = |fx, run| {
 	for batch in run.batches {
 		if $stop == Err(None) {
 			req = QueueSend.request({ origin: run.origin, talon_version: Help.version, contributor: run.contributor, rows: batch, timeout_s: 20 })
-			match ProbeShare.answer({ origin: run.origin, version: Help.version, count: batch.len(), reply: fx.http_send!(req) }) {
+			match ProbeShare.answer({ origin: run.origin, version: Help.version, count: batch.len(), reply: fx.http_send!(req), source: run.setting }) {
 				Ok(done) => {
 					$shared = { requests: $shared.requests + 1, sent: $shared.sent + done.sent, counted: $shared.counted + done.counted, first: $shared.first + done.first, skipped: $shared.skipped + done.skipped }
 				}

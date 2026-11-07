@@ -5,6 +5,14 @@ Help :: [].{
 	version : Str
 	version = "0.0.1"
 
+	## R-RG2, Design Q207, Q208: the built-in default registry, in the base URL form. R-RG8: it is the `AUDIENCE` of `worker/wrangler.toml`.
+	default_registry : Str
+	default_registry = "https://registry.roc-talon.org"
+
+	## R-RG1, R-RG9: the text of the source of the built-in default. Only a failure with this source falls back to `direct`.
+	default_source : Str
+	default_source = "the built-in default"
+
 	## What a command line asks for before it is parsed: `Help` for `--help` or `help` as the first word,
 	## `Version` for `--version`. Words after a bare `--` belong to a child program (R-CM12).
 	## Else `Command`.

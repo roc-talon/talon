@@ -9,6 +9,7 @@ import Evidence
 import Explain
 import Facts
 import Fail
+import Fallback
 import Fx
 import Gather
 import Github
@@ -81,8 +82,9 @@ PickLoop :: [].{
 	releases! = |fx, request| listed!(fx, request, ResolveBase.list_first(request)) ?? []
 
 	## Slice 206e2 (R-CV1, R-AP16): `releases!` for the first read of a command that only reports (`tln outdated`): the source is `ResolveBase.list_first` (the registry list of a `Read`).
-	first_releases! : Fx, ResolveBase.Request => List(Nightlies.Release)
-	first_releases! = |fx, request| listed!(fx, request, ResolveBase.list_first(request)) ?? []
+	## Slice 225 (R-RG9, R-DI14): `fell` is `Ok` when the list read of the built-in default fell back to `direct`. The caller makes the request `direct` with `ResolveBase.routed`.
+	first_releases! : Fx, ResolveBase.Request => { releases : List(Nightlies.Release), fell : Try(Fallback.Fell, [None]) }
+	first_releases! = |fx, request| listed_via!(fx, request, ResolveBase.list_first(request)) ?? { releases: [], fell: Err(None) }
 
 	run! : Fx, ResolveBase.Request, PickLoop.Input, PickLoop.Setup, PickLoop.State => Try(PickLoop.Looped, PickLoop.Stuck)
 	run! = |fx, request, input, setup, state| {
@@ -467,10 +469,13 @@ wide! = |fx, request, input, probed| {
 }
 
 listed! : Fx, ResolveBase.Request, Nightlies.Source => Try(List(Nightlies.Release), [Unread])
-listed! = |fx, request, source| match Toolchain.host(fx.platform!()) {
+listed! = |fx, request, source| Ok(listed_via!(fx, request, source)?.releases)
+
+listed_via! : Fx, ResolveBase.Request, Nightlies.Source => Try({ releases : List(Nightlies.Release), fell : Try(Fallback.Fell, [None]) }, [Unread])
+listed_via! = |fx, request, source| match Toolchain.host(fx.platform!()) {
 	Err(_) => Err(Unread)
 	Ok(host) => match Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host, source }) {
-		Ok(found) => Ok(found.releases)
+		Ok(found) => Ok({ releases: found.releases, fell: found.fell })
 		Err(_) => Err(Unread)
 	}
 }

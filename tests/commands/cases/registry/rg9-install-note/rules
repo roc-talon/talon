@@ -1,0 +1,1 @@
+R-RG9 R-J3 R-AL2 R-DI1 (slice 225, Q601 items 3 and 5): tln install (a command other than update) with the default and no answer to the first registry request (the closure POST): the run falls back to direct. With --json the note registry-direct is the first entry of data.notes. The expected files are a proposal built from the direct run of install.

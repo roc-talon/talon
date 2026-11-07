@@ -102,8 +102,12 @@ ShortNames :: [].{
 	## | 2 | One `RegistryCache.get!` of `short_path(shorts)` (not `newest`, no bookmark). `NoCopy` (`--offline` and no copy): kind `Network`, exit 15, `the registry <origin> is not asked (--offline) and Talon has no kept answer for <v1>, <v2>. Run the command with no --offline.` (R-IX6, a proposal for the text). A status other than 200: `Registry.refuse` with method `Get`. A failure of `get!` is the failure |
 	## | 3 | `entries`, `visible_items` and `outcome` for each value. The result is in the order of `shorts` |
 	## | 4 | For each value with `NoMatch`, in order: one `RegistryCache.get!` of `search_path(<value>)` (R-SN5), then `hits` and `visible_hits`. A read that fails, a `NoCopy` and a status other than 200 give no suggestion (Q5 of slice 211: no test, the reference gives `[]`) |
+	## Slice 225 (R-RG9): `lookup!` with the source of the registry setting (`""` for none). The source goes to the text of a failure with no answer.
 	lookup! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, snapshot : Try(U64, [None]), shorts : List(Str) } => Try(List(Found), Fail)
-	lookup! = |fx, facts| {
+	lookup! = |fx, facts| lookup_via!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, now: facts.now, offline: facts.offline, snapshot: facts.snapshot, shorts: facts.shorts, source: "" })
+
+	lookup_via! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, snapshot : Try(U64, [None]), shorts : List(Str), source : Str } => Try(List(Found), Fail)
+	lookup_via! = |fx, facts| {
 		ClosureRequest.check_shorts(facts.shorts.len())?
 		if facts.shorts.is_empty() {
 			Ok([])
@@ -134,12 +138,12 @@ moved_text = |item| match item.moved_from {
 	Err(None) => ""
 }
 
-Ask : { roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, snapshot : Try(U64, [None]), shorts : List(Str) }
+Ask : { roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, snapshot : Try(U64, [None]), shorts : List(Str), source : Str }
 
 # One read through the cache. `Ok(Err(NoCopy))` is `--offline` with no kept answer. A status other than 200 is a refusal.
 read_answer! : Fx, Ask, Str => Try([Body(Str), NoCopy], Fail)
 read_answer! = |fx, facts, route| {
-	got = RegistryCache.get!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path: route, now: facts.now, offline: facts.offline, newest: Bool.False, bookmark: Err(None) })?
+	got = RegistryCache.get_via!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path: route, now: facts.now, offline: facts.offline, newest: Bool.False, bookmark: Err(None), source: facts.source })?
 	match got {
 		NoCopy => Ok(NoCopy)
 		Answer(answer) => if answer.status == 200 {

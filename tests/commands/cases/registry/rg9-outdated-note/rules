@@ -1,0 +1,1 @@
+R-RG9 R-J3 R-FL4 (slice 225, Q601 items 3 and 5): tln outdated --json with the default and no answer to the first registry request: the run falls back to direct, the note registry-direct is the first entry of data.notes, the warning is on stderr. `why` has no case: it reads no registry in the current design (Design Q209 open: where why gets an answer).

@@ -1,0 +1,6 @@
+{ "now": "2026-10-15T11:00:00Z",
+  "releases": [
+    { "owner": "acme", "repo": "json", "tag": "2.1.0", "version": "2.1.0", "hash": "3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3", "published_at": "2026-10-15T12:00:00Z", "exposes": ["Json"], "size": 222, "repository_id": 1, "owner_id": 9001 },
+    { "owner": "acme", "repo": "yaml", "tag": "1.0.0", "version": "1.0.0", "hash": "4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4", "published_at": "2026-10-15T12:00:00Z", "exposes": ["Yaml"], "size": 222, "repository_id": 2, "owner_id": 9001 },
+    { "owner": "acme", "repo": "csv", "tag": "1.0.0", "version": "1.0.0", "hash": "7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7", "published_at": "2026-10-15T12:00:00Z", "exposes": ["Csv"], "size": 222, "repository_id": 3, "owner_id": 9001 }
+  ] }

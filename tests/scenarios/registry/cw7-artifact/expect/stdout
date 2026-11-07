@@ -1,0 +1,26 @@
+200: 200
+cache-control: max-age=60
+content-type: application/json
+etag: 1
+fake meta:
+status 200
+header Content-Type: application/json
+header Cache-Control: max-age=60
+header ETag: "a1"
+require-none authorization
+require user-agent: tln/0.0.1
+diff of the body (real <, fake >):
+8d7
+< "ingest"
+11a11
+> "oidc"
+404: 404
+content-type: application/problem+json
+fake meta:
+status 404
+header Content-Type: application/problem+json
+diff of the 404 body (real <, fake >):
+1c1
+< "detail":"no artifact 4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4"
+---
+> "detail":"no artifact 3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3"

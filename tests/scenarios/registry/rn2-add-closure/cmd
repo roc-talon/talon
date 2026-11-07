@@ -1,0 +1,9 @@
+# R-RG2 R-RG1 R-AD2 R-AD35 R-AP1 R-AL2 R-AP16 R-DT5 R-DI1 R-RG4 (slice 225, L4): the real Worker, the full name and the closure query. Tag net.
+# 1: `tln add Karakatiza666/roc-semver@0.2.0` writes the header entry with the URL of the release (R-AP1 answers 200 for the name, no ingest).
+# 2: `tln update --dry-run`: one `POST /v1/closure` with the group and the hash of the header (R-AL2 step 2, R-AP16). `--json`: `data.snapshot` is `log:<n>` (R-DT5, R-J3), which says that the answer of the registry was the index.
+export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
+trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
+if tln add Karakatiza666/roc-semver@0.2.0 --no-check > $TALON_TEST_DIR/a.out 2> $TALON_TEST_DIR/a.err; then echo "add: exit 0"; else echo "add: exit $?"; cat $TALON_TEST_DIR/a.err; fi
+grep -o '"https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/[A-Za-z0-9]*[.]tar[.]zst"' main.roc
+if tln update --no-check --dry-run --json > $TALON_TEST_DIR/u.out 2> $TALON_TEST_DIR/u.err; then echo "update: exit 0"; else echo "update: exit $?"; cat $TALON_TEST_DIR/u.err; fi
+grep -c '"snapshot":"log:[0-9]*"' $TALON_TEST_DIR/u.out

@@ -38,6 +38,7 @@ package
 		Explain,
 		Facts,
 		Fail,
+		Fallback,
 		Fetch,
 		FirstRun,
 		FirstRunFlow,
@@ -256,6 +257,6 @@ package
 		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",
 		records: "../../packages/records/main.roc",
 		resolve: "../../packages/resolve/main.roc",
-		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.1.0/KFKmXaroJeaPkQmAaqm83fTP9yhnEkTQwE97a5BtFSX.tar.zst",
+		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
 		toml: "https://github.com/Karakatiza666/roc-toml/releases/download/0.1.0/3icmtKz6XQUyHqu5JftcoJJT6a9YTND1B8z1UAmtqJpN.tar.zst",
 	}

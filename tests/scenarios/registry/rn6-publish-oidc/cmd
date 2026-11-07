@@ -1,0 +1,4 @@
+# BLOCKED: see skip-reason. Remove the tag blocked when a real GitHub token can be given to a test (never a real token in a test).
+# R-PUB1 R-PUB4 R-RG8 Registry R-AP27 R-TP3 (slice 225, L4): `tln publish` with a real OIDC token of a GitHub Actions job (audience = the default host). It runs only in a job of GitHub Actions with `permissions: id-token: write` (slices 221, 223). Here the variables are not set, so the case is a skeleton: the job sets ACTIONS_ID_TOKEN_REQUEST_URL, ACTIONS_ID_TOKEN_REQUEST_TOKEN, GITHUB_REPOSITORY and GITHUB_REF.
+export TALON_REGISTRY=https://registry.roc-talon.org
+tln publish

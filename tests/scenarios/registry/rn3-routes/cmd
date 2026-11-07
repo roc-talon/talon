@@ -1,0 +1,16 @@
+# R-RG2 R-RG7 R-AP2 R-AP5 R-AP9 R-AP13 R-AP23 (slice 225, L4): the routes that no read-only command of `tln` sends alone: artifacts, toolchains, the group read and the ingest, on the real Worker with `curl` (no audience, no token, no `tln`). Tag net.
+# The ingest is the one write: the body is the URL of a public release that is already in the registry (Karakatiza666/roc-semver 0.2.0), so it is a repeat (Registry R-AP23, 200) and adds no row.
+# `$TALON_REGISTRY` is the base URL form (R-RG7): the routes are joined with `/v1/...` and no more.
+H=BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i
+U=https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/$H.tar.zst
+G=github.com%2FKarakatiza666%2Froc-semver%2Freleases%2Fdownload%2F%7Bv%7D%2F
+code() { curl -sS -m 30 -o $TALON_TEST_DIR/body -w '%{http_code}' "$@"; }
+echo "artifact: $(code $TALON_REGISTRY/v1/artifacts/$H)"
+grep -c "\"$H\"" $TALON_TEST_DIR/body
+echo "group: $(code "$TALON_REGISTRY/v1/releases?group=$G")"
+grep -c '"version":"0.2.0"' $TALON_TEST_DIR/body
+echo "toolchains: $(code "$TALON_REGISTRY/v1/toolchains?after=0")"
+grep -c '"toolchains":\[' $TALON_TEST_DIR/body
+echo "compat: $(code $TALON_REGISTRY/v1/artifacts/$H/compat)"
+echo "ingest: $(code -X POST -H 'content-type: application/json' -d "{\"url\":\"$U\"}" $TALON_REGISTRY/v1/releases)"
+grep -c "\"$H\"" $TALON_TEST_DIR/body

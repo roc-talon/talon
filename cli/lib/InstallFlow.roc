@@ -47,7 +47,7 @@ InstallFlow :: [].{
 
 	## Slice 073: what `install_with!` gives. `tools` are the rows of the tools step (`[]` for no step or no entry): `--json` puts them in `data.tools` (`ToolsPlan.with_tools`). `Report.Outcome` does not hold them.
 	## Slice 206e4 (R-SH4, R-AP30): `ran` is the run that sent a closure query (`ShareHook.ran_of`): the index notes and the send of the share queue at the end of the command. `Err(None)`: no request.
-	Done : { outcome : Report.Outcome, tools : List(ToolsStep.JsonRow), ran : Try(Fail.Ran, [None]) }
+	Done : { outcome : Report.Outcome, tools : List(ToolsStep.JsonRow), ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }
 
 	## Slice 056 (R-PT5 to R-PT7, D2, D16): `install!` with the tools step. `tools` is `Ok(args)` for the commands that run it (`Resolve.install_with!`: `tln install`, `tln update`, `tln upgrade`), `Err(None)` for the other callers. The step runs after the header flow and has
 	## the phase `Install` (no names), `Frozen` (`--frozen`: after the line `the header satisfies talon.toml`). The line `nothing to change` is printed once, at the end, and only when neither the header nor the tools change (D16): while the tools step runs, the header flow gets an `Fx` that drops it.
@@ -117,7 +117,7 @@ with_setting = |request, loaded| match request.registry {
 			Ok({ ..request, registry: Off, index: Offline(origin) })
 		} else {
 			snapshot = IndexQuery.snapshot({ registry: Bool.True, flag: request.snapshot, config: loaded.intent.resolution.snapshot })?
-			Ok({ ..request, registry: Read({ origin, snapshot, window: None, listed: Bool.False, share: loaded.config.share }) })
+			Ok({ ..request, registry: Read({ origin, snapshot, window: None, listed: Bool.False, share: loaded.config.share, source: IndexQuery.source({ flag, env: request.net.registry, config: loaded.config.registry }) }) })
 		}
 	}
 	_ => Ok(request)
@@ -129,7 +129,7 @@ compilers_only : Request, Bool, Bool -> Request
 compilers_only = |request, fresh, has_platform| if !fresh request else match (request.registry, request.index) {
 	(Read(_), _) if has_platform => request
 	(Read(query), _) => { ..request, registry: Compilers(query) }
-	(_, Offline(origin)) => { ..request, registry: Compilers({ origin, snapshot: None, window: None, listed: Bool.False, share: Err(Unset) }) }
+	(_, Offline(origin)) => { ..request, registry: Compilers({ origin, snapshot: None, window: None, listed: Bool.False, share: Err(Unset), source: "the registry setting" }) }
 	_ => request
 }
 
@@ -155,18 +155,18 @@ run! = |fx, asked, tools, fresh| {
 	if request.frozen {
 		frozen!(fx, request, loaded, built, decision, plan.phase.is_ok())?
 		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
-		Ok({ outcome: InstallPlan.idle(request, request.now), tools: step.rows, ran: Err(None) })
+		Ok({ outcome: InstallPlan.idle(request, request.now), tools: step.rows, ran: Err(None), fell: Err(None) })
 	} else {
 		header = match plan.phase {
 			Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
 			Err(None) => fx
 		}
-		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note })? else { outcome: InstallPlan.idle(plan.request, request.now), ran: Err(None) }
+		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note })? else { outcome: InstallPlan.idle(plan.request, request.now), ran: Err(None), fell: Err(None) }
 		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
 		if plan.phase.is_ok() and !step.changed and !header_changed(outcome.outcome) {
 			fx.out!("nothing to change\n")
 		}
-		Ok({ outcome: outcome.outcome, tools: step.rows, ran: outcome.ran })
+		Ok({ outcome: outcome.outcome, tools: step.rows, ran: outcome.ran, fell: outcome.fell })
 	}
 }
 
@@ -233,7 +233,7 @@ frozen! = |fx, request, loaded, built, decision, with_tools| {
 }
 
 # `install`, `update` and `add`: the steps of the flow in the slice file.
-resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, { decision : Pin.Decision, fresh : Bool, range_note : Try(Str, [None]) } => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
+resolve! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, { decision : Pin.Decision, fresh : Bool, range_note : Try(Str, [None]) } => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 resolve! = |fx, request, loaded, built, start| {
 	decision = start.decision
 	settings = ResolveBase.settings_of(request, loaded)
@@ -265,7 +265,7 @@ resolve! = |fx, request, loaded, built, start| {
 	held = if request.no_check Err(None) else decision.held.map_err(|_| None)
 	plan = match decision.held {
 		Ok(id) if free_nightly and !request.no_check => NightlyFlow.plan!(fx, request, loaded, settings, { held: id, snapshot })?
-		_ => { free: Err(Held), releases: Err(NotRead), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Err(None) }
+		_ => { free: Err(Held), releases: Err(NotRead), newest: Err(NoneKnown), optional: { ids: [], sizes: [] }, downloads: 0, note: Err(None), fell: Err(None) }
 	}
 	# Q1 of slice 039: the line that says why the nightly stays H.
 	notes = plan.note.map_ok(|text| [text]) ?? []
@@ -274,7 +274,9 @@ resolve! = |fx, request, loaded, built, start| {
 	}
 	# Slice 206b (R-AP16): the window of the query is the held compiler. Slice 206e2 (R-AP16, R-CV1, Design Q489): the free nightly of `upgrade` with a registry list that was read has the `Free` window; an unread list keeps `Held`.
 	# The plan read the list (`releases` is `Ok`), so the later reads of the command use the kept file (R-IX4).
-	queried = match request.registry {
+	# R-RG9: a list read of the plan that fell back makes the run `direct`.
+	after_plan = ResolveBase.routed(request, plan.fell)
+	queried = match after_plan.registry {
 		Read(query) => {
 			window = match decision.held {
 				Err(_) => None
@@ -283,19 +285,23 @@ resolve! = |fx, request, loaded, built, start| {
 					_ => Held(id)
 				}
 			}
-			{ ..request, registry: Read({ ..query, window, listed: query.listed or plan.releases.is_ok() }) }
+			{ ..after_plan, registry: Read({ ..query, window, listed: query.listed or plan.releases.is_ok() }) }
 		}
-		_ => request
+		_ => after_plan
 	}
 	ready = PickFlow.prepare!(fx, queried, loaded, built, settings, snapshot, held, plan.free, plan.newest, plan.optional)?
 	# Slice 206b: `ready.request` has the index of the query.
 	# Slice 206e4 (R-SH4, Design Q533, Q541): a failure after the closure answer carries the run, so the command prints the index notes after the error text and sends the queue.
 	ran = ShareHook.ran_of(ready.request, { notes: request.command != Install, second: Err(NotRead) })
-	first = PickFlow.search!(fx, ready.request, ready, listed_start(PickLoop.start(ready.setup, ready.prepared.facts), plan.releases)).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
+	first = PickFlow.search!(fx, ready.request, ready, listed_start(PickLoop.start(ready.setup, ready.prepared.facts), plan.releases)).map_err(|fail| Fail.with_fell(ShareHook.attach(fail, ran, Bool.False), ResolveBase.fell_of(ready.request)))?
 	ended = attempts!(fx, ready.request, loaded, ready, { picked: first, first: Err(None), seen: [], downloads: plan.downloads, fresh: start.fresh })?
 	outcome = ended.outcome
 	# R-SO20: the note of the pin is the first of `data.notes`.
-	Ok({ outcome: { ..outcome, notes: pin_notes.concat(notes).concat(outcome.notes) }, ran: ended.ran })
+	Ok({
+		outcome: { ..outcome, notes: pin_notes.concat(notes).concat(outcome.notes) },
+		ran: ended.ran,
+		fell: ResolveBase.fell_of(ready.request),
+	})
 }
 
 # Slice 089 (R-UP6, R-EP10, 039c D3): the first search starts with the compiler list that the plan read, so the oracle loop does not read it again.
@@ -310,7 +316,7 @@ attempts! = |fx, request, loaded, ready, run| {
 	match finish!(fx, request, loaded, picked.facts, picked.chosen, picked.moves, picked.probed, { seen: run.seen, nightly: picked.nightly, downloads: run.downloads, fresh: run.fresh }) {
 		Ok(ended) => Ok(ended)
 		Err(fail) => match fail.again {
-			Err(None) => Err(ShareHook.attach(fail, ShareHook.ran_of(request, { notes: request.command != Install, second: picked.probed.second }), Bool.True))
+			Err(None) => Err(Fail.with_fell(ShareHook.attach(fail, ShareHook.ran_of(request, { notes: request.command != Install, second: picked.probed.second }), Bool.True), ResolveBase.fell_of(request)))
 			Ok(again) => {
 				fx.out!("note: tuple dropped: ${fail.message.drop_prefix("no tuple works: ")}\n")
 				first = run.first ?? fail

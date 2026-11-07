@@ -1,0 +1,2 @@
+update --no-check --dry-run --file u1/main.roc env:TALON_REGISTRY=https://registry.roc-talon.org
+update --no-check --dry-run --file u1/main.roc --registry https://registry.roc-talon.org

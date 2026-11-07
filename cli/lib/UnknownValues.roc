@@ -169,7 +169,7 @@ UnknownValues :: [].{
 	## | 7 | After the second query, an `Indexed` value whose hash is still in `unknown` of that answer ends as `Archive`. No third query (Q423). |
 	##
 	## The result: `answer` is the answer of the second query, or `first`. `values` are the values in the order of `classify` with their end.
-	settle! : Fx, { origin : Str, version : Str, roots : Roots, facts : ClosureRequest.Facts, first : Wire.Answer, urls : List(Str), snapshot : Bool } => Try({ answer : Wire.Answer, values : List({ hash : Str, url : Str, end : UnknownValues.End }) }, Fail)
+	settle! : Fx, { origin : Str, version : Str, roots : Roots, facts : ClosureRequest.Facts, first : Wire.Answer, urls : List(Str), snapshot : Bool, source ?: Str } => Try({ answer : Wire.Answer, values : List({ hash : Str, url : Str, end : UnknownValues.End }) }, Fail)
 	settle! = |fx, facts| {
 		values = UnknownValues.classify({ unknown: facts.first.unknown, urls: facts.urls, releases: facts.first.releases, snapshot: facts.snapshot })
 		for v in values {
@@ -232,7 +232,7 @@ UnknownValues :: [].{
 			Ok(r) => r
 			Err(NoCompiler) => return Err(Fail.new(NoTuple, "no compiler is left"))
 		}
-		answer = ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: UnknownValues.again_headers({ version: facts.version, bookmark: UnknownValues.largest($marks) }) })?
+		answer = ClosureIndex.send!(fx, { origin: facts.origin, version: facts.version, request, headers: UnknownValues.again_headers({ version: facts.version, bookmark: UnknownValues.largest($marks) }), source: facts.?source ?? "" })?
 		final = ends.map(|e| if e.end == Indexed and answer.unknown.contains(e.hash) { ..e, end: Archive } else e)
 		Ok({ answer, values: final })
 	}

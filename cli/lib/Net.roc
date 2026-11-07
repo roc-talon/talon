@@ -60,13 +60,13 @@ Net :: [].{
 	}
 
 	## The registry of a run: the first of the flag (`--registry`), `TALON_REGISTRY` (`Settings.registry`) and `registry` in
-	## `config.toml`. The text `direct` is `Direct`, any other text is `Url(text)`. With no value: `Direct`, the built-in
+	## `config.toml`. The text `direct` is `Direct`, any other text is `Url(text)`. With no value: `Url(Help.default_registry)`, the built-in
 	## default (R-RG2). A URL is not checked here.
 	registry : { flag : Try(Str, [Unset]), env : Try(Str, [Unset]), config : Try(Str, [Unset]) } -> Registry
 	registry = |layers| match Setting.pick({ flag: layers.flag, env: layers.env, project: Err(Unset), user: layers.config }) {
 		Ok("direct") => Direct
 		Ok(url) => Url(url)
-		Err(Unset) => Direct
+		Err(Unset) => Url(Help.default_registry)
 	}
 
 	## The token from the output of `gh auth token` (R-RG3, the third source): the output with the white space cut off,

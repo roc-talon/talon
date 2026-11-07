@@ -36,7 +36,7 @@ expect {
 	bad == []
 }
 
-# R-RG1 R-RG2: the registry. The flag, then `TALON_REGISTRY`, then `config.toml`, then the built-in default `direct`. The text `direct` is
+# R-RG1 R-RG2: the registry. The flag, then `TALON_REGISTRY`, then `config.toml`, then the built-in default, the registry URL (slice 225, R-RG2, Design Q208). The text `direct` is
 # `Direct`, any other text is a URL. R-RG3: the token of `gh` is the output of `gh auth token` when `gh` exits with 0 and prints a
 # text. `Net.token` follows the plan: `Test` sends none, `Env` the variable, `AskGh` the answer of `gh`. R-EV19 R-DI9: the
 # headers of a request: the user agent first, then the token, then `If-None-Match`.
@@ -44,7 +44,8 @@ expect {
 	set = |v| Ok(v)
 	none = Err(Unset)
 	registries = [
-		("nothing: the default", { flag: none, env: none, config: none }, Direct),
+		("nothing: the default", { flag: none, env: none, config: none }, Url("https://registry.roc-talon.org")),
+		("direct in config.toml over the default", { flag: none, env: none, config: set("direct") }, Direct),
 		("config only", { flag: none, env: none, config: set("https://c.example.com") }, Url("https://c.example.com")),
 		("env over config", { flag: none, env: set("direct"), config: set("https://c.example.com") }, Direct),
 		("flag over env", { flag: set("https://f.example.com"), env: set("direct"), config: set("https://c.example.com") }, Url("https://f.example.com")),

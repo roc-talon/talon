@@ -1,0 +1,21 @@
+# R-AP2 R-AP53 R-AP56 R-AP32 (slice 224, the contract run, tag worker): `GET /v1/artifacts/{hash}` of the real Worker, the route that the compat bot reads (bot/lib/BotFlow.roc, R-MX15, Bot.release_url).
+# No tln command sends this route (only the bot app does: it needs an OIDC token for its first request and is not a tln command), so the case uses `curl` as rn3-routes does, and has no tln twin.
+# The twin is the fake route of the L2 cases tests/commands/cases/bot/b1-sweep (200) and b25-artifact-404 (404): their bodies and `.meta` files are copied to given/fake/. The case prints the status, the headers that the bot depends on, and a diff of the sorted members (the text is cut at each brace, bracket and comma, one member for each line, so the order of the members is not compared) of the real body and the fake body. A line with `<` is the Worker, a line with `>` is the fake route.
+# The seed (worker/seed.json): acme/json 2.1.0 with the hash of the fake route at log index 3.
+D=$TALON_TEST_DIR
+H=3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3
+split() { sed 's/{v}/(v)/g' "$1" | tr '{}[],' '\n\n\n\n\n' | grep -v '^$' | sort; }
+get() { curl -sS -m 30 -D "$2.head" -o "$2" -w '%{http_code}' "$1"; }
+echo "200: $(get $TALON_REGISTRY/v1/artifacts/$H $D/real.json)"
+grep -i '^content-type:\|^cache-control:' $D/real.json.head | tr -d '\r'
+echo "etag: $(grep -ic '^etag:' $D/real.json.head)"
+echo "fake meta:"; cat $D/fake/artifact.meta
+echo "diff of the body (real <, fake >):"
+split $D/real.json > $D/real.lines; split $D/fake/artifact.json > $D/fake.lines
+diff $D/real.lines $D/fake.lines || true
+echo "404: $(get $TALON_REGISTRY/v1/artifacts/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4 $D/real404.json)"
+grep -i '^content-type:\|^cache-control:' $D/real404.json.head | tr -d '\r'
+echo "fake meta:"; cat $D/fake/artifact-404.meta
+split $D/real404.json > $D/real.lines; split $D/fake/artifact-404.json > $D/fake.lines
+echo "diff of the 404 body (real <, fake >):"
+diff $D/real.lines $D/fake.lines || true

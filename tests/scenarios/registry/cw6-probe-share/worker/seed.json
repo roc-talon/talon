@@ -1,0 +1,4 @@
+{ "now": "2026-10-15T11:00:00Z",
+  "releases": [
+    { "owner": "acme", "repo": "json", "tag": "2.1.0", "version": "2.1.0", "hash": "4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq", "published_at": "2026-09-24T12:00:00Z", "exposes": ["Json"], "repository_id": 1, "owner_id": 9001 }
+  ] }

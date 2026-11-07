@@ -1,5 +1,7 @@
 import lib.Fail
 import lib.IndexQuery
+import lib.Registry
+import "../../worker/wrangler.toml" as wrangler : Str
 
 IndexqueryTest :: [].{}
 
@@ -15,12 +17,15 @@ view = |flag, env, config| match IndexQuery.setting({ flag, env, config }) {
 	Err(fail) => "${fail.kind.code().to_str()} ${Fail.line(fail)}"
 }
 
+# R-RG2 R-RG7 row 7 (Design Q208): the built-in default, in the base URL form.
+default_registry = "https://registry.roc-talon.org"
+
 cfg = |text| Ok({ text, at: "/h/.config/talon/config.toml:3" })
 
-# R-RG1 R-RG2: the precedence flag, TALON_REGISTRY, config.toml, then the built-in default `direct`. The text `direct` is `Direct` at each level.
+# R-RG1 R-RG2: the precedence flag, TALON_REGISTRY, config.toml, then the built-in default, the registry URL (slice 225). The text `direct` is `Direct` at each level.
 expect {
 	rows = [
-		(Err(Unset), Err(Unset), Err(Unset), "direct"),
+		(Err(Unset), Err(Unset), Err(Unset), default_registry),
 		(Ok("direct"), Ok("https://env.example"), cfg("https://cfg.example"), "direct"),
 		(Ok("https://flag.example"), Ok("https://env.example"), cfg("https://cfg.example"), "https://flag.example"),
 		(Err(Unset), Ok("https://env.example"), cfg("https://cfg.example"), "https://env.example"),
@@ -31,6 +36,27 @@ expect {
 	bad = rows.keep_if(|(f, e, c, want)| view(f, e, c) != want).map(|(f, e, c, _)| view(f, e, c))
 	dbg bad
 	bad == []
+}
+
+# R-RG2 R-RG7 rows 3 and 7 (slice 225): the default is a URL in the base URL form (`Registry.base` keeps it as it is). A user who wants `direct` sets it at any level (the rows above); the default is no `config.toml` text, so it needs no read of the file.
+expect {
+	view(Err(Unset), Err(Unset), Err(Unset)) == default_registry and Registry.base(default_registry) == Ok(default_registry)
+}
+
+# R-RG2 R-CV1 (slice 225): the source of the compiler list of a roc command with no registry setting is the default registry, and `direct` at any level is `Direct`. `kept` and `offline` give the R-IX4 and R-IX6 reads.
+expect {
+	unset = { flag: Err(Unset), env: Err(Unset), config: Err(Unset), offline: Bool.False, kept: Bool.False }
+	got = IndexQuery.list_source(unset)
+	direct = IndexQuery.list_source({ ..unset, env: Ok("direct") })
+	match (got, direct) {
+		(Ok(Registry(r)), Ok(Direct)) => r.origin == default_registry and r.kept == Bool.False
+		_ => Bool.False
+	}
+}
+
+# R-RG8 (slice 225): the base URL form of the default and the Worker setting `AUDIENCE` are one text. The deployed `worker/wrangler.toml` is the source of the setting.
+expect {
+	wrangler.split_on("\n").contains("AUDIENCE = \"${view(Err(Unset), Err(Unset), Err(Unset))}\"")
 }
 
 # R-RG1 R-RG7 row 6 (Design Q439): a valid `--registry` wins, so `TALON_REGISTRY` is not read: a bad value there does not stop the command.

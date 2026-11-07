@@ -183,8 +183,12 @@ RegistryCache :: [].{
 	## | 4 | Status 200 and `keep` is `Ok` (a 200 with no ETag, or no max-age, is kept: Design Q218): one `write_atomic!` of `[body file, meta file]` in this order (the meta is last: R-IX2). A `NoStore` answer, a 404, any other status: no write. The answer is given as it is (status, body), source `Live`. |
 	## | 5 | Status 304 after `Revalidate` (the request had `If-None-Match`): one `write_atomic!` of `[meta file]` with the same ETag and `max-age` (the age starts again: R-IX2), the result is the copy as `status` 200. |
 	## A failed write is `Err` of kind `Environment`, `cannot write <path>`.
+	## Slice 225 (R-RG9): `get!` with the source of the registry setting (`""` for none). The source goes to the text of a failure with no answer.
 	get! : Fx, { roots : Roots, origin : Str, version : Str, path : Str, now : U64, offline : Bool, newest : Bool, bookmark : Try(Str, [None]) } => Try([Answer({ status : U16, headers : List((Str, Str)), body : Str, source : [Live, Copy(U64)] }), NoCopy], Fail)
-	get! = |fx, facts| {
+	get! = |fx, facts| get_via!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path: facts.path, now: facts.now, offline: facts.offline, newest: facts.newest, bookmark: facts.bookmark, source: "" })
+
+	get_via! : Fx, { roots : Roots, origin : Str, version : Str, path : Str, now : U64, offline : Bool, newest : Bool, bookmark : Try(Str, [None]), source : Str } => Try([Answer({ status : U16, headers : List((Str, Str)), body : Str, source : [Live, Copy(U64)] }), NoCopy], Fail)
+	get_via! = |fx, facts| {
 		url = "${facts.origin}${facts.path}"
 		paths = RegistryCache.files({ roots: facts.roots, origin: facts.origin, url })
 		no_cache = facts.newest or facts.bookmark != Err(None)
@@ -246,7 +250,7 @@ fetch! = |fx, facts, files, etag, copy| {
 				Timeout => "no answer in 20 s"
 				Failed(t) => t
 			}
-			return Err(Registry.no_answer({ origin: facts.origin, why: text }))
+			return Err(Registry.no_answer({ origin: facts.origin, why: text, source: facts.source }))
 		}
 	}
 	if reply.status >= 300 and reply.status < 400 and reply.status != 304 {

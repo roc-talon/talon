@@ -119,6 +119,17 @@ R-RG7: The registry base URL (Design Q207, Q210). A registry setting (R-RG1, pri
 | 6 | Not valid | A text that is not `direct` and is not a URL by rows 1 and 2. From `--registry` or `TALON_REGISTRY`: exit code 2 (`usage`). From `config.toml`: exit code 19 (`input`), as R-TF4. The message names the source and the text, and says the allowed forms. The check runs when Talon reads the setting, so a command that uses no registry does not stop for `--registry` or `TALON_REGISTRY`, and stops for `config.toml` as for each other key of R-TF4. With a valid `--registry`, Talon does not read `TALON_REGISTRY` (R-RG1), so a bad value there does not stop the command. A bad `config.toml` value still stops it with exit code 19, also when the flag or the variable wins (Design Q439). Only a command that reads `config.toml` for a key of its own reads and checks it; the registry key adds no read, so `list`, `cache`, `tool list` and `path` do not stop for it (Design Q546). The `roc` proxy checks the key only when it needs the compiler list (Design Q561). |
 | 7 | The default (R-RG2) | `https://registry.roc-talon.org`: a domain of the org `roc-talon`, not a `workers.dev` name (Design Q208). The root `roc-talon.org` is for the website, not for the registry. The `tln` release that changes the default uses this URL. |
 
+R-RG9: No answer from the registry (Design Q600, Q601; the rule of the user, 2026-11-06). A registry that a person set (`--registry`, `TALON_REGISTRY`, `config.toml`, R-RG1 priorities 1 to 3) that does not answer stops the command with exit code 15 (R-E6). The message names the registry URL and its source, and says how to use `direct` only for a command that can run with `direct`: not for `tln publish`, `tln yank`, `tln move`, `tln share login`, `logout`, `forget` and `tln probe --share`, which need a registry. For them the message names the URL and the source only, in the form of their own texts (for `publish`, R-PUB4 item 9: `... after 4 requests` with the source added) (Design Q602). The built-in default (priority 4) is different: when it does not answer, the command goes on in `direct` mode (7.3), as if the setting were `direct`:
+
+| # | Item | Rule |
+| --- | --- | --- |
+| 1 | Which failures | No answer: no DNS name, no connection, a TLS failure, a timeout (R-DA9), and a 5xx answer (also 503 `busy`, Registry R-AP82, and a 5xx of a proxy in front of the Worker). A 429 or another 4xx is an answer: R-E6 applies, with no fall back. |
+| 2 | When | Only at the first registry request of the run, before Talon uses any registry answer. After a registry answer is used, a later request with no answer whose answer the command needs (the second query of R-SP16, a read) stops the command with exit code 15, as for a set registry. Reason: one command uses one index (R-DI14). Two requests are not stops, with each registry: an ingest gives the warning of R-AD35 step 3 and Registry R-AP28 case 2 (the URL and the status, no source), and the share send is silent (R-SH4) (Design Q603). |
+| 3 | What `direct` means for the run | Each rule of `direct`: the release lists of GitHub (R-DI2), the GitHub compiler list and its `digest` (R-CV1, R-CV3), no privacy guard (R-RG4 is for a registry), no share send (R-SH2 condition 2), no smoke builds (R-SM3), and the index notes of `direct` (R-DI11). |
+| 4 | A command that needs a registry | No fall back: `tln share login`, `logout`, `forget`, `tln probe --share`, `tln publish` and `--snapshot log:N` stop with exit code 15 and the message of a set registry, because `direct` cannot do their work. |
+| 5 | Output | One warning on stderr, also with `--quiet` (R-FL4 keeps warnings): `warning: the default registry <url> does not answer (<cause>): this run uses GitHub (direct)`. With `--json`, `data.notes[]` has `{"kind":"registry-direct","registry":"<url>","cause":"<cause>"}`, and a failed run has it in `error.details.notes`. A command whose `data` has no `notes` member gets one, after its other members (for `tln outdated`: after `members`, not in `index_notes`, whose items are the notes of Registry R-AP30, Design Q604). A command that makes no registry request (for example `tln why` now) has no fall back and no note. The texts are a proposal (CLI 3, R-OUT2). |
+| 6 | Memory | None. Each run tries the default again. Reason: no state to go stale, and a DNS failure costs a few ms. A host that takes the connection and then does not answer costs the timeout of R-DA9 (20 s) in each run: the user can choose a memory of the failure later (Design Q601). |
+
 R-RG8: The base URL form of the default (R-RG2) and the Worker setting `AUDIENCE` (Registry R-TP3 row 2) are one text. A change of the host is a change of `AUDIENCE` and of the index dir of each user (R-IX1), so it needs a Talon release (R-RG2).
 
 R-RG3: With `direct`, and for the list of nightlies, Talon calls the GitHub API (7.3, R-CV1). With no token, GitHub allows 60 requests an hour for one IP address. So Talon uses a token when it finds one, in this order: `GITHUB_TOKEN`, `GH_TOKEN`, then the output of `gh auth token` when `gh` is installed and logged in. Talon sends the token only to `api.github.com`, never to a registry or a mirror. The one token that goes to the registry is not one of these: `tln share login` gets it from the OAuth App `Talon` for that use, and sends it once (R-SH7). With no token, a rate limit error (exit code 15) names these three sources.
@@ -141,19 +152,20 @@ R-RG4 costs one GitHub API call for each new repository on each machine, only in
 | 5 | A public answer, then a private one in one command | The command stops (R-RG6), and the public answer stays in `repo.json`: it is true, and it holds no private data (R-RG5) |
  A rate limit error is R-DI13 (7.3). With `--offline`, Talon sends no request, so R-RG4 does not apply. `tln install --frozen` makes no index call (R-DI1), so it does not run R-RG4.
 
-Example. It needs phase P2 (Design 7): the short name, the `log:` snapshot and the unit-probe note need the registry and unit probes.
+Example. It needs phase P2 (Design 7): the short name and the `log:` snapshot need the registry.
 
 ```text
-$ tln add parser@2.0.0
-resolved 4 packages in 41ms (log:184467)
-probed 3 times on 1 nightly (0 downloads)
-
-  main.roc
+$ tln add parser@2.0.0 --no-check --dry-run
+matched "parser": lukewilliamboswell/roc-parser
+check: skipped
+/home/me/app/main.roc
   + parser: lukewilliamboswell/roc-parser 2.0.0
-    matched "parser" to lukewilliamboswell/roc-parser
-    talon.toml: parser = "=2.0.0"
-    note: module Yaml fails on nightly-2026-10-09-258ab27 (redundant expose). Your app does not import it.
+/home/me/app/talon.toml: parser = "=2.0.0"
+resolved at log:184467, 0 probes
+dry run: nothing was written
 ```
+
+The lines follow R-AD3 (`matched`), Design 4.3 (the `talon.toml` line) and Resolution R-DT5 (`resolved at`). The L2 case `registry/rg2-example-add-short` is this example (TESTING.md TW16, Design Q599).
 
 ### Sharing probe results
 
@@ -841,7 +853,7 @@ Output catalog. One row for each command, or each case with its own `data`. A sl
 
 | Command | `data` fields | Human text | Status |
 | --- | --- | --- | --- |
-| `install` with names (and `add`) | `snapshot`, `probes`, `downloads`, `added[]` (`alias`, `name`, `version`). The example above shortens the list. | Example in section 1 | Partial: the first slice of `add` completes it |
+| `install` with names (and `add`) | `snapshot`, `log_size`, `probes`, `downloads`, `dry_run`, `check`, `build`, `added[]` (`alias`, `name`, `version`), `moved[]`, `kept[]`, `pinned`, `toml[]` (`path`, `key`, `value`), `renamed[]`, `notes[]`, `written[]` (Design Q599) | Example in section 1 | Done |
 | `upgrade` | Not yet | Example in Resolution 10 | Partial |
 | A resolve with no tuple (exit 10) | `error.details`: not yet | Example in Resolution 5 | Partial |
 | `audit` (R-CM14) | `index` (`registry` or `direct`), `checked` (the count of hashes), `notes[]` (for example `no-yank-data`, `unused-ignore`), `findings[]`: `name`, `group`, `version`, `hash`, `alias` (`null` for a transitive entry), `via` (the header aliases that need it, `[]` for a header entry), `reason` (R-AU2), `fails` (R-AU3), `ignored` (R-AU10), `since` (a time, or `null`), `yank` (`{reason, by}`, or `null`), `new_hash` (the new asset hash, or `null` when the index does not know it), `successor` (a full name, or `null`, R-AU13), `fix` (R-AU8). With exit code 21, the same object is in `error.details` (R-AU5). | Below the table | Proposal (R-OUT2), P3 |

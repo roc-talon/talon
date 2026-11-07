@@ -1,0 +1,1 @@
+tln: error[usage]: snapshot log:30 needs a registry: direct has no log. Use a UTC time, for example 2026-10-12T00:00:00Z.

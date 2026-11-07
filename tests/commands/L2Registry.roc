@@ -67,8 +67,8 @@ L2Registry :: [].{
 						Ok(word) => Ok(word.drop_prefix("bookmark="))
 						Err(_) => Err(None)
 					}
-					facts = { roots, origin: "http://127.0.0.1:9", version: Help.version, path, now, offline: rest.contains("offline"), newest: rest.contains("newest"), bookmark }
-					match RegistryCache.get!(fx, facts) {
+					facts = { roots, origin: "http://127.0.0.1:9", version: Help.version, path, now, offline: rest.contains("offline"), newest: rest.contains("newest"), bookmark, source: set_source }
+					match RegistryCache.get_via!(fx, facts) {
 						Ok(Answer(answer)) => {
 							fx.out!("status: ${answer.status.to_str()}\n")
 							match answer.source {
@@ -153,8 +153,8 @@ L2Registry :: [].{
 					for r in refs.keep_if(|r| !Lookup.needs_registry(scope, r, entities)) {
 						fx.out!("${r.name}: no search\n")
 					}
-					facts = { roots, origin: origin_of(rest), version: Help.version, now: 1792065600, offline: rest.contains("offline"), snapshot: log_of(rest), shorts: asked.map(|r| r.name) }
-					match ShortNames.lookup!(fx, facts) {
+					facts = { roots, origin: origin_of(rest), version: Help.version, now: 1792065600, offline: rest.contains("offline"), snapshot: log_of(rest), shorts: asked.map(|r| r.name), source: set_source }
+					match ShortNames.lookup_via!(fx, facts) {
 						Err(fail) => L2Util.report!(fx, fail)
 						Ok(found) => {
 							for (r, f) in asked.map2(found, |r, f| (r, f)) {
@@ -191,8 +191,8 @@ L2Registry :: [].{
 					for r in refs.keep_if(|r| !Lookup.needs_registry(scope, r, entities)) {
 						fx.out!("${r.name}: no search\n")
 					}
-					facts = { roots, origin: origin_of(rest), version: Help.version, now: 1792065600, offline: rest.contains("offline"), snapshot: log_of(rest), shorts: asked.map(|r| r.name) }
-					match ShortNames.lookup!(fx, facts) {
+					facts = { roots, origin: origin_of(rest), version: Help.version, now: 1792065600, offline: rest.contains("offline"), snapshot: log_of(rest), shorts: asked.map(|r| r.name), source: set_source }
+					match ShortNames.lookup_via!(fx, facts) {
 						Err(fail) => L2Util.report!(fx, fail)
 						Ok(found) => match Lookup.registry_all(scope, asked.map2(found, |r, f| { ref: r, found: f })) {
 							Ok(done) => {
@@ -332,8 +332,8 @@ L2Registry :: [].{
 						}
 						Err(_) => Err(None)
 					}
-					facts = { net, roots, origin: "http://127.0.0.1:9", version: Help.version, now: 1792065600, offline: rest.contains("offline"), name, selector, snapshot: log_of(rest), known: [] }
-					match FullName.read!(fx, facts) {
+					facts = { net, roots, origin: "http://127.0.0.1:9", version: Help.version, now: 1792065600, offline: rest.contains("offline"), name, selector, snapshot: log_of(rest), known: [], source: set_source }
+					match FullName.read_via!(fx, facts) {
 						Ok(Found(answer)) => {
 							fx.out!("releases ${answer.releases.len().to_str()}\n")
 							for r in answer.releases {
@@ -382,6 +382,9 @@ snapshot_of = |words| match words.find_first(|word| word.starts_with("snapshot="
 	}
 	Err(_) => Err(None)
 }
+
+# R-RG9 (slice 225): these apps model a registry that a person set (the origin is fixed), so the stop text names the source `TALON_REGISTRY`.
+set_source = "TALON_REGISTRY"
 
 source_text : [Live, Cached(U64), Missing] -> Str
 source_text = |source| match source {

@@ -1,0 +1,4 @@
+R-RG2 R-RG1 R-RG7 (slice 225, entry `commands`): "A user who wants `direct` after that sets it in `config.toml`" (R-RG2). config.toml has `registry = "direct"`, and the case sets no flag and no variable.
+Run 1: the direct calls (GitHub release lists, archive reads), the line `resolved at <time>`, no request to the registry host (a request there would get 404 from the fake, which has the route; the call log shows none).
+Run 2: `--snapshot log:30` with `direct` is exit 2 (R-DT3, R-FL9, `Intent.direct_snapshot`): the default registry does not leak into a `direct` run.
+Run 3: `--registry` over config.toml (R-RG1): the registry URL of the default, so the closure POST goes to it.

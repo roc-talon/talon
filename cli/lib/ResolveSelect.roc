@@ -116,9 +116,9 @@ ranged! = |fx, request, loaded, settings| {
 	# Slice 206d2 (R-CV1, R-AP19, R-DT3, R-RG1): with a registry (the setting of `update`, read as in `InstallFlow.with_setting`), the list is the registry list. `log:N` hides the toolchain rows above N; a time keeps the time filter of `range_pick`.
 	(snapshot, registry) = match registry_of(request, loaded)? {
 		Ok(r) => match r.snapshot {
-			Time(t) => (Ok(t), Ok({ origin: r.origin, version: Help.version, log: Err(None) }))
-			Log(n) => (Err(None), Ok({ origin: r.origin, version: Help.version, log: Ok(n) }))
-			None => (Err(None), Ok({ origin: r.origin, version: Help.version, log: Err(None) }))
+			Time(t) => (Ok(t), Ok({ origin: r.origin, version: Help.version, log: Err(None), source: r.source }))
+			Log(n) => (Err(None), Ok({ origin: r.origin, version: Help.version, log: Ok(n), source: r.source }))
+			None => (Err(None), Ok({ origin: r.origin, version: Help.version, log: Err(None), source: r.source }))
 		}
 		Err(None) => (ResolveSelect.snapshot_of(request, loaded.intent)?, Err(None))
 	}
@@ -132,13 +132,13 @@ ranged! = |fx, request, loaded, settings| {
 }
 
 # Slice 206d2 (R-RG1, R-RG7, R-DT3): the registry and the snapshot of a run with a registry, or `Err(None)` (`direct`, no setting). A bad setting or snapshot text is the failure of `IndexQuery`.
-registry_of : ResolveBase.Request, ResolveBase.Loaded -> Try(Try({ origin : Str, snapshot : [None, Time(U64), Log(U64)] }, [None]), Fail)
+registry_of : ResolveBase.Request, ResolveBase.Loaded -> Try(Try({ origin : Str, snapshot : [None, Time(U64), Log(U64)], source : Str }, [None]), Fail)
 registry_of = |request, loaded| match request.registry {
 	Setting(flag) => match IndexQuery.setting({ flag, env: request.net.registry, config: loaded.config.registry })? {
 		Direct => Ok(Err(None))
-		Registry(origin) => Ok(Ok({ origin, snapshot: IndexQuery.snapshot({ registry: Bool.True, flag: request.snapshot, config: loaded.intent.resolution.snapshot })? }))
+		Registry(origin) => Ok(Ok({ origin, snapshot: IndexQuery.snapshot({ registry: Bool.True, flag: request.snapshot, config: loaded.intent.resolution.snapshot })?, source: IndexQuery.source({ flag, env: request.net.registry, config: loaded.config.registry }) }))
 	}
-	Read(query) => Ok(Ok({ origin: query.origin, snapshot: query.snapshot }))
+	Read(query) => Ok(Ok({ origin: query.origin, snapshot: query.snapshot, source: query.source }))
 	_ => Ok(Err(None))
 }
 

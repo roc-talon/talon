@@ -1,0 +1,8 @@
+args
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.local/share/talon/share.json
+clock
+http_send DELETE https://registry.roc-talon.org/v1/tokens timeout=20
+  User-Agent: tln/0.0.1
+  Authorization: Bearer eyJ.jwt.sig

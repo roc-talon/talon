@@ -1,0 +1,10 @@
+# R-AP10 R-CT1 R-CT2 R-CT4 R-AP72 R-PB6 R-CM8 R-RG4 (slice 224, the contract run, tag worker): the real Worker for the twin case tests/commands/cases/probe/ps8-share-command (L2, fake routes).
+# `tln probe json --share --file p1/main.roc`: one unit check (the fake roc answers `check *` pass), then the share step: the guard, one closure query, one `POST /v1/compat` with the header `Talon-Contributor`, no token (the user hint path, R-AP10), the totals.
+# The seed (worker/seed.json, worker/seed.sql) has the release acme/json 2.1.0 and the toolchain nightly-2026-10-14-38a3029. The twin has the fake answer `{"written":1,"first":1,"skipped":[]}` (201); the stdout and the stderr must be the same.
+# The Worker reads the tags of roc-talon/talon (GET /repos/roc-talon/talon/tags?per_page=100, R-CT12: the check of `talon_version`): worker/github/ has the tag v0.0.1, expect/worker-github.log has the request. worker/settings.json gives CONTRIBUTOR_KEY (R-CT3). The compat.db of given/home has the pin of the compiler (a real SQLite file: the twin has the line form compat.tsv).
+# How to make given/home/.cache/roc/talon/compat.db again (a small real SQLite file, 12 KB, user_version 1; the schema is the one of cli/RealDb.roc). With node 26, in this case dir, run `new DatabaseSync(path).exec(SQL)` (require("node:sqlite")) with this SQL, and delete the old file first:
+#   CREATE TABLE facts (hash TEXT NOT NULL, nightly TEXT NOT NULL, target TEXT NOT NULL, outcome TEXT NOT NULL, modules TEXT NOT NULL, closure TEXT NOT NULL, PRIMARY KEY (hash, nightly, target, closure)) WITHOUT ROWID;
+#   CREATE TABLE pinned (tag TEXT NOT NULL, target TEXT NOT NULL, sha256 TEXT NOT NULL, source TEXT NOT NULL, PRIMARY KEY (tag, target)) WITHOUT ROWID;
+#   INSERT INTO pinned VALUES ('nightly-2026-10-14-38a3029', 'linux_x86_64', '3e4ebcdac764d6259eb45a22f647754c94d15d36f0a04ede0cdd83f0ca28a703', 'registry');  PRAGMA user_version=1;
+st() { echo "== $*"; if tln "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st probe json --share --file p1/main.roc

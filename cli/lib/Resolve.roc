@@ -117,7 +117,7 @@ Resolve :: [].{
 	## | 4 | A stale key keeps the warning (no prompt), a key that the header lacks has no effect (as for `update`, Q3). | R-I5, R-I8 |
 	##
 	## `moved` of the `Outcome` has the entries that differ. A failure of the ladder is the failure of the run (exit 10 or 11, nothing was written).
-	verify! : Fx, Request => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
+	verify! : Fx, Request => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 	verify! = |fx, request| VerifyFlow.verify!(fx, request)
 
 	## See the slice file 005, "The flow of `Resolve.run!`". It is `install!` with the outcome dropped.

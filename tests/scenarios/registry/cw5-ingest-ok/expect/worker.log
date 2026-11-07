@@ -1,0 +1,4 @@
+GET /v1/packages/acme/roc-thing/releases 404
+POST /v1/releases 201
+GET /v1/packages/acme/roc-thing/releases 200
+POST /v1/closure 200

@@ -1,0 +1,7 @@
+== tln add acme/lib --no-check --dry-run
+check: skipped
+$PROJECT/main.roc
+  + lib: acme/lib 1.0.0
+resolved at log:2, 0 probes
+dry run: nothing was written
+exit 0

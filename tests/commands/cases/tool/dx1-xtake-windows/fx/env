@@ -5,3 +5,4 @@ USERPROFILE={w}/home/u
 CI=true
 LOCALAPPDATA=C:/AppData/Local
 APPDATA=C:/AppData/Roaming
+TALON_REGISTRY=direct

@@ -1,0 +1,7 @@
+== outdated --file u1/main.roc
+$PROJECT/u1/main.roc
+  package  current  wanted  latest  nightly range
+  json     2.0.0    2.2.0   2.2.0   none known
+  parser   1.0.0    1.2.0   1.2.0   none known
+  pf       0.1.0    0.1.1   0.1.1   none known
+exit 0

@@ -44,7 +44,7 @@ L2ProbeShare :: [].{
 						Ok(word) => word.drop_prefix("url=")
 						Err(_) => ""
 					}
-					found = ProbeShareFlow.send!(fx, { roots, net: Net.from_env(env.concat(extra)), origin: "http://127.0.0.1:9", source, hash, env: env.concat(extra) })
+					found = ProbeShareFlow.send!(fx, { roots, net: Net.from_env(env.concat(extra)), origin: "http://127.0.0.1:9", source, hash, env: env.concat(extra), setting: "TALON_REGISTRY" })
 					match found {
 						Ok(done) => {
 							for out_line in ProbeShare.lines({ label: hash, shared: done.shared, kept_back: done.kept_back, unsent: done.unsent }) {

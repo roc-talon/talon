@@ -1,6 +1,7 @@
 import records.Closure as Wire
 import records.Problem
 import Fail
+import Help
 import JsonDoc
 
 ## The registry client core (slice 201, Registry 4, 4.2; CLI 3). Pure: no `Fx`, no clock. The wire types and codecs are the package `records` (R-PK7, slice 104).
@@ -159,22 +160,36 @@ Registry :: [].{
 	## Messages: see the "Output" section of the slice file (proposals). Two are in CLI 3 R-E6: `unsupported-client` (400, with `minimum`) and the text `too-large` names `field` and `limit`.
 	## Slice 208 (Design Q424, R-AP25): `retry_after ?:` is the value of the header `Retry-After` of the answer (the name in any case), as the text of the answer. For a 429 the message gives the time: `... Try again in <n> s.` when the text, with white space cut, is a whole number
 	## (`<n>` as the number); with no `retry_after`, or a value that is not a whole number (`soon`, `1.5`, `-3`, empty), the message is as before (`Try again later.`). The other statuses ignore it.
-	refuse : { origin : Str, version : Str, method : Registry.Method, reply : Registry.Reply, retry_after ?: Str } -> Fail
+	refuse : { origin : Str, version : Str, method : Registry.Method, reply : Registry.Reply, retry_after ?: Str, source ?: Str, needs ?: Bool } -> Fail
 	refuse = |facts| {
 		status = facts.reply.status
+		source = facts.?source ?? ""
+		# R-RG9: a 5xx of a read with a `source` stops with `Registry.stop_text`.
+		stops = status >= 500 and source != ""
 		match Registry.problem(facts.reply) {
 			Err(NotProblem) => {
-				message = "${facts.origin} answered ${status.to_str()} and the answer is not problem details. Check the registry setting."
-				{ ..Fail.new(Network, message), details: Ok(Obj([("status", Num(status.to_i64()))])) }
+				message = if stops {
+					Registry.stop_text({ origin: facts.origin, source, what: "answered ${status.to_str()}: the answer is not problem details", needs: facts.?needs ?? Bool.False })
+				} else {
+					"${facts.origin} answered ${status.to_str()} and the answer is not problem details. Check the registry setting."
+				}
+				{ ..Fail.new(Network, message), details: Ok(Obj([("status", Num(status.to_i64()))])), fallback: Registry.fallback_of({ stops, source, cause: status.to_str() }) }
 			}
 			Ok(body) => {
 				details = Obj([("status", Num(status.to_i64())), ("type", Text(body.type_text))])
-				{ ..Registry.problem_fail(facts, body), details: Ok(details) }
+				what = if body.type_text == Problem.type_uri(Busy) "the registry is busy" else if body.detail.is_empty() body.title else body.detail
+				message = if stops {
+					Registry.stop_text({ origin: facts.origin, source, what: "answered ${status.to_str()}: ${what}", needs: facts.?needs ?? Bool.False })
+				} else {
+					Registry.problem_fail(facts, body).message
+				}
+				cause = if body.type_text == Problem.type_uri(Busy) "${status.to_str()} busy" else status.to_str()
+				{ ..Registry.problem_fail(facts, body), message, details: Ok(details), fallback: Registry.fallback_of({ stops, source, cause }) }
 			}
 		}
 	}
 
-	problem_fail : { origin : Str, version : Str, method : Registry.Method, reply : Registry.Reply, retry_after ?: Str }, Problem.Body -> Fail
+	problem_fail : { origin : Str, version : Str, method : Registry.Method, reply : Registry.Reply, retry_after ?: Str, source ?: Str, needs ?: Bool }, Problem.Body -> Fail
 	problem_fail = |facts, body| {
 		status = facts.reply.status
 		what = if body.detail.is_empty() body.title else body.detail
@@ -215,8 +230,29 @@ Registry :: [].{
 	}
 
 	## R-E6 (no answer): the failure for a request that got no answer (a refused connection, a timeout). Kind `Network` (15). No `details`.
-	no_answer : { origin : Str, why : Str } -> Fail
-	no_answer = |facts| Fail.new(Network, "the registry ${facts.origin} gave no answer: ${facts.why}. Try again later.")
+	## R-RG9 (Design Q600): with a `source` (not empty: the place of the registry setting, `IndexQuery.source`) the message is `Registry.stop_text`.
+	no_answer : { origin : Str, why : Str, source ?: Str, needs ?: Bool } -> Fail
+	no_answer = |facts| match facts.?source ?? "" {
+		"" => Fail.new(Network, "the registry ${facts.origin} gave no answer: ${facts.why}. Try again later.")
+		source => {
+			fail = Fail.new(Network, Registry.stop_text({ origin: facts.origin, source, what: "gave no answer: ${facts.why}", needs: facts.?needs ?? Bool.False }))
+			if source == Help.default_source {
+				{ ..fail, fallback: Ok(facts.why) }
+			} else fail
+		}
+	}
+
+	## R-RG9 (Design Q601): `Ok(cause)` when the failure is of the built-in default and is a stop of a 5xx.
+	fallback_of : { stops : Bool, source : Str, cause : Str } -> Try(Str, [None])
+	fallback_of = |facts| if facts.stops and facts.source == Help.default_source Ok(facts.cause) else Err(None)
+
+	## R-RG9 (Design Q600, proposal, R-OUT2): the one text of a stop for a registry that gives no answer or a 5xx. `what` is the end of the first sentence.
+	stop_text : { origin : Str, source : Str, what : Str, needs : Bool } -> Str
+	stop_text = |facts| if facts.needs {
+		"the registry ${facts.origin} (${facts.source}) ${facts.what}."
+	} else {
+		"the registry ${facts.origin} (${facts.source}) ${facts.what}. Use --registry direct, or registry = \"direct\" in config.toml, to read GitHub in place of it."
+	}
 
 	## R-AP51, R-E6 (a 2xx answer that does not decode): the closure answer of R-AP17 (`records.Closure.decode_answer`). A required member that is missing, `null`, or of a wrong type: `Err` with kind `Network` (15) and a message that names the registry `origin`. An unknown member is ignored (R-AP44).
 	closure_answer : { origin : Str, body : Str } -> Try(Wire.Answer, Fail)

@@ -23,7 +23,7 @@
 #     given/answers is the text that is typed in.
 #   - the tag no-alias: the case does not change the host names (it names the host of the probe itself: `flowprobe nightlies --host <target>` has the default linux_x86_64, on every system).
 #   - the tag linux-x64 skips the case on a host that is not Linux x86_64. Another host gets the names of its own (tests/lib.sh alias_in, alias_out) and the GNU tools (make_gnu_shim).
-#   - the tags windows, exdev, slow (without SLOW=1), net (without NET=1) and real-roc (without REAL_ROC=1) are not in the fast set.
+#   - the tag blocked is never run (SKIP line with its skip-reason); the tags windows, exdev, slow (without SLOW=1), net (without NET=1) and real-roc (without REAL_ROC=1) are not in the fast set.
 #   - expect/facts.tsv (slice 030): the rows of `home/.cache/roc/talon/compat.db` after the cmd (the dump of tests/tools/dumpdb.py, the line form of `Db.file_text`).
 #     When the file is missing, the db is not compared. An empty file means that there is no db file. UPDATE=1 writes it, and removes it when the db is missing.
 #   - expect/roc.log: when it is missing, the case expects no roc call.
@@ -33,6 +33,10 @@
 #     the tree diff. expect/http.log (optional) is the log of the requests: one line for each, in the order of arrival.
 #     expect/http-bodies/ (optional, slice 200) has one file for each request that had a body, named by the line number of the request in http.log (from 1).
 #   - the fake roc can run the pinned roc for a rule (the exit field `real`, tests/fakes/roc): `roc unbundle` has no fake.
+#   - the tag worker (slice 224, the contract run, docs/slices/224-contract-run.md): the case runs only when L3W_DIR is the dir of a Worker build (the step l3w of scripts/test.sh), else it is skipped.
+#     The runner starts the real Worker for the case (tests/tools/with-worker.sh, worker/tests/serve.mjs), from `<case>/worker/` (seed.sql, github/, settings.json), and the cmd sees
+#     TALON_REGISTRY and TALON_WORKER (http://127.0.0.1:8787). With given/http/ the fake HTTP server runs too (GitHub for tln). expect/worker.log (optional) is the log of the
+#     requests to the Worker, expect/worker-github.log (optional) the log of the requests of the Worker to its fake GitHub. L3W_ONLY=1: only the cases with the tag worker. NODE: the node binary.
 set -u
 SELF=$(cd "$(dirname "$0")" && pwd)
 . "$SELF/../scripts/env.sh"
@@ -55,6 +59,8 @@ run_case() {
     local dir=$1 name tags W
     name=${dir#"$SCENARIOS"/}
     tags=$(cat "$dir/tags" 2> /dev/null || true)
+    # The tag blocked (slice 225, G-C229): the case waits for an outside state (for example a host that does not resolve yet). It is always skipped, with a SKIP line that gives the first line of its file `skip-reason`.
+    case " $tags " in *" blocked "*) echo "blocked: $(head -n 1 "$dir/skip-reason" 2> /dev/null || echo 'no skip-reason file')"; return 2 ;; esac
     for t in windows exdev; do
         case " $tags " in *" $t "*) return 2 ;; esac
     done
@@ -63,6 +69,7 @@ run_case() {
     case " $tags " in *" slow "*) [ "${SLOW:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" real-roc "*) [ "${REAL_ROC:-0}" = 1 ] || return 2 ;; esac
     case " $tags " in *" net "*) [ "${NET:-0}" = 1 ] || return 2 ;; esac
+    case " $tags " in *" worker "*) [ -n "${L3W_DIR:-}" ] || return 2 ;; esac
     # Slice 053: a case with the file `needs-real-cache` copies the real roc cache. When that dir does not exist (the runner of the nightly run has none), the case is skipped with a reason.
     if [ -f "$dir/needs-real-cache" ] && [ ! -d "${REAL_CACHE:-$HOME/.cache/roc}" ]; then
         echo "no real roc cache: ${REAL_CACHE:-$HOME/.cache/roc} does not exist (set REAL_CACHE)"
@@ -124,6 +131,12 @@ run_case() {
         run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$CASE_SH" -e "$cmdfile")
         # A case with routes gets the fake HTTP server (slice 003). It runs inside the namespace of the case.
         [ -d "$W/http" ] && run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" "$CASE_SH" -e "$cmdfile")
+        # Slice 224: the tag worker puts the real Worker (with-worker.sh) between the fake HTTP server and the cmd.
+        if [[ " $tags " == *" worker "* ]]; then
+            local wk=("$SELF/tools/with-worker.sh" "$W" "$dir" "$L3W_DIR" "${NODE:-$(command -v node)}" "$CASE_SH" -e "$cmdfile")
+            run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "${wk[@]}")
+            [ -d "$W/http" ] && run=("$TIMEOUT_CMD" "${CASE_TIMEOUT:-120}" "$SELF/tools/with-http.sh" "$W" "$SELF/fixtures" "${wk[@]}")
+        fi
     fi
     (cd "$W/project" && $cut env -i "${envs[@]}" "${run[@]}" > "$W/out/stdout.raw" 2> "$W/out/stderr.raw" < /dev/null)
     echo $? > "$W/out/exit"
@@ -135,6 +148,8 @@ run_case() {
     dump_facts "$W" | $back > "$W/out/facts.tsv"
     if [ -f "$W/roc.log" ]; then normalize "$W" < "$W/roc.log" | hexnorm | $back > "$W/out/roc.log"; else : > "$W/out/roc.log"; fi
     if [ -f "$W/http.log" ]; then normalize "$W" < "$W/http.log" | $back > "$W/out/http.log"; else : > "$W/out/http.log"; fi
+    local wl
+    for wl in worker.log worker-github.log; do if [ -f "$W/$wl" ]; then normalize "$W" < "$W/$wl" > "$W/out/$wl"; else : > "$W/out/$wl"; fi; done
     # Slice 200: the request bodies of the fake server, one file for each request that had a body, named by its line number in http.log. Normalized as http.log is (the port is $PORT).
     mkdir -p "$W/out/http-bodies"
     if [ -d "$W/http-bodies" ]; then
@@ -150,6 +165,8 @@ run_case() {
         update_file "$ex/roc.log" "$W/out/roc.log" optional
         update_file "$ex/facts.tsv" "$W/out/facts.tsv" optional
         update_file "$ex/http.log" "$W/out/http.log" optional
+        update_file "$ex/worker.log" "$W/out/worker.log" optional
+        update_file "$ex/worker-github.log" "$W/out/worker-github.log" optional
         # Slice 200: expect/http-bodies/ is kept only when the case has it (or when a request had a body and the dir is asked for with HTTP_BODIES=1).
         if [ -d "$ex/http-bodies" ] || [ "${HTTP_BODIES:-0}" = 1 ]; then rm -rf "$ex/http-bodies"; cp -a "$W/out/http-bodies" "$ex/http-bodies"; fi
         return 0
@@ -170,6 +187,8 @@ run_case() {
     fi
     [ -f "$ex/facts.tsv" ] && { compare_file "compat.db rows" "$ex/facts.tsv" "$W/out/facts.tsv" >> "$report" || fail=1; }
     [ -f "$ex/http.log" ] && { compare_file "http requests" "$ex/http.log" "$W/out/http.log" >> "$report" || fail=1; }
+    [ -f "$ex/worker.log" ] && { compare_file "worker requests" "$ex/worker.log" "$W/out/worker.log" >> "$report" || fail=1; }
+    [ -f "$ex/worker-github.log" ] && { compare_file "worker github requests" "$ex/worker-github.log" "$W/out/worker-github.log" >> "$report" || fail=1; }
     # Slice 200: optional expect/http-bodies/ (one file for each request with a body, named by its line number in http.log). A missing or extra file, or another content, fails the case.
     if [ -d "$ex/http-bodies" ]; then
         if ! diff -r -u --label expected --label actual "$ex/http-bodies" "$W/out/http-bodies" > "$W/out/http-bodies.diff"; then
@@ -211,6 +230,12 @@ for c in "${ALL[@]}"; do
         case $rel in *"$f"*) CASES+=("$c"); break ;; esac
     done
 done
+# Slice 224: L3W_ONLY=1 keeps only the cases with the tag worker (the step l3w).
+if [ "${L3W_ONLY:-0}" = 1 ]; then
+    _w=()
+    for c in "${CASES[@]}"; do case " $(cat "$c/tags" 2> /dev/null | tr '\n' ' ') " in *" worker "*) _w+=("$c") ;; esac; done
+    CASES=("${_w[@]}")
+fi
 if [ ${#CASES[@]} -eq 0 ]; then echo "scenarios: no case matches"; exit 1; fi
 
 mkdir -p "$CASEROOT"

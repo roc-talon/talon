@@ -1,0 +1,25 @@
+--- home/.cache/roc/talon/index/github/acme/known/repo.json
++++ home/.cache/roc/talon/index/github/acme/known/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/known","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/pfx/repo.json
++++ home/.cache/roc/talon/index/github/acme/pfx/repo.json
+@@ -0,0 +1 @@
++{"id":2,"full_name":"acme/pfx","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/ae7fcf36e6e344437c63dea9b236a7cd.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/ae7fcf36e6e344437c63dea9b236a7cd.json
+@@ -0,0 +1 @@
++{"releases":[{"group":"github.com/acme/known/releases/download/{v}/","hash":"5UVYbRk4zTJP7MLG5AAaTwK2TmX3U1bdndvNzddMyTaV","log_index":1,"provenance":["ingest"],"published_at":1788264000000,"repo":"acme/known","roc_version":null,"series":"1","tag":"1.0.0","url":"https://github.com/acme/known/releases/download/1.0.0/5UVYbRk4zTJP7MLG5AAaTwK2TmX3U1bdndvNzddMyTaV.tar.zst","version":"1.0.0","withdrawn":null,"yank_reason":null,"yanked":false},{"group":"github.com/acme/known/releases/download/{v}/","hash":"24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL","log_index":2,"provenance":["ingest"],"published_at":1788350400000,"repo":"acme/known","roc_version":null,"series":"1","tag":"1.1.0","url":"https://github.com/acme/known/releases/download/1.1.0/24rkETgKNBjGJpcTGb8WEQVf7ULptHeJM7c85KqCdLxL.tar.zst","version":"1.1.0","withdrawn":null,"yank_reason":null,"yanked":false}],"checked":{"checked_at":1792062000000,"name":"acme/known","stale":false},"repos":[{"name":"acme/known","state":"active","state_at":1792062000000,"successor":null}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/ae7fcf36e6e344437c63dea9b236a7cd.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/ae7fcf36e6e344437c63dea9b236a7cd.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/known/releases
++etag "4ae43d10cfe998840d77f2ff5242cec2"
++max-age 60
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600}]}

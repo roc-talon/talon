@@ -112,13 +112,13 @@ ProbeFlow :: [].{
 Finished : { shown : ProbeCmd.Shown, stop : Try(Fail, [None]), share : Try({ roots : Roots, net : Net.Settings, env : List((Str, Str)), source : Str, node : Units.Node }, [None]) }
 
 # Slice 217, R-PB6: the registry of `--share`, read before any other work (`Err(None)`: no `--share`).
-share_origin! : Fx, Args, ProbeCmd.Plan => Try(Try(Str, [None]), Fail)
+share_origin! : Fx, Args, ProbeCmd.Plan => Try(Try({ origin : Str, setting : Str }, [None]), Fail)
 share_origin! = |fx, args, plan| if plan.share Ok(Ok(ProbeShareFlow.check!(fx, args)?)) else Ok(Err(None))
 
 Begun : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }
 
 # The answer, then the exit code. With `--json` the answer text is on stderr. A stop (exit 12) prints the failure with the `data` in `error.details` (R-J5).
-finish! : Fx, Args, Finished, Try(Str, [None]) => I32
+finish! : Fx, Args, Finished, Try({ origin : Str, setting : Str }, [None]) => I32
 finish! = |fx, args, done, origin| {
 	answer = ProbeCmd.text(done.shown)
 	if args.json fx.err!(answer) else fx.out!(answer)
@@ -129,7 +129,7 @@ finish! = |fx, args, done, origin| {
 		Err(None) => Bool.True
 	}
 	match (origin, done.share) {
-		(Ok(registry), Ok(share)) if runs => shared!(fx, args, { doc, origin: registry, share, probe: done.stop })
+		(Ok(registry), Ok(share)) if runs => shared!(fx, args, { doc, origin: registry.origin, setting: registry.setting, share, probe: done.stop })
 		_ => match done.stop {
 			Ok(fail) => Common.failed!(fx, args, { ..fail, details: Ok(doc) })
 			Err(None) => {
@@ -143,8 +143,8 @@ finish! = |fx, args, done, origin| {
 }
 
 # Slice 217, Q493: the share step after a probe with exit 0. The share lines come after the probe lines (with `--json`, on stderr as the probe lines). The `data` of the share is added to the `data` of the probe. A failed send, or a send that did not finish, is its code (15).
-shared! : Fx, Args, { doc : JsonDoc, origin : Str, probe : Try(Fail, [None]), share : { roots : Roots, net : Net.Settings, env : List((Str, Str)), source : Str, node : Units.Node } } => I32
-shared! = |fx, args, run| match ProbeShareFlow.send!(fx, { roots: run.share.roots, net: run.share.net, origin: run.origin, source: run.share.source, hash: run.share.node.hash, env: run.share.env }) {
+shared! : Fx, Args, { doc : JsonDoc, origin : Str, setting : Str, probe : Try(Fail, [None]), share : { roots : Roots, net : Net.Settings, env : List((Str, Str)), source : Str, node : Units.Node } } => I32
+shared! = |fx, args, run| match ProbeShareFlow.send!(fx, { roots: run.share.roots, net: run.share.net, origin: run.origin, setting: run.setting, source: run.share.source, hash: run.share.node.hash, env: run.share.env }) {
 	Err(fail) => match run.probe {
 		Ok(kept) => Common.failed!(fx, args, { ..kept, details: Ok(run.doc) })
 		Err(None) => Common.failed!(fx, args, fail)

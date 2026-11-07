@@ -3,6 +3,7 @@ import Common
 import Fail
 import Fx
 import Help
+import IndexQuery
 import Item
 import JsonDoc
 import Net
@@ -51,7 +52,7 @@ show! = |fx, args, lines, data| if args.json {
 }
 
 # The steps that `logout` and `forget` share: the environment, the registry (R-SH10, Q485), the path of `share.json` and its doc (a missing file is `Err(Missing)`).
-Start : { origin : Str, json_path : Str, doc : Try(ShareJson.Doc, [Missing]) }
+Start : { origin : Str, setting : Str, json_path : Str, doc : Try(ShareJson.Doc, [Missing]) }
 
 start! : Fx, Args, Str => Try(Start, Fail)
 start! = |fx, args, word| {
@@ -71,7 +72,7 @@ start! = |fx, args, word| {
 		[Ok(text)] => Ok(ShareJson.read({ path: json_path, text })?)
 		_ => Err(Missing)
 	}
-	Ok({ origin, json_path, doc })
+	Ok({ origin, setting: IndexQuery.source({ flag: args.registry, env: Net.from_env(env).registry, config: config.registry }), json_path, doc })
 }
 
 logout_flow! : Fx, Args => Try(Shown, Fail)
@@ -91,7 +92,7 @@ logout_flow! = |fx, args| {
 		Live(token) => {
 			request = ShareAccount.logout_request({ origin: begun.origin, version: Help.version, token })
 			# 401: the token already stopped, the goal is reached (Q481).
-			_ = ShareAccount.delete_answer({ origin: begun.origin, version: Help.version, reply: fx.http_send!(request) })?
+			_ = ShareAccount.delete_answer({ origin: begun.origin, version: Help.version, reply: fx.http_send!(request), source: begun.setting })?
 		}
 	}
 	ShareFlow.totals_write!(fx, begun.json_path, ShareAccount.logged_out)?
@@ -115,7 +116,7 @@ forget_flow! = |fx, args| {
 		}
 	}
 	reply = fx.http_send!(ShareAccount.forget_request({ origin: begun.origin, version: Help.version, proof }))
-	match ShareAccount.delete_answer({ origin: begun.origin, version: Help.version, reply })? {
+	match ShareAccount.delete_answer({ origin: begun.origin, version: Help.version, reply, source: begun.setting })? {
 		Stopped => {
 			answer = reply.map_err(|_| {}) ?? { status: 401, headers: [], body: "" }
 			return Err(ShareAccount.forget_stopped({ origin: begun.origin, reply: { status: answer.status, body: answer.body } }))

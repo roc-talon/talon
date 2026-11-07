@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # The fast set (TW20): check, fmt check, L0, L1, L2, L3 fast, the registry layers W0 to W2 (TESTING.md 9), and the self-test of the runners.
 # Exit 0 only when every step passes.
-# Usage: scripts/test.sh [step ...]    steps: check fmt l0 l1 l2 l3 w0 w1 wbuild w2 wtrap selftest (default: all, with l1 last: its builds start at the start and take 30 s, so l1 waits for no build)
+# Usage: scripts/test.sh [step ...]    steps: check fmt l0 l1 l2 l3 w0 w1 wbuild w2 wtrap l3w selftest (default: all but l3w, with l1 last: its builds start at the start and take 30 s, so l1 waits for no build)
 #        VERBOSE=1                     print the log of each step, not only of a failed one
 #        ROC=<path>                    another compiler (default: the pinned nightly, scripts/env.sh)
 #        OPT=dev|speed                 build mode of the test binaries (default dev; speed is LLVM; another value: exit 2, TW25)
@@ -15,7 +15,9 @@
 #            then `sync --check`. It does nothing when the stamp is up to date. The build starts at the start of the run, with the other builds, and the step waits for it (budget 90 s, TW26).
 #        w2: runs worker/tests/run.mjs on the build of wbuild (W2_DIR is that dir). It never builds. `w2` alone puts `wbuild` before it, so the time of w2 is the time of the cases.
 #        w0 and w1 need Node 26 or later (TW34); w1 and w2 need Miniflare (the global wrangler 4, or MINIFLARE=<dir>).
-#        BUDGET_<STEP>=<s>             change the budget of one step for this run (CHECK FMT L0 L1 L2 L3 W0 W1 WBUILD W2 WTRAP SELFTEST, TW26)
+#        l3w (slice 224, the contract run, docs/slices/224-contract-run.md): the L3 cases with the tag worker (tests/run.sh L3W_ONLY=1), with tln against the real Worker of wbuild in Miniflare
+#            (tests/tools/with-worker.sh, worker/tests/serve.mjs). It never builds the Worker: `l3w` alone puts `wbuild` before it. It needs the tln build, Node 26 and Miniflare (as w2).
+#        BUDGET_<STEP>=<s>             change the budget of one step for this run (CHECK FMT L0 L1 L2 L3 W0 W1 WBUILD W2 WTRAP L3W SELFTEST, TW26)
 #        TEST_TIMEOUT=<s>              the time limit of one test process: a `roc test` file (l0), a fuzz run (l1), a case of l2 and of l3 (default: 3 times the budget of its step: l0 30, l1 180, l2 90, l3 180).
 #                                      A process over the limit is killed and fails its step (`l0: <file>: timed out after <s> s`). The builds have no limit. L3 reads CASE_TIMEOUT first (tests/run.sh).
 #        BUDGET_TOTAL=<s>              the budget of the whole run (default 180, TW20)
@@ -40,7 +42,7 @@ STEPS=("$@")
 _s=(); _seen=0
 for _x in "${STEPS[@]}"; do
     [ "$_x" = wbuild ] && _seen=1
-    if { [ "$_x" = w2 ] || [ "$_x" = wtrap ]; } && [ $_seen = 0 ]; then _s+=(wbuild); _seen=1; fi
+    if { [ "$_x" = w2 ] || [ "$_x" = wtrap ] || [ "$_x" = l3w ]; } && [ $_seen = 0 ]; then _s+=(wbuild); _seen=1; fi
     _s+=("$_x")
 done
 STEPS=("${_s[@]}")
@@ -313,7 +315,18 @@ archive_build() {
     worker_prune "$root" 3 "$final"
     echo "$final/archive-test.wasm" > "$LOGS/worker-archive.$rid"
 }
-step_selftest() { wait_build l2 && SELFTEST_L2BIN=$WORK/bin/l2 tests/selftest.sh; }
+# l3w (slice 224): the L3 cases with the tag worker, on the Worker build of wbuild (L3W_DIR) and the tln build. Each case starts its own Worker (about 1 s) in the network namespace of the case,
+# on the fixed port 8787 (tests/tools/with-worker.sh). Without a namespace (no bwrap, or BWRAP=0) the port is shared, so the cases run one at a time.
+step_l3w() {
+    [ -f "$LOGS/worker-dir.$$" ] || { echo "l3w: this run has no Worker build: the step wbuild did not run or failed. l3w does not build the Worker."; return 1; }
+    need_node l3w || return 1
+    wait_build tln || return 1
+    local jobs=${JOBS:-}
+    { [ "${BWRAP:-1}" != 0 ] && command -v bwrap > /dev/null 2>&1 && bwrap --dev-bind / / --unshare-net true > /dev/null 2>&1; } || jobs=1
+    JOBS=$jobs L3W_DIR=$(cat "$LOGS/worker-dir.$$") L3W_ONLY=1 NODE=$(command -v node) CASE_TIMEOUT=${CASE_TIMEOUT:-$(limit_of l3w)} TLN=$WORK/bin/tln tests/run.sh
+}
+# The self-test gets the Worker build of this run, when it has one (the rows of l3w, slice 224); else those rows are skipped.
+step_selftest() { wait_build l2 && SELFTEST_L2BIN=$WORK/bin/l2 SELFTEST_W_DIR=$(cat "$LOGS/worker-dir.$$" 2> /dev/null) tests/selftest.sh; }
 
 # The slow part of L2, L3 and the self-test is `roc build` of the test apps (LLVM: 90 s each, --opt=dev: 2 to 5 s). So the builds start
 # together at the start (the machine has many cores), and each build is made once: the self-test shares the L2 app.
@@ -364,7 +377,7 @@ wait_build() {
 }
 
 # The budget of each step in seconds (TW26). BUDGET_<STEP> changes one for this run.
-declare -A BUDGET=([check]=10 [fmt]=5 [l0]=10 [l1]=60 [l2]=30 [l3]=60 [w0]=10 [w1]=15 [wbuild]=90 [w2]=45 [wtrap]=5 [selftest]=20)
+declare -A BUDGET=([check]=10 [fmt]=5 [l0]=10 [l1]=60 [l2]=30 [l3]=60 [w0]=10 [w1]=15 [wbuild]=90 [w2]=45 [wtrap]=5 [l3w]=15 [selftest]=20)
 for s in "${!BUDGET[@]}"; do
     v=BUDGET_${s^^}
     [ -n "${!v:-}" ] && BUDGET[$s]=${!v}
@@ -382,7 +395,8 @@ plan_builds() {
         l1) rm -rf "$WORK/l1"; mkdir -p "$WORK/l1"
             while read -r t; do [ -n "$t" ] && build_start "l1-$(basename "$t" .roc)" "$t"; done < <(l1_targets) ;;
         wbuild) build_start "worker.$$" worker/main.roc ;;
-        l3) build_start tln cli/main.roc; build_start fxprobe cli/fxprobe.roc; build_start flowprobe cli/flowprobe.roc ;;
+        l3) [ -z "${BUILD_WANT[tln]:-}" ] && build_start tln cli/main.roc; build_start fxprobe cli/fxprobe.roc; build_start flowprobe cli/flowprobe.roc ;;
+        l3w) [ -z "${BUILD_WANT[tln]:-}" ] && build_start tln cli/main.roc ;;
         esac
     done
     # The l0 step runs while the builds run: it keeps the memory of the n largest builds that run at the same time free.

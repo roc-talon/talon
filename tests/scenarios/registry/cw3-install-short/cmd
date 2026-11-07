@@ -1,0 +1,4 @@
+# R-AP7 R-AD34 R-SN1 R-AP1 R-AP3 R-RG4 (slice 224, the contract run, tag worker): the real Worker for the twin case tests/commands/cases/registry/sn6-install-short-one (L2, fake routes).
+# `tln install known`: the short name is one request `GET /v1/packages?short=known` (R-AP7, no guard for it), then the same as `add acme/known` (R-AP1, one closure query). The seed is the seed of cw2-add-closure.
+st() { echo "== $*"; if tln "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st install known --no-check --dry-run --file p1/main.roc

@@ -1,4 +1,4 @@
-tln: error[network]: the registry http://127.0.0.1:9 gave no answer: no answer in 20 s. Try again later.
+tln: error[network]: the registry http://127.0.0.1:9 (TALON_REGISTRY) gave no answer: no answer in 20 s. Use --registry direct, or registry = "direct" in config.toml, to read GitHub in place of it.
 tln: error[network]: the registry http://127.0.0.1:9 gave the answer 301 for /v1/packages/acme/redir/releases, and Talon cannot use it. Try again later.
 tln: error[network]: the registry http://127.0.0.1:9 gave the answer 301 for /v1/packages/acme/redir/releases, and Talon cannot use it. Try again later.
 tln: error[network]: the registry http://127.0.0.1:9 gave the answer 304 for /v1/packages/acme/nm304/releases, and Talon cannot use it. Try again later.

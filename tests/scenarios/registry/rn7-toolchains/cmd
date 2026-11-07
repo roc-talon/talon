@@ -1,0 +1,7 @@
+# BLOCKED: see skip-reason. Remove the tag blocked when the live registry has toolchain rows.
+# R-CV1 R-AP5 R-IX4 R-RG1 R-CM15 (slice 225, L4): one `tln` command that reads the compiler list of the registry (`GET /v1/toolchains?after=0`, Nightlies.list_registry!) and installs nothing. `tln roc update` reads the list too, but it has no dry-run form (R-CM15: it installs the newest compiler), so it would download a real compiler. `tln upgrade roc --dry-run --no-check` reads the list for the free window (slice 206b row 3) and writes nothing. The case checks that the list has a nightly row (the file `toolchains.json` of R-IX4 is written) and that the project is not changed.
+export XDG_CACHE_HOME=$TALON_TEST_DIR/xdg ROC_CACHE_DIR=$TALON_TEST_DIR/xdg/roc
+trap 'rm -rf "${XDG_CACHE_HOME:?}"' EXIT
+if tln upgrade roc --dry-run --no-check > $TALON_TEST_DIR/o.out 2> $TALON_TEST_DIR/o.err; then echo "exit 0"; else echo "exit $?"; fi
+ls $XDG_CACHE_HOME/roc/talon/index/registry/*/toolchains.json | sed 's#.*/#file: #'
+grep -c '"nightly-' $XDG_CACHE_HOME/roc/talon/index/registry/*/toolchains.json | sed 's/^[1-9][0-9]*$/has nightly rows/'

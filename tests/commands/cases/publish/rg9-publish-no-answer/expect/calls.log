@@ -1,0 +1,36 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get https://api.github.com/repos/acme/json/releases/tags/2.1.0
+  User-Agent: tln/0.0.1
+  Authorization: Bearer gh1
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 facts_of=4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq
+http_get http://127.0.0.1:9/v1/releases?group=github.com%2Facme%2Fjson%2Freleases%2Fdownload%2F%7Bv%7D%2F
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt1
+  <body> {"compat":[{"error_digest":null,"nightly":"nightly-2026-10-12-2664a27","result":"pass","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-13-bbbbbbb","result":"hang","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-14-38a3029","result":"fail","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-15-0a0a0a0","result":"crash","target":"any"}],"url":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}
+sleep 2000
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt1
+  <body> {"compat":[{"error_digest":null,"nightly":"nightly-2026-10-12-2664a27","result":"pass","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-13-bbbbbbb","result":"hang","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-14-38a3029","result":"fail","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-15-0a0a0a0","result":"crash","target":"any"}],"url":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}
+sleep 8000
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt1
+  <body> {"compat":[{"error_digest":null,"nightly":"nightly-2026-10-12-2664a27","result":"pass","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-13-bbbbbbb","result":"hang","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-14-38a3029","result":"fail","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-15-0a0a0a0","result":"crash","target":"any"}],"url":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}
+sleep 30000
+http_send POST http://127.0.0.1:9/v1/releases timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  Authorization: Bearer jwt1
+  <body> {"compat":[{"error_digest":null,"nightly":"nightly-2026-10-12-2664a27","result":"pass","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-13-bbbbbbb","result":"hang","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-14-38a3029","result":"fail","target":"any"},{"error_digest":null,"nightly":"nightly-2026-10-15-0a0a0a0","result":"crash","target":"any"}],"url":"https://github.com/acme/json/releases/download/2.1.0/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq.tar.zst"}

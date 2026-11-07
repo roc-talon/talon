@@ -1,0 +1,14 @@
+--- home/.cache/roc/talon/index/github/acme/json/repo.json
++++ home/.cache/roc/talon/index/github/acme/json/repo.json
+@@ -0,0 +1 @@
++{"id":1,"full_name":"acme/json","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600}]}
+--- home/.local/share/talon/share.json
++++ home/.local/share/talon/share.json
+@@ -1 +1 @@
+-{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":0,"counted":0,"first":0,"first_sent_at":null,"last_sent_at":null,"token":null,"token_expires_at":null,"account":null}
++{"format":1,"id":"0123456789abcdeffedcba9876543210","sent":1,"counted":1,"first":1,"first_sent_at":"2026-10-15T12:00:00Z","last_sent_at":"2026-10-15T12:00:00Z","token":null,"token_expires_at":null,"account":null}

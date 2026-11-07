@@ -1,0 +1,5 @@
+# R-AP1 R-AP3 R-AP16 R-AP17 R-DT5 R-RG4 (slice 224, the contract run, tag worker): the real Worker for the twin case tests/commands/cases/registry/ad35-add-closure (L2, fake routes).
+# The same command and the same project (p1/main.roc). The same stdout is the contract: the seed (worker/seed.json: 2 releases of acme/known, the platform acme/pfx, 47 more releases for the log size 50) makes the answers that the fake routes of the twin have.
+# The twin has the registry in config.toml; here it is TALON_REGISTRY (the Worker). The fake HTTP server is GitHub for tln (the guard, R-RG4).
+st() { echo "== $*"; if tln "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st add acme/known@^1 --no-check --dry-run --file p1/main.roc

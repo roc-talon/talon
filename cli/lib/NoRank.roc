@@ -144,7 +144,7 @@ NoRank :: [].{
 		# R-C16 (slice 084): the pick of a young compiler that only a pattern kept gets the note, before the download line.
 		RocInstall.print_note!(fx, Bool.False, Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }))
 		item = Roots.item(roots, Item.Toolchain(id))
-		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: id, id, item, asset, sha, system, source: Nightlies.digest_source(list) }
+		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: id, id, item, asset, sha, system, source: Nightlies.digest_source(found.via) }
 		Ok(Download({ id, size: asset.size, ctx }))
 	}
 

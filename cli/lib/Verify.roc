@@ -67,7 +67,7 @@ Verify :: [].{
 				Ok(done) => {
 					shown.out!("verified: the tuple passes. No project file was written.\n")
 					if args.json {
-						fx.out!(Out.json_ok({ command: args.typed, data: Report.data(done.outcome) }))
+						fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(Report.data(done.outcome), done.fell) }))
 					}
 					ShareHook.send!(fx, done.ran, 0)
 					0
@@ -79,7 +79,7 @@ Verify :: [].{
 }
 
 # Steps 2 to 8: the environment, the project, the record, the compiler, and `Resolve.verify!`.
-flow! : Fx, Args, Opts => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
+flow! : Fx, Args, Opts => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 flow! = |fx, args, opts| {
 	start = Install.begin!(fx, args)?
 	Install.check_member(Bool.False, start.project)?

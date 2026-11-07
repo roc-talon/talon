@@ -283,7 +283,7 @@ release_list_with! = |fx, args, facts, via| match IndexQuery.setting({ flag: arg
 			Ok(selector) => Ok({ selector, text: selector_text(selector) })
 			Err(None) => Err(None)
 		}
-		read = FullName.read!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: args.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [] })?
+		read = FullName.read_via!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: args.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: IndexQuery.source({ flag: args.registry, env: facts.net.registry, config: via.registry }) })?
 		match read {
 			NoMatch => Ok({ list: [], pages: [] })
 			SourceBuild => Err(Fail.new(Internal, "${facts.name}: a source build is not read from the registry"))

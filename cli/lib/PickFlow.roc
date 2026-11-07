@@ -4,6 +4,7 @@ import ClosureIndex
 import ClosureRequest
 import Consent
 import Fail
+import Fallback
 import Fx
 import FullName
 import Help
@@ -63,12 +64,14 @@ PickFlow :: [].{
 
 	## Slice 206d2 (Registry R-AP16 second query, R-AP19, Design Q403, Q404, Q460): what the second closure query of a held move needs, from the first query of a run with a registry. `Err(None)` with no registry answer.
 	## `first` is the answer that the first search used (the answer of `UnknownValues.settle!`, not hidden), `compilers` the window of the first request, `keep` its `hashes`, `user` the N of `--snapshot log:N`, `anchors` the anchor URLs (R-DI11).
-	Second : { origin : Str, first : Wire.Answer, compilers : Try(Wire.Window, [None]), keep : List(Str), user : Try(U64, [None]), anchors : List(Str) }
+	Second : { origin : Str, first : Wire.Answer, compilers : Try(Wire.Window, [None]), keep : List(Str), user : Try(U64, [None]), anchors : List(Str), source : Str }
 
 	## Slice 039: `free` are the values of the compiler slot (`NightlyFlow.Plan.free`). Slice 039b: `optional` are the optional compilers (`NightlyFlow.Plan.optional`). Slice 039c: `newest` is N (`NightlyFlow.Plan.newest`).
 	prepare! : Fx, ResolveBase.Request, Loaded, { vars : List(Vars.Var), wants : List(Vars.Want) }, Settings, Try(U64, [None]), Try(Str, [None]), Try(List(Str), [Held]), Try(Str, [NoneKnown]), { ids : List(Str), sizes : List({ id : Str, size : U64 }) } => Try(PickFlow.Ready, Fail)
-	prepare! = |fx, request, loaded, built, settings, snapshot, held, free, newest, optional| {
-		asked = PickAsk.asked!(fx, request, loaded, built.vars)?
+	prepare! = |fx, asked_request, loaded, built, settings, snapshot, held, free, newest, optional| {
+		asked = PickAsk.asked!(fx, asked_request, loaded, built.vars)?
+		# R-RG9: after a fall back the run is `direct` (no registry query, no share send).
+		request = ResolveBase.routed(asked_request, asked.fell)
 		# A named header entry is moved as `update X@sel` does it (R-AD22).
 		command = match request.command {
 			Upgrade => if NightlyPlan.scope(request.names).who == None NightlyOnly else Upgrade
@@ -105,8 +108,10 @@ PickFlow :: [].{
 		stale = live_wants!(fx, request, built.wants)?
 		known = built.vars.join_map(|v| v.uses.map(|u| u.url))
 		# Slice 206f (R-AD35, R-AD36, R-AD37, Design Q545): a new full name is read from the registry (R-AP1) before the first closure query: the group of the query is known only after that read.
-		items = fresh_items!(fx, request, asked.fresh, known)?
-		queried = query!(fx, request, loaded, IndexQuery.groups(scoped).concat(items))?
+		fresh = fresh_items!(fx, request, asked.fresh, known, !asked.answered)?
+		# R-RG9: after a fall back the run is `direct`.
+		routed = ResolveBase.routed(request, fresh.fell)
+		queried = query!(fx, routed, loaded, IndexQuery.groups(scoped).concat(fresh.items), !asked.answered and !fresh.answered)?
 		indexed = queried.request
 		# Slice 206d2 (R-SP23, R-DI11): a fixed anchor of the closure answer is never movable.
 		held_scope = IndexQuery.held_anchors({ scoped, anchors: queried.anchors })
@@ -124,7 +129,7 @@ PickFlow :: [].{
 	## Slice 206e2 (R-AP16, R-AP74, R-RG4, R-DI1, R-CM6): the first closure query of a command that only reports (`tln outdated`), with its `groups` (`IndexQuery.report_groups`) and the window of `request` (`Report`).
 	## The calls of `query!` (the guard, one query, `settle!`). The result is the request with the index of the answer. A request that is not `Read`: as it is (no call).
 	report_query! : Fx, ResolveBase.Request, Loaded, List(ClosureRequest.Group) => Try(ResolveBase.Request, Fail)
-	report_query! = |fx, request, loaded, groups| Ok(query!(fx, request, loaded, groups)?.request)
+	report_query! = |fx, request, loaded, groups| Ok(query!(fx, request, loaded, groups, Bool.True)?.request)
 
 	## The oracle loop of the first search, and the second search of a held move (R-SP16, R-DI1). `state` has what the command read and probed before: the first call has `PickLoop.start`, the call after a dropped tuple has the facts, the count and the dropped tuples.
 	search! : Fx, ResolveBase.Request, PickFlow.Ready, PickLoop.State => Try(Picked, Fail)
@@ -177,8 +182,8 @@ PickFlow :: [].{
 # Slice 206f (R-AD35 steps 1 to 5, R-AD36, R-AD37, Design Q430, Q545): the registry read of each new full name of `add` and `install <names>` (`FullName.read!`, the guard included), in the order of the names, and the one item of the closure query for each (`FullName.closure_item`).
 # A run with no registry (`direct`) makes no call and gives no item. `--offline` has the copies only (`Offline`: `read!` sends no request). A selector that keeps no release is `Add.no_release` (the text of `add`, with the close versions of the answer).
 # `SourceBuild` and the compiler selectors do not reach here: `Ref.parse` stops them for `add` (`Scope.Install`).
-fresh_items! : Fx, ResolveBase.Request, List(ResolveBase.Fresh), List(Str) => Try(List(ClosureRequest.Group), Fail)
-fresh_items! = |fx, request, fresh, known| {
+fresh_items! : Fx, ResolveBase.Request, List(ResolveBase.Fresh), List(Str), Bool => Try({ items : List(ClosureRequest.Group), fell : Try(Fallback.Fell, [None]), answered : Bool }, Fail)
+fresh_items! = |fx, request, fresh, known, first| {
 	source = match (request.registry, request.index) {
 		(Read(query), _) => Ok({
 			origin: query.origin,
@@ -186,12 +191,13 @@ fresh_items! = |fx, request, fresh, known| {
 				Log(n) => Ok(n)
 				_ => Err(None)
 			},
+			source: query.source,
 		})
-		(_, Offline(origin)) => Ok({ origin, snapshot: Err(None) })
+		(_, Offline(origin)) => Ok({ origin, snapshot: Err(None), source: "" })
 		_ => Err(Direct)
 	}
 	match source {
-		Err(Direct) => Ok([])
+		Err(Direct) => Ok({ items: [], fell: Err(None), answered: Bool.False })
 		Ok(registry) => {
 			var $items = no_items
 			for f in fresh {
@@ -199,7 +205,15 @@ fresh_items! = |fx, request, fresh, known| {
 					Ok(selector) => Ok({ selector, text: f.text })
 					Err(None) => Err(None)
 				}
-				read = FullName.read!(fx, { net: request.net, roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, name: f.name, selector: typed, snapshot: registry.snapshot, known })?
+				read = match FullName.read_via!(fx, { net: request.net, roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, name: f.name, selector: typed, snapshot: registry.snapshot, known, source: registry.source }) {
+					Ok(got) => got
+					# R-RG9 (Design Q601): the full-name read is the first registry request of the run: no answer from the built-in default, the run goes on in `direct`.
+					Err(fail) => {
+						# R-RG9 row 2: only the first registry request of the run falls back. A later one (`$items` has an answer, or the short names had one) is exit 15.
+						if !first or !$items.is_empty() return Err(fail)
+						return Ok({ items: [], fell: Ok(Fallback.decide!(fx, fail, registry.origin)?), answered: Bool.False })
+					}
+				}
 				match read {
 					Found(releases) => match FullName.closure_item({ releases, selector: f.selector, text: f.text, range: f.range }) {
 						Ok(item) => {
@@ -211,7 +225,7 @@ fresh_items! = |fx, request, fresh, known| {
 					SourceBuild => return Err(Fail.new(Internal, "${f.name}: a source build is not read from the registry"))
 				}
 			}
-			Ok($items)
+			Ok({ items: $items, fell: Err(None), answered: !$items.is_empty() })
 		}
 	}
 }
@@ -369,8 +383,8 @@ short_failure = |from, text| match Ref.parse(text, Scope.Install, Bool.False) {
 # Slice 206e (Design Q469): with no group and no hash (no source) there is no guard and no query: the request as it is.
 # Each value whose `anchor_note` is `Ok` (no release of its group in the answer of `settle!`) prints `<alias>: <note>` on stdout, in the order of `unknown`, and is an anchor (`anchors`: its URL).
 # Slice 206e2: `groups` are given by the caller (`IndexQuery.groups` of the scope, or `IndexQuery.report_groups` for `tln outdated`).
-query! : Fx, ResolveBase.Request, Loaded, List(ClosureRequest.Group) => Try({ request : ResolveBase.Request, anchors : List(Str), second : Try(PickFlow.Second, [None]) }, Fail)
-query! = |fx, request, loaded, groups| match request.registry {
+query! : Fx, ResolveBase.Request, Loaded, List(ClosureRequest.Group), Bool => Try({ request : ResolveBase.Request, anchors : List(Str), second : Try(PickFlow.Second, [None]) }, Fail)
+query! = |fx, request, loaded, groups, is_first| match request.registry {
 	Read(query) => {
 		entries = loaded.members.join_map(|m| m.locked.rows.map(|r| r.value))
 		sources = IndexQuery.sources({ groups, entries })
@@ -384,12 +398,19 @@ query! = |fx, request, loaded, groups| match request.registry {
 			Ok(wire) => (wire.hashes, wire.compilers)
 			Err(_) => ([], Err(None))
 		}
-		first = ClosureIndex.query!(fx, { origin: query.origin, version: Help.version, facts })?
+		# R-RG9 (Design Q601): the first request of a run with the built-in default gives no answer: the run goes on in `direct`.
+		first = match ClosureIndex.query!(fx, { origin: query.origin, version: Help.version, facts, source: query.source }) {
+			Ok(answer) => answer
+			Err(fail) => {
+				if !is_first return Err(fail)
+				return Ok({ request: { ..request, registry: Fell(Fallback.decide!(fx, fail, query.origin)?) }, anchors: [], second: Err(None) })
+			}
+		}
 		log = match query.snapshot {
 			Log(_) => Bool.True
 			_ => Bool.False
 		}
-		settled = UnknownValues.settle!(fx, { origin: query.origin, version: Help.version, roots: request.roots, facts, first, urls: entries, snapshot: log })?
+		settled = UnknownValues.settle!(fx, { origin: query.origin, version: Help.version, roots: request.roots, facts, first, urls: entries, snapshot: log, source: query.source })?
 		rows = loaded.members.join_map(|m| m.locked.rows)
 		var $anchors = []
 		for v in settled.values {
@@ -406,7 +427,7 @@ query! = |fx, request, loaded, groups| match request.registry {
 			Log(n) => (LogSnapshot.hide_above(settled.answer, { n, keep }), Ok(n))
 			_ => (settled.answer, Err(None))
 		}
-		second = { origin: query.origin, first: settled.answer, compilers, keep, user, anchors: $anchors }
+		second = { origin: query.origin, first: settled.answer, compilers, keep, user, anchors: $anchors, source: query.source }
 		Ok({ request: { ..request, index: Answer({ origin: query.origin, answer: shown }) }, anchors: $anchors, second: Ok(second) })
 	}
 	_ => Ok({ request, anchors: [], second: Err(None) })
@@ -456,7 +477,7 @@ second_index! = |fx, request, ready, kept| match (ready.second, request.index) {
 	(Ok(q), Answer(a)) => {
 		answer = match kept {
 			Ok(got) => got
-			Err(NotRead) => LogSnapshot.second!(fx, { origin: q.origin, version: Help.version, first: q.first, compilers: q.compilers, groups: IndexQuery.second_groups(ready.scoped), keep: q.keep, user: q.user })?
+			Err(NotRead) => LogSnapshot.second!(fx, { origin: q.origin, version: Help.version, first: q.first, compilers: q.compilers, groups: IndexQuery.second_groups(ready.scoped), keep: q.keep, user: q.user, source: q.source })?
 		}
 		names = ready.scoped
 			.keep_if(|s| s.movable)

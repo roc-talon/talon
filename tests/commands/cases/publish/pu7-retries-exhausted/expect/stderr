@@ -1,2 +1,2 @@
 note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
-tln: error[network]: the registry answered 502 (/errors/upstream) 4 times. Try again later.
+tln: error[network]: the registry http://127.0.0.1:9 (TALON_REGISTRY) answered 502 (/errors/upstream) 4 times. Try again later.

@@ -1,0 +1,3 @@
+GET /api/repos/acme/roc-thing 200
+GET /api/repos/acme/roc-thing/releases?per_page=100 200
+GET /api/repos/acme/pfx 200

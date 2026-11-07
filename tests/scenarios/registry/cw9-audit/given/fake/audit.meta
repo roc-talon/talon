@@ -1,0 +1,7 @@
+status 200
+header Content-Type: application/json
+header Cache-Control: max-age=300
+header ETag: "h1"
+require user-agent: tln/0.0.1
+require cache-control: no-cache
+require-none authorization

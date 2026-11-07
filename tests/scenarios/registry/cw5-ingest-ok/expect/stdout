@@ -1,0 +1,7 @@
+== add acme/roc-thing --no-check --dry-run
+check: skipped
+$PROJECT/main.roc
+  + thing: acme/roc-thing 1.2.0
+resolved at log:3, 0 probes
+dry run: nothing was written
+exit 0

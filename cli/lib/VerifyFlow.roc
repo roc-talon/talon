@@ -29,7 +29,7 @@ Picked : ResolveBase.Picked
 VerifyFlow :: [].{
 
 	## The flow of `Resolve.verify!`. The differences from `install!` are in the doc of `Resolve.verify!`.
-	verify! : Fx, Request => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
+	verify! : Fx, Request => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 	verify! = |fx, asked| {
 		start = ResolveLoad.prepared!(fx, asked, Verify)?
 		# Slice 206e (R-AL2, R-RG1): the registry setting after the load, as `install`.
@@ -59,15 +59,15 @@ VerifyFlow :: [].{
 		# `ready.request` has the index of the query.
 		# Slice 206e4 (R-SH4, Design Q533, Q537): `verify` prints no index note, and a failure after the closure answer carries the run for the send.
 		ran = ShareHook.ran_of(ready.request, { notes: Bool.False, second: Err(NotRead) })
-		picked = PickFlow.search!(fx, ready.request, ready, PickLoop.start(ready.setup, ready.prepared.facts)).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
+		picked = PickFlow.search!(fx, ready.request, ready, PickLoop.start(ready.setup, ready.prepared.facts)).map_err(|fail| Fail.with_fell(ShareHook.attach(fail, ran, Bool.False), ResolveBase.fell_of(ready.request)))?
 		done = verified!(fx, ready.request, start.loaded, picked, start.decision).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
 		outcome = done.outcome
 		# Slice 218 (R-SM1): the builds of ladder step 3 go to the run for the smoke build before the send.
 		sent = ran.map_ok(|found| { ..found, built: done.built })
 		# R-DT5 (Design Q438): the log size of a run with a registry answer, as `InstallFlow.finish!`.
 		match InstallFlow.log_size(ready.request) {
-			Ok(n) => Ok({ outcome: { ..outcome, at: if picked.facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent })
-			Err(None) => Ok({ outcome, ran: sent })
+			Ok(n) => Ok({ outcome: { ..outcome, at: if picked.facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent, fell: ResolveBase.fell_of(ready.request) })
+			Err(None) => Ok({ outcome, ran: sent, fell: ResolveBase.fell_of(ready.request) })
 		}
 	}
 }

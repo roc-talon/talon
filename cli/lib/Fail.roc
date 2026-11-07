@@ -15,6 +15,12 @@ Fail := {
 	## Slice 222 (Design Q542): `Ok(range)` for the refusal of `Consent.range_refused` (no installed compiler in the range of `[toolchain] roc`), so a command can read the range as data. Never in `--json`.
 	refused_range : Try(Str, [None]) ?? Err(None),
 
+	## Slice 225 (R-RG9, Design Q601): `Ok(cause)` for a read that gave no answer (or a 5xx) from the built-in default registry: the command can go on in `direct`. Never in `--json`.
+	fallback : Try(Str, [None]) ?? Err(None),
+
+	## Slice 225 (R-RG9, Design Q601 item 3): `Ok` for a failure of a run that fell back to `direct`. `Out` puts the note `registry-direct` in `error.details.notes` (`--json`), so each command has it from this one field.
+	fell : Try({ registry : Str, cause : Str }, [None]) ?? Err(None),
+
 	## Slice 209b (R-SM6, R-EP7, Design Q557): `Ok` for the drop of a tuple for a `bot` smoke fail of the build key (the release URL `id` of the platform, its `hash`, the compiler `nightly` and the build `target`). The command gives the smoke checks of that platform to the next search (`Matrix.smoke_checks`). Never in `--json`.
 	smoke : Try({ id : Str, hash : Str, nightly : Str, target : Str }, [None]) ?? Err(None),
 }.{
@@ -45,6 +51,13 @@ Fail := {
 	## Slice 209b: the failure of a tuple that carries the key of its smoke fail (`smoke`).
 	with_smoke : Fail, { id : Str, hash : Str, nightly : Str, target : Str } -> Fail
 	with_smoke = |fail, key| { ..fail, smoke: Ok(key) }
+
+	## Slice 225: the failure of a run that fell back (`fell` `Ok`), else the failure as it is.
+	with_fell : Fail, Try({ registry : Str, cause : Str }, [None]) -> Fail
+	with_fell = |fail, fell| match fell {
+		Ok(f) => { ..fail, fell: Ok(f) }
+		Err(None) => fail
+	}
 
 	## The last stderr line of a failure: `tln: error[<kind>]: <message>` (R-E4).
 	line : Fail -> Str

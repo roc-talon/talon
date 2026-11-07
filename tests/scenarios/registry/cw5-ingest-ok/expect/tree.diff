@@ -1,0 +1,30 @@
+--- home/.cache/roc/talon/index/github/acme/pfx/repo.json
++++ home/.cache/roc/talon/index/github/acme/pfx/repo.json
+@@ -0,0 +1 @@
++{"id":2,"full_name":"acme/pfx","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/roc-thing/1.json
++++ home/.cache/roc/talon/index/github/acme/roc-thing/1.json
+@@ -0,0 +1 @@
++[{"tag_name":"1.2.0","draft":false,"prerelease":false,"published_at":"2026-10-20T12:00:00Z","assets":[{"name":"7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","size":372,"browser_download_url":"https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst"}]}]
+\ No newline at end of file
+--- home/.cache/roc/talon/index/github/acme/roc-thing/repo.json
++++ home/.cache/roc/talon/index/github/acme/roc-thing/repo.json
+@@ -0,0 +1 @@
++{"id":501,"full_name":"acme/roc-thing","private":false,"fork":false}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/56bbb00602abdada8a71da3dd8819882.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/56bbb00602abdada8a71da3dd8819882.json
+@@ -0,0 +1 @@
++{"releases":[{"group":"github.com/acme/roc-thing/releases/download/{v}/","hash":"7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J","log_index":3,"provenance":["ingest"],"published_at":1792497600000,"repo":"acme/roc-thing","roc_version":"nightly-2026-10-31-f7bef6b","series":"1","tag":"1.2.0","url":"https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst","version":"1.2.0","withdrawn":null,"yank_reason":null,"yanked":false}],"checked":{"checked_at":null,"name":"acme/roc-thing","stale":true},"repos":[{"name":"acme/roc-thing","state":"active","state_at":1793534400000,"successor":null}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/56bbb00602abdada8a71da3dd8819882.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/56bbb00602abdada8a71da3dd8819882.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/roc-thing/releases
++etag "f433269952aef3b1b3f77ede328dc43d"
++max-age 60
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/main.roc","last_use":1793534400}]}

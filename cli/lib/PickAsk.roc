@@ -2,6 +2,7 @@ import Add
 import Alias
 import Closure
 import Fail
+import Fallback
 import Fx
 import Help
 import Ident
@@ -20,6 +21,18 @@ PickAsk :: [].{
 	# (R-SP18): a header alias, or a full name that has one entry in the current member (D5), or a new entry.
 	asked! : Fx, ResolveBase.Request, ResolveBase.Loaded, List(Vars.Var) => Try(ResolveBase.Asked, Fail)
 	asked! = |fx, request, loaded, vars| {
+		# Slice 225 (R-RG9): the short-name read is the first registry request of the run, so it can fall back to `direct`. A failure after it carries the note.
+		current = request.project.file ?? ""
+		scope = if request.command != Install Scope.Project else Scope.Install
+		entities = if request.command != Install entities_of(vars, loaded.members) else entities_of(in_file(vars, current), loaded.members.keep_if(|m| m.file == current))
+		texts = if request.command == Upgrade request.names.keep_if(|name| name != "roc") else request.names
+		got = short_names!(fx, request, scope, entities, texts)?
+		asked = asked_with!(fx, request, loaded, vars, got.entries).map_err(|fail| Fail.with_fell(fail, got.fell))?
+		Ok({ ..asked, fell: got.fell, answered: !got.entries.is_empty() })
+	}
+
+	asked_with! : Fx, ResolveBase.Request, ResolveBase.Loaded, List(Vars.Var), List({ ref : Ref, lookup : Lookup, matched : Try(Str, [None]) }) => Try(ResolveBase.Asked, Fail)
+	asked_with! = |fx, request, loaded, vars, shorts| {
 		current = request.project.file ?? ""
 		scope = if request.command != Install Scope.Project else Scope.Install
 		rows = ResolveBase.current_rows(loaded.members, current)
@@ -31,7 +44,6 @@ PickAsk :: [].{
 		var $shorted = 0
 		texts = if request.command == Upgrade request.names.keep_if(|name| name != "roc") else request.names
 		# Slice 206f (R-AD34, R-I8, Design Q223): with a registry, the short names of the command are read with one request, before any other registry call.
-		shorts = short_names!(fx, request, scope, entities, texts)?
 		for text in texts {
 			parsed = Ref.parse(text, scope, Bool.False)?
 			short = if shorts.is_empty() Err(None) else if Lookup.needs_registry(scope, parsed, entities) shorts.get($shorted).map_err(|_| None) else Err(None)
@@ -94,7 +106,7 @@ PickAsk :: [].{
 				}
 			}
 		}
-		Ok({ names: $names, picks: $picks, kept: $kept, fresh: $fresh })
+		Ok({ names: $names, picks: $picks, kept: $kept, fresh: $fresh, fell: Err(None), answered: Bool.False })
 	}
 
 	# R-SL5, R-AD22: the range that a selector gives to its variable. `Latest` is any version.
@@ -124,7 +136,7 @@ PickAsk :: [].{
 # Slice 206f (R-AD3 to R-AD5, R-AD34, R-I8, Design Q223): the short names of `add` and `install <names>` with a registry. A name that `Lookup.needs_registry` selects is a short name; all of them go in one `ShortNames.lookup!`, then `Lookup.registry_all`.
 # The `matched "<short>": <name>` lines are printed at once, in the order of the names (R-AD3). A failure prints its block on stderr and stops the command (exit 2, or 15 for `--offline` with no copy). No registry (`direct`), or a command other than `Install`: `[]`, no call.
 # The result has one entry for each short name, in the order of the command.
-short_names! : Fx, ResolveBase.Request, Scope, List(Lookup.Entity), List(Str) => Try(List({ ref : Ref, lookup : Lookup, matched : Try(Str, [None]) }), Fail)
+short_names! : Fx, ResolveBase.Request, Scope, List(Lookup.Entity), List(Str) => Try({ entries : List({ ref : Ref, lookup : Lookup, matched : Try(Str, [None]) }), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 short_names! = |fx, request, scope, entities, texts| {
 	source = match (request.registry, request.index) {
 		(Read(query), _) => Ok({
@@ -133,21 +145,27 @@ short_names! = |fx, request, scope, entities, texts| {
 				Log(n) => Ok(n)
 				_ => Err(None)
 			},
+			source: query.source,
 		})
-		(_, Offline(origin)) => Ok({ origin, snapshot: Err(None) })
+		(_, Offline(origin)) => Ok({ origin, snapshot: Err(None), source: "" })
 		_ => Err(Direct)
 	}
 	if request.command != Install {
-		return Ok([])
+		return Ok({ entries: [], fell: Err(None) })
 	}
 	match source {
-		Err(Direct) => Ok([])
+		Err(Direct) => Ok({ entries: [], fell: Err(None) })
 		Ok(registry) => {
 			refs = texts.keep_oks(|text| Ref.parse(text, scope, Bool.False)).keep_if(|ref| Lookup.needs_registry(scope, ref, entities))
 			if refs.is_empty() {
-				return Ok([])
+				return Ok({ entries: [], fell: Err(None) })
 			}
-			found = ShortNames.lookup!(fx, { roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, snapshot: registry.snapshot, shorts: refs.map(|ref| ref.name) })?
+			looked = ShortNames.lookup_via!(fx, { roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, snapshot: registry.snapshot, shorts: refs.map(|ref| ref.name), source: registry.source })
+			# R-RG9 (Design Q601): no answer from the built-in default at this first request: the run goes on as `direct`, which has no short names.
+			found = match looked {
+				Ok(list) => list
+				Err(fail) => return Ok({ entries: [], fell: Ok(Fallback.decide!(fx, fail, registry.origin)?) })
+			}
 			match Lookup.registry_all(scope, refs.map2(found, |ref, one| { ref, found: one })) {
 				Ok(entries) => {
 					for entry in entries {
@@ -156,7 +174,7 @@ short_names! = |fx, request, scope, entities, texts| {
 							Err(None) => {}
 						}
 					}
-					Ok(entries)
+					Ok({ entries, fell: Err(None) })
 				}
 				Err({ fail, block }) => {
 					if !block.is_empty() fx.err!(block)

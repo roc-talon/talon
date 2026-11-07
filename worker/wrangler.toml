@@ -4,6 +4,9 @@ compatibility_date = "2026-10-01"
 # enable_request_signal and global_fetch_strictly_public: cloudflare-workers/README.md "Use it in your project", step 4.
 compatibility_flags = ["enable_request_signal", "global_fetch_strictly_public"]
 
+# The registry host (Design Q208, R-RG2, slice 121): a Worker custom domain on the zone roc-talon.org (the root is for the website).
+routes = [{ pattern = "registry.roc-talon.org", custom_domain = true }]
+
 # D1 (slice 101: the binding that main.roc declares). The id is the remote database (slice 121, `wrangler d1 create talon-registry`, 2026-11-06). A local run makes its own empty database.
 # The migrations are in ../sql (slice 102).
 [[d1_databases]]

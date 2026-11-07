@@ -251,3 +251,7 @@ Rule: R-MX18 items 13 and 14 (one `Bot.failure`). With those two edits (or no an
 | `ciscan.py compatbot .` | exit 0 |
 | The workflow | Local file only. Not pushed, not run |
 | Later slices | The bot uses `tln probe --smoke` (218b) for R-MX10 and the platform pairs of R-MX13, and the range facts (217b) for the range search (Q574): a later slice |
+
+## Human review (the user, 2026-11-06)
+
+The user accepted all the proposed output texts and `--json` fields of this slice (TW24, R-OUT2). They are final.

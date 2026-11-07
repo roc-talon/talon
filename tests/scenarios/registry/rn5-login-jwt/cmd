@@ -1,0 +1,5 @@
+# BLOCKED: see skip-reason. Remove the tag blocked when a real GitHub token can be given to a test (never a real token in a test).
+# R-AP37 R-SH7 R-SH12 R-RG8 (slice 225, L4): `tln share login` against the live host: the device flow of GitHub, then `POST /v1/login`; the registry answers the JWT with iss and aud = AUDIENCE = the default host (Registry R-TP3 row 2). The case needs a person to approve the device code and a GitHub account, so it is written for the day the host resolves and a person runs it. It sends no GitHub token of the caller (R-RG3).
+export TALON_REGISTRY=https://registry.roc-talon.org
+tln share login
+tln share status

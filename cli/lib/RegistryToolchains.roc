@@ -127,7 +127,7 @@ RegistryToolchains :: [].{
 	## | 3b | An answer: 200 gives `page`. A 3xx, and a 304 (no `If-None-Match` was sent): `RegistryCache.unusable` (exit 15). Another status: `Registry.refuse` with method `Get`. No answer: `Registry.no_answer` (`no answer in 20 s` for a timeout). Any failure ends the read: no write, so the file never has a gap (R-IX4) |
 	## | 4 | New rows and no failure: one `write_atomic!` of `[{ path, content: file_text_keep(merge, extras) }]` (the unknown members of the kept file stay, R-TF2), after the last page. No new row: no write (also when the file is missing: no empty file). A failed write: kind `Environment`, `cannot write <path>` |
 	## | 5 | The result: `Live` and the merged rows |
-	list! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool } => Try({ rows : List(Row), source : Source }, Fail)
+	list! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, source ?: Str } => Try({ rows : List(Row), source : Source }, Fail)
 	list! = |fx, facts| {
 		file = RegistryToolchains.path({ roots: facts.roots, origin: facts.origin })
 		kept = kept_rows!(fx, file, facts.origin)
@@ -198,7 +198,7 @@ with_extra : Str, Str -> Str
 with_extra = |row, extra| if extra.is_empty() row else "${row.drop_suffix("}")},${extra}}"
 
 # Step 2 of `list!`: `--offline` reads only the file. Its age is its modification time.
-offline_list! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool }, Str, List(RegistryToolchains.Row) => Try({ rows : List(RegistryToolchains.Row), source : RegistryToolchains.Source }, Fail)
+offline_list! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, source ?: Str }, Str, List(RegistryToolchains.Row) => Try({ rows : List(RegistryToolchains.Row), source : RegistryToolchains.Source }, Fail)
 offline_list! = |fx, facts, file, rows| if rows.is_empty() {
 	Ok({ rows, source: Missing })
 } else {
@@ -215,7 +215,7 @@ offline_list! = |fx, facts, file, rows| if rows.is_empty() {
 }
 
 # Step 3 of `list!`: the pages one after the other. Any failure ends the read (no write, so the file never has a gap).
-fetch_pages! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool }, U64 => Try(List(RegistryToolchains.Row), Fail)
+fetch_pages! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, source ?: Str }, U64 => Try(List(RegistryToolchains.Row), Fail)
 fetch_pages! = |fx, facts, start| {
 	var $after = start
 	var $fresh = []
@@ -236,7 +236,7 @@ fetch_pages! = |fx, facts, start| {
 }
 
 # One request of a page: 200 is a page, 3xx (and 304) is no use, any other status is a refusal.
-fetch_page! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool }, U64 => Try(Wire.Page, Fail)
+fetch_page! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, source ?: Str }, U64 => Try(Wire.Page, Fail)
 fetch_page! = |fx, facts, after| {
 	url = RegistryToolchains.page_url({ origin: facts.origin, after })
 	headers = RegistryCache.read_headers({ version: facts.version, etag: Err(None), newest: Bool.False, bookmark: Err(None) })
@@ -247,7 +247,7 @@ fetch_page! = |fx, facts, after| {
 				Timeout => "no answer in 20 s"
 				Failed(t) => t
 			}
-			return Err(Registry.no_answer({ origin: facts.origin, why: text }))
+			return Err(Registry.no_answer({ origin: facts.origin, why: text, source: facts.?source ?? "" }))
 		}
 	}
 	if reply.status == 200 {
@@ -255,6 +255,6 @@ fetch_page! = |fx, facts, after| {
 	} else if reply.status >= 300 and reply.status < 400 {
 		Err(RegistryCache.unusable({ origin: facts.origin, path: url.drop_prefix(facts.origin), status: reply.status }))
 	} else {
-		Err(Registry.refuse({ origin: facts.origin, version: facts.version, method: Get, reply: { status: reply.status, body: reply.body }, retry_after: Registry.retry_after_of(reply.headers) }))
+		Err(Registry.refuse({ origin: facts.origin, version: facts.version, method: Get, reply: { status: reply.status, body: reply.body }, retry_after: Registry.retry_after_of(reply.headers), source: facts.?source ?? "" }))
 	}
 }

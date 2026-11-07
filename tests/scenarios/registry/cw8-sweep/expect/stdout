@@ -1,0 +1,36 @@
+missing: 200
+cache-control: no-store
+content-type: application/json
+etag: 0
+fake meta:
+status 200
+header Content-Type: application/json
+header Cache-Control: no-store
+require user-agent: tln/0.0.1
+require cache-control: no-cache
+require-none authorization
+{"log_size":5,"members":3,"missing":["3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3","4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4"],"sweep":null}
+diff of the body (real <, fake >):
+3c3
+< "log_size":5
+---
+> "log_size":8
+done: 200
+{"log_size":5,"members":3,"missing":[],"sweep":{"nightly":"nightly-2026-10-30-ddddddd","target":"any","time":1792062000000,"upto_log_index":5}}
+diff of the body (real <, fake >):
+1c1
+< "log_size":5
+---
+> "log_size":8
+4c4
+< "nightly":"nightly-2026-10-30-ddddddd"
+---
+> "nightly":"nightly-2026-10-29-aaaaaaa"
+7,8c7,8
+< "time":1792062000000
+< "upto_log_index":5
+---
+> "time":1767225609000
+> "upto_log_index":8
+no tag: 404
+{"detail":"no toolchain for the tag nightly-2026-10-31-eeeeeee","status":404,"title":"Not found","type":"/errors/not-found"}

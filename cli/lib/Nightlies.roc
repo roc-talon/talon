@@ -1,6 +1,7 @@
 import Age
 import Db
 import Fail
+import Fallback
 import Facts
 import Fx
 import Clock
@@ -285,9 +286,9 @@ Nightlies :: [].{
 	## Slice 204: the registry source of the list, next to `list!` (the GitHub source). `origin` is the registry, `version` the `tln` version, `log` is `--snapshot log:N` (R-AP19). A command picks the source: slice 206.
 	## The calls: those of `RegistryToolchains.list!`, then (rows to releases with `RegistryToolchains.visible` and `from_rows`) `Facts.pin_all!` with `registry_pins`: the `compat.db` calls follow the registry calls, for the visible rows only (Q4 of slice 204: a hidden row is not seen), also for a list from the file.
 	## `releases`, `changed` and `dropped` are as in `list!` (R-CV6: a tag with a changed sha256 is no candidate, whatever the source of the first sha256 was). `source` is the one of `RegistryToolchains.list!`. The failure of `RegistryToolchains.list!` or of `pin_all!` is the failure.
-	list_registry! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, host : Host, log : Try(U64, [None]) } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Fail)
+	list_registry! : Fx, { roots : Roots, origin : Str, version : Str, offline : Bool, host : Host, log : Try(U64, [None]), source ?: Str } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Fail)
 	list_registry! = |fx, facts| {
-		got = RegistryToolchains.list!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, offline: facts.offline })?
+		got = RegistryToolchains.list!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, offline: facts.offline, source: facts.?source ?? "" })?
 		shown = RegistryToolchains.visible({ rows: got.rows, log: facts.log })
 		found = Nightlies.from_rows({ host: facts.host, rows: shown })
 		pinned = Facts.pin_all!(fx, { roots: facts.roots, listed: Nightlies.registry_pins({ host: facts.host, releases: found }) })?
@@ -298,13 +299,25 @@ Nightlies :: [].{
 
 	## Slice 206e2 (R-CV1, R-IX4, R-CV5): where a command reads its compiler list. `Direct`: the GitHub list (`list!`). `Registry`: the rows of a registry (`list_registry!`, `log` is `--snapshot log:N`).
 	## `kept` is true when the command has read the registry list once already: the read uses only the kept file (`offline` true, no request), so the command sends one `GET /v1/toolchains` (R-IX4).
-	Source : [Direct, Registry({ origin : Str, version : Str, log : Try(U64, [None]), kept : Bool })]
+	Source : [Direct, Registry({ origin : Str, version : Str, log : Try(U64, [None]), kept : Bool, source : Str, first : Bool })]
 
 	## Slice 206e2: the list of `source`: `list!` for `Direct`, `list_registry!` for `Registry` (offline when `kept`). The result and the failures are those of the function.
-	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Fail)
+	## Slice 225 (R-RG9): `via` is the source that gave the list, for the `digest` of its rows (`digest_source`): `Direct` after a fall back.
+	via : { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Nightlies.Source, Try(Fallback.Fell, [None]) -> { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }
+	via = |got, via, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via, fell }
+
+	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
 	list_of! = |fx, facts| match facts.source {
-		Direct => Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })
-		Registry(r) => Nightlies.list_registry!(fx, { roots: facts.roots, origin: r.origin, version: r.version, offline: facts.offline or r.kept, host: facts.host, log: r.log })
+		Direct => Ok(Nightlies.via(Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })?, Direct, Err(None)))
+		Registry(r) => match Nightlies.list_registry!(fx, { roots: facts.roots, origin: r.origin, version: r.version, offline: facts.offline or r.kept, host: facts.host, log: r.log, source: r.source }) {
+			Ok(listed) => Ok(Nightlies.via(listed, facts.source, Err(None)))
+			Err(fail) => {
+				# R-RG9 (Design Q601): the first request of a run gives no answer from the built-in default: the list is the GitHub list. `--snapshot log:N` needs the registry.
+				if r.log != Err(None) or !r.first return Err(fail)
+				fell = Fallback.decide!(fx, fail, r.origin)?
+				Ok(Nightlies.via(Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })?, Direct, Ok(fell)))
+			}
+		}
 	}
 
 	## R-CV5 (slice 206e2): the `sha256_source` of a compiler of the list of `source`: `GithubDigest` for `Direct`, `Registry` for a registry row.

@@ -120,7 +120,7 @@ Update :: [].{
 			shown.out!("dry run: nothing was written\n")
 		}
 		if args.json {
-			fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.ran) }))
+			fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(ShareHook.with_index_notes(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.ran), done.fell) }))
 		}
 	}
 }

@@ -202,3 +202,7 @@ Code: `ProbeSmokeFlow.roc` (URL with no selectable compiler: `NoRank.ensure!` wi
 | L2 | 515 passed, 0 failed |
 | L3 (`JOBS=1`) | pass (81.9 s, over the 60 s budget: warning) |
 | Not tested | Q592 (no queue row) and Q593 (a non-nightly id), and the "newest with a recorded pass" half of Q597 |
+
+## Human review (the user, 2026-11-06)
+
+The user accepted all the proposed output texts and `--json` fields of this slice (TW24, R-OUT2). They are final.

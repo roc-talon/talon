@@ -61,7 +61,7 @@ OutdatedFlow :: [].{
 					Err(None) => []
 				}
 				if args.json {
-					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(Outdated.data(done.members), done.ran) }))
+					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(Out.with_fell_member(Outdated.data(done.members), done.fell), done.ran) }))
 				} else {
 					for member in done.members {
 						fx.out!(Outdated.text(member))
@@ -83,7 +83,7 @@ OutdatedFlow :: [].{
 Pending : { file : Str, rows : List({ row : Outdated.Row, hash : Str }), fixed : List(Str) }
 
 # Steps 2 to 8 of the table above.
-flow! : Fx, Args => Try({ members : List(Outdated.Member), ran : Try(Fail.Ran, [None]) }, Fail)
+flow! : Fx, Args => Try({ members : List(Outdated.Member), ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 flow! = |fx, args| {
 	start = Install.begin!(fx, args)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
@@ -101,9 +101,10 @@ flow! = |fx, args| {
 	# Slice 206e2: with a registry the list comes first, then the query with the `Report` window.
 	(listed, request) = match set.registry {
 		Read(query) => {
-			list = PickLoop.first_releases!(fx, set)
+			read = PickLoop.first_releases!(fx, set)
+			list = read.releases
 			window = Report(ResolveBase.compiler_domain(set, loaded, settings, { releases: list, snapshot: query.snapshot }))
-			queried = PickFlow.report_query!(fx, { ..set, registry: Read({ ..query, window, listed: Bool.True }) }, loaded, IndexQuery.report_groups(vars))?
+			queried = PickFlow.report_query!(fx, ResolveBase.routed({ ..set, registry: Read({ ..query, window, listed: Bool.True }) }, read.fell), loaded, IndexQuery.report_groups(vars))?
 			(Ok(list), queried)
 		}
 		_ => (Err(NotRead), set)
@@ -111,7 +112,7 @@ flow! = |fx, args| {
 	# Slice 206e4 (R-SH4, Design Q533): a failure after the closure answer carries the run.
 	ran = ShareHook.ran_of(request, { notes: Bool.True, second: Err(NotRead) })
 	members = report!(fx, request, { names, built, shown, vars, settings, listed }).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
-	Ok({ members, ran })
+	Ok({ members, ran, fell: ResolveBase.fell_of(request) })
 }
 
 # Steps 9 to the end of the table above: the candidates, the compiler list and the facts of the rows that are behind.

@@ -1,5 +1,6 @@
 status 200
 header Content-Type: application/json
-header Cache-Control: no-store
+header Cache-Control: max-age=60
+header ETag: "a1"
 require-none authorization
 require user-agent: tln/0.0.1

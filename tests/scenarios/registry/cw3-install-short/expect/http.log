@@ -1,0 +1,2 @@
+GET /api/repos/acme/known 200
+GET /api/repos/acme/pfx 200

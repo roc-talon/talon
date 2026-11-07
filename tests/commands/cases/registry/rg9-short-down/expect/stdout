@@ -1,0 +1,5 @@
+== add known@1.1.0 --no-check --dry-run --file p1/main.roc
+exit 2
+== add known@1.1.0 --no-check --dry-run --json --file p1/main.roc
+{"schema":1,"command":"add","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"'known' is a short name, and GitHub has no index of short names. Use the full name (owner/repo).","details":{"notes":[{"kind":"registry-direct","registry":"https://registry.roc-talon.org","cause":"could not resolve host: registry.roc-talon.org"}]}}}
+exit 2

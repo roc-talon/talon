@@ -1,0 +1,23 @@
+== update --no-check --dry-run --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --json --snapshot log:30 --file u1/main.roc
+{"schema":1,"command":"update","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"snapshot log:30 needs a registry: direct has no log. Use a UTC time, for example 2026-10-12T00:00:00Z."}}
+exit 2
+== update --no-check --dry-run --file u1/main.roc --registry https://registry.roc-talon.org
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  ~ parser: acme/parser 1.0.0 -> 1.2.0
+  ~ pf: acme/pfx 0.1.0 -> 0.1.1
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0

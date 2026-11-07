@@ -1,0 +1,10 @@
+--- project/main.roc
++++ project/main.roc
+@@ -1 +1 @@
+-package [] {}
++package [] { semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst" }
+--- project/talon.toml
++++ project/talon.toml
+@@ -0,0 +1,2 @@
++[dependencies]
++semver = "=0.2.0"

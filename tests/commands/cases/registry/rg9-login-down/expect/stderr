@@ -1,0 +1,7 @@
+A login ties this machine to your GitHub account.
+The results that this machine sent before move to the account, and the next ones count for it.
+The registry keeps them until you run `tln share forget`, or until their compiler is 12 months old. Then it keeps only the totals.
+Open http://127.0.0.1:8/login/device
+Enter the code: WDJB-MJHT
+Talon waits until you approve the code in GitHub.
+tln: error[network]: the registry https://registry.roc-talon.org (the built-in default) gave no answer: could not resolve host: registry.roc-talon.org.

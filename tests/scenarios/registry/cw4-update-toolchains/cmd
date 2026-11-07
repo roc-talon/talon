@@ -1,0 +1,7 @@
+# R-AP5 R-CV1 R-AP47 R-AP19 R-AP16 R-DT3 R-SO13 (slice 224, the contract run, tag worker): the real Worker for the twin case tests/commands/cases/registry/dt3-update-range-log (L2, fake routes).
+# The same 2 commands, the same project u1 (a `[toolchain] roc` range, no roc: pin, no compiler: `roc version` of the fake roc fails, as the twin has no roc on PATH). So the range step reads the compiler list: GET /v1/toolchains?after=0 (R-AP5), and run 2 (log:30) reads it again with after=41 (R-AP47).
+# The seed (worker/seed.json, worker/extra.sql) has the 3 toolchain rows (log 10, 19, 41, as the twin since round 2; one log has one leaf for each index, see worker/extra.sql) and the 10 releases of the twin closure answer at their log indexes (50 in all, 37 withdrawn). The stdout must equal the twin.
+# The packages and the repo answers of the guard are in given/home, as in the twin. worker/seed.sql is seed.json made with worker/tests/tools/mk-l3w-seed.mjs, then worker/extra.sql.
+st() { echo "== $*"; if tln "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st update --no-check --dry-run --file u1/main.roc
+st update --no-check --dry-run --snapshot log:30 --file u1/main.roc

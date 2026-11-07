@@ -130,9 +130,13 @@ Code: `ProbeShow.facts_doc`; `ProbeSearch.Found.facts` (`last.facts.drop_first(r
 | `todo: slice 217b` in cli/ and tests/ | none |
 | Expected exits read | pc4 runs: 12, 0, 0, 0, 0; pd1 run 3: 0, run 8: 12; pc2 run E: 12. Each is a rule of its run |
 | Dispute D1 | Accepted: the test agent added `facts: []` to the old `Shown.Range` records of ProbecmdTest |
-| Q5 (G-C214) | Answered as a TW24 proposal by the TalonRegistry reviewer. The human review is open |
+| Q5 (G-C214) | Answered as a TW24 proposal by the TalonRegistry reviewer. The user accepted it (2026-11-06) |
 | Mutation: `facts: last.facts` (no `drop_first`) in `ProbeSearch` | Caught: pc4-range-facts and pd1-downloads fail |
 | `check`, `fmt`, `selftest` | pass |
 | L0 | pass, except the red stubs of slices 223 (BotTest) and 218b (ProbesmokeTest) |
 | L2 | 480 pass. The 26 failures are bot/* (223) and probe/sm* (218b), all on their `todo` stubs |
 | L3 (`JOBS=1`) | pass (87.7 s, over the 60 s budget: warning) |
+
+## Human review (the user, 2026-11-06)
+
+The user accepted all the proposed output texts and `--json` fields of this slice (TW24, R-OUT2). They are final.

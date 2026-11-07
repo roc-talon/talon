@@ -1,0 +1,4 @@
+warning: the default registry https://registry.roc-talon.org does not answer (could not resolve host: registry.roc-talon.org): this run uses GitHub (direct)
+tln: error[usage]: 'known' is a short name, and GitHub has no index of short names. Use the full name (owner/repo).
+warning: the default registry https://registry.roc-talon.org does not answer (could not resolve host: registry.roc-talon.org): this run uses GitHub (direct)
+tln: error[usage]: 'known' is a short name, and GitHub has no index of short names. Use the full name (owner/repo).

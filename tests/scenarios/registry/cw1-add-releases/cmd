@@ -1,0 +1,6 @@
+# R-AP1 R-AP3 R-AP16 R-AP17 R-RG7 R-AD35 (slice 224, the contract run, tag worker): `tln add acme/lib` against the real Worker (app.wasm in Miniflare, local D1 with the migrations and worker/seed.sql).
+# The seed (worker/seed.json, made with worker/tests/tools/mk-l3w-seed.mjs) has 2 indexed releases: acme/lib 1.0.0 (a package) and acme/pfx 0.1.0 (the platform of the project).
+# The fake HTTP server is GitHub for tln: the privacy guard (`GET /repos/<owner>/<repo>`, R-RG4) of the two names. TALON_REGISTRY is the Worker (tests/tools/with-worker.sh).
+# The requests to the Worker: R-AP1 for acme/lib (200), then one closure query (R-AP16). The Worker makes no GitHub request (expect/worker-github.log is empty). `--no-check --dry-run`: no probe, no write of the project.
+st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
+st tln add acme/lib --no-check --dry-run

@@ -1,0 +1,5 @@
+{ "now": "2026-11-01T11:00:00Z",
+  "releases": [
+    { "owner": "acme", "repo": "pfx", "tag": "0.1.0", "version": "0.1.0", "hash": "6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL", "published_at": "2026-07-01T12:00:00Z", "kind": 2, "repository_id": 2, "owner_id": 9001 },
+    { "owner": "Karakatiza666", "repo": "roc-semver", "tag": "0.2.0", "version": "0.2.0", "hash": "BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i", "published_at": "2026-08-01T12:00:00Z", "exposes": ["Semver"], "repository_id": 3, "owner_id": 9003 }
+  ] }
