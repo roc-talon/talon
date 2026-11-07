@@ -87,7 +87,7 @@ The Workers profile gave 39 ms for this function at the first call. If the time 
 
 The `--opt=size` build (research/deploy-121/startup/size/app.wasm) also has 228 title copies in a function of 1,170,718 bytes. So the copies are not from the inlining of the speed mode.
 
-Not reproduced: a headerless native program with the same or-pattern shape (`orpat/rec-or.roc` against `orpat/rec-wild.roc`, also `or.roc`, `wild.roc`, `*-fx.roc`) has the same text size for both forms. So the trigger needs more than the or-pattern alone (possibly the platform types, the `=>` closure in a record, or the wasm32 target). The smallest evidence for an upstream report is `variants/mini2or` against `variants/mini2wild` (one app file each, the platform by URL).
+Smaller repro: `minrepro/` has a headerless native program of 40 lines that shows the copies (`minrepro/README.md`). The first native try (`orpat/`) did not show them, because its arm body is only a call that is not inlined.
 
 `--specialize=no` (boxy lowering) crashes the compiler on this app (`Segmentation fault ... post-check boxy_plan`), so it could not be compared.
 
@@ -150,7 +150,7 @@ event! = |w, ev| match ev {
 
 ### Upstream (Roc compiler)
 
-A report can say: "a `match` arm with an or-pattern of N tag alternatives is lowered as N copies of the arm body, also when the pattern binds nothing; with a large inlined callee in the arm this makes the function N times larger (`--opt=speed` and `--opt=size`, wasm32)". Repro: `variants/mini2or/main.roc` against `variants/mini2wild/main.roc` (largest function 501,878 against 165,808 bytes). The native repro in `orpat/` did not show it, so the report must use the wasm32 app.
+A report can say: "a `match` arm with an or-pattern of N tag alternatives is lowered as N copies of the arm body, also when the pattern binds nothing; with a large inlined callee in the arm this makes the function N times larger (`--opt=speed` and `--opt=size`, wasm32)". The filed repro is `minrepro/repro` (one native file, see `minrepro/README.md`).
 
 ## 5. What is left
 
@@ -172,4 +172,5 @@ A report can say: "a `match` arm with an or-pattern of N tag alternatives is low
 | `rocstr.mjs` | decode the 12-byte `RocStr` records in the data |
 | `variants/mini*` | the small apps of table 3 |
 | `variants/bp/main.roc`, `variants/bpone/main.roc` | proposal A, and A + B (the other files of these dirs are copies of `worker/`, not kept) |
-| `orpat/` | the native repro that did not reproduce |
+| `orpat/` | the first native try (did not show the copies) |
+| `minrepro/` | the smallest repro of the upstream issue |

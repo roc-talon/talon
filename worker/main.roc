@@ -3,7 +3,7 @@ app [event!] {
 	header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",
 	jwt: "https://github.com/Karakatiza666/roc-jwt/releases/download/0.0.1/C35APf1eow8zsCV6yrDpXLr3wxrMQVPdtoTQSGAM9dDh.tar.zst",
 	lib: "lib/main.roc",
-	pf: platform "https://github.com/Karakatiza666/roc-cloudflare-workers/releases/download/0.0.7/H2XzG4R2kci1kL4iVzvjx4CF1ohs1XYv1CMHjZzJ5TTi.tar.zst",
+	pf: platform "https://github.com/Karakatiza666/roc-cloudflare-workers/releases/download/0.0.8/DDDLMRuP5Qxi8pcCWbP7AHg5gmrmGTRN1jWqDjbfEbSe.tar.zst",
 	records: "../packages/records/main.roc",
 	roc: "nightly-2026-10-31-f7bef6b",
 	semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
@@ -111,7 +111,7 @@ problem_response = |problem| Response.from_bytes(problem.http_status(), "applica
 ## Run the handler of a route. Each `Err` of a handler is the problem `Internal` with a fixed `detail`: the answer shows no inner state (R-AP48).
 handle! : Route.Id, Request => Try(Response, _)
 handle! = |id, req| {
-	match run!(id, req) {
+	match read_answer(run!(id, req)) {
 		Ok(res) => Ok(res)
 		Err(_) => Ok(problem_response(Problem.new(Internal, "the Worker failed to handle the request")))
 	}
@@ -122,30 +122,31 @@ handle! = |id, req| {
 ## Slice 110: the closure route. `ClosureRoute` gives `Refuse(problem)` for a 400 and `Fault` for a fault of the Worker, as `ReadRoutes`.
 ## Slice 108: the toolchain route does the bot check (R-TP7). A failed check is its own problem. Slice 109: `ToolchainRoutes` does the rest (`GET` and `PUT`).
 ## Slice 106: the three read routes. `ReadRoutes` gives `Refuse(problem)` for a 400 or a 404 and `Fault` for a fault of the Worker (500 `internal`).
-run! : Route.Id, Request => Try(Response, [Fault(Str)])
+## `run!` gives the `ReadRoutes.Error` of the route. `handle!` calls `read_answer` once, so the code of `problem_response` is in one place (slice 227).
+run! : Route.Id, Request => Try(Response, ReadRoutes.Error)
 run! = |id, req| match id {
-	GetRepoReleases(owner, repo) => read_answer(ReadRoutes.repo_releases!(req, owner, repo))
-	GetArtifact(hash) => read_answer(ReadRoutes.artifact!(req, hash))
-	GetReleases => read_answer(ReadRoutes.releases!(req))
-	GetPackages => read_answer(ShortRoutes.list!(req))
-	PostClosure => read_answer(ClosureRoute.post!(req))
-	PostCompat => read_answer(CompatRoutes.post!(req))
-	GetSweep(tag) => read_answer(CompatReadRoutes.sweep!(req, tag))
-	GetCompatHints => read_answer(CompatReadRoutes.audit!(req))
-	GetArtifactCompat(hash) => read_answer(CompatReadRoutes.artifact_compat!(req, hash))
-	GetToolchains => read_answer(ToolchainRoutes.list!(req))
+	GetRepoReleases(owner, repo) => ReadRoutes.repo_releases!(req, owner, repo)
+	GetArtifact(hash) => ReadRoutes.artifact!(req, hash)
+	GetReleases => ReadRoutes.releases!(req)
+	GetPackages => ShortRoutes.list!(req)
+	PostClosure => ClosureRoute.post!(req)
+	PostCompat => CompatRoutes.post!(req)
+	GetSweep(tag) => CompatReadRoutes.sweep!(req, tag)
+	GetCompatHints => CompatReadRoutes.audit!(req)
+	GetArtifactCompat(hash) => CompatReadRoutes.artifact_compat!(req, hash)
+	GetToolchains => ToolchainRoutes.list!(req)
 	PostRelease => match req.header("authorization") {
-		Ok(_) => read_answer(PublishRoutes.post!(req))
-		Err(NotFound) => read_answer(IngestRoutes.post!(req))
+		Ok(_) => PublishRoutes.post!(req)
+		Err(NotFound) => IngestRoutes.post!(req)
 	}
-	PostTokens => read_answer(LoginRoutes.post_tokens!(req))
-	DeleteTokens => read_answer(LoginRoutes.delete_tokens!(req))
-	GetMe => read_answer(LoginRoutes.get_me!(req))
-	DeleteMe => read_answer(LoginRoutes.delete_me!(req))
-	PostWebhook => read_answer(WebhookRoutes.post!(req))
+	PostTokens => LoginRoutes.post_tokens!(req)
+	DeleteTokens => LoginRoutes.delete_tokens!(req)
+	GetMe => LoginRoutes.get_me!(req)
+	DeleteMe => LoginRoutes.delete_me!(req)
+	PostWebhook => WebhookRoutes.post!(req)
 	PutToolchain(tag) => match Auth.bot!(req) {
-		Err(problem) => Ok(problem_response(problem))
-		Ok(_) => read_answer(ToolchainRoutes.put!(req, tag))
+		Err(problem) => Err(Refuse(problem))
+		Ok(_) => ToolchainRoutes.put!(req, tag)
 	}
 }
 

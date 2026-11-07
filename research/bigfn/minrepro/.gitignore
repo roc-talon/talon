@@ -1,0 +1,9 @@
+out/
+*.wasm
+# the forms that pair.sh and the gen.py scripts write
+/r[0-9]*/or/
+/r[0-9]*/arms/
+/r[0-9]*/one/
+/h[0-9]*/or/
+/h[0-9]*/arms/
+/h[0-9]*/one/

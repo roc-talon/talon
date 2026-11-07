@@ -3,7 +3,7 @@
 | Item | State |
 | --- | --- |
 | Worker | `talon-registry`, version 7abfc3e0 (platform 0.0.7, no local patch), at `https://registry.roc-talon.org` (custom domain, 2026-11-06, after the user moved the zone to Cloudflare). The first version d895d7e4 was at `https://talon-registry.bellup.workers.dev`; that address is off since the custom domain (404). |
-| D1 | `talon-registry-weur` (id in `worker/wrangler.toml`), region WEUR (2026-11-07, the user asked for the primary near Barcelona). Migrations 0001 and 0002 applied with `wrangler d1 migrations apply DB --remote`. Read replication `auto`. The first database `talon-registry` (EEUR) is not used now. |
+| D1 | `talon-registry-weur` (id in `worker/wrangler.toml`), region WEUR (2026-11-07, the user asked for the primary near Barcelona). Migrations 0001 and 0002 applied with `wrangler d1 migrations apply DB --remote`. Read replication `auto`. The first database `talon-registry` (EEUR) is deleted. |
 | Queues | `talon-index` and `talon-index-dlq`, made with `wrangler queues create`. |
 | Settings | `[vars]` of `worker/wrangler.toml`: AUDIENCE, ISSUES_URL, BOT_REPOSITORY_ID 1434744226, BOT_WORKFLOW_REF (branch `main`), GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID. |
 | Secrets | CONTRIBUTOR_KEY and TOKEN_KEY made by `make-keys.mjs`, kept in `~/.config/talon-registry/` (mode 600). GITHUB_WEBHOOK_SECRET and GITHUB_APP_KEY (converted to PKCS#8 with `openssl pkcs8 -topk8 -nocrypt`) from `~/.config/talon-indexer/`. Never in the repo. |
@@ -30,7 +30,7 @@ Platform 0.0.7 has the fix and replaces the local patch.
 
 | Item | Why |
 | --- | --- |
-| GitHub App webhook URL | It is `https://example.com/v1/webhooks/github` (read with `app-hook.mjs`). The user sets it to `https://registry.roc-talon.org/v1/webhooks/github`: in the App settings, or `node research/deploy-121/app-hook.mjs 5572595 ~/.config/talon-indexer/private-key.pem https://registry.roc-talon.org/v1/webhooks/github`. The automatic change was refused by the agent permission check. |
+| GitHub App webhook URL | Done: on 2026-11-07 `app-hook.mjs` reads `https://registry.roc-talon.org/v1/webhooks/github` (the user set it). Before, it was `https://example.com/v1/webhooks/github`. The user sets it to `https://registry.roc-talon.org/v1/webhooks/github`: in the App settings, or `node research/deploy-121/app-hook.mjs 5572595 ~/.config/talon-indexer/private-key.pem https://registry.roc-talon.org/v1/webhooks/github`. The automatic change was refused by the agent permission check. |
 | P2 exit measures (closure p50, load test, step 12g) | Next part of slice 121. |
 
 ## D1 read replication and the closure time (2026-11-06)
@@ -58,7 +58,7 @@ The user asked for the primary in Barcelona and a replica in San Jose. D1 gives 
 | The two releases again | `POST /v1/releases` (ingest) for roc-semver 0.2.0 and 0.1.0: log_index 1 and 2, provenance `ingest` (0.1.0 was `poll` before). |
 | Deploy | version e9ff97ed |
 | Read replication | `auto`, set by the API |
-| Old database `talon-registry` (EEUR) | Not deleted: the agent permission check refused the delete. The user deletes it. |
+| Old database `talon-registry` (EEUR) | Deleted on 2026-11-07 with the user's approval. |
 
 Closure from ATH after the move: p50 108 ms, p90 123 ms (40 requests). It was 77 ms with the EEUR primary. WEUR is farther from Greece than EEUR, so this is expected. One colo only.
 

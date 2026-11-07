@@ -1,0 +1,65 @@
+== m1
+PASS selftest/wrong-json-range-order (68 ms)
+PASS selftest/wrong-log (3307 ms)
+PASS selftest/wrong-problem-content-type (115 ms)
+PASS selftest/wrong-problem-member (16 ms)
+PASS selftest/wrong-queue-acked (127 ms)
+PASS selftest/wrong-queue-retry (127 ms)
+PASS selftest/wrong-queue-sent (13 ms)
+PASS selftest/wrong-queue-sent-none (97 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (139 ms)
+PASS selftest/wrong-status (62 ms)
+PASS selftest/wrong-timing-safe (3 ms)
+PASS selftest/wrong-tokens-log (2 ms)
+w2 pool: 32 apps started, 150 resets, 189 cases; time of the jobs added: start 21 s, reset 32 s, cases 149 s
+w2: 174 passed, 15 failed
+== m2
+PASS selftest/wrong-json-range-order (1 ms)
+PASS selftest/wrong-log (3157 ms)
+PASS selftest/wrong-problem-content-type (3 ms)
+PASS selftest/wrong-problem-member (8 ms)
+PASS selftest/wrong-queue-acked (126 ms)
+PASS selftest/wrong-queue-retry (77 ms)
+PASS selftest/wrong-queue-sent (35 ms)
+PASS selftest/wrong-queue-sent-none (2 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (37 ms)
+PASS selftest/wrong-status (30 ms)
+PASS selftest/wrong-timing-safe (2 ms)
+PASS selftest/wrong-tokens-log (1 ms)
+w2 pool: 72 apps started, 110 resets, 189 cases; time of the jobs added: start 47 s, reset 23 s, cases 144 s
+w2: 127 passed, 62 failed
+== m3
+PASS selftest/wrong-json-range-order (47 ms)
+PASS selftest/wrong-log (3181 ms)
+PASS selftest/wrong-problem-content-type (2 ms)
+PASS selftest/wrong-problem-member (5 ms)
+PASS selftest/wrong-queue-acked (193 ms)
+PASS selftest/wrong-queue-retry (82 ms)
+PASS selftest/wrong-queue-sent (47 ms)
+PASS selftest/wrong-queue-sent-none (22 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (29 ms)
+PASS selftest/wrong-status (42 ms)
+PASS selftest/wrong-timing-safe (2 ms)
+PASS selftest/wrong-tokens-log (2 ms)
+w2 pool: 27 apps started, 155 resets, 189 cases; time of the jobs added: start 15 s, reset 23 s, cases 118 s
+w2: 178 passed, 11 failed
+== m4
+PASS selftest/wrong-json-range-order (21 ms)
+PASS selftest/wrong-log (3308 ms)
+PASS selftest/wrong-problem-content-type (26 ms)
+PASS selftest/wrong-problem-member (5 ms)
+PASS selftest/wrong-queue-acked (81 ms)
+PASS selftest/wrong-queue-retry (151 ms)
+PASS selftest/wrong-queue-sent (56 ms)
+PASS selftest/wrong-queue-sent-none (58 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (3 ms)
+PASS selftest/wrong-status (3 ms)
+PASS selftest/wrong-timing-safe (4 ms)
+PASS selftest/wrong-tokens-log (4 ms)
+w2 pool: 25 apps started, 157 resets, 189 cases; time of the jobs added: start 16 s, reset 29 s, cases 135 s
+w2: 180 passed, 9 failed
+EXIT 0

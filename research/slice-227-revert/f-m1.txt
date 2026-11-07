@@ -1,0 +1,9 @@
+FAIL oidc/tp3-jwks-max-age
+FAIL oidc/tp3-jwks-upstream
+FAIL oidc/tp3-jwt-strict
+FAIL oidc/tp3-key-rotation
+FAIL oidc/tp3-signature-and-kid
+FAIL oidc/tp3-token-form
+FAIL oidc/tp3-tp7-claims
+FAIL oidc/tp7-bot-token-pass
+w2: 181 passed, 8 failed

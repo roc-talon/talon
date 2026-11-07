@@ -2,7 +2,7 @@ app [event!] {
 	base58: "https://github.com/Karakatiza666/roc-base58/releases/download/0.1.0/BgUuQGqWY94NikfEx4rBkWkgxYhngMim3ZEnD8wpM4NS.tar.zst",
 	header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",
 	lib: "lib/main.roc",
-	pf: platform "https://github.com/Karakatiza666/roc-cloudflare-workers/releases/download/0.0.7/H2XzG4R2kci1kL4iVzvjx4CF1ohs1XYv1CMHjZzJ5TTi.tar.zst",
+	pf: platform "https://github.com/Karakatiza666/roc-cloudflare-workers/releases/download/0.0.8/DDDLMRuP5Qxi8pcCWbP7AHg5gmrmGTRN1jWqDjbfEbSe.tar.zst",
 	records: "../packages/records/main.roc",
 	roc: "nightly-2026-10-31-f7bef6b",
 	semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
