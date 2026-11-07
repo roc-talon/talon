@@ -71,6 +71,6 @@ Case `tests/commands/cases/probe/pb3-bundle-no-project` (rules R-PB1, R-PB2, R-S
 
 | Item | Owner |
 | --- | --- |
-| G-C232: a bundle operand with a found project: use it or not | Decided by the user (2026-11-07): yes, it uses the project. That is the current behaviour (pc1 run 10, pc2 run F). No code change. |
+| G-C232: a bundle operand with a found project: use it or not | Decided by the user (2026-11-07, Design Q605): yes, it uses the project. That is the current behaviour (pc1 run 10, pc2 run F). No code change. |
 | `--range` with a bundle and no project: still exit 2 | Question if the bot needs it |
 | The `label` of a bundle in `data` is the bare hash | Accepted by the user (2026-11-07, TW24) |
