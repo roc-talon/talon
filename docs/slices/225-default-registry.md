@@ -1,6 +1,6 @@
 # 225 Default registry, P2 exit
 
-Phase: P2 (CLI client). Status: tests written (test agent), waits for the human review (TW24) and the code agent.
+Phase: P2 (CLI client). Status: done. The proposed texts (TW24) were accepted by the user on 2026-11-08.
 
 Plan row 225 of `PLAN-P2-CLI.md`. The built-in default of the registry setting changes from `direct` to the registry URL `https://registry.roc-talon.org` (R-RG2, Design Q207, Q208). This is the client part of the P2 exit (Design 7). The slice also holds the design examples of CLI 1 and CLI 3 that need P2 (TW16), and L4 cases with the real Worker on the edge (tag `net`).
 
@@ -327,6 +327,6 @@ The ingest of `rn3` sent only the release that is already there (Karakatiza666/r
 | Exits read | The expected exits of the rg2-* and rg9-* cases agree with the rules (rg2-config-direct run 2 exit 2 is the R-SP log refusal of `direct`) |
 | L4 net | rn1 to rn4 pass against `https://registry.roc-talon.org` (one run). rn5 and rn6 are blocked (they need a real GitHub token). rn7 is blocked (no toolchain row until the compat bot runs) |
 | Release | The release that sets the default waits for the host (G-C231, Q600). The host now resolves |
-| Open, for the user | The proposed texts (TW24): the fall back warning, the stop message with and without the fix, the publish form with the source, the `notes` member of `outdated --json` |
+| TW24 | The proposed texts (the fall back warning, the stop message with and without the fix, the publish form with the source, the `notes` member of `outdated --json`) were accepted by the user on 2026-11-08 |
 
 Status: done.
