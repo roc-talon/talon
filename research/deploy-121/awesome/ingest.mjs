@@ -28,8 +28,8 @@ for (const line of readme.split('\n')) {
   else skipped.push({ repo: m[1], url: u, kind });
 }
 
-// resume: keep finished lines of an earlier partial run (set FRESH=1 to start over)
-const prior = (existsSync(here + 'ingest.jsonl') && !process.env.FRESH) ? readFileSync(here + 'ingest.jsonl', 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)).filter((j) => j.status < 500) : [];
+// resume: keep finished lines of an earlier partial run; a 5xx or a 429 (owner cap) is sent again (set FRESH=1 to start over)
+const prior = (existsSync(here + 'ingest.jsonl') && !process.env.FRESH) ? readFileSync(here + 'ingest.jsonl', 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l)).filter((j) => j.status < 500 && j.status !== 429) : [];
 const done = new Set(prior.map((j) => j.url));
 const rows = []; const noAsset = []; const perRepo = new Map(); const jsonl = prior.map((j) => JSON.stringify(j));
 let n5xx = 0, total = 0;
