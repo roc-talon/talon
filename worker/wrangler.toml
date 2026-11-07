@@ -7,12 +7,12 @@ compatibility_flags = ["enable_request_signal", "global_fetch_strictly_public"]
 # The registry host (Design Q208, R-RG2, slice 121): a Worker custom domain on the zone roc-talon.org (the root is for the website).
 routes = [{ pattern = "registry.roc-talon.org", custom_domain = true }]
 
-# D1 (slice 101: the binding that main.roc declares). The id is the remote database (slice 121, `wrangler d1 create talon-registry`, 2026-11-06). A local run makes its own empty database.
+# D1 (slice 101: the binding that main.roc declares). The id is the remote database (slice 121, `wrangler d1 create talon-registry-weur --location weur`, 2026-11-07; the first database was in EEUR). A local run makes its own empty database.
 # The migrations are in ../sql (slice 102).
 [[d1_databases]]
 binding = "DB"
-database_name = "talon-registry"
-database_id = "2e64cef7-cb86-4dde-aa55-2fd0479a8f28"
+database_name = "talon-registry-weur"
+database_id = "6f2a8b71-8e6b-46c4-9e7d-6adb378fbbb2"
 migrations_dir = "../sql"
 
 # Rate limit bindings (Registry R-WH14). RL_HINTS: user hints, 30 a minute for each rate key (R-CT11, slice 116b). RL_INGEST: ingests, 60 a minute (R-PU34 row 1, slice 112b).

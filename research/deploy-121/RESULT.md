@@ -3,7 +3,7 @@
 | Item | State |
 | --- | --- |
 | Worker | `talon-registry`, version 7abfc3e0 (platform 0.0.7, no local patch), at `https://registry.roc-talon.org` (custom domain, 2026-11-06, after the user moved the zone to Cloudflare). The first version d895d7e4 was at `https://talon-registry.bellup.workers.dev`; that address is off since the custom domain (404). |
-| D1 | `talon-registry` (id in `worker/wrangler.toml`), region EEUR. Migrations 0001 and 0002 applied with `wrangler d1 migrations apply DB --remote`. |
+| D1 | `talon-registry-weur` (id in `worker/wrangler.toml`), region WEUR (2026-11-07, the user asked for the primary near Barcelona). Migrations 0001 and 0002 applied with `wrangler d1 migrations apply DB --remote`. Read replication `auto`. The first database `talon-registry` (EEUR) is not used now. |
 | Queues | `talon-index` and `talon-index-dlq`, made with `wrangler queues create`. |
 | Settings | `[vars]` of `worker/wrangler.toml`: AUDIENCE, ISSUES_URL, BOT_REPOSITORY_ID 1434744226, BOT_WORKFLOW_REF (branch `main`), GITHUB_APP_ID, GITHUB_APP_INSTALLATION_ID. |
 | Secrets | CONTRIBUTOR_KEY and TOKEN_KEY made by `make-keys.mjs`, kept in `~/.config/talon-registry/` (mode 600). GITHUB_WEBHOOK_SECRET and GITHUB_APP_KEY (converted to PKCS#8 with `openssl pkcs8 -topk8 -nocrypt`) from `~/.config/talon-indexer/`. Never in the repo. |
@@ -46,3 +46,20 @@ Design Q49 asks for read replication on. The first deploy did not set it, so it 
 | POST /v1/closure, 1.5 min after replication on | 77 ms | 114 ms |
 
 So from ATH the closure is about 65 to 75 ms over the baseline, over the 50 ms target of Design 7 P2. The D1 primary is in EEUR, and a session from ATH probably goes to the primary (the probe of Registry 8 saw sessions from LHR, TBS and FRA go to the primary). One colo is not the P2 measure: the load test and a measure from several colos are still open.
+
+## Move of D1 to WEUR (2026-11-07)
+
+The user asked for the primary in Barcelona and a replica in San Jose. D1 gives a region hint only (no city), and it puts the replicas itself (one for each region, no choice). So the new database has `--location weur`. A database cannot change its region, so the move is a new database.
+
+| Step | Result |
+| --- | --- |
+| `wrangler d1 export --no-schema` of the old database | Not used: the export writes the 64-bit ids as floats (for example `-7163292474072844000`), so the ids are wrong. |
+| New database, migrations 0001 and 0002 | `talon-registry-weur`, running in WEUR |
+| The two releases again | `POST /v1/releases` (ingest) for roc-semver 0.2.0 and 0.1.0: log_index 1 and 2, provenance `ingest` (0.1.0 was `poll` before). |
+| Deploy | version e9ff97ed |
+| Read replication | `auto`, set by the API |
+| Old database `talon-registry` (EEUR) | Not deleted: the agent permission check refused the delete. The user deletes it. |
+
+Closure from ATH after the move: p50 108 ms, p90 123 ms (40 requests). It was 77 ms with the EEUR primary. WEUR is farther from Greece than EEUR, so this is expected. One colo only.
+
+Fault found: about 1 to 2 percent of requests on all routes get 503 with the Cloudflare body `error code: 500` (5 of 400, 1 of 300, 1 of 40). Worker analytics show 0 errors for the same time, so the requests do not get to the Worker code. Reported to the platform session (start of a cold isolate with the 6 MB wasm is one possible cause, not verified).
