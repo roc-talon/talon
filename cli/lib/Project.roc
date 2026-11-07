@@ -121,7 +121,7 @@ Project := {
 		match chosen {
 			Err(NoFile) => match root_dir {
 				Ok(dir) => Ok({ file: Err(NoCurrent), workspace, toml: nearest_toml(facts.walk, first_dir(facts.walk), dir), roc_version: nearest_version(facts.walk, first_dir(facts.walk)) })
-				Err(NoRoot) => Err(Fail.new(Usage, "no project file found. Checked: ${Str.join_with(facts.walk.map(|d| d.dir), ", ")}. Pass --file <path>."))
+				Err(NoRoot) => Err({ ..Fail.new(Usage, "no project file found. Checked: ${Str.join_with(facts.walk.map(|d| d.dir), ", ")}. Pass --file <path>."), no_project: Bool.True })
 			}
 			Ok(file) => match (root_dir, facts.members.contains(file)) {
 				(Ok(dir), Bool.True) => Ok({ file: Ok(file), workspace, toml: nearest_toml(facts.walk, Text.dir_of(file), dir), roc_version: nearest_version(facts.walk, Text.dir_of(file)) })

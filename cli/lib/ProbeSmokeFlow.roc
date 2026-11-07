@@ -78,21 +78,9 @@ ready! = |fx, args, plan| match plan.operand {
 		roots = Roots.of_run!(fx, env)?
 		net = Net.from_env(env)
 		_ = Clock.now!(fx, env)?
-		config = RocInstall.read_config!(fx, roots)?
-		toolchain = Compiler.toolchain_of(env)?
-		on_path = Install.compiler!(fx, roots, Bool.False)
-		installed = Launch.toolchains!(fx, roots)
-		picked = Compiler.select({ argument: Err(Unset), env: toolchain, req: Err(Unset), nightly: Bool.True, has_toml: Bool.False, version_file: Err(None), default: config.default_roc, path: on_path.map_ok(|found| found.id), installed, times: [] })
-		downloads = { auto: Consent.auto_install(env), allow: plan.opts.allow_downloads, yes: args.yes, mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }), quiet: args.quiet, offline: args.offline, env }
-		held = match picked {
-			Ok(sel) => sel.id
-			Err(_) => NoRank.ensure!(fx, { roots, run: { scope: Project([ident.hash]), exclude: [], downloads }, listed: installed })?.id
-		}
-		started = Start.run!(fx, { roots, path_roc: on_path, held, downloads })?
-		none = { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }
-		probe = Probe.settings({ flag_slots: plan.opts.slots, project: none, user: config.probe })
+		got = ProbeFlow.bare!(fx, args, plan.opts, { env, roots, hash: ident.hash })?
 		node = { hash: ident.hash, name: ident.name ?? link, version: ident.version, is_platform: Bool.True }
-		Ok({ roots, net, offline: args.offline, started, probe, node, url: link, what: link })
+		Ok({ roots, net, offline: args.offline, started: got.started, probe: got.probe, node, url: link, what: link })
 	}
 }
 

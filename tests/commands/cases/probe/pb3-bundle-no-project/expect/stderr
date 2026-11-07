@@ -1,0 +1,5 @@
+unit check of 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f on nightly-2026-11-06-34f137a: pass
+tln: error[usage]: no project file found. Checked: $PROJECT, $WORK, /tmp/talon-l2, /tmp, /. Pass --file <path>.
+downloading nightly-2026-10-13-91fa0c2 (73.5 MB)
+unit check of 8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f on nightly-2026-10-13-91fa0c2: pass
+tln: error[input]: $PROJECT/badtoml/talon.toml:1: not valid TOML

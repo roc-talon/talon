@@ -4,6 +4,8 @@ import Args
 import Fx
 import HeldRoc
 import Roots
+import RocInstall
+import Probe
 import Common
 import Compiler
 import Consent
@@ -51,11 +53,37 @@ ProbeFlow :: [].{
 	begin! : Fx, Args, Opts, Bool => Try(ResolveBase.Request, Fail)
 	begin! = |fx, args, opts, needs_member| {
 		start = Install.begin!(fx, args)?
+		ProbeFlow.begun!(fx, args, opts, needs_member, start)
+	}
+
+	## `begin!` after the project search (slice 226: the bundle operand searches first, with `Install.begin_loose!`).
+	begun! : Fx, Args, Opts, Bool, Begun => Try(ResolveBase.Request, Fail)
+	begun! = |fx, args, opts, needs_member, start| {
 		Install.check_member(needs_member, start.project)?
 		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
 		Ok(ProbeFlow.request_of(args, { allow: opts.allow_downloads, probe: opts.probe_downloads, slots: opts.slots, none: Stop }, start, { toolchain, compiler }))
+	}
+
+	## The no-project prelude (slice 226, Design Q591: shared by the URL operand of `--smoke` and a bundle operand with no project): the config, the compiler of ranks 2, 6 and 7 (`Compiler.select` with no project) and `Start.run!`. No project search, no `projects.json` record. `hash` is the package that a missing compiler is for.
+	bare! : Fx, Args, Opts, { env : List((Str, Str)), roots : Roots, hash : Str } => Try({ started : Start.Started, on_path : Try({ id : Str, path : Str }, [NoCompiler]), probe : Probe.Settings }, Fail)
+	bare! = |fx, args, opts, base| {
+		env = base.env
+		roots = base.roots
+		config = RocInstall.read_config!(fx, roots)?
+		toolchain = Compiler.toolchain_of(env)?
+		on_path = Install.compiler!(fx, roots, Bool.False)
+		installed = Launch.toolchains!(fx, roots)
+		picked = Compiler.select({ argument: Err(Unset), env: toolchain, req: Err(Unset), nightly: Bool.True, has_toml: Bool.False, version_file: Err(None), default: config.default_roc, path: on_path.map_ok(|found| found.id), installed, times: [] })
+		downloads = { auto: Consent.auto_install(env), allow: opts.allow_downloads, yes: args.yes, mode: Mode.from_env({ env: Dict.from_list(env), json: args.json }), quiet: args.quiet, offline: args.offline, env }
+		held = match picked {
+			Ok(sel) => sel.id
+			Err(_) => NoRank.ensure!(fx, { roots, run: { scope: Project([base.hash]), exclude: [], downloads }, listed: installed })?.id
+		}
+		started = Start.run!(fx, { roots, path_roc: on_path, held, downloads })?
+		none = { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }
+		Ok({ started, on_path, probe: Probe.settings({ flag_slots: opts.slots, project: none, user: config.probe }) })
 	}
 
 	## The steps of `single!` up to the compiler (slice 218b: shared with `ProbeSmokeFlow`): the load, the pin check, the held compiler and `Start.run!`. `rows` are the header entries of the current member (R-R12).
@@ -192,9 +220,45 @@ source_text = |rows, node| match rows.find_first(
 
 # The steps of `Verify.flow!` up to the compiler, then the target.
 flow! : Fx, Args, ProbeCmd.Plan => Try(Finished, Fail)
-flow! = |fx, args, plan| {
+flow! = |fx, args, plan| match plan.target {
+	Bundle(path) => bundle_flow!(fx, args, plan, path)
+	_ => project_flow!(fx, args, plan)
+}
+
+project_flow! : Fx, Args, ProbeCmd.Plan => Try(Finished, Fail)
+project_flow! = |fx, args, plan| {
 	request = ProbeFlow.begin!(fx, args, plan.opts, is_project(plan.target))?
 	if plan.range ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
+}
+
+# Slice 226 (Design Q566 (b)): a bundle operand searches for the project once. A project is found: the path of `project_flow!`. None is found (and no `--range`): the no-project path.
+bundle_flow! : Fx, Args, ProbeCmd.Plan, Str => Try(Finished, Fail)
+bundle_flow! = |fx, args, plan, path| {
+	got = Install.begin_loose!(fx, args)?
+	match got.found {
+		Ok(found) => {
+			request = ProbeFlow.begun!(fx, args, plan.opts, Bool.False, { env: got.env, roots: got.roots, net: got.net, now: got.now, project: found.project })?
+			if plan.range ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
+		}
+		Err(fail) => if plan.range or !fail.no_project Err(fail) else bare_bundle!(fx, args, plan, { path, env: got.env, roots: got.roots, net: got.net, now: got.now })
+	}
+}
+
+# The unit probe of a bundle file with no project: the steps of `single!` after `Start.run!`.
+bare_bundle! : Fx, Args, ProbeCmd.Plan, { path : Str, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64 } => Try(Finished, Fail)
+bare_bundle! = |fx, args, plan, base| {
+	hash = ProbeCmd.bundle_hash(base.path)?
+	node = { hash, name: hash, version: "", is_platform: Bool.False }
+	got = ProbeFlow.bare!(fx, args, plan.opts, { env: base.env, roots: base.roots, hash })?
+	started = got.started
+	program = match Fetch.unbundler({ selected: started.id, installed: started.installed, path: got.on_path }) {
+		Ok(id) => Launch.program!(fx, { roots: base.roots, id, installed: started.installed, path: got.on_path })?
+		Err(NoCompiler) => return Err(Compiler.failure(NoCompiler))
+	}
+	ProbeBundle.ensure!(fx, { roots: base.roots, path: base.path, hash, program })?
+	run = { roots: base.roots, now: base.now, started, probe: got.probe }
+	fact = ProbeUnit.node!(fx, run, node)?
+	Ok({ shown: Unit({ node, compiler: started.id, fact, probes: 1 }), stop: Err(None), share: Ok({ roots: base.roots, net: base.net, env: base.env, source: "", node }) })
 }
 
 is_project : ProbeCmd.Target -> Bool

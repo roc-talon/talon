@@ -1,0 +1,4 @@
+env:ROC_TOOLCHAIN=nightly-2026-11-06-34f137a env:TALON_AUTO_INSTALL=yes probe --json --yes {w}/project/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
+probe json
+env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 env:TALON_AUTO_INSTALL=yes probe --json --yes {w}/project/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
+cwd:badtoml env:ROC_TOOLCHAIN=nightly-2026-10-13-91fa0c2 env:TALON_AUTO_INSTALL=yes probe --json --yes {w}/project/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f.tar.zst
