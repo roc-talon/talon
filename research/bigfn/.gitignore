@@ -1,0 +1,11 @@
+*.wasm
+*.bin
+out/
+w2*/
+variants/packages
+variants/base/
+# bp and bpone: copies of worker/; only main.roc (the change) is kept
+variants/bp/*
+!variants/bp/main.roc
+variants/bpone/*
+!variants/bpone/main.roc

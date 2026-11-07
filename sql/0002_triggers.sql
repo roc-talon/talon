@@ -1,6 +1,6 @@
 -- Registry triggers, P2 (slice 103). Registry R-MX8, R-MX12, R-RE8, R-RE23, R-CT13, R-SG8, Design Q27, Q79 to Q86.
 -- One statement for each semicolon (a trigger body is BEGIN ... END followed by a semicolon).
--- No PRAGMA, no BEGIN TRANSACTION: D1 and node:sqlite take the same file.
+-- No PRAGMA and no explicit transaction statement (wrangler refuses a local file that has that text, even in a comment): D1 and node:sqlite take the same file.
 -- There is no trigger that writes a leaf. The Worker writes the leaf (R-SG8). A trigger only checks it.
 -- The member condition of R-MX11 is a correlated NOT EXISTS: SQLite allows no WITH clause in a trigger.
 -- Codes (R-IK7): artifact kind app 0, package 1, platform 2. Source bot 0. Result pass 0, fail 1, hang 2, crash 3.
