@@ -64,13 +64,12 @@ expect {
 	))
 }
 
-# R-PT18, R-PT1, R-TF4: the other forms of `bin` are exit code 19: `true`, a string, a key that is not one of the 5 targets, and a value that is not a sha256 (upper case, short, not a string, with the prefix `sha256:`).
+# R-PT18, R-PT1, R-TF4: the other forms of `bin` are exit code 19: `true`, a string, and a value of a known target that is not a sha256 (a key that is not a target is a warning since slice 233, see below) (upper case, short, not a string, with the prefix `sha256:`).
 expect {
 	msg = "talon.toml:2: tools.a.bin"
 	rows = [
 		("true", "19 ${msg}: must be a table of target hashes, or false\nA newer tln may know this value. Update tln: tln tool update talon"),
 		("\"x\"", "19 ${msg}: must be a table of target hashes, or false\nA newer tln may know this value. Update tln: tln tool update talon"),
-		("{ x64glibc = \"${h1}\" }", "19 ${msg}.x64glibc: not a target (arm64mac, arm64musl, x64mac, x64musl, x64win)\nA newer tln may know this value. Update tln: tln tool update talon"),
 		("{ x64musl = \"${Str.repeat("A", 64)}\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
 		("{ x64musl = \"abc\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
 		("{ x64musl = 1 }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
@@ -171,4 +170,84 @@ expect {
 		(w(X, Bool.True, Bool.True, old, Ok(set)), Keep),
 	]
 	rows.all(|(got, want)| got == want)
+}
+
+# Slice 233 (docs/slices/233-keep-tools-keys.md, Design Q607): unknown keys of a `[tools]` entry stay. The warning texts are proposals (TW24).
+unknown_hint = "A newer tln may know this value. Update tln: tln tool update talon"
+
+# R-PT18, R-TF4, R-TF8: a key of `bin` that is not a target is a warning, not exit code 19. Talon does not check its value (a string that is no sha256, a number). The row of `tool_bins` has the known targets only. The warning names the key and is on the line of the entry.
+expect {
+	text = lines([
+		"[tools]", # 1
+		"a = { ref = \"acme/foo\", bin = { x64musl = \"${h1}\", x64glibc = \"${h2}\" } }", # 2
+		"b = { ref = \"acme/foo\", bin = { x64glibc = 1 } }", # 3
+		"c = { ref = \"acme/foo\", bin = { wasm32 = \"not a hash\", X64MUSL = \"${h1}\" } }", # 4
+	])
+	read_bins(text) == Ok((
+		[
+			{ key: "a", bin: Hashes([{ target: "x64musl", sha256: h1 }]) },
+			{ key: "b", bin: Hashes([]) },
+			{ key: "c", bin: Hashes([]) },
+		],
+		[
+			"talon.toml:2: unknown key tools.a.bin.x64glibc",
+			"talon.toml:3: unknown key tools.b.bin.x64glibc",
+			"talon.toml:4: unknown key tools.c.bin.wasm32",
+			"talon.toml:4: unknown key tools.c.bin.X64MUSL",
+		],
+	))
+}
+
+# R-PT18, R-TF8: a known target with a bad value is still exit code 19, also when an unknown target is in the table (the message is about the known target, with the hint line). A bad `bin` form is exit code 19 as before.
+expect {
+	msg = "19 talon.toml:2: tools.a.bin"
+	rows = [
+		("{ x64glibc = \"${h1}\", x64musl = \"abc\" }", "${msg}.x64musl: must be 64 lower case hex digits\n${unknown_hint}"),
+		("{ x64musl = 1, x64glibc = 1 }", "${msg}.x64musl: must be 64 lower case hex digits\n${unknown_hint}"),
+		("{ x64glibc = \"x\", arm64mac = \"${Str.repeat("A", 64)}\" }", "${msg}.arm64mac: must be 64 lower case hex digits\n${unknown_hint}"),
+	]
+	rows.all(|(value, want)| read_bins(lines(["[tools]", "a = { ref = \"acme/foo\", bin = ${value} }"])) == Err(want))
+}
+
+# R-TF4, R-PT1: an unknown key of an entry is a warning (it is today), not an issue. Subkey warnings come first (sorted by name), then the warnings of unknown `bin` targets (in file order, not sorted), also when all are on one line. The table form `[tools.a]` gives each warning its own line.
+expect {
+	one_line = lines(["[tools]", "a = { ref = \"acme/foo\", zed = 1, note = \"x\", bin = { x64musl = \"${h1}\", x64glibc = \"${h2}\", wasm32 = \"${h2}\" } }"])
+	table = lines(["[tools.a]", "ref = \"acme/foo\"", "note = \"x\"", "[tools.a.bin]", "x64glibc = \"${h2}\""])
+	only_note = lines(["[tools]", "a = { ref = \"acme/foo\", note = \"x\" }"])
+	read_bins(one_line) == Ok((
+		[{ key: "a", bin: Hashes([{ target: "x64musl", sha256: h1 }]) }],
+		["talon.toml:2: unknown key tools.a.note", "talon.toml:2: unknown key tools.a.zed", "talon.toml:2: unknown key tools.a.bin.x64glibc", "talon.toml:2: unknown key tools.a.bin.wasm32"],
+	)) and read_bins(table) == Ok(([{ key: "a", bin: Hashes([]) }], ["talon.toml:3: unknown key tools.a.note", "talon.toml:5: unknown key tools.a.bin.x64glibc"])) and read_bins(only_note) == Ok(([], ["talon.toml:2: unknown key tools.a.note"]))
+}
+
+# R-PT3, R-TF8: `put` (the write of an entry at a new `url`) keeps each key that Talon does not know, with its value, in the order of the file, after `ref` and `url`. `ref` and `url` take the new values. Three rows: one unknown key; two unknown keys of other types around a `bin = false` (it stays where it is, R-PT25); the entry with `ref` only.
+expect {
+	put = |text, key| ToolsToml.put({ path: "talon.toml", text, key, ref: "acme/foo@^1.1.0", url: foo11 })
+	new = "ref = \"acme/foo@^1.1.0\", url = \"${foo11}\""
+	text = lines([
+		"[tools]",
+		"a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\" }  # c1",
+		"b = { ref = \"acme/b\", n = 5, bin = false, flags = [1, 2] }",
+		"c = { ref = \"acme/c\", extra = true }",
+	])
+	put(text, "a") == Ok(lines(["[tools]", "a = { ${new}, note = \"keep\" }  # c1", "b = { ref = \"acme/b\", n = 5, bin = false, flags = [1, 2] }", "c = { ref = \"acme/c\", extra = true }"])) and put(text, "b") == Ok(lines(["[tools]", "a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\" }  # c1", "b = { ${new}, n = 5, bin = false, flags = [1, 2] }", "c = { ref = \"acme/c\", extra = true }"])) and put(text, "c") == Ok(lines(["[tools]", "a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\" }  # c1", "b = { ref = \"acme/b\", n = 5, bin = false, flags = [1, 2] }", "c = { ${new}, extra = true }"]))
+}
+
+# R-PT19, R-PT18, R-TF8: `put` at a new `url` drops the whole `bin` table, with a target that Talon does not know, and keeps the unknown subkeys. The write of the new table after it (`put_bin`, as `apply` does) has the known targets only.
+expect {
+	text = lines(["[tools]", "a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\", bin = { x64musl = \"${h1}\", x64glibc = \"${h2}\" } }"])
+	put = ToolsToml.put({ path: "talon.toml", text, key: "a", ref: "acme/foo@^1.1.0", url: foo11 })
+	both = match put {
+		Ok(t) => ToolsToml.put_bin({ path: "talon.toml", text: t, key: "a", bin: [{ target: "x64win", sha256: h3 }] })
+		Err(e) => Err(e)
+	}
+	put == Ok(lines(["[tools]", "a = { ref = \"acme/foo@^1.1.0\", url = \"${foo11}\", note = \"keep\" }"])) and both == Ok(lines(["[tools]", "a = { ref = \"acme/foo@^1.1.0\", url = \"${foo11}\", note = \"keep\", bin = { x64win = \"${h3}\" } }"]))
+}
+
+# R-PT18, R-PT19, R-TF8: `put_bin` (a `url` that stays gains values) keeps a `bin` key that is not a target, with its value as written (a string that is no sha256, a number). The known targets come first, in the order of the list, then the unknown keys in the order of the old table. An empty list with an unknown key gives a table with that key. The unknown subkeys of the entry stay. `drop_bin` (a new `url` and no check) removes the whole table.
+expect {
+	base = lines(["[tools]", "a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\", bin = { x64glibc = \"${h2}\", x64musl = \"${h1}\", wasm32 = 7 } }"])
+	put = |bin| ToolsToml.put_bin({ path: "talon.toml", text: base, key: "a", bin })
+	head = "a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\", bin = "
+	put([{ target: "x64musl", sha256: h3 }, { target: "x64win", sha256: h2 }]) == Ok(lines(["[tools]", "${head}{ x64musl = \"${h3}\", x64win = \"${h2}\", x64glibc = \"${h2}\", wasm32 = 7 } }"])) and put([]) == Ok(lines(["[tools]", "${head}{ x64glibc = \"${h2}\", wasm32 = 7 } }"])) and ToolsToml.drop_bin({ path: "talon.toml", text: base, key: "a" }) == Ok(lines(["[tools]", "a = { ref = \"acme/a\", url = \"${foo10}\", note = \"keep\" }"]))
 }

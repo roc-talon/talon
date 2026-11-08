@@ -46,8 +46,8 @@ ToolsToml :: [].{
 	## | Another key of the entry | `unknown key tools.<key>.<name>` | warning |
 	##
 	## A `ref` with no selector and `@latest` are the same (R-PT1, R-T26). The `url` text is not compared with the `ref` here: that is R-PT7 (`ToolsPlan.frozen_check`).
-	## Slice 091 (R-PT18): `bins` has one row for each entry that has the key `bin`, in the order of the entries: `false` is `Off`, a table is `Hashes` (in the text order of the targets). The key `bin` is no unknown key (no warning). A `bin` of another form is an issue of the entry (exit code 19, R-PT1, R-PT18).
-	## The texts are proposals (TW24): `tools.<key>.bin: must be a table of target hashes, or false`, `tools.<key>.bin.<target>: not a target (arm64mac, arm64musl, x64mac, x64musl, x64win)`, `tools.<key>.bin.<target>: must be 64 lower case hex digits`.
+	## Slice 091 (R-PT18): `bins` has one row for each entry that has the key `bin`, in the order of the entries: `false` is `Off`, a table is `Hashes` (in the text order of the targets). The key `bin` is no unknown key (no warning). A key of `bin` that is no target is a warning `unknown key tools.<key>.bin.<name>` and is not checked (slice 233, R-PT18). A `bin` of another form is an issue of the entry (exit code 19, R-PT1, R-PT18).
+	## The texts are proposals (TW24): `tools.<key>.bin: must be a table of target hashes, or false`, `tools.<key>.bin.<target>: must be 64 lower case hex digits`.
 	read_table : Toml -> { value : List(ToolsToml.Entry), bins : List({ key : Str, bin : ToolBin.Lock }), issues : List(TomlKeys.Note), warnings : List(TomlKeys.Note) }
 	read_table = |doc| match Toml.get(doc, ["tools"]) {
 		Err(NotFound) => { value: [], bins: [], issues: [], warnings: [] }
@@ -64,6 +64,7 @@ ToolsToml :: [].{
 	}
 
 	## Slice 091, R-PT19, R-PT25: `put` also keeps `bin = false` of the entry that it replaces (no command changes or removes it), and drops a `bin` table of that entry (it belongs to the old `url`).
+	## Slice 233, R-PT19, R-TF8: `put` keeps each other key of the entry (also a key that Talon does not know) after `ref` and `url`, in the order of the file.
 	## R-PT3, R-PT5: the text with the entry `<key> = { ref = "<ref>", url = "<url>" }` (the key `ref` first). The entry of `key` that is there is replaced where it is (the comment on its line stays). A new key goes after the last entry of `[tools]`. With no table, a new `[tools]` table goes
 	## at the end of the text, after a blank line. The empty text gives `[tools]`, the entry, and the line end (not the form `[tools.<key>]`). A text with no line end at its end gets one first. All other bytes stay.
 	##
@@ -73,24 +74,24 @@ ToolsToml :: [].{
 	## | The entry cannot be written (`tools` is a value that is not a table) | Failure of kind `Input`: `<path>: the key tools.<key> cannot be written` |
 	put : { path : Str, text : Str, key : Str, ref : Str, url : Str } -> Try(Str, Fail)
 	put = |facts| {
-		value = Value.Table(Dict.from_list([("ref", Value.String(facts.ref)), ("url", Value.String(facts.url))]))
+		new_fields = [("ref", Value.String(facts.ref)), ("url", Value.String(facts.url))]
 		if facts.text == "" {
-			return Ok("[tools]\n${key_text(facts.key)} = ${Value.print(value)}\n")
+			return Ok("[tools]\n${key_text(facts.key)} = ${Value.print(Value.Table(Dict.from_list(new_fields)))}\n")
 		}
 		match Toml.parse(facts.text) {
 			Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
-			Ok(doc) => put_key(doc, facts.key, keep_off(doc, facts.key, value)).map_ok(|done| done.to_str()).map_err(|_| Fail.new(Input, "${facts.path}: the key tools.${facts.key} cannot be written"))
+			Ok(doc) => put_key(doc, facts.key, Value.Table(Dict.from_list(new_fields.concat(old_keys(doc, facts.key))))).map_ok(|done| done.to_str()).map_err(|_| Fail.new(Input, "${facts.path}: the key tools.${facts.key} cannot be written"))
 		}
 	}
 
-	## R-PT18, R-PT19: the text with `bin = { <target> = "<sha256>", ... }` in the entry `key` (an entry that is there). The table has the keys in the order of the list (the list is in text order), as one inline table in the entry (`{ ref = "...", url = "...", bin = { x64musl = "..." } }`). A `bin` of the entry that is there is replaced (also `false`: the caller never asks). The empty list gives `bin = {}`.
+	## R-PT18, R-PT19: the text with `bin = { <target> = "<sha256>", ... }` in the entry `key` (an entry that is there). The table has the keys in the order of the list (the list is in text order), then each key of the old table that is not a target (slice 233, as written), as one inline table in the entry (`{ ref = "...", url = "...", bin = { x64musl = "..." } }`). A `bin` of the entry that is there is replaced (also `false`: the caller never asks). The empty list gives `bin = {}`.
 	## All other bytes stay. A key that is not in `[tools]` is a failure of kind `Internal`: `<path>: the key '<key>' is not there`. A text that is not TOML is a failure of kind `Input`: `<path>:<line>: not valid TOML`.
 	put_bin : { path : Str, text : Str, key : Str, bin : List(ToolBin.Hash) } -> Try(Str, Fail)
-	put_bin = |facts| edit_bin(facts.path, facts.text, facts.key, |fields| fields.concat([("bin", bin_value(facts.bin))]))
+	put_bin = |facts| edit_bin(facts.path, facts.text, facts.key, |fields, unknown| fields.concat([("bin", bin_value(facts.bin, unknown))]))
 
 	## Slice 091, R-PT19: the text without the key `bin` of the entry `key` (a table, not `false`). Nothing to remove gives the text as it is. Same failures as `put_bin`.
 	drop_bin : { path : Str, text : Str, key : Str } -> Try(Str, Fail)
-	drop_bin = |facts| edit_bin(facts.path, facts.text, facts.key, |fields| fields)
+	drop_bin = |facts| edit_bin(facts.path, facts.text, facts.key, |fields, _| fields)
 
 	## R-PT3: the text without the entries `keys` of `[tools]` (`Toml.remove`: the lines of the entry go, with the comment on its last line; the comment lines above and the header of a table that becomes empty stay). All other bytes stay.
 	##
@@ -175,15 +176,18 @@ refused = |line, message| { line, entry: Err(Bad), bin: Err(Unset), issues: [{ l
 # The keys `ref` and `url` of an entry. Another key is a warning.
 read_fields : Toml, Str, Dict(Str, Value), U64 -> One
 read_fields = |doc, key, t, line| {
-	at = |name| match Toml.line(doc, ["tools", key, name]) {
+	at = |path| match Toml.line(doc, ["tools", key].concat(path)) {
 		Ok(n) => n
 		Err(NoEntry) => line
 	}
-	unknown = Text.sorted(t.keys().keep_if(|k| k != "ref" and k != "url" and k != "bin")).map(|k| { line: at(k), message: "unknown key tools.${key}.${k}" })
-	fail = |name, why| { line, entry: Err(Bad), bin: Err(Unset), issues: [{ line: at(name), message: "tools.${key}.${name}: ${why}" }], warnings: unknown }
+	unknown = Text.sorted(t.keys().keep_if(|k| k != "ref" and k != "url" and k != "bin")).map(|k| { line: at([k]), message: "unknown key tools.${key}.${k}" })
+	fail = |name, why| { line, entry: Err(Bad), bin: Err(Unset), issues: [{ line: at(name.split_on(".")), message: "tools.${key}.${name}: ${why}" }], warnings: unknown }
 	good = |ref, url| match read_bin(t) {
 		Err({ name, why }) => fail(name, why)
-		Ok(lock) => { line, entry: Ok({ key, ref, url, line }), bin: lock.map_ok(|b| { key, bin: b }), issues: [], warnings: unknown }
+		Ok({ lock, unknown_bin }) => {
+			bin_warnings = unknown_bin.map(|k| { line: at(["bin", k]), message: "unknown key tools.${key}.bin.${k}" })
+			{ line, entry: Ok({ key, ref, url, line }), bin: lock.map_ok(|b| { key, bin: b }), issues: [], warnings: unknown.concat(bin_warnings) }
+		}
 	}
 	match t.get("ref") {
 		Ok(Value.String(ref)) => match check_ref(ref) {
@@ -221,40 +225,48 @@ selector_text = |ref| match ref.split_first("@") {
 	Err(_) => ""
 }
 
-# R-PT19: `put` keeps `bin = false` of the entry that it replaces, and drops a `bin` table.
-keep_off : Toml, Str, Value -> Value
-keep_off = |doc, key, value| match (value, Toml.get(doc, ["tools", key, "bin"])) {
-	(Value.Table(t), Ok(Value.Boolean(b))) if !b => Value.Table(t.insert("bin", Value.Boolean(Bool.False)))
-	_ => value
+# R-PT19, R-TF8: the keys of the old entry that `put` keeps, in file order. `ref` and `url` are new, a `bin` table belongs to the old `url`, `bin = false` stays.
+old_keys : Toml, Str -> List((Str, Value))
+old_keys = |doc, key| match Toml.get(doc, ["tools", key]) {
+	Ok(Value.Table(t)) => t.to_list().keep_if(
+		|(name, v)| name != "ref" and name != "url" and (
+			name != "bin" or match v {
+				Value.Boolean(_) => Bool.True
+				_ => Bool.False
+			}
+		),
+	)
+	_ => []
 }
 
-# R-PT18: the value of a `bin` table.
-bin_value : List(ToolBin.Hash) -> Value
-bin_value = |hashes| Value.Table(Dict.from_list(hashes.map(|h| (h.target, Value.String(h.sha256)))))
+# R-PT18: the value of a `bin` table: the known targets, then the old keys that are no target (as written).
+bin_value : List(ToolBin.Hash), List((Str, Value)) -> Value
+bin_value = |hashes, unknown| Value.Table(Dict.from_list(hashes.map(|h| (h.target, Value.String(h.sha256))).concat(unknown)))
 
-# R-PT18, R-PT19: the entry `key` with its fields changed by `change`. The key `bin` goes first, `change` can add it again.
-edit_bin : Str, Str, Str, (List((Str, Value)) -> List((Str, Value))) -> Try(Str, Fail)
+# R-PT18, R-PT19: the entry `key` with its fields changed by `change`. The key `bin` goes first, `change` can add it again. `change` also gets the keys of the old `bin` table that are no target.
+edit_bin : Str, Str, Str, (List((Str, Value)), List((Str, Value)) -> List((Str, Value))) -> Try(Str, Fail)
 edit_bin = |path, text, key, change| match Toml.parse(text) {
 	Err(TomlErr(e)) => Err(Fail.new(Input, "${path}:${e.line.to_str()}: not valid TOML"))
 	Ok(doc) => match Toml.get(doc, ["tools", key]) {
 		Ok(Value.Table(t)) => {
 			kept = t.to_list().keep_if(|(name, _)| name != "bin")
-			fields = change(kept)
+			old_bin = match t.get("bin") {
+				Ok(Value.Table(bt)) => bt.to_list().keep_if(|(name, _)| !ToolBin.all_targets.contains(name))
+				_ => []
+			}
+			fields = change(kept, old_bin)
 			Toml.replace(doc, ["tools", key], Value.Table(Dict.from_list(fields))).map_ok(|done| done.to_str()).map_err(|_| Fail.new(Internal, "${path}: the key '${key}' is not there"))
 		}
 		_ => Err(Fail.new(Internal, "${path}: the key '${key}' is not there"))
 	}
 }
 
-# R-PT18: the key `bin` of an entry. A missing key is `Ok(Err(Unset))`, another form is the name and the reason of the issue.
-read_bin : Dict(Str, Value) -> Try(Try(ToolBin.Lock, [Unset]), { name : Str, why : Str })
+# R-PT18: the key `bin` of an entry. A missing key is `Err(Unset)` in `lock`, another form is the name and the reason of the issue. `unknown_bin` has the keys of the table that are no target (in file order, a warning, not checked).
+read_bin : Dict(Str, Value) -> Try({ lock : Try(ToolBin.Lock, [Unset]), unknown_bin : List(Str) }, { name : Str, why : Str })
 read_bin = |t| match t.get("bin") {
-	Err(_) => Ok(Err(Unset))
-	Ok(Value.Boolean(b)) => if b Err({ name: "bin", why: bin_form }) else Ok(Ok(Off))
-	Ok(Value.Table(bt)) => match Text.sorted(bt.keys()).find_first(|k| !ToolBin.all_targets.contains(k)) {
-		Ok(k) => Err({ name: "bin.${k}", why: "not a target (arm64mac, arm64musl, x64mac, x64musl, x64win)" })
-		Err(_) => read_hashes(bt)
-	}
+	Err(_) => Ok({ lock: Err(Unset), unknown_bin: [] })
+	Ok(Value.Boolean(b)) => if b Err({ name: "bin", why: bin_form }) else Ok({ lock: Ok(Off), unknown_bin: [] })
+	Ok(Value.Table(bt)) => read_hashes(bt).map_ok(|lock| { lock, unknown_bin: bt.keys().keep_if(|k| !ToolBin.all_targets.contains(k)) })
 	Ok(_) => Err({ name: "bin", why: bin_form })
 }
 

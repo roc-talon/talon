@@ -109,7 +109,7 @@ Intent := {
 					# R-TF8: a table that the role does not allow is no value of a known key.
 					if first.message.starts_with("the table [") Err(fail) else Err(Fail.with_hint(fail))
 				}
-				[] => Ok({ intent: scan.intent, warnings: scan.warnings.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
+				[] => Ok({ intent: scan.intent, warnings: by_line(scan.warnings).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
 			}
 		}
 	}
@@ -200,6 +200,15 @@ read_tables = |doc, role, text| {
 		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings).concat(unknown_keys(doc, "run", ["after"])),
 	}
 }
+
+# Slice 233, R-TF4: the warnings by line. Warnings of one line stay in the order that the readers gave (the sort alone is not stable).
+by_line : List(Note) -> List(Note)
+by_line = |notes| notes.map_with_index(|w, i| (w, i)).sort_with(
+	|(a, i), (b, j)| match TomlKeys.compare_lines(a.line, b.line) {
+		Same => TomlKeys.compare_lines(i, j)
+		other => other
+	},
+).map(|(w, _)| w)
 
 # R-TG3, R-TG4 (slice 054): `[build] target`. A bad value is no failure of the read: `target` is `Err(Unset)` and `bad` has the first problem (`Intent.build_check` is the failure, for an app).
 read_build : Toml -> { value : { target : Try(Str, [Unset]), bad : Try({ line : U64, message : Str }, [Valid]) }, warnings : List(Note) }

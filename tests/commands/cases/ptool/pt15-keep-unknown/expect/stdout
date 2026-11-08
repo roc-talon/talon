@@ -1,0 +1,7 @@
+== update --tool --file p1/main.roc
+$PROJECT/p1/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0
+== env:HOME={w}/home2 update --tool --file p2/main.roc
+moved tool foo 1.0.0 to 1.1.0 (acme/foo)
+$PROJECT/p2/talon.toml: tools.foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst" }
+exit 0

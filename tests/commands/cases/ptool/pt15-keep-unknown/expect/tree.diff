@@ -1,0 +1,23 @@
+--- home/.cache/roc/talon/index/github/acme/foo/1.json
++++ home/.cache/roc/talon/index/github/acme/foo/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"1.1.0","draft":false,"prerelease":false,"published_at":"2026-09-01T12:00:00Z","assets":[{"name": "AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", "size": 1048576, "digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000", "browser_download_url": "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst"}, {"name": "AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-x64musl", "size": 100, "digest": "sha256:7125e547ae305ff476a89009d3b2b9643f2d5da34c55c2914ca15262b686a238"}, {"name": "AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-arm64mac", "size": 100, "digest": "sha256:4c312d7655a95c10d6419304e256a8a56390294042fc39c95bd87ac56ba3f897"}, {"name": "AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY-x64mac", "size": 100, "digest": "sha256:b9edfe8f39bb57e075b763b82be25df19e16f7d4ea17ed0a01a912e04cf31dd4"}]},
++{"tag_name":"1.0.0","draft":false,"prerelease":false,"published_at":"2026-08-01T12:00:00Z","assets":[{"name":"GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst","size":1048576,"browser_download_url":"https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst"}]}
++]
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1792065600}]}
+--- project/p1/talon.toml
++++ project/p1/talon.toml
+@@ -1,2 +1,2 @@
+ [tools]
+-foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", bin = { x64musl = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", x64glibc = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" } }
++foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", bin = { arm64mac = "4c312d7655a95c10d6419304e256a8a56390294042fc39c95bd87ac56ba3f897", x64mac = "b9edfe8f39bb57e075b763b82be25df19e16f7d4ea17ed0a01a912e04cf31dd4", x64musl = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", x64glibc = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" } }
+--- project/p2/talon.toml
++++ project/p2/talon.toml
+@@ -1,2 +1,2 @@
+ [tools]
+-foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.0.0/GTD8yh6ExWViorE8u3JMyK9mC5b6FRuCgpd5xNhd7xtW.tar.zst", note = "keep", bin = { x64musl = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", x64glibc = "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc" } }
++foo = { ref = "acme/foo@^1", url = "https://github.com/acme/foo/releases/download/1.1.0/AL3LZTP3UWR21xDHSrJudR7Cb5ofsXBNqdwip4kv6fVY.tar.zst", note = "keep" }
