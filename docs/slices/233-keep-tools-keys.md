@@ -1,6 +1,6 @@
 # 233 Keep unknown `[tools]` keys
 
-Phase: P2. Status: done (TW24 texts wait for the user review)
+Phase: P2. Status: done (TW24 texts accepted by the user, 2026-11-08)
 
 ## Rules
 

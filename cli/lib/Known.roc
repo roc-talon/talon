@@ -59,12 +59,14 @@ update! = |fx, item, facts, refresh| {
 	text = match fx.read_files!([item]) {
 		[Ok(found)] => Ok(found)
 		[Err(NotFound)] => Err(Missing)
+		# No test covers this stop (R-TF9: a read error still stops): the fake Fx cannot fail this read. Change it only after careful thought.
 		other => return Err(Fail.new(Environment, "cannot read ${item}: ${Str.inspect(other)}"))
 	}
 	# R-TF9: a failure of kind `Input` (newer format, bad content) is one warning and no write. Kind `Environment` stops.
 	changed = match Projects.record({ path: item, text, cache: facts.roots.cache, files: facts.files, now: facts.now, refresh }) {
 		Ok(done) => done
 		Err(fail) => {
+			# No test covers this branch: the fake Fx cannot fail a read of projects.json. Change it only after careful thought.
 			if fail.kind != Input return Err(fail)
 			fx.err!("warning: Talon does not record this project. ${fail.message}\n")
 			Unchanged

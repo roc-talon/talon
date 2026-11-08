@@ -1,6 +1,6 @@
 # 232 Unknown tool source kind
 
-Phase: P2. Status: done (TW24 texts wait for the user's review)
+Phase: P2. Status: done (TW24 texts accepted by the user, 2026-11-08)
 
 ## Rules
 
