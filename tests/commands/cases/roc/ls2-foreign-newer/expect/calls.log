@@ -1,0 +1,25 @@
+args
+env_all
+tty
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-15-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-15-aaaaaaa/.last-use
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-15-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-15-aaaaaaa/.last-use
+args
+env_all
+tty
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+args
+env_all
+tty
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains

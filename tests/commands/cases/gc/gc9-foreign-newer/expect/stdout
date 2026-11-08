@@ -1,0 +1,15 @@
+== cache gc --dry-run
+would remove toolchain nightly-2026-08-01-aaaaaaa (281 B)
+would free 281 B
+dry run: nothing was removed
+exit 0
+== cache gc
+removed toolchain nightly-2026-08-01-aaaaaaa (281 B)
+freed 281 B
+exit 0
+== cache gc
+nothing to remove
+exit 0
+== cache clean --all --dry-run
+nothing to remove
+exit 0

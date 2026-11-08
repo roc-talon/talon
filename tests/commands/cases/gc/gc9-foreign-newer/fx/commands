@@ -1,0 +1,8 @@
+# R-GC5, R-TF3, F7, F14: GC age is 0 days. A dry run. nightly-2026-08-01-aaaaaaa (format 1, installed 2026-08-01) goes: it shows that GC runs. nightly-2026-08-02-bbbbbbb has format 2: its time is unknown, so it stays. toolchains/wasm-x (an unknown name form, old time) is not judged and stays. The default stays.
+cache gc --dry-run
+# R-GC5, R-TF3, F7, F14: the real run. The same set goes. The two other dirs stay.
+cache gc
+# R-GC5, F14: a second run removes nothing.
+cache gc
+# R-GC5, F14: cache clean (all) does not touch the toolchains dir.
+cache clean --all --dry-run

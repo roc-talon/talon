@@ -125,27 +125,24 @@ GitBuild :: [].{
 
 # The `installed_at` of a build that is of the repo and the ref (R-R5, R-R6). A row that is not readable, or has no such field, does not match.
 built_at : GitRef.Source, Manage.Read -> Try(U64, [NoMatch])
-built_at = |source, read| match read {
-	Ok(text) => match JsonDoc.parse(text) {
-		Ok(Obj(fields)) => {
-			repo = text_field(fields, "repo")
-			ref = text_field(fields, "ref")
-			sha = text_field(fields, "sha")
-			at = text_field(fields, "installed_at")
-			same_repo = repo == Ok(GitRef.repo_url(source))
-			same_ref = ref == Ok(source.ref) or (is_sha_text(source.ref) and sha_starts(sha, source.ref))
-			if same_repo and same_ref {
-				match at {
-					Ok(when) => Clock.parse_utc(when).map_err(|_| NoMatch)
-					Err(_) => Err(NoMatch)
-				}
-			} else {
-				Err(NoMatch)
+built_at = |source, read| match TalonFile.fields_of(read) {
+	Ok(fields) => {
+		repo = text_field(fields, "repo")
+		ref = text_field(fields, "ref")
+		sha = text_field(fields, "sha")
+		at = text_field(fields, "installed_at")
+		same_repo = repo == Ok(GitRef.repo_url(source))
+		same_ref = ref == Ok(source.ref) or (is_sha_text(source.ref) and sha_starts(sha, source.ref))
+		if same_repo and same_ref {
+			match at {
+				Ok(when) => Clock.parse_utc(when).map_err(|_| NoMatch)
+				Err(_) => Err(NoMatch)
 			}
+		} else {
+			Err(NoMatch)
 		}
-		_ => Err(NoMatch)
 	}
-	Err(_) => Err(NoMatch)
+	Err(None) => Err(NoMatch)
 }
 
 text_field : List((Str, JsonDoc)), Str -> Try(Str, [NoField])

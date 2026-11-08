@@ -1,7 +1,10 @@
 import lib.BinRecord
+import lib.Compiler
+import lib.Gc
 import lib.GitBuild
 import lib.JsonDoc
 import lib.Link
+import lib.Manage
 import lib.Setup
 import lib.ToolBinUse
 import lib.Toolchain
@@ -102,4 +105,89 @@ expect {
 	target = |text| Link.target({ id: "link-dev", path: "/c/roc/toolchains/link-dev/.talon.json", text: Ok(text) })
 	dbg (formats, target(link), target(newer(link)).is_err())
 	formats.all(|f| f == format_of(tc) and f > 0) and target(link) == Ok("/r/roc") and target(newer(link)).is_err()
+}
+
+# Slice 235 (docs/slices/235-one-talon-json-reader.md), R-TF3 (the `.talon.json` exception), R-NS1, R-LY1, R-CV5, R-GC5: all readers of `toolchains/<id>/.talon.json` read a text with `format` plus 1 as no fields.
+# The texts come from the real writers (Toolchain.meta, GitBuild.meta) and then `newer`, so the field names and the `format` are never a copy.
+nightly_id = "nightly-2026-06-01-6666666"
+
+git_id = "git-5a5a5a5a"
+
+git_source = { owner: "roc-lang", repo: "roc", ref: "main" }
+
+# The nightly record: `installed_at` and `published_at` are 2026-06-01 and 2026-05-31, `compat` is `6666666`.
+nightly_text : Str
+nightly_text = Toolchain.meta({ id: nightly_id, url: "https://example.com/roc.tar.gz", sha256: sha, typed: "@latest", compat: Ok("6666666"), now: 1780315200, published_at: 1780228800 })
+
+git_text : Str
+git_text = GitBuild.meta({ id: git_id, source: git_source, sha: Str.repeat("b", 40), sha256: sha, compat: Err(Unknown), now: 1780315200 })
+
+# R-TF3 R-NS1 R-LY1: control. With the current `format` each reader gets its field.
+expect {
+	times = Compiler.times([{ id: nightly_id, text: Ok(nightly_text) }])
+	rows = Manage.rows({ found: [{ id: nightly_id, meta: Ok(nightly_text), last_use: Err(NotFound) }], default: Err(Unset) })
+	compat = Manage.compat_of(Ok(nightly_text))
+	origins = Manage.origins([{ id: git_id, meta: Ok(git_text), last_use: Err(NotFound) }])
+	picked = GitBuild.newest({ source: git_source, rows: [{ id: git_id, text: Ok(git_text) }] })
+	dbg (times, rows.map(|r| r.installed_at), compat, origins.len(), picked)
+	times.len() == 1 and rows.map(|r| r.installed_at) == [Ok(1780315200)] and compat == Ok("6666666") and origins.len() == 1 and picked == Ok(git_id)
+}
+
+# R-TF3 R-NS1 (F7): `Compiler.times` (used by `Base`, `ResolveSelect` and `RocManage`) gives no time for a newer `format`, as for a missing time. Rank 4 then falls back to the tag text.
+expect {
+	times = Compiler.times([{ id: nightly_id, text: Ok(newer(nightly_text)) }])
+	dbg times
+	times == []
+}
+
+# R-TF3 R-LY1 (F7): `Manage.rows` (`roc list`, `roc rm`, GC) gives `Unknown` for `installed_at` of a newer `format`.
+expect {
+	rows = Manage.rows({ found: [{ id: nightly_id, meta: Ok(newer(nightly_text)), last_use: Err(NotFound) }], default: Err(Unset) })
+	dbg rows.map(|r| r.installed_at)
+	rows.map(|r| r.installed_at) == [Err(Unknown)]
+}
+
+# R-TF3 R-GC5 (F7): GC keeps a compiler with a newer `format` and no `.last-use`: both times are unknown, so `Keep(NoTime)`. The same compiler with the current `format` is old (2026-06-01) and goes. No project, GC age 30 days, now is 2026-10-22.
+expect {
+	now = 1792670400
+	verdict = |text| {
+		rows = Manage.rows({ found: [{ id: nightly_id, meta: Ok(text), last_use: Err(NotFound) }], default: Err(Unset) })
+		Gc.toolchains({ rows, projects: [], now, age: 30 * 86400 }).map(|c| c.verdict)
+	}
+	dbg (verdict(nightly_text), verdict(newer(nightly_text)))
+	verdict(nightly_text) == [Remove] and verdict(newer(nightly_text)) == [Keep(NoTime)]
+}
+
+# R-TF3 R-GC3 (F7): `Manage.compat_of` gives no compat id for a newer `format`, so GC and `roc rm` remove no `compat-<id>/` dir that they cannot tie to the compiler.
+expect {
+	compat = Manage.compat_of(Ok(newer(nightly_text)))
+	dbg compat
+	compat == Err(None)
+}
+
+# R-TF3 R-R15 (F7): `Manage.origins` (the SOURCE column of `roc list`) gives no origin for a newer `format`.
+expect {
+	origins = Manage.origins([{ id: git_id, meta: Ok(newer(git_text)), last_use: Err(NotFound) }])
+	dbg origins.len()
+	origins.is_empty()
+}
+
+# R-TF3 R-R5 R-R6 (F7): `GitBuild.newest` (`roc default --git`, the probes) skips a build with a newer `format`: no match. The older build with the current `format` wins.
+expect {
+	older = GitBuild.meta({ id: "git-1111aaaa", source: git_source, sha: Str.repeat("a", 40), sha256: sha, compat: Err(Unknown), now: 1780228800 })
+	only_newer = GitBuild.newest({ source: git_source, rows: [{ id: git_id, text: Ok(newer(git_text)) }] })
+	both = GitBuild.newest({ source: git_source, rows: [{ id: "git-1111aaaa", text: Ok(older) }, { id: git_id, text: Ok(newer(git_text)) }] })
+	dbg (only_newer, both)
+	only_newer == Err(None) and both == Ok("git-1111aaaa")
+}
+
+# R-TF3 R-LK4 (F7): `Link.target` is the one reader that still stops. A newer `format` of a `link-*` record is exit 19 (kind Input), and the text names `tln tool update talon`.
+expect {
+	link = Link.meta({ id: "link-dev", kind: Link, path: "/r/roc", now: 1792670400 })
+	got = Link.target({ id: "link-dev", path: "/c/roc/toolchains/link-dev/.talon.json", text: Ok(newer(link)) })
+	dbg got
+	match got {
+		Err(fail) => fail.kind == Input and fail.message.contains("tln tool update talon")
+		Ok(_) => Bool.False
+	}
 }

@@ -2,6 +2,7 @@ import Args
 import Clock
 import Fail
 import JsonDoc
+import TalonFile
 import Locked
 import ManageUpdate
 import ManageUse
@@ -339,15 +340,12 @@ Manage :: [].{
 
 # The JSON object of a `.talon.json` text, then the field `key`. Not JSON, not an object and no field are `Err(None)`.
 field_of : Manage.Read, Str -> Try(JsonDoc, [None])
-field_of = |read, key| match read {
-	Ok(body) => match JsonDoc.parse(body) {
-		Ok(JsonDoc.Obj(pairs)) => match pairs.find_first(|(name, _)| name == key) {
-			Ok((_, value)) => Ok(value)
-			Err(_) => Err(None)
-		}
-		_ => Err(None)
+field_of = |read, key| match TalonFile.fields_of(read) {
+	Ok(pairs) => match pairs.find_first(|(name, _)| name == key) {
+		Ok((_, value)) => Ok(value)
+		Err(_) => Err(None)
 	}
-	Err(_) => Err(None)
+	Err(None) => Err(None)
 }
 
 # R-LY1: a time field of `.talon.json` (a UTC text).

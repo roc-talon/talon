@@ -1,6 +1,6 @@
 import Clock
 import Fail
-import JsonDoc
+import TalonFile
 import Pin
 import Text
 import semver.Semver
@@ -250,13 +250,10 @@ is_compiler_dir = |name| {
 
 # R-NS1: the `published_at` of a `.talon.json` text. A file that is missing or does not read, text that is not JSON, and a missing or bad time have none.
 published_at_of : Try(Str, [NotFound, Denied, Other(Str)]) -> Try(U64, [NoTime])
-published_at_of = |text| match text {
-	Ok(body) => match JsonDoc.parse(body) {
-		Ok(Obj(pairs)) => match pairs.find_first(|(key, _)| key == "published_at") {
-			Ok((_, Text(when))) => Clock.parse_utc(when).map_err(|BadTime| NoTime)
-			_ => Err(NoTime)
-		}
+published_at_of = |text| match TalonFile.fields_of(text) {
+	Ok(pairs) => match pairs.find_first(|(key, _)| key == "published_at") {
+		Ok((_, Text(when))) => Clock.parse_utc(when).map_err(|BadTime| NoTime)
 		_ => Err(NoTime)
 	}
-	Err(_) => Err(NoTime)
+	Err(None) => Err(NoTime)
 }

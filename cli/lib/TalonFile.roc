@@ -52,6 +52,17 @@ TalonFile :: [].{
 		}
 	}
 
+	## The fields of a `toolchains/<id>/.talon.json` text, for a reader that does not stop on a bad file (R-TF3, the `.talon.json` exception).
+	## A missing file, a bad read, text that does not parse, no `format` and a newer `format` all give `Err(None)`: no fields.
+	fields_of : Try(Str, err) -> Try(List((Str, JsonDoc)), [None])
+	fields_of = |read| match read {
+		Ok(text) => match TalonFile.open({ path: "", text, newest: TalonFile.record_format, can_recreate: Bool.False }) {
+			Ok(Use(used)) => Ok(used.fields)
+			_ => Err(None)
+		}
+		Err(_) => Err(None)
+	}
+
 	## The text to write: the JSON object with `format` first, then `fields`, as `JsonDoc.render`, and one `\n` at the end.
 	## The form is a proposal (one line).
 	render : { format : U64, fields : List((Str, JsonDoc)) } -> Str

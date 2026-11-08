@@ -1,0 +1,47 @@
+args
+env_all
+tty
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa
+args
+env_all
+tty
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa
+lock $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa nowait: held
+random
+rename $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+tty
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/nightly-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+tty
+env_all
+list_dirs $HOME/.cache/roc
+tree_info $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x $HOME/.cache/roc/packages

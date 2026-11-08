@@ -1,0 +1,9 @@
+# R-TF3 (the .talon.json exception), R-LY1, F7: a record with a newer format reads as no fields. The row nightly-2026-10-15-aaaaaaa has `-` for INSTALLED, and it is still listed.
+# R-GC5, R-LY1, F14: the dir toolchains/wasm-x has a name form that this tln does not know. It is not listed.
+roc ls
+# R-J3: the same with --json. The newer record has installed_at null. wasm-x is not in compilers.
+roc list --json
+# R-GC5, F14: a foreign dir is not selected for removal. The name matches no compiler: exit 2, nothing is removed.
+roc rm wasm-x
+# R-GC5, F14: the same for a prefix.
+roc rm wasm
