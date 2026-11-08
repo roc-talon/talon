@@ -24,6 +24,10 @@ import TalonFile
 ## A field that Talon does not know stays when Talon writes the file (R-TF2). A newer `format` is exit 19 (R-TF3). A missing file is no tool.
 ToolsJson :: [].{
 
+	## The `format` of `tools.json` that this Talon writes (R-TF1, R-TF2).
+	format : U64
+	format = 1
+
 	## What a tool was built from. `Git` is the form of slice 048 (R-T23).
 	Source : [Release({ version : Str, url : Str }), Git({ commit : Str, ref : Str })]
 
@@ -225,9 +229,9 @@ tools_of = |path, fields| match fields.find_first(|(name, _)| name == "tools") {
 
 # A file that Talon reads and writes: `format` 1 at most, and it can not be made again from nothing (R-TF3).
 open_file : Str, Str -> Try({ format : U64, fields : List((Str, JsonDoc)) }, Fail)
-open_file = |path, text| match TalonFile.open({ path, text, newest: 1, can_recreate: Bool.False })? {
+open_file = |path, text| match TalonFile.open({ path, text, newest: ToolsJson.format, can_recreate: Bool.False })? {
 	Use(file) => Ok(file)
-	_ => Ok({ format: 1, fields: [] })
+	_ => Ok({ format: ToolsJson.format, fields: [] })
 }
 
 # One tool of the `tools` object. A check fails with the first thing that is wrong: no object, no name, no known source.
@@ -390,7 +394,7 @@ release_tool = |built| {
 }
 
 render_fields : List((Str, JsonDoc)) -> Str
-render_fields = |fields| TalonFile.render({ format: 1, fields })
+render_fields = |fields| TalonFile.render({ format: ToolsJson.format, fields })
 
 # The entry `talon` of the `tools` object (question Q-S1).
 talon_of : Str, JsonDoc -> Try(ToolsJson.Talon, Fail)

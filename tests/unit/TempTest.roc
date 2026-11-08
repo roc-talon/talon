@@ -105,3 +105,60 @@ expect {
 	dbg got
 	got == ["/c/roc/talon/tmp/0123456789abcdef.locks", "/c/roc/talon/tmp/1123456789abcdef.locks"]
 }
+
+# R-CC2 R-GC6: the forms of the stale kinds are fixed for all releases. Each form is stale after more than 1 day and is not stale at exactly 1 day: `<target>.<16hex>.tmp` (a file or a dir), `<item>.<16hex>.trash` (a dir), `<item>.lock.<16hex>.stale` (a lock dir, R-CC12), `talon/tmp/<16hex>/` (a dir) and `talon/tmp/<16hex>.locks` (a file).
+# The `.tmp`, the probe copy and the `.locks` ages are also in the tests above. The `.trash` and `.stale` ages are here.
+expect {
+	now = 2000000
+	day = 86400
+	e = |path, is_dir, mtime| { path, is_dir, mtime }
+	forms = [
+		("/c/roc/packages/h1.0123456789abcdef.tmp", Bool.False),
+		("/c/roc/packages/h2.0123456789abcdef.tmp", Bool.True),
+		("/c/roc/toolchains/n1.fedcba9876543210.trash", Bool.True),
+		("/c/roc/toolchains/n2.lock.0123456789abcdef.stale", Bool.True),
+		("/c/roc/talon/tmp/0123456789abcdef", Bool.True),
+		("/c/roc/talon/tmp/fedcba9876543210.locks", Bool.False),
+	]
+	old = forms.map(|(path, is_dir)| e(path, is_dir, now - day - 1))
+	edge = forms.map(|(path, is_dir)| e(path, is_dir, now - day))
+	young = forms.map(|(path, is_dir)| e(path, is_dir, now))
+	sorted = [
+		"/c/roc/packages/h1.0123456789abcdef.tmp",
+		"/c/roc/packages/h2.0123456789abcdef.tmp",
+		"/c/roc/talon/tmp/0123456789abcdef",
+		"/c/roc/talon/tmp/fedcba9876543210.locks",
+		"/c/roc/toolchains/n1.fedcba9876543210.trash",
+		"/c/roc/toolchains/n2.lock.0123456789abcdef.stale",
+	]
+	got_old = Temp.old({ entries: old, now })
+	got_edge = Temp.old({ entries: edge, now })
+	got_young = Temp.old({ entries: young, now })
+	dbg (got_old, got_edge, got_young)
+	got_old == sorted and got_edge == [] and got_young == []
+}
+
+# R-CC2: a name with another word, or a bad stamp, is never stale, also when it is very old. The forms are closed: `x.<16hex>.bak`, an upper case stamp, a stamp of 15 or 17 digits, a missing dot before the stamp, a stamp with no word, and `.del` (the sweep of R-ST10 owns it, not `tln cache gc`).
+expect {
+	now = 2000000
+	e = |path, is_dir| { path, is_dir, mtime: 0 }
+	entries = [
+		e("/c/roc/packages/x.0123456789abcdef.bak", Bool.False),
+		e("/c/roc/packages/x.0123456789abcdef.bak", Bool.True),
+		e("/c/roc/toolchains/n1.0123456789abcdef.old", Bool.True),
+		e("/c/roc/toolchains/n1.0123456789abcdef.stale.bak", Bool.True),
+		e("/c/roc/packages/x.0123456789ABCDEF.tmp", Bool.False),
+		e("/c/roc/toolchains/x.0123456789ABCDEF.trash", Bool.True),
+		e("/c/roc/toolchains/x.lock.0123456789abcde.stale", Bool.True),
+		e("/c/roc/toolchains/x.lock.0123456789abcdef0.stale", Bool.True),
+		e("/c/roc/packages/x0123456789abcdef.tmp", Bool.False),
+		e("/c/roc/toolchains/x0123456789abcdef.trash", Bool.True),
+		e("/c/roc/bin/tln.0123456789abcdef.del", Bool.False),
+		e("/c/roc/talon/tmp/0123456789abcdef.bak", Bool.True),
+		e("/c/roc/talon/tmp/0123456789ABCDEF", Bool.True),
+		e("/c/roc/talon/tmp/0123456789abcdef.locks.bak", Bool.False),
+	]
+	got = Temp.old({ entries, now })
+	dbg got
+	got == []
+}

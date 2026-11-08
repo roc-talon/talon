@@ -75,7 +75,7 @@ XCache :: [].{
 	## R-B9, R-TF1: the text of the manifest. `TalonFile.render` with `format` 1 and these fields, in this order: `name`, `source` (the object of `tools.json`: `{"kind":"release","version","url"}` or `{"kind":"git","commit","ref"}`), `build` (`{"hashes":[..],"nightly","target"}`), `sha256`, `libs`, `bundle`, `last_run`.
 	manifest_text : Entry -> Str
 	manifest_text = |entry| TalonFile.render({
-		format: 1,
+		format: TalonFile.manifest_format,
 		fields: [
 			("name", Text(entry.name)),
 			("source", ToolsJson.source_json(entry.source)),
@@ -97,7 +97,7 @@ XCache :: [].{
 	read : { path : Str, text : Str } -> [Use(Entry), Ignore, Delete(Str)]
 	read = |facts| {
 		bad = Delete("${facts.path}: the content does not parse. Talon deletes it and makes it again.")
-		match TalonFile.open({ path: facts.path, text: facts.text, newest: 1, can_recreate: Bool.True }) {
+		match TalonFile.open({ path: facts.path, text: facts.text, newest: TalonFile.manifest_format, can_recreate: Bool.True }) {
 			Ok(Use(file)) => match entry_of(file.fields) {
 				Ok(entry) => Use(entry)
 				Err(NoEntry) => bad

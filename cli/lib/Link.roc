@@ -99,7 +99,7 @@ Link :: [].{
 			Copy => "source"
 		}
 		TalonFile.render({
-			format: 1,
+			format: TalonFile.record_format,
 			fields: [("id", JsonDoc.Text(facts.id)), (key, JsonDoc.Text(facts.path)), ("installed_at", JsonDoc.Text(Clock.format_utc(facts.now)))],
 		})
 	}
@@ -120,7 +120,7 @@ Link :: [].{
 		Err(Other(text)) => Err(Fail.new(Environment, "cannot read ${facts.path}: ${text}"))
 		Ok(text) => {
 			no_path = Fail.new(Input, "${facts.path}: the link ${facts.id} has no absolute target path")
-			match TalonFile.open({ path: facts.path, text, newest: 1, can_recreate: Bool.False })? {
+			match TalonFile.open({ path: facts.path, text, newest: TalonFile.record_format, can_recreate: Bool.False })? {
 				Use(file) => match file.fields.find_first(|(key, _)| key == "path") {
 					Ok((_, JsonDoc.Text(target))) if target.starts_with("/") => Ok(target)
 					_ => Err(no_path)

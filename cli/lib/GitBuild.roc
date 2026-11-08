@@ -67,7 +67,7 @@ GitBuild :: [].{
 			Err(_) => JsonDoc.Null
 		}
 		TalonFile.render({
-			format: 1,
+			format: TalonFile.record_format,
 			fields: [
 				("id", JsonDoc.Text(facts.id)),
 				("repo", JsonDoc.Text(GitRef.repo_url(facts.source))),

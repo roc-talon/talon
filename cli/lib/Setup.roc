@@ -3,6 +3,7 @@ import Fail
 import JsonDoc
 import SetupText
 import TalonFile
+import ToolsJson
 import Text
 
 ## `tln setup` (slice 027, CLI 6.7: R-CM18, R-ST1 to R-ST15, R-NI13, R-NI14, R-LY8, R-LY9; Design 6.2: R-HF7, R-HF11). Part A (pure decisions) is here, and part C (the command code) is `SetupFlow.run!`.
@@ -226,7 +227,7 @@ Setup :: [].{
 	## | A `format` above 1 | Kind `Input`: `<path>: format <n> is newer than this tln (format 1). Run: tln tool update talon` |
 	## | `tools` is not an object | Kind `Input`: `<path>: tools is not an object` |
 	tool_names : { path : Str, text : Str } -> Try(List(Str), Fail)
-	tool_names = |facts| match TalonFile.open({ path: facts.path, text: facts.text, newest: 1, can_recreate: Bool.False })? {
+	tool_names = |facts| match TalonFile.open({ path: facts.path, text: facts.text, newest: ToolsJson.format, can_recreate: Bool.False })? {
 		Use(file) => match file.fields.find_first(|(key, _)| key == "tools") {
 			Ok((_, JsonDoc.Obj(tools))) => Ok(tools.map(|(name, _)| name))
 			Ok(_) => Err(Fail.new(Input, "${facts.path}: tools is not an object"))

@@ -310,7 +310,7 @@ Toolchain :: [].{
 			Err(_) => JsonDoc.Null
 		}
 		TalonFile.render({
-			format: 1,
+			format: TalonFile.record_format,
 			fields: [
 				("id", JsonDoc.Text(facts.id)),
 				("url", JsonDoc.Text(facts.url)),

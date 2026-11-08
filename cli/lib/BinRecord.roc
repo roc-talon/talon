@@ -1,6 +1,7 @@
 import Fail
 import JsonDoc
 import TalonFile
+import ToolsJson
 
 ## Slice 078 (CLI 6.4 R-T4, CLI 6.7 R-ST9, R-ST11, CLI 6.1 R-TF2): the record of the bin dir entries that Talon made. Part A (TESTING.md 2.2): pure decisions on the text of `tools.json`. The command code is in `SetupFlow`, `ToolBuild`, `XTake` and `TalonUpdateFlow`.
 ## The field is `bin`, an object in the entry of a tool: the name of a bin dir entry (no `.exe`) to the sha256 of the file that Talon put there. The `talon` entry has `tln` and `roc` (R-S6). `format` stays 1 (R-TF2).
@@ -46,7 +47,7 @@ BinRecord :: [].{
 					if changed == tools {
 						Ok(text)
 					} else {
-						Ok(TalonFile.render({ format: 1, fields: fields.map(|(name, doc)| if name == "tools" (name, Obj(changed)) else (name, doc)) }))
+						Ok(TalonFile.render({ format: ToolsJson.format, fields: fields.map(|(name, doc)| if name == "tools" (name, Obj(changed)) else (name, doc)) }))
 					}
 				}
 			}
@@ -73,7 +74,7 @@ BinRecord :: [].{
 
 # The fields of the file (`format` 1 at most, R-TF3). The failures are those of `ToolsJson.read`.
 fields_of : Str, Str -> Try(List((Str, JsonDoc)), Fail)
-fields_of = |path, text| match TalonFile.open({ path, text, newest: 1, can_recreate: Bool.False })? {
+fields_of = |path, text| match TalonFile.open({ path, text, newest: ToolsJson.format, can_recreate: Bool.False })? {
 	Use(file) => Ok(file.fields)
 	_ => Ok([])
 }

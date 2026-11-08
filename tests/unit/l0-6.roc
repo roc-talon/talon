@@ -7,6 +7,8 @@ import CleanTest
 import ClosureTest
 import CommonTest
 import FetchTest
+import FormatTest
+import FormatconstTest
 import IndexqueryTest
 import LookupTest
 import OptsTest

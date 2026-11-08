@@ -13,6 +13,10 @@ import Text
 ## No command calls this module yet: slice 206 and later slices choose the registry source of a compiler list. `Nightlies.list_registry!` is the seam.
 RegistryToolchains :: [].{
 
+	## The `format` of the registry compiler list file that this Talon writes (R-IX4, R-TF1).
+	format : U64
+	format = 1
+
 	## A row of R-RE4 on the wire (`records.Toolchain.Row`): `sha256` is bare lower-case hex, `published_at` is milliseconds (R-AP50), `log_index` is the position in the log (R-AP19).
 	Row : Wire.Row
 
@@ -25,7 +29,7 @@ RegistryToolchains :: [].{
 
 	## R-IX4, R-TF1: the text of the file: `{"format":1,"rows":[<row>,...]}`, no white space, a line end at the end. Each row is the text of `records.Toolchain.encode_row` (members `tag`, `target`, `asset_name`, `sha256`, `published_at`, `log_index` in this order). No row gives `{"format":1,"rows":[]}`.
 	file_text : List(Row) -> Str
-	file_text = |rows| "{\"format\":1,\"rows\":[${Str.join_with(rows.map(Wire.encode_row), ",")}]}\n"
+	file_text = |rows| "{\"format\":${format.to_str()},\"rows\":[${Str.join_with(rows.map(Wire.encode_row), ",")}]}\n"
 
 	## R-TF2, R-IX4 (slice 204b): the unknown members of a file text, as the text of their pairs (`"k":v,...`, no braces). `top` is those of the top object (not `format`, not `rows`). `rows` has one text for each row of `rows`, in order,
 	## with the members of that row that `records.Toolchain` does not know (`""` for none). A text that does not parse as `parse_file` reads it gives no member (`{ top: "", rows: [] }`).
@@ -47,7 +51,7 @@ RegistryToolchains :: [].{
 	file_text_keep = |rows, extras| {
 		texts = rows.map_with_index(|row, i| with_extra(Wire.encode_row(row), extras.rows.get(i) ?? ""))
 		tail = if extras.top.is_empty() "" else ",${extras.top}"
-		"{\"format\":1,\"rows\":[${Str.join_with(texts, ",")}]${tail}}\n"
+		"{\"format\":${format.to_str()},\"rows\":[${Str.join_with(texts, ",")}]${tail}}\n"
 	}
 
 	## The reverse of `file_text`. `Err(Bad)`: not JSON, no `format` or `rows` member, a row with a missing member or a member of the wrong type (R-IX4, R-TF6: the file is deleted and the read starts at `after=0`).
@@ -55,9 +59,9 @@ RegistryToolchains :: [].{
 	parse_file : Str -> Try(List(Row), [Bad, Newer])
 	parse_file = |text| match JsonDoc.parse(text) {
 		Ok(Obj(pairs)) => match member(pairs, "format") {
-			Ok(Num(n)) => if n > 1 {
+			Ok(Num(n)) => if n > format.to_i64_wrap() {
 				Err(Newer)
-			} else if n == 1 {
+			} else if n == format.to_i64_wrap() {
 				file_rows(pairs)
 			} else {
 				Err(Bad)

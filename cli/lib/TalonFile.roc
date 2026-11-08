@@ -6,6 +6,14 @@ import JsonDoc
 ## `fields` and is written again (R-TF2).
 TalonFile :: [].{
 
+	## The `format` of a manifest in `talon/x/` that this Talon writes (R-TF1, R-TF2).
+	manifest_format : U64
+	manifest_format = 1
+
+	## The `format` of `toolchains/<id>/.talon.json` that this Talon writes (R-TF1, R-TF2).
+	record_format : U64
+	record_format = 1
+
 	## Reads the text of a Talon file. `newest` is the `format` that this Talon writes. `can_recreate` is true for a
 	## file that Talon can make again (`path-roc.json`, a manifest in `talon/x/`: R-TF3).
 	##

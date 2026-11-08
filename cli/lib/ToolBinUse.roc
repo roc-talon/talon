@@ -82,7 +82,7 @@ ToolBinUse :: [].{
 	## R-PT22, R-B9, R-TF1: the text of the manifest: one line, `format` 1, and the fields in this order: `name`, `source` (`{"kind":"prebuilt","version","url"}`), `target`, `sha256`, `bundle`, `last_run`. There is no `build` field (no build id). The layout is a proposal (TW24).
 	manifest_text : ToolBinUse.Prebuilt -> Str
 	manifest_text = |entry| TalonFile.render({
-		format: 1,
+		format: TalonFile.manifest_format,
 		fields: [
 			("name", Text(entry.name)),
 			("source", Obj([("kind", Text("prebuilt")), ("version", Text(entry.version)), ("url", Text(entry.url))])),
@@ -95,7 +95,7 @@ ToolBinUse :: [].{
 
 	## R-PT22, R-TF1: the entry back from the text. A manifest that is not a prebuilt manifest (the kind `release` or `git`, another format) is `NotPrebuilt`: the caller reads it as a source entry (`XCache.read`).
 	read_manifest : Str -> Try(ToolBinUse.Prebuilt, [NotPrebuilt])
-	read_manifest = |text| match TalonFile.open({ path: "manifest.json", text, newest: 1, can_recreate: Bool.True }) {
+	read_manifest = |text| match TalonFile.open({ path: "manifest.json", text, newest: TalonFile.manifest_format, can_recreate: Bool.True }) {
 		Ok(Use(file)) => prebuilt_of(file.fields)
 		_ => Err(NotPrebuilt)
 	}

@@ -292,7 +292,7 @@ Zig :: [].{
 	## | `installed_at` | `Clock.format_utc(now)` (the time of Talon, `TALON_NOW`) |
 	meta : { version : Str, url : Str, sha256 : Str, now : U64 } -> Str
 	meta = |facts| TalonFile.render({
-		format: 1,
+		format: TalonFile.record_format,
 		fields: [
 			("id", JsonDoc.Text("zig-${facts.version}")),
 			("url", JsonDoc.Text(facts.url)),
