@@ -1,0 +1,6 @@
+# R-TF9 R-TF3: GC still stops on a projects.json of "format":2: exit 19, the file is named, nothing is removed
+cache gc
+# R-TF9 R-TF6: the same for content that does not parse
+env:HOME={w}/home2 cache gc
+# R-TF9, R-GC11: a dry run reads the same list, so it stops too
+cache gc --dry-run

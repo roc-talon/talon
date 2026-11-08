@@ -1,0 +1,6 @@
+== cache gc
+exit 19
+== env:HOME={w}/home2 cache gc
+exit 19
+== cache gc --dry-run
+exit 19

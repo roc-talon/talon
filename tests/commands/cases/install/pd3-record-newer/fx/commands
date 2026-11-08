@@ -1,0 +1,2 @@
+# R-TF9 R-PD9: projects.json has "format":2. `install --frozen` (the run 5 of install/in2-nocompiler) records the project file: the record step prints one warning and writes nothing, and the command goes on. The header satisfies talon.toml, so exit 0. Today the command stops with exit 19.
+install --frozen --file n5/main.roc

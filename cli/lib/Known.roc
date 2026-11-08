@@ -22,7 +22,7 @@ Known :: [].{
 	## | 4 | `Projects.record` with `refresh: Always` |
 	## | 5 | When the result is `Write(text)`: `write_atomic!` of the item (R-CC1). A failure is of kind `Environment`. |
 	##
-	## No `ask!` call in the lock (R-CC3 point 5). A failure of `Projects.record` is returned as it is (exit 19, R-TF6).
+	## No `ask!` call in the lock (R-CC3 point 5). A failure of `Projects.record` of kind `Input` is one warning on stderr and no write (R-TF9, R-TF3, R-TF6). A failure of kind `Environment` is returned as it is.
 	record! : Fx, { roots : Roots, files : List(Str), now : U64 } => Try({}, Fail)
 	record! = |fx, facts| record_with!(fx, facts, Always)
 
@@ -61,7 +61,15 @@ update! = |fx, item, facts, refresh| {
 		[Err(NotFound)] => Err(Missing)
 		other => return Err(Fail.new(Environment, "cannot read ${item}: ${Str.inspect(other)}"))
 	}
-	changed = Projects.record({ path: item, text, cache: facts.roots.cache, files: facts.files, now: facts.now, refresh })?
+	# R-TF9: a failure of kind `Input` (newer format, bad content) is one warning and no write. Kind `Environment` stops.
+	changed = match Projects.record({ path: item, text, cache: facts.roots.cache, files: facts.files, now: facts.now, refresh }) {
+		Ok(done) => done
+		Err(fail) => {
+			if fail.kind != Input return Err(fail)
+			fx.err!("warning: Talon does not record this project. ${fail.message}\n")
+			Unchanged
+		}
+	}
 	match changed {
 		Unchanged => Ok({})
 		Write(content) => match fx.write_atomic!([{ path: item, content }]) {

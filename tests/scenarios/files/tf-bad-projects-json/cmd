@@ -1,6 +1,8 @@
-# R-TF6 R-TF3 R-EC19 R-E4 R-CC3 R-CC6: projects.json cannot be made again. Content that does not parse, and a newer format, stop
-# the command with exit code 19 (input). The error line names the file. The file stays as it is. The lock is released,
-# also after the failure (R-CC3: unlock! runs when the body fails).
+# R-TF9 R-TF6 R-TF3 R-CC3 R-CC6 (slice 234): projects.json cannot be made again. Content that does not parse, and a newer
+# format, are failures of kind input. The record step does not stop on them: it prints one warning that names the file,
+# writes nothing, and the command goes on (exit 0). The file stays as it is. The lock is released (R-CC3).
+# GC still stops with exit code 19 on the same files (L2 case gc/gc8-projects-input). The probe line `recorded <n>` counts the
+# files that the command asked to record, not the files that were written.
 D="$XDG_CACHE_HOME/roc/talon"
 mkdir -p "$D"
 x=0

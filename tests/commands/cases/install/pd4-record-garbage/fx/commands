@@ -1,0 +1,2 @@
+# R-TF9 R-TF6 R-PD9: projects.json has content that does not parse. The same command: one warning, no write, the command goes on, exit 0. Today the command stops with exit 19.
+install --frozen --file n5/main.roc

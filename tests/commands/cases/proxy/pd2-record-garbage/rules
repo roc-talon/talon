@@ -1,0 +1,1 @@
+R-TF9 R-TF6 R-PD9 R-PD10 R-E1 (slice 234): the `roc` proxy with a `projects.json` whose content does not parse (cut off, as after a disk fault). In each of the 2 runs the record step prints one warning and writes nothing, and the proxy goes on: roc runs and its exit code 3 passes through (R-E1). Today the proxy stops with exit 19 (red). The warning text is a proposal (TW24).

@@ -1,0 +1,1 @@
+R-TF9 R-TF6 R-PD9 (slice 234): the same command with a `projects.json` whose content does not parse. One warning, no write, exit 0. Today exit 19 (red). The warning text is a proposal (TW24).

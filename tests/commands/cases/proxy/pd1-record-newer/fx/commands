@@ -1,0 +1,4 @@
+# R-TF9 R-PD10: projects.json has "format":2, newer than this tln. The record step prints one warning and writes nothing. The proxy goes on: roc runs and its exit code 3 passes through (R-E1). Today the proxy stops with exit 19.
+@roc build p1/main.roc
+# The same file in the next run: the same warning each time, the file is the same.
+@roc check p1/main.roc

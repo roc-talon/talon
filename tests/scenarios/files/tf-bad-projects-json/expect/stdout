@@ -1,7 +1,10 @@
-exit 19
+recorded 1
+exit 0
 garbage{
 lock released
-exit 19
+recorded 1
+exit 0
 {"format":2,"projects":[]}
-exit 19
+recorded 1
+exit 0
 {"format":1,"projects":[{"path":1}]}
