@@ -1,0 +1,10 @@
+run,time,nightly,hash,repo,target,result,wall_ms,cpu_ms,rss_kb
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,2B3sC6U2dWkVUK2VY2gJS5Wej9YCDo3ZYq2e7tMWUCNp,niclas-ahden/joy,any,pass,6070,280,98376
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,4viZsnWjdYsyH4Q87ESFAwM5c55Hnc15nAGW1UwzWpFU,roc-lang/basic-webserver,any,fail,8360,3810,172048
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,8mU1KkLF5L8UhHVrYwY66QCwH73omXWgDuwhn26ZjJab,niclas-ahden/roc-xml,any,pass,5710,310,107596
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,9UWLeQeJEUkXNGmZtibc1aqpL3gm6Li65GvXxsML5vFz,niclas-ahden/joy,any,fail,6080,270,99668
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,9yjxqdGTP4xSpSEmDazwTmRsehfRZzA19pwEKkR6fj1g,roc-lang/basic-cli,any,fail,2230,2120,136628
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,CKB1tEoRy7DWSWDQWqwQEdRyF7khLBjYpzbMuz97D2i4,niclas-ahden/roc-xml,any,fail,70,40,81796
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,Ce1qSM6yNhhF6UxSrQ3E4qaDDvqvsg2rtE7snUNHQJGi,niclas-ahden/joy,any,fail,470,110,94300
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,FpMTcemHxwRmDRCwnTtcrQeCRnqA5UcJ1TZzYL3iPtA4,niclas-ahden/roc-zip,any,pass,820,470,147376
+42428275982,2026-11-08T00:13:41Z,nightly-2026-10-28-bad769b,FwUgHLFzeUzCCKjezbh5nGFxMAN7sFZEgiaZ2UBAhrsK,imclerran/roc-isodate,any,pass,270,180,104720
