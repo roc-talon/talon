@@ -1,0 +1,12 @@
+== @roc +nightly-2026-10-14-38a3029 check in/main.roc
+exit 0
+== @roc +nightly-2026-10-14-38a3029 check out/main.roc
+exit 19
+== @roc check out/main.roc
+exit 19
+== @roc +nightly-2026-10-14-38a3029 check bad/main.roc
+exit 19
+== @roc +nightly-2026-10-14-38a3029 check wout/apps/a/main.roc
+exit 19
+== @roc +nightly-2026-10-14-38a3029 check win/apps/a/main.roc
+exit 0

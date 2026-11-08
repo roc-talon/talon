@@ -1,0 +1,5 @@
+[toolchain]
+tln = ">=0.0.1"
+
+[scripts]
+hi = "tool-a one"

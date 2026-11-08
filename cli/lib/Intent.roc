@@ -9,6 +9,7 @@ import Pin
 import Probe
 import Ranges
 import Text
+import TlnGate
 import ToolBin
 import ToolsToml
 import TomlKeys
@@ -102,6 +103,8 @@ Intent := {
 	read = |facts| match Toml.parse(facts.text) {
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(doc) => {
+			# R-TF10: the gate of the root file comes first. A member file has no `[toolchain]` (R-WS5).
+			if facts.role != Member TlnGate.gate({ path: facts.path, doc })?
 			scan = read_tables(doc, facts.role, facts.text)
 			match scan.issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
 				[first, ..] => {
@@ -345,7 +348,7 @@ read_toolchain = |doc| {
 	{
 		value: { roc: roc.value, roc_text, nightly: nightly.value },
 		issues: roc.issues.concat(nightly.issues),
-		warnings: unknown_keys(doc, "toolchain", ["roc", "nightly"]),
+		warnings: unknown_keys(doc, "toolchain", ["roc", "nightly", "tln"]),
 	}
 }
 

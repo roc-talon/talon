@@ -110,7 +110,7 @@ Rules for all slices: one rule group or one command path, about 400 lines of cod
 | 233 | Keep unknown `[tools]` keys | (status: done, file 233-keep-tools-keys.md) Unknown `bin` targets give a warning and are kept. An entry write keeps unknown subkeys (F4, F8). | R-PT18, R-PT19 | G-C237 (Design Q607) | D / none | 120 | Sonnet |
 | 234 | Record step never stops | (status: done, file 234-record-never-stops.md) `projects.json` failure of kind input in the record step: warning, no write. GC still exit 19 (F1). | R-TF9 | G-C237 (Design Q607) | D / none | 80 | Sonnet |
 | 235 | One `.talon.json` reader | (status: done, file 235-one-talon-json-reader.md) All readers use one function. A newer format reads as no fields. L2 for a foreign toolchains/ dir (F7, F14). | R-TF3, R-GC5 | G-C237 (Design Q607) | 230 / none | 120 | Sonnet |
-| 236 | tln version gate | Optional key in the root talon.toml. Each command and the proxy check it first: exit 19 (F3, user decision 2026-11-08). | (new id) | G-C237 (Design Q607) | 231 / none | 150 | Sonnet high |
+| 236 | tln version gate | (status: done, file 236-tln-version-gate.md) Optional key in the root talon.toml. Each command and the proxy check it first: exit 19 (F3, user decision 2026-11-08). | R-TF10 | G-C237 (Design Q607) | 231 / none | 150 | Sonnet high |
 
 ## 3. Test strategy
 

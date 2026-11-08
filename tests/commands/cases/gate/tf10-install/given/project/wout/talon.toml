@@ -1,0 +1,5 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[toolchain]
+tln = ">=999.0.0"

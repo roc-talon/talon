@@ -1,0 +1,2 @@
+# no roc on PATH: no compiler is selected (R-SO14)
+exe /fake/bin/tln 5000 1700000000

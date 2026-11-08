@@ -204,6 +204,7 @@ package
 		TalonUpdateFlow,
 		Temp,
 		Text,
+		TlnGate,
 		TomlKeys,
 		ToolBin,
 		ToolBinCheck,

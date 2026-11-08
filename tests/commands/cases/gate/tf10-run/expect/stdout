@@ -1,0 +1,8 @@
+== run hi cwd:in
+exit 0
+== run hi cwd:out
+exit 19
+== run hi cwd:bad
+exit 19
+== run hi cwd:wout/apps/a
+exit 19

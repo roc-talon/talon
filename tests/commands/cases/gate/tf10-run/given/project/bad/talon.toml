@@ -1,0 +1,5 @@
+[toolchain]
+tln = "banana"
+
+[scripts]
+hi = "tool-a one"

@@ -4,5 +4,7 @@ app [main!] { bot: "../../bot/lib/main.roc", lib: "../../cli/lib/main.roc", reco
 
 import BotTest
 import NewerhintTest
+import TlngateTest
+import TlngatepureTest
 
 main! = |_args| Ok({})

@@ -1,0 +1,177 @@
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/in/main.roc
+list_dirs $PROJECT/in
+list_dirs $PROJECT
+read_files $PROJECT/in/talon.toml
+read_files $PROJECT/in/main.roc
+canonical $PROJECT/in/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/in/main.roc $PROJECT/in/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/out/main.roc
+list_dirs $PROJECT/out
+list_dirs $PROJECT
+read_files $PROJECT/out/talon.toml
+read_files $PROJECT/out/main.roc
+canonical $PROJECT/out/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/out/main.roc $PROJECT/out/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/bad/main.roc
+list_dirs $PROJECT/bad
+list_dirs $PROJECT
+read_files $PROJECT/bad/talon.toml
+read_files $PROJECT/bad/main.roc
+canonical $PROJECT/bad/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/bad/main.roc $PROJECT/bad/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/num/main.roc
+list_dirs $PROJECT/num
+list_dirs $PROJECT
+read_files $PROJECT/num/talon.toml
+read_files $PROJECT/num/main.roc
+canonical $PROJECT/num/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/num/main.roc $PROJECT/num/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/none/main.roc
+list_dirs $PROJECT/none
+list_dirs $PROJECT
+read_files $PROJECT/none/talon.toml
+read_files $PROJECT/none/main.roc
+canonical $PROJECT/none/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/none/main.roc $PROJECT/none/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/both/main.roc
+list_dirs $PROJECT/both
+list_dirs $PROJECT
+read_files $PROJECT/both/talon.toml
+read_files $PROJECT/both/main.roc
+canonical $PROJECT/both/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/both/main.roc $PROJECT/both/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/wout/apps/a/main.roc
+list_dirs $PROJECT/wout/apps/a
+list_dirs $PROJECT/wout/apps
+list_dirs $PROJECT/wout
+list_dirs $PROJECT
+read_files $PROJECT/wout/talon.toml
+read_files $PROJECT/wout/apps/a/main.roc
+canonical $PROJECT/wout/apps/a/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/wout/apps/a/main.roc $PROJECT/wout/apps/a/talon.toml $PROJECT/wout/apps/talon.toml $PROJECT/wout/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/win/apps/a/main.roc
+list_dirs $PROJECT/win/apps/a
+list_dirs $PROJECT/win/apps
+list_dirs $PROJECT/win
+list_dirs $PROJECT
+read_files $PROJECT/win/talon.toml
+read_files $PROJECT/win/apps/a/main.roc
+canonical $PROJECT/win/apps/a/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/win/apps/a/main.roc $PROJECT/win/apps/a/talon.toml $PROJECT/win/apps/talon.toml $PROJECT/win/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq/main.roc $HOME/.cache/roc/packages/EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt/main.roc
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/wmem/apps/a/main.roc
+list_dirs $PROJECT/wmem/apps/a
+list_dirs $PROJECT/wmem/apps
+list_dirs $PROJECT/wmem
+list_dirs $PROJECT
+read_files $PROJECT/wmem/apps/a/talon.toml $PROJECT/wmem/talon.toml
+read_files $PROJECT/wmem/apps/a/main.roc
+canonical $PROJECT/wmem/apps/a/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/wmem/apps/a/main.roc $PROJECT/wmem/apps/a/talon.toml $PROJECT/wmem/apps/talon.toml $PROJECT/wmem/talon.toml $HOME/.config/talon/config.toml

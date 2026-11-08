@@ -1,0 +1,4 @@
+tln: error[input]: $PROJECT/out/talon.toml:2: this project needs tln >=999.0.0, this is tln 0.0.1. Run: tln tool update talon
+tln: error[input]: $PROJECT/bad/talon.toml:2: toolchain.tln: 'banana' is not a version range
+A newer tln may know this value. Update tln: tln tool update talon
+tln: error[input]: $PROJECT/wout/talon.toml:5: this project needs tln >=999.0.0, this is tln 0.0.1. Run: tln tool update talon

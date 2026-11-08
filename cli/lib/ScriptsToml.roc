@@ -1,4 +1,5 @@
 import Fail
+import TlnGate
 import TomlKeys
 import toml.Toml
 import toml.Value
@@ -57,6 +58,7 @@ ScriptsToml :: [].{
 	read = |facts| match Toml.parse(facts.text) {
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(doc) => {
+			TlnGate.gate({ path: facts.path, doc })?
 			found = read_table(doc)
 			match found.issues.first() {
 				Ok(issue) => Err(Fail.new(Input, "${facts.path}:${issue.line.to_str()}: ${issue.message}"))

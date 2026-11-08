@@ -1,0 +1,8 @@
+# R-TF10: the range admits this tln: the script runs
+run hi cwd:in
+# R-TF10: the range does not admit this tln: exit 19, no step runs
+run hi cwd:out
+# R-TF10 R-TF4 R-TF8: a range that does not parse: exit 19 and the hint line
+run hi cwd:bad
+# R-TF10 R-WS5: the root file of a workspace is outside the range
+run hi cwd:wout/apps/a

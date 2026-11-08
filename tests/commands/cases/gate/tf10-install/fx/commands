@@ -1,0 +1,18 @@
+# R-TF10: the range admits this tln: no stop and no warning (the key is a known key)
+install --frozen --file in/main.roc
+# R-TF10: the range does not admit this tln: exit 19 and the text of the design, before any other work
+install --frozen --file out/main.roc
+# R-TF10 R-TF4 R-TF8 (Q609): a range that does not parse: exit 19 and the hint line
+install --frozen --file bad/main.roc
+# R-TF10 R-TF4 R-TF8: a value that is not a string: exit 19 and the hint line
+install --frozen --file num/main.roc
+# R-TF10: a [toolchain] table with no key tln: no gate
+install --frozen --file none/main.roc
+# R-TF10: the gate fails and the file has another fault: the gate message
+install --frozen --file both/main.roc
+# R-TF10 R-WS5: the root file of a workspace is outside the range: exit 19, the root file in the message
+install --frozen --file wout/apps/a/main.roc
+# R-TF10 R-WS5: the root file is inside the range
+install --frozen --file win/apps/a/main.roc
+# R-TF10 R-WS5: only the root file counts. The member file has the key (outside the range): the failure is R-WS5 (a member file has no [toolchain]), not the gate
+install --frozen --file wmem/apps/a/main.roc

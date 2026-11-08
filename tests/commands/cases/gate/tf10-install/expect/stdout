@@ -1,0 +1,21 @@
+== install --frozen --file in/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --file out/main.roc
+exit 19
+== install --frozen --file bad/main.roc
+exit 19
+== install --frozen --file num/main.roc
+exit 19
+== install --frozen --file none/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --file both/main.roc
+exit 19
+== install --frozen --file wout/apps/a/main.roc
+exit 19
+== install --frozen --file win/apps/a/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --file wmem/apps/a/main.roc
+exit 19

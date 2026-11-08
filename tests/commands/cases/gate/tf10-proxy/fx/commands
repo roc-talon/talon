@@ -1,0 +1,12 @@
+# R-TF10: the range admits this tln: the proxy runs the compiler (rank 1)
+@roc +nightly-2026-10-14-38a3029 check in/main.roc
+# R-TF10: the range does not admit this tln: exit 19, no compiler is run, no .last-use
+@roc +nightly-2026-10-14-38a3029 check out/main.roc
+# R-TF10: the same for rank 3 (the pin of the header)
+@roc check out/main.roc
+# R-TF10 R-TF4 R-TF8: a range that does not parse: exit 19 and the hint line, no compiler
+@roc +nightly-2026-10-14-38a3029 check bad/main.roc
+# R-TF10 R-WS5: the root file of the workspace is outside the range
+@roc +nightly-2026-10-14-38a3029 check wout/apps/a/main.roc
+# R-TF10 R-WS5: the root file is inside the range
+@roc +nightly-2026-10-14-38a3029 check win/apps/a/main.roc

@@ -1,0 +1,107 @@
+args
+env_all
+clock
+cwd
+canonical $PROJECT/in/main.roc
+list_dirs $PROJECT/in
+list_dirs $PROJECT
+read_files $PROJECT/in/talon.toml
+read_files $PROJECT/in/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/in/main.roc $PROJECT/in/talon.toml
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc check in/main.roc
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
+args
+env_all
+clock
+cwd
+canonical $PROJECT/out/main.roc
+list_dirs $PROJECT/out
+list_dirs $PROJECT
+read_files $PROJECT/out/talon.toml
+read_files $PROJECT/out/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/out/main.roc $PROJECT/out/talon.toml
+args
+env_all
+clock
+cwd
+canonical $PROJECT/out/main.roc
+list_dirs $PROJECT/out
+list_dirs $PROJECT
+read_files $PROJECT/out/talon.toml
+read_files $PROJECT/out/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/out/main.roc $PROJECT/out/talon.toml $HOME/.config/talon/config.toml
+args
+env_all
+clock
+cwd
+canonical $PROJECT/bad/main.roc
+list_dirs $PROJECT/bad
+list_dirs $PROJECT
+read_files $PROJECT/bad/talon.toml
+read_files $PROJECT/bad/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/bad/main.roc $PROJECT/bad/talon.toml
+args
+env_all
+clock
+cwd
+canonical $PROJECT/wout/apps/a/main.roc
+list_dirs $PROJECT/wout/apps/a
+list_dirs $PROJECT/wout/apps
+list_dirs $PROJECT/wout
+list_dirs $PROJECT
+read_files $PROJECT/wout/talon.toml
+read_files $PROJECT/wout/apps/a/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/wout/apps/a/main.roc $PROJECT/wout/talon.toml
+args
+env_all
+clock
+cwd
+canonical $PROJECT/win/apps/a/main.roc
+list_dirs $PROJECT/win/apps/a
+list_dirs $PROJECT/win/apps
+list_dirs $PROJECT/win
+list_dirs $PROJECT
+read_files $PROJECT/win/talon.toml
+read_files $PROJECT/win/apps/a/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/win/apps/a/main.roc $PROJECT/win/talon.toml
+list_dirs $HOME/.cache/roc/toolchains
+write_atomic $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+canonical $HOME/.cache $HOME/.cache/roc
+exec $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc check win/apps/a/main.roc
+  env XDG_CACHE_HOME=$HOME/.cache
+  env ROC_CACHE_DIR=$HOME/.cache/roc
+  env TALON_IN_PROXY=1
