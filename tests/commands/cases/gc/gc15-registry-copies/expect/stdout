@@ -1,0 +1,31 @@
+== cache gc --dry-run
+would remove $HOME/.cache/roc/talon/index/registry/https_old.example.org (135 B)
+would remove $HOME/.cache/roc/talon/index/registry/https_over.example.org (23 B)
+would remove $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json (44 B)
+would remove $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta (68 B)
+would remove $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json (44 B)
+would remove $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta (68 B)
+would free 382 B
+dry run: nothing was removed
+exit 0
+== cache gc --json
+{"schema":1,"command":"cache gc","ok":true,"data":{"dry_run":false,"ran":true,"toolchains":[],"skipped":[],"compat":[],"stale":[],"builds":["$HOME/.cache/roc/talon/index/registry/https_old.example.org","$HOME/.cache/roc/talon/index/registry/https_over.example.org","$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json","$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta","$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json","$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta"],"packages":[],"projects":[],"sizes":[{"item":"$HOME/.cache/roc/talon/index/registry/https_old.example.org","bytes":135},{"item":"$HOME/.cache/roc/talon/index/registry/https_over.example.org","bytes":23},{"item":"$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json","bytes":44},{"item":"$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta","bytes":68},{"item":"$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json","bytes":44},{"item":"$HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta","bytes":68}],"freed":382},"error":null}
+exit 0
+== cache gc
+nothing to remove
+exit 0
+== env:HOME={w}/home/h2 env:TALON_REGISTRY=http://127.0.0.1:8787 cache gc
+removed $HOME/h2/.cache/roc/talon/index/registry/https_current.example.org (135 B)
+removed $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.json (44 B)
+removed $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.meta (68 B)
+removed $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.json (44 B)
+removed $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.meta (68 B)
+freed 359 B
+exit 0
+== env:HOME={w}/home/h3 cache gc --registry direct
+removed $HOME/h3/.cache/roc/talon/index/registry/https_current.example.org (135 B)
+removed $HOME/h3/.cache/roc/talon/index/registry/https_old.example.org (135 B)
+freed 270 B
+exit 0
+== env:HOME={w}/home/h4 cache gc
+exit 19

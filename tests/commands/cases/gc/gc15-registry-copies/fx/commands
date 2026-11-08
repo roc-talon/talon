@@ -1,0 +1,20 @@
+# R-GC15, R-IX1, R-IX2, R-IX5, R-GC9, R-GC11 (slice 237, Design Q611 = G-C241): the registry copies. TALON_NOW and the clock of the fake are both 2026-10-15T12:00:00Z (1792065600), gc-age is the default (30 days: 2592000 s), so the cut is 1789473600. config.toml: registry = "https://current.example.org".
+# talon/index/registry/ has these dirs. The pages of the registry of the run (https_current.example.org/get/), by the time of the meta (R-IX2):
+#   0..01 (meta very old: the page goes, both files, though the body file is young), 0..02 (1 s more than the age: goes), 0..03 (exactly the age: stays), 0..04 (young: stays), 0..05 (a meta in the future: stays),
+#   0..06 (an old body with a young meta: stays, the meta decides), notes.meta (not a page name: stays, proposal). toolchains.json of that dir is very old and stays (R-GC15: it keeps it).
+# Dirs of other registries (the whole dir goes when no file in it changed in the GC age): https_old.example.org (all files very old: goes), http_127.0.0.1_8787 (one young meta: the dir stays, and no page of it is judged, Open Q2),
+#   https_edge.example.org (its newest file is exactly the age: stays), https_over.example.org (1 s more: goes).
+# talon/index/github/ (an old file) has no GC rule: stays.
+# A new listing and its `tree_info` are asked only when talon/index has a dir `registry` (the cases of the other rules keep their calls.log).
+cache gc --dry-run
+# R-J3: the real run with --json. The delete has the paths in the order of the report. The registry items are in `builds` (proposal, Open Q3).
+cache gc --json
+# The second run removes nothing: the dirs that stay are asked again (tree_info), the pages that stay are listed again, no delete.
+cache gc
+# R-RG1, R-GC15: TALON_REGISTRY wins over config.toml. h2 has the config registry https://current.example.org, the variable gives http://127.0.0.1:8787. So https_current.example.org (all files very old) is another registry and goes.
+# The dir of the registry of the run (http_127.0.0.1_8787, all files very old) stays whole with its toolchains.json, and its 2 old pages (d, e) go, 4 files.
+env:HOME={w}/home/h2 env:TALON_REGISTRY=http://127.0.0.1:8787 cache gc
+# R-IX5, R-GC15: with `direct` (--registry direct) no registry dir is the dir of the run (direct uses only talon/index/github/). h3: https_old.example.org and https_current.example.org (all very old) go, https_new.example.org (one young file) stays. No page is judged.
+env:HOME={w}/home/h3 cache gc --registry direct
+# R-GC15, R-RG7 row 6, R-TF4, R-TF8 (Q1 of the slice file, Design Q611): a bad registry text in config.toml (h4, with an old dir of another registry). GC stops before it lists or removes anything: exit 19, the error line and the hint line, nothing removed.
+env:HOME={w}/home/h4 cache gc

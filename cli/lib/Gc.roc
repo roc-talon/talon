@@ -6,6 +6,7 @@ import JsonDoc
 import Locked
 import Manage
 import Release
+import RegistryCache
 import Roots
 import Text
 import Toolchain
@@ -236,6 +237,31 @@ Gc :: [].{
 		{ pkgs: Text.sorted_unique(pkgs.map(|one| one.path)), builds: Text.sorted_unique(builds.map(|one| one.path)) }
 	}
 
+	## R-GC15, R-IX2, R-GC9 (slice 237): the files of the old pages of `dir` (`<origin dir>/get` of the registry of the run). `entries` is its `Gc.entries`-like listing. Only `<32 lower-case hex digits>.json` and `.meta` are pages.
+	## A page goes (both files) when its meta is older than `age` (`is_over`: exactly the age stays, a time in the future stays). A half page is aged by its own file, and only that file is listed. The result is sorted by path.
+	index_pages : { dir : Str, entries : List({ name : Str, is_dir : Bool, mtime : U64 }), now : U64, age : U64 } -> List(Str)
+	index_pages = |facts| {
+		pages = facts.entries.keep_if(|e| !e.is_dir and is_page_name(e.name))
+		# R-IX2: the age of a page is the time of its meta, when it has one.
+		aged_by = |e| match pages.find_first(|m| m.name == "${key_of(e.name)}.meta") {
+			Ok(meta) => meta.mtime
+			Err(_) => e.mtime
+		}
+		old = pages.keep_if(|e| is_over(aged_by(e), facts.now, facts.age))
+		Text.sorted_unique(old.map(|e| Text.join(facts.dir, e.name)))
+	}
+
+	## R-GC15, R-IX1, R-IX5 (slice 237): the dirs of `<index>/registry` that are candidates: each dir that is not the dir of the registry of the run (`RegistryCache.origin_dir`). `Direct` has no dir, so each dir is a candidate. A file is no dir of a registry.
+	## `entries` is the `Gc.entries` of the listing of `<index>/registry`. The age test is `Gc.expired`. The result is sorted by path.
+	index_dirs : { roots : Roots, current : [Direct, Registry(Str)], entries : List({ path : Str, is_dir : Bool, mtime : U64 }) } -> List(Str)
+	index_dirs = |facts| {
+		own = match facts.current {
+			Direct => ""
+			Registry(origin) => RegistryCache.origin_dir({ roots: facts.roots, origin })
+		}
+		Text.sorted_unique(facts.entries.keep_if(|e| e.is_dir and e.path != own).map(|e| e.path))
+	}
+
 	## R-GC2, R-GC3, R-GC13: a name of a build-cache dir: `compat-`, `nightly-` or `debug-` and one more character. `Clean.asks` uses it too.
 	is_build_name : Str -> Bool
 	is_build_name = |name| ["compat-", "nightly-", "debug-"].any(|prefix| name.starts_with(prefix) and name.count_utf8_bytes() > prefix.count_utf8_bytes())
@@ -374,3 +400,14 @@ id_of = |facts| if Ident.of_url(facts.value).is_ok() {
 } else {
 	Ok(Text.resolve(facts.dir, facts.value))
 }
+
+# R-IX2: `<32 lower-case hex digits>.json` or `.meta`.
+is_page_name : Str -> Bool
+is_page_name = |name| (name.ends_with(".json") or name.ends_with(".meta")) and {
+	key = key_of(name)
+	key.count_utf8_bytes() == 32 and key.to_utf8().all(|b| (b >= 48 and b <= 57) or (b >= 97 and b <= 102))
+}
+
+# The name without its last extension.
+key_of : Str -> Str
+key_of = |name| Str.join_with(name.split_on(".").drop_last(1), ".")

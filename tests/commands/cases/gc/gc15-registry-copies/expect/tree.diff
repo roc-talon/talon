@@ -1,0 +1,92 @@
+--- home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json
++++ home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json
+@@ -1 +0,0 @@
+-{"page":"00000000000000000000000000000001"}
+--- home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta
++++ home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=00000000000000000000000000000001
+-max-age 300
+--- home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json
++++ home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json
+@@ -1 +0,0 @@
+-{"page":"00000000000000000000000000000002"}
+--- home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta
++++ home/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=00000000000000000000000000000002
+-max-age 300
+--- home/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000a.json
++++ home/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000a.json
+@@ -1 +0,0 @@
+-{"page":"0000000000000000000000000000000a"}
+--- home/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000a.meta
++++ home/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000a.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=0000000000000000000000000000000a
+-max-age 300
+--- home/.cache/roc/talon/index/registry/https_old.example.org/toolchains.json
++++ home/.cache/roc/talon/index/registry/https_old.example.org/toolchains.json
+@@ -1 +0,0 @@
+-{"format":1,"rows":[]}
+--- home/.cache/roc/talon/index/registry/https_over.example.org/toolchains.json
++++ home/.cache/roc/talon/index/registry/https_over.example.org/toolchains.json
+@@ -1 +0,0 @@
+-{"format":1,"rows":[]}
+--- home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.json
++++ home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.json
+@@ -1 +0,0 @@
+-{"page":"0000000000000000000000000000000d"}
+--- home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.meta
++++ home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=0000000000000000000000000000000d
+-max-age 300
+--- home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.json
++++ home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.json
+@@ -1 +0,0 @@
+-{"page":"0000000000000000000000000000000e"}
+--- home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.meta
++++ home/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=0000000000000000000000000000000e
+-max-age 300
+--- home/h2/.cache/roc/talon/index/registry/https_current.example.org/get/0000000000000000000000000000000c.json
++++ home/h2/.cache/roc/talon/index/registry/https_current.example.org/get/0000000000000000000000000000000c.json
+@@ -1 +0,0 @@
+-{"page":"0000000000000000000000000000000c"}
+--- home/h2/.cache/roc/talon/index/registry/https_current.example.org/get/0000000000000000000000000000000c.meta
++++ home/h2/.cache/roc/talon/index/registry/https_current.example.org/get/0000000000000000000000000000000c.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=0000000000000000000000000000000c
+-max-age 300
+--- home/h2/.cache/roc/talon/index/registry/https_current.example.org/toolchains.json
++++ home/h2/.cache/roc/talon/index/registry/https_current.example.org/toolchains.json
+@@ -1 +0,0 @@
+-{"format":1,"rows":[]}
+--- home/h3/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000010.json
++++ home/h3/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000010.json
+@@ -1 +0,0 @@
+-{"page":"00000000000000000000000000000010"}
+--- home/h3/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000010.meta
++++ home/h3/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000010.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=00000000000000000000000000000010
+-max-age 300
+--- home/h3/.cache/roc/talon/index/registry/https_current.example.org/toolchains.json
++++ home/h3/.cache/roc/talon/index/registry/https_current.example.org/toolchains.json
+@@ -1 +0,0 @@
+-{"format":1,"rows":[]}
+--- home/h3/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000f.json
++++ home/h3/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000f.json
+@@ -1 +0,0 @@
+-{"page":"0000000000000000000000000000000f"}
+--- home/h3/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000f.meta
++++ home/h3/.cache/roc/talon/index/registry/https_old.example.org/get/0000000000000000000000000000000f.meta
+@@ -1,2 +0,0 @@
+-url /v1/releases?group=0000000000000000000000000000000f
+-max-age 300
+--- home/h3/.cache/roc/talon/index/registry/https_old.example.org/toolchains.json
++++ home/h3/.cache/roc/talon/index/registry/https_old.example.org/toolchains.json
+@@ -1 +0,0 @@
+-{"format":1,"rows":[]}

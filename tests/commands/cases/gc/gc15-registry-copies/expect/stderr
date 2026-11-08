@@ -1,0 +1,9 @@
+removed $HOME/.cache/roc/talon/index/registry/https_old.example.org (135 B)
+removed $HOME/.cache/roc/talon/index/registry/https_over.example.org (23 B)
+removed $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json (44 B)
+removed $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta (68 B)
+removed $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json (44 B)
+removed $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta (68 B)
+freed 382 B
+tln: error[input]: $HOME/h4/.config/talon/config.toml:1: registry: 'ftp://bad' is not a registry URL. Use direct, an https:// URL, or an http:// URL of 127.0.0.1, [::1] or localhost, with no path.
+A newer tln may know this value. Update tln: tln tool update talon

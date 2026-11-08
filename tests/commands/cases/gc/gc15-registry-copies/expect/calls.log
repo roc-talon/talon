@@ -1,0 +1,77 @@
+args
+env_all
+tty
+env_all
+clock
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+list_dirs $HOME/.cache/roc/talon/index/registry
+list_dirs $HOME/.cache/roc/talon/index/registry/https_current.example.org/get
+read_files $HOME/.cache/roc/talon/projects.json
+tree_info $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_8787 $HOME/.cache/roc/talon/index/registry/https_edge.example.org $HOME/.cache/roc/talon/index/registry/https_old.example.org $HOME/.cache/roc/talon/index/registry/https_over.example.org $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta
+args
+env_all
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+list_dirs $HOME/.cache/roc/talon/index/registry
+list_dirs $HOME/.cache/roc/talon/index/registry/https_current.example.org/get
+read_files $HOME/.cache/roc/talon/projects.json
+tree_info $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_8787 $HOME/.cache/roc/talon/index/registry/https_edge.example.org $HOME/.cache/roc/talon/index/registry/https_old.example.org $HOME/.cache/roc/talon/index/registry/https_over.example.org $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta
+delete $HOME/.cache/roc/talon/index/registry/https_old.example.org $HOME/.cache/roc/talon/index/registry/https_over.example.org $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.json $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000001.meta $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.json $HOME/.cache/roc/talon/index/registry/https_current.example.org/get/00000000000000000000000000000002.meta
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+tty
+env_all
+clock
+lock $HOME/.cache/roc/talon/gc nowait: held
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains $HOME/.cache/roc/packages $HOME/.cache/roc/talon $HOME/.cache/roc/talon/tmp $HOME/.cache/roc/talon/index $HOME/.cache/roc/talon/x
+list_dirs $HOME/.cache/roc
+list_dirs $HOME/.cache/roc/talon/index/registry
+list_dirs $HOME/.cache/roc/talon/index/registry/https_current.example.org/get
+read_files $HOME/.cache/roc/talon/projects.json
+tree_info $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_8787 $HOME/.cache/roc/talon/index/registry/https_edge.example.org
+unlock $HOME/.cache/roc/talon/gc
+args
+env_all
+tty
+env_all
+clock
+lock $HOME/h2/.cache/roc/talon/gc nowait: held
+read_files $HOME/h2/.config/talon/config.toml
+list_dirs $HOME/h2/.cache/roc/toolchains $HOME/h2/.cache/roc/packages $HOME/h2/.cache/roc/talon $HOME/h2/.cache/roc/talon/tmp $HOME/h2/.cache/roc/talon/index $HOME/h2/.cache/roc/talon/x
+list_dirs $HOME/h2/.cache/roc
+list_dirs $HOME/h2/.cache/roc/talon/index/registry
+list_dirs $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get
+read_files $HOME/h2/.cache/roc/talon/projects.json
+tree_info $HOME/h2/.cache/roc/talon/index/registry/https_current.example.org $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.json $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.meta $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.json $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.meta
+delete $HOME/h2/.cache/roc/talon/index/registry/https_current.example.org $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.json $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000d.meta $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.json $HOME/h2/.cache/roc/talon/index/registry/http_127.0.0.1_8787/get/0000000000000000000000000000000e.meta
+unlock $HOME/h2/.cache/roc/talon/gc
+args
+env_all
+tty
+env_all
+clock
+lock $HOME/h3/.cache/roc/talon/gc nowait: held
+read_files $HOME/h3/.config/talon/config.toml
+list_dirs $HOME/h3/.cache/roc/toolchains $HOME/h3/.cache/roc/packages $HOME/h3/.cache/roc/talon $HOME/h3/.cache/roc/talon/tmp $HOME/h3/.cache/roc/talon/index $HOME/h3/.cache/roc/talon/x
+list_dirs $HOME/h3/.cache/roc
+list_dirs $HOME/h3/.cache/roc/talon/index/registry
+read_files $HOME/h3/.cache/roc/talon/projects.json
+tree_info $HOME/h3/.cache/roc/talon/index/registry/https_current.example.org $HOME/h3/.cache/roc/talon/index/registry/https_new.example.org $HOME/h3/.cache/roc/talon/index/registry/https_old.example.org
+delete $HOME/h3/.cache/roc/talon/index/registry/https_current.example.org $HOME/h3/.cache/roc/talon/index/registry/https_old.example.org
+unlock $HOME/h3/.cache/roc/talon/gc
+args
+env_all
+tty
+env_all
+clock
+lock $HOME/h4/.cache/roc/talon/gc nowait: held
+read_files $HOME/h4/.config/talon/config.toml
+unlock $HOME/h4/.cache/roc/talon/gc

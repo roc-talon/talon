@@ -5,14 +5,19 @@ import Compiler
 import Fail
 import Fx
 import Gather
+import Item
 import Gc
+import IndexQuery
 import Known
+import Net
 import Manage
 import Out
 import Projects
+import RegistryCache
 import RocInstall
 import Roots
 import Temp
+import Text
 import ToolsHeld
 import Trash
 import XCache
@@ -44,7 +49,7 @@ CacheGc :: [].{
 	run! : Fx, Args => I32
 	run! = |fx, args| match Gc.read(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok(plan) => match gc_flow!(fx, plan) {
+		Ok(plan) => match gc_flow!(fx, plan, args.registry) {
 			Ok(done) => {
 				print!(fx, args, done)
 				0
@@ -70,15 +75,15 @@ CacheGc :: [].{
 Clocks : { real : U64, now : U64 }
 
 # What GC did, for the output. No lock for a dry run (Q4).
-gc_flow! : Fx, Gc.Plan => Try(Gc.Done, Fail)
-gc_flow! = |fx, plan| {
+gc_flow! : Fx, Gc.Plan, Try(Str, [Unset]) => Try(Gc.Done, Fail)
+gc_flow! = |fx, plan, flag| {
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
 	clocks = CacheGc.clocks_of({ env, real: fx.clock!() })?
 	if plan.dry_run {
-		work!(fx, roots, clocks, plan)
+		work!(fx, roots, clocks, plan, { flag, env: Net.from_env(env).registry })
 	} else {
-		match fx.with_lock!(Roots.item(roots, Gc), NoWait, || work!(fx, roots, clocks, plan)) {
+		match fx.with_lock!(Roots.item(roots, Gc), NoWait, || work!(fx, roots, clocks, plan, { flag, env: Net.from_env(env).registry })) {
 			Ok(done) => Ok(done)
 			Err(Busy) => Ok({ dry_run: Bool.False, ran: Bool.False, toolchains: [], skipped: [], compat: [], stale: [], builds: [], pkgs: [], projects: [], sizes: [] })
 			Err(Failed(fail)) => Err(fail)
@@ -87,9 +92,11 @@ gc_flow! = |fx, plan| {
 }
 
 # Steps 4 to 11, in the GC lock. All reads come first: a failure there ends the run with nothing removed (D7).
-work! : Fx, Roots, Clocks, Gc.Plan => Try(Gc.Done, Fail)
-work! = |fx, roots, clocks, plan| {
+work! : Fx, Roots, Clocks, Gc.Plan, { flag : Try(Str, [Unset]), env : Try(Str, [Unset]) } => Try(Gc.Done, Fail)
+work! = |fx, roots, clocks, plan, registry| {
 	config = RocInstall.read_config!(fx, roots)?
+	# R-GC15, Design Q611: the registry of the run, in the R-RG1 order. A bad value stops GC before any listing.
+	current = IndexQuery.setting({ flag: registry.flag, env: registry.env, config: config.registry })?
 	age = Gc.age(config.gc_age)
 	dirs = Gc.scan_dirs(roots)
 	listed = fx.list_dirs!(dirs)
@@ -98,8 +105,9 @@ work! = |fx, roots, clocks, plan| {
 		_ => []
 	}
 	builds = Gc.entries({ dirs: [roots.build], listed: fx.list_dirs!([roots.build]) })
-	known = known_projects!(fx, roots, { now: clocks.now, age })?
 	entries = Gc.entries({ dirs, listed })
+	index = index_listings!(fx, roots, { current, entries })
+	known = known_projects!(fx, roots, { now: clocks.now, age })?
 	protected = protect!(fx, roots, { live: known.live, entries })
 	projects = known.live.map(|project| project.path)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
@@ -120,7 +128,7 @@ work! = |fx, roots, clocks, plan| {
 	}
 	stale = Temp.old({ entries, now: clocks.real })
 	compat = going.keep_oks(|id| compat_of(id).map_ok(|c| Roots.item(roots, Compat(c))))
-	aged = aged!(fx, roots, { clocks, age, going, compat, stale, entries, builds, protected, projects })
+	aged = aged!(fx, roots, { clocks, age, index, going, compat, stale, entries, builds, protected, projects })
 	if plan.dry_run {
 		return Ok({ dry_run: Bool.True, ran: Bool.True, toolchains: going, skipped: [], compat, stale, builds: aged.builds, pkgs: aged.pkgs, projects: known.gone, sizes: aged.sizes })
 	}
@@ -150,7 +158,7 @@ walk! = |fx, roots, live, nodes| match Gc.protected({ projects: live, nodes }) {
 }
 
 # Step 8 (028b), R-GC2, R-GC3, R-GC4, R-GC9, R-GC11: the dirs that the age rule removes, and the size of each ask. One `tree_info!` for all asks (D11), also in a dry run. `now` is the real clock (R-EV22).
-aged! : Fx, Roots, { clocks : Clocks, age : U64, going : List(Str), compat : List(Str), stale : List(Str), entries : List({ path : Str, is_dir : Bool, mtime : U64 }), builds : List({ path : Str, is_dir : Bool, mtime : U64 }), protected : List(Str), projects : List(Str) } => { builds : List(Str), pkgs : List(Str), sizes : List(Gc.Sized) }
+aged! : Fx, Roots, { clocks : Clocks, age : U64, index : { dirs : List(Str), dir : Str, pages : List({ name : Str, is_dir : Bool, mtime : U64 }) }, going : List(Str), compat : List(Str), stale : List(Str), entries : List({ path : Str, is_dir : Bool, mtime : U64 }), builds : List({ path : Str, is_dir : Bool, mtime : U64 }), protected : List(Str), projects : List(Str) } => { builds : List(Str), pkgs : List(Str), sizes : List(Gc.Sized) }
 aged! = |fx, roots, facts| {
 	x_reads = x_reads!(fx, roots, facts.entries)
 	open = Gc.candidates({ roots, entries: facts.entries, builds: [], protected: facts.protected, owned: [] })
@@ -159,13 +167,40 @@ aged! = |fx, roots, facts| {
 	held = if !facts.projects.is_empty() and (!expired([]).is_empty() or !open.pkgs.is_empty()) ToolsHeld.of!(fx, facts.projects) else []
 	candidates = Gc.candidates({ roots, entries: facts.entries, builds: facts.builds, protected: facts.protected.concat(held), owned: facts.compat })
 	x_dirs = expired(held)
-	asks = Gc.asks({ roots, toolchains: facts.going, compat: facts.compat, stale: facts.stale, builds: candidates.builds.concat(x_dirs), pkgs: candidates.pkgs })
+	pages = Gc.index_pages({ dir: facts.index.dir, entries: facts.index.pages, now: facts.clocks.real, age: facts.age })
+	asks = Gc.asks({ roots, toolchains: facts.going, compat: facts.compat, stale: facts.stale, builds: candidates.builds.concat(x_dirs).concat(facts.index.dirs).concat(pages), pkgs: candidates.pkgs })
 	infos = if asks.is_empty() [] else fx.tree_info!(asks.map(|ask| ask.path))
 	measured = asks.map2(infos, |ask, info| { item: ask.item, path: ask.path, info })
 	{
-		builds: Gc.expired({ dirs: candidates.builds, measured, now: facts.clocks.real, span: facts.age }).concat(x_dirs),
+		builds: Gc.expired({ dirs: candidates.builds.concat(facts.index.dirs), measured, now: facts.clocks.real, span: facts.age }).concat(x_dirs).concat(pages),
 		pkgs: Gc.expired({ dirs: candidates.pkgs, measured, now: facts.clocks.real, span: 86400 }),
 		sizes: Gc.sizes(measured),
+	}
+}
+
+# Step 5c (slice 237, R-GC15, R-IX5): the registry copies. The one listing of `talon/index/registry` runs only when `talon/index` has a dir `registry`. The listing of `get/` runs only for a registry of the run that has a dir there.
+index_listings! : Fx, Roots, { current : [Direct, Registry(Str)], entries : List({ path : Str, is_dir : Bool, mtime : U64 }) } => { dirs : List(Str), dir : Str, pages : List({ name : Str, is_dir : Bool, mtime : U64 }) }
+index_listings! = |fx, roots, facts| {
+	registry = Text.join(Roots.item(roots, Item.Index), "registry")
+	if !facts.entries.any(|e| e.is_dir and e.path == registry) {
+		return { dirs: [], dir: "", pages: [] }
+	}
+	listed = Gc.entries({ dirs: [registry], listed: fx.list_dirs!([registry]) })
+	dirs = Gc.index_dirs({ roots, current: facts.current, entries: listed })
+	own = match facts.current {
+		Direct => Err(None)
+		Registry(origin) => Ok(RegistryCache.origin_dir({ roots, origin }))
+	}
+	match own {
+		Ok(dir) if listed.any(|e| e.is_dir and e.path == dir) => {
+			get = Text.join(dir, "get")
+			pages = match fx.list_dirs!([get]) {
+				[Ok(found)] => found
+				_ => []
+			}
+			{ dirs, dir: get, pages }
+		}
+		_ => { dirs, dir: "", pages: [] }
 	}
 }
 
