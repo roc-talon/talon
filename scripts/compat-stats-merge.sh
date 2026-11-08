@@ -1,7 +1,7 @@
 #!/bin/sh
 # Slice 229 (Design Q606): merge the compat stats of one bot run into stats/compat/ of a checkout of the branch `compat-stats`.
 # Usage: scripts/compat-stats-merge.sh <artifact dir> <branch checkout dir>
-# The artifact dir has <YYYY-MM>.csv and runs.csv of one run. A row is added once (probe row key: run id and hash, run row key: run id). A row with an empty run id has no key and is always added.
+# The artifact dir has <YYYY-MM>.csv and runs.csv of one run. A row is added once (probe row key: run id, nightly and hash, run row key: run id). A row with an empty run id has no key and is always added.
 # Then stats/compat/README.md is written again: a mermaid chart of the last 60 runs.
 set -eu
 
@@ -30,7 +30,7 @@ merge() {
 }
 
 for f in "$in"/????-??.csv; do
-	[ -f "$f" ] && merge "$(basename "$f")" "1 4"
+	[ -f "$f" ] && merge "$(basename "$f")" "1 3 4"
 done
 merge runs.csv "1"
 
