@@ -1,0 +1,4 @@
+# the download, the install of the compiler, then one rule for the hash
+curl	0	-	-	-
+roc install	signal:9	-	-	-
+7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.tar.zst	0	{"schema":1,"command":"probe","ok":true,"data":{"kind":"unit","hash":"7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7","label":"acme/json 2.1.0","compiler":"nightly-2026-10-20-bbbbbbb","outcome":"pass","modules":[],"probes":1},"error":null}	-	copy:{w}/home/tmp/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.time={w}/fx/times/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7

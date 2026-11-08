@@ -1,0 +1,1 @@
+Q608 R-DL4 R-NI6 R-MX13 R-OUT2 (slice 229b): as b30 (audit group), but tln roc install of the audit nightly ends with signal 9. One warning that names the audit nightly, the probe, the post and the stats are as in b30, exit 0.

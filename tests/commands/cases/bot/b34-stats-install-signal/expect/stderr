@@ -1,0 +1,1 @@
+warning: the compat bot could not install the compiler nightly-2026-10-20-bbbbbbb before its probes (tln roc install ended with signal 9). Each probe downloads the compiler, so the probe times of nightly-2026-10-20-bbbbbbb include the download.

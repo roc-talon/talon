@@ -214,3 +214,8 @@ expect {
 	run = |probes| Bot.run_line({ run: "9001", time: 1792065600, tags: 1, probes })
 	run([Ok(st(12340, 6560, 123456)), Err("none"), Ok(st(3000, 1500, 2048))]) == "9001,2026-10-15T12:00:00Z,1,3,1,15340,8060,123456" and run([]) == "9001,2026-10-15T12:00:00Z,1,0,0,0,0,0" and run([Err("none")]) == "9001,2026-10-15T12:00:00Z,1,1,1,0,0,0"
 }
+
+# Q608 (slice 229b): the install job is `tln roc install <tag>`, with no flag and no GNU time.
+expect {
+	Bot.install_job({ tag: tag }) == ["tln", "roc", "install", tag]
+}

@@ -1,4 +1,5 @@
-# the download, then one rule for each hash
+# the download, the install of the compiler, then one rule for each hash
 curl	0	-	-	-
+roc install	0	-	-	-
 3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3.tar.zst	0	{"schema":1,"command":"probe","ok":true,"data":{"kind":"unit","hash":"3JF3sEqM796hk5WFqA6EtmEwJQ9quALszsfJyvXNQKy3","label":"acme/json 2.1.0","compiler":"nightly-2026-10-29-aaaaaaa","outcome":"pass","modules":[],"probes":1},"error":null}	-	-
 4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.tar.zst	0	{"schema":1,"command":"probe","ok":true,"data":{"kind":"unit","hash":"4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4","label":"acme/json 2.1.0","compiler":"nightly-2026-10-29-aaaaaaa","outcome":"fail","modules":[],"probes":1},"error":null}	-	copy:{w}/home/tmp/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4.time={w}/fx/times/4Ss5JMkXAD9Z7cktFEdrqeMuT6jGMF1pVozTyPHZ6zT4

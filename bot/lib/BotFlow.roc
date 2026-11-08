@@ -197,7 +197,7 @@ round! : Fx, Run, Str, { work : Work.Answer, held : List(Compat.Row), nofact : U
 round! = |fx, run, tag, state| {
 	todo = state.work.missing.keep_if(|hash| !state.held.any(|row| row.hash == hash))
 	fx.out!("sweep ${tag}: ${todo.len().to_str()} of ${state.work.members.to_str()} members to probe\n")
-	probed = probe!(fx, run, tag, todo).map_err(halt(state.acc))?
+	probed = probe!(fx, run, tag, todo, state.n == 1).map_err(halt(state.acc))?
 	acc = add_stats(state.acc, probed)
 	rows = state.held.concat(probed.rows)
 	nofact = state.nofact + probed.nofact
@@ -229,7 +229,7 @@ audit! = |fx, run, before| {
 	var $acc = before
 	var $problems = []
 	for group in Bot.audit_groups(pairs) {
-		probed = probe!(fx, run, group.nightly, group.hashes).map_err(halt($acc))?
+		probed = probe!(fx, run, group.nightly, group.hashes, Bool.True).map_err(halt($acc))?
 		$acc = add_stats($acc, probed)
 		posts = Bot.chunks({ rows: probed.rows, sweep: Err(None) })
 		_ = post_all!(fx, run, { tag: group.nightly, audit: Bool.True, posts }).map_err(halt($acc))?
@@ -244,8 +244,9 @@ add_stats : Acc, Unit -> Acc
 add_stats = |acc, probed| { ..acc, lines: acc.lines.concat(probed.lines), probes: acc.probes.concat(probed.probes) }
 
 # Steps 4 and 5: the archive and the probe of each hash on the tag, in two batches of 4 (R-MX18 item 1). A hash with no row is a warning and a count.
-probe! : Fx, Run, Str, List(Str) => Try(Unit, Fail)
-probe! = |fx, run, tag, hashes| {
+# `first` is false in a second round of a tag: the compiler is installed already (Q608).
+probe! : Fx, Run, Str, List(Str), Bool => Try(Unit, Fail)
+probe! = |fx, run, tag, hashes, first| {
 	var $nofact = 0
 	var $found = []
 	for hash in hashes {
@@ -270,6 +271,18 @@ probe! = |fx, run, tag, hashes| {
 			other => {
 				$nofact = $nofact + 1
 				fx.err!("warning: no fact for ${item.hash} on ${tag}: curl ${ended_text(other)}\n")
+			}
+		}
+	}
+	# Q608: with the stats on, install the compiler before the first probe batch, so the probes have no download time.
+	if first and !$ready.is_empty() {
+		if run.stats.is_ok() {
+			installed = batch!(fx, [Bot.install_job({ tag: tag })])
+			for result in installed {
+				match result.ended {
+					Exited(0) => {}
+					other => fx.err!("warning: the compat bot could not install the compiler ${tag} before its probes (tln roc install ${ended_text(other)}). Each probe downloads the compiler, so the probe times of ${tag} include the download.\n")
+				}
 			}
 		}
 	}

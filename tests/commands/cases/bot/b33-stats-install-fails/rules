@@ -1,0 +1,1 @@
+Q608 R-DL4 R-NI6 R-MX18 R-OUT2 (slice 229b): as b28, but tln roc install exits with 1. One warning on stderr (proposal text), the probes, the time files, the post and the stats files are as in b28, exit 0. The install job is still logged before the probe batch.

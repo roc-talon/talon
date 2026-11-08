@@ -97,6 +97,10 @@ Bot :: [].{
 	time_file : { dir : Str, hash : Str } -> Str
 	time_file = |x| "${x.dir}/${x.hash}.time"
 
+	## Slice 229b (Design Q608): the job that installs the compiler of a nightly before its first probe batch: `tln roc install <tag>`. No GNU time, no `--yes`, no `TALON_AUTO_INSTALL` (R-NI6, R-DL4: the command names the download, so it is the consent).
+	install_job : { tag : Str } -> List(Str)
+	install_job = |x| ["tln", "roc", "install", x.tag]
+
 	## Slice 229 (Q606): the `repo` of the first release of an artifact answer that is not withdrawn (the same release as `release_url`), for example `acme/json`. The empty text when there is none or the member is `null`.
 	release_repo : Str -> Str
 	release_repo = |text| match JsonDoc.parse(text) {

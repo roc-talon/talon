@@ -25,6 +25,8 @@ http_get http://127.0.0.1:9/v1/artifacts/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma
 spawn_all limit=4
   job - curl -fsSL --output $HOME/tmp/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.tar.zst https://github.com/acme/json/releases/download/2.1.0/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.tar.zst
 spawn_all limit=4
+  job - tln roc install nightly-2026-10-20-bbbbbbb
+spawn_all limit=4
   job - /usr/bin/time -f %e %U %S %M -o $HOME/tmp/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.time env ROC_TOOLCHAIN=nightly-2026-10-20-bbbbbbb tln probe --json --yes $HOME/tmp/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.tar.zst
 read_files $HOME/tmp/7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7.time
 http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20

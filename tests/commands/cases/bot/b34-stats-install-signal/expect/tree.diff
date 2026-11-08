@@ -1,0 +1,10 @@
+--- home/stats/2026-10.csv
++++ home/stats/2026-10.csv
+@@ -0,0 +1,2 @@
++run,time,nightly,hash,repo,target,result,wall_ms,cpu_ms,rss_kb
++9001,2026-10-15T12:00:00Z,nightly-2026-10-20-bbbbbbb,7tj9biW3KRJ7EEWmVUGigHiouCTXhV2dzcyvwma7Cyu7,acme/json,any,pass,1500,1250,4096
+--- home/stats/runs.csv
++++ home/stats/runs.csv
+@@ -0,0 +1,2 @@
++run,time,tags,probes,no_stats,wall_ms,cpu_ms,rss_kb
++9001,2026-10-15T12:00:00Z,1,1,0,1500,1250,4096
