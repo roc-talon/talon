@@ -1,0 +1,2 @@
+# R-TF8 R-IS6 (slice 232, Design Q607): `tln setup` replaces an entry `talon` that it cannot read. The given tools.json has the entry talon with the source kind zzz (a kind that this tln does not know) and the tool zed (the kind zzz). Setup writes the entry talon as a prebuilt entry of the running tln, in its place (run 1 of st5-talon-entry), exit 0. The entry zed stays as it was (the tree diff has it in both lines). The stderr warning for zed is the warning of st1-flow (no file of zed in the data bin dir).
+setup

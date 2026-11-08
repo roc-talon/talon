@@ -1,0 +1,6 @@
+== tool list
+exit 19
+== tool update
+exit 19
+== tool remove foo
+exit 19

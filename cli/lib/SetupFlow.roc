@@ -203,7 +203,7 @@ put_talon! : Fx, Facts, { target : Str, now : U64 } => Try(List(Str), Fail)
 put_talon! = |fx, facts, run| {
 	path = Roots.item(facts.roots, ToolsJson)
 	text = SetupIo.read_text!(fx, path)?
-	have = ToolsJson.talon({ path, text })?
+	have = ToolsJson.talon_repair({ path, text })?
 	match decide_talon(facts, { have, target: run.target, now: run.now }) {
 		Keep => Ok([])
 		Put(talon) => {
@@ -243,7 +243,7 @@ gather! = |fx| {
 		Ok(content) => Setup.tool_names({ path: tools_file, text: content })?
 		Err(NotFound) => []
 	}
-	talon = ToolsJson.talon({ path: tools_file, text })?
+	talon = ToolsJson.talon_repair({ path: tools_file, text })?
 	names = Setup.names({ os: machine.os, tools })
 	listed = SetupIo.listings!(fx, { data_bin, bin })?
 	recorded = BinRecord.read({ path: tools_file, text })?

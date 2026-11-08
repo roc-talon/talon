@@ -61,7 +61,7 @@ import XTake
 ToolFlow :: [].{
 
 	## What steps 2 and 3 found (slice 049, `tln x`): the machine, `tools.json` with all fields of each tool, `config.toml`. `ToolBuild.Facts` is this and the name of the app.
-	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]) }
+	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]) }
 
 	## Steps 1 to 13.
 	run! : Fx, Args => I32
@@ -182,6 +182,13 @@ gather_with! = |fx, plan| {
 			Err(None) => ToolInstall.key({ plan, name })
 		}
 	}
+	# Slice 232 (R-TF8): an item that needs a newer tln, with this key or this name, stops the install.
+	for ref in [key, name] {
+		match ToolsJson.newer_for({ items: m.items, ref }) {
+			Ok(n) => return Err(ToolsJson.newer_fail({ path: Roots.item(m.roots, Item.ToolsJson), item: n }))
+			Err(None) => {}
+		}
+	}
 	match ToolsJson.clash({ entries, key, name }) {
 		Taken(other) => return Err(ToolInstall.clash_failure({ key, taken: other.name, name }))
 		Elsewhere(other) => return Err(ToolInstall.elsewhere_failure({ key: other.key, name }))
@@ -214,9 +221,11 @@ machine! = |fx| {
 		Err(Unknown) => return Err(Fail.new(Environment, "tln has no build target for this machine"))
 	}
 	tools_file = Roots.item(roots, Item.ToolsJson)
-	tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
+	tools_text = SetupIo.read_text!(fx, tools_file)?
+	tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
+	items = ToolsJson.items({ path: tools_file, text: tools_text })?
 	config = RocInstall.read_config!(fx, roots)?
-	Ok({ env, roots, net, now, os: host.os, bin, target, tools, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry })
+	Ok({ env, roots, net, now, os: host.os, bin, target, tools, items, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry })
 }
 
 # Step 4 (R-SC3, R-AD7): an installed tool by its name or short name, else the name as typed. A failure prints its block first.

@@ -77,13 +77,30 @@ run! : Fx, Args, ToolManage.Cmd, Kind => Try(List(ToolUpdate.Outcome), Fail)
 run! = |fx, args, cmd, kind| {
 	machine = ToolManageFlow.machine!(fx)?
 	tools = match cmd.ref {
-		Ok(ref) => [ToolManageFlow.find!(fx, { ref, tools: machine.tools })?]
-		Err(None) => machine.tools
+		Ok(ref) => {
+			# Slice 232 (R-TF8): an item that needs a newer tln stops the command.
+			match ToolsJson.newer_for({ items: machine.items, ref: ref.name }) {
+				Ok(n) => return Err(ToolsJson.newer_fail({ path: ToolManageFlow.tools_file(machine.facts.roots), item: n }))
+				Err(None) => {}
+			}
+			[ToolManageFlow.find!(fx, { ref, tools: machine.tools })?]
+		}
+		Err(None) => {
+			for item in machine.items {
+				match item {
+					Newer(n) => fx.err!("${ToolManage.newer_warning(n)}\n")
+					Known(_) => {}
+				}
+			}
+			machine.tools
+		}
 	}
 	if tools.is_empty() {
-		shown = Common.shown_fx(fx, args)
-		for line in ToolManage.ls_report([]).stdout {
-			shown.out!(line)
+		if machine.items.is_empty() {
+			shown = Common.shown_fx(fx, args)
+			for line in ToolManage.ls_report([]).stdout {
+				shown.out!(line)
+			}
 		}
 		return Ok([])
 	}

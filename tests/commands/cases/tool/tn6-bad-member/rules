@@ -1,0 +1,7 @@
+R-TF6 R-TF8 R-EC19 (slice 232, Design Q607): an entry with a known kind and a missing member is not an unknown item. `foo` is a `release` with no `url`: the file is bad. Each run: exit 19 `tool foo: has no source that tln knows`, with NO hint line (the hint is only for an unknown kind), also with the entry `zed` (the kind `zzz`) in the file. This case passes before and after the slice (it guards R-TF6).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool list` | exit 19 | R-TF6 |
+| 2 | `tool update` | exit 19 | R-TF6 |
+| 3 | `tool remove foo` | exit 19 | R-TF6 |

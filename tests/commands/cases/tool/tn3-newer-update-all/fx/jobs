@@ -1,0 +1,5 @@
+# R-DA3 the download of the binary and of sha256sums.txt, R-HF2 chmod, R-S3 `--version` of the new file. The first rule whose needle is in the arguments answers. `{out}` is the file of the `--output` of the curl job.
+v0.3.4/sha256sums.txt	0	-	-	copy:{out}={w}/fx/src/sums-0.3.4
+v0.3.4/tln-x64musl	0	-	-	copy:{out}={w}/fx/src/bin-0.3.4
+chmod 0755	0	-	-	-
+--version	0	tln 0.3.4	-	-

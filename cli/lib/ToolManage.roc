@@ -82,20 +82,57 @@ ToolManage :: [].{
 	##
 	## Each element is one line with its `\n`.
 	ls_report : List(ToolsJson.Tool) -> { stdout : List(Str), stderr : List(Str) }
-	ls_report = |tools| if tools.is_empty() {
+	ls_report = |tools| ToolManage.ls_report_items(tools.map(|t| Known(t)))
+
+	## Slice 232 (R-TF8, R-T4, TW24 proposal): `ls_report` for the items of `tools.json`. A `Newer` item is a row in its place: the SOURCE cell is `needs a newer tln (source kind <kind>)`, the other cells are `-`. Only a known tool has a library.
+	ls_report_items : List(ToolsJson.Item) -> { stdout : List(Str), stderr : List(Str) }
+	ls_report_items = |items| if items.is_empty() {
 		{ stdout: ["no tool is installed. Run: tln tool install owner/app\n"], stderr: [] }
 	} else {
-		with_libs = tools.any(|t| !t.libs.is_empty())
+		with_libs = items.any(
+			|item| match item {
+				Known(t) => !t.libs.is_empty()
+				Newer(_) => Bool.False
+			},
+		)
 		head = if with_libs ["TOOL", "NAME", "SOURCE", "COMPILER", "TARGET", "INSTALLED", "LIBS"] else ["TOOL", "NAME", "SOURCE", "COMPILER", "TARGET", "INSTALLED"]
-		cells = tools.map(|t| row_of(t, with_libs))
+		cells = items.map(
+			|item| match item {
+				Known(t) => row_of(t, with_libs)
+				Newer(n) => {
+					base = [n.key, n.name, "needs a newer tln (source kind ${n.kind})", "-", "-", "-"]
+					if with_libs base.append("-") else base
+				}
+			},
+		)
 		widths = head.map_with_index(|h, i| widest(cells, i, h.count_utf8_bytes()))
 		{ stdout: [head].concat(cells).map(|row| "${line_of(row, widths)}\n"), stderr: [] }
 	}
+
+	## Slice 232 (TW24 proposal): the warning of `tool update` and `tool rebuild` with no operand for an item that needs a newer tln.
+	newer_warning : ToolsJson.Newer -> Str
+	newer_warning = |n| "warning: tool ${n.key}: source kind \"${n.kind}\" needs a newer tln, skipped"
 
 	## R-J3, R-J4, R-OUT4 (proposal): the `data` of `tool list --json`: `tools`, an array with one object for each tool in the order of the file. The keys of a tool, in this order: `tool` (the key), `name`, `source` (an object: `kind` `release` with `version` and `url`, or `kind` `git` with `commit`, `ref` and, with `--path`, `path`),
 	## `nightly`, `target`, `sha256`, `libs` (an array of texts), `installed_at`.
 	ls_data : List(ToolsJson.Tool) -> JsonDoc
 	ls_data = |tools| JsonDoc.Obj([("tools", JsonDoc.Arr(tools.map(tool_doc)))])
+
+	## Slice 232 (TW24 proposal): `ls_data` for the items. A `Newer` item is `{"tool","name","source":{"kind"},"needs_newer_tln":true}`.
+	ls_data_items : List(ToolsJson.Item) -> JsonDoc
+	ls_data_items = |items| JsonDoc.Obj([
+		(
+			"tools",
+			JsonDoc.Arr(
+				items.map(
+					|item| match item {
+						Known(t) => tool_doc(t)
+						Newer(n) => JsonDoc.Obj([("tool", JsonDoc.Text(n.key)), ("name", JsonDoc.Text(n.name)), ("source", JsonDoc.Obj([("kind", JsonDoc.Text(n.kind))])), ("needs_newer_tln", JsonDoc.Flag(Bool.True))])
+					},
+				),
+			),
+		),
+	])
 
 	## R-ST6, R-ST11, R-B6: what `tool remove` does with the bin dir entry. `old` is the sha256 of the binary in the data bin dir (`Err(NotFound)`: it is gone). `have` is the entry as `SetupIo.have_of!` gives it.
 	##

@@ -1,0 +1,10 @@
+R-TF8 R-EC19 R-TF6 (slice 232, Design Q607): a command that targets an entry with an unknown source kind stops with exit 19. `tools.json` has `foo` (release) and `zed` (the kind `zzz`). Each run: exit 19, the message names the file, the key and the kind, the second line is the hint of slice 231, and `tools.json` does not change (the tree diff is empty). The stop is after the read of `tools.json` and of `config.toml` (the end of the machine step), and for `tool remove` after the read of `tools.json`; no request, no lock, no clock for `remove`.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool update zed` | the operand is the key | R-TF8 |
+| 2 | `tool update acme/zed` | the operand is the full name | R-TF8 |
+| 3 | `tool rebuild zed` | | R-TF8 |
+| 4 | `tool remove zed` | no lock, no delete | R-TF8, R-B6 |
+| 5 | `tool install acme/zed` | the full name of the entry. Before any request | R-TF8, R-T28 |
+| 6 | `tool install other/zed` | another full name, the binary name `zed` is the key of the entry. Before any request | R-TF8, R-T28 |

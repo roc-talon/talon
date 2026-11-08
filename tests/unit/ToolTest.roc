@@ -443,7 +443,7 @@ git_json : Str
 git_json = "{\"name\":\"acme/g\",\"source\":{\"kind\":\"git\",\"commit\":\"abc\",\"ref\":\"main\"}}"
 
 # R-T4 R-T27 R-LY2 R-LY3 R-TF1 R-TF3 R-ST15: `tools.json` as the command reads it. The key of `tools` is the binary name. A missing file, or a file with no `tools` field, is no tool. A release tool and a git tool (slice 048 writes it; R-T27) are read, in the order
-# of the text. Not JSON, a `tools` that is no object, a tool with no name or no source that Talon knows, and a newer `format` (R-TF3, `tln tool update talon`) are failures of kind input (exit 19) that name the file (the texts are proposals, TW24).
+# of the text. An unknown source kind (slice 232, R-TF8) is no entry here: it is an item of `ToolsJson.items`. Not JSON, a `tools` that is no object, a tool with no name or no source that Talon knows, and a newer `format` (R-TF3, `tln tool update talon`) are failures of kind input (exit 19) that name the file (the texts are proposals, TW24).
 expect {
 	path = "/d/talon/tools.json"
 	read = |text| match ToolsJson.read({ path, text }) {
@@ -469,7 +469,7 @@ expect {
 		(read(Ok("{\"format\":1,\"tools\":{\"foo\":3}}")), input("tool foo: is not an object")),
 		(read(Ok("{\"format\":1,\"tools\":{\"foo\":{\"source\":{\"kind\":\"git\",\"commit\":\"a\",\"ref\":\"b\"}}}}")), input("tool foo: has no name")),
 		(read(Ok("{\"format\":1,\"tools\":{\"foo\":{\"name\":\"acme/foo\"}}}")), input("tool foo: has no source that tln knows")),
-		(read(Ok("{\"format\":1,\"tools\":{\"foo\":{\"name\":\"acme/foo\",\"source\":{\"kind\":\"zip\"}}}}")), input("tool foo: has no source that tln knows")),
+		(read(Ok("{\"format\":1,\"tools\":{\"foo\":{\"name\":\"acme/foo\",\"source\":{\"kind\":\"zip\"}}}}")), Ok([])),
 		(read(Ok("{\"format\":2,\"tools\":{}}")), input("format 2 is newer than this tln (format 1). Run: tln tool update talon")),
 	]
 	bad = rows.keep_if(|(got, want)| got != want)

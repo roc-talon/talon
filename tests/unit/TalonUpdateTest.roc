@@ -374,7 +374,7 @@ expect {
 		(talon(Ok(whole("\"talon\":${prebuilt_doc("0.3.4")}"))), Str.inspect({ source: Prebuilt({ version: "0.3.4", url: "https://h/v0.3.4/tln-x64musl" }), hashes: [], nightly: "", target: "x64musl", sha256: "S", libs: [], installed_at: "2026-10-15T12:00:00Z" })),
 		(talon(Ok(whole("\"foo\":${tool_doc},\"talon\":${git_doc}"))), Str.inspect({ source: Git({ commit: "d0d0d0d0", ref: "v0.3.4", path: Ok("cli") }), hashes: ["H1"], nightly: "nightly-2026-10-14-38a3029", target: "x64musl", sha256: "S2", libs: [], installed_at: "2026-10-16T08:00:00Z" })),
 		(talon(Ok(whole("\"talon\":{\"source\":{\"kind\":\"git\",\"commit\":\"c\",\"ref\":\"main\"}}"))), Str.inspect({ source: Git({ commit: "c", ref: "main", path: Err(None) }), hashes: [], nightly: "", target: "", sha256: "", libs: [], installed_at: "" })),
-		(talon(Ok(whole("\"talon\":${odd}"))), input("tool talon: has no source that tln knows")),
+		(talon(Ok(whole("\"talon\":${odd}"))), "none"),
 		(talon(Ok(whole("\"talon\":{\"source\":{\"kind\":\"prebuilt\",\"version\":\"0.3.4\"}}"))), input("tool talon: has no source that tln knows")),
 		(talon(Ok(whole("\"talon\":{\"name\":\"roc-talon/talon\"}"))), input("tool talon: has no source that tln knows")),
 		(talon(Ok(whole("\"talon\":5"))), input("tool talon: is not an object")),

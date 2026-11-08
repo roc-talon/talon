@@ -1,0 +1,6 @@
+R-TF8 R-T4 R-J3 R-J4 (slice 232, Design Q607): `tln tool list` with an entry that has a source kind that this tln does not know. `tools.json` has `foo` (release, with a library), `zed` (the kind `zzz`, with a field and a member that tln does not know) and `g` (git, with `--path`). The text of the row and of the `--json` object are proposals (TW24, slice file 232).
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `tool list` | one line for each entry in the order of the file. `zed` has the source cell `needs a newer tln (source kind zzz)` and `-` in the other cells. Exit 0, no warning | R-TF8, R-T4 |
+| 2 | `tool list --json` | the envelope with 3 objects. The object of `zed` has `source` with the kind only and `needs_newer_tln` true | R-TF8, R-J3, R-J4 |

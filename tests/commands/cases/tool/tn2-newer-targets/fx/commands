@@ -1,0 +1,6 @@
+tool update zed
+tool update acme/zed
+tool rebuild zed
+tool remove zed
+tool install acme/zed
+tool install other/zed

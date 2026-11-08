@@ -18,5 +18,6 @@ import RangesTest
 import RegtoolchainsTest
 import TalonfileTest
 import ToolManageTest
+import ToolnewerTest
 
 main! = |_args| Ok({})

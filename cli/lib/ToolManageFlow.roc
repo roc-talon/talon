@@ -44,11 +44,11 @@ ToolManageFlow :: [].{
 		Err(fail) => Common.failed!(fx, args, fail)
 		Ok(_) => match listing!(fx) {
 			Err(fail) => Common.failed!(fx, args, fail)
-			Ok(tools) => {
+			Ok(items) => {
 				if args.json {
-					fx.out!(Out.json_ok({ command: args.typed, data: ToolManage.ls_data(tools) }))
+					fx.out!(Out.json_ok({ command: args.typed, data: ToolManage.ls_data_items(items) }))
 				} else {
-					shown = ToolManage.ls_report(tools)
+					shown = ToolManage.ls_report_items(items)
 					for line in shown.stdout {
 						fx.out!(line)
 					}
@@ -79,14 +79,14 @@ ToolManageFlow :: [].{
 
 	## The machine and the manifest, for the commands that go through the tools (`remove` and `ToolUpdateFlow`): the environment, the roots, the network settings, the time, the system (`platform!`), the bin dir, the build target, `config.toml` (`min-release-age`, the probe timeout)
 	## and the tools of `tools.json`. `Facts` is the base of `ToolBuild.Facts`: `name`, `key` and `file` are empty, a tool command sets them for each tool.
-	machine! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
+	machine! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), talon : Try(ToolsJson.Talon, [None]) }, Fail)
 	machine! = |fx| machine_with!(fx, Strict)
 
 	## Slice 231 (R-TF8): the same, with the lenient read of `config.toml`. Only `tln tool update talon` uses it.
-	machine_lenient! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
+	machine_lenient! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), talon : Try(ToolsJson.Talon, [None]) }, Fail)
 	machine_lenient! = |fx| machine_with!(fx, Lenient)
 
-	machine_with! : Fx, [Strict, Lenient] => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
+	machine_with! : Fx, [Strict, Lenient] => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), talon : Try(ToolsJson.Talon, [None]) }, Fail)
 	machine_with! = |fx, reading| {
 		env = fx.env_all!()
 		roots = Roots.of_run!(fx, env)?
@@ -101,6 +101,7 @@ ToolManageFlow :: [].{
 		tools_file = Roots.item(roots, Item.ToolsJson)
 		tools_text = SetupIo.read_text!(fx, tools_file)?
 		tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
+		items = ToolsJson.items({ path: tools_file, text: tools_text })?
 		talon = ToolsJson.talon({ path: tools_file, text: tools_text })?
 		config = match reading {
 			Strict => RocInstall.read_config!(fx, roots)?
@@ -123,8 +124,12 @@ ToolManageFlow :: [].{
 			file: "",
 			selected: Fetch.selected({ held: "", default: config.default_roc ?? "" }),
 		}
-		Ok({ facts, tools, talon })
+		Ok({ facts, tools, items, talon })
 	}
+
+	## The path of `tools.json`, for the messages of a command that stops on an item that needs a newer tln.
+	tools_file : Roots -> Str
+	tools_file = |roots| Roots.item(roots, Item.ToolsJson)
 
 	## The facts of one tool: the base with the name, the key and the file name of the tool (R-ST15).
 	facts_of : ToolBuild.Facts, ToolsJson.Tool -> ToolBuild.Facts
@@ -147,12 +152,12 @@ Done : { tool : ToolsJson.Tool, removed : List(Str), kept : List(Str) }
 entry_of : ToolsJson.Tool -> ToolsJson.Entry
 entry_of = |tool| { key: tool.key, name: tool.name, source: tool.source }
 
-# Step 2 of `list!`: the tools of `tools.json`. No clock, no platform.
-listing! : Fx => Try(List(ToolsJson.Tool), Fail)
+# Step 2 of `list!`: the items of `tools.json` (also the ones that need a newer tln). No clock, no platform.
+listing! : Fx => Try(List(ToolsJson.Item), Fail)
 listing! = |fx| {
 	roots = Roots.of_run!(fx, fx.env_all!())?
 	tools_file = Roots.item(roots, Item.ToolsJson)
-	ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })
+	ToolsJson.items({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })
 }
 
 # Steps 4 to 6 of `remove!`: the tool, then the lock and the changes.
@@ -163,7 +168,13 @@ removal! = |fx, ref| {
 	machine = fx.platform!()
 	bin = Setup.bin_dir({ os: machine.os, env })?
 	tools_file = Roots.item(roots, Item.ToolsJson)
-	tools = ToolsJson.manifest({ path: tools_file, text: SetupIo.read_text!(fx, tools_file)? })?
+	text = SetupIo.read_text!(fx, tools_file)?
+	tools = ToolsJson.manifest({ path: tools_file, text })?
+	# Slice 232 (R-TF8): an item that needs a newer tln stops the command.
+	match ToolsJson.newer_for({ items: ToolsJson.items({ path: tools_file, text })?, ref: ref.name }) {
+		Ok(n) => return Err(ToolsJson.newer_fail({ path: tools_file, item: n }))
+		Err(None) => {}
+	}
 	tool = ToolManageFlow.find!(fx, { ref, tools })?
 	file = ToolInstall.file_name({ os: machine.os, key: tool.key })
 	paths = { tools_file, file, os: machine.os, entry: Text.join(bin, file), bin, data_file: Text.join(Roots.item(roots, Item.Bin), file) }

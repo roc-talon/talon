@@ -31,6 +31,12 @@ ToolsJson :: [].{
 	## What a tool was built from. `Git` is the form of slice 048 (R-T23).
 	Source : [Release({ version : Str, url : Str }), Git({ commit : Str, ref : Str })]
 
+	## Slice 232 (R-TF8): an entry of `tools` with a `source.kind` that this tln does not know. It is not used, it stays as it is when the file is written, `tool list` shows it.
+	Newer : { key : Str, name : Str, kind : Str }
+
+	## An entry of `tools` as `items` gives it: a tool that tln knows, or a `Newer` entry.
+	Item : [Known(Tool), Newer(Newer)]
+
 	## One tool as `read` gives it: the key (the binary name), the full name and the source.
 	Entry : { key : Str, name : Str, source : Source }
 
@@ -60,16 +66,43 @@ ToolsJson :: [].{
 	## | `tools` is not an object | Kind `Input`: `<path>: tools is not an object` |
 	## | A tool that is not an object, or has no text `name`, or has no `source` with a known `kind` and its fields | Kind `Input`: `<path>: tool <key>: <what>` with `<what>` `is not an object`, `has no name` or `has no source that tln knows` |
 	read : { path : Str, text : Try(Str, [NotFound]) } -> Try(List(Entry), Fail)
-	read = |facts| match facts.text {
+	read = |facts| Ok(
+		ToolsJson.items(facts)?.keep_oks(
+			|item| match item {
+				Known(tool) => Ok({ key: tool.key, name: tool.name, source: tool.source })
+				Newer(_) => Err(Skip)
+			},
+		),
+	)
+
+	## Slice 232 (R-TF8): the entries of `tools` in the order of the text, the key `talon` left out. An entry with a text `kind` of its `source` that is not `release` or `git` is `Newer`. Any other fault is a failure of `read`.
+	items : { path : Str, text : Try(Str, [NotFound]) } -> Try(List(Item), Fail)
+	items = |facts| match facts.text {
 		Err(NotFound) => Ok([])
 		Ok(text) => {
 			file = open_file(facts.path, text)?
 			match tools_of(facts.path, file.fields)? {
-				Ok(tools) => others(tools).fold_try([], |kept, (key, doc)| Ok(kept.append(entry_of(facts.path, key, doc)?)))
+				Ok(tools) => others(tools).fold_try([], |kept, (key, doc)| Ok(kept.append(item_of(facts.path, key, doc)?)))
 				Err(NoTools) => Ok([])
 			}
 		}
 	}
+
+	## Slice 232 (R-TF8): the first `Newer` item with the key or the full name `ref`, exact.
+	newer_for : { items : List(Item), ref : Str } -> Try(Newer, [None])
+	newer_for = |facts| match facts.items.find_first(
+		|item| match item {
+			Newer(n) => n.key == facts.ref or n.name == facts.ref
+			Known(_) => Bool.False
+		},
+	) {
+		Ok(Newer(n)) => Ok(n)
+		_ => Err(None)
+	}
+
+	## Slice 232 (R-TF8, R-EC19): the failure of a command that targets a `Newer` item. Kind `Input`, with the hint of slice 231.
+	newer_fail : { path : Str, item : Newer } -> Fail
+	newer_fail = |facts| Fail.with_hint(Fail.new(Input, "${facts.path}: tool ${facts.item.key}: source kind \"${facts.item.kind}\" needs a newer tln"))
 
 	## The text of the file after the tool `built` is added, or replaces the tool with the same key (R-T26, R-T27). `text` is the file as it is now. The other tools and the other top-level fields stay as they are (R-TF2), in their
 	## place; a new tool is the last of `tools`. A replaced tool keeps the fields that Talon does not know, in their place (R-TF2); the fields of the table are the new ones. A file with no `tools` field gets the field at the end. A failure is the one of `read` for the parts that it reads (`TalonFile.open`).
@@ -102,16 +135,14 @@ ToolsJson :: [].{
 
 	## R-T4, R-T7: the tools of the file with all their fields, in the order of the text. The reading rules of `read` hold (a missing file is no tool, the `format`, a tool with no name or no known source: kind `Input`). The `source` of a git tool has the optional text `path`.
 	manifest : { path : Str, text : Try(Str, [NotFound]) } -> Try(List(Tool), Fail)
-	manifest = |facts| match facts.text {
-		Err(NotFound) => Ok([])
-		Ok(text) => {
-			file = open_file(facts.path, text)?
-			match tools_of(facts.path, file.fields)? {
-				Ok(tools) => others(tools).fold_try([], |kept, (key, doc)| Ok(kept.append(tool_of(facts.path, key, doc)?)))
-				Err(NoTools) => Ok([])
-			}
-		}
-	}
+	manifest = |facts| Ok(
+		ToolsJson.items(facts)?.keep_oks(
+			|item| match item {
+				Known(tool) => Ok(tool)
+				Newer(_) => Err(Skip)
+			},
+		),
+	)
 
 	## R-T4, R-T23, R-T26, R-T27, R-TF2: the text of the file after `tool` is put in `tools`. It replaces the tool with the same key in its place, else it is the last tool. The rules of `add` hold: the other tools and the other top-level fields stay, a replaced tool keeps the fields that Talon does not
 	## know, a file with no `tools` field gets the field at the end, a missing file gives a new file. The object `source` is written whole from `tool.source` and `tool.path`: a git source is `{"kind":"git","commit","ref"}` and `"path"` when `tool.path` is `Ok`.
@@ -192,20 +223,13 @@ ToolsJson :: [].{
 
 	## The entry `talon` of the file. A missing file, no `tools` field and no key `talon` give `Ok(Err(None))`. The failures are those of `read` for the parts that it reads (kind `Input`, exit 19), and for the entry: `<path>: tool talon: is not an object`, `<path>: tool talon: has no source that tln knows` (no object `source`, a kind other than `prebuilt` and `git`, a field of the kind that is missing).
 	## A field that is missing from `build` or from the entry gives the empty text or the empty list, as `manifest`. A git source has `path` only when the object has it.
+	## Slice 232 (R-TF8): an entry with a text `kind` that is not `prebuilt` or `git` is `Ok(Err(None))`, so `tool update talon` goes on.
 	talon : { path : Str, text : Try(Str, [NotFound]) } -> Try(Try(Talon, [None]), Fail)
-	talon = |facts| match facts.text {
-		Err(NotFound) => Ok(Err(None))
-		Ok(text) => {
-			file = open_file(facts.path, text)?
-			match tools_of(facts.path, file.fields)? {
-				Err(NoTools) => Ok(Err(None))
-				Ok(pairs) => match pairs.find_first(|(key, _)| key == "talon") {
-					Err(_) => Ok(Err(None))
-					Ok((_, doc)) => Ok(Ok(talon_of(facts.path, doc)?))
-				}
-			}
-		}
-	}
+	talon = |facts| talon_read(facts, Bool.False)
+
+	## Slice 232 (R-TF8, R-IS6): `talon`, but each fault of the entry is `Ok(Err(None))`: `tln setup` replaces an entry that it can not read. A fault of the file stays a failure.
+	talon_repair : { path : Str, text : Try(Str, [NotFound]) } -> Try(Try(Talon, [None]), Fail)
+	talon_repair = |facts| talon_read(facts, Bool.True)
 
 	## The text of the file after `talon` is the entry `talon`: in its place when there is one (a field that Talon does not know stays, R-TF2), else the last entry of `tools` (a file with no `tools` field gets the field at the end, a missing file gives a new file). The other tools and the other top-level fields stay as they are. The failures are those of `put`.
 	put_talon : { path : Str, text : Try(Str, [NotFound]), talon : Talon } -> Try(Str, Fail)
@@ -232,6 +256,49 @@ open_file : Str, Str -> Try({ format : U64, fields : List((Str, JsonDoc)) }, Fai
 open_file = |path, text| match TalonFile.open({ path, text, newest: ToolsJson.format, can_recreate: Bool.False })? {
 	Use(file) => Ok(file)
 	_ => Ok({ format: ToolsJson.format, fields: [] })
+}
+
+# The entry `talon` for `talon` and `talon_repair`. `repair` turns each fault of the entry into no entry.
+talon_read : { path : Str, text : Try(Str, [NotFound]) }, Bool -> Try(Try(ToolsJson.Talon, [None]), Fail)
+talon_read = |facts, repair| match facts.text {
+	Err(NotFound) => Ok(Err(None))
+	Ok(text) => {
+		file = open_file(facts.path, text)?
+		match tools_of(facts.path, file.fields)? {
+			Err(NoTools) => Ok(Err(None))
+			Ok(pairs) => match pairs.find_first(|(key, _)| key == "talon") {
+				Err(_) => Ok(Err(None))
+				Ok((_, doc)) => match talon_of(facts.path, doc) {
+					Ok(entry) => Ok(Ok(entry))
+					Err(_) if repair or other_kind(doc, ["prebuilt", "git"]).is_ok() => Ok(Err(None))
+					Err(fail) => Err(fail)
+				}
+			}
+		}
+	}
+}
+
+# The text `kind` of the object `source` of an entry, when it is not one of `known`.
+other_kind : JsonDoc, List(Str) -> Try(Str, [None])
+other_kind = |doc, known| match doc {
+	Obj(pairs) => match text_field(object_in(pairs, "source"), "kind") {
+		Ok(kind) if !known.contains(kind) => Ok(kind)
+		_ => Err(None)
+	}
+	_ => Err(None)
+}
+
+# One entry of `tools`: `Newer` when the entry has a text name and a `source` of an unknown kind, else a tool (`tool_of` fails for a bad entry, in the order object, name, source).
+item_of : Str, Str, JsonDoc -> Try(ToolsJson.Item, Fail)
+item_of = |path, key, doc| {
+	name = match doc {
+		Obj(pairs) => text_field(pairs, "name")
+		_ => Err(Missing)
+	}
+	match (name, other_kind(doc, ["release", "git"])) {
+		(Ok(found), Ok(kind)) => Ok(Newer({ key, name: found, kind }))
+		_ => Ok(Known(tool_of(path, key, doc)?))
+	}
 }
 
 # One tool of the `tools` object. A check fails with the first thing that is wrong: no object, no name, no known source.

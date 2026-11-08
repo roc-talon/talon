@@ -1,0 +1,9 @@
+args
+env_all
+tty
+env_all
+read_files $HOME/.local/share/talon/tools.json
+args
+env_all
+env_all
+read_files $HOME/.local/share/talon/tools.json

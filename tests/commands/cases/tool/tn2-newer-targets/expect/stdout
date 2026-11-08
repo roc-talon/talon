@@ -1,0 +1,12 @@
+== tool update zed
+exit 19
+== tool update acme/zed
+exit 19
+== tool rebuild zed
+exit 19
+== tool remove zed
+exit 19
+== tool install acme/zed
+exit 19
+== tool install other/zed
+exit 19

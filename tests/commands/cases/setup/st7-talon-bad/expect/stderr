@@ -1,1 +1,2 @@
-tln: error[input]: $HOME/.local/share/talon/tools.json: tool talon: has no source that tln knows
+warning: $HOME/.local/share/talon/bin/foo is missing, so tln setup made no entry for foo.
+note: no default compiler was set, because the list of compilers cannot be read (no GitHub repository roc-lang/nightlies (a private repository needs a token)). The first command that needs a compiler picks one.

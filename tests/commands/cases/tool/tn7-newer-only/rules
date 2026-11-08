@@ -1,0 +1,1 @@
+R-TF8 (slice 232, Design Q607): `tln tool update` and `tln tool rebuild` with no operand, when the file has only entries with an unknown source kind. Each run: one warning line for each entry on stderr (the file order), nothing on stdout, exit 0. The line `no tool is installed` is not printed, because the file has items. No request, no lock, no write.
