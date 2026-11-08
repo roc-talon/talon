@@ -104,7 +104,11 @@ Intent := {
 		Ok(doc) => {
 			scan = read_tables(doc, facts.role, facts.text)
 			match scan.issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
-				[first, ..] => Err(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}"))
+				[first, ..] => {
+					fail = Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")
+					# R-TF8: a table that the role does not allow is no value of a known key.
+					if first.message.starts_with("the table [") Err(fail) else Err(Fail.with_hint(fail))
+				}
 				[] => Ok({ intent: scan.intent, warnings: scan.warnings.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
 			}
 		}
@@ -115,7 +119,7 @@ Intent := {
 	## (the text of the table above). A package or a platform has no build (R-TG4), so its `[build]` has no effect: `Ok({})`. `bad` `Err(Valid)`: `Ok({})`.
 	build_check : { path : Str, bad : Try({ line : U64, message : Str }, [Valid]), kind : [App, Package, Platform] } -> Try({}, Fail)
 	build_check = |x| match (x.kind, x.bad) {
-		(App, Ok(note)) => Err(Fail.new(Input, "${x.path}:${note.line.to_str()}: ${note.message}"))
+		(App, Ok(note)) => Err(Fail.with_hint(Fail.new(Input, "${x.path}:${note.line.to_str()}: ${note.message}")))
 		_ => Ok({})
 	}
 

@@ -1,1 +1,2 @@
 tln: error[input]: $HOME/.config/talon/config.toml:1: registry: 'ftp://bad' is not a registry URL. Use direct, an https:// URL, or an http:// URL of 127.0.0.1, [::1] or localhost, with no path.
+A newer tln may know this value. Update tln: tln tool update talon

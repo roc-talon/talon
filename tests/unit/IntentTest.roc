@@ -108,31 +108,31 @@ expect {
 	}
 	failures = [
 		("not TOML", "[dependencies]\njson = = 1\n", Standalone, "tln: error[input]: /p/talon.toml:2: not valid TOML"),
-		("a range that does not parse", "[dependencies]\njson = \"latest\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: 'latest' is not a version range"),
-		("the range of a value with a name", "[dependencies]\n\nhttp = \"roc-lang/http@mian\"\n", Standalone, "tln: error[input]: /p/talon.toml:3: dependencies.http: 'mian' is not a version range"),
+		("a range that does not parse", "[dependencies]\njson = \"latest\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: 'latest' is not a version range\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("the range of a value with a name", "[dependencies]\n\nhttp = \"roc-lang/http@mian\"\n", Standalone, "tln: error[input]: /p/talon.toml:3: dependencies.http: 'mian' is not a version range\nA newer tln may know this value. Update tln: tln tool update talon"),
 		# R-I2: the name ends at the first `@`, so the range is the rest, `^1@x`.
-		("2 @ in a value: the range is after the first one", "[dependencies]\nhttp = \"roc-lang/http@^1@x\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.http: '^1@x' is not a version range"),
-		("an override with a bad range", "[overrides]\nx = \"^\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: overrides.x: '^' is not a version range"),
-		("a dependency that is not a string", "[dependencies]\njson = 5\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: must be a string"),
-		("a compiler range", "[toolchain]\nroc = \"latest\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: 'latest' is not a compiler range"),
+		("2 @ in a value: the range is after the first one", "[dependencies]\nhttp = \"roc-lang/http@^1@x\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.http: '^1@x' is not a version range\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("an override with a bad range", "[overrides]\nx = \"^\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: overrides.x: '^' is not a version range\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a dependency that is not a string", "[dependencies]\njson = 5\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: must be a string\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a compiler range", "[toolchain]\nroc = \"latest\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: 'latest' is not a compiler range\nA newer tln may know this value. Update tln: tln tool update talon"),
 		# R-SC12 (slice 012): the full id only. A prefix of a nightly id, with or without a bound, is an error.
-		("a prefix of a compiler id, with a bound", "[toolchain]\nroc = \">=nightly-2026-10-09\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: '>=nightly-2026-10-09' is not a compiler range"),
-		("a prefix of a compiler id, exact", "[toolchain]\nroc = \"=nightly-2026-10\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: '=nightly-2026-10' is not a compiler range"),
-		("nightly is not a boolean", "[toolchain]\nnightly = \"yes\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.nightly: must be true or false"),
-		("an unknown strategy", "[resolution]\nstrategy = \"middle\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.strategy: must be \"highest\" or \"lowest\""),
-		("min-release-age in hours", "[resolution]\nmin-release-age = \"48h\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.min-release-age: must be a number of days, for example \"2d\""),
-		("a snapshot", "[resolution]\nsnapshot = \"yesterday\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.snapshot: must be \"log:<n>\" or a UTC time"),
-		("a priority that is not a list of strings", "[resolution]\npriority = [1]\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.priority: must be a list of strings"),
+		("a prefix of a compiler id, with a bound", "[toolchain]\nroc = \">=nightly-2026-10-09\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: '>=nightly-2026-10-09' is not a compiler range\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a prefix of a compiler id, exact", "[toolchain]\nroc = \"=nightly-2026-10\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.roc: '=nightly-2026-10' is not a compiler range\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("nightly is not a boolean", "[toolchain]\nnightly = \"yes\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: toolchain.nightly: must be true or false\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("an unknown strategy", "[resolution]\nstrategy = \"middle\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.strategy: must be \"highest\" or \"lowest\"\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("min-release-age in hours", "[resolution]\nmin-release-age = \"48h\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.min-release-age: must be a number of days, for example \"2d\"\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a snapshot", "[resolution]\nsnapshot = \"yesterday\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.snapshot: must be \"log:<n>\" or a UTC time\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a priority that is not a list of strings", "[resolution]\npriority = [1]\n", Standalone, "tln: error[input]: /p/talon.toml:2: resolution.priority: must be a list of strings\nA newer tln may know this value. Update tln: tln tool update talon"),
 		("[resolution] in a member file (R-WS5)", "# member\n[dependencies]\njson = \"^2\"\n\n[resolution]\nstrategy = \"lowest\"\n", Member, "tln: error[input]: /p/talon.toml:5: the table [resolution] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
 		("[toolchain] in a member file", "[toolchain]\nroc = \"*\"\n", Member, "tln: error[input]: /p/talon.toml:1: the table [toolchain] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
 		("[audit] in a member file", "[audit]\nignore = []\n", Member, "tln: error[input]: /p/talon.toml:1: the table [audit] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
 		("[workspace] in a member file", "[workspace]\nmembers = []\n", Member, "tln: error[input]: /p/talon.toml:1: the table [workspace] is not allowed in a workspace member file (it has only dependencies, overrides, patch and build)"),
 		# R-EC19 R-PA12 R-PA15 R-SE18 (slice 076, Q1): a `[patch]` `base` is a hash, which names `packages/<base>`: a text that is not a safe path part is a value of the wrong form (exit 19, before any read)
-		("a [patch] base that is ..", "[patch]\njson = { path = \"./x/main.roc\", base = \"..\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: '..' is not a hash"),
-		("a [patch] base with a /", "[patch]\njson = { path = \"./x/main.roc\", base = \"a/../b\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: 'a/../b' is not a hash"),
-		("a [patch] base with a backslash", "[patch]\nx = 1\njson = { path = \"./x/main.roc\", base = \"a\\\\b\" }\n", Standalone, "tln: error[input]: /p/talon.toml:3: patch.json.base: 'a\\b' is not a hash"),
-		("an empty [patch] base", "[patch]\njson = { path = \"./x/main.roc\", base = \"\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: '' is not a hash"),
-		("the first one in file order", "[dependencies]\njson = \"latest\"\n\n[resolution]\nstrategy = \"x\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: 'latest' is not a version range"),
+		("a [patch] base that is ..", "[patch]\njson = { path = \"./x/main.roc\", base = \"..\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: '..' is not a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a [patch] base with a /", "[patch]\njson = { path = \"./x/main.roc\", base = \"a/../b\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: 'a/../b' is not a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("a [patch] base with a backslash", "[patch]\nx = 1\njson = { path = \"./x/main.roc\", base = \"a\\\\b\" }\n", Standalone, "tln: error[input]: /p/talon.toml:3: patch.json.base: 'a\\b' is not a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("an empty [patch] base", "[patch]\njson = { path = \"./x/main.roc\", base = \"\" }\n", Standalone, "tln: error[input]: /p/talon.toml:2: patch.json.base: '' is not a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("the first one in file order", "[dependencies]\njson = \"latest\"\n\n[resolution]\nstrategy = \"x\"\n", Standalone, "tln: error[input]: /p/talon.toml:2: dependencies.json: 'latest' is not a version range\nA newer tln may know this value. Update tln: tln tool update talon"),
 	]
 	bad_failures = failures.keep_if(|(_, text, role, want)| fails(text, role) != want).map(|(label, text, role, want)| (label, want, fails(text, role)))
 	dbg bad_failures
@@ -186,8 +186,8 @@ expect {
 		("any is no Roc target", view("[build]\ntarget = \"any\"\n", Standalone), Ok(("Err(Unset)", [], "2: build.target: 'any' is not a Roc target"))),
 		("the empty name", view("[build]\ntarget = \"\"\n", Standalone), Ok(("Err(Unset)", [], "2: build.target: '' is not a Roc target"))),
 		("a bad value in a member file", view("[dependencies]\njson = \"^2\"\n[build]\ntarget = \"wasm64\"\n", Member), Ok(("Err(Unset)", [], "4: build.target: 'wasm64' is not a Roc target"))),
-		("check: an app with a bad value is exit 19", check("[build]\ntarget = \"wasm64\"\n", App), Err("tln: error[input]: /p/talon.toml:2: build.target: 'wasm64' is not a Roc target")),
-		("check: an app with a value that is no string is exit 19", check("[build]\ntarget = 5\n", App), Err("tln: error[input]: /p/talon.toml:2: build.target: must be a string")),
+		("check: an app with a bad value is exit 19", check("[build]\ntarget = \"wasm64\"\n", App), Err("tln: error[input]: /p/talon.toml:2: build.target: 'wasm64' is not a Roc target\nA newer tln may know this value. Update tln: tln tool update talon")),
+		("check: an app with a value that is no string is exit 19", check("[build]\ntarget = 5\n", App), Err("tln: error[input]: /p/talon.toml:2: build.target: must be a string\nA newer tln may know this value. Update tln: tln tool update talon")),
 		("check: an app with a good value", check(wasm, App), Ok(("check", [], "no failure"))),
 		("check: an app with no table", check("", App), Ok(("check", [], "no failure"))),
 		("check: a package with a bad value has no failure (R-TG4)", check("[build]\ntarget = \"wasm64\"\n", Package), Ok(("check", [], "no failure"))),
@@ -349,7 +349,7 @@ expect {
 		Ok(done) => Ok((done.config.default_roc, done.config.nightly, done.config.min_release_age))
 		Err(f) => Err((f.kind.code(), f.message))
 	}
-	bad_form = Err((19, "/c/config.toml:2: default-roc: must be a full compiler id"))
+	bad_form = Err((19, "/c/config.toml:2: default-roc: must be a full compiler id\nA newer tln may know this value. Update tln: tln tool update talon"))
 	rows = [
 		("a nightly", "default-roc = \"nightly-2026-10-09-258ab27\"\n", Ok((Ok("nightly-2026-10-09-258ab27"), Err(Unset), Err(Unset)))),
 		("the other tag form", "default-roc = \"nightly-2026-July-23-fdd77c3\"\n", Ok((Ok("nightly-2026-July-23-fdd77c3"), Err(Unset), Err(Unset)))),
@@ -375,7 +375,7 @@ expect {
 		Ok(done) => Ok((done.config.gc_age, done.config.min_release_age, done.warnings))
 		Err(f) => Err((f.kind.code(), f.message))
 	}
-	bad_form = |line| Err((19, "/c/config.toml:${line}: gc-age: must be a number of days, for example \"30d\""))
+	bad_form = |line| Err((19, "/c/config.toml:${line}: gc-age: must be a number of days, for example \"30d\"\nA newer tln may know this value. Update tln: tln tool update talon"))
 	rows = [
 		("7 days", "gc-age = \"7d\"\n", Ok((Ok(604800), Err(Unset), []))),
 		("30 days and the other key", "min-release-age = \"2d\"\ngc-age = \"30d\"\n", Ok((Ok(2592000), Ok(172800), []))),
@@ -401,8 +401,8 @@ expect {
 		Err(f) => Err(f.line())
 	}
 	key = "resolution.min-release-age-exclude"
-	bad_pattern = |line, pattern| Err("tln: error[input]: /p/talon.toml:${line}: ${key}: '${pattern}' must be owner/repo or owner/*")
-	bad_form = |line| Err("tln: error[input]: /p/talon.toml:${line}: ${key}: must be a list of owner/repo or owner/* patterns")
+	bad_pattern = |line, pattern| Err("tln: error[input]: /p/talon.toml:${line}: ${key}: '${pattern}' must be owner/repo or owner/*\nA newer tln may know this value. Update tln: tln tool update talon")
+	bad_form = |line| Err("tln: error[input]: /p/talon.toml:${line}: ${key}: must be a list of owner/repo or owner/* patterns\nA newer tln may know this value. Update tln: tln tool update talon")
 	rows = [
 		("two patterns, as written", read("[resolution]\nmin-release-age-exclude = [\"acme/*\", \"Roc-Lang/basic-cli\"]\n", Standalone), Ok((["acme/*", "Roc-Lang/basic-cli"], []))),
 		("the root file reads it", read("[workspace]\nmembers = [\"apps/*/main.roc\"]\n\n[resolution]\nmin-release-age-exclude = [\"acme/*\"]\n", Root), Ok((["acme/*"], []))),
@@ -435,8 +435,8 @@ expect {
 		Ok(done) => Ok((done.config.min_release_age_exclude, done.config.min_release_age, done.warnings))
 		Err(f) => Err((f.kind.code(), f.message))
 	}
-	bad_pattern = |line, pattern| Err((19, "/c/config.toml:${line}: min-release-age-exclude: '${pattern}' must be owner/repo or owner/*"))
-	bad_form = |line| Err((19, "/c/config.toml:${line}: min-release-age-exclude: must be a list of owner/repo or owner/* patterns"))
+	bad_pattern = |line, pattern| Err((19, "/c/config.toml:${line}: min-release-age-exclude: '${pattern}' must be owner/repo or owner/*\nA newer tln may know this value. Update tln: tln tool update talon"))
+	bad_form = |line| Err((19, "/c/config.toml:${line}: min-release-age-exclude: must be a list of owner/repo or owner/* patterns\nA newer tln may know this value. Update tln: tln tool update talon"))
 	rows = [
 		("two patterns, as written", read("min-release-age-exclude = [\"acme/*\", \"Roc-Lang/basic-cli\"]\n"), Ok((["acme/*", "Roc-Lang/basic-cli"], Err(Unset), []))),
 		("with min-release-age", read("min-release-age = \"3d\"\nmin-release-age-exclude = [\"roc-lang/*\"]\n"), Ok((["roc-lang/*"], Ok(259200), []))),
@@ -447,7 +447,7 @@ expect {
 		("a bad pattern", read("# the list\nmin-release-age-exclude = [\"acme/*/x\"]\n"), bad_pattern("2", "acme/*/x")),
 		("a bad pattern: all", read("min-release-age-exclude = [\"*/*\"]\n"), bad_pattern("1", "*/*")),
 		("a bad pattern after a good one, on the line of the key", read("# c\nmin-release-age-exclude = [\n\t\"a/x\",\n\t\"b/y/z\",\n]\nnightly = true\n"), bad_pattern("2", "b/y/z")),
-		("a second key after a good list: the line of the other key", read("min-release-age-exclude = [\"a/x\", \"b/y\"]\nmin-release-age = \"48h\"\n"), Err((19, "/c/config.toml:2: min-release-age: must be a number of days, for example \"2d\""))),
+		("a second key after a good list: the line of the other key", read("min-release-age-exclude = [\"a/x\", \"b/y\"]\nmin-release-age = \"48h\"\n"), Err((19, "/c/config.toml:2: min-release-age: must be a number of days, for example \"2d\"\nA newer tln may know this value. Update tln: tln tool update talon"))),
 		("not a list: a text", read("min-release-age-exclude = \"acme/*\"\n"), bad_form("1")),
 		("a list of a number", read("# c\nmin-release-age-exclude = [1]\n"), bad_form("2")),
 		("a table", read("[min-release-age-exclude]\nx = 1\n"), bad_form("1")),
@@ -467,7 +467,7 @@ expect {
 		Ok(done) => Ok((done.intent.resolution.probe, done.warnings))
 		Err(f) => Err((f.kind.code(), f.message))
 	}
-	bad_key = |line, key, why| Err((19, "/p/talon.toml:${line}: resolution.probe.${key}: ${why}"))
+	bad_key = |line, key, why| Err((19, "/p/talon.toml:${line}: resolution.probe.${key}: ${why}\nA newer tln may know this value. Update tln: tln tool update talon"))
 	whole = "must be a whole number"
 	rows = [
 		("the example of Design 4.3", "[resolution]\nprobe = { max = 100, max-toolchains = 10, slots = 12 }\n", Ok(({ max: Ok(100), timeout: Err(Unset), slots: Ok(12), max_toolchains: Ok(10) }, []))),
@@ -495,7 +495,7 @@ expect {
 		Ok(done) => Ok((done.config.probe, done.config.gc_age, done.warnings))
 		Err(f) => Err((f.kind.code(), f.message))
 	}
-	bad_key = |line, key, why| Err((19, "/c/config.toml:${line}: probe.${key}: ${why}"))
+	bad_key = |line, key, why| Err((19, "/c/config.toml:${line}: probe.${key}: ${why}\nA newer tln may know this value. Update tln: tln tool update talon"))
 	whole = "must be a whole number"
 	rows = [
 		("the example of CLI 6.1", "nightly = true\n\n[probe]\nslots = 12\nmax-toolchains = 10\n", Ok(({ ..no_probe, slots: Ok(12), max_toolchains: Ok(10) }, Err(Unset), []))),

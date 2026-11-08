@@ -62,6 +62,14 @@ Fail := {
 		Err(None) => fail
 	}
 
+	## Slice 231 (R-TF8, Design Q607, Q609): the hint for a value of a known key that a newer tln may know.
+	newer_hint : Str
+	newer_hint = "A newer tln may know this value. Update tln: tln tool update talon"
+
+	## Slice 231 (R-TF8): the failure with the hint as a second line of the message. The kind stays.
+	with_hint : Fail -> Fail
+	with_hint = |fail| { ..fail, message: "${fail.message}\n${Fail.newer_hint}" }
+
 	## The last stderr line of a failure: `tln: error[<kind>]: <message>` (R-E4).
 	line : Fail -> Str
 	line = |fail| "tln: error[${fail.kind.name()}]: ${fail.message}"

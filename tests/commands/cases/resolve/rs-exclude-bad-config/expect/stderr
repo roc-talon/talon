@@ -1,1 +1,2 @@
 tln: error[input]: $HOME/.config/talon/config.toml:3: min-release-age-exclude: '*/*' must be owner/repo or owner/*
+A newer tln may know this value. Update tln: tln tool update talon

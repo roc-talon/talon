@@ -82,7 +82,7 @@ Job : { release : TalonUpdate.Release, bin_url : Str, sums_url : Str, sums_path 
 # Steps 1 to 4: the release list, the pick, the way.
 run! : Fx, Args => Try(ToolUpdate.Outcome, Fail)
 run! = |fx, args| {
-	machine = ToolManageFlow.machine!(fx)?
+	machine = ToolManageFlow.machine_lenient!(fx)?
 	facts = machine.facts
 	asset = TalonUpdate.asset_name({ os: facts.os, target: facts.target })
 	list = release_list!(fx, args, facts, asset)?

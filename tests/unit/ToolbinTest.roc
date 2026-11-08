@@ -68,13 +68,13 @@ expect {
 expect {
 	msg = "talon.toml:2: tools.a.bin"
 	rows = [
-		("true", "19 ${msg}: must be a table of target hashes, or false"),
-		("\"x\"", "19 ${msg}: must be a table of target hashes, or false"),
-		("{ x64glibc = \"${h1}\" }", "19 ${msg}.x64glibc: not a target (arm64mac, arm64musl, x64mac, x64musl, x64win)"),
-		("{ x64musl = \"${Str.repeat("A", 64)}\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits"),
-		("{ x64musl = \"abc\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits"),
-		("{ x64musl = 1 }", "19 ${msg}.x64musl: must be 64 lower case hex digits"),
-		("{ x64musl = \"sha256:${h1}\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits"),
+		("true", "19 ${msg}: must be a table of target hashes, or false\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("\"x\"", "19 ${msg}: must be a table of target hashes, or false\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("{ x64glibc = \"${h1}\" }", "19 ${msg}.x64glibc: not a target (arm64mac, arm64musl, x64mac, x64musl, x64win)\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("{ x64musl = \"${Str.repeat("A", 64)}\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("{ x64musl = \"abc\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("{ x64musl = 1 }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("{ x64musl = \"sha256:${h1}\" }", "19 ${msg}.x64musl: must be 64 lower case hex digits\nA newer tln may know this value. Update tln: tln tool update talon"),
 	]
 	rows.all(|(value, want)| read_bins(lines(["[tools]", "a = { ref = \"acme/foo\", bin = ${value} }"])) == Err(want))
 }
@@ -127,7 +127,7 @@ expect {
 		Ok(r) => Ok((r.config.tool_binaries, r.warnings))
 		Err(e) => Err("${e.kind.code().to_str()} ${e.message}")
 	}
-	read("tool-binaries = false\n") == Ok((Ok(Bool.False), [])) and read("tool-binaries = true\n") == Ok((Ok(Bool.True), [])) and read("nightly = true\n") == Ok((Err(Unset), [])) and read("tool-binaries = \"no\"\n") == Err("19 config.toml:1: tool-binaries: must be true or false")
+	read("tool-binaries = false\n") == Ok((Ok(Bool.False), [])) and read("tool-binaries = true\n") == Ok((Ok(Bool.True), [])) and read("nightly = true\n") == Ok((Err(Unset), [])) and read("tool-binaries = \"no\"\n") == Err("19 config.toml:1: tool-binaries: must be true or false\nA newer tln may know this value. Update tln: tln tool update talon")
 }
 
 # R-PT19: the targets that the check tries for an entry whose `url` stays: the ones with no value in `bin` (all 5 with no `bin`, none for `false`). `merge` keeps each old value as it is and adds the found values of the other targets, in text order.

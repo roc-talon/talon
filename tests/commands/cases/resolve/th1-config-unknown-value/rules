@@ -1,0 +1,1 @@
+R-TF8 R-TF4 R-EC19 (slice 231, Design Q607): `install` with `default-roc = "svn-1a2b3c4"` in `config.toml` (line 3): a known key with an id kind that this tln does not know. Exit 19, the usual line, and one more line: the hint `A newer tln may know this value. Update tln: tln tool update talon` (text from R-TF8). The hint is part of the message text (proposal, TW24).

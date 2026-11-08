@@ -291,6 +291,17 @@ RocInstall :: [].{
 		Ok(read.config)
 	}
 
+	## Slice 231 (R-TF8): the lenient read of `config.toml` for `tln tool update talon`. It never fails on the text: a bad value is a warning on stderr and the key is unset.
+	read_config_lenient! : Fx, Roots => Try(ConfigToml.Config, Fail)
+	read_config_lenient! = |fx, roots| {
+		path = Roots.item(roots, Item.Config)
+		read = ConfigToml.read_lenient({ path, text: RocInstall.read_text!(fx, path)? })
+		for w in read.warnings {
+			fx.err!("warning: ${w}\n")
+		}
+		Ok(read.config)
+	}
+
 	## Step 7, R-NI6: the person (or the flags) agrees to the download. It runs before the lock (R-CC3 point 5).
 	ask_download! : Fx, Args, List((Str, Str)), { id : Str, size : U64 } => Try({}, Fail)
 	ask_download! = |fx, args, env, facts| {

@@ -21,58 +21,91 @@ ConfigToml :: [].{
 	read = |facts| match Toml.parse(facts.text) {
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(doc) => {
-			nightly = config_field(
-				doc,
-				"nightly",
-				|v| match v {
-					Value.Boolean(b) => Ok(b)
-					_ => Err("must be true or false")
-				},
-			)
-			age = config_field(
-				doc,
-				"min-release-age",
-				|v| match v {
-					Value.String(text) => TomlKeys.days_of(text).map_err(|NotDays| "must be a number of days, for example \"2d\"")
-					_ => Err("must be a number of days, for example \"2d\"")
-				},
-			)
-			exclude = config_field(doc, "min-release-age-exclude", Age.read_list)
-			default_roc = config_field(
-				doc,
-				"default-roc",
-				|v| match v {
-					Value.String(text) if is_default_id(text) => Ok(text)
-					_ => Err("must be a full compiler id")
-				},
-			)
-			gc_age = config_field(
-				doc,
-				"gc-age",
-				|v| match v {
-					Value.String(text) => TomlKeys.days_of(text).map_err(|NotDays| "must be a number of days, for example \"30d\"")
-					_ => Err("must be a number of days, for example \"30d\"")
-				},
-			)
-			tool_binaries = config_field(
-				doc,
-				"tool-binaries",
-				|v| match v {
-					Value.Boolean(b) => Ok(b)
-					_ => Err("must be true or false")
-				},
-			)
-			probe = TomlKeys.read_probe(doc, ["probe"], "probe")
-			issues = nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(tool_binaries.issues).concat(probe.issues)
-			match issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
-				[first, ..] => Err(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}"))
-				[] => {
-					unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: TomlKeys.key_line(doc, [key]), message: "unknown key ${key}" })
-					warnings = unknown.concat(probe.warnings).sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}")
-					Ok({ config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, facts.path), share: share_of(doc) }, warnings })
-				}
+			found = scan(facts.path, doc)
+			match found.issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
+				# R-TF8: each failure of a value of a known key has the hint.
+				[first, ..] => Err(Fail.with_hint(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")))
+				[] => Ok({ config: found.config, warnings: shown(facts.path, found.warnings) })
 			}
 		}
+	}
+
+	## Slice 231 (R-TF8, Design Q607, Q609): the read of `tln tool update talon`. It never fails. A bad value is the warning `<path>:<line>: <key>: <why> (ignored)` and the key is unset. Text that is not TOML is the empty config and the warning `<path>:<line>: not valid TOML (ignored)`.
+	## The warnings are in the order of the lines.
+	read_lenient : { path : Str, text : Str } -> { config : Config, warnings : List(Str) }
+	read_lenient = |facts| match Toml.parse(facts.text) {
+		Err(TomlErr(e)) => {
+			{ config: empty_config(facts.path, ""), warnings: ["${facts.path}:${e.line.to_str()}: not valid TOML (ignored)"] }
+		}
+		Ok(doc) => {
+			found = scan(facts.path, doc)
+			ignored = found.issues.map(|n| { ..n, message: "${n.message} (ignored)" })
+			{ config: found.config, warnings: shown(facts.path, ignored.concat(found.warnings)) }
+		}
+	}
+}
+
+# The config of a text with no key. `text` is the empty text.
+empty_config : Str, Str -> Config
+empty_config = |path, text| match Toml.parse(text) {
+	Ok(doc) => scan(path, doc).config
+	Err(_) => crash "empty text must parse"
+}
+
+# The notes as warning texts, in the order of the lines.
+shown : Str, List(TomlKeys.Note) -> List(Str)
+shown = |path, notes| notes.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${path}:${w.line.to_str()}: ${w.message}")
+
+# The keys of a parsed `config.toml`: the config (a bad key is unset), the issues (bad values) and the warnings.
+scan : Str, Toml -> { config : Config, issues : List(TomlKeys.Note), warnings : List(TomlKeys.Note) }
+scan = |path, doc| {
+	nightly = config_field(
+		doc,
+		"nightly",
+		|v| match v {
+			Value.Boolean(b) => Ok(b)
+			_ => Err("must be true or false")
+		},
+	)
+	age = config_field(
+		doc,
+		"min-release-age",
+		|v| match v {
+			Value.String(text) => TomlKeys.days_of(text).map_err(|NotDays| "must be a number of days, for example \"2d\"")
+			_ => Err("must be a number of days, for example \"2d\"")
+		},
+	)
+	exclude = config_field(doc, "min-release-age-exclude", Age.read_list)
+	default_roc = config_field(
+		doc,
+		"default-roc",
+		|v| match v {
+			Value.String(text) if is_default_id(text) => Ok(text)
+			_ => Err("must be a full compiler id")
+		},
+	)
+	gc_age = config_field(
+		doc,
+		"gc-age",
+		|v| match v {
+			Value.String(text) => TomlKeys.days_of(text).map_err(|NotDays| "must be a number of days, for example \"30d\"")
+			_ => Err("must be a number of days, for example \"30d\"")
+		},
+	)
+	tool_binaries = config_field(
+		doc,
+		"tool-binaries",
+		|v| match v {
+			Value.Boolean(b) => Ok(b)
+			_ => Err("must be true or false")
+		},
+	)
+	probe = TomlKeys.read_probe(doc, ["probe"], "probe")
+	unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: TomlKeys.key_line(doc, [key]), message: "unknown key ${key}" })
+	{
+		config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, path), share: share_of(doc) },
+		issues: nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(tool_binaries.issues).concat(probe.issues),
+		warnings: unknown.concat(probe.warnings),
 	}
 }
 

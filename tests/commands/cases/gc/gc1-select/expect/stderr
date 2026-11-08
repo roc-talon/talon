@@ -20,3 +20,4 @@ dry run: nothing was removed
 tln: error[usage]: tln cache gc takes no operand, got 1
 tln: error[input]: $HOME2/.cache/roc/talon/projects.json: the content does not parse
 tln: error[input]: $HOME3/.config/talon/config.toml:2: gc-age: must be a number of days, for example "30d"
+A newer tln may know this value. Update tln: tln tool update talon

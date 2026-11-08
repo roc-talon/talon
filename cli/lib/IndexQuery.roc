@@ -32,7 +32,7 @@ IndexQuery :: [].{
 			Err(Unset) => Err(Unset)
 			Ok(c) => match read_setting(c.text) {
 				Ok(found) => Ok(found)
-				Err(BadRegistry) => return Err(Fail.new(Input, "${c.at}: registry: '${c.text}' is not a registry URL. ${forms}"))
+				Err(BadRegistry) => return Err(Fail.with_hint(Fail.new(Input, "${c.at}: registry: '${c.text}' is not a registry URL. ${forms}")))
 			}
 		}
 		# Q439: only the winner of the flag and the variable is read.

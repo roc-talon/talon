@@ -1,0 +1,2 @@
+warning: $HOME/.config/talon/config.toml:1: default-roc: must be a full compiler id (ignored)
+note: attestation not checked (needs gh, logged in)

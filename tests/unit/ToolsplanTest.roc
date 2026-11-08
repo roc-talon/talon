@@ -61,17 +61,17 @@ expect {
 # R-PT1, R-TF4 (exit code 19): a form that is not valid, by line. Each failure names the key and says why.
 expect {
 	rows = [
-		("[tools]\nFoo = { ref = \"acme/foo\" }\n", "19 talon.toml:2: tools.Foo: the key is not a tool name (lower case letters, digits, '.', '_' and '-', and the first one a letter or a digit)"),
-		("[tools]\nfoo = \"acme/foo\"\n", "19 talon.toml:2: tools.foo: must be a table with ref and url"),
-		("[tools]\nfoo = { url = \"${foo11}\" }\n", "19 talon.toml:2: tools.foo.ref: must be a string"),
-		("[tools]\nfoo = { ref = \"foo\" }\n", "19 talon.toml:2: tools.foo.ref: 'foo' is not an owner/app name"),
-		("[tools]\nfoo = { ref = \"acme/foo@dd03c09e\" }\n", "19 talon.toml:2: tools.foo.ref: 'dd03c09e' is not a release selector (a version, a range or latest)"),
-		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://example.com/x.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://example.com/x.tar.zst' is not a release URL with a version and a hash"),
-		("[tools]\nfoo = { ref = \"acme/foo\", url = 3 }\n", "19 talon.toml:2: tools.foo.url: must be a string"),
+		("[tools]\nFoo = { ref = \"acme/foo\" }\n", "19 talon.toml:2: tools.Foo: the key is not a tool name (lower case letters, digits, '.', '_' and '-', and the first one a letter or a digit)\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = \"acme/foo\"\n", "19 talon.toml:2: tools.foo: must be a table with ref and url\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = { url = \"${foo11}\" }\n", "19 talon.toml:2: tools.foo.ref: must be a string\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = { ref = \"foo\" }\n", "19 talon.toml:2: tools.foo.ref: 'foo' is not an owner/app name\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = { ref = \"acme/foo@dd03c09e\" }\n", "19 talon.toml:2: tools.foo.ref: 'dd03c09e' is not a release selector (a version, a range or latest)\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://example.com/x.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://example.com/x.tar.zst' is not a release URL with a version and a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = { ref = \"acme/foo\", url = 3 }\n", "19 talon.toml:2: tools.foo.url: must be a string\nA newer tln may know this value. Update tln: tln tool update talon"),
 		# R-SE18 R-ID5 R-H4 (slice 076): a hash that is not a safe path part is no hash, so the `url` is not a release URL (the key of a cloned repository must not name a path outside `packages/`)
-		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/...tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/...tar.zst' is not a release URL with a version and a hash"),
-		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/a\\\\b.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/a\\b.tar.zst' is not a release URL with a version and a hash"),
-		("tools = 1\n", "19 talon.toml:1: tools: must be a table"),
+		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/...tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/...tar.zst' is not a release URL with a version and a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("[tools]\nfoo = { ref = \"acme/foo\", url = \"https://github.com/acme/foo/releases/download/1.1.0/a\\\\b.tar.zst\" }\n", "19 talon.toml:2: tools.foo.url: 'https://github.com/acme/foo/releases/download/1.1.0/a\\b.tar.zst' is not a release URL with a version and a hash\nA newer tln may know this value. Update tln: tln tool update talon"),
+		("tools = 1\n", "19 talon.toml:1: tools: must be a table\nA newer tln may know this value. Update tln: tln tool update talon"),
 	]
 	rows.all(|(text, want)| read_tools(text, Standalone) == Err(want))
 }

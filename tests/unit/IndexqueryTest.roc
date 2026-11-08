@@ -99,7 +99,7 @@ expect {
 # R-RG7 row 6, R-TF4: a bad text from `config.toml` is an input failure (exit 19) in the form `<path>:<line>: <key>: <why>`. It stops the command as each other key of R-TF4, also when the flag or the variable wins.
 expect {
 	why = "registry: 'https://user@r.example' is not a registry URL. ${forms}"
-	line = "19 tln: error[input]: /h/.config/talon/config.toml:3: ${why}"
+	line = "19 tln: error[input]: /h/.config/talon/config.toml:3: ${why}\nA newer tln may know this value. Update tln: tln tool update talon"
 	rows = [
 		(Err(Unset), Err(Unset), line),
 		(Ok("https://flag.example"), Err(Unset), line),

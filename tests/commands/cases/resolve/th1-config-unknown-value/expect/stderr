@@ -1,0 +1,2 @@
+tln: error[input]: $HOME/.config/talon/config.toml:3: default-roc: must be a full compiler id
+A newer tln may know this value. Update tln: tln tool update talon

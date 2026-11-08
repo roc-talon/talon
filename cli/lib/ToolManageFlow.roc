@@ -80,7 +80,14 @@ ToolManageFlow :: [].{
 	## The machine and the manifest, for the commands that go through the tools (`remove` and `ToolUpdateFlow`): the environment, the roots, the network settings, the time, the system (`platform!`), the bin dir, the build target, `config.toml` (`min-release-age`, the probe timeout)
 	## and the tools of `tools.json`. `Facts` is the base of `ToolBuild.Facts`: `name`, `key` and `file` are empty, a tool command sets them for each tool.
 	machine! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
-	machine! = |fx| {
+	machine! = |fx| machine_with!(fx, Strict)
+
+	## Slice 231 (R-TF8): the same, with the lenient read of `config.toml`. Only `tln tool update talon` uses it.
+	machine_lenient! : Fx => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
+	machine_lenient! = |fx| machine_with!(fx, Lenient)
+
+	machine_with! : Fx, [Strict, Lenient] => Try({ facts : ToolBuild.Facts, tools : List(ToolsJson.Tool), talon : Try(ToolsJson.Talon, [None]) }, Fail)
+	machine_with! = |fx, reading| {
 		env = fx.env_all!()
 		roots = Roots.of_run!(fx, env)?
 		net = Net.from_env(env)
@@ -95,7 +102,10 @@ ToolManageFlow :: [].{
 		tools_text = SetupIo.read_text!(fx, tools_file)?
 		tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
 		talon = ToolsJson.talon({ path: tools_file, text: tools_text })?
-		config = RocInstall.read_config!(fx, roots)?
+		config = match reading {
+			Strict => RocInstall.read_config!(fx, roots)?
+			Lenient => RocInstall.read_config_lenient!(fx, roots)?
+		}
 		facts = {
 			env,
 			roots,

@@ -1,0 +1,3 @@
+# the user list
+nightly = true
+default-roc = "svn-1a2b3c4"

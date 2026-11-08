@@ -15,4 +15,5 @@ tln: error[no_tuple]: no compiler release is known
 tln: error[network]: nightly-2026-10-09-258ab27 is not installed and --offline is set
 tln: error[network]: no cached list of compilers and --offline is set
 tln: error[input]: $HOME/.config/talon/config.toml:1: nightly: must be true or false
+A newer tln may know this value. Update tln: tln tool update talon
 downloading nightly-2026-10-21-5349569 (456 B)

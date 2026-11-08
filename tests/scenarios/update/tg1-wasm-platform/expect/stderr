@@ -1,1 +1,2 @@
 tln: error[input]: $PROJECT/p2/talon.toml:5: build.target: 'wasm64' is not a Roc target
+A newer tln may know this value. Update tln: tln tool update talon

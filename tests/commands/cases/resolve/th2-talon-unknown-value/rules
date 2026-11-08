@@ -1,0 +1,1 @@
+R-TF8 R-TF4 R-EC19 (slice 231, Design Q607): `install` with `[resolution] strategy = "middle"` in `talon.toml` (line 2): an unknown word for a known key. Exit 19, the usual line, and the hint line of R-TF8. The `config.toml` is good.
