@@ -1,0 +1,1 @@
+R-CH10 (slice 238, Design Q612): the same table in config.toml and in talon.toml (the key order and the spaces differ): no stop, no warning. Today two warnings (red).

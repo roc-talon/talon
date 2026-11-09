@@ -1,0 +1,4 @@
+== @roc check p1/main.roc
+exit 19
+== @roc check p2/main.roc
+exit 19

@@ -1,6 +1,7 @@
 import Age
 import Common
 import Compiler
+import Channel
 import ConfigToml
 import Facts
 import Fail
@@ -271,6 +272,7 @@ Base :: [].{
 			Given(given) => given
 			Patches => no_config
 		}
+		channels_equal(read, { tomls, config: config_path, kind })?
 		version_file = read_version(read, versions)?
 		has_toml = match found {
 			Ok(project) => project.project.toml.is_ok()
@@ -409,6 +411,17 @@ read_config = |read, path| match text_of(read, path) {
 	}
 	Err(NotFound) => Ok(no_config)
 	Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
+}
+
+# Slice 238 (R-CH10): a channel name in `talon.toml` and in `config.toml` has equal tables. A file that is not there, or a config that is given, has nothing to compare.
+# Design Q613 item 4: each load that has both texts compares. `tool update talon` reads no `talon.toml`.
+channels_equal : Reads, { tomls : List(Str), config : Str, kind : [Read, Given, Patches] } -> Try({}, Fail)
+channels_equal = |read, x| match (x.kind, x.tomls) {
+	(Read, [path]) => match (text_of(read, path), text_of(read, x.config)) {
+		(Ok(talon), Ok(config)) => Channel.compare({ talon: { path, text: talon }, config: { path: x.config, text: config } })
+		_ => Ok({})
+	}
+	_ => Ok({})
 }
 
 # R-SO5, R-SC12: the id of the `.roc-version`. An empty file is no file. A text that is no full id is exit 19.

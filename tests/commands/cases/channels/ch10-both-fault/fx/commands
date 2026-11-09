@@ -1,0 +1,2 @@
+# R-CH10: a channel fault in config.toml and another in talon.toml: the fault of config.toml shows
+install --frozen --file p/main.roc

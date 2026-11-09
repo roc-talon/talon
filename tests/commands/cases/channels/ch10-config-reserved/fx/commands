@@ -1,0 +1,2 @@
+# R-CH10: a reserved name in config.toml: exit 19
+install --frozen --file p/main.roc

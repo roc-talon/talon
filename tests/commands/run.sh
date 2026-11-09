@@ -60,13 +60,18 @@ run_case() {
     : > "$report"
     compare_file "exit code" "$W/out/exit.expected" "$W/out/exit" >> "$report" || fail=1
     compare_file "stdout" "$ex/stdout" "$W/out/stdout.n" >> "$report" || fail=1
-    compare_file "stderr" "$ex/stderr" "$W/out/stderr.n" >> "$report" || fail=1
     if [ "$CASEROOT" = /tmp/talon-l2 ]; then
+        compare_file "stderr" "$ex/stderr" "$W/out/stderr.n" >> "$report" || fail=1
         compare_file "Fx calls" "$ex/calls.log" "$W/out/calls.log.n" >> "$report" || fail=1
     else
         # The ancestors of the work dir are not /tmp/talon-l2, /tmp and /: the calls on them are left out of both files (tests/lib.sh anc_filter).
-        if [ -f "$ex/calls.log" ]; then anc_filter "$W" < "$ex/calls.log" > "$W/out/calls.expected"; else : > "$W/out/calls.expected"; fi
-        anc_filter "$W" < "$W/out/calls.log.n" > "$W/out/calls.actual"
+        # anc_filter keeps `list_dirs /`, but the walk up stops at the repository root of a work dir under the repo (.tmp/), so the root is left out too.
+        # The list of dirs after $WORK in the text "Checked: ..." (the walk up from the work dir) is left out of the stderr files for the same reason.
+        if [ -f "$ex/calls.log" ]; then anc_filter "$W" < "$ex/calls.log" | sed -e '\#^list_dirs /$#d' > "$W/out/calls.expected"; else : > "$W/out/calls.expected"; fi
+        anc_filter "$W" < "$W/out/calls.log.n" | sed -e '\#^list_dirs /$#d' > "$W/out/calls.actual"
+        sed -E 's#(Checked: .*\$WORK)(, [^, ]+)*\. Pass#\1. Pass#' "$ex/stderr" > "$W/out/stderr.expected" 2> /dev/null || : > "$W/out/stderr.expected"
+        sed -E 's#(Checked: .*\$WORK)(, [^, ]+)*\. Pass#\1. Pass#' "$W/out/stderr.n" > "$W/out/stderr.actual"
+        compare_file "stderr" "$W/out/stderr.expected" "$W/out/stderr.actual" >> "$report" || fail=1
         compare_file "Fx calls" "$W/out/calls.expected" "$W/out/calls.actual" >> "$report" || fail=1
     fi
     compare_file "file tree" "$ex/tree.diff" "$W/out/tree.diff" >> "$report" || fail=1

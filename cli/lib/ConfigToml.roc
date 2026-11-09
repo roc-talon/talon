@@ -1,4 +1,5 @@
 import Age
+import Channel
 import Fail
 import Pin
 import Probe
@@ -21,10 +22,13 @@ ConfigToml :: [].{
 	read = |facts| match Toml.parse(facts.text) {
 		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
 		Ok(doc) => {
-			found = scan(facts.path, doc)
+			found = scan(facts.path, facts.text, doc)
 			match found.issues.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)) {
-				# R-TF8: each failure of a value of a known key has the hint.
-				[first, ..] => Err(Fail.with_hint(Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")))
+				# R-TF8: each failure of a value of a known key has the hint. A reserved channel name is no such value (slice 238).
+				[first, ..] => {
+					fail = Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")
+					if Channel.hintless(first.message) Err(fail) else Err(Fail.with_hint(fail))
+				}
 				[] => Ok({ config: found.config, warnings: shown(facts.path, found.warnings) })
 			}
 		}
@@ -38,7 +42,7 @@ ConfigToml :: [].{
 			{ config: empty_config(facts.path, ""), warnings: ["${facts.path}:${e.line.to_str()}: not valid TOML (ignored)"] }
 		}
 		Ok(doc) => {
-			found = scan(facts.path, doc)
+			found = scan(facts.path, facts.text, doc)
 			ignored = found.issues.map(|n| { ..n, message: "${n.message} (ignored)" })
 			{ config: found.config, warnings: shown(facts.path, ignored.concat(found.warnings)) }
 		}
@@ -48,7 +52,7 @@ ConfigToml :: [].{
 # The config of a text with no key. `text` is the empty text.
 empty_config : Str, Str -> Config
 empty_config = |path, text| match Toml.parse(text) {
-	Ok(doc) => scan(path, doc).config
+	Ok(doc) => scan(path, text, doc).config
 	Err(_) => crash "empty text must parse"
 }
 
@@ -57,8 +61,8 @@ shown : Str, List(TomlKeys.Note) -> List(Str)
 shown = |path, notes| notes.sort_with(|a, b| TomlKeys.compare_lines(a.line, b.line)).map(|w| "${path}:${w.line.to_str()}: ${w.message}")
 
 # The keys of a parsed `config.toml`: the config (a bad key is unset), the issues (bad values) and the warnings.
-scan : Str, Toml -> { config : Config, issues : List(TomlKeys.Note), warnings : List(TomlKeys.Note) }
-scan = |path, doc| {
+scan : Str, Str, Toml -> { config : Config, issues : List(TomlKeys.Note), warnings : List(TomlKeys.Note) }
+scan = |path, file_text, doc| {
 	nightly = config_field(
 		doc,
 		"nightly",
@@ -101,11 +105,12 @@ scan = |path, doc| {
 		},
 	)
 	probe = TomlKeys.read_probe(doc, ["probe"], "probe")
+	channels = Channel.read(doc, file_text)
 	unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: TomlKeys.key_line(doc, [key]), message: "unknown key ${key}" })
 	{
 		config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, path), share: share_of(doc) },
-		issues: nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(tool_binaries.issues).concat(probe.issues),
-		warnings: unknown.concat(probe.warnings),
+		issues: nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(tool_binaries.issues).concat(probe.issues).concat(channels.issues),
+		warnings: unknown.concat(probe.warnings).concat(channels.warnings),
 	}
 }
 
@@ -115,7 +120,7 @@ is_default_id = |text| Pin.is_id(text) or ["git-", "link-", "copy-"].any(|prefix
 
 # The keys of `config.toml` (CLI 6.1). `probe` is a table.
 config_keys : List(Str)
-config_keys = ["default-roc", "registry", "nightly", "min-release-age", "min-release-age-exclude", "gc-age", "tool-binaries", "share", "probe"]
+config_keys = ["default-roc", "registry", "nightly", "min-release-age", "min-release-age-exclude", "gc-age", "tool-binaries", "share", "probe", "channels"]
 
 # A top-level key of `config.toml`, or the reason that it is wrong.
 config_field : Toml, Str, (Value -> Try(a, Str)) -> { value : Try(a, [Unset]), issues : List(TomlKeys.Note) }

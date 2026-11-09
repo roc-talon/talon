@@ -1,0 +1,4 @@
+[channels.reify]
+shape = "git-build"
+source = "a/b"
+tag-prefix = "x-"

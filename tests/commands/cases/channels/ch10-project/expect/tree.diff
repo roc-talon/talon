@@ -1,0 +1,4 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/good/main.roc","last_use":1792670400},{"path":"$PROJECT/res/main.roc","last_use":1792670400},{"path":"$PROJECT/res2/main.roc","last_use":1792670400},{"path":"$PROJECT/shape/main.roc","last_use":1792670400},{"path":"$PROJECT/shapenum/main.roc","last_use":1792670400},{"path":"$PROJECT/srcnum/main.roc","last_use":1792670400},{"path":"$PROJECT/warn/main.roc","last_use":1792670400},{"path":"$PROJECT/wgood/apps/a/main.roc","last_use":1792670400}]}

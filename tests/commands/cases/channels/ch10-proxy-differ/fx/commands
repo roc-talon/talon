@@ -1,0 +1,4 @@
+# R-CH10: the roc proxy (a run that is not early reads through Base.load!, not through ResolveLoad): the source differs between config.toml and talon.toml: exit 19, no compiler is run
+@roc check p1/main.roc
+# R-CH10: the tag-prefix differs: exit 19
+@roc check p2/main.roc

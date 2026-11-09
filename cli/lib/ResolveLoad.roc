@@ -1,3 +1,4 @@
+import Channel
 import Compiler
 import ConfigToml
 import Fail
@@ -80,6 +81,15 @@ ResolveLoad :: [].{
 				fx.err!("warning: ${w}\n")
 			}
 			$intents = $intents.append({ path: t.path, intent: read.intent })
+		}
+		# Slice 238 (R-CH10): equal channel tables in the root `talon.toml` and in `config.toml`. Design Q613 item 4.
+		if config_result.is_ok() {
+			config_text = config_result ?? ""
+			for t in $tomls {
+				if t.path == root_toml or request.project.workspace.is_err() {
+					Channel.compare({ talon: { path: t.path, text: t.text }, config: { path: config_path, text: config_text } })?
+				}
+			}
 		}
 		members = files.map2(
 			candidates,

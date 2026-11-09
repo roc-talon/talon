@@ -1,0 +1,2 @@
+warning: $HOME/.config/talon/config.toml:2: channels.reify.shape: 'git-build' is not a channel shape (ignored)
+note: attestation not checked (needs gh, logged in)

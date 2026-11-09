@@ -1,0 +1,2 @@
+# R-CH10 R-TF10: a channel fault and a version gate failure in one talon.toml: the gate message
+install --frozen --file p/main.roc

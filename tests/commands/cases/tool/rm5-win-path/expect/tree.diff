@@ -33,7 +33,7 @@
 --- home/u3/AppData/Local\roc/toolchains/link-mine/.talon.json
 +++ home/u3/AppData/Local\roc/toolchains/link-mine/.talon.json
 @@ -1 +0,0 @@
--{"format":1,"id":"link-mine","kind":"link","path":"$HOME/u3/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
+-{"format":1,"id":"link-mine","kind":"link","path":"/opt/user/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
 --- home/u3/AppData/Local\roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 +++ home/u3/AppData/Local\roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 @@ -1 +0,0 @@
@@ -115,7 +115,7 @@
 --- home/u4/AppData/Local\roc/toolchains/link-mine/.talon.json
 +++ home/u4/AppData/Local\roc/toolchains/link-mine/.talon.json
 @@ -1 +0,0 @@
--{"format":1,"id":"link-mine","kind":"link","path":"$HOME/u4/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
+-{"format":1,"id":"link-mine","kind":"link","path":"/opt/user/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
 --- home/u4/AppData/Local\roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 +++ home/u4/AppData/Local\roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 @@ -1 +0,0 @@

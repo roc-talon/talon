@@ -1,0 +1,1 @@
+R-CH10 R-TF10 R-EC19 (slice 238, Design Q613 item 9): talon.toml has the reserved table [channels.nightly] (line 1) and [toolchain] tln = ">=999.0.0" (line 6). The version gate comes first (R-TF10: 'checks it first'): the message is the gate message. The text is the one of slice 236.

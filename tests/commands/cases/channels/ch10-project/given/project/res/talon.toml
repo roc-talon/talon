@@ -1,0 +1,4 @@
+[channels.nightly]
+shape = "github-release"
+source = "roc-lang/nightlies"
+tag-prefix = "nightly-"

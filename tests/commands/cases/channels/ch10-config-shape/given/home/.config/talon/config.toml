@@ -1,0 +1,4 @@
+[channels.reify]
+shape = "git-build"
+source = "Karakatiza666/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"

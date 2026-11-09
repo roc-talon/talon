@@ -1,0 +1,13 @@
+base l0-9: exit=0 All (67) tests passed in 2737.7 ms. (cached) 
+base L2: FAIL channels/ch10-both-differ FAIL channels/ch10-both-equal FAIL channels/ch10-both-fault FAIL channels/ch10-config-reserved FAIL channels/ch10-config-shape FAIL channels/ch10-config-warn FAIL channels/ch10-gate-first FAIL channels/ch10-project FAIL channels/ch10-update-bad FAIL channels/ch10-update-skip commands: 0 passed, 10 failed 
+m1: L0 exit=1 expect { expect {     65 passed     2 failed     0 compiler errors 
+m2: L0 exit=1 expect { expect {     65 passed     2 failed     0 compiler errors 
+m3: L0 exit=1 expect { expect {     65 passed     2 failed     0 compiler errors 
+m4: L0 exit=1 expect {     66 passed     1 failed     0 compiler errors 
+m4b: BUILD FAILED
+m5: L0 exit=1 expect {     66 passed     1 failed     0 compiler errors 
+m6: L0 exit=1 expect {     66 passed     1 failed     0 compiler errors 
+m7: L0 exit=1 expect {     66 passed     1 failed     0 compiler errors 
+m8: L0 exit=1 expect {     66 passed     1 failed     0 compiler errors 
+m9: L0 exit=1 expect {     66 passed     1 failed     0 compiler errors 
+m10: L0 exit=1 expect { expect {     65 passed     2 failed     0 compiler errors 

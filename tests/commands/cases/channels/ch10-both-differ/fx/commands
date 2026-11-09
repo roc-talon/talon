@@ -1,0 +1,2 @@
+# R-CH10: the same name with tables that differ: exit 19
+install --frozen --file p/main.roc

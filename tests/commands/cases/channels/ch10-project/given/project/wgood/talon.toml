@@ -1,0 +1,7 @@
+[workspace]
+members = ["apps/*/main.roc"]
+
+[channels.reify]
+shape = "github-release"
+source = "Karakatiza666/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"

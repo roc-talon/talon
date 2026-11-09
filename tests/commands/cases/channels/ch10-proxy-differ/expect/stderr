@@ -1,0 +1,2 @@
+tln: error[input]: $PROJECT/p1/talon.toml:1: channels.reify is not equal to channels.reify in $HOME/.config/talon/config.toml:1
+tln: error[input]: $PROJECT/p2/talon.toml:1: channels.reify is not equal to channels.reify in $HOME/.config/talon/config.toml:1

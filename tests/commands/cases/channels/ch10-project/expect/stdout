@@ -1,0 +1,19 @@
+== install --frozen --file good/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --file res/main.roc
+exit 19
+== install --frozen --file res2/main.roc
+exit 19
+== install --frozen --file shape/main.roc
+exit 19
+== install --frozen --file shapenum/main.roc
+exit 19
+== install --frozen --file srcnum/main.roc
+exit 19
+== install --frozen --file warn/main.roc
+the header satisfies talon.toml
+exit 0
+== install --frozen --file wgood/apps/a/main.roc
+the header satisfies talon.toml
+exit 0

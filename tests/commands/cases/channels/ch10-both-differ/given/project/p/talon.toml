@@ -1,0 +1,6 @@
+[toolchain]
+nightly = true
+[channels.reify]
+shape = "github-release"
+source = "someone-else/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"

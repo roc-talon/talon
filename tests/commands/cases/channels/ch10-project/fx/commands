@@ -1,0 +1,16 @@
+# R-CH10 R-CH1: a valid table in talon.toml: no stop, no warning
+install --frozen --file good/main.roc
+# R-CH10 R-CH1 R-CH2: the built-in name nightly is reserved, also with the built-in values: exit 19
+install --frozen --file res/main.roc
+# R-CH10 R-CH3: the reserved name stable: exit 19
+install --frozen --file res2/main.roc
+# R-CH10 R-TF8: an unknown shape word: exit 19 and the hint line
+install --frozen --file shape/main.roc
+# R-CH10 R-TF4 R-TF8: shape is not a string: exit 19 and the hint line
+install --frozen --file shapenum/main.roc
+# R-CH10 R-TF4 R-TF8: source is not a string: exit 19 and the hint line
+install --frozen --file srcnum/main.roc
+# R-CH10: an unknown key in a channel table: a warning, the command goes on
+install --frozen --file warn/main.roc
+# R-CH10 R-WS5: a valid table in the root file of a workspace: no stop, no warning
+install --frozen --file wgood/apps/a/main.roc

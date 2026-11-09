@@ -1,4 +1,5 @@
 import BuildTarget
+import Channel
 import Clock
 import ConfigToml
 import Age
@@ -110,7 +111,7 @@ Intent := {
 				[first, ..] => {
 					fail = Fail.new(Input, "${facts.path}:${first.line.to_str()}: ${first.message}")
 					# R-TF8: a table that the role does not allow is no value of a known key.
-					if first.message.starts_with("the table [") Err(fail) else Err(Fail.with_hint(fail))
+					if first.message.starts_with("the table [") or Channel.hintless(first.message) Err(fail) else Err(Fail.with_hint(fail))
 				}
 				[] => Ok({ intent: scan.intent, warnings: by_line(scan.warnings).map(|w| "${facts.path}:${w.line.to_str()}: ${w.message}") })
 			}
@@ -172,9 +173,10 @@ climb = |dir, root, found| {
 }
 
 known_tables : List(Str)
-known_tables = ["workspace", "toolchain", "resolution", "audit", "dependencies", "overrides", "patch", "build", "tools", "scripts", "run"]
+known_tables = ["workspace", "toolchain", "resolution", "audit", "dependencies", "overrides", "patch", "build", "tools", "scripts", "run", "channels"]
 
 # R-WS5, R-TG5: the tables that a member file may have.
+# Design Q613 item 3: `channels` is a known table and not a member table, so a member file with it is a failure (as `[toolchain]`).
 member_tables : List(Str)
 member_tables = ["dependencies", "overrides", "patch", "build", "scripts", "run"]
 
@@ -188,6 +190,7 @@ read_tables = |doc, role, text| {
 	build = read_build(doc)
 	tools = ToolsToml.read_table(doc)
 	shape = check_tables(doc, role, text)
+	channels = Channel.read(doc, text)
 	{
 		intent: {
 			toolchain: toolchain.value,
@@ -199,8 +202,8 @@ read_tables = |doc, role, text| {
 			build: build.value,
 			resolution: resolution.value,
 		},
-		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues).concat(tools.issues).concat(patch_issues(doc)),
-		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings).concat(unknown_keys(doc, "run", ["after"])),
+		issues: shape.issues.concat(toolchain.issues).concat(resolution.issues).concat(deps.issues).concat(overrides.issues).concat(tools.issues).concat(patch_issues(doc)).concat(channels.issues),
+		warnings: shape.warnings.concat(toolchain.warnings).concat(resolution.warnings).concat(build.warnings).concat(tools.warnings).concat(unknown_keys(doc, "run", ["after"])).concat(channels.warnings),
 	}
 }
 

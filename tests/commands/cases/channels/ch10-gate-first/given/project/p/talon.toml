@@ -1,0 +1,6 @@
+[channels.nightly]
+shape = "github-release"
+source = "Karakatiza666/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"
+[toolchain]
+tln = ">=999.0.0"

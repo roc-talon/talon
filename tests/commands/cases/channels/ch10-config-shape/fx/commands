@@ -1,0 +1,2 @@
+# R-CH10 R-TF8: an unknown shape word in config.toml: exit 19 and the hint line
+install --frozen --file p/main.roc

@@ -1,0 +1,1 @@
+R-CH10 R-TF8 R-EC19 (slice 238, Design Q613 item 10): config.toml has an unknown shape (line 2) and talon.toml has the reserved table [channels.nightly] (line 1). With a fault in both files in one run, the fault of config.toml shows. The texts are proposals (TW24).

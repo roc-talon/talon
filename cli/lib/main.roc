@@ -16,6 +16,7 @@ package
 		CacheGc,
 		CacheShow,
 		CacheView,
+		Channel,
 		Clean,
 		Clock,
 		Closure,

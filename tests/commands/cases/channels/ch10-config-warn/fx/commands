@@ -1,0 +1,2 @@
+# R-CH10: an unknown key in a channel table of config.toml: a warning
+install --frozen --file p/main.roc

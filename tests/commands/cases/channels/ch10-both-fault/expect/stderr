@@ -1,0 +1,2 @@
+tln: error[input]: $HOME/.config/talon/config.toml:2: channels.reify.shape: 'git-build' is not a channel shape
+A newer tln may know this value. Update tln: tln tool update talon

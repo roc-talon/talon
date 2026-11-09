@@ -1,0 +1,4 @@
+[channels.reify]
+shape = "github-release"
+source = 5
+tag-prefix = "nightly-reify-"

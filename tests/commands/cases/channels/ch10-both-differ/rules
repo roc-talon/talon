@@ -1,0 +1,1 @@
+R-CH10 R-EC19 (slice 238, Design Q612): the table reify in config.toml and in talon.toml has another source: exit 19. See Open Q4 of the slice file for the commands that check. Today two warnings and exit 0 (red). The text is a proposal (TW24).

@@ -1,0 +1,2 @@
+# R-CH10: equal tables in both files: no stop
+install --frozen --file p/main.roc

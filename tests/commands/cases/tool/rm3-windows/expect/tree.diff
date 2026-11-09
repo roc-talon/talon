@@ -33,7 +33,7 @@
 --- home/u1/AppData/Local\roc/toolchains/link-mine/.talon.json
 +++ home/u1/AppData/Local\roc/toolchains/link-mine/.talon.json
 @@ -1 +0,0 @@
--{"format":1,"id":"link-mine","kind":"link","path":"$HOME/u1/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
+-{"format":1,"id":"link-mine","kind":"link","path":"/opt/user/src/roc/zig-out/bin/roc","installed_at":"2026-10-20T12:00:00Z"}
 --- home/u1/AppData/Local\roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 +++ home/u1/AppData/Local\roc/toolchains/nightly-2026-09-01-abcdef0/.talon.json
 @@ -1 +0,0 @@

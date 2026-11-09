@@ -1,0 +1,2 @@
+== install --frozen --file p/main.roc
+exit 19

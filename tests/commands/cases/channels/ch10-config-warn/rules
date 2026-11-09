@@ -1,0 +1,1 @@
+R-CH10 R-TF4 (slice 238, Design Q612): config.toml has a valid table with one unknown key: a warning that names the key, no stop. Today the warning names the key channels, not channels.reify.color (red).

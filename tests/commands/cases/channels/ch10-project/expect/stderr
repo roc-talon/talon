@@ -1,0 +1,9 @@
+tln: error[input]: $PROJECT/res/talon.toml:1: channels.nightly: 'nightly' is a reserved channel name
+tln: error[input]: $PROJECT/res2/talon.toml:1: channels.stable: 'stable' is a reserved channel name
+tln: error[input]: $PROJECT/shape/talon.toml:2: channels.reify.shape: 'git-build' is not a channel shape
+A newer tln may know this value. Update tln: tln tool update talon
+tln: error[input]: $PROJECT/shapenum/talon.toml:2: channels.reify.shape: must be a string
+A newer tln may know this value. Update tln: tln tool update talon
+tln: error[input]: $PROJECT/srcnum/talon.toml:3: channels.reify.source: must be a string
+A newer tln may know this value. Update tln: tln tool update talon
+warning: $PROJECT/warn/talon.toml:5: unknown key channels.reify.color
