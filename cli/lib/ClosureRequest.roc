@@ -77,9 +77,11 @@ ClosureRequest :: [].{
 			Err(BadReq) => []
 			Ok(parsed) => domain.rows.keep_if(
 				|r| (!Pin.is_nightly(r.id) or domain.nightly)
-					and Pin.admits({ req: parsed, id: r.id, times })
-						and !Age.hides({ now: domain.now, min_age: domain.min_age, published_at: r.published_at, exclude: domain.exclude, name: Ok(Age.compiler_name(r.id)) })
-							and ClosureRequest.allowed(domain.snapshot, r),
+					# R-CH16: a user-channel build is local only, so it is never in a registry window.
+					and (Pin.is_nightly(r.id) or !Pin.counts_as_nightly(r.id))
+						and Pin.admits({ req: parsed, id: r.id, times })
+							and !Age.hides({ now: domain.now, min_age: domain.min_age, published_at: r.published_at, exclude: domain.exclude, name: Ok(Age.compiler_name(r.id)) })
+								and ClosureRequest.allowed(domain.snapshot, r),
 			)
 		}
 	}

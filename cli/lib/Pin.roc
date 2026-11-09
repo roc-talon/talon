@@ -1,3 +1,4 @@
+import Channel
 import Fail
 import PinOrder
 import Ranges
@@ -48,6 +49,10 @@ Pin :: [].{
 	## Is the id a nightly tag (`nightly-` and 3 parts, the form of Design 2)? A release is not.
 	is_nightly : Str -> Bool
 	is_nightly = PinOrder.is_nightly
+
+	## R-CH9: does the id count as a nightly for the `nightly` switch (R-NS3)? A nightly tag, or the id of a user-channel build (R-CH5).
+	counts_as_nightly : Str -> Bool
+	counts_as_nightly = |id| Pin.is_nightly(id) or Channel.parse_id(id).is_ok()
 
 	## R-NS5, R-NS7, R-RP2, R-NS1: does the range admit the compiler id? `Any` admits all. `Exactly(a)` admits the nightly `a` in either tag form (R-CV1: the date and the sha are equal) and no other
 	## id (slice 022, G1 of slice 020: `nightly-2026-July-23-abc1234` and `nightly-2026-07-23-abc1234` are one nightly). `AtLeast(a)` admits a nightly that `Pin.order` puts at or after `a`
@@ -220,7 +225,7 @@ Pin :: [].{
 	use_gate : { id : Str, req : Try(Req, [Unset]), req_text : Try(Str, [Unset]), nightly : Bool, source : Source, times : List({ id : Str, published_at : U64 }) } -> Try({}, Fail)
 	use_gate = |facts| {
 		keep = "tln roc use does not change talon.toml."
-		if Pin.is_nightly(facts.id) and !facts.nightly {
+		if Pin.counts_as_nightly(facts.id) and !facts.nightly {
 			Err(Fail.new(NoTuple, "tln roc use ${facts.id}: it is a nightly, and nightly is false (set by ${Pin.source_text(facts.source)}). Use a release, or change the nightly switch. ${keep}"))
 		} else {
 			match (facts.req, facts.req_text) {

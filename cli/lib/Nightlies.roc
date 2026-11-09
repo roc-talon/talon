@@ -1,4 +1,5 @@
 import Age
+import Channel
 import Db
 import Fail
 import Fallback
@@ -56,13 +57,26 @@ Nightlies :: [].{
 	## The sha is 7 or more hex digits, as `Selector` reads it. Any other text is `Err(NotNightly)`. The form is not kept: two tags of the other form with equal date and
 	## sha name the same nightly (R-CV1).
 	parts : Str -> Try({ year : U64, month : U64, day : U64, sha : Str }, [NotNightly])
-	parts = |tag| match tag.split_on("-") {
-		["nightly", year, month, day, sha] if Selector.parse(tag, Bool.False) == Ok(Nightly(tag)) => match (U64.from_str(year), month_number(month), U64.from_str(day)) {
-			(Ok(y), Ok(m), Ok(d)) => Ok({ year: y, month: m, day: d, sha })
-			_ => Err(NotNightly)
-		}
+	parts = |tag| Nightlies.parts_of("nightly-", tag)
+
+	## R-CH4, R-CH5: the parts of a tag of the channel with the tag-prefix `tag_prefix`: `<tag-prefix><YYYY-MM-DD>-<sha>`. The month name is read for the `nightly` table only (Design Q614 item 7).
+	## A tag of another channel, a tag with more parts (`-safe`) and any other text is `Err(NotNightly)`.
+	parts_of : Str, Str -> Try({ year : U64, month : U64, day : U64, sha : Str }, [NotNightly])
+	parts_of = |tag_prefix, tag| match tag.drop_prefix(tag_prefix).split_on("-") {
+		[year, month, day, sha] if tag.starts_with(tag_prefix) => Channel.date_of({ names: tag_prefix == "nightly-" }, year, month, day, sha).map_err(|_| NotNightly)
 		_ => Err(NotNightly)
 	}
+
+	## R-CH5: the id of a tag. The id of a `nightly` tag is the tag text. For another channel it is `<name>-<date>-<sha>`: the tag-prefix is dropped and the name is put in its place.
+	id_of : { name : Str, tag_prefix : Str, tag : Str } -> Try(Str, [NotBuild])
+	id_of = |facts| match Nightlies.parts_of(facts.tag_prefix, facts.tag) {
+		Ok(_) => if facts.name == "nightly" Ok(facts.tag) else Ok("${facts.name}-${facts.tag.drop_prefix(facts.tag_prefix)}")
+		Err(NotNightly) => Err(NotBuild)
+	}
+
+	## R-CH4, R-CV2: the start of the name of a compiler asset: `roc_` and the tag-prefix and the target and `-`.
+	asset_prefix : { tag_prefix : Str, host : Host } -> Str
+	asset_prefix = |facts| "roc_${facts.tag_prefix}${Nightlies.target(facts.host)}-"
 
 	## R-CV1, R-CV2, R-CV3, R-DI3, R-NS1: the nightlies of the pages of the release list (the texts that `Github.releases!` gives, in order), for one host.
 	##
@@ -83,12 +97,16 @@ Nightlies :: [].{
 	## A page that is not a JSON array of objects, a release with no text `tag_name`, and a nightly that is not a draft or a prerelease and has no `published_at`
 	## that `Clock.parse_utc` reads, are `Err(BadPage(n))`, with `n` the 1-based number of the page. The result is in the order of `order` (R-NS1).
 	releases : { host : Host, pages : List(Str) } -> Try(List(Release), [BadPage(U64)])
-	releases = |facts| facts.pages
+	releases = |facts| Nightlies.releases_of({ host: facts.host, pages: facts.pages, channel: { name: "nightly", tag_prefix: "nightly-" } })
+
+	## R-CH4: as `releases`, for the channel `channel` (a `github-release` table). The id is `Nightlies.id_of`; the asset starts with `Nightlies.asset_prefix`.
+	releases_of : { host : Host, pages : List(Str), channel : { name : Str, tag_prefix : Str, .. } } -> Try(List(Release), [BadPage(U64)])
+	releases_of = |facts| facts.pages
 		.map_with_index(|text, i| (i + 1, text))
 		.fold_try(
 			[],
 			|found, (n, text)| match JsonDoc.parse(text) {
-				Ok(Arr(items)) => items.fold_try(found, |acc, doc| read_release(facts.host, acc, doc).map_err(|_| BadPage(n)))
+				Ok(Arr(items)) => items.fold_try(found, |acc, doc| read_release(facts.host, facts.channel, acc, doc).map_err(|_| BadPage(n)))
 				_ => Err(BadPage(n))
 			},
 		)
@@ -109,14 +127,15 @@ Nightlies :: [].{
 	## `min_age` seconds old (`now - published_at >= min_age`: "at least 2 days old", R-RU1) and, when there is a `snapshot` time, it is not later than it (R-DT4: a
 	## release published after that time is hidden). `min_age` 0 hides nothing (`"0d"`). A release whose name (`Age.compiler_name`) a pattern of `exclude` matches is not hidden by the age (R-C15); the snapshot still hides it. `keep` are ids that are never hidden (R-C9: the value that a pin has now).
 	## The order of `list` stays. A user that names a compiler is not limited by this (R-NS4, R-C7): `pick` takes the full list for names.
-	visible : { list : List(Release), now : U64, min_age : U64, snapshot : Try(U64, [None]), keep : List(Str), exclude : List(Str) } -> List(Release)
+	## R-CH9, R-C15: `channels` are the tables that give the name of a user-channel build (its `source`). `recorded` are the `source` values of the `.talon.json` of installed builds, used when no table has the name.
+	visible : { list : List(Release), now : U64, min_age : U64, snapshot : Try(U64, [None]), keep : List(Str), exclude : List(Str), channels ?: List({ name : Str, source : Str, tag_prefix : Str }), recorded ?: List({ id : Str, source : Str }) } -> List(Release)
 	visible = |facts| facts.list.keep_if(
 		|r| {
 			not_after = match facts.snapshot {
 				Ok(at) => r.published_at <= at
 				Err(None) => Bool.True
 			}
-			hidden = Age.hides({ now: facts.now, min_age: facts.min_age, published_at: r.published_at, exclude: facts.exclude, name: Ok(Age.compiler_name(r.id)) })
+			hidden = Age.hides({ now: facts.now, min_age: facts.min_age, published_at: r.published_at, exclude: facts.exclude, name: Age.compiler_name_in({ tables: facts.?channels ?? [], recorded: note_of(facts.?recorded ?? [], r.id) }, r.id) })
 			facts.keep.contains(r.id) or (!hidden and not_after)
 		},
 	)
@@ -367,24 +386,18 @@ keep_first = |acc, row| match acc.find_first_index(|o| o.tag == row.tag) {
 is_sha256 : Str -> Bool
 is_sha256 = |text| text.count_utf8_bytes() == 64 and text.to_utf8().all(|b| (b >= '0' and b <= '9') or (b >= 'a' and b <= 'f'))
 
-months : List(Str)
-months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
-
-# The number of a month in a tag: 2 digits, or the English name in full.
-month_number : Str -> Try(U64, [NotMonth])
-month_number = |text| match U64.from_str(text) {
-	Ok(n) => Ok(n)
-	Err(_) => match months.find_first_index(|name| name == text) {
-		Ok(i) => Ok(i + 1)
-		Err(_) => Err(NotMonth)
-	}
+# The source that was recorded for an id, if any.
+note_of : List({ id : Str, source : Str }), Str -> Try(Str, [None])
+note_of = |recorded, id| match recorded.find_first(|r| r.id == id) {
+	Ok(r) => Ok(r.source)
+	Err(_) => Err(None)
 }
 
 # R-NS1: the date of the tag, then `published_at`.
 sort_key : Nightlies.Release -> List(U64)
-sort_key = |r| match Nightlies.parts(r.id) {
+sort_key = |r| match Channel.parse_id(r.id) {
 	Ok(p) => [p.year, p.month, p.day, r.published_at]
-	Err(NotNightly) => [0, 0, 0, r.published_at]
+	Err(NotChannelId) => [0, 0, 0, r.published_at]
 }
 
 compare_numbers : List(U64), List(U64) -> [Before, Same, After]
@@ -412,31 +425,31 @@ text_field = |pairs, key| match field(pairs, key) {
 }
 
 # One release of a page: the new list, or `Bad` for the cases of `BadPage`.
-read_release : Nightlies.Host, List(Nightlies.Release), JsonDoc -> Try(List(Nightlies.Release), [Bad])
-read_release = |host, found, doc| match doc {
+read_release : Nightlies.Host, { name : Str, tag_prefix : Str, .. }, List(Nightlies.Release), JsonDoc -> Try(List(Nightlies.Release), [Bad])
+read_release = |host, channel, found, doc| match doc {
 	Obj(pairs) => {
 		tag = match field(pairs, "tag_name") {
 			Ok(Text(t)) => t
 			_ => return Err(Bad)
 		}
-		skipped = is_true(pairs, "draft") or is_true(pairs, "prerelease") or Nightlies.parts(tag) == Err(NotNightly)
-		if skipped {
+		id = Nightlies.id_of({ name: channel.name, tag_prefix: channel.tag_prefix, tag })
+		if is_true(pairs, "draft") or is_true(pairs, "prerelease") or id.is_err() {
 			Ok(found)
 		} else {
 			published_at = match field(pairs, "published_at") {
 				Ok(Text(t)) => Clock.parse_utc(t).map_err(|BadTime| Bad)?
 				_ => return Err(Bad)
 			}
-			Ok(found.append({ id: tag, published_at, asset: asset_of(host, pairs) }))
+			Ok(found.append({ id: id ?? tag, published_at, asset: asset_of(host, channel.tag_prefix, pairs) }))
 		}
 	}
 	_ => Err(Bad)
 }
 
 # R-CV2: the one asset of the host, or the reason that there is none.
-asset_of : Nightlies.Host, List((Str, JsonDoc)) -> Try(Nightlies.Asset, [NoAsset, Several(U64)])
-asset_of = |host, pairs| {
-	prefix = "roc_nightly-${Nightlies.target(host)}-"
+asset_of : Nightlies.Host, Str, List((Str, JsonDoc)) -> Try(Nightlies.Asset, [NoAsset, Several(U64)])
+asset_of = |host, tag_prefix, pairs| {
+	prefix = Nightlies.asset_prefix({ tag_prefix, host })
 	extension = match host {
 		WindowsX64 | WindowsArm64 => ".zip"
 		_ => ".tar.gz"

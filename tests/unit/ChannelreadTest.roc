@@ -168,3 +168,35 @@ expect {
 	dbg got
 	got == Err((19, "/p/talon.toml:7: this project needs tln >=999.0.0, this is tln ${Help.version}. Run: tln tool update talon"))
 }
+
+# Design Q614 item 4 (R-CH3 addition, slice 239): a table name that starts with a reserved word and `-` is exit 19 as a reserved name, no hint line. `my-nightly` and `gitx` are free.
+expect {
+	names = ["git-fork", "nightly-reify", "stable-1", "compat-x"]
+	got = names.map(|n| (project(Standalone, lines(table(n))), config(lines(table(n)))))
+	want = names.map(|n| (Err((19, "/p/talon.toml:1: channels.${n}: '${n}' is a reserved channel name")), Err((19, "/c/config.toml:1: channels.${n}: '${n}' is a reserved channel name"))))
+	free = project(Standalone, lines(table("my-nightly").concat([""]).concat(table("gitx"))))
+	dbg got
+	got == want and free == Ok([])
+}
+
+# Design Q614 items 1, 3 (R-CH4, R-CH10): a `source` or a `tag-prefix` of a bad form is a fault at the table read: exit 19, at the line of the key, NO hint line (as a missing key). Both files.
+# The texts are a proposal (TW24): `channels.<name>.source: '<value>' is not owner/repo`, `channels.<name>.tag-prefix: '<value>' is not a tag prefix`.
+expect {
+	mk = |source, prefix| lines(["[channels.reify]", "shape = \"github-release\"", "source = \"${source}\"", "tag-prefix = \"${prefix}\""])
+	good = "Karakatiza666/roc-reify-nightlies"
+	bad_source = ["owner", "a/b/c", "owner/repo.git", "owner/repo/", "a/.b"]
+	bad_prefix = ["nightly", "Nightly-", "v 1-", ""]
+	src = bad_source.map(|v| (project(Standalone, mk(v, "nightly-reify-")), config(mk(v, "nightly-reify-"))))
+	src_want = bad_source.map(|v| (Err((19, "/p/talon.toml:3: channels.reify.source: '${v}' is not owner/repo")), Err((19, "/c/config.toml:3: channels.reify.source: '${v}' is not owner/repo"))))
+	pre = bad_prefix.map(|v| (project(Standalone, mk(good, v)), config(mk(good, v))))
+	pre_want = bad_prefix.map(|v| (Err((19, "/p/talon.toml:4: channels.reify.tag-prefix: '${v}' is not a tag prefix")), Err((19, "/c/config.toml:4: channels.reify.tag-prefix: '${v}' is not a tag prefix"))))
+	dbg src
+	src == src_want and pre == pre_want
+}
+
+# Design Q614 item 3: two faults in one file (a bad source on line 3 and a bad tag-prefix on line 4): the first by line wins, as in slice 238.
+expect {
+	text = lines(["[channels.reify]", "shape = \"github-release\"", "source = \"owner\"", "tag-prefix = \"nightly\""])
+	dbg project(Standalone, text)
+	project(Standalone, text) == Err((19, "/p/talon.toml:3: channels.reify.source: 'owner' is not owner/repo"))
+}

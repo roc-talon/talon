@@ -23,9 +23,65 @@ Channel :: [].{
 			Err(_) => Bool.False
 		}
 		if first_ok and last_ok and bytes.len() >= 2 and bytes.len() <= 24 and bytes.all(|b| is_lower(b) or is_digit(b) or b == '-') {
-			if reserved.contains(name) Err(Reserved) else Ok({})
+			# Design Q614 item 4: a reserved word, or a reserved word and `-` at the start, is a reserved name.
+			if reserved.contains(name) or reserved.any(|word| name.starts_with("${word}-")) Err(Reserved) else Ok({})
 		} else {
 			Err(BadName)
+		}
+	}
+
+	## R-CH4, Design Q614 item 1: the form of `source`: `owner/repo`, 2 parts of `A-Z a-z 0-9 . _ -`. No part starts with `.`, the repo does not end with `.git`.
+	source_check : Str -> Try({}, [BadSource])
+	source_check = |text| match text.split_on("/") {
+		[owner, repo] if good_part(owner) and good_part(repo) and !repo.ends_with(".git") => Ok({})
+		_ => Err(BadSource)
+	}
+
+	## R-CH4, Design Q614 item 2: the form of `tag-prefix`: 1 to 40 characters of `a-z 0-9 . _ -`, and the last one is `-`.
+	tag_prefix_check : Str -> Try({}, [BadTagPrefix])
+	tag_prefix_check = |text| {
+		bytes = text.to_utf8()
+		ok = bytes.len() >= 1 and bytes.len() <= 40 and bytes.last() == Ok('-') and bytes.all(|b| is_lower(b) or is_digit(b) or b == '-' or b == '.' or b == '_')
+		if ok Ok({}) else Err(BadTagPrefix)
+	}
+
+	## R-CH5, Design Q614 item 7: the date and the sha of a build, from the 4 parts of the end of a tag or an id. The year has 4 digits, the month and the day 2 digits,
+	## the sha 7 or more hex digits. With `names` true the month can be an English name in full (the `nightly` table only).
+	date_of : { names : Bool }, Str, Str, Str, Str -> Try({ year : U64, month : U64, day : U64, sha : Str }, [NotDate])
+	date_of = |opts, year, month, day, sha| {
+		month_n = if digits_of(month, 2) {
+			U64.from_str(month).map_err(|_| NotDate)
+		} else if opts.names {
+			match months.find_first_index(|name| name == month) {
+				Ok(i) => Ok(i + 1)
+				Err(_) => Err(NotDate)
+			}
+		} else {
+			Err(NotDate)
+		}
+		if digits_of(year, 4) and digits_of(day, 2) and sha.count_utf8_bytes() >= 7 and sha.to_utf8().all(is_hex) {
+			match (U64.from_str(year), month_n, U64.from_str(day)) {
+				(Ok(y), Ok(m), Ok(d)) => Ok({ year: y, month: m, day: d, sha })
+				_ => Err(NotDate)
+			}
+		} else {
+			Err(NotDate)
+		}
+	}
+
+	## R-CH5: the id of a channel build, read from the right: sha, day, month, year. The rest is the name. The name follows R-CH3 (`nightly` is the one reserved name that is allowed).
+	parse_id : Str -> Try({ name : Str, year : U64, month : U64, day : U64, sha : Str }, [NotChannelId])
+	parse_id = |id| {
+		parts = id.split_on("-")
+		cut = parts.len().minus_saturated(4)
+		name = Str.join_with(parts.take_first(cut), "-")
+		name_ok = name == "nightly" or Channel.name_check(name).is_ok()
+		match (parts.drop_first(cut), cut > 0 and name_ok) {
+			([year, month, day, sha], Bool.True) => match Channel.date_of({ names: name == "nightly" }, year, month, day, sha) {
+				Ok(d) => Ok({ name, year: d.year, month: d.month, day: d.day, sha: d.sha })
+				Err(_) => Err(NotChannelId)
+			}
+			_ => Err(NotChannelId)
 		}
 	}
 
@@ -39,7 +95,7 @@ Channel :: [].{
 
 	## R-TF8, Design Q613 items 1 and 2: a reserved name, a bad name and a missing key are not a value of a known key, so its failure has no hint line.
 	hintless : Str -> Bool
-	hintless = |message| message.ends_with("is a reserved channel name") or message.ends_with("is not a channel name") or message.contains(": missing key ")
+	hintless = |message| message.ends_with("is a reserved channel name") or message.ends_with("is not a channel name") or message.ends_with("is not owner/repo") or message.ends_with("is not a tag prefix") or message.contains(": missing key ")
 
 	## R-CH10: the tables `[channels.<name>]` of one parsed file. `issues` are failures (the caller sorts them by line), `warnings` go on (an unknown key).
 	read : Toml, Str -> { tables : List(Table), issues : List(TomlKeys.Note), warnings : List(TomlKeys.Note) }
@@ -76,6 +132,22 @@ reserved = ["nightly", "stable", "git", "link", "copy", "zig", "debug", "local",
 
 table_keys : List(Str)
 table_keys = ["shape", "source", "tag-prefix"]
+
+months : List(Str)
+months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+
+digits_of : Str, U64 -> Bool
+digits_of = |text, count| text.count_utf8_bytes() == count and text.to_utf8().all(is_digit)
+
+is_hex : U8 -> Bool
+is_hex = |b| is_digit(b) or (b >= 'a' and b <= 'f') or (b >= 'A' and b <= 'F')
+
+# One part of `owner/repo`.
+good_part : Str -> Bool
+good_part = |part| {
+	bytes = part.to_utf8()
+	!bytes.is_empty() and bytes.first() != Ok('.') and bytes.all(|b| is_lower(b) or is_digit(b) or (b >= 'A' and b <= 'Z') or b == '-' or b == '_' or b == '.')
+}
 
 is_lower : U8 -> Bool
 is_lower = |b| b >= 'a' and b <= 'z'
@@ -120,9 +192,9 @@ read_one = |doc, text, name| {
 		Err(BadName) => { table: Err(Skipped), issues: [{ line, message: "channels.${name}: '${name}' is not a channel name" }], warnings: [] }
 		Ok({}) => {
 			shape = text_key(doc, name, "shape", |word| if Channel.shapes.contains(word) Ok(word) else Err("'${word}' is not a channel shape"))
-			source = text_key(doc, name, "source", |word| Ok(word))
-			# Design Q613 item 6: the shape (slice 239) checks the forms of `source` and `tag-prefix`. Here they are only strings.
-			prefix = text_key(doc, name, "tag-prefix", |word| Ok(word))
+			# Design Q614 item 3: the shape `github-release` checks the forms of `source` and `tag-prefix`.
+			source = text_key(doc, name, "source", |word| if Channel.source_check(word).is_ok() Ok(word) else Err("'${word}' is not owner/repo"))
+			prefix = text_key(doc, name, "tag-prefix", |word| if Channel.tag_prefix_check(word).is_ok() Ok(word) else Err("'${word}' is not a tag prefix"))
 			unknown = match Toml.get(doc, ["channels", name]) {
 				Ok(Value.Table(t)) => t.keys().keep_if(|k| !table_keys.contains(k)).map(|k| { line: TomlKeys.key_line(doc, ["channels", name, k]), message: "unknown key channels.${name}.${k}" })
 				_ => []

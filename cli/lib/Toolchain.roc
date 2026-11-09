@@ -135,7 +135,7 @@ Toolchain :: [].{
 	range_allowed = |facts| {
 		shown = Nightlies.visible({ list: Nightlies.candidates(facts.releases), now: facts.now, min_age: facts.min_age, snapshot: facts.snapshot, keep: [], exclude: facts.exclude })
 		times = facts.releases.map(|r| { id: r.id, published_at: r.published_at })
-		shown.keep_if(|r| (facts.nightly or !Pin.is_nightly(r.id)) and Pin.admits({ req: facts.req, id: r.id, times }))
+		shown.keep_if(|r| (facts.nightly or !Pin.counts_as_nightly(r.id)) and Pin.admits({ req: facts.req, id: r.id, times }))
 	}
 
 	## R-SO13, R-NS2 (slice 025b): the failure when the list has no compiler for the range (`range_pick` gave `Err(NoneKnown)`). Kind `NoTuple` (exit 10), as R-NS2 and R-SO19 give for a compiler that the range or the

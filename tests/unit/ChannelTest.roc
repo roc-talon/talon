@@ -31,9 +31,10 @@ expect {
 	got == names.map(|_| Err(Reserved))
 }
 
-# R-CH3: a name that only starts with a reserved word is free; a reserved word with a suffix or a prefix is a valid name.
+# R-CH3: a name that only starts with a reserved word is free; a reserved word with a suffix (no `-`) or a prefix is a valid name.
+# Design Q614 item 4: `stable-1` is not free any more (it starts with the reserved word and `-`); it moved to the next expect.
 expect {
-	names = ["nightly2", "my-nightly", "gitx", "stable-1", "zigzag", "locals"]
+	names = ["nightly2", "my-nightly", "gitx", "zigzag", "locals", "my-git-fork", "x-stable-1"]
 	got = names.map(|n| Channel.name_check(n))
 	dbg got
 	got == names.map(|_| Ok({}))
@@ -81,4 +82,36 @@ expect {
 	want = rows.map(|_| Err((19, "/p/talon.toml:1: channels.reify is not equal to channels.reify in /c/config.toml:1")))
 	dbg got
 	got == want
+}
+
+# Design Q614 item 4 (R-CH3 addition, slice 239): a name that starts with a reserved word and `-` is refused as a reserved name (`Reserved`, not `BadName`). The syntax is checked first:
+# `Git-x` is `BadName`. `Channel.name_check` gives the same answer for every name that starts with one of the 9 words and `-`.
+expect {
+	reserved = ["git-fork", "link-x", "copy-1", "zig-a", "nightly-reify", "stable-1", "debug-x", "local-y", "compat-z", "git-a-b", "nightly-2026"]
+	got = reserved.map(|n| Channel.name_check(n))
+	dbg got
+	got == reserved.map(|_| Err(Reserved)) and Channel.name_check("Git-x") == Err(BadName) and Channel.name_check("git-") == Err(BadName)
+}
+
+# Design Q614 items 1, 3 (R-CH4): the form of `source`. `owner/repo`, exactly 2 parts, each of `A-Z a-z 0-9 . _ -`, no part starts with `.`, no `.git` at the end, no `/` at the end. Case is kept.
+# New name (a proposal): `Channel.source_check : Str -> Try({}, [BadSource])`.
+expect {
+	fine = ["a/b", "Karakatiza666/roc-reify-nightlies", "roc-lang/nightlies", "o.w_n-er/re.po_1", "-a/b", "a/b.c", "A/B"]
+	wrong = ["", "owner", "/repo", "owner/", "a/b/c", "a/b/", "owner/repo/", "owner/repo.git", "a/.git", ".a/b", "a/.b", "own er/repo", "owner/rep@", "owner/rep\u(e9)", "https://github.com/a/b", "a//b", "a/b\n"]
+	got_fine = fine.map(|t| Channel.source_check(t))
+	got_wrong = wrong.map(|t| Channel.source_check(t))
+	dbg got_wrong
+	got_fine == fine.map(|_| Ok({})) and got_wrong == wrong.map(|_| Err(BadSource))
+}
+
+# Design Q614 items 2, 3 (R-CH4): the form of `tag-prefix`. 1 to 40 characters of `a-z 0-9 . _ -`, and it ends with `-`.
+# New name (a proposal): `Channel.tag_prefix_check : Str -> Try({}, [BadTagPrefix])`.
+expect {
+	forty = "${Str.repeat("a", 39)}-"
+	fine = ["nightly-", "nightly-reify-", "v-", "-", "a.b_c-", "0-", forty]
+	wrong = ["", "nightly", "v", "Nightly-", "v 1-", "v/-", "-v", "é-", "${Str.repeat("a", 40)}-", "a-\n", "a+b-"]
+	got_fine = fine.map(|t| Channel.tag_prefix_check(t))
+	got_wrong = wrong.map(|t| Channel.tag_prefix_check(t))
+	dbg got_wrong
+	got_fine == fine.map(|_| Ok({})) and got_wrong == wrong.map(|_| Err(BadTagPrefix))
 }

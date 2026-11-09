@@ -1,0 +1,18 @@
+base l0-9: exit=0 All (95) tests passed in 2366.8 ms. (cached) 
+base L2: commands: 151 passed, 0 failed 
+m1: L0 exit=1 expect { expect {     93 passed     2 failed     0 compiler errors 
+m2: L0 exit=1 expect { expect { expect { expect {     91 passed     4 failed     0 compiler errors 
+m3: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m4: L0 exit=1 expect { expect {     93 passed     2 failed     0 compiler errors 
+m5: L0 exit=1 expect { expect {     93 passed     2 failed     0 compiler errors 
+m6: L0 exit=1 expect { expect {     93 passed     2 failed     0 compiler errors 
+m7: L0 exit=1 expect { expect { expect { expect { expect { expect {     89 passed     6 failed 
+m8: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m9: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m11: L0 exit=1 expect { expect {     93 passed     2 failed     0 compiler errors 
+m12: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m13: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m14: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m15: L0 exit=1 expect {     94 passed     1 failed     0 compiler errors 
+m10: L2 FAIL install/in2-nocompiler FAIL proxy/px2-install FAIL roc/bs1-base FAIL roc/bs2-no-pin FAIL roc/bs3-range FAIL roc/cv1-pins FAIL roc/df1-default FAIL roc/gi1-install FAIL roc/gi2-zig FAIL roc/gi3-nozon FAIL roc/ri1-flow FAIL roc/up1-update FAIL roc/up2-exclude FAIL roc/us1-use FAIL roc/us3-step FAIL roc/us5-both-missing FAIL roc/us6-exclude-steps FAIL upgrade/ur1-roc commands: 38 passed, 18 failed 
+m13b: L2 commands: 94 passed, 0 failed 

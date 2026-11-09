@@ -4,6 +4,9 @@ app [main!] { bot: "../../bot/lib/main.roc", lib: "../../cli/lib/main.roc", reco
 
 import BotTest
 import ChannelTest
+import ChannelidTest
+import ChannelreleaseTest
+import ChannelswitchTest
 import ChannelreadTest
 import GcindexTest
 import NewerhintTest

@@ -45,7 +45,7 @@ Manage :: [].{
 		},
 	)
 
-	## R-LY1: the kind of an installed id. A name that starts with `git-`, `link-` or `copy-` is that kind. A nightly tag (`Pin.is_nightly`) is `Nightly`. Any other id of `Compiler.installed` is a `Release`.
+	## R-LY1: the kind of an installed id. A name that starts with `git-`, `link-` or `copy-` is that kind. A nightly tag or the id of a user-channel build (`Pin.counts_as_nightly`, R-CH17) is `Nightly`. Any other id of `Compiler.installed` is a `Release`.
 	kind_of : Str -> [Nightly, Release, Git, Link, Copy]
 	kind_of = |id| if id.starts_with("git-") {
 		Git
@@ -53,7 +53,7 @@ Manage :: [].{
 		Link
 	} else if id.starts_with("copy-") {
 		Copy
-	} else if Pin.is_nightly(id) {
+	} else if Pin.counts_as_nightly(id) {
 		Nightly
 	} else {
 		Release

@@ -1,3 +1,4 @@
+import Channel
 import Pin
 import toml.Value
 
@@ -54,6 +55,17 @@ Age :: [].{
 	## R-C15: the name that a pattern compares for a compiler: `roc-lang/nightlies` for a nightly, `roc-lang/roc` for a release.
 	compiler_name : Str -> Str
 	compiler_name = |id| if Pin.is_nightly(id) "roc-lang/nightlies" else "roc-lang/roc"
+
+	## R-C15, R-CH9 (Design Q614 item 6): the name of a build, given the channel tables. A user-channel build has the `source` of its table. With no table, it has the `source` that its `.talon.json`
+	## recorded. With none, `Err(NoName)`: no pattern matches. A nightly and a release always have a name (`compiler_name`).
+	compiler_name_in : { tables : List({ name : Str, source : Str, tag_prefix : Str }), recorded : Try(Str, [None]) }, Str -> Try(Str, [NoName])
+	compiler_name_in = |facts, id| match Channel.parse_id(id) {
+		Ok(parsed) if parsed.name != "nightly" => match facts.tables.find_first(|t| t.name == parsed.name) {
+			Ok(table) => Ok(table.source)
+			Err(_) => facts.recorded.map_err(|_| NoName)
+		}
+		_ => Ok(Age.compiler_name(id))
+	}
 
 	## R-C11, R-C13: the value of the key `min-release-age-exclude`, or the reason that it is wrong. The caller adds the path, the line and the key.
 	read_list : Value -> Try(List(Str), Str)

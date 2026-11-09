@@ -1,6 +1,7 @@
 import Answer
 import Args
 import Fail
+import Pin
 import JsonDoc
 import Prompt
 import Roots
@@ -98,11 +99,11 @@ TalonRemove :: [].{
 	describe_compilers : { ids : List(Str), zigs : List(Str) } -> Str
 	describe_compilers = |facts| {
 		counts = [
-			count_text(facts.ids, "nightly-", "nightly", "nightlies"),
-			count_text(facts.ids.keep_if(|id| kind_of(id) == Release), "", "release", "releases"),
-			count_text(facts.ids, "git-", "git build", "git builds"),
-			count_text(facts.ids, "link-", "link", "links"),
-			count_text(facts.ids, "copy-", "copy", "copies"),
+			count_text(facts.ids, Nightly, "nightly", "nightlies"),
+			count_text(facts.ids, Release, "release", "releases"),
+			count_text(facts.ids, Git, "git build", "git builds"),
+			count_text(facts.ids, Link, "link", "links"),
+			count_text(facts.ids, Copy, "copy", "copies"),
 		].keep_if(|text| !text.is_empty())
 		words = counts.concat(facts.zigs.map(|version| "zig ${version}"))
 		if words.is_empty() "none" else Str.join_with(words, ", ")
@@ -362,14 +363,17 @@ kind_of = |id| if id.starts_with("nightly-") {
 	Link
 } else if id.starts_with("copy-") {
 	Copy
+} else if Pin.counts_as_nightly(id) {
+	# R-CH17: GC and `tool remove` treat a user-channel build as a nightly.
+	Nightly
 } else {
 	Release
 }
 
-# `<n> <word>` for the ids that start with `prefix`, or the empty text for none.
-count_text : List(Str), Str, Str, Str -> Str
-count_text = |ids, prefix, one, many| {
-	n = if prefix == "" ids.len() else ids.keep_if(|id| id.starts_with(prefix)).len()
+# `<n> <word>` for the ids of the kind `kind`, or the empty text for none.
+count_text : List(Str), Kind, Str, Str -> Str
+count_text = |ids, kind, one, many| {
+	n = ids.keep_if(|id| kind_of(id) == kind).len()
 	if n == 0 "" else "${n.to_str()} ${if n == 1 one else many}"
 }
 
