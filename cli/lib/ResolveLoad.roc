@@ -175,7 +175,7 @@ read_config! = |fx, path, result| match result {
 		}
 		Ok(read.config)
 	}
-	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), tool_binaries: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }, registry: Err(Unset), share: Err(Unset) })
+	Err(NotFound) => Ok({ nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), tool_binaries: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }, registry: Err(Unset), share: Err(Unset), channels: [] })
 	Err(_) => Err(Fail.new(Environment, "cannot read ${path}"))
 }
 

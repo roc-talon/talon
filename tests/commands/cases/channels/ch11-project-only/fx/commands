@@ -1,0 +1,5 @@
+roc install reify --yes
+roc install reify-2026-11-03-1708298 --yes
+roc install reify --yes env:TALON_AUTO_INSTALL=1
+roc install reify --yes env:TALON_AUTO_INSTALL=1 --offline
+roc install reify --yes cwd:sub

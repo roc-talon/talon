@@ -400,7 +400,7 @@ patch_of = |locked, toml| match locked {
 }
 
 no_config : ConfigToml.Config
-no_config = { nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), tool_binaries: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }, registry: Err(Unset), share: Err(Unset) }
+no_config = { nightly: Err(Unset), min_release_age: Err(Unset), min_release_age_exclude: [], default_roc: Err(Unset), gc_age: Err(Unset), tool_binaries: Err(Unset), probe: { max: Err(Unset), timeout: Err(Unset), slots: Err(Unset), max_toolchains: Err(Unset) }, registry: Err(Unset), share: Err(Unset), channels: [] }
 
 # R-SO6, R-TF4: `default-roc` and the settings of `config.toml`. A missing file gives no setting.
 read_config : Reads, Str -> Try(ConfigToml.Config, Fail)

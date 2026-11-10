@@ -1,0 +1,5 @@
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1 +1 @@
+-default-roc = "nightly-2026-10-14-38a3029"
++default-roc = "reify-2026-11-03-1708298"

@@ -1,0 +1,4 @@
+[channels.mine]
+shape = "github-release"
+source = "Karakatiza666/roc-mine-nightlies"
+tag-prefix = "nightly-reify-"

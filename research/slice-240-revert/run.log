@@ -1,0 +1,14 @@
+base l0-9: exit=0 All (100) tests passed in 2460.1 ms. (cached) 
+base L2: commands: 54 passed, 0 failed 
+m1: L2 commands: 20 passed, 0 failed 
+m3: L2 FAIL channels/ch11-project-only FAIL channels/ch11-unknown commands: 18 passed, 2 failed 
+m4: L2 FAIL channels/ch13-default-by-id commands: 19 passed, 1 failed 
+m5: L2 FAIL channels/ch11-install FAIL channels/ch11-no-default FAIL channels/ch11-switch-off FAIL channels/ch11-young FAIL channels/ch16-registry-set commands: 15 passed, 5 failed 
+m5b: L2 FAIL channels/ch11-install commands: 19 passed, 1 failed 
+m6: L2 FAIL channels/ch11-install FAIL channels/ch11-no-default FAIL channels/ch11-switch-off FAIL channels/ch11-young FAIL channels/ch16-registry-set commands: 15 passed, 5 failed 
+m8: L2 FAIL channels/ch11-builtin-free FAIL registry/cv1-roc-default FAIL registry/cv1-roc-use FAIL roc/cv1-pins FAIL roc/df1-default FAIL roc/ri1-flow FAIL roc/up1-update FAIL roc/up2-exclude FAIL share/sh58-send-upgrade-roc FAIL share/sh62-no-send-roc-install FAIL share/sh62-no-send-roc-update FAIL upgrade/ur1-roc commands: 42 passed, 12 failed 
+m9: L2 FAIL channels/ch11-switch-off commands: 19 passed, 1 failed 
+m10: L2 FAIL channels/ch11-young commands: 19 passed, 1 failed 
+m15: L2 FAIL channels/ch11-switch-off commands: 19 passed, 1 failed 
+m13: L0 exit=0 All (100) tests passed in 2920.5 ms. 
+m16: L0 exit=2 All (100) tests passed in 2834.6 ms. 

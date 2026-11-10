@@ -1,0 +1,4 @@
+base l0-9: exit=0 All (100) tests passed in 2313.9 ms. (cached) 
+base L2: commands: 54 passed, 0 failed 
+m1: L2 FAIL channels/ch16-registry-set commands: 19 passed, 1 failed 
+m13: L0 exit=1 expect {     99 passed     1 failed     0 compiler errors 

@@ -1,0 +1,55 @@
+--- home/.cache/roc/talon/compat.tsv
++++ home/.cache/roc/talon/compat.tsv
+@@ -0,0 +1,3 @@
++format	1
++pinned	reify-2026-10-30-abc1234	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest	reify	Karakatiza666/roc-reify-nightlies
++pinned	reify-2026-11-03-1708298	linux_x86_64	b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78	github-digest	reify	Karakatiza666/roc-reify-nightlies
+--- home/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.json
++++ home/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.json
+@@ -0,0 +1,8 @@
++[
++{"tag_name":"nightly-reify-2026-11-05-1111111","draft":false,"prerelease":true,"published_at":"2026-11-05T10:00:00Z","assets":[{"name":"roc_nightly-reify-linux_x86_64-2026-11-05-1111111.tar.gz","size":73500000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-05-1111111/roc_nightly-reify-linux_x86_64-2026-11-05-1111111.tar.gz"}]},
++{"tag_name":"nightly-reify-2026-11-04-2222222","draft":true,"prerelease":false,"published_at":"2026-11-04T10:00:00Z","assets":[{"name":"roc_nightly-reify-linux_x86_64-2026-11-04-2222222.tar.gz","size":73500000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-04-2222222/roc_nightly-reify-linux_x86_64-2026-11-04-2222222.tar.gz"}]},
++{"tag_name":"nightly-reify-2026-11-04-3333333","draft":false,"prerelease":false,"published_at":"2026-11-04T09:00:00Z","assets":[{"name":"roc_nightly-reify-windows_x86_64-2026-11-04-3333333.zip","size":61200000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-04-3333333/roc_nightly-reify-windows_x86_64-2026-11-04-3333333.zip"}]},
++{"tag_name":"nightly-reify-2026-11-03-1708298","draft":false,"prerelease":false,"published_at":"2026-11-03T10:00:00Z","assets":[{"name":"roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-03-1708298/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz"}]},
++{"tag_name":"nightly-2026-11-02-aaaaaaa","draft":false,"prerelease":false,"published_at":"2026-11-02T10:00:00Z","assets":[{"name":"roc_nightly-linux_x86_64-2026-11-02-aaaaaaa.tar.gz","size":73300000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-2026-11-02-aaaaaaa/roc_nightly-linux_x86_64-2026-11-02-aaaaaaa.tar.gz"}]},
++{"tag_name":"nightly-reify-2026-10-30-abc1234","draft":false,"prerelease":false,"published_at":"2026-10-30T09:00:00Z","assets":[{"name":"roc_nightly-reify-linux_x86_64-2026-10-30-abc1234.tar.gz","size":73100000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://objects.example.org/reify/abc1234/roc_nightly-reify-linux_x86_64-2026-10-30-abc1234.tar.gz"}]}
++]
+--- home/.cache/roc/toolchains/reify-2026-10-30-abc1234/.talon.json
++++ home/.cache/roc/toolchains/reify-2026-10-30-abc1234/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"reify-2026-10-30-abc1234","url":"https://objects.example.org/reify/abc1234/roc_nightly-reify-linux_x86_64-2026-10-30-abc1234.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"reify-2026-10-30-abc1234","compat":"abc1234","installed_at":"2026-11-10T12:00:00Z","published_at":"2026-10-30T09:00:00Z","channel":"reify","source":"Karakatiza666/roc-reify-nightlies"}
+--- home/.cache/roc/toolchains/reify-2026-10-30-abc1234/LICENSE
++++ home/.cache/roc/toolchains/reify-2026-10-30-abc1234/LICENSE
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-10-30-abc1234/legal_details
++++ home/.cache/roc/toolchains/reify-2026-10-30-abc1234/legal_details
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-10-30-abc1234/roc
++++ home/.cache/roc/toolchains/reify-2026-10-30-abc1234/roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-11-03-1708298/.talon.json
++++ home/.cache/roc/toolchains/reify-2026-11-03-1708298/.talon.json
+@@ -0,0 +1 @@
++{"format":1,"id":"reify-2026-11-03-1708298","url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-03-1708298/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"reify","compat":"1708298","installed_at":"2026-11-10T12:00:00Z","published_at":"2026-11-03T10:00:00Z","channel":"reify","source":"Karakatiza666/roc-reify-nightlies"}
+--- home/.cache/roc/toolchains/reify-2026-11-03-1708298/LICENSE
++++ home/.cache/roc/toolchains/reify-2026-11-03-1708298/LICENSE
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-11-03-1708298/legal_details
++++ home/.cache/roc/toolchains/reify-2026-11-03-1708298/legal_details
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-11-03-1708298/roc
++++ home/.cache/roc/toolchains/reify-2026-11-03-1708298/roc
+@@ -0,0 +1 @@
++fake
+\ No newline at end of file

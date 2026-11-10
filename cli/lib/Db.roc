@@ -23,7 +23,7 @@ import Text
 ## | --- | --- |
 ## | Format | `format<TAB><n>` |
 ## | Fact | `fact<TAB>hash<TAB>nightly<TAB>target<TAB>outcome<TAB>modules<TAB>closure` |
-## | Pinned | `pinned<TAB>tag<TAB>target<TAB>sha256<TAB>source` |
+## | Pinned | `pinned<TAB>tag<TAB>target<TAB>sha256<TAB>source`, and for a build of a user channel `<TAB>channel<TAB>owner/repo` (slice 240) |
 Db :: [].{
 
 	## R-TF1: the format that this Talon writes. R-TF3: a file with a larger number is never written.
@@ -43,8 +43,8 @@ Db :: [].{
 	## One row of `facts`. `modules` and `closure` as in the table above.
 	Fact : { hash : Str, nightly : Str, target : Str, outcome : Outcome, modules : List(Str), closure : Str }
 
-	## Where a sha256 came from (R-CV3, R-CV5).
-	Source : [GithubDigest, Registry]
+	## Where a sha256 came from (R-CV3, R-CV5). Slice 240 (R-CH13): `GithubChannel` is a GitHub `digest` of a build of a user channel. The row and `.talon.json` also hold the channel name and its `source` (`owner/repo`).
+	Source : [GithubDigest, Registry, GithubChannel({ name : Str, source : Str })]
 
 	## One row of `pinned`.
 	Pinned : { tag : Str, target : Str, sha256 : Str, source : Source }
@@ -162,6 +162,7 @@ Db :: [].{
 	source_word : Source -> Str
 	source_word = |source| match source {
 		GithubDigest => "github-digest"
+		GithubChannel(_) => "github-digest"
 		Registry => "registry"
 	}
 
@@ -188,7 +189,12 @@ Db :: [].{
 
 	pinned_line : Pinned -> Str
 	pinned_line = |pinned| Str.join_with(
-		["pinned", pinned.tag, pinned.target, pinned.sha256, Db.source_word(pinned.source)],
+		["pinned", pinned.tag, pinned.target, pinned.sha256, Db.source_word(pinned.source)].concat(
+			match pinned.source {
+				GithubChannel(c) => [c.name, c.source]
+				_ => []
+			},
+		),
 		"\t",
 	)
 
@@ -203,6 +209,7 @@ Db :: [].{
 			Ok(source) => Ok(Pinned({ tag, target, sha256, source }))
 			Err(BadWord) => Err(BadLine)
 		}
+		["pinned", tag, target, sha256, "github-digest", name, source] => Ok(Pinned({ tag, target, sha256, source: GithubChannel({ name, source }) }))
 		_ => Err(BadLine)
 	}
 

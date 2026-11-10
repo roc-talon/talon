@@ -1,5 +1,6 @@
 import Args
 import Base
+import Channel
 import ClosureRequest
 import Clock
 import Common
@@ -18,11 +19,13 @@ import Net
 import Nightlies
 import Out
 import Pin
+import Project
 import Prompt
 import Roots
 import Temp
 import Text
 import Toolchain
+import toml.Toml
 
 ## The command `tln roc install <id>` (also `tln roc i`, `tln roc add`: R-CM15, R-CM19, R-R8; slice 021). Direct style over `Fx` (TESTING.md 2.2 part C): `Toolchain` and `Nightlies` decide,
 ## this module orders the calls. `Run.run!` calls it for the command `["roc", "install"]`. The body is the work of the code agent. The calls, in order (the L2 case `roc/ri1-flow`
@@ -83,6 +86,21 @@ RocInstall :: [].{
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
 		if RocInstall.has_dir(entries, run.id) return Ok({ offer: Present({ id: run.id }), note: Err(None) })
+		# Slice 240 (R-CH11, R-CH5, R-CH8): a user channel. An installed id (a unique prefix) comes first (R-SC10), then the tables.
+		ref = RocInstall.channel_ref!(fx, { text: run.id, config: config.channels, entries, env: run.env })?
+		match ref {
+			Installed(found_id) => return Ok({ offer: Present({ id: found_id }), note: Err(None) })
+			_ => {}
+		}
+		user = match ref {
+			Latest(table) => Ok(table)
+			Build(table, _) => Ok(table)
+			_ => Err(None)
+		}
+		pick_text = match ref {
+			Latest(_) => "@latest"
+			_ => run.id
+		}
 		basis = if Toolchain.needs_base(run.id) {
 			Base.selected!(fx, { env: run.env, roots, installed: Compiler.installed(entries), config })?
 		} else {
@@ -94,9 +112,15 @@ RocInstall :: [].{
 			First(flag) => IndexQuery.list_source({ flag, env: Net.from_env(run.env).registry, config: config.registry, offline: run.offline, kept: Bool.False })?
 			Later(flag) => IndexQuery.list_source({ flag, env: Net.from_env(run.env).registry, config: config.registry, offline: run.offline, kept: Bool.True })?
 		}
-		found = Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list })?
+		found = match user {
+			Ok(table) => Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list, channel: table })?
+			Err(_) => Nightlies.list_of!(fx, { net: Net.from_env(run.env), roots, now: real, offline: run.offline, host: system, source: list })?
+		}
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
-		lists = Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude })
+		lists = match user {
+			Ok(table) => RocInstall.channel_domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude, table })
+			Err(_) => Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude })
+		}
 		# R-SL7, R-SO23 (slice 072e): with no compiler selected the base is a pick as an id (no download), else the base of `selected!`.
 		base = if Toolchain.needs_base(run.id) {
 			Base.listed!(fx, { roots, basis, releases: found.releases, auto: lists.auto, now, min_age, nightly: switch.nightly, exclude })?
@@ -104,7 +128,7 @@ RocInstall :: [].{
 			Err(None)
 		}
 		auto = Nightlies.auto_with_base({ releases: found.releases, dropped: found.dropped, auto: lists.auto, base })
-		id = match Nightlies.pick({ text: run.id, named: lists.named, auto, base }) {
+		id = match Nightlies.pick({ text: pick_text, named: lists.named, auto, base }) {
 			Ok(picked) => {
 				warn_changed!(fx, found.changed)
 				picked
@@ -114,16 +138,16 @@ RocInstall :: [].{
 					Ok(fail) => return Err(fail)
 					Err(NotNamed) => warn_changed!(fx, found.changed)
 				}
-				return Err(Toolchain.pick_failed({ error, releases: found.releases, host: system, switch }))
+				return Err(RocInstall.pick_failed_in({ error, releases: found.releases, host: system, switch, user }))
 			}
 		}
-		note = if run.id == "@latest" or Toolchain.needs_base(run.id) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
+		note = if pick_text == "@latest" or Toolchain.needs_base(run.id) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
 		if RocInstall.has_dir(entries, id) return Ok({ offer: Present({ id: id }), note })
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
 		if run.offline return Err(Toolchain.offline_missing(id))
 		item = Roots.item(roots, Item.Toolchain(id))
-		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: Nightlies.digest_source(found.via) }
+		ctx = { roots, net: Net.from_env(run.env), now, published_at: RocInstall.published_of(found.releases, id), typed: run.id, id, item, asset, sha, system, source: RocInstall.source_of(found.via, user) }
 		Ok({ offer: Download({ id, size: asset.size, ctx }), note })
 	}
 
@@ -236,6 +260,95 @@ RocInstall :: [].{
 	first_default! : Fx, Roots, Str => Try([Set, Kept], Fail)
 	first_default! = |fx, roots, id| set_default!(fx, roots, id)
 
+	## Slice 240 (R-CH11, R-CH5, Design Q615 items 4, 7, 8): what the text of `tln roc install` names. `Installed`: a unique prefix of the id of an installed user build (R-SC10). `Latest` and `Build`: a channel with a table in `config.toml`.
+	## `NotChannel`: the old rules decide. A text that can name a channel, with no table in `config.toml`: the project `talon.toml` is read (the normal project search). A table there only is exit 19 (no consent, before any request).
+	## No table at all is exit 2 (`Channel.unknown_text`).
+	channel_ref! : Fx, { text : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), entries : Entries, env : List((Str, Str)) } => Try([NotChannel, Installed(Str), Latest({ name : Str, source : Str, tag_prefix : Str }), Build({ name : Str, source : Str, tag_prefix : Str }, Str)], Fail)
+	channel_ref! = |fx, run| match Channel.install_ref({ text: run.text, config: run.config, project: [] }) {
+		Latest(table) => Ok(Latest(table))
+		Build(table, id) => Ok(Build(table, id))
+		_ => match Channel.unknown_text(run.text) {
+			Err(_) => Ok(NotChannel)
+			Ok(unknown) => match RocInstall.installed_prefix(run.entries, run.text) {
+				Ok(id) => Ok(Installed(id))
+				Err(_) => match Channel.install_ref({ text: run.text, config: [], project: RocInstall.project_tables!(fx, run.env) }) {
+					ProjectOnly(table) => {
+						said = Channel.trust_text(table)
+						Err(Fail.new(Input, "${said.message}\n${said.hint}"))
+					}
+					_ => Err(Fail.new(Usage, unknown))
+				}
+			}
+		}
+	}
+
+	## Slice 240 (R-SC10): the one installed user build that has the text as a prefix of its id. The text must be longer than `<name>-`, so a bare name is no prefix.
+	installed_prefix : Entries, Str -> Try(Str, [NoOne])
+	installed_prefix = |entries, text| {
+		hits = entries.keep_oks(
+			|e| match Channel.parse_id(e.name) {
+				Ok(parts) if e.is_dir and parts.name != "nightly" and e.name.starts_with(text) and text.count_utf8_bytes() > parts.name.count_utf8_bytes() + 1 => Ok(e.name)
+				_ => Err(NoOne)
+			},
+		)
+		match hits {
+			[one] => Ok(one)
+			_ => Err(NoOne)
+		}
+	}
+
+	## Slice 240 (R-CH11, Design Q615 item 4): the tables of the root `talon.toml` of the project (the normal project search from `cwd`). No project, or a text that is not TOML, gives none.
+	project_tables! : Fx, List((Str, Str)) => List({ name : Str, source : Str, tag_prefix : Str })
+	project_tables! = |fx, env| {
+		home = match RocInstall.env_var(env, "HOME") {
+			Ok(dir) => dir
+			Err(_) => ""
+		}
+		match Project.scan!(fx, { start: fx.cwd!(), home }) {
+			Ok(found) => {
+				# The workspace root, else the nearest `talon.toml`.
+				at = match found.root {
+					Ok(dir) => found.walk.find_first(|d| d.dir == dir)
+					Err(NoWorkspace) => found.walk.find_first(|d| d.toml.is_ok())
+				}
+				text = match at {
+					Ok(d) => d.toml
+					Err(_) => Err(None)
+				}
+				match text {
+					Ok(content) => match Toml.parse(content) {
+						Ok(doc) => Channel.entries(Channel.read(doc, content).tables)
+						Err(_) => []
+					}
+					Err(_) => []
+				}
+			}
+			Err(_) => []
+		}
+	}
+
+	## Slice 240 (R-CH8, R-CH9, R-NS3, R-NS4, R-C7): as `Toolchain.domain` for the builds of one user channel. A name is not limited. The age uses the `source` of the table (R-C15).
+	channel_domain : { releases : List(Nightlies.Release), now : U64, min_age : U64, nightly : Bool, exclude : List(Str), table : { name : Str, source : Str, tag_prefix : Str } } -> { named : List(Str), auto : List(Str) }
+	channel_domain = |facts| {
+		found = Nightlies.candidates(facts.releases)
+		shown = Nightlies.visible({ list: found, now: facts.now, min_age: facts.min_age, snapshot: Err(None), keep: [], exclude: facts.exclude, channels: [facts.table] })
+		{ named: found.map(|r| r.id), auto: if facts.nightly shown.map(|r| r.id) else [] }
+	}
+
+	## Slice 240 (Design Q615 item 5, TW24): `Toolchain.pick_failed`, and for a user channel with the switch off, the text of R-NS2 with the channel name.
+	pick_failed_in : { error : Nightlies.PickError, releases : List(Nightlies.Release), host : Nightlies.Host, switch : { nightly : Bool, source : Pin.Source }, user : Try({ name : Str, source : Str, tag_prefix : Str }, [None]) } -> Fail
+	pick_failed_in = |facts| match (facts.error, facts.user) {
+		(Empty, Ok(table)) if !facts.switch.nightly => Fail.new(NoTuple, "no build of channel ${table.name} is allowed, and nightly is false (set by ${Pin.source_text(facts.switch.source)})")
+		_ => Toolchain.pick_failed({ error: facts.error, releases: facts.releases, host: facts.host, switch: facts.switch })
+	}
+
+	## Slice 240 (R-CV5, R-CH13): the source of the sha256 of the picked build. A user build holds its channel name and `source`.
+	source_of : Nightlies.Source, Try({ name : Str, source : Str, tag_prefix : Str }, [None]) -> Db.Source
+	source_of = |via, user| match user {
+		Ok(table) => GithubChannel({ name: table.name, source: table.source })
+		Err(_) => Nightlies.digest_source(via)
+	}
+
 	## Shared helpers of `offer!` (slice 072b: `NoRank.offer!` uses them too): the environment variable, the entries of a dir, an installed dir, the asset and the date of a release.
 	env_var : List((Str, Str)), Str -> Try(Str, [NotSet])
 	env_var = |env, name| match env.find_first(|(key, _)| key == name) {
@@ -342,7 +455,7 @@ flow! = |fx, args, typed| {
 	match noted.offer {
 		Present(found) => {
 			roots = Roots.of_run!(fx, env)?
-			default = set_default!(fx, roots, found.id)?
+			default = if Channel.parse_id(found.id).map_ok(|parts| parts.name != "nightly") == Ok(Bool.True) Kept else set_default!(fx, roots, found.id)?
 			Ok({ ..present(roots, found.id), default })
 		}
 		Download(offer) => {
@@ -387,12 +500,15 @@ install! = |fx, ctx, dir| {
 			Err(fail)
 		}
 		Ok(compat) => {
-			# R-SO24: the default is set under the lock of the item, before the final rename.
-			default = match set_default!(fx, ctx.roots, ctx.id) {
-				Ok(kind) => kind
-				Err(fail) => {
-					_ = fx.delete!([p.temp, p.probe_dir])
-					return Err(fail)
+			# R-SO24: the default is set under the lock of the item, before the final rename. Slice 240 (R-CH15, Design Q615 item 6): a user build never sets it.
+			default = match ctx.source {
+				GithubChannel(_) => Kept
+				_ => match set_default!(fx, ctx.roots, ctx.id) {
+					Ok(kind) => kind
+					Err(fail) => {
+						_ = fx.delete!([p.temp, p.probe_dir])
+						return Err(fail)
+					}
 				}
 			}
 			match fx.rename!({ from: p.temp, to: ctx.item }) {
@@ -422,7 +538,10 @@ build! = |fx, ctx, p, program| {
 	extract!(fx, ctx, p)?
 	set_executable!(fx, ctx, p)?
 	compat = learn_compat!(fx, ctx, p)?
-	meta = Toolchain.meta_from({ id: ctx.id, url: ctx.asset.url, sha256: ctx.sha, typed: ctx.typed, compat, now: ctx.now, published_at: ctx.published_at }, ctx.source)
+	meta = match ctx.source {
+		GithubChannel(c) => Toolchain.meta_from({ id: ctx.id, url: ctx.asset.url, sha256: ctx.sha, typed: ctx.typed, compat, now: ctx.now, published_at: ctx.published_at, channel: c }, ctx.source)
+		_ => Toolchain.meta_from({ id: ctx.id, url: ctx.asset.url, sha256: ctx.sha, typed: ctx.typed, compat, now: ctx.now, published_at: ctx.published_at }, ctx.source)
+	}
 	match fx.write_atomic!([{ path: p.meta, content: meta }]) {
 		Ok(_) => Ok(compat)
 		Err({ path, err }) => Err(Fail.new(Environment, "cannot write ${path}: ${Str.inspect(err)}"))

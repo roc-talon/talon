@@ -300,10 +300,11 @@ Toolchain :: [].{
 	## | `installed_at` | `Clock.format_utc(now)` (the time of Talon, `TALON_NOW`) |
 	## | `published_at` | Slice 022 (Q5 of the review): `Clock.format_utc(published_at)`, the GitHub `published_at` of the release (R-NS1). The last key. `Compiler.times` reads it, so rank 4 orders the installed compilers with no network. |
 	meta : { id : Str, url : Str, sha256 : Str, typed : Str, compat : Try(Str, [Unknown, Several(List(Str))]), now : U64, published_at : U64 } -> Str
-	meta = |facts| Toolchain.meta_from(facts, GithubDigest)
+	meta = |facts| Toolchain.meta_from({ id: facts.id, url: facts.url, sha256: facts.sha256, typed: facts.typed, compat: facts.compat, now: facts.now, published_at: facts.published_at }, GithubDigest)
 
 	## Slice 206e2 (R-CV5): `meta` with the source of the sha256: `GithubDigest` gives `github-digest`, `Registry` gives `registry`.
-	meta_from : { id : Str, url : Str, sha256 : Str, typed : Str, compat : Try(Str, [Unknown, Several(List(Str))]), now : U64, published_at : U64 }, Db.Source -> Str
+	## Slice 240 (R-CV5, R-CH13): `channel` is the channel of a user build. Then the last two keys are `channel` and `source`. A nightly has no `channel`, so its text does not change.
+	meta_from : { id : Str, url : Str, sha256 : Str, typed : Str, compat : Try(Str, [Unknown, Several(List(Str))]), now : U64, published_at : U64, channel ?: { name : Str, source : Str } }, Db.Source -> Str
 	meta_from = |facts, source| {
 		compat = match facts.compat {
 			Ok(id) => JsonDoc.Text(id)
@@ -320,6 +321,7 @@ Toolchain :: [].{
 					JsonDoc.Text(
 						match source {
 							GithubDigest => "github-digest"
+							GithubChannel(_) => "github-digest"
 							Registry => "registry"
 						},
 					),
@@ -328,7 +330,12 @@ Toolchain :: [].{
 				("compat", compat),
 				("installed_at", JsonDoc.Text(Clock.format_utc(facts.now))),
 				("published_at", JsonDoc.Text(Clock.format_utc(facts.published_at))),
-			],
+			].concat(
+				match facts.?channel {
+					Ok(c) => [("channel", JsonDoc.Text(c.name)), ("source", JsonDoc.Text(c.source))]
+					Err(_) => []
+				},
+			),
 		})
 	}
 

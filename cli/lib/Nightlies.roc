@@ -264,6 +264,26 @@ Nightlies :: [].{
 		}
 	}
 
+	## Slice 240 (R-CH4, R-CH16, R-CV3, R-CV6): the list of a user channel, as `list!`. The repo is the `source` of the table (`owner/repo`, as written). The pages are cached in `talon/index/github/<owner>/<repo>/`.
+	## The rows of `compat.db` have the channel name and its `source`. The list is always `direct`: no registry is read.
+	list_channel! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, channel : { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+	list_channel! = |fx, facts| {
+		(owner, repo) = match facts.channel.source.split_on("/") {
+			[o, r] => (o, r)
+			_ => ("", "")
+		}
+		found = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.now, offline: facts.offline })?
+		match Nightlies.releases_of({ host: facts.host, pages: found.pages, channel: facts.channel }) {
+			Ok(list) => {
+				listed = pins_of(facts.host, list, GithubChannel({ name: facts.channel.name, source: facts.channel.source }))
+				changed = Facts.pin_all!(fx, { roots: facts.roots, listed })?
+				kept = Nightlies.without_changed({ releases: list, changed })
+				Ok(Nightlies.via({ releases: kept, source: found.source, changed, dropped: list.keep_if(|release| !kept.any(|k| k.id == release.id)) }, Direct, Err(None)))
+			}
+			Err(BadPage(n)) => Err(Fail.new(Network, "page ${n.to_str()} of ${facts.channel.source} is not a release list"))
+		}
+	}
+
 	## Slice 204 (R-CV1, R-CV2, R-CV3, R-AP50): the nightlies of the host from the rows of a registry (`RegistryToolchains.visible` has already hidden the rows above `log:N`). Pure.
 	## One release for each row with `target == Nightlies.target(host)` and a tag that `Nightlies.parts` reads (a row of another target gives no release on this host, as a nightly with no asset for it: R-CV2). Of two rows of one tag and target the row with the smaller `log_index` counts (any order in the list); the later one is dropped (`row_changes` sees it).
 	## `id` is the tag, `published_at` is the row value in seconds (`published_at // 1000`: R-AP50 gives milliseconds, R-DI10 seconds). `asset` is `Ok` with `name` = `asset_name`, `size` = the row `size` (R-AP80; a row with size 0 is `Err(NoAsset)`, Q340), `url` = `https://github.com/roc-lang/nightlies/releases/download/<tag>/<asset_name>` (Q1 of slice 204),
@@ -320,13 +340,27 @@ Nightlies :: [].{
 	## `kept` is true when the command has read the registry list once already: the read uses only the kept file (`offline` true, no request), so the command sends one `GET /v1/toolchains` (R-IX4).
 	Source : [Direct, Registry({ origin : Str, version : Str, log : Try(U64, [None]), kept : Bool, source : Str, first : Bool })]
 
+	## Slice 240 (R-CH16, R-CV3): the source of the list of the channel `name`. A user channel is always `Direct`. The `nightly` channel keeps the source of the run.
+	source_for : Nightlies.Source, Str -> Nightlies.Source
+	source_for = |source, name| if name == "nightly" source else Direct
+
 	## Slice 206e2: the list of `source`: `list!` for `Direct`, `list_registry!` for `Registry` (offline when `kept`). The result and the failures are those of the function.
 	## Slice 225 (R-RG9): `via` is the source that gave the list, for the `digest` of its rows (`digest_source`): `Direct` after a fall back.
 	via : { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Nightlies.Source, Try(Fallback.Fell, [None]) -> { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }
 	via = |got, via, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via, fell }
 
-	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
-	list_of! = |fx, facts| match facts.source {
+	## Slice 240 (R-CH16): with `channel` the list is that of the user channel (`list_channel!` when `source_for` gives `Direct`, which it always does for a user channel).
+	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source, channel ?: { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+	list_of! = |fx, facts| match facts.?channel {
+		Ok(channel) => match Nightlies.source_for(facts.source, channel.name) {
+			Direct => Nightlies.list_channel!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host, channel })
+			other => Nightlies.list_plain!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host, source: other })
+		}
+		Err(_) => Nightlies.list_plain!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host, source: facts.source })
+	}
+
+	list_plain! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+	list_plain! = |fx, facts| match facts.source {
 		Direct => Ok(Nightlies.via(Nightlies.list!(fx, { net: facts.net, roots: facts.roots, now: facts.now, offline: facts.offline, host: facts.host })?, Direct, Err(None)))
 		Registry(r) => match Nightlies.list_registry!(fx, { roots: facts.roots, origin: r.origin, version: r.version, offline: facts.offline or r.kept, host: facts.host, log: r.log, source: r.source }) {
 			Ok(listed) => Ok(Nightlies.via(listed, facts.source, Err(None)))

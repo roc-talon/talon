@@ -1,0 +1,39 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+env_all
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml

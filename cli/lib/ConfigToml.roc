@@ -14,7 +14,8 @@ ConfigToml :: [].{
 	## Slice 091 (R-PT25, R-LY4): `tool_binaries` is `tool-binaries` (CLI 6.1), a boolean. A value that is not a boolean is a failure of kind `Input` (exit 19, R-TF4): `<path>:<line>: tool-binaries: must be true or false` (a proposal, TW24). The key is no unknown key (no warning). The stub reads no value.
 	## A `default-roc` that is not a string, or not a full id (a prefix), is a failure of kind `Input` (exit 19, R-TF4, R-SC12): `<path>:<line>: default-roc: must be a full compiler id`. The other keys are known and not read.
 	## Slice 206b (R-RG1, R-RG7 row 6): `registry` is the text of the key `registry` and its place `<path>:<line>`, for `IndexQuery.setting`, which checks it. A value that is not a string is `Err(Unset)` here (slice 206f, Design Q546: `remove` and `share *` check it with `IndexQuery.setting`, the commands that read the file for a key of their own; `list`, `cache`, `tool list` and `path` do not read it).
-	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]), min_release_age_exclude : List(Str), default_roc : Try(Str, [Unset]), gc_age : Try(U64, [Unset]), tool_binaries : Try(Bool, [Unset]), probe : Probe.Keys, registry : Try({ text : Str, at : Str }, [Unset]), share : Try(Bool, [Unset]) }
+	## Slice 240 (R-CH11): `channels` are the user tables of the file that have all their keys.
+	Config : { nightly : Try(Bool, [Unset]), min_release_age : Try(U64, [Unset]), min_release_age_exclude : List(Str), default_roc : Try(Str, [Unset]), gc_age : Try(U64, [Unset]), tool_binaries : Try(Bool, [Unset]), probe : Probe.Keys, registry : Try({ text : Str, at : Str }, [Unset]), share : Try(Bool, [Unset]), channels : List({ name : Str, source : Str, tag_prefix : Str }) }
 
 	## Reads the text of a `config.toml` (R-TF4). A key with a value of the wrong form is a failure of kind `Input` (exit 19): `<path>:<line>: <key>: <why>`.
 	## An unknown top-level key is a warning: `<path>:<line>: unknown key <key>`.
@@ -108,15 +109,15 @@ scan = |path, file_text, doc| {
 	channels = Channel.read(doc, file_text)
 	unknown = Toml.table(doc).to_list().keep_if(|(key, _)| !config_keys.contains(key)).map(|(key, _)| { line: TomlKeys.key_line(doc, [key]), message: "unknown key ${key}" })
 	{
-		config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, path), share: share_of(doc) },
+		config: { nightly: nightly.value, min_release_age: age.value, min_release_age_exclude: exclude.value ?? [], default_roc: default_roc.value, gc_age: gc_age.value, tool_binaries: tool_binaries.value, probe: probe.value, registry: registry_of(doc, path), share: share_of(doc), channels: Channel.entries(channels.tables) },
 		issues: nightly.issues.concat(age.issues).concat(exclude.issues).concat(default_roc.issues).concat(gc_age.issues).concat(tool_binaries.issues).concat(probe.issues).concat(channels.issues),
 		warnings: unknown.concat(probe.warnings).concat(channels.warnings),
 	}
 }
 
-# R-SO6, D6: a nightly, a release, or `git-`, `link-`, `copy-` with a name.
+# R-SO6, D6: a nightly, a release, or `git-`, `link-`, `copy-` with a name. Slice 240 (R-CH5): the id of a user-channel build.
 is_default_id : Str -> Bool
-is_default_id = |text| Pin.is_id(text) or ["git-", "link-", "copy-"].any(|prefix| text.starts_with(prefix) and !text.drop_prefix(prefix).is_empty())
+is_default_id = |text| Pin.is_id(text) or Channel.parse_id(text).is_ok() or ["git-", "link-", "copy-"].any(|prefix| text.starts_with(prefix) and !text.drop_prefix(prefix).is_empty())
 
 # The keys of `config.toml` (CLI 6.1). `probe` is a table.
 config_keys : List(Str)

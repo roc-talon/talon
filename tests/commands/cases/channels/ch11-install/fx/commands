@@ -1,0 +1,3 @@
+roc install reify --yes
+roc install reify-2026-10-30-abc1234 --yes
+roc install reify-2026-11-03-1708298

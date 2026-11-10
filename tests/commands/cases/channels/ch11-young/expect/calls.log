@@ -1,0 +1,72 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc-reify-nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.json $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2
+lock $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-03-1708298/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz
+sha256_file $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz -C $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-03-1708298.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298
+unlock $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies
+read_files $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.meta $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2
+lock $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555 nowait: held
+list_dirs $HOME/.cache/roc/toolchains
+random
+programs curl wget
+make_dirs $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-09-5555555.tar.gz https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-09-5555555/roc_nightly-reify-linux_x86_64-2026-11-09-5555555.tar.gz
+sha256_file $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-09-5555555.tar.gz
+spawn_all limit=1
+  job - tar -xf $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-09-5555555.tar.gz -C $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp --strip-components=1
+delete $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/roc_nightly-reify-linux_x86_64-2026-11-09-5555555.tar.gz
+spawn_all limit=1
+  job - chmod 0755 $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/roc
+list_dirs $HOME/.cache/roc
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+spawn_all limit=1
+  job $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/roc check $HOME/.cache/roc/talon/tmp/0123456789abcdef/empty.roc
+list_dirs $HOME/.cache/roc
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp/.talon.json
+rename $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555.0123456789abcdef.tmp $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555
+unlock $HOME/.cache/roc/toolchains/reify-2026-11-09-5555555

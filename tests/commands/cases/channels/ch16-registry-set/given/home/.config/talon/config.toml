@@ -1,0 +1,8 @@
+registry = "http://127.0.0.1:9"
+share = true
+default-roc = "nightly-2026-10-14-38a3029"
+
+[channels.reify]
+shape = "github-release"
+source = "Karakatiza666/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"

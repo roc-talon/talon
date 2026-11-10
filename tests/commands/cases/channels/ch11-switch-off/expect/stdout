@@ -1,0 +1,5 @@
+== roc install reify --yes
+exit 10
+== roc install reify-2026-11-03-1708298 --yes
+installed reify-2026-11-03-1708298
+exit 0

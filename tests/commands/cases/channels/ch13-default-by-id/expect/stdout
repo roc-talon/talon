@@ -1,0 +1,9 @@
+== roc default reify-2026-11-03
+reify-2026-11-03-1708298 is now the default compiler
+exit 0
+== roc default reify-2026-11-03-1708298
+reify-2026-11-03-1708298 is already the default compiler
+exit 0
+== roc default reify-2026-11-03-1708298 --json
+{"schema":1,"command":"roc default","ok":true,"data":{"id":"reify-2026-11-03-1708298","previous":"reify-2026-11-03-1708298","changed":false,"installed":false},"error":null}
+exit 0

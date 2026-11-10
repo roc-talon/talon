@@ -85,6 +85,66 @@ Channel :: [].{
 		}
 	}
 
+	## Slice 240 (R-CH11): the tables of a file that have `source` and `tag-prefix`, for `install_ref`. A table with a missing or bad key is a failure of the read of the file and is not here.
+	entries : List(Channel.Table) -> List({ name : Str, source : Str, tag_prefix : Str })
+	entries = |tables| tables.keep_oks(
+		|t| match (t.source, t.tag_prefix) {
+			(Ok(source), Ok(tag_prefix)) => Ok({ name: t.name, source, tag_prefix })
+			_ => Err(Incomplete)
+		},
+	)
+
+	## Slice 240 (R-CH11, R-CH8, R-CH5): what the operand of `tln roc install` names. `config` and `project` are the tables of `config.toml` and of the root `talon.toml`.
+	## A bare name of a table is `Latest`. An id of a table (`parse_id`, read from the right) is `Build`. A table of `config.toml` wins. A table of the project only is `ProjectOnly` (no consent yet, exit 19).
+	## The tables decide, not the form of the text: a nightly id, a sha prefix, `@latest` and a release are `NotChannel`.
+	install_ref : { text : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } -> [NotChannel, Latest({ name : Str, source : Str, tag_prefix : Str }), Build({ name : Str, source : Str, tag_prefix : Str }, Str), ProjectOnly({ name : Str, source : Str, tag_prefix : Str })]
+	install_ref = |facts| {
+		bare = if name_check(facts.text).is_ok() Ok(facts.text) else Err(NoName)
+		built = match parse_id(facts.text) {
+			Ok(id) if id.name != "nightly" => Ok(id.name)
+			_ => Err(NoName)
+		}
+		found = |name| match facts.config.find_first(|t| t.name == name) {
+			Ok(t) => Ok(Config(t))
+			Err(_) => match facts.project.find_first(|t| t.name == name) {
+				Ok(t) => Ok(Project(t))
+				Err(_) => Err(NoTable)
+			}
+		}
+		by_bare = match bare {
+			Ok(name) => found(name)
+			Err(_) => Err(NoTable)
+		}
+		by_id = match built {
+			Ok(name) => found(name)
+			Err(_) => Err(NoTable)
+		}
+		match (by_bare, by_id) {
+			(Ok(Config(t)), _) => Latest(t)
+			(Ok(Project(t)), _) => ProjectOnly(t)
+			(_, Ok(Config(t))) => Build(t, facts.text)
+			(_, Ok(Project(t))) => ProjectOnly(t)
+			_ => NotChannel
+		}
+	}
+
+	## Slice 240 (R-CH11): the failure text of a table that only the project has (exit 19, kind Input). `source` is shown as written.
+	trust_text : { name : Str, source : Str, .. } -> { message : Str, hint : Str }
+	trust_text = |table| { message: "talon.toml uses compiler channel ${table.name} (github.com/${table.source}).", hint: "Run: tln roc channel add ${table.name}" }
+
+	## Slice 240 (Design Q615 item 7): the exit 2 text for a name, or an id of a name, that has no table. A text that is all hex digits is a sha prefix, not a name (the old rules decide).
+	unknown_text : Str -> Try(Str, [NotChannelText])
+	unknown_text = |text| {
+		name = match parse_id(text) {
+			Ok(id) if id.name != "nightly" => Ok(id.name)
+			_ => if name_check(text).is_ok() and !text.to_utf8().all(is_hex) Ok(text) else Err(NotChannelText)
+		}
+		match name {
+			Ok(n) => Ok("unknown compiler channel ${n}. Add it: tln roc channel add ${n} <URL>")
+			Err(e) => Err(e)
+		}
+	}
+
 	## R-CH2: the built-in tables. Only `nightly` has one. A reserved name with no table (`stable`) gives `NotBuiltIn`.
 	builtin : Str -> Try({ shape : Str, source : Str, tag_prefix : Str }, [NotBuiltIn])
 	builtin = |name| if name == "nightly" Ok({ shape: "github-release", source: "roc-lang/nightlies", tag_prefix: "nightly-" }) else Err(NotBuiltIn)
