@@ -1,0 +1,5 @@
+1: platform 0.0.10 (strict reads, Cbor.js_values on queue messages). The dead letter queue gets 5 messages with the JSON shape that the Worker sends (Queue.json):
+   p1: an installation message with real-size ids (installation 177657685, repository ids of 10 digits), p2: a release message with real-size ids,
+   p3: a release id of 2^53 - 1 (the largest JSON number that is exact in JS) into U64,
+   p4: release_id null (a null field from JS is no key: a required field is missing), p5: no repository_ids.
+   All 5 are acked. p1 to p3 give the log line with the ids; p4 and p5 are not readable. Nothing is sent, no D1 row.

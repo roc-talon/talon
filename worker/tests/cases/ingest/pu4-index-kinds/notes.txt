@@ -4,3 +4,4 @@
 4: package again: 200
 5: read the app artifact
 6: read the package artifact
+db.tsv (R-IK8, platform 0.0.10 Sql.Blob): each kind 1 name that the ingest wrote with Sql.blob is a BLOB of 32 bytes, not text and not an array.

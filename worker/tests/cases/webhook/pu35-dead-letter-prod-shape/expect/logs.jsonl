@@ -1,0 +1,5 @@
+{"level":"error","msg":"index job dead","event":"installation_repositories","action":"added","repository_id":0,"release_id":0}
+{"level":"error","msg":"index job dead","event":"release","action":"published","repository_id":1434744226,"release_id":262144001}
+{"level":"error","msg":"index job dead","event":"release","action":"published","repository_id":1434744226,"release_id":9007199254740991}
+{"level":"error","msg":"index job dead","readable":false}
+{"level":"error","msg":"index job dead","readable":false}

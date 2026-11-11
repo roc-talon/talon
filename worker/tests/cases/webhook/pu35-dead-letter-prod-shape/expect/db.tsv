@@ -1,0 +1,2 @@
+@ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance)
+0	0	0	0	0	0	0

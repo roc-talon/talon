@@ -3,9 +3,9 @@ app [event!] {
 	header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",
 	jwt: "https://github.com/Karakatiza666/roc-jwt/releases/download/0.0.1/C35APf1eow8zsCV6yrDpXLr3wxrMQVPdtoTQSGAM9dDh.tar.zst",
 	lib: "lib/main.roc",
-	pf: platform "https://github.com/Karakatiza666/roc-cloudflare-workers/releases/download/0.0.8/DDDLMRuP5Qxi8pcCWbP7AHg5gmrmGTRN1jWqDjbfEbSe.tar.zst",
+	pf: platform "https://github.com/Karakatiza666/roc-cloudflare-workers/releases/download/0.0.10/Dfyn36P4a9t8519ZVXDkHrmvXA9cbzrjkN4YHJuVfkGd.tar.zst",
 	records: "../packages/records/main.roc",
-	roc: "nightly-2026-10-31-f7bef6b",
+	roc: "nightly-2026-11-06-34f137a",
 	semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
 	tar: "https://github.com/Karakatiza666/roc-tar/releases/download/0.0.2/ynGk61syE32Lobjgwd3ZNRURf78xPGxr8Nzi1bSuhUr.tar.zst",
 }
