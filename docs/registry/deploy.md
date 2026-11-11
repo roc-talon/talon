@@ -28,7 +28,7 @@ A migration is never rolled back. It runs after the upload, so a failed upload c
 
 ## Smoke checks
 
-`worker/roc-cfw.toml` lists them. `same-body` only for routes whose body does not change by itself. Not `/v1/toolchains`, `/v1/sweeps/*`, `.../compat`, lists that grow: they are status only. The releases and artifact routes of a package end with the `checked` item (R-AP29): `checked_at` and `stale` change with no write of the deploy. They use `same-body = true` with `ignore = ["/checked"]` (roc-cfw 0.0.3), so every other member is compared. Each request has a time limit of `timeout = 10` s (the slowest route took 0.36 s).
+`worker/roc-cfw.toml` lists them. `same-body` only for routes whose body does not change by itself. Not `/v1/toolchains`, `/v1/sweeps/*`, `.../compat`, lists that grow: they are status only. The releases routes of a package (R-AP1, R-AP13) end with the `checked` item (R-AP29): `checked_at` and `stale` change with no write of the deploy. They use `same-body = true` with `ignore = ["/checked"]` (roc-cfw 0.0.3), so every other member is compared. The artifact route (R-AP2) has no `checked` item, so it is compared whole. Each request has a time limit of `timeout = 10` s (the slowest route took 0.36 s).
 
 ## Rules for the operator
 

@@ -1,7 +1,8 @@
 # The settings of `roc-cfw deploy` for the registry Worker (docs/registry/deploy.md).
 # same-body: the body must be equal to the body before the deploy. Only routes whose body does not change by itself.
-# ignore = ["/checked"]: the releases and artifact routes of a package end with the `checked` item (R-AP29: name, checked_at, stale). checked_at changes when ReconcileCron
+# ignore = ["/checked"]: the releases routes of a package (R-AP1, R-AP13) end with the `checked` item (R-AP29: name, checked_at, stale). checked_at changes when ReconcileCron
 # writes repo_checks, and stale is computed from the request time, so that member can change with no write. The other members are compared (checked on prod 2026-11-11: only `checked` differs).
+# The artifact route (R-AP2) has no `checked` item, so it is compared whole.
 # Not here: /v1/toolchains, /v1/packages?q=, /v1/releases?after=, /v1/sweeps/*, .../compat (a cron, the bot or an ingest changes the whole body). They are status only.
 [deploy]
 url = "https://registry.roc-talon.org"
@@ -27,7 +28,6 @@ ignore = ["/checked"]
 [[deploy.smoke]]
 path = "/v1/artifacts/H363y6zEDk8hbLgYVpyALt7cYS6w65sHMfoPEaCNqQY9"
 same-body = true
-ignore = ["/checked"]
 
 [[deploy.smoke]]
 path = "/v1/packages?short=isodate"
