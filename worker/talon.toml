@@ -1,6 +1,6 @@
 # The registry Worker (Registry 8, R-WH12). The tool roc-cfw is pinned here. No global install.
 [tools]
-roc-cfw = { ref = "Karakatiza666/roc-cloudflare-workers-cli@^0.0.2", url = "https://github.com/Karakatiza666/roc-cloudflare-workers-cli/releases/download/0.0.2/8tR51txKBULgj181gM8vXCwY3suMdoc9aKpWne5KV61D.tar.zst" }
+roc-cfw = { ref = "Karakatiza666/roc-cloudflare-workers-cli@^0.0.3", url = "https://github.com/Karakatiza666/roc-cloudflare-workers-cli/releases/download/0.0.3/4ygqeTqdmXdutavJTkJfhDMUCuAkDECGYhCreyqKz1qg.tar.zst" }
 
 [scripts]
 build = ["roc build --target=wasm32 --no-cache --opt=speed --output=app.wasm main.roc", "roc-cfw sync"]

@@ -8,7 +8,7 @@ The command is `tln run deploy` in `worker/`. `tln run deploy-dry` does the same
 | --- | --- | --- | --- |
 | 1 | `scripts/test.sh w0 wbuild w2 wtrap` (in the talon root) | The registry tests, on a build of their own in `.work/worker/<stamp>/` | `talon.toml` |
 | 2 | `@check` | `roc build` of `app.wasm`, then `roc-cfw sync --check` | `talon.toml` |
-| 3 | `roc-cfw deploy` | Preflight, record the live version, before reads of the `same-body` routes, `d1 migrations apply DB --remote`, `wrangler versions upload` and `versions deploy`, smoke checks, rollback when a check fails | `roc-cfw`, settings in `worker/roc-cfw.toml` |
+| 3 | `roc-cfw deploy` | Preflight, record the live version, before reads of the `same-body` routes, `wrangler versions upload`, `d1 migrations apply DB --remote` (after the upload, before the deploy; the pending list must be empty after it), `versions deploy`, smoke checks, rollback when a check fails | `roc-cfw`, settings in `worker/roc-cfw.toml` |
 | 4 | Log tail | `wrangler tail`: look for errors for some minutes | Manual |
 | 5 | Dead letter consumer | In the log tail, look for the output of the dead-letter consumer (`IndexQueue.dead!`). The registry Worker is the consumer of `talon-index-dlq`, so a dead message is taken off at once and the queue never shows a count. | Manual |
 
@@ -24,11 +24,11 @@ The command is `tln run deploy` in `worker/`. `tln run deploy-dry` does the same
 | 3 | Smoke check failed, rollback passed | Old version live |
 | 4 | Smoke check failed, no rollback | New version live: run the rollback command that was printed |
 
-A migration is never rolled back. Write migrations that the old code can use.
+A migration is never rolled back. It runs after the upload, so a failed upload changes no schema. Write migrations that the old code can use.
 
 ## Smoke checks
 
-`worker/roc-cfw.toml` lists them. `same-body` only for routes whose body does not change by itself. Not `/v1/toolchains`, `/v1/sweeps/*`, `.../compat`, lists that grow. Not the releases and artifact routes of a package either: they end with the `checked` item (R-AP29), and `checked_at` and `stale` change with no write of the deploy. That is one more reason a body changes by itself. If roc-cfw can compare a body without one JSON member, these 4 can go back to `same-body` with `checked` ignored. A new route that matters gets a `[[deploy.smoke]]` entry.
+`worker/roc-cfw.toml` lists them. `same-body` only for routes whose body does not change by itself. Not `/v1/toolchains`, `/v1/sweeps/*`, `.../compat`, lists that grow: they are status only. The releases and artifact routes of a package end with the `checked` item (R-AP29): `checked_at` and `stale` change with no write of the deploy. They use `same-body = true` with `ignore = ["/checked"]` (roc-cfw 0.0.3), so every other member is compared. Each request has a time limit of `timeout = 10` s (the slowest route took 0.36 s).
 
 ## Rules for the operator
 
