@@ -1,0 +1,6 @@
+# Q617-1: config.toml has [channels.reify] with the same source: exit 0, "already added", no change, no request (no http file in this case)
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies
+# Q617-1: the same source in the form owner/repo, and a tag-prefix that differs from the table: the source decides
+roc channel add reify Karakatiza666/roc-reify-nightlies --tag-prefix other-
+# Q617-1: another source: exit 2, the hint is to remove the table first
+roc channel add reify https://github.com/someone-else/roc-reify-nightlies

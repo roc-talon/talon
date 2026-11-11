@@ -1,0 +1,14 @@
+== roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies/releases
+read 3 releases of github.com/Karakatiza666/roc-reify-nightlies
+added channel reify to $HOME/.config/talon/config.toml:
+  [channels.reify]
+  shape = "github-release"
+  source = "Karakatiza666/roc-reify-nightlies"
+  tag-prefix = "nightly-reify-"
+newest: reify-2026-11-03-1708298 (has linux_x86_64). Install: tln roc install reify
+exit 0
+== roc channel list
+NAME     SHAPE           SOURCE                             FROM
+nightly  github-release  roc-lang/nightlies                 built-in
+reify    github-release  Karakatiza666/roc-reify-nightlies  config.toml
+exit 0

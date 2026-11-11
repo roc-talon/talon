@@ -1,4 +1,5 @@
 import Fail
+import JsonDoc
 import Selector
 import Text
 import TomlKeys
@@ -312,6 +313,238 @@ Channel :: [].{
 		}
 	}
 
+	## Slice 242 (R-CH12, R-CH13): a table as the commands read and print it. `shape` is always `github-release`.
+	Entry : { name : Str, source : Str, tag_prefix : Str }
+
+	## Slice 242 (R-CH12): the source of the URL of `tln roc channel add <name> <URL>`. The forms: `https://github.com/<owner>/<repo>` with `/`, `/releases` or `/releases/tag/<tag>` at the end, and `<owner>/<repo>`.
+	## The source keeps its case and follows R-CH4 (`source_check`). Any other text is `BadUrl`.
+	source_of_url : Str -> Try(Str, [BadUrl])
+	source_of_url = |url| {
+		github = "https://github.com/"
+		parts = if url.starts_with(github) {
+			match url.drop_prefix(github).split_on("/") {
+				[owner, repo] => Ok((owner, repo))
+				[owner, repo, ""] => Ok((owner, repo))
+				[owner, repo, "releases"] => Ok((owner, repo))
+				[owner, repo, "releases", "tag", tag] if !tag.is_empty() => Ok((owner, repo))
+				_ => Err(BadUrl)
+			}
+		} else {
+			match url.split_on("/") {
+				[owner, repo] => Ok((owner, repo))
+				_ => Err(BadUrl)
+			}
+		}
+		match parts {
+			Ok((owner, repo)) => {
+				source = "${owner}/${repo}"
+				if source_check(source).is_ok() Ok(source) else Err(BadUrl)
+			}
+			Err(_) => Err(BadUrl)
+		}
+	}
+
+	## Slice 242 (R-CH12): the exit 2 text for a URL that is not a form. The hint is the text of the design.
+	url_text : Str -> { message : Str, hint : Str }
+	url_text = |url| { message: "${url} is not a channel source", hint: "known channel sources: github.com/<owner>/<repo>" }
+
+	## Slice 242 (R-CH12, Design Q617 item 3): the tag-prefix of the tags of page 1. A tag that ends with `<date>-<sha>` gives the text before the date; the prefix must follow R-CH4 (`tag_prefix_check`, so it is never empty).
+	## One prefix is the answer. None is `NoPrefix`. 2 or more are `Prefixes`, sorted, with no double.
+	prefix_of_tags : List(Str) -> Try(Str, [NoPrefix, Prefixes(List(Str))])
+	prefix_of_tags = |tags| {
+		found = tags.keep_oks(|tag| prefix_in_tag(tag))
+		unique = found.fold([], |acc, p| if acc.contains(p) acc else acc.append(p))
+		match Text.sorted(unique) {
+			[] => Err(NoPrefix)
+			[one] => Ok(one)
+			many => Err(Prefixes(many))
+		}
+	}
+
+	## Slice 242 (R-CH12): the exit 2 text of `NoPrefix` and `Prefixes`.
+	prefix_text : [NoPrefix, Prefixes(List(Str))] -> Str
+	prefix_text = |failure| match failure {
+		NoPrefix => "no release tag ends with <date>-<sha>. Pass --tag-prefix."
+		Prefixes(list) => "release tags have ${list.len().to_str()} prefixes: ${Str.join_with(list, ", ")}. Pass --tag-prefix."
+	}
+
+	## Slice 242 (Design Q617 item 3): `--tag-prefix <given>`. A value that breaks R-CH4 is `BadPrefix` (before the tags). Else a tag must start with it and have `<date>-<sha>` after it: none is `NoTag`.
+	prefix_given : { given : Str, tags : List(Str) } -> Try(Str, [BadPrefix, NoTag])
+	prefix_given = |facts| match tag_prefix_check(facts.given) {
+		Err(_) => Err(BadPrefix)
+		Ok({}) => {
+			listed = facts.tags.any(
+				|tag| tag.starts_with(facts.given) and match tag.drop_prefix(facts.given).split_on("-") {
+					[year, month, day, sha] => date_of({ names: Bool.False }, year, month, day, sha).is_ok()
+					_ => Bool.False
+				},
+			)
+			if listed Ok(facts.given) else Err(NoTag)
+		}
+	}
+
+	## Slice 242 (Design Q617 item 3): the exit 2 text of the two failures of `prefix_given`.
+	given_text : { given : Str, kind : [BadPrefix, NoTag], source : Str } -> Str
+	given_text = |facts| match facts.kind {
+		BadPrefix => "${facts.given} is not a tag prefix. A tag prefix has 1 to 40 characters of a-z, 0-9, . _ and -, and ends with -."
+		NoTag => "no release tag on page 1 of github.com/${facts.source} starts with ${facts.given} and ends with <date>-<sha>"
+	}
+
+	## Slice 242 (Design Q617 item 1): `add <name> <URL>` when `config.toml` has a table of the name. The same source (the text, case kept) is `Same`; another is `Other(<the source in config.toml>)`.
+	exists_check : { name : Str, source : Str, config : List(Channel.Entry) } -> [Absent, Same, Other(Str)]
+	exists_check = |facts| match facts.config.find_first(|t| t.name == facts.name) {
+		Ok(t) => if t.source == facts.source Same else Other(t.source)
+		Err(_) => Absent
+	}
+
+	## Slice 242 (Design Q617 item 1): exit 0, the table is added already.
+	already_text : { name : Str, source : Str } -> Str
+	already_text = |facts| "channel ${facts.name} is already added (github.com/${facts.source})"
+
+	## Slice 242 (Design Q617 item 1): exit 2, the table has another source.
+	exists_text : { name : Str, source : Str, existing : Str } -> { message : Str, hint : Str }
+	exists_text = |facts| {
+		message: "channel ${facts.name} is added with the source ${facts.existing}, not ${facts.source}",
+		hint: "To replace it, run: tln roc channel rm ${facts.name}",
+	}
+
+	## Slice 242 (R-CH12, R-CH5): exit 19 when an installed id of the name records another source. The ids are read from the right (`user_parts`); an id with no recorded source records no other source. The first one in the order of the list is the answer.
+	source_conflict : { name : Str, source : Str, installed : List({ id : Str, source : Try(Str, [Unset]) }) } -> Try({}, [Conflict(Str)])
+	source_conflict = |facts| {
+		other = facts.installed.keep_oks(
+			|row| match (user_parts(row.id), row.source) {
+				(Ok(p), Ok(recorded)) if p.name == facts.name and recorded != facts.source => Ok(recorded)
+				_ => Err(Fine)
+			},
+		)
+		match other {
+			[recorded, ..] => Err(Conflict(recorded))
+			[] => Ok({})
+		}
+	}
+
+	## Slice 242 (R-CH12): the exit 19 text of `source_conflict`.
+	conflict_text : { name : Str, source : Str, recorded : Str } -> { message : Str, hint : Str }
+	conflict_text = |facts| {
+		message: "channel ${facts.name}: installed builds record the source ${facts.recorded}, not ${facts.source}",
+		hint: "Remove them with tln roc remove <id>, or use another name.",
+	}
+
+	## Slice 242 (R-CH13, Design Q617 item R-CH13 (1)): `add <name>` with no URL. `NoTable`: the project has no table of the name (exit 2). `Copy`: the project has it and `config.toml` has not. `Equal`: both have it, equal (exit 0). `Differ`: both have it, not equal (exit 19).
+	copy_check : { name : Str, config : List(Channel.Entry), project : List(Channel.Entry) } -> [NoTable, Copy(Channel.Entry), Equal, Differ]
+	copy_check = |facts| match facts.project.find_first(|t| t.name == facts.name) {
+		Err(_) => NoTable
+		Ok(p) => match facts.config.find_first(|t| t.name == facts.name) {
+			Err(_) => Copy(p)
+			Ok(c) => if c.source == p.source and c.tag_prefix == p.tag_prefix Equal else Differ
+		}
+	}
+
+	## Slice 242 (R-CH13, Design Q617): `rm <name>`. A table of `config.toml` is `Found`. The built-in name is `Builtin`. Any other name (also one that only the project has) is `Missing`.
+	rm_check : { name : Str, config : List(Channel.Entry) } -> [Found, Builtin, Missing]
+	rm_check = |facts| if builtin(facts.name).is_ok() {
+		Builtin
+	} else if facts.config.any(|t| t.name == facts.name) {
+		Found
+	} else {
+		Missing
+	}
+
+	## Slice 242 (R-CH13, Design Q617): the exit 2 text of `Builtin` and `Missing`.
+	rm_fail_text : { name : Str, kind : [Builtin, Missing], path : Str } -> Str
+	rm_fail_text = |facts| match facts.kind {
+		Builtin => "${facts.name} is a built-in channel and cannot be removed"
+		Missing => "no channel ${facts.name} in ${facts.path}"
+	}
+
+	## Slice 242 (R-CH12, R-CH10): the table as the commands write it: 4 lines, each with a line end.
+	table_text : Channel.Entry -> Str
+	table_text = |t| "[channels.${t.name}]\nshape = \"github-release\"\nsource = \"${t.source}\"\ntag-prefix = \"${t.tag_prefix}\"\n"
+
+	## Slice 242 (R-CH12, R-CC6): the new text of `config.toml` with the table added. The table goes at the end, after a blank line (none for an empty file). Every other byte stays. A text that is not TOML is a failure of kind `Input`.
+	add_edit : { path : Str, text : Str, table : Channel.Entry } -> Try(Str, Fail)
+	add_edit = |facts| match Toml.parse(facts.text) {
+		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
+		Ok(_) => {
+			kept = trim_end_lines(facts.text)
+			if kept.is_empty() Ok(table_text(facts.table)) else Ok("${kept}\n\n${table_text(facts.table)}")
+		}
+	}
+
+	## Slice 242 (R-CH13, R-CC6): the new text of `config.toml` without the table `name`: its header, its keys and the blank lines before it. Every other byte stays. No such table is `Same`. A text that is not TOML is a failure of kind `Input`.
+	remove_edit : { path : Str, text : Str, name : Str } -> Try([Same, Set(Str)], Fail)
+	remove_edit = |facts| match Toml.parse(facts.text) {
+		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
+		Ok(_) => {
+			lines = facts.text.split_on("\n")
+			header = "[channels.${facts.name}]"
+			match lines.find_first_index(|line| line.trim() == header) {
+				Err(_) => Ok(Same)
+				Ok(at) => {
+					is_blank = |i| lines.get(i).map_ok(|line| line.trim().is_empty()) == Ok(Bool.True)
+					is_header = |i| lines.get(i).map_ok(|line| line.trim().starts_with("[")) == Ok(Bool.True)
+					start = back_over(at, is_blank, 0)
+					next = forward_to(at + 1, lines.len(), is_header)
+					stop = back_over(next, is_blank, at + 1)
+					kept = lines.take_first(start).concat(lines.drop_first(stop))
+					Ok(Set(Str.join_with(kept, "\n")))
+				}
+			}
+		}
+	}
+
+	## Slice 242 (R-CH13, Design Q617 item 7): the text of `tln roc channel list`. A header, the built-in table, the tables of `config.toml` in file order, then the tables that only the project has. Each gap is the widest cell and 2 spaces; the last column has no padding. No end of line at the end.
+	list_text : { config : List(Channel.Entry), project : List(Channel.Entry) } -> Str
+	list_text = |facts| {
+		rows = list_rows(facts)
+		table = [["NAME", "SHAPE", "SOURCE", "FROM"]].concat(rows.map(|r| [r.entry.name, "github-release", r.entry.source, r.from]))
+		widths = [0, 1, 2].map(|col| table.fold(0, |w, cells| w.max((cells.get(col) ?? "").count_utf8_bytes())))
+		pad = |text, w| "${text}${" ".repeat(w - text.count_utf8_bytes())}"
+		line = |cells| {
+			shown = cells.map_with_index(|text, col| if col == 3 text else pad(text, widths.get(col) ?? 0))
+			Str.join_with(shown.map(|cell| cell), "  ")
+		}
+		Str.join_with(table.map(line), "\n")
+	}
+
+	## Slice 242 (R-CH13, R-J1 to R-J3, Design Q617 item 7): the `data` of `tln roc channel list --json`. The keys are snake_case. `origin` is `built-in`, `config` or `project`; `added` is false for a table that only the project has.
+	list_data : { config : List(Channel.Entry), project : List(Channel.Entry) } -> JsonDoc
+	list_data = |facts| {
+		doc = |r| JsonDoc.Obj([
+			("name", JsonDoc.Text(r.entry.name)),
+			("shape", JsonDoc.Text("github-release")),
+			("source", JsonDoc.Text(r.entry.source)),
+			("tag_prefix", JsonDoc.Text(r.entry.tag_prefix)),
+			("origin", JsonDoc.Text(r.origin)),
+			("added", JsonDoc.Flag(r.origin != "project")),
+		])
+		JsonDoc.Obj([("channels", JsonDoc.Arr(list_rows(facts).map(doc)))])
+	}
+
+	## Slice 242 (R-CH12, TW24): the print of `add <name> <URL>`. `read` is the number of releases of page 1. No end of line at the end. A newest build with no asset for `target` has no `Install:` part.
+	added_text : { path : Str, table : Channel.Entry, read : U64, newest : { id : Str, has_asset : Bool }, target : Str } -> Str
+	added_text = |facts| {
+		noun = if facts.read == 1 "release" else "releases"
+		last = if facts.newest.has_asset {
+			"newest: ${facts.newest.id} (has ${facts.target}). Install: tln roc install ${facts.table.name}"
+		} else {
+			"newest: ${facts.newest.id} (no asset for ${facts.target})"
+		}
+		"read ${facts.read.to_str()} ${noun} of github.com/${facts.table.source}\nadded channel ${facts.table.name} to ${facts.path}:\n${indented(facts.table)}\n${last}"
+	}
+
+	## Slice 242 (R-CH13, TW24): the print of `add <name>` (a copy from the project). No end of line at the end.
+	copied_text : { path : Str, from : Str, table : Channel.Entry } -> Str
+	copied_text = |facts| "copied channel ${facts.table.name} from ${facts.from} to ${facts.path}:\n${indented(facts.table)}"
+
+	## Slice 242 (Design Q618): exit 2, page 1 has no build.
+	no_build_text : Str -> Str
+	no_build_text = |source| "github.com/${source} has no build on page 1 (drafts and prereleases do not count)"
+
+	## Slice 242 (R-CH13, TW24): the print of `rm`.
+	removed_text : { path : Str, name : Str } -> Str
+	removed_text = |facts| "removed channel ${facts.name} from ${facts.path}"
+
 	## R-CH2: the built-in tables. Only `nightly` has one. A reserved name with no table (`stable`) gives `NotBuiltIn`.
 	builtin : Str -> Try({ shape : Str, source : Str, tag_prefix : Str }, [NotBuiltIn])
 	builtin = |name| if name == "nightly" Ok({ shape: "github-release", source: "roc-lang/nightlies", tag_prefix: "nightly-" }) else Err(NotBuiltIn)
@@ -353,6 +586,54 @@ Channel :: [].{
 		_ => Ok({})
 	}
 }
+
+# Slice 242: the prefix in a tag that ends with `<date>-<sha>` (the ISO date). The prefix follows R-CH4, so it is never empty.
+prefix_in_tag : Str -> Try(Str, [NoPrefix])
+prefix_in_tag = |tag| {
+	parts = tag.split_on("-")
+	cut = parts.len().minus_saturated(4)
+	prefix = if cut == 0 "" else "${Str.join_with(parts.take_first(cut), "-")}-"
+	match parts.drop_first(cut) {
+		[year, month, day, sha] if parts.len() >= 4 and Channel.date_of({ names: Bool.False }, year, month, day, sha).is_ok() and Channel.tag_prefix_check(prefix).is_ok() => Ok(prefix)
+		_ => Err(NoPrefix)
+	}
+}
+
+# Slice 242: the text without the line ends (and `\r`) at its end.
+trim_end_lines : Str -> Str
+trim_end_lines = |text| {
+	bytes = text.to_utf8()
+	n = bytes.len()
+	keep = trim_count(bytes, n)
+	Str.from_utf8_lossy(bytes.take_first(keep))
+}
+
+trim_count : List(U8), U64 -> U64
+trim_count = |bytes, n| match bytes.get(n.minus_saturated(1)) {
+	Ok(b) if n > 0 and (b == '\n' or b == '\r') => trim_count(bytes, n - 1)
+	_ => n
+}
+
+# Slice 242: the index `i` moved back over the blank lines, down to `floor`.
+back_over : U64, (U64 -> Bool), U64 -> U64
+back_over = |i, is_blank, floor| if i > floor and is_blank(i - 1) back_over(i - 1, is_blank, floor) else i
+
+# Slice 242: the first index from `i` that is a header, else `end`.
+forward_to : U64, U64, (U64 -> Bool) -> U64
+forward_to = |i, end, is_header| if i >= end or is_header(i) i else forward_to(i + 1, end, is_header)
+
+# Slice 242: the rows of `list`: the built-in table, the tables of `config.toml`, then the tables that only the project has.
+list_rows : { config : List(Channel.Entry), project : List(Channel.Entry) } -> List({ entry : Channel.Entry, from : Str, origin : Str })
+list_rows = |facts| {
+	built = { name: "nightly", source: "roc-lang/nightlies", tag_prefix: "nightly-" }
+	mine = facts.config.map(|t| { entry: t, from: "config.toml", origin: "config" })
+	only = facts.project.keep_if(|t| !facts.config.any(|c| c.name == t.name)).map(|t| { entry: t, from: "talon.toml (not added)", origin: "project" })
+	[{ entry: built, from: "built-in", origin: "built-in" }].concat(mine).concat(only)
+}
+
+# Slice 242: the table with 2 spaces of indent, no end of line at the end.
+indented : Channel.Entry -> Str
+indented = |t| Str.join_with(Channel.table_text(t).split_on("\n").keep_if(|line| !line.is_empty()).map(|line| "  ${line}"), "\n")
 
 published_in : List({ id : Str, published_at : U64 }), Str -> Try(U64, [NoTime])
 published_in = |times, id| match times.find_first(|row| row.id == id) {

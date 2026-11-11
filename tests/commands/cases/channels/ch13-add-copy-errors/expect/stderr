@@ -1,0 +1,3 @@
+tln: error[usage]: no talon.toml found. Give the URL: tln roc channel add reify <URL>
+tln: error[usage]: $PROJECT/p-notable/talon.toml has no [channels.reify] table. Give the URL: tln roc channel add reify <URL>
+tln: error[input]: $PROJECT/p-differ/talon.toml:1: channels.reify is not equal to channels.reify in $HOME/.config/talon/config.toml:1

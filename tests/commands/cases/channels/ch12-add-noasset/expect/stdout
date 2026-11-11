@@ -1,0 +1,9 @@
+== roc channel add win Karakatiza666/roc-win
+read 4 releases of github.com/Karakatiza666/roc-win
+added channel win to $HOME/.config/talon/config.toml:
+  [channels.win]
+  shape = "github-release"
+  source = "Karakatiza666/roc-win"
+  tag-prefix = "fork-"
+newest: win-2026-11-09-7777777 (no asset for linux_x86_64)
+exit 0

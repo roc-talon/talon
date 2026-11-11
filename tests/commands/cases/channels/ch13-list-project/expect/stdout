@@ -1,0 +1,11 @@
+== roc channel list
+NAME     SHAPE           SOURCE                             FROM
+nightly  github-release  roc-lang/nightlies                 built-in
+mine     github-release  Karakatiza666/roc-mine             config.toml
+reify    github-release  Karakatiza666/roc-reify-nightlies  talon.toml (not added)
+exit 0
+== roc channel list --json
+{"schema":1,"command":"roc channel list","ok":true,"data":{"channels":[{"name":"nightly","shape":"github-release","source":"roc-lang/nightlies","tag_prefix":"nightly-","origin":"built-in","added":true},{"name":"mine","shape":"github-release","source":"Karakatiza666/roc-mine","tag_prefix":"fork-","origin":"config","added":true},{"name":"reify","shape":"github-release","source":"Karakatiza666/roc-reify-nightlies","tag_prefix":"nightly-reify-","origin":"project","added":false}]},"error":null}
+exit 0
+== roc channel list cwd:p-differ
+exit 19

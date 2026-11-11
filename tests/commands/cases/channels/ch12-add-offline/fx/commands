@@ -1,0 +1,2 @@
+# R-CH12 R-DI12: --offline and a URL: exit 15, no request, no write. The check is after the checks of the name and the URL, and after the read of the installed ids.
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --offline

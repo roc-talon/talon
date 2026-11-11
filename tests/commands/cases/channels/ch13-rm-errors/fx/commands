@@ -1,0 +1,6 @@
+# Q617 R-CH13-2: a name with no table: exit 2
+roc channel rm ghost
+# Q617 R-CH13-2: a built-in name: exit 2
+roc channel rm nightly
+# Q617 R-CH13-2: a table that only the project has: exit 2; rm edits config.toml only, talon.toml stays
+roc channel rm reify

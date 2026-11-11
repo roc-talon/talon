@@ -1,0 +1,8 @@
+# Q617 R-CH13-1: no project (no talon.toml up the tree), no config.toml: exit 2
+roc channel add reify cwd:p-none env:HOME={w}/home2
+# Q617 R-CH13-1: a talon.toml with no table of the name: exit 2
+roc channel add reify cwd:p-notable env:HOME={w}/home2
+# Q617 R-CH13-1: an equal table is in config.toml: exit 0, no change
+roc channel add reify cwd:p-equal
+# Q617 R-CH13-1, R-CH10: a different table is in config.toml: exit 19, the text of the equality check
+roc channel add reify cwd:p-differ

@@ -1,0 +1,1 @@
+R-CH12 R-CH4 (slice 242, Design Q617 item 3): `--tag-prefix` with a bad form is exit 2 before any request. A good one that no tag of page 1 has is exit 2 after the request. No write in both runs (the tree has the cache file only). The texts are a proposal (TW24).

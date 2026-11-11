@@ -1,0 +1,9 @@
+== roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --json
+{"schema":1,"command":"roc channel add","ok":true,"data":{"name":"reify","shape":"github-release","source":"Karakatiza666/roc-reify-nightlies","tag_prefix":"nightly-reify-","path":"$HOME/.config/talon/config.toml","changed":true,"read":2,"target":"linux_x86_64","newest":{"id":"reify-2026-11-03-1708298","has_asset":true}},"error":null}
+exit 0
+== roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --json
+{"schema":1,"command":"roc channel add","ok":true,"data":{"name":"reify","shape":"github-release","source":"Karakatiza666/roc-reify-nightlies","tag_prefix":"nightly-reify-","path":"$HOME/.config/talon/config.toml","changed":false,"read":null,"target":null,"newest":null},"error":null}
+exit 0
+== roc channel rm reify --json
+{"schema":1,"command":"roc channel rm","ok":true,"data":{"name":"reify","path":"$HOME/.config/talon/config.toml","changed":true},"error":null}
+exit 0

@@ -1,0 +1,3 @@
+# R-CH12: --tag-prefix is for `roc channel add` only. With rm or list it is a usage error (the form of `flag '--no-check' is not for 'roc use'`). No change of any file.
+roc channel rm reify --tag-prefix x-
+roc channel list --tag-prefix x-

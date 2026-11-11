@@ -1,0 +1,1 @@
+tln: error[input]: $PROJECT/p-differ/talon.toml:1: channels.mine is not equal to channels.mine in $HOME/.config/talon/config.toml:1

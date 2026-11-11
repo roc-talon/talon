@@ -1,0 +1,4 @@
+== roc channel rm reify --tag-prefix x-
+exit 2
+== roc channel list --tag-prefix x-
+exit 2

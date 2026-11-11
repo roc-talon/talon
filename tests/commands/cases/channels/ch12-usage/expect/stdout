@@ -1,0 +1,14 @@
+== roc channel
+exit 2
+== roc channel frob
+exit 2
+== roc channel add
+exit 2
+== roc channel add a b c
+exit 2
+== roc channel rm
+exit 2
+== roc channel rm a b
+exit 2
+== roc channel list extra
+exit 2

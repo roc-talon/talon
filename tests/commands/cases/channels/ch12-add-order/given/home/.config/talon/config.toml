@@ -1,0 +1,6 @@
+nightly = true
+
+[channels.mine]
+shape = "github-release"
+source = "acme/mine"
+tag-prefix = "m-"

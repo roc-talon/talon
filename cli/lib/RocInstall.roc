@@ -389,7 +389,17 @@ RocInstall :: [].{
 
 	## Slice 240 (R-CH11, Design Q615 item 4): the tables of the root `talon.toml` of the project (the normal project search from `cwd`). No project, or a text that is not TOML, gives none.
 	project_tables! : Fx, List((Str, Str)) => List({ name : Str, source : Str, tag_prefix : Str })
-	project_tables! = |fx, env| {
+	project_tables! = |fx, env| match RocInstall.project_toml!(fx, env) {
+		Ok(found) => match Toml.parse(found.text) {
+			Ok(doc) => Channel.entries(Channel.read(doc, found.text).tables)
+			Err(_) => []
+		}
+		Err(_) => []
+	}
+
+	## Slice 242 (R-CH13): the path and the text of the root `talon.toml` of the project (the normal project search from `cwd`: the workspace root, else the nearest `talon.toml`). No project, or no `talon.toml` there, is `NoProject`.
+	project_toml! : Fx, List((Str, Str)) => Try({ path : Str, text : Str }, [NoProject])
+	project_toml! = |fx, env| {
 		home = match RocInstall.env_var(env, "HOME") {
 			Ok(dir) => dir
 			Err(_) => ""
@@ -401,19 +411,15 @@ RocInstall :: [].{
 					Ok(dir) => found.walk.find_first(|d| d.dir == dir)
 					Err(NoWorkspace) => found.walk.find_first(|d| d.toml.is_ok())
 				}
-				text = match at {
-					Ok(d) => d.toml
-					Err(_) => Err(None)
-				}
-				match text {
-					Ok(content) => match Toml.parse(content) {
-						Ok(doc) => Channel.entries(Channel.read(doc, content).tables)
-						Err(_) => []
+				match at {
+					Ok(d) => match d.toml {
+						Ok(content) => Ok({ path: Text.join(d.dir, "talon.toml"), text: content })
+						Err(_) => Err(NoProject)
 					}
-					Err(_) => []
+					Err(_) => Err(NoProject)
 				}
 			}
-			Err(_) => []
+			Err(_) => Err(NoProject)
 		}
 	}
 

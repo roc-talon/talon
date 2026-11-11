@@ -1,0 +1,27 @@
+== roc channel add one Karakatiza666/roc-one
+read 1 release of github.com/Karakatiza666/roc-one
+added channel one to $HOME/.config/talon/config.toml:
+  [channels.one]
+  shape = "github-release"
+  source = "Karakatiza666/roc-one"
+  tag-prefix = "fork-"
+newest: one-2026-11-03-1111111 (has linux_x86_64). Install: tln roc install one
+exit 0
+== roc channel add two https://github.com/Karakatiza666/roc-two/
+read 1 release of github.com/Karakatiza666/roc-two
+added channel two to $HOME/.config/talon/config.toml:
+  [channels.two]
+  shape = "github-release"
+  source = "Karakatiza666/roc-two"
+  tag-prefix = "fork-"
+newest: two-2026-11-03-2222222 (has linux_x86_64). Install: tln roc install two
+exit 0
+== roc channel add three https://github.com/Karakatiza666/roc-three/releases/tag/fork-2026-11-03-3333333
+read 1 release of github.com/Karakatiza666/roc-three
+added channel three to $HOME/.config/talon/config.toml:
+  [channels.three]
+  shape = "github-release"
+  source = "Karakatiza666/roc-three"
+  tag-prefix = "fork-"
+newest: three-2026-11-03-3333333 (has linux_x86_64). Install: tln roc install three
+exit 0

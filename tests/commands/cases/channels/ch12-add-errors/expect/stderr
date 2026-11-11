@@ -1,0 +1,10 @@
+tln: error[usage]: Reify is not a channel name. A name is a-z, 0-9 and -, starts with a letter, has 2 to 24 characters and does not end with -.
+tln: error[usage]: nightly is a reserved channel name
+tln: error[usage]: git-fork is a reserved channel name
+tln: error[usage]: give the channel name: tln roc channel add <name> <URL>
+tln: error[usage]: https://gitlab.com/Karakatiza666/roc-reify-nightlies is not a channel source
+known channel sources: github.com/<owner>/<repo>
+tln: error[usage]: http://github.com/Karakatiza666/roc-reify-nightlies is not a channel source
+known channel sources: github.com/<owner>/<repo>
+tln: error[usage]: https://github.com/Karakatiza666/roc-reify-nightlies/issues is not a channel source
+known channel sources: github.com/<owner>/<repo>

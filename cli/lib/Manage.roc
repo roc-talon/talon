@@ -1,4 +1,5 @@
 import Args
+import Channel
 import Clock
 import Fail
 import JsonDoc
@@ -34,6 +35,24 @@ Manage :: [].{
 
 	## Slice 071 (R-R15): where a `git-*` build came from. `id` is the toolchain id, `repo` is the `repo` field of its `.talon.json` as it is (the URL `https://github.com/<owner>/<repo>`, R-R1), `ref` is the `ref` field (the text the user typed: a branch, a tag or a sha).
 	Origin : { id : Str, repo : Str, ref : Str }
+
+	## Slice 242 (R-CH13, R-CH5): a user-channel build in `roc list`. `name` is the channel, `source` is the `source` of `.talon.json`, `removed` is true when `config.toml` has no table of the channel.
+	User : { id : Str, name : Str, source : Try(Str, [None]), removed : Bool }
+
+	## Slice 242 (R-CH13): the user-channel builds of `found` (the ids that `Channel.user_parts` reads), in the order of `found`. `channels` are the tables of `config.toml`.
+	users : { found : List({ id : Str, meta : Manage.Read, last_use : Manage.Read }), channels : List({ name : Str, .. }) } -> List(Manage.User)
+	users = |facts| facts.found.keep_oks(
+		|item| match Channel.user_parts(item.id) {
+			Ok(parts) => {
+				source = match field_of(item.meta, "source") {
+					Ok(JsonDoc.Text(text)) => Ok(text)
+					_ => Err(None)
+				}
+				Ok({ id: item.id, name: parts.name, source, removed: !facts.channels.any(|t| t.name == parts.name) })
+			}
+			Err(_) => Err(NotUser)
+		},
+	)
 
 	## R-CC9 (shared by `roc list` and `cache gc`): the 2 results of each id (`.talon.json`, then `.last-use`), in one list of `Fx.read_files!` results (2 for each id, in the order of `ids`).
 	found_of : List(Str), List(Manage.Read) -> List({ id : Str, meta : Manage.Read, last_use : Manage.Read })
@@ -133,7 +152,7 @@ Manage :: [].{
 	## (no more `/`); any other `repo` text shows in full. With no row that has an origin the table is as before (no column). The warning and the empty case do not change.
 	##
 	## Each element is one line with its `\n`.
-	ls_report : { rows : List(Manage.Row), origins : List(Manage.Origin), default : Try(Str, [Unset]) } -> { stdout : List(Str), stderr : List(Str) }
+	ls_report : { rows : List(Manage.Row), origins : List(Manage.Origin), default : Try(Str, [Unset]), users ?: List(Manage.User) } -> { stdout : List(Str), stderr : List(Str) }
 	ls_report = |facts| {
 		warning = match facts.default {
 			Ok(id) if !facts.rows.any(|r| r.is_default) => ["warning: the default compiler ${id} is not installed\n"]
@@ -142,7 +161,7 @@ Manage :: [].{
 		if facts.rows.is_empty() {
 			{ stdout: ["no compiler is installed. Run: tln roc install @latest\n"], stderr: warning }
 		} else {
-			{ stdout: table(facts.rows, facts.origins), stderr: warning }
+			{ stdout: table(facts.rows, facts.origins, facts.?users ?? []), stderr: warning }
 		}
 	}
 
@@ -150,10 +169,11 @@ Manage :: [].{
 	## The keys of a row: `id`, `kind`, `installed_at` (`Clock.format_utc` or `null`), `last_use` (the same), `default` (true for the default).
 	##
 	## Slice 071 (R-R15, R-OUT4, proposal): the row of a `git` kind has 2 more keys after `default`: `repo` and `ref`, the texts of its `Manage.Origin` as they are (the stored URL, raw), or `null` for both when no origin has its id. A row of another kind has no such key.
-	ls_data : { rows : List(Manage.Row), origins : List(Manage.Origin), default : Try(Str, [Unset]) } -> JsonDoc
+	## Slice 242 (R-CH13): the row of a user-channel build has 3 more keys after `default`: `channel`, `source` (text or `null`) and `channel_removed`.
+	ls_data : { rows : List(Manage.Row), origins : List(Manage.Origin), default : Try(Str, [Unset]), users ?: List(Manage.User) } -> JsonDoc
 	ls_data = |facts| JsonDoc.Obj([
 		("default", text_or_null(facts.default.map_err(|Unset| None))),
-		("compilers", JsonDoc.Arr(facts.rows.map(|row| row_doc(row, facts.origins)))),
+		("compilers", JsonDoc.Arr(facts.rows.map(|row| row_doc(row, facts.origins, facts.?users ?? [])))),
 	])
 
 	## R-CS2, R-CC6, R-LY1, R-CC7: the edit of `config.toml` that makes `id` the global default. `text` is the file (the empty text when it does not exist). `id` is a full id.
@@ -374,8 +394,8 @@ time_json = |time| match time {
 	Err(Unknown) => JsonDoc.Null
 }
 
-row_doc : Manage.Row, List(Manage.Origin) -> JsonDoc
-row_doc = |row, origins| {
+row_doc : Manage.Row, List(Manage.Origin), List(Manage.User) -> JsonDoc
+row_doc = |row, origins, users| {
 	base = [
 		("id", JsonDoc.Text(row.id)),
 		("kind", JsonDoc.Text(Manage.kind_text(row.kind))),
@@ -383,7 +403,13 @@ row_doc = |row, origins| {
 		("last_use", time_json(row.last_use)),
 		("default", JsonDoc.Flag(row.is_default)),
 	]
-	if row.kind == Git {
+	if users.any(|u| u.id == row.id) {
+		own = match users.find_first(|u| u.id == row.id) {
+			Ok(u) => [("channel", JsonDoc.Text(u.name)), ("source", text_or_null(u.source)), ("channel_removed", JsonDoc.Flag(u.removed))]
+			Err(_) => []
+		}
+		JsonDoc.Obj(base.concat(own))
+	} else if row.kind == Git {
 		source = match origin_for(origins, row.id) {
 			Ok(o) => [("repo", JsonDoc.Text(o.repo)), ("ref", JsonDoc.Text(o.ref))]
 			Err(NotFound) => [("repo", JsonDoc.Null), ("ref", JsonDoc.Null)]
@@ -426,11 +452,21 @@ date_text = |time| match time {
 
 # R-OUT2, R-R15: the header and one line for each row. Each column is as wide as its widest cell, the last column has no padding.
 # The column `SOURCE` is there when a row has an origin (`-` for the other rows).
-table : List(Manage.Row), List(Manage.Origin) -> List(Str)
-table = |rows, origins| {
-	source_of = |r| match origin_for(origins, r.id) {
-		Ok(o) => Ok("${short_repo(o.repo)}@${o.ref}")
-		Err(NotFound) => Err(NotFound)
+table : List(Manage.Row), List(Manage.Origin), List(Manage.User) -> List(Str)
+table = |rows, origins, users| {
+	source_of = |r| match users.find_first(|u| u.id == r.id) {
+		Ok(u) => {
+			text = u.source ?? "-"
+			Ok(if u.removed "${text} (channel removed)" else text)
+		}
+		Err(_) => match origin_for(origins, r.id) {
+			Ok(o) => Ok("${short_repo(o.repo)}@${o.ref}")
+			Err(NotFound) => Err(NotFound)
+		}
+	}
+	kind_of_row = |r| match users.find_first(|u| u.id == r.id) {
+		Ok(u) => u.name
+		Err(_) => Manage.kind_text(r.kind)
 	}
 	has_source = rows.any(|r| source_of(r) != Err(NotFound))
 	head = { mark: "  ", id: "ID", kind: "KIND", installed: "INSTALLED", used: "LAST USE", source: "SOURCE" }
@@ -438,7 +474,7 @@ table = |rows, origins| {
 		|r| {
 			mark: if r.is_default "* " else "  ",
 			id: r.id,
-			kind: Manage.kind_text(r.kind),
+			kind: kind_of_row(r),
 			installed: date_text(r.installed_at),
 			used: date_text(r.last_use),
 			source: source_of(r) ?? "-",

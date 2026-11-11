@@ -1,0 +1,5 @@
+# Q617 R-CH13-3: the project has mine (equal to config.toml) and reify (not in config.toml): reify is listed, marked not added
+roc channel list
+roc channel list --json
+# Q617 R-CH13-3, R-CH10: unequal tables: exit 19
+roc channel list cwd:p-differ

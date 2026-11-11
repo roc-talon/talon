@@ -3,6 +3,7 @@ import Args
 import CacheClean
 import CacheGc
 import CacheShow
+import ChannelCmd
 import DelFlow
 import Exit
 import Fail
@@ -144,6 +145,8 @@ dispatch! = |fx, args| if args.options.any(|(name, _)| name == "--tool") {
 	RocManage.update!(fx, args)
 } else if args.command == ["roc", "use"] {
 	RocUse.use!(fx, args)
+} else if args.command == ["roc", "channel"] {
+	ChannelCmd.run!(fx, args)
 } else if args.command == ["cache", "gc"] {
 	CacheGc.run!(fx, args)
 } else if args.command == ["cache", "clean"] {

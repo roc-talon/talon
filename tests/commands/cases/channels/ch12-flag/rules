@@ -1,0 +1,1 @@
+R-CH12 R-CH13 R-OUT2 (slice 242, TW24): an option that does not apply to a command is a usage error (exit 2), as `tln roc use --no-check`. `--tag-prefix` is allowed for `tln roc channel add` only. The text is the existing form.

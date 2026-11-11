@@ -1,0 +1,13 @@
+== roc channel add mine https://github.com/someone/roc-builds
+exit 2
+== roc channel add both https://github.com/someone/two-prefixes
+exit 2
+== roc channel add pick https://github.com/someone/two-prefixes-b --tag-prefix fork-b-
+read 3 releases of github.com/someone/two-prefixes-b
+added channel pick to $HOME/.config/talon/config.toml:
+  [channels.pick]
+  shape = "github-release"
+  source = "someone/two-prefixes-b"
+  tag-prefix = "fork-b-"
+newest: pick-2026-11-03-bbbbbbb (has linux_x86_64). Install: tln roc install pick
+exit 0

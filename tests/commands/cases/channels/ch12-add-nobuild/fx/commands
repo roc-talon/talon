@@ -1,0 +1,4 @@
+# Q618: every tag that ends with <date>-<sha> is a draft or a prerelease: exit 2, nothing is written
+roc channel add nb Karakatiza666/roc-nb
+# Q618: the prefix derivation reads builds only: the draft of the prefix other- does not count, so the prefix is fork-
+roc channel add nb2 Karakatiza666/roc-nb2

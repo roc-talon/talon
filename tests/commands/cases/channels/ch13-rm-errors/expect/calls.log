@@ -1,0 +1,18 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml

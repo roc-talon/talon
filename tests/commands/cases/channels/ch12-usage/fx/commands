@@ -1,0 +1,8 @@
+# TW24 (R-OUT2): the usage texts follow `roc default`, `roc remove` and `roc update` (needs one X, takes one X got N, takes no operand got N). All exit 2.
+roc channel
+roc channel frob
+roc channel add
+roc channel add a b c
+roc channel rm
+roc channel rm a b
+roc channel list extra

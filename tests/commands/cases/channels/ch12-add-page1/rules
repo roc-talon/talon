@@ -1,0 +1,1 @@
+R-CH12 R-DI2 (slice 242, Design Q617 item 4): `add` reads page 1 of the release list only. Page 1 has a `Link: ... rel="next"` header; the calls.log has one http_get (no `page=2`). The table, the count, the prefix `fork-` and the newest build `pg-2026-11-03-1111111` come from page 1 (the page 2 file would add a tag of the prefix `other-` and a newer build).

@@ -1,0 +1,46 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/someone/roc-builds
+programs gh
+http_get https://api.github.com/repos/someone/roc-builds/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/someone/roc-builds/1.json $HOME/.cache/roc/talon/index/github/someone/roc-builds/1.meta
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/someone/two-prefixes
+programs gh
+http_get https://api.github.com/repos/someone/two-prefixes/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/someone/two-prefixes/1.json $HOME/.cache/roc/talon/index/github/someone/two-prefixes/1.meta
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/someone/two-prefixes-b
+programs gh
+http_get https://api.github.com/repos/someone/two-prefixes-b/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/someone/two-prefixes-b/1.json $HOME/.cache/roc/talon/index/github/someone/two-prefixes-b/1.meta
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml

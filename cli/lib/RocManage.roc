@@ -136,11 +136,12 @@ list_flow! : Fx, Args => Try({}, Fail)
 list_flow! = |fx, args| {
 	roots = Roots.of_run!(fx, fx.env_all!())?
 	config = RocInstall.read_config!(fx, roots)?
-	ids = Launch.toolchains!(fx, roots)
+	# Slice 242 (R-CH13): the user-channel builds are rows too.
+	ids = Launch.toolchains_all!(fx, roots)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
 	reads = if ids.is_empty() [] else fx.read_files!(paths)
 	found = Manage.found_of(ids, reads)
-	facts = { rows: Manage.rows({ found, default: config.default_roc }), origins: Manage.origins(found), default: config.default_roc }
+	facts = { rows: Manage.rows({ found, default: config.default_roc }), origins: Manage.origins(found), default: config.default_roc, users: Manage.users({ found, channels: config.channels }) }
 	report = Manage.ls_report(facts)
 	if args.json {
 		fx.out!(Out.json_ok({ command: args.typed, data: Manage.ls_data(facts) }))

@@ -222,7 +222,7 @@ Github :: [].{
 	## | 4 | After the last page (no `next`), with no failure: one `write_atomic!` for all pages that changed: for each page the body (200 only, and only when the body is a JSON array: G3) and then the meta (200 with such a body, and 304: the same text, to renew the time of the page). No call when no page changed. A failure at any step writes nothing (R-DI13). |
 	##
 	## The token (R-RG3): before the first `http_get!`, and only then, `Net.token`. For `AskGh`: one `programs!(["gh"])`, and when `gh` is there one `spawn_all!({ jobs: [{ argv: ["gh", "auth", "token"], cwd: Err(Inherit) }], limit: 1 })`, read by `Net.token_from_gh`. `Test` and `Env` make no call. The token is for the list requests only (R-DI9: not for `.roc-version`, not for an archive).
-	releases! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64, offline : Bool } => Try({ pages : List(Str), source : [Live, Cached(U64), Missing] }, Fail)
+	releases! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64, offline : Bool, pages ?: U64 } => Try({ pages : List(Str), source : [Live, Cached(U64), Missing] }, Fail)
 	releases! = |fx, facts| {
 		dir = match Github.index_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo }) {
 			Ok(d) => d
@@ -232,7 +232,7 @@ Github :: [].{
 			[Ok(entries)] => entries
 			_ => []
 		}
-		run = { net: facts.net, owner: facts.owner, repo: facts.repo, now: facts.now, offline: facts.offline, dir, listing }
+		run = { net: facts.net, owner: facts.owner, repo: facts.repo, now: facts.now, offline: facts.offline, dir, listing, limit: facts.?pages ?? 0 }
 		first = Github.list_url({ api: facts.net.api, owner: facts.owner, repo: facts.repo })
 		state = pages_from!(fx, run, { pages: [], writes: [], oldest: Err(None), token: Unresolved }, 1, first)?
 		if !state.writes.is_empty() {
@@ -286,7 +286,7 @@ Github :: [].{
 
 Entry : { name : Str, is_dir : Bool, mtime : U64 }
 
-Run : { net : Net.Settings, owner : Str, repo : Str, now : U64, offline : Bool, dir : Str, listing : List(Entry) }
+Run : { net : Net.Settings, owner : Str, repo : Str, now : U64, offline : Bool, dir : Str, listing : List(Entry), limit : U64 }
 
 Token : [Unresolved, Resolved(Try(Str, [None]))]
 
@@ -424,6 +424,8 @@ pages_from! = |fx, run, state, n, url| {
 
 next_page! : Fx, Run, State, U64, Try(Str, [None]) => Try(State, Fail)
 next_page! = |fx, run, state, n, next| match next {
+	# Slice 242: `pages` limits the number of pages (0: no limit). `add` reads page 1 only.
+	Ok(_) if run.limit > 0 and n >= run.limit => Ok(state)
 	Ok(url) => pages_from!(fx, run, state, n + 1, url)
 	Err(None) => Ok(state)
 }

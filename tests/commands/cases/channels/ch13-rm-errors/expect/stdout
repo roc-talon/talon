@@ -1,0 +1,6 @@
+== roc channel rm ghost
+exit 2
+== roc channel rm nightly
+exit 2
+== roc channel rm reify
+exit 2

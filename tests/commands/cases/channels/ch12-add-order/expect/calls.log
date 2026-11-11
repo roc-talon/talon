@@ -1,0 +1,31 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/reify-2026-10-30-abc1234/.talon.json
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains

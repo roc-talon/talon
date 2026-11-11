@@ -1,0 +1,4 @@
+# R-CH13: the built-in table first, then the tables of config.toml in file order. The columns: name, shape, source, where it comes from.
+roc channel list
+# R-CH13: no config.toml: the built-in table only
+roc channel list env:HOME={w}/home2

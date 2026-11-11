@@ -1,0 +1,8 @@
+== roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies
+channel reify is already added (github.com/Karakatiza666/roc-reify-nightlies)
+exit 0
+== roc channel add reify Karakatiza666/roc-reify-nightlies --tag-prefix other-
+channel reify is already added (github.com/Karakatiza666/roc-reify-nightlies)
+exit 0
+== roc channel add reify https://github.com/someone-else/roc-reify-nightlies
+exit 2

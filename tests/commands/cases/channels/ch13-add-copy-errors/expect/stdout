@@ -1,0 +1,9 @@
+== roc channel add reify cwd:p-none env:HOME={w}/home2
+exit 2
+== roc channel add reify cwd:p-notable env:HOME={w}/home2
+exit 2
+== roc channel add reify cwd:p-equal
+channel reify is already added (github.com/Karakatiza666/roc-reify-nightlies)
+exit 0
+== roc channel add reify cwd:p-differ
+exit 19

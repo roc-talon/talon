@@ -1,0 +1,2 @@
+# Q617-6: the newest build of page 1 (R-CH4: not a draft, not a prerelease) is a Windows build, 1 day old. The nightly switch is false and min-release-age (2 days) would hide it: neither applies. The text says it has no asset for linux_x86_64. The table is written all the same.
+roc channel add win Karakatiza666/roc-win

@@ -1,0 +1,4 @@
+# R-CH12: reify is installed (reify-2026-10-30-abc1234) and records the source someone-else/roc-reify-nightlies. The URL is another source: exit 19, no request, no write.
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies
+# R-CH12: mine is installed and records the same source as the URL: no conflict. The table is written.
+roc channel add mine https://github.com/Karakatiza666/roc-mine

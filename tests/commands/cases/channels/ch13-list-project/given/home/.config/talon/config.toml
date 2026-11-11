@@ -1,0 +1,4 @@
+[channels.mine]
+shape = "github-release"
+source = "Karakatiza666/roc-mine"
+tag-prefix = "fork-"

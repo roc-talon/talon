@@ -1,0 +1,11 @@
+== roc channel add nb Karakatiza666/roc-nb
+exit 2
+== roc channel add nb2 Karakatiza666/roc-nb2
+read 2 releases of github.com/Karakatiza666/roc-nb2
+added channel nb2 to $HOME/.config/talon/config.toml:
+  [channels.nb2]
+  shape = "github-release"
+  source = "Karakatiza666/roc-nb2"
+  tag-prefix = "fork-"
+newest: nb2-2026-11-03-4444444 (has linux_x86_64). Install: tln roc install nb2
+exit 0

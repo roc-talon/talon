@@ -1,0 +1,1 @@
+R-CH13 R-CH1 (slice 242, Design Q617, R-CH13 item 2): `rm` of an unknown name, of `nightly` (built-in, R-CH1: a user cannot change it) and of a table that only the project talon.toml has: exit 2 each, no change of any file (the tree.diff is empty). `rm` reads no project. The texts are a proposal (TW24); the calls.log lines are a guess.

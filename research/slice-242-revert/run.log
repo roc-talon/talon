@@ -1,0 +1,32 @@
+base l0-9: exit=0 All (134) tests passed in 6383.9 ms. 
+base L2: commands: 22 passed, 0 failed 
+m1: L0 exit=0 All (134) tests passed in 3777.9 ms. (cached) 
+m1: L2 FAIL channels/ch12-add-order commands: 21 passed, 1 failed 
+m2: L0 exit=0 All (134) tests passed in 4584.4 ms. (cached) 
+m2: L2 FAIL channels/ch12-add-exists FAIL channels/ch12-add-json commands: 20 passed, 2 failed 
+m3: L0 exit=0 All (134) tests passed in 3345.8 ms. (cached) 
+m3: L2 FAIL channels/ch12-add-nobuild commands: 21 passed, 1 failed 
+m4: L0 exit=1 expect {     133 passed     1 failed     0 compiler errors 
+m4: L2 commands: 22 passed, 0 failed 
+m5: L0 exit=0 All (134) tests passed in 3375.3 ms. (cached) 
+m5: L2 FAIL channels/ch12-add-page1 commands: 21 passed, 1 failed 
+m6: L0 exit=0 All (134) tests passed in 3704.0 ms. (cached) 
+m6: L2 FAIL channels/ch12-flag commands: 21 passed, 1 failed 
+m7: L0 exit=0 All (134) tests passed in 3283.5 ms. (cached) 
+m7: L2 FAIL channels/ch12-flag commands: 21 passed, 1 failed 
+m8: L0 exit=0 All (134) tests passed in 4375.4 ms. (cached) 
+m8: L2 FAIL channels/ch13-add-copy-errors commands: 21 passed, 1 failed 
+m9: L0 exit=0 All (134) tests passed in 3345.9 ms. (cached) 
+m9: L2 FAIL channels/ch13-rm-errors commands: 21 passed, 1 failed 
+m10: L0 exit=0 All (134) tests passed in 4080.5 ms. (cached) 
+m10: L2 FAIL channels/ch13-rm-errors commands: 21 passed, 1 failed 
+m11: L0 exit=0 All (134) tests passed in 6943.0 ms. 
+m11: L2 FAIL channels/ch13-rm commands: 21 passed, 1 failed 
+m12: L0 exit=1 expect { expect {     132 passed     2 failed     0 compiler errors 
+m12: L2 FAIL channels/ch13-list-project commands: 21 passed, 1 failed 
+m13: L0 exit=0 All (134) tests passed in 5100.9 ms. (cached) 
+m13: L2 FAIL channels/ch12-add-conflict FAIL channels/ch12-add-order commands: 20 passed, 2 failed 
+m14: L0 exit=0 All (134) tests passed in 3907.6 ms. (cached) 
+m14: L2 FAIL channels/ch12-add-exists FAIL channels/ch12-add-order commands: 20 passed, 2 failed 
+m15: L0 exit=0 All (134) tests passed in 3339.4 ms. (cached) 
+m15: L2 FAIL channels/ch12-add-nobuild commands: 21 passed, 1 failed 

@@ -1,0 +1,6 @@
+# R-CH12: the form <owner>/<repo>. The name is the operand, not the repo name.
+roc channel add one Karakatiza666/roc-one
+# R-CH12: the form with a / at the end
+roc channel add two https://github.com/Karakatiza666/roc-two/
+# R-CH12: the form /releases/tag/<tag>; the tag in the URL does not change the source
+roc channel add three https://github.com/Karakatiza666/roc-three/releases/tag/fork-2026-11-03-3333333

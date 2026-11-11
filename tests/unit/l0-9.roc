@@ -3,7 +3,9 @@ app [main!] { bot: "../../bot/lib/main.roc", lib: "../../cli/lib/main.roc", reco
 # l0 driver 9: `roc test` runs the `expect`s of the unit modules that it imports. It has its own header for the package of the compat bot (slice 223). Each unit module of this dir is imported by exactly one driver (`scripts/test.sh` checks it).
 
 import BotTest
+import ChanneladdTest
 import ChannelTest
+import ChannelfileTest
 import ChannelidTest
 import ChannelinstallTest
 import ChannelreleaseTest

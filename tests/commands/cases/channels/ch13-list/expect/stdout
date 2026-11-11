@@ -1,0 +1,10 @@
+== roc channel list
+NAME     SHAPE           SOURCE                             FROM
+nightly  github-release  roc-lang/nightlies                 built-in
+reify    github-release  Karakatiza666/roc-reify-nightlies  config.toml
+my-fork  github-release  acme/roc-fork                      config.toml
+exit 0
+== roc channel list env:HOME={w}/home2
+NAME     SHAPE           SOURCE              FROM
+nightly  github-release  roc-lang/nightlies  built-in
+exit 0

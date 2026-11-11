@@ -1,0 +1,14 @@
+# R-CH12 R-CH3: a bad name (upper case): exit 2, before any request
+roc channel add Reify https://github.com/Karakatiza666/roc-reify-nightlies
+# R-CH12 R-CH3: a reserved name
+roc channel add nightly https://github.com/Karakatiza666/roc-reify-nightlies
+# R-CH12 R-CH3 Q614-4: a name that starts with a reserved word and a -
+roc channel add git-fork https://github.com/Karakatiza666/roc-reify-nightlies
+# R-CH12: no name, only a URL: the text of the design example, exit 2
+roc channel add https://github.com/Karakatiza666/roc-reify-nightlies
+# R-CH12: a URL form that is not known (another host): exit 2 with the list of known forms
+roc channel add reify https://gitlab.com/Karakatiza666/roc-reify-nightlies
+# R-CH12: http is not a known form
+roc channel add reify http://github.com/Karakatiza666/roc-reify-nightlies
+# R-CH12: a URL path that is not a repo page
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies/issues

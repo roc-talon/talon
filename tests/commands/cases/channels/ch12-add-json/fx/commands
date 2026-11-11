@@ -1,0 +1,4 @@
+# TW24 (R-OUT2, R-J1 to R-J3): the --json forms of add (written), add (already added), rm. The envelope and the snake_case keys are those of roc list.
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --json
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --json
+roc channel rm reify --json

@@ -1,0 +1,8 @@
+# R-CH13 R-CH5: before the rm: roc list shows the user build, its channel has a table, so no mark (the build row is a proposal, TW24)
+roc list
+# R-CH13: rm removes the table of config.toml (and the blank line before it). The installed reify build is not touched: no change under .cache (the tree.diff has no toolchain line).
+roc channel rm reify
+# R-CH13: the list has no reify row now; mine stays
+roc channel list
+# R-CH13 R-CH5: the installed build stays; roc list marks it (channel removed)
+roc list

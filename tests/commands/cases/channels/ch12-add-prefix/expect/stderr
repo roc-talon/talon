@@ -1,0 +1,2 @@
+tln: error[usage]: no release tag ends with <date>-<sha>. Pass --tag-prefix.
+tln: error[usage]: release tags have 2 prefixes: fork-a-, fork-b-. Pass --tag-prefix.

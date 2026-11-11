@@ -1,0 +1,4 @@
+# Q617-3: a --tag-prefix that breaks the R-CH4 form: exit 2, before any request
+roc channel add pick https://github.com/someone/two-prefixes-b --tag-prefix Bad_
+# Q617-3: a good --tag-prefix and no tag on page 1 has it: exit 2 (after the one request)
+roc channel add pick https://github.com/someone/two-prefixes-b --tag-prefix zzz-

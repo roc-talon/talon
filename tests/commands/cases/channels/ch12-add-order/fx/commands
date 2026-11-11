@@ -1,0 +1,8 @@
+# Q617-2: an installed id of another source and --offline: exit 19 (the conflict comes before --offline)
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --offline
+# Q617-2: the table is in config.toml with another source, an installed id of a third source, and --offline: exit 2 (the existing table comes before the conflict)
+roc channel add mine https://github.com/other/mine --offline
+# Q617-2: a URL that is no form and --offline: exit 2 (the URL comes before --offline)
+roc channel add fine https://gitlab.com/o/r --offline
+# Q617-2 Q617-9: all local checks pass, --offline, and the list of the source is in the cache: exit 15 anyway
+roc channel add fine https://github.com/Karakatiza666/roc-fine --offline

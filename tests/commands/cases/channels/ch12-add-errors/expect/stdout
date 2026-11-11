@@ -1,0 +1,14 @@
+== roc channel add Reify https://github.com/Karakatiza666/roc-reify-nightlies
+exit 2
+== roc channel add nightly https://github.com/Karakatiza666/roc-reify-nightlies
+exit 2
+== roc channel add git-fork https://github.com/Karakatiza666/roc-reify-nightlies
+exit 2
+== roc channel add https://github.com/Karakatiza666/roc-reify-nightlies
+exit 2
+== roc channel add reify https://gitlab.com/Karakatiza666/roc-reify-nightlies
+exit 2
+== roc channel add reify http://github.com/Karakatiza666/roc-reify-nightlies
+exit 2
+== roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies/issues
+exit 2

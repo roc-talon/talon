@@ -1,0 +1,32 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-nb
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc-nb/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-nb/1.json $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-nb/1.meta
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-nb2
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc-nb2/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-nb2/1.json $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-nb2/1.meta
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml

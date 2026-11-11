@@ -17,6 +17,7 @@ package
 		CacheShow,
 		CacheView,
 		Channel,
+		ChannelCmd,
 		Clean,
 		Clock,
 		Closure,

@@ -1,0 +1,4 @@
+[channels.mine]
+shape = "github-release"
+source = "someone-else/roc-mine"
+tag-prefix = "fork-"

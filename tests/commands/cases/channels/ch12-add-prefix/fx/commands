@@ -1,0 +1,6 @@
+# R-CH12: no tag ends with <date>-<sha> (tags v1, v2): exit 2, the text of the design example
+roc channel add mine https://github.com/someone/roc-builds
+# R-CH12: two prefixes (fork-a-, fork-b-): exit 2, listed, pass --tag-prefix
+roc channel add both https://github.com/someone/two-prefixes
+# R-CH12: --tag-prefix gives the prefix; the builds of the other prefix are not builds of the channel. The newest is of fork-b-.
+roc channel add pick https://github.com/someone/two-prefixes-b --tag-prefix fork-b-

@@ -1,0 +1,23 @@
+--- home/.cache/roc/talon/index/github/Karakatiza666/roc-nb/1.json
++++ home/.cache/roc/talon/index/github/Karakatiza666/roc-nb/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"fork-2026-11-05-1111111","draft":true,"prerelease":false,"published_at":"2026-11-05T10:00:00Z","assets":[{"name":"roc_fork-linux_x86_64-2026-11-05-1111111.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-nb/releases/download/fork-2026-11-05-1111111/roc_fork-linux_x86_64-2026-11-05-1111111.tar.gz"}]},
++{"tag_name":"fork-2026-11-04-2222222","draft":false,"prerelease":true,"published_at":"2026-11-04T10:00:00Z","assets":[{"name":"roc_fork-linux_x86_64-2026-11-04-2222222.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-nb/releases/download/fork-2026-11-04-2222222/roc_fork-linux_x86_64-2026-11-04-2222222.tar.gz"}]}
++]
+--- home/.cache/roc/talon/index/github/Karakatiza666/roc-nb2/1.json
++++ home/.cache/roc/talon/index/github/Karakatiza666/roc-nb2/1.json
+@@ -0,0 +1,4 @@
++[
++{"tag_name":"other-2026-11-08-3333333","draft":true,"prerelease":false,"published_at":"2026-11-08T10:00:00Z","assets":[{"name":"roc_other-linux_x86_64-2026-11-08-3333333.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-nb2/releases/download/other-2026-11-08-3333333/roc_other-linux_x86_64-2026-11-08-3333333.tar.gz"}]},
++{"tag_name":"fork-2026-11-03-4444444","draft":false,"prerelease":false,"published_at":"2026-11-03T10:00:00Z","assets":[{"name":"roc_fork-linux_x86_64-2026-11-03-4444444.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/Karakatiza666/roc-nb2/releases/download/fork-2026-11-03-4444444/roc_fork-linux_x86_64-2026-11-03-4444444.tar.gz"}]}
++]
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1 +1,6 @@
+ nightly = true
++
++[channels.nb2]
++shape = "github-release"
++source = "Karakatiza666/roc-nb2"
++tag-prefix = "fork-"

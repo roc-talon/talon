@@ -1,0 +1,4 @@
+== roc channel add pick https://github.com/someone/two-prefixes-b --tag-prefix Bad_
+exit 2
+== roc channel add pick https://github.com/someone/two-prefixes-b --tag-prefix zzz-
+exit 2

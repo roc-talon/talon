@@ -1,0 +1,7 @@
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -0,0 +1,4 @@
++[channels.reify]
++shape = "github-release"
++source = "Karakatiza666/roc-reify-nightlies"
++tag-prefix = "nightly-reify-"

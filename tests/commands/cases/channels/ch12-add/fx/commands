@@ -1,0 +1,4 @@
+# R-CH12: name, URL with /releases. Page 1 has 3 builds of one tag-prefix. Run 1 derives the tag-prefix, writes the table to config.toml (appended, a blank line before it), prints it and the newest build.
+roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies/releases
+# R-CH13: the list shows the built-in table and the new one
+roc channel list

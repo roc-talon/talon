@@ -1,0 +1,18 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/someone/two-prefixes-b
+programs gh
+http_get https://api.github.com/repos/someone/two-prefixes-b/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/someone/two-prefixes-b/1.json $HOME/.cache/roc/talon/index/github/someone/two-prefixes-b/1.meta

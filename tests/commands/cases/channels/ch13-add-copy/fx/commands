@@ -1,0 +1,4 @@
+# R-CH13 Q612-2: no URL: the table comes from the project talon.toml. No request, also with --offline. Only the table is copied, not [toolchain].
+roc channel add reify --offline
+# R-CH13: the list shows it
+roc channel list

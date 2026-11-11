@@ -1,0 +1,1 @@
+R-CH12 R-CH13 R-OUT2 (slice 242, TW24): the usage texts of `tln roc channel`: no word, an unknown word, `add` with no operand or with 3, `rm` with none or 2, `list` with an operand. Exit 2 (R-FL1). The words follow the other `tln roc` commands (`needs one compiler`, `takes one compiler, got 2`, `takes no operand, got 1`). The calls.log lines (the start only) are a guess.

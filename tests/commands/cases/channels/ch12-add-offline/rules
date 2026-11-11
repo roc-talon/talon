@@ -1,0 +1,1 @@
+R-CH12 R-DI12 R-EC15 (slice 242, Design Q612): `tln roc channel add <name> <URL> --offline` gives exit 15 (page 1 of the release list is a request). No http file in this case. No cache read, no write of config.toml (the tree does not change). The text of the failure is a proposal (TW24).

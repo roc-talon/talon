@@ -1,0 +1,29 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/reify-2026-10-30-abc1234/.talon.json
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/mine-2026-10-30-abc1234/.talon.json
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-mine
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc-mine/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-mine/1.json $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-mine/1.meta
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml

@@ -206,7 +206,7 @@ top_level = |word| {
 # The second word of a command (R-CM15 to R-CM17, R-CM23).
 sub_words : Str -> List(Str)
 sub_words = |command| match command {
-	"roc" => ["install", "link", "use", "list", "remove", "default", "update"]
+	"roc" => ["install", "link", "use", "list", "remove", "default", "update", "channel"]
 	"tool" => ["install", "list", "update", "rebuild", "remove"]
 	"cache" => ["gc", "clean", "list", "dir"]
 	"share" => ["on", "off", "login", "logout", "forget"]
@@ -222,6 +222,7 @@ takes_value : List(Str), Str -> Bool
 takes_value = |cmd, flag| match flag {
 	"--registry" | "--file" | "--as" | "--ci" | "--path" | "--roc" | "--snapshot" | "--strategy" | "--slots" | "--reason" | "--to" | "--ignore" => Bool.True
 	"--target" => cmd == ["probe"]
+	"--tag-prefix" => cmd == ["roc", "channel"]
 	"--platform" => cmd == ["init"]
 	_ => Bool.False
 }
@@ -259,6 +260,7 @@ allows = |cmd, flag| {
 		"--roc" | "--allow-unchecked" | "--resolve" => one_of(["tool install", "x"])
 		"--remove-tools" | "--keep-all" => cmd == "tool remove"
 		"--replace-roc" | "--no-modify-path" => cmd == "setup"
+		"--tag-prefix" => cmd == "roc channel"
 		"--reason" => cmd == "yank"
 		"--to" => cmd == "move"
 		"--undo" => one_of(["yank", "move"])

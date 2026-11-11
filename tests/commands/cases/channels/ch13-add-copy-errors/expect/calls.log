@@ -1,0 +1,43 @@
+args
+env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
+read_files $HOME2/.config/talon/config.toml
+cwd
+list_dirs $PROJECT/p-none
+list_dirs $PROJECT
+list_dirs $WORK
+args
+env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
+read_files $HOME2/.config/talon/config.toml
+cwd
+list_dirs $PROJECT/p-notable
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p-notable/talon.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+cwd
+list_dirs $PROJECT/p-equal
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p-equal/talon.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+cwd
+list_dirs $PROJECT/p-differ
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p-differ/talon.toml

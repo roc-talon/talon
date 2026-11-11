@@ -1,0 +1,8 @@
+== roc channel add reify https://github.com/Karakatiza666/roc-reify-nightlies --offline
+exit 19
+== roc channel add mine https://github.com/other/mine --offline
+exit 2
+== roc channel add fine https://gitlab.com/o/r --offline
+exit 2
+== roc channel add fine https://github.com/Karakatiza666/roc-fine --offline
+exit 15

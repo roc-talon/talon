@@ -1,0 +1,4 @@
+[
+{"tag_name":"fork-a-2026-11-04-aaaaaaa","draft":false,"prerelease":false,"published_at":"2026-11-04T10:00:00Z","assets":[{"name":"roc_fork-a-linux_x86_64-2026-11-04-aaaaaaa.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/someone/two-prefixes-b/releases/download/fork-a-2026-11-04-aaaaaaa/roc_fork-a-linux_x86_64-2026-11-04-aaaaaaa.tar.gz"}]},
+{"tag_name":"fork-b-2026-11-03-bbbbbbb","draft":false,"prerelease":false,"published_at":"2026-11-03T10:00:00Z","assets":[{"name":"roc_fork-b-linux_x86_64-2026-11-03-bbbbbbb.tar.gz","size":73400000,"digest":"sha256:b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","browser_download_url":"https://github.com/someone/two-prefixes-b/releases/download/fork-b-2026-11-03-bbbbbbb/roc_fork-b-linux_x86_64-2026-11-03-bbbbbbb.tar.gz"}]}
+]

@@ -1,0 +1,12 @@
+== roc channel add reify --offline
+copied channel reify from $PROJECT/talon.toml to $HOME/.config/talon/config.toml:
+  [channels.reify]
+  shape = "github-release"
+  source = "Karakatiza666/roc-reify-nightlies"
+  tag-prefix = "nightly-reify-"
+exit 0
+== roc channel list
+NAME     SHAPE           SOURCE                             FROM
+nightly  github-release  roc-lang/nightlies                 built-in
+reify    github-release  Karakatiza666/roc-reify-nightlies  config.toml
+exit 0

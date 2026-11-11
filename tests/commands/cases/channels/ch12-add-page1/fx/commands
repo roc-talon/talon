@@ -1,0 +1,2 @@
+# R-CH12: add reads page 1 only. The answer has a Link header with rel="next". Page 2 has a newer build of another prefix: if Talon read it, the prefix would be ambiguous and the newest build would change. The count, the prefix and the newest build come from page 1.
+roc channel add pg Karakatiza666/roc-pg
