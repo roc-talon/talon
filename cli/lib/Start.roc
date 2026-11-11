@@ -47,7 +47,7 @@ Run : { roots : Roots, path_roc : Try({ id : Str, path : Str }, [NoCompiler]), h
 # Steps 0a to 0f. `picked` is true for the pick of a run with no compiler selected.
 go! : Fx, Run, Bool => Try(Start.Started, Fail)
 go! = |fx, run, picked| {
-	listed = Launch.toolchains!(fx, run.roots)
+	listed = Launch.toolchains_all!(fx, run.roots)
 	have = match Compiler.find({ id: run.held, installed: listed, path: run.path_roc }) {
 		Ok(id) => { id, installed: listed, downloads: 0 }
 		Err(Missing) => download!(fx, run, listed, picked)?

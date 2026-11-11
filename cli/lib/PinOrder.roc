@@ -1,3 +1,4 @@
+import Channel
 import Clock
 import Selector
 import Text
@@ -30,7 +31,8 @@ PinOrder :: [].{
 	# R-NS1: the key is the day, then the kind, then the time of 2 nightlies, then the text.
 	order_of : Str, Str, List({ id : Str, published_at : U64 }) -> [Before, Same, After]
 	order_of = |a, b, times| match (id_kind(a), id_kind(b)) {
-		(Other, _) | (_, Other) => Same
+		# Slice 241 (R-CH9): two builds of one user channel are ordered as nightlies. Other pairs of user builds have no order (`Same`).
+		(Other, _) | (_, Other) => Channel.user_order(a, b, times) ?? Same
 		_ => if same_id(a, b) {
 			Same
 		} else {

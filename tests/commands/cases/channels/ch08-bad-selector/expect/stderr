@@ -1,0 +1,8 @@
+tln: error[usage]: reify@abc1234: only latest or a step (-1, +1) can follow a channel name
+To name one build, use its full id: tln roc install reify-<date>-<sha>
+tln: error[usage]: reify@2026-11-03: only latest or a step (-1, +1) can follow a channel name
+To name one build, use its full id: tln roc install reify-<date>-<sha>
+tln: error[usage]: reify@reify-2026-11-03-1708298: only latest or a step (-1, +1) can follow a channel name
+To name one build, use its full id: tln roc install reify-<date>-<sha>
+tln: error[usage]: nightly@abc1234: only latest or a step (-1, +1) can follow a channel name
+To name one build, use its full id: tln roc install nightly-<date>-<sha>

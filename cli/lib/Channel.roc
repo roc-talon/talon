@@ -1,4 +1,6 @@
 import Fail
+import Selector
+import Text
 import TomlKeys
 import toml.Toml
 import toml.Value
@@ -140,8 +142,173 @@ Channel :: [].{
 			_ => if name_check(text).is_ok() and !text.to_utf8().all(is_hex) Ok(text) else Err(NotChannelText)
 		}
 		match name {
-			Ok(n) => Ok("unknown compiler channel ${n}. Add it: tln roc channel add ${n} <URL>")
+			Ok(n) => Ok(unknown_name_text(n))
 			Err(e) => Err(e)
+		}
+	}
+
+	## Slice 241 (Design Q616 items 1 and 7): the exit 2 text for the name of a channel that has no table.
+	unknown_name_text : Str -> Str
+	unknown_name_text = |n| "unknown compiler channel ${n}. Add it: tln roc channel add ${n} <URL>"
+
+	## Slice 241 (R-CH5, R-CH7): the parts of the id of a user-channel build. A nightly id is not one (`nightly` is the built-in channel).
+	user_parts : Str -> Try({ name : Str, year : U64, month : U64, day : U64, sha : Str }, [NotUser])
+	user_parts = |id| match parse_id(id) {
+		Ok(p) if p.name != "nightly" => Ok(p)
+		_ => Err(NotUser)
+	}
+
+	## Slice 241 (R-CH9, R-NS1, Design Q616 item 5): the order of two builds of one user channel: the date, then `published_at` when both are known and differ, then the tag text (the sha).
+	## Two ids of different channels, or an id that is not a user build, have no order (`Err(NoOrder)`: there is no order across channels).
+	user_order : Str, Str, List({ id : Str, published_at : U64 }) -> Try([Before, Same, After], [NoOrder])
+	user_order = |a, b, times| match (user_parts(a), user_parts(b)) {
+		(Ok(x), Ok(y)) if x.name == y.name => {
+			if a == b {
+				Ok(Same)
+			} else {
+				match compare_numbers([x.year, x.month, x.day], [y.year, y.month, y.day]) {
+					Same => match (published_in(times, a), published_in(times, b)) {
+						(Ok(p), Ok(q)) if p != q => Ok(if p < q Before else After)
+						_ => Ok(Text.compare(x.sha, y.sha))
+					}
+					other => Ok(other)
+				}
+			}
+		}
+		_ => Err(NoOrder)
+	}
+
+	## Slice 241 (R-CH7): does `>=<bound>` admit the id? A build of the same channel that `user_order` does not put before the bound.
+	user_at_least : Str, Str, List({ id : Str, published_at : U64 }) -> Bool
+	user_at_least = |bound, id, times| match user_order(id, bound, times) {
+		Ok(Before) => Bool.False
+		Ok(_) => Bool.True
+		Err(_) => Bool.False
+	}
+
+	## Slice 241 (R-CH7, R-CH8): the table for a name. The table of `config.toml` wins.
+	table_for : { name : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } -> [Config({ name : Str, source : Str, tag_prefix : Str }), Project({ name : Str, source : Str, tag_prefix : Str }), Neither]
+	table_for = |facts| match facts.config.find_first(|t| t.name == facts.name) {
+		Ok(t) => Config(t)
+		Err(_) => match facts.project.find_first(|t| t.name == facts.name) {
+			Ok(t) => Project(t)
+			Err(_) => Neither
+		}
+	}
+
+	## Slice 241 (R-CH8, Design Q616 items 3 and 4): what `<name>@<selector>` names. `text` is the operand of a `tln roc` command. `config` and `project` are the tables of `config.toml` and of the root `talon.toml`.
+	## The `Str` of `Builtin` and `User` is the selector for `Nightlies.pick` (`@latest`, `@-1`). `nightly` is the built-in channel (no table, no consent). A table of `config.toml` wins (`User`); the project only is `ProjectOnly`
+	## (exit 19); no table is `NoTable` (exit 2). After a name only `latest` and a step can follow; any other selector is `BadSelector` (a table of the project only is `ProjectOnly` first). A bare `nightly` is `Builtin("@latest")`.
+	## Any other text (a bare name, a selector with no name, a package ref, a bad name, an id) is `NotNamed`.
+	named_ref : { text : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } -> [NotNamed, Builtin(Str), User({ name : Str, source : Str, tag_prefix : Str }, Str), ProjectOnly({ name : Str, source : Str, tag_prefix : Str }), NoTable(Str), BadSelector(Str)]
+	named_ref = |facts| {
+		if facts.text == "nightly" {
+			Builtin("@latest")
+		} else {
+			match facts.text.split_first("@") {
+				Err(_) => NotNamed
+				Ok({ before, after }) => {
+					name = before
+					valid = match Selector.parse(after, Bool.False) {
+						Ok(Latest) | Ok(Step(_)) => Bool.True
+						_ => Bool.False
+					}
+					if after.is_empty() {
+						NotNamed
+					} else if name == "nightly" {
+						if valid Builtin("@${after}") else BadSelector(after)
+					} else if name_check(name).is_err() {
+						NotNamed
+					} else {
+						match table_for({ name, config: facts.config, project: facts.project }) {
+							Config(t) => if valid User(t, "@${after}") else BadSelector(after)
+							Project(t) => ProjectOnly(t)
+							Neither => NoTable(name)
+						}
+					}
+				}
+			}
+		}
+	}
+
+	## Slice 241 (Design Q616 item 3): the exit 2 text (kind Usage) of a selector after a name other than `latest` and a step.
+	bad_selector_text : { name : Str, selector : Str } -> { message : Str, hint : Str }
+	bad_selector_text = |facts| {
+		message: "${facts.name}@${facts.selector}: only latest or a step (-1, +1) can follow a channel name",
+		hint: "To name one build, use its full id: tln roc install ${facts.name}-<date>-<sha>",
+	}
+
+	## Slice 241 (R-CH7, R-CH5): the range `=<user id>` or `>=<user id>` of the text of `[toolchain] roc`. Any other text names no user build.
+	user_range : Str -> Try([Exactly(Str), AtLeast(Str)], [NoUser])
+	user_range = |text| {
+		at_least = text.drop_prefix(">=")
+		exact = text.drop_prefix("=")
+		if text.starts_with(">=") and user_parts(at_least).is_ok() {
+			Ok(AtLeast(at_least))
+		} else if text.starts_with("=") and user_parts(exact).is_ok() {
+			Ok(Exactly(exact))
+		} else {
+			Err(NoUser)
+		}
+	}
+
+	## Slice 241 (R-CH11, R-CH7, R-CH13, Design Q616 items 1 and 6, Design Q615 item 2): the trust of the compiler range `text` (`[toolchain] roc`).
+	##
+	## | Case | Result |
+	## | --- | --- |
+	## | The range names no user build (`*`, a semver range, a nightly, a release, a text that is no range) | `NoChannel` |
+	## | `=<user id>` or `>=<user id>`, the table is in `config.toml` | `Free` |
+	## | No table in `config.toml`, an installed id is in the range | `Free` (R-CH13: no list is needed) |
+	## | The table is in the project only | `Stop(table)` (exit 19, before any request) |
+	## | No table in either file | `NoTable(name)` (exit 2) |
+	pin_trust : { text : Str, installed : List(Str), times : List({ id : Str, published_at : U64 }), config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } -> [NoChannel, Free, Stop({ name : Str, source : Str, tag_prefix : Str }), NoTable(Str)]
+	pin_trust = |facts| match user_range(facts.text) {
+		Err(_) => NoChannel
+		Ok(range) => {
+			bound = match range {
+				Exactly(id) => id
+				AtLeast(id) => id
+			}
+			name = match user_parts(bound) {
+				Ok(p) => p.name
+				Err(_) => ""
+			}
+			held = facts.installed.any(
+				|id| match range {
+					Exactly(a) => id == a
+					AtLeast(a) => user_at_least(a, id, facts.times)
+				},
+			)
+			match table_for({ name, config: facts.config, project: facts.project }) {
+				Config(_) => Free
+				_ if held => Free
+				Project(t) => Stop(t)
+				Neither => NoTable(name)
+			}
+		}
+	}
+
+	## Slice 241 (Design Q616 item 8, R-CH6): the warning (one line, no `warning: ` and no line end) for a pin that names a user build whose table is in `config.toml` and not in the project `talon.toml`. Else `Err(None)`.
+	pin_warning : { text : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } -> Try(Str, [None])
+	pin_warning = |facts| match user_range(facts.text) {
+		Err(_) => Err(None)
+		Ok(range) => {
+			bound = match range {
+				Exactly(id) => id
+				AtLeast(id) => id
+			}
+			name = match user_parts(bound) {
+				Ok(p) => p.name
+				Err(_) => ""
+			}
+			match table_for({ name, config: facts.config, project: facts.project }) {
+				Config(_) => if facts.project.any(|t| t.name == name) {
+					Err(None)
+				} else {
+					Ok("talon.toml pins roc \"${facts.text}\", but it has no [channels.${name}] table. Other machines and CI cannot resolve the pin. Copy the table from config.toml to talon.toml.")
+				}
+				_ => Err(None)
+			}
 		}
 	}
 
@@ -185,6 +352,18 @@ Channel :: [].{
 		}
 		_ => Ok({})
 	}
+}
+
+published_in : List({ id : Str, published_at : U64 }), Str -> Try(U64, [NoTime])
+published_in = |times, id| match times.find_first(|row| row.id == id) {
+	Ok(row) => Ok(row.published_at)
+	Err(_) => Err(NoTime)
+}
+
+compare_numbers : List(U64), List(U64) -> [Before, Same, After]
+compare_numbers = |a, b| match (a, b) {
+	([x, .. as xs], [y, .. as ys]) => if x < y Before else if x > y After else compare_numbers(xs, ys)
+	_ => Same
 }
 
 reserved : List(Str)

@@ -8,7 +8,9 @@ import ChannelidTest
 import ChannelinstallTest
 import ChannelreleaseTest
 import ChannelswitchTest
+import ChannelrangeTest
 import ChannelreadTest
+import ChannelrefTest
 import GcindexTest
 import NewerhintTest
 import TlngateTest

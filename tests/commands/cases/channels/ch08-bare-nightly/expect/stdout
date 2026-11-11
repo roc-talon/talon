@@ -1,0 +1,3 @@
+== roc install nightly --yes
+installed nightly-2026-11-06-ddddddd
+exit 0

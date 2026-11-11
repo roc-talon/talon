@@ -19,6 +19,7 @@ import Roots
 import Setting
 import Text
 import Toolchain
+import toml.Toml
 
 ## The compiler that Resolution 13 selects for a target file (R-SO1 to R-SO14), for the `roc` proxy (`Proxy.go!`) and for the base of a relative step (slice 026, R-SL7, R-PD16, R-PD7, R-NS3).
 ## A leaf module: `Proxy` imports `RocInstall`, and `RocInstall.offer!` needs the base, so the code that both use is here (as `Common` and `Start` were made in slice 025).
@@ -47,11 +48,11 @@ Base :: [].{
 	## What the ranks 3 to 6 read (step 6 of the table of `Proxy`). `req_text` is the text of the range, for the failure of `NoneInRange`.
 	## Slice 043 (R-PX5, R-PA6, R-PA10): `patch` has the patches of the header of the target file (`Patched.entries`: its rows and the `[patch]` table of the `talon.toml` that the step reads): `replace` are the `--replace-dep` pairs, `stale` are the entries whose `base` is not the hash of the header entry.
 	## A target with no header, no `talon.toml` or no patch has both lists empty.
-	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), config_registry : Try({ text : Str, at : Str }, [Unset]), min_age : U64, exclude : List(Str), has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
+	Loaded : { pin : Try(Str, [NoPin]), req : Try(Pin.Req, [Unset]), req_text : Str, nightly : Try(Bool, [Unset]), toml_nightly : Try(Bool, [Unset]), config_nightly : Try(Bool, [Unset]), config_registry : Try({ text : Str, at : Str }, [Unset]), min_age : U64, exclude : List(Str), channels : List({ name : Str, source : Str, tag_prefix : Str }), project_channels : List({ name : Str, source : Str, tag_prefix : Str }), has_toml : Bool, version_file : Try(Str, [None]), default : Try(Str, [Unset]), hashes : List(Str), patch : { replace : List(LadderPlan.Replace), stale : List(Patched.Entry) } }
 
 	## What `load!` reads when there is nothing to read (`ROC_TOOLCHAIN` or `roc +<id>` is used: no file counts).
 	no_facts : Base.Loaded
-	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), config_registry: Err(Unset), min_age: 172800, exclude: [], has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
+	no_facts = { pin: Err(NoPin), req: Err(Unset), req_text: "", nightly: Err(Unset), toml_nightly: Err(Unset), config_nightly: Err(Unset), config_registry: Err(Unset), min_age: 172800, exclude: [], channels: [], project_channels: [], has_toml: Bool.False, version_file: Err(None), default: Err(Unset), hashes: [], patch: { replace: [], stale: [] } }
 
 	## R-EV17, R-SO9: `TALON_IN_PROXY=1` is set. Any other value, and no variable, is false. A proxy that sees it does not look at `PATH` (rank 7).
 	in_proxy : List((Str, Str)) -> Bool
@@ -283,8 +284,40 @@ Base :: [].{
 			(_, Ok(flag)) => Ok(flag)
 			_ => Err(Unset)
 		}
-		Ok({ pin, req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, config_registry: config.registry, min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: toml.age, user: config.min_release_age }) ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
+		Ok({ pin, channels: config.channels, project_channels: project_tables(read, tomls), req: toolchain.roc, req_text: toolchain.roc_text ?? "", nightly, toml_nightly: toolchain.nightly, config_nightly: config.nightly, config_registry: config.registry, min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: toml.age, user: config.min_release_age }) ?? 172800, exclude: Age.join({ project: toml.exclude, user: config.min_release_age_exclude }), has_toml, version_file, default: config.default_roc, hashes: header_hashes(locked), patch: patch_of(locked, { toolchain: toml.toolchain, patches: table.patches, path: table.path }) })
 	}
+
+	## Slice 241 (R-CH6, R-CH7, R-CH11, R-CH13, Design Q615 item 2, Design Q616 items 1, 7 and 8): the trust of a pin `=<user id>` or `>=<user id>` of `[toolchain] roc` (`Channel.pin_trust`). `Resolve` and the `roc` proxy share it.
+	## It comes before any request, before `--offline`, before the switch and before the consent. A table in the project `talon.toml` only is exit 19 (`--yes` and `TALON_AUTO_INSTALL` do not give the consent); no table in either file and no
+	## installed build in the range is exit 2. A table in `config.toml` only is a warning on stderr.
+	pin_trust! : Fx, { text : Str, installed : List(Str), times : List({ id : Str, published_at : U64 }), config : List({ name : Str, source : Str, tag_prefix : Str }), project : List({ name : Str, source : Str, tag_prefix : Str }) } => Try({}, Fail)
+	pin_trust! = |fx, run| {
+		match Channel.pin_trust(run) {
+			NoChannel => {}
+			Free => match Channel.pin_warning({ text: run.text, config: run.config, project: run.project }) {
+				Ok(warning) => fx.err!("warning: ${warning}\n")
+				Err(None) => {}
+			}
+			Stop(table) => {
+				said = Channel.trust_text(table)
+				return Err(Fail.new(Input, "${said.message}\n${said.hint}"))
+			}
+			NoTable(name) => return Err(Fail.new(Usage, Channel.unknown_name_text(name)))
+		}
+		Ok({})
+	}
+
+	## Slice 241: the tables `[channels.<name>]` of the root `talon.toml` that `load!` read.
+	project_tables : List((Str, Try(Str, [NotFound, Denied, Other(Str)]))), List(Str) -> List({ name : Str, source : Str, tag_prefix : Str })
+	project_tables = |read, tomls| tomls.join_map(
+		|path| match read.find_first(|(p, _)| p == path) {
+			Ok((_, Ok(text))) => match Toml.parse(text) {
+				Ok(doc) => Channel.entries(Channel.read(doc, text).tables)
+				Err(_) => []
+			}
+			_ => []
+		},
+	)
 
 	# Step 7, R-NS1: the `published_at` of the installed compilers, for the order of rank 4.
 	times! : Fx, Roots, List(Str) => List({ id : Str, published_at : U64 })

@@ -1,0 +1,14 @@
+== update json file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: passed
+$PROJECT/p2/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-20-bbbbbbb
+exit 0
+== update json file=p4/main.roc compiler=nightly-2026-10-14-38a3029
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p4/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+  + roc: nightly-2026-10-20-bbbbbbb
+exit 0

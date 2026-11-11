@@ -1,0 +1,4 @@
+roc install reify@abc1234 --yes
+roc install reify@2026-11-03 --yes
+roc install reify@reify-2026-11-03-1708298 --yes
+roc install nightly@abc1234 --yes

@@ -156,7 +156,8 @@ Nightlies :: [].{
 	## | `NoBase` | A relative step, and no compiler is selected (R-SO14) |
 	## | `BaseNotListed(id)` | A relative step, and the selected compiler `id` is not in `auto` (question Q3) |
 	## | `OutOfRange({ base, step })` | The step goes past the oldest or the newest compiler of `auto` |
-	PickError : [Empty, NoMatch(Str), Ambiguous({ text : Str, ids : List(Str) }), NoBase, BaseNotListed(Str), OutOfRange({ base : Str, step : I64 })]
+	## | `UserTag({ text, name })` | Slice 241 (R-SL6): `@<user id>`, the tag of a user channel, is not a ref |
+	PickError : [Empty, NoMatch(Str), Ambiguous({ text : Str, ids : List(Str) }), NoBase, BaseNotListed(Str), OutOfRange({ base : Str, step : I64 }), UserTag({ text : Str, name : Str })]
 
 	## R-SC10, R-SC11, R-SC13, R-SL5, R-SL7, R-SL6, R-CV1, R-NS1: the full id of the compiler that an argument of `tln roc ...` (or `roc +<id>`) names.
 	## Talon stores only full ids, so the caller writes the result and never the text.
@@ -179,6 +180,8 @@ Nightlies :: [].{
 		at = facts.text.starts_with("@")
 		text = facts.text.drop_prefix("@")
 		match (at, Selector.parse(text, Bool.False)) {
+			# Slice 241 (R-SL6): the tag of a user channel is not a ref.
+			(Bool.True, _) if Channel.user_parts(text).is_ok() => Err(UserTag({ text: facts.text, name: Channel.user_parts(text).map_ok(|p| p.name) ?? "" }))
 			(Bool.True, Ok(Latest)) => match facts.auto.last() {
 				Ok(id) => Ok(id)
 				Err(_) => Err(Empty)
@@ -205,6 +208,7 @@ Nightlies :: [].{
 		Ambiguous({ text, ids }) => Fail.new(Usage, "${text} matches ${ids.len().to_str()} compilers: ${Str.join_with(ids, ", ")}. Use a longer prefix or the full id.")
 		NoBase => Fail.new(Environment, "no compiler is selected, so a relative step has no start. Run: tln roc install @latest and tln roc default <id>")
 		BaseNotListed(id) => Fail.new(Usage, "${id} is not in the list of compilers, so a relative step has no start")
+		UserTag({ text, name }) => Fail.new(Usage, "${text} is a user-channel tag, not a ref. Use ${name}@latest or ${name}@-1")
 		OutOfRange({ base, step }) => {
 			count = step.abs().to_str()
 			steps = if step.abs() == 1 "1 step" else "${count} steps"

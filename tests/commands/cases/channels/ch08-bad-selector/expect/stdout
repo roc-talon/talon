@@ -1,0 +1,8 @@
+== roc install reify@abc1234 --yes
+exit 2
+== roc install reify@2026-11-03 --yes
+exit 2
+== roc install reify@reify-2026-11-03-1708298 --yes
+exit 2
+== roc install nightly@abc1234 --yes
+exit 2

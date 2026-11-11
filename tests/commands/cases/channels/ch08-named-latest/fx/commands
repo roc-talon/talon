@@ -1,0 +1,4 @@
+roc install reify@latest --yes
+roc install nightly@latest --yes
+roc install foo@latest --yes
+roc install reify@latest

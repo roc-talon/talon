@@ -73,6 +73,13 @@ Launch :: [].{
 		_ => []
 	}
 
+	## Slice 241 (R-CH7, R-CH13): as `toolchains!`, with the installed user-channel builds. A run that holds a user build (a pin `=<user id>`) finds it here. One `list_dirs!` call.
+	toolchains_all! : Fx, Roots => List(Str)
+	toolchains_all! = |fx, roots| match fx.list_dirs!([Text.join(roots.cache, "toolchains")]) {
+		[Ok(found)] => Text.sorted(Compiler.installed(found).concat(Compiler.installed_users(found)))
+		_ => []
+	}
+
 	## R-CC9: the `.last-use` of the installed compiler `id`. One `write_atomic!` of `<cache>/toolchains/<id>/.last-use` with `last_use(now)` (R-CC1). A write error is ignored (Q7 of slice 023: a run does not stop for it).
 	## The caller calls it before the compiler starts, and only for an id that is in `toolchains!` (the `roc` on `PATH` has no toolchain dir). `now` is the time of Talon (`TALON_NOW`, R-EV22).
 	touch! : Fx, Roots, { id : Str, now : U64 } => {}

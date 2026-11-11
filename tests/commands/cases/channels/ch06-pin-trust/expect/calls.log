@@ -1,0 +1,55 @@
+env_all
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+canonical $PROJECT/p2/main.roc
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+canonical $PROJECT/p3/main.roc
+list_dirs $PROJECT/p3
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p3/talon.toml
+read_files $PROJECT/p3/main.roc
+read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+canonical $PROJECT/p4/main.roc
+list_dirs $PROJECT/p4
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p4/talon.toml
+read_files $PROJECT/p4/main.roc
+read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+canonical $PROJECT/p5/main.roc
+list_dirs $PROJECT/p5
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p5/talon.toml
+read_files $PROJECT/p5/main.roc
+read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json
+canonical $PROJECT/p6/main.roc
+list_dirs $PROJECT/p6
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p6/talon.toml
+read_files $PROJECT/p6/main.roc
+read_files $PROJECT/p6/main.roc $PROJECT/p6/talon.toml $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json

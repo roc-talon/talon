@@ -1,0 +1,1 @@
+warning: talon.toml pins roc "=reify-2026-11-03-1708298", but it has no [channels.reify] table. Other machines and CI cannot resolve the pin. Copy the table from config.toml to talon.toml.

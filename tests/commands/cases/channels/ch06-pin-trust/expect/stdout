@@ -1,0 +1,12 @@
+== install file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+exit 19
+== install file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+exit 19
+== install file=p3/main.roc compiler=nightly-2026-10-14-38a3029 offline
+exit 19
+== install file=p4/main.roc compiler=nightly-2026-10-14-38a3029 auto-install=yes yes
+exit 19
+== install file=p5/main.roc compiler=nightly-2026-10-14-38a3029 nightly=false
+exit 19
+== install file=p6/main.roc compiler=nightly-2026-10-14-38a3029
+exit 2

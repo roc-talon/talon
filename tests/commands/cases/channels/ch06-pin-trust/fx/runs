@@ -1,0 +1,6 @@
+install file=p1/main.roc compiler=nightly-2026-10-14-38a3029
+install file=p2/main.roc compiler=nightly-2026-10-14-38a3029
+install file=p3/main.roc compiler=nightly-2026-10-14-38a3029 offline
+install file=p4/main.roc compiler=nightly-2026-10-14-38a3029 auto-install=yes yes
+install file=p5/main.roc compiler=nightly-2026-10-14-38a3029 nightly=false
+install file=p6/main.roc compiler=nightly-2026-10-14-38a3029

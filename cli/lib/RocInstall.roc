@@ -86,25 +86,57 @@ RocInstall :: [].{
 		switch = Pin.switch({ env: Common.nightly_of(run.env), toml: Err(Unset), config: config.nightly })
 		entries = RocInstall.toolchain_entries!(fx, Text.join(roots.cache, "toolchains"))
 		if RocInstall.has_dir(entries, run.id) return Ok({ offer: Present({ id: run.id }), note: Err(None) })
+		# Slice 241 (R-CH8, Design Q616 items 2 to 4): `<name>@<selector>` and the bare word `nightly`.
+		named = RocInstall.named_ref!(fx, { text: run.id, config: config.channels, env: run.env })?
 		# Slice 240 (R-CH11, R-CH5, R-CH8): a user channel. An installed id (a unique prefix) comes first (R-SC10), then the tables.
-		ref = RocInstall.channel_ref!(fx, { text: run.id, config: config.channels, entries, env: run.env })?
+		ref = match named {
+			NotNamed => RocInstall.channel_ref!(fx, { text: run.id, config: config.channels, entries, env: run.env })?
+			_ => NotChannel
+		}
 		match ref {
 			Installed(found_id) => return Ok({ offer: Present({ id: found_id }), note: Err(None) })
 			_ => {}
 		}
-		user = match ref {
-			Latest(table) => Ok(table)
-			Build(table, _) => Ok(table)
+		user_named = match (named, ref) {
+			(User(table, _), _) => Ok(table)
+			(_, Latest(table)) => Ok(table)
+			(_, Build(table, _)) => Ok(table)
 			_ => Err(None)
 		}
-		pick_text = match ref {
-			Latest(_) => "@latest"
+		pick_text = match (named, ref) {
+			(Builtin(sel), _) => sel
+			(User(_, sel), _) => sel
+			(_, Latest(_)) => "@latest"
 			_ => run.id
 		}
+		# Design Q616 item 2: a step after a name counts from the newest allowed build of that channel, whatever the selected compiler is.
+		named_step = match named {
+			Builtin(sel) => sel != "@latest"
+			User(_, sel) => sel != "@latest"
+			NotNamed => Bool.False
+		}
 		basis = if Toolchain.needs_base(run.id) {
-			Base.selected!(fx, { env: run.env, roots, installed: Compiler.installed(entries), config })?
+			Base.selected!(fx, { env: run.env, roots, installed: Text.sorted(Compiler.installed(entries).concat(Compiler.installed_users(entries))), config })?
 		} else {
 			{ base: Err(None), hashes: [], range: Err(None) }
+		}
+		# Slice 241 (R-SL7, R-CH8): a step with no name is inside the user channel of the selected compiler, when that compiler is a user build and `config.toml` has its table.
+		user = match user_named {
+			Ok(table) => Ok(table)
+			Err(_) => match basis.base {
+				Ok(base_id) if Toolchain.needs_base(run.id) => match Channel.user_parts(base_id) {
+					Ok(parts) => match config.channels.find_first(|t| t.name == parts.name) {
+						Ok(table) => Ok(table)
+						# Slice 241 (R-SL7, R-CH11, Design Q615 item 7): no table in `config.toml`: a table of the project only is exit 19, no table at all is exit 2. No fallback to the nightlies list.
+						Err(_) => match RocInstall.project_tables!(fx, run.env).find_first(|t| t.name == parts.name) {
+							Ok(table) => return Err(RocInstall.trust_stop(table))
+							Err(_) => return Err(Fail.new(Usage, Channel.unknown_name_text(parts.name)))
+						}
+					}
+					Err(_) => Err(None)
+				}
+				_ => Err(None)
+			}
 		}
 		# Slice 206g (R-CV1, R-IX4, R-IX6, R-RG1): `registry` makes the list the registry list (`First`: the request, `Later`: the kept rows), with the flag of the caller. Left out: `list`.
 		list = match run.?registry ?? Off {
@@ -122,7 +154,12 @@ RocInstall :: [].{
 			Err(_) => Toolchain.domain({ releases: found.releases, now, min_age, nightly: switch.nightly, exclude })
 		}
 		# R-SL7, R-SO23 (slice 072e): with no compiler selected the base is a pick as an id (no download), else the base of `selected!`.
-		base = if Toolchain.needs_base(run.id) {
+		base = if named_step {
+			match lists.auto.last() {
+				Ok(newest) => Ok(newest)
+				Err(_) => Err(None)
+			}
+		} else if Toolchain.needs_base(run.id) {
 			Base.listed!(fx, { roots, basis, releases: found.releases, auto: lists.auto, now, min_age, nightly: switch.nightly, exclude })?
 		} else {
 			Err(None)
@@ -141,7 +178,7 @@ RocInstall :: [].{
 				return Err(RocInstall.pick_failed_in({ error, releases: found.releases, host: system, switch, user }))
 			}
 		}
-		note = if pick_text == "@latest" or Toolchain.needs_base(run.id) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
+		note = if pick_text == "@latest" or Toolchain.needs_base(pick_text) Toolchain.kept_note({ id, releases: found.releases, now, min_age, exclude }) else Err(None)
 		if RocInstall.has_dir(entries, id) return Ok({ offer: Present({ id: id }), note })
 		asset = RocInstall.asset_of(found.releases, id)?
 		sha = Toolchain.require_digest({ id, asset })?
@@ -164,9 +201,24 @@ RocInstall :: [].{
 	## | `range_pick` gives `Err(NoneKnown)` | `Toolchain.range_failed` (kind `NoTuple`, exit 10) |
 	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the pick (rank 4 selects by itself).
 	## Slice 206d2 (R-CV1, R-AP19, R-DT3): `registry` `Ok({ origin, version, log })` (a run with a registry): the list is `Nightlies.list_registry!` (the registry list, the rows above `log:N` hidden) in place of `Nightlies.list!`. `Err(None)`: as before.
-	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]), source : Str }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
+	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]), source : Str }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]), channels ?: List({ name : Str, source : Str, tag_prefix : Str }) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
 	range_id! = |fx, run| {
 		system = Toolchain.host(fx.platform!())?
+		# Slice 241 (R-CH7, R-CH16, Design Q615 item 3): a pin `=<user id>` or `>=<user id>` lists its own channel (direct, the `source` of the table). It never reads `roc-lang/nightlies` or a registry.
+		user_table = match Channel.user_range(run.req_text) {
+			Ok(Exactly(bound)) => RocInstall.table_of_id(run.?channels ?? [], bound)
+			Ok(AtLeast(bound)) => RocInstall.table_of_id(run.?channels ?? [], bound)
+			Err(_) => Err(None)
+		}
+		if user_table.is_ok() {
+			table = user_table ?? { name: "", source: "", tag_prefix: "" }
+			listed = Nightlies.list_channel!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host: system, channel: table })?
+			if listed.source == Missing return Err(Toolchain.offline_no_list({}))
+			return match Toolchain.range_pick({ releases: listed.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {
+				Ok(id) => Ok({ id, note: Err(None) })
+				Err(_) => Err(Toolchain.range_failed({ req_text: run.req_text, switch: run.switch }))
+			}
+		}
 		# Slice 206g (Design Q561): the proxy gives the `registry` key of `config.toml` in `config`; the form is checked here, after `platform!`, when the list is needed (exit 19 for a bad value).
 		registry = match run.?config {
 			Ok(config) => match IndexQuery.list_source({ flag: Err(Unset), env: run.net.registry, config, offline: run.offline, kept: Bool.False })? {
@@ -280,6 +332,44 @@ RocInstall :: [].{
 				}
 			}
 		}
+	}
+
+	## Slice 241 (R-CH8, R-CH11, Design Q615 item 7, Design Q616 items 3 and 4): what `<name>@<selector>` names (`Channel.named_ref`). `config` are the tables of `config.toml`. When `config.toml` has no table for the name, the project `talon.toml`
+	## is read (the normal project search, as `channel_ref!`). A table there only is exit 19 (no consent, before any request); no table at all is exit 2 (`Channel.unknown_name_text`); a bad selector is exit 2 (`Channel.bad_selector_text`).
+	named_ref! : Fx, { text : Str, config : List({ name : Str, source : Str, tag_prefix : Str }), env : List((Str, Str)) } => Try([NotNamed, Builtin(Str), User({ name : Str, source : Str, tag_prefix : Str }, Str)], Fail)
+	named_ref! = |fx, run| match Channel.named_ref({ text: run.text, config: run.config, project: [] }) {
+		NotNamed => Ok(NotNamed)
+		Builtin(sel) => Ok(Builtin(sel))
+		User(table, sel) => Ok(User(table, sel))
+		ProjectOnly(table) => Err(RocInstall.trust_stop(table))
+		BadSelector(sel) => Err(RocInstall.bad_selector(run.text, sel))
+		NoTable(name) => match Channel.named_ref({ text: run.text, config: run.config, project: RocInstall.project_tables!(fx, run.env) }) {
+			ProjectOnly(table) => Err(RocInstall.trust_stop(table))
+			_ => Err(Fail.new(Usage, Channel.unknown_name_text(name)))
+		}
+	}
+
+	trust_stop : { name : Str, source : Str, tag_prefix : Str } -> Fail
+	trust_stop = |table| {
+		said = Channel.trust_text(table)
+		Fail.new(Input, "${said.message}\n${said.hint}")
+	}
+
+	bad_selector : Str, Str -> Fail
+	bad_selector = |text, selector| {
+		name = text.split_first("@").map_ok(|s| s.before) ?? text
+		said = Channel.bad_selector_text({ name, selector })
+		Fail.new(Usage, "${said.message}\n${said.hint}")
+	}
+
+	## Slice 241: the table of the channel of a user id (`config.toml`).
+	table_of_id : List({ name : Str, source : Str, tag_prefix : Str }), Str -> Try({ name : Str, source : Str, tag_prefix : Str }, [None])
+	table_of_id = |tables, id| match Channel.user_parts(id) {
+		Ok(parts) => match tables.find_first(|t| t.name == parts.name) {
+			Ok(t) => Ok(t)
+			Err(_) => Err(None)
+		}
+		Err(_) => Err(None)
 	}
 
 	## Slice 240 (R-SC10): the one installed user build that has the text as a prefix of its id. The text must be longer than `<name>-`, so a bare name is no prefix.

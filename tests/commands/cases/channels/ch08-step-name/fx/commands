@@ -1,0 +1,3 @@
+roc install reify@-1 --yes
+roc install reify@+1 --yes
+roc install reify@-1

@@ -1,0 +1,2 @@
+@roc check p1/main.roc
+@roc check p1/main.roc env:TALON_AUTO_INSTALL=yes env:CI=true

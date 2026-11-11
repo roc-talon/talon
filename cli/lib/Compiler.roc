@@ -1,3 +1,4 @@
+import Channel
 import Clock
 import Fail
 import TalonFile
@@ -37,7 +38,7 @@ Compiler :: [].{
 	## Any other text (a prefix such as `nightly-2026-10`, `link-` with no name) is a failure of kind `Usage` (exit 2, as a bad `TALON_NOW`): `ROC_TOOLCHAIN is not a full compiler id: <text>`.
 	toolchain_of : List((Str, Str)) -> Try(Try(Str, [Unset]), Fail)
 	toolchain_of = |env| match env.find_first(|(name, _)| name == "ROC_TOOLCHAIN") {
-		Ok((_, text)) if !text.is_empty() => if Pin.is_id(text) or is_named_build(text) {
+		Ok((_, text)) if !text.is_empty() => if Pin.is_id(text) or is_named_build(text) or Channel.user_parts(text).is_ok() {
 			Ok(Ok(text))
 		} else {
 			Err(Fail.new(Usage, "ROC_TOOLCHAIN is not a full compiler id: ${text}"))
@@ -133,6 +134,10 @@ Compiler :: [].{
 	installed : List({ name : Str, is_dir : Bool, mtime : U64 }) -> List(Str)
 	installed = |entries| Text.sorted(entries.keep_if(|e| e.is_dir and is_compiler_dir(e.name)).map(|e| e.name))
 
+	## Slice 241 (R-CH7, R-CH13): the ids of the user-channel builds in the listing of `<cache>/toolchains`, sorted. `installed` has none of them (a run without a pin on a user build neither lists nor reads them). A range `=<user id>` or `>=<user id>` adds them to `installed`.
+	installed_users : List({ name : Str, is_dir : Bool, mtime : U64 }) -> List(Str)
+	installed_users = |entries| Text.sorted(entries.keep_if(|e| e.is_dir and !e.name.ends_with(".lock") and !e.name.ends_with(".tmp") and Channel.user_parts(e.name).is_ok()).map(|e| e.name))
+
 	## R-NS1, R-LY1 (slice 022, Q5 of the review): the `published_at` of the installed compilers. Each row is an id and the result of reading `toolchains/<id>/.talon.json`. The text is a JSON object with the string
 	## `published_at` (a UTC time, `Clock.format_utc`: `2026-10-14T12:00:00Z`). A row with no file, with text that is not JSON, with no `published_at` (an install of slice 021 before it had the field) or with a bad
 	## time has no result: the order then falls back to the tag text (`Pin.order`). The order of the result is the order of the rows.
@@ -226,7 +231,8 @@ in_range = |req, facts| {
 		Ok(id) if !facts.installed.contains(id) => [id]
 		_ => []
 	}
-	fits = |id| Pin.is_id(id) and Pin.admits({ req, id, times: facts.times }) and (facts.nightly or !Pin.is_nightly(id))
+	# Slice 241 (R-CH7, R-CH9): a user build is a candidate for `=<user id>` and `>=<user id>` (`Pin.admits`), and counts as a nightly for the switch.
+	fits = |id| (Pin.is_id(id) or Channel.user_parts(id).is_ok()) and Pin.admits({ req, id, times: facts.times }) and (facts.nightly or !Pin.counts_as_nightly(id))
 	newest = |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best
 	match facts.installed.concat(on_path).keep_if(fits) {
 		[first, .. as rest] => Ok({ id: rest.fold(first, newest), rank: Range, state: Installed })

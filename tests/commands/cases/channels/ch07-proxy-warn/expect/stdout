@@ -1,0 +1,2 @@
+== @roc check p1/main.roc
+exit 0

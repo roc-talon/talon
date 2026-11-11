@@ -34,6 +34,11 @@ Pin :: [].{
 			Ok(AtLeast(bound(">=")))
 		} else if text.starts_with("=") and !text.starts_with("=<") and is_compiler_id(bound("=")) {
 			Ok(Exactly(bound("=")))
+		} else if text.starts_with(">=") and Channel.user_parts(bound(">=")).is_ok() {
+			# Slice 241 (R-CH7): the id of a user-channel build, read from the right (R-CH5).
+			Ok(AtLeast(bound(">=")))
+		} else if text.starts_with("=") and Channel.user_parts(bound("=")).is_ok() {
+			Ok(Exactly(bound("=")))
 		} else {
 			match Ranges.check(text) {
 				Ok({}) => Ok(Semver(text))
@@ -62,10 +67,11 @@ Pin :: [].{
 	## `times` has the `published_at` of each id that the caller knows (the `.talon.json` of an installed compiler, or the list of compilers). `[]` is allowed.
 	admits : { req : Req, id : Str, times : List({ id : Str, published_at : U64 }) } -> Bool
 	admits = |facts| match facts.req {
-		Any => Bool.True
+		# Slice 241 (R-CH7, Design Q612 item 3): `*`, a semver range and `>=<nightly>` never admit a user build. `=<user id>` and `>=<user id>` are over that channel only.
+		Any => Channel.user_parts(facts.id).is_err()
 		Exactly(a) => Pin.same_id(a, facts.id)
-		AtLeast(a) => PinOrder.at_least(a, facts.id, facts.times)
-		Semver(range) => !Pin.is_nightly(facts.id) and Ranges.admits({ ranges: [range], version: facts.id })
+		AtLeast(a) => if Channel.user_parts(a).is_ok() Channel.user_at_least(a, facts.id, facts.times) else PinOrder.at_least(a, facts.id, facts.times)
+		Semver(range) => !Pin.is_nightly(facts.id) and Channel.user_parts(facts.id).is_err() and Ranges.admits({ ranges: [range], version: facts.id })
 	}
 
 	## R-NS1 (slice 022): the order of 2 compiler ids, for the newest installed compiler of rank 4 (R-SO4) and for `AtLeast`. The key of an id is its day, then its kind, then its time, then its text:

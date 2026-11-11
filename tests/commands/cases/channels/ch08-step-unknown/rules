@@ -1,0 +1,1 @@
+R-SL7 R-CH8 R-CH11 R-CH16 (slice 241, derived from R-CH7, R-SL7 and Design Q615 item 7): as ch08-step-trust, but no file has a table for `reify`: exit 2, `unknown compiler channel reify. Add it: tln roc channel add reify <URL>`. No fallback to the list of roc-lang/nightlies, no request. The calls.log is a guess (TW18).

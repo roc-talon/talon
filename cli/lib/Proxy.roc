@@ -1,5 +1,6 @@
 import Answer
 import Base
+import Channel
 import Clock
 import Common
 import Compiler
@@ -135,7 +136,7 @@ Proxy :: [].{
 	## `auto` `Yes` with `NeedsTty` never gives `NeedTty`: the answer needs no person, so the run makes no `tty!` call.
 	want : { id : Str, auto : [Ask, Yes, No], mode : Mode } -> [Refuse, Install, Ask, NeedTty]
 	want = |run| {
-		if !Pin.is_nightly(run.id) or run.auto == No {
+		if !Pin.counts_as_nightly(run.id) or run.auto == No {
 			Refuse
 		} else if run.auto == Yes {
 			Install
@@ -226,8 +227,13 @@ go! = |fx| {
 		return Err(Patched.stale_fail({ entries: loaded.patch.stale, by: Proxy }))
 	}
 	# R-SO24 case 3: the list is always read, as rank 6 can take the newest installed compiler.
-	installed = Launch.toolchains!(fx, roots)
+	# Slice 241 (R-CH7, R-CH13): a pin `=<user id>` or `>=<user id>` sees the installed user builds.
+	installed = if Channel.user_range(loaded.req_text).is_ok() Launch.toolchains_all!(fx, roots) else Launch.toolchains!(fx, roots)
 	times = if loaded.req.is_ok() and !installed.is_empty() Base.times!(fx, roots, installed) else []
+	# Slice 241 (R-CH6, R-CH11, Design Q615 item 2): the trust of the pin, before any request and before the consent. Not for `roc +<id>` or `ROC_TOOLCHAIN` (they select before the range).
+	if !early {
+		Base.pin_trust!(fx, { text: loaded.req_text, installed, times, config: loaded.channels, project: loaded.project_channels })?
+	}
 	facts = Base.facts({ argument: split.argument, toolchain, loaded, env_nightly: Common.nightly_of(env), installed, times })
 	picked = Base.choose!(fx, { roots, env, pin: loaded.pin, facts })
 	on_path = picked.on_path
@@ -312,6 +318,6 @@ ranged! = |fx, run| {
 	}
 	now = if run.off Clock.now!(fx, run.env)? else run.now
 	switch = Pin.switch({ env: Common.nightly_of(run.env), toml: loaded.toml_nightly, config: loaded.config_nightly })
-	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, exclude: loaded.exclude, snapshot: Err(None), switch, registry: Err(None), config: loaded.config_registry })?.id
+	id = RocInstall.range_id!(fx, { roots: run.roots, net: Net.from_env(run.env), now, offline: Bool.False, req, req_text: loaded.req_text, min_age: loaded.min_age, exclude: loaded.exclude, snapshot: Err(None), switch, registry: Err(None), channels: loaded.channels, config: loaded.config_registry })?.id
 	Ok({ id, rank: Range, state: Missing })
 }

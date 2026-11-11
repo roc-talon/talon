@@ -1,0 +1,8 @@
+== roc install @-1 --yes
+installed reify-2026-10-30-abc1234
+exit 0
+== roc install @+1 --yes
+exit 2
+== roc install reify@-1
+reify-2026-10-30-abc1234 is already installed
+exit 0

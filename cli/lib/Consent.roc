@@ -317,7 +317,7 @@ Consent :: [].{
 	required_want : { id : Str, auto : [Ask, Yes, No], mode : Mode, yes : Bool, flag : Try(Answer, [NoFlag]) } -> [Refuse, AutoNo, NeedsConsent, Install, Ask, NeedTty]
 	required_want = |run| {
 		answered = run.yes or flag_is_yes(run.flag)
-		if !Pin.is_nightly(run.id) {
+		if !Pin.counts_as_nightly(run.id) {
 			Refuse
 		} else if run.auto == No and !answered {
 			AutoNo

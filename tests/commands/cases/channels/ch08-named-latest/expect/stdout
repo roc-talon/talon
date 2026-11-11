@@ -1,0 +1,11 @@
+== roc install reify@latest --yes
+installed reify-2026-11-03-1708298
+exit 0
+== roc install nightly@latest --yes
+installed nightly-2026-11-06-ddddddd
+exit 0
+== roc install foo@latest --yes
+exit 2
+== roc install reify@latest
+reify-2026-11-03-1708298 is already installed
+exit 0

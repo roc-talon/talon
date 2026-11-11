@@ -1,3 +1,5 @@
+import Base
+import Channel
 import Clock
 import Compiler
 import Consent
@@ -9,6 +11,7 @@ import Intent
 import ResolveBase
 import RocInstall
 import Text
+import toml.Toml
 
 ## The compiler of a run (slice 031b: split from `ResolveBase`): the choice of the held compiler, and the snapshot that a range of compilers needs.
 ResolveSelect :: [].{
@@ -73,7 +76,9 @@ ResolveSelect :: [].{
 choose! : Fx, ResolveBase.Request, ResolveBase.Loaded => Try({ loaded : ResolveBase.Loaded, note : Try(Str, [None]), listed : Bool }, Fail)
 choose! = |fx, request, loaded| {
 	settings = ResolveBase.settings_of(request, loaded)
-	match picked!(fx, request, loaded, settings, Err(Unset)) {
+	lists = listed!(fx, request, loaded)
+	pin_trust!(fx, loaded, lists)?
+	match select_from(request, loaded, settings, Err(Unset), lists) {
 		Ok(sel) => {
 			if sel.rank == Newest {
 				fx.err!("note: ${Compiler.newest_note(sel.id)}\n")
@@ -85,16 +90,29 @@ choose! = |fx, request, loaded| {
 	}
 }
 
-# The lists of the installed compilers (steps 2 and 3) and `Compiler.select` (step 4). `choose!` and `peek!` call it.
-picked! : Fx, ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings, Try(Str, [Unset]) => Try({ id : Str, rank : Compiler.Rank, state : [Installed, Missing] }, [NoCompiler, NoneInRange])
-picked! = |fx, request, loaded, settings, argument| {
+# Slice 241 (R-CH6, R-CH7, R-CH11, R-CH13, Design Q615 item 2, Design Q616 items 1, 7 and 8): the trust of a pin `=<user id>` or `>=<user id>` of `[toolchain] roc`. It comes before any request, before `--offline` and before the switch.
+# A table in the project `talon.toml` only is exit 19 (`--yes` and `TALON_AUTO_INSTALL` do not give the consent); no table in either file and no installed build in the range is exit 2. A table in `config.toml` only is a warning on stderr.
+pin_trust! : Fx, ResolveBase.Loaded, { installed : List(Str), times : List({ id : Str, published_at : U64 }) } => Try({}, Fail)
+pin_trust! = |fx, loaded, lists| {
+	project = loaded.tomls.join_map(
+		|t| match Toml.parse(t.text) {
+			Ok(doc) => Channel.entries(Channel.read(doc, t.text).tables)
+			Err(_) => []
+		},
+	)
+	Base.pin_trust!(fx, { text: loaded.intent.toolchain.roc_text ?? "", installed: lists.installed, times: lists.times, config: loaded.config.channels, project })
+}
+
+# The lists of the installed compilers (steps 2 and 3).
+listed! : Fx, ResolveBase.Request, ResolveBase.Loaded => { installed : List(Str), times : List({ id : Str, published_at : U64 }) }
+listed! = |fx, request, loaded| {
 	req = loaded.intent.toolchain.roc
-	has_toml = request.project.toml.is_ok()
-	default = loaded.config.default_roc
 	dir = Text.join(request.roots.cache, "toolchains")
 	# R-SO24 case 3: the list is always read, as rank 6 may take the newest installed compiler.
+	# Slice 241 (R-CH7, R-CH13): a pin `=<user id>` or `>=<user id>` sees the installed user builds. Any other run does not.
+	pins_user = Channel.user_range(loaded.intent.toolchain.roc_text ?? "").is_ok()
 	installed = match fx.list_dirs!([dir]) {
-		[Ok(found)] => Compiler.installed(found)
+		[Ok(found)] => if pins_user Text.sorted(Compiler.installed(found).concat(Compiler.installed_users(found))) else Compiler.installed(found)
 		_ => []
 	}
 	times = if req.is_ok() and !installed.is_empty() {
@@ -103,7 +121,20 @@ picked! = |fx, request, loaded, settings, argument| {
 	} else {
 		[]
 	}
-	Compiler.select({ argument, env: Err(Unset), req, nightly: settings.nightly, has_toml, version_file: loaded.version_file, default, path: request.compiler.map_ok(|found| found.id), installed, times })
+	{ installed, times }
+}
+
+# The lists of the installed compilers (steps 2 and 3) and `Compiler.select` (step 4). `peek!` calls it.
+picked! : Fx, ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings, Try(Str, [Unset]) => Try({ id : Str, rank : Compiler.Rank, state : [Installed, Missing] }, [NoCompiler, NoneInRange])
+picked! = |fx, request, loaded, settings, argument| select_from(request, loaded, settings, argument, listed!(fx, request, loaded))
+
+# Step 4: `Compiler.select` over the lists.
+select_from : ResolveBase.Request, ResolveBase.Loaded, ResolveBase.Settings, Try(Str, [Unset]), { installed : List(Str), times : List({ id : Str, published_at : U64 }) } -> Try({ id : Str, rank : Compiler.Rank, state : [Installed, Missing] }, [NoCompiler, NoneInRange])
+select_from = |request, loaded, settings, argument, lists| {
+	req = loaded.intent.toolchain.roc
+	has_toml = request.project.toml.is_ok()
+	default = loaded.config.default_roc
+	Compiler.select({ argument, env: Err(Unset), req, nightly: settings.nightly, has_toml, version_file: loaded.version_file, default, path: request.compiler.map_ok(|found| found.id), installed: lists.installed, times: lists.times })
 }
 
 # R-SO13, R-DL5, R-DL10, R-SO19 (slice 025b): no installed compiler is in the range. The refusal comes first (no request). Then the list gives the newest compiler that the range allows,
@@ -127,7 +158,7 @@ ranged! = |fx, request, loaded, settings| {
 		Err(Unset) => Any
 	}
 	switch = { nightly: settings.nightly, source: settings.nightly_from }
-	picked = RocInstall.range_id!(fx, { roots: request.roots, net: request.net, now: request.now, offline: request.offline, req, req_text: text, min_age: settings.min_age, exclude: settings.exclude, snapshot, switch, registry })?
+	picked = RocInstall.range_id!(fx, { roots: request.roots, net: request.net, now: request.now, offline: request.offline, req, req_text: text, min_age: settings.min_age, exclude: settings.exclude, snapshot, switch, registry, channels: loaded.config.channels })?
 	Ok({ loaded: { ..loaded, selected: { id: Ok(picked.id), from: Range } }, note: picked.note, listed: registry.is_ok() })
 }
 

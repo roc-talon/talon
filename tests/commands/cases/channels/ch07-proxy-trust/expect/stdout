@@ -1,0 +1,4 @@
+== @roc check p1/main.roc
+exit 19
+== @roc check p1/main.roc env:TALON_AUTO_INSTALL=yes env:CI=true
+exit 19

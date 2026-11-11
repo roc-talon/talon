@@ -1,0 +1,30 @@
+base l0-9: exit=0 All (113) tests passed in 2652.9 ms. 
+base L2: commands: 36 passed, 0 failed 
+m1: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m1: L2 commands: 8 passed, 0 failed 
+m2: L0 exit=0 All (113) tests passed in 3024.0 ms. 
+m2: L2 commands: 8 passed, 0 failed 
+m3: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m3: L2 commands: 8 passed, 0 failed 
+m4: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m4: L2 commands: 8 passed, 0 failed 
+m5: L0 exit=0 All (113) tests passed in 2463.4 ms. (cached) 
+m5: L2 FAIL channels/ch08-step FAIL channels/ch08-step-name commands: 5 passed, 2 failed 
+m6: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m6: L2 FAIL channels/ch08-bare-nightly commands: 6 passed, 1 failed 
+m7: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m7: L2 FAIL channels/ch08-bad-selector commands: 6 passed, 1 failed 
+m8: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m8: L2 FAIL channels/ch07-pin-atleast FAIL channels/ch07-pin-download FAIL channels/ch07-pin-download-atleast FAIL channels/ch07-pin-exact commands: 4 passed, 4 failed 
+m9: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m9: L2 commands: 8 passed, 0 failed 
+m10: L0 exit=0 All (113) tests passed in 2575.4 ms. (cached) 
+m10: L2 FAIL channels/ch07-proxy-trust FAIL channels/ch07-proxy-warn commands: 6 passed, 2 failed 
+m11: L0 exit=0 All (113) tests passed in 2628.0 ms. (cached) 
+m11: L2 FAIL channels/ch06-pin-trust FAIL channels/ch07-pin-warn commands: 7 passed, 2 failed 
+m12: L0 exit=0 All (113) tests passed in 2498.5 ms. (cached) 
+m12: L2 FAIL channels/ch07-pin-download FAIL channels/ch07-pin-download-atleast commands: 6 passed, 2 failed 
+m13: L0 exit=0 All (113) tests passed in 2449.4 ms. (cached) 
+m13: L2 FAIL channels/ch07-pin-download FAIL channels/ch07-pin-download-atleast FAIL channels/ch08-named-latest FAIL channels/ch08-step FAIL channels/ch08-step-name FAIL channels/ch11-install FAIL channels/ch11-no-default FAIL channels/ch11-switch-off FAIL channels/ch11-young FAIL channels/ch16-registry-set commands: 26 passed, 10 failed 
+m14: L0 exit=1 expect {     112 passed     1 failed     0 compiler errors 
+m14: L2 commands: 15 passed, 0 failed 
