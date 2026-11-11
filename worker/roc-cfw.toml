@@ -1,31 +1,29 @@
 # The settings of `roc-cfw deploy` for the registry Worker (docs/registry/deploy.md).
-# same-body: the body must be equal to the body before the deploy. Only routes whose body does not change by itself (a release is not changed after it is published).
+# same-body: the body must be equal to the body before the deploy. Only routes whose body does not change by itself.
 # Not here: /v1/toolchains, /v1/packages?q=, /v1/releases?after=, /v1/sweeps/*, .../compat (a cron, the bot or an ingest changes them).
+# Not here: the releases and artifact routes of a package. They end with the `checked` item (R-AP29: name, checked_at, stale). checked_at changes when ReconcileCron writes repo_checks,
+# and stale is computed from the request time, so the body can change with no write. If roc-cfw can compare a body without one JSON member, these 4 can go back to same-body with `checked` ignored.
 [deploy]
 url = "https://registry.roc-talon.org"
 migrate = ["DB"]
 
 [[deploy.smoke]]
 path = "/v1/packages/imclerran/roc-isodate/releases"
-same-body = true
 
 [[deploy.smoke]]
 path = "/v1/packages/Imclerran/Roc-Isodate/releases"
-same-body = true
 
 [[deploy.smoke]]
 path = "/v1/packages/hasnep/roc-ascii/releases"
-same-body = true
 
 [[deploy.smoke]]
 path = "/v1/artifacts/H363y6zEDk8hbLgYVpyALt7cYS6w65sHMfoPEaCNqQY9"
-same-body = true
 
 [[deploy.smoke]]
 path = "/v1/packages?short=isodate"
 same-body = true
 
-# Status only: the body can change by itself.
+# Status only: the body can change by itself (a cron, the bot, an ingest, or the `checked` item).
 [[deploy.smoke]]
 path = "/v1/toolchains"
 
