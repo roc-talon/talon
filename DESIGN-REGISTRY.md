@@ -287,7 +287,7 @@ R-AP56: The path and the query of the read routes (Design Q88, Q89, Q91, Q95, Q1
 | `after` of R-AP5, R-AP13 and R-AP14 | Decimal digits, with no leading zero (only `0` itself starts with `0`), at most 2^63 - 1 (an SQLite INTEGER, R-IK6). Any other text is 400 `bad-request`. Reasons: a log index has one text form, so one answer has one cache key (R-AP55), and the value binds to a column with no overflow. |
 | `target` of R-AP5 | Any text, compared exactly with the `target` of R-RE4. An empty text, or a target that the registry does not know, gives 200 with no rows. Reason: roc can add a target (CLI 6.2, R-CV8), and a 400 would refuse a newer `tln` on an older Worker (R-AP44). |
 
-R-AP57: The steps of `PUT /v1/toolchains/{tag}` (R-AP6, R-PU7 to R-PU10, Design Q98 to Q101, Q103, Q105). After the token check of R-PU7:
+R-AP57: The steps of `PUT /v1/toolchains/{tag}` (R-AP6, R-PU7 to R-PU10, Design Q98 to Q101, Q103, Q105). A tag of a user compiler channel is never sent here: its builds are local only (CLI R-CH16, Design Q612). After the token check of R-PU7:
 
 | # | Step | Answer |
 | --- | --- | --- |
@@ -918,6 +918,8 @@ The registry cannot index a name with a collision, and the package still works: 
 
 R-IK4: The id of a nightly is `days × 2^28 + sha`. `days` is the count of days from 1970-01-01 to the date of the tag. `sha` is the first 7 hex digits of the sha of the tag (28 bits). So:
 
+A build of a user compiler channel (CLI 6.8, R-CH16) has no id, no `toolchains` row, no leaf and no bot run, and it is not shared (CLI R-CH16, Design Q612).
+
 | Property | Reason |
 | --- | --- |
 | Both tag forms of CLI 6.2, R-CV1 (`nightly-2026-10-09-258ab27`, `nightly-2026-October-09-258ab27`) give one id | R-CV1 says that they name one nightly |
@@ -992,7 +994,7 @@ The matrix makes probes rare. A user who adds a common package gets a known answ
 
 | # | Producer | Runs | Trust |
 | --- | --- | --- | --- |
-| R-MX1 | Talon compat bot | A scheduled GitHub Actions workflow. For each new nightly, it runs unit probes on each member of the bot set (R-MX11), not on each indexed hash. It gets the work list from `GET /v1/sweeps/{tag}` (R-AP39). For each new release, it searches the nightly range (Resolution 4). It also runs the smoke builds of the platforms in the set for each of their targets (R-MX10), and checks the pairs with the most user hints (R-MX13). Posts results with an OIDC token. The workflow: R-MX15. | Full |
+| R-MX1 | Talon compat bot | A scheduled GitHub Actions workflow. For each new nightly, it runs unit probes on each member of the bot set (R-MX11), not on each indexed hash. It gets the work list from `GET /v1/sweeps/{tag}` (R-AP39). For each new release, it searches the nightly range (Resolution 4). It also runs the smoke builds of the platforms in the set for each of their targets (R-MX10), and checks the pairs with the most user hints (R-MX13). Posts results with an OIDC token. The workflow: R-MX15. | Full The bot probes only the nightlies of `roc-lang/nightlies`, never a build of a user compiler channel (CLI R-CH16, Design Q612). |
 | R-MX2 | Release workflow | `tln probe --range <bundle file>`, then `tln publish` sends the facts (Resolution 4, R-PB5) | Full, tied to the publisher |
 | R-MX3 | Users | `tln` with sharing on, and `tln probe --share` (6.1, CLI 1, R-SH1) | Hint only (rank 6) |
 
