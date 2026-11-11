@@ -1,8 +1,13 @@
 # The registry Worker (Registry 8, R-WH12). The tool roc-cfw is pinned here. No global install.
 [tools]
-roc-cfw = { ref = "Karakatiza666/roc-cloudflare-workers-cli@^0.0.1", url = "https://github.com/Karakatiza666/roc-cloudflare-workers-cli/releases/download/0.0.1/9fJGynVVjWajYb1sgwTGs7bFLRxB75VHuxMxnGu75UU8.tar.zst" }
+roc-cfw = { ref = "Karakatiza666/roc-cloudflare-workers-cli@^0.0.2", url = "https://github.com/Karakatiza666/roc-cloudflare-workers-cli/releases/download/0.0.2/8tR51txKBULgj181gM8vXCwY3suMdoc9aKpWne5KV61D.tar.zst" }
 
 [scripts]
 build = ["roc build --target=wasm32 --no-cache --opt=speed --output=app.wasm main.roc", "roc-cfw sync"]
 check = ["roc build --target=wasm32 --no-cache --opt=speed --output=app.wasm main.roc", "roc-cfw sync --check"]
 dev = ["@build", "wrangler d1 migrations apply DB --local", "wrangler dev --local"]
+
+# Deploy (docs/registry/deploy.md). The registry tests run from the talon root (they build their own copy of the Worker), then check builds app.wasm, then roc-cfw deploys it.
+# roc-cfw deploy does the preflight, the D1 migrations, the upload, the smoke checks and the rollback (roc-cfw.toml). The log tail and the dead-letter queue stay manual.
+deploy-dry = [{ run = "scripts/test.sh w0 wbuild w2 wtrap", in = ".." }, "@check", "roc-cfw deploy --dry-run"]
+deploy = [{ run = "scripts/test.sh w0 wbuild w2 wtrap", in = ".." }, "@check", "roc-cfw deploy"]

@@ -1,0 +1,67 @@
+# The settings of `roc-cfw deploy` for the registry Worker (docs/registry/deploy.md).
+# same-body: the body must be equal to the body before the deploy. Only routes whose body does not change by itself (a release is not changed after it is published).
+# Not here: /v1/toolchains, /v1/packages?q=, /v1/releases?after=, /v1/sweeps/*, .../compat (a cron, the bot or an ingest changes them).
+[deploy]
+url = "https://registry.roc-talon.org"
+migrate = ["DB"]
+
+[[deploy.smoke]]
+path = "/v1/packages/imclerran/roc-isodate/releases"
+same-body = true
+
+[[deploy.smoke]]
+path = "/v1/packages/Imclerran/Roc-Isodate/releases"
+same-body = true
+
+[[deploy.smoke]]
+path = "/v1/packages/hasnep/roc-ascii/releases"
+same-body = true
+
+[[deploy.smoke]]
+path = "/v1/artifacts/H363y6zEDk8hbLgYVpyALt7cYS6w65sHMfoPEaCNqQY9"
+same-body = true
+
+[[deploy.smoke]]
+path = "/v1/packages?short=isodate"
+same-body = true
+
+# Status only: the body can change by itself.
+[[deploy.smoke]]
+path = "/v1/toolchains"
+
+[[deploy.smoke]]
+path = "/v1/artifacts/H363y6zEDk8hbLgYVpyALt7cYS6w65sHMfoPEaCNqQY9/compat"
+
+[[deploy.smoke]]
+path = "/v1/packages?q=roc"
+
+[[deploy.smoke]]
+path = "/v1/releases?after=100"
+
+[[deploy.smoke]]
+path = "/v1/sweeps/nightly-2026-11-06-34f137a"
+
+# Error answers: a wrong method, a missing item, a bad query.
+[[deploy.smoke]]
+path = "/v1/toolchains/nightly-2026-10-30-0602c5f"
+status = 405
+
+[[deploy.smoke]]
+path = "/v1/closure"
+status = 405
+
+[[deploy.smoke]]
+path = "/v1/packages/nobody/none/releases"
+status = 404
+
+[[deploy.smoke]]
+path = "/v1/artifacts/11111111111111111111111111111111"
+status = 404
+
+[[deploy.smoke]]
+path = "/v1/releases"
+status = 400
+
+[[deploy.smoke]]
+path = "/v1/compat_hints"
+status = 400
