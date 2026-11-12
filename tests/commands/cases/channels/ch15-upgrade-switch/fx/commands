@@ -1,0 +1,2 @@
+# R-CH15 R-CH9 R-NS3 (slice 243, user decision of 2026-11-12; mutation check up4): `tln upgrade roc` on `=<user id>` with the nightly switch off (TALON_NIGHTLY=0). A user build counts as a nightly for the switch, so no build of the channel is allowed: exit 10, nothing is written. Same as `roc install reify` (ch11-switch-off).
+env:TALON_NIGHTLY=0 upgrade roc --file p1/main.roc

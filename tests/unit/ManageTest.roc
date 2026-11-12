@@ -348,7 +348,7 @@ expect {
 					and data_none == "{\"id\":\"${id}\",\"path\":\"/c/roc/toolchains/${id}\",\"was_default\":false,\"default\":null,\"projects\":[]}"
 }
 
-# R-CM15, R-CM19 (slice 026): `roc update` takes no operand. 1 or more is a usage failure (exit 2). The text names the long form, also for `up`. The global flags are accepted.
+# R-CM15, R-CM19 (slice 026): `roc update` with no operand, also for `up`. The global flags are accepted. Slice 243 (R-CH15): `roc update` takes one channel name now, so the two rows with an operand (`takes no operand`) moved to `ChanneldefaultTest` (`Manage.update_name`).
 expect {
 	updated = |words| match Args.parse(words) {
 		Ok(args) => Manage.read_update(args)
@@ -358,8 +358,6 @@ expect {
 	alias_ok
 		and updated(["roc", "update"]) == Ok({})
 			and updated(["roc", "up", "--json", "--yes", "--offline", "--quiet"]) == Ok({})
-				and updated(["roc", "up", "@latest"]) == Err(Fail.new(Usage, "tln roc update takes no operand, got 1"))
-					and updated(["roc", "update", "nightly-2026-10-14-38a3029", "x"]) == Err(Fail.new(Usage, "tln roc update takes no operand, got 2"))
 }
 
 # R-RU2 (slice 026): the global default moves when it is not set, a nightly or a release (also the other tag form of a nightly). A `git-`, `link-` or `copy-` default stays (R-NS6). The text of the id decides, not the file.

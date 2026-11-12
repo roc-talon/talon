@@ -1,0 +1,9 @@
+# R-CH15 R-UP6 R-RP1 R-U3 R-CH9 (slice 243, user decision of 2026-11-12): `tln upgrade roc` on `[toolchain] roc = "=<user id>"` in talon.toml. TALON_NOW is 2026-11-10T12:00:00Z. HOME has the nightly N and the user builds A (reify-2026-10-30-fedcba9) and R (reify-2026-11-03-1708298), both installed. The fake GitHub has the list of reify (A and R, with a Linux asset). The list is read direct (no cache yet). The candidates are the newer builds of the channel of the pin that the switch and min-release-age allow.
+# Run 1: p1 pins =A. R is newer and passes the check loop (the baseline is A, the candidate is R, then the build), so talon.toml gets the pin R. The table of reify stays. No header entry is written.
+upgrade roc --file p1/main.roc
+# Run 2: p2 pins =R, the newest build of the channel. No newer build: the is-the-newest path. Nothing is written, no probe.
+upgrade roc --file p2/main.roc
+# Run 3: the same move as run 1 with --json (p3 pins =A). The human text goes to stderr, stdout has only the envelope.
+upgrade roc --json --file p3/main.roc
+# Run 4: the newest build is pinned already (p2), with --json.
+upgrade roc --json --file p2/main.roc

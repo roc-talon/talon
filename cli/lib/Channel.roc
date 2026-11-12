@@ -545,6 +545,117 @@ Channel :: [].{
 	removed_text : { path : Str, name : Str } -> Str
 	removed_text = |facts| "removed channel ${facts.name} from ${facts.path}"
 
+	## Slice 243 (R-CH15, R-CH8, R-CH5): the ref that `tln roc update` gives to `RocInstall.offer!`. A name gives `<name>@latest`. No name: the channel of the default (read from the right) gives `<name>@latest`; any other default, and no default, give `@latest`.
+	update_ref : { name : Try(Str, [NoName]), default : Try(Str, [Unset]) } -> Str
+	update_ref = |facts| match facts.name {
+		Ok(name) => "${name}@latest"
+		Err(NoName) => match facts.default {
+			Ok(id) => match user_parts(id) {
+				Ok(parts) => "${parts.name}@latest"
+				Err(_) => "@latest"
+			}
+			Err(Unset) => "@latest"
+		}
+	}
+
+	## Slice 243 (R-CH14, R-CH15): the text of `[toolchain] roc` of a root `talon.toml` text, when it is a string. No key, no table, a value that is no string and a text that is not TOML give `Err(None)`.
+	pin_text : Str -> Try(Str, [None])
+	pin_text = |text| match Toml.parse(text) {
+		Ok(doc) => match Toml.get(doc, ["toolchain", "roc"]) {
+			Ok(Value.String(value)) => Ok(value)
+			_ => Err(None)
+		}
+		Err(_) => Err(None)
+	}
+
+	## Slice 243 (R-CH17, R-PD12, R-GC5, Design Q619 G1): the id of `[toolchain] roc = "=<id>"` in a root `talon.toml` text. The id is a user-channel build or a nightly (`parse_id`). A range (`*`, `>=...`, a semver range), a text that is no id, no key and a text that is not TOML give `Err(None)`.
+	toml_pin : Str -> Try(Str, [None])
+	toml_pin = |text| match pin_text(text) {
+		Ok(value) if value.starts_with("=") and parse_id(value.drop_prefix("=")).is_ok() => Ok(value.drop_prefix("="))
+		_ => Err(None)
+	}
+
+	## Slice 243 (R-CC7): the spans of a root `talon.toml` that `roc use` edits, for `Guard.check_all`: the text of `[toolchain] roc` (`""` for none).
+	use_spans : Str -> List(Str)
+	use_spans = |text| [pin_text(text) ?? ""]
+
+	## Slice 243 (R-CH14, R-CH6, R-CC6, R-CC7, Design Q619 C1, C3, C5): the new text of the root `talon.toml` for `roc use <user id>`. It sets `[toolchain] roc = "=<id>"` (`Toml.replace` when the key is there, so its comment stays; else `Toml.insert`), and adds the table `[channels.<name>]` at the end
+	## after a blank line, unless it is there (`Channel.table_text`). When the old value names a user build (`=<id>` or `>=<id>`) of another channel, only the table `[channels.<old>]` goes (with the blank lines before it). Every other byte stays. The empty text gives a new file. A text that is not TOML is a failure of kind `Input`.
+	use_edit : { path : Str, text : Str, id : Str, table : Channel.Entry } -> Try(Str, Fail)
+	use_edit = |facts| match Toml.parse(facts.text) {
+		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
+		Ok(first) => {
+			old_channel = match pin_text(facts.text) {
+				Ok(value) => match user_range(value) {
+					Ok(range) => channel_of_range(range)
+					Err(_) => ""
+				}
+				Err(_) => ""
+			}
+			dropped = if old_channel != "" and old_channel != facts.table.name {
+				without_table(facts.text, old_channel)
+			} else {
+				facts.text
+			}
+			doc = match Toml.parse(dropped) {
+				Ok(d) => d
+				Err(_) => first
+			}
+			value = Value.String("=${facts.id}")
+			pinned = match Toml.get(doc, ["toolchain", "roc"]) {
+				Ok(_) => Toml.replace(doc, ["toolchain", "roc"], value).map_err(|_| cannot_edit(facts.path))
+				Err(NotFound) => Toml.insert(doc, ["toolchain", "roc"], value).map_err(|_| cannot_edit(facts.path))
+			}
+			done = pinned?
+			text = done.to_str()
+			has_table = match Toml.get(done, ["channels", facts.table.name]) {
+				Ok(_) => Bool.True
+				Err(NotFound) => Bool.False
+			}
+			if has_table Ok(text) else Ok("${trim_end_lines(text)}\n\n${table_text(facts.table)}")
+		}
+	}
+
+	## Slice 243 (R-CH14, R-CC6, Design Q619 C2, C3): back to a nightly. When `[toolchain] roc` names a user build (`=<id>` or `>=<id>`), the key goes (`Toml.remove`) and the table `[channels.<name>]` of that channel goes with the blank lines before it. A `[toolchain]` table that is empty after that
+	## goes too, with the blank lines before it. Other tables stay. Every other byte stays. Any other value, no key and the empty text are `Same`. A text that is not TOML is a failure of kind `Input`.
+	unuse_edit : { path : Str, text : Str } -> Try([Same, Set(Str)], Fail)
+	unuse_edit = |facts| match Toml.parse(facts.text) {
+		Err(TomlErr(e)) => Err(Fail.new(Input, "${facts.path}:${e.line.to_str()}: not valid TOML"))
+		Ok(_) => match pin_text(facts.text) {
+			Err(_) => Ok(Same)
+			Ok(value) => match user_range(value) {
+				Err(_) => Ok(Same)
+				Ok(range) => {
+					dropped = without_table(facts.text, channel_of_range(range))
+					match Toml.parse(dropped) {
+						Err(_) => Err(cannot_edit(facts.path))
+						Ok(doc) => match Toml.remove(doc, ["toolchain", "roc"]) {
+							Err(NoEntry) => Err(cannot_edit(facts.path))
+							Ok(done) => {
+								empty = match Toml.get(done, ["toolchain"]) {
+									Ok(Value.Table(t)) => t.is_empty()
+									_ => Bool.False
+								}
+								if empty Ok(Set(without_table_header(done.to_str(), "toolchain"))) else Ok(Set(done.to_str()))
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	## Slice 243 (R-CH15, R-UP8, Design Q619 U2): `tln upgrade roc` for a pin. `text` is the value of `[toolchain] roc`; `newest` is the newest build of the channel that the switch and `min-release-age` allow. `=<user id>` gives `Move(newest)` when `Channel.user_order` puts `newest` after the pinned build, else `Same` (never down, never to another channel).
+	## `>=<user id>` works as a `>=nightly-...` range: it does not move. Every value that names no user build is `NotUser`.
+	pin_move : { text : Str, newest : Str, times : List({ id : Str, published_at : U64 }) } -> [NotUser, Same, Move(Str)]
+	pin_move = |facts| match user_range(facts.text) {
+		Ok(Exactly(id)) => match user_order(facts.newest, id, facts.times) {
+			Ok(After) => Move(facts.newest)
+			_ => Same
+		}
+		_ => NotUser
+	}
+
 	## R-CH2: the built-in tables. Only `nightly` has one. A reserved name with no table (`stable`) gives `NotBuiltIn`.
 	builtin : Str -> Try({ shape : Str, source : Str, tag_prefix : Str }, [NotBuiltIn])
 	builtin = |name| if name == "nightly" Ok({ shape: "github-release", source: "roc-lang/nightlies", tag_prefix: "nightly-" }) else Err(NotBuiltIn)
@@ -759,5 +870,43 @@ header_line = |doc, text, name| {
 	match found {
 		Ok((_, n)) => n
 		Err(_) => TomlKeys.key_line(doc, ["channels"])
+	}
+}
+
+cannot_edit : Str -> Fail
+cannot_edit = |path| Fail.new(Internal, "${path}: cannot write [toolchain] roc")
+
+# The channel name that a range of `user_range` names.
+channel_of_range : [Exactly(Str), AtLeast(Str)] -> Str
+channel_of_range = |range| {
+	bound = match range {
+		Exactly(id) => id
+		AtLeast(id) => id
+	}
+	match Channel.user_parts(bound) {
+		Ok(p) => p.name
+		Err(_) => ""
+	}
+}
+
+# The text without the table `[channels.<name>]`: its header, its keys and the blank lines before it (as `remove_edit`).
+without_table : Str, Str -> Str
+without_table = |text, name| without_table_header(text, "channels.${name}")
+
+# The text without the table `[<path>]` (the header line, the lines up to the next header, and the blank lines before it). No such header: the text as it is.
+without_table_header : Str, Str -> Str
+without_table_header = |text, path| {
+	lines = text.split_on("\n")
+	header = "[${path}]"
+	match lines.find_first_index(|line| line.trim() == header) {
+		Err(_) => text
+		Ok(at) => {
+			is_blank = |i| lines.get(i).map_ok(|line| line.trim().is_empty()) == Ok(Bool.True)
+			is_header = |i| lines.get(i).map_ok(|line| line.trim().starts_with("[")) == Ok(Bool.True)
+			start = back_over(at, is_blank, 0)
+			next = forward_to(at + 1, lines.len(), is_header)
+			stop = back_over(next, is_blank, at + 1)
+			Str.join_with(lines.take_first(start).concat(lines.drop_first(stop)), "\n")
+		}
 	}
 }

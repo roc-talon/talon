@@ -1,0 +1,17 @@
+== cache gc --dry-run
+would remove toolchain mine-2026-08-02-bbbbbbb (472 B)
+would remove toolchain nightly-2026-08-01-eeeeeee (429 B)
+would remove toolchain reify-2026-08-01-aaaaaaa (515 B)
+would free 1.4 KB
+dry run: nothing was removed
+exit 0
+== cache gc
+removed toolchain mine-2026-08-02-bbbbbbb (472 B)
+removed toolchain nightly-2026-08-01-eeeeeee (429 B)
+removed toolchain reify-2026-08-01-aaaaaaa (515 B)
+freed 1.4 KB
+exit 0
+== cache gc --dry-run
+nothing to remove
+dry run: nothing was removed
+exit 0

@@ -1,6 +1,7 @@
 import Answer
 import Args
 import Base
+import Channel
 import Common
 import Compiler
 import Consent
@@ -26,6 +27,9 @@ import ResolveLoad
 import ResolveSelect
 import RocInstall
 import Roots
+import Text
+import Toolchain
+import toml.Toml
 
 ## The command `tln roc use <ref>` (slice 026b, CLI 6.6: R-CS1, R-U1 to R-U6, R-WS13, R-RP1; Design 7 R-PH8). Direct style over `Fx` (TESTING.md 2.2 part C): `Manage` and `Pin` decide, `Ladder.use!` runs the probes,
 ## this module orders the calls. `Run.tln!` calls it for the command `["roc", "use"]`. The calls, in order (the L2 cases `roc/us1-use`, `roc/us2-workspace` and the L3 case
@@ -69,12 +73,119 @@ RocUse :: [].{
 			}
 		}
 	}
+
+	## Slice 243 (R-CH15, R-UP6, R-RP1, R-U3, R-H6, R-CH11, R-CH16, user decision of 2026-11-12): `tln upgrade roc` on `[toolchain] roc = "=<user id>"` of the root `talon.toml`. `held` is that id. `start` is the result of `Update.begin!`. The calls, in order:
+	##
+	## | Step | Does |
+	## | --- | --- |
+	## | 1 | `Compiler.toolchain_of`, `Install.compiler!`, `ResolveLoad.load!` (as `roc use`) |
+	## | 2 | The table of the channel of `held`: `config.toml` has it, else exit 19 (the project only: R-CH11) or exit 2 (R-CH8), before any request |
+	## | 3 | `platform!`, `Nightlies.list_channel!` (direct, the `source` of the table: R-CH16). `Toolchain.range_pick` over `>=<held>` with the switch and `min-release-age`. No build, or the build is not later than `held` (`Channel.pin_move`): `Newest(held)`, nothing else is done |
+	## | 4 | The offer of the new build, the installed list, `install_all!` (the consent, the download), then `Ladder.use!` for every member: the baseline check on `held`, the candidate check and the build on the new build (R-U3, R-H6: a new error is exit 11 and nothing is written) |
+	## | 5 | Under no lock (R-CC7): `write!` of the root `talon.toml` with `Channel.use_edit`. A dry run writes nothing |
+	upgrade_user! : Fx, Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, { held : Str, dry_run : Bool } => Try([Newest(Str), Kept({ note : Try(Str, [None]) }), Moved({ id : Str, old : Str, file : Str, written : Bool, probes : U64, downloads : U64, built : Bool, notes : List(Str), skipped : Try(Str, [None]) })], Fail)
+	upgrade_user! = |fx, args, start, run| {
+		toolchain = Compiler.toolchain_of(start.env)?
+		compiler = Install.compiler!(fx, start.roots, Bool.False)
+		flag = if args.options.any(|(name, _)| name == "--allow-downloads") Ok(Yes) else Err(NoFlag)
+		mode = Mode.from_env({ env: Dict.from_list(start.env), json: args.json })
+		auto = Consent.auto_install(start.env)
+		request = request_of(args, start, { compiler, toolchain, flag, mode, auto })
+		loaded = ResolveLoad.load!(fx, request)?
+		table = match user_table(loaded, run.held)? {
+			Ok(found) => found
+			Err(NotUser) => return Err(Fail.new(Internal, "${run.held} is not a user-channel build"))
+		}
+		settings = ResolveBase.settings_of(request, loaded)
+		system = Toolchain.host(fx.platform!())?
+		listed = Nightlies.list_channel!(fx, { net: start.net, roots: start.roots, now: start.now, offline: args.offline, host: system, channel: table })?
+		if listed.source == Missing return Err(Toolchain.offline_no_list({}))
+		times = listed.releases.map(|r| { id: r.id, published_at: r.published_at })
+		picked = Toolchain.range_pick({ releases: listed.releases, req: AtLeast(run.held), now: start.now, min_age: settings.min_age, snapshot: Err(None), nightly: settings.nightly, exclude: settings.exclude })
+		_ = match picked {
+			Ok(id) => id
+			Err(NoneKnown) => if settings.nightly {
+				return Ok(Newest(run.held))
+			} else {
+				return Err(Fail.new(NoTuple, "no build of channel ${table.name} is allowed, and nightly is false (set by ${Pin.source_text(settings.nightly_from)})"))
+			}
+		}
+		# R-SP12 (slice 243, user decision of 2026-11-12): the candidates are the builds of the channel later than `held` that the switch and `min-release-age` allow (`>=<held>`), newest first, at most `max_toolchains` of them.
+		# The first one that passes the check loop is the answer. A build that fails with a new error (kind `AppError`) is dropped and the next one is tried; any other failure stops the command.
+		allowed = Toolchain.range_allowed({ releases: listed.releases, req: AtLeast(run.held), now: start.now, min_age: settings.min_age, snapshot: Err(None), nightly: settings.nightly, exclude: settings.exclude }).map(|r| r.id)
+		later = allowed.keep_if(|each| Channel.user_order(each, run.held, times) == Ok(After))
+		by_newest = later.sort_with(
+			|a, b| match Channel.user_order(a, b, times) {
+				Ok(After) => Before
+				Ok(Before) => After
+				_ => Same
+			},
+		)
+		candidates = by_newest.take_first(try_limit)
+		if candidates.is_empty() return Ok(Newest(run.held))
+		root = toml_path(request.project, loaded)
+		installed = Launch.toolchains_all!(fx, start.roots)
+		rows = loaded.members.map(|m| { file: m.file, baseline: run.held, previous: Err(NoPin), op: Err(Same) })
+		ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler, registry: First(args.registry) }
+		members = rows.map(|r| use_member(loaded, r))
+		var $won = no_win
+		var $why = no_why
+		var $downloads = 0
+		var $probes = 0
+		for id in candidates {
+			offer = RocInstall.offer_noted!(fx, { id, env: start.env, offline: args.offline, registry: First(args.registry) })?.offer
+			installs = install_all!(fx, args, ctx, { target: offer, id, rows, picked: Err(None) })?
+			$downloads = $downloads + installs
+			match Ladder.use!(fx, { roots: start.roots, now: start.now, path_roc: compiler, held: id, members, owners: [], downloads: ResolveBase.ladder_downloads(request), probe: { max: 100, timeout: 30, slots: 12, max_toolchains: 10 } }) {
+				Ok(ran) => {
+					$probes = $probes + members.fold(0, |total, m| total + if m.kind == App 3 else 2)
+					$won = Ok({ id, notes: ran.notes })
+					break
+				}
+				Err(fail) => if fail.kind.code() == 11 {
+					$probes = $probes + members.len() * 2
+					# The note comes at once, before the ladder lines of the next candidate (the order of ur4-candidate).
+					fx.out!("note: roc ${id} is not used: ${fail.message}\n")
+					if $why.is_err() {
+						$why = Ok({ id, message: fail.message })
+					}
+				} else {
+					return Err(fail)
+				}
+			}
+		}
+		chosen = match $won {
+			Ok(found) => found
+			Err(None) => {
+				return Ok(Kept({ note: Err(None) }))
+			}
+		}
+		toml = match toml_plan(loaded, { path: root, id: chosen.id, user: Ok(table) }) {
+			Ok(plan) => plan
+			Err(Same) => return Ok(Newest(run.held))
+		}
+		written = if run.dry_run [] else write!(fx, loaded, { id: chosen.id, rows: [], toml: Ok(toml) })?
+		skipped = Err(None)
+		Ok(
+			Moved({
+				id: chosen.id,
+				old: toml.old ?? "",
+				file: root,
+				written: written.contains(root),
+				probes: $probes,
+				downloads: $downloads,
+				built: members.any(|m| m.kind == App),
+				notes: chosen.notes,
+				skipped,
+			}),
+		)
+	}
 }
 
 Offered : RocInstall.Offer
 
 # What the output needs. `written` has the files in the order of the write.
-Done : { id : Str, written : List({ file : Str, previous : Try(Str, [NoPin]) }), probes : U64, downloads : U64, built : Bool, notes : List(Str), toolchain : Try(Str, [Unset]) }
+Done : { id : Str, written : List({ file : Str, previous : Try(Str, [NoPin]) }), toml : Try({ file : Str, old : Try(Str, [NoPin]), added : Try(Str, [None]), removed : Try(Str, [None]), user : Bool }, [None]), probes : U64, downloads : U64, built : Bool, notes : List(Str), toolchain : Try(Str, [Unset]) }
 
 # The facts that steps 7 and 8 share.
 Context : { env : List((Str, Str)), mode : Mode, offline : Bool, auto : [Ask, Yes, No], flag : Try(Answer, [NoFlag]), yes : Bool, quiet : Bool, installed : List(Str), path_roc : Try({ id : Str, path : Str }, [NoCompiler]), registry : [Off, First(Try(Str, [Unset])), Later(Try(Str, [Unset]))] }
@@ -91,8 +202,13 @@ flow! = |fx, args, text| {
 	auto = Consent.auto_install(start.env)
 	request = request_of(args, start, { compiler, toolchain, flag, mode, auto })
 	loaded = ResolveLoad.load!(fx, request)?
+	# Slice 243 (R-CH14, R-CH8, Design Q619 C1, C4): the id of a user build that the operand names in full: the table and the range come before any list.
+	if Channel.user_parts(text).is_ok() {
+		_ = user_table(loaded, text)?
+		Pin.use_gate({ id: text, req: loaded.intent.toolchain.roc, req_text: loaded.intent.toolchain.roc_text, nightly: ResolveBase.settings_of(request, loaded).nightly, source: ResolveBase.settings_of(request, loaded).nightly_from, times: [] })?
+	}
 	fallback = fallback!(fx, request, loaded)?
-	installed = Launch.toolchains!(fx, start.roots)
+	installed = Launch.toolchains_all!(fx, start.roots)
 	noted = named!(fx, { text, installed, env: start.env, offline: args.offline, flag: args.registry })?
 	target = noted.offer
 	# Slice 206g (R-IX4): the new compiler read the compiler list when it is a download or a step; the baselines then read the kept rows.
@@ -105,28 +221,112 @@ flow! = |fx, args, text| {
 		Download(offer) => offer.id
 	}
 	ManageUse.use_pinnable(id)?
+	user = user_table(loaded, id)?
 	gate!(fx, request, loaded, { target, id, installed })?
 	rows = ManageUse.use_plan({ id, members: loaded.members.map(|m| { file: m.file, pin: m.locked.roc }), fallback: fallback.id })?
-	changes = rows.keep_if(|r| r.op.is_ok())
-	if changes.is_empty() {
-		return Ok({ id, written: [], probes: 0, downloads: 0, built: Bool.False, notes: [], toolchain })
+	# Slice 243 (R-CH14): the root `talon.toml` of the run: a user build goes in; a nightly takes a user pin out.
+	root = toml_path(request.project, loaded)
+	toml = toml_plan(loaded, { path: root, id, user })
+	# A user build is a change for every member (the compiler of the project changes), a nightly only for a member with an edit.
+	changes = if user.is_ok() rows else rows.keep_if(|r| r.op.is_ok())
+	if rows.keep_if(|r| r.op.is_ok()).is_empty() and toml.is_err() {
+		return Ok({ id, written: [], toml: Err(None), probes: 0, downloads: 0, built: Bool.False, notes: [], toolchain })
 	}
 	# R-C16 (slice 084): `roc use` writes a pin, so a young compiler that only a pattern kept is a new choice, also when it is installed. A pin that equals it changes nothing (the return above): no note.
 	RocInstall.print_note!(fx, args.quiet, noted.note)
 	ctx = { env: start.env, mode, offline: args.offline, auto, flag, yes: args.yes, quiet: args.quiet, installed, path_roc: compiler, registry: if listed Later(args.registry) else First(args.registry) }
 	installs = install_all!(fx, args, ctx, { target, id, rows: changes, picked: fallback.picked })?
-	members = changes.map(|r| use_member(loaded, r, id))
+	members = changes.map(|r| use_member(loaded, r))
 	ran = Ladder.use!(fx, { roots: start.roots, now: start.now, path_roc: compiler, held: id, members, owners: [], downloads: ResolveBase.ladder_downloads(request), probe: { max: 100, timeout: 30, slots: 12, max_toolchains: 10 } })?
-	written = write!(fx, loaded, { id, rows: changes })?
+	written = write!(fx, loaded, { id, rows: changes, toml })?
+	moved = written.keep_if(|file| file != root)
 	Ok({
 		id,
-		written: written.map(|file| { file, previous: changes.find_first(|r| r.file == file).map_ok(|r| r.previous) ?? Err(NoPin) }),
+		written: moved.map(|file| { file, previous: changes.find_first(|r| r.file == file).map_ok(|r| r.previous) ?? Err(NoPin) }),
+		toml: match toml {
+			Ok(plan) if written.contains(root) => Ok({ file: root, old: plan.old, added: plan.added, removed: plan.removed, user: user.is_ok() })
+			_ => Err(None)
+		},
 		probes: members.fold(0, |total, m| total + if m.kind == App 3 else 2),
 		downloads: installs,
 		built: members.any(|m| m.kind == App),
 		notes: ran.notes,
 		toolchain,
 	})
+}
+
+# Slice 243 (R-CH14, R-CH8, R-CH11, Design Q619 C4): the table of the channel of a user build. `Err(NotUser)` for any other id. A table of `config.toml` is the answer; a table of the project only is exit 19 (R-CH11); no table is exit 2.
+user_table : ResolveBase.Loaded, Str -> Try(Try(Channel.Entry, [NotUser]), Fail)
+user_table = |loaded, id| match Channel.user_parts(id) {
+	Err(_) => Ok(Err(NotUser))
+	Ok(parts) => {
+		project = loaded.tomls.join_map(
+			|t| match Toml.parse(t.text) {
+				Ok(doc) => Channel.entries(Channel.read(doc, t.text).tables)
+				Err(_) => []
+			},
+		)
+		match Channel.table_for({ name: parts.name, config: loaded.config.channels, project }) {
+			Config(t) => Ok(Ok(t))
+			Project(t) => {
+				said = Channel.trust_text(t)
+				Err(Fail.new(Input, "${said.message}\n${said.hint}"))
+			}
+			Neither => Err(Fail.new(Usage, Channel.unknown_name_text(parts.name)))
+		}
+	}
+}
+
+# The root `talon.toml`: the workspace root, else the directory of the first member.
+toml_path : Project, ResolveBase.Loaded -> Str
+toml_path = |project, loaded| {
+	root = match project.workspace {
+		Ok(ws) => ws.root
+		Err(Standalone) => loaded.members.first().map_ok(|m| Text.dir_of(m.file)) ?? ""
+	}
+	Text.join(root, "talon.toml")
+}
+
+# Slice 243 (R-CH14): the edit of the root `talon.toml`. `Err(Same)`: no edit. A user build sets `[toolchain] roc = "=<id>"` (and the table); a nightly takes out a pin of a user build.
+# `old` is the text of `[toolchain] roc` before, `added` and `removed` are the channel tables that the edit adds and removes (for the output).
+TomlPlan : { old : Try(Str, [NoPin]), added : Try(Str, [None]), removed : Try(Str, [None]), table : Try(Channel.Entry, [NotUser]), path : Str }
+
+toml_plan : ResolveBase.Loaded, { path : Str, id : Str, user : Try(Channel.Entry, [NotUser]) } -> Try(TomlPlan, [Same])
+toml_plan = |loaded, run| {
+	text = ResolveBase.loaded_text(loaded, run.path)
+	old = Channel.pin_text(text).map_err(|None| NoPin)
+	tables = match Toml.parse(text) {
+		Ok(doc) => Channel.read(doc, text).tables.map(|t| t.name)
+		Err(_) => []
+	}
+	old_channel = match old {
+		Ok(value) => match Channel.user_range(value) {
+			Ok(Exactly(bound)) | Ok(AtLeast(bound)) => Channel.user_parts(bound).map_ok(|p| p.name).map_err(|_| None)
+			Err(_) => Err(None)
+		}
+		Err(_) => Err(None)
+	}
+	dropped = match old_channel {
+		Ok(name) if tables.contains(name) => Ok(name)
+		_ => Err(None)
+	}
+	match run.user {
+		Ok(table) => {
+			edited = Channel.use_edit({ path: run.path, text, id: run.id, table })
+			removed = match dropped {
+				Ok(name) if name != table.name => Ok(name)
+				_ => Err(None)
+			}
+			match edited {
+				Ok(new) if new != text => Ok({ old, added: if tables.contains(table.name) Err(None) else Ok(table.name), removed, table: run.user, path: run.path })
+				_ => Err(Same)
+			}
+		}
+		Err(NotUser) => match Channel.unuse_edit({ path: run.path, text }) {
+			Ok(Set(_)) => Ok({ old, added: Err(None), removed: dropped, table: run.user, path: run.path })
+			_ => Err(Same)
+		}
+	}
 }
 
 # The `ResolveBase.Request` that `load!`, `select!` and `ladder_downloads` read.
@@ -211,13 +411,20 @@ gate! = |fx, request, loaded, run| {
 }
 
 # The member of the ladder for one row of the plan (the text that the first read gave).
-use_member : ResolveBase.Loaded, ManageUse.UseRow, Str -> Ladder.UseMember
-use_member = |loaded, row, id| {
+use_member : ResolveBase.Loaded, ManageUse.UseRow -> Ladder.UseMember
+use_member = |loaded, row| {
 	kind = match loaded.members.find_first(|m| m.file == row.file) {
 		Ok(m) => m.locked.kind
 		Err(_) => App
 	}
-	{ file: row.file, kind, text: ResolveBase.loaded_text(loaded, row.file), ops: [Pin(id)], baseline: row.baseline }
+	{ file: row.file, kind, text: ResolveBase.loaded_text(loaded, row.file), ops: ops_of(row), baseline: row.baseline }
+}
+
+# The header edit of a row: its op, or none for a member that the plan leaves as it is.
+ops_of : ManageUse.UseRow -> List(Locked.Op)
+ops_of = |row| match row.op {
+	Ok(op) => [op]
+	Err(Same) => []
 }
 
 # Steps 7 and 8: the downloads, then the installs, the new compiler first. It gives the number of compilers that this run installed.
@@ -284,21 +491,46 @@ missing_baselines = |ctx, run| {
 	}
 }
 
-# Step 10, R-CC7, R-WS13: no lock. Each changed header is read again, checked against the first read, and all of them are written with one `write_atomic!` call. It gives the files that were written.
-write! : Fx, ResolveBase.Loaded, { id : Str, rows : List(ManageUse.UseRow) } => Try(List(Str), Fail)
+# Step 10, R-CC7, R-WS13: no lock. Each changed header and the root `talon.toml` (slice 243) are read again, checked against the first read, and all of them are written with one `write_atomic!` call. It gives the files that were written.
+write! : Fx, ResolveBase.Loaded, { id : Str, rows : List(ManageUse.UseRow), toml : Try(TomlPlan, [Same]) } => Try(List(Str), Fail)
 write! = |fx, loaded, run| {
 	paths = run.rows.map(|r| r.file)
-	ops = [Pin(run.id)]
+	toml_files = match run.toml {
+		Ok(plan) => [plan.path]
+		Err(Same) => []
+	}
 	var $files = no_files
 	var $edited = no_edited
-	for (path, result) in paths.map2(fx.read_files!(paths), |path, result| (path, result)) {
+	for (path, result) in paths.concat(toml_files).map2(fx.read_files!(paths.concat(toml_files)), |path, result| (path, result)) {
+		is_toml = toml_files.contains(path)
 		now = match result {
 			Ok(text) => text
+			Err(NotFound) if is_toml => ""
 			Err(_) => return Err(Fail.new(Environment, "cannot read ${path}"))
 		}
 		read = ResolveBase.loaded_text(loaded, path)
-		$files = $files.append({ path, read, now, spans_read: Locked.spans({ text: read, ops }), spans_now: Locked.spans({ text: now, ops }) })
-		$edited = $edited.append({ path, now, new: Locked.edit({ path, text: now, ops })? })
+		if is_toml {
+			plan = match run.toml {
+				Ok(p) => p
+				Err(Same) => return Err(Fail.new(Internal, "${path}: no edit"))
+			}
+			new = match plan.table {
+				Ok(table) => Channel.use_edit({ path, text: now, id: run.id, table })?
+				Err(NotUser) => match Channel.unuse_edit({ path, text: now })? {
+					Set(text) => text
+					Same => now
+				}
+			}
+			$files = $files.append({ path, read, now, spans_read: Channel.use_spans(read), spans_now: Channel.use_spans(now) })
+			$edited = $edited.append({ path, now, new })
+		} else {
+			ops = match run.rows.find_first(|r| r.file == path) {
+				Ok(row) => ops_of(row)
+				Err(_) => []
+			}
+			$files = $files.append({ path, read, now, spans_read: Locked.spans({ text: read, ops }), spans_now: Locked.spans({ text: now, ops }) })
+			$edited = $edited.append({ path, now, new: Locked.edit({ path, text: now, ops })? })
+		}
 	}
 	ResolveBase.write_checked!(fx, { files: $files, edited: $edited })
 }
@@ -312,18 +544,36 @@ no_edited = []
 # Step 11, R-OUT2, R-J3, R-U6: the lines of `ManageUse.use_report` and the note, or the envelope (the human text is on stderr with `--json`).
 print! : Fx, Fx, Args, Done => {}
 print! = |fx, shown, args, done| {
-	for line in ManageUse.use_report({ id: done.id, files: done.written }) {
+	lines = match done.toml {
+		Ok(toml) => ManageUse.use_toml_report({ id: done.id, user: toml.user, toml: { file: toml.file, old: toml.old, added: toml.added, removed: toml.removed }, files: done.written })
+		Err(None) => ManageUse.use_report({ id: done.id, files: done.written })
+	}
+	for line in lines {
 		shown.out!(line)
 	}
 	note = match done.toolchain {
-		Ok(toolchain) if !done.written.is_empty() => [ManageUse.use_note({ toolchain, id: done.id })]
+		Ok(toolchain) if !done.written.is_empty() or done.toml.is_ok() => [ManageUse.use_note({ toolchain, id: done.id })]
 		_ => []
 	}
 	for text in note {
 		shown.out!("note: ${text}\n")
 	}
 	if args.json {
-		data = ManageUse.use_data({ id: done.id, files: done.written, probes: done.probes, downloads: done.downloads, built: done.built, notes: done.notes.concat(note) })
+		listed = match done.toml {
+			Ok(toml) => [{ file: toml.file, previous: toml.old }].concat(done.written)
+			Err(None) => done.written
+		}
+		data = ManageUse.use_data({ id: done.id, files: listed, probes: done.probes, downloads: done.downloads, built: done.built, notes: done.notes.concat(note) })
 		fx.out!(Out.json_ok({ command: args.typed, data }))
 	}
 }
+
+# R-SP12 (slice 243): the most candidates that `upgrade roc` on a user pin tries (the `max_toolchains` of the probe settings, as the ladder run).
+try_limit : U64
+try_limit = 10
+
+no_win : Try({ id : Str, notes : List(Str) }, [None])
+no_win = Err(None)
+
+no_why : Try({ id : Str, message : Str }, [None])
+no_why = Err(None)

@@ -1,0 +1,9 @@
+# R-GC5 R-CH17 R-CH13 R-CH9 (slice 243, Design Q612): GC treats a user-channel build as a nightly. TALON_NOW is 2026-10-22T12:00:00Z, the GC age is 30 days, no project is known. config.toml has the default (a nightly) and the table of reify, not the table of mine.
+#   Goes: reify-2026-08-01-aaaaaaa (no pin, last use 2026-07-02), mine-2026-08-02-bbbbbbb (the same, and its channel has no table: the build is still a toolchain of the rule of a nightly), nightly-2026-08-01-eeeeeee (the nightly twin: the same rule, the same kind of size line).
+#   Stays: nightly-2026-10-14-38a3029 (the default, last use 2026-07-01), reify-2026-10-12-ccccccc (used 10 days ago: used in the GC age), reify-2026-10-21-ddddddd (used 16 hours ago: the last day).
+# A dry run first: the 3 that go are listed with their sizes, sorted by id. Nothing is removed.
+cache gc --dry-run
+# R-GC5 R-CC10: the real run. The lock of each toolchain, the rename to .trash, the delete. A user build has no compat id here (the `compat` field is null), so there is no compat dir to delete.
+cache gc
+# R-GC5: the second run removes nothing: the 3 builds that stay are still there (a build of a user channel is listed, judged and kept).
+cache gc --dry-run

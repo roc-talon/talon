@@ -1,0 +1,13 @@
+# R-CH14 R-CS1 R-U1 R-U3 R-CH6 R-R4 R-RP1 R-H1 R-CC7 R-PD9 (slice 243, Design Q612): `tln roc use` on a user channel. HOME is home: O (nightly-2026-10-09-258ab27, the default), N (nightly-2026-10-14-38a3029), R (reify-2026-11-03-1708298) and A (reify-2026-10-30-fedcba9) are installed; config.toml has the table of reify. No download, no list. Every run has the check: the baseline on the old pin in the project dir, the candidate check and the build on the new compiler in the temp copy.
+# Run 1: the id of a user build. p1 has the header pin O and a comment-only talon.toml. The pin does not go to the header (R-R4): `[toolchain] roc = "=R"` and the table `[channels.reify]` (from config.toml) go to the root talon.toml, and the header entry `roc:` is removed. The comments stay.
+roc use reify-2026-11-03-1708298 --file p1/main.roc
+# Run 2: the same with --json (p2 has `[toolchain] nightly = true` in talon.toml: the key roc goes after it). Human text on stderr, stdout is only the envelope. The talon.toml is the first file of `files` (its previous pin is null).
+roc use reify-2026-11-03-1708298 --file p2/main.roc --json
+# Run 3: R-U6 with a user build: ROC_TOOLCHAIN is O (higher priority than the new pin). The pin is written after the check and the note says so.
+env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 roc use reify-2026-11-03-1708298 --file p5/main.roc
+# Run 4 (C1, R-CH14 back to nightly): p3 has the pin =R in talon.toml with the table. Candidate: the nightly N. The pin goes to the header; the key roc and the table [channels.reify] go from talon.toml, [toolchain] keeps nightly = true.
+roc use nightly-2026-10-14-38a3029 --file p3/main.roc
+# Run 5 (C2, R-CH14 user to user): p4 has the pin =R. Candidate: the older build A of the same channel. Only the value changes; the table stays.
+roc use reify-2026-10-30-fedcba9 --file p4/main.roc
+# Run 6 (C5, R-CH14 (5)): p6 has the header pin O and no talon.toml. Talon creates talon.toml with only [toolchain] and [channels.reify].
+roc use reify-2026-11-03-1708298 --file p6/main.roc

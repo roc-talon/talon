@@ -1,0 +1,2 @@
+# R-CH15 R-C7 R-CH9 (slice 243, user decision of 2026-11-12; mutation check up3): the candidates of `tln upgrade roc` on `=<user id>` respect min-release-age. HOME has the builds A (reify-2026-10-30-fedcba9, the pin), R (reify-2026-11-03-1708298) and Y (reify-2026-11-09-5555555, published 26 hours before TALON_NOW), all installed and listed. Y is younger than min-release-age, so it is no candidate: the pin moves to R, and Y is never checked.
+upgrade roc --file p1/main.roc

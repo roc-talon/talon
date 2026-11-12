@@ -1,0 +1,2 @@
+# R-CH14 R-CH8 (slice 243, Design Q619 C4): `tln roc use <user id>` when neither config.toml nor the project has a table for the channel of the id (config.toml has only default-roc, the project has no talon.toml). Exit 2 with the unknown-channel text of R-CH8; nothing is written. The stop is guessed to come right after the config read.
+roc use reify-2026-11-03-1708298 --file p1/main.roc

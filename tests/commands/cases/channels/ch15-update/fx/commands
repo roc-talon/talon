@@ -1,0 +1,13 @@
+# R-CH15 R-RU1 R-RU2 R-CH8 R-CH9 (slice 243, Design Q612): `tln roc update` and a user-channel default. TALON_NOW is 2026-11-10T12:00:00Z. The fake GitHub has the list of Karakatiza666/roc-reify-nightlies (2 builds with a Linux asset: reify-2026-10-30-fedcba9 and the newer reify-2026-11-03-1708298) and the list of roc-lang/nightlies (nightly-2026-10-14-38a3029 and an older one). No download in this case: the newest build of each list is installed already.
+# Run 1 (home): the default is the user build reify-2026-10-30-fedcba9 (config.toml has the comment on its line). No name: the channel of default-roc is reify, so the list of reify is read (not the list of the nightlies), the newest build is installed already, and the default moves inside the channel: the line is-the-newest, then the move line. The value of default-roc changes, the comment stays.
+roc update
+# Run 2 (home): the default is the newest build now. The list is cached (no request). Nothing moves, no lock.
+roc update
+# Run 3 (home): the name is given, the same channel as the default. Same result as run 2, and --json: the envelope has the user build as id, installed false, previous = the default, changed false.
+roc update reify --json
+# Run 4 (home2): the default is the user build reify-2026-11-03-1708298. The name nightly selects the list of roc-lang/nightlies. The newest nightly is installed already. The default of a user channel moves only inside its channel (R-RU2, R-CH15): it stays, and the note says how to change it.
+env:HOME={w}/home2 roc update nightly
+# Run 5 (home4): U1 (Design Q619). The default is a nightly and the name is a user channel. The newest build of reify is installed already. The default does not move (a user build is never picked as the default by update), and the note says how to set it. No lock, no write.
+env:HOME={w}/home4 roc update reify
+# Run 6 (home5): U1. No default is set. The default stays unset (an install of a user build never sets it), and the note says so.
+env:HOME={w}/home5 roc update reify

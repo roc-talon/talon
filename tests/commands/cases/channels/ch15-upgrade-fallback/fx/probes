@@ -1,0 +1,11 @@
+# run 1: the baseline passes; bbbbbbb has a new error (duplicate definition); the baseline again; 1708298 passes the check and the build
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr
+# run 2: the baseline passes; bbbbbbb has the new error; the baseline again; 1708298 has the new error too
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr

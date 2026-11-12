@@ -1,0 +1,8 @@
+# R-RR1 R-CH15 R-CH9 R-CH5 (slice 243, Design Q612): the default is removed. HOME is home: the default is the user build reify-2026-11-10-abc1234, and the store has the nightly nightly-2026-10-14-38a3029, the older build reify-2026-11-03-1708298 of the same channel, and mine-2026-11-12-1111111, the newest build of all, of the channel mine. A user-channel default moves only inside its channel: to reify-2026-11-03-1708298, not to the nightly and not to the build of mine. config.toml: the value changes, the comment stays, the tables stay.
+roc remove reify-2026-11-10-abc1234
+# R-RR1 R-CH15 (GUARD, green when written): HOME is home2. The default is the nightly and the only other build is a user build. No nightly or release is left, and the default moves only inside its channel: it is not set (the line default-roc goes), as when nothing is installed. The user build is not picked.
+env:HOME={w}/home2 roc remove nightly-2026-10-14-38a3029
+# R-RR1 R-CH15 (GUARD, green when written): HOME is home3. The default is the newest nightly, another nightly and a user build are installed. The default moves to the other nightly (the newest user build is never chosen: a user build counts as a nightly for the switch only).
+env:HOME={w}/home3 roc remove nightly-2026-10-14-38a3029
+# R1 R-RR1 R-CH15 (Design Q619): HOME is home4. The default is the user build reify-2026-11-10-abc1234, and the only other build is a nightly. A user default moves only inside its channel and never falls back to a nightly: the default becomes unset (the line default-roc goes), and a note on stderr says so and how to set a default.
+env:HOME={w}/home4 roc remove reify-2026-11-10-abc1234

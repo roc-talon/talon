@@ -1,0 +1,135 @@
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/p1/main.roc","last_use":1794312000},{"path":"$PROJECT/p2/main.roc","last_use":1794312000},{"path":"$PROJECT/p3/main.roc","last_use":1794312000},{"path":"$PROJECT/p4/main.roc","last_use":1794312000},{"path":"$PROJECT/p5/main.roc","last_use":1794312000},{"path":"$PROJECT/p6/main.roc","last_use":1794312000}]}
+--- home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.last-use
+@@ -0,0 +1 @@
++2026-11-10T12:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+@@ -0,0 +1 @@
++2026-11-10T12:00:00Z
+--- home/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use
++++ home/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use
+@@ -0,0 +1 @@
++2026-11-10T12:00:00Z
+--- home/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
++++ home/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
+@@ -0,0 +1 @@
++2026-11-10T12:00:00Z
+--- project/p1/main.roc
++++ project/p1/main.roc
+@@ -2,7 +2,6 @@
+ 	# the platform
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	roc: "nightly-2026-10-09-258ab27",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p1/talon.toml
++++ project/p1/talon.toml
+@@ -1 +1,9 @@
+ # project settings
++
++[toolchain]
++roc = "=reify-2026-11-03-1708298"
++
++[channels.reify]
++shape = "github-release"
++source = "Karakatiza666/roc-reify-nightlies"
++tag-prefix = "nightly-reify-"
+--- project/p2/main.roc
++++ project/p2/main.roc
+@@ -2,7 +2,6 @@
+ 	# the platform
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	roc: "nightly-2026-10-09-258ab27",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p2/talon.toml
++++ project/p2/talon.toml
+@@ -1,2 +1,8 @@
+ [toolchain]
+ nightly = true
++roc = "=reify-2026-11-03-1708298"
++
++[channels.reify]
++shape = "github-release"
++source = "Karakatiza666/roc-reify-nightlies"
++tag-prefix = "nightly-reify-"
+--- project/p3/main.roc
++++ project/p3/main.roc
+@@ -2,6 +2,7 @@
+ 	# the platform
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
++	roc: "nightly-2026-10-14-38a3029",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p3/talon.toml
++++ project/p3/talon.toml
+@@ -1,8 +1,2 @@
+ [toolchain]
+ nightly = true
+-roc = "=reify-2026-11-03-1708298"
+-
+-[channels.reify]
+-shape = "github-release"
+-source = "Karakatiza666/roc-reify-nightlies"
+-tag-prefix = "nightly-reify-"
+--- project/p4/talon.toml
++++ project/p4/talon.toml
+@@ -1,5 +1,5 @@
+ [toolchain]
+-roc = "=reify-2026-11-03-1708298"
++roc = "=reify-2026-10-30-fedcba9"
+ 
+ [channels.reify]
+ shape = "github-release"
+--- project/p5/main.roc
++++ project/p5/main.roc
+@@ -2,7 +2,6 @@
+ 	# the platform
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	roc: "nightly-2026-10-09-258ab27",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p5/talon.toml
++++ project/p5/talon.toml
+@@ -1 +1,9 @@
+ # project settings
++
++[toolchain]
++roc = "=reify-2026-11-03-1708298"
++
++[channels.reify]
++shape = "github-release"
++source = "Karakatiza666/roc-reify-nightlies"
++tag-prefix = "nightly-reify-"
+--- project/p6/main.roc
++++ project/p6/main.roc
+@@ -2,7 +2,6 @@
+ 	# the platform
+ 	pf: platform "https://github.com/acme/pf/releases/download/0.1.0/895yiekWBru1NBsyGpzBzHzqjLdBGbe5MkhtZ4325wWw.tar.zst",
+ 	json: "https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst",
+-	roc: "nightly-2026-10-09-258ab27",
+ }
+ 
+ main! = |_args| Ok({})
+--- project/p6/talon.toml
++++ project/p6/talon.toml
+@@ -0,0 +1,7 @@
++[toolchain]
++roc = "=reify-2026-11-03-1708298"
++
++[channels.reify]
++shape = "github-release"
++source = "Karakatiza666/roc-reify-nightlies"
++tag-prefix = "nightly-reify-"

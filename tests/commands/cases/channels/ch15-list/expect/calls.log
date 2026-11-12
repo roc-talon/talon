@@ -1,0 +1,22 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/mine-2026-10-20-1111111/.talon.json $HOME/.cache/roc/toolchains/mine-2026-10-20-1111111/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.talon.json $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/toolchains/mine-2026-10-20-1111111/.talon.json $HOME/.cache/roc/toolchains/mine-2026-10-20-1111111/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.talon.json $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
+args
+env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+read_files $HOME2/.cache/roc/toolchains/mine-2026-10-20-1111111/.talon.json $HOME2/.cache/roc/toolchains/mine-2026-10-20-1111111/.last-use $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use

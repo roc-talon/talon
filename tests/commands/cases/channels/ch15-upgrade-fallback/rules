@@ -1,0 +1,1 @@
+R-CH15 R-UP6 R-SP12 (slice 243, user decision of 2026-11-12): the check loop of `upgrade roc` on `=<user id>` goes down the newer builds of the channel, newest first: a build with a new error gets a note and the next one is tried; the first that passes is written; with none, `nothing to change`. stdout, stderr, calls.log and tree.diff come from the real run (reviewed).

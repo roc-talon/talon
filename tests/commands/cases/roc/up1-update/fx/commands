@@ -14,7 +14,7 @@ env:CI=true env:HOME={w}/home4 env:TALON_NOW=2026-10-19T12:00:00Z roc update
 env:CI=true env:HOME={w}/home5 env:TALON_NIGHTLY=0 roc update
 # R-DI12: --offline and no cached list: exit 15, nothing is installed.
 env:CI=true env:HOME={w}/home6 roc update --offline
-# R-CM15 R-CM19: roc update takes no operand: exit 2, no Fx call.
+# R-CM15 R-CM19 R-CH15 R-CH3 (slice 243): roc update takes at most one channel name; a compiler id is no name: exit 2, no Fx call.
 roc update nightly-2026-10-18-5349569
 # R-DL3 R-NI6: a person answers n: exit 13, the text says nothing was downloaded. The default and the store do not change.
 env:HOME={w}/home7 roc update

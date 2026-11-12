@@ -1,0 +1,6 @@
+== roc update
+exit 2
+== roc update proj --yes
+exit 19
+== roc update mine
+exit 2

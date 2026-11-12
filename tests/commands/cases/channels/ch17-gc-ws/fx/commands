@@ -1,0 +1,6 @@
+# R-GC5 R-CH17 R-PD12 (slice 243, Design Q619 G1): GC keeps a user build that a known project pins with `[toolchain] roc = "=<id>"` in its root talon.toml. TALON_NOW is 2026-10-22T12:00:00Z, the GC age is 30 days. The member w/m1 of a workspace (used 1 day ago) has its own talon.toml with no pin; the ROOT w/talon.toml pins reify-2026-08-01-aaaaaaa; the build is old (last use 2026-07-02) and nothing else uses it, so without the pin it would go (as in ch17-gc).
+#   Goes: mine-2026-08-02-bbbbbbb and nightly-2026-08-01-eeeeeee (no pin, old). Stays: reify-2026-08-01-aaaaaaa (pinned by p1), the default, and the two recent builds.
+# A dry run first: the 2 that go are listed with their sizes. Nothing is removed.
+cache gc --dry-run
+# The real run: the pinned build stays.
+cache gc

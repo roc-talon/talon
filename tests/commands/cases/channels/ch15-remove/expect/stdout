@@ -1,0 +1,16 @@
+== roc remove reify-2026-11-10-abc1234
+removed reify-2026-11-10-abc1234
+the default compiler is now reify-2026-11-03-1708298
+exit 0
+== env:HOME={w}/home2 roc remove nightly-2026-10-14-38a3029
+removed nightly-2026-10-14-38a3029
+no default compiler is set now
+exit 0
+== env:HOME={w}/home3 roc remove nightly-2026-10-14-38a3029
+removed nightly-2026-10-14-38a3029
+the default compiler is now nightly-2026-10-09-258ab27
+exit 0
+== env:HOME={w}/home4 roc remove reify-2026-11-10-abc1234
+removed reify-2026-11-10-abc1234
+no default compiler is set now
+exit 0

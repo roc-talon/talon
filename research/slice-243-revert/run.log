@@ -1,0 +1,57 @@
+# Run 1: all mutants (g1c, up3, up4 were NOT caught; tests added; see run 2 and 3)
+base l0-9: exit=0 All (151) tests passed in 4487.1 ms. 
+base L2: commands: 121 passed, 0 failed 
+c1a: L0 exit=1     1 failed     0 compiler errors 
+c1a: L2 FAIL channels/ch14-use commands: 120 passed, 1 failed 
+c1b: L0 exit=1     1 failed     0 compiler errors 
+c1b: L2 FAIL channels/ch14-use-stop FAIL roc/us1-use commands: 119 passed, 2 failed 
+c2: L0 exit=1     1 failed     0 compiler errors 
+c2: L2 commands: 121 passed, 0 failed 
+c3a: L0 exit=1     1 failed     0 compiler errors 
+c3a: L2 commands: 121 passed, 0 failed 
+c3b: L0 exit=1     1 failed     0 compiler errors 
+c3b: L2 FAIL channels/ch14-use commands: 120 passed, 1 failed 
+c5: L0 exit=0 All (151) tests passed in 2306.2 ms. 
+c5: L2 FAIL channels/ch14-use commands: 120 passed, 1 failed 
+u1a: L0 exit=1     1 failed     0 compiler errors 
+u1a: L2 FAIL channels/ch15-update commands: 120 passed, 1 failed 
+u1b: L0 exit=1     1 failed     0 compiler errors 
+u1b: L2 FAIL channels/ch15-update commands: 120 passed, 1 failed 
+ru2: L0 exit=1     1 failed     0 compiler errors 
+ru2: L2 commands: 121 passed, 0 failed 
+ru2b: L0 exit=1     1 failed     0 compiler errors 
+ru2b: L2 FAIL channels/ch15-update FAIL roc/up1-update FAIL roc/up2-exclude commands: 118 passed, 3 failed 
+r1a: L0 exit=1     1 failed     0 compiler errors 
+r1a: L2 FAIL channels/ch15-remove commands: 120 passed, 1 failed 
+r1b: L0 exit=0 All (151) tests passed in 2559.4 ms. 
+r1b: L2 FAIL channels/ch15-remove commands: 120 passed, 1 failed 
+u4: L0 exit=0 All (151) tests passed in 2309.4 ms. 
+u4: L2 FAIL channels/ch08-named-latest FAIL channels/ch15-update-errors commands: 119 passed, 2 failed 
+g1a: L0 exit=1     1 failed     0 compiler errors 
+g1a: L2 FAIL channels/ch17-gc-pin commands: 120 passed, 1 failed 
+g1b: L0 exit=0 All (151) tests passed in 2260.6 ms. 
+g1b: L2 FAIL channels/ch17-gc-pin commands: 120 passed, 1 failed 
+g1c: L0 exit=0 All (151) tests passed in 2205.8 ms. 
+g1c: L2 commands: 121 passed, 0 failed 
+up1: L0 exit=0 All (151) tests passed in 2252.6 ms. 
+up1: L2 FAIL channels/ch15-upgrade-fallback commands: 120 passed, 1 failed 
+up2: L0 exit=0 All (151) tests passed in 2127.2 ms. 
+up2: L2 FAIL channels/ch15-upgrade-fallback commands: 120 passed, 1 failed 
+up3: L0 exit=0 All (151) tests passed in 2176.0 ms. 
+up3: L2 commands: 121 passed, 0 failed 
+up4: L0 exit=0 All (151) tests passed in 2179.5 ms. 
+up4: L2 commands: 121 passed, 0 failed 
+up5: L0 exit=0 All (151) tests passed in 2176.8 ms. 
+up5: L2 FAIL channels/ch15-upgrade-errors commands: 120 passed, 1 failed 
+# Run 2 (after the new cases ch17-gc-ws, ch15-upgrade-young): g1c up3 up4
+g1c: L0 exit=0 All (151) tests passed in 2228.5 ms. 
+g1c: L2 FAIL channels/ch17-gc-ws commands: 123 passed, 1 failed 
+up3: L0 exit=0 All (151) tests passed in 2204.1 ms. 
+up3: L2 FAIL channels/ch15-upgrade-young commands: 123 passed, 1 failed 
+up4: L0 exit=0 All (151) tests passed in 2206.2 ms. 
+up4: L2 commands: 124 passed, 0 failed 
+# Run 3 (up4 moved to the 'picked' line; up4b is the equivalent mutant)
+up4: L0 exit=0 All (151) tests passed in 2184.8 ms. 
+up4: L2 FAIL channels/ch15-upgrade-switch commands: 123 passed, 1 failed 
+up4b: L0 exit=0 All (151) tests passed in 2227.1 ms. 
+up4b: L2 commands: 124 passed, 0 failed 

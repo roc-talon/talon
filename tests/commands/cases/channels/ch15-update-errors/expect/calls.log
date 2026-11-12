@@ -1,0 +1,42 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml

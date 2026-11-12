@@ -1,0 +1,60 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc-reify-nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.json $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=3
+list_dirs $HOME/.cache/roc/toolchains
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+list_dirs $HOME/.cache/roc/toolchains
+canonical $HOME/.cache $HOME/.cache/roc
+random
+copy_tree $PROJECT/p1 $HOME/.cache/roc/talon/tmp/0123456789abcdef
+list_dirs $HOME/.cache/roc/talon/tmp/0123456789abcdef
+write_atomic $HOME/.cache/roc/talon/tmp/0123456789abcdef/main.roc
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use
+probes 1
+  probe $PROJECT/p1 reify-2026-10-30-fedcba9 $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef reify-2026-11-03-1708298 $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/roc check main.roc timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.last-use
+write_atomic $HOME/.cache/roc/toolchains/reify-2026-10-30-fedcba9/.last-use
+probes 1
+  probe $HOME/.cache/roc/talon/tmp/0123456789abcdef reify-2026-11-03-1708298 $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/roc build main.roc --output=$HOME/.cache/roc/talon/tmp/0123456789abcdef/tln-probe.out --no-cache timeout=30
+    env XDG_CACHE_HOME=$HOME/.cache ROC_CACHE_DIR=$HOME/.cache/roc TALON_IN_PROXY=1
+delete $HOME/.cache/roc/talon/tmp/0123456789abcdef
+read_files $PROJECT/p1/talon.toml
+write_atomic $PROJECT/p1/talon.toml

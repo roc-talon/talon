@@ -1,0 +1,15 @@
+== roc list
+  ID                          KIND     INSTALLED   LAST USE  SOURCE
+  mine-2026-10-20-1111111     mine     2026-11-02  -         Karakatiza666/roc-mine (channel removed)
+  nightly-2026-10-14-38a3029  nightly  2026-10-20  -         -
+  reify-2026-10-30-fedcba9    reify    2026-11-01  -         Karakatiza666/roc-reify-nightlies
+* reify-2026-11-03-1708298    reify    2026-11-01  -         Karakatiza666/roc-reify-nightlies
+exit 0
+== roc list --json
+{"schema":1,"command":"roc list","ok":true,"data":{"default":"reify-2026-11-03-1708298","compilers":[{"id":"mine-2026-10-20-1111111","kind":"nightly","installed_at":"2026-11-02T12:00:00Z","last_use":null,"default":false,"channel":"mine","source":"Karakatiza666/roc-mine","channel_removed":true},{"id":"nightly-2026-10-14-38a3029","kind":"nightly","installed_at":"2026-10-20T09:00:00Z","last_use":null,"default":false},{"id":"reify-2026-10-30-fedcba9","kind":"nightly","installed_at":"2026-11-01T12:00:00Z","last_use":null,"default":false,"channel":"reify","source":"Karakatiza666/roc-reify-nightlies","channel_removed":false},{"id":"reify-2026-11-03-1708298","kind":"nightly","installed_at":"2026-11-01T12:00:00Z","last_use":null,"default":true,"channel":"reify","source":"Karakatiza666/roc-reify-nightlies","channel_removed":false}]},"error":null}
+exit 0
+== env:HOME={w}/home2 roc list
+  ID                          KIND     INSTALLED   LAST USE  SOURCE
+* mine-2026-10-20-1111111     mine     2026-11-02  -         Karakatiza666/roc-mine (channel removed)
+  nightly-2026-10-14-38a3029  nightly  2026-10-20  -         -
+exit 0

@@ -9,7 +9,9 @@ import ChannelfileTest
 import ChannelidTest
 import ChannelinstallTest
 import ChannelreleaseTest
+import ChanneldefaultTest
 import ChannelswitchTest
+import ChannelusepinTest
 import ChannelrangeTest
 import ChannelreadTest
 import ChannelrefTest

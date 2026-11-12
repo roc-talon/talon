@@ -1,0 +1,2 @@
+# R-CH14 R-U5 R-CH14-C1 (slice 243, Design Q619 C1): `tln roc use <user id>` when talon.toml has `[toolchain] roc = "*"` (a range that is not an =<user id> or >=<user id> pin). Talon stops with exit 10 and names the range; it writes no file (no talon.toml, no header, no .last-use). The stop is guessed to come right after the config read (no compiler list, no probe).
+roc use reify-2026-11-03-1708298 --file p1/main.roc

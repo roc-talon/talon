@@ -1,0 +1,1 @@
+R-CH15 R-CH9 R-NS2 R-NS3 R-CH8 R-RU1 (slice 243): `tln roc update` stops with exit 10 when the switch is off and the channel of the default is a user channel. The failure text is the one of ch11-switch-off (kind no_tuple). The calls.log is the start of ch15-update run 1 up to the first-seen rows, then the stop (a guess, listed in the slice file).

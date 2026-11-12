@@ -4,6 +4,7 @@ import Fail
 import Ident
 import JsonDoc
 import Locked
+import Pin
 import Manage
 import Release
 import RegistryCache
@@ -96,10 +97,10 @@ Gc :: [].{
 	## | 2 | The global default (`row.is_default`) | `Keep(Default)` |
 	## | 3 | Both times unknown | `Keep(NoTime)` |
 	## | 4 | Used in the last day: `now - used` is not more than 86400, or `used` is in the future | `Keep(LastDay)` |
-	## | 5 | A project of `projects` pins it (`Manage.pinned_by`), whatever the age of the toolchain (D17: an old nightly can leave the release list, so it may not download again) | `Keep(Pinned)` |
+	## | 5 | A project of `projects` pins it (`Manage.pinned_by`), or an id of `pinned` is it (slice 243, R-CH17, Design Q619 G1: the ids of `[toolchain] roc = "=<id>"` of the root `talon.toml` of the live projects, `Channel.toml_pin`), whatever the age of the toolchain (D17: an old nightly can leave the release list, so it may not download again) | `Keep(Pinned)` |
 	## | 6 | `now - used` is not more than `age` | `Keep(Used)` |
 	## | 7 | All other toolchains: a `git-*` build, a nightly, a release | `Remove` |
-	toolchains : { rows : List(Manage.Row), projects : List(Gc.Project), now : U64, age : U64 } -> List(Gc.Choice)
+	toolchains : { rows : List(Manage.Row), projects : List(Gc.Project), now : U64, age : U64, pinned ?: List(Str) } -> List(Gc.Choice)
 	toolchains = |facts| facts.rows.map(|row| { id: row.id, verdict: verdict_of(row, facts) })
 
 	## R-D2, R-D1 (slice 061): the Zig installs in the store. `entries` is the listing of `<cache>/toolchains` (`Fx.list_dirs!`, the first result of the 6 dirs of `scan_dirs`, as `Compiler.installed` gets it).
@@ -324,7 +325,7 @@ is_over : U64, U64, U64 -> Bool
 is_over = |time, now, span| now > time and now - time > span
 
 # R-GC5, D17: the first row of the table in the doc of `toolchains` that fits.
-verdict_of : Manage.Row, { rows : List(Manage.Row), projects : List(Gc.Project), now : U64, age : U64 } -> [Remove, Keep(Gc.Why)]
+verdict_of : Manage.Row, { rows : List(Manage.Row), projects : List(Gc.Project), now : U64, age : U64, pinned ?: List(Str) } -> [Remove, Keep(Gc.Why)]
 verdict_of = |row, facts| if row.kind == Link or row.kind == Copy {
 	Keep(Hand)
 } else if row.is_default {
@@ -334,7 +335,7 @@ verdict_of = |row, facts| if row.kind == Link or row.kind == Copy {
 		Err(Unknown) => Keep(NoTime)
 		Ok(used) => if !is_over(used, facts.now, 86400) {
 			Keep(LastDay)
-		} else if !Manage.pinned_by({ id: row.id, projects: facts.projects }).is_empty() {
+		} else if !Manage.pinned_by({ id: row.id, projects: facts.projects }).is_empty() or (facts.?pinned ?? []).any(|id| Pin.same_id(id, row.id)) {
 			Keep(Pinned)
 		} else if !is_over(used, facts.now, facts.age) {
 			Keep(Used)

@@ -1,0 +1,4 @@
+# run 1: the baseline on A, the candidate check and the build on R pass
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+0	../fixtures/check/out/build-pass.stdout	../fixtures/check/out/build-pass.stderr

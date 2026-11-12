@@ -1,0 +1,2 @@
+== env:TALON_NIGHTLY=0 upgrade roc --file p1/main.roc
+exit 10

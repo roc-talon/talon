@@ -1,0 +1,1 @@
+R-GC5 R-CH17 R-PD12 (slice 243, Design Q619 G1): for a member of a workspace GC reads the ROOT talon.toml (not the nearest one) and keeps the build that it pins. Same as ch17-gc-pin, with the project w/m1. Mutation check: mutant g1c.

@@ -1,4 +1,5 @@
 import Args
+import Channel
 import Compiler
 import Fail
 import JsonDoc
@@ -26,7 +27,7 @@ ManageUse :: [].{
 
 	## R-U1 (slice 026b): the check of the id that the operand named (an installed prefix or the list gave a full id). A pin is a nightly or a release (`Pin.is_id`). Any other id (`git-*`, `link-*`, `copy-*`, `debug-<sha>`) is the failure of row 3 of `read_use`.
 	use_pinnable : Str -> Try({}, Fail)
-	use_pinnable = |id| if Pin.is_id(id) Ok({}) else Err(use_refused(id))
+	use_pinnable = |id| if Pin.is_id(id) or Channel.user_parts(id).is_ok() Ok({}) else Err(use_refused(id))
 
 	## R-CS1, R-U3, R-RP1, R-WS13, R-RP3, R-BL1 (slice 026b): what `roc use` does for each member file, in the order of `members`. `id` is the new compiler. `pin` is the `roc:` entry of the member. `fallback` is the compiler of a member that has no pin
 	## (`ROC_TOOLCHAIN`, else the compiler that Resolution 13 selects: R-BL1).
@@ -49,7 +50,18 @@ ManageUse :: [].{
 				Ok(pin) => Pin.same_id(pin, facts.id)
 				Err(NoPin) => Bool.False
 			}
-			Ok({ file: member.file, baseline, previous: member.pin, op: if same Err(Same) else Ok(Pin(facts.id)) })
+			# Slice 243 (R-CH14): the pin of a user-channel build is in `talon.toml`. The header entry goes (`Unpin`); a member with no entry has no header edit.
+			op = if Channel.user_parts(facts.id).is_ok() {
+				match member.pin {
+					Ok(_) => Ok(Unpin)
+					Err(NoPin) => Err(Same)
+				}
+			} else if same {
+				Err(Same)
+			} else {
+				Ok(Pin(facts.id))
+			}
+			Ok({ file: member.file, baseline, previous: member.pin, op })
 		},
 	)
 
@@ -82,6 +94,55 @@ ManageUse :: [].{
 			},
 		)
 		lines.join().append("the roc pin is now ${facts.id}\n")
+	}
+
+	## Slice 243 (R-CH14, TW24): the lines of `roc use` when the root `talon.toml` was written (a user-channel build, or the way back to a nightly over a user pin). `toml` is the file with `old` (the old text of `[toolchain] roc`), `added` and `removed` (the channel table that was added or removed, `Err(None)` for none).
+	## `files` are the member files that were written, with their old header pin. Each element is one line with its `\n`:
+	##
+	## | Line | When |
+	## | --- | --- |
+	## | `<talon.toml>` | first |
+	## | `  + [toolchain] roc: =<id>` or `  ~ [toolchain] roc: <old> -> =<id>` | `user` (a user-channel build is the pin) |
+	## | `  - [toolchain] roc: <old>` | not `user` |
+	## | `  - [channels.<name>]`, `  + [channels.<name>]` | `removed`, then `added` |
+	## | `<file>` and `  - roc: <old>` | each member of `files` with a user pin; `  + roc: <id>` or `  ~ roc: <old> -> <id>` for a nightly |
+	## | `the roc pin is now =<id> (in talon.toml)` or `the roc pin is now <id>` | last |
+	use_toml_report : { id : Str, user : Bool, toml : { file : Str, old : Try(Str, [NoPin]), added : Try(Str, [None]), removed : Try(Str, [None]) }, files : List({ file : Str, previous : Try(Str, [NoPin]) }) } -> List(Str)
+	use_toml_report = |facts| {
+		pin = if facts.user {
+			match facts.toml.old {
+				Ok(old) => "  ~ [toolchain] roc: ${old} -> =${facts.id}\n"
+				Err(NoPin) => "  + [toolchain] roc: =${facts.id}\n"
+			}
+		} else {
+			match facts.toml.old {
+				Ok(old) => "  - [toolchain] roc: ${old}\n"
+				Err(NoPin) => "  - [toolchain] roc\n"
+			}
+		}
+		gone = match facts.toml.removed {
+			Ok(name) => ["  - [channels.${name}]\n"]
+			Err(None) => []
+		}
+		new = match facts.toml.added {
+			Ok(name) => ["  + [channels.${name}]\n"]
+			Err(None) => []
+		}
+		members = facts.files.map(
+			|f| if facts.user {
+				match f.previous {
+					Ok(old) => ["${f.file}\n", "  - roc: ${old}\n"]
+					Err(NoPin) => ["${f.file}\n"]
+				}
+			} else {
+				match f.previous {
+					Ok(old) => ["${f.file}\n", "  ~ roc: ${old} -> ${facts.id}\n"]
+					Err(NoPin) => ["${f.file}\n", "  + roc: ${facts.id}\n"]
+				}
+			},
+		)
+		last = if facts.user "the roc pin is now =${facts.id} (in talon.toml)\n" else "the roc pin is now ${facts.id}\n"
+		[["${facts.toml.file}\n", pin], gone, new].join().concat(members.join()).append(last)
 	}
 
 	## R-J3, R-J4, R-OUT4 (slice 026b, a proposal): the `data` of `roc use --json`, the keys in this order: `id` (the new pin), `files` (an array of `{ "path", "previous" }`, `previous` is the old pin as text or `null`), `probes` (the number of `roc` runs), `downloads` (the compilers that this run downloaded),

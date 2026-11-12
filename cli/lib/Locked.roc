@@ -35,7 +35,8 @@ Locked := {
 	## | `Add({ alias, url, is_platform })` | A whole new entry after the last entry (the form is the one of `Header.add_entry`) | R-H1 |
 	## | `Remove(alias)` | Removes the whole entry (`Header.remove_entry`). It works for a release row, a `Path` row and a `Foreign` row: `tln remove` of an unmanaged entry is a whole-entry change that the user asked for (R-H4, R-H9, R-RV5) | R-H1, R-H4, R-H9, R-RV5 |
 	## | `Pin(id)` | Sets the text of the `roc:` entry when there is one. Else adds the entry `roc: "<id>"` as the last entry. | R-H6, R-RP3 |
-	Op : [Set({ alias : Str, url : Str }), Replace({ alias : Str, url : Str }), Add({ alias : Str, url : Str, is_platform : Bool }), Remove(Str), Pin(Str)]
+	## | `Unpin` | Removes the whole `roc:` entry (`Header.remove_entry`), as `Remove` does for a dependency. No entry: the failure `roc is not in the header` (slice 243, R-CH14: the pin of a user-channel build is in `talon.toml`, not in the header). | R-H1, R-CH14 |
+	Op : [Set({ alias : Str, url : Str }), Replace({ alias : Str, url : Str }), Add({ alias : Str, url : Str, is_platform : Bool }), Remove(Str), Pin(Str), Unpin]
 
 	## Reads the header of the text. `path` is for the message. Failures are the ones of `Project.check_header` (R-PD8, R-TF5): no header is kind
 	## `Usage`, `<path> has no app, package or platform header`. A header that does not parse is kind `Input`,
@@ -110,6 +111,7 @@ alias_of = |op| match op {
 	Add({ alias, .. }) => alias
 	Remove(alias) => alias
 	Pin(_) => "roc"
+	Unpin => "roc"
 }
 
 # The text that the span of the op holds now (R-CC7).
@@ -167,6 +169,10 @@ apply_op = |path, text, op| {
 			# R-RV5: a path row and a foreign row go too (`check_row` refuses them for `Set` only).
 			if !locked.rows.any(|r| r.alias == alias) return Err(internal("${alias} is not in the header"))
 			written(alias, Header.remove_entry(text, alias))
+		}
+		Unpin => match locked.roc {
+			Ok(_) => written("roc", Header.remove_entry(text, "roc"))
+			Err(NoPin) => Err(internal("roc is not in the header"))
 		}
 		Pin(id) => match locked.roc {
 			Ok(_) => written(id, Header.set_value(text, "roc", id))

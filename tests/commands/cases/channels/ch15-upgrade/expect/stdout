@@ -1,0 +1,16 @@
+== upgrade roc --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/talon.toml
+  ~ [toolchain] roc: =reify-2026-10-30-fedcba9 -> =reify-2026-11-03-1708298
+resolved at 2026-11-10T12:00:00Z, 3 probes
+exit 0
+== upgrade roc --file p2/main.roc
+reify-2026-11-03-1708298 is the newest
+exit 0
+== upgrade roc --json --file p3/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"id":"reify-2026-11-03-1708298","files":[{"path":"$PROJECT/p3/talon.toml","previous":"=reify-2026-10-30-fedcba9"}],"probes":3,"downloads":0,"check":"passed","build":"passed","notes":[]},"error":null}
+exit 0
+== upgrade roc --json --file p2/main.roc
+{"schema":1,"command":"upgrade","ok":true,"data":{"id":"reify-2026-11-03-1708298","changed":false},"error":null}
+exit 0

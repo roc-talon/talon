@@ -1,0 +1,7 @@
+== upgrade roc --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/talon.toml
+  ~ [toolchain] roc: =reify-2026-10-30-fedcba9 -> =reify-2026-11-03-1708298
+resolved at 2026-11-10T12:00:00Z, 3 probes
+exit 0

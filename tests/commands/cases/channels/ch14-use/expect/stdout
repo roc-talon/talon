@@ -1,0 +1,51 @@
+== roc use reify-2026-11-03-1708298 --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/talon.toml
+  + [toolchain] roc: =reify-2026-11-03-1708298
+  + [channels.reify]
+$PROJECT/p1/main.roc
+  - roc: nightly-2026-10-09-258ab27
+the roc pin is now =reify-2026-11-03-1708298 (in talon.toml)
+exit 0
+== roc use reify-2026-11-03-1708298 --file p2/main.roc --json
+{"schema":1,"command":"roc use","ok":true,"data":{"id":"reify-2026-11-03-1708298","files":[{"path":"$PROJECT/p2/talon.toml","previous":null},{"path":"$PROJECT/p2/main.roc","previous":"nightly-2026-10-09-258ab27"}],"probes":3,"downloads":0,"check":"passed","build":"passed","notes":[]},"error":null}
+exit 0
+== env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 roc use reify-2026-11-03-1708298 --file p5/main.roc
+check: passed
+build: passed
+$PROJECT/p5/talon.toml
+  + [toolchain] roc: =reify-2026-11-03-1708298
+  + [channels.reify]
+$PROJECT/p5/main.roc
+  - roc: nightly-2026-10-09-258ab27
+the roc pin is now =reify-2026-11-03-1708298 (in talon.toml)
+note: ROC_TOOLCHAIN is nightly-2026-10-09-258ab27. It has a higher priority than the new pin reify-2026-11-03-1708298, so it still selects the compiler. The pin is used when ROC_TOOLCHAIN is not set.
+exit 0
+== roc use nightly-2026-10-14-38a3029 --file p3/main.roc
+check: passed
+build: passed
+$PROJECT/p3/talon.toml
+  - [toolchain] roc: =reify-2026-11-03-1708298
+  - [channels.reify]
+$PROJECT/p3/main.roc
+  + roc: nightly-2026-10-14-38a3029
+the roc pin is now nightly-2026-10-14-38a3029
+exit 0
+== roc use reify-2026-10-30-fedcba9 --file p4/main.roc
+check: passed
+build: passed
+$PROJECT/p4/talon.toml
+  ~ [toolchain] roc: =reify-2026-11-03-1708298 -> =reify-2026-10-30-fedcba9
+the roc pin is now =reify-2026-10-30-fedcba9 (in talon.toml)
+exit 0
+== roc use reify-2026-11-03-1708298 --file p6/main.roc
+check: passed
+build: passed
+$PROJECT/p6/talon.toml
+  + [toolchain] roc: =reify-2026-11-03-1708298
+  + [channels.reify]
+$PROJECT/p6/main.roc
+  - roc: nightly-2026-10-09-258ab27
+the roc pin is now =reify-2026-11-03-1708298 (in talon.toml)
+exit 0

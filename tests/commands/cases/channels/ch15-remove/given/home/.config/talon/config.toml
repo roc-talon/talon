@@ -1,0 +1,12 @@
+# tln settings
+default-roc = "reify-2026-11-10-abc1234"   # tln roc default writes it
+
+[channels.reify]
+shape = "github-release"
+source = "Karakatiza666/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"
+
+[channels.mine]
+shape = "github-release"
+source = "Karakatiza666/roc-mine"
+tag-prefix = "fork-"

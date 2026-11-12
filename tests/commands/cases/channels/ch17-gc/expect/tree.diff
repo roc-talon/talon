@@ -1,0 +1,42 @@
+--- home/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.last-use
++++ home/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.last-use
+@@ -1 +0,0 @@
+-2026-07-02T00:00:00Z
+--- home/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.talon.json
++++ home/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"mine-2026-08-02-bbbbbbb","url":"https://github.com/Karakatiza666/roc-mine/releases/download/fork-2026-08-02-bbbbbbb/roc_fork-linux_x86_64-2026-08-02-bbbbbbb.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"mine","compat":null,"installed_at":"2026-07-01T00:00:00Z","published_at":"2026-08-02T10:00:00Z","channel":"mine","source":"Karakatiza666/roc-mine"}
+\ No newline at end of file
+--- home/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/roc
++++ home/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/roc
+@@ -1 +0,0 @@
+-fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.last-use
++++ home/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.last-use
+@@ -1 +0,0 @@
+-2026-07-02T00:00:00Z
+--- home/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.talon.json
++++ home/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"nightly-2026-08-01-eeeeeee","url":"https://github.com/roc-lang/nightlies/releases/download/nightly-2026-08-01-eeeeeee/roc_nightly-linux_x86_64-2026-08-01-eeeeeee.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"@latest","compat":null,"installed_at":"2026-07-01T00:00:00Z","published_at":"2026-08-01T15:00:00Z"}
+\ No newline at end of file
+--- home/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/roc
++++ home/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/roc
+@@ -1 +0,0 @@
+-fake
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.last-use
++++ home/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.last-use
+@@ -1 +0,0 @@
+-2026-07-02T00:00:00Z
+--- home/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.talon.json
++++ home/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"reify-2026-08-01-aaaaaaa","url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-08-01-aaaaaaa/roc_nightly-reify-linux_x86_64-2026-08-01-aaaaaaa.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"reify","compat":null,"installed_at":"2026-07-01T00:00:00Z","published_at":"2026-08-01T10:00:00Z","channel":"reify","source":"Karakatiza666/roc-reify-nightlies"}
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/roc
++++ home/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/roc
+@@ -1 +0,0 @@
+-fake
+\ No newline at end of file

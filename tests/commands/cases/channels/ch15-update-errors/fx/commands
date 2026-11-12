@@ -1,0 +1,7 @@
+# R-CH15 R-CH8 R-CH11 R-RU3 (slice 243, Design Q619 U3 and U4): `tln roc update` stops before any request. config.toml has the default (the user build reify-2026-10-30-fedcba9) and no channel table. The project talon.toml has the table of `proj` only. `roc update` reads the project talon.toml only because config.toml has no table for the name (the search lines of ch11-unknown and ch11-project-only). No file is written.
+# Run 1 (U3): no name, the channel of the default is reify, and no file has its table: exit 2, the unknown-channel text.
+roc update
+# Run 2 (U4): a table that only the project has: exit 19 and the two lines with the `channel add` hint (the text of R-CH11). The consent is not given by --yes.
+roc update proj --yes
+# Run 3: a name with no table anywhere: exit 2.
+roc update mine

@@ -88,11 +88,15 @@ Update :: [].{
 
 	## Steps 2 to 6 (shared with `Upgrade.run!`): `Install.begin!`, `Install.check_member(false, ...)` and `Known.record!`.
 	begin! : Fx, Args => Try(Start, Fail)
-	begin! = |fx, args| {
-		start = Install.begin!(fx, args)?
-		Install.check_member(Bool.False, start.project)?
-		Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
-		Ok(start)
+	begin! = |fx, args| Update.begin_toml!(fx, args).map_ok(|got| got.start)
+
+	## Slice 243: `begin!` and the text of the `talon.toml` of the project (`Install.begin_toml!`, no new call).
+	begin_toml! : Fx, Args => Try({ start : Start, toml : Try(Str, [NoToml]) }, Fail)
+	begin_toml! = |fx, args| {
+		got = Install.begin_toml!(fx, args)?
+		Install.check_member(Bool.False, got.start.project)?
+		Known.record!(fx, { roots: got.start.roots, files: Install.canonical_files!(fx, got.start.project), now: got.start.now })?
+		Ok(got)
 	}
 
 	## Steps 8 and 9 (shared with `Upgrade.run!`): the compiler and `Resolve.install!` with `which.command` and the names.

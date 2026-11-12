@@ -1,0 +1,6 @@
+default-roc = "nightly-2026-10-09-258ab27"
+
+[channels.reify]
+shape = "github-release"
+source = "Karakatiza666/roc-reify-nightlies"
+tag-prefix = "nightly-reify-"

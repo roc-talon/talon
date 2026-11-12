@@ -1,0 +1,5 @@
+# R-CH14 R-CH8 R-CH9 R-CH11 R-U1 R-U3 R-SL7 (slice 243, Design Q612, Q616 item 2): `tln roc use <name>@<selector>` on a user channel. HOME is home (as ch14-use): R (reify-2026-11-03-1708298, the newest) and A (reify-2026-10-30-fedcba9) are installed, O is the default. The fake GitHub has the list of Karakatiza666/roc-reify-nightlies (R and A). No download.
+# Run 1: reify@latest is R: the list is read (the request, the cache, the first-seen rows), the check runs, `[toolchain] roc = "=R"` and the table go to talon.toml, the header pin O goes.
+roc use reify@latest --file p1/main.roc
+# Run 2: reify@-1 counts from reify@latest in the channel (Q616 item 2): it is A. The list is cached now (no request). p2 has the header pin O too.
+roc use reify@-1 --file p2/main.roc

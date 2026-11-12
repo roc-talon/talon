@@ -1,0 +1,2 @@
+# R-CH15 R-CH11 R-RU3 (slice 243, user decision of 2026-11-12): `tln upgrade roc` on `[toolchain] roc = "=proj-2026-10-01-aaaaaaa"` when only the project talon.toml has the table of proj (config.toml has only reify). Exit 19 with the two lines of R-CH11 and the `channel add` hint, before any request. No file is written.
+upgrade roc --file p1/main.roc

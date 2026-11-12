@@ -1,0 +1,19 @@
+--- home/.cache/roc/toolchains/reify-2026-11-10-abc1234/.talon.json
++++ home/.cache/roc/toolchains/reify-2026-11-10-abc1234/.talon.json
+@@ -1 +0,0 @@
+-{"format":1,"id":"reify-2026-11-10-abc1234","url":"https://github.com/Karakatiza666/roc-reify-nightlies/releases/download/nightly-reify-2026-11-10-abc1234/roc_nightly-reify-linux_x86_64-2026-11-10-abc1234.tar.gz","sha256":"b5d54c39e66671c9731b9f471e585d8262cd4f54963f0c93082d8dcf334d4c78","sha256_source":"github-digest","typed":"reify","compat":null,"installed_at":"2026-11-10T09:00:00Z","published_at":"2026-11-10T08:00:00Z","channel":"reify","source":"Karakatiza666/roc-reify-nightlies"}
+\ No newline at end of file
+--- home/.cache/roc/toolchains/reify-2026-11-10-abc1234/roc
++++ home/.cache/roc/toolchains/reify-2026-11-10-abc1234/roc
+@@ -1 +0,0 @@
+-fake
+\ No newline at end of file
+--- home/.config/talon/config.toml
++++ home/.config/talon/config.toml
+@@ -1,5 +1,5 @@
+ # tln settings
+-default-roc = "reify-2026-11-10-abc1234"   # tln roc default writes it
++default-roc = "reify-2026-11-03-1708298"   # tln roc default writes it
+ 
+ [channels.reify]
+ shape = "github-release"

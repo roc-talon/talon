@@ -437,6 +437,7 @@ ResolveBase :: [].{
 				Add({ alias, url, is_platform }) => rows.append({ alias, value: url, is_platform })
 				Remove(alias) => rows.keep_if(|r| r.alias != alias)
 				Pin(_) => rows
+				Unpin => rows
 			},
 		)
 	}

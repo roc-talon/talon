@@ -1,0 +1,4 @@
+[channels.proj]
+shape = "github-release"
+source = "acme/roc-proj"
+tag-prefix = "proj-"

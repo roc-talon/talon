@@ -1,4 +1,5 @@
 import Args
+import Channel
 import Common
 import Compiler
 import Fail
@@ -116,9 +117,9 @@ RocManage :: [].{
 
 	## `tln roc update` (`up`, slice 026, R-CS3, R-RU1 to R-RU4). The calls are in the table at the top of this file. The body is the work of the code agent.
 	update! : Fx, Args => I32
-	update! = |fx, args| match ManageUpdate.read_update(args) {
+	update! = |fx, args| match ManageUpdate.update_name(args) {
 		Err(fail) => Common.failed!(fx, args, fail)
-		Ok({}) => match update_flow!(fx, args) {
+		Ok(name) => match update_flow!(fx, args, name) {
 			Ok(done) => {
 				print_update!(fx, args, done)
 				0
@@ -236,15 +237,16 @@ write_config! = |fx, path, decide| {
 }
 
 # What `update!` prints: the compiler, what the default did, and the facts of `ManageUpdate.update_data`.
-Updated : { id : Str, item : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]), default : [Set, Moved(Str), Stay(Str), Same], previous : Try(Str, [Unset]), changed : Bool }
+Updated : { id : Str, item : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]), default : [Set, Moved(Str), Stay(Str), Same, NoDefault], previous : Try(Str, [Unset]), changed : Bool }
 
 # Steps 2 to 5 of `roc update`.
-update_flow! : Fx, Args => Try(Updated, Fail)
-update_flow! = |fx, args| {
+update_flow! : Fx, Args, Try(Str, [NoName]) => Try(Updated, Fail)
+update_flow! = |fx, args, name| {
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
 	before = RocInstall.read_config!(fx, roots)?.default_roc
-	got = download!(fx, args, { env, text: "@latest", installed: [] })?
+	# Slice 243 (R-CH15, R-CH8): a name gives the list of that channel; no name gives the channel of a user-channel default, else the nightlies (`@latest`).
+	got = download!(fx, args, { env, text: Channel.update_ref({ name, default: before }), installed: [] })?
 	moved = if got.defaulted {
 		{ default: Set, previous: Err(Unset), changed: Bool.True }
 	} else {
@@ -254,14 +256,16 @@ update_flow! = |fx, args| {
 }
 
 # Step 5, R-RU2: the default is the id already (no lock), a local build (stays), or moves under the lock of `config.toml`.
-moved_default! : Fx, Roots, { id : Str, before : Try(Str, [Unset]) } => Try({ default : [Set, Moved(Str), Stay(Str), Same], previous : Try(Str, [Unset]), changed : Bool }, Fail)
+moved_default! : Fx, Roots, { id : Str, before : Try(Str, [Unset]) } => Try({ default : [Set, Moved(Str), Stay(Str), Same, NoDefault], previous : Try(Str, [Unset]), changed : Bool }, Fail)
 moved_default! = |fx, roots, facts| match facts.before {
 	Ok(current) if current == facts.id => Ok({ default: Same, previous: facts.before, changed: Bool.False })
-	Ok(current) if Manage.update_move({ default: facts.before }) == Stay => Ok({ default: Stay(current), previous: facts.before, changed: Bool.False })
+	Ok(current) if Manage.update_move_to({ default: facts.before, id: facts.id }) == Stay => Ok({ default: Stay(current), previous: facts.before, changed: Bool.False })
+	# Slice 243 (R-CH15, Design Q619 U1): no default is set and the new build is a user build: it stays unset.
+	Err(Unset) if Manage.update_move_to({ default: facts.before, id: facts.id }) == Stay => Ok({ default: NoDefault, previous: facts.before, changed: Bool.False })
 	_ => {
 		path = Roots.item(roots, Config)
 		edited = edit_config!(fx, path, |text| Manage.default_set({ path, text, id: facts.id }))?
-		default : [Set, Moved(Str), Stay(Str), Same]
+		default : [Set, Moved(Str), Stay(Str), Same, NoDefault]
 		default = match (edited.changed, edited.previous) {
 			(Bool.False, _) => Same
 			(Bool.True, Ok(old)) => Moved(old)
@@ -316,7 +320,8 @@ remove_flow! = |fx, text| {
 	roots = Roots.of_run!(fx, env)?
 	config = RocInstall.read_config!(fx, roots)?
 	switch = Pin.switch({ env: Common.nightly_of(env), toml: Err(Unset), config: config.nightly })
-	installed = Launch.toolchains!(fx, roots)
+	# Slice 243 (R-CH15): the user-channel builds are installed ids here.
+	installed = Launch.toolchains_all!(fx, roots)
 	id = Nightlies.pick({ text, named: installed, auto: installed, base: Err(None) }).map_err(|error| Nightlies.failure(error))?
 	projects = pinned!(fx, roots, id)?
 	metas = fx.read_files!(installed.map(|each| Roots.item(roots, ToolchainMeta(each))))
@@ -345,7 +350,11 @@ remove_flow! = |fx, text| {
 				Ok(note) => fx.err!("note: ${note}\n")
 				Err(None) => {}
 			}
-			Err(None) => {}
+			Err(None) => match Manage.unset_note({ removed: id }) {
+				# Slice 243 (R-RR1, Design Q619 R1): a user default with no other build of its channel is unset, with a note.
+				Ok(note) => fx.err!("note: ${note}\n")
+				Err(None) => {}
+			}
 		}
 	}
 	after = if was_default next else config.default_roc.map_err(|Unset| None)

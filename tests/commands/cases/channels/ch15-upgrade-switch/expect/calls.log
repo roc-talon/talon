@@ -1,0 +1,29 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+clock
+cwd
+canonical $PROJECT/p1/main.roc
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+canonical $PROJECT/p1/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+platform
+list_dirs $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies
+programs gh
+http_get https://api.github.com/repos/Karakatiza666/roc-reify-nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.json $HOME/.cache/roc/talon/index/github/Karakatiza666/roc-reify-nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=2

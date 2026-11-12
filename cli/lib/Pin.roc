@@ -234,8 +234,17 @@ Pin :: [].{
 		if Pin.counts_as_nightly(facts.id) and !facts.nightly {
 			Err(Fail.new(NoTuple, "tln roc use ${facts.id}: it is a nightly, and nightly is false (set by ${Pin.source_text(facts.source)}). Use a release, or change the nightly switch. ${keep}"))
 		} else {
+			# Slice 243 (R-CH14, Design Q619 C1): an existing `=<user id>` or `>=<user id>` pin is replaced by `roc use`, so it never stops (a user build, or a nightly on the way back).
+			replaced = match facts.req {
+				Ok(Exactly(a)) => Channel.user_parts(a).is_ok()
+				Ok(AtLeast(a)) => Channel.user_parts(a).is_ok()
+				_ => Bool.False
+			}
 			match (facts.req, facts.req_text) {
-				(Ok(req), Ok(text)) if !Pin.admits({ req, id: facts.id, times: facts.times }) => Err(Fail.new(NoTuple, "tln roc use ${facts.id}: it is outside [toolchain] roc (${text}). Use a compiler in the range, or change [toolchain] roc. ${keep}"))
+				(Ok(req), Ok(text)) if !replaced and !Pin.admits({ req, id: facts.id, times: facts.times }) => match Channel.user_parts(facts.id) {
+					Ok(parts) => Err(Fail.new(NoTuple, "talon.toml has [toolchain] roc = \"${text}\", which does not take the user build ${facts.id}. Only an =<id> or >=<id> pin of channel ${parts.name} does. Change [toolchain] roc first."))
+					Err(_) => Err(Fail.new(NoTuple, "tln roc use ${facts.id}: it is outside [toolchain] roc (${text}). Use a compiler in the range, or change [toolchain] roc. ${keep}"))
+				}
 				_ => Ok({})
 			}
 		}

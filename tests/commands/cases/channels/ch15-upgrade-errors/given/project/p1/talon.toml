@@ -1,0 +1,7 @@
+[toolchain]
+roc = "=proj-2026-10-01-aaaaaaa"
+
+[channels.proj]
+shape = "github-release"
+source = "acme/roc-proj"
+tag-prefix = "proj-"

@@ -1,4 +1,5 @@
 import Args
+import Channel
 import Clock
 import Common
 import Compiler
@@ -12,6 +13,7 @@ import Known
 import Net
 import Manage
 import Out
+import Pin
 import Projects
 import RegistryCache
 import RocInstall
@@ -81,9 +83,9 @@ gc_flow! = |fx, plan, flag| {
 	roots = Roots.of_run!(fx, env)?
 	clocks = CacheGc.clocks_of({ env, real: fx.clock!() })?
 	if plan.dry_run {
-		work!(fx, roots, clocks, plan, { flag, env: Net.from_env(env).registry })
+		work!(fx, roots, clocks, plan, { flag, env: Net.from_env(env).registry, home: RocInstall.env_var(env, "HOME") ?? "" })
 	} else {
-		match fx.with_lock!(Roots.item(roots, Gc), NoWait, || work!(fx, roots, clocks, plan, { flag, env: Net.from_env(env).registry })) {
+		match fx.with_lock!(Roots.item(roots, Gc), NoWait, || work!(fx, roots, clocks, plan, { flag, env: Net.from_env(env).registry, home: RocInstall.env_var(env, "HOME") ?? "" })) {
 			Ok(done) => Ok(done)
 			Err(Busy) => Ok({ dry_run: Bool.False, ran: Bool.False, toolchains: [], skipped: [], compat: [], stale: [], builds: [], pkgs: [], projects: [], sizes: [] })
 			Err(Failed(fail)) => Err(fail)
@@ -92,7 +94,7 @@ gc_flow! = |fx, plan, flag| {
 }
 
 # Steps 4 to 11, in the GC lock. All reads come first: a failure there ends the run with nothing removed (D7).
-work! : Fx, Roots, Clocks, Gc.Plan, { flag : Try(Str, [Unset]), env : Try(Str, [Unset]) } => Try(Gc.Done, Fail)
+work! : Fx, Roots, Clocks, Gc.Plan, { flag : Try(Str, [Unset]), env : Try(Str, [Unset]), home : Str } => Try(Gc.Done, Fail)
 work! = |fx, roots, clocks, plan, registry| {
 	config = RocInstall.read_config!(fx, roots)?
 	# R-GC15, Design Q611: the registry of the run, in the R-RG1 order. A bad value stops GC before any listing.
@@ -101,7 +103,8 @@ work! = |fx, roots, clocks, plan, registry| {
 	dirs = Gc.scan_dirs(roots)
 	listed = fx.list_dirs!(dirs)
 	ids = match listed {
-		[Ok(found), ..] => Compiler.installed(found)
+		# Slice 243 (R-GC5, R-CH17): a user-channel build is a toolchain of the rule of a nightly.
+		[Ok(found), ..] => Text.sorted(Compiler.installed(found).concat(Compiler.installed_users(found)))
 		_ => []
 	}
 	builds = Gc.entries({ dirs: [roots.build], listed: fx.list_dirs!([roots.build]) })
@@ -110,11 +113,12 @@ work! = |fx, roots, clocks, plan, registry| {
 	known = known_projects!(fx, roots, { now: clocks.now, age })?
 	protected = protect!(fx, roots, { live: known.live, entries })
 	projects = known.live.map(|project| project.path)
+	pinned = toml_pins!(fx, registry.home, known.live)
 	paths = ids.join_map(|id| [Roots.item(roots, ToolchainMeta(id)), Roots.item(roots, ToolchainLastUse(id))])
 	reads = if ids.is_empty() [] else fx.read_files!(paths)
 	found = Manage.found_of(ids, reads)
 	rows = Manage.rows({ found, default: config.default_roc })
-	choices = Gc.toolchains({ rows, projects: known.live, now: clocks.now, age })
+	choices = Gc.toolchains({ rows, projects: known.live, now: clocks.now, age, pinned })
 	zig_ids = match listed {
 		[Ok(found_dirs), ..] => Gc.zig_dirs(found_dirs)
 		_ => []
@@ -217,6 +221,32 @@ known_projects! = |fx, roots, facts| {
 	entries = Known.entries!(fx, roots)?
 	reads = if entries.is_empty() [] else fx.read_files!(entries.map(|entry| entry.path))
 	Ok(Gc.projects({ entries, reads, now: facts.now, age: facts.age }))
+}
+
+# Slice 243 (R-GC5, R-CH17, R-PD12, Design Q619 G1): the ids that the root `talon.toml` of the live projects pins with `[toolchain] roc = "=<id>"` (any id: a nightly, a release, a user build). The root is the project search from the directory of the project file
+# (`RocInstall.root_toml!`: the workspace root, else the nearest `talon.toml`). A root that two projects share is read once. A project with no root `talon.toml` pins nothing.
+toml_pins! : Fx, Str, List(Gc.Project) => List(Str)
+toml_pins! = |fx, home, live| {
+	var $texts = []
+	var $seen = []
+	for project in live {
+		match RocInstall.root_toml!(fx, { start: Text.dir_of(project.path), home }) {
+			Ok(found) => if !$seen.contains(found.path) {
+				$seen = $seen.append(found.path)
+				$texts = $texts.append(found.text)
+			}
+			Err(NoProject) => {}
+		}
+	}
+	$texts.keep_oks(
+		|text| match Channel.pin_text(text) {
+			Ok(value) => match Pin.parse_req(value) {
+				Ok(Exactly(id)) => Ok(id)
+				_ => Err(None)
+			}
+			Err(_) => Err(None)
+		},
+	)
 }
 
 # Step 9, R-CC10: each compiler under its own lock with `NoWait`. A busy lock skips it. The result lists are in the order of `ids`.

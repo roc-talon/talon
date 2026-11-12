@@ -1,0 +1,5 @@
+# R-CH15 R-UP6 R-RP1 R-U3 R-SP12 (slice 243, user decision of 2026-11-12): the fallback of `tln upgrade roc` on `[toolchain] roc = "=<user id>"`. HOME has the user builds A (reify-2026-10-30-fedcba9), R (reify-2026-11-03-1708298) and B (reify-2026-11-08-bbbbbbb), all installed and listed. Both projects pin =A.
+# Run 1: the newest build B fails its check with a new error (duplicate definition). A note names B and the reason. R passes, so the pin moves to R.
+upgrade roc --file p1/main.roc
+# Run 2: B and R both fail. One note for each, then `nothing to change`. talon.toml is unchanged.
+upgrade roc --file p2/main.roc

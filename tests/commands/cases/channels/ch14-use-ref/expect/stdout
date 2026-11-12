@@ -1,0 +1,20 @@
+== roc use reify@latest --file p1/main.roc
+check: passed
+build: passed
+$PROJECT/p1/talon.toml
+  + [toolchain] roc: =reify-2026-11-03-1708298
+  + [channels.reify]
+$PROJECT/p1/main.roc
+  - roc: nightly-2026-10-09-258ab27
+the roc pin is now =reify-2026-11-03-1708298 (in talon.toml)
+exit 0
+== roc use reify@-1 --file p2/main.roc
+check: passed
+build: passed
+$PROJECT/p2/talon.toml
+  + [toolchain] roc: =reify-2026-10-30-fedcba9
+  + [channels.reify]
+$PROJECT/p2/main.roc
+  - roc: nightly-2026-10-09-258ab27
+the roc pin is now =reify-2026-10-30-fedcba9 (in talon.toml)
+exit 0

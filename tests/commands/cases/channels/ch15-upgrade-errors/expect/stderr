@@ -1,0 +1,2 @@
+tln: error[input]: talon.toml uses compiler channel proj (github.com/acme/roc-proj).
+Run: tln roc channel add proj

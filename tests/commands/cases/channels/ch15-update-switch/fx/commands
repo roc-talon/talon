@@ -1,0 +1,2 @@
+# R-CH15 R-CH9 R-NS3 R-NS2 R-CH8 (slice 243, Design Q615 item 5): `tln roc update` with nightly = false in config.toml and a user-channel default. No name: the channel of default-roc is reify. A user build counts as a nightly for the switch (R-CH9), so no build is allowed: exit 10, the text of `roc install reify` (ch11-switch-off). The list is read first (request, cache, first-seen rows), as in that case. Nothing else changes: the default and the store stay.
+roc update

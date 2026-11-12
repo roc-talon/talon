@@ -217,16 +217,27 @@ Manage :: [].{
 	## R-RR1, R-NS3, R-NS6: the compiler that takes the global default when the default `removed` goes. The newest by `Pin.order` (with `times`) of the ids in `installed` except `removed`, that are a release, or a nightly when `nightly`
 	## (the `nightly` switch) is true. Review (G2): the order is `Pin.order` with `times`, as rank 4: a release with a date in `times` is ordered by its date, so a release newer than every nightly wins. A `git-`, `link-` or `copy-` id is never chosen (R-NS6: chosen by name only). None: `Err(None)` and the default is not set.
 	next_default : { installed : List(Str), removed : Str, nightly : Bool, times : List({ id : Str, published_at : U64 }) } -> Try(Str, [None])
-	next_default = |facts| {
-		other = |id| id != facts.removed and Pin.is_id(id)
-		admitted = |id| other(id) and (facts.nightly or Manage.kind_of(id) != Nightly)
-		newest = |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best
-		# R-RR1: no admitted compiler is left, so the newest of any kind takes the default (a note tells that the switch rejects it).
-		match facts.installed.keep_if(admitted) {
-			[first, .. as rest] => Ok(rest.fold(first, newest))
-			[] => match facts.installed.keep_if(other) {
-				[first, .. as rest] => Ok(rest.fold(first, newest))
+	next_default = |facts| match Channel.user_parts(facts.removed) {
+		# Slice 243 (R-RR1, R-CH15, R-CH9, Design Q619 R1): a user-channel default moves only inside its channel, to the newest other build (`Channel.user_order`). With none, no default is set: never a nightly, never another channel. The switch does not matter (a user build counts as a nightly, so none is admitted when it is off, and the newest still takes it).
+		Ok(_) => {
+			same = |id| id != facts.removed and Channel.user_order(id, facts.removed, facts.times).is_ok()
+			newest_user = |best, id| if Channel.user_order(id, best, facts.times) == Ok(After) id else best
+			match facts.installed.keep_if(same) {
+				[first, .. as rest] => Ok(rest.fold(first, newest_user))
 				[] => Err(None)
+			}
+		}
+		Err(_) => {
+			other = |id| id != facts.removed and Pin.is_id(id)
+			admitted = |id| other(id) and (facts.nightly or Manage.kind_of(id) != Nightly)
+			newest = |best, id| if Pin.order({ a: id, b: best, times: facts.times }) == After id else best
+			# R-RR1: no admitted compiler is left, so the newest of any kind takes the default (a note tells that the switch rejects it).
+			match facts.installed.keep_if(admitted) {
+				[first, .. as rest] => Ok(rest.fold(first, newest))
+				[] => match facts.installed.keep_if(other) {
+					[first, .. as rest] => Ok(rest.fold(first, newest))
+					[] => Err(None)
+				}
 			}
 		}
 	}
@@ -346,8 +357,34 @@ Manage :: [].{
 		}
 	}
 
+	## Slice 243 (R-RU2, R-CH15, Design Q619 U1): does `roc update` move the global default to the new build `id`? The rows of `update_move` hold for a nightly, a release or no default. A user-channel default (`Channel.user_parts`) moves only to a build of the same channel, read from the right (R-CH5).
+	## A user build never becomes the default of a nightly, a release or no default (`Stay`: a note says how). A new build that is no user build and no nightly or release (`git-*`) does not move a user default.
+	update_move_to : { default : Try(Str, [Unset]), id : Str } -> [Move, Stay]
+	update_move_to = |facts| match Channel.user_parts(facts.id) {
+		Ok(new) => match facts.default {
+			Ok(current) => match Channel.user_parts(current) {
+				Ok(old) => if old.name == new.name Move else Stay
+				Err(_) => Stay
+			}
+			Err(Unset) => Stay
+		}
+		Err(_) => match facts.default {
+			Ok(current) if Channel.user_parts(current).is_ok() => Stay
+			_ => update_move({ default: facts.default })
+		}
+	}
+
+	## Slice 243 (R-RR1, R-CH15, Design Q619 R1, R-OUT2, TW24 proposal): the note when the removed default `removed` was a user-channel build and no other build of its channel is installed, so no default is set. No `note: ` and no line end.
+	## `<removed> was the default and no other build of the channel <name> is installed, so no default is set. Install one with tln roc install <name>, then run: tln roc default <id>`. Any other id gives `Err(None)`.
+	unset_note : { removed : Str } -> Try(Str, [None])
+	unset_note = |facts| match Channel.user_parts(facts.removed) {
+		Ok(parts) => Ok("${facts.removed} was the default and no other build of the channel ${parts.name} is installed, so no default is set. Install one with tln roc install ${parts.name}, then run: tln roc default <id>")
+		Err(_) => Err(None)
+	}
+
 	# Split to `ManageUpdate` and `ManageUse` (slice 036b3). A unit test calls these names.
 	read_update = ManageUpdate.read_update
+	update_name = ManageUpdate.update_name
 	update_data = ManageUpdate.update_data
 	update_report = ManageUpdate.update_report
 	read_use = ManageUse.read_use

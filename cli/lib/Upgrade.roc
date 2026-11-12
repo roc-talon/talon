@@ -1,9 +1,16 @@
 import Args
+import Channel
+import Clock
 import Common
 import Fail
 import Fx
+import JsonDoc
 import NightlyPlan
+import ManageUse
 import Opts
+import Out
+import Report
+import RocUse
 import ShareHook
 import Update
 
@@ -55,7 +62,36 @@ Upgrade :: [].{
 		Err(fail) => Common.failed!(fx, args, fail)
 		Ok({ opts }) => {
 			shown = Common.shown_fx(fx, args)
-			result = match Update.begin!(shown, args) {
+			got = Update.begin_toml!(shown, args)
+			begun = got.map_ok(|g| g.start)
+			# Slice 243 (R-CH15): `tln upgrade roc` on `[toolchain] roc = "=<user id>"` runs the check loop over the builds of that channel and writes talon.toml.
+			held_user = match got {
+				Ok(g) if opts.names == ["roc"] => match g.toml {
+					Ok(text) => match Channel.pin_text(text) {
+						Ok(value) => match Channel.user_range(value) {
+							Ok(Exactly(id)) => Ok(id)
+							_ => Err(None)
+						}
+						Err(_) => Err(None)
+					}
+					Err(NoToml) => Err(None)
+				}
+				_ => Err(None)
+			}
+			match held_user {
+				Ok(held) => match begun {
+					Ok(start) => return match RocUse.upgrade_user!(shown, args, start, { held, dry_run: opts.dry_run }) {
+						Ok(done) => {
+							print_user!(fx, shown, args, start.now, done)
+							0
+						}
+						Err(fail) => Common.failed!(fx, args, fail)
+					}
+					Err(fail) => return Common.failed!(fx, args, fail)
+				}
+				Err(_) => {}
+			}
+			result = match begun {
 				Ok(start) => Update.resolve!(shown, args, opts, start, { command: Upgrade, names: opts.names, fixed: [], fresh: Bool.False })
 				Err(fail) => Err(fail)
 			}
@@ -67,6 +103,41 @@ Upgrade :: [].{
 				}
 				Err(fail) => ShareHook.failed!(fx, args, fail)
 			}
+		}
+	}
+}
+
+# Slice 243 (R-CH15, TW24 proposal): the lines of `tln upgrade roc` on a user pin. `Newest`: `<id> is the newest`. A move: the root `talon.toml` and `  ~ [toolchain] roc: =<old> -> =<new>`, then `resolved at <time>, <n> probes` (and `dry run: nothing was written`).
+# With `--json` the human text goes to stderr and stdout is the envelope; `data` is the `data` of `roc use`.
+print_user! : Fx, Fx, Args, U64, [Newest(Str), Kept({ note : Try(Str, [None]) }), Moved({ id : Str, old : Str, file : Str, written : Bool, probes : U64, downloads : U64, built : Bool, notes : List(Str), skipped : Try(Str, [None]) })] => {}
+print_user! = |fx, shown, args, now, done| match done {
+	Newest(id) => {
+		shown.out!("${id} is the newest\n")
+		if args.json {
+			fx.out!(Out.json_ok({ command: args.typed, data: JsonDoc.Obj([("id", JsonDoc.Text(id)), ("changed", JsonDoc.Flag(Bool.False))]) }))
+		}
+	}
+	Kept(_) => {
+		# As `upgrade roc` when no later nightly works (ur5-optional): the note, `nothing to change`, exit 0.
+		shown.out!("nothing to change\n")
+		if args.json {
+			fx.out!(Out.json_ok({ command: args.typed, data: JsonDoc.Obj([("changed", JsonDoc.Flag(Bool.False)), ("notes", JsonDoc.Arr([]))]) }))
+		}
+	}
+	Moved(moved) => {
+		match moved.skipped {
+			Ok(text) => shown.out!("note: ${text}\n")
+			Err(None) => {}
+		}
+		shown.out!("${moved.file}\n")
+		shown.out!("  ~ [toolchain] roc: ${moved.old} -> =${moved.id}\n")
+		shown.out!("${Report.resolved_line({ at: Clock.format_utc(now), log: Err(None), probes: moved.probes })}\n")
+		if !moved.written {
+			shown.out!("dry run: nothing was written\n")
+		}
+		if args.json {
+			files = if moved.written [{ file: moved.file, previous: Ok(moved.old) }] else []
+			fx.out!(Out.json_ok({ command: args.typed, data: ManageUse.use_data({ id: moved.id, files, probes: moved.probes, downloads: moved.downloads, built: moved.built, notes: moved.notes }) }))
 		}
 	}
 }

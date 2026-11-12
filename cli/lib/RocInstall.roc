@@ -404,7 +404,13 @@ RocInstall :: [].{
 			Ok(dir) => dir
 			Err(_) => ""
 		}
-		match Project.scan!(fx, { start: fx.cwd!(), home }) {
+		RocInstall.root_toml!(fx, { start: fx.cwd!(), home })
+	}
+
+	## Slice 243 (R-PD12, R-GC5): as `project_toml!` for the project search that starts at `start` (a directory), not at `cwd`.
+	root_toml! : Fx, { start : Str, home : Str } => Try({ path : Str, text : Str }, [NoProject])
+	root_toml! = |fx, facts| {
+		match Project.scan!(fx, facts) {
 			Ok(found) => {
 				# The workspace root, else the nearest `talon.toml`.
 				at = match found.root {

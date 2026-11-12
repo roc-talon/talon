@@ -1,0 +1,1 @@
+R-CH15 R-CH11 (slice 243, user decision of 2026-11-12): a project-only table for the channel of the pin gives exit 19 with the channel add hint, before any request. The calls.log is baked from the real run later.

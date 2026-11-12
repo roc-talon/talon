@@ -1,0 +1,22 @@
+== roc update
+reify-2026-11-03-1708298 is the newest
+the default compiler moved from reify-2026-10-30-fedcba9 to reify-2026-11-03-1708298
+exit 0
+== roc update
+reify-2026-11-03-1708298 is the newest
+exit 0
+== roc update reify --json
+{"schema":1,"command":"roc update","ok":true,"data":{"id":"reify-2026-11-03-1708298","path":"$HOME/.cache/roc/toolchains/reify-2026-11-03-1708298","installed":false,"previous":"reify-2026-11-03-1708298","changed":false},"error":null}
+exit 0
+== env:HOME={w}/home2 roc update nightly
+nightly-2026-10-14-38a3029 is the newest
+note: the default compiler reify-2026-11-03-1708298 is a build of the channel reify, so it stays. To change it, run: tln roc default nightly-2026-10-14-38a3029
+exit 0
+== env:HOME={w}/home4 roc update reify
+reify-2026-11-03-1708298 is the newest
+note: the default compiler nightly-2026-10-14-38a3029 is not a build of the channel reify, so it stays. To change it, run: tln roc default reify-2026-11-03-1708298
+exit 0
+== env:HOME={w}/home5 roc update reify
+reify-2026-11-03-1708298 is the newest
+note: no default compiler is set, and reify-2026-11-03-1708298 is a build of the channel reify, so it is not made the default. To use it, run: tln roc default reify-2026-11-03-1708298
+exit 0

@@ -1,0 +1,76 @@
+args
+env_all
+tty
+read_files $HOME/.config/talon/config.toml
+env_all
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+read_files $HOME/.cache/roc/talon/projects.json
+read_files $HOME/.cache/roc/toolchains/mine-2026-11-12-1111111/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/reify-2026-11-03-1708298/.talon.json $HOME/.cache/roc/toolchains/reify-2026-11-10-abc1234/.talon.json
+lock $HOME/.cache/roc/toolchains/reify-2026-11-10-abc1234 nowait: held
+random
+rename $HOME/.cache/roc/toolchains/reify-2026-11-10-abc1234 $HOME/.cache/roc/toolchains/reify-2026-11-10-abc1234.0123456789abcdef.trash
+delete $HOME/.cache/roc/toolchains/reify-2026-11-10-abc1234.0123456789abcdef.trash
+unlock $HOME/.cache/roc/toolchains/reify-2026-11-10-abc1234
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME2/.config/talon/config.toml
+env_all
+read_files $HOME2/.config/talon/config.toml
+list_dirs $HOME2/.cache/roc/toolchains
+read_files $HOME2/.cache/roc/talon/projects.json
+read_files $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME2/.cache/roc/toolchains/reify-2026-11-10-abc1234/.talon.json
+lock $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+random
+rename $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+delete $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-14-38a3029
+lock $HOME2/.config/talon/config.toml nowait: held
+read_files $HOME2/.config/talon/config.toml
+read_files $HOME2/.config/talon/config.toml
+write_atomic $HOME2/.config/talon/config.toml
+unlock $HOME2/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME3/.config/talon/config.toml
+env_all
+read_files $HOME3/.config/talon/config.toml
+list_dirs $HOME3/.cache/roc/toolchains
+read_files $HOME3/.cache/roc/talon/projects.json
+read_files $HOME3/.cache/roc/toolchains/nightly-2026-10-09-258ab27/.talon.json $HOME3/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME3/.cache/roc/toolchains/reify-2026-11-10-abc1234/.talon.json
+lock $HOME3/.cache/roc/toolchains/nightly-2026-10-14-38a3029 nowait: held
+random
+rename $HOME3/.cache/roc/toolchains/nightly-2026-10-14-38a3029 $HOME3/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+delete $HOME3/.cache/roc/toolchains/nightly-2026-10-14-38a3029.0123456789abcdef.trash
+unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-14-38a3029
+lock $HOME3/.config/talon/config.toml nowait: held
+read_files $HOME3/.config/talon/config.toml
+read_files $HOME3/.config/talon/config.toml
+write_atomic $HOME3/.config/talon/config.toml
+unlock $HOME3/.config/talon/config.toml
+args
+env_all
+tty
+read_files $HOME4/.config/talon/config.toml
+env_all
+read_files $HOME4/.config/talon/config.toml
+list_dirs $HOME4/.cache/roc/toolchains
+read_files $HOME4/.cache/roc/talon/projects.json
+read_files $HOME4/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME4/.cache/roc/toolchains/reify-2026-11-10-abc1234/.talon.json
+lock $HOME4/.cache/roc/toolchains/reify-2026-11-10-abc1234 nowait: held
+random
+rename $HOME4/.cache/roc/toolchains/reify-2026-11-10-abc1234 $HOME4/.cache/roc/toolchains/reify-2026-11-10-abc1234.0123456789abcdef.trash
+delete $HOME4/.cache/roc/toolchains/reify-2026-11-10-abc1234.0123456789abcdef.trash
+unlock $HOME4/.cache/roc/toolchains/reify-2026-11-10-abc1234
+lock $HOME4/.config/talon/config.toml nowait: held
+read_files $HOME4/.config/talon/config.toml
+read_files $HOME4/.config/talon/config.toml
+write_atomic $HOME4/.config/talon/config.toml
+unlock $HOME4/.config/talon/config.toml

@@ -1,0 +1,1 @@
+R-GC5 R-CH17 R-PD12 (slice 243, Design Q619 G1): a pin =<user id> in the root talon.toml of a known project keeps the build at any age. Same home as ch17-gc plus project p1. The calls.log is the actual output of the current code with the pinned build left out of the removal steps (the extra read of p1/talon.toml for the pin is guessed: it is the same read as for [tools]).

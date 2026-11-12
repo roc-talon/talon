@@ -1,0 +1,4 @@
+tln: error[usage]: unknown compiler channel reify. Add it: tln roc channel add reify <URL>
+tln: error[input]: talon.toml uses compiler channel proj (github.com/acme/roc-proj).
+Run: tln roc channel add proj
+tln: error[usage]: unknown compiler channel mine. Add it: tln roc channel add mine <URL>

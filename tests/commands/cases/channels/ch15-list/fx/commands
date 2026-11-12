@@ -1,0 +1,6 @@
+# R-CH15 R-CH13 R-RU2 R-GC5 (slice 243): the default marks of `roc list` for a user-channel build (GUARD: green when written, it holds what slice 242 made). HOME is home: the default is the user build reify-2026-11-03-1708298 and its table is in config.toml. The `*` is on that row, not on the newer-looking nightly. The other user build (reify-2026-10-30-fedcba9) and the build of the channel mine (no table: `(channel removed)`) have no mark.
+roc list
+# R-CH15 R-J3: the same with --json. The `default` field is the id of the user build. No first-run lines.
+roc list --json
+# R-CH15 R-CH13: HOME is home2. The default is a build of a channel that has no table (it was removed): the row has the mark `*` and `(channel removed)`.
+env:HOME={w}/home2 roc list
