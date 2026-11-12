@@ -1,0 +1,1 @@
+package [Lib] { parser: "https://github.com/acme/parser/releases/download/1.0.2/GbwaoZjkLELtS94sHZLdG3xPzyKjWYMhTTWmkEZrYvf1.tar.zst", util: "https://github.com/someone/roc-util/releases/download/0.3.0/8vJsgiwWAjcXVatFyZuVru8hP74KeMfBWHiPxGTyFC8U.tar.zst" }

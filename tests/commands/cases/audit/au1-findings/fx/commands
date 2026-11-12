@@ -1,0 +1,5 @@
+# R-AU1 R-AU2 R-AU3 R-AU8 R-AU13 R-OUT2 (slice 244): the project p1 with a registry. Header: pf, json (yanked), csv (repo-missing: withdrawn and the repos state missing), xml (moved), old (yanked, no reason). json needs parser (asset-replaced) and util (deleted: release-missing).
+# Run 1: the report on stdout (4 that fail, 2 warnings, the fix line, the R-AU4 note), the failure line on stderr, exit 21.
+audit --file p1/main.roc
+# Run 2 (R-AU5 R-J4 R-J5): --json: ok false, error.kind findings, the report in error.details. stdout is only the envelope; stderr has the failure line.
+audit --json --file p1/main.roc

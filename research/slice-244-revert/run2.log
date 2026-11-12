@@ -1,0 +1,10 @@
+base l0-9: exit=0 All (175) tests passed in 3820.2 ms. 
+base L2: commands: 7 passed, 0 failed 
+a2: L0 exit=1     2 failed     0 compiler errors 
+a2: L2 commands: 7 passed, 0 failed 
+a2b: L0 exit=1     2 failed     0 compiler errors 
+a2b: L2 commands: 7 passed, 0 failed 
+a3b: L0 exit=1     1 failed     0 compiler errors 
+a3b: L2 FAIL audit/au9-ignore commands: 6 passed, 1 failed 
+a6b: L0 exit=1     1 failed     0 compiler errors 
+a6b: L2 commands: 7 passed, 0 failed 

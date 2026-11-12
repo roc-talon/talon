@@ -1,0 +1,4 @@
+# R-AU3 R-AU4 R-C6 (slice 244, Q-244-1, Q-244-2): no finding: exit 0. With a registry before P3 the last line is the note of no yank data (its own text, not the text of direct).
+audit --file p2/main.roc
+# R-OUT2 R-J4: --json: data with checked 2, the note no-yank-data, no finding. Nothing on stderr.
+audit --json --file p2/main.roc

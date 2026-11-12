@@ -1,0 +1,6 @@
+== audit --file p5/main.roc
+exit 19
+== audit --ignore acme/json@2.1.0 --file p5/main.roc
+exit 2
+== audit json
+exit 2

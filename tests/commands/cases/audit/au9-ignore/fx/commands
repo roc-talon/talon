@@ -1,0 +1,10 @@
+# R-AU9 R-AU10 R-AU11 R-AU3 (slice 244): p4 is p1 with [audit] ignore in its talon.toml: json (yanked), csv (repo-missing), old (yanked), and roc-gone (no finding: unused).
+# R-AU1 R-YK5: talon.toml also has [resolution] snapshot = "log:1". tln audit uses the state of now: the snapshot hides no release (parser and util have log index 7 and 8, and are still findings in each run).
+# Run 1: the flag ignores parser too. The two sources are joined: no finding that fails is left, exit 0. Each ignored finding is a line `ignored: <item>`; the unused item is a line `unused ignore: <item>`.
+audit --file p4/main.roc --ignore acme/parser@1.0.2:asset-replaced
+# Run 2: the same with --json: ignored true on 4 findings, the note unused-ignore. Exit 0.
+audit --json --file p4/main.roc --ignore acme/parser@1.0.2:asset-replaced
+# Run 3: the items of talon.toml only: parser still fails, exit 21.
+audit --file p4/main.roc
+# Run 4: an item of parser with another reason ignores nothing (R-AU9: the reason is required): exit 21, and the item is unused (R-AU11). The name matches with any case.
+audit --file p4/main.roc --ignore ACME/Parser@1.0.2:yanked

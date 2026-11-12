@@ -1,0 +1,7 @@
+== audit --file p6/main.roc
+audit: 3 packages checked (registry)
+yanked  fmt 1.0.0  acme/fmt  "bad build"  tool: fmt
+1 finding, 0 warnings, 0 ignored.
+fix: fmt: tln update --tool fmt.
+note: the registry has no yank and advisory data yet
+exit 21

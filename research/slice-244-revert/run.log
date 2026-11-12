@@ -1,0 +1,42 @@
+base l0-9: exit=0 All (173) tests passed in 3959.1 ms. 
+base L2: commands: 7 passed, 0 failed 
+a1: L0 exit=1     2 failed     0 compiler errors 
+a1: L2 commands: 7 passed, 0 failed 
+a1b: L0 exit=1     1 failed     0 compiler errors 
+a1b: L2 commands: 7 passed, 0 failed 
+a2: L0 exit=0 All (173) tests passed in 3562.6 ms. 
+a2: L2 commands: 7 passed, 0 failed 
+a2b: L0 exit=0 All (173) tests passed in 3885.6 ms. 
+a2b: L2 commands: 7 passed, 0 failed 
+a3a: L0 exit=1     1 failed     0 compiler errors 
+a3a: L2 commands: 7 passed, 0 failed 
+a3b: L0 exit=0 All (173) tests passed in 4061.0 ms. 
+a3b: L2 FAIL audit/au9-ignore commands: 6 passed, 1 failed 
+a3c: L0 exit=1     1 failed     0 compiler errors 
+a3c: L2 commands: 7 passed, 0 failed 
+a4a: L0 exit=1     1 failed     0 compiler errors 
+a4a: L2 FAIL audit/au9-ignore commands: 6 passed, 1 failed 
+a4b: L0 exit=1     2 failed     0 compiler errors 
+a4b: L2 FAIL audit/au3-warnings FAIL audit/au9-ignore commands: 5 passed, 2 failed 
+a5: L0 exit=1     2 failed     0 compiler errors 
+a5: L2 FAIL audit/au1-findings FAIL audit/au9-ignore commands: 5 passed, 2 failed 
+a6a: L0 exit=1     1 failed     0 compiler errors 
+a6a: L2 commands: 7 passed, 0 failed 
+a6b: L0 exit=0 All (173) tests passed in 3999.7 ms. 
+a6b: L2 commands: 7 passed, 0 failed 
+a7a: L0 exit=0 All (173) tests passed in 2670.2 ms. 
+a7a: L2 FAIL audit/au1-tool commands: 6 passed, 1 failed 
+a7b: L0 exit=1     3 failed     0 compiler errors 
+a7b: L2 FAIL audit/au1-tool commands: 6 passed, 1 failed 
+a8: L0 exit=1     1 failed     0 compiler errors 
+a8: L2 FAIL audit/au4-not-indexed commands: 6 passed, 1 failed 
+a9: L0 exit=0 All (173) tests passed in 2398.2 ms. 
+a9: L2 commands: 7 passed, 0 failed 
+a10a: L0 exit=0 All (173) tests passed in 2577.4 ms. 
+a10a: L2 FAIL audit/au12-bad-items commands: 6 passed, 1 failed 
+a10b: L0 exit=0 All (173) tests passed in 2437.5 ms. 
+a10b: L2 FAIL audit/au12-bad-items commands: 6 passed, 1 failed 
+a10c: L0 exit=0 All (173) tests passed in 2372.8 ms. 
+a10c: L2 FAIL audit/au4-not-indexed commands: 6 passed, 1 failed 
+a11: L0 exit=0 All (173) tests passed in 2506.5 ms. 
+a11: L2 FAIL audit/au12-bad-items FAIL audit/au9-ignore commands: 5 passed, 2 failed 

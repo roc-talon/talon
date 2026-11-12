@@ -1,0 +1,2 @@
+[audit]
+ignore = ["acme/json@2.1.0:yanked", "acme/json@2.1.0"]

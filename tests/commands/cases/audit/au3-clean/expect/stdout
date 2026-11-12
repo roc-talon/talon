@@ -1,0 +1,8 @@
+== audit --file p2/main.roc
+audit: 2 packages checked (registry)
+0 findings, 0 warnings, 0 ignored.
+note: the registry has no yank and advisory data yet
+exit 0
+== audit --json --file p2/main.roc
+{"schema":1,"command":"audit","ok":true,"data":{"index":"registry","checked":2,"notes":[{"kind":"no-yank-data"}],"findings":[]},"error":null}
+exit 0

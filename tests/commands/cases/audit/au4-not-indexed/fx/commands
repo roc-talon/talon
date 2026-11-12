@@ -1,0 +1,7 @@
+# Q-244-4 (Design Q620) R-AU1 R-OUT2 (slice 244 review): the header entry web (acme/web 1.0.0) is in `unknown` of the closure answer: the registry has no release of it. It is not checked (checked 2), gives no finding,
+# and gives one note: `note: not checked: acme/web 1.0.0: the registry has no release of it` in the report on stdout, before the R-AU4 note. No ingest (audit writes nothing to the registry). Exit 0. The walk reads the header of web from the cache.
+audit --file p7/main.roc
+# The same with --json: the note {"kind":"not-indexed","name","version","hash"} in data.notes, after no-yank-data. Nothing on stderr.
+audit --json --file p7/main.roc
+# Q-244-8 (Design Q620): --offline is exit 2 (usage), before any read: tln audit reads the index of now.
+audit --offline --file p7/main.roc

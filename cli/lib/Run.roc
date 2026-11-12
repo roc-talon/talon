@@ -48,6 +48,7 @@ import Update
 import Upgrade
 import Verify
 import Why
+import AuditFlow
 import XFlow
 
 ## The command code of `tln` (direct style, TESTING.md 2.2 part C).
@@ -121,6 +122,8 @@ dispatch! = |fx, args| if args.options.any(|(name, _)| name == "--tool") {
 	Ls.run!(fx, args)
 } else if args.command == ["why"] {
 	Why.run!(fx, args)
+} else if args.command == ["audit"] {
+	AuditFlow.run!(fx, args)
 } else if args.command == ["outdated"] {
 	OutdatedFlow.run!(fx, args)
 } else if args.command == ["patch"] {

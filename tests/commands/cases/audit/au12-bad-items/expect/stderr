@@ -1,0 +1,3 @@
+tln: error[input]: $PROJECT/p5/talon.toml:2: audit.ignore: 'acme/json@2.1.0' is not <full name>@<version>:<reason>, for example roc-lang/json@2.1.0:yanked
+tln: error[usage]: --ignore: 'acme/json@2.1.0' is not <full name>@<version>:<reason>, for example roc-lang/json@2.1.0:yanked
+tln: error[usage]: tln audit takes no operand

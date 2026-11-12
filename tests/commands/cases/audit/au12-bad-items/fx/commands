@@ -1,0 +1,7 @@
+# R-AU12 R-EC19 R-EC2 R-CM14 (slice 244): items that do not parse.
+# Run 1: an item of [audit] ignore in talon.toml with no reason: exit 19 (input), the path and the line of the key. The run stops after the load: no closure query.
+audit --file p5/main.roc
+# Run 2: a --ignore item with no reason: exit 2 (usage), before the environment, the project and talon.toml are read.
+audit --ignore acme/json@2.1.0 --file p5/main.roc
+# Run 3: tln audit takes no operand: exit 2.
+audit json

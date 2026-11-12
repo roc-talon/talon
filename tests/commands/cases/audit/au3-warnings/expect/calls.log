@@ -1,0 +1,42 @@
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/p3/main.roc
+list_dirs $PROJECT/p3
+list_dirs $PROJECT
+read_files $PROJECT/p3/main.roc
+canonical $PROJECT/p3/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/repo.json $HOME/.cache/roc/talon/index/github/someone/roc-xml/repo.json $HOME/.cache/roc/talon/index/github/someone/roc-util/repo.json $HOME/.cache/roc/talon/index/github/acme/pre/repo.json
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-13-5e6f7a8","to":"nightly-2026-10-13-5e6f7a8"},"groups":[],"hashes":["2r9Lu7UYgi1kKtSUgf4fcvSU2hYjr3h7hGBaYNbpZJFL","7pDrEX5i6rSnPmz39xyi1oQe5Ecz4rhc89537nmcVw23","8vJsgiwWAjcXVatFyZuVru8hP74KeMfBWHiPxGTyFC8U","HqYEKNUqBdh84r5eYtDsVrC33ZSo1cP9DEnQnjo3uooR"]}
+args
+env_all
+env_all
+clock
+cwd
+canonical $PROJECT/p3/main.roc
+list_dirs $PROJECT/p3
+list_dirs $PROJECT
+read_files $PROJECT/p3/main.roc
+canonical $PROJECT/p3/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/repo.json $HOME/.cache/roc/talon/index/github/someone/roc-xml/repo.json $HOME/.cache/roc/talon/index/github/someone/roc-util/repo.json $HOME/.cache/roc/talon/index/github/acme/pre/repo.json
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-13-5e6f7a8","to":"nightly-2026-10-13-5e6f7a8"},"groups":[],"hashes":["2r9Lu7UYgi1kKtSUgf4fcvSU2hYjr3h7hGBaYNbpZJFL","7pDrEX5i6rSnPmz39xyi1oQe5Ecz4rhc89537nmcVw23","8vJsgiwWAjcXVatFyZuVru8hP74KeMfBWHiPxGTyFC8U","HqYEKNUqBdh84r5eYtDsVrC33ZSo1cP9DEnQnjo3uooR"]}

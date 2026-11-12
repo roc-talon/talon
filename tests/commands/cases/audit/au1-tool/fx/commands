@@ -1,0 +1,2 @@
+# R-AU1 R-PT8 R-AU3 (slice 244, Q-244-7): the hash of the url of a project tool is checked (only that hash). Its hash is in the hashes of the closure query, after the header hashes. fmt 1.0.0 is yanked: exit 21. The last column is `tool: <key>`, the fix is `tln update --tool fmt`.
+audit --file p6/main.roc
