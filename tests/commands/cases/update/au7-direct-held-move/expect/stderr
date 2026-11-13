@@ -1,0 +1,4 @@
+warning: acme/json has 2 series in the closure: 2 via json, 1 via json1. The types of the 2 series are different types.
+warning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.
+~ json: acme/json 2.0.0 -> 2.1.0 (held): yaml 1.1.0 needs json >= 2.1.0
+  writes $PROJECT/u1/main.roc

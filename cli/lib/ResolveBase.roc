@@ -231,7 +231,7 @@ ResolveBase :: [].{
 
 	## Slice 206 (R-IX6, Design Q391): `missing` is true when the name has no index at all (`direct`: no cached page 1 offline; a registry offline: no kept copy for any group of the name).
 	## `missing_forms` are the group forms (`Ident.group.form`) that have no kept copy offline with a registry: each acts as in R-DI11, and the other groups use their copies. `direct` and an answer give `[]`.
-	Candidates : { name : Str, list : List(Index.Candidate), missing : Bool, missing_forms : List(Str) }
+	Candidates : { name : Str, list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), pages : List(Str) }
 
 	# An entry of the header that `add` found and keeps (R-AD21).
 	Kept : { alias : Str, name : Str, version : Str, note : Str }
@@ -264,7 +264,7 @@ ResolveBase :: [].{
 	Probed : { compiler : Try(Str, [None]), checks : List(Db.Fact), looked : List(Db.Key), count : U64, started : Try(Start.Started, [None]), tried : List(List({ at : U64, id : Str })), used : List({ id : Str, modules : List(Str) }), domain : Try(List(Str), [NotRead]), inferred : List(Epochs.Inferred), listed : Try(List(Nightlies.Release), [NotRead]), optional : { open : List(Str), got : List(Str), tried : U64, downloads : U64, dropped : U64 }, seen : List(BuildTarget.Seen), second : Try(Wire.Answer, [NotRead]) }
 
 	# The tuple that the pick chose, with the facts that `finish!` and `verified!` need, and the facts of the probe rounds.
-	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move), nightly : Try(Str, [None]), probed : Probed }
+	Picked : { facts : Finish, chosen : List(Pick.Chosen), moves : List(Consent.Move), nightly : Try(Str, [None]), probed : Probed, found : List(ResolveBase.Candidates) }
 
 	## R-NS8 to R-NS10, R-C7, R-LY4: the settings. The priority is the flag or the environment, `talon.toml`, `config.toml`, the default.
 	## It reads only `command`, `strategy` and `nightly` of the request, so a caller can give any record that has them.
@@ -445,6 +445,13 @@ ResolveBase :: [].{
 	## Slice 010: the headers that the pick read, as the nodes of the closure walk (D3). The pick keeps no alias, so the aliases of these nodes are empty. A platform entry is the first entry.
 	known_nodes : List(Fact) -> List(Closure.Node)
 	known_nodes = |facts| facts.map(|f| Pick.node_of(f))
+
+	## Slice 244c: the known nodes of the closure walk: the nodes of the pick that have aliases (a release URL in `paths`) first, the facts that have no such node (no alias), then the path nodes. `Closure.step` takes the first node of an id.
+	walk_known : { known : List(Fact), paths : List(Closure.Node) } -> List(Closure.Node)
+	walk_known = |facts| {
+		aliased = facts.paths.keep_if(|n| Ident.of_url(n.id).is_ok())
+		aliased.concat(ResolveBase.known_nodes(facts.known).keep_if(|n| !aliased.any(|a| a.id == n.id))).concat(facts.paths.keep_if(|n| Ident.of_url(n.id).is_err()))
+	}
 
 	## Slice 054 (R-TG1, R-TG5, R-PD6): `[build] target` of the nearest `talon.toml` of a member (the root file when the member has no file of its own). `Err(Unset)` for no file or no key.
 	member_target : Vars.Member -> Try(Str, [Unset])

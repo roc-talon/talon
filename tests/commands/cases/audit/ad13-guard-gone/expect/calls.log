@@ -1,0 +1,32 @@
+args
+env_all
+tty
+env_all
+clock
+cwd
+canonical $PROJECT/p9/main.roc
+list_dirs $PROJECT/p9
+list_dirs $PROJECT
+read_files $PROJECT/p9/main.roc
+canonical $PROJECT/p9/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+read_files $PROJECT/p9/main.roc $PROJECT/p9/talon.toml $HOME/.config/talon/config.toml
+read_files $HOME/.cache/roc/talon/index/github/acme/pfx/repo.json $HOME/.cache/roc/talon/index/github/acme/json/repo.json $HOME/.cache/roc/talon/index/github/someone/roc-gone/repo.json
+programs gh
+http_get https://api.github.com/repos/someone/roc-gone
+  User-Agent: tln/0.0.1
+http_send POST http://127.0.0.1:9/v1/closure timeout=20
+  User-Agent: tln/0.0.1
+  Content-Type: application/json
+  <body> {"compilers":{"from":"nightly-2026-10-13-5e6f7a8","to":"nightly-2026-10-13-5e6f7a8"},"groups":[],"hashes":["2r9Lu7UYgi1kKtSUgf4fcvSU2hYjr3h7hGBaYNbpZJFL","Fnce5i4ftfkoHZzQXC27fy74BBgTN4AR9qUJEXTQYdrs"]}
+random
+list_dirs $HOME/.cache/roc/packages
+programs curl wget
+make_dirs $HOME/.cache/roc/packages/ADb5CSatxTK8upp115ECzNp9eHW4tJ9cdx5zzS1C18ys.0123456789abcdef.tmp
+spawn_all limit=8
+  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output $HOME/.cache/roc/packages/ADb5CSatxTK8upp115ECzNp9eHW4tJ9cdx5zzS1C18ys.0123456789abcdef.tmp/ADb5CSatxTK8upp115ECzNp9eHW4tJ9cdx5zzS1C18ys.tar.zst https://github.com/someone/roc-gone/releases/download/1.0.0/ADb5CSatxTK8upp115ECzNp9eHW4tJ9cdx5zzS1C18ys.tar.zst
+delete $HOME/.cache/roc/packages/ADb5CSatxTK8upp115ECzNp9eHW4tJ9cdx5zzS1C18ys.0123456789abcdef.tmp

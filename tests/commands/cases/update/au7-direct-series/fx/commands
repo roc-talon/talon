@@ -1,0 +1,3 @@
+# R-AU7 (slice 244d, Q622): direct (no registry). u1 has json (acme/json 2.0.0), json1 (acme/json 1.0.0) and json3 (acme/json 3.0.0). update json reads the list of acme/json (one request).
+# The list has no tag 1.0.0: one release-missing line for json1. The tag 3.0.0 has another package asset: the R-DI15 warning of today, and no R-AU7 line (Q622 item 5). No extra request: calls.log is the run of today.
+update json --no-check --dry-run --file u1/main.roc

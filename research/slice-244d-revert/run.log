@@ -1,0 +1,26 @@
+base l0-9: exit=0 All (187) tests passed in 2603.3 ms. 
+base L2: commands: 56 passed, 0 failed 
+e1: L0 exit=0 All (187) tests passed in 1776.1 ms. 
+e1: L2 FAIL update/au7-direct-held-move FAIL update/au7-direct-series commands: 23 passed, 2 failed 
+e2: L0 exit=1     1 failed     0 compiler errors 
+e2: L2 FAIL update/au7-direct-series commands: 24 passed, 1 failed 
+e3: L0 exit=0 All (187) tests passed in 1424.3 ms. 
+e3: L2 commands: 56 passed, 0 failed 
+e4: L0 exit=1     1 failed     0 compiler errors 
+e4: L2 FAIL audit/ad12-archive-gone commands: 24 passed, 1 failed 
+e5: L0 exit=1     1 failed     0 compiler errors 
+e5: L2 FAIL audit/ad12-archive-gone FAIL audit/ad13-guard-gone commands: 23 passed, 2 failed 
+e6: L0 exit=0 All (187) tests passed in 1389.6 ms. 
+e6: L2 commands: 25 passed, 0 failed 
+e7: L0 exit=0 All (187) tests passed in 1310.8 ms. 
+e7: L2 FAIL update/au7-direct-held-move commands: 55 passed, 1 failed 
+e8: L0 exit=0 All (187) tests passed in 1400.6 ms. 
+e8: L2 FAIL fetch/fe-flows FAIL install/in1-flow FAIL install/in2-nocompiler FAIL moves/hm1-noninteractive FAIL moves/hm2-interactive FAIL moves/hm3-budget FAIL resolve/rs-exclude-age FAIL resolve/rs-exclude-age-none FAIL resolve/rs-failures FAIL resolve/rs-install-add-key FAIL resolve/rs-new-toml FAIL resolve/rs-unmanaged FAIL resolve/rs-update-scope FAIL resolve/rs-want-platform FAIL resolve/rs-workspace-shared-group FAIL update/au7-direct-held-move FAIL update/au7-direct-series FAIL update/up1-flow FAIL update/up2-exclude commands: 37 passed, 19 failed 
+e9: L0 exit=0 All (187) tests passed in 1326.2 ms. 
+e9: L2 commands: 56 passed, 0 failed 
+e10: L0 exit=0 All (187) tests passed in 1305.8 ms. 
+e10: L2 FAIL update/au7-direct-held-move FAIL update/au7-direct-series commands: 54 passed, 2 failed 
+e11: L0 exit=0 All (187) tests passed in 1386.2 ms. 
+e11: L2 commands: 25 passed, 0 failed 
+e12: L0 exit=0 All (187) tests passed in 1425.6 ms. 
+e12: L2 FAIL audit/ad12-archive-gone FAIL audit/ad13-guard-gone FAIL audit/ad1-direct FAIL audit/ad2-direct-clean FAIL audit/ad9-guard FAIL audit/au1-findings FAIL audit/au1-tool FAIL audit/au3-clean FAIL audit/au3-warnings FAIL audit/au4-not-indexed FAIL audit/au9-ignore commands: 14 passed, 11 failed 

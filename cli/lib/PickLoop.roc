@@ -236,6 +236,7 @@ read_all! = |fx, request, ids, facts, paths| {
 		match fact {
 			Record(r) => {
 				$facts = $facts.append({ url: r.id, release: r.header.release })
+				$paths = $paths.append({ id: r.id, entries: r.header.entries })
 				if r.header.release.kind == Platform {
 					$seen = $seen.append({ url: r.id, found: Ok(r.header.target_names) })
 				}
@@ -244,6 +245,8 @@ read_all! = |fx, request, ids, facts, paths| {
 				Ok(_) => {
 					release = Release.read({ path: g.path, text: g.text })?
 					$facts = $facts.append({ url: g.id, release })
+					# Slice 244c: the entries with their aliases, for the walk (`ResolveBase.walk_known`): the fact keeps none.
+					$paths = $paths.append({ id: g.id, entries: Release.entries_of({ path: g.path, text: g.text })? })
 					if release.kind == Platform {
 						$seen = $seen.append({ url: g.id, found: BuildTarget.targets_of(g.text) })
 					}

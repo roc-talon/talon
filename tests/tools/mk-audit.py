@@ -182,7 +182,7 @@ def calls_run(p, repos, hashes, first, tty, query=True):
     return text
 
 
-def make(name, rules, project, files, keys, states, repos, guard, commands, stdout, stderr, exits, calls, unknown=(), direct=False, routes=None, kept=None, cache=()):
+def make(name, rules, project, files, keys, states, repos, guard, commands, stdout, stderr, exits, calls, unknown=(), direct=False, routes=None, kept=None, cache=(), jobs=""):
     d = os.path.join(CASES, name)
     # The calls.log of a case is baked from the real run after the review (slice 244 review). A baked file is kept; the literal guess is written only when the case has none.
     baked = None
@@ -194,6 +194,8 @@ def make(name, rules, project, files, keys, states, repos, guard, commands, stdo
     write(os.path.join(d, "rules"), rules + "\n")
     write(os.path.join(d, "fx/env"), "HOME={w}/home\nTALON_NOW=2026-10-15T12:00:00Z\n" + ("TALON_REGISTRY=direct\n" if direct else ""))
     write(os.path.join(d, "fx/programs"), "curl\n")
+    if jobs:
+        write(os.path.join(d, "fx/jobs"), jobs)
     write(os.path.join(d, "fx/gitdirs"), ".\n")
     write(os.path.join(d, "fx/commands"), commands)
     if not direct:
@@ -693,7 +695,7 @@ def run_calls(first, tty):
     return "\n".join(out) + "\n"
 
 
-def copy_base(name, rules, commands, change, stdout, stderr, calls, drop_cache=(), programs=None, jobs_extra="", files=None):
+def copy_base(name, rules, commands, change, stdout, stderr, calls, drop_cache=(), programs=None, jobs_extra="", files=None, kept=None):
     d = os.path.join(REG, name)
     baked = None
     if os.path.isfile(os.path.join(d, "expect/calls.log")):
@@ -725,7 +727,7 @@ def copy_base(name, rules, commands, change, stdout, stderr, calls, drop_cache=(
         write(os.path.join(d, "expect/stderr"), stderr)
     write(os.path.join(d, "expect/exit"), "0\n")
     write(os.path.join(d, "expect/calls.log"), baked if baked is not None else calls)
-    tree(d, "u1", {"acme/parser/repo.json": PARSER_REPO})
+    tree(d, "u1", {"acme/parser/repo.json": PARSER_REPO} if kept is None else kept)
 
 
 def repo_state(ans, name, state, successor=None):
@@ -855,6 +857,333 @@ def au7_held_move():
     write(os.path.join(d, "expect/calls.log"), baked if baked is not None else "\n".join(lines[:end]) + "\n")
 
 
+# ---- Slice 244d (docs/slices/244-audit.md, part 244d).
+def gh_rel_json(repo, tag, hashes, published):
+    return {"tag_name": tag, "draft": False, "prerelease": False, "published_at": published,
+            "assets": [{"name": f"{x}.tar.zst", "size": 1000, "browser_download_url": f"https://github.com/{repo}/releases/download/{tag}/{x}.tar.zst"} for x in hashes]}
+
+
+def keep_baked(d):
+    out = {}
+    for f in ("calls.log",):
+        path = os.path.join(d, "expect", f)
+        if os.path.isfile(path):
+            with open(path) as fh:
+                out[f] = fh.read()
+    return out
+
+
+DIRECT_STDOUT = """== update json --no-check --dry-run --file u1/main.roc
+@STDOUT@exit 0
+"""
+
+
+def au7_direct_series(name="update/au7-direct-series", rules=None, cmds=None, stdout=None, stderr=None, adjust=None, mtimes="", kept_repos=("acme/json",)):
+    # Item 1 (R-AU7 with direct, Q622 items 1, 2, 5): the world of registry/ap30-update-notes with no registry (direct), and 2 more series of acme/json in the header:
+    # json1 (1.0.0: the list has no tag 1.0.0 any more: release-missing) and json3 (3.0.0: the tag has another package asset now: asset-replaced with a known new hash, R-DI15).
+    # `update json` frees json (series 2) only, so json1 and json3 are held; the pick reads the list of acme/json once (R-DI2).
+    base = os.path.join(REG, "ap30-update-notes")
+    d = os.path.join(ROOT, "tests/commands/cases", name)
+    baked = keep_baked(d)
+    shutil.rmtree(d, ignore_errors=True)
+    shutil.copytree(base, d)
+    shutil.rmtree(os.path.join(d, "expect"))
+    shutil.rmtree(os.path.join(d, "fx/http/127.0.0.1%3A9"))
+    os.remove(os.path.join(d, "given/home/.config/talon/config.toml"))
+    for r in ("pfx", "json"):
+        shutil.rmtree(os.path.join(d, f"given/home/.cache/roc/talon/index/github/acme/{r}"), ignore_errors=True)
+    h1, h3, h3n = h("json1"), h("json3"), h("json3new")
+    main = os.path.join(d, "given/project/u1/main.roc")
+    with open(main) as f:
+        text = f.read()
+    extra = (f'\tjson1: "https://github.com/acme/json/releases/download/1.0.0/{h1}.tar.zst",\n'
+             f'\tjson3: "https://github.com/acme/json/releases/download/3.0.0/{h3}.tar.zst",\n')
+    text = text.replace("\troc:", extra + "\troc:")
+    write(main, text)
+    for k in (h1, h3):
+        write(os.path.join(d, f"given/home/.cache/roc/packages/{k}/main.roc"), "package [Lib] {}\n")
+    route = os.path.join(d, "fx/http/api.github.com/repos/acme/json/releases%3Fper_page=100")
+    with open(route) as f:
+        rels = json.load(f)
+    rels.append(gh_rel_json("acme/json", "1.1.0", [h("json11")], "2026-08-01T12:00:00Z"))
+    rels.append(gh_rel_json("acme/json", "3.0.0", [h3n], "2026-08-02T12:00:00Z"))
+    write(route, json.dumps(rels))
+    if adjust:
+        adjust(d, h1)
+    if mtimes:
+        write(os.path.join(d, "fx/mtimes"), mtimes)
+    write(os.path.join(d, "rules"), rules or "R-AU7 R-DI2 R-DI15 (slice 244d item 1, Q622 items 1, 2, 5): the audit warnings of a resolve with direct, from the release list that the pick read. See fx/commands.\n")
+    base_cmds = "# R-AU7 (slice 244d, Q622): direct (no registry). u1 has json (acme/json 2.0.0), json1 (acme/json 1.0.0) and json3 (acme/json 3.0.0). update json reads the list of acme/json (one request).\n"
+    base_cmds += "# The list has no tag 1.0.0: one release-missing line for json1. The tag 3.0.0 has another package asset: the R-DI15 warning of today, and no R-AU7 line (Q622 item 5). No extra request: calls.log is the run of today.\n"
+    base_cmds += "update json --no-check --dry-run --file u1/main.roc\n"
+    cmds = cmds or base_cmds
+    write(os.path.join(d, "fx/env"), "HOME={w}/home\nTALON_NOW=2026-10-15T12:00:00Z\nTALON_REGISTRY=direct\n")
+    write(os.path.join(d, "fx/commands"), cmds)
+    write(os.path.join(d, "expect/stdout"), stdout if stdout is not None else DIRECT_STDOUT.replace("@STDOUT@", AU7_DIRECT_OUT))
+    write(os.path.join(d, "expect/stderr"), stderr if stderr is not None else AU7_DIRECT_ERR)
+    write(os.path.join(d, "expect/exit"), "0\n")
+    write(os.path.join(d, "expect/calls.log"), baked.get("calls.log", "(guess: the calls of today; baked from the real run)\n"))
+    kept = {}
+    for r in kept_repos:
+        with open(os.path.join(d, "fx/http", list_route(r))) as f:
+            kept[f"{r}/1.json"] = f.read()
+        kept[f"{r}/1.meta"] = ""
+    tree(d, "u1", kept)
+
+
+AU7_DIRECT_OUT = 'check: skipped\n$PROJECT/u1/main.roc\n  ~ json: acme/json 2.0.0 -> 2.1.0\nresolved at 2026-10-15T12:00:00Z, 0 probes\ndry run: nothing was written\n'
+# The stderr of today (the R-DI15 warning of Index.candidates, the R-C8 closure note), then the new R-AU7 line (after the closure notes).
+AU7_DIRECT_ERR = 'warning: acme/json 3.0.0: the release has the hash CN1mAUVH23GpH5gUcJWbD3aTrsc2KMeGEEmHa7n8qju3, but Talon knows https://github.com/acme/json/releases/download/3.0.0/6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP.tar.zst with the hash 6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP. It is not a candidate.\nwarning: acme/json has 3 series in the closure: 2 via json, 1 via json1, 3 via json3. The types of the 3 series are different types.\n' + 'warning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.\n'
+AU7_DIRECT_KEPT = {"acme/json/1.json": None, "acme/json/1.meta": ""}
+
+
+def gone_job(key):
+    return f"{h(key)}.tar.zst\t22\t-\tcurl: (22) The requested URL returned error: 404\t-\n"
+
+
+def fetch_gone(key):
+    tmp = f"$HOME/.cache/roc/packages/{h(key)}.0123456789abcdef.tmp"
+    return (f"random\nlist_dirs $HOME/.cache/roc/packages\nprograms curl wget\nmake_dirs {tmp}\nspawn_all limit=8\n"
+            f"  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output {tmp}/{h(key)}.tar.zst {u(key)}\ndelete {tmp}\n")
+
+
+def gone_note(key):
+    repo, version, _ = PKG[key]
+    return f"note: not checked: the deps of {repo} {version}: its archive is gone\n"
+
+
+def gone_doc(key):
+    repo, version, _ = PKG[key]
+    return {"kind": "deps-not-checked", "name": repo, "version": version, "hash": h(key)}
+
+
+def ad12_archive_gone():
+    # Item 2 (Q621 item 3, Q-244b-3) with direct: json is not in the cache and its archive answers 404. For tln audit it is a leaf: its finding comes from the list
+    # (the tag 2.1.0 has another package asset: asset-replaced with the new hash), its deps (parser, util) are not checked, one note. Exit 21 (the finding fails).
+    entries = [("pf", "pf", True), ("json", "json", False)]
+    lists = {
+        "acme/pfx": gh_page([gh_release("acme/pfx", "0.1.0", [h("pf") + ".tar.zst"])]),
+        "acme/json": gh_page([gh_release("acme/json", "2.1.0", [h("json2") + ".tar.zst"])]),
+    }
+    routes = {list_route(r): text for r, text in lists.items()}
+    kept = {}
+    for r, text in lists.items():
+        kept[f"{r}/1.json"] = text
+        kept[f"{r}/1.meta"] = ""
+    cmds = "# Q621 item 3 (Q-244b-3) R-AU1 R-AU2 R-DI7 (slice 244d item 2): TALON_REGISTRY=direct. q3: pf (in the cache, fine), json 2.1.0 (NOT in the cache; its download answers 404).\n"
+    cmds += "# For tln audit only, json is a leaf: its finding from the list (asset-replaced, new hash known), its deps not checked, the note of Q621 item 3 (after the fix line, before the R-C6 note). Exit 21.\n"
+    cmds += "audit --file q3/main.roc\n"
+    cmds += "# --json: data.notes has the note kind deps-not-checked (TW24) after no-yank-data. The download is tried again (no file of a gone archive is kept).\n"
+    cmds += "audit --json --file q3/main.roc\n"
+    fix_json = "ask the author to release a new version, then run tln update json"
+    rows = [["asset replaced", "json 2.1.0", "acme/json", f"GitHub has {h('json2')[:6]}..., the header has {h('json')[:6]}...", "header: json"]]
+    text = ("audit: 2 packages checked (direct)\n" + table(rows) + "1 finding, 0 warnings, 0 ignored.\n" + f"fix: json: {fix_json}.\n" + gone_note("json") + NOTE_DIRECT)
+    m = ["$PROJECT/q3/main.roc"]
+    data = {"index": "direct", "checked": 2, "notes": [{"kind": "no-yank-data"}, gone_doc("json")],
+            "findings": [finding("json", "json", [], "asset-replaced", True, False, None, None, None, fix_json, members=m, new_hash=h("json2"))]}
+    msg = FAIL_MSG.format(items="acme/json@2.1.0:asset-replaced")
+    stdout = "== audit --file q3/main.roc\n" + text + "exit 21\n== audit --json --file q3/main.roc\n" + env_fail(msg, data) + "exit 21\n"
+    stderr = f"tln: error[findings]: {msg}\n" * 2
+    walk = fetch_gone("json") + f"read_files $HOME/.cache/roc/packages/{h('pf')}/main.roc\n"
+    run1 = calls_run("q3", [], [], True, True, query=False) + walk
+    for r in lists:
+        run1 += LIST_CALLS.format(r=r) + WRITE_CALLS.format(r=r)
+    run2 = calls_run("q3", [], [], False, False, query=False) + walk
+    for r in lists:
+        run2 += f"list_dirs $HOME/.cache/roc/talon/index/github/{r}\nread_files $HOME/.cache/roc/talon/index/github/{r}/1.meta $HOME/.cache/roc/talon/index/github/{r}/1.json\n"
+    make("ad12-archive-gone", "Q621 R-AU1 R-AU2 R-DI7 R-OUT2 (slice 244d item 2, Q-244b-3): direct, a package whose archive is gone is a leaf for tln audit. See fx/commands.", "q3",
+         {"q3/main.roc": header(entries)}, ["pf"], {}, [], [], cmds, stdout, stderr, None, run1 + run2, direct=True, routes=routes, kept=kept, jobs=gone_job("json"))
+
+
+def ad13_guard_gone():
+    # Item 2 with a registry: the world of ad9-guard, but gone is not in the cache and its archive answers 404: a leaf, its repo-missing finding (Q620 item 9), the note.
+    entries = [("pf", "pf", True), ("json", "json200", False), ("gone", "gone", False)]
+    keys = ["pf", "json200"]
+    repos = [repo_item("acme/pfx"), repo_item("acme/json")]
+    cmds = "# Q621 item 3 (Q-244b-3) Q620 item 9 R-RG4 (slice 244d item 2): the world of ad9-guard (gone: the guard refuses someone/roc-gone, so its hash is not in the query),\n"
+    cmds += "# but gone is not in the cache and its download answers 404. For tln audit it is a leaf: its repo-missing finding, the note of Q621 item 3. Exit 21.\n"
+    cmds += "audit --file p9/main.roc\n"
+    rows = [["repo missing", "gone 1.0.0", "someone/roc-gone", "the repository is deleted or private", "header: gone"]]
+    fix_gone = "tln remove gone, then tln add another package, or add the item to [audit] ignore"
+    text = "audit: 3 packages checked (registry)\n" + table(rows) + "1 finding, 0 warnings, 0 ignored.\n" + f"fix: gone: {fix_gone}.\n" + gone_note("gone") + NOTE_REG
+    msg = FAIL_MSG.format(items="someone/roc-gone@1.0.0:repo-missing")
+    calls = calls_run("p9", ["acme/pfx", "acme/json", "someone/roc-gone"], [h("pf"), h("json200")], True, True)
+    marker = "http_send POST"
+    i = calls.index(marker)
+    calls = calls[:i] + "programs gh\nhttp_get https://api.github.com/repos/someone/roc-gone\n  User-Agent: tln/0.0.1\n" + calls[i:] + fetch_gone("gone")
+    make("ad13-guard-gone", "Q621 Q620 R-RG4 R-AU2 (slice 244d item 2, Q-244b-3): a refused repository whose archive is gone is a leaf for tln audit. See fx/commands.", "p9",
+         {"p9/main.roc": header(entries)}, keys, {}, repos, ["acme/pfx", "acme/json"], cmds, "== audit --file p9/main.roc\n" + text + "exit 21\n", f"tln: error[findings]: {msg}\n", None, calls, jobs=gone_job("gone"))
+
+
+def au7_frozen():
+    # Q-244c-1 (Q622 item 1): --frozen sends no closure query, so it prints no audit warning, also when the registry would say json is missing (the answer of au7-install-warnings is not asked for).
+    def change(ans):
+        repo_state(ans, "acme/json", "missing")
+        repo_state(ans, "acme/parser", "moved", "acme/roc-parser")
+    cmds = "# R-AU7 R-AU6 R-LF1 (slice 244d, Q-244c-1): tln install --frozen with the registry of au7-install-warnings. No closure query, no audit warning, exit 0. calls.log: the real run (no http call).\n"
+    cmds += "install --frozen --file u1/main.roc\n"
+    copy_base("au7-frozen", "R-AU7 R-AU6 R-LF1 (slice 244d, Q-244c-1): --frozen prints no audit warning. See fx/commands.", cmds, change,
+              "== install --frozen --file u1/main.roc\nthe header satisfies talon.toml\nexit 0\n", "", "(guess: baked from the real run)\n", kept={})
+
+
+def au7_direct_held_move():
+    # Q623 item 3 ("the last read of each repository", Q-244d-3): direct, a held move. u1: pf, json (acme/json 2.0.0), json1 (acme/json 1.0.0, another series), yaml (acme/yaml 1.0.0).
+    # update yaml@1.1.0: the first search lists acme/yaml only; yaml 1.1.0 needs json 2.1.0 and json is held, so the first search has no tuple. The second search frees json and lists acme/json
+    # (its first read in the run). That list has no tag 1.0.0: the R-AU7 line for json1 comes only from a list of the second search.
+    d = os.path.join(ROOT, "tests/commands/cases/update/au7-direct-held-move")
+    baked = keep_baked(d)
+    shutil.rmtree(d, ignore_errors=True)
+    h_pf, h_json, h_json21, h_yaml = "6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL", H_JSON, "4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq", "67RGmW5jLihk6Dbbcr7fH8b66zZx8qZDsG2qNkdxJKiZ"
+    h1, hy11 = h("json1"), h("yaml11")
+    gh = lambda repo, ver, x: f"https://github.com/{repo}/releases/download/{ver}/{x}.tar.zst"
+    main = "app [main!] {\n" + "".join([
+        f'\tpf: platform "{gh("acme/pfx", "0.1.0", h_pf)}",\n',
+        f'\tjson: "{gh("acme/json", "2.0.0", h_json)}",\n',
+        f'\tjson1: "{gh("acme/json", "1.0.0", h1)}",\n',
+        f'\tyaml: "{gh("acme/yaml", "1.0.0", h_yaml)}",\n',
+        '\troc: "nightly-2026-10-14-38a3029",\n']) + "}\n\nmain! = |_args| Ok({})\n"
+    write(os.path.join(d, "given/project/u1/main.roc"), main)
+    pfh = 'platform "acme"\n\trequires {} { main! : () => {} }\n\texposes [Std]\n\tpackages {}\n\tprovides [main_for_host!]\n'
+    pkgs = {h_pf: pfh, h_json: "package [Lib] {}\n", h_json21: "package [Lib] {}\n", h1: "package [Lib] {}\n", h_yaml: "package [Lib] {}\n",
+            hy11: 'package [Lib] { json: "' + gh("acme/json", "2.1.0", h_json21) + '" }\n'}
+    for k, text in pkgs.items():
+        write(os.path.join(d, f"given/home/.cache/roc/packages/{k}/main.roc"), text)
+    lists = {
+        "acme/yaml": [gh_rel_json("acme/yaml", "1.0.0", [h_yaml], "2026-08-01T12:00:00Z"), gh_rel_json("acme/yaml", "1.1.0", [hy11], "2026-09-01T12:00:00Z")],
+        "acme/json": [gh_rel_json("acme/json", "2.0.0", [h_json], "2026-08-16T12:00:00Z"), gh_rel_json("acme/json", "2.1.0", [h_json21], "2026-09-25T12:00:00Z")],
+        "acme/pfx": [gh_rel_json("acme/pfx", "0.1.0", [h_pf], "2026-07-01T12:00:00Z")],
+    }
+    kept = {}
+    for r, rels in lists.items():
+        text = json.dumps(rels)
+        write(os.path.join(d, "fx/http", list_route(r)), text)
+        kept[f"{r}/1.json"] = text
+        kept[f"{r}/1.meta"] = ""
+    for src in ("entry", "fx/gitdirs", "fx/path-roc", "fx/jobs", "fx/programs"):
+        shutil.copy(os.path.join(REG, "ap30-held-move-notes", src), os.path.join(d, src))
+    write(os.path.join(d, "fx/env"), "HOME={w}/home\nTALON_NOW=2026-10-15T12:00:00Z\nTALON_REGISTRY=direct\n")
+    write(os.path.join(d, "rules"), "R-AU7 R-SP16 R-SP24 R-DI2 (slice 244d, Q623 item 3): direct, the R-AU7 line from a list that only the second search of a held move read. See fx/commands.\n")
+    cmds = "# R-AU7 (slice 244d, Q623 item 3, Q-244d-3): TALON_REGISTRY=direct. update yaml@1.1.0: the first search lists acme/yaml; yaml 1.1.0 needs json 2.1.0, json is held: the second search frees json and lists acme/json.\n"
+    cmds += "# The list of acme/json has no tag 1.0.0: one release-missing line for json1, from the list of the second search. No extra request.\n"
+    cmds += "update yaml@1.1.0 --no-check --dry-run --file u1/main.roc\n"
+    write(os.path.join(d, "fx/commands"), cmds)
+    write(os.path.join(d, "expect/stdout"), HELD_DIRECT_OUT)
+    write(os.path.join(d, "expect/stderr"), HELD_DIRECT_ERR)
+    write(os.path.join(d, "expect/exit"), "0\n")
+    write(os.path.join(d, "expect/calls.log"), baked.get("calls.log", "(guess: baked from the real run)\n"))
+    tree(d, "u1", kept)
+
+
+HELD_DIRECT_OUT = '== update yaml@1.1.0 --no-check --dry-run --file u1/main.roc\ncheck: skipped\n$PROJECT/u1/main.roc\n  ~ json: acme/json 2.0.0 -> 2.1.0\n  ~ yaml: acme/yaml 1.0.0 -> 1.1.0\n$PROJECT/u1/talon.toml: yaml = "=1.1.0"\nresolved at 2026-10-15T12:00:00Z, 0 probes\ndry run: nothing was written\nexit 0\n'
+# The stderr of today (the R-C8 closure note, the report of the held move), with the new R-AU7 line after the closure notes (the order of au7-held-move).
+HELD_DIRECT_ERR = 'warning: acme/json has 2 series in the closure: 2 via json, 1 via json1. The types of the 2 series are different types.\nwarning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.\n~ json: acme/json 2.0.0 -> 2.1.0 (held): yaml 1.1.0 needs json >= 2.1.0\n  writes $PROJECT/u1/main.roc\n'
+
+
+# ---- Slice 244d mutation gaps (research/slice-244d-revert/RESULT.md). The expected files are the real runs, read by eye (the code is right for these cases).
+def g_verify():
+    # G3 (e9): verify is fed too.
+    cmds = "# R-AU7 R-CM11 (slice 244d, mutation gap G3): the world of update/au7-direct-series, with verify. The same audit lines as update when verify reads the list of acme/json.\n"
+    cmds += "verify --no-check --file u1/main.roc\n"
+    au7_direct_series("verify/au7-direct", "R-AU7 R-CM11 (slice 244d, mutation gap G3): verify prints the direct audit warnings. See fx/commands.\n", cmds, G_VERIFY_OUT, G_VERIFY_ERR, adjust=verify_world, kept_repos=("acme/json", "acme/parser", "acme/pfx"))
+
+
+def verify_world(d, h1):
+    # verify frees every header variable, so a header entry is always a candidate. The finding is on a transitive entry: each json 2.x header needs acme/json 1.0.0
+    # (another series, fixed by the package header, not a variable); the list of acme/json has no tag 1.0.0. The newest candidates of parser and pfx are put in the cache.
+    main = os.path.join(d, "given/project/u1/main.roc")
+    with open(main) as f:
+        text = f.read()
+    text = "".join(l for l in text.splitlines(keepends=True) if not l.startswith("\tjson1:") and not l.startswith("\tjson3:"))
+    write(main, text)
+    shutil.rmtree(os.path.join(d, f"given/home/.cache/roc/packages/{h('json3')}"))
+    dep = f'package [Lib] {{ old: "https://github.com/acme/json/releases/download/1.0.0/{h1}.tar.zst" }}\n'
+    for k in ("7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21", "8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f", "4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq", "3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA"):
+        write(os.path.join(d, f"given/home/.cache/roc/packages/{k}/main.roc"), dep)
+    for k in ("EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc", "u2J5ZhgwXSYn55Ac7xti1xFYVGz78yhBDqfZY2ZtFR6", "EiSZVhEG7h44iRLspsGTX5NRmJbz4fHktH4XcpRqFyjt", "CPn9GfheMVLVbuEhuXk81TvvfeswKFFB4cAYUuvg57p2"):
+        write(os.path.join(d, f"given/home/.cache/roc/packages/{k}/main.roc"), "package [Lib] {}\n")
+    write(os.path.join(d, "given/home/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK/main.roc"),
+          'platform "acme"\n\trequires {} { main! : () => {} }\n\texposes [Std]\n\tpackages {}\n\tprovides [main_for_host!]\n')
+
+
+def g_offline():
+    # G4 (e11): --offline prints no direct warning (Q623 item 3), also with kept pages.
+    cmds = "# R-AU7 R-DI12 (slice 244d, Q623 item 3, mutation gap G4): the world of update/au7-direct-series. Run 1 keeps the pages of acme/json (and prints the json1 line).\n"
+    cmds += "update json --no-check --dry-run --file u1/main.roc\n"
+    cmds += "# Run 2: --offline reads the kept pages: no request, no audit line (the R-DI15 warning and the R-C8 note stay).\n"
+    cmds += "update json --offline --no-check --dry-run --file u1/main.roc\n"
+    au7_direct_series("update/au7-direct-offline", "R-AU7 R-DI12 (slice 244d, Q623 item 3, mutation gap G4): --offline prints no direct audit warning. See fx/commands.\n", cmds, G_OFFLINE_OUT, G_OFFLINE_ERR, mtimes="acme/json/1.meta 1792065590\n")
+
+
+def g_archive_status(name, job_tail, project, out, err, rules, note):
+    # G2 (e6): only a 404 makes a leaf (Q623 item 1). The world of ad12, another failure of the download.
+    entries = [("pf", "pf", True), ("json", "json", False)]
+    lists = {
+        "acme/pfx": gh_page([gh_release("acme/pfx", "0.1.0", [h("pf") + ".tar.zst"])]),
+        "acme/json": gh_page([gh_release("acme/json", "2.1.0", [h("json2") + ".tar.zst"])]),
+    }
+    routes = {list_route(r): text for r, text in lists.items()}
+    cmds = note + f"audit --file {project}/main.roc\n"
+    make(name, rules, project, {f"{project}/main.roc": header(entries)}, ["pf"], {}, [], [], cmds, out, err, None, "(guess: baked from the real run)\n",
+         direct=True, routes=routes, kept={}, jobs=f"{h('json')}.tar.zst\t{job_tail}\n")
+
+
+def g_ls():
+    # G1 (e3): only tln audit makes a leaf. tln why walks the closure too: a 404 of a header archive stops it (exit 15), no note.
+    entries = [("pf", "pf", True), ("json", "json", False)]
+    cmds = "# Q623 R-FE6 R-FE10 (slice 244d, mutation gap G1): TALON_REGISTRY=direct, the project of ad12 (json not in the cache, its download answers 404). tln why walks the closure:\n"
+    cmds += "# the 404 stops it with exit 15 and the text of today (no state: Run tln audit). No leaf, no not-checked note: only tln audit makes a leaf.\n"
+    cmds += "why json --file q3/main.roc\n"
+    make("ad16-why-404", "Q623 R-FE6 R-FE10 (slice 244d, mutation gap G1): only tln audit makes a leaf. See fx/commands.", "q3", {"q3/main.roc": header(entries)}, ["pf"], {}, [], [], cmds,
+         G_WHY_OUT, G_WHY_ERR, None, "(guess: baked from the real run)\n", direct=True, routes={}, kept={}, jobs=gone_job("json"))
+
+
+def g_cases():
+    g_verify()
+    g_offline()
+    url_json = u("json")
+    g_archive_status("ad14-archive-500", "22\t-\tcurl: (22) The requested URL returned error: 500\t-", "q3",
+                     "== audit --file q3/main.roc\nexit 15\n", f"tln: error[network]: download of acme/json 2.1.0 failed: 500 ({url_json}). Run tln audit to see why.\n",
+                     "Q623 R-FE6 R-FE10 (slice 244d, Q-244d-1, mutation gap G2): a download 500 is no leaf. See fx/commands.",
+                     "# Q623 item 1 (Q-244d-1, mutation gap G2): the world of ad12, but the download of json answers 500. Not a leaf: exit 15, the text of today, no note.\n")
+    g_archive_status("ad15-archive-net", "6\t-\tcurl: (6) Could not resolve host: github.com\t-", "q3",
+                     "== audit --file q3/main.roc\nexit 15\n", f"tln: error[network]: download of acme/json 2.1.0 failed: curl: (6) Could not resolve host: github.com ({url_json})\n",
+                     "Q623 R-FE6 R-DA7 (slice 244d, Q-244d-1, mutation gap G2): a transport error of a download is no leaf. See fx/commands.",
+                     "# Q623 item 1 (Q-244d-1, mutation gap G2): the world of ad12, but the download of json fails with a transport error (curl exit 6). Not a leaf: exit 15, no note.\n")
+    g_ls()
+
+
+G_VERIFY_OUT = '== verify --no-check --file u1/main.roc\nnote: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1\ncheck: skipped\n$PROJECT/u1/main.roc\n  ~ json: acme/json 2.0.0 -> 2.1.0\n  ~ parser: acme/parser 1.0.0 -> 1.2.0\n  ~ pf: acme/pfx 0.1.0 -> 0.1.1\nverified: the tuple passes. No project file was written.\nexit 0\n'
+# The real run, with the head of the line as resolve_line gives it (`old via json`; the run of 2026-11-13 printed an empty edge: a code bug).
+G_VERIFY_ERR = 'warning: acme/json has 2 series in the closure: 2 via json, 1 via json. The types of the 2 series are different types.\nwarning: old via json: acme/json 1.0.0 has a deleted release. Fix: tln update json (tln why acme/json@1), or use [overrides].\n'
+G_OFFLINE_OUT = '== update json --no-check --dry-run --file u1/main.roc\ncheck: skipped\n$PROJECT/u1/main.roc\n  ~ json: acme/json 2.0.0 -> 2.1.0\nresolved at 2026-10-15T12:00:00Z, 0 probes\ndry run: nothing was written\nexit 0\n== update json --offline --no-check --dry-run --file u1/main.roc\ncheck: skipped\n$PROJECT/u1/main.roc\n  ~ json: acme/json 2.0.0 -> 2.1.0\nresolved at 2026-10-15T12:00:00Z, 0 probes\ndry run: nothing was written\nexit 0\n'
+G_OFFLINE_ERR = 'warning: acme/json 3.0.0: the release has the hash CN1mAUVH23GpH5gUcJWbD3aTrsc2KMeGEEmHa7n8qju3, but Talon knows https://github.com/acme/json/releases/download/3.0.0/6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP.tar.zst with the hash 6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP. It is not a candidate.\nwarning: acme/json has 3 series in the closure: 2 via json, 1 via json1, 3 via json3. The types of the 3 series are different types.\nwarning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.\nwarning: acme/json 3.0.0: the release has the hash CN1mAUVH23GpH5gUcJWbD3aTrsc2KMeGEEmHa7n8qju3, but Talon knows https://github.com/acme/json/releases/download/3.0.0/6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP.tar.zst with the hash 6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP. It is not a candidate.\nindex: cached at 2026-10-15T11:59:50Z\nwarning: acme/json has 3 series in the closure: 2 via json, 1 via json1, 3 via json3. The types of the 3 series are different types.\n'
+G_WHY_OUT = '== why json --file q3/main.roc\nexit 15\n'
+G_WHY_ERR = 'tln: error[network]: download of acme/json 2.1.0 failed: 404 (https://github.com/acme/json/releases/download/2.1.0/532HKEYYDQqzMZhSYLoLRNM98SZvHgQMP3BfwzuyRoMV.tar.zst). Run tln audit to see why.\n'
+
+
+def au7_transitive():
+    # Slice 244d verify/au7-direct bug, registry path (Q622 R-AU7 text): json 2.0.0 (header) needs util (someone/roc-util 0.3.0, alias util in the record of json).
+    # The answer has the release row of util with withdrawn "deleted": one line with the head `util via json`.
+    hu = h("util")
+    uu = u("util")
+    def change(ans):
+        for a in ans["artifacts"]:
+            if a["hash"] == H_JSON:
+                a["deps"] = [{"alias": "util", "hash": hu, "is_platform": False, "group": form("someone/roc-util"), "series": "0.3", "version": "0.3.0", "url": uu}]
+        ans["artifacts"].append({"hash": hu, "kind": "package", "exposed": [], "platform_hash": None, "roc_pin": None, "size": 1000, "deps": [], "target_names": []})
+        ans["artifacts"].sort(key=lambda a: a["hash"])
+        ans["releases"].append({"log_index": 30, "hash": hu, "group": form("someone/roc-util"), "series": "0.3", "version": "0.3.0", "url": uu, "tag": "0.3.0", "roc_version": None,
+                                "repo": "someone/roc-util", "published_at": 1782907200000, "yanked": False, "yank_reason": None, "withdrawn": "deleted", "provenance": ["webhook"]})
+        ans["repos"].append({"name": "someone/roc-util", "state": "active", "successor": None, "state_at": 1700000000000})
+        ans["repos"].sort(key=lambda r: r["name"])
+    cmds = "# R-AU7 R-AU8 (slice 244c/244d, Q622): tln install with a registry (u1 of registry/di1-install-no-free). The record of json 2.0.0 needs util (someone/roc-util 0.3.0); its release is withdrawn (deleted).\n"
+    cmds += "# One line for the transitive entry, with the head `<edge> via <aliases>`: util via json. No extra request, exit 0.\n"
+    cmds += "install --no-check --dry-run --file u1/main.roc\n"
+    line = "warning: util via json: someone/roc-util 0.3.0 has a deleted release. Fix: tln update json (tln why someone/roc-util), or use [overrides].\n"
+    copy_base("au7-transitive", "R-AU7 R-AU8 (slice 244c/244d, Q622): the head of the line of a transitive entry in a resolve with a registry. See fx/commands.", cmds, change,
+              "== install --no-check --dry-run --file u1/main.roc\nnothing to change\ndry run: nothing was written\nexit 0\n", line, run_calls(True, True))
+
+
 def au4_not_indexed():
     entries = [("pf", "pf", True), ("json", "json200", False), ("web", "web", False)]
     keys = ["pf", "json200"]
@@ -898,4 +1227,11 @@ if __name__ == "__main__":
     au7_no_finding()
     au7_ignore()
     au7_held_move()
+    au7_direct_series()
+    ad12_archive_gone()
+    ad13_guard_gone()
+    au7_frozen()
+    au7_direct_held_move()
+    g_cases()
+    au7_transitive()
     shutil.rmtree(os.path.join(ROOT, ".tmp/mk-audit"), ignore_errors=True)

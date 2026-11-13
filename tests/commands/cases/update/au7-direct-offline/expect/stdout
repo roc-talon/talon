@@ -1,0 +1,14 @@
+== update json --no-check --dry-run --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0
+== update json --offline --no-check --dry-run --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: acme/json 2.0.0 -> 2.1.0
+resolved at 2026-10-15T12:00:00Z, 0 probes
+dry run: nothing was written
+exit 0

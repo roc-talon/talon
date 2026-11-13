@@ -314,7 +314,7 @@ listed_start = |state, releases| { ..state, probed: { ..state.probed, listed: re
 attempts! : Fx, ResolveBase.Request, Loaded, PickFlow.Ready, { picked : ResolveBase.Picked, first : Try(Fail, [None]), seen : List(Str), downloads : U64, fresh : Bool } => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
 attempts! = |fx, request, loaded, ready, run| {
 	picked = run.picked
-	match finish!(fx, request, loaded, picked.facts, picked.chosen, picked.moves, picked.probed, { seen: run.seen, nightly: picked.nightly, downloads: run.downloads, fresh: run.fresh }) {
+	match finish!(fx, request, loaded, picked.facts, picked.chosen, picked.moves, picked.probed, { seen: run.seen, nightly: picked.nightly, downloads: run.downloads, fresh: run.fresh, found: picked.found }) {
 		Ok(ended) => Ok(ended)
 		Err(fail) => match fail.again {
 			Err(None) => Err(Fail.with_fell(ShareHook.attach(fail, ShareHook.ran_of(request, { notes: request.command != Install, second: picked.probed.second }), Bool.True), ResolveBase.fell_of(request)))
@@ -353,7 +353,7 @@ smoke_domain = |probed, fail| match (probed.domain, probed.listed, fail.smoke) {
 }
 
 # Q7 (slice 036b2): a line before the ladder that an earlier tuple printed (`seen`) is not printed again.
-finish! : Fx, ResolveBase.Request, Loaded, Finish, List(Pick.Chosen), List(Consent.Move), ResolveBase.Probed, { seen : List(Str), nightly : Try(Str, [None]), downloads : U64, fresh : Bool } => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
+finish! : Fx, ResolveBase.Request, Loaded, Finish, List(Pick.Chosen), List(Consent.Move), ResolveBase.Probed, { seen : List(Str), nightly : Try(Str, [None]), downloads : U64, fresh : Bool, found : List(ResolveBase.Candidates) } => Try({ outcome : Report.Outcome, ran : Try(Fail.Ran, [None]) }, Fail)
 finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	seen = after.seen
 	scoped = facts.scoped
@@ -429,10 +429,10 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	closures = ResolveBase.closure!(
 		fx,
 		request,
-		{ members: loaded.members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, changes) }), known: ResolveBase.known_nodes(facts.known).concat(facts.paths) },
+		{ members: loaded.members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, changes) }), known: ResolveBase.walk_known({ known: facts.known, paths: facts.paths }) },
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
-	audit = AuditResolve.warn!(fx, request, loaded, closures, probed.second)
+	audit = AuditResolve.warn!(fx, request, loaded, closures, { second: probed.second, found: after.found })
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))
 	# The pins of a move are edits of the candidate, so the ladder checks them (R-BL1). `decision.writes` is the other kind of pin (R-RP3).
 	checked = if moved.is_ok() edits else changes

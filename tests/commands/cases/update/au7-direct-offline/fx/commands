@@ -1,0 +1,4 @@
+# R-AU7 R-DI12 (slice 244d, Q623 item 3, mutation gap G4): the world of update/au7-direct-series. Run 1 keeps the pages of acme/json (and prints the json1 line).
+update json --no-check --dry-run --file u1/main.roc
+# Run 2: --offline reads the kept pages: no request, no audit line (the R-DI15 warning and the R-C8 note stay).
+update json --offline --no-check --dry-run --file u1/main.roc

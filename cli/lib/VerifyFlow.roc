@@ -62,7 +62,7 @@ VerifyFlow :: [].{
 		# Slice 206e4 (R-SH4, Design Q533, Q537): `verify` prints no index note, and a failure after the closure answer carries the run for the send.
 		ran = ShareHook.ran_of(ready.request, { notes: Bool.False, second: Err(NotRead) })
 		picked = PickFlow.search!(fx, ready.request, ready, PickLoop.start(ready.setup, ready.prepared.facts)).map_err(|fail| AuditResolve.explain(Fail.with_fell(ShareHook.attach(fail, ran, Bool.False), ResolveBase.fell_of(ready.request)), { project: ready.request.project, loaded: start.loaded }))?
-		done = verified!(fx, ready.request, start.loaded, picked, start.decision).map_err(|fail| AuditResolve.explain(ShareHook.attach(fail, ran, Bool.False), { project: ready.request.project, loaded: start.loaded }))?
+		done = verified!(fx, ready.request, start.loaded, picked, start.decision, picked.found).map_err(|fail| AuditResolve.explain(ShareHook.attach(fail, ran, Bool.False), { project: ready.request.project, loaded: start.loaded }))?
 		outcome = done.outcome
 		# Slice 218 (R-SM1): the builds of ladder step 3 go to the run for the smoke build before the send.
 		sent = ran.map_ok(|found| { ..found, built: done.built, audit: done.audit })
@@ -75,8 +75,8 @@ VerifyFlow :: [].{
 }
 
 # Slice 009: the part of `verify!` after the pick (`Resolve.verify!`, rows 1 to 3 of its table): the notes, the ladder with `--replace-dep`, the plan. Nothing is written.
-verified! : Fx, ResolveBase.Request, Loaded, Picked, Pin.Decision => Try({ outcome : Report.Outcome, built : List(Fail.Built), audit : List(JsonDoc) }, Fail)
-verified! = |fx, request, loaded, picked, decision| {
+verified! : Fx, ResolveBase.Request, Loaded, Picked, Pin.Decision, List(ResolveBase.Candidates) => Try({ outcome : Report.Outcome, built : List(Fail.Built), audit : List(JsonDoc) }, Fail)
+verified! = |fx, request, loaded, picked, decision, listed| {
 	facts = picked.facts
 	var_chosen = picked.chosen.take_first(facts.scoped.len())
 	pick_notes = picked.chosen.keep_oks(|c| c.note)
@@ -104,11 +104,11 @@ verified! = |fx, request, loaded, picked, decision| {
 		request,
 		{
 			members: loaded.members.keep_if(|m| files.contains(m.file)).map(|m| { file: m.file, entries: ResolveBase.entries_after(m, edits) }),
-			known: ResolveBase.known_nodes(facts.known).concat(facts.paths),
+			known: ResolveBase.walk_known({ known: facts.known, paths: facts.paths }),
 		},
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
-	audit = AuditResolve.warn!(fx, request, loaded, closures, picked.probed.second)
+	audit = AuditResolve.warn!(fx, request, loaded, closures, { second: picked.probed.second, found: listed })
 	ran = if request.no_check {
 		fx.out!("check: skipped\n")
 		{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [], built: [] }

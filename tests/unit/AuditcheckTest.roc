@@ -1,6 +1,7 @@
 import lib.Args
 import lib.AuditCheck
 import lib.Fail
+import lib.Fetch
 
 AuditcheckTest :: [].{}
 
@@ -555,6 +556,7 @@ report = {
 	unused: ["someone/roc-gone@1.0.0:yanked"],
 	no_yank_data: Bool.False,
 	unindexed: [],
+	gone: [],
 }
 
 # R-AU3 R-AU10 R-AU11 R-OUT2 (TW24: the human text of the design, CLI 3 "Human text of tln audit", with the columns made by a rule). The report on stdout:
@@ -595,6 +597,7 @@ expect {
 		unused: [],
 		no_yank_data: Bool.False,
 		unindexed: [],
+		gone: [],
 	}
 	got = AuditCheck.text(r)
 	want = Str.join_with(
@@ -616,7 +619,7 @@ expect {
 
 # R-AU4 R-C6 (Q-244-1, Q-244-2): the note of no yank data is the last line. `direct`: the text of R-C6. A registry with no yank data (before P3): its own text. No finding: only the first line, the count line and the note.
 expect {
-	empty = { index: Direct, checked: 3, findings: [], unused: [], no_yank_data: Bool.True, unindexed: [] }
+	empty = { index: Direct, checked: 3, findings: [], unused: [], no_yank_data: Bool.True, unindexed: [], gone: [] }
 	d = AuditCheck.text(empty)
 	g = AuditCheck.text({ ..empty, index: Registry })
 	none = AuditCheck.text({ ..empty, index: Registry, no_yank_data: Bool.False })
@@ -648,7 +651,7 @@ expect {
 # Q-244-4 (Design Q620) R-AU1 R-OUT2 R-OUT4: a closure hash with no release in the closure answer is not checked. The report has one note for each, in the field `unindexed` of `Report` (NEW: `List({ name : Str, version : Str, hash : Str })`, in the order of the entries).
 # Human text (TW24, the text of the code agent, accepted): `note: not checked: <name> <version>: the registry has no release of it`, on stdout, after the `fix:` line and before the R-AU4 note. `--json`: one note `{"kind":"not-indexed","name","version","hash"}` for each, after the `unused-ignore` notes. The exit code does not change.
 expect {
-	r = { index: Registry, checked: 2, findings: [f_xml], unused: ["someone/roc-old@1.0.0:yanked"], no_yank_data: Bool.True, unindexed: [{ name: "acme/fmt", version: "1.0.0", hash: h_fmt }, { name: "acme/web", version: "1.0.0", hash: h_web }] }
+	r = { index: Registry, checked: 2, findings: [f_xml], unused: ["someone/roc-old@1.0.0:yanked"], no_yank_data: Bool.True, unindexed: [{ name: "acme/fmt", version: "1.0.0", hash: h_fmt }, { name: "acme/web", version: "1.0.0", hash: h_web }], gone: [] }
 	got = AuditCheck.text(r)
 	want = Str.join_with(
 		[
@@ -795,7 +798,7 @@ expect {
 
 # R-AU4 R-DI11 R-OUT2 (TW24 proposal): with `direct` the note of an entry with no index has its own text: `note: not checked: <name> <version>: no index without a registry`. The note of no yank data is the text of R-C6.
 expect {
-	r = { index: Direct, checked: 1, findings: [], unused: [], no_yank_data: Bool.True, unindexed: [{ name: "127.0.0.1:9/x/1.0.0", version: "1.0.0", hash: h_old }] }
+	r = { index: Direct, checked: 1, findings: [], unused: [], no_yank_data: Bool.True, unindexed: [{ name: "127.0.0.1:9/x/1.0.0", version: "1.0.0", hash: h_old }], gone: [] }
 	got = AuditCheck.text(r)
 	got == "audit: 1 packages checked (direct)\n0 findings, 0 warnings, 0 ignored.\nnote: not checked: 127.0.0.1:9/x/1.0.0 1.0.0: no index without a registry\nnote: no yank and advisory data without a registry\n"
 }
@@ -902,4 +905,53 @@ expect {
 	bad = rows.keep_if(|(index, status, finding, want)| fail(index, status, finding) != Fail.new(Network, want)).map(|(index, status, _, want)| (index, status, want))
 	dbg bad
 	bad == []
+}
+
+# ---- Slice 244d (docs/slices/244-audit.md, part 244d), item 2: Q621 item 3 (Q-244b-3). `Report` gets the field `gone : List({ name : Str, version : Str, hash : Str })` (NEW, TW24): the packages whose archive is gone (a download 404),
+# leaves of the walk of `tln audit`, in the order of the entries. Until the field exists this file does not compile: red on purpose.
+# Human text (TW24, the text of Q621 item 3): `note: not checked: the deps of <name> <version>: its archive is gone`, one for each, on stdout after the `not checked` notes of the entries with no index and before the R-AU4 note.
+# `--json` (TW24): one note `{"kind":"deps-not-checked","name","version","hash"}` for each, after the `not-indexed` notes. The exit code does not change.
+expect {
+	r = {
+		index: Direct,
+		checked: 2,
+		findings: [],
+		unused: [],
+		no_yank_data: Bool.True,
+		unindexed: [{ name: "127.0.0.1:9/x/1.0.0", version: "1.0.0", hash: h_old }],
+		gone: [{ name: "acme/json", version: "2.1.0", hash: h_json }, { name: "acme/web", version: "1.0.0", hash: h_web }],
+	}
+	text = AuditCheck.text(r)
+	want = "audit: 2 packages checked (direct)\n0 findings, 0 warnings, 0 ignored.\nnote: not checked: 127.0.0.1:9/x/1.0.0 1.0.0: no index without a registry\nnote: not checked: the deps of acme/json 2.1.0: its archive is gone\nnote: not checked: the deps of acme/web 1.0.0: its archive is gone\nnote: no yank and advisory data without a registry\n"
+	data = AuditCheck.data(r).render()
+	notes = "\"notes\":[{\"kind\":\"no-yank-data\"},{\"kind\":\"not-indexed\",\"name\":\"127.0.0.1:9/x/1.0.0\",\"version\":\"1.0.0\",\"hash\":\"${h_old}\"},{\"kind\":\"deps-not-checked\",\"name\":\"acme/json\",\"version\":\"2.1.0\",\"hash\":\"${h_json}\"},{\"kind\":\"deps-not-checked\",\"name\":\"acme/web\",\"version\":\"1.0.0\",\"hash\":\"${h_web}\"}]"
+	dbg text
+	dbg data
+	text == want and data.contains(notes) and AuditCheck.code(r.findings) == 0
+}
+
+# Slice 244d mutation gap G2 (Q623 item 1, Q-244d-1): only a 404 of a download makes a leaf. `Fetch.gone_url` gives the URL of a download failure that is a 404 (the text of `Fetch.download_failed`, with or without the R-FE10 state), else Err(None).
+expect {
+	u = u_json
+	rows = [
+		(Fail.new(Network, "download of acme/json 2.1.0 failed: 404 (${u}). Run tln audit to see why."), Ok(u)),
+		(Fail.new(Network, "download of acme/json 2.1.0 failed: 404 (${u}). The registry says: the asset was replaced. Ask the author to release a new version, then run tln update json."), Ok(u)),
+		(Fail.new(Network, "download of acme/json 2.1.0 failed: 500 (${u}). Run tln audit to see why."), Err(None)),
+		(Fail.new(Network, "download of acme/json 2.1.0 failed: HTTP error (${u}). Run tln audit to see why."), Err(None)),
+		(Fail.new(Network, "download of acme/json 2.1.0 failed: curl: (6) Could not resolve host: github.com (${u})"), Err(None)),
+		(Fail.new(Integrity, "download of acme/json 2.1.0 failed: 404 (${u}). Run tln audit to see why."), Err(None)),
+		(Fail.new(Network, "acme/json 2.1.0 is not in the package cache and --offline is set (${u})"), Err(None)),
+	]
+	bad = rows.keep_if(|(f, want)| Fetch.gone_url(f) != want).map(|(f, want)| (f.message, want, Fetch.gone_url(f)))
+	dbg bad
+	bad == []
+}
+
+# Slice 244d (verify/au7-direct bug): the `edge` of a transitive entry is the alias of the first link that names it (AuditTypes.Entry), also when the walk row has no alias (`alias: ""`).
+# The R-AU7 line of a resolve shows it as the head `<edge> via <aliases>` (Q622).
+expect {
+	no_alias = p1_rows.map(|r| if r.id == u_util { ..r, alias: "" } else r)
+	got = AuditCheck.entries({ members: [{ file: "/p/main.roc", walked: { rows: no_alias, links: p1_links } }], tools: [] }).keep_if(|e| e.hash == h_util).map(|e| (e.edge, e.via))
+	dbg got
+	got == [("util", ["json"])]
 }

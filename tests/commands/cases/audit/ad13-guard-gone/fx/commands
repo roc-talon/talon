@@ -1,0 +1,3 @@
+# Q621 item 3 (Q-244b-3) Q620 item 9 R-RG4 (slice 244d item 2): the world of ad9-guard (gone: the guard refuses someone/roc-gone, so its hash is not in the query),
+# but gone is not in the cache and its download answers 404. For tln audit it is a leaf: its repo-missing finding, the note of Q621 item 3. Exit 21.
+audit --file p9/main.roc

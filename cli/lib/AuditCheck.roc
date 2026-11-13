@@ -320,6 +320,15 @@ closure_entry = |hash, rows| {
 		(Err(_), Ok(f)) => f.row
 		(Err(_), Err(_)) => crash "no row"
 	}
+	# The alias of the first link that names the row (a walk row may have no alias).
+	edge = if row.direct {
+		row.alias
+	} else {
+		match rows.first() {
+			Ok(f) => f.walked.links.find_first(|l| l.to == row.id).map_ok(|l| l.alias) ?? row.alias
+			Err(_) => row.alias
+		}
+	}
 	members = rows.fold([], |acc, f| if acc.contains(f.file) acc else acc.append(f.file))
 	via = rows.fold([], |acc, f| if f.row.direct acc else header_aliases(f.walked, f.row.id).fold(acc, |a, x| if a.contains(x) a else a.append(x)))
 	{
@@ -329,7 +338,7 @@ closure_entry = |hash, rows| {
 		version: row.version,
 		hash,
 		alias: if row.direct Ok(row.alias) else Err(None),
-		edge: row.alias,
+		edge,
 		via,
 		tool: Err(None),
 		members,

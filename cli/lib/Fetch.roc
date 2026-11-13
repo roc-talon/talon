@@ -109,6 +109,13 @@ Fetch :: [].{
 		}
 	}
 
+	## Slice 244d: the URL of a download failure that is a 404 (the text of `download_failed`), else `Err(None)`. `tln audit` makes a leaf of such a package.
+	gone_url : Fail -> Try(Str, [None])
+	gone_url = |fail| match fail.message.split_first(" failed: 404 (") {
+		Ok(found) if fail.kind == Network and fail.message.starts_with("download of ") => found.after.split_first(")").map_ok(|x| x.before).map_err(|_| None)
+		_ => Err(None)
+	}
+
 	## The failure of `roc unbundle` (R-FE2): kind `Integrity` (exit 16), `roc unbundle rejected <what> (<url>): <last line>`. The last
 	## line is the last line of the stderr of roc, and `exit code <n>` when it is empty. `NotStarted(text)` is kind `Environment` (exit 18),
 	## `cannot run roc: <text>` (R-HF12).

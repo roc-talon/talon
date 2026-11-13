@@ -1,5 +1,6 @@
 import records.Closure as Wire
 import Args
+import Closure
 import AuditCheck
 import AuditDirect
 import AuditResolve
@@ -20,6 +21,7 @@ import Project
 import PrivacyGuard
 import ResolveBase
 import Text
+import Walk
 
 ## The command `tln audit` with a registry (slice 244a, R-CM14, R-AU1 to R-AU5, R-AU9 to R-AU13, R-AU15, R-PT8). Command code over `Fx` (TESTING.md 2.2 part C): `AuditCheck` decides, `AuditReport` has the words.
 ## The calls, in order (the L2 cases `audit/` fix them):
@@ -58,7 +60,7 @@ go! = |fx, args| {
 	checked = state.tally
 	ignoring = AuditCheck.ignore({ findings: checked.findings, items: from_toml.concat(opts.items) })
 	report : AuditTypes.Report
-	report = { index: state.index, checked: checked.checked, findings: ignoring.findings, unused: ignoring.unused, no_yank_data: Bool.True, unindexed: checked.unindexed.map(|e| { name: e.name, version: e.version, hash: e.hash }) }
+	report = { index: state.index, checked: checked.checked, findings: ignoring.findings, unused: ignoring.unused, no_yank_data: Bool.True, unindexed: checked.unindexed.map(|e| { name: e.name, version: e.version, hash: e.hash }), gone: state.gone }
 	if !args.json {
 		fx.out!(AuditCheck.text(report))
 	}
@@ -85,28 +87,50 @@ registry! = |fx, ctx| {
 		ClosureIndex.query!(fx, { origin: ctx.query.origin, version: Help.version, facts: { groups: [], entries: kept, window }, source: ctx.query.source })?
 	}
 	request = { ..read.request, registry: Read(ctx.query), index: Answer({ origin: ctx.query.origin, answer }) }
-	walk = Ls.walk_loaded!(fx, { ..read, request }, Bool.False)?
+	walk = leaf_walk!(fx, { ..read, request })?
 	all = AuditCheck.entries({ members: walk.closures, tools: ctx.tools })
-	Ok({ index: Registry, tally: AuditCheck.of_guarded({ answer, entries: all, refused }) })
+	Ok({ index: Registry, tally: AuditCheck.of_guarded({ answer, entries: all, refused }), gone: gone_of(all, walk.gone) })
 }
 
 # `direct` (slice 244b): the walk, then the release list of each repository of the closure (R-DI2, transitive groups too), in the order of the entries. No guard and no registry request.
 direct! : Fx, { read : ReadState, tools : List({ key : Str, url : Str }) } => Try(State, Fail)
 direct! = |fx, ctx| {
 	request = ctx.read.request
-	walk = Ls.walk_loaded!(fx, ctx.read, Bool.False)?
+	walk = leaf_walk!(fx, ctx.read)?
 	all = AuditCheck.entries({ members: walk.closures, tools: ctx.tools })
 	var $lists = []
 	for r in AuditCheck.repos_of(all) {
 		list = Github.audit_list!(fx, { net: request.net, roots: request.roots, owner: r.owner, repo: r.repo, now: request.now })?
 		$lists = $lists.append({ owner: r.owner, repo: r.repo, list })
 	}
-	Ok({ index: Direct, tally: AuditCheck.of_lists({ entries: all, lists: $lists })? })
+	Ok({ index: Direct, tally: AuditCheck.of_lists({ entries: all, lists: $lists })?, gone: gone_of(all, walk.gone) })
 }
 
 ReadState : { project : Project, request : ResolveBase.Request, loaded : ResolveBase.Loaded }
 
-State : { index : [Registry, Direct], tally : { checked : U64, findings : List(AuditTypes.Finding), unindexed : List(AuditTypes.Entry) } }
+State : { index : [Registry, Direct], tally : { checked : U64, findings : List(AuditTypes.Finding), unindexed : List(AuditTypes.Entry) }, gone : List({ name : Str, version : Str, hash : Str }) }
+
+# Slice 244d (Q621 item 3): the walk of `Ls.walk_loaded!`, with a 404 of an archive download as a leaf (this command only). `gone` are the URLs of the leaves.
+leaf_walk! : Fx, ReadState => Try({ closures : List({ file : Str, walked : Closure.Walked }), gone : List(Str) }, Fail)
+leaf_walk! = |fx, read| {
+	named = read.loaded.members.keep_if(|m| m.file == (read.project.file ?? ""))
+	members = if named.is_empty() read.loaded.members else named
+	var $nodes = []
+	var $done = []
+	var $gone = []
+	for m in members {
+		r = read.request
+		run = Walk.run!(fx, { roots: r.roots, net: r.net, offline: r.offline, selected: r.selected, none: r.none, index: r.index, file: m.file, entries: ResolveBase.entries_after(m, []), known: $nodes, leaf: Bool.True })?
+		$nodes = run.nodes
+		$done = $done.append({ file: m.file, walked: run.walked })
+		$gone = $gone.concat(run.gone)
+	}
+	Ok({ closures: $done, gone: $gone })
+}
+
+# The leaves as notes, in the order of the entries.
+gone_of : List(AuditTypes.Entry), List(Str) -> List({ name : Str, version : Str, hash : Str })
+gone_of = |entries, urls| entries.keep_if(|e| urls.contains(e.url)).map(|e| { name: e.name, version: e.version, hash: e.hash })
 
 # R-AU12, R-WS5: the items of `[audit] ignore` of the root talon.toml (the workspace root, else the file of the project). No file: no item.
 root_items : { project : Project, loaded : ResolveBase.Loaded, request : ResolveBase.Request } -> Try(List(Str), Fail)

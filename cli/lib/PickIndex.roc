@@ -27,7 +27,7 @@ PickIndex :: [].{
 		for name in names {
 			match request.index {
 				Answer(a) => {
-					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [] })
+					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [], pages: [] })
 				}
 				Offline(origin) => {
 					got = ClosureIndex.offline!(fx, { roots: request.roots, origin, version: Help.version, now: request.now, name, forms: forms_of(name, known) })?
@@ -35,7 +35,7 @@ PickIndex :: [].{
 						Ok(t) => older($oldest, t)
 						Err(None) => $oldest
 					}
-					$found = $found.append({ name, list: got.list, missing: got.missing, missing_forms: got.missing_forms })
+					$found = $found.append({ name, list: got.list, missing: got.missing, missing_forms: got.missing_forms, pages: [] })
 				}
 				Direct => {
 					(owner, repo) = match name.split_on("/") {
@@ -54,7 +54,7 @@ PickIndex :: [].{
 							for w in warnings {
 								fx.err!("warning: ${w}\n")
 							}
-							$found = $found.append({ name, list, missing: fetched.source == Missing, missing_forms: [] })
+							$found = $found.append({ name, list, missing: fetched.source == Missing, missing_forms: [], pages: fetched.pages })
 						}
 						Err(BadPage(n)) => return Err(Fail.new(Network, "the release list of ${name} (page ${n.to_str()}) is not a list of releases"))
 					}
@@ -73,7 +73,7 @@ PickIndex :: [].{
 	slots_of = |scoped, wants, found, asked, fresh, settings, snapshot, unmanaged, current_file| {
 		candidates_of = |name| match found.find_first(|c| c.name == name) {
 			Ok(c) => c
-			Err(_) => { name, list: [], missing: Bool.True, missing_forms: [] }
+			Err(_) => { name, list: [], missing: Bool.True, missing_forms: [], pages: [] }
 		}
 		var_slots = scoped.map(
 			|s| {

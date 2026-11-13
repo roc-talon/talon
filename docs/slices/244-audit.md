@@ -537,13 +537,121 @@ The follow of a successor (R-PU28 client part, P3); the text of the R-DI15 warni
 
 ---
 
-# Part 244d (stub): `direct` feeds of the walk and the pick
+# Part 244d: `direct` feeds of the walk and the pick
 
-Phase: P2. Status: planned. Both items change shared walk and pick code, so they are one slice.
+Phase: P2. Status: code in (2026-11-13: `l0-9` 187 of 187; L2 392 of 393 before the rulings below). Design Q621 (G-C251) item 3, Q622 (G-C252) items 1, 2, 5, Q623 (G-C253): the answers of Q-244d-1 to Q-244d-4 and the 244d texts.
 
-| # | Item | Rules, decisions | Facts |
+## Items
+
+| # | Item | Rules, decisions |
+| --- | --- | --- |
+| 1 | The R-AU7 warnings of a resolve with `direct`: the pages of the release lists that the pick read go to `AuditCheck.resolve_direct` (built and L0-tested in 244c, c3) in `AuditResolve.warn!`. No extra request. | R-AU7, Q622 items 1, 2, 5 |
+| 2 | For `tln audit` only: a package that is not in the cache and whose archive is gone (download 404) is a leaf. Its own finding is reported, its deps are not checked, and one note: `note: not checked: the deps of <name> <version>: its archive is gone`. With `direct`, and with a registry for a repository that the privacy guard refused (Q620 item 9). Other commands keep exit 15 (R-FE6, R-FE10). | Q621 item 3 (Q-244b-3), R-AU1, R-DI7 |
+| 3 | (cheap) `--frozen` prints no audit warning | Q622 item 1 (Q-244c-1) |
+
+## Scope (facts found in the code before any change)
+
+| Fact | Where |
+| --- | --- |
+| `Index.candidates` keeps only the candidates; the pages are not kept after the pick. A `pages` field on `ResolveBase.Candidates` (4 constructors in `PickIndex` and `ClosureIndex`) carries them (the code agent of 244c). | `Index.roc`, `PickIndex.roc`, `ClosureIndex.roc` |
+| With `direct` the walk of `tln audit` gets the facts of each package from `Gather.get!`: `Fetch.packages!` for the URLs that are not in `packages/`, then one `read_files!`. The first failure stops the walk (today: exit 15, `download of <what> failed: 404 (<url>). Run tln audit to see why.`). | `Gather.roc`, `Walk.roc` |
+| With a registry, the hash of a refused repository is not in the query (Q620 item 9), so the walk downloads its archive. | `AuditFlow.roc` |
+| A two-series header (`json` 2.x, `json1` 1.0.0, `json3` 3.0.0 of `acme/json`) resolves today with `update json` in `direct`: one list request, the R-DI15 warning for json3, the R-C8 note of 3 series, exit 0. | L2 `update/au7-direct-series` (run of today) |
+
+## Questions (TW17): answered, Design Q623 (G-C253)
+
+| # | Question | Answer (Q623) | Tests that follow it |
 | --- | --- | --- | --- |
-| 1 | The R-AU7 warnings of a resolve with `direct`: keep the pages of the release lists that the pick read, and give them to `AuditCheck.resolve_direct` (built and L0-tested in 244c) in `AuditResolve.warn!`. | R-AU7, Q-244c-2, Q-244c-5 (Q622) | `ResolveBase.Candidates` gets a `pages` field (4 constructors in `PickIndex` and `ClosureIndex`). A finding needs another closure hash of a listed repository (for example a second series), so an L2 case needs a two-series world. |
-| 2 | Q-244b-3 (Q621 item 3): for `tln audit` only, a package that is not in the cache and whose archive is gone (404) is a leaf: its own finding is reported, its deps are not checked, and one note `note: not checked: the deps of <name> <version>: its archive is gone`. | R-AU1, R-DI7, Q621 item 3 | Today the walk stops with exit 15 (`Walk.roc`, `Gather.roc`). All 244b fixtures have the archives in the cache. |
+| Q-244d-1 | Which download failures make a leaf (item 2)? | Only an HTTP 404 answer of the download (`Http(Ok(404))`), as R-FE10 ("gone"). Another status, a network error, `--offline` with no archive, or an unbundle failure stop `tln audit` as today (exit 15, 16 or 18): Talon cannot say that the archive is gone. | L2 `ad12`, `ad13` (404 only) |
+| Q-244d-2 | A header entry whose archive is gone: a leaf too (not only a transitive one)? | Yes, any node of the walk. Its own finding comes from the list (direct) or the answer or the guard (registry); with no reason it has no finding, only the note. | L2 `ad12` (a header entry), `ad13` |
+| Q-244d-3 | Item 1: which pages? A run can read a list twice (the second search of a held move, a fall back). | Every list that the run read, the last read of each repository. The run sends no request for the warnings. `--offline` (kept pages) prints none (Q622 item 1). | L2 `update/au7-direct-series`, `update/au7-direct-held-move` |
+| Q-244d-4 | Item 2: a second run of `tln audit` downloads the gone archive again (no record of a 404 is kept). Keep it? | Yes. A 404 can be a short fault of the host, and Talon keeps no negative cache of downloads (R-FE1). One request per run and package. | L2 `ad12` run 2 (the download again) |
 
-Ask TalonRegistry for the next free ids before the questions of 244d.
+## Tests (244d)
+
+### L0 (tests/unit/AuditcheckTest.roc)
+
+| # | Test | Rules | State now |
+| --- | --- | --- | --- |
+| d2 | `Fetch.gone_url` (mutation gap G2): the URL of a download 404 (with or without the R-FE10 state); `Err(None)` for 500, `HTTP error`, a transport error, kind `Integrity`, the offline text | Q623 item 1 | green |
+| d1 | `Report` gets `gone : List({ name, version, hash })` (NEW). `text`: one `note: not checked: the deps of <name> <version>: its archive is gone` for each, after the no-index notes, before the R-AU4 note. `data`: one `{"kind":"deps-not-checked","name","version","hash"}` for each, after the `not-indexed` notes. Exit code from the findings. The 5 old `Report` literals get `gone: []`. | Q621 item 3, R-OUT2, R-OUT4 | red (no field: the file does not compile) |
+
+Checked against a copy of `cli/lib` with the field added (`.tmp/`, deleted after): no type error; 186 old expects pass, d1 fails.
+
+### L2 (made by `tests/tools/mk-audit.py`)
+
+| Case | Runs | Rules | State now |
+| --- | --- | --- | --- |
+| update/au7-direct-series | Item 1. The world of `registry/ap30-update-notes`, `TALON_REGISTRY=direct`, with `json1` (acme/json 1.0.0: the list has no tag 1.0.0) and `json3` (acme/json 3.0.0: the tag has another package asset). `update json --no-check --dry-run`: the output of today plus `warning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.` after the closure notes; no R-AU7 line for json3 (Q622 item 5). | R-AU7 R-DI2 R-DI15 | red (only the new stderr line) |
+| audit/ad12-archive-gone | Item 2, `direct`. q3: pf (cached), json 2.1.0 (not cached, download 404; the tag has another package asset). Report: the `asset-replaced` row with the new hash, the fix line, the note, exit 21. `--json`: the note kind `deps-not-checked`. | Q621 R-AU1 R-AU2 R-DI7 R-OUT2 | red (exit 15 today) |
+| audit/ad13-guard-gone | Item 2, registry: the world of `ad9-guard`, gone not cached, download 404. The `repo-missing` row, the note, exit 21. | Q621 Q620 R-RG4 R-AU2 | red (exit 15 today) |
+| registry/au7-frozen | Item 3. `install --frozen` with the answer of `au7-install-warnings`: `the header satisfies talon.toml`, no warning, no request, exit 0. | R-AU7 R-AU6 R-LF1 (Q622 item 1) | green |
+| update/au7-direct-held-move | Q623 item 3 (Q-244d-3). `direct`, u1: pf, json (acme/json 2.0.0), json1 (acme/json 1.0.0), yaml (acme/yaml 1.0.0). `update yaml@1.1.0 --no-check --dry-run`: the first search lists acme/yaml; yaml 1.1.0 needs json 2.1.0 and json is held, so the second search frees json and lists acme/json and acme/pfx. The list of acme/json (read only by the second search) has no tag 1.0.0: `warning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.` after the closure notes. | R-AU7 R-SP16 R-SP24 R-DI2 | red (the code feeds only the lists of the first search) |
+| verify/au7-direct | Mutation gap G3 (e9). `direct`, `verify --no-check`: verify frees every header variable, so the finding is on a transitive entry: each json 2.x header needs acme/json 1.0.0 (alias `old`), and the list has no tag 1.0.0. Expected `warning: old via json: acme/json 1.0.0 has a deleted release. Fix: tln update json (tln why acme/json@1), or use [overrides].` | R-AU7 R-CM11 | red: CODE BUG, the run prints `warning:  via json: ...` (the edge alias of a transitive entry is empty in the resolve flow) |
+| update/au7-direct-offline | Mutation gap G4 (e11), Q623 item 3. The world of au7-direct-series. Run 1 keeps the pages (the json1 line). Run 2 `--offline` reads the kept pages (`fx/mtimes` fixes the `index: cached at` time): no request, no audit line. | R-AU7 R-DI12 | green |
+| audit/ad14-archive-500 | Mutation gap G2 (e6), Q623 item 1. The world of ad12, the download answers 500: exit 15, `download of acme/json 2.1.0 failed: 500 (<url>). Run tln audit to see why.`, no leaf, no note. | Q623 R-FE6 R-FE10 | green |
+| audit/ad15-archive-net | Mutation gap G2, a transport error (curl exit 6): exit 15, `download of acme/json 2.1.0 failed: curl: (6) Could not resolve host: github.com (<url>)`, no note. | Q623 R-FE6 R-DA7 | green |
+| audit/ad16-why-404 | Mutation gap G1 (e3). The project of ad12, `why json`: the walk stops on the 404 with exit 15 and the text of today; no leaf, no note (only `tln audit` makes a leaf). | Q623 R-FE6 R-FE10 | green |
+
+Other commands keep exit 15 on a 404: `fetch/fe-flow`, `registry/fe10-install-404` (unchanged).
+
+### calls.log
+
+| Case | Source |
+| --- | --- |
+| update/au7-direct-series | The real run of today (one `http_get` of the list of acme/json), baked: item 1 sends no extra request. |
+| registry/au7-frozen | The real run, baked after a check by eye: no `http` call. |
+| audit/ad12-archive-gone | The real run, baked (ruling of the manager, 2026-11-13): after the 404 the walk reads the level again without the gone package, through `Gather.facts!` and `Fetch.packages!`, so `random` and `list_dirs $HOME/.cache/roc/packages` come before the read of the pf header. Checked by eye: 2 list requests in run 1, none in run 2, one download in each run (Q-244d-4), no extra request. |
+| update/au7-direct-held-move | The real run of today, baked: 3 list requests (acme/yaml in the first search; acme/json, acme/pfx in the second). The R-AU7 line adds none. |
+| audit/ad13-guard-gone | Guessed: the calls of ad9-guard, with the download calls of gone (404) in place of the `read_files` of its header. The calls of today match. |
+
+## Output (proposed, TW24)
+
+| Item | Text |
+| --- | --- |
+| The note (human) | `note: not checked: the deps of <name> <version>: its archive is gone` (Q621 item 3), after the `not checked: ... no index` notes, before the R-AU4 note, in the order of the entries |
+| The note (`--json`) | `data.notes[]`: `{"kind":"deps-not-checked","name":"acme/json","version":"2.1.0","hash":"..."}`, after the `not-indexed` notes |
+| The R-AU7 line with `direct` | The 244c text (`resolve_line`), on stderr after the closure notes (after the R-C8 note) |
+
+## Trickiest behaviors (for the mutation check later; not run)
+
+| # | Behavior | Test |
+| --- | --- | --- |
+| 1 | Item 1 sends no request: the pages are the ones that the pick read | L2 au7-direct-series calls.log |
+| 2 | No R-AU7 line for `asset-replaced` with a new hash (the R-DI15 warning is there) | L2 au7-direct-series (json3) |
+| 3 | Only `tln audit` makes a leaf; a resolve keeps exit 15 | L2 registry/fe10-install-404, fetch/fe-flow |
+| 4 | The leaf keeps its own finding (direct from the list; registry from the guard) | L2 ad12, ad13 |
+| 5 | The deps of a leaf are not walked (no download, no read of parser and util) | L2 ad12 calls.log |
+| 6 | Only a 404 makes a leaf | (Q-244d-1: no L2 case for another status yet; a mutation may find it) |
+
+## Rulings and notes after the code (2026-11-13)
+
+| Item | Text |
+| --- | --- |
+| ad12 calls.log (both runs) | The real lines are accepted: the second read of the level after the 404 (`random`, `list_dirs` of the packages dir, then the pf header). |
+| Gap against Q623 item 3 | The code feeds the R-AU7 lines of `direct` only from the lists of the first search; the lists that the second search of a held move reads (`second_index!`) are not kept. New red case `update/au7-direct-held-move`. A list that both searches read cannot differ in a fake world (the second read uses the pages of the first, R-DI2: 60 s), so the case uses a repository that only the second search reads. |
+
+## Mutation check (244d, research/slice-244d-revert/RESULT.md)
+
+12 mutants: 8 caught, 4 not caught. Tests added (2026-11-13). Every calls.log of these cases is the real run, read by eye before it was baked: verify lists acme/json, acme/parser, acme/pfx (the pick; the warning adds no request); the offline run 2 sends no request; ad14, ad15, ad16 stop after the one download.
+
+| Gap | Mutant | Test added |
+| --- | --- | --- |
+| G1 | e3: a leaf in every command | L2 audit/ad16-why-404 |
+| G2 | e6: any status of a download makes a leaf | L2 audit/ad14-archive-500, audit/ad15-archive-net; L0 d2 (`Fetch.gone_url`) |
+| G3 | e9: verify is not fed | L2 verify/au7-direct (red: a code bug, below) |
+| G4 | e11: `--offline` prints direct warnings | L2 update/au7-direct-offline |
+
+Code bug found by verify/au7-direct: the R-AU7 line of a transitive entry in a resolve has an empty head edge (`warning:  via json: ...`). `tln audit` gives `util ... via json` for the same kind of entry (ad1-direct), so the entries of the resolve flow lose the alias of the edge (the walk rows or links that `AuditResolve` passes to `AuditCheck.entries`). The other 244c/244d cases have no transitive finding in a resolve, so they did not show it.
+
+The same bug in the registry path (244c): L2 `registry/au7-transitive` (u1 of di1; the record of json 2.0.0 needs util, someone/roc-util 0.3.0, withdrawn `deleted`) expects `warning: util via json: someone/roc-util 0.3.0 has a deleted release. Fix: tln update json (tln why someone/roc-util), or use [overrides].`; the run prints `warning:  via json: ...` (red). L0 (AuditcheckTest, last expect): `AuditCheck.entries` takes `edge` from the walk row (`row.alias`); a transitive row with an empty alias gives `edge` "", not the alias of the first link that names it (`util`) as `AuditTypes.Entry` says (red: `[("", ["json"])]`). The calls.log of au7-transitive is run 1 of di1 with `tty`, and the run matches it: no extra request.
+
+Run 2026-11-13 (capped, `TMPDIR` in `.tmp/tmp`): `l0-9` 188 of 188; `audit/ update/au7 registry/au7 verify/au7` 25 of 26 (verify/au7-direct red: the bug).
+
+## Size
+
+About 150 lines: the `pages` field and its 4 constructors and the feed to `warn!` about 50, the leaf in the walk of `tln audit` (the 404 of `Gather`, a flag that only `AuditFlow` sets) about 60, `Report.gone` text and data about 30.
+
+## Out of scope (244d)
+
+A negative cache of downloads; mirrors (R-FE6, P3); the text of the R-DI15 warning of `Index.candidates`.

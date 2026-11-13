@@ -1,0 +1,8 @@
+== audit --file p9/main.roc
+audit: 3 packages checked (registry)
+repo missing  gone 1.0.0  someone/roc-gone  the repository is deleted or private  header: gone
+1 finding, 0 warnings, 0 ignored.
+fix: gone: tln remove gone, then tln add another package, or add the item to [audit] ignore.
+note: not checked: the deps of someone/roc-gone 1.0.0: its archive is gone
+note: the registry has no yank and advisory data yet
+exit 21

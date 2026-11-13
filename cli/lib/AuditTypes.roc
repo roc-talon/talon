@@ -12,6 +12,6 @@ AuditTypes :: [].{
 	## One finding (R-AU2). `ignored` is the item as written. `since` is in milliseconds.
 	Finding : { entry : AuditTypes.Entry, reason : AuditTypes.Reason, ignored : Try(Str, [None]), since : Try(U64, [None]), yank_reason : Try(Str, [None]), new_hash : Try(Str, [None]), successor : Try(Str, [None]) }
 
-	## What the output shows (R-OUT2). `unindexed` are the hashes with no release in the answer (Q-244-4).
-	Report : { index : [Registry, Direct], checked : U64, findings : List(AuditTypes.Finding), unused : List(Str), no_yank_data : Bool, unindexed : List({ name : Str, version : Str, hash : Str }) }
+	## What the output shows (R-OUT2). `unindexed` are the hashes with no release in the answer (Q-244-4). `gone` are the nodes whose archive download answered 404: their deps are not checked (Q621 item 3).
+	Report : { index : [Registry, Direct], checked : U64, findings : List(AuditTypes.Finding), unused : List(Str), no_yank_data : Bool, unindexed : List({ name : Str, version : Str, hash : Str }), gone : List({ name : Str, version : Str, hash : Str }) }
 }

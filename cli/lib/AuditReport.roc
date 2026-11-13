@@ -80,6 +80,7 @@ AuditReport :: [].{
 			Direct => "no index without a registry"
 		}
 		not_checked = report.unindexed.map(|u| "note: not checked: ${u.name} ${u.version}: ${why_not}")
+		gone_lines = report.gone.map(|g| "note: not checked: the deps of ${g.name} ${g.version}: its archive is gone")
 		note = if report.no_yank_data {
 			match report.index {
 				Direct => ["note: no yank and advisory data without a registry"]
@@ -88,7 +89,7 @@ AuditReport :: [].{
 		} else {
 			[]
 		}
-		lines = head.concat(rows).concat(warn_lines).concat(ignored_lines).concat(unused_lines).concat([count]).concat(fix_lines).concat(not_checked).concat(note)
+		lines = head.concat(rows).concat(warn_lines).concat(ignored_lines).concat(unused_lines).concat([count]).concat(fix_lines).concat(not_checked).concat(gone_lines).concat(note)
 		"${Str.join_with(lines, "\n")}\n"
 	}
 
@@ -98,6 +99,7 @@ AuditReport :: [].{
 		yank_note = if report.no_yank_data [JsonDoc.Obj([("kind", Text("no-yank-data"))])] else []
 		unused = report.unused.map(|item| JsonDoc.Obj([("kind", Text("unused-ignore")), ("item", Text(item))]))
 		not_indexed = report.unindexed.map(|u| JsonDoc.Obj([("kind", Text("not-indexed")), ("name", Text(u.name)), ("version", Text(u.version)), ("hash", Text(u.hash))]))
+		deps_gone = report.gone.map(|g| JsonDoc.Obj([("kind", Text("deps-not-checked")), ("name", Text(g.name)), ("version", Text(g.version)), ("hash", Text(g.hash))]))
 		JsonDoc.Obj([
 			(
 				"index",
@@ -109,7 +111,7 @@ AuditReport :: [].{
 				),
 			),
 			("checked", Num(report.checked.to_i64_wrap())),
-			("notes", Arr(yank_note.concat(unused).concat(not_indexed))),
+			("notes", Arr(yank_note.concat(unused).concat(not_indexed).concat(deps_gone))),
 			("findings", Arr(report.findings.map(finding_doc))),
 		])
 	}

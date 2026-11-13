@@ -1,0 +1,3 @@
+warning: acme/json 3.0.0: the release has the hash CN1mAUVH23GpH5gUcJWbD3aTrsc2KMeGEEmHa7n8qju3, but Talon knows https://github.com/acme/json/releases/download/3.0.0/6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP.tar.zst with the hash 6hQqfPCHRKKyu51zWmUVkrvjg1isMDorbhCfd42F4atP. It is not a candidate.
+warning: acme/json has 3 series in the closure: 2 via json, 1 via json1, 3 via json3. The types of the 3 series are different types.
+warning: json1: acme/json 1.0.0 has a deleted release. Fix: tln update json1.

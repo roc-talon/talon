@@ -1,0 +1,10 @@
+base l0-9: exit=0 All (189) tests passed in 2469.1 ms. 
+base L2: commands: 62 passed, 0 failed 
+e3: L0 exit=0 All (189) tests passed in 2183.2 ms. (cached) 
+e3: L2 FAIL audit/ad16-why-404 commands: 61 passed, 1 failed 
+e6: L0 exit=1     1 failed     0 compiler errors 
+e6: L2 FAIL audit/ad14-archive-500 commands: 30 passed, 1 failed 
+e9: L0 exit=0 All (189) tests passed in 2287.4 ms. (cached) 
+e9: L2 FAIL verify/au7-direct commands: 61 passed, 1 failed 
+e11: L0 exit=0 All (189) tests passed in 2189.1 ms. (cached) 
+e11: L2 FAIL update/au7-direct-offline commands: 30 passed, 1 failed 

@@ -1,0 +1,2 @@
+# R-AU7 R-AU6 R-LF1 (slice 244d, Q-244c-1): tln install --frozen with the registry of au7-install-warnings. No closure query, no audit warning, exit 0. calls.log: the real run (no http call).
+install --frozen --file u1/main.roc

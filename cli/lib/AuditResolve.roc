@@ -1,5 +1,6 @@
 import records.Closure as Wire
 import AuditCheck
+import AuditTypes
 import Closure
 import Fail
 import Fx
@@ -27,10 +28,10 @@ AuditResolve :: [].{
 	}
 
 	## R-AU7: print the warnings and give their `--json` docs (`data.audit_warnings`). `second` is the second answer of a held move; it is searched first (Q-244c-2).
-	warn! : Fx, ResolveBase.Request, ResolveBase.Loaded, List({ file : Str, walked : Closure.Walked }), Try(Wire.Answer, [NotRead]) => List(JsonDoc)
-	warn! = |fx, request, loaded, closures, second| match request.index {
+	warn! : Fx, ResolveBase.Request, ResolveBase.Loaded, List({ file : Str, walked : Closure.Walked }), { second : Try(Wire.Answer, [NotRead]), found : List(ResolveBase.Candidates) } => List(JsonDoc)
+	warn! = |fx, request, loaded, closures, how| match request.index {
 		Answer(a) => {
-			answers = match second {
+			answers = match how.second {
 				Ok(other) => [other, a.answer]
 				Err(NotRead) => [a.answer]
 			}
@@ -39,13 +40,34 @@ AuditResolve :: [].{
 				Ok(t) => lenient_items(t.text)
 				Err(None) => []
 			}
-			found = AuditCheck.resolve_findings({ answers, entries, items })
-			for f in found {
-				fx.err!("warning: ${AuditCheck.resolve_line(f)}\n")
+			show!(fx, AuditCheck.resolve_findings({ answers, entries, items }))
+		}
+		Direct => if request.offline {
+			[]
+		} else {
+			# Q-244d-3: the pages that the pick read (no request). A name that is not `owner/repo` has no list.
+			lists = how.found.keep_if(|c| !c.pages.is_empty()).keep_oks(
+				|c| match c.name.split_on("/") {
+					[owner, repo] => Ok({ owner: owner.with_ascii_lowercased(), repo: repo.with_ascii_lowercased(), list: Pages({ pages: c.pages, redirected: Bool.False }) })
+					_ => Err(NoRepo)
+				},
+			)
+			entries = AuditCheck.entries({ members: closures, tools: [] })
+			items = match root_toml({ project: request.project, loaded }) {
+				Ok(t) => lenient_items(t.text)
+				Err(None) => []
 			}
-			found.map(AuditCheck.resolve_doc)
+			show!(fx, AuditCheck.resolve_direct({ lists, entries, items }))
 		}
 		_ => []
+	}
+
+	show! : Fx, List(AuditTypes.Finding) => List(JsonDoc)
+	show! = |fx, found| {
+		for f in found {
+			fx.err!("warning: ${AuditCheck.resolve_line(f)}\n")
+		}
+		found.map(AuditCheck.resolve_doc)
 	}
 
 	## The data of `--json` with the member `audit_warnings` after the other members, when there is a warning (R-J6: no output of today changes).

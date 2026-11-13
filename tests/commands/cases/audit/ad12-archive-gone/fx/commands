@@ -1,0 +1,5 @@
+# Q621 item 3 (Q-244b-3) R-AU1 R-AU2 R-DI7 (slice 244d item 2): TALON_REGISTRY=direct. q3: pf (in the cache, fine), json 2.1.0 (NOT in the cache; its download answers 404).
+# For tln audit only, json is a leaf: its finding from the list (asset-replaced, new hash known), its deps not checked, the note of Q621 item 3 (after the fix line, before the R-C6 note). Exit 21.
+audit --file q3/main.roc
+# --json: data.notes has the note kind deps-not-checked (TW24) after no-yank-data. The download is tried again (no file of a gone archive is kept).
+audit --json --file q3/main.roc

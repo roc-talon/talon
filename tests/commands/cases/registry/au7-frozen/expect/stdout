@@ -1,0 +1,3 @@
+== install --frozen --file u1/main.roc
+the header satisfies talon.toml
+exit 0

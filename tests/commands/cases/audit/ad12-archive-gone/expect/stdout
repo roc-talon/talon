@@ -1,0 +1,11 @@
+== audit --file q3/main.roc
+audit: 2 packages checked (direct)
+asset replaced  json 2.1.0  acme/json  GitHub has 6vGT9h..., the header has 532HKE...  header: json
+1 finding, 0 warnings, 0 ignored.
+fix: json: ask the author to release a new version, then run tln update json.
+note: not checked: the deps of acme/json 2.1.0: its archive is gone
+note: no yank and advisory data without a registry
+exit 21
+== audit --json --file q3/main.roc
+{"schema":1,"command":"audit","ok":false,"data":null,"error":{"kind":"findings","code":21,"message":"findings that fail: acme/json@2.1.0:asset-replaced. To accept one, add it to [audit] ignore in talon.toml","details":{"index":"direct","checked":2,"notes":[{"kind":"no-yank-data"},{"kind":"deps-not-checked","name":"acme/json","version":"2.1.0","hash":"532HKEYYDQqzMZhSYLoLRNM98SZvHgQMP3BfwzuyRoMV"}],"findings":[{"name":"acme/json","group":"github.com/acme/json/releases/download/{v}/","version":"2.1.0","hash":"532HKEYYDQqzMZhSYLoLRNM98SZvHgQMP3BfwzuyRoMV","alias":"json","via":[],"tool":null,"members":["$PROJECT/q3/main.roc"],"reason":"asset-replaced","fails":true,"ignored":false,"since":null,"yank":null,"new_hash":"6vGT9h4vuRRjWYkXrDAWGzJxH7PBca6fzbhBBu3NaLkG","successor":null,"fix":"ask the author to release a new version, then run tln update json"}]}}}
+exit 21

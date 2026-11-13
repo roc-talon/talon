@@ -136,7 +136,7 @@ PickFlow :: [].{
 	search! = |fx, request, ready, state| {
 		failed = |fail| with_close_versions(fail, { scoped: ready.scoped, asked: ready.asked, found: ready.found })
 		searched = match PickLoop.run!(fx, request, ready.input, ready.setup, state) {
-			Ok(c) => { looped: c, moves: [] }
+			Ok(c) => { looped: c, moves: [], found: ready.found }
 			Err(stuck) => {
 				if !PickMoves.second_wanted(stuck.fail, ready.scoped) return Err(failed(stuck.fail))
 				# R-SP16, R-DI1: the second search of a held move. The index of the movable groups is read once, in the order of the slots. The facts of the first search stay (R-AL8).
@@ -147,7 +147,7 @@ PickFlow :: [].{
 				}
 				held = held_nightly!(fx, request, ready, stuck)
 				match PickLoop.run!(fx, moved.request, again, held.setup, { facts: stuck.facts, paths: stuck.paths, probed: { ..held.probed, second: moved.second, domain: wider(moved.request.index, held.probed.domain) } }) {
-					Ok(c) => { looped: c, moves: PickMoves.moves_of({ scoped: ready.scoped, slots: again.slots, chosen: c.chosen, facts: c.facts }).concat(roc_moves(ready, { slots: again.slots, setup: held.setup }, c)) }
+					Ok(c) => { looped: c, found: moved.found, moves: PickMoves.moves_of({ scoped: ready.scoped, slots: again.slots, chosen: c.chosen, facts: c.facts }).concat(roc_moves(ready, { slots: again.slots, setup: held.setup }, c)) }
 					Err(second) => if second.fail.kind == NoTuple return Err(failed(stuck.fail)) else return Err(second.fail)
 				}
 			}
@@ -175,6 +175,7 @@ PickFlow :: [].{
 			moves: searched.moves,
 			nightly: looped.nightly,
 			probed: looped.probed,
+			found: searched.found,
 		})
 	}
 }

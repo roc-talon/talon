@@ -1,0 +1,3 @@
+# Q623 R-FE6 R-FE10 (slice 244d, mutation gap G1): TALON_REGISTRY=direct, the project of ad12 (json not in the cache, its download answers 404). tln why walks the closure:
+# the 404 stops it with exit 15 and the text of today (no state: Run tln audit). No leaf, no not-checked note: only tln audit makes a leaf.
+why json --file q3/main.roc

@@ -1,0 +1,3 @@
+# R-AU7 R-AU8 (slice 244c/244d, Q622): tln install with a registry (u1 of registry/di1-install-no-free). The record of json 2.0.0 needs util (someone/roc-util 0.3.0); its release is withdrawn (deleted).
+# One line for the transitive entry, with the head `<edge> via <aliases>`: util via json. No extra request, exit 0.
+install --no-check --dry-run --file u1/main.roc

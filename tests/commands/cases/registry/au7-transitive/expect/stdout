@@ -1,0 +1,4 @@
+== install --no-check --dry-run --file u1/main.roc
+nothing to change
+dry run: nothing was written
+exit 0

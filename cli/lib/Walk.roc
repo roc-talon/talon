@@ -1,6 +1,7 @@
 import Closure
 import ClosureIndex
 import Fail
+import Fetch
 import Fx
 import Gather
 import Net
@@ -25,27 +26,36 @@ Walk :: [].{
 	## `file` and `entries` are the project file (absolute) and its header entries (`Locked.rows` without the `roc` entry, as `Closure.Entry`). `known` are nodes that the command read already (the facts of the pick), or `[]`.
 	## Slice 206 (R-AL8 source 2, R-AL9): `index` is the index of the run. With `Answer`, a level reads the facts of an id whose hash has a record in the answer from the record (`Gather.facts!`): no fetch and no read for it. The walk asks only for the winners (R-AL9), so a record of a version that does not win is never read.
 	## The result has `nodes`: `known` and every node that this call read, so a second member does not read them again.
-	run! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) } => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
-	run! = |fx, facts| walk!(fx, facts, facts.known)
+	run! : Fx, { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source, file : Str, entries : List(Closure.Entry), known : List(Closure.Node), leaf ?: Bool } => Try({ walked : Closure.Walked, nodes : List(Closure.Node), gone : List(Str) }, Fail)
+	run! = |fx, facts| walk!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none, index: facts.index, file: facts.file, entries: facts.entries, known: facts.known, leaf: facts.?leaf ?? Bool.False }, facts.known, [])
 }
 
-Facts : { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source, file : Str, entries : List(Closure.Entry), known : List(Closure.Node) }
+Facts : { roots : Roots, net : Net.Settings, offline : Bool, selected : Str, none : NoRank.Fallback, index : ClosureIndex.Source, file : Str, entries : List(Closure.Entry), known : List(Closure.Node), leaf : Bool }
 
 # Steps 1 to 4: `Closure.step`, then the levels that it asks for, until it is done.
-walk! : Fx, Facts, List(Closure.Node) => Try({ walked : Closure.Walked, nodes : List(Closure.Node) }, Fail)
-walk! = |fx, facts, nodes| match Closure.step({ file: facts.file, entries: facts.entries, nodes }) {
-	Done(walked) => Ok({ walked, nodes })
+walk! : Fx, Facts, List(Closure.Node), List(Str) => Try({ walked : Closure.Walked, nodes : List(Closure.Node), gone : List(Str) }, Fail)
+walk! = |fx, facts, nodes, gone| match Closure.step({ file: facts.file, entries: facts.entries, nodes }) {
+	Done(walked) => Ok({ walked, nodes, gone })
 	Fail(problem) => Err(Closure.failure(problem))
 	Need(ids) => {
-		more = level!(fx, facts, ids)?
-		walk!(fx, facts, nodes.concat(more))
+		more = level!(fx, facts, ids, [])?
+		walk!(fx, facts, nodes.concat(more.nodes), gone.concat(more.gone))
 	}
 }
 
 # One level: `Gather.facts!` for the ids (slice 206: a record of the closure answer gives its entries, no read), then the entries of each header text.
-level! : Fx, Facts, List(Str) => Try(List(Closure.Node), Fail)
-level! = |fx, facts, ids| {
-	got = Gather.facts!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none, index: facts.index }, ids)?
+# Slice 244d (Q621 item 3): with `leaf` (`tln audit` only) a download that answers 404 makes its id a leaf: a node with no entries, listed in `gone`. Any other failure stops the walk. The level is read again without the gone id.
+level! : Fx, Facts, List(Str), List(Str) => Try({ nodes : List(Closure.Node), gone : List(Str) }, Fail)
+level! = |fx, facts, ids, gone| {
+	asked = ids.keep_if(|id| !gone.contains(id))
+	attempt = Gather.facts!(fx, { roots: facts.roots, net: facts.net, offline: facts.offline, selected: facts.selected, none: facts.none, index: facts.index }, asked)
+	got = match attempt {
+		Ok(found) => found
+		Err(fail) => match Fetch.gone_url(fail) {
+			Ok(url) if facts.leaf and asked.contains(url) => return level!(fx, facts, ids, gone.append(url))
+			_ => return Err(fail)
+		}
+	}
 	var $nodes = no_nodes
 	for g in got {
 		match g {
@@ -57,7 +67,7 @@ level! = |fx, facts, ids| {
 			}
 		}
 	}
-	Ok($nodes)
+	Ok({ nodes: $nodes.concat(gone.map(|id| { id, entries: [] })), gone })
 }
 
 no_nodes : List(Closure.Node)
