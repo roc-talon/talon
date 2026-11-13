@@ -1,3 +1,5 @@
+import JsonDoc
+import AuditResolve
 import BuildSkip
 import Clock
 import Fail
@@ -59,11 +61,11 @@ VerifyFlow :: [].{
 		# `ready.request` has the index of the query.
 		# Slice 206e4 (R-SH4, Design Q533, Q537): `verify` prints no index note, and a failure after the closure answer carries the run for the send.
 		ran = ShareHook.ran_of(ready.request, { notes: Bool.False, second: Err(NotRead) })
-		picked = PickFlow.search!(fx, ready.request, ready, PickLoop.start(ready.setup, ready.prepared.facts)).map_err(|fail| Fail.with_fell(ShareHook.attach(fail, ran, Bool.False), ResolveBase.fell_of(ready.request)))?
-		done = verified!(fx, ready.request, start.loaded, picked, start.decision).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
+		picked = PickFlow.search!(fx, ready.request, ready, PickLoop.start(ready.setup, ready.prepared.facts)).map_err(|fail| AuditResolve.explain(Fail.with_fell(ShareHook.attach(fail, ran, Bool.False), ResolveBase.fell_of(ready.request)), { project: ready.request.project, loaded: start.loaded }))?
+		done = verified!(fx, ready.request, start.loaded, picked, start.decision).map_err(|fail| AuditResolve.explain(ShareHook.attach(fail, ran, Bool.False), { project: ready.request.project, loaded: start.loaded }))?
 		outcome = done.outcome
 		# Slice 218 (R-SM1): the builds of ladder step 3 go to the run for the smoke build before the send.
-		sent = ran.map_ok(|found| { ..found, built: done.built })
+		sent = ran.map_ok(|found| { ..found, built: done.built, audit: done.audit })
 		# R-DT5 (Design Q438): the log size of a run with a registry answer, as `InstallFlow.finish!`.
 		match InstallFlow.log_size(ready.request) {
 			Ok(n) => Ok({ outcome: { ..outcome, at: if picked.facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent, fell: ResolveBase.fell_of(ready.request) })
@@ -73,7 +75,7 @@ VerifyFlow :: [].{
 }
 
 # Slice 009: the part of `verify!` after the pick (`Resolve.verify!`, rows 1 to 3 of its table): the notes, the ladder with `--replace-dep`, the plan. Nothing is written.
-verified! : Fx, ResolveBase.Request, Loaded, Picked, Pin.Decision => Try({ outcome : Report.Outcome, built : List(Fail.Built) }, Fail)
+verified! : Fx, ResolveBase.Request, Loaded, Picked, Pin.Decision => Try({ outcome : Report.Outcome, built : List(Fail.Built), audit : List(JsonDoc) }, Fail)
 verified! = |fx, request, loaded, picked, decision| {
 	facts = picked.facts
 	var_chosen = picked.chosen.take_first(facts.scoped.len())
@@ -106,6 +108,7 @@ verified! = |fx, request, loaded, picked, decision| {
 		},
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
+	audit = AuditResolve.warn!(fx, request, loaded, closures, picked.probed.second)
 	ran = if request.no_check {
 		fx.out!("check: skipped\n")
 		{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [], built: [] }
@@ -176,7 +179,7 @@ verified! = |fx, request, loaded, picked, decision| {
 		notes: pick_notes.concat(platform_notes).concat(differ_notes).concat(ran.notes),
 		written: [],
 	}
-	Ok({ outcome, built: ran.built })
+	Ok({ outcome, built: ran.built, audit })
 }
 
 no_replace : List(LadderPlan.Replace)

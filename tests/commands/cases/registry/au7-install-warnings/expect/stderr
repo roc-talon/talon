@@ -1,0 +1,8 @@
+warning: json: acme/json 2.0.0 is in a deleted or private repository. Fix: tln remove json, then tln add another package, or add the item to [audit] ignore.
+warning: parser: moved to acme/roc-parser
+warning: json: acme/json 2.0.0 is in a deleted or private repository. Fix: tln remove json, then tln add another package, or add the item to [audit] ignore.
+warning: parser: moved to acme/roc-parser
+nothing to change
+dry run: nothing was written
+warning: json: acme/json 2.0.0 is in a deleted or private repository. Fix: tln remove json, then tln add another package, or add the item to [audit] ignore.
+warning: parser: moved to acme/roc-parser

@@ -1,0 +1,8 @@
+# R-AU7 R-AU14 R-FL4 R-J2 R-OUT4 (slice 244c, Q-244c-1 to Q-244c-4): tln install with a registry, all entries held (the world of registry/di1-install-no-free, project u1).
+# The closure answer says: acme/json is missing (repo-missing, json 2.0.0 is a header entry), acme/parser moved to acme/roc-parser (a rename). pf is fine.
+# One warning line on stderr for each closure hash with a reason, in the order of the walk; for moved the line of R-PU28 (P2 text, Q-244c-4). No extra request, exit 0.
+install --no-check --dry-run --file u1/main.roc
+# --json: data.audit_warnings (new member after written, TW24); the human lines stay on stderr (R-J2).
+install --no-check --dry-run --json --file u1/main.roc
+# --quiet hides the notes and the answer lines, not the warnings (R-FL4).
+install --no-check --dry-run --quiet --file u1/main.roc

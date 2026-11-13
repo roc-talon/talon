@@ -1,0 +1,8 @@
+c11: L0 exit=0 All (186) tests passed in 7696.2 ms. 
+c11: L2 FAIL registry/au7-no-finding commands: 24 passed, 1 failed 
+c1: L0 exit=0 All (186) tests passed in 1917.6 ms. 
+c1: L2 FAIL registry/au7-held-move commands: 24 passed, 1 failed 
+c3b: L0 exit=0 All (186) tests passed in 1786.6 ms. 
+c3b: L2 FAIL registry/au7-ignore commands: 24 passed, 1 failed 
+c11: L0 exit=0 All (186) tests passed in 1683.7 ms. 
+c11: L2 commands: 22 passed, 0 failed 

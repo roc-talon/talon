@@ -1,3 +1,4 @@
+import AuditResolve
 import Args
 import Clock
 import Common
@@ -195,6 +196,6 @@ print! = |fx, shown, args, opts, done| {
 		shown.out!("dry run: nothing was written\n")
 	}
 	if args.json {
-		fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.fell) }))
+		fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(AuditResolve.with_warnings(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.ran), done.fell) }))
 	}
 }

@@ -1,0 +1,2 @@
+# R-AU7 R-J6 (slice 244c, mutation gap G3): the answer of registry/di1-install-no-free (all repositories active, no withdrawn row in the closure). --json: data has no audit_warnings member (no output of today changes).
+install --no-check --dry-run --json --file u1/main.roc

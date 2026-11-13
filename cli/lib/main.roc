@@ -11,6 +11,7 @@ package
 		AuditDirect,
 		AuditFlow,
 		AuditReport,
+		AuditResolve,
 		AuditTypes,
 		Base,
 		BinRecord,

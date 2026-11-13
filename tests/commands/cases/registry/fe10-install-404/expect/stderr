@@ -1,0 +1,1 @@
+tln: error[network]: download of acme/json 2.0.0 failed: 404 (https://github.com/acme/json/releases/download/2.0.0/7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21.tar.zst). The registry says: the asset was replaced. Ask the author to release a new version, then run tln update json.

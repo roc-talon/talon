@@ -2,6 +2,7 @@ import records.Closure as Wire
 import Args
 import AuditCheck
 import AuditDirect
+import AuditResolve
 import AuditTypes
 import ClosureIndex
 import ClosureRequest
@@ -109,15 +110,9 @@ State : { index : [Registry, Direct], tally : { checked : U64, findings : List(A
 
 # R-AU12, R-WS5: the items of `[audit] ignore` of the root talon.toml (the workspace root, else the file of the project). No file: no item.
 root_items : { project : Project, loaded : ResolveBase.Loaded, request : ResolveBase.Request } -> Try(List(Str), Fail)
-root_items = |read| {
-	path = match read.project.workspace {
-		Ok(w) => Text.join(w.root, "talon.toml")
-		Err(Standalone) => Text.join(Text.dir_of(read.loaded.members.first().map_ok(|m| m.file) ?? ""), "talon.toml")
-	}
-	match read.loaded.tomls.find_first(|t| t.path == path) {
-		Ok(t) => AuditCheck.toml_items({ path, text: t.text })
-		Err(_) => Ok([])
-	}
+root_items = |read| match AuditResolve.root_toml({ project: read.project, loaded: read.loaded }) {
+	Ok(t) => AuditCheck.toml_items({ path: t.path, text: t.text })
+	Err(None) => Ok([])
 }
 
 # Q502 as `tln why`: the nightly of the workspace is the window when the pins of the members agree.

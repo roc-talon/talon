@@ -61,6 +61,42 @@ AuditCheck :: [].{
 		},
 	)
 
+	resolve_line : AuditTypes.Finding -> Str
+	resolve_line = AuditReport.resolve_line
+
+	resolve_doc : AuditTypes.Finding -> JsonDoc
+	resolve_doc = AuditReport.resolve_doc
+
+	download_failed : { what : Str, status : U16, url : Str, index : [Registry, Direct], finding : Try(AuditTypes.Finding, [None]) } -> Fail
+	download_failed = AuditReport.download_failed
+
+	## R-AU7 (Q-244c-2, Q-244c-3): the findings of a resolve with a registry, in the order of the entries. The first answer of `answers` that has the release row of an entry gives its state. An entry with no row gives nothing.
+	## An ignored finding is dropped. An item that does not parse is skipped.
+	resolve_findings : { answers : List(Wire.Answer), entries : List(AuditTypes.Entry), items : List(Str) } -> List(AuditTypes.Finding)
+	resolve_findings = |facts| {
+		found = facts.entries.keep_oks(
+			|entry| match facts.answers.keep_oks(|answer| AuditCheck.state_of({ answer, entry })).first() {
+				Ok(s) => AuditCheck.finding({ entry, row: s.row, repo: s.repo })
+				Err(_) => Err(None)
+			},
+		)
+		AuditCheck.ignore({ findings: found, items: facts.items }).findings.keep_if(|f| f.ignored == Err(None))
+	}
+
+	## R-AU7, R-DI15 (Q-244c-5): the findings of a resolve with `direct`, from the release lists that it read. `asset-replaced` with a new hash gives nothing: `Index.candidates` printed the R-DI15 warning already.
+	resolve_direct : { lists : List({ owner : Str, repo : Str, list : AuditDirect.Fetched }), entries : List(AuditTypes.Entry), items : List(Str) } -> List(AuditTypes.Finding)
+	resolve_direct = |facts| {
+		found = facts.entries.keep_oks(
+			|entry| {
+				listed = AuditDirect.repo_of(entry.url)?
+				l = facts.lists.find_first(|x| x.owner == listed.owner and x.repo == listed.repo).map_err(|_| None)?
+				f = AuditDirect.direct_finding({ entry, list: l.list }).map_err(|_| None)?
+				if f.new_hash != Err(None) Err(None) else Ok(f)
+			},
+		)
+		AuditCheck.ignore({ findings: found, items: facts.items }).findings.keep_if(|f| f.ignored == Err(None))
+	}
+
 	reason_text : AuditTypes.Reason -> Str
 	reason_text = AuditReport.reason_text
 

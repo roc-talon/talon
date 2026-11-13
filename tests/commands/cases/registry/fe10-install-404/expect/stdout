@@ -1,0 +1,2 @@
+== install --no-check --dry-run --file u1/main.roc
+exit 15

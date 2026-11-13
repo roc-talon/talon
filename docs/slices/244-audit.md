@@ -374,3 +374,176 @@ Run 2026-11-12 (after the mutation gaps): `l0-9` all passed; `tests/commands/run
 ## Out of scope (244b)
 
 R-AU7, R-AU14, R-FE10 (244c); the behavior of Q-244b-3 (no test until it is answered); a 301 in the resolve commands; advisories (P3).
+
+---
+
+# Part 244c: the audit warnings of a resolve, and the download 404 message
+
+Phase: P2. Status: code (green), 2026-11-13: L0 `l0-9` 186 of 186; L2 `audit/` and `registry/au7-install-warnings`, `registry/fe10-install-404` 14 of 14 (the other L2 cases pass). Design Q620 (G-C250) item 1 (P2 build, the phase is a constant of each `tln` release), Q621 (G-C251), Q622 (G-C252): the answers of Q-244c-1 to Q-244c-5 and the 244c texts, approved by the user on 2026-11-13.
+
+The code (by the code agent):
+
+| Part | Where |
+| --- | --- |
+| The 5 pure functions (`resolve_findings`, `resolve_direct`, `resolve_line`, `resolve_doc`, `download_failed`) | `AuditCheck`, `AuditReport` |
+| `AuditResolve.roc` (new): the command code. `warn!` after `ResolveBase.closure_notes!`: one `warning: <line>` on stderr for each finding, from the closure answers of the run, no request; the R-FE10 message at a download failure | `cli/lib/AuditResolve.roc` |
+| The hooks | `InstallFlow.finish!`, `VerifyFlow`, `Install`, `Update`, `Verify`, `AuditFlow` |
+| `Fail.Ran.audit : List(JsonDoc)`: the `data.audit_warnings` elements travel with the run to the end of the command | `cli/lib/Fail.roc` |
+| `from_p3 : {} -> Bool` (false in P2): the phase constant of Q-244c-4 (the `Run:` part, the fix with a successor, the fix of `moved`) | `cli/lib/AuditReport.roc` |
+
+## Rules (244c)
+
+| Rule | What 244c does |
+| --- | --- |
+| R-AU7 | A command that resolves prints one warning for each closure hash with a reason of R-AU2, from the release states that it has: the closure answer (registry), or the release lists that it read (`direct`). No extra request. The exit code does not change. The warning gives the reason and the fix of R-AU8. |
+| R-AU14 | `moved` of a header entry: the warning is the note of Registry R-PU28, one line for each entry, not a second warning. `repo-missing` and `moved` of a rename start in P2. |
+| R-AU6, R-FE6, R-FE10 | A download 404 of a closure URL: when the command has a state with `asset-replaced`, `repo-missing` or `release-missing`, the message gives the reason and the fix; else it names `tln audit` (done already, `Fetch.download_failed`). Exit 15. |
+| R-FL4, R-J2, R-OUT4 | The warnings go to stderr, also with `--json`, and stay with `--quiet`. `data` holds each fact of the lines. |
+
+## Scope (facts found in the code before any change)
+
+| Fact | Where |
+| --- | --- |
+| `install`, `add`, `update`, `upgrade` and `init` resolve in `InstallFlow` (`finish!`); `verify` in `VerifyFlow`. `remove` resolves nothing. `outdated` and `why` send a query but resolve nothing. `--frozen` and `--offline` send no closure query. | `Resolve.roc`, `InstallFlow.roc`, `VerifyFlow.roc` |
+| After the pick, `finish!` walks the new closure (`ResolveBase.closure!`) and prints `ResolveBase.closure_notes!` on stderr. The closure answer is `request.index` (`Answer(a)`), and the second answer of a held move is `probed.second`. So the closure and the states are there, with no extra request. | `InstallFlow.finish!` |
+| `AuditCheck.entries`, `state_of`, `finding`, `of_answer`, `ignore`, `toml_items`, `fix` (244a) and `direct_finding` (244b) give the findings and the fix. | `AuditCheck`, `AuditReport`, `AuditDirect` |
+| With a registry the resolve does not download an archive whose hash has an artifact record in the answer (`Gather.facts!`, R-AL8 source 2). So a 404 in a resolve with a registry comes only for a hash with no artifact record. With `direct`, `Gather` downloads every archive that is not in the cache. | `Gather.roc` |
+| With `direct`, the resolve reads the release list of each free variable and each new name (R-DI1), and `Index.candidates` keeps only candidates: a chosen release is never a draft, a prerelease or a re-release. A finding comes only for another closure hash of a listed repository (for example a second series of the same repository). `Index.candidates` already prints the R-DI15 warning of a re-release (its own text). A list that answers 404 or 301 stops the resolve (exit 15, Q621 item 1). | `Index.roc`, `PickIndex.roc` |
+| The client part of Registry R-PU28 (`tln update <alias>` follows a successor) is P3 (`PLAN-P2-CLI.md` line 47, Design Q406). No code follows a successor today. | `grep successor cli/lib` |
+
+## Proposed names (TW24, for the code agent)
+
+| Name | Does |
+| --- | --- |
+| `AuditCheck.resolve_findings : { answers, entries, items } -> List(Finding)` | Registry. For each entry, in order: the first answer of `answers` that has its release row gives the state (`state_of`, `finding`). An entry with no row gives nothing. A finding that an item of `items` ignores is dropped. An item that does not parse is skipped. |
+| `AuditCheck.resolve_direct : { lists, entries, items } -> List(Finding)` | `direct`. `direct_finding` for each entry whose repository is in `lists`. `asset-replaced` with a new hash, and a bad page, give nothing. Items as above. |
+| `AuditCheck.resolve_line : Finding -> Str` | The text of one warning (below). |
+| `AuditCheck.resolve_doc : Finding -> JsonDoc` | One element of `data.audit_warnings`. |
+| `AuditCheck.download_failed : { what, status, url, index, finding } -> Fail` | R-FE10. `Fetch.download_failed` keeps its text for the other cases. |
+
+The flow (a proposal): in `InstallFlow.finish!` and `VerifyFlow`, after `ResolveBase.closure_notes!`: `AuditCheck.entries({ members: closures, tools: [] })`, the items of `[audit] ignore` of the root `talon.toml` (the text that the load read), then `resolve_findings` (answers `[second, first]`) or `resolve_direct` (the lists of the run), then one `warning: <line>` on stderr for each, and the docs in `Outcome`. The 404: where the flow gets a download failure, it looks for the release state of the hash of the URL and calls `download_failed`. The entry comes from the walk when it has one; else the alias of a header entry with that URL; else `via` is unknown.
+
+## Questions (TW17): answered, Design Q622 (G-C252)
+
+The user approved Q-244c-1, 2, 3 and 5 as recommended, and the texts. Q-244c-4: the answer is in the row and in "The fix before P3" below.
+
+| # | Question | Answer | Tests that follow it |
+| --- | --- | --- | --- |
+| Q-244c-1 | Which commands print the R-AU7 warnings? | Each command that resolves: `install`, `add`, `update`, `upgrade`, `init` and `verify`. Not `--frozen` and not `--offline` (no closure answer; the kept copies of R-IX6 have no `repos`). Not `outdated`, `why`, `list`, `remove`: they resolve nothing. Reason: unlike the index notes (Q537), a warning shows only when there is a problem, so it is no noise in CI. | L2 `registry/au7-install-warnings` (`install`) |
+| Q-244c-2 | Which hashes and which states? | The closure after the pick (with `--dry-run`, the planned closure), all members, no project tools (the resolve query has no tool hashes). With a held move, the second answer first, then the first answer. A hash with no release row gives nothing (no `not-indexed` note: that is `tln audit`). | L0 `resolve_findings` (2 expects) |
+| Q-244c-3 | Does `[audit] ignore` apply to the warnings? | Yes: an ignored finding gives no warning (the user accepted it). An item that does not parse is skipped with no stop and no line (Q620 item 6: only `tln audit` stops). No `unused ignore` note. | L0 `resolve_findings` |
+| Q-244c-4 | R-AU14 starts `moved` in P2 with the text `json: moved to acme/roc-json. Run: tln update json`. But `tln update <alias>` follows a successor only in P3 (R-PU28 client part, Q406). In P2 the `Run:` part tells the user to do a step that does not move the entry. | User (2026-11-13): drop `Run:` until P3, and change the 244a `tln audit` fix the same way in 244c. (a) Before P3 the line is `json: moved to acme/roc-json`, with no `Run:` part; from P3 it gets `. Run: tln update json`. (b) Before P3 a successor does not make the R-AU8 fix `tln update <alias>` (`tln update` does not follow a successor until P3): a finding with a successor gets the fix of its reason as if it had no successor, and `moved` has no fix. Texts: "The fix before P3" below. | L0 `resolve_line` (row `xml`), L2 `au7-install-warnings` |
+| Q-244c-5 | `direct`: R-AU7 and R-DI15 give 2 lines for one re-released tag (the `asset-replaced` finding with a new hash, and the warning of `Index.candidates`). The catalog (CLI 3) gives one text for both. | One line: R-AU7 prints nothing for `asset-replaced` with a new hash, because the R-DI15 warning names the release and both hashes (the rule of R-AU14: not a second warning). The text of `Index.candidates` stays as it is (out of scope; changing it changes the `index/` cases). | L0 `resolve_direct` row 2 |
+
+## Tests (244c)
+
+### L0 (tests/unit/AuditcheckTest.roc, appended)
+
+| # | Test | Rules | State now |
+| --- | --- | --- | --- |
+| c1 | `resolve_findings` with one answer: the findings in entry order, an ignored item dropped, a bad item skipped | R-AU7 (Q-244c-2, Q-244c-3) | red (no name) |
+| c2 | `resolve_findings` with 2 answers: the first answer with the row wins, with its own `repos` | R-AU7 (Q-244c-2) | red |
+| c3 | `resolve_direct`, 7 rows: prerelease; asset-replaced with a new hash (nothing); no package asset; tag not in the list; ignored; bad page; no list | R-AU7 R-DI15 (Q-244c-5) | red |
+| c4 | `resolve_line`, 11 rows: each reason, header and transitive, `moved` with and with no successor (no `Fix:` part for `moved`) | R-AU7 R-AU8 R-AU14 R-PU28 (Q-244c-4) | red |
+| c5 | `resolve_doc` of a transitive finding | R-OUT4 R-J6 | red |
+| c6 | `download_failed`, 10 rows: the 3 reasons (registry), `direct`, a transitive entry with an unknown `via`, other reasons, no state, status 500 | R-FE10 R-FE6 R-AU6 R-AU8 | red |
+
+Checked against a copy of `cli/lib` with stubs of the 5 new names (`.tmp/`, deleted after): no type error; 180 old expects pass, the 6 new ones fail. In the repo, `l0-9` does not compile until the 5 names exist (the code agent adds them first).
+
+### L2 (made by `tests/tools/mk-audit.py`, copies of `registry/di1-install-no-free`, project u1: pf, json, parser, all held, no `talon.toml`)
+
+| Case | Runs | Rules | State now |
+| --- | --- | --- | --- |
+| registry/au7-install-warnings | The answer: `acme/json` is `missing`, `acme/parser` is `moved` to `acme/roc-parser`. `install --no-check --dry-run`: 2 warning lines on stderr, exit 0. `--json`: `data.audit_warnings`, the lines on stderr. `--quiet`: the lines stay. | R-AU7 R-AU14 R-FL4 R-J2 R-OUT4 | green |
+| registry/fe10-install-404 | The answer has the row of json 2.0.0 with `withdrawn: asset-replaced` and no artifact record; the archive is not in the cache; the download answers 404. Exit 15 with the reason and the fix. | R-FE10 R-FE6 R-AU6 R-AU8 | green |
+| registry/au7-no-finding | The answer of di1 (all active). `install --no-check --dry-run --json`: `data` has no `audit_warnings` member, the output of di1 as it is (mutation gap G3). | R-AU7 R-J6 | green |
+| registry/au7-ignore | The answer of au7-install-warnings; `u1/talon.toml` has `[audit] ignore = ["acme/json@2.0.0:repo-missing", "bad"]`. No line for json, the parser line stays, no stop and no line about the bad item, exit 0 (mutation gap G2). | R-AU7 R-AU9 (Q-244c-3) | green |
+| registry/au7-held-move | Run 1 of registry/ap30-held-move-notes (`update yaml@1.1.0`, a held move of pf). The first answer says acme/json is active (with the row of json 2.0.0), the second answer says it is missing: one `repo-missing` line for json (mutation gap G1). | R-AU7 R-AP16 R-SP24 (Q-244c-2) | green |
+
+Run 2026-11-13 (capped, `TMPDIR` in `.tmp/tmp`): both cases fail only on stdout/stderr text; `calls.log` and `tree.diff` match the code of today. That shows R-AU7: no extra request.
+
+Not tested at L2: `direct` (not fed yet: slice 244d), `add`, `upgrade`, `init`, `verify` (the same code place as `install` and `update` in `finish!`; `verify` is another flow: a review point), `--frozen` and `--offline` (no warning, Q-244c-1).
+
+The 3 cases of the mutation gaps (added 2026-11-13) passed on the code as it was. Their calls.log: au7-no-finding is run 1 of di1 as it is; au7-held-move is run 1 of ap30-held-move-notes as it is; au7-ignore is the real run (one more `read_files $PROJECT/u1/talon.toml` in the project search, because the file now exists), baked after a check by eye: 2 requests (the guard `http_get` of acme/parser and the one closure query), as in di1, so R-AU7 sends no extra request. In au7-held-move the warning is on stderr before the lines of the held move (the real order: after the closure notes).
+
+### Guessed calls.log lines
+
+None are new. Run 1 of each case is run 1 of `di1-install-no-free` with `tty` (a human run). Runs 2 and 3 of `au7-install-warnings` drop the writes of `projects.json` and `path-roc.json` and the GitHub request for `acme/parser` (kept after run 1). `fe10-install-404` adds the download calls of `fetch/fe-flow` (`random`, `list_dirs`, `programs curl wget`, `make_dirs`, `spawn_all` with the curl job, `delete`). All match the code of today.
+
+## Output (proposed, TW24)
+
+| Item | Text |
+| --- | --- |
+| A warning (stderr) | `warning: <head>: <name> <version> <state>. Fix: <fix of R-AU8>.` `<head>`: the alias, or `<edge> via <aliases>`. |
+| `<state>` | `is yanked ("<reason>")` or `is yanked (no reason given)`; `has a replaced asset (the asset of the header is gone)`; `is in a deleted or private repository`; `has a deleted release`; `is a prerelease`; `is withdrawn (<value>)`; `is in a repository that moved` (` to <successor>` when known) |
+| `moved` of a header entry with a successor | `warning: json: moved to acme/roc-json` (P2, Q-244c-4); from P3 `. Run: tln update json` is added |
+| Place | After the closure notes, before the ladder lines. In the order of the closure walk. |
+| `--json` | `data.audit_warnings`: `[{name, group, version, hash, alias, via, reason, successor, text}]`, after `written` (`index_notes` stays last, Q540). Left out when there is no warning, so no output of today changes (R-J6). |
+| 404 with a state | `download of <what> failed: 404 (<url>). The registry says: <state>. <Fix as a sentence>.` With `direct`: `GitHub says:`. `<state>`: `the asset was replaced`, `the repository is deleted or private`, `the release was deleted`. A fix that starts with `tln ` gets `Run `. An entry with an unknown `via`: `Update the package that needs it (tln why <name>), or use [overrides].` |
+
+### The fix before P3 (Q-244c-4, TW24 proposal; shown to the user at commit time)
+
+| Place | Before (244a, 244b) | Now (P2) |
+| --- | --- | --- |
+| `AuditCheck.fix` of a header finding with a successor (any reason but `moved`) | `tln update <alias>` | The fix of its reason with no successor. Example: `repo-missing` with a successor: `tln remove csv, then tln add another package, or add the item to [audit] ignore`. |
+| `AuditCheck.fix` of `moved` (header, transitive, tool; with or without a successor) | `tln update <alias>` (header) | No fix: `""`. It does not fail, and the old URL still works (R-AU3). The `successor` field and the detail cell (`successor: <name>`) keep the new name. |
+| The `fix:` line of `tln audit` | Items for the failing findings and for the findings with a successor | Items for the failing findings only (a successor adds no item). No item: no `fix:` line. |
+| `--json` `findings[].fix` | Always text | `null` for `moved`. Text for the other reasons. |
+| The R-AU7 line of `moved` (resolve) | — | Header entry with a successor: `<alias>: moved to <successor>`. Else: `<head>: <name> <version> is in a repository that moved[ to <successor>].` with no `Fix:` part. |
+| From P3 (the phase constant) | — | The fix of R-AU8 with a successor (`tln update <alias>`) and the `. Run: tln update <alias>` part come back. |
+
+Changed tests (they are red until the code changes): L0 the `fix` expect (rows `csv` with a successor, `xml`, and 3 new `moved` rows), the human text expect (no `xml:` item), the `--json` data expect (`"fix":null`), the not-indexed text expect (no `fix:` line), c4 rows `xml` with no successor and `util` moved (no `Fix:` part). L2 (by `mk-audit.py`): `audit/au1-findings`, `au3-warnings` (no `fix:` line), `au9-ignore`, `ad1-direct`: no `xml:` item, `"fix":null` for xml.
+
+## Trickiest behaviors (for the mutation check later; not run)
+
+| # | Behavior | Test |
+| --- | --- | --- |
+| 1 | No extra request: the warnings come from the answer that the resolve has | L2 calls.log of `au7-install-warnings` |
+| 2 | The first answer of the list wins, with the `repos` of the same answer | L0 c2 |
+| 3 | An ignored finding gives no line; a bad item does not stop | L0 c1 |
+| 4 | `moved` of a header entry: the R-PU28 line, not a second warning; a transitive `moved` keeps the warning form | L0 c4 |
+| 5 | `direct`: no line for `asset-replaced` with a new hash | L0 c3 row 2 |
+| 6 | The exit code stays 0 with warnings; `--quiet` keeps them | L2 `au7-install-warnings` |
+| 7 | 404 message: only the 3 reasons and only status 404 | L0 c6 |
+| 8 | A transitive entry with an unknown `via` is not given the fix of a project tool | L0 c6 row 4 |
+| 9 | Before P3 a successor does not change the fix, and `moved` has no fix item (Q-244c-4) | L0 `fix` expect, L2 `audit/au3-warnings` |
+
+## Notes after the code (2026-11-13)
+
+| Item | Text |
+| --- | --- |
+| `direct` is not fed yet (manager decision) | `resolve_direct` is built and L0-tested (c3), but a resolve with `direct` prints no R-AU7 line yet. The pick does not keep the pages of the release lists (`Index.candidates` keeps only the candidates). To feed it, `ResolveBase.Candidates` needs a `pages` field (4 constructors in `PickIndex` and `ClosureIndex`). This moves to slice 244d (below), with Q-244b-3: both change shared walk and pick code. |
+| `--frozen` and `--offline` | They print no R-AU7 warning (Q-244c-1: no closure answer). No test. |
+
+## Mutation check (244c, research/slice-244c-revert/RESULT.md)
+
+11 mutants: 8 caught, 3 not caught, no equivalent mutant. Tests added for the 3 gaps:
+
+| Gap | Mutant | Test added |
+| --- | --- | --- |
+| G1 | c1: `warn!` searches the first answer before the second (held move) | L2 registry/au7-held-move |
+| G2 | c3b: a bad `[audit] ignore` item drops all items | L2 registry/au7-ignore (L0 cannot: `lenient_items` is private) |
+| G3 | c11: `audit_warnings: []` in every `--json` run with a closure answer | L2 registry/au7-no-finding |
+
+Run 2026-11-13 after the gap tests (capped, `TMPDIR` in `.tmp/tmp`): `l0-9` 186 of 186; `tests/commands/run.sh audit/ registry/au7 registry/fe10` 17 of 17.
+
+## Size
+
+Estimate before the code: about 200 lines of code: `AuditCheck` about 90 (5 functions), `InstallFlow` and `VerifyFlow` about 40 (the call after the closure notes, the `Outcome` member, `Report` data), the 404 path about 40 (the state of a hash at the failure), the release lists of a `direct` run about 30.
+
+## Out of scope (244c)
+
+The follow of a successor (R-PU28 client part, P3); the text of the R-DI15 warning of `Index.candidates` (Q-244c-5); yank data (P3); mirrors (R-FE6, P3); a 404 during `roc check` (the compiler downloads, not Talon).
+
+---
+
+# Part 244d (stub): `direct` feeds of the walk and the pick
+
+Phase: P2. Status: planned. Both items change shared walk and pick code, so they are one slice.
+
+| # | Item | Rules, decisions | Facts |
+| --- | --- | --- | --- |
+| 1 | The R-AU7 warnings of a resolve with `direct`: keep the pages of the release lists that the pick read, and give them to `AuditCheck.resolve_direct` (built and L0-tested in 244c) in `AuditResolve.warn!`. | R-AU7, Q-244c-2, Q-244c-5 (Q622) | `ResolveBase.Candidates` gets a `pages` field (4 constructors in `PickIndex` and `ClosureIndex`). A finding needs another closure hash of a listed repository (for example a second series), so an L2 case needs a two-series world. |
+| 2 | Q-244b-3 (Q621 item 3): for `tln audit` only, a package that is not in the cache and whose archive is gone (404) is a leaf: its own finding is reported, its deps are not checked, and one note `note: not checked: the deps of <name> <version>: its archive is gone`. | R-AU1, R-DI7, Q621 item 3 | Today the walk stops with exit 15 (`Walk.roc`, `Gather.roc`). All 244b fixtures have the archives in the cache. |
+
+Ask TalonRegistry for the next free ids before the questions of 244d.

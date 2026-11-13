@@ -1,3 +1,4 @@
+import AuditResolve
 import Compiler
 import Closure
 import Consent
@@ -161,7 +162,7 @@ run! = |fx, asked, tools, fresh| {
 			Ok(_) => { ..fx, out!: |text| if text == "nothing to change\n" {} else fx.out!(text) }
 			Err(None) => fx
 		}
-		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note })? else { outcome: InstallPlan.idle(plan.request, request.now), ran: Err(None), fell: Err(None) }
+		outcome = if plan.header resolve!(header, plan.request, loaded, built, { decision, fresh, range_note: start.range_note }).map_err(|fail| AuditResolve.explain(fail, { project: plan.request.project, loaded }))? else { outcome: InstallPlan.idle(plan.request, request.now), ran: Err(None), fell: Err(None) }
 		step = tools_after!(fx, tools, { request, loaded, phase: plan.phase, keys: plan.keys })?
 		if plan.phase.is_ok() and !step.changed and !header_changed(outcome.outcome) {
 			fx.out!("nothing to change\n")
@@ -431,6 +432,7 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 		{ members: loaded.members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, changes) }), known: ResolveBase.known_nodes(facts.known).concat(facts.paths) },
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
+	audit = AuditResolve.warn!(fx, request, loaded, closures, probed.second)
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))
 	# The pins of a move are edits of the candidate, so the ladder checks them (R-BL1). `decision.writes` is the other kind of pin (R-RP3).
 	checked = if moved.is_ok() edits else changes
@@ -488,7 +490,7 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 		},
 	)
 	# Slice 218 (R-SM1): the builds of ladder step 3 go to the run for the smoke build before the send.
-	sent = ran.map_ok(|found| { ..found, built: done.built })
+	sent = ran.map_ok(|found| { ..found, built: done.built, audit })
 	# The failure of a later step still has the run (`attempts!`): the notes are printed already.
 	match log_of(request) {
 		Ok(n) => Ok({ outcome: { ..outcome, at: if facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent })

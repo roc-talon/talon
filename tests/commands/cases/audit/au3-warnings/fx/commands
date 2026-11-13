@@ -1,4 +1,4 @@
-# R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only findings that do not fail: xml moved (successor acme/roc-xml), util unpublished (release-missing), pre edited (prerelease). Exit 0, 3 warning lines, the fix line names xml only (no successor for the other two).
+# R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only findings that do not fail: xml moved (successor acme/roc-xml), util unpublished (release-missing), pre edited (prerelease). Exit 0, 3 warning lines, no fix line (Q-244c-4: moved has no fix before P3, the others do not fail).
 audit --file p3/main.roc
 # R-OUT2: --json: each finding has fails false; exit 0.
 audit --json --file p3/main.roc

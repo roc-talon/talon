@@ -1,0 +1,3 @@
+warning: json: acme/json 2.0.0 is in a deleted or private repository. Fix: tln remove json, then tln add another package, or add the item to [audit] ignore.
+~ pf: acme/pfx 0.1.0 -> 0.1.1 (held): yaml 1.1.0 needs pf >= 0.1.1
+  writes $PROJECT/u1/main.roc

@@ -293,7 +293,7 @@ def p1_findings(member, ignored=()):
     return [
         finding("json", "json", [], "yanked", True, "acme/json@2.1.0:yanked" in ignored, None, {"reason": "parse bug, use 2.1.1"}, None, "tln update json", members=m),
         finding("csv", "csv", [], "repo-missing", True, "someone/roc-csv@1.1.0:repo-missing" in ignored, SINCE, None, None, FIX_CSV, members=m),
-        finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", "tln update xml", members=m),
+        finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", None, members=m),
         finding("old", "old", [], "yanked", True, "someone/roc-old@1.0.0:yanked" in ignored, None, {"reason": None}, None, "tln update old", members=m),
         finding("parser", None, ["json"], "asset-replaced", True, "acme/parser@1.0.2:asset-replaced" in ignored, None, None, None, FIX_PARSER, members=m),
         finding("util", None, ["json"], "release-missing", False, False, None, None, None, "tln update json (tln why someone/roc-util), or use [overrides]", members=m),
@@ -320,7 +320,7 @@ def au1():
         "warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml\n"
         "warning: release missing  util 0.3.0  someone/roc-util  via json\n"
         "4 findings, 2 warnings, 0 ignored.\n"
-        f"fix: json: tln update json. csv: {FIX_CSV}. xml: tln update xml. old: tln update old. parser: {FIX_PARSER}.\n" + NOTE_REG
+        f"fix: json: tln update json. csv: {FIX_CSV}. old: tln update old. parser: {FIX_PARSER}.\n" + NOTE_REG
     )
     data = {"index": "registry", "checked": 7, "notes": [{"kind": "no-yank-data"}], "findings": p1_findings("$PROJECT/p1/main.roc")}
     stdout = "== audit --file p1/main.roc\n" + text + "exit 21\n" + "== audit --json --file p1/main.roc\n" + env_fail(msg, data) + "exit 21\n"
@@ -355,7 +355,7 @@ def au3_warnings():
     repos = [repo_item("acme/pfx"), repo_item("someone/roc-xml", "moved", "acme/roc-xml"), repo_item("someone/roc-util"), repo_item("acme/pre")]
     guard = ["acme/pfx", "someone/roc-xml", "someone/roc-util", "acme/pre"]
     hashes = [h("pf"), h("xml"), h("util"), h("pre")]
-    cmds = "# R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only findings that do not fail: xml moved (successor acme/roc-xml), util unpublished (release-missing), pre edited (prerelease). Exit 0, 3 warning lines, the fix line names xml only (no successor for the other two).\n"
+    cmds = "# R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only findings that do not fail: xml moved (successor acme/roc-xml), util unpublished (release-missing), pre edited (prerelease). Exit 0, 3 warning lines, no fix line (Q-244c-4: moved has no fix before P3, the others do not fail).\n"
     cmds += "audit --file p3/main.roc\n"
     cmds += "# R-OUT2: --json: each finding has fails false; exit 0.\n"
     cmds += "audit --json --file p3/main.roc\n"
@@ -365,7 +365,7 @@ def au3_warnings():
         "warning: release missing  util 0.3.0  someone/roc-util  header: util\n"
         "warning: prerelease  pre 1.0.0  acme/pre  header: pre\n"
         "0 findings, 3 warnings, 0 ignored.\n"
-        "fix: xml: tln update xml.\n" + NOTE_REG
+        + NOTE_REG
     )
     m = ["$PROJECT/p3/main.roc"]
     data = {
@@ -373,7 +373,7 @@ def au3_warnings():
         "checked": 4,
         "notes": [{"kind": "no-yank-data"}],
         "findings": [
-            finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", "tln update xml", members=m),
+            finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", None, members=m),
             finding("util", "util", [], "release-missing", False, False, None, None, None, "tln update util", members=m),
             finding("pre", "pre", [], "prerelease", False, False, None, None, None, "tln update pre", members=m),
         ],
@@ -400,9 +400,9 @@ def au9_ignore():
     ign = "ignored: acme/json@2.1.0:yanked\nignored: someone/roc-csv@1.1.0:repo-missing\nignored: someone/roc-old@1.0.0:yanked\n"
     warn = "warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml\nwarning: release missing  util 0.3.0  someone/roc-util  via json\n"
     parser_row = "asset replaced  parser 1.0.2  acme/parser  the asset of the header is gone  via json\n"
-    run1 = head + warn + ign + "ignored: acme/parser@1.0.2:asset-replaced\nunused ignore: someone/roc-gone@1.0.0:yanked\n0 findings, 2 warnings, 4 ignored.\nfix: xml: tln update xml.\n" + NOTE_REG
-    run3 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: xml: tln update xml. parser: {FIX_PARSER}.\n" + NOTE_REG
-    run4 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\nunused ignore: ACME/Parser@1.0.2:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: xml: tln update xml. parser: {FIX_PARSER}.\n" + NOTE_REG
+    run1 = head + warn + ign + "ignored: acme/parser@1.0.2:asset-replaced\nunused ignore: someone/roc-gone@1.0.0:yanked\n0 findings, 2 warnings, 4 ignored.\n" + NOTE_REG
+    run3 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: parser: {FIX_PARSER}.\n" + NOTE_REG
+    run4 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\nunused ignore: ACME/Parser@1.0.2:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: parser: {FIX_PARSER}.\n" + NOTE_REG
     all4 = ("acme/json@2.1.0:yanked", "someone/roc-csv@1.1.0:repo-missing", "someone/roc-old@1.0.0:yanked", "acme/parser@1.0.2:asset-replaced")
     data = {"index": "registry", "checked": 7, "notes": [{"kind": "no-yank-data"}, {"kind": "unused-ignore", "item": "someone/roc-gone@1.0.0:yanked"}], "findings": p1_findings("$PROJECT/p4/main.roc", all4)}
     msg = FAIL_MSG.format(items="acme/parser@1.0.2:asset-replaced")
@@ -536,7 +536,7 @@ def ad1_direct():
         + "warning: prerelease  pre 1.0.0  acme/pre  header: pre\n"
         + "warning: release missing  util 0.3.0  someone/roc-util  via json\n"
         + "2 findings, 3 warnings, 0 ignored.\n"
-        + f"fix: json: {fix_json}. csv: {FIX_CSV}. xml: tln update xml.\n" + NOTE_DIRECT
+        + f"fix: json: {fix_json}. csv: {FIX_CSV}.\n" + NOTE_DIRECT
     )
     m = ["$PROJECT/q1/main.roc"]
     data = {
@@ -546,7 +546,7 @@ def ad1_direct():
         "findings": [
             finding("json", "json", [], "asset-replaced", True, False, None, None, None, fix_json, members=m, new_hash=h("json2")),
             finding("csv", "csv", [], "repo-missing", True, False, None, None, None, FIX_CSV, members=m),
-            finding("xml", "xml", [], "moved", False, False, None, None, "acme/roc-xml", "tln update xml", members=m),
+            finding("xml", "xml", [], "moved", False, False, None, None, "acme/roc-xml", None, members=m),
             finding("pre", "pre", [], "prerelease", False, False, None, None, None, "tln update pre", members=m),
             finding("util", None, ["json"], "release-missing", False, False, None, None, None, "tln update json (tln why someone/roc-util), or use [overrides]", members=m),
         ],
@@ -653,6 +653,208 @@ def ad_redirect(name, project, location):
          {f"{project}/main.roc": header(entries)}, keys, {}, [], [], cmds, stdout, stderr, None, calls, direct=True, routes=routes, kept=kept)
 
 
+# ---- Slice 244c (R-AU7, R-AU14, R-FE10): the audit warnings of a resolve. The cases are copies of registry/di1-install-no-free (project u1: pf, json, parser, all held; no talon.toml),
+# with a changed closure answer. Run 1 of di1 is `install --no-check --dry-run --json --file u1/main.roc`: its calls are the calls of these runs (R-AU7: no extra request).
+REG = os.path.join(ROOT, "tests/commands/cases/registry")
+BASE = os.path.join(REG, "di1-install-no-free")
+H_JSON = "7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21"
+H_PARSER = "EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc"
+U_JSON = f"https://github.com/acme/json/releases/download/2.0.0/{H_JSON}.tar.zst"
+PARSER_REPO = '{"id":2,"full_name":"acme/parser","private":false,"fork":false}'
+
+
+def base_calls():
+    # Run 1 of di1 (--json, first run): from the first `args` to the closure query.
+    with open(os.path.join(BASE, "expect/calls.log")) as f:
+        lines = f.read().split("\n")
+    end = [i for i, l in enumerate(lines) if l == "args"][1]
+    return lines[:end]
+
+
+def run_calls(first, tty):
+    # A later run: projects.json is not written again, path-roc.json is kept (no `roc version`), the privacy answer of acme/parser is kept (no GitHub request). A human run calls `tty`.
+    out = []
+    skip = 0
+    for l in base_calls():
+        if skip:
+            skip -= 1
+            continue
+        if not first and l == "write_atomic $HOME/.cache/roc/talon/projects.json":
+            continue
+        if not first and l == "spawn_all limit=1":
+            skip = 2  # the job line and the write of path-roc.json
+            continue
+        if not first and l == "programs gh":
+            skip = 3  # the GitHub request, its header line and the write of repo.json
+            continue
+        out.append(l)
+        if tty and l == "env_all" and out.count("env_all") == 1:
+            out.append("tty")
+    return "\n".join(out) + "\n"
+
+
+def copy_base(name, rules, commands, change, stdout, stderr, calls, drop_cache=(), programs=None, jobs_extra="", files=None):
+    d = os.path.join(REG, name)
+    baked = None
+    if os.path.isfile(os.path.join(d, "expect/calls.log")):
+        with open(os.path.join(d, "expect/calls.log")) as f:
+            baked = f.read()
+    shutil.rmtree(d, ignore_errors=True)
+    shutil.copytree(BASE, d)
+    shutil.rmtree(os.path.join(d, "expect"))
+    shutil.rmtree(os.path.join(d, "given/project/u2"))
+    for k in drop_cache:
+        shutil.rmtree(os.path.join(d, "given/home/.cache/roc/packages", k))
+    ans_path = os.path.join(d, "fx/http/127.0.0.1%3A9/v1/closure.POST")
+    with open(ans_path) as f:
+        ans = json.load(f)
+    change(ans)
+    write(ans_path, json.dumps(ans, separators=(",", ":")))
+    write(os.path.join(d, "rules"), rules + "\n")
+    write(os.path.join(d, "fx/commands"), commands)
+    for rel, text in (files or {}).items():
+        write(os.path.join(d, "given/project", rel), text)
+    if programs is not None:
+        write(os.path.join(d, "fx/programs"), programs)
+    if jobs_extra:
+        with open(os.path.join(d, "fx/jobs")) as f:
+            jobs = f.read()
+        write(os.path.join(d, "fx/jobs"), jobs + jobs_extra)
+    write(os.path.join(d, "expect/stdout"), stdout)
+    if stderr:
+        write(os.path.join(d, "expect/stderr"), stderr)
+    write(os.path.join(d, "expect/exit"), "0\n")
+    write(os.path.join(d, "expect/calls.log"), baked if baked is not None else calls)
+    tree(d, "u1", {"acme/parser/repo.json": PARSER_REPO})
+
+
+def repo_state(ans, name, state, successor=None):
+    for r in ans["repos"]:
+        if r["name"] == name:
+            r["state"] = state
+            r["successor"] = successor
+
+
+def au7_install():
+    def change(ans):
+        repo_state(ans, "acme/json", "missing")
+        repo_state(ans, "acme/parser", "moved", "acme/roc-parser")
+    fix_json = "tln remove json, then tln add another package, or add the item to [audit] ignore"
+    line_json = f"json: acme/json 2.0.0 is in a deleted or private repository. Fix: {fix_json}."
+    line_parser = "parser: moved to acme/roc-parser"
+    warn = f"warning: {line_json}\nwarning: {line_parser}\n"
+    cmds = "# R-AU7 R-AU14 R-FL4 R-J2 R-OUT4 (slice 244c, Q-244c-1 to Q-244c-4): tln install with a registry, all entries held (the world of registry/di1-install-no-free, project u1).\n"
+    cmds += "# The closure answer says: acme/json is missing (repo-missing, json 2.0.0 is a header entry), acme/parser moved to acme/roc-parser (a rename). pf is fine.\n"
+    cmds += "# One warning line on stderr for each closure hash with a reason, in the order of the walk; for moved the line of R-PU28 (P2 text, Q-244c-4). No extra request, exit 0.\n"
+    cmds += "install --no-check --dry-run --file u1/main.roc\n"
+    cmds += "# --json: data.audit_warnings (new member after written, TW24); the human lines stay on stderr (R-J2).\n"
+    cmds += "install --no-check --dry-run --json --file u1/main.roc\n"
+    cmds += "# --quiet hides the notes and the answer lines, not the warnings (R-FL4).\n"
+    cmds += "install --no-check --dry-run --quiet --file u1/main.roc\n"
+    docs = [
+        {"name": "acme/json", "group": "github.com/acme/json/releases/download/{v}/", "version": "2.0.0", "hash": H_JSON, "alias": "json", "via": [], "reason": "repo-missing", "successor": None, "text": line_json},
+        {"name": "acme/parser", "group": "github.com/acme/parser/releases/download/{v}/", "version": "1.0.0", "hash": H_PARSER, "alias": "parser", "via": [], "reason": "moved", "successor": "acme/roc-parser", "text": line_parser},
+    ]
+    data = {"snapshot": "log:50", "log_size": 50, "probes": 0, "downloads": 0, "dry_run": True, "check": None, "build": None, "added": [], "moved": [], "kept": [], "pinned": None, "toml": [], "renamed": [], "notes": [], "written": [], "audit_warnings": docs}
+    env = json.dumps({"schema": 1, "command": "install", "ok": True, "data": data, "error": None}, separators=(",", ":"))
+    done = "nothing to change\ndry run: nothing was written\n"
+    stdout = "== install --no-check --dry-run --file u1/main.roc\n" + done + "exit 0\n"
+    stdout += "== install --no-check --dry-run --json --file u1/main.roc\n" + env + "\nexit 0\n"
+    stdout += "== install --no-check --dry-run --quiet --file u1/main.roc\nexit 0\n"
+    stderr = warn + warn + done + warn
+    calls = run_calls(True, True) + run_calls(False, False) + run_calls(False, True)
+    copy_base("au7-install-warnings", "R-AU7 R-AU14 R-FL4 R-J2 R-OUT4 (slice 244c): the audit warnings of tln install with a registry. See fx/commands.", cmds, change, stdout, stderr, calls)
+
+
+def fe10_install_404():
+    def change(ans):
+        ans["artifacts"] = [a for a in ans["artifacts"] if a["hash"] != H_JSON]
+        for r in ans["releases"]:
+            if r["hash"] == H_JSON:
+                r["withdrawn"] = "asset-replaced"
+    cmds = "# R-FE10 R-FE6 R-AU6 (slice 244c): tln install with a registry (project u1 of registry/di1-install-no-free). The answer has the release row of json 2.0.0 with withdrawn asset-replaced,\n"
+    cmds += "# and no artifact record of it, so the resolve downloads the archive (Gather, R-AL8 source 4). The download answers 404 (no mirror before P3): exit 15. The message gives the reason and the fix (R-AU8) of that state.\n"
+    cmds += "install --no-check --dry-run --file u1/main.roc\n"
+    tmp = f"$HOME/.cache/roc/packages/{H_JSON}.0123456789abcdef.tmp"
+    calls = run_calls(True, True)
+    calls += "random\nlist_dirs $HOME/.cache/roc/packages\nprograms curl wget\n"
+    calls += f"make_dirs {tmp}\nspawn_all limit=8\n  job - curl --fail --location --silent --show-error --proto =https,http --proto-redir =https --retry 2 --connect-timeout 30 --output {tmp}/{H_JSON}.tar.zst {U_JSON}\ndelete {tmp}\n"
+    msg = f"tln: error[network]: download of acme/json 2.0.0 failed: 404 ({U_JSON}). The registry says: the asset was replaced. Ask the author to release a new version, then run tln update json.\n"
+    copy_base("fe10-install-404", "R-FE10 R-FE6 R-AU6 R-AU8 (slice 244c): a download 404 of a closure URL whose release state the command has. See fx/commands.", cmds, change,
+              "== install --no-check --dry-run --file u1/main.roc\nexit 15\n", msg, calls, drop_cache=[H_JSON], programs="roc\ncurl\n",
+              jobs_extra=f"{H_JSON}.tar.zst\t22\t-\tcurl: (22) The requested URL returned error: 404\t-\n")
+
+
+# ---- Slice 244c mutation gaps (research/slice-244c-revert/RESULT.md).
+def au7_no_finding():
+    # G3 (c11), R-J6: a --json resolve with a closure answer and no finding has no `audit_warnings` member: the output of di1 run 1 as it is.
+    cmds = "# R-AU7 R-J6 (slice 244c, mutation gap G3): the answer of registry/di1-install-no-free (all repositories active, no withdrawn row in the closure). --json: data has no audit_warnings member (no output of today changes).\n"
+    cmds += "install --no-check --dry-run --json --file u1/main.roc\n"
+    with open(os.path.join(BASE, "expect/stdout")) as f:
+        first = f.read().split("\n")[1]
+    stdout = "== install --no-check --dry-run --json --file u1/main.roc\n" + first + "\nexit 0\n"
+    copy_base("au7-no-finding", "R-AU7 R-J6 (slice 244c, mutation gap G3): no finding, no audit_warnings member. See fx/commands.", cmds, lambda ans: None,
+              stdout, "nothing to change\ndry run: nothing was written\n", run_calls(True, False))
+
+
+def au7_ignore():
+    # G2 (c3b), Q-244c-3: a bad item of [audit] ignore does not drop the good items, and does not stop the resolve.
+    def change(ans):
+        repo_state(ans, "acme/json", "missing")
+        repo_state(ans, "acme/parser", "moved", "acme/roc-parser")
+    cmds = "# R-AU7 R-AU9 (slice 244c, Q-244c-3, mutation gap G2): the answer of au7-install-warnings (json repo-missing, parser moved). u1/talon.toml has [audit] ignore with the json item and a bad item.\n"
+    cmds += "# The json finding is ignored: no line. The bad item is skipped: no stop, no line about it (only tln audit reports it). The parser line stays. Exit 0.\n"
+    cmds += "install --no-check --dry-run --file u1/main.roc\n"
+    toml = '[audit]\nignore = ["acme/json@2.0.0:repo-missing", "bad"]\n'
+    copy_base("au7-ignore", "R-AU7 R-AU9 (slice 244c, Q-244c-3): [audit] ignore in a resolve, with a bad item. See fx/commands.", cmds, change,
+              "== install --no-check --dry-run --file u1/main.roc\nnothing to change\ndry run: nothing was written\nexit 0\n",
+              "warning: parser: moved to acme/roc-parser\n", run_calls(True, True), files={"u1/talon.toml": toml})
+
+
+def au7_held_move():
+    # G1 (c1), Q-244c-2: with a held move the second answer is searched first. Run 1 of registry/ap30-held-move-notes (update yaml@1.1.0 moves pf, held).
+    # The first answer gets the release row of json 2.0.0 (a held header entry) with acme/json active; the second answer says acme/json is missing.
+    base = os.path.join(REG, "ap30-held-move-notes")
+    d = os.path.join(REG, "au7-held-move")
+    baked = None
+    if os.path.isfile(os.path.join(d, "expect/calls.log")):
+        with open(os.path.join(d, "expect/calls.log")) as f:
+            baked = f.read()
+    shutil.rmtree(d, ignore_errors=True)
+    shutil.copytree(base, d)
+    v1 = os.path.join(d, "fx/http/127.0.0.1%3A9/v1")
+    for n in range(3, 9):
+        for ext in ("", ".meta"):
+            os.remove(os.path.join(v1, f"closure.POST.{n}{ext}"))
+    with open(os.path.join(v1, "closure.POST")) as f:
+        first = json.load(f)
+    with open(os.path.join(v1, "closure.POST.2")) as f:
+        second = json.load(f)
+    row = [r for r in second["releases"] if r["hash"] == H_JSON][0]
+    first["releases"].append(row)
+    first["repos"].append({"name": "acme/json", "state": "active", "successor": None, "state_at": 1700000000000})
+    repo_state(second, "acme/json", "missing")
+    write(os.path.join(v1, "closure.POST"), json.dumps(first, separators=(",", ":")))
+    write(os.path.join(v1, "closure.POST.2"), json.dumps(second, separators=(",", ":")))
+    cmd = "update yaml@1.1.0 --no-check --dry-run --file u1/main.roc"
+    write(os.path.join(d, "fx/commands"), "# R-AU7 (slice 244c, Q-244c-2, mutation gap G1): run 1 of registry/ap30-held-move-notes. The first answer says acme/json is active (with the row of json 2.0.0), the second answer of the held move says it is missing.\n# The second answer is searched first: one repo-missing line for json.\n" + cmd + "\n")
+    write(os.path.join(d, "rules"), "R-AU7 R-AP16 R-SP24 (slice 244c, Q-244c-2): the state of a hash comes from the second answer of a held move first. See fx/commands.\n")
+    with open(os.path.join(base, "expect/stdout")) as f:
+        out = f.read()
+    out = out[: out.index("== ", 3)]
+    with open(os.path.join(base, "expect/stderr")) as f:
+        err = f.read().split("\n")[:2]
+    fix_json = "tln remove json, then tln add another package, or add the item to [audit] ignore"
+    # The warning comes after the closure notes, before the lines of the held moves (the real order).
+    err = f"warning: json: acme/json 2.0.0 is in a deleted or private repository. Fix: {fix_json}.\n" + "\n".join(err) + "\n"
+    write(os.path.join(d, "expect/stdout"), out)
+    write(os.path.join(d, "expect/stderr"), err)
+    with open(os.path.join(base, "expect/calls.log")) as f:
+        lines = f.read().split("\n")
+    end = [i for i, l in enumerate(lines) if l == "args"][1]
+    write(os.path.join(d, "expect/calls.log"), baked if baked is not None else "\n".join(lines[:end]) + "\n")
+
+
 def au4_not_indexed():
     entries = [("pf", "pf", True), ("json", "json200", False), ("web", "web", False)]
     keys = ["pf", "json200"]
@@ -691,4 +893,9 @@ if __name__ == "__main__":
     ad9_guard()
     ad_redirect("ad10-redirect-host", "r1", "https://evil.example/repositories/42/releases?per_page=100")
     ad_redirect("ad11-redirect-none", "r2", None)
+    au7_install()
+    fe10_install_404()
+    au7_no_finding()
+    au7_ignore()
+    au7_held_move()
     shutil.rmtree(os.path.join(ROOT, ".tmp/mk-audit"), ignore_errors=True)

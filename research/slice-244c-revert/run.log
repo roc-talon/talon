@@ -1,0 +1,26 @@
+base l0-9: exit=0 All (186) tests passed in 7184.8 ms. 
+base L2: commands: 22 passed, 0 failed 
+c1: L0 exit=0 All (186) tests passed in 7233.6 ms. 
+c1: L2 commands: 14 passed, 0 failed 
+c2: L0 exit=1     1 failed     0 compiler errors 
+c2: L2 commands: 14 passed, 0 failed 
+c3a: L0 exit=1     1 failed     0 compiler errors 
+c3a: L2 commands: 14 passed, 0 failed 
+c3b: L0 exit=0 All (186) tests passed in 6930.9 ms. 
+c3b: L2 commands: 14 passed, 0 failed 
+c4: L0 exit=1     1 failed     0 compiler errors 
+c4: L2 FAIL registry/au7-install-warnings commands: 13 passed, 1 failed 
+c5: L0 exit=1     1 failed     0 compiler errors 
+c5: L2 commands: 14 passed, 0 failed 
+c6: L0 exit=0 All (186) tests passed in 7179.1 ms. 
+c6: L2 FAIL registry/au7-install-warnings commands: 13 passed, 1 failed 
+c7: L0 exit=1     1 failed     0 compiler errors 
+c7: L2 commands: 14 passed, 0 failed 
+c8: L0 exit=1     1 failed     0 compiler errors 
+c8: L2 commands: 14 passed, 0 failed 
+c9: L0 exit=1     3 failed     0 compiler errors 
+c9: L2 FAIL audit/ad1-direct FAIL audit/au1-findings FAIL audit/au3-warnings FAIL audit/au9-ignore commands: 10 passed, 4 failed 
+c10: L0 exit=0 All (186) tests passed in 8439.4 ms. 
+c10: L2 FAIL audit/ad1-direct FAIL audit/au3-warnings commands: 12 passed, 2 failed 
+c11: L0 exit=0 All (186) tests passed in 1963.2 ms. 
+c11: L2 commands: 22 passed, 0 failed 

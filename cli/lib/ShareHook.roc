@@ -52,6 +52,7 @@ ShareHook :: [].{
 			noted: Bool.False,
 			headers: [],
 			built: [],
+			audit: [],
 		})
 		_ => Err(None)
 	}

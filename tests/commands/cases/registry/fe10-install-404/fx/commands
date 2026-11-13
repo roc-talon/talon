@@ -1,0 +1,3 @@
+# R-FE10 R-FE6 R-AU6 (slice 244c): tln install with a registry (project u1 of registry/di1-install-no-free). The answer has the release row of json 2.0.0 with withdrawn asset-replaced,
+# and no artifact record of it, so the resolve downloads the archive (Gather, R-AL8 source 4). The download answers 404 (no mirror before P3): exit 15. The message gives the reason and the fix (R-AU8) of that state.
+install --no-check --dry-run --file u1/main.roc

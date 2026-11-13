@@ -1,3 +1,4 @@
+import AuditResolve
 import Args
 import Common
 import Compiler
@@ -67,7 +68,7 @@ Verify :: [].{
 				Ok(done) => {
 					shown.out!("verified: the tuple passes. No project file was written.\n")
 					if args.json {
-						fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(Report.data(done.outcome), done.fell) }))
+						fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(AuditResolve.with_warnings(Report.data(done.outcome), done.ran), done.fell) }))
 					}
 					ShareHook.send!(fx, done.ran, 0)
 					0

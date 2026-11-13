@@ -1,0 +1,9 @@
+== install --no-check --dry-run --file u1/main.roc
+nothing to change
+dry run: nothing was written
+exit 0
+== install --no-check --dry-run --json --file u1/main.roc
+{"schema":1,"command":"install","ok":true,"data":{"snapshot":"log:50","log_size":50,"probes":0,"downloads":0,"dry_run":true,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"audit_warnings":[{"name":"acme/json","group":"github.com/acme/json/releases/download/{v}/","version":"2.0.0","hash":"7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21","alias":"json","via":[],"reason":"repo-missing","successor":null,"text":"json: acme/json 2.0.0 is in a deleted or private repository. Fix: tln remove json, then tln add another package, or add the item to [audit] ignore."},{"name":"acme/parser","group":"github.com/acme/parser/releases/download/{v}/","version":"1.0.0","hash":"EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc","alias":"parser","via":[],"reason":"moved","successor":"acme/roc-parser","text":"parser: moved to acme/roc-parser"}]},"error":null}
+exit 0
+== install --no-check --dry-run --quiet --file u1/main.roc
+exit 0

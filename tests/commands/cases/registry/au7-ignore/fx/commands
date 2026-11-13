@@ -1,0 +1,3 @@
+# R-AU7 R-AU9 (slice 244c, Q-244c-3, mutation gap G2): the answer of au7-install-warnings (json repo-missing, parser moved). u1/talon.toml has [audit] ignore with the json item and a bad item.
+# The json finding is ignored: no line. The bad item is skipped: no stop, no line about it (only tln audit reports it). The parser line stays. Exit 0.
+install --no-check --dry-run --file u1/main.roc
