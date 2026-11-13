@@ -666,3 +666,133 @@ expect {
 	dbg data
 	got == want and data.contains(notes) and AuditCheck.code(r.findings) == 0
 }
+
+# ---- Slice 244b (docs/slices/244-audit.md, part 244b): `tln audit` with `direct` (R-AU1, R-AU2 the `direct` column, R-AU4, R-DI2 to R-DI4, R-DI11, R-DI15) and the privacy guard of Design Q620 item 9.
+# New names for the code agent (a proposal, TW24; until they exist this file does not compile: red on purpose):
+#   `AuditCheck.repos_of : List(Entry) -> List({ owner : Str, repo : Str })`   (the GitHub repositories to list, lower case, each once, in the order of the entries)
+#   `AuditCheck.direct_finding : { entry : Entry, list : [NotFound, Pages({ pages : List(Str), redirected : Bool })] } -> Try(Finding, [None, BadPage(U64)])`
+#   `AuditCheck.of_lists : { entries : List(Entry), lists : List({ owner : Str, repo : Str, list : [NotFound, Pages({ pages : List(Str), redirected : Bool })] }) } -> Try({ checked : U64, findings : List(Finding), unindexed : List(Entry) }, Fail)`
+#   `AuditCheck.of_guarded : { answer : records.Closure.Answer, entries : List(Entry), refused : List(Str) } -> { checked : U64, findings : List(Finding), unindexed : List(Entry) }`   (`of_answer` with the repositories that the guard refused, Q620 item 9)
+# Expects marked "Q-244b-n" follow the recommended answer of that question.
+
+# A release object of a GitHub release list page (R-DI3, R-DI4: `tag_name`, `draft`, `prerelease`, `published_at`, `assets`; `html_url` names the repository that answered, Q-244b-1).
+gh_release = |name, tag, draft, prerelease, assets| {
+	asset_text = Str.join_with(assets.map(|a| "{\"name\":\"${a}\",\"size\":1000,\"browser_download_url\":\"https://github.com/${name}/releases/download/${tag}/${a}\"}"), ",")
+	"{\"tag_name\":\"${tag}\",\"draft\":${if draft "true" else "false"},\"prerelease\":${if prerelease "true" else "false"},\"published_at\":\"2026-07-01T12:00:00Z\",\"html_url\":\"https://github.com/${name}/releases/tag/${tag}\",\"assets\":[${asset_text}]}"
+}
+
+gh_page = |releases| "[${Str.join_with(releases, ",")}]"
+
+pkg = |hash| "${hash}.tar.zst"
+
+e_json = entry_of(h_json)
+
+pages = |list, redirected| Pages({ pages: list, redirected })
+
+direct = |entry, list| AuditCheck.direct_finding({ entry, list })
+
+d_finding = |entry, reason| { entry, reason, ignored: Err(None), since: Err(None), yank_reason: Err(None), new_hash: Err(None), successor: Err(None) }
+
+# R-AU2 (`direct` column) R-AU13 R-DI3 R-DI4 R-DI15 (Q-244b-1, Q-244b-2): the finding of one entry from the release list of its repository. The release of the entry is the release whose `tag_name` is the tag of the URL (exact).
+# `since` is always Err(None) with `direct` (GitHub gives no time of a delete or a replace). No reason: Err(None).
+expect {
+	other = gh_release("acme/json", "2.0.0", Bool.False, Bool.False, [pkg(h_pf)])
+	ok_rel = gh_release("acme/json", "2.1.0", Bool.False, Bool.False, [pkg(h_json)])
+	rows = [
+		# 1: the list call answers 404: the repository is deleted or private (Design N4).
+		(NotFound, Ok(d_finding(e_json, RepoMissing))),
+		# 2 to 3: the tag has the header asset: no finding. Other assets do not count (R-DI4).
+		(pages([gh_page([other, ok_rel])], Bool.False), Err(None)),
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.False, ["docs.tar.gz", pkg(h_json), "${pkg(h_json)}.intoto.jsonl"])])], Bool.False), Err(None)),
+		# 4 to 7: the tag is not in the list (deleted), the list is empty, the tag differs (`v2.1.0` is not `2.1.0`), a draft: `release-missing` (`direct` cannot tell a deleted release from a draft).
+		(pages([gh_page([other])], Bool.False), Ok(d_finding(e_json, ReleaseMissing))),
+		(pages(["[]"], Bool.False), Ok(d_finding(e_json, ReleaseMissing))),
+		(pages([gh_page([gh_release("acme/json", "v2.1.0", Bool.False, Bool.False, [pkg(h_json)])])], Bool.False), Ok(d_finding(e_json, ReleaseMissing))),
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.True, Bool.False, [pkg(h_json)])])], Bool.False), Ok(d_finding(e_json, ReleaseMissing))),
+		# 8: `prerelease` true.
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.True, [pkg(h_json)])])], Bool.False), Ok(d_finding(e_json, Prerelease))),
+		# 9: a draft that is also a prerelease: `release-missing` comes first (R-AU13).
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.True, Bool.True, [pkg(h_json)])])], Bool.False), Ok(d_finding(e_json, ReleaseMissing))),
+		# 10: the tag has one other package asset (R-DI15): `asset-replaced` with the new hash.
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.False, [pkg(h_web)])])], Bool.False), Ok({ ..d_finding(e_json, AssetReplaced), new_hash: Ok(h_web) })),
+		# 10b (R-AU13, mutation gap G1): a prerelease with no header asset and one other package asset: `asset-replaced` comes before `prerelease`.
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.True, [pkg(h_web)])])], Bool.False), Ok({ ..d_finding(e_json, AssetReplaced), new_hash: Ok(h_web) })),
+		# 11 to 13 (Q-244b-2): no package asset: `asset-replaced`, no new hash. 2 other package assets: `asset-replaced`, no new hash. The header asset and another one (R-DI4: not a candidate): no finding, the bytes of the header are there.
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.False, ["docs.tar.gz"])])], Bool.False), Ok(d_finding(e_json, AssetReplaced))),
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.False, [pkg(h_web), pkg(h_xml)])])], Bool.False), Ok(d_finding(e_json, AssetReplaced))),
+		(pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.False, [pkg(h_web), pkg(h_json)])])], Bool.False), Err(None)),
+		# 14: the tag is on page 2.
+		(pages([gh_page([other]), gh_page([ok_rel])], Bool.False), Err(None)),
+		# 15 to 17 (Q-244b-1): the list came after a redirect: `moved`. The successor is the `owner/repo` of the `html_url` of the first release of the list; the same name (any case) or no release gives no successor.
+		(pages([gh_page([gh_release("acme/roc-json", "2.1.0", Bool.False, Bool.False, [pkg(h_json)])])], Bool.True), Ok({ ..d_finding(e_json, Moved), successor: Ok("acme/roc-json") })),
+		(pages([gh_page([gh_release("Acme/JSON", "2.1.0", Bool.False, Bool.False, [pkg(h_json)])])], Bool.True), Ok(d_finding(e_json, Moved))),
+		(pages(["[]"], Bool.True), Ok(d_finding(e_json, ReleaseMissing))),
+		# 18 to 19: R-AU13 with a redirect: the other reason wins, the finding keeps the successor.
+		(pages([gh_page([gh_release("acme/roc-json", "2.1.0", Bool.False, Bool.True, [pkg(h_json)])])], Bool.True), Ok({ ..d_finding(e_json, Prerelease), successor: Ok("acme/roc-json") })),
+		(pages([gh_page([gh_release("acme/roc-json", "2.1.0", Bool.False, Bool.False, [pkg(h_web)])])], Bool.True), Ok({ ..d_finding(e_json, AssetReplaced), new_hash: Ok(h_web), successor: Ok("acme/roc-json") })),
+		# 20 to 21: a page that is not a JSON array of objects, or a release with no text `tag_name`: `BadPage(n)` (1-based).
+		(pages(["{}"], Bool.False), Err(BadPage(1))),
+		(pages([gh_page([other]), "[{\"draft\":false}]"], Bool.False), Err(BadPage(2))),
+	]
+	bad = rows.map_with_index(|(list, want), i| (i + 1, want, direct(e_json, list))).keep_if(|(_, want, got)| got != want)
+	dbg bad
+	bad == []
+}
+
+# R-AU1 R-DI2 R-DI11 (Q-244b-4 for other hosts): the repositories that `direct` lists: the `github.com` repository of each entry (the URL), lower case, each once, in the order of the entries. The header entries and the transitive ones (R-AU1: `audit` also lists transitive groups) and the tools.
+# An entry of another host has no list.
+expect {
+	odd = ent("http://127.0.0.1:9/x/1.0.0/${h_old}.tar.zst", "127.0.0.1:9/x/1.0.0", "1.0.0", h_old, "x")
+	upper = ent(url("Acme/JSON", "2.1.0", h_http1), "Acme/JSON", "2.1.0", h_http1, "j2")
+	got = AuditCheck.repos_of(p1_entries.concat([odd, upper]))
+	want = ["acme/pfx", "acme/json", "acme/web", "someone/roc-csv", "someone/roc-xml", "someone/roc-old", "acme/parser", "someone/roc-util", "acme/fmt"].map(
+		|n| match n.split_on("/") {
+			[o, r] => { owner: o, repo: r }
+			_ => { owner: "", repo: "" }
+		},
+	)
+	dbg got
+	got == want
+}
+
+# R-AU1 R-AU2 R-DI11 (TW24 proposal for the note of another host): the findings of `direct`, in the order of the entries. `checked` counts the entries with a list (also a 404). An entry of another host, or of a repository with no list, is in `unindexed`.
+# A page that is not a list stops the run: kind `Network` (exit 15), the text of `Init` and `FullName` for a bad page.
+expect {
+	odd = ent("http://127.0.0.1:9/x/1.0.0/${h_old}.tar.zst", "127.0.0.1:9/x/1.0.0", "1.0.0", h_old, "x")
+	entries = [entry_of(h_pf), e_json, entry_of(h_csv), odd, entry_of(h_xml)]
+	lists = [
+		{ owner: "acme", repo: "pfx", list: pages([gh_page([gh_release("acme/pfx", "0.1.0", Bool.False, Bool.False, [pkg(h_pf)])])], Bool.False) },
+		{ owner: "acme", repo: "json", list: pages([gh_page([gh_release("acme/json", "2.1.0", Bool.False, Bool.True, [pkg(h_json)])])], Bool.False) },
+		{ owner: "someone", repo: "roc-csv", list: NotFound },
+	]
+	got = AuditCheck.of_lists({ entries, lists })
+	bad_page = AuditCheck.of_lists({ entries, lists: [{ owner: "acme", repo: "json", list: pages(["nope"], Bool.False) }] })
+	match got {
+		Ok(r) =>
+			r.checked == 3
+				and r.findings.map(|x| (x.entry.hash, x.reason)) == [(h_json, Prerelease), (h_csv, RepoMissing)]
+					and r.unindexed.map(|e| e.hash) == [h_old, h_xml]
+						and bad_page == Err(Fail.new(Network, "the release list of acme/json (page 1) is not a list of releases"))
+		Err(_) => Bool.False
+	}
+}
+
+# Design Q620 item 9 (Q-244-9): with a registry, a repository that the privacy guard refuses (GitHub 404, no kept public answer) gives a `repo-missing` finding for each entry of it, in the order of the entries, counted in `checked`.
+# Its hashes are not in the query, so the answer has no release of them; a refused entry is never `unindexed`. `refused` holds lower-case `owner/repo` names (the form of `PrivacyGuard.repos_to_check`); the entry name matches with any case.
+expect {
+	no_csv = { ..answer, releases: answer.releases.drop_if(|r| r.hash == h_csv) }
+	entries = AuditCheck.entries({ members: [p1], tools: [] })
+	got = AuditCheck.of_guarded({ answer: no_csv, entries, refused: ["someone/roc-csv"] })
+	plain = AuditCheck.of_answer({ answer: no_csv, entries })
+	got.checked == 8
+		and got.findings.map(|x| (x.entry.hash, x.reason, x.since)) == [(h_json, Yanked, Err(None)), (h_csv, RepoMissing, Err(None)), (h_xml, Moved, Ok(1700000000000)), (h_old, Yanked, Err(None)), (h_parser, AssetReplaced, Err(None)), (h_util, ReleaseMissing, Err(None))]
+			and got.unindexed == []
+				and plain.unindexed.map(|e| e.hash) == [h_csv]
+}
+
+# R-AU4 R-DI11 R-OUT2 (TW24 proposal): with `direct` the note of an entry with no index has its own text: `note: not checked: <name> <version>: no index without a registry`. The note of no yank data is the text of R-C6.
+expect {
+	r = { index: Direct, checked: 1, findings: [], unused: [], no_yank_data: Bool.True, unindexed: [{ name: "127.0.0.1:9/x/1.0.0", version: "1.0.0", hash: h_old }] }
+	got = AuditCheck.text(r)
+	got == "audit: 1 packages checked (direct)\n0 findings, 0 warnings, 0 ignored.\nnote: not checked: 127.0.0.1:9/x/1.0.0 1.0.0: no index without a registry\nnote: no yank and advisory data without a registry\n"
+}

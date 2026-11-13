@@ -68,7 +68,11 @@ AuditReport :: [].{
 		count = "${plural(failing.len(), "finding")}, ${plural(warnings.len(), "warning")}, ${ignored.len().to_str()} ignored."
 		items = open.keep_if(|f| AuditReport.fails(f.reason) or f.successor != Err(None)).map(|f| "${f.entry.edge}: ${AuditReport.fix(f)}.")
 		fix_lines = if items.is_empty() [] else ["fix: ${Str.join_with(items, " ")}"]
-		not_checked = report.unindexed.map(|u| "note: not checked: ${u.name} ${u.version}: the registry has no release of it")
+		why_not = match report.index {
+			Registry => "the registry has no release of it"
+			Direct => "no index without a registry"
+		}
+		not_checked = report.unindexed.map(|u| "note: not checked: ${u.name} ${u.version}: ${why_not}")
 		note = if report.no_yank_data {
 			match report.index {
 				Direct => ["note: no yank and advisory data without a registry"]

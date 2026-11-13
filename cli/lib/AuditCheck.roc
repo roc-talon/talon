@@ -1,6 +1,7 @@
 import records.Closure as Wire
 import records.Release as WireRelease
 import Args
+import AuditDirect
 import AuditReport
 import AuditTypes
 import Closure
@@ -31,6 +32,34 @@ AuditCheck :: [].{
 	Finding : AuditTypes.Finding
 
 	Report : AuditTypes.Report
+
+	repos_of : List(AuditTypes.Entry) -> List({ owner : Str, repo : Str })
+	repos_of = AuditDirect.repos_of
+
+	direct_finding : { entry : AuditTypes.Entry, list : AuditDirect.Fetched } -> Try(AuditTypes.Finding, [None, BadPage(U64)])
+	direct_finding = AuditDirect.direct_finding
+
+	of_lists : { entries : List(AuditTypes.Entry), lists : List({ owner : Str, repo : Str, list : AuditDirect.Fetched }) } -> Try({ checked : U64, findings : List(AuditTypes.Finding), unindexed : List(AuditTypes.Entry) }, Fail)
+	of_lists = AuditDirect.of_lists
+
+	## Design Q620 item 9: `of_answer` for a run where the privacy guard refused some repositories (`refused`: `owner/repo`, lower case). An entry of a refused repository is a `repo-missing` finding (counted, never `unindexed`), in the order of the entries.
+	of_guarded : { answer : Wire.Answer, entries : List(AuditTypes.Entry), refused : List(Str) } -> { checked : U64, findings : List(AuditTypes.Finding), unindexed : List(AuditTypes.Entry) }
+	of_guarded = |facts| facts.entries.fold(
+		{ checked: 0, findings: [], unindexed: [] },
+		|acc, entry| {
+			gone = match AuditDirect.repo_of(entry.url) {
+				Ok(r) => facts.refused.contains("${r.owner}/${r.repo}")
+				Err(None) => Bool.False
+			}
+			if gone {
+				missing = { entry, reason: RepoMissing, ignored: Err(None), since: Err(None), yank_reason: Err(None), new_hash: Err(None), successor: Err(None) }
+				{ ..acc, checked: acc.checked + 1, findings: acc.findings.append(missing) }
+			} else {
+				one = AuditCheck.of_answer({ answer: facts.answer, entries: [entry] })
+				{ checked: acc.checked + one.checked, findings: acc.findings.concat(one.findings), unindexed: acc.unindexed.concat(one.unindexed) }
+			}
+		},
+	)
 
 	reason_text : AuditTypes.Reason -> Str
 	reason_text = AuditReport.reason_text

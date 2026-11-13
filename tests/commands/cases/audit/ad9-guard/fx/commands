@@ -1,0 +1,3 @@
+# Design Q620 item 9 (Q-244-9) R-RG4 R-RG6 R-AU2 (slice 244b): a registry. gone (someone/roc-gone) has no kept public answer, and GitHub answers 404 for the repository (no route): for tln audit only,
+# this is a repo-missing finding of gone (counted in checked), and its hash is not in the closure query (R-RG4 holds). The other hashes are checked. The walk reads the header of gone from the cache. Exit 21.
+audit --file p8/main.roc

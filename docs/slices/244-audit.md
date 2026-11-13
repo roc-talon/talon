@@ -242,3 +242,135 @@ Questions for 244b (not for this review): how `direct` sees a redirect (`moved`)
 | D3 | calls.log of au9-ignore, au12-bad-items run 1 and au1-tool: the real run reads `$PROJECT/<p>/talon.toml` after the two `list_dirs` lines. | Accept the real line. Bake the real lines after the review. | All calls.log files are the real run, read by eye. Every stdout, stderr and exit was read: no exit-0 run has text on stderr, and no failure is baked as expected. |
 | D4 | Q-244-4: the code prints the note on stderr only, because `Report` has no field for it. | Add tests; the code agent adds a `Report` field. | L0 22 and au4-not-indexed runs 1, 2 (red). The note text of the code is accepted. |
 
+
+---
+
+# 244b `tln audit` with `direct`, and the privacy guard case
+
+Phase: P2. Status: code (green). Design Q620 (G-C250) item 9, Design Q621 (G-C251): the answers of Q-244b-1 to Q-244b-4, as recommended. The code agent wrote `cli/lib/AuditDirect.roc`, `AuditFlow.registry!` and `AuditFlow.direct!`, `Github.audit_list!` and `PrivacyGuard.collect!`. L0 `l0-9` 180 of 180; L2 `audit/` 10 of 10 (2026-11-12, after the ruling below).
+
+## Rules (244b)
+
+| Rule | What it says for this part |
+| --- | --- |
+| R-AU1 | With `direct`, the state comes from the release list of R-DI2 for each group of the closure, transitive groups too (one list for each repository). |
+| R-AU2 (`direct` column) | `release-missing`: the tag is not in the list (a draft too). `prerelease`: `prerelease` true. `asset-replaced`: the tag has another package asset (R-DI15). `repo-missing`: the list call answers 404. `moved`: the answer comes from another name (GitHub redirects a renamed repository). `yanked` has no `direct` source; an R-AP31 move has none either. |
+| R-AU4, R-C6 | With `direct` the last line is `note: no yank and advisory data without a registry` (the R-C6 text; the registry text of Q620 item 2 is for a registry only). |
+| R-DI2, R-DI3, R-DI4, R-DI11, R-DI13, R-DI15 | The list call, its cache of 60 s and its ETag; draft and prerelease; the package asset; another host has no index; the rate limit (exit 15); a re-release. |
+| R-RG4, R-RG6, Q620 item 9 | With a registry: a repository that the guard refuses (404 or private, no kept public answer) is a `repo-missing` finding for `tln audit` only, and its hashes stay out of the closure query. `direct` sends no registry request, so it runs no guard. |
+
+## Scope (facts found in the code before any change)
+
+| Fact | Where | Consequence |
+| --- | --- | --- |
+| `AuditFlow.go!` stops with exit 1 `tln audit with direct is not built yet` for `direct`. | AuditFlow.roc | Red state of ad1 and ad2. |
+| `PrivacyGuard.check!` returns `Err(refusal)` (exit 2) on the first refused repository and checks no later one. | PrivacyGuard.roc | Red state of ad9. The code needs a form that gives the refused repositories back. |
+| `Github.releases!` turns any status other than 200, 304 or a rate limit into `status_failure` (exit 15): a 404 and a 301 stop the command. | Github.roc | `audit` needs a form that keeps a 404 (`NotFound`) and follows one redirect (Q-244b-1). |
+| The real `Fx.http_get!` follows no redirect: basic-cli `Http.send!(request, {})` gives the first answer. GitHub answers a renamed repository with 301 and `Location: <api>/repositories/<id>/releases...`: the location has an id, not a name. | RealFx.roc, basic-cli Http.roc | Q-244b-1. |
+| `Index.assets_of` gives the package assets of one release object (R-DI4 names). | Index.roc | `direct_finding` can use it. |
+| With `direct`, the walk reads each package header from `packages/<hash>/` or downloads the archive (R-DI7). A package that is not in the cache and whose asset is gone stops the walk with exit 15 before the report. | Walk.roc, Gather.roc | Q-244b-3. All 244b fixtures have the packages in the cache. |
+
+## Proposed names (TW24, for the code agent)
+
+| Name | Type | Rule |
+| --- | --- | --- |
+| `AuditCheck.repos_of` | `List(Entry) -> List({ owner : Str, repo : Str })`: the `github.com` repository of each entry (URL), lower case, each once, in the order of the entries | R-AU1, R-DI2, R-DI11 |
+| `AuditCheck.direct_finding` | `{ entry : Entry, list : [NotFound, Pages({ pages : List(Str), redirected : Bool })] } -> Try(Finding, [None, BadPage(U64)])` | R-AU2, R-AU13, R-DI3, R-DI4, R-DI15 |
+| `AuditCheck.of_lists` | `{ entries : List(Entry), lists : List({ owner : Str, repo : Str, list : ... }) } -> Try({ checked : U64, findings : List(Finding), unindexed : List(Entry) }, Fail)`; a bad page is kind `Network`, `the release list of <owner>/<repo> (page <n>) is not a list of releases` (the text of `Init` and `FullName`) | R-AU1, R-DI11 |
+| `AuditCheck.of_guarded` | `{ answer, entries, refused : List(Str) } -> { checked, findings, unindexed }` (`of_answer` with the lower-case `owner/repo` names that the guard refused) | Q620 item 9 |
+| `AuditCheck.text` (changed) | with `index: Direct` the note of an unindexed entry is `note: not checked: <name> <version>: no index without a registry` | R-DI11, R-OUT2 |
+
+Flow (part C, a guess): with `direct`, after the load and the talon.toml items: the walk of each member (`Ls.walk_loaded!` with the `Direct` index); `entries`; for each repository of `repos_of`, in order, the release list (a form of `Github.releases!` that gives `NotFound` for a 404, and on a 301, 302, 307 or 308 of page 1 follows the `Location` once when it is on the same API base, then `redirected` true); `of_lists`; `ignore`; the report with `index: Direct`. With a registry: the guard with a form that collects the refused repositories; their hashes out of the query; `of_guarded` in place of `of_answer`.
+
+## Tests (244b)
+
+### L0 (tests/unit/AuditcheckTest.roc, appended)
+
+| # | Test | Rules | State now |
+| --- | --- | --- | --- |
+| b1 | `direct_finding`, 22 rows: 404; the tag with the header asset (and other assets); tag missing, empty list, `v2.1.0` is not `2.1.0`, a draft; prerelease; draft and prerelease; one other package asset (new hash); a prerelease with one other package asset and no header asset: `asset-replaced` (row 10b, mutation gap G1); no package asset; 2 other package assets; the header asset and another; the tag on page 2; redirect with a new name, with the same name in other case, with an empty list; redirect with prerelease and with a replaced asset (the successor stays); 2 bad pages | R-AU2 R-AU13 R-DI3 R-DI4 R-DI15 (Q-244b-1, Q-244b-2) | green |
+| b2 | `repos_of`: each repository once, lower case, in entry order; another host is left out | R-AU1 R-DI2 R-DI11 | green |
+| b3 | `of_lists`: `checked`, findings in entry order, `unindexed` (another host, a repository with no list), a bad page (exit 15 text) | R-AU1 R-AU2 R-DI11 | green |
+| b4 | `of_guarded`: a refused repository gives `repo-missing` (counted, `since` null, in entry order, never unindexed); `of_answer` alone puts it in `unindexed` | Q620 item 9 | green |
+| b5 | `text` with `index: Direct`: the note of an entry with no index, then the R-C6 note | R-AU4 R-DI11 R-OUT2 | green |
+
+Checked against a copy of `cli/lib` with stubs of the 4 new names (`.tmp/`, deleted after): no type error; b1 to b4 fail with `todo`, b5 with the registry text; the 24 old expects pass. In the repo, `l0-9` makes the compiler stop with SIGSEGV (exit 139) until the 4 names exist (the same as 244a): the code agent adds them first.
+
+### L2 (tests/commands/cases/audit/, made by `tests/tools/mk-audit.py`)
+
+| Case | Runs | Rules | State now |
+| --- | --- | --- | --- |
+| ad1-direct | `TALON_REGISTRY=direct`. q1: pf (fine), json 2.1.0 (another package asset: asset-replaced, new hash), csv (404: repo-missing), xml (301 to `/repositories/42/...`, new list with `html_url` of acme/roc-xml: moved), pre (prerelease); json needs parser (fine) and util (tag 0.3.0 missing: release-missing). Run 1: report, exit 21. Run 2: `--json`, exit 21, the pages of run 1 are used with no request. | R-CM14 R-AU1 R-AU2 R-AU3 R-AU4 R-AU13 R-DI2 R-DI3 R-DI4 R-DI15 R-C6 R-OUT2 | green |
+| ad2-direct-clean | `direct`, q2: pf and json fine, x is a loopback URL (no index, R-DI11). Human and `--json`, exit 0: the `not checked` note and the R-C6 note. | R-AU1 R-AU3 R-AU4 R-C6 R-DI11 | green |
+| ad9-guard | A registry. p8: gone (`someone/roc-gone`) has no kept public answer and GitHub answers 404: a `repo-missing` finding, exit 21; the query has only the hashes of pf and json; the walk reads gone from the cache. | Q620 R-RG4 R-RG6 R-AU2 R-AU3 | green |
+
+| ad10-redirect-host | `direct`, r1: pf (fine), xml: the list answers 301 with `Location: https://evil.example/repositories/42/releases?per_page=100` (another host; a route exists there). Exit 15, `GitHub answered 301 for <the list URL>`; no request to `evil.example` (mutation gap G2, d12: the token never goes to another host). | R-CM14 R-DI2 (Q621 item 1, Q-244b-1) | green |
+| ad11-redirect-none | `direct`, r2: as ad10, but the 301 has no `Location` header. Exit 15, the same text, no second request. | R-CM14 R-DI2 (Q621 item 1) | green |
+
+ad10 and ad11 were added after the 244b mutation check. They passed on the code as it was (no code change). Their calls.log is the guess of `mk-audit.py`; it is the same as the real `out/calls.log.n` (read by eye: 2 `http_get`, pfx and roc-xml only).
+
+Run 2026-11-12 (after the mutation gaps): `l0-9` all passed; `tests/commands/run.sh audit/` 12 passed, 0 failed.
+
+### Guessed calls.log lines (the code agent may dispute; the real lines are baked after the review)
+
+| Part | Guess |
+| --- | --- |
+| Start | The real start of the 244a cases (as `od1-table`: no `read_files talon.toml` when the project has none). No guard and no closure query with `direct`. |
+| Walk (direct) | `random`, `list_dirs packages`, then one `read_files` of the cached `main.roc` files for each level (level 1: the header hashes in header order; level 2: parser, util). |
+| Lists | For each repository of `repos_of`, in entry order (pfx, json, roc-csv, roc-xml, pre, parser, roc-util): `list_dirs index/github/<o>/<r>`, `programs gh`, `http_get https://api.github.com/repos/<o>/<r>/releases?per_page=100` with `User-Agent`; then `write_atomic 1.json 1.meta` for a 200 list. The 404 writes nothing. The 301: a second `http_get https://api.github.com/repositories/42/releases?per_page=100`, and nothing is written. |
+| ad1 run 2 | A kept page younger than 60 s: `list_dirs`, `read_files 1.meta 1.json`, no request. The 404 and the redirected list are asked again (they are not kept). |
+| ad9 | The guard lines are the real start of the red run: `read_files` of the 3 `repo.json`, `programs gh`, `http_get https://api.github.com/repos/someone/roc-gone`. Then (guess) the query with 2 hashes, and the walk: `random`, `list_dirs packages`, `read_files <gone>/main.roc`. |
+
+## Output (proposed, TW24)
+
+| Where | Text or field |
+| --- | --- |
+| Line 1 with `direct` | `audit: <n> packages checked (direct)` (244a rule) |
+| An entry with no index (`direct`) | `note: not checked: <name> <version>: no index without a registry` (`<name>` is `Closure.Row.name`: for a loopback URL `127.0.0.1:9/x/1.0.0`). `--json`: `{"kind":"not-indexed",...}` as 244a. |
+| `asset-replaced` with `direct` | the 244a detail with the new hash: `GitHub has <first 6 of new>..., the header has <first 6 of old>...`; `new_hash` in `--json`. With 0 or 2+ other package assets: `the asset of the header is gone`, `new_hash` null (Q-244b-2). |
+| `since` with `direct` | always null. |
+| ad9 | the 244a texts (`repo missing` row, fix, failure line). |
+
+## Questions (TW17): answered as recommended, Design Q621 (G-C251)
+
+| # | Question | Answer (Q621) | Tests that follow it |
+| --- | --- | --- | --- |
+| Q-244b-1 | How does `direct` see `moved`? R-AU2 says "the release list answer comes from another name, because GitHub redirects a renamed repository". The `Fx` follows no redirect, and the 301 `Location` has a repository id, not a name. | `audit` follows a 301, 302, 307 or 308 of page 1 once, only to the same API base (`TALON_GITHUB_API` or `https://api.github.com`). The finding is `moved` (also with no successor). The successor is the `owner/repo` of the `html_url` of the first release of the new list, when it is not the old name (any case); else null. The pages of a redirected list are not kept (the cache dir has the old name). Other commands (a resolve) keep their exit 15 on a 301 (no change here; 244c or later). | L0 b1 rows 15 to 19; L2 ad1 |
+| Q-244b-2 | The release of the header tag with 0 package assets, or with 2 or more (R-DI4: not a candidate). | 0 package assets: `asset-replaced`, `new_hash` null (as Registry R-PU20 for a release with no package asset). The header hash among 2+ package assets: no asset reason (its bytes are still there; R-DI4 stops only a new candidate). 2+ other package assets: `asset-replaced`, `new_hash` null. Exactly one other: `asset-replaced` with that hash. | L0 b1 rows 2, 3, 10 to 13 |
+| Q-244b-3 | With `direct` (and for a refused repository with a registry, Q620 item 9) the walk needs the archive of each package (R-DI7). A package that is not in the cache and whose asset is gone (404) stops the walk with exit 15 before any finding is printed. | For `tln audit` only: such a node is a leaf. Its own finding comes from the list (or the guard); its deps are not checked, and one note says so: `note: not checked: the deps of <name> <version>: its archive is gone` (TW24). The exit code follows the findings. | none yet (all fixtures have the archives in the cache) |
+| Q-244b-4 | R-AU1 says "the state of now", R-DI2 uses a kept page younger than 60 s with no request. Does `audit` use it? | Yes: R-DI2 as it is (60 s is "now" for an index that GitHub caches too), with `If-None-Match` for an older page. `--offline` stays exit 2 (Q620 item 8). | L2 ad1 run 2 |
+
+## Trickiest behaviors (for the mutation check later; not run)
+
+| # | Behavior | Test that should catch a mutant |
+| --- | --- | --- |
+| 1 | The tag match is exact (`v2.1.0` is not `2.1.0`) | L0 b1 row 6 |
+| 2 | A draft is `release-missing`, also when it is a prerelease | L0 b1 rows 7, 9 |
+| 3 | The header hash among 2 package assets is no finding; 2 other assets give no new hash | L0 b1 rows 12, 13 |
+| 4 | A redirect is `moved` even with no successor; the same name in other case is no successor | L0 b1 rows 15, 16 |
+| 5 | Another reason wins over `moved` and keeps the successor | L0 b1 rows 18, 19 |
+| 6 | All pages are read (the tag on page 2) | L0 b1 row 14 |
+| 7 | Transitive repositories are listed, each repository once | L0 b2; L2 ad1 |
+| 8 | A 404 is a finding, not exit 15; a bad page is exit 15 | L0 b1 row 1, b3; L2 ad1 |
+| 9 | A refused repository is a finding, its hash is not in the query, the other hashes are | L0 b4; L2 ad9 calls.log |
+| 10 | Another host is `unindexed` with the `direct` note text | L0 b3, b5; L2 ad2 |
+
+## Notes after the code (2026-11-12)
+
+| Item | Text |
+| --- | --- |
+| Dispute (ruled by the manager) | ad1-direct calls.log: the real walk (`ResolveBase.closure!`) does `random` and `list_dirs $HOME/.cache/roc/packages` for each level, not once for each walk. The real lines are accepted: copied from the run's `out/calls.log.n` (not `UPDATE=1`), kept by `mk-audit.py`. The stdout, stderr and exit of ad1, ad2 and ad9 were read: no exit-0 run has text on stderr, and no failure is baked as expected. ad2-direct-clean and ad9-guard match the real run as written. |
+| A redirect to another host | Q621 item 1 follows a redirect only to the same API base. A `Location` on another host, or no `Location`, is not followed: the list call fails with exit 15, `GitHub answered <status> for <url>` (`Github.status_failure`). Tests: L2 ad10-redirect-host, ad11-redirect-none. |
+
+## Mutation check (244b, research/slice-244b-revert/RESULT.md)
+
+14 mutants: 12 caught, 2 not caught, no equivalent mutant. Tests added for the 2 gaps:
+
+| Gap | Mutant | Test added |
+| --- | --- | --- |
+| G1 | d1: `prerelease` wins over `asset-replaced` (R-AU13, direct) | L0 b1 row 10b: a prerelease with no header asset and one other package asset gives `AssetReplaced` with the new hash |
+| G2 | d12: a redirect to any location is followed (the token could go to another host) | L2 ad10-redirect-host (a `Location` on `evil.example`), ad11-redirect-none (no `Location`): exit 15, no second request |
+
+## Out of scope (244b)
+
+R-AU7, R-AU14, R-FE10 (244c); the behavior of Q-244b-3 (no test until it is answered); a 301 in the resolve commands; advisories (P3).

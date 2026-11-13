@@ -8,6 +8,7 @@ package
 		Answer,
 		Args,
 		AuditCheck,
+		AuditDirect,
 		AuditFlow,
 		AuditReport,
 		AuditTypes,

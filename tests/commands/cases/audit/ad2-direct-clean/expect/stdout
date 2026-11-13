@@ -1,0 +1,9 @@
+== audit --file q2/main.roc
+audit: 2 packages checked (direct)
+0 findings, 0 warnings, 0 ignored.
+note: not checked: 127.0.0.1:9/x/1.0.0 1.0.0: no index without a registry
+note: no yank and advisory data without a registry
+exit 0
+== audit --json --file q2/main.roc
+{"schema":1,"command":"audit","ok":true,"data":{"index":"direct","checked":2,"notes":[{"kind":"no-yank-data"},{"kind":"not-indexed","name":"127.0.0.1:9/x/1.0.0","version":"1.0.0","hash":"GVTMyi7D1NzJB5cvMmibMVnU4s4Juamoy9svKqgvhbtb"}],"findings":[]},"error":null}
+exit 0

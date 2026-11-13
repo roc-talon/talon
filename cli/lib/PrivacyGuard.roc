@@ -97,52 +97,64 @@ PrivacyGuard :: [].{
 	## | 3 | For each repository with no file, in order: one `http_get!` of `repo_url` with `Net.headers` (the token, no ETag). A transport error: `Github.network_failure`. A rate limit: `Github.rate_limit_failure` (R-DI13, exit 15). `Other`: `Github.status_failure`. `BadBody`: `Err(bad_body)` (exit 15), nothing is written for it. `Refused`: `Err(refusal)`, nothing is written for it, and no later repository is asked. |
 	## | 4 | `Public`: one `write_atomic!` of `[{ path: repo_file, content: body }]` (the body as it came, R-RG5), at once, so a later `Refused` keeps this answer (Design Q220). |
 	check! : Fx, { net : Net.Settings, roots : Roots, sources : List(Source), offline : Bool, frozen : Bool } => Try({}, Fail)
-	check! = |fx, facts| {
-		repos = match PrivacyGuard.repos_to_check({ sources: facts.sources, offline: facts.offline, frozen: facts.frozen }) {
-			Ok(r) => r
-			Err(BadName(text)) => return Err(bad_name(text))
-		}
-		files = repos.keep_oks(
-			|r| PrivacyGuard.repo_file({ roots: facts.roots, owner: r.owner, repo: r.repo }).map_ok(|path| { owner: r.owner, repo: r.repo, path }),
-		)
-		if files.is_empty() {
-			return Ok({})
-		}
-		known = fx.read_files!(files.map(|f| f.path))
-		todo = files.map2(known, |f, got| (f, got)).keep_if(|(_, got)| got.is_err()).map(|(f, _)| f)
-		if todo.is_empty() {
-			return Ok({})
-		}
-		gh = match facts.net.token {
-			AskGh => Github.ask_gh!(fx)
-			_ => Err(None)
-		}
-		token = Net.token({ plan: facts.net.token, gh })
-		for repo in todo {
-			url = PrivacyGuard.repo_url({ api: facts.net.api, owner: repo.owner, repo: repo.repo })
-			reply = match fx.http_get!({ url, headers: Net.headers({ token, etag: Err(None) }) }) {
-				Ok(r) => r
-				Err(why) => return Err(Github.network_failure({ url, why }))
-			}
-			# The clock is read only when the reset time can come from `retry-after` alone.
-			has_reset = reply.headers.any(|(name, _)| name.with_ascii_lowercased() == "x-ratelimit-reset")
-			now = if (reply.status == 403 or reply.status == 429) and !has_reset fx.clock!() else 0
-			match Github.rate_limit({ status: reply.status, headers: reply.headers, now }) {
-				Ok(limited) => return Err(Github.rate_limit_failure(limited))
-				Err(NotLimited) => {}
-			}
-			match PrivacyGuard.verdict({ status: reply.status, body: reply.body }) {
-				Public => match fx.write_atomic!([{ path: repo.path, content: reply.body }]) {
-					Ok(_) => {}
-					Err(failed) => return Err(Fail.new(Environment, "cannot write ${failed.path}"))
-				}
-				Refused => return Err(PrivacyGuard.refusal({ owner: repo.owner, repo: repo.repo, token: token != Err(None) }))
-				BadBody => return Err(PrivacyGuard.bad_body({ url: url }))
-				Other => return Err(Github.status_failure({ url, status: reply.status }))
-			}
-		}
-		Ok({})
+	check! = |fx, facts| guard!(fx, facts, Bool.False).map_ok(|_| {})
+
+	## Slice 244b (Design Q620 item 9): `check!` for `tln audit`. A `Refused` repository does not stop the run: the result is the refused names (`owner/repo`, lower case), in order, and the later repositories are checked. Other failures stop as in `check!`.
+	collect! : Fx, { net : Net.Settings, roots : Roots, sources : List(Source), offline : Bool, frozen : Bool } => Try(List(Str), Fail)
+	collect! = |fx, facts| guard!(fx, facts, Bool.True)
+}
+
+guard! : Fx, { net : Net.Settings, roots : Roots, sources : List(Source), offline : Bool, frozen : Bool }, Bool => Try(List(Str), Fail)
+guard! = |fx, facts, collect| {
+	repos = match PrivacyGuard.repos_to_check({ sources: facts.sources, offline: facts.offline, frozen: facts.frozen }) {
+		Ok(r) => r
+		Err(BadName(text)) => return Err(bad_name(text))
 	}
+	files = repos.keep_oks(
+		|r| PrivacyGuard.repo_file({ roots: facts.roots, owner: r.owner, repo: r.repo }).map_ok(|path| { owner: r.owner, repo: r.repo, path }),
+	)
+	if files.is_empty() {
+		return Ok([])
+	}
+	known = fx.read_files!(files.map(|f| f.path))
+	todo = files.map2(known, |f, got| (f, got)).keep_if(|(_, got)| got.is_err()).map(|(f, _)| f)
+	if todo.is_empty() {
+		return Ok([])
+	}
+	gh = match facts.net.token {
+		AskGh => Github.ask_gh!(fx)
+		_ => Err(None)
+	}
+	token = Net.token({ plan: facts.net.token, gh })
+	var $refused = []
+	for repo in todo {
+		url = PrivacyGuard.repo_url({ api: facts.net.api, owner: repo.owner, repo: repo.repo })
+		reply = match fx.http_get!({ url, headers: Net.headers({ token, etag: Err(None) }) }) {
+			Ok(r) => r
+			Err(why) => return Err(Github.network_failure({ url, why }))
+		}
+		# The clock is read only when the reset time can come from `retry-after` alone.
+		has_reset = reply.headers.any(|(name, _)| name.with_ascii_lowercased() == "x-ratelimit-reset")
+		now = if (reply.status == 403 or reply.status == 429) and !has_reset fx.clock!() else 0
+		match Github.rate_limit({ status: reply.status, headers: reply.headers, now }) {
+			Ok(limited) => return Err(Github.rate_limit_failure(limited))
+			Err(NotLimited) => {}
+		}
+		match PrivacyGuard.verdict({ status: reply.status, body: reply.body }) {
+			Public => match fx.write_atomic!([{ path: repo.path, content: reply.body }]) {
+				Ok(_) => {}
+				Err(failed) => return Err(Fail.new(Environment, "cannot write ${failed.path}"))
+			}
+			Refused => if collect {
+				$refused = $refused.append("${repo.owner}/${repo.repo}")
+			} else {
+				return Err(PrivacyGuard.refusal({ owner: repo.owner, repo: repo.repo, token: token != Err(None) }))
+			}
+			BadBody => return Err(PrivacyGuard.bad_body({ url: url }))
+			Other => return Err(Github.status_failure({ url, status: reply.status }))
+		}
+	}
+	Ok($refused)
 }
 
 # The failure for a typed name with an unsafe part (R-EC2). `text` is the typed text.

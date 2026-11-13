@@ -1,0 +1,5 @@
+# R-AU1 R-AU3 R-AU4 R-C6 R-DI11 (slice 244b): TALON_REGISTRY=direct. q2: pf and json are fine. x is a loopback URL (R-EV25), a host with no index in direct mode (R-DI11): not checked, not counted, one note (TW24).
+# Run 1: exit 0; the notes after the count line, the R-C6 note last. Nothing on stderr.
+audit --file q2/main.roc
+# Run 2: --json, exit 0: data.notes has no-yank-data and not-indexed.
+audit --json --file q2/main.roc

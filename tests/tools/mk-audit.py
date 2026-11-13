@@ -56,6 +56,8 @@ PKG = {
     "pre": ("acme/pre", "1.0.0", "package"),
     "fmt": ("acme/fmt", "1.0.0", "app"),
     "web": ("acme/web", "1.0.0", "package"),
+    "gone": ("someone/roc-gone", "1.0.0", "package"),
+    "loop": ("127.0.0.1:9/x", "1.0.0", "package"),
 }
 # The deps of a package header (alias -> key), sorted by alias (R-AP49).
 DEPS = {"json": [("parser", "parser"), ("util", "util")]}
@@ -63,6 +65,8 @@ DEPS = {"json": [("parser", "parser"), ("util", "util")]}
 
 def u(key):
     repo, version, _ = PKG[key]
+    if key == "loop":
+        return f"http://127.0.0.1:9/x/{version}/{h(key)}.tar.zst"
     return url(repo, version, h(key))
 
 
@@ -178,7 +182,7 @@ def calls_run(p, repos, hashes, first, tty, query=True):
     return text
 
 
-def make(name, rules, project, files, keys, states, repos, guard, commands, stdout, stderr, exits, calls, unknown=()):
+def make(name, rules, project, files, keys, states, repos, guard, commands, stdout, stderr, exits, calls, unknown=(), direct=False, routes=None, kept=None, cache=()):
     d = os.path.join(CASES, name)
     # The calls.log of a case is baked from the real run after the review (slice 244 review). A baked file is kept; the literal guess is written only when the case has none.
     baked = None
@@ -188,17 +192,20 @@ def make(name, rules, project, files, keys, states, repos, guard, commands, stdo
     shutil.rmtree(d, ignore_errors=True)
     write(os.path.join(d, "entry"), "commands\n")
     write(os.path.join(d, "rules"), rules + "\n")
-    write(os.path.join(d, "fx/env"), "HOME={w}/home\nTALON_NOW=2026-10-15T12:00:00Z\n")
+    write(os.path.join(d, "fx/env"), "HOME={w}/home\nTALON_NOW=2026-10-15T12:00:00Z\n" + ("TALON_REGISTRY=direct\n" if direct else ""))
     write(os.path.join(d, "fx/programs"), "curl\n")
     write(os.path.join(d, "fx/gitdirs"), ".\n")
     write(os.path.join(d, "fx/commands"), commands)
-    ans = json.dumps(answer(keys, states, repos, unknown), separators=(",", ":"))
-    write(os.path.join(d, "fx/http/127.0.0.1%3A9/v1/closure.POST"), ans)
-    write(os.path.join(d, "fx/http/127.0.0.1%3A9/v1/closure.POST.meta"), "status 200\nheader Content-Type: application/json\nheader Cache-Control: no-store\nrequire content-type: application/json\nrequire-none authorization\n")
-    write(os.path.join(d, "given/home/.config/talon/config.toml"), 'registry = "http://127.0.0.1:9"\n')
+    if not direct:
+        ans = json.dumps(answer(keys, states, repos, unknown), separators=(",", ":"))
+        write(os.path.join(d, "fx/http/127.0.0.1%3A9/v1/closure.POST"), ans)
+        write(os.path.join(d, "fx/http/127.0.0.1%3A9/v1/closure.POST.meta"), "status 200\nheader Content-Type: application/json\nheader Cache-Control: no-store\nrequire content-type: application/json\nrequire-none authorization\n")
+        write(os.path.join(d, "given/home/.config/talon/config.toml"), 'registry = "http://127.0.0.1:9"\n')
+    for path, text in (routes or {}).items():
+        write(os.path.join(d, "fx/http", path), text)
     for r in guard:
         write(os.path.join(d, f"given/home/.cache/roc/talon/index/github/{r}/repo.json"), json.dumps({"id": 1, "full_name": r, "private": False}, separators=(",", ":")))
-    for k in list(keys) + [h_key for h_key in PKG if h(h_key) in unknown]:
+    for k in list(keys) + list(cache) + [h_key for h_key in PKG if h(h_key) in unknown]:
         write(os.path.join(d, f"given/home/.cache/roc/packages/{h(k)}/main.roc"), package_header(k))
     for rel, text in files.items():
         write(os.path.join(d, "given/project", rel), text)
@@ -207,11 +214,11 @@ def make(name, rules, project, files, keys, states, repos, guard, commands, stdo
         write(os.path.join(d, "expect/stderr"), stderr)
     write(os.path.join(d, "expect/exit"), "0\n")
     write(os.path.join(d, "expect/calls.log"), baked if baked is not None else calls)
-    tree(d, project)
+    tree(d, project, kept or {})
 
 
 # tree.diff: tree_diff (tests/lib.sh) over a copy of given/ and the same copy with the one change of the runs: projects.json gets the project file (Known.record!, R-PD9).
-def tree(d, project):
+def tree(d, project, kept=None):
     w = os.path.join(ROOT, ".tmp/mk-audit", os.path.basename(d))
     shutil.rmtree(w, ignore_errors=True)
     os.makedirs(os.path.join(w, "orig"))
@@ -220,6 +227,8 @@ def tree(d, project):
         shutil.copytree(os.path.join(d, "given", part), os.path.join(w, part))
     if project:
         write(os.path.join(w, "home/.cache/roc/talon/projects.json"), json.dumps({"format": 1, "projects": [{"path": f"{w}/project/{project}/main.roc", "last_use": NOW}]}, separators=(",", ":")) + "\n")
+    for path, text in (kept or {}).items():
+        write(os.path.join(w, "home/.cache/roc/talon/index/github", path), text)
     out = subprocess.run(["bash", "-c", f'. tests/lib.sh && tree_diff "{w}"'], capture_output=True, text=True, check=True).stdout
     write(os.path.join(d, "expect/tree.diff"), out)
 
@@ -244,7 +253,7 @@ P1_HASHES = [h("pf"), h("json"), h("csv"), h("xml"), h("old")]
 FAIL_MSG = "findings that fail: {items}. To accept one, add it to [audit] ignore in talon.toml"
 
 
-def finding(key, alias, via, reason, fails, ignored, since, yank, successor, fix, tool=None, members=None):
+def finding(key, alias, via, reason, fails, ignored, since, yank, successor, fix, tool=None, members=None, new_hash=None):
     repo, version, _ = PKG[key]
     return {
         "name": repo,
@@ -260,7 +269,7 @@ def finding(key, alias, via, reason, fails, ignored, since, yank, successor, fix
         "ignored": ignored,
         "since": since,
         "yank": yank,
-        "new_hash": None,
+        "new_hash": new_hash,
         "successor": successor,
         "fix": fix,
     }
@@ -453,6 +462,197 @@ def au1_tool():
          {"p6/main.roc": header(entries), "p6/talon.toml": toml}, keys, states, repos, guard, cmds, stdout, stderr, None, calls)
 
 
+def gh_release(repo, tag, assets, prerelease=False, draft=False):
+    return {
+        "tag_name": tag,
+        "draft": draft,
+        "prerelease": prerelease,
+        "published_at": "2026-07-01T12:00:00Z",
+        "html_url": f"https://github.com/{repo}/releases/tag/{tag}",
+        "assets": [{"name": a, "size": 1000, "browser_download_url": f"https://github.com/{repo}/releases/download/{tag}/{a}"} for a in assets],
+    }
+
+
+def gh_page(releases):
+    return json.dumps(releases, separators=(",", ":"))
+
+
+def list_route(repo):
+    return f"api.github.com/repos/{repo}/releases%3Fper_page=100"
+
+
+def table(rows):
+    w = [max(len(r[i]) for r in rows) + 2 for i in range(len(rows[0]) - 1)]
+    return "".join("".join(c.ljust(w[i]) for i, c in enumerate(r[:-1])) + r[-1] + "\n" for r in rows)
+
+
+LIST_CALLS = "list_dirs $HOME/.cache/roc/talon/index/github/{r}\nprograms gh\nhttp_get https://api.github.com/repos/{r}/releases?per_page=100\n  User-Agent: tln/0.0.1\n"
+WRITE_CALLS = "write_atomic $HOME/.cache/roc/talon/index/github/{r}/1.json $HOME/.cache/roc/talon/index/github/{r}/1.meta\n"
+NOTE_DIRECT = "note: no yank and advisory data without a registry\n"
+
+
+def walk_calls(levels):
+    text = "random\nlist_dirs $HOME/.cache/roc/packages\n"
+    for level in levels:
+        text += "read_files " + " ".join(f"$HOME/.cache/roc/packages/{h(k)}/main.roc" for k in level) + "\n"
+    return text
+
+
+def ad1_direct():
+    entries = [("pf", "pf", True), ("json", "json", False), ("csv", "csv", False), ("xml", "xml", False), ("pre", "pre", False)]
+    keys = ["pf", "json", "csv", "xml", "pre", "parser", "util"]
+    lists = {
+        "acme/pfx": gh_page([gh_release("acme/pfx", "0.1.0", [h("pf") + ".tar.zst"])]),
+        "acme/json": gh_page([gh_release("acme/json", "2.0.0", [h("json200") + ".tar.zst"]), gh_release("acme/json", "2.1.0", [h("json2") + ".tar.zst", "docs.tar.gz"])]),
+        "acme/pre": gh_page([gh_release("acme/pre", "1.0.0", [h("pre") + ".tar.zst"], prerelease=True)]),
+        "acme/parser": gh_page([gh_release("acme/parser", "1.0.2", [h("parser") + ".tar.zst"])]),
+        "someone/roc-util": gh_page([gh_release("someone/roc-util", "0.4.0", [h("old") + ".tar.zst"])]),
+    }
+    routes = {list_route(r): text for r, text in lists.items()}
+    # someone/roc-csv: no route, the fake answers 404 (deleted or private). someone/roc-xml: renamed, GitHub answers 301 to the repository id (Q-244b-1).
+    routes[list_route("someone/roc-xml")] = ""
+    routes[list_route("someone/roc-xml") + ".meta"] = "status 301\nheader Location: https://api.github.com/repositories/42/releases?per_page=100\n"
+    routes["api.github.com/repositories/42/releases%3Fper_page=100"] = gh_page([gh_release("acme/roc-xml", "0.4.0", [h("xml") + ".tar.zst"])])
+    kept = {}
+    for r, text in lists.items():
+        kept[f"{r}/1.json"] = text
+        kept[f"{r}/1.meta"] = ""
+    cmds = "# R-AU1 R-AU2 (the direct column) R-AU3 R-AU4 R-AU13 R-DI2 R-DI3 R-DI4 R-DI15 (slice 244b): TALON_REGISTRY=direct. q1: pf, json 2.1.0 (the tag 2.1.0 has another package asset now: asset-replaced, new hash known),\n"
+    cmds += "# csv (the list answers 404: repo-missing), xml (the list answers 301: moved, successor from the html_url of the new list, Q-244b-1), pre (prerelease). json needs parser (fine) and util (the tag 0.3.0 is not in the list: release-missing).\n"
+    cmds += "# The release list of each repository is read once (R-DI2), also for the transitive ones (R-AU1). The pages of a 200 list are kept (R-DI2); a 404 and a redirected list are not (Q-244b-1). No closure query, no privacy guard (no registry request).\n"
+    cmds += "# Run 1: the report, exit 21. The last line is the note of R-C6 (R-AU4).\n"
+    cmds += "audit --file q1/main.roc\n"
+    cmds += "# Run 2: --json, exit 21. The pages of run 1 are younger than 60 s (R-DI2, the clock is TALON_NOW): no request (Q-244b-4).\n"
+    cmds += "audit --json --file q1/main.roc\n"
+    new6 = h("json2")[:6]
+    rows = [
+        ["asset replaced", "json 2.1.0", "acme/json", f"GitHub has {new6}..., the header has {h('json')[:6]}...", "header: json"],
+        ["repo missing", "csv 1.1.0", "someone/roc-csv", "the repository is deleted or private", "header: csv"],
+    ]
+    fix_json = "ask the author to release a new version, then run tln update json"
+    text = (
+        "audit: 7 packages checked (direct)\n" + table(rows)
+        + "warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml\n"
+        + "warning: prerelease  pre 1.0.0  acme/pre  header: pre\n"
+        + "warning: release missing  util 0.3.0  someone/roc-util  via json\n"
+        + "2 findings, 3 warnings, 0 ignored.\n"
+        + f"fix: json: {fix_json}. csv: {FIX_CSV}. xml: tln update xml.\n" + NOTE_DIRECT
+    )
+    m = ["$PROJECT/q1/main.roc"]
+    data = {
+        "index": "direct",
+        "checked": 7,
+        "notes": [{"kind": "no-yank-data"}],
+        "findings": [
+            finding("json", "json", [], "asset-replaced", True, False, None, None, None, fix_json, members=m, new_hash=h("json2")),
+            finding("csv", "csv", [], "repo-missing", True, False, None, None, None, FIX_CSV, members=m),
+            finding("xml", "xml", [], "moved", False, False, None, None, "acme/roc-xml", "tln update xml", members=m),
+            finding("pre", "pre", [], "prerelease", False, False, None, None, None, "tln update pre", members=m),
+            finding("util", None, ["json"], "release-missing", False, False, None, None, None, "tln update json (tln why someone/roc-util), or use [overrides]", members=m),
+        ],
+    }
+    msg = FAIL_MSG.format(items="acme/json@2.1.0:asset-replaced, someone/roc-csv@1.1.0:repo-missing")
+    stdout = "== audit --file q1/main.roc\n" + text + "exit 21\n== audit --json --file q1/main.roc\n" + env_fail(msg, data) + "exit 21\n"
+    stderr = f"tln: error[findings]: {msg}\n" * 2
+    order = ["acme/pfx", "acme/json", "someone/roc-csv", "someone/roc-xml", "acme/pre", "acme/parser", "someone/roc-util"]
+    run1 = calls_run("q1", [], [], True, True, query=False) + walk_calls([["pf", "json", "csv", "xml", "pre"], ["parser", "util"]])
+    for r in order:
+        run1 += LIST_CALLS.format(r=r)
+        if r == "someone/roc-xml":
+            run1 += "http_get https://api.github.com/repositories/42/releases?per_page=100\n  User-Agent: tln/0.0.1\n"
+        if r in lists:
+            run1 += WRITE_CALLS.format(r=r)
+    run2 = calls_run("q1", [], [], False, False, query=False) + walk_calls([["pf", "json", "csv", "xml", "pre"], ["parser", "util"]])
+    for r in order:
+        if r in lists:
+            run2 += f"list_dirs $HOME/.cache/roc/talon/index/github/{r}\nread_files $HOME/.cache/roc/talon/index/github/{r}/1.meta $HOME/.cache/roc/talon/index/github/{r}/1.json\n"
+        else:
+            run2 += LIST_CALLS.format(r=r)
+            if r == "someone/roc-xml":
+                run2 += "http_get https://api.github.com/repositories/42/releases?per_page=100\n  User-Agent: tln/0.0.1\n"
+    make("ad1-direct", "R-CM14 R-AU1 R-AU2 R-AU3 R-AU4 R-AU13 R-DI2 R-DI3 R-DI4 R-DI15 R-C6 R-OUT2 (slice 244b, Q-244b-1, Q-244b-2, Q-244b-4): tln audit with direct. See fx/commands.", "q1",
+         {"q1/main.roc": header(entries)}, keys, {}, [], [], cmds, stdout, stderr, None, run1 + run2, direct=True, routes=routes, kept=kept)
+
+
+def ad2_direct_clean():
+    entries = [("pf", "pf", True), ("json", "json200", False), ("x", "loop", False)]
+    keys = ["pf", "json200", "loop"]
+    lists = {
+        "acme/pfx": gh_page([gh_release("acme/pfx", "0.1.0", [h("pf") + ".tar.zst"])]),
+        "acme/json": gh_page([gh_release("acme/json", "2.0.0", [h("json200") + ".tar.zst"])]),
+    }
+    routes = {list_route(r): text for r, text in lists.items()}
+    kept = {}
+    for r, text in lists.items():
+        kept[f"{r}/1.json"] = text
+        kept[f"{r}/1.meta"] = ""
+    cmds = "# R-AU1 R-AU3 R-AU4 R-C6 R-DI11 (slice 244b): TALON_REGISTRY=direct. q2: pf and json are fine. x is a loopback URL (R-EV25), a host with no index in direct mode (R-DI11): not checked, not counted, one note (TW24).\n"
+    cmds += "# Run 1: exit 0; the notes after the count line, the R-C6 note last. Nothing on stderr.\n"
+    cmds += "audit --file q2/main.roc\n"
+    cmds += "# Run 2: --json, exit 0: data.notes has no-yank-data and not-indexed.\n"
+    cmds += "audit --json --file q2/main.roc\n"
+    name = "127.0.0.1:9/x/1.0.0"
+    text = "audit: 2 packages checked (direct)\n0 findings, 0 warnings, 0 ignored.\n" + f"note: not checked: {name} 1.0.0: no index without a registry\n" + NOTE_DIRECT
+    data = {"index": "direct", "checked": 2, "notes": [{"kind": "no-yank-data"}, {"kind": "not-indexed", "name": name, "version": "1.0.0", "hash": h("loop")}], "findings": []}
+    stdout = "== audit --file q2/main.roc\n" + text + "exit 0\n== audit --json --file q2/main.roc\n" + env_ok(data) + "exit 0\n"
+    run1 = calls_run("q2", [], [], True, True, query=False) + walk_calls([["pf", "json200", "loop"]])
+    for r in lists:
+        run1 += LIST_CALLS.format(r=r) + WRITE_CALLS.format(r=r)
+    run2 = calls_run("q2", [], [], False, False, query=False) + walk_calls([["pf", "json200", "loop"]])
+    for r in lists:
+        run2 += f"list_dirs $HOME/.cache/roc/talon/index/github/{r}\nread_files $HOME/.cache/roc/talon/index/github/{r}/1.meta $HOME/.cache/roc/talon/index/github/{r}/1.json\n"
+    make("ad2-direct-clean", "R-CM14 R-AU1 R-AU3 R-AU4 R-C6 R-DI11 R-OUT2 (slice 244b): direct with no finding, a host with no index. See fx/commands.", "q2",
+         {"q2/main.roc": header(entries)}, keys, {}, [], [], cmds, stdout, "", None, run1 + run2, direct=True, routes=routes, kept=kept)
+
+
+def ad9_guard():
+    entries = [("pf", "pf", True), ("json", "json200", False), ("gone", "gone", False)]
+    keys = ["pf", "json200"]
+    repos = [repo_item("acme/pfx"), repo_item("acme/json")]
+    cmds = "# Design Q620 item 9 (Q-244-9) R-RG4 R-RG6 R-AU2 (slice 244b): a registry. gone (someone/roc-gone) has no kept public answer, and GitHub answers 404 for the repository (no route): for tln audit only,\n"
+    cmds += "# this is a repo-missing finding of gone (counted in checked), and its hash is not in the closure query (R-RG4 holds). The other hashes are checked. The walk reads the header of gone from the cache. Exit 21.\n"
+    cmds += "audit --file p8/main.roc\n"
+    rows = [["repo missing", "gone 1.0.0", "someone/roc-gone", "the repository is deleted or private", "header: gone"]]
+    fix_gone = "tln remove gone, then tln add another package, or add the item to [audit] ignore"
+    text = "audit: 3 packages checked (registry)\n" + table(rows) + "1 finding, 0 warnings, 0 ignored.\n" + f"fix: gone: {fix_gone}.\n" + NOTE_REG
+    msg = FAIL_MSG.format(items="someone/roc-gone@1.0.0:repo-missing")
+    stdout = "== audit --file p8/main.roc\n" + text + "exit 21\n"
+    stderr = f"tln: error[findings]: {msg}\n"
+    calls = calls_run("p8", ["acme/pfx", "acme/json", "someone/roc-gone"], [h("pf"), h("json200")], True, True)
+    marker = "http_send POST"
+    i = calls.index(marker)
+    calls = calls[:i] + "programs gh\nhttp_get https://api.github.com/repos/someone/roc-gone\n  User-Agent: tln/0.0.1\n" + calls[i:] + walk_calls([["gone"]])
+    make("ad9-guard", "Q620 R-RG4 R-RG6 R-AU2 R-AU3 (slice 244b, Q-244-9): the privacy guard refuses a repository: repo-missing. See fx/commands.", "p8",
+         {"p8/main.roc": header(entries)}, keys, {}, repos, ["acme/pfx", "acme/json"], cmds, stdout, stderr, None, calls, cache=["gone"])
+
+
+def ad_redirect(name, project, location):
+    # Mutation gap G2 (slice 244b, d12): Q621 item 1 follows a redirect of the list only to the same API base. Another host, or no Location: the list fails (exit 15), and no second request goes out (the token never goes to another host).
+    entries = [("pf", "pf", True), ("xml", "xml", False)]
+    keys = ["pf", "xml"]
+    lists = {"acme/pfx": gh_page([gh_release("acme/pfx", "0.1.0", [h("pf") + ".tar.zst"])])}
+    routes = {list_route(r): text for r, text in lists.items()}
+    routes[list_route("someone/roc-xml")] = ""
+    routes[list_route("someone/roc-xml") + ".meta"] = "status 301\n" + (f"header Location: {location}\n" if location else "")
+    # A route on the other host: a request to it would show in calls.log (it must not).
+    routes["evil.example/repositories/42/releases%3Fper_page=100"] = gh_page([gh_release("acme/roc-xml", "0.4.0", [h("xml") + ".tar.zst"])])
+    kept = {}
+    for r, text in lists.items():
+        kept[f"{r}/1.json"] = text
+        kept[f"{r}/1.meta"] = ""
+    what = f"Location {location} (another host)" if location else "no Location header"
+    cmds = f"# Q621 item 1 (Q-244b-1) R-DI2 (slice 244b, mutation gap G2): TALON_REGISTRY=direct. The list of someone/roc-xml answers 301 with {what}.\n"
+    cmds += "# Only a Location on the same API base is followed. Here no second request goes out: exit 15, GitHub answered 301 for <the list URL>.\n"
+    cmds += f"audit --file {project}/main.roc\n"
+    url_ = "https://api.github.com/repos/someone/roc-xml/releases?per_page=100"
+    stdout = f"== audit --file {project}/main.roc\nexit 15\n"
+    stderr = f"tln: error[network]: GitHub answered 301 for {url_}\n"
+    calls = calls_run(project, [], [], True, True, query=False) + walk_calls([["pf", "xml"]])
+    calls += LIST_CALLS.format(r="acme/pfx") + WRITE_CALLS.format(r="acme/pfx") + LIST_CALLS.format(r="someone/roc-xml")
+    make(name, "R-CM14 R-DI2 (slice 244b, Q621 item 1, Q-244b-1): a redirect of the list off the API base is not followed. See fx/commands.", project,
+         {f"{project}/main.roc": header(entries)}, keys, {}, [], [], cmds, stdout, stderr, None, calls, direct=True, routes=routes, kept=kept)
+
+
 def au4_not_indexed():
     entries = [("pf", "pf", True), ("json", "json200", False), ("web", "web", False)]
     keys = ["pf", "json200"]
@@ -486,4 +686,9 @@ if __name__ == "__main__":
     au12_bad_items()
     au1_tool()
     au4_not_indexed()
+    ad1_direct()
+    ad2_direct_clean()
+    ad9_guard()
+    ad_redirect("ad10-redirect-host", "r1", "https://evil.example/repositories/42/releases?per_page=100")
+    ad_redirect("ad11-redirect-none", "r2", None)
     shutil.rmtree(os.path.join(ROOT, ".tmp/mk-audit"), ignore_errors=True)

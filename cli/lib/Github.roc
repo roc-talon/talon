@@ -224,29 +224,21 @@ Github :: [].{
 	## The token (R-RG3): before the first `http_get!`, and only then, `Net.token`. For `AskGh`: one `programs!(["gh"])`, and when `gh` is there one `spawn_all!({ jobs: [{ argv: ["gh", "auth", "token"], cwd: Err(Inherit) }], limit: 1 })`, read by `Net.token_from_gh`. `Test` and `Env` make no call. The token is for the list requests only (R-DI9: not for `.roc-version`, not for an archive).
 	releases! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64, offline : Bool, pages ?: U64 } => Try({ pages : List(Str), source : [Live, Cached(U64), Missing] }, Fail)
 	releases! = |fx, facts| {
-		dir = match Github.index_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo }) {
-			Ok(d) => d
-			Err(BadPart) => return Err(Github.bad_repo({ owner: facts.owner, repo: facts.repo }))
-		}
-		listing = match fx.list_dirs!([dir]) {
-			[Ok(entries)] => entries
-			_ => []
-		}
-		run = { net: facts.net, owner: facts.owner, repo: facts.repo, now: facts.now, offline: facts.offline, dir, listing, limit: facts.?pages ?? 0 }
-		first = Github.list_url({ api: facts.net.api, owner: facts.owner, repo: facts.repo })
-		state = pages_from!(fx, run, { pages: [], writes: [], oldest: Err(None), token: Unresolved }, 1, first)?
-		if !state.writes.is_empty() {
-			match fx.write_atomic!(state.writes) {
-				Ok(_) => {}
-				Err(failed) => return Err(Fail.new(Environment, "cannot write ${failed.path}"))
-			}
-		}
+		state = fetch!(fx, { net: facts.net, roots: facts.roots, owner: facts.owner, repo: facts.repo, now: facts.now, offline: facts.offline, limit: facts.?pages ?? 0, audit: Bool.False })?
 		source = match (facts.offline, state.oldest) {
 			(False, _) => Live
 			(True, Ok(oldest)) => Cached(oldest)
 			(True, Err(None)) => Missing
 		}
 		Ok({ pages: state.pages, source })
+	}
+
+	## Slice 244b (R-AU2, Q-244b-1, Q-244b-4): the release list for `tln audit` with `direct`. The same calls as `releases!` (not offline), with two differences for page 1 only. A 404 is `NotFound`, not a failure.
+	## A 301, 302, 307 or 308 with a `Location` on the same API base is followed once: `redirected` is true, and the pages of the redirected list are not read from the cache and not written. Other commands keep their failure on these statuses.
+	audit_list! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64 } => Try([NotFound, Pages({ pages : List(Str), redirected : Bool })], Fail)
+	audit_list! = |fx, facts| {
+		state = fetch!(fx, { net: facts.net, roots: facts.roots, owner: facts.owner, repo: facts.repo, now: facts.now, offline: Bool.False, limit: 0, audit: Bool.True })?
+		if state.gone Ok(NotFound) else Ok(Pages({ pages: state.pages, redirected: state.moved }))
 	}
 
 	## The `.roc-version` hint of a tag (R-DI8, slice 068). It keeps each answer in the cache file `hint_file` and never asks again for a tag that has one. The calls, in order (the L2 case `index/di-list-flow` fixes them):
@@ -286,13 +278,36 @@ Github :: [].{
 
 Entry : { name : Str, is_dir : Bool, mtime : U64 }
 
-Run : { net : Net.Settings, owner : Str, repo : Str, now : U64, offline : Bool, dir : Str, listing : List(Entry), limit : U64 }
+Run : { net : Net.Settings, owner : Str, repo : Str, now : U64, offline : Bool, dir : Str, listing : List(Entry), limit : U64, audit : Bool }
 
 Token : [Unresolved, Resolved(Try(Str, [None]))]
 
-State : { pages : List(Str), writes : List({ path : Str, content : Str }), oldest : Try(U64, [None]), token : Token }
+State : { pages : List(Str), writes : List({ path : Str, content : Str }), oldest : Try(U64, [None]), token : Token, gone : Bool, moved : Bool }
 
 CachedPage : { etag : Try(Str, [None]), next : Try(Str, [None]), mtime : U64, body : Str }
+
+# The steps 1 to 4 of `releases!` (the list, the pages, the write). `audit` is the form of `audit_list!`.
+fetch! : Fx, { net : Net.Settings, roots : Roots, owner : Str, repo : Str, now : U64, offline : Bool, limit : U64, audit : Bool } => Try(State, Fail)
+fetch! = |fx, facts| {
+	dir = match Github.index_dir({ roots: facts.roots, owner: facts.owner, repo: facts.repo }) {
+		Ok(d) => d
+		Err(BadPart) => return Err(Github.bad_repo({ owner: facts.owner, repo: facts.repo }))
+	}
+	listing = match fx.list_dirs!([dir]) {
+		[Ok(entries)] => entries
+		_ => []
+	}
+	run = { net: facts.net, owner: facts.owner, repo: facts.repo, now: facts.now, offline: facts.offline, dir, listing, limit: facts.limit, audit: facts.audit }
+	first = Github.list_url({ api: facts.net.api, owner: facts.owner, repo: facts.repo })
+	state = pages_from!(fx, run, { pages: [], writes: [], oldest: Err(None), token: Unresolved, gone: Bool.False, moved: Bool.False }, 1, first)?
+	if !state.writes.is_empty() {
+		match fx.write_atomic!(state.writes) {
+			Ok(_) => {}
+			Err(failed) => return Err(Fail.new(Environment, "cannot write ${failed.path}"))
+		}
+	}
+	Ok(state)
+}
 
 # Does the body of a page parse as a JSON array (a list of releases)?
 is_list : Str -> Bool
@@ -407,12 +422,17 @@ pages_from! = |fx, run, state, n, url| {
 						new_etag = header_value(answer.headers, "etag").map_err(|_| None)
 						next = Github.next_link(answer.headers)
 						# G3: a body that is not a JSON array is not cached, so the next call asks again.
-						writes = if is_list(answer.body) [{ path: files.body, content: answer.body }, { path: files.meta, content: Github.meta_text({ etag: new_etag, next }) }] else []
+						writes = if is_list(answer.body) and !state.moved [{ path: files.body, content: answer.body }, { path: files.meta, content: Github.meta_text({ etag: new_etag, next }) }] else []
 						next_page!(fx, run, { ..asked, pages: asked.pages.append(answer.body), writes: asked.writes.concat(writes) }, n, next)
 					}
 					(304, Ok(c)) if etag != Err(None) => {
 						writes = [{ path: files.meta, content: Github.meta_text({ etag: c.etag, next: c.next }) }]
 						next_page!(fx, run, { ..asked, pages: asked.pages.append(c.body), writes: asked.writes.concat(writes) }, n, c.next)
+					}
+					(404, _) if run.audit and n == 1 => Ok({ ..asked, gone: Bool.True })
+					(status, _) if run.audit and n == 1 and !state.moved and [301, 302, 307, 308].contains(status) => match header_value(answer.headers, "location") {
+						Ok(there) if there.starts_with(run.net.api) => pages_from!(fx, { ..run, listing: [] }, { ..asked, moved: Bool.True }, 1, there)
+						_ => Err(Github.status_failure({ url, status }))
 					}
 					(404, _) => Err(Github.missing_repo({ owner: run.owner, repo: run.repo }))
 					(status, _) => Err(Github.status_failure({ url, status }))

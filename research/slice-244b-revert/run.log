@@ -1,0 +1,30 @@
+base l0-9: exit=0 All (180) tests passed in 5023.7 ms. 
+base L2: commands: 139 passed, 0 failed 
+d1: L0 exit=0 All (180) tests passed in 4221.0 ms. 
+d1: L2 commands: 10 passed, 0 failed 
+d2: L0 exit=1     1 failed     0 compiler errors 
+d2: L2 commands: 10 passed, 0 failed 
+d3: L0 exit=1     1 failed     0 compiler errors 
+d3: L2 commands: 10 passed, 0 failed 
+d4: L0 exit=1     1 failed     0 compiler errors 
+d4: L2 commands: 10 passed, 0 failed 
+d5: L0 exit=1     1 failed     0 compiler errors 
+d5: L2 commands: 10 passed, 0 failed 
+d6: L0 exit=1     1 failed     0 compiler errors 
+d6: L2 commands: 10 passed, 0 failed 
+d7: L0 exit=1     1 failed     0 compiler errors 
+d7: L2 commands: 10 passed, 0 failed 
+d8: L0 exit=1     1 failed     0 compiler errors 
+d8: L2 FAIL audit/ad9-guard commands: 9 passed, 1 failed 
+d9: L0 exit=0 All (180) tests passed in 2619.9 ms. 
+d9: L2 FAIL audit/ad9-guard commands: 9 passed, 1 failed 
+d10a: L0 exit=2 All (180) tests passed in 3683.3 ms. 
+d10a: L2 FAIL audit/ad9-guard commands: 138 passed, 1 failed 
+d10b: L0 exit=2 All (180) tests passed in 3959.8 ms. 
+d10b: L2 FAIL registry/ad35-stop-cases FAIL registry/rg4-guard commands: 137 passed, 2 failed 
+d11: L0 exit=0 All (180) tests passed in 4054.3 ms. 
+d11: L2 FAIL index/di-list-flow FAIL registry/rg9-add-full-down commands: 137 passed, 2 failed 
+d12: L0 exit=0 All (180) tests passed in 4416.4 ms. 
+d12: L2 commands: 139 passed, 0 failed 
+d13: L0 exit=0 All (180) tests passed in 4777.0 ms. 
+d13: L2 FAIL audit/ad1-direct commands: 138 passed, 1 failed 

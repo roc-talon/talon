@@ -1,0 +1,3 @@
+# Q621 item 1 (Q-244b-1) R-DI2 (slice 244b, mutation gap G2): TALON_REGISTRY=direct. The list of someone/roc-xml answers 301 with Location https://evil.example/repositories/42/releases?per_page=100 (another host).
+# Only a Location on the same API base is followed. Here no second request goes out: exit 15, GitHub answered 301 for <the list URL>.
+audit --file r1/main.roc

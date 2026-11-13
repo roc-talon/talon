@@ -1,0 +1,7 @@
+# R-AU1 R-AU2 (the direct column) R-AU3 R-AU4 R-AU13 R-DI2 R-DI3 R-DI4 R-DI15 (slice 244b): TALON_REGISTRY=direct. q1: pf, json 2.1.0 (the tag 2.1.0 has another package asset now: asset-replaced, new hash known),
+# csv (the list answers 404: repo-missing), xml (the list answers 301: moved, successor from the html_url of the new list, Q-244b-1), pre (prerelease). json needs parser (fine) and util (the tag 0.3.0 is not in the list: release-missing).
+# The release list of each repository is read once (R-DI2), also for the transitive ones (R-AU1). The pages of a 200 list are kept (R-DI2); a 404 and a redirected list are not (Q-244b-1). No closure query, no privacy guard (no registry request).
+# Run 1: the report, exit 21. The last line is the note of R-C6 (R-AU4).
+audit --file q1/main.roc
+# Run 2: --json, exit 21. The pages of run 1 are younger than 60 s (R-DI2, the clock is TALON_NOW): no request (Q-244b-4).
+audit --json --file q1/main.roc
