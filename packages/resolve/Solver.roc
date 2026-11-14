@@ -92,7 +92,7 @@ Solver :: [].{
 	## | 1 | The order of the variables: the movable slots first, in the order of the slots (`priority`), then the other slots in the order of the slots. So a movable slot keeps its value when a tuple exists with it and the earlier movable slots. | R-SP24, R-VA6 |
 	## | 2 | The order of the values of a movable slot: `current` first (when it is a value), then the nearest values. `Highest`: the higher versions from low to high, then the lower versions from high to low. `Lowest`: the lower versions from high to low, then the higher versions from low to high. A tie (one version, 2 ids) is in the byte order of the ids. The strategy does not change the order of any other slot. | R-SP24 |
 	## | 3 | The values of a movable slot are those of `Domain.values` (R-C1, R-C6, R-C7, R-C9) less the releases that a fact shows to have the wrong kind: only the order differs. | R-SP23 |
-	## | 4 | `Done` and `Need` are in the order of `req.slots` (each ask by the first slot that has the release, the order of the asks inside one slot stays). `Fail` has the steps of the search: its terms are in the order of the search, and the ids of a movable slot in the order of rule 2. | R-DT2 |
+	## | 4 | `Done` and `Need` are in the order of `req.slots` (each ask by the first slot that has the release, the order of the asks inside one slot stays). `Fail` has the steps of the search, but the terms of each step are in the order of the slots (R-AL17), and the ids of a movable slot are in the order of rule 2. | R-DT2 |
 	##
 	## Slice 039c (R-RP4, R-SP23): a `Compiler` slot is movable when its name is in `movable` and it has a `current` (the held compiler H): `tln upgrade X` holds the nightly, and a held move of `upgrade` can include it. Outside `upgrade` the caller never names it.
 	## Rule 1 holds for it: it is decided after the movable packages (it is the last slot), before the free packages. Rule 2 for a compiler reads the order of D (`compat.domain`, oldest first), not a version: `current` first, then, with `Highest`, the compilers after it in D from old to new, then the compilers before it from new to old.
@@ -120,14 +120,14 @@ Solver :: [].{
 			Off => {
 				incs = table(All)
 				match solve(vars, incs) {
-					NoTuple(f) => Fail(SolverWhy.why_of(vars, incs, f.rows, f.last))
+					NoTuple(f) => Fail(SolverWhy.why_of(order, vars, incs, f.rows, f.last))
 					Found(t) => finish(t)
 				}
 			}
 			Allowed => {
 				incs = table(Real)
 				match solve(vars, incs) {
-					NoTuple(f) => Fail(SolverWhy.why_of(vars, incs, f.rows, f.last))
+					NoTuple(f) => Fail(SolverWhy.why_of(order, vars, incs, f.rows, f.last))
 					Found(tb) => {
 						a = if req.compat.checks.any(|c| c.source == Inferred) solve(vars, table(All)) else Found(tb)
 						match a {

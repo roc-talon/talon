@@ -15,10 +15,11 @@ Span : SolverBase.Span
 SolverWhy :: [].{
 
 	## The explanation: the cone of the empty row, in the order of the table (D9).
-	why_of : List(Var), List(Inc), List(Search.Row), U64 -> SolverBase.Why
-	why_of = |vars, incs, rows, last| {
+	## `order` has the place in `req.slots` of each variable of the search. The terms of a step are in the order of the slots (R-AL17, R-DT2).
+	why_of : List(U64), List(Var), List(Inc), List(Search.Row), U64 -> SolverBase.Why
+	why_of = |order, vars, incs, rows, last| {
 		marked = cone(rows, last)
-		{ steps: marked.map(|i| step_of(vars, incs, marked, rows, i)) }
+		{ steps: marked.map(|i| step_of(order, vars, incs, marked, rows, i)) }
 	}
 }
 
@@ -34,12 +35,12 @@ refers = |rows, j, i| match rows.get(j) {
 	Err(_) => Bool.False
 }
 
-step_of : List(Var), List(Inc), List(U64), List(Search.Row), U64 -> SolverBase.Step
-step_of = |vars, incs, marked, rows, i| {
+step_of : List(U64), List(Var), List(Inc), List(U64), List(Search.Row), U64 -> SolverBase.Step
+step_of = |order, vars, incs, marked, rows, i| {
 	row = rows.get(i) ?? { lits: [], from: Base }
 	at = |n| marked.find_first_index(|x| x == n) ?? 0
 	{
-		terms: row.lits.map(|l| term_of(vars, l)),
+		terms: row.lits.map(|l| (order.get(l.v) ?? l.v, term_of(vars, l))).sort_with(|p, q| p.0.order_relative_to(q.0)).map(|p| p.1),
 		cause: match row.from {
 			Base => incs.get(i).map_ok(|x| x.cause) ?? Given
 			Derived(a, b) => Derived(at(a), at(b))

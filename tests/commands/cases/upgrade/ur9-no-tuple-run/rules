@@ -1,0 +1,8 @@
+R-AL10 R-AL11 R-AL12 R-AL17 R-EP7 R-SP8 R-SP12 R-SP24 R-RP2 (slice 248): the `no_tuple` text of `tln upgrade roc` when no compiler works. 2 runs. The world of `upgrade/ug6-list-once` (the pin H is nightly-2026-10-09-9d9d9d9, n10, n11 and n12 are installed, n14 is too young), with the facts in `given/<home>/.cache/roc/talon/compat.tsv` (no probe runs).
+lib 1.0.0 (held) fails on H, n10 and n11 and passes on n08 and n12, so its fail run is H .. n11. The platform pfx 0.1.0 has a row on n12 only (n14 has no row, so the run ends there). lib 1.1.0 fails on H to n12, so the second search (R-SP24) also finds no tuple.
+Run 1: pfx fails on n12. Run 2 (home2): pfx hangs on n12 (a fault: the interval of n12 alone, R-EP7).
+R-AL11: a run of one compiler that is not H gets the line `  <label> fails on <id>` (no range). Only a run of H alone has no line. A hang gives the word `hangs` (not `crashes`).
+R-AL12 R-SP8: the failed command is `tln upgrade roc`, so the fix block has no `or tln upgrade roc`. No probe and no matrix knows a nightly that works, so option 1 is `tln roc use <id>`.
+Red (slice 248): the code prints no line for the run of pfx on n12 (it prints a cause line only when from is not to, or with an inferred mark), and calls the hang of run 2 `crashes` (`OracleCause.causes_of` reads the row of H, not of the compiler of the fault).
+The first line of run 2 has `(hangs)`: the answer of Q-248-1 (approved 2026-11-14; the text of `Units.judge`, R-PH13; the wording of R-AL10 changes).
+expect/stdout, expect/exit, expect/calls.log and expect/tree.diff are the actual output of the run before the fix (the fix changes only the text of stderr). Each line was read: each run is exit 10, no probe, no header write, no ladder.

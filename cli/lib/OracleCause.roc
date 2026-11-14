@@ -8,7 +8,7 @@ import resolve.Solver
 ## The causes and the text of a failure of the oracle step (slice 039s: split from `Oracle`, R-PH13, R-RP2, R-EP7, R-LD3). Pure.
 OracleCause :: [].{
 
-	# R-EP7: the releases that the proof blames, with their interval on D. A fault is a hang or a crash by the row of H. No repeat.
+	# R-EP7: the releases that the proof blames, with their interval on D. A fault is a hang or a crash by the row of the compiler of the fault (`p.from`). No repeat.
 	causes_of : OracleBase.Input, OracleBase.Compat, Solver.Why -> List(Explain.Cause)
 	causes_of = |input, compat, why| why.steps
 		.keep_oks(
@@ -18,7 +18,7 @@ OracleCause :: [].{
 					alias: alias_of(input, p.id),
 					kind: match p.kind {
 						Fail => Fail
-						Fault => match OracleDomain.row_of(compat.checks, compat.compiler ?? "", p.id) {
+						Fault => match OracleDomain.row_of(compat.checks, p.from, p.id) {
 							Ok(f) => if f.outcome == Hang Hang else Crash
 							Err(_) => Crash
 						}
@@ -44,7 +44,7 @@ OracleCause :: [].{
 		if causes.is_empty() {
 			Fail.new(NoTuple, "no tuple works: the releases of ${Str.join_with(input.slots.map(|slot| slot.id), ", ")} do not fit together (R-C2, R-C3)")
 		} else if assume {
-			{ ..Fail.new(NoTuple, "${first}\n${Str.join_with(Explain.lines({ causes, hint, failed: compat.failed }), "\n")}"), details: Ok(Explain.details({ held: nightly, causes, hint })) }
+			{ ..Fail.new(NoTuple, "${first}\n${Str.join_with(Explain.lines_held({ causes, hint, failed: compat.failed, held: nightly }), "\n")}"), details: Ok(Explain.details({ held: nightly, causes, hint })) }
 		} else {
 			Fail.new(NoTuple, first)
 		}

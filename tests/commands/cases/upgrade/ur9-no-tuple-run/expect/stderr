@@ -1,0 +1,8 @@
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-09-9d9d9d9 fails for acme/lib 1.0.0 (no module is named); the platform acme/pfx 0.1.0 (no module is named)
+  acme/lib 1.0.0 fails on nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-11-1f1f1f1
+  the platform acme/pfx 0.1.0 fails on nightly-2026-10-12-2a2a2a2
+  fix: tln roc use <id>
+tln: error[no_tuple]: no tuple works: the unit check on nightly-2026-10-09-9d9d9d9 fails for acme/lib 1.0.0 (no module is named); the platform acme/pfx 0.1.0 (hangs)
+  acme/lib 1.0.0 fails on nightly-2026-10-09-9d9d9d9 .. nightly-2026-10-11-1f1f1f1
+  the platform acme/pfx 0.1.0 hangs on nightly-2026-10-12-2a2a2a2
+  fix: tln roc use <id>

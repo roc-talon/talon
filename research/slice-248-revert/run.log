@@ -1,0 +1,26 @@
+base: L0 l0-2: exit=0 All (106) tests passed. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+base L2: commands: 60 passed, 0 failed 
+m1: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m1: L2 FAIL probe/dm1-domain FAIL probe/lp1-loop FAIL probe/un1-units commands: 57 passed, 3 failed 
+m2: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m2: L2 FAIL upgrade/ur9-no-tuple-run commands: 59 passed, 1 failed 
+m3: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m3: L2 FAIL upgrade/ur9-no-tuple-run commands: 59 passed, 1 failed 
+m4: L0 l0-2: exit=0 All (106) tests passed. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m4: L2 commands: 60 passed, 0 failed 
+m5: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0     0 compiler errors. domain: exit=0 All (2) tests passed. moves: exit=0     0 compiler errors. solver: exit=0 All (5) tests passed.
+m5: L2 FAIL upgrade/ur9-no-tuple-run commands: 59 passed, 1 failed 
+m6: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0     0 compiler errors. domain: exit=0 All (2) tests passed. moves: exit=0     0 compiler errors. solver: exit=0     0 compiler errors.
+m6: L2 commands: 60 passed, 0 failed 
+m7: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0     0 compiler errors.
+m7: L2 commands: 60 passed, 0 failed 
+m8: L0 l0-2: exit=0 . conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m8: L2 commands: 60 passed, 0 failed 
+m9: L0 l0-2: exit=0 . conflicts: exit=0 . domain: exit=0 All (2) tests passed. moves: exit=0 . solver: exit=0 .
+m9: L2 
+m10: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m10: L2 commands: 60 passed, 0 failed 
+m11: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0 All (6) tests passed. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m11: L2 FAIL upgrade/ur9-no-tuple-run commands: 59 passed, 1 failed 
+m12: L0 l0-2: exit=0     0 compiler errors. conflicts: exit=0     0 compiler errors. domain: exit=0 All (2) tests passed. moves: exit=0 All (5) tests passed. solver: exit=0 All (5) tests passed.
+m12: L2 commands: 60 passed, 0 failed 

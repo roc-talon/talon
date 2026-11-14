@@ -29,6 +29,10 @@ Explain :: [].{
 	lines : { causes : List(Explain.Cause), hint : Try(Str, [None]), failed : [UpgradeRoc, Other] } -> List(Str)
 	lines = |x| x.causes.keep_if(|c| c.from != c.to or !c.inferred.is_empty()).map(cause_line).concat(fix_lines(x.hint, x.causes, x.failed))
 
+	## R-AL11 (slice 248): as `lines`, and a run of one compiler that is not the held nightly `held` has its line (`  <label> fails on <id>`). Only a run of `held` alone has no line.
+	lines_held : { causes : List(Explain.Cause), hint : Try(Str, [None]), failed : [UpgradeRoc, Other], held : Str } -> List(Str)
+	lines_held = |x| x.causes.keep_if(|c| c.from != c.to or !c.inferred.is_empty() or c.from != x.held).map(cause_line).concat(fix_lines(x.hint, x.causes, x.failed))
+
 	## Slice 065 (R-AL12, R-SP8): the command that failed. `UpgradeRoc` for `tln upgrade roc` (`command` is `Upgrade` and `names` is `["roc"]`), `Other` for each other command, also `tln upgrade` and `tln upgrade roc <name>` (manager answer Q1 of `docs/slices/065-fix-line.md`). Flags do not matter (they are not in the input).
 	failed_command : { command : [Install, Update, Upgrade], names : List(Str) } -> [UpgradeRoc, Other]
 	failed_command = |x| match x.command {
