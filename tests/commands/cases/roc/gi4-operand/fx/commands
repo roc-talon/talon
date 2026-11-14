@@ -1,0 +1,13 @@
+roc install --git Karakatiza666/roc
+roc install --git roc-lang/roc
+roc install --git foo@main
+roc install --git github.com/roc-lang/roc@main
+roc install --git deadbeef
+roc install --git nightly-2026-10-21-5349569
+roc install --git @
+roc install --git
+roc install --git @main @wip
+roc default --git Karakatiza666/roc
+roc default --git @main @wip
+roc install @deadbee --offline
+roc install deadbeef

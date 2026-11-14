@@ -1,0 +1,20 @@
+Slice 245, R-R14 (DESIGN-CLI.md 6.6): the one operand of `--git` (entry `commands`, one line of `fx/commands` for each run). The fake API has no `commits/` route, so a commit request would be in calls.log
+(and get 404). The nightly list is there for the last run only. `config.toml` has a default. No `fx/jobs` and no `fx/src/`: a source build cannot start.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `roc install --git Karakatiza666/roc` | a name with no `@ref`: exit 2, no request (Talon does not guess the default branch) | R-R14 |
+| 2 | `roc install --git roc-lang/roc` | the same for the default repo: exit 2, no request | R-R14 |
+| 3 | `roc install --git foo@main` | a short name, not `owner/repo`: exit 2 | R-R14 |
+| 4 | `roc install --git github.com/roc-lang/roc@main` | a `host/path` name, not `owner/repo`: exit 2 | R-R14 |
+| 5 | `roc install --git deadbeef` | a bare word is a name, not `owner/repo@ref`: exit 2 | R-R14 |
+| 6 | `roc install --git nightly-2026-10-21-5349569` | a nightly tag with no `@` is not `@ref`: exit 2. The text names `tln roc install <tag>` (slice 245, approved 2026-11-13). RED until the code agent changes the text | R-R14, R-SL2 |
+| 7 | `roc install --git @` | an empty ref: exit 2 | R-R14 |
+| 8 | `roc install --git` | no operand: exit 2 | R-R14 |
+| 9 | `roc install --git @main @wip` | 2 operands: exit 2, no request | R-R14 |
+| 10 | `roc default --git Karakatiza666/roc` | `roc default` reads the operand the same way: exit 2 | R-R14, R-R5 |
+| 11 | `roc default --git @main @wip` | 2 operands: exit 2 | R-R14, R-R5 |
+| 12 | `roc install @deadbee --offline` | `@` and 7 hex digits is a sha (no `--git`): the git path, which stops at `--offline` with exit 15 and names `roc-lang/roc@deadbee` | R-R14, R-R11, R-SL10, R-DI12 |
+| 13 | `roc install deadbeef` | a bare word with no `@` is not a sha: it names a compiler id. No commit request, the nightly list is read, `no compiler matches deadbeef`, exit 2 | R-R14, R-R8 |
+
+The texts are the proposals of slice 045 (C3) and the old texts of `roc install` (TW24). Each stop has exit 2 except run 12. No run writes a file except run 13 (the list cache of R-DI2).

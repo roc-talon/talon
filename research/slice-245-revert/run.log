@@ -1,0 +1,22 @@
+base l0-3: exit=0 All (131) tests passed in 2344.2 ms. 
+base L2: commands: 12 passed, 0 failed 
+m1: L0 exit=1     2 failed     0 compiler errors 
+m1: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m2: L0 exit=1     2 failed     0 compiler errors 
+m2: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m3: L0 exit=1     1 failed     0 compiler errors 
+m3: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m4a: L0 exit=1     1 failed     0 compiler errors 
+m4a: L2 FAIL roc/gi5-short-hex commands: 11 passed, 1 failed 
+m4b: L0 exit=1     14 failed     0 compiler errors 
+m4b: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m5: L0 exit=1     2 failed     0 compiler errors 
+m5: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m6: L0 exit=0 All (131) tests passed in 2819.8 ms. 
+m6: L2 FAIL roc/gi5-short-hex commands: 11 passed, 1 failed 
+m7a: L0 exit=1     1 failed     0 compiler errors 
+m7a: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m7b: L0 exit=1     2 failed     0 compiler errors 
+m7b: L2 FAIL roc/gi4-operand commands: 11 passed, 1 failed 
+m8: L0 exit=2 All (131) tests passed in 3004.2 ms. 
+m8: L2 FAIL channels/ch08-bad-selector commands: 11 passed, 1 failed 

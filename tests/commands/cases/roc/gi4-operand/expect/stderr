@@ -1,0 +1,13 @@
+tln: error[usage]: 'Karakatiza666/roc' has no ref: use owner/repo@ref or @ref
+tln: error[usage]: 'roc-lang/roc' has no ref: use owner/repo@ref or @ref
+tln: error[usage]: --git takes a GitHub repository as owner/repo, not 'foo'
+tln: error[usage]: --git takes a GitHub repository as owner/repo, not 'github.com/roc-lang/roc'
+tln: error[usage]: --git takes a GitHub repository as owner/repo, not 'deadbeef'
+tln: error[usage]: --git takes owner/repo@ref or @ref; for a nightly use tln roc install nightly-2026-10-21-5349569
+tln: error[usage]: '@' has an empty selector after '@'
+tln: error[usage]: tln roc install --git needs one ref: owner/repo@ref or @ref
+tln: error[usage]: tln roc install --git takes one ref, got 2
+tln: error[usage]: 'Karakatiza666/roc' has no ref: use owner/repo@ref or @ref
+tln: error[usage]: tln roc default --git takes one ref, got 2
+tln: error[network]: roc-lang/roc@deadbee needs a request to find its commit, and --offline is set
+tln: error[usage]: no compiler matches deadbeef

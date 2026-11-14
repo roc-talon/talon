@@ -1,0 +1,10 @@
+Slice 245, R-R14 with R-SL10, R-SL12 (DESIGN-CLI.md 2 and 6.6): `@` and 6 hex digits is not a sha (a sha has at least 7), so the selector is none of rules 1 to 3 of section 2 and stops with exit 2. The error says
+`use --git for a branch or tag` (R-SL12). The text is the text of `Ref.parse` for a bad selector (slice 004 proposal, TW24). No fake HTTP route and no `fx/jobs`: no request and no build.
+
+| Run | Words | Result | Rules |
+| --- | --- | --- | --- |
+| 1 | `roc install @deadbe` | exit 2, `bad selector 'deadbe' in '@deadbe': use --git for a branch or tag` | R-R14, R-SL10, R-SL12 |
+| 2 | `roc install Karakatiza666/roc@deadbe` | the same with a repo name | R-R14, R-SL10, R-SL12 |
+
+RED at slice 245 start: the code sends the text to the compiler pick (`no compiler matches deadbe`) after it reads the nightly list. calls.log is a GUESS (slice 245 file, question Q-245-1): the stop comes before
+any request, after the 4 calls that each `tln` run makes first (`args`, `env_all`, `tty`, `config.toml`). The case has no HTTP route, so a list read gets 404.

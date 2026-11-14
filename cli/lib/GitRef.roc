@@ -32,7 +32,8 @@ GitRef :: [].{
 	## | --- | --- |
 	## | `--git` and one operand with a git ref (`GitRef` or `GitSha` selector) of the form `owner/repo@ref` or `@ref` | `Ok(Ok(source))` |
 	## | no `--git`, `bare_sha`, one operand with a `GitSha` selector (`@dd03c09e`, `owner/repo@dd03c09e`) | `Ok(Ok(source))` |
-	## | no `--git`, any other operand (a nightly tag with or without `@`, `@latest`, `@-1`, a prefix, a release version, a bad selector) or no operand or 2 or more | `Ok(Err(NotGit))`: the old command reads it |
+	## | no `--git`, `bare_sha`, a bad selector of `@sel` or `owner/repo@sel` (`@deadbe`: fewer than 7 hex digits, R-SL12; a channel name keeps `NotGit`, R-CH8) | `Err(Usage)`: the `Ref.parse` failure, before any request |
+	## | no `--git`, any other operand (a nightly tag with or without `@`, `@latest`, `@-1`, a prefix, a release version) or no operand or 2 or more | `Ok(Err(NotGit))`: the old command reads it |
 	## | `--git`, no operand | `Err(Usage)`: `tln <typed> --git needs one ref: owner/repo@ref or @ref` (`typed` is `Args.typed`: `roc install`, `roc i`, `roc default`) |
 	## | `--git`, 2 operands or more | `Err(Usage)`: `tln <typed> --git takes one ref, got <n>` |
 	## | `--git`, a failure of `Ref.parse` | that failure |
@@ -49,7 +50,7 @@ GitRef :: [].{
 			}
 		} else if facts.bare_sha {
 			match args.operands {
-				[one] => Ok(sha_source(one))
+				[one] => sha_source(one)
 				_ => Ok(Err(NotGit))
 			}
 		} else {
@@ -174,21 +175,34 @@ git_source = |text| {
 	if parsed.form != Full {
 		return Err(Fail.new(Usage, "--git takes a GitHub repository as owner/repo, not '${parsed.name}'"))
 	}
+	# A nightly tag with no `@` is an id for `tln roc install`, not a git ref (R-R14, Q624).
+	match parsed.selector {
+		Ok(Nightly(tag)) if text == tag => return Err(Fail.new(Usage, "--git takes owner/repo@ref or @ref; for a nightly use tln roc install ${tag}"))
+		_ => {}
+	}
 	match (parsed.name.split_first("/"), ref_of(parsed.selector)) {
 		(Ok({ before, after }), Ok(ref)) => Ok({ owner: before, repo: after, ref })
 		_ => Err(Fail.new(Usage, "'${text}' has no ref: use owner/repo@ref or @ref"))
 	}
 }
 
-# R-R11: a sha selector needs no `--git`. Any other operand is for the old command.
-sha_source : Str -> Try(GitRef.Source, [NotGit])
-sha_source = |text| match Ref.parse(text, Scope.Roc, Bool.False) {
-	Ok(parsed) => match (parsed.form, parsed.selector, parsed.name.split_first("/")) {
-		(Full, Ok(GitSha(ref)), Ok({ before, after })) => Ok({ owner: before, repo: after, ref })
-		_ => Err(NotGit)
+# R-R11: a sha selector needs no `--git`. A bad selector is a usage failure before any request (R-SL12, Q624 item 1). Any other operand is for the old command.
+sha_source : Str -> Try(Try(GitRef.Source, [NotGit]), Fail)
+sha_source = |text| {
+	parsed = match Ref.parse(text, Scope.Roc, Bool.False) {
+		Ok(found) => found
+		# A name with no `/` before the `@` is a channel name: `RocInstall` words that failure (R-CH8).
+		Err(fail) => return if is_repo_or_short(text) Err(fail) else Ok(Err(NotGit))
 	}
-	Err(_) => Err(NotGit)
+	match (parsed.form, parsed.selector, parsed.name.split_first("/")) {
+		(Full, Ok(GitSha(ref)), Ok({ before, after })) => Ok(Ok({ owner: before, repo: after, ref }))
+		_ => Ok(Err(NotGit))
+	}
 }
+
+# `@sel` (the short form of `roc-lang/roc`) or `owner/repo@sel`.
+is_repo_or_short : Str -> Bool
+is_repo_or_short = |text| text.starts_with("@") or text.split_first("@").map_ok(|parts| parts.before.contains("/")) ?? Bool.False
 
 ref_of : Try(Selector, [None]) -> Try(Str, [NoRef])
 ref_of = |selector| match selector {

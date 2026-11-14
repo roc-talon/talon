@@ -1,0 +1,26 @@
+== roc install --git Karakatiza666/roc
+exit 2
+== roc install --git roc-lang/roc
+exit 2
+== roc install --git foo@main
+exit 2
+== roc install --git github.com/roc-lang/roc@main
+exit 2
+== roc install --git deadbeef
+exit 2
+== roc install --git nightly-2026-10-21-5349569
+exit 2
+== roc install --git @
+exit 2
+== roc install --git
+exit 2
+== roc install --git @main @wip
+exit 2
+== roc default --git Karakatiza666/roc
+exit 2
+== roc default --git @main @wip
+exit 2
+== roc install @deadbee --offline
+exit 15
+== roc install deadbeef
+exit 2

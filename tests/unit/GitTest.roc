@@ -6,7 +6,10 @@ import lib.Github
 import lib.Help
 import lib.JsonDoc
 import lib.Nightlies
+import lib.Ref
 import lib.Roots
+import lib.Scope
+import lib.Selector
 
 GitTest :: [].{}
 
@@ -76,6 +79,70 @@ expect {
 		(read(["roc", "install", "--git", "a/b/c@main"], Bool.True), Err("tln: error[usage]: 'a/b/c' is not a package name: use a short name, owner/repo or host/path")),
 		(read(["roc", "install", "--git", "Karakatiza666/roc"], Bool.True), Err("tln: error[usage]: 'Karakatiza666/roc' has no ref: use owner/repo@ref or @ref")),
 		(read(["roc", "install", "--git", "Karakatiza666/roc@"], Bool.True), Err("tln: error[usage]: 'Karakatiza666/roc@' has an empty selector after '@'")),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
+# R-R14 (slice 245, docs/slices/245-git-operand.md): `--git` takes one operand, `owner/repo@ref` or `@ref` (`@ref` is `roc-lang/roc`). A name with no `@ref` (also `roc-lang/roc`: Talon does not guess the
+# default branch), a name that is not `owner/repo` (a short name, a bare hex word, `host/path`, 3 parts), a nightly tag with no `@`, an empty ref, and 2 or more operands are a usage failure (exit 2),
+# for `roc install` and for `roc default` (R-R5). With `--git` each non-empty ref is a git ref, also 6 hex digits (R-SL13). With no `--git`: a bare word with no `@` is not a sha (it names a compiler id, R-SC10),
+# and `@` with 7 or more hex digits is a sha (R-SL10, R-R11). The texts are the proposals of slice 045 (C3) and slice 004 (TW24).
+expect {
+	read = |words, bare| match Args.parse(words) {
+		Ok(args) => match GitRef.read({ args, bare_sha: bare }) {
+			Ok(found) => Ok(found)
+			Err(fail) => Err(fail.line())
+		}
+		Err(stop) => Err("parse: ${stop.fail.line()}")
+	}
+	src = |owner, repo, ref| Ok(Ok({ owner, repo, ref }))
+	not_git = Ok(Err(NotGit))
+	no_ref = |text| Err("tln: error[usage]: '${text}' has no ref: use owner/repo@ref or @ref")
+	not_full = |name| Err("tln: error[usage]: --git takes a GitHub repository as owner/repo, not '${name}'")
+	rows = [
+		(read(["roc", "install", "--git", "roc-lang/roc"], Bool.True), no_ref("roc-lang/roc")),
+		(read(["roc", "install", "--git", "Karakatiza666/roc"], Bool.True), no_ref("Karakatiza666/roc")),
+		(read(["roc", "install", "--git", "nightly-2026-10-21-5349569"], Bool.True), Err("tln: error[usage]: --git takes owner/repo@ref or @ref; for a nightly use tln roc install nightly-2026-10-21-5349569")),
+		(read(["roc", "install", "--git", "deadbeef"], Bool.True), not_full("deadbeef")),
+		(read(["roc", "install", "--git", "github.com/roc-lang/roc@main"], Bool.True), not_full("github.com/roc-lang/roc")),
+		(read(["roc", "install", "--git", "roc@main"], Bool.True), not_full("roc")),
+		(read(["roc", "install", "--git", "@"], Bool.True), Err("tln: error[usage]: '@' has an empty selector after '@'")),
+		(read(["roc", "install", "--git", "@a", "@b", "@c"], Bool.True), Err("tln: error[usage]: tln roc install --git takes one ref, got 3")),
+		(read(["roc", "install", "--git", "Karakatiza666/roc", "@main"], Bool.True), Err("tln: error[usage]: tln roc install --git takes one ref, got 2")),
+		(read(["roc", "default", "--git", "Karakatiza666/roc"], Bool.False), no_ref("Karakatiza666/roc")),
+		(read(["roc", "default", "--git", "roc@main"], Bool.False), not_full("roc")),
+		(read(["roc", "default", "--git", "@a", "@b"], Bool.False), Err("tln: error[usage]: tln roc default --git takes one ref, got 2")),
+		(read(["roc", "install", "--git", "@deadbe"], Bool.True), src("roc-lang", "roc", "deadbe")),
+		(read(["roc", "install", "--git", "roc-lang/roc@main"], Bool.True), src("roc-lang", "roc", "main")),
+		(read(["roc", "install", "deadbeef"], Bool.True), not_git),
+		(read(["roc", "install", "dd03c09e5f0a3b6c7d8e9f001122334455667788"], Bool.True), not_git),
+		(read(["roc", "install", "@deadbee"], Bool.True), src("roc-lang", "roc", "deadbee")),
+		(read(["roc", "install", "Karakatiza666/roc@deadbee"], Bool.True), src("Karakatiza666", "roc", "deadbee")),
+		(read(["roc", "install", "@1234567"], Bool.True), not_git),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}
+
+# R-R14 R-SL10 R-SL12 R-SL9 (slice 245): the selector rules that R-R14 names, in the scope `Roc` with no `--git`. `@` and 7 hex digits is a sha (R-SL10). 6 hex digits is not a sha: a bad selector, and the text
+# says `use --git for a branch or tag` (R-SL12). 7 decimal digits read as a series first (R-SL9 rule 1, CLI 2.2 line "a sha of digits only reads as a series first"). A bare hex word is a name with no selector
+# (form `Bare`), not a sha: `tln roc install deadbeef` names a compiler id.
+expect {
+	view = |text| match Ref.parse(text, Scope.Roc, Bool.False) {
+		Ok(parsed) => Ok((parsed.form, parsed.name, parsed.selector))
+		Err(fail) => Err(fail.line())
+	}
+	rows = [
+		(view("@deadbee"), Ok((Full, "roc-lang/roc", Ok(Selector.GitSha("deadbee"))))),
+		(view("@dd03c09e"), Ok((Full, "roc-lang/roc", Ok(Selector.GitSha("dd03c09e"))))),
+		(view("@deadbe"), Err("tln: error[usage]: bad selector 'deadbe' in '@deadbe': use --git for a branch or tag")),
+		(view("Karakatiza666/roc@deadbe"), Err("tln: error[usage]: bad selector 'deadbe' in 'Karakatiza666/roc@deadbe': use --git for a branch or tag")),
+		(view("@mian"), Err("tln: error[usage]: bad selector 'mian' in '@mian': use --git for a branch or tag")),
+		(view("@1234567"), Ok((Full, "roc-lang/roc", Ok(Selector.Range("^1234567"))))),
+		(view("deadbeef"), Ok((Bare, "deadbeef", Err(None)))),
 	]
 	bad = rows.keep_if(|(got, want)| got != want)
 	dbg bad

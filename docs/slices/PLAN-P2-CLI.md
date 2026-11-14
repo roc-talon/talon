@@ -122,6 +122,7 @@ Rules for all slices: one rule group or one command path, about 400 lines of cod
 | 244b | `tln audit` with `direct` | (status: done, file 244-audit.md) The release list of each repo in the closure, a 404 kept as `repo-missing`, the redirect as `moved`, the privacy guard case (Q620 item 9). | R-AU1, R-AU2, R-AU4 | G-C250 (Design Q620) | 244a / none | 200 | Sonnet |
 | 244c | Audit warnings in a resolve | (status: done, file 244-audit.md; the `direct` feed moved to 244d) R-AU7 warnings, the R-AU14 / R-PU28 `moved` note, the R-FE10 download 404 message. | R-AU6, R-AU7, R-AU14 | G-C250 (Design Q620) | 244a / none | 200 | Sonnet |
 | 244d | Audit: direct warnings, gone archive | (status: done, file 244-audit.md) Feed the `direct` release-list pages to `resolve_direct` (R-AU7 with `direct`). In `tln audit`, a package whose archive is gone is a leaf with one note (Q621 item 3). | R-AU7, R-AU1 | G-C251, G-C252 (Design Q621, Q622) | 244b, 244c / none | 150 | Sonnet |
+| 245 | The `--git` operand | (status: done, file 245-git-operand.md) Tests for R-R14 (most of it was built in slice 045). A short hex (`@deadbe`) stops with the R-SL12 text before any request; a nightly tag after `--git` points to `tln roc install <tag>`. | R-R14, R-SL10, R-SL12 | G-C254 (Design Q624) | none / none | 50 | Sonnet |
 
 ## 3. Test strategy
 
