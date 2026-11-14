@@ -1,0 +1,15 @@
+FAIL move/tp15-refusals (477 ms)
+    request 8: status: expected 403, got 201
+    request 8: problem: content-type: expected "application/problem+json", got "application/json"
+    request 8: problem.type: expected "/errors/forbidden", got missing
+    request 8: problem.detail: expected "token claim event_name is \"push\", expected \"workflow_dispatch\"", got missing
+    request 8: problem.status: expected 201 (the HTTP status), got missing
+    d1-calls: request 8: expected 0, got 2 (batch,batch)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), (SELECT o.value FROM names o WHERE o.id = r.offer), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["acme/other\t202\t10\t0\t\\N\t\\N\t1767000000000\t1767000000000","acme/roc-json\t200\t10\t0\t\\N\t\\N\t1767000000000\t1767000000000","olduser/gone\t150\t10\t2\tacme/roc-json\t\\N\t1767000000000\t1767000000000","olduser/roc-json\t100\t10\t0\t\\N\t\\N\t1767000000000\t1767000000000","third/lib\t300\t30\t0\t\\N\t\\N\t1767000000000\t1767000000000"]
+      got:      ["acme/other\t202\t10\t0\t\\N\t\\N\t1767000000000\t1767000000000","acme/roc-json\t200\t10\t0\t\\N\t\\N\t1767000000000\t1767000000000","olduser/gone\t150\t10\t2\tacme/roc-json\t\\N\t1767000000000\t1767000000000","olduser/roc-json\t100\t10\t2\tacme/roc-json\t\\N\t1767225630000\t1767000000000","third/lib\t300\t30\t0\t\\N\t\\N\t1767000000000\t1767000000000"]
+    db: @ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq: rows differ:
+      expected: ["acme/other\t1\t0\t\\N\t202\t\\N\t10\t\\N\t\\N\t1767000000000","acme/roc-json\t1\t0\t\\N\t200\t\\N\t10\t\\N\t\\N\t1767000000000","olduser/gone\t1\t0\t\\N\t150\t\\N\t10\t\\N\t\\N\t1767000000000","olduser/roc-json\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","third/lib\t1\t0\t\\N\t300\t\\N\t30\t\\N\t\\N\t1767000000000"]
+      got:      ["acme/other\t1\t0\t\\N\t202\t\\N\t10\t\\N\t\\N\t1767000000000","acme/roc-json\t1\t0\t\\N\t200\t\\N\t10\t\\N\t\\N\t1767000000000","olduser/gone\t1\t0\t\\N\t150\t\\N\t10\t\\N\t\\N\t1767000000000","olduser/roc-json\t1\t0\t\\N\t100\t\\N\t10\t\\N\t\\N\t1767000000000","olduser/roc-json\t2\t6\t100\t100\t10\t10\tacme/roc-json\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"push\",\"run_id\":\"906\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t1767225630000","third/lib\t1\t0\t\\N\t300\t\\N\t30\t\\N\t\\N\t1767000000000"]
+w2 pool: 1 apps started, 0 resets, 1 cases; time of the jobs added: start 0 s, reset 0 s, cases 0 s
+w2: 0 passed, 1 failed

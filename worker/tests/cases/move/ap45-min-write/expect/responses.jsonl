@@ -1,0 +1,5 @@
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":400,"problem":{"type":"/errors/unsupported-client","minimum":"0.5.0"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the request has no Authorization header: this route needs a GitHub OIDC token"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the request has no Authorization header: this route needs a GitHub OIDC token"}}
+{"status":405,"problem":{"type":"/errors/method-not-allowed"}}

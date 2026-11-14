@@ -1,0 +1,54 @@
+PASS yank/tp8-token (1791 ms)
+PASS yank/yk1-route-checks (866 ms)
+PASS yank/yk1-yank-unyank (2162 ms)
+PASS yank/yk2-operator (1108 ms)
+PASS yank/yk3-roles (1513 ms)
+PASS yank/yk6-body (1090 ms)
+PASS yank/yk7-reads (622 ms)
+FAIL yank/yk8-answers (670 ms)
+    d1-calls: request 1: expected 1, got 2 (batch,batch)
+    d1-calls: request 2: expected 1, got 2 (batch,batch)
+    d1-calls: request 3: expected 1, got 2 (batch,batch)
+    d1-calls: request 4: expected 2, got 3 (batch,batch,batch)
+    d1-calls: request 5: expected 2, got 3 (batch,batch,batch)
+FAIL yank/yk9-no-yank-row (745 ms)
+    request 2: status: expected 500, got 200
+    request 2: problem: content-type: expected "application/problem+json", got "application/json"
+    request 2: problem.type: expected "/errors/internal", got missing
+    request 2: problem.status: expected 200 (the HTTP status), got missing
+    request 3: status: expected 500, got 200
+    request 3: problem: content-type: expected "application/problem+json", got "application/json"
+    request 3: problem.type: expected "/errors/internal", got missing
+    request 3: problem.status: expected 200 (the HTTP status), got missing
+    request 4: status: expected 500, got 200
+    request 4: problem: content-type: expected "application/problem+json", got "application/json"
+    request 4: problem.type: expected "/errors/internal", got missing
+    request 4: problem.status: expected 200 (the HTTP status), got missing
+    request 5: status: expected 500, got 200
+    request 5: problem: content-type: expected "application/problem+json", got "application/json"
+    request 5: problem.type: expected "/errors/internal", got missing
+    request 5: problem.status: expected 200 (the HTTP status), got missing
+    request 6: status: expected 500, got 200
+    request 6: problem: content-type: expected "application/problem+json", got "application/json"
+    request 6: problem.type: expected "/errors/internal", got missing
+    request 6: problem.status: expected 200 (the HTTP status), got missing
+    request 7: status: expected 500, got 200
+    request 7: problem: content-type: expected "application/problem+json", got "application/json"
+    request 7: problem.type: expected "/errors/internal", got missing
+    request 7: problem.status: expected 200 (the HTTP status), got missing
+    request 8: status: expected 500, got 200
+    request 8: problem: content-type: expected "application/problem+json", got "application/json"
+    request 8: problem.type: expected "/errors/internal", got missing
+    request 8: problem.status: expected 200 (the HTTP status), got missing
+    request 11: status: expected 500, got 200
+    request 11: problem: content-type: expected "application/problem+json", got "application/json"
+    request 11: problem.type: expected "/errors/internal", got missing
+    request 11: problem.status: expected 200 (the HTTP status), got missing
+    d1-calls: request 7: expected 1, got 2 (batch,batch)
+    d1-calls: request 8: expected 1, got 2 (batch,batch)
+    d1-calls: request 11: expected 1, got 3 (batch,batch,batch)
+    db: @ SELECT count(*) FROM compat: rows differ:
+      expected: ["0"]
+      got:      ["1"]
+w2 pool: 7 apps started, 2 resets, 9 cases; time of the jobs added: start 9 s, reset 0 s, cases 11 s
+w2: 7 passed, 2 failed

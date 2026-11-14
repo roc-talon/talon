@@ -1,0 +1,13 @@
+1: 501 bytes: 400 before the token (a junk token, no JWKS read, 0 D1 calls)
+2: 251 characters of 2 bytes (502 bytes): 400
+3: a new line in the reason: 400
+4: a tab in the reason: 400
+5: a NUL in the reason: 400
+6: a reason that is a number: 400
+7: a body that is not JSON: 400
+8: a body that is a list: 400
+9: a body of another media type: 415 before the token (R-AP48 row 5)
+10: 500 bytes of ASCII with the operator key: 200 (the limit is in bytes, 500 is good)
+11: 250 characters of 2 bytes (500 bytes): 200
+12: {"reason":null}: 200, no reason
+13: {"later":1} (an unknown member is ignored, R-AP44): 200 on a yanked release, nothing changes

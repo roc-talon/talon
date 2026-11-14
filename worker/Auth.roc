@@ -9,6 +9,7 @@ import pf.WebCrypto
 import pf.Env
 import pf.Time
 import lib.Oidc
+import lib.Move
 import lib.Problem
 import jwt.Jwk
 
@@ -106,5 +107,52 @@ Auth :: [].{
 		claims = verify!(token)?
 		Oidc.check_publish(claims, { host: "github.com", owner_repo: asset.owner_repo, tag: asset.tag })?
 		Ok(claims)
+	}
+
+	## R-TP15 for the move routes (R-AP31, slice 247): `Oidc.bearer` of the `Authorization` header (`NoToken` is 401 `Oidc.missing_token`), then the text is compared with the secret `OPERATOR_KEY` (R-YK2, a compare in constant time,
+	## `WebCrypto.timing_safe_equal`): equal is `Operator` (no JWKS read, no claims). A text that is not equal is a token: `verify!` (rows 1 to 3), then `Move.check_token` (row 6 and `event_name` `workflow_dispatch`): `Token(claims)`.
+	## A missing setting `OPERATOR_KEY` means that no text is the key (the route works for tokens only). The tests are W2: `worker/tests/cases/move/`. (If slice 246 adds a shared operator check, `move!` calls it.)
+	move! : Request => Try([Operator, Token(Oidc.Claims)], Problem)
+	move! = |req| {
+		token = match Oidc.bearer(req.header("authorization")) {
+			Token(text) => text
+			NoToken => return Err(Oidc.missing_token)
+			Refuse(problem) => return Err(problem)
+		}
+		if operator_match!(token) == Match {
+			Ok(Operator)
+		} else {
+			claims = verify!(token)?
+			Move.check_token(claims)?
+			Ok(Token(claims))
+		}
+	}
+
+	## R-YK1, R-YK2, Q246-5, Q246-6 for the yank routes (slice 246): `Oidc.bearer` of the `Authorization` header (`NoToken` is 401 `Oidc.missing_token`), then `operator_match!`.
+	## `Match` is `Operator` (no JWKS read, no claims). `NoMatch` is a token: `verify!` (R-TP3 rows 1 to 3), the caller is `Author(claims)`. `NoKey` (the secret is missing or empty) is 500 `internal`.
+	yank! : Request => Try([Operator, Author(Oidc.Claims)], Problem)
+	yank! = |req| {
+		token = match Oidc.bearer(req.header("authorization")) {
+			Token(text) => text
+			NoToken => return Err(Oidc.missing_token)
+			Refuse(problem) => return Err(problem)
+		}
+		match operator_match!(token) {
+			Match => Ok(Operator)
+			NoKey => Err(Problem.new(Internal, "the Worker failed to handle the request"))
+			NoMatch => Ok(Author(verify!(token)?))
+		}
+	}
+
+	## R-YK2, Q246-5: is the bearer text the secret `OPERATOR_KEY`? Both texts are hashed with HMAC-SHA256 under the key (so the 2 values have the same length, 32 bytes), then compared with
+	## `WebCrypto.timing_safe_equal!`: the time shows neither the length nor a prefix of the key. `NoKey`: the secret is missing or empty, and it never matches (Q246-6). A route that wants
+	## "no key means no match" (the move routes) maps `NoKey` to `NoMatch`.
+	operator_match! : Str => [Match, NoMatch, NoKey]
+	operator_match! = |text| match Env.secret!("OPERATOR_KEY") {
+		Ok(secret) if !secret.reveal().is_empty() => {
+			key = secret.reveal().to_utf8()
+			if (WebCrypto.timing_safe_equal!(WebCrypto.hmac_sha256(key, key), WebCrypto.hmac_sha256(key, text.to_utf8()))) Match else NoMatch
+		}
+		_ => NoKey
 	}
 }

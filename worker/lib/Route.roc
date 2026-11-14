@@ -9,7 +9,8 @@ Route :: [].{
 	## a stub whose handler gives `Err` (slice 101 section 3). Slice 106: `GET /v1/packages/{owner}/{repo}/releases` (R-AP1), `GET /v1/artifacts/{hash}` (R-AP2), `GET /v1/releases` (R-AP13, R-AP14). Slice 108: `PUT /v1/toolchains/{tag}` (R-AP6), the bot check only until slice 109. Slice 109: `GET /v1/toolchains` (R-AP5), `GetToolchains`; its line is in `decide` (`decide_get`). Slice 107: `GET /v1/packages` (R-AP7), `GetPackages`. Slice 115a: `POST /v1/compat` (R-AP10), `PostCompat`. Slice 115b: `GET /v1/sweeps/{tag}` (R-AP39), `GetSweep`; `GET /v1/compat_hints` (R-AP40), `GetCompatHints`; `GET /v1/artifacts/{hash}/compat` (R-AP4), `GetArtifactCompat`. Their lines in `decide` are missing until the code of the slices 115a and 115b. Slice 112: `POST /v1/releases` with no token (R-AP9), `PostRelease`. Its line in `decide` is for the code agent: `/v1/releases` serves `GET` (`GetReleases`) and `POST` (`PostRelease`, with the media check of a JSON body as `decide_closure`), and another method is 405 with `Allow: GET, POST`.
 	## Slice 117 (login): `POST /v1/tokens` (R-AP37, `PostTokens`) and `DELETE /v1/tokens` (R-AP38, `DeleteTokens`), `GET /v1/contributors/me` (R-AP35, `GetMe`) and `DELETE /v1/contributors/me` (R-AP36, `DeleteMe`). Their lines in `decide` are for the code agent (docs/slices/117-login.md section 3.5): `/v1/tokens` serves `POST` (the media check of `decide_post`) and `DELETE` (no body check), another method is 405 with `Allow: DELETE, POST`; `/v1/contributors/me` serves `GET` and `DELETE` (no body check), another method is 405 with `Allow: DELETE, GET`.
 	## Slice 118: `POST /v1/webhooks/github` (R-AP12), `PostWebhook`. Its line in `decide` is for the code agent (docs/slices/118-webhook.md section 3.2): `/v1/webhooks/github` serves `POST` (the media check of `decide_post`), another method is 405 with `Allow: POST`.
-	Id : [PostClosure, PutToolchain(Str), GetToolchains, GetRepoReleases(Str, Str), GetArtifact(Str), GetReleases, GetPackages, PostCompat, GetSweep(Str), GetCompatHints, GetArtifactCompat(Str), PostRelease, PostTokens, DeleteTokens, GetMe, DeleteMe, PostWebhook]
+	## Slice 247 (move): `PUT` (R-AP31, `PutSuccessor(owner, repo)`) and `DELETE` (`DeleteSuccessor(owner, repo)`) of `/v1/packages/{owner}/{repo}/successor`. The line in `decide` is for the code agent (docs/slices/247-move.md section 3.2): `PUT` is a route with a JSON body (the media check of `decide_post`), `DELETE` has no body check, another method is 405 with `Allow: DELETE, PUT`.
+	Id : [PostClosure, PutToolchain(Str), GetToolchains, GetRepoReleases(Str, Str), GetArtifact(Str), GetReleases, GetPackages, PostCompat, GetSweep(Str), GetCompatHints, GetArtifactCompat(Str), PostRelease, PostTokens, DeleteTokens, GetMe, DeleteMe, PostWebhook, PutYank(Str), DeleteYank(Str), PutSuccessor(Str, Str), DeleteSuccessor(Str, Str)]
 
 	## What the decision needs from the request.
 	## `method`: the text of the method (`GET`, `POST`, ..., or any other text). `segments`: the path split at `/`, with no empty item
@@ -39,11 +40,13 @@ Route :: [].{
 			["v1", "packages", owner, repo, "releases"] => decide_get(input, path, GetRepoReleases(owner, repo))
 			["v1", "artifacts", hash] => decide_get(input, path, GetArtifact(hash))
 			["v1", "releases"] => decide_releases(input, path)
+			["v1", "releases", index, "yank"] => decide_yank(input, path, index)
 			["v1", "tokens"] => decide_tokens(input, path)
 			["v1", "contributors", "me"] => decide_me(input, path)
 			["v1", "packages"] => decide_get(input, path, GetPackages)
 			["v1", "compat"] => decide_post(input, path, PostCompat)
 			["v1", "webhooks", "github"] => decide_post(input, path, PostWebhook)
+			["v1", "packages", owner, repo, "successor"] => decide_successor(input, path, owner, repo)
 			["v1", "sweeps", tag] => decide_get(input, path, GetSweep(tag))
 			["v1", "compat_hints"] => decide_get(input, path, GetCompatHints)
 			["v1", "artifacts", hash, "compat"] => decide_get(input, path, GetArtifactCompat(hash))
@@ -81,6 +84,23 @@ Route :: [].{
 		}
 	}
 
+	## `/v1/packages/{owner}/{repo}/successor` (slice 247): `PUT` is R-AP31 with the media check of a JSON body (as `decide_post`), `DELETE` has no body check. Another method: 405 with `Allow: DELETE, PUT`.
+	decide_successor : Route.Input, Str, Str, Str -> Route.Decision
+	decide_successor = |input, path, owner, repo| match input.method {
+		"PUT" => {
+			if !input.has_body {
+				Handle(PutSuccessor(owner, repo))
+			} else {
+				match input.content_type {
+					Err(NotFound) => Refuse(Problem.new(UnsupportedMediaType, "the request body must be application/json, but the request has no Content-Type"))
+					Ok(ct) => if (is_json_media(ct)) Handle(PutSuccessor(owner, repo)) else Refuse(Problem.new(UnsupportedMediaType, "the request body must be application/json, got ${ct}"))
+				}
+			}
+		}
+		"DELETE" => Handle(DeleteSuccessor(owner, repo))
+		_ => NotAllowed(Problem.new(MethodNotAllowed, "${input.method} is not allowed on ${path}"), ["DELETE", "PUT"])
+	}
+
 	## `/v1/releases` (slice 112): `GET` is R-AP13, `POST` is the ingest (R-AP9, R-AP26) with the media check of `decide_post`. Another method: 405 with `Allow: GET, POST`.
 	decide_releases : Route.Input, Str -> Route.Decision
 	decide_releases = |input, path| match input.method {
@@ -103,6 +123,28 @@ Route :: [].{
 		"GET" => Handle(GetMe)
 		"DELETE" => Handle(DeleteMe)
 		_ => NotAllowed(Problem.new(MethodNotAllowed, "${input.method} is not allowed on ${path}"), ["DELETE", "GET"])
+	}
+
+	## `/v1/releases/{log_index}/yank` (slice 246): `PUT` is a route with a JSON body (the media check of `decide_post`, R-AP23), `DELETE` has no body check. Another method: 405 with `Allow: DELETE, PUT` (R-AP21).
+	## The index is the path segment as sent (Q246-7: the handler maps a bad index to 404).
+	decide_yank : Route.Input, Str, Str -> Route.Decision
+	decide_yank = |input, path, index| match input.method {
+		"PUT" => decide_json(input, PutYank(index))
+		"DELETE" => Handle(DeleteYank(index))
+		_ => NotAllowed(Problem.new(MethodNotAllowed, "${input.method} is not allowed on ${path}"), ["DELETE", "PUT"])
+	}
+
+	## The media check of a body of `decide_post`, for a method other than `POST`: a request with no body is not checked.
+	decide_json : Route.Input, Route.Id -> Route.Decision
+	decide_json = |input, id| {
+		if !input.has_body {
+			Handle(id)
+		} else {
+			match input.content_type {
+				Err(NotFound) => Refuse(Problem.new(UnsupportedMediaType, "the request body must be application/json, but the request has no Content-Type"))
+				Ok(ct) => if (is_json_media(ct)) Handle(id) else Refuse(Problem.new(UnsupportedMediaType, "the request body must be application/json, got ${ct}"))
+			}
+		}
 	}
 
 	## `PUT /v1/toolchains/{tag}`: the method only. R-AP6 has no body, so no media check.

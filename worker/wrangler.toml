@@ -35,7 +35,7 @@ simple = { limit = 10, period = 60 }
 
 # The client version (R-AP45, slice 116b): the oldest `tln` that the registry accepts. An empty text means no check.
 # MIN_TLN covers all routes, MIN_TLN_WRITE the write routes (R-AP41).
-# The other settings (R-WH14, slice 121). The secrets CONTRIBUTOR_KEY, TOKEN_KEY, GITHUB_WEBHOOK_SECRET and GITHUB_APP_KEY are set with `wrangler secret put`.
+# The other settings (R-WH14, slice 121). The secrets CONTRIBUTOR_KEY, TOKEN_KEY, GITHUB_WEBHOOK_SECRET, GITHUB_APP_KEY and OPERATOR_KEY (the operator key of the yank and move routes, R-YK2) are set with `wrangler secret put`.
 [vars]
 MIN_TLN = ""
 MIN_TLN_WRITE = ""

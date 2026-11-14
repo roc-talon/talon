@@ -1,0 +1,5 @@
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"newowner/roc-json"},"token":"t-new","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"newowner/roc-json"},"token":"t-old","now":1767225631000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"newowner/roc-json"},"token":"t-third","now":1767225632000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"third/lib"},"token":"t-third","now":1767225633000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"newowner/roc-json"},"token":"t-new","now":1767225635000}

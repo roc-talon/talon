@@ -1,0 +1,9 @@
+FAIL move/ap31-put-delete (479 ms)
+    request 1: json.state: expected "moved", got "active"
+    request 2: json.state: expected "moved", got "active"
+    request 3: json_at repos.0.state: expected "moved", got "active"
+    request 4: json_len matches.0.matches: expected an array of 1 items, got 2 items
+    request 4: json_at matches.0.matches.0.moved_from: expected "olduser/roc-json", got missing
+    request 5: json.state: expected "moved", got "active"
+w2 pool: 1 apps started, 0 resets, 1 cases; time of the jobs added: start 1 s, reset 0 s, cases 0 s
+w2: 0 passed, 1 failed

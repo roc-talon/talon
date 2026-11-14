@@ -1,0 +1,7 @@
+@ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq
+1	1	0	0	{"workflow_ref":"acme/lib/.github/workflows/yank.yml@refs/heads/main","workflow_sha":null,"job_workflow_ref":null,"event_name":"workflow_dispatch","run_id":"1","run_attempt":"1","actor_id":"2","runner_environment":"github-hosted"}	broken build	1767000000001
+2	1	0	1	\N	first	1767000000002
+2	2	1	1	\N	\N	1767000000003
+2	3	0	0	{"workflow_ref":"acme/lib/.github/workflows/yank.yml@refs/heads/main","workflow_sha":null,"job_workflow_ref":null,"event_name":"workflow_dispatch","run_id":"1","run_attempt":"1","actor_id":"2","runner_environment":"github-hosted"}	second	1767000000004
+4	1	0	0	{"workflow_ref":"acme/lib/.github/workflows/yank.yml@refs/heads/main","workflow_sha":null,"job_workflow_ref":null,"event_name":"workflow_dispatch","run_id":"1","run_attempt":"1","actor_id":"2","runner_environment":"github-hosted"}	old	1767000000005
+4	2	1	0	{"workflow_ref":"acme/lib/.github/workflows/yank.yml@refs/heads/main","workflow_sha":null,"job_workflow_ref":null,"event_name":"workflow_dispatch","run_id":"1","run_attempt":"1","actor_id":"2","runner_environment":"github-hosted"}	\N	1767000000006

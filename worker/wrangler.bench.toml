@@ -1,6 +1,6 @@
 # The bench deployment (task T4 of the allocator bench, research/bench/README.md). Not the prod Worker: use `wrangler -c wrangler.bench.toml`.
 # The same app.wasm and shim as prod. Differences: workers.dev only, its own D1, queues and keys, no crons (no GitHub reads), high hint limit (the hints scenario).
-# No GitHub App secrets: ingest and publish do not work here. The data comes from a dump of prod (research/d1-dump/dump.mjs).
+# No GitHub App secrets: ingest and publish do not work here. The data comes from a dump of prod (research/d1-dump/dump.mjs). No OPERATOR_KEY secret (R-WH14, slice 246): the yank routes answer 500 here (Q246-6).
 name = "talon-registry-bench"
 main = "worker.js"
 compatibility_date = "2026-10-01"

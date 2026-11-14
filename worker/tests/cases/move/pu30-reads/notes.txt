@@ -1,0 +1,7 @@
+1: R-AP1 of acme/lib: owner_changed is the recreate at T2 (the last event of action 1 or 3; the later found at T3 does not count). One D1 call.
+2: R-AP1 of acme/two: owner_changed is the transfer at T1 (the older recreate at T0 does not count).
+3: R-AP1 of acme/none: no event of action 1 or 3 (only the bind): the member is present and null (not missing).
+4: R-AP2: the artifact of acme/two: the same member in its repos item. One D1 call.
+5: R-AP13: the group of acme/none: null. One D1 call.
+6: R-AP14: the page of all releases: 3 repos, by name, each with its own member. One D1 call.
+7: R-AP17: the closure of 2 groups: the repos of the answer carry the member. One D1 call.

@@ -1,0 +1,5 @@
+Slice 246, case s6-yanks (the table yanks of migration 0003, W1 on node:sqlite and on local D1).
+  R-RE10, R-YK4: a row is (release, seq) with action, by, claims, reason and time. Two rows of one release have 2 seq values; the same (release, seq) is an error.
+  R-IK7: action is yank 0 or unyank 1, by is author 0 or operator 1. A code outside the set is an error.
+  R-IK8, R-RE26: the table is STRICT. A text for time and a real for time are errors. claims and reason can be NULL (an operator yank has no claims, an unyank has no reason). action, by and time cannot be NULL.
+  R-RE6 (the tables part): the rows are only added by the Worker. The schema has no trigger for it, so an UPDATE of a row is a test of the rule in W2 (the route adds rows and changes none).

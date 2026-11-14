@@ -1,0 +1,17 @@
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"now":1767225631000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"authorization":"Basic abc"},"now":1767225632000}
+{"method":"PUT","path":"/v1/releases/999/yank","json":{},"token":"tamper","now":1767225633000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"aud_slash","now":1767225634000}
+{"method":"PUT","path":"/v1/releases/999/yank","json":{},"token":"good","now":1767225635000}
+{"method":"PUT","path":"/v1/releases/3/yank","json":{},"token":"good","now":1767225636000}
+{"method":"PUT","path":"/v1/releases/999/yank","json":{},"token":"other_repo","now":1767225637000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"other_repo","now":1767225638000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"private","now":1767225639000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"push","now":1767225640000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"release_event","now":1767225641000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"bad_id","now":1767225642000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"no_owner","now":1767225643000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"both","now":1767225644000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"tag ref"},"token":"good_tag","now":1767225645000}
+{"method":"DELETE","path":"/v1/releases/1/yank","token":"xfer","now":1767225646000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"recreate","now":1767225647000}

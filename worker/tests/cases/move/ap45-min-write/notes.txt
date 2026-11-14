@@ -1,0 +1,5 @@
+1: PUT with tln/0.4.1: 400 unsupported-client with the minimum, before any token or body check.
+2: DELETE with tln/0.4.1: 400 unsupported-client.
+3: PUT with tln/0.5.0 (equal to the minimum) and no token: the version passes, 401.
+4: PUT with curl/8 (not checked) and no token: 401.
+5: GET of the same path: 405 (the version of a read route is not the question here).

@@ -32,6 +32,8 @@ import ShortRoutes
 import ToolchainRoutes
 import IngestRoutes
 import PublishRoutes
+import MoveRoutes
+import YankRoutes
 import HintRoutes
 import LoginRoutes
 import GithubRead
@@ -144,6 +146,10 @@ run! = |id, req| match id {
 	GetMe => LoginRoutes.get_me!(req)
 	DeleteMe => LoginRoutes.delete_me!(req)
 	PostWebhook => WebhookRoutes.post!(req)
+	PutSuccessor(owner, repo) => MoveRoutes.put!(req, owner, repo)
+	DeleteSuccessor(owner, repo) => MoveRoutes.delete!(req, owner, repo)
+	PutYank(index) => YankRoutes.put!(req, index)
+	DeleteYank(index) => YankRoutes.delete!(req, index)
 	PutToolchain(tag) => match Auth.bot!(req) {
 		Err(problem) => Err(Refuse(problem))
 		Ok(_) => ToolchainRoutes.put!(req, tag)

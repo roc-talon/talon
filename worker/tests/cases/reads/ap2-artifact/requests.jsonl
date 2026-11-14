@@ -2,7 +2,7 @@
 {"method": "GET", "path": "/v1/artifacts/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3"}
 {"method": "GET", "path": "/v1/artifacts/cGfHiC6Kgg3FpFZvgwGcswsCRtp4aBP2fzuXRQPizuN"}
 {"method": "GET", "path": "/v1/artifacts/EWmDvi3hhz86LYi2NcD6YUp18DeeB5gDkwJzde3MgF9A"}
-{"method": "GET", "path": "/v1/artifacts/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE", "headers": {"if-none-match": "\"329e346c2498c9a90bd1efb3f6905295\""}}
+{"method": "GET", "path": "/v1/artifacts/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE", "headers": {"if-none-match": "\"5833fd50b73800a630e921c757ddde2f\""}}
 {"method": "GET", "path": "/v1/artifacts/3qbR1eZRqXUWroWKKYhbDmR3FfqTHfqSU8zZSxtANzYh"}
 {"method": "GET", "path": "/v1/artifacts/3qbR1eZRqXUWroWKKYhbDmR3FfqTHfqSU8zZSxtANzYh"}
 {"method": "GET", "path": "/v1/artifacts/not-a-hash"}

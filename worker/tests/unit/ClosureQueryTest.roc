@@ -284,7 +284,7 @@ rows = {
 	],
 	hints: [{ hash: h2, nightly: t2, target: "x64musl", pass_count: 3, fail_count: 1, crash_count: 0 }],
 	checked: [{ name: "o/a", checked_at: Ok(1000), app_installed: Bool.False }],
-	repos: [{ name: "o/a", state: 2, successor: Ok("o/b"), state_at: 5 }],
+	repos: [{ name: "o/a", state: 2, successor: Ok("o/b"), state_at: 5, owner_action: Ok(3), owner_at: Ok(1700) }],
 	log_size: 9,
 }
 
@@ -314,7 +314,7 @@ expect {
 		log_size: 9,
 		unknown: ["bad", b2],
 		checked: [{ name: "o/a", checked_at: Ok(1000), stale: Bool.True }],
-		repos: [{ name: "o/a", state: Moved, successor: Ok("o/b"), state_at: 5 }],
+		repos: [{ name: "o/a", state: Moved, successor: Ok("o/b"), state_at: 5, owner_changed: Ok({ action: Recreate, at: 1700 }) }],
 	}
 	runs = "[{\"error_digest\":null,\"from\":\"${t1}\",\"hash\":\"${b1}\",\"result\":\"pass\",\"source\":\"bot\",\"target\":\"any\",\"to\":\"${t2}\"},{\"error_digest\":\"d1\",\"from\":\"${t1}\",\"hash\":\"${b1}\",\"result\":\"fail\",\"source\":\"author\",\"target\":\"x64musl\",\"to\":\"${t1}\"}]"
 	nearest = "[{\"error_digest\":\"d2\",\"hash\":\"${b1}\",\"nightly\":\"${t1}\",\"result\":\"fail\",\"side\":\"before\",\"source\":\"bot\",\"target\":\"any\"},{\"error_digest\":null,\"hash\":\"${b2}\",\"nightly\":\"${t2}\",\"result\":\"pass\",\"side\":\"after\",\"source\":\"author\",\"target\":\"any\"}]"

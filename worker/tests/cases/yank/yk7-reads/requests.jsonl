@@ -1,0 +1,7 @@
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1"}
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=2"}
+{"method":"GET","path":"/v1/artifacts/FfhdJC6hjGYxLT2it8N1ipqaofCXs4K6AQLt9zzEKNLG"}
+{"method":"GET","path":"/v1/artifacts/BRmpv6YTMiaiZ2QGbqkS1vu2JQgvDtAU1fQgneszmsG5"}
+{"method":"GET","path":"/v1/packages/acme/lib/releases"}
+{"method":"GET","path":"/v1/releases?after=0"}
+{"method":"POST","path":"/v1/closure","json":{"groups":[{"group":"github.com/acme/lib/releases/download/{v}/","series":"1"}],"hashes":[]}}

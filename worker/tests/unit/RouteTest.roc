@@ -70,3 +70,33 @@ bad_charset = [
 	"application/json; charset=utf-8x",
 ]
 expect bad_charset.map(|ct| Route.decide(input("POST", closure, Ok(ct), Bool.True))) == bad_charset.map(|ct| bad_media(ct))
+
+# ---- slice 247 (docs/slices/247-move.md): `/v1/packages/{owner}/{repo}/successor` (R-AP31, R-AP48, R-AP23, R-AP21) ----
+succ_path = ["v1", "packages", "acme", "lib", "successor"]
+
+succ_not_allowed = |method| NotAllowed(Problem.new(MethodNotAllowed, "${method} is not allowed on /v1/packages/acme/lib/successor"), ["DELETE", "PUT"])
+
+# R-AP31: `PUT` sets the successor and `DELETE` removes it. The owner and the repo are the path parts as sent (the case stays).
+expect Route.decide(input("PUT", succ_path, json, Bool.True)) == Handle(PutSuccessor("acme", "lib"))
+expect Route.decide(input("DELETE", succ_path, Err(NotFound), Bool.False)) == Handle(DeleteSuccessor("acme", "lib"))
+expect Route.decide(input("PUT", ["v1", "packages", "Acme", "Lib", "successor"], json, Bool.True)) == Handle(PutSuccessor("Acme", "Lib"))
+
+# R-AP23: the body of a `PUT` is JSON. Without a body a `PUT` is not checked (the handler gives 400). A `DELETE` has no body check.
+expect Route.decide(input("PUT", succ_path, Ok("text/plain"), Bool.True)) == bad_media("text/plain")
+expect Route.decide(input("PUT", succ_path, Err(NotFound), Bool.True)) == Refuse(Problem.new(UnsupportedMediaType, "the request body must be application/json, but the request has no Content-Type"))
+expect Route.decide(input("PUT", succ_path, Err(NotFound), Bool.False)) == Handle(PutSuccessor("acme", "lib"))
+expect Route.decide(input("PUT", succ_path, Ok("Application/JSON; charset=UTF-8"), Bool.True)) == Handle(PutSuccessor("acme", "lib"))
+expect Route.decide(input("DELETE", succ_path, Ok("text/plain"), Bool.True)) == Handle(DeleteSuccessor("acme", "lib"))
+
+# R-AP48 row 2, R-AP21: another method is 405 with `Allow: DELETE, PUT`.
+expect Route.decide(input("GET", succ_path, Err(NotFound), Bool.False)) == succ_not_allowed("GET")
+expect Route.decide(input("POST", succ_path, json, Bool.True)) == succ_not_allowed("POST")
+expect Route.decide(input("PATCH", succ_path, json, Bool.True)) == succ_not_allowed("PATCH")
+expect Route.decide(input("HEAD", succ_path, Err(NotFound), Bool.False)) == succ_not_allowed("HEAD")
+
+# R-AP48 row 1: a path that is no route (an extra part, a missing part, another word) is 404.
+expect Route.decide(input("PUT", ["v1", "packages", "acme", "lib", "successor", "x"], json, Bool.True)) == Refuse(Problem.new(NotFound, "no route for PUT /v1/packages/acme/lib/successor/x"))
+expect Route.decide(input("PUT", ["v1", "packages", "acme", "successor"], json, Bool.True)) == Refuse(Problem.new(NotFound, "no route for PUT /v1/packages/acme/successor"))
+expect Route.decide(input("PUT", ["v1", "packages", "acme", "lib", "successors"], json, Bool.True)) == Refuse(Problem.new(NotFound, "no route for PUT /v1/packages/acme/lib/successors"))
+# The read route of the same repository is unchanged.
+expect Route.decide(input("GET", ["v1", "packages", "acme", "lib", "releases"], Err(NotFound), Bool.False)) == Handle(GetRepoReleases("acme", "lib"))

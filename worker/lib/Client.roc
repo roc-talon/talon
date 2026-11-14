@@ -12,7 +12,7 @@ Client :: [].{
 	## Every other route is a read.
 	is_write : Route.Id -> Bool
 	is_write = |id| match id {
-		PostCompat | PostRelease | PutToolchain(_) | PostTokens | DeleteTokens | DeleteMe => Bool.True
+		PostCompat | PostRelease | PutToolchain(_) | PostTokens | DeleteTokens | DeleteMe | PutYank(_) | DeleteYank(_) | PutSuccessor(_, _) | DeleteSuccessor(_, _) => Bool.True
 		_ => Bool.False
 	}
 

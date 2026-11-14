@@ -1,0 +1,8 @@
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"acme/roc-json","state_at":1767225630000}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"acme/roc-json","state_at":1767225630000}}
+{"status":200,"json_at":{"repos.0.name":"olduser/roc-json","repos.0.state":"moved","repos.0.successor":"acme/roc-json","repos.0.state_at":1767225630000},"json_len":{"repos":1}}
+{"status":200,"json_len":{"matches.0.matches":1},"json_at":{"matches.0.matches.0.name":"acme/roc-json","matches.0.matches.0.moved_from":"olduser/roc-json","matches.0.matches.0.state":"active"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"acme/second","state_at":1767225632000}}
+{"status":200,"json_at":{"repos.0.successor":"acme/second","repos.0.state_at":1767225632000}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","successor":null,"state_at":1767225633000}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","successor":null,"state_at":1767225633000}}

@@ -47,11 +47,11 @@ ClosureRoute :: [].{
 			Err(TooLarge(problem, extra)) => Ok(Response.from_bytes(413, "application/problem+json", Problem.to_json_with(problem, extra).to_utf8()))
 			Ok(query) => {
 				params = (query.groups_json, query.hashes_json, Sql.or_null(query.from), Sql.or_null(query.to))
-				stmts = statements.map(|body| Sql.stmt("${prefix_sql}\n${body}", params))
+				stmts = statements.append(Reads.reasons_select("rel")).map(|body| Sql.stmt("${prefix_sql}\n${body}", params))
 				session = db.with_session!(Reads.session_of(req.header("talon-bookmark"))).map_err(|e| Fault(Str.inspect(e)))?
 				results = session.batch!(stmts).map_err(|e| Fault(Str.inspect(e)))?
 				rows = rows_of(results)?
-				body = ClosureQuery.answer(query, rows, Time.now_ms!()).map_err(
+				body = ClosureQuery.answer_with(query, rows, reasons_of(results)?, Time.now_ms!()).map_err(
 					|e| match e {
 						BadRow(text) => Fault(text)
 					},
@@ -70,7 +70,7 @@ ClosureRoute :: [].{
 	## The typed rows of each result. A read error is a fault (500).
 	rows_of : List(D1.Result) -> Try(ClosureQuery.Rows, ReadRoutes.Error)
 	rows_of = |results| match results {
-		[art, dep, tgt, rel, unk, epo, run, nea, hin, che, rep, log] => {
+		[art, dep, tgt, rel, unk, epo, run, nea, hin, che, rep, log, _] => {
 			sizes : List({ log_size : U64 })
 			sizes = all(log)?
 			Ok({
@@ -91,7 +91,14 @@ ClosureRoute :: [].{
 				},
 			})
 		}
-		_ => Err(Fault("closure: the batch gave ${results.len().to_str()} results, not 12"))
+		_ => Err(Fault("closure: the batch gave ${results.len().to_str()} results, not 13"))
+	}
+
+	## Slice 246 (R-AP49): the reasons of the last yank, the 13th statement (`Reads.reasons_select("rel")`).
+	reasons_of : List(D1.Result) -> Try(List(Reads.ReasonRow), ReadRoutes.Error)
+	reasons_of = |results| match results.get(12) {
+		Ok(result) => all(result)
+		Err(_) => Err(Fault("closure: the batch gave no result for the reasons"))
 	}
 
 	all = |result| result.all().map_err(|e| Fault(Str.inspect(e)))

@@ -100,7 +100,7 @@ expect match Closure.decode_answer("[]") {
 
 # R-AP17, R-AP29, R-AP32, R-IK7: the answer, with the 9 members of R-AP17 and `repos`. `source`, `result`, `side` and `state` are lower-case text. `checked_at` and `successor` are null when none. `log_size` keeps all its digits above 2^53 (R-IK2 text rule for big integers).
 answer_json : Str
-answer_json = js("{'artifacts':[],'releases':[${release_json}],'epochs':[{'target':'x64linux','from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'runs':[{'hash':'H1','target':'any','source':'bot','result':'fail','error_digest':'e1','from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'nearest':[{'hash':'H1','target':'any','source':'author','result':'pass','error_digest':null,'nightly':'nightly-2026-10-01-1111111','side':'before'}],'hints':[{'hash':'H1','nightly':'nightly-2026-10-09-258ab27','target':'x64linux','pass_count':3,'fail_count':0,'crash_count':1}],'log_size':9007199254740993,'unknown':['H7'],'checked':[{'name':'roc-lang/unicode','checked_at':null,'stale':true}],'repos':[{'name':'roc-lang/unicode','state':'moved','successor':'acme/unicode','state_at':1760000001000},{'name':'a/b','state':'active','successor':null,'state_at':5}]}")
+answer_json = js("{'artifacts':[],'releases':[${release_json}],'epochs':[{'target':'x64linux','from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'runs':[{'hash':'H1','target':'any','source':'bot','result':'fail','error_digest':'e1','from':'nightly-2026-10-09-258ab27','to':'nightly-2026-10-14-38a3029'}],'nearest':[{'hash':'H1','target':'any','source':'author','result':'pass','error_digest':null,'nightly':'nightly-2026-10-01-1111111','side':'before'}],'hints':[{'hash':'H1','nightly':'nightly-2026-10-09-258ab27','target':'x64linux','pass_count':3,'fail_count':0,'crash_count':1}],'log_size':9007199254740993,'unknown':['H7'],'checked':[{'name':'roc-lang/unicode','checked_at':null,'stale':true}],'repos':[{'name':'roc-lang/unicode','owner_changed':null,'state':'moved','successor':'acme/unicode','state_at':1760000001000},{'name':'a/b','owner_changed':null,'state':'active','successor':null,'state_at':5}]}")
 
 answer_row : Closure.Answer
 answer_row = {
@@ -114,8 +114,8 @@ answer_row = {
 	unknown: ["H7"],
 	checked: [{ name: "roc-lang/unicode", checked_at: Err(None), stale: Bool.True }],
 	repos: [
-		{ name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"), state_at: 1760000001000 },
-		{ name: "a/b", state: Active, successor: Err(None), state_at: 5 },
+		{ name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"), state_at: 1760000001000, owner_changed: Err(None) },
+		{ name: "a/b", state: Active, successor: Err(None), state_at: 5, owner_changed: Err(None) },
 	],
 }
 
@@ -177,10 +177,10 @@ expect {
 }
 
 expect {
-	r1 = { name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"), state_at: 1760000001000 }
-	r2 = { name: "a/b", state: Active, successor: Err(None), state_at: 5 }
-	r3 = { name: "c/d", state: Missing, successor: Err(None), state_at: 0 }
-	Closure.encode_repo(r1) == js("{'name':'roc-lang/unicode','state':'moved','state_at':1760000001000,'successor':'acme/unicode'}") and Closure.encode_repo(r2) == js("{'name':'a/b','state':'active','state_at':5,'successor':null}") and [r1, r2, r3].all(|r| Closure.decode_repo(Closure.encode_repo(r)) == Ok(r)) and Closure.decode_repo(js("{'name':'a/b','state':'active','state_at':5,'successor':null}")) == Ok(r2)
+	r1 = { name: "roc-lang/unicode", state: Moved, successor: Ok("acme/unicode"), state_at: 1760000001000, owner_changed: Err(None) }
+	r2 = { name: "a/b", state: Active, successor: Err(None), state_at: 5, owner_changed: Err(None) }
+	r3 = { name: "c/d", state: Missing, successor: Err(None), state_at: 0, owner_changed: Err(None) }
+	Closure.encode_repo(r1) == js("{'name':'roc-lang/unicode','owner_changed':null,'state':'moved','state_at':1760000001000,'successor':'acme/unicode'}") and Closure.encode_repo(r2) == js("{'name':'a/b','owner_changed':null,'state':'active','state_at':5,'successor':null}") and [r1, r2, r3].all(|r| Closure.decode_repo(Closure.encode_repo(r)) == Ok(r)) and Closure.decode_repo(js("{'name':'a/b','owner_changed':null,'state':'active','state_at':5,'successor':null}")) == Ok(r2)
 }
 
 # Slice 104b, R-AP51: a missing required member, a null required member, a wrong type and an unknown `state` are BadJson in both items.
@@ -193,7 +193,7 @@ expect {
 		Err(BadJson(_)) => Bool.True
 		_ => Bool.False
 	}
-	bad_c(js("{'checked_at':null,'name':'a'}")) and bad_c(js("{'name':'a/b','stale':true}")) and bad_c(js("{'checked_at':null,'name':null,'stale':true}")) and bad_c(js("{'checked_at':'x','name':'a','stale':true}")) and bad_c("[]") and bad_r(js("{'name':'a','state':'gone','state_at':1,'successor':null}")) and bad_r(js("{'name':'a','state':'active','successor':null}")) and bad_r(js("{'name':'a','state':'active','state_at':1}")) and bad_r(js("{'name':'a','state':null,'state_at':1,'successor':null}"))
+	bad_c(js("{'checked_at':null,'name':'a'}")) and bad_c(js("{'name':'a/b','stale':true}")) and bad_c(js("{'checked_at':null,'name':null,'stale':true}")) and bad_c(js("{'checked_at':'x','name':'a','stale':true}")) and bad_c("[]") and bad_r(js("{'name':'a','owner_changed':null,'state':'gone','state_at':1,'successor':null}")) and bad_r(js("{'name':'a','owner_changed':null,'state':'active','successor':null}")) and bad_r(js("{'name':'a','owner_changed':null,'state':'active','state_at':1}")) and bad_r(js("{'name':'a','owner_changed':null,'state':null,'state_at':1,'successor':null}"))
 }
 
 # R-AP49, R-AP51: each nullable member is written as `null`, not left out. Release: `tag`, `roc_version`, `repo`, `yank_reason`, `withdrawn`. Artifact: `platform_hash`, `roc_pin`. Dep: `series`, `version`.

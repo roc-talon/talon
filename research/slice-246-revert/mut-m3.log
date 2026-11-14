@@ -1,0 +1,35 @@
+
+── ✗ fail ───────────────────────────────────────── tests/unit/YankTest.roc:58:1
+
+expect {
+    verdict(Yank, Author, Yanked(Author)) == "no-change"
+        and verdict(Yank, Author, Yanked(Operator)) == "no-change"
+        and verdict(Yank, Operator, Yanked(Author)) == "no-change"
+        and verdict(Yank, Operator, Yanked(Operator)) == "no-change"
+        and verdict(Unyank, Author, Live) == "no-change"
+        and verdict(Unyank, Operator, Live) == "no-change"
+}
+
+Ran 18 tests in 257.8 ms.:
+    17 passed
+    1 failed
+    0 compiler errors
+All (7) tests passed in 151.6 ms.
+PASS yank/tp8-token (1218 ms)
+FAIL yank/yk1-route-checks (807 ms)
+    d1-calls: request 6: expected 1, got 2 (batch,batch)
+FAIL yank/yk1-yank-unyank (1618 ms)
+    request 10: json.release.yank_reason: expected "broken build", got "other"
+    d1-calls: request 10: expected 1, got 2 (batch,batch)
+PASS yank/yk2-operator (1014 ms)
+FAIL yank/yk3-roles (1076 ms)
+    request 2: json.release.yank_reason: expected "security", got "mine"
+    request 6: json.release.yank_reason: expected "author reason", got "late"
+    d1-calls: request 2: expected 1, got 2 (batch,batch)
+    d1-calls: request 6: expected 1, got 2 (batch,batch)
+FAIL yank/yk6-body (1002 ms)
+    request 13: json.release.yank_reason: expected null, got "ignored"
+    d1-calls: request 13: expected 1, got 2 (batch,batch)
+PASS yank/yk7-reads (384 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 7 s, reset 0 s, cases 7 s
+w2: 3 passed, 4 failed

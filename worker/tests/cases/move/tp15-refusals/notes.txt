@@ -1,0 +1,13 @@
+1: The token of the successor name, but the owner id 20 is not the owner of the old row (10), and there is no offer: 403.
+2: The token of another account (third/lib): not the old repository, not the successor: 403.
+3: A repository of the same account (owner id 10) that is not the named successor: 403.
+4: The token of an old repository whose row is moved: an offer needs the state active: 403.
+5: DELETE on a row with no successor, with the token of another repository: 403 (only the old repository has a say).
+6: DELETE on a row with a successor, with the token of a repository that is neither the old one nor the successor: 403.
+7: The repository of the token is private: 403, no D1 call (R-TP3 row 6).
+8: The event of the token is push, not workflow_dispatch: 403, no D1 call.
+9: No Authorization header: 401.
+10: The Authorization scheme is Basic: 401, never a read.
+11: A token that is no JWT: 401.
+12: A token with a changed signature: 401.
+13: DELETE with no Authorization header: 401.

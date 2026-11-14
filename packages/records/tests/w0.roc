@@ -12,5 +12,8 @@ import WireTest
 import WorkTest
 import AuditTest
 import SortedTest
+import MoveTest
+import OwnerChangedTest
+import YankTest
 
 main! = |_args| Ok({})

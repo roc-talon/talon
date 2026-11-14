@@ -1,0 +1,13 @@
+{"method":"PUT","path":"/v1/packages/nobody/nothing/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"token":"t-acme","now":1767225630000}
+{"method":"DELETE","path":"/v1/packages/nobody/nothing/successor","headers":{"user-agent":"tln/0.5.0"},"token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body":"this is not json","token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body":"{}","token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body":"{\"name\":null}","token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body":"{\"name\":42}","token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body":"[\"acme/roc-json\"]","token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body_pad":{"prefix":"{\"name\":\"","total":262145,"suffix":"\"}"},"token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"text/plain"},"body":"{\"name\":\"acme/roc-json\"}","token":"t-acme","now":1767225630000}
+{"method":"POST","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0","content-type":"application/json"},"body":"{}","now":1767225630000}
+{"method":"GET","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor/x","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"now":1767225630000}

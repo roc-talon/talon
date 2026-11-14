@@ -114,3 +114,6 @@ expect {
 		and Client.rate_problem().to_json().contains("/errors/rate-limited")
 		and Client.limit_retry_after == 60
 }
+
+# ---- slice 247 (R-AP45, R-AP41): MIN_TLN_WRITE covers the move routes (Registry R-AP45 lists "the move route of R-AP31") ----
+expect Client.is_write(PutSuccessor("acme", "lib")) and Client.is_write(DeleteSuccessor("acme", "lib"))

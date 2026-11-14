@@ -15,11 +15,12 @@ provenance	4	0	1
 releases	13	0	1
 repo_checks	7	0	1
 repo_events	10	0	1
-repos	7	0	1
+repos	8	0	1
 sweeps	4	1	1
 targets	2	0	1
 toolchains	8	1	1
 transitions	5	1	1
+yanks	7	0	1
 @ SELECT t.name, c.name, c.type, CASE WHEN c.pk > 0 THEN NULL ELSE c."notnull" END, c.pk, c.hidden FROM pragma_table_list t, pragma_table_xinfo(t.name) c WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*' ORDER BY t.name, c.name
 artifact_targets	artifact	INTEGER	\N	1	0
 artifact_targets	target	INTEGER	\N	2	0
@@ -121,6 +122,7 @@ repo_events	repository_id_before	INTEGER	0	0	0
 repo_events	seq	INTEGER	\N	2	0
 repo_events	successor	INTEGER	0	0	0
 repo_events	time	INTEGER	1	0	0
+repos	offer	INTEGER	0	0	0
 repos	repo	INTEGER	\N	1	0
 repos	repository_id	INTEGER	1	0	0
 repos	repository_owner_id	INTEGER	1	0	0
@@ -147,6 +149,13 @@ transitions	compared	INTEGER	1	0	0
 transitions	nightly	INTEGER	\N	1	0
 transitions	previous	INTEGER	1	0	0
 transitions	target	INTEGER	\N	2	0
+yanks	action	INTEGER	1	0	0
+yanks	by	INTEGER	1	0	0
+yanks	claims	TEXT	0	0	0
+yanks	reason	TEXT	0	0	0
+yanks	release	INTEGER	\N	1	0
+yanks	seq	INTEGER	\N	2	0
+yanks	time	INTEGER	1	0	0
 @ SELECT t.name, CASE WHEN i.origin = 'c' THEN i.name END, i."unique", i.origin, (SELECT group_concat(x.name, ',') FROM (SELECT name FROM pragma_index_info(i.name) ORDER BY seqno) x) FROM pragma_table_list t, pragma_index_list(t.name) i WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*' ORDER BY 1, 4, 5
 artifact_targets	\N	1	pk	artifact,target
 compat	compat_artifact_target	0	c	artifact,target,nightly
@@ -166,5 +175,6 @@ sweeps	\N	1	pk	nightly,target
 targets	\N	1	u	name
 toolchains	\N	1	pk	nightly,target
 transitions	\N	1	pk	nightly,target
+yanks	\N	1	pk	release,seq
 @ SELECT count(*) FROM pragma_table_list t, pragma_foreign_key_list(t.name) f WHERE t.schema = 'main' AND t.type = 'table' AND t.name NOT GLOB 'sqlite_*' AND t.name NOT GLOB '_cf_*'
 0

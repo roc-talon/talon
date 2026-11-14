@@ -30,7 +30,7 @@ ReadRoutes :: [].{
 	repo_releases! = |req, owner, repo| {
 		page = "WITH page AS (SELECT * FROM releases WHERE repo = ?1 ORDER BY log_index)"
 		id = Reads.repo_id(owner, repo)
-		stmts = [Sql.stmt(releases_sql(page), [id]), Sql.stmt(repos_sql(page), [id])]
+		stmts = [Sql.stmt(releases_sql(page), [id]), Sql.stmt(repos_sql(page), [id]), Sql.stmt(reasons_sql(page), [id])]
 		serve!(req, Reads.cache_control, stmts, |results, now| repo_answer(results, now, owner, repo))
 	}
 
@@ -46,6 +46,7 @@ ReadRoutes :: [].{
 				Sql.stmt(targets_sql, [id]),
 				Sql.stmt(releases_sql(page), [id]),
 				Sql.stmt(repos_sql(page), [id]),
+				Sql.stmt(reasons_sql(page), [id]),
 			]
 			serve!(req, Reads.cache_control, stmts, |results, now| artifact_answer(results, now, hash))
 		}
@@ -60,7 +61,7 @@ ReadRoutes :: [].{
 		Ok(ByAfter(after)) => {
 			page = "WITH page AS (SELECT * FROM releases WHERE log_index > ?1 ORDER BY log_index LIMIT ${U64.to_str(Reads.page_limit)})"
 			id = after.to_i64_wrap()
-			stmts = [Sql.stmt(releases_sql(page), [id]), Sql.stmt(repos_sql(page), [id])]
+			stmts = [Sql.stmt(releases_sql(page), [id]), Sql.stmt(repos_sql(page), [id]), Sql.stmt(reasons_sql(page), [id])]
 			serve!(req, Reads.cache_control, stmts, |results, now| after_answer(results, now))
 		}
 		Ok(ByGroup(query)) => {
@@ -75,13 +76,13 @@ ReadRoutes :: [].{
 				Err(None) => -1
 			}
 			params = (Reads.form_id(query.group), bounds.lo, bounds.hi, after, limit)
-			stmts = [Sql.stmt(releases_sql(page), params), Sql.stmt(repos_sql(page), params)]
+			stmts = [Sql.stmt(releases_sql(page), params), Sql.stmt(repos_sql(page), params), Sql.stmt(reasons_sql(page), params)]
 			serve!(req, Reads.cache_control, stmts, |results, now| group_answer(results, now, query.series))
 		}
 	}
 
 	## The row of `repos` joined with `repo_checks` and the names (one statement for `checked` and `repos`).
-	RepoCheckRow : { name : Str, state : I64, successor : Try(Str, [Missing]), state_at : U64, checked_at : Try(U64, [Missing]), app_installed : Bool }
+	RepoCheckRow : { name : Str, state : I64, successor : Try(Str, [Missing]), state_at : U64, checked_at : Try(U64, [Missing]), app_installed : Bool, owner_action : Try(I64, [Missing]), owner_at : Try(U64, [Missing]) }
 
 	Tail : { checked : Try(Reads.CheckedItem, [None]), repos : List(Reads.RepoItem) }
 
@@ -134,8 +135,8 @@ ReadRoutes :: [].{
 
 	repo_answer : List(D1.Result), U64, Str, Str -> Try(Str, ReadRoutes.Error)
 	repo_answer = |results, now, owner, repo| match results {
-		[rel, rep] => {
-			releases = releases_of(rel)?
+		[rel, rep, why] => {
+			releases = releases_of(rel, why)?
 			if releases.is_empty() {
 				Err(Refuse(Reads.no_repo_releases(owner, repo)))
 			} else {
@@ -143,13 +144,13 @@ ReadRoutes :: [].{
 				Ok(Reads.releases_body({ releases, checked: tail.checked, repos: tail.repos }))
 			}
 		}
-		_ => Err(Fault("repo releases: the batch gave ${U64.to_str(results.len())} results, not 2"))
+		_ => Err(Fault("repo releases: the batch gave ${U64.to_str(results.len())} results, not 3"))
 	}
 
 	group_answer : List(D1.Result), U64, Try(Str, [None]) -> Try(Str, ReadRoutes.Error)
 	group_answer = |results, now, series| match results {
-		[rel, rep] => {
-			all = releases_of(rel)?
+		[rel, rep, why] => {
+			all = releases_of(rel, why)?
 			releases = match series {
 				Ok(text) => all.keep_if(|r| r.series == text)
 				Err(None) => all
@@ -157,22 +158,22 @@ ReadRoutes :: [].{
 			tail = tail_of(rep, now)?
 			Ok(Reads.releases_body({ releases, checked: tail.checked, repos: tail.repos }))
 		}
-		_ => Err(Fault("releases: the batch gave ${U64.to_str(results.len())} results, not 2"))
+		_ => Err(Fault("releases: the batch gave ${U64.to_str(results.len())} results, not 3"))
 	}
 
 	after_answer : List(D1.Result), U64 -> Try(Str, ReadRoutes.Error)
 	after_answer = |results, now| match results {
-		[rel, rep] => {
-			releases = releases_of(rel)?
+		[rel, rep, why] => {
+			releases = releases_of(rel, why)?
 			tail = tail_of(rep, now)?
 			Ok(Reads.page_body({ releases, repos: tail.repos }))
 		}
-		_ => Err(Fault("releases: the batch gave ${U64.to_str(results.len())} results, not 2"))
+		_ => Err(Fault("releases: the batch gave ${U64.to_str(results.len())} results, not 3"))
 	}
 
 	artifact_answer : List(D1.Result), U64, Str -> Try(Str, ReadRoutes.Error)
 	artifact_answer = |results, now, hash| match results {
-		[art, dep, tgt, rel, rep] => {
+		[art, dep, tgt, rel, rep, why] => {
 			artifacts : List(Reads.ArtifactRow)
 			artifacts = art.all().map_err(|e| Fault(Str.inspect(e)))?
 			match artifacts {
@@ -183,20 +184,24 @@ ReadRoutes :: [].{
 					names : List({ name : Str })
 					names = tgt.all().map_err(|e| Fault(Str.inspect(e)))?
 					artifact = Reads.artifact_of_rows({ artifact: row, deps, target_names: names.map(|t| t.name) }).map_err(bad_row)?
-					releases = releases_of(rel)?
+					releases = releases_of(rel, why)?
 					tail = tail_of(rep, now)?
 					Ok(Reads.artifact_body({ artifact, releases, repos: tail.repos }))
 				}
 			}
 		}
-		_ => Err(Fault("artifact: the batch gave ${U64.to_str(results.len())} results, not 5"))
+		_ => Err(Fault("artifact: the batch gave ${U64.to_str(results.len())} results, not 6"))
 	}
 
-	releases_of : D1.Result -> Try(List(Release.Row), ReadRoutes.Error)
-	releases_of = |result| {
+	## The records of the rows of `releases_sql`, with the reasons of the rows of `reasons_sql` (slice 246, R-AP49).
+	releases_of : D1.Result, D1.Result -> Try(List(Release.Row), ReadRoutes.Error)
+	releases_of = |result, why| {
 		rows : List(Reads.ReleaseRow)
 		rows = result.all().map_err(|e| Fault(Str.inspect(e)))?
-		rows.map_try(Reads.release_of_row).map_err(bad_row)
+		reasons : List(Reads.ReasonRow)
+		reasons = why.all().map_err(|e| Fault(Str.inspect(e)))?
+		releases = rows.map_try(Reads.release_of_row).map_err(bad_row)?
+		Reads.with_reasons_checked(releases, reasons).map_err(bad_row)
 	}
 
 	## `repos` from the rows. `checked` is the item of the first repo (R-AP53: one item, or none).
@@ -204,7 +209,7 @@ ReadRoutes :: [].{
 	tail_of = |result, now| {
 		rows : List(ReadRoutes.RepoCheckRow)
 		rows = result.all().map_err(|e| Fault(Str.inspect(e)))?
-		repos = rows.map_try(|r| Reads.repo_item_of_row({ name: r.name, state: r.state, successor: r.successor, state_at: r.state_at })).map_err(bad_row)?
+		repos = rows.map_try(|r| Reads.repo_item_of_row({ name: r.name, state: r.state, successor: r.successor, state_at: r.state_at, owner_action: r.owner_action, owner_at: r.owner_at })).map_err(bad_row)?
 		checked = match rows {
 			[first, ..] => Ok(Reads.checked_of_row({ name: first.name, checked_at: first.checked_at, app_installed: first.app_installed }, now))
 			[] => Err(None)
@@ -236,9 +241,13 @@ ReadRoutes :: [].{
 	releases_sql : Str -> Str
 	releases_sql = |page| "${page} SELECT r.log_index AS log_index, an.value AS hash, fn.value AS form, CAST(r.version AS TEXT) AS version, r.version_text AS version_text, r.url AS url, r.tag AS tag, r.roc_version AS roc_version, rn.value AS repo, r.published_at AS published_at, r.yanked AS yanked, r.withdrawn AS withdrawn, (SELECT group_concat(via) FROM (SELECT via FROM provenance WHERE release = r.log_index ORDER BY via)) AS vias FROM page r JOIN names an ON an.id = r.artifact JOIN names fn ON fn.id = r.form LEFT JOIN names rn ON rn.id = r.repo ORDER BY r.log_index"
 
+	## The reasons of the last yank of the yanked releases of a CTE `page` (slice 246, `Reads.ReasonRow`).
+	reasons_sql : Str -> Str
+	reasons_sql = |page| "${page} ${Reads.reasons_select("page")}"
+
 	## The repos of the releases of a CTE `page`, with their check, sorted by name (bytes).
 	repos_sql : Str -> Str
-	repos_sql = |page| "${page} SELECT rn.value AS name, p.state AS state, sn.value AS successor, p.state_at AS state_at, c.checked_at AS checked_at, COALESCE(c.app_installed, 0) AS app_installed FROM repos p JOIN names rn ON rn.id = p.repo LEFT JOIN names sn ON sn.id = p.successor LEFT JOIN repo_checks c ON c.repo = p.repo WHERE p.repo IN (SELECT repo FROM page) ORDER BY rn.value"
+	repos_sql = |page| "${page} SELECT rn.value AS name, p.state AS state, sn.value AS successor, p.state_at AS state_at, c.checked_at AS checked_at, COALESCE(c.app_installed, 0) AS app_installed, (SELECT e.action FROM repo_events e WHERE e.repo = p.repo AND e.action IN (1, 3) ORDER BY e.seq DESC LIMIT 1) AS owner_action, (SELECT e.time FROM repo_events e WHERE e.repo = p.repo AND e.action IN (1, 3) ORDER BY e.seq DESC LIMIT 1) AS owner_at FROM repos p JOIN names rn ON rn.id = p.repo LEFT JOIN names sn ON sn.id = p.successor LEFT JOIN repo_checks c ON c.repo = p.repo WHERE p.repo IN (SELECT repo FROM page) ORDER BY rn.value"
 
 	artifact_sql : Str
 	artifact_sql = "SELECT an.value AS hash, a.kind AS kind, a.exposes AS exposed_json, pl.value AS platform_hash, a.roc_pin AS roc_pin, a.size AS size FROM artifacts a JOIN names an ON an.id = a.artifact LEFT JOIN names pl ON pl.id = a.platform WHERE a.artifact = ?1"

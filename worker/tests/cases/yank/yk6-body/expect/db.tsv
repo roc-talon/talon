@@ -1,0 +1,8 @@
+@ SELECT log_index, yanked FROM releases ORDER BY log_index
+1	1
+2	1
+4	1
+@ SELECT release, length(CAST(reason AS BLOB)) FROM yanks ORDER BY release, seq
+1	500
+2	500
+4	\N

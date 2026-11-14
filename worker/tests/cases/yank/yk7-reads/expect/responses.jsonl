@@ -1,0 +1,7 @@
+{"status":200,"json_len":{"releases":1},"json_at":{"releases.0.log_index":1,"releases.0.yanked":true,"releases.0.yank_reason":"broken build"}}
+{"status":200,"json_len":{"releases":1},"json_at":{"releases.0.log_index":2,"releases.0.yanked":true,"releases.0.yank_reason":"second"}}
+{"status":200,"json_len":{"releases":1},"json_at":{"releases.0.yanked":true,"releases.0.yank_reason":"second"}}
+{"status":200,"json_len":{"releases":1},"json_at":{"releases.0.yanked":false,"releases.0.yank_reason":null}}
+{"status":200,"json_len":{"releases":2}}
+{"status":200,"json_len":{"releases":3},"json_at":{"releases.0.yank_reason":"broken build","releases.1.yank_reason":"second","releases.2.yank_reason":null,"releases.2.yanked":false}}
+{"status":200,"json_len":{"releases":1},"json_at":{"releases.0.log_index":1,"releases.0.yanked":true,"releases.0.yank_reason":"broken build"}}

@@ -1,0 +1,19 @@
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1"}
+{"method":"GET","path":"/v1/packages/acme/lib/releases"}
+{"method":"GET","path":"/v1/artifacts/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg"}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"broken build"},"token":"a1","now":1767225631000}
+{"wait_ms":300}
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1"}
+{"method":"GET","path":"/v1/packages/acme/lib/releases"}
+{"method":"GET","path":"/v1/artifacts/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg"}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"other"},"token":"a2","now":1767225632000}
+{"method":"DELETE","path":"/v1/releases/1/yank","token":"a3","now":1767225633000}
+{"wait_ms":300}
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F"}
+{"method":"GET","path":"/v1/releases?group=github.com%2Facme%2Flib%2Freleases%2Fdownload%2F%7Bv%7D%2F&series=1"}
+{"method":"GET","path":"/v1/packages/acme/lib/releases"}
+{"method":"GET","path":"/v1/artifacts/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg"}
+{"method":"DELETE","path":"/v1/releases/1/yank","token":"a4","now":1767225634000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"token":"a5","now":1767225635000}

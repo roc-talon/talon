@@ -69,12 +69,13 @@ IngestRoutes :: [].{
 		session = db.with_session!(Primary).map_err(fault)?
 		now_ms = Time.now_ms!()
 		repo_id = Reads.repo_id(target.owner, target.repo)
-		first = session.batch!([Sql.stmt(label_sql, label_params(target)), owner_stmt(target, now_ms), Sql.stmt(repo_sql, [repo_id])]).map_err(fault)?
+		first = session.batch!([Sql.stmt(label_sql, label_params(target)), owner_stmt(target, now_ms), Sql.stmt(repo_sql, [repo_id]), reason_stmt(target)]).map_err(fault)?
 		rows = label_rows(first.first().map_err(|_| Fault("the pre-read gave no result"))?.all())?
+		reasons = checked_reasons(first, rows)?
 		old = old_row(first, 2, repo_id)?
 		match Ingest.after_read(target, rows).map_err(bad_row)? {
 			Conflict(problem) => Err(Refuse(problem))
-			Answer(release) => answer!(session, 200, release)
+			Answer(release) => answer!(session, 200, with_reason(reasons, release))
 			AddProvenance(log_index) => {
 				github_repo = read_repo!(target)?
 				now = Time.now_ms!()
@@ -85,7 +86,7 @@ IngestRoutes :: [].{
 				provenance = Sql.stmt("INSERT INTO provenance (release, via, claims, time) SELECT ?1, 3, NULL, ?2 WHERE NOT EXISTS (SELECT 1 FROM provenance WHERE release = ?1 AND via = 3)", (log_index, now))
 				stmts = [provenance].concat(identity).append(Sql.stmt(label_sql, label_params(target)))
 				results = session.batch!(stmts).map_err(fault)?
-				dropping(answer!(session, 200, last_release(results)?), req, target, 200)
+				dropping(answer!(session, 200, with_reason(reasons, last_release(results)?)), req, target, 200)
 			}
 			Index => {
 				match IngestLimits.owner_check(owner_input(target, first, now_ms)?) {
@@ -281,7 +282,8 @@ IngestRoutes :: [].{
 
 	## The answer 200 or 201 (step 7), with the bookmark of the session after its last call (R-AP41 row 5).
 	answer! : D1.Session, U16, Release.Row => Try(Response, IngestRoutes.Error)
-	answer! = |session, status, release| {
+	answer! = |session, status, found| {
+		release = found
 		base = Response.from_bytes(status, "application/json", Ingest.answer_body(release).to_utf8()).with_header("cache-control", Ingest.cache_control)
 		located = if (status == 201) base.with_header("location", Ingest.location(release.hash)) else base
 		Ok(
@@ -290,6 +292,31 @@ IngestRoutes :: [].{
 				Err(NotFound) => located
 			},
 		)
+	}
+
+	## Slice 246b, R-AP49, Design Q627: the statement that reads the reason of the release of the label, the last statement of the first batch (no more D1 call). The result has no row for an unyanked release.
+	## The label has the same 3 parameters as `label_sql`.
+	reason_stmt : Ingest.Target -> Sql.Stmt
+	reason_stmt = |target| Sql.stmt(Reads.reasons_select("(SELECT * FROM releases WHERE form = ?1 AND version = ?2 AND version_text = ?3)"), label_params(target))
+
+	## The reasons of the first batch (its last result). A release of the label that is yanked and has no row in `yanks` is a fault of the registry: 500 (Design Q627, R-RE10). The check is before any write.
+	checked_reasons : List(D1.Result), List(Ingest.LabelRow) -> Try(List(Reads.ReasonRow), IngestRoutes.Error)
+	checked_reasons = |results, rows| {
+		last = results.last().map_err(|_| Fault("the pre-read gave no result"))?
+		reasons : List(Reads.ReasonRow)
+		reasons = last.all().map_err(fault)?
+		if rows.any(|r| r.release.yanked and !reasons.any(|x| x.log_index == r.release.log_index)) {
+			Err(Fault("a release is yanked and has no row in yanks"))
+		} else {
+			Ok(reasons)
+		}
+	}
+
+	## The record with its reason, from the reasons of `checked_reasons`.
+	with_reason : List(Reads.ReasonRow), Release.Row -> Release.Row
+	with_reason = |reasons, release| match Reads.with_reasons([release], reasons) {
+		[shown] => shown
+		_ => release
 	}
 
 	# ---- the label read (step 2, and the last statement of a batch) ----

@@ -1,0 +1,9 @@
+@ SELECT log_index, yanked FROM releases ORDER BY log_index
+1	1
+5	0
+@ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq
+1	1	0	1	\N	\N	1767225632000
+5	1	0	1	\N	mirror compromised	1767225631000
+5	2	1	1	\N	\N	1767225633000
+@ SELECT (SELECT count(*) FROM provenance), (SELECT count(*) FROM log), (SELECT count(*) FROM repo_events), (SELECT count(*) FROM releases)
+2	3	2	2

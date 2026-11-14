@@ -219,8 +219,8 @@ flowchart LR
 | # | Slice | Rule ids | Model |
 | --- | --- | --- | --- |
 | 130 | Tile writer and log routes (if G1 puts them in P3) | R-SG4, R-SG7, R-AP11, the R2 step of R-PU1 | Opus medium |
-| 131 | Yank | R-YK1 to R-YK7, R-TP8, `yanks` table, R-RE10 | Sonnet high |
-| 132 | Move | R-AP31, R-TP14, R-TP15, R-PU28 to R-PU30 (client part is CLI) | Sonnet high |
+| 131 | Yank (shared slice 246, started 2026-11-13 on the user's order) | R-YK1 to R-YK7, R-TP8, `yanks` table, R-RE10 | Sonnet high |
+| 132 | Move (shared slice 247, started 2026-11-13 on the user's order) | R-AP31, R-TP14, R-TP15, R-PU28 to R-PU30 (client part is CLI) | Sonnet high |
 | 133 | Attestation, mirror, scanner hook, advisories | R-SE10, R-SE6, Design 7 P3 | Not planned |
 
 ### C.4 Client track (CLI P2, separate plan)

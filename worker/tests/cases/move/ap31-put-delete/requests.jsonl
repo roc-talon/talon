@@ -1,0 +1,8 @@
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"token":"t-acme","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"token":"t-acme","now":1767225631000}
+{"method":"GET","path":"/v1/packages/olduser/roc-json/releases","headers":{"user-agent":"tln/0.5.0"},"now":1767225631500}
+{"method":"GET","path":"/v1/packages?short=roc-json","headers":{"user-agent":"tln/0.5.0"},"now":1767225631600}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/second"},"token":"t-second","now":1767225632000}
+{"method":"GET","path":"/v1/packages/olduser/roc-json/releases","headers":{"user-agent":"tln/0.5.0","cache-control":"no-cache"},"now":1767225632500}
+{"method":"DELETE","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"token":"t-second","now":1767225633000}
+{"method":"DELETE","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"token":"t-old","now":1767225634000}

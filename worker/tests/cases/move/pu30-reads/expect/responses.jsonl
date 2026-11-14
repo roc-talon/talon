@@ -1,0 +1,7 @@
+{"status":200,"json_at":{"repos.0.name":"acme/lib","repos.0.owner_changed":{"action":"recreate","at":1767200000000}}}
+{"status":200,"json_at":{"repos.0.owner_changed":{"action":"transfer","at":1767100000000}}}
+{"status":200,"json_at":{"repos.0.owner_changed":null}}
+{"status":200,"json_at":{"repos.0.name":"acme/two","repos.0.owner_changed":{"action":"transfer","at":1767100000000}}}
+{"status":200,"json_at":{"repos.0.name":"acme/none","repos.0.owner_changed":null}}
+{"status":200,"json_len":{"repos":3},"json_at":{"repos.0.name":"acme/lib","repos.0.owner_changed":{"action":"recreate","at":1767200000000},"repos.1.name":"acme/none","repos.1.owner_changed":null,"repos.2.name":"acme/two","repos.2.owner_changed":{"action":"transfer","at":1767100000000}}}
+{"status":200,"json_at":{"repos.0.name":"acme/lib","repos.0.owner_changed":{"action":"recreate","at":1767200000000},"repos.1.name":"acme/none","repos.1.owner_changed":null}}

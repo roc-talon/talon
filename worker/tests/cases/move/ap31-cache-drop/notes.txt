@@ -1,0 +1,4 @@
+1: R-AP1 read of the old name: active, no successor. The answer is cached.
+2: The same read: from the cache (no D1 call).
+3: The move: 201.
+4: The read again with no Cache-Control: no-cache: the key of the old name was dropped after the move, so the answer is new: moved, with the successor (1 D1 call).

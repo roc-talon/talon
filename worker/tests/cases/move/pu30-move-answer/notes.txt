@@ -1,0 +1,4 @@
+1: PUT 201: the answer has owner_changed = the transfer at T1 (the move event 6 does not replace it).
+2: The same PUT again: 200, same member.
+3: DELETE by the successor token: 200, same member.
+4: An offer on other/old (owner 30, recreated at T2) by its own token: 202, the member is the recreate.

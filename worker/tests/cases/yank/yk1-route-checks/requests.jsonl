@@ -1,0 +1,10 @@
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"user-agent":"tln/0.4.1","authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225631000}
+{"method":"DELETE","path":"/v1/releases/1/yank","headers":{"user-agent":"tln/0.4.1 (linux)","authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225632000}
+{"method":"PUT","path":"/v1/releases/1/yank","body":"not json","headers":{"content-type":"application/json","user-agent":"tln/0.4.1","authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225633000}
+{"method":"GET","path":"/v1/packages/acme/lib/releases","headers":{"user-agent":"tln/0.4.1"}}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"r"},"headers":{"user-agent":"tln/0.5.0 (linux)","authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225635000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"r"},"headers":{"user-agent":"curl/8.4.0","authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225636000}
+{"method":"GET","path":"/v1/releases/1/yank"}
+{"method":"POST","path":"/v1/releases/1/yank","json":{}}
+{"method":"PUT","path":"/v1/releases/1/yank/x","json":{},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"}}
+{"method":"DELETE","path":"/v1/releases/1","headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"}}

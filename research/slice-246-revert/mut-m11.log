@@ -1,0 +1,14 @@
+All (18) tests passed in 250.4 ms.
+All (7) tests passed in 152.5 ms.
+PASS yank/tp8-token (1011 ms)
+PASS yank/yk1-route-checks (678 ms)
+PASS yank/yk1-yank-unyank (1439 ms)
+PASS yank/yk2-operator (787 ms)
+PASS yank/yk3-roles (867 ms)
+PASS yank/yk6-body (830 ms)
+FAIL yank/yk7-reads (331 ms)
+    request 2: json_at releases.0.yank_reason: expected "second", got "first"
+    request 3: json_at releases.0.yank_reason: expected "second", got "first"
+    request 6: json_at releases.1.yank_reason: expected "second", got "first"
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 6 s, reset 0 s, cases 6 s
+w2: 6 passed, 1 failed

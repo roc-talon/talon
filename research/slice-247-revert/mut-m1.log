@@ -1,0 +1,16 @@
+
+── ✗ fail ──────────────────────────────────────── tests/unit/MoveTest.roc:205:1
+
+expect Move.check({ ..facts, succ: Ok({ ..ok_succ, newest: Ok({ kind: App, modules: [] }) }), chain: ["olduser/roc-json"] }) == mismatch(Kind)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mentioned values:
+ok_succ = { state: Active, newest: Ok({ kind: Package, modules: ["Gamma",
+"Beta", "Alpha", "Delta"] }) }
+facts = { old, old_newest: Ok(old_app), name: "acme/roc-json", succ:
+Ok(ok_succ), chain: ["acme/roc-json"] }
+
+Ran 123 tests in 364.1 ms.:
+    122 passed
+    1 failed
+    0 compiler errors

@@ -1,0 +1,66 @@
+	actor_id: Ok("512345"),
+	runner_environment: Ok("github-hosted"),
+}
+
+
+── ✗ fail ──────────────────────────────────────── tests/unit/YankTest.roc:206:1
+
+expect {
+    all_bad = { ..base, repository: Ok("acme/other"), repository_visibility: Ok("private"), event_name: Ok("push") }
+    check(all_bad, Ok("acme/lib")) == forbidden("token claim repository is \"acme/other\", expected \"acme/lib\"")
+        and check({ ..all_bad, repository: Ok("acme/lib") }, Ok("acme/lib")) == forbidden("token claim repository_visibility is \"private\", expected \"public\"")
+        and check({ ..all_bad, repository: Ok("acme/lib"), repository_visibility: Ok("public") }, Ok("acme/lib")) == forbidden("token claim event_name is \"push\", expected \"workflow_dispatch\"")
+}
+
+Mentioned values:
+base = {
+	iss: Ok("https://token.actions.githubusercontent.com"),
+	aud: Ok("https://registry.example"),
+	exp: Ok(1767225900),
+	nbf: Ok(1767225300),
+	repository: Ok("acme/lib"),
+	repository_id: Ok("900"),
+	repository_owner_id: Ok("9100"),
+	repository_visibility: Ok("public"),
+	ref: Ok("refs/heads/main"),
+	ref_type: Ok("branch"),
+	event_name: Ok("workflow_dispatch"),
+	workflow_ref: Ok("acme/lib/.github/workflows/yank.yml@refs/heads/main"),
+	workflow_sha: Ok("89abcdef0123456789abcdef0123456789abcdef"),
+	job_workflow_ref: Ok("acme/lib/.github/workflows/yank.yml@refs/heads/main"),
+	run_id: Ok("77"),
+	run_attempt: Ok("1"),
+	actor_id: Ok("512345"),
+	runner_environment: Ok("github-hosted"),
+}
+
+Ran 18 tests in 268.0 ms.:
+    16 passed
+    2 failed
+    0 compiler errors
+All (7) tests passed in 158.2 ms.
+FAIL yank/tp8-token (987 ms)
+    request 10: status: expected 403, got 200
+    request 10: problem: content-type: expected "application/problem+json", got "application/json"
+    request 10: problem.type: expected "/errors/forbidden", got missing
+    request 10: problem.detail: expected "token claim event_name is \"push\", expected \"workflow_dispatch\"", got missing
+    request 10: problem.status: expected 200 (the HTTP status), got missing
+    request 11: status: expected 403, got 200
+    request 11: problem: content-type: expected "application/problem+json", got "application/json"
+    request 11: problem.type: expected "/errors/forbidden", got missing
+    request 11: problem.detail: expected "token claim event_name is \"release\", expected \"workflow_dispatch\"", got missing
+    request 11: problem.status: expected 200 (the HTTP status), got missing
+    request 15: json.release.yank_reason: expected "tag ref", got null
+    d1-calls: request 10: expected 1, got 2 (batch,batch)
+    d1-calls: request 15: expected 2, got 1 (batch)
+    db: @ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq: rows differ:
+      expected: ["1\t1\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"502\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\ttag ref\t1767225645000","1\t2\t1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"503\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225646000","1\t3\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"504\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225647000"]
+      got:      ["1\t1\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"push\",\"run_id\":\"77\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225640000","1\t2\t1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"503\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225646000","1\t3\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"504\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225647000"]
+PASS yank/yk1-route-checks (659 ms)
+PASS yank/yk1-yank-unyank (1398 ms)
+PASS yank/yk2-operator (790 ms)
+PASS yank/yk3-roles (862 ms)
+PASS yank/yk6-body (844 ms)
+PASS yank/yk7-reads (330 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 6 s, reset 0 s, cases 6 s
+w2: 6 passed, 1 failed

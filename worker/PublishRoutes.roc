@@ -56,8 +56,9 @@ PublishRoutes :: [].{
 		session = IngestRoutes.db.with_session!(Primary).map_err(IngestRoutes.fault)?
 		repo_id = Reads.repo_id(target.owner, target.repo)
 		label_stmt = Sql.stmt(IngestRoutes.label_sql_of(0), IngestRoutes.label_params(target))
-		first = session.batch!([label_stmt, Sql.stmt(IngestRoutes.repo_sql, [repo_id])]).map_err(IngestRoutes.fault)?
+		first = session.batch!([label_stmt, Sql.stmt(IngestRoutes.repo_sql, [repo_id]), IngestRoutes.reason_stmt(target)]).map_err(IngestRoutes.fault)?
 		rows = IngestRoutes.label_rows(first.first().map_err(|_| Fault("the pre-read gave no result"))?.all())?
+		reasons = IngestRoutes.checked_reasons(first, rows)?
 		old = IngestRoutes.old_row(first, 1, repo_id)?
 		now = Time.now_ms!()
 		github_repo = { repo: { id: ids.repository_id, owner_id: ids.owner_id, public: Bool.True }, full_name: claims.repository ?? target.name }
@@ -75,12 +76,12 @@ PublishRoutes :: [].{
 		have = { facts: !body.facts.is_empty(), events: done.has_events }
 		match Publish.after_read(target, rows, have).map_err(IngestRoutes.bad_row)? {
 			Conflict(problem) => Err(Refuse(problem))
-			Answer(release) => IngestRoutes.answer!(session, 200, release)
+			Answer(release) => IngestRoutes.answer!(session, 200, IngestRoutes.with_reason(reasons, release))
 			Write(_) => {
 				provenance = Sql.stmt(Publish.provenance_sql(), (form, target.column.version, target.column.version_text, claims_text, now))
 				stmts = [provenance].concat(done.stmts).concat(facts).append(label_stmt)
 				results = session.batch!(stmts).map_err(IngestRoutes.fault)?
-				IngestRoutes.dropping(IngestRoutes.answer!(session, 200, IngestRoutes.last_release(results)?), req, target, 200)
+				IngestRoutes.dropping(IngestRoutes.answer!(session, 200, IngestRoutes.with_reason(reasons, IngestRoutes.last_release(results)?)), req, target, 200)
 			}
 			Index => {
 				flow = {

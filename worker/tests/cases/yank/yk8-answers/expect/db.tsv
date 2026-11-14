@@ -1,0 +1,8 @@
+@ SELECT log_index, yanked FROM releases ORDER BY log_index
+1	1
+2	1
+@ SELECT release, via FROM provenance ORDER BY release, via
+1	0
+1	3
+2	0
+2	3

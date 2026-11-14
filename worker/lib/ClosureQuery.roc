@@ -162,9 +162,17 @@ ClosureQuery :: [].{
 	## `hints`: the hash in base58. `unknown`: `unknown_of`. `checked`: `Reads.checked_of_row(row, now_ms)`. `repos`: `Reads.repo_item_of_row`.
 	## A row that does not convert (a hash of other than 32 bytes, an unknown code, an `exposes` that is not a JSON array) is `Err(BadRow(text))`: 500 `internal`.
 	answer : ClosureQuery.Query, ClosureQuery.Rows, U64 -> Try(Str, [BadRow(Str)])
-	answer = |query, rows, now_ms| {
+	answer = |query, rows, now_ms| answer_by(query, rows, |all| Ok(all), now_ms)
+
+	## Slice 246 (R-AP49, R-YK7): `answer` with the reasons of the last yank of the yanked releases (the rows of `Reads.reasons_select`). `Rows` has no field for them (slice file 3.5), so they are a separate list.
+	answer_with : ClosureQuery.Query, ClosureQuery.Rows, List(Reads.ReasonRow), U64 -> Try(Str, [BadRow(Str)])
+	answer_with = |query, rows, reasons, now_ms| answer_by(query, rows, |all| Reads.with_reasons_checked(all, reasons), now_ms)
+
+	## `answer` with a step that sets the reasons of the records (Design Q627: `answer_with` refuses a yanked release with no row in `yanks`).
+	answer_by : ClosureQuery.Query, ClosureQuery.Rows, (List(Release.Row) -> Try(List(Release.Row), [BadRow(Str)])), U64 -> Try(Str, [BadRow(Str)])
+	answer_by = |query, rows, reasoned, now_ms| {
 		artifacts = rows.artifacts.map_try(|a| artifact_of(rows, a))?
-		all = rows.releases.map_try(Reads.release_of_row)?
+		all = reasoned(rows.releases.map_try(Reads.release_of_row)?)?
 		runs = rows.runs.map_try(run_of)?
 		nearest = rows.nearest.map_try(nearest_of)?
 		hints = rows.hints.map_try(hint_of)?

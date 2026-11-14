@@ -1,0 +1,13 @@
+All (18) tests passed in 279.3 ms.
+All (7) tests passed in 130.0 ms.
+PASS yank/tp8-token (1015 ms)
+PASS yank/yk1-route-checks (653 ms)
+FAIL yank/yk1-yank-unyank (1436 ms)
+    request 9: json_at releases.0.yanked: expected true, got false
+    request 9: json_at releases.0.yank_reason: expected "broken build", got null
+PASS yank/yk2-operator (851 ms)
+PASS yank/yk3-roles (926 ms)
+PASS yank/yk6-body (804 ms)
+PASS yank/yk7-reads (296 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 7 s, reset 0 s, cases 6 s
+w2: 6 passed, 1 failed

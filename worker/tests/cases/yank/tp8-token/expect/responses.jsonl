@@ -1,0 +1,17 @@
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated"}}
+{"status":404,"problem":{"type":"/errors/not-found","detail":"no release has the log index 999"}}
+{"status":404,"problem":{"type":"/errors/not-found","detail":"no release has the log index 3"}}
+{"status":404,"problem":{"type":"/errors/not-found"}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository is \"acme/other\", expected \"acme/lib\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_visibility is \"private\", expected \"public\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim event_name is \"push\", expected \"workflow_dispatch\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim event_name is \"release\", expected \"workflow_dispatch\""}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_id is \"12a\", expected a number"}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_owner_id is missing"}}
+{"status":403,"problem":{"type":"/errors/repository-changed","detail":"the name acme/lib is bound to another GitHub account (repository id 900)"},"json":{"issues_url":"https://github.com/roc-talon/talon/issues"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"release":{"log_index":1,"provenance":["ingest"],"hash":"3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.0.0","tag":"1.0.0","repo":"acme/lib","url":"https://github.com/acme/lib/releases/download/1.0.0/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg.tar.zst","published_at":1792497600000,"roc_version":null,"withdrawn":null,"yanked":true,"yank_reason":"tag ref"}}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"release":{"log_index":1,"provenance":["ingest"],"hash":"3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.0.0","tag":"1.0.0","repo":"acme/lib","url":"https://github.com/acme/lib/releases/download/1.0.0/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg.tar.zst","published_at":1792497600000,"roc_version":null,"withdrawn":null,"yanked":false,"yank_reason":null}}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"release":{"log_index":1,"provenance":["ingest"],"hash":"3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg","group":"github.com/acme/lib/releases/download/{v}/","series":"1","version":"1.0.0","tag":"1.0.0","repo":"acme/lib","url":"https://github.com/acme/lib/releases/download/1.0.0/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg.tar.zst","published_at":1792497600000,"roc_version":null,"withdrawn":null,"yanked":true,"yank_reason":null}}}

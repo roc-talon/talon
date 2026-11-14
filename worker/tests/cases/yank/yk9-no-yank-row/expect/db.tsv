@@ -1,0 +1,11 @@
+@ SELECT log_index, yanked FROM releases ORDER BY log_index
+1	1
+2	0
+@ SELECT count(*) FROM yanks
+0
+@ SELECT count(*) FROM compat
+0
+@ SELECT release, via, time FROM provenance ORDER BY release, via
+1	0	1767000000000
+1	3	1767000000000
+2	3	1767000000000

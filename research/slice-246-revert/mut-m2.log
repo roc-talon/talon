@@ -1,0 +1,43 @@
+
+── ✗ fail ───────────────────────────────────────── tests/unit/YankTest.roc:69:1
+
+expect {
+    verdict(Yank, Author, Live) == "change"
+        and verdict(Yank, Operator, Live) == "change"
+        and verdict(Unyank, Author, Yanked(Author)) == "change"
+        and verdict(Unyank, Operator, Yanked(Author)) == "change"
+        and verdict(Unyank, Operator, Yanked(Operator)) == "change"
+        and verdict(Unyank, Author, Yanked(Operator)) == "refuse 403"
+}
+
+
+── ✗ fail ───────────────────────────────────────── tests/unit/YankTest.roc:79:1
+
+expect {
+    Yank.decide(Unyank, Author, Yanked(Operator)) == Refuse(Problem.new(Forbidden, "the release is yanked by the operator: only the operator can remove this yank"))
+}
+
+Ran 18 tests in 236.8 ms.:
+    16 passed
+    2 failed
+    0 compiler errors
+All (7) tests passed in 135.2 ms.
+PASS yank/tp8-token (1143 ms)
+PASS yank/yk1-route-checks (806 ms)
+PASS yank/yk1-yank-unyank (1510 ms)
+PASS yank/yk2-operator (828 ms)
+FAIL yank/yk3-roles (1021 ms)
+    request 3: status: expected 403, got 200
+    request 3: problem: content-type: expected "application/problem+json", got "application/json"
+    request 3: problem.type: expected "/errors/forbidden", got missing
+    request 3: problem.detail: expected "the release is yanked by the operator: only the operator can remove this yank", got missing
+    request 3: problem.status: expected 200 (the HTTP status), got missing
+    d1-calls: request 3: expected 1, got 2 (batch,batch)
+    d1-calls: request 4: expected 2, got 1 (batch)
+    db: @ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq: rows differ:
+      expected: ["1\t1\t0\t1\t\\N\tsecurity\t1767225631000","1\t2\t1\t1\t\\N\t\\N\t1767225634000","1\t3\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"403\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\tauthor reason\t1767225635000","1\t4\t1\t1\t\\N\t\\N\t1767225637000","4\t1\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"405\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\tmine\t1767225639000","4\t2\t1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"405\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225640000"]
+      got:      ["1\t1\t0\t1\t\\N\tsecurity\t1767225631000","1\t2\t1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"402\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225633000","1\t3\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"403\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\tauthor reason\t1767225635000","1\t4\t1\t1\t\\N\t\\N\t1767225637000","4\t1\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"405\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\tmine\t1767225639000","4\t2\t1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"405\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225640000"]
+PASS yank/yk6-body (936 ms)
+PASS yank/yk7-reads (357 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 6 s, reset 0 s, cases 7 s
+w2: 6 passed, 1 failed

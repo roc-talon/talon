@@ -1,0 +1,4 @@
+@ SELECT log_index, yanked FROM releases ORDER BY log_index
+1	1
+@ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq
+1	1	0	1	\N	r	1767225635000

@@ -11,11 +11,13 @@ package
 		Compat,
 		Id,
 		Index,
+		Move,
 		Problem,
 		Release,
 		Short,
 		Sorted,
 		Toolchain,
 		Work,
+		Yank,
 	]
 	{}

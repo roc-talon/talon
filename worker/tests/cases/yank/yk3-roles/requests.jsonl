@@ -1,0 +1,10 @@
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"security"},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225631000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"mine"},"token":"au1","now":1767225632000}
+{"method":"DELETE","path":"/v1/releases/1/yank","token":"au2","now":1767225633000}
+{"method":"DELETE","path":"/v1/releases/1/yank","headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225634000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"author reason"},"token":"au3","now":1767225635000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{"reason":"late"},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225636000}
+{"method":"DELETE","path":"/v1/releases/1/yank","headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225637000}
+{"method":"PUT","path":"/v1/releases/4/yank","json":{"reason":"x"},"token":"au4","now":1767225638000}
+{"method":"PUT","path":"/v1/releases/4/yank","json":{"reason":"mine"},"token":"b1","now":1767225639000}
+{"method":"DELETE","path":"/v1/releases/4/yank","token":"b1","now":1767225640000}

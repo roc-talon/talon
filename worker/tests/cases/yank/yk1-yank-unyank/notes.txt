@@ -1,0 +1,19 @@
+1: before: the group read
+2: before: the group and series read
+3: before: the repository read
+4: before: the artifact read
+5: PUT with a reason, an author token (workflow_dispatch, a branch ref): 200, yanked, the reason, 2 D1 calls
+6: (wait 300 ms: the cache drop after the answer)
+7: after the yank (R-YK7: the 4 keys of R-AP69 are dropped): the group read
+8: after the yank (R-YK7: the 4 keys of R-AP69 are dropped): the group and series read
+9: after the yank (R-YK7: the 4 keys of R-AP69 are dropped): the repository read
+10: after the yank (R-YK7: the 4 keys of R-AP69 are dropped): the artifact read
+11: PUT again with another reason: 200, nothing changes (the reason stays), 1 D1 call, no row
+12: DELETE: 200, not yanked, the reason is null, 2 D1 calls
+13: (wait 300 ms: the cache drop after the answer)
+14: after the unyank (R-YK7: a DELETE drops the 4 keys too): the group read
+15: after the unyank (R-YK7: a DELETE drops the 4 keys too): the group and series read
+16: after the unyank (R-YK7: a DELETE drops the 4 keys too): the repository read
+17: after the unyank (R-YK7: a DELETE drops the 4 keys too): the artifact read
+18: DELETE again: 200, nothing changes, 1 D1 call, no row
+19: PUT with {} (no reason is valid, R-YK6): 200, yanked, reason null, 2 D1 calls

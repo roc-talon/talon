@@ -1,0 +1,6 @@
+Slice 247b, case t4-move-guard (W1 on node:sqlite and on local D1). Q247-11, R-AP31, R-RE11, R-RE15, R-AP41.
+  A move reads the old row (`state_at`, `successor`) in the first D1 call and writes in the second call (R-AP41: 2 calls). Another move can write between the two calls.
+  The W2 runner has a hook only on the fetches of GitHub. It cannot write between the two D1 calls of a request. So this case tests the guarded statement in W1.
+  The statements here are a COPY of the statements of worker/MoveRoutes.roc (`move!`) and of IngestRoutes.event_stmt. If the code changes them, this case must change with them.
+  Rule: the UPDATE changes 0 rows when `state_at` or `successor` is not the value that the read saw, or when the successor row is not active. The event row of the same batch is then not written (`WHERE changes() > 0`).
+  The code maps 0 changed rows to 422 successor-mismatch with the check Index (that part is in W0, worker/tests/unit/MoveTest.roc).

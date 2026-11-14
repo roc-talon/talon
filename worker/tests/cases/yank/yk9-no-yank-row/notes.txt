@@ -1,0 +1,11 @@
+1: control: a release that is not yanked is read as before (series 2)
+2: R-AP13: release 1 is yanked and has no yanks row: 500 internal
+3: R-AP1: the repository answer holds release 1: 500
+4: R-AP2: the artifact of release 1: 500
+5: R-AP14: the page that holds release 1: 500
+6: R-AP17: the closure with release 1: 500
+7: ingest of the label of release 1 (it has the ingest row): the answer would hold the release: 500, 1 D1 call
+8: publish with no facts, the label has the oidc row: 500, 1 D1 call
+9: operator DELETE of the release: 500, 1 D1 call, nothing written
+10: operator PUT of the release: 500, 1 D1 call
+11: publish with one fact for label 1 (the write path): refused at the first batch, 500, 1 D1 call, nothing written (Q246b-1, Design Q627 item 3)

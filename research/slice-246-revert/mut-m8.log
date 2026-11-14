@@ -1,0 +1,16 @@
+All (18) tests passed in 274.2 ms.
+All (7) tests passed in 158.2 ms.
+PASS yank/tp8-token (964 ms)
+PASS yank/yk1-route-checks (652 ms)
+PASS yank/yk1-yank-unyank (1408 ms)
+FAIL yank/yk2-operator (814 ms)
+    request 7: status: expected 401, got 200
+    request 7: problem: content-type: expected "application/problem+json", got "application/json"
+    request 7: problem.type: expected "/errors/unauthenticated", got missing
+    request 7: problem.status: expected 200 (the HTTP status), got missing
+    d1-calls: request 7: expected 0, got 1 (batch)
+PASS yank/yk3-roles (856 ms)
+PASS yank/yk6-body (821 ms)
+PASS yank/yk7-reads (366 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 11 s, reset 0 s, cases 6 s
+w2: 6 passed, 1 failed

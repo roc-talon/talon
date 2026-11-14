@@ -1,0 +1,5 @@
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"release":{"log_index":1,"yanked":true,"yank_reason":"broken build"}}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"release":{"log_index":2,"yanked":true,"yank_reason":"second"}}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"release":{"log_index":2,"yanked":true,"yank_reason":"second"}}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"release":{"log_index":1,"yanked":true,"yank_reason":"broken build"}}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"release":{"log_index":1,"yanked":true,"yank_reason":"broken build"}}}

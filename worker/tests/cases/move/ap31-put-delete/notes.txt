@@ -1,0 +1,8 @@
+1: PUT with the token of the successor (the owner id of the old row): no successor yet, so 201. The row is moved, the successor is the new name, state_at is the clock. D1 calls: the read and the write batch.
+2: The same PUT again: the successor is the current one, so 200, nothing is written (no event, state_at stays). One D1 call.
+3: R-AP1 read of the old name: its `repos` item is moved with the successor (R-AP32, R-PU28).
+4: R-AP33, R-PU29: the short name roc-json matches 2 names: the old name is replaced by the end of its chain, so there is one match, acme/roc-json, moved from olduser/roc-json.
+5: PUT of another successor (the token of acme/second): the old row has a successor, so the answer is 200 and the successor changes, state_at is the new clock. 2 D1 calls.
+6: The read again, with Cache-Control: no-cache (R-AP43): the successor is acme/second.
+7: DELETE with the token of the successor (acme/second, any owner id): the successor is removed, 200, the answer has successor null. 2 D1 calls. (The state after the removal is Q247-2: not in the case.)
+8: DELETE again, now with the token of the old repository: no successor, so 200 and nothing is written (1 D1 call).

@@ -1,0 +1,8 @@
+@ SELECT repo, state, successor, state_at FROM repos ORDER BY repo
+1	2	3	2700
+2	0	\N	1000
+3	0	\N	1000
+4	1	\N	1000
+@ SELECT repo, seq, action, successor, time FROM repo_events ORDER BY repo, seq
+1	1	6	2	2000
+1	2	6	3	2700

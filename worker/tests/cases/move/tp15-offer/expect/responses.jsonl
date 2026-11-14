@@ -1,0 +1,5 @@
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_owner_id is \"40\": it is not the owner of olduser/roc-json, and olduser/roc-json has no offer for newowner/roc-json"}}
+{"status":202,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"active","successor":null,"state_at":1767000000000}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository is \"third/lib\": it is not olduser/roc-json and it is not newowner/roc-json"}}
+{"status":403,"problem":{"type":"/errors/forbidden","detail":"token claim repository_owner_id is \"50\": it is not the owner of olduser/roc-json, and olduser/roc-json has no offer for third/lib"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"newowner/roc-json","state_at":1767225635000}}

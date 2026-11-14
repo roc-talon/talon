@@ -1,0 +1,7 @@
+{"status":422,"problem":{"type":"/errors/successor-mismatch","detail":"the successor olduser/roc-json fails the Chain check: the successor chain from the successor comes back to the old name"}}
+{"status":422,"problem":{"type":"/errors/successor-mismatch","detail":"the successor not a name fails the Index check: it needs a github.com name with a repos row in the state active and at least one release that is a candidate"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"newowner/roc-json","state_at":1767225632000}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"newowner/roc-json","state_at":1767225632000}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token is not a valid JWT"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store"},"headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","successor":null,"state_at":1767225635000}}
+{"status":200,"json":{"name":"olduser/roc-json","successor":null}}

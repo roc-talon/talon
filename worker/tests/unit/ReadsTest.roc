@@ -79,10 +79,10 @@ chk1 : Reads.CheckedItem
 chk1 = { name: "roc-lang/unicode", checked_at: Ok(1700000000000), stale: Bool.False }
 
 rp1 : Reads.RepoItem
-rp1 = { name: "roc-lang/unicode", state: Active, successor: Err(None), state_at: 1699999000000 }
+rp1 = { name: "roc-lang/unicode", state: Active, successor: Err(None), state_at: 1699999000000, owner_changed: Err(None) }
 
 rp2 : Reads.RepoItem
-rp2 = { name: "roc-lang/moved", state: Moved, successor: Ok("roc-lang/unicode"), state_at: 1699999500000 }
+rp2 = { name: "roc-lang/moved", state: Moved, successor: Ok("roc-lang/unicode"), state_at: 1699999500000, owner_changed: Err(None) }
 
 art1_rows : { artifact : Reads.ArtifactRow, deps : List(Reads.DepRow), target_names : List(Str) }
 art1_rows = { artifact: { hash: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31], kind: 1, exposed_json: "[\"Unicode\",\"Utf\"]", platform_hash: Err(Missing), roc_pin: Err(Missing), size: 12345 }, deps: [{ alias: "b", hash: [255, 254, 253, 252, 251, 250, 249, 248, 247, 246, 245, 244, 243, 242, 241, 240, 239, 238, 237, 236, 235, 234, 233, 232, 231, 230, 229, 228, 227, 226, 225, 224], form: Ok("github.com/roc-lang/unicode/releases/download/v{v}/"), version: Ok("-9222246132652900353"), version_text: Ok(""), url: "https://github.com/roc-lang/unicode/releases/download/v4.1.0/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3.tar.zst", is_platform: Bool.True }, { alias: "a", hash: [7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7], form: Ok("github.com/roc-lang/unicode/releases/download/{v}/"), version: Ok("-9223371929480462337"), version_text: Ok(""), url: "https://github.com/roc-lang/unicode/releases/download/0.25.1/US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx.tar.zst", is_platform: Bool.False }], target_names: [] }
@@ -103,20 +103,20 @@ art3 : Artifact.Row
 art3 = { hash: "EWmDvi3hhz86LYi2NcD6YUp18DeeB5gDkwJzde3MgF9A", kind: App, exposed: [], platform_hash: Ok("cGfHiC6Kgg3FpFZvgwGcswsCRtp4aBP2fzuXRQPizuN"), roc_pin: Err(None), size: 7, deps: [], target_names: [] }
 
 body_rel : Str
-body_rel = "{\"releases\":[{\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE\",\"log_index\":2,\"provenance\":[\"oidc\",\"ingest\"],\"published_at\":1700000000000,\"repo\":\"roc-lang/unicode\",\"roc_version\":\"0.1.0\",\"series\":\"4\",\"tag\":\"4.2.0\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/4.2.0/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE.tar.zst\",\"version\":\"4.2.0\",\"withdrawn\":null,\"yank_reason\":null,\"yanked\":false},{\"group\":\"example.com/pkg/{v}/\",\"hash\":\"JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3\",\"log_index\":5,\"provenance\":[\"webhook\"],\"published_at\":1700000100000,\"repo\":null,\"roc_version\":null,\"series\":\"0.25\",\"tag\":null,\"url\":\"https://example.com/pkg/0.25.1/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3.tar.zst\",\"version\":\"0.25.1\",\"withdrawn\":\"edited\",\"yank_reason\":null,\"yanked\":true}],\"checked\":{\"checked_at\":1700000000000,\"name\":\"roc-lang/unicode\",\"stale\":false},\"repos\":[{\"name\":\"roc-lang/moved\",\"state\":\"moved\",\"state_at\":1699999500000,\"successor\":\"roc-lang/unicode\"},{\"name\":\"roc-lang/unicode\",\"state\":\"active\",\"state_at\":1699999000000,\"successor\":null}]}"
+body_rel = "{\"releases\":[{\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE\",\"log_index\":2,\"provenance\":[\"oidc\",\"ingest\"],\"published_at\":1700000000000,\"repo\":\"roc-lang/unicode\",\"roc_version\":\"0.1.0\",\"series\":\"4\",\"tag\":\"4.2.0\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/4.2.0/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE.tar.zst\",\"version\":\"4.2.0\",\"withdrawn\":null,\"yank_reason\":null,\"yanked\":false},{\"group\":\"example.com/pkg/{v}/\",\"hash\":\"JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3\",\"log_index\":5,\"provenance\":[\"webhook\"],\"published_at\":1700000100000,\"repo\":null,\"roc_version\":null,\"series\":\"0.25\",\"tag\":null,\"url\":\"https://example.com/pkg/0.25.1/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3.tar.zst\",\"version\":\"0.25.1\",\"withdrawn\":\"edited\",\"yank_reason\":null,\"yanked\":true}],\"checked\":{\"checked_at\":1700000000000,\"name\":\"roc-lang/unicode\",\"stale\":false},\"repos\":[{\"name\":\"roc-lang/moved\",\"owner_changed\":null,\"state\":\"moved\",\"state_at\":1699999500000,\"successor\":\"roc-lang/unicode\"},{\"name\":\"roc-lang/unicode\",\"owner_changed\":null,\"state\":\"active\",\"state_at\":1699999000000,\"successor\":null}]}"
 
 body_null : Str
 body_null = "{\"releases\":[],\"checked\":null,\"repos\":[]}"
 
 body_page : Str
-body_page = "{\"releases\":[{\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx\",\"log_index\":9,\"provenance\":[\"oidc\",\"webhook\",\"poll\",\"ingest\"],\"published_at\":1700000200000,\"repo\":\"roc-lang/unicode\",\"roc_version\":null,\"series\":\"70000\",\"tag\":\"70000.1.2\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/70000.1.2/US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx.tar.zst\",\"version\":\"70000.1.2\",\"withdrawn\":null,\"yank_reason\":null,\"yanked\":false}],\"repos\":[{\"name\":\"roc-lang/unicode\",\"state\":\"active\",\"state_at\":1699999000000,\"successor\":null}]}"
+body_page = "{\"releases\":[{\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx\",\"log_index\":9,\"provenance\":[\"oidc\",\"webhook\",\"poll\",\"ingest\"],\"published_at\":1700000200000,\"repo\":\"roc-lang/unicode\",\"roc_version\":null,\"series\":\"70000\",\"tag\":\"70000.1.2\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/70000.1.2/US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx.tar.zst\",\"version\":\"70000.1.2\",\"withdrawn\":null,\"yank_reason\":null,\"yanked\":false}],\"repos\":[{\"name\":\"roc-lang/unicode\",\"owner_changed\":null,\"state\":\"active\",\"state_at\":1699999000000,\"successor\":null}]}"
 
 body_page0 : Str
 body_page0 = "{\"releases\":[],\"repos\":[]}"
 
 # R-AP2, R-AP49, R-AP81: the dep `b` of the package carries the platform mark (`is_platform` after `hash`), the dep `a` does not.
 body_art : Str
-body_art = "{\"artifact\":{\"deps\":[{\"alias\":\"a\",\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx\",\"is_platform\":false,\"series\":\"0.25\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/0.25.1/US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx.tar.zst\",\"version\":\"0.25.1\"},{\"alias\":\"b\",\"group\":\"github.com/roc-lang/unicode/releases/download/v{v}/\",\"hash\":\"JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3\",\"is_platform\":true,\"series\":\"4\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/v4.1.0/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3.tar.zst\",\"version\":\"4.1.0\"}],\"exposed\":[\"Unicode\",\"Utf\"],\"hash\":\"1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE\",\"kind\":\"package\",\"platform_hash\":null,\"roc_pin\":null,\"size\":12345,\"target_names\":[]},\"releases\":[{\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE\",\"log_index\":2,\"provenance\":[\"oidc\",\"ingest\"],\"published_at\":1700000000000,\"repo\":\"roc-lang/unicode\",\"roc_version\":\"0.1.0\",\"series\":\"4\",\"tag\":\"4.2.0\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/4.2.0/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE.tar.zst\",\"version\":\"4.2.0\",\"withdrawn\":null,\"yank_reason\":null,\"yanked\":false}],\"repos\":[{\"name\":\"roc-lang/unicode\",\"state\":\"active\",\"state_at\":1699999000000,\"successor\":null}]}"
+body_art = "{\"artifact\":{\"deps\":[{\"alias\":\"a\",\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx\",\"is_platform\":false,\"series\":\"0.25\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/0.25.1/US517G5965aydkZ46HS38QLi7UQiSojurfbQfKCELFx.tar.zst\",\"version\":\"0.25.1\"},{\"alias\":\"b\",\"group\":\"github.com/roc-lang/unicode/releases/download/v{v}/\",\"hash\":\"JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3\",\"is_platform\":true,\"series\":\"4\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/v4.1.0/JEJUoGfGEPTZ1XTwN39dYdFxYxDiDaSKVNy5qYWJmZt3.tar.zst\",\"version\":\"4.1.0\"}],\"exposed\":[\"Unicode\",\"Utf\"],\"hash\":\"1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE\",\"kind\":\"package\",\"platform_hash\":null,\"roc_pin\":null,\"size\":12345,\"target_names\":[]},\"releases\":[{\"group\":\"github.com/roc-lang/unicode/releases/download/{v}/\",\"hash\":\"1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE\",\"log_index\":2,\"provenance\":[\"oidc\",\"ingest\"],\"published_at\":1700000000000,\"repo\":\"roc-lang/unicode\",\"roc_version\":\"0.1.0\",\"series\":\"4\",\"tag\":\"4.2.0\",\"url\":\"https://github.com/roc-lang/unicode/releases/download/4.2.0/1thX6LZfHDZZKUs92febYZhYRcXddmzfzF2NvTkPNE.tar.zst\",\"version\":\"4.2.0\",\"withdrawn\":null,\"yank_reason\":null,\"yanked\":false}],\"repos\":[{\"name\":\"roc-lang/unicode\",\"owner_changed\":null,\"state\":\"active\",\"state_at\":1699999000000,\"successor\":null}]}"
 
 etag_page0 : Str
 etag_page0 = "\"d7b14e00f753650245fd6bbf5b96048b\""
@@ -367,11 +367,11 @@ expect {
 
 # R-AP32: the repos item from a repos row.
 expect {
-	row = |state, successor| Reads.repo_item_of_row({ name: "roc-lang/unicode", state, successor, state_at: 5 })
+	row = |state, successor| Reads.repo_item_of_row({ name: "roc-lang/unicode", state, successor, state_at: 5, owner_action: Err(Missing), owner_at: Err(Missing) })
 	bad = [row(3, Err(Missing)), row(-1, Err(Missing))].map(|r| r.is_err())
-	(row(0, Err(Missing)) == Ok({ name: "roc-lang/unicode", state: Active, successor: Err(None), state_at: 5 }))
-		and (row(1, Err(Missing)) == Ok({ name: "roc-lang/unicode", state: Missing, successor: Err(None), state_at: 5 }))
-		and (row(2, Ok("roc-lang/moved")) == Ok({ name: "roc-lang/unicode", state: Moved, successor: Ok("roc-lang/moved"), state_at: 5 }))
+	(row(0, Err(Missing)) == Ok({ name: "roc-lang/unicode", state: Active, successor: Err(None), state_at: 5, owner_changed: Err(None) }))
+		and (row(1, Err(Missing)) == Ok({ name: "roc-lang/unicode", state: Missing, successor: Err(None), state_at: 5, owner_changed: Err(None) }))
+		and (row(2, Ok("roc-lang/moved")) == Ok({ name: "roc-lang/unicode", state: Moved, successor: Ok("roc-lang/moved"), state_at: 5, owner_changed: Err(None) }))
 		and (bad == [Bool.True, Bool.True])
 }
 
@@ -475,4 +475,28 @@ expect {
 	none = { ..rr2, vias: Err(Missing) }
 	page = [rr1, none, rr3].map_try(Reads.release_of_row)
 	(Reads.provenance_of(Err(Missing)) == Ok([])) and (Reads.release_of_row(none) == Ok({ ..er2, provenance: [] })) and page == Ok([er1, { ..er2, provenance: [] }, er3])
+}
+
+# ---- slice 247b (docs/slices/247-move.md section 10): the member `owner_changed` of the repos item (R-AP32, R-PU30, Design Q626) ----
+# `owner_changed_of`: the columns `action` (1 transfer, 3 recreate) and `time` of the last event of the repo. No column, or NULL for both: none.
+expect Reads.owner_changed_of(Err(Missing), Err(Missing)) == Ok(Err(None))
+expect Reads.owner_changed_of(Ok(1), Ok(1767225630000)) == Ok(Ok({ action: Transfer, at: 1767225630000 }))
+expect Reads.owner_changed_of(Ok(3), Ok(1767100000000)) == Ok(Ok({ action: Recreate, at: 1767100000000 }))
+# A row with one column only, and an action that is not 1 or 3 (R-RE15: bind 0, rename 2, missing 4, found 5, ...), is a bad row (500, R-AP48).
+expect {
+	is_bad = |got| match got {
+		Err(BadRow(_)) => Bool.True
+		_ => Bool.False
+	}
+	is_bad(Reads.owner_changed_of(Ok(1), Err(Missing))) and is_bad(Reads.owner_changed_of(Err(Missing), Ok(5))) and is_bad(Reads.owner_changed_of(Ok(0), Ok(5))) and is_bad(Reads.owner_changed_of(Ok(2), Ok(5)))
+		and is_bad(Reads.owner_changed_of(Ok(4), Ok(5))) and is_bad(Reads.owner_changed_of(Ok(5), Ok(5))) and is_bad(Reads.owner_changed_of(Ok(6), Ok(5))) and is_bad(Reads.owner_changed_of(Ok(9), Ok(5))) and is_bad(Reads.owner_changed_of(Ok(-1), Ok(5)))
+}
+
+# `repo_item_of_row` gives the member from the 2 columns, with the other members as before. A bad action is a bad row.
+expect {
+	row = |action, at| Reads.repo_item_of_row({ name: "a/b", state: 2, successor: Ok("c/d"), state_at: 5, owner_action: action, owner_at: at })
+	(row(Ok(1), Ok(1767225630000)) == Ok({ name: "a/b", state: Moved, successor: Ok("c/d"), state_at: 5, owner_changed: Ok({ action: Transfer, at: 1767225630000 }) }))
+		and (row(Ok(3), Ok(1767100000000)) == Ok({ name: "a/b", state: Moved, successor: Ok("c/d"), state_at: 5, owner_changed: Ok({ action: Recreate, at: 1767100000000 }) }))
+		and (row(Err(Missing), Err(Missing)) == Ok({ name: "a/b", state: Moved, successor: Ok("c/d"), state_at: 5, owner_changed: Err(None) }))
+		and row(Ok(2), Ok(5)).is_err()
 }

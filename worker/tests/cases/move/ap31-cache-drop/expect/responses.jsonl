@@ -1,0 +1,4 @@
+{"status":200,"json_at":{"repos.0.state":"active","repos.0.successor":null}}
+{"status":200,"json_at":{"repos.0.state":"active"}}
+{"status":201,"headers":{"content-type":"application/json","cache-control":"no-store"},"d1_session":"first-primary","headers_set":["talon-bookmark"],"json":{"name":"olduser/roc-json","state":"moved","successor":"acme/roc-json","state_at":1767225630000}}
+{"status":200,"json_at":{"repos.0.state":"moved","repos.0.successor":"acme/roc-json"}}

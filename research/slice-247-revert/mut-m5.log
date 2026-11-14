@@ -1,0 +1,6 @@
+FAIL move/tp15-offer (554 ms)
+    db: @ SELECT n.value, r.repository_id, r.repository_owner_id, (SELECT s.value FROM names s WHERE s.id = r.successor), (SELECT o.value FROM names o WHERE o.id = r.offer), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value: rows differ:
+      expected: ["newowner/roc-json\t400\t40\t\\N\t\\N\t1767000000000\t1767000000000","olduser/roc-json\t100\t10\tnewowner/roc-json\t\\N\t1767225635000\t1767000000000","third/lib\t500\t50\t\\N\t\\N\t1767000000000\t1767000000000"]
+      got:      ["newowner/roc-json\t400\t40\t\\N\t\\N\t1767000000000\t1767000000000","olduser/roc-json\t100\t10\tnewowner/roc-json\tnewowner/roc-json\t1767225635000\t1767000000000","third/lib\t500\t50\t\\N\t\\N\t1767000000000\t1767000000000"]
+w2 pool: 1 apps started, 0 resets, 1 cases; time of the jobs added: start 1 s, reset 0 s, cases 1 s
+w2: 0 passed, 1 failed

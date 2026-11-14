@@ -1,0 +1,13 @@
+1: The old name has no repos row: 404. (It reads the token first: this request fills the JWKS memo, so the next requests do not depend on the order of the body check and the token check, Q247-1.)
+2: DELETE of a name with no repos row: 404.
+3: The body is not JSON: 400.
+4: The body is a JSON object with no name: 400.
+5: The name is null: 400.
+6: The name is a number: 400.
+7: The body is a JSON list: 400.
+8: A PUT with no body: 400.
+9: A body larger than 256 KB: 413 too-large, field body, limit 262144, no D1 call.
+10: A body with another media type (text/plain): 415 before the handler.
+11: POST on the route: 405 with Allow: DELETE, PUT.
+12: GET on the route: 405 with Allow: DELETE, PUT.
+13: A path with an extra part: 404.

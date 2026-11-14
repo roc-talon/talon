@@ -1,0 +1,35 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), (SELECT o.value FROM names o WHERE o.id = r.offer), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+chk/both	307	10	0	\N	\N	1767000000000	1767000000000
+chk/exposes	306	10	0	\N	\N	1767000000000	1767000000000
+chk/kind	305	10	0	\N	\N	1767000000000	1767000000000
+chk/missing	301	10	1	\N	\N	1767000000000	1767000000000
+chk/moved	302	10	2	acme/roc-json	\N	1767000000000	1767000000000
+chk/newest	308	10	0	\N	\N	1767000000000	1767000000000
+chk/withdrawn	304	10	0	\N	\N	1767000000000	1767000000000
+chk/yanked	303	10	0	\N	\N	1767000000000	1767000000000
+olduser/roc-json	100	10	2	chk/newest	\N	1767225630000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+chk/both	1	0	\N	307	\N	10	\N	\N	1767000000000
+chk/exposes	1	0	\N	306	\N	10	\N	\N	1767000000000
+chk/kind	1	0	\N	305	\N	10	\N	\N	1767000000000
+chk/missing	1	0	\N	301	\N	10	\N	\N	1767000000000
+chk/moved	1	0	\N	302	\N	10	\N	\N	1767000000000
+chk/newest	1	0	\N	308	\N	10	\N	\N	1767000000000
+chk/withdrawn	1	0	\N	304	\N	10	\N	\N	1767000000000
+chk/yanked	1	0	\N	303	\N	10	\N	\N	1767000000000
+olduser/roc-json	1	0	\N	100	\N	10	\N	\N	1767000000000
+olduser/roc-json	2	6	100	100	10	10	chk/newest	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"workflow_dispatch","run_id":"908","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	1767225630000
+@ SELECT log_index, yanked, withdrawn FROM releases ORDER BY log_index
+1	0	\N
+2	0	\N
+3	0	repo-missing
+4	0	\N
+5	1	\N
+6	0	deleted
+7	0	\N
+8	0	\N
+9	0	\N
+10	0	\N
+11	0	\N
+12	1	\N
+13	0	\N

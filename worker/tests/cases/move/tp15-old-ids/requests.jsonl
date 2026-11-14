@@ -1,0 +1,4 @@
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"token":"t-stranger","now":1767225630000}
+{"method":"DELETE","path":"/v1/packages/olduser/gone2/successor","headers":{"user-agent":"tln/0.5.0"},"token":"t-stranger2","now":1767225630000}
+{"method":"PUT","path":"/v1/packages/olduser/roc-json/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"token":"t-sameowner","now":1767225631000}
+{"method":"PUT","path":"/v1/packages/olduser/other/successor","headers":{"user-agent":"tln/0.5.0"},"json":{"name":"acme/roc-json"},"token":"t-samerepo","now":1767225632000}

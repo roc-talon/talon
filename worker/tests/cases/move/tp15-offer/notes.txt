@@ -1,0 +1,5 @@
+1: The successor is in another account (owner id 40) and there is no offer: 403.
+2: The token of the old repository (state active): an offer. 202, the answer is the row of the old name: still active, no successor, state_at unchanged. 2 D1 calls.
+3: A third account cannot use the offer: 403 (not the old repository, not the offered name).
+4: The third account names itself: the offer is for another name, so 403.
+5: The offered successor accepts with its own token (owner id 40): the move is done, 201, the offer is cleared.

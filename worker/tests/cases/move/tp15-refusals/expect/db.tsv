@@ -1,0 +1,12 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), (SELECT o.value FROM names o WHERE o.id = r.offer), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/other	202	10	0	\N	\N	1767000000000	1767000000000
+acme/roc-json	200	10	0	\N	\N	1767000000000	1767000000000
+olduser/gone	150	10	2	acme/roc-json	\N	1767000000000	1767000000000
+olduser/roc-json	100	10	0	\N	\N	1767000000000	1767000000000
+third/lib	300	30	0	\N	\N	1767000000000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/other	1	0	\N	202	\N	10	\N	\N	1767000000000
+acme/roc-json	1	0	\N	200	\N	10	\N	\N	1767000000000
+olduser/gone	1	0	\N	150	\N	10	\N	\N	1767000000000
+olduser/roc-json	1	0	\N	100	\N	10	\N	\N	1767000000000
+third/lib	1	0	\N	300	\N	30	\N	\N	1767000000000

@@ -1,0 +1,40 @@
+
+── ✗ fail ──────────────────────────────────────── tests/unit/YankTest.roc:226:1
+
+expect {
+    Yank.binding(ids(900, 9100), Err(NoRow)) == Ok({})
+        and Yank.binding(ids(900, 9100), Ok(ids(900, 9100))) == Ok({})
+        and Yank.binding(ids(900, 777), Ok(ids(900, 9100))) == Ok({})
+        and Yank.binding(ids(1, 9100), Ok(ids(900, 9100))) == Ok({})
+        and Yank.binding(ids(1, 2), Ok(ids(900, 9100))) == Err(Changed)
+}
+
+Ran 18 tests in 280.1 ms.:
+    17 passed
+    1 failed
+    0 compiler errors
+All (7) tests passed in 129.5 ms.
+FAIL yank/tp8-token (930 ms)
+    request 16: status: expected 200, got 403
+    request 16: header talon-bookmark: expected a value, got none
+    request 16: header content-type: expected "application/json", got "application/problem+json"
+    request 16: header cache-control: expected "no-store", got null
+    request 16: json.release: expected an object, got missing
+    request 17: status: expected 200, got 403
+    request 17: header talon-bookmark: expected a value, got none
+    request 17: header content-type: expected "application/json", got "application/problem+json"
+    request 17: header cache-control: expected "no-store", got null
+    request 17: json.release: expected an object, got missing
+    d1-calls: request 16: expected 2, got 1 (batch)
+    d1-calls: request 17: expected 2, got 1 (batch)
+    db: @ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq: rows differ:
+      expected: ["1\t1\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"502\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\ttag ref\t1767225645000","1\t2\t1\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"503\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225646000","1\t3\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"504\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\t\\N\t1767225647000"]
+      got:      ["1\t1\t0\t0\t{\"workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"workflow_sha\":\"89abcdef0123456789abcdef0123456789abcdef\",\"job_workflow_ref\":\"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0\",\"event_name\":\"workflow_dispatch\",\"run_id\":\"502\",\"run_attempt\":\"1\",\"actor_id\":\"512345\",\"runner_environment\":\"github-hosted\"}\ttag ref\t1767225645000"]
+PASS yank/yk1-route-checks (674 ms)
+PASS yank/yk1-yank-unyank (1240 ms)
+PASS yank/yk2-operator (835 ms)
+PASS yank/yk3-roles (842 ms)
+PASS yank/yk6-body (825 ms)
+PASS yank/yk7-reads (328 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 6 s, reset 0 s, cases 6 s
+w2: 6 passed, 1 failed

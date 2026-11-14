@@ -1,0 +1,5 @@
+1: ingest of a yanked label with the same hash: 200 with the reason in the first D1 batch: 1 D1 call (Q246-11)
+2: ingest of the label of release 2 (the reason of the last yank): 200, 1 D1 call
+3: publish with no facts, label with the oidc row: 200 from the pre-read, 1 D1 call
+4: publish with a fact, label that has only the ingest row: the write batch, 2 D1 calls (not 3), the reason in the answer
+5: the same publish again: 200 with the reason, 2 D1 calls (a repeat with facts writes again, as slice 114)

@@ -1,0 +1,6 @@
+@ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq
+7	1	0	0	{"run_id":"1"}	broken	1790000000000
+7	2	1	1	\N	\N	1790000000001
+8	1	0	1	\N	\N	1790000000002
+@ SELECT COALESCE(MAX(seq), 0) + 1 FROM yanks WHERE release = 7
+3

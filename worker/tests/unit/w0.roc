@@ -9,6 +9,7 @@ import IdentityTest
 import IngestTest
 import IngestLimitsTest
 import LoginTest
+import MoveTest
 import CompatTest
 import CompatReadsTest
 import DailyTest
@@ -24,5 +25,6 @@ import ShortsTest
 import ToolchainsTest
 import VersionTest
 import WebhookTest
+import YankTest
 
 main! = |_args| Ok({})

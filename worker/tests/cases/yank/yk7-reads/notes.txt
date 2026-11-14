@@ -1,0 +1,7 @@
+1: R-AP13 series 1: the release 1 is yanked with its reason
+2: R-AP13 series 2: the release 2 has the reason of the last yank
+3: R-AP2: the artifact of the release 2
+4: R-AP2: the release 4 was yanked and unyanked: not yanked, no reason
+5: R-AP1: the repository acme/lib has the 2 yanked releases
+6: R-AP14: the page of all releases in log index order
+7: R-AP17: the closure answer has the release 1 with its yank state

@@ -1,0 +1,9 @@
+1: The successor has no repos row: check Index.
+2: The successor is missing (its release is withdrawn): Index.
+3: The successor is moved: Index (an active row is needed).
+4: The successor is active, and its only release is yanked: no candidate, Index.
+5: The successor is active, and its only release is withdrawn: no candidate, Index.
+6: The newest candidate of the successor is an app, the old name has a package: Kind.
+7: The successor exposes Alpha only. The newest release of the old name is 2.0.0 (Alpha, Beta), not 1.0.0 (Alpha, Beta, Gamma) that is last in the log: the missing module is Beta.
+8: The successor fails Kind and exposes: the first check that fails is Kind.
+9: The newest candidate is 3.0.0 (a yanked 4.0.0 and a platform 0.9.0 that is last in the log do not count): all checks pass, 201.

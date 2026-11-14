@@ -1,0 +1,4 @@
+1: An offer PUT with the token of olduser/roc-json whose ids (999, 99) match neither id of the row (100, 10): 403 repository-changed, with the issues_url. 1 D1 call, nothing written.
+2: DELETE on the moved name olduser/gone2 with a token of that name and ids (998, 98) that do not match (150, 15): 403 repository-changed. 1 D1 call.
+3: The token has the other id of the row (the owner id 10 equals the row owner, the repository id does not): not changed, so the offer goes on. The offer is for acme/roc-json (owner 10): all checks pass, 202. 2 D1 calls.
+4: A token of olduser/other with the same repository id (160) and another owner id (99): not changed. The offer is not accepted by the role table only when the ids are wrong; here the old repository offers, 202 (the offered name acme/roc-json is checked by Index, Kind, exposes: it passes).

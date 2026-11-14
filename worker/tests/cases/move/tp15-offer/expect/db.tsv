@@ -1,0 +1,12 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, (SELECT s.value FROM names s WHERE s.id = r.successor), (SELECT o.value FROM names o WHERE o.id = r.offer), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+newowner/roc-json	400	40	\N	\N	1767000000000	1767000000000
+olduser/roc-json	100	10	newowner/roc-json	\N	1767225635000	1767000000000
+third/lib	500	50	\N	\N	1767000000000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+newowner/roc-json	1	0	\N	400	\N	40	\N	1767000000000
+olduser/roc-json	1	0	\N	100	\N	10	\N	1767000000000
+olduser/roc-json	2	8	100	100	10	10	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"workflow_dispatch","run_id":"900","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	1767225631000
+olduser/roc-json	3	6	100	100	10	10	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"workflow_dispatch","run_id":"901","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	1767225635000
+third/lib	1	0	\N	500	\N	50	\N	1767000000000
+@ SELECT n.value, e.seq, (SELECT s.value FROM names s WHERE s.id = e.successor) FROM repo_events e JOIN names n ON n.id = e.repo WHERE e.action = 6 ORDER BY n.value, e.seq
+olduser/roc-json	3	newowner/roc-json

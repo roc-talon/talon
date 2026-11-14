@@ -1,0 +1,5 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib/releases/download/1.0.0/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg.tar.zst"},"now":1767225631000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib/releases/download/2.0.0/FfhdJC6hjGYxLT2it8N1ipqaofCXs4K6AQLt9zzEKNLG.tar.zst"},"now":1767225632000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib/releases/download/2.0.0/FfhdJC6hjGYxLT2it8N1ipqaofCXs4K6AQLt9zzEKNLG.tar.zst"},"token":"p2","now":1767225633000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib/releases/download/1.0.0/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg.tar.zst","compat":[{"nightly":"nightly-2026-10-31-f7bef6b","target":"any","result":"pass","error_digest":null}]},"token":"p1","now":1767225634000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/lib/releases/download/1.0.0/3g6pdQ6Y66osX1c5BJXrWnGNJWpqTrXCLT3cSfANdbdg.tar.zst","compat":[{"nightly":"nightly-2026-10-31-f7bef6b","target":"any","result":"pass","error_digest":null}]},"token":"p1","now":1767225635000}

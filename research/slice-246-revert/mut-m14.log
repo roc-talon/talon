@@ -1,0 +1,46 @@
+
+── ✗ fail ──────────────────────────────────────── tests/unit/YankTest.roc:214:1
+
+expect {
+    match Yank.check_token(base, Err(NoRepo)) {
+        Err(problem) => problem == Problem.new(Forbidden, "the release has no GitHub repository: only the operator can yank it")
+        Ok({}) => Bool.False
+    }
+}
+
+Mentioned values:
+base = {
+	iss: Ok("https://token.actions.githubusercontent.com"),
+	aud: Ok("https://registry.example"),
+	exp: Ok(1767225900),
+	nbf: Ok(1767225300),
+	repository: Ok("acme/lib"),
+	repository_id: Ok("900"),
+	repository_owner_id: Ok("9100"),
+	repository_visibility: Ok("public"),
+	ref: Ok("refs/heads/main"),
+	ref_type: Ok("branch"),
+	event_name: Ok("workflow_dispatch"),
+	workflow_ref: Ok("acme/lib/.github/workflows/yank.yml@refs/heads/main"),
+	workflow_sha: Ok("89abcdef0123456789abcdef0123456789abcdef"),
+	job_workflow_ref: Ok("acme/lib/.github/workflows/yank.yml@refs/heads/main"),
+	run_id: Ok("77"),
+	run_attempt: Ok("1"),
+	actor_id: Ok("512345"),
+	runner_environment: Ok("github-hosted"),
+}
+
+Ran 18 tests in 257.7 ms.:
+    17 passed
+    1 failed
+    0 compiler errors
+All (7) tests passed in 147.9 ms.
+PASS yank/tp8-token (954 ms)
+PASS yank/yk1-route-checks (675 ms)
+PASS yank/yk1-yank-unyank (1401 ms)
+PASS yank/yk2-operator (815 ms)
+PASS yank/yk3-roles (871 ms)
+PASS yank/yk6-body (782 ms)
+PASS yank/yk7-reads (306 ms)
+w2 pool: 7 apps started, 0 resets, 7 cases; time of the jobs added: start 9 s, reset 0 s, cases 6 s
+w2: 7 passed, 0 failed

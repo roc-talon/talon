@@ -227,11 +227,11 @@ rel = |name, version, hash| {
 	provenance: ["webhook"],
 }
 
-active = |name| { name, state: Active, successor: Err(None), state_at: 1700000000000 }
+active = |name| { name, state: Active, successor: Err(None), state_at: 1700000000000, owner_changed: Err(None) }
 
-missing = |name| { name, state: Missing, successor: Err(None), state_at: 1700000000000 }
+missing = |name| { name, state: Missing, successor: Err(None), state_at: 1700000000000, owner_changed: Err(None) }
 
-moved = |name, to| { name, state: Moved, successor: Ok(to), state_at: 1700000000000 }
+moved = |name, to| { name, state: Moved, successor: Ok(to), state_at: 1700000000000, owner_changed: Err(None) }
 
 # R-AU2 (the registry column), R-AU13, R-AP49: the reason of one release row and the `repos` item of its name. No reason: Err(None).
 expect {

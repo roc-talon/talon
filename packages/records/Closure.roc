@@ -32,7 +32,45 @@ Closure :: [].{
 	Checked : { name : Str, checked_at : Try(U64, [None]), stale : Bool }
 
 	## An item of `repos` (R-AP32). `state` is `active`, `missing` or `moved` on the wire. `successor` is a name, `Err(None)` (null) for none. `state_at` is a time in milliseconds (R-AP50).
-	Repo : { name : Str, state : [Active, Missing, Moved], successor : Try(Str, [None]), state_at : U64 }
+	Repo : { name : Str, state : [Active, Missing, Moved], successor : Try(Str, [None]), state_at : U64, owner_changed : Try(Closure.OwnerChanged, [None]) }
+
+	## Slice 247b (R-AP32, R-PU30, Design Q626): the member `owner_changed` of a `repos` item. `Err(None)` (`null`): the repo has no `transfer` and no `recreate` event (R-TP13). Else the action of the LAST such event
+	## and its time in milliseconds (R-AP50): `{"action": "transfer" | "recreate", "at": <ms>}`. The writer always writes the member (`null` for none, R-AP51). The reader accepts a missing member as `null`
+	## (an answer of an older Worker, R-AP44).
+	OwnerChanged : { action : [Transfer, Recreate], at : U64 }
+
+	## The wire form of `OwnerChanged`: `action` is the text `transfer` or `recreate`.
+	OwnerChangedWire : { action : Str, at : U64 }
+
+	## Slice 247b stubs (TW18). `owner_changed_to_wire` writes the object. `owner_changed_from_wire` reads it: an `action` that is not `transfer` or `recreate` is `BadJson`.
+	owner_changed_to_wire : Closure.OwnerChanged -> Closure.OwnerChangedWire
+	owner_changed_to_wire = |o| {
+		action: match o.action {
+			Transfer => "transfer"
+			Recreate => "recreate"
+		},
+		at: o.at,
+	}
+
+	owner_changed_from_wire : Closure.OwnerChangedWire -> Try(Closure.OwnerChanged, [BadJson(Str)])
+	owner_changed_from_wire = |w| match w.action {
+		"transfer" => Ok({ action: Transfer, at: w.at })
+		"recreate" => Ok({ action: Recreate, at: w.at })
+		other => Err(bad("owner_changed action", other))
+	}
+
+	## Plumbing of the member in a `repos` item (slice 247b). The writer always writes the member, `null` for none. The reader takes a missing member as none.
+	owner_to_wire : Try(Closure.OwnerChanged, [None]) -> Try(Nullable(Closure.OwnerChangedWire), [Missing])
+	owner_to_wire = |o| Ok(Nullable.write(o.map_ok(owner_changed_to_wire)))
+
+	owner_from_wire : Try(Nullable(Closure.OwnerChangedWire), [Missing]) -> Try(Try(Closure.OwnerChanged, [None]), [BadJson(Str)])
+	owner_from_wire = |w| match w {
+		Err(Missing) => Ok(Err(None))
+		Ok(n) => match Nullable.read(n) {
+			Err(None) => Ok(Err(None))
+			Ok(o) => owner_changed_from_wire(o).map_ok(|v| Ok(v))
+		}
+	}
 
 	## The answer of `POST /v1/closure` (R-AP17), with `repos` of R-AP32.
 	Answer : {
@@ -55,7 +93,7 @@ Closure :: [].{
 	RunWire : { hash : Str, target : Str, source : Str, result : Str, error_digest : Nullable(Str), from : Str, to : Str }
 	NearestWire : { hash : Str, target : Str, source : Str, result : Str, error_digest : Nullable(Str), nightly : Str, side : Str }
 	CheckedWire : { name : Str, checked_at : Nullable(U64), stale : Bool }
-	RepoWire : { name : Str, state : Str, successor : Nullable(Str), state_at : U64 }
+	RepoWire : { name : Str, state : Str, successor : Nullable(Str), state_at : U64, owner_changed : Try(Nullable(Closure.OwnerChangedWire), [Missing]) }
 	AnswerWire : {
 		artifacts : List(Artifact.Wire),
 		releases : List(Release.Wire),
@@ -105,6 +143,7 @@ Closure :: [].{
 		},
 		successor: Nullable.write(r.successor),
 		state_at: r.state_at,
+		owner_changed: owner_to_wire(r.owner_changed),
 	}
 
 	repo_from_wire : Closure.RepoWire -> Try(Closure.Repo, [BadJson(Str)])
@@ -115,7 +154,8 @@ Closure :: [].{
 			"moved" => Ok(Moved)
 			other => Err(bad("state", other))
 		}?
-		Ok({ name: r.name, state, successor: Nullable.read(r.successor), state_at: r.state_at })
+		owner_changed = owner_from_wire(r.owner_changed)?
+		Ok({ name: r.name, state, successor: Nullable.read(r.successor), state_at: r.state_at, owner_changed })
 	}
 
 	## Slice 104b. One item of `checked` (R-AP29) or `repos` (R-AP32) as a JSON object, for the read routes (R-AP1, R-AP2, R-AP13, R-AP14). Members in the order of the derived codec (alphabetical), so 2 answers of one state have the same bytes (R-AP24). `checked_at` and `successor` are written as `null` for none (R-AP51). The decoders follow R-AP51: a missing required member, a null `name`, or an unknown `state` is `BadJson`.
@@ -139,6 +179,7 @@ Closure :: [].{
 		},
 		successor: Nullable.write(r.successor),
 		state_at: r.state_at,
+		owner_changed: owner_to_wire(r.owner_changed),
 	})
 
 	decode_repo : Str -> Try(Closure.Repo, [BadJson(Str)])
@@ -154,7 +195,8 @@ Closure :: [].{
 					"moved" => Ok(Moved)
 					other => Err(bad("state", other))
 				}?
-				Ok({ name: r.name, state, successor: Nullable.read(r.successor), state_at: r.state_at })
+				owner_changed = owner_from_wire(r.owner_changed)?
+				Ok({ name: r.name, state, successor: Nullable.read(r.successor), state_at: r.state_at, owner_changed })
 			}
 		}
 	}
@@ -214,6 +256,7 @@ Closure :: [].{
 						},
 						successor: Nullable.read(r.successor),
 						state_at: r.state_at,
+						owner_changed: owner_from_wire(r.owner_changed)?,
 					}),
 				)?
 				Ok({
@@ -266,6 +309,7 @@ Closure :: [].{
 				},
 				successor: Nullable.write(r.successor),
 				state_at: r.state_at,
+				owner_changed: owner_to_wire(r.owner_changed),
 			},
 		),
 	})

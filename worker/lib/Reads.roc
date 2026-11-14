@@ -149,7 +149,19 @@ Reads :: [].{
 	}
 
 	## The row of `repos` joined with the names of the repo and of the successor (`names.value`, kind 3). `state` is the code 0, 1, 2.
-	RepoRow : { name : Str, state : I64, successor : Try(Str, [Missing]), state_at : U64 }
+	RepoRow : { name : Str, state : I64, successor : Try(Str, [Missing]), state_at : U64, owner_action : Try(I64, [Missing]), owner_at : Try(U64, [Missing]) }
+
+	## Slice 247b (R-AP32, R-PU30, Design Q626): the member `owner_changed` of an item. `owner_action` and `owner_at` are the columns `action` (1 `transfer`, 3 `recreate`, R-RE15) and `time` of the LAST event of the repo
+	## (the largest `seq`) whose action is 1 or 3, from a sub-select of the statement that reads the `repos` row (no D1 call more, R-AP41). `Err(Missing)` (NULL, or no column) for both: none.
+	## `owner_changed_of` is `Err(None)` for none and for no column. A row with only one of the 2 columns, or an action that is not 1 or 3, is `Err(BadRow(text))`.
+	owner_changed_of : Try(I64, [Missing]), Try(U64, [Missing]) -> Try(Try(Closure.OwnerChanged, [None]), [BadRow(Str)])
+	owner_changed_of = |action, at| match (action, at) {
+		(Err(Missing), Err(Missing)) => Ok(Err(None))
+		(Ok(1), Ok(time)) => Ok(Ok({ action: Transfer, at: time }))
+		(Ok(3), Ok(time)) => Ok(Ok({ action: Recreate, at: time }))
+		(Ok(code), Ok(_)) => Err(BadRow("the owner event action ${I64.to_str(code)} is not 1 or 3"))
+		_ => Err(BadRow("the owner event has only one of the columns owner_action and owner_at"))
+	}
 
 	## An item of `repos` (R-AP32): `{name, state, successor, state_at}`. `state` is `active`, `missing` or `moved` on the wire. It is the type of `records` (slice 104b).
 	RepoItem : Closure.Repo
@@ -163,7 +175,8 @@ Reads :: [].{
 			2 => Ok(Moved)
 			other => Err(BadRow("repo ${row.name}: the state code ${I64.to_str(other)} is not known"))
 		}?
-		Ok({ name: row.name, state, successor: row.successor.map_err(|_| None), state_at: row.state_at })
+		owner_changed = owner_changed_of(row.owner_action, row.owner_at)?
+		Ok({ name: row.name, state, successor: row.successor.map_err(|_| None), state_at: row.state_at, owner_changed })
 	}
 
 	# ---- the rows of releases and artifacts ----
@@ -205,7 +218,7 @@ Reads :: [].{
 	}
 
 	## The wire record of R-AP49. `provenance`: `provenance_of(row.vias)` (slice 122; a stub gives `[]` until the code agent writes it). `hash`: `Base58.encode` of the 32 bytes; another length is `BadRow`. `group`: `form`. `version` and `series`: `Version.read`, then
-	## `Semver.to_str` and `Version.series_of`. `yank_reason`: always `Err(None)` before P3 (`yanks` is P3). The nullable columns are `Err(None)` when missing.
+	## `Semver.to_str` and `Version.series_of`. `yank_reason`: always `Err(None)` here (slice 246: the reason is not a column of the row, `with_reasons` sets it). The nullable columns are `Err(None)` when missing.
 	## A hash with other than 32 bytes, or a version column that `Version.read` refuses, is `Err(BadRow)` with a text (the handler gives 500 `internal`, R-AP48).
 	release_of_row : Reads.ReleaseRow -> Try(Release.Row, [BadRow(Str)])
 	release_of_row = |row| {
@@ -228,6 +241,38 @@ Reads :: [].{
 			provenance: provenance_of(row.vias)?,
 		})
 	}
+
+	## Slice 246, R-AP49, R-YK1: the reason of the last yank of a release (`yanks.reason`, NULL for none). The SQL of a read route gives one row for each yanked release of the page, as one more statement of its batch.
+	## It is a separate list, so that `ReleaseRow` has no new field (slice file 3.5).
+	ReasonRow : { log_index : U64, reason : Try(Str, [Missing]) }
+
+	## Slice 246, R-AP49: the records of `releases` with `yank_reason` set. A release that is yanked and has a row in `reasons` gets its reason (`Err(Missing)` is none). Another release is not changed:
+	## an unyanked release has no reason (an unyank gives null).
+	with_reasons : List(Release.Row), List(Reads.ReasonRow) -> List(Release.Row)
+	with_reasons = |releases, reasons| releases.map(
+		|release| if release.yanked {
+			match reasons.find_first(|r| r.log_index == release.log_index) {
+				Ok(found) => { ..release, yank_reason: found.reason.map_err(|_| None) }
+				Err(NotFound) => release
+			}
+		} else {
+			release
+		},
+	)
+
+	## Slice 246b, Design Q627: as `with_reasons`, but a yanked release with no row in `reasons` (it has no row in `yanks`: `reasons_select` gives a row only for a release that has one) is `Err(BadRow)`.
+	with_reasons_checked : List(Release.Row), List(Reads.ReasonRow) -> Try(List(Release.Row), [BadRow(Str)])
+	with_reasons_checked = |releases, reasons| {
+		missing = releases.find_first(|r| r.yanked and !reasons.any(|x| x.log_index == r.log_index))
+		match missing {
+			Ok(r) => Err(BadRow("release ${r.log_index.to_str()} is yanked and has no row in yanks"))
+			Err(NotFound) => Ok(with_reasons(releases, reasons))
+		}
+	}
+
+	## Slice 246: the `SELECT` that gives the `ReasonRow`s of the CTE `source` (`page` in `ReadRoutes`, `rel` in the closure): the reason of the last `yanks` row of each yanked release. The caller puts its `WITH` text before it.
+	reasons_select : Str -> Str
+	reasons_select = |source| "SELECT r.log_index AS log_index, (SELECT y.reason FROM yanks y WHERE y.release = r.log_index ORDER BY y.seq DESC LIMIT 1) AS reason FROM ${source} r WHERE r.yanked = 1 AND EXISTS (SELECT 1 FROM yanks z WHERE z.release = r.log_index) ORDER BY r.log_index"
 
 	## One artifact as D1 rows. `kind` is the code 0, 1, 2. `exposed_json` is `artifacts.exposes`: a JSON array of text in the order of the header (R-RE1). `hash` and `platform_hash` are `names.value` (the 32 bytes) as for `ReleaseRow`.
 	ArtifactRow : { hash : List(U8), kind : I64, exposed_json : Str, platform_hash : Try(List(U8), [Missing]), roc_pin : Try(Str, [Missing]), size : U64 }

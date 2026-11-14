@@ -1,0 +1,10 @@
+1: operator PUT: 200 (by operator)
+2: author PUT on a yanked release: 200, nothing changes, the reason stays "security", 1 D1 call
+3: author DELETE of a yank of the operator: 403 forbidden (R-YK2), 1 D1 call
+4: operator DELETE: 200, not yanked
+5: author PUT after the operator removed the yank: 200, yanked (by author)
+6: operator PUT on a yank of an author: 200, nothing changes (the yank stays the yank of the author), 1 D1 call
+7: operator DELETE of a yank of an author: 200, not yanked
+8: author PUT on a release of another repository, with a token of this repository: 403 (R-TP8 repository), the state stays
+9: author of the other repository PUT then DELETE its own release: 200, 200
+10: ...DELETE: the yank is the yank of an author, so the author removes it

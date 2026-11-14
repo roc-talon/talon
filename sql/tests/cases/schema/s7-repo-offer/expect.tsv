@@ -1,0 +1,6 @@
+@ SELECT repo, CAST(offer AS TEXT) FROM repos ORDER BY repo
+1	\N
+2	-3091616050638104172
+3	\N
+@ SELECT repo, seq, action, CAST(successor AS TEXT) FROM repo_events ORDER BY repo, seq
+1	1	8	-3091616050638104172

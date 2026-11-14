@@ -1,0 +1,15 @@
+INSERT OR IGNORE INTO names (id, kind, value) VALUES (-6711688152467910139, 3, 'olduser/roc-json');
+INSERT INTO repos (repo, repository_id, repository_owner_id, state, successor, state_at, time, offer) VALUES (-6711688152467910139, 100, 10, 0, NULL, 1767000000000, 1767000000000, NULL);
+INSERT INTO repo_checks (repo, etag, checked_at, next_check_at, fail_count, app_installed) VALUES (-6711688152467910139, NULL, NULL, 1767003600000, 0, 0);
+INSERT INTO repo_events (repo, seq, action, repository_id_before, repository_id_after, owner_id_before, owner_id_after, successor, claims, time) VALUES (-6711688152467910139, 1, 0, NULL, 100, NULL, 10, NULL, NULL, 1767000000000);
+INSERT OR IGNORE INTO names (id, kind, value) VALUES (-2349770634695605972, 1, X'78B2F6E8931BEC6097B2101D3B524C0E12BDB8E6E161BB8298ED87CCAB147E98');
+INSERT INTO names (id, kind, value) VALUES (1108167917357857411, 2, 'github.com/olduser/roc-json/releases/download/{v}/');
+INSERT INTO artifacts (artifact, kind, exposes, platform, roc_pin, size) VALUES (-2349770634695605972, 1, '["Alpha","Beta"]', NULL, NULL, 999);
+INSERT INTO log (idx, grp, version, hash, time) VALUES (1, 'github.com/olduser/roc-json/releases/download/{v}/', '2.0.0', '98ACebQ3t2vvUtLkE876aMZuKp1mWCzyumQei1pM1yaX', 1767000000000);
+INSERT INTO releases (log_index, form, version, version_text, artifact, repo, url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at) VALUES (1, 1108167917357857411, -9222809086901288961, '', -2349770634695605972, -6711688152467910139, 'https://github.com/olduser/roc-json/releases/download/2.0.0/98ACebQ3t2vvUtLkE876aMZuKp1mWCzyumQei1pM1yaX.tar.zst', '2.0.0', NULL, 1792497600000, 0, NULL, NULL);
+INSERT INTO provenance (release, via, claims, time) VALUES (1, 3, NULL, 1767000000000);
+INSERT OR IGNORE INTO names (id, kind, value) VALUES (-9034575850499715093, 1, X'474576B71ED833AB21656E4B2581F7236F8DC50E845CC50B32E6636D21864541');
+INSERT INTO artifacts (artifact, kind, exposes, platform, roc_pin, size) VALUES (-9034575850499715093, 1, '["Alpha","Beta","Gamma"]', NULL, NULL, 999);
+INSERT INTO log (idx, grp, version, hash, time) VALUES (2, 'github.com/olduser/roc-json/releases/download/{v}/', '1.0.0', '5oDP5Q3QjyKryNLwFs5JFyAqwWcpTf1p6rSY4z2VFyqr', 1767000000000);
+INSERT INTO releases (log_index, form, version, version_text, artifact, repo, url, tag, roc_version, published_at, yanked, withdrawn, withdrawn_at) VALUES (2, 1108167917357857411, -9223090561877999617, '', -9034575850499715093, -6711688152467910139, 'https://github.com/olduser/roc-json/releases/download/1.0.0/5oDP5Q3QjyKryNLwFs5JFyAqwWcpTf1p6rSY4z2VFyqr.tar.zst', '1.0.0', NULL, 1792497600000, 0, NULL, NULL);
+INSERT INTO provenance (release, via, claims, time) VALUES (2, 3, NULL, 1767000000000);

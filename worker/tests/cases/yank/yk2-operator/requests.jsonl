@@ -1,0 +1,12 @@
+{"method":"PUT","path":"/v1/releases/5/yank","json":{"reason":"mirror compromised"},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225631000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225632000}
+{"method":"DELETE","path":"/v1/releases/5/yank","headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225633000}
+{"method":"DELETE","path":"/v1/releases/5/yank","headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225634000}
+{"method":"PUT","path":"/v1/releases/999/yank","json":{},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225635000}
+{"method":"PUT","path":"/v1/releases/3/yank","json":{},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d4086"},"now":1767225636000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d40860"},"now":1767225637000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"authorization":"Bearer op-key-7f3a9c1e5b2d408"},"now":1767225638000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"authorization":"Bearer OP-KEY-7F3A9C1E5B2D4086"},"now":1767225639000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"now":1767225640000}
+{"method":"PUT","path":"/v1/releases/1/yank","json":{},"headers":{"authorization":"Basic op-key-7f3a9c1e5b2d4086"},"now":1767225641000}
+{"method":"DELETE","path":"/v1/releases/1/yank","headers":{"authorization":"Bearer nope"},"now":1767225642000}

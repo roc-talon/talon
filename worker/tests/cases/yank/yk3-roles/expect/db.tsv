@@ -1,0 +1,10 @@
+@ SELECT log_index, yanked FROM releases ORDER BY log_index
+1	0
+4	0
+@ SELECT release, seq, action, by, claims, reason, time FROM yanks ORDER BY release, seq
+1	1	0	1	\N	security	1767225631000
+1	2	1	1	\N	\N	1767225634000
+1	3	0	0	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"workflow_dispatch","run_id":"403","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	author reason	1767225635000
+1	4	1	1	\N	\N	1767225637000
+4	1	0	0	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"workflow_dispatch","run_id":"405","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	mine	1767225639000
+4	2	1	0	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"workflow_dispatch","run_id":"405","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	\N	1767225640000

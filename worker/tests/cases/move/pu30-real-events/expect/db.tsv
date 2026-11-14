@@ -1,0 +1,50 @@
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+again/repo	3002	31	0	\N	1767000000000	1767000000000
+back/repo	6001	61	0	\N	1767225630000	1767000000000
+fresh/repo	5001	51	0	\N	1767225630000	1767225630000
+prov/repo	7001	71	0	\N	1767000000000	1767000000000
+same/repo	1001	11	0	\N	1767000000000	1767000000000
+taken/repo	4001	41	0	\N	1767000000000	1767000000000
+xfer/repo	2001	22	0	\N	1767000000000	1767000000000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+again/repo	1	0	\N	3001	\N	31	\N	\N	1767000000000
+again/repo	2	3	3001	3002	31	31	\N	\N	1767225630000
+back/repo	1	0	\N	6001	\N	61	\N	\N	1767000000000
+back/repo	2	5	6001	6001	61	61	\N	\N	1767225630000
+fresh/repo	1	0	\N	5001	\N	51	\N	\N	1767225630000
+prov/repo	1	0	\N	7001	\N	71	\N	\N	1767000000000
+same/repo	1	0	\N	1001	\N	11	\N	\N	1767000000000
+taken/repo	1	0	\N	4001	\N	41	\N	\N	1767000000000
+xfer/repo	1	0	\N	2001	\N	21	\N	\N	1767000000000
+xfer/repo	2	1	2001	2001	21	22	\N	\N	1767225630000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+again/repo	\N	\N	1767003600000	0	0
+back/repo	\N	\N	1767225630000	0	0
+fresh/repo	\N	\N	1767229230000	0	0
+prov/repo	\N	\N	1767003600000	0	0
+same/repo	\N	\N	1767003600000	0	0
+taken/repo	\N	\N	1767003600000	0	0
+xfer/repo	\N	\N	1767003600000	0	0
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	prov/repo	1.0.0	\N	\N
+2	back/repo	0.9.0	repo-missing	1767000000500
+3	same/repo	1.0.0	\N	\N
+4	xfer/repo	1.0.0	\N	\N
+5	again/repo	1.0.0	\N	\N
+6	fresh/repo	1.0.0	\N	\N
+7	back/repo	1.0.0	\N	\N
+@ SELECT value FROM names WHERE kind = 2 ORDER BY value
+github.com/again/repo/releases/download/{v}/
+github.com/back/repo/releases/download/{v}/
+github.com/fresh/repo/releases/download/{v}/
+github.com/prov/repo/releases/download/{v}/
+github.com/same/repo/releases/download/{v}/
+github.com/xfer/repo/releases/download/{v}/
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+1	1	\N	1767000000000
+2	1	\N	1767000000000
+3	3	\N	1767225630000
+4	3	\N	1767225630000
+5	3	\N	1767225630000
+6	3	\N	1767225630000
+7	3	\N	1767225630000

@@ -1,0 +1,4 @@
+Slice 247, case s7-repo-offer (the column repos.offer of migration 0004, W1 on node:sqlite and on local D1).
+  R-RE11, R-TP15: a repos row has an offer: the id of the offered successor name, or NULL. A row that is written with no offer has NULL.
+  R-IK2, R-IK8: the column is INTEGER in a STRICT table. A text is an error. The offer is a 64-bit id (above 2^53): it keeps all digits.
+  R-RE15: repo_events has the action offer (8): the CHECK of 0001 accepts it (the row is the event of an offer).

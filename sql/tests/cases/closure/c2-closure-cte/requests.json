@@ -294,13 +294,17 @@
      "name": "o/a",
      "state": 0,
      "successor": null,
-     "state_at": 1000
+     "state_at": 1000,
+     "owner_action": null,
+     "owner_at": null
     },
     {
      "name": "o/b",
      "state": 2,
      "successor": "o/b2",
-     "state_at": 2000
+     "state_at": 2000,
+     "owner_action": null,
+     "owner_at": null
     }
    ],
    "log_size": [
