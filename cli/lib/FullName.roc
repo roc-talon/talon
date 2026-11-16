@@ -76,6 +76,10 @@ FullName :: [].{
 	no_candidate : { name : Str } -> Fail
 	no_candidate = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use. A release needs one <hash>.tar.zst asset and must not be a draft or a prerelease.")
 
+	## Slice 250 (Design Q630, Q630-3): STUB. R-AD35 step 2 when the R-AP1 answer has releases and each one is yanked (or withdrawn) and there is no selector: kind `Usage` (exit 2), no closure query. Text (proposal, TW24): `<name> has no release that Talon can use: each release is yanked.`
+	each_yanked : { name : Str } -> Fail
+	each_yanked = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use: each release is yanked.")
+
 	## Slice 206f (R-AD35 step 5, Design Q545): the one item of the closure query for a full name, from the R-AP1 answer. `group` is the `group` of the releases that the selector keeps (the release with the largest `published_at`, then the larger `log_index`, of the kept ones that are not yanked and not withdrawn, else of the kept ones; the first wins a tie).
 	## `text` is what the user typed after `@`, `range` is the range of the new entry (`Fresh.range`: `=1.2.3` for a version, `^1` for a range). The members of the item:
 	##
@@ -95,7 +99,12 @@ FullName :: [].{
 			},
 		)
 		live = kept.keep_if(|r| !r.yanked and r.withdrawn == Err(None))
-		pool = if live.is_empty() kept else live
+		# Design Q630-2: a version or a range that the user names and that is yanked is no match. No selector: the first read falls back to the kept rows (the caller says `each_yanked`).
+		named = match facts.selector {
+			Ok(Exact(_)) | Ok(Range(_)) => Bool.True
+			_ => Bool.False
+		}
+		pool = if live.is_empty() and !named kept else live
 		newest = pool.fold(
 			Err(NoMatch),
 			|best, r| match best {

@@ -1,0 +1,2 @@
+index: cached at 2026-10-14T17:46:40Z
+tln: error[network]: acme/json 2.1.0 is not in the package cache and --offline is set (https://github.com/acme/json/releases/download/2.1.0/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4.tar.zst)

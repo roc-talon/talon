@@ -1,0 +1,5 @@
+R-C6 R-C9 R-SL12 R-YK7 R-PH13 R-AL13 (slice 250, Design Q630-2, Q630-4): `tln update json@2.1.0 --no-check --dry-run` with a registry. The home, the fakes and the answer are those of yf1-update-yanked (json 2.1.0, log 25, is yanked with the reason "parse bug"; the header has json 2.0.0).
+Q630-2: the user names a release that is yanked. It is not chosen (R-C6, no exception for a name): the pick has no release that satisfies =2.1.0. Exit 10, the failure of `Pick.step`, as `update json@9.9.9` (ad35-add-nomatch is the exit 2 of `add`). The close versions of R-SL12 are the versions of the candidates that are not yanked: 2.1.1, 2.0.5, 2.0.0.
+Q630-4: the text counts the yanked rows that the filter dropped. n = the 4 candidates that stay + 1 yanked = 5 releases; 4 outside the ranges (=2.1.0); 0 too new; 1 yanked. The count shows only when it is above 0 (Pick.with_yanked).
+The calls are the calls of the run before the slice (the query has the range =2.1.0): the yank changes no request.
+Before the slice: exit 0, `json: 2.0.0 -> 2.1.0`, the line `json = "=2.1.0"` for talon.toml, and the R-AU7 warning for the yanked release.

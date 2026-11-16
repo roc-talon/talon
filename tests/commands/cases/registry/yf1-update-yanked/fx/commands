@@ -1,0 +1,5 @@
+update --no-check --dry-run --file u1/main.roc
+update --no-check --dry-run --file u2/main.roc
+update --no-check --dry-run --snapshot log:25 --file u1/main.roc
+update --no-check --dry-run --snapshot log:25 --file u2/main.roc
+outdated --file u1/main.roc

@@ -1,0 +1,1 @@
+R-C6 R-AD35 R-SL12 R-YK7 (slice 250, mutation gap G3, Design Q630-2): `tln add acme/known@9.9.9` with a registry, as ad35-add-nomatch, but 1.1.0 is yanked (1.0.0 is not). The selector keeps nothing: `Add.no_release` with the close versions of the releases that are not yanked: `Close versions: 1.0.0.` (not `1.1.0, 1.0.0`). The calls are those of ad35-add-nomatch.

@@ -1,0 +1,2 @@
+== add acme/known@9.9.9 --no-check --dry-run --file p1/main.roc
+exit 2

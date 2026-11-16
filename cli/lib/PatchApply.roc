@@ -195,7 +195,7 @@ rebase_one! = |fx, request, found| {
 # Steps 2 to 4 of `base!`: the release list of the group gives the release that has the hash, then the fetch of that release (R-PA13). No release: exit 14. A failed fetch is the failure of the fetch (`--offline`: exit 15, R-FE7).
 fetch_base! : Fx, ResolveBase.Request, { name : Str, group : { form : Str, series : Str }, entry : { alias : Str, url : Str, base : Str, dir : Str } } => Try({}, Fail)
 fetch_base! = |fx, request, x| {
-	found = PickIndex.index!(fx, request, [x.name], [])?
+	found = PickIndex.lookup!(fx, request, [x.name])?
 	match found {
 		[candidates] => if candidates.missing {
 			Err(Github.no_page_failure(x.name))

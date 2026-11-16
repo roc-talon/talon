@@ -1,0 +1,34 @@
+base: L0 l0-1: exit=0 All (225) tests passed.
+base L2: commands: 242 passed, 0 failed 
+q1a: L0 l0-1: exit=1     0 compiler errors.
+q1a: L2 commands: 242 passed, 0 failed 
+q1b: L0 l0-1: exit=0 All (225) tests passed.
+q1b: L2 commands: 242 passed, 0 failed 
+q1c: L0 l0-1: exit=0 All (225) tests passed.
+q1c: L2 commands: 242 passed, 0 failed 
+q2: L0 l0-1: exit=1     0 compiler errors.
+q2: L2 FAIL registry/yf1-update-yanked FAIL registry/yf2-add-yanked FAIL registry/yf4-update-named-yanked FAIL registry/yf7-offline-yanked-count commands: 238 passed, 4 failed 
+q3: L0 l0-1: exit=0 All (225) tests passed.
+q3: L2 FAIL registry/yf4-update-named-yanked FAIL registry/yf7-offline-yanked-count commands: 240 passed, 2 failed 
+q4: L0 l0-1: exit=1     0 compiler errors.
+q4: L2 commands: 242 passed, 0 failed 
+q5: L0 l0-1: exit=1     0 compiler errors.
+q5: L2 FAIL registry/yf4-update-named-yanked FAIL registry/yf7-offline-yanked-count commands: 240 passed, 2 failed 
+q6: L0 l0-1: exit=0 All (225) tests passed.
+q6: L2 FAIL registry/yf7-offline-yanked-count commands: 241 passed, 1 failed 
+q7: L0 l0-1: exit=1     0 compiler errors.
+q7: L2 FAIL registry/yf6-add-named-yanked commands: 241 passed, 1 failed 
+q8: L0 l0-1: exit=0 All (225) tests passed.
+q8: L2 commands: 242 passed, 0 failed 
+q9: L0 l0-1: exit=0 All (225) tests passed.
+q9: L2 commands: 242 passed, 0 failed 
+q10: L0 l0-1: exit=1     0 compiler errors.
+q10: L2 FAIL registry/yf3-x-yanked commands: 241 passed, 1 failed 
+q11: L0 l0-1: exit=0 All (225) tests passed.
+q11: L2 commands: 242 passed, 0 failed 
+q12: L0 l0-1: exit=0 All (225) tests passed.
+q12: L2 commands: 242 passed, 0 failed 
+q13: L0 l0-1: exit=0 All (225) tests passed.
+q13: L2 commands: 242 passed, 0 failed 
+q14: L0 l0-1: exit=0 All (225) tests passed.
+q14: L2 commands: 242 passed, 0 failed 

@@ -1,4 +1,5 @@
 import records.Closure as Wire
+import records.Release as WireRelease
 import Add
 import ClosureIndex
 import ClosureRequest
@@ -60,6 +61,7 @@ PickFlow :: [].{
 		input : PickLoop.Input,
 		setup : PickLoop.Setup,
 		second : Try(PickFlow.Second, [None]),
+		yanked : List({ name : Str, count : U64 }),
 	}
 
 	## Slice 206d2 (Registry R-AP16 second query, R-AP19, Design Q403, Q404, Q460): what the second closure query of a held move needs, from the first query of a run with a registry. `Err(None)` with no registry answer.
@@ -118,12 +120,13 @@ PickFlow :: [].{
 		free_names = scoped.keep_if(|s| s.free).keep_oks(|s| s.variable.name.map_err(|_| None))
 		want_names = stale.live.keep_oks(|w| w.name.map_err(|_| None))
 		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(ResolveBase.no_names, |found, name| if found.contains(name) found else found.append(name))
-		found = anchored(PickIndex.index!(fx, indexed, repos, known)?, queried.anchors)
+		counted = PickIndex.counted!(fx, indexed, repos, known)?
+		found = anchored(counted.found, queried.anchors)
 		offline_notes!(fx, indexed, held_scope, found)
 		prepared = PickIndex.prepare!(fx, indexed, loaded, asked.fresh, found)?
 		input = PickIndex.slots_of(held_scope, stale.live, found, asked, prepared.rows, settings, snapshot, PickAsk.unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
 		setup = { held, free, newest, movable: Err(None), optional, probes: if request.probe.no_probe Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), target: ResolveBase.member_target(m) }) }
-		Ok({ request: indexed, loaded, settings, snapshot, scoped: held_scope, asked, stale, found, known, prepared, input, setup, second: queried.second })
+		Ok({ request: indexed, loaded, settings, snapshot, scoped: held_scope, asked, stale, found, known, prepared, input, setup, second: queried.second, yanked: counted.yanked })
 	}
 
 	## Slice 206e2 (R-AP16, R-AP74, R-RG4, R-DI1, R-CM6): the first closure query of a command that only reports (`tln outdated`), with its `groups` (`IndexQuery.report_groups`) and the window of `request` (`Report`).
@@ -134,7 +137,7 @@ PickFlow :: [].{
 	## The oracle loop of the first search, and the second search of a held move (R-SP16, R-DI1). `state` has what the command read and probed before: the first call has `PickLoop.start`, the call after a dropped tuple has the facts, the count and the dropped tuples.
 	search! : Fx, ResolveBase.Request, PickFlow.Ready, PickLoop.State => Try(Picked, Fail)
 	search! = |fx, request, ready, state| {
-		failed = |fail| with_close_versions(fail, { scoped: ready.scoped, asked: ready.asked, found: ready.found })
+		failed = |fail| with_close_versions(with_yanked_count(fail, { index: request.index, scoped: ready.scoped, asked: ready.asked, known: ready.known, yanked: ready.yanked }), { scoped: ready.scoped, asked: ready.asked, found: ready.found })
 		searched = match PickLoop.run!(fx, request, ready.input, ready.setup, state) {
 			Ok(c) => { looped: c, moves: [], found: ready.found }
 			Err(stuck) => {
@@ -216,11 +219,14 @@ fresh_items! = |fx, request, fresh, known, first| {
 					}
 				}
 				match read {
-					Found(releases) => match FullName.closure_item({ releases, selector: f.selector, text: f.text, range: f.range }) {
-						Ok(item) => {
-							$items = $items.append(item)
+					Found(releases) => match each_yanked_check(f, releases.releases) {
+						Err(fail) => return Err(fail)
+						Ok(_) => match FullName.closure_item({ releases, selector: f.selector, text: f.text, range: f.range }) {
+							Ok(item) => {
+								$items = $items.append(item)
+							}
+							Err(NoMatch) => return Err(no_match(f, releases.releases.keep_if(|r| !r.yanked).map(|r| r.version)))
 						}
-						Err(NoMatch) => return Err(no_match(f, releases.releases.map(|r| r.version)))
 					}
 					NoMatch => return Err(no_match(f, []))
 					SourceBuild => return Err(Fail.new(Internal, "${f.name}: a source build is not read from the registry"))
@@ -233,6 +239,16 @@ fresh_items! = |fx, request, fresh, known, first| {
 
 no_items : List(ClosureRequest.Group)
 no_items = []
+
+# Slice 250 (Design Q630-3, R-AD35 step 2): a name with releases, no selector, and each release yanked or withdrawn: exit 2, before the closure query.
+each_yanked_check : ResolveBase.Fresh, List(WireRelease.Row) -> Try({}, Fail)
+each_yanked_check = |f, rows| {
+	no_selector = match f.selector {
+		Err(None) | Ok(Latest) => Bool.True
+		_ => Bool.False
+	}
+	if no_selector and !rows.is_empty() and rows.all(|r| r.yanked or r.withdrawn != Err(None)) Err(FullName.each_yanked({ name: f.name })) else Ok({})
+}
 
 # Design Q430: the text of `add`. A name with no selector and no release at all is the text of R-AD35 step 2.
 no_match : ResolveBase.Fresh, List(Str) -> Fail
@@ -294,6 +310,34 @@ movable_names = |scoped, found| scoped
 	.fold(ResolveBase.no_names, |names, name| if names.contains(name) or found.any(|c| c.name == name) names else names.append(name))
 
 PickInput : PickLoop.Input
+
+# Slice 250 (Design Q630-4, R-PH13): the failure of an empty domain counts the yanked rows that `ClosureIndex.live` dropped for its name (`Pick.with_yanked`). The count is read from the closure answer; no answer, no count.
+with_yanked_count : Fail, { index : ClosureIndex.Source, scoped : List(Vars.Scoped), asked : Asked, known : List(Str), yanked : List({ name : Str, count : U64 }) } -> Fail
+with_yanked_count = |fail, facts| match (fail.kind, facts.index) {
+	(NoTuple, index) => {
+		first_alias = |s| s.variable.uses.first().map_ok(|u| u.alias) ?? ""
+		starts = |id| fail.message.starts_with("no tuple works: ${id} has no release ")
+		name = match facts.scoped.find_first(|s| starts(first_alias(s))) {
+			Ok(s) => s.variable.name.map_err(|_| None)
+			Err(_) => match facts.asked.fresh.find_first(|f| starts(f.key)) {
+				Ok(f) => Ok(f.name)
+				Err(_) => Err(None)
+			}
+		}
+		match name {
+			Ok(n) => {
+				count = match index {
+					Answer(a) => ClosureIndex.dropped({ releases: a.answer.releases, artifacts: a.answer.artifacts, name: n, held: facts.known })
+					Offline(_) => facts.yanked.find_first(|y| y.name == n).map_ok(|y| y.count) ?? 0
+					Direct => 0
+				}
+				{ ..fail, message: Pick.with_yanked({ message: fail.message, yanked: count }) }
+			}
+			Err(None) => fail
+		}
+	}
+	_ => fail
+}
 
 # R-SL12, U3 of slice 009: the failure "has no release that satisfies" of a variable with a selector (`update X@sel`) names the close versions of its repository.
 with_close_versions : Fail, { scoped : List(Vars.Scoped), asked : Asked, found : List(Candidates) } -> Fail

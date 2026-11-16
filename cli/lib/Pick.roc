@@ -43,6 +43,31 @@ Pick :: [].{
 	## or when a young release is newly chosen because a pattern of `min-release-age-exclude` keeps it visible (R-C16, `Age.note`).
 	Chosen : { id : Str, url : Str, version : Str, change : [Keep, Move(Str)], note : Try(Str, [None]) }
 
+	## Slice 250 (Design Q630, Q630-4): STUB. The failure text of an empty domain with the count of the yanked rows that `ClosureIndex.live` dropped for the name of the slot. `message` is the message of `Pick.step`. `yanked` is 0: `message` as it is.
+	## `yanked` above 0 and `message` ends in `(<n> releases, <a> outside the ranges, <b> too new)`: the part becomes `(<n + yanked> releases, <a> outside the ranges, <b> too new, <yanked> yanked)`. Any other `message` (the kind of R-C4, "do not fit together") stays.
+	with_yanked : { message : Str, yanked : U64 } -> Str
+	with_yanked = |facts| {
+		if facts.yanked == 0 {
+			facts.message
+		} else {
+			parts = facts.message.split_on("(")
+			match parts.last() {
+				Err(_) => facts.message
+				Ok(tail) => match tail.split_on(" releases, ") {
+					[count, rest] => match (U64.from_str(count), rest.ends_with(" too new)")) {
+						(Ok(n), Bool.True) => {
+							head = facts.message.drop_suffix(tail)
+							body = rest.drop_suffix(")")
+							"${head}${(n + facts.yanked).to_str()} releases, ${body}, ${facts.yanked.to_str()} yanked)"
+						}
+						_ => facts.message
+					}
+					_ => facts.message
+				}
+			}
+		}
+	}
+
 	## The rules, applied in this order to the domain of a slot:
 	##
 	## | # | Rule | Source |

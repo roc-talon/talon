@@ -64,6 +64,33 @@ ClosureIndex :: [].{
 		)
 	}
 
+	## Slice 250 (R-C6, R-C9, R-YK5, Design Q630): STUB. The release rows that a pick may use: each row with `yanked` true is dropped, unless it is the value of a header entry. `held` are the header values (URLs, Design 4.2): a row is held when `Ident.of_url(<held>)` has the hash of the row and the same URL form and version
+	## (the label of `drop_labels`). A `held` text that is no release URL holds nothing. The rows that are not yanked stay, in the order of the rows. `withdrawn` is not read here (`candidates` drops it).
+	live : { releases : List(WireRelease.Row), held : List(Str) } -> List(WireRelease.Row)
+	live = |facts| {
+		labels = facts.held.keep_oks(Ident.of_url)
+		facts.releases.keep_if(
+			|row| {
+				if !row.yanked {
+					Bool.True
+				} else {
+					match Ident.of_url(row.url) {
+						Err(Foreign) => Bool.False
+						Ok(ident) => labels.any(|k| k.group.form == ident.group.form and k.version == ident.version and k.hash == ident.hash)
+					}
+				}
+			},
+		)
+	}
+
+	## Slice 250 (Design Q630-4): the count of the candidates of `name` that `live` drops (the rows of the name that a pick would otherwise see). Used for the failure text (`Pick.with_yanked`).
+	dropped : { releases : List(WireRelease.Row), artifacts : List(WireArtifact.Row), name : Str, held : List(Str) } -> U64
+	dropped = |facts| {
+		all = ClosureIndex.candidates({ releases: facts.releases, artifacts: facts.artifacts, name: facts.name })
+		kept = ClosureIndex.candidates({ releases: ClosureIndex.live({ releases: facts.releases, held: facts.held }), artifacts: facts.artifacts, name: facts.name })
+		all.len() - kept.len()
+	}
+
 	## Slice 206d, Design Q461 (R-AP28 case 1, R-AP65, R-C9): the candidates of a name after the drop of the registry's release of a `Label` value. A candidate is dropped when a URL of `known` (the header values, `Ident.of_url`)
 	## has its group form (`ident.group.form`) and its version, and another hash. So the pick keeps the header URL of that label (the warning says that Talon does not use the registry's release for this value).
 	## The other versions of the group, a candidate with the hash of the header URL, and a candidate of another group form stay. The order stays. A `known` text that is no release URL drops nothing.
@@ -205,8 +232,9 @@ ClosureIndex :: [].{
 	##
 	## A copy body is decoded with `records.Index.decode_releases`. A copy that does not decode is as no copy (Design Q392, R-TF6): one `delete!` of its body and meta files (in this order), and the warning
 	## `warning: the kept answer <body path> of the registry <origin> does not decode (<reason>); removed` on stderr (a proposal, R-OUT2). Talon reads no GitHub page of `talon/index/github/` (R-IX5).
-	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str) } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]) }, Fail)
+	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64 }, Fail)
 	offline! = |fx, facts| {
+		var $yanked = 0
 		var $list = no_candidates
 		var $oldest = Err(None)
 		var $no_copy = no_names
@@ -214,7 +242,9 @@ ClosureIndex :: [].{
 			path = Registry.releases_url({ origin: "", group: form, series: Err(None) })
 			match kept!(fx, facts, path)? {
 				Ok(copy) => {
-					$list = $list.concat(ClosureIndex.candidates({ releases: copy.rows.keep_if(|row| row.group == form), artifacts: [], name: facts.name }))
+					form_rows = copy.rows.keep_if(|row| row.group == form)
+					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else 0
+					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: form_rows, held: facts.held }) else form_rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
 				}
 				Err(NoCopy) => {
@@ -231,19 +261,20 @@ ClosureIndex :: [].{
 			match kept!(fx, facts, path)? {
 				Ok(copy) => {
 					rows = if facts.forms.is_empty() copy.rows else copy.rows.keep_if(|row| $no_copy.contains(row.group))
-					$list = $list.concat(ClosureIndex.candidates({ releases: rows, artifacts: [], name: facts.name }))
+					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else 0
+					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: rows, held: facts.held }) else rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
 					$no_copy = []
 				}
 				Err(NoCopy) => {
 					if facts.forms.is_empty() {
-						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest })
+						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked })
 					}
 				}
 			}
 		}
 		missing_forms = $no_copy
-		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest })
+		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked })
 	}
 }
 
@@ -270,7 +301,7 @@ older = |oldest, t| match oldest {
 }
 
 # One kept copy of a read route (R-IX6), with no request: its rows and its time. A copy that does not decode is as no copy (Design Q392, R-TF6): Talon deletes it and prints a warning that names the file.
-kept! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str) }, Str => Try(Try({ rows : List(WireRelease.Row), time : U64 }, [NoCopy]), Fail)
+kept! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool }, Str => Try(Try({ rows : List(WireRelease.Row), time : U64 }, [NoCopy]), Fail)
 kept! = |fx, facts, path| {
 	got = RegistryCache.get!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path, now: facts.now, offline: Bool.True, newest: Bool.False, bookmark: Err(None) })?
 	match got {

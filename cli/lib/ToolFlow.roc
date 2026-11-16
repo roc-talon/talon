@@ -103,6 +103,10 @@ ToolFlow :: [].{
 	release_list_with_for! : Fx, Args, ToolBuild.Facts, { selector : Try(Selector, [None]), registry : Try({ text : Str, at : Str }, [Unset]) } => Try(List(Index.Candidate), Fail)
 	release_list_with_for! = |fx, args, facts, via| release_list_with!(fx, args, facts, via).map_ok(|got| got.list)
 
+	## Slice 250 (R-B3): the index of the run for the note of a reused build. The setting was read (and checked) by the release list before.
+	index_for : Args, ToolBuild.Facts, Try({ text : Str, at : Str }, [Unset]) -> [Direct, Registry]
+	index_for = |args, facts, registry| index_kind(args, facts, registry)
+
 	release_pages_for! : Fx, Args, ToolBuild.Facts => Try({ list : List(Index.Candidate), pages : List(Str) }, Fail)
 	release_pages_for! = |fx, args, facts| release_list!(fx, args, facts)
 
@@ -123,6 +127,12 @@ ToolFlow :: [].{
 
 	package_text_for! : Fx, Args, ToolBuild.Facts, { url : Str, hash : Str } => Try(Str, Fail)
 	package_text_for! = |fx, args, facts, pkg| package_text!(fx, args, facts, pkg)
+}
+
+index_kind : Args, ToolBuild.Facts, Try({ text : Str, at : Str }, [Unset]) -> [Direct, Registry]
+index_kind = |args, facts, registry| match IndexQuery.setting({ flag: args.registry, env: facts.net.registry, config: registry }) {
+	Ok(Registry(_)) => Registry
+	_ => Direct
 }
 
 # Steps 2 to 13.
@@ -154,7 +164,7 @@ flow! = |fx, args, plan| {
 		Keep(version) => return Ok({ how: Present, key: facts.key, name: facts.name, version, bin: Text.join(facts.bin, facts.file), built: Err(None) })
 		Build => {}
 	}
-	match XTake.online!(fx, args, { facts, selector: plan.ref.selector, list, newest })? {
+	match XTake.online!(fx, args, { facts, selector: plan.ref.selector, list, newest, index: index_kind(args, facts, gathered.registry) })? {
 		Ok(done) => return Ok(done)
 		Err(NoMatch) => {}
 	}

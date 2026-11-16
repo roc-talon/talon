@@ -18,5 +18,6 @@ import TempTest
 import ToolTest
 import UnknownvaluesTest
 import UpgradeTest
+import YankfilterTest
 
 main! = |_args| Ok({})

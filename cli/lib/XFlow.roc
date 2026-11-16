@@ -94,16 +94,17 @@ flow! = |fx, args, plan| {
 			_ => return Err(fail)
 		}
 	}
+	index = ToolFlow.index_for(args, facts, machine.registry)
 	picked = ToolInstall.pick({ name, list, selector: plan.ref.selector, now: facts.now, min_age: facts.min_age, exclude: facts.exclude })?
 	newest = newest_of(picked)?
 	check = Online({ first: newest.ident.version, listed: list.map(|c| c.ident.version) })
 	match XCache.choose({ name, target: facts.target, selector: plan.ref.selector, check, installed, entries: found }) {
 		Installed(tool) => {
-			note_reuse!(fx, { via: RunInstalled, key: tool.key, name, have: ToolsJson.source_text(tool.source), newest: newest.ident.version })
+			note_reuse!(fx, { via: RunInstalled, key: tool.key, name, have: ToolsJson.source_text(tool.source), newest: newest.ident.version, index })
 			run_binary!(fx, plan, installed_bin(facts, tool))
 		}
 		Cached(hit) => {
-			note_reuse!(fx, { via: RunCached, key, name, have: ToolsJson.source_text(hit.entry.source), newest: newest.ident.version })
+			note_reuse!(fx, { via: RunCached, key, name, have: ToolsJson.source_text(hit.entry.source), newest: newest.ident.version, index })
 			XCacheIo.touch!(fx, hit, Clock.format_utc(facts.now))?
 			run_binary!(fx, plan, XCacheIo.bin_of({ found: hit, os: facts.os }))
 		}
@@ -147,11 +148,14 @@ offline! = |fx, args, plan, run| {
 }
 
 # Step 5 (R-C6, R-B3): the note for a build that is used, and the line when it is older than the newest release.
-note_reuse! : Fx, { via : [TakeOver, RunCached, RunInstalled], key : Str, name : Str, have : Str, newest : Str } => {}
+note_reuse! : Fx, { via : [TakeOver, RunCached, RunInstalled], key : Str, name : Str, have : Str, newest : Str, index : [Direct, Registry] } => {}
 note_reuse! = |fx, run| {
-	fx.err!("note: ${XCmd.no_data}\n")
+	match XCmd.reuse_note(run.index) {
+		Ok(text) => fx.err!("note: ${text}\n")
+		Err(None) => {}
+	}
 	if XCache.is_older({ have: run.have, newest: run.newest }) {
-		fx.err!("${XCmd.available(run)}\n")
+		fx.err!("${XCmd.available({ via: run.via, key: run.key, name: run.name, have: run.have, newest: run.newest })}\n")
 	}
 }
 

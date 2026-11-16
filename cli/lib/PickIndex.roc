@@ -21,20 +21,33 @@ PickIndex :: [].{
 	# Slice 206d (Design Q461): with `Answer`, the registry's release of a `Label` value (a `known` URL with the same group form and version and another hash) is no candidate (`ClosureIndex.drop_labels`).
 	# `Offline(origin)`: the kept copies of the registry reads (`ClosureIndex.offline!`) for the group forms of the `known` URLs of the name. In both offline forms one line `index: cached at <oldest>` (R-DI12).
 	index! : Fx, ResolveBase.Request, List(Str), List(Str) => Try(List(ResolveBase.Candidates), Fail)
-	index! = |fx, request, names, known| {
+	index! = |fx, request, names, known| Ok(counted!(fx, request, names, known)?.found)
+
+	# Slice 250 (R-PA13, R-C6): the lookup of one exact release by its hash (the base of a patch) is no pick: the rows are not filtered by `yanked`.
+	lookup! : Fx, ResolveBase.Request, List(Str) => Try(List(ResolveBase.Candidates), Fail)
+	lookup! = |fx, request, names| Ok(gather!(fx, request, names, [], Bool.False)?.found)
+
+	# Slice 250 (Design Q630-4): `index!` and the count of the yanked rows that were dropped for each name of a kept copy (`Offline`). The other indexes give no count here (the flow counts an answer itself).
+	counted! : Fx, ResolveBase.Request, List(Str), List(Str) => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }) }, Fail)
+	counted! = |fx, request, names, known| gather!(fx, request, names, known, Bool.True)
+
+	gather! : Fx, ResolveBase.Request, List(Str), List(Str), Bool => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }) }, Fail)
+	gather! = |fx, request, names, known, filter| {
+		var $yanked = []
 		var $found = no_candidates
 		var $oldest = Err(None)
 		for name in names {
 			match request.index {
 				Answer(a) => {
-					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [], pages: [] })
+					$found = $found.append({ name, list: ClosureIndex.drop_labels({ list: ClosureIndex.candidates({ releases: if filter ClosureIndex.live({ releases: a.answer.releases, held: known }) else a.answer.releases, artifacts: a.answer.artifacts, name }), known }), missing: Bool.False, missing_forms: [], pages: [] })
 				}
 				Offline(origin) => {
-					got = ClosureIndex.offline!(fx, { roots: request.roots, origin, version: Help.version, now: request.now, name, forms: forms_of(name, known) })?
+					got = ClosureIndex.offline!(fx, { roots: request.roots, origin, version: Help.version, now: request.now, name, forms: forms_of(name, known), held: known, filter })?
 					$oldest = match got.oldest {
 						Ok(t) => older($oldest, t)
 						Err(None) => $oldest
 					}
+					$yanked = $yanked.append({ name, count: got.yanked })
 					$found = $found.append({ name, list: got.list, missing: got.missing, missing_forms: got.missing_forms, pages: [] })
 				}
 				Direct => {
@@ -65,7 +78,7 @@ PickIndex :: [].{
 			Ok(t) => fx.err!("${Github.offline_line(t)}\n")
 			Err(None) => {}
 		}
-		Ok($found)
+		Ok({ found: $found, yanked: $yanked })
 	}
 
 	# The slots of `Pick.step`: the variables in order, then the wants (R-VA6), then the new names of `add`.

@@ -51,6 +51,13 @@ XCmd :: [].{
 	no_data : Str
 	no_data = "no yank and advisory data without a registry"
 
+	## Slice 250 (R-B3, R-C6, CLI R-AU4, Design Q630): STUB. The note of a reused build for the index of the command: `Direct` gives `Ok(no_data)`, `Registry` gives `Err(None)` (the registry has the yank data, the advisories are P3 and have no note).
+	reuse_note : [Direct, Registry] -> Try(Str, [None])
+	reuse_note = |index| match index {
+		Direct => Ok(no_data)
+		Registry => Err(None)
+	}
+
 	## R-B3: the line when the build that is used is older than the newest release. `have` is its version, `newest` the newest release, `key` the binary name, `name` the full name.
 	##
 	## | `via` | Text |

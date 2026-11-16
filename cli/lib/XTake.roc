@@ -48,7 +48,7 @@ XTake :: [].{
 	Taken : Try(ToolBuild.Done, [NoMatch])
 
 	## Steps 1 to 4 online. `list` are the candidates of the release list, `newest` is the first candidate of `ToolInstall.pick`.
-	online! : Fx, Args, { facts : ToolBuild.Facts, selector : Try(Selector, [None]), list : List(Index.Candidate), newest : Index.Candidate } => Try(Taken, Fail)
+	online! : Fx, Args, { facts : ToolBuild.Facts, selector : Try(Selector, [None]), list : List(Index.Candidate), newest : Index.Candidate, index : [Direct, Registry] } => Try(Taken, Fail)
 	online! = |fx, _args, run| {
 		facts = run.facts
 		found = XCacheIo.entries!(fx, facts.roots, facts.os)?
@@ -56,7 +56,10 @@ XTake :: [].{
 		match XCache.choose({ name: facts.name, target: facts.target, selector: run.selector, check, installed: Err(None), entries: found }) {
 			Cached(hit) => {
 				version = ToolsJson.source_text(hit.entry.source)
-				fx.err!("note: ${XCmd.no_data}\n")
+				match XCmd.reuse_note(run.index) {
+					Ok(text) => fx.err!("note: ${text}\n")
+					Err(None) => {}
+				}
 				if XCache.is_older({ have: version, newest: run.newest.ident.version }) {
 					fx.err!("${XCmd.available({ via: TakeOver, key: facts.key, name: facts.name, have: version, newest: run.newest.ident.version })}\n")
 				}

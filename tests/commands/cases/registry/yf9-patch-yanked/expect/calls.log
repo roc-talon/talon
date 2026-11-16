@@ -1,0 +1,30 @@
+args
+env_all
+env_all
+clock
+cwd
+canonical $PROJECT/p2/main.roc
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+canonical $PROJECT/p2/main.roc
+lock $HOME/.cache/roc/talon/projects.json nowait: held
+list_dirs $HOME/.cache/roc/talon
+read_files $HOME/.cache/roc/talon/projects.json
+write_atomic $HOME/.cache/roc/talon/projects.json
+unlock $HOME/.cache/roc/talon/projects.json
+path_roc
+read_files $HOME/.cache/roc/talon/path-roc.json
+spawn_all limit=1
+  job - /fake/bin/roc version
+write_atomic $HOME/.cache/roc/talon/path-roc.json
+read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
+random
+list_dirs $HOME/.cache/roc/packages
+read_files $HOME/.cache/roc/packages/HHHmbitLoVKgaw1KLiPKPddTczS4aKa1oKn7HpZwYRuS/main.roc $HOME/.cache/roc/packages/55X6eHan7Y8pdMGGK3UKXA5Ui37wDB3uqZP5mFBhN6Mb/main.roc
+list_dirs $HOME/.cache/roc/packages/DBH2L5Q5ucHw58xhQJXbWc3BVECYMfTbyyr7tELWyEn4
+list_dirs $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get
+read_files $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/115d2390e614794b0446998391b51487.meta $HOME/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/115d2390e614794b0446998391b51487.json
+random
+list_dirs $HOME/.cache/roc/packages
