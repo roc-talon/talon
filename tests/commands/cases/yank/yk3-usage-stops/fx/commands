@@ -1,0 +1,12 @@
+yank 2.1.0 --registry direct
+yank 2.1.0 --registry direct --offline
+yank 2.1.0 --offline
+yank --offline
+yank
+yank 2.1.0 2.2.0
+yank env:GITHUB_REPOSITORY=
+yank 2.1.0 env:GITHUB_REPOSITORY=
+yank 2.1.0 env:GITHUB_REPOSITORY=acme/json/x
+yank 2.1.0 env:GITHUB_REPOSITORY= env:ACTIONS_ID_TOKEN_REQUEST_URL=
+yank 2.1.0 env:ACTIONS_ID_TOKEN_REQUEST_URL=
+yank 2.1.0 env:ACTIONS_ID_TOKEN_REQUEST_TOKEN=

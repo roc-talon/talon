@@ -1,0 +1,2 @@
+tln: error[usage]: the GitHub OIDC token request was refused (403). The job needs permissions: id-token: write.
+tln: error[network]: the GitHub OIDC token request failed: answered 500

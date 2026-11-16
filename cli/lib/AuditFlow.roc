@@ -60,7 +60,7 @@ go! = |fx, args| {
 	checked = state.tally
 	ignoring = AuditCheck.ignore({ findings: checked.findings, items: from_toml.concat(opts.items) })
 	report : AuditTypes.Report
-	report = { index: state.index, checked: checked.checked, findings: ignoring.findings, unused: ignoring.unused, no_yank_data: Bool.True, unindexed: checked.unindexed.map(|e| { name: e.name, version: e.version, hash: e.hash }), gone: state.gone }
+	report = { index: state.index, checked: checked.checked, findings: ignoring.findings, unused: ignoring.unused, no_yank_data: state.index == Direct, unindexed: checked.unindexed.map(|e| { name: e.name, version: e.version, hash: e.hash }), gone: state.gone }
 	if !args.json {
 		fx.out!(AuditCheck.text(report))
 	}

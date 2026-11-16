@@ -24,6 +24,7 @@ import ProbeFlow
 import ProbeSmokeFlow
 import Proxy
 import PublishFlow
+import YankFlow
 import Ref
 import Remove
 import RocInstall
@@ -134,6 +135,8 @@ dispatch! = |fx, args| if args.options.any(|(name, _)| name == "--tool") {
 	ProbeFlow.run!(fx, args)
 } else if args.command == ["publish"] {
 	PublishFlow.run!(fx, args)
+} else if args.command == ["yank"] {
+	YankFlow.run!(fx, args)
 } else if args.command == ["roc", "install"] {
 	GitInstall.run!(fx, args)
 } else if args.command == ["roc", "link"] {

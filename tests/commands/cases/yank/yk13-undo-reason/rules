@@ -1,0 +1,2 @@
+Q629-2 R-CM21 R-YK1 R-EC2 (slice 249, proposal pending user review): --reason with --undo is exit 2, before any request (the DELETE has no body, so the reason would be lost). The check is after the operand (run 3: no tag gives the tag text) and before the repository (run 2 has no repository and still gets this text). Run 4 has --json: the usage error in the envelope.
+Runs 5 and 6 (mutation gap G1): --undo with a reason that is also bad (501 bytes, a tab) gives the --undo text: the check is before the content of the reason.

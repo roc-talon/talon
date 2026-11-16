@@ -1,0 +1,14 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get http://127.0.0.1:9/v1/packages/acme/json/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get http://127.0.0.1:9/v1/packages/acme/json/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache

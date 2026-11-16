@@ -1,0 +1,7 @@
+== yank 2.1.0 --reason bad
+exit 20
+== yank 2.1.0 --undo --json
+{"schema":1,"command":"yank","ok":false,"data":null,"error":{"kind":"rejected","code":20,"message":"the release is yanked by the operator: only the operator can remove this yank (/errors/forbidden). Fix the release or the workflow, then run the command again.","details":{"status":403,"type":"/errors/forbidden"}}}
+exit 20
+== yank 2.1.0
+exit 20

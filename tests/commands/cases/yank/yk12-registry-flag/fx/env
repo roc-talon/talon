@@ -1,0 +1,7 @@
+HOME={w}/home
+CI=true
+GITHUB_REPOSITORY=acme/json
+GITHUB_REF=refs/heads/main
+GITHUB_EVENT_NAME=workflow_dispatch
+ACTIONS_ID_TOKEN_REQUEST_URL=http://127.0.0.1:8/token?api-version=2.0
+ACTIONS_ID_TOKEN_REQUEST_TOKEN=req1

@@ -1,0 +1,9 @@
+== yank 2.1.0 --reason new-reason
+acme/json 2.1.0 (tag 2.1.0) is yanked already: old-reason
+exit 0
+== yank 2.1.0 --undo
+acme/json 2.1.0 (tag 2.1.0) is not yanked
+exit 0
+== yank 2.1.0 --json
+{"schema":1,"command":"yank","ok":true,"data":{"name":"acme/json","tag":"2.1.0","version":"2.1.0","log_index":41,"yanked":true,"reason":"old-reason","changed":false},"error":null}
+exit 0

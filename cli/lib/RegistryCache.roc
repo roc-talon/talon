@@ -188,7 +188,12 @@ RegistryCache :: [].{
 	get! = |fx, facts| get_via!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path: facts.path, now: facts.now, offline: facts.offline, newest: facts.newest, bookmark: facts.bookmark, source: "" })
 
 	get_via! : Fx, { roots : Roots, origin : Str, version : Str, path : Str, now : U64, offline : Bool, newest : Bool, bookmark : Try(Str, [None]), source : Str } => Try([Answer({ status : U16, headers : List((Str, Str)), body : Str, source : [Live, Copy(U64)] }), NoCopy], Fail)
-	get_via! = |fx, facts| {
+	get_via! = |fx, facts| RegistryCache.get_needs!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path: facts.path, now: facts.now, offline: facts.offline, newest: facts.newest, bookmark: facts.bookmark, source: facts.source, needs: Bool.False })
+
+	## `get_via!` for a command that needs the registry (R-RG9, Design Q600): with `needs` the text of a failure with no answer has no advice for `direct`.
+	get_needs! : Fx, { roots : Roots, origin : Str, version : Str, path : Str, now : U64, offline : Bool, newest : Bool, bookmark : Try(Str, [None]), source : Str, needs : Bool } => Try([Answer({ status : U16, headers : List((Str, Str)), body : Str, source : [Live, Copy(U64)] }), NoCopy], Fail)
+	get_needs! = |fx, facts| {
+		needs = facts.needs
 		url = "${facts.origin}${facts.path}"
 		paths = RegistryCache.files({ roots: facts.roots, origin: facts.origin, url })
 		no_cache = facts.newest or facts.bookmark != Err(None)
@@ -198,8 +203,8 @@ RegistryCache :: [].{
 			(Use, Ok(c)) => Ok(Answer({ status: 200, headers: [], body: c.body, source: Copy(c.cached.mtime) }))
 			(Missing, _) => Ok(NoCopy)
 			(Use, Err(_)) => Ok(NoCopy)
-			(Revalidate(etag), _) => fetch!(fx, facts, paths, Ok(etag), copy)
-			(Fetch, _) => fetch!(fx, facts, paths, Err(None), copy)
+			(Revalidate(etag), _) => fetch!(fx, facts, paths, Ok(etag), copy, needs)
+			(Fetch, _) => fetch!(fx, facts, paths, Err(None), copy, needs)
 		}
 	}
 }
@@ -240,7 +245,7 @@ load_copy! = |fx, files, key| {
 }
 
 # Steps 3 to 5 of `get!`: the request, and the write of the copy.
-fetch! = |fx, facts, files, etag, copy| {
+fetch! = |fx, facts, files, etag, copy, needs| {
 	url = "${facts.origin}${facts.path}"
 	headers = RegistryCache.read_headers({ version: facts.version, etag, newest: facts.newest, bookmark: facts.bookmark })
 	reply = match fx.http_get!({ url, headers }) {
@@ -250,7 +255,7 @@ fetch! = |fx, facts, files, etag, copy| {
 				Timeout => "no answer in 20 s"
 				Failed(t) => t
 			}
-			return Err(Registry.no_answer({ origin: facts.origin, why: text, source: facts.source }))
+			return Err(Registry.no_answer({ origin: facts.origin, why: text, source: facts.source, needs }))
 		}
 	}
 	if reply.status >= 300 and reply.status < 400 and reply.status != 304 {

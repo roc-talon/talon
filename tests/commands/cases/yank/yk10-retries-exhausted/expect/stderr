@@ -1,0 +1,2 @@
+tln: error[network]: the registry http://127.0.0.1:9 (TALON_REGISTRY) gave no answer 4 times: no answer in 20 s. The yank may be done. Run the command again.
+tln: error[network]: the registry http://127.0.0.1:9 (TALON_REGISTRY) is busy (503) after 4 requests. Try again in 3 s.

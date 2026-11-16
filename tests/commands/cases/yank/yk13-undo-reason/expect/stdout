@@ -1,0 +1,13 @@
+== yank 2.1.0 --undo --reason parse-bug
+exit 2
+== yank 2.1.0 --undo --reason parse-bug env:GITHUB_REPOSITORY=
+exit 2
+== yank --undo --reason parse-bug
+exit 2
+== yank 2.1.0 --undo --reason parse-bug --json
+{"schema":1,"command":"yank","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"tln yank --undo takes no --reason"}}
+exit 2
+== yank 2.1.0 --undo --reason aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+exit 2
+== yank 2.1.0 --undo --reason a	b
+exit 2

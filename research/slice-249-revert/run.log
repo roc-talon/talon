@@ -1,0 +1,36 @@
+base: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+base L2: commands: 70 passed, 0 failed 
+y1: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y1: L2 commands: 70 passed, 0 failed 
+y2: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y2: L2 FAIL yank/yk13-undo-reason commands: 69 passed, 1 failed 
+y3: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y3: L2 commands: 70 passed, 0 failed 
+y3b: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y3b: L2 FAIL yank/yk4-reason-checks commands: 69 passed, 1 failed 
+y4: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y4: L2 commands: 70 passed, 0 failed 
+y5: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y5: L2 commands: 70 passed, 0 failed 
+y6: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y6: L2 commands: 70 passed, 0 failed 
+y7: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y7: L2 FAIL yank/yk1-yank-undo FAIL yank/yk2-same-state FAIL yank/yk7-refused FAIL yank/yk8-renew-401 FAIL yank/yk9-retries commands: 65 passed, 5 failed 
+y7b: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y7b: L2 FAIL yank/yk10-retries-exhausted FAIL yank/yk1-yank-undo FAIL yank/yk2-same-state FAIL yank/yk7-refused FAIL yank/yk8-renew-401 FAIL yank/yk9-retries commands: 64 passed, 6 failed 
+y8: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y8: L2 FAIL yank/yk10-retries-exhausted FAIL yank/yk11-registry-no-answer FAIL yank/yk12-registry-flag FAIL yank/yk1-yank-undo FAIL yank/yk2-same-state FAIL yank/yk5-no-release FAIL yank/yk6-token-refused FAIL yank/yk7-refused FAIL yank/yk8-renew-401 FAIL yank/yk9-retries commands: 60 passed, 10 failed 
+y9: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y9: L2 FAIL yank/yk8-renew-401 commands: 69 passed, 1 failed 
+y10: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y10: L2 commands: 70 passed, 0 failed 
+y11a: L0 l0-6: exit=1     0 compiler errors. l0-9: exit=0 All (189) tests passed.
+y11a: L2 FAIL yank/yk11-registry-no-answer commands: 69 passed, 1 failed 
+y11b: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=0 All (189) tests passed.
+y11b: L2 FAIL yank/yk11-registry-no-answer commands: 69 passed, 1 failed 
+y12: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=1     0 compiler errors.
+y12: L2 FAIL audit/ad13-guard-gone FAIL audit/ad9-guard FAIL audit/au1-findings FAIL audit/au1-tool FAIL audit/au3-clean FAIL audit/au3-warnings FAIL audit/au4-not-indexed FAIL audit/au9-ignore commands: 62 passed, 8 failed 
+y12j: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=1     0 compiler errors.
+y12j: L2 FAIL audit/au1-findings FAIL audit/au3-clean FAIL audit/au3-warnings FAIL audit/au4-not-indexed FAIL audit/au9-ignore commands: 65 passed, 5 failed 
+y13: L0 l0-6: exit=0 All (163) tests passed. l0-9: exit=1     0 compiler errors.
+y13: L2 commands: 70 passed, 0 failed 

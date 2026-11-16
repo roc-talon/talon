@@ -1,0 +1,1 @@
+R-FL5 R-RG1 R-RG7 R-CM21 (slice 249): the flag --registry is read by tln yank (no TALON_REGISTRY in the environment). The token audience is the registry URL of the flag.

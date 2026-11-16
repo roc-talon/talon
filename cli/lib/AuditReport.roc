@@ -27,12 +27,11 @@ AuditReport :: [].{
 	}
 
 	## R-AU8: the fix of a finding. A project tool: `tln update --tool <key>`. A header entry: `tln update <alias>`. A transitive entry: update each header entry that needs it.
-	## Before P3 (`from_p3`, Q-244c-4) `tln update` does not follow a successor, so a successor does not change the fix, and `moved` has no fix (""): it does not fail and the old URL works.
+	## A successor (R-PU28) is followed by `tln update <alias>`, so `moved` has this fix too (Design Q629).
 	fix : AuditTypes.Finding -> Str
 	fix = |f| {
 		ask = f.reason == AssetReplaced
-		follows = from_p3({}) and f.successor != Err(None)
-		if f.reason == Moved and !from_p3({}) return ""
+		follows = f.successor != Err(None)
 		match place_of(f.entry) {
 			Header(alias) => {
 				if ask {
@@ -73,7 +72,7 @@ AuditReport :: [].{
 		ignored_lines = ignored.keep_oks(|f| f.ignored.map_ok(|item| "ignored: ${item}"))
 		unused_lines = report.unused.map(|item| "unused ignore: ${item}")
 		count = "${plural(failing.len(), "finding")}, ${plural(warnings.len(), "warning")}, ${ignored.len().to_str()} ignored."
-		items = open.keep_if(|f| AuditReport.fails(f.reason) or (from_p3({}) and f.successor != Err(None))).keep_if(|f| AuditReport.fix(f) != "").map(|f| "${f.entry.edge}: ${AuditReport.fix(f)}.")
+		items = open.keep_if(|f| AuditReport.fails(f.reason) or f.successor != Err(None)).keep_if(|f| AuditReport.fix(f) != "").map(|f| "${f.entry.edge}: ${AuditReport.fix(f)}.")
 		fix_lines = if items.is_empty() [] else ["fix: ${Str.join_with(items, " ")}"]
 		why_not = match report.index {
 			Registry => "the registry has no release of it"
@@ -81,13 +80,10 @@ AuditReport :: [].{
 		}
 		not_checked = report.unindexed.map(|u| "note: not checked: ${u.name} ${u.version}: ${why_not}")
 		gone_lines = report.gone.map(|g| "note: not checked: the deps of ${g.name} ${g.version}: its archive is gone")
-		note = if report.no_yank_data {
-			match report.index {
-				Direct => ["note: no yank and advisory data without a registry"]
-				Registry => ["note: the registry has no yank and advisory data yet"]
-			}
-		} else {
-			[]
+		# R-AU4, Design Q629: only `direct` has the note. A registry has the yank data.
+		note = match report.index {
+			Direct => if report.no_yank_data ["note: no yank and advisory data without a registry"] else []
+			Registry => []
 		}
 		lines = head.concat(rows).concat(warn_lines).concat(ignored_lines).concat(unused_lines).concat([count]).concat(fix_lines).concat(not_checked).concat(gone_lines).concat(note)
 		"${Str.join_with(lines, "\n")}\n"
@@ -96,7 +92,7 @@ AuditReport :: [].{
 	## R-OUT4: the `data` of `--json`, and the `details` of exit 21 (R-AU5). `notes` are objects with a `kind`.
 	data : AuditTypes.Report -> JsonDoc
 	data = |report| {
-		yank_note = if report.no_yank_data [JsonDoc.Obj([("kind", Text("no-yank-data"))])] else []
+		yank_note = if report.no_yank_data and report.index == Direct [JsonDoc.Obj([("kind", Text("no-yank-data"))])] else []
 		unused = report.unused.map(|item| JsonDoc.Obj([("kind", Text("unused-ignore")), ("item", Text(item))]))
 		not_indexed = report.unindexed.map(|u| JsonDoc.Obj([("kind", Text("not-indexed")), ("name", Text(u.name)), ("version", Text(u.version)), ("hash", Text(u.hash))]))
 		deps_gone = report.gone.map(|g| JsonDoc.Obj([("kind", Text("deps-not-checked")), ("name", Text(g.name)), ("version", Text(g.version)), ("hash", Text(g.hash))]))
@@ -117,7 +113,7 @@ AuditReport :: [].{
 	}
 
 	## Slice 244c (R-AU7, R-AU8, R-AU14, Q-244c-4): the text of one warning of a resolve, with no `warning: ` prefix. `<head>: <name> <version> <state>. Fix: <fix>.` The head is the alias, or `<edge> via <aliases>`.
-	## `moved` of a header entry with a successor is the line of R-PU28: `<alias>: moved to <successor>` (from P3 `. Run: tln update <alias>` is added). `moved` has no fix before P3: no `Fix:` part.
+	## `moved` of a header entry with a successor is the line of R-PU28: `<alias>: moved to <successor>` (with `. Run: tln update <alias>`, Design Q622, Q629).
 	resolve_line : AuditTypes.Finding -> Str
 	resolve_line = |f| {
 		e = f.entry
@@ -127,9 +123,8 @@ AuditReport :: [].{
 			Tool(key) => key
 		}
 		fixed = AuditReport.fix(f)
-		match (f.reason, place_of(e), f.successor, from_p3({})) {
-			(Moved, Header(alias), Ok(to), Bool.True) => "${alias}: moved to ${to}. Run: tln update ${alias}"
-			(Moved, Header(alias), Ok(to), Bool.False) => "${alias}: moved to ${to}"
+		match (f.reason, place_of(e), f.successor) {
+			(Moved, Header(alias), Ok(to)) => "${alias}: moved to ${to}. Run: tln update ${alias}"
 			_ => "${head}: ${e.name} ${e.version} ${state_text(f)}.${if fixed == "" "" else " Fix: ${fixed}."}"
 		}
 	}
@@ -189,10 +184,6 @@ AuditReport :: [].{
 		{ ..Fail.new(Findings, message), details: Ok(AuditReport.data(report)) }
 	}
 }
-
-# The phase constant of Design Q620 item 1: false in a P2 `tln` (no yank data, `tln update` does not follow a successor). The P3 release sets it.
-from_p3 : {} -> Bool
-from_p3 = |_| Bool.False
 
 # Where a hash is in the project: a header entry, a transitive entry (the header aliases that need it), or a tool.
 Place : [Header(Str), Via(List(Str)), Tool(Str)]

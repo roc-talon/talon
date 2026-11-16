@@ -1,0 +1,1 @@
+R-CM21 R-EC2 R-YK3 R-AP1 R-J4 (slice 249): a tag with no indexed release is exit 2, before the token request: run 1 (the list has only the tag 2.1.0), run 2 (404, the repository has no indexed release), run 3 with --json (no details). One request each.

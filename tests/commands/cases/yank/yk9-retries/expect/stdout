@@ -1,0 +1,6 @@
+== yank 2.1.0 --reason x
+yanked acme/json 2.1.0 (tag 2.1.0): x
+exit 0
+== yank 2.1.0 --undo
+unyanked acme/json 2.1.0 (tag 2.1.0)
+exit 0

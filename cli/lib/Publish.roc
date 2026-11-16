@@ -1,4 +1,5 @@
 import records.Compat
+import records.Problem
 import records.Release
 import Db
 import Fail
@@ -285,35 +286,22 @@ Publish :: [].{
 	## | any other case | the message of `Registry.refuse` |
 	failure : { origin : Str, version : Str, tries : U64, renewed : Bool, reply : Publish.Reply, source ?: Str } -> Fail
 	failure = |input| match input.reply {
-		Err(Timeout) => Publish.no_reply(input, "no answer in 20 s")
-		Err(Failed(why)) => Publish.no_reply(input, why)
+		Err(Timeout) => Publish.no_reply(input, "no answer in 20 s", "publish")
+		Err(Failed(why)) => Publish.no_reply(input, why, "publish")
 		Ok(answer) => {
 			retry_after = Registry.retry_after_of(answer.headers)
 			refused = Registry.refuse({ origin: input.origin, version: input.version, method: Post, reply: { status: answer.status, body: answer.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
 			match Registry.problem({ status: answer.status, body: answer.body }) {
 				Err(NotProblem) => refused
 				Ok(body) => {
-					what = if body.detail.is_empty() body.title else body.detail
 					type = body.type_text
-					status = answer.status.to_str()
-					tries = input.tries.to_str()
-					# Q602: the source goes after the URL of the registry. Without a source the text is as before.
-					source = input.?source ?? ""
-					who = if source == "" "the registry" else "the registry ${input.origin} (${source})"
+					what = if body.detail.is_empty() body.title else body.detail
 					text = if type == "/errors/label-conflict" {
 						Ok("${what} (${type}). The tag was released again. Release a new version.")
 					} else if type == "/errors/forbidden" {
 						Ok("${what} (${type}). Run tln publish in a job for the tag.")
-					} else if answer.status == 401 and input.renewed {
-						Ok("${what} (${type}): the registry refused the new token too.")
-					} else if input.tries > 1 and answer.status == 429 {
-						Ok("${who} answered 429 (${type}) after ${tries} requests. ${Registry.wait_text(retry_after)}")
-					} else if input.tries > 1 and answer.status == 503 and type == "/errors/busy" {
-						Ok("${who} is busy (503) after ${tries} requests. ${Registry.wait_text(retry_after)}")
-					} else if input.tries > 1 and answer.status >= 500 {
-						Ok("${who} answered ${status} (${type}) ${tries} times. Try again later.")
 					} else {
-						Err(None)
+						Publish.retry_text(input, { status: answer.status, retry_after, body })
 					}
 					match text {
 						Ok(message) => { ..refused, message }
@@ -438,10 +426,33 @@ Publish :: [].{
 		source => " (${source})"
 	}
 
-	no_reply : { origin : Str, version : Str, tries : U64, renewed : Bool, reply : Publish.Reply, source ?: Str }, Str -> Fail
-	no_reply = |input, why| if input.tries > 1 {
-		Fail.new(Network, "the registry ${input.origin}${Publish.source_text(input)} gave no answer ${input.tries.to_str()} times: ${why}. The publish may be done. Run the command again.")
+	## `what` is the word of the work that may be done (`publish`, `yank`, `undo`).
+	no_reply : { origin : Str, version : Str, tries : U64, renewed : Bool, reply : Publish.Reply, source ?: Str }, Str, Str -> Fail
+	no_reply = |input, why, what| if input.tries > 1 {
+		Fail.new(Network, "the registry ${input.origin}${Publish.source_text(input)} gave no answer ${input.tries.to_str()} times: ${why}. The ${what} may be done. Run the command again.")
 	} else {
 		Registry.no_answer({ origin: input.origin, why, source: input.?source ?? "", needs: Bool.True })
+	}
+
+	## The message of a write that failed after more than one request, or that got a new token (R-AP34, Q516, Q602). `Err(None)`: the text of `Registry.refuse`.
+	retry_text : { origin : Str, version : Str, tries : U64, renewed : Bool, reply : Publish.Reply, source ?: Str }, { status : U16, retry_after : Str, body : Problem.Body } -> Try(Str, [None])
+	retry_text = |input, got| {
+		what = if got.body.detail.is_empty() got.body.title else got.body.detail
+		type = got.body.type_text
+		status = got.status.to_str()
+		tries = input.tries.to_str()
+		source = input.?source ?? ""
+		who = if source == "" "the registry" else "the registry ${input.origin} (${source})"
+		if got.status == 401 and input.renewed {
+			Ok("${what} (${type}): the registry refused the new token too.")
+		} else if input.tries > 1 and got.status == 429 {
+			Ok("${who} answered 429 (${type}) after ${tries} requests. ${Registry.wait_text(got.retry_after)}")
+		} else if input.tries > 1 and got.status == 503 and type == "/errors/busy" {
+			Ok("${who} is busy (503) after ${tries} requests. ${Registry.wait_text(got.retry_after)}")
+		} else if input.tries > 1 and got.status >= 500 {
+			Ok("${who} answered ${status} (${type}) ${tries} times. Try again later.")
+		} else {
+			Err(None)
+		}
 	}
 }

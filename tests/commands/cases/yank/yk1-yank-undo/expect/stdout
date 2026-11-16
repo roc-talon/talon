@@ -1,0 +1,9 @@
+== yank 2.1.0 --reason parse-bug
+yanked acme/json 2.1.0 (tag 2.1.0): parse-bug
+exit 0
+== yank 2.1.0 --undo
+unyanked acme/json 2.1.0 (tag 2.1.0)
+exit 0
+== yank 2.1.0 --json
+{"schema":1,"command":"yank","ok":true,"data":{"name":"acme/json","tag":"2.1.0","version":"2.1.0","log_index":41,"yanked":true,"reason":null,"changed":true},"error":null}
+exit 0

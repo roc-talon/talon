@@ -1,0 +1,4 @@
+tln: error[usage]: the reason is 501 bytes: the registry takes at most 500
+tln: error[usage]: the reason has a control character: a reason is one line of plain text
+tln: error[usage]: the reason is 501 bytes: the registry takes at most 500
+tln: error[usage]: tln yank needs a tag: tln yank <tag> [--reason <text>] [--undo]

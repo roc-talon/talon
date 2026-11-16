@@ -258,6 +258,8 @@ package
 		XFlow,
 		XProject,
 		XTake,
+		YankCheck,
+		YankFlow,
 		Zig,
 		ZigInstall,
 	]

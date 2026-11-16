@@ -520,18 +520,18 @@ expect {
 
 # R-AU8 R-SC15 R-PU28 (TW24 texts): the fix of a finding (the `fix` field, and the items of the `fix:` line).
 # Header entry: `tln update <alias>`. `asset-replaced` also asks the author. `repo-missing`: replace the package, or ignore it.
-# Slice 244c (Q-244c-4, approved): before P3 `tln update` does not follow a successor (R-PU28 client part is P3), so a successor does not change the fix, and `moved` has no fix ("": it does not fail, the old URL works).
+# Slice 249 (Q629-12, approved: `from_p3` is on): `tln update` follows a successor (R-PU28), so a finding with a successor has the fix `tln update <alias>` (any reason), and `moved` has a fix like the other reasons. This is the form of slice 244a.
 # Transitive entry: update each header entry that needs it (`via`), with `tln why <name of R-SC15>`, or `[overrides]`. A project tool: `tln update --tool <key>` (Q-244-7).
 expect {
 	rows = [
 		(f_json, "tln update json"),
 		({ ..f_json, entry: entry_of(h_csv), reason: AssetReplaced }, "ask the author to release a new version, then run tln update csv"),
 		(f_csv, "tln remove csv, then tln add another package, or add the item to [audit] ignore"),
-		({ ..f_csv, successor: Ok("acme/roc-csv") }, "tln remove csv, then tln add another package, or add the item to [audit] ignore"),
-		(f_xml, ""),
-		({ ..f_xml, successor: Err(None) }, ""),
-		({ ..f_util, reason: Moved, successor: Ok("acme/roc-util") }, ""),
-		({ ..f_fmt, reason: Moved, successor: Ok("acme/roc-fmt") }, ""),
+		({ ..f_csv, successor: Ok("acme/roc-csv") }, "tln update csv"),
+		(f_xml, "tln update xml"),
+		({ ..f_xml, successor: Err(None) }, "tln update xml"),
+		({ ..f_util, reason: Moved, successor: Ok("acme/roc-util") }, "tln update json (tln why someone/roc-util), or use [overrides]"),
+		({ ..f_fmt, reason: Moved, successor: Ok("acme/roc-fmt") }, "tln update --tool fmt"),
 		(f_util, "tln update json (tln why someone/roc-util), or use [overrides]"),
 		(util_header, "tln update util"),
 		(f_parser, "tln update json or tln update web (tln why acme/parser), or use [overrides]; ask the author to release a new version"),
@@ -576,7 +576,7 @@ expect {
 			"ignored: someone/roc-old@1.0.0:yanked",
 			"unused ignore: someone/roc-gone@1.0.0:yanked",
 			"3 findings, 2 warnings, 1 ignored.",
-			"fix: json: tln update json. parser: tln update json (tln why acme/parser), or use [overrides]; ask the author to release a new version. csv: tln remove csv, then tln add another package, or add the item to [audit] ignore.",
+			"fix: json: tln update json. parser: tln update json (tln why acme/parser), or use [overrides]; ask the author to release a new version. csv: tln remove csv, then tln add another package, or add the item to [audit] ignore. xml: tln update xml.",
 			"",
 		],
 		"\n",
@@ -617,23 +617,23 @@ expect {
 	got == want and one.contains("\n1 finding, 1 warning, 0 ignored.\n")
 }
 
-# R-AU4 R-C6 (Q-244-1, Q-244-2): the note of no yank data is the last line. `direct`: the text of R-C6. A registry with no yank data (before P3): its own text. No finding: only the first line, the count line and the note.
+# R-AU4 R-C6 (Q-244-1, Q-244-2; slice 249, Q629-11 (a)): the note of no yank data is the last line, for `direct` only: the text of R-C6. A registry has yank data (slice 249): no note, also when the flag `no_yank_data` is true (the flag is for `direct`; the flow sets it from the index). No finding: only the first line, the count line and the note.
 expect {
 	empty = { index: Direct, checked: 3, findings: [], unused: [], no_yank_data: Bool.True, unindexed: [], gone: [] }
 	d = AuditCheck.text(empty)
 	g = AuditCheck.text({ ..empty, index: Registry })
 	none = AuditCheck.text({ ..empty, index: Registry, no_yank_data: Bool.False })
 	d == "audit: 3 packages checked (direct)\n0 findings, 0 warnings, 0 ignored.\nnote: no yank and advisory data without a registry\n"
-		and g == "audit: 3 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\nnote: the registry has no yank and advisory data yet\n"
+		and g == "audit: 3 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n"
 			and none == "audit: 3 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n"
 }
 
 # R-OUT2 R-OUT4 R-AU10 R-AU11 R-AU13 (TW24: the catalog row `audit`, with `tool` and `members` added, and `yank` without `by`): the `data` of `--json`. Keys in this order. `notes` are objects with `kind`
-# (`no-yank-data`, then one `unused-ignore` for each item). `since` is a UTC time text. `yank` is `{reason}` for `yanked`, else null.
+# (`no-yank-data` for `direct` only, then one `unused-ignore` for each item). `since` is a UTC time text. `yank` is `{reason}` for `yanked`, else null.
 expect {
 	r = { ..report, findings: [f_json, parser_one, f_xml], unused: ["someone/roc-old@1.0.0:yanked"], checked: 5, no_yank_data: Bool.True }
 	got = AuditCheck.data(r).render()
-	want = "{\"index\":\"registry\",\"checked\":5,\"notes\":[{\"kind\":\"no-yank-data\"},{\"kind\":\"unused-ignore\",\"item\":\"someone/roc-old@1.0.0:yanked\"}],\"findings\":[{\"name\":\"acme/json\",\"group\":\"github.com/acme/json/releases/download/{v}/\",\"version\":\"2.1.0\",\"hash\":\"${h_json}\",\"alias\":\"json\",\"via\":[],\"tool\":null,\"members\":[\"/p/main.roc\"],\"reason\":\"yanked\",\"fails\":true,\"ignored\":false,\"since\":null,\"yank\":{\"reason\":\"parse bug, use 2.1.1\"},\"new_hash\":null,\"successor\":null,\"fix\":\"tln update json\"},{\"name\":\"acme/parser\",\"group\":\"github.com/acme/parser/releases/download/{v}/\",\"version\":\"1.0.2\",\"hash\":\"${h_parser}\",\"alias\":null,\"via\":[\"json\"],\"tool\":null,\"members\":[\"/p/main.roc\"],\"reason\":\"asset-replaced\",\"fails\":true,\"ignored\":false,\"since\":null,\"yank\":null,\"new_hash\":null,\"successor\":null,\"fix\":\"tln update json (tln why acme/parser), or use [overrides]; ask the author to release a new version\"},{\"name\":\"someone/roc-xml\",\"group\":\"github.com/someone/roc-xml/releases/download/{v}/\",\"version\":\"0.4.0\",\"hash\":\"${h_xml}\",\"alias\":\"xml\",\"via\":[],\"tool\":null,\"members\":[\"/p/main.roc\"],\"reason\":\"moved\",\"fails\":false,\"ignored\":false,\"since\":\"2023-11-14T22:13:20Z\",\"yank\":null,\"new_hash\":null,\"successor\":\"acme/roc-xml\",\"fix\":null}]}"
+	want = "{\"index\":\"registry\",\"checked\":5,\"notes\":[{\"kind\":\"unused-ignore\",\"item\":\"someone/roc-old@1.0.0:yanked\"}],\"findings\":[{\"name\":\"acme/json\",\"group\":\"github.com/acme/json/releases/download/{v}/\",\"version\":\"2.1.0\",\"hash\":\"${h_json}\",\"alias\":\"json\",\"via\":[],\"tool\":null,\"members\":[\"/p/main.roc\"],\"reason\":\"yanked\",\"fails\":true,\"ignored\":false,\"since\":null,\"yank\":{\"reason\":\"parse bug, use 2.1.1\"},\"new_hash\":null,\"successor\":null,\"fix\":\"tln update json\"},{\"name\":\"acme/parser\",\"group\":\"github.com/acme/parser/releases/download/{v}/\",\"version\":\"1.0.2\",\"hash\":\"${h_parser}\",\"alias\":null,\"via\":[\"json\"],\"tool\":null,\"members\":[\"/p/main.roc\"],\"reason\":\"asset-replaced\",\"fails\":true,\"ignored\":false,\"since\":null,\"yank\":null,\"new_hash\":null,\"successor\":null,\"fix\":\"tln update json (tln why acme/parser), or use [overrides]; ask the author to release a new version\"},{\"name\":\"someone/roc-xml\",\"group\":\"github.com/someone/roc-xml/releases/download/{v}/\",\"version\":\"0.4.0\",\"hash\":\"${h_xml}\",\"alias\":\"xml\",\"via\":[],\"tool\":null,\"members\":[\"/p/main.roc\"],\"reason\":\"moved\",\"fails\":false,\"ignored\":false,\"since\":\"2023-11-14T22:13:20Z\",\"yank\":null,\"new_hash\":null,\"successor\":\"acme/roc-xml\",\"fix\":\"tln update xml\"}]}"
 	ignored = AuditCheck.data({ ..r, findings: [{ ..f_old, ignored: Ok("someone/roc-old@1.0.0:yanked") }], unused: [], no_yank_data: Bool.False }).render()
 	dbg got
 	got == want and ignored.contains("\"ignored\":true,") and ignored.contains("\"notes\":[],") and ignored.contains("\"yank\":{\"reason\":null}")
@@ -659,14 +659,14 @@ expect {
 			"warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml",
 			"unused ignore: someone/roc-old@1.0.0:yanked",
 			"0 findings, 1 warning, 0 ignored.",
+			"fix: xml: tln update xml.",
 			"note: not checked: acme/fmt 1.0.0: the registry has no release of it",
 			"note: not checked: acme/web 1.0.0: the registry has no release of it",
-			"note: the registry has no yank and advisory data yet",
 			"",
 		],
 		"\n",
 	)
-	notes = "\"notes\":[{\"kind\":\"no-yank-data\"},{\"kind\":\"unused-ignore\",\"item\":\"someone/roc-old@1.0.0:yanked\"},{\"kind\":\"not-indexed\",\"name\":\"acme/fmt\",\"version\":\"1.0.0\",\"hash\":\"${h_fmt}\"},{\"kind\":\"not-indexed\",\"name\":\"acme/web\",\"version\":\"1.0.0\",\"hash\":\"${h_web}\"}],"
+	notes = "\"notes\":[{\"kind\":\"unused-ignore\",\"item\":\"someone/roc-old@1.0.0:yanked\"},{\"kind\":\"not-indexed\",\"name\":\"acme/fmt\",\"version\":\"1.0.0\",\"hash\":\"${h_fmt}\"},{\"kind\":\"not-indexed\",\"name\":\"acme/web\",\"version\":\"1.0.0\",\"hash\":\"${h_web}\"}],"
 	data = AuditCheck.data(r).render()
 	dbg got
 	dbg data
@@ -852,8 +852,8 @@ expect {
 }
 
 # R-AU7 R-AU8 R-AU14 R-PU28 (TW24 texts; Q-244c-4 for `moved`): the text of one warning. `<head>: <name> <version> <state>. Fix: <fix of R-AU8>.`
-# `<head>` is the alias of a header entry, or `<edge> via <aliases>` for a transitive entry. `moved` of a header entry with a successor is the line of R-PU28 with no `Run:` part before P3 (Q-244c-4).
-# `moved` has no fix before P3 (Q-244c-4): no `Fix:` part.
+# `<head>` is the alias of a header entry, or `<edge> via <aliases>` for a transitive entry. `moved` of a header entry with a successor is the line of R-PU28: `<alias>: moved to <successor>. Run: tln update <alias>` (slice 249, Q629-12: `from_p3` is on).
+# Another `moved` entry has the fix `tln update <alias>` like the other reasons.
 expect {
 	moved_util = { ..f_util, reason: Moved, successor: Ok("acme/roc-util") }
 	rows = [
@@ -865,9 +865,9 @@ expect {
 		(f_util, "util via json: someone/roc-util 0.3.0 has a deleted release. Fix: tln update json (tln why someone/roc-util), or use [overrides]."),
 		({ ..f_util, reason: Prerelease }, "util via json: someone/roc-util 0.3.0 is a prerelease. Fix: tln update json (tln why someone/roc-util), or use [overrides]."),
 		({ ..f_util, reason: Other("frozen") }, "util via json: someone/roc-util 0.3.0 is withdrawn (frozen). Fix: tln update json (tln why someone/roc-util), or use [overrides]."),
-		(f_xml, "xml: moved to acme/roc-xml"),
-		({ ..f_xml, successor: Err(None) }, "xml: someone/roc-xml 0.4.0 is in a repository that moved."),
-		(moved_util, "util via json: someone/roc-util 0.3.0 is in a repository that moved to acme/roc-util."),
+		(f_xml, "xml: moved to acme/roc-xml. Run: tln update xml"),
+		({ ..f_xml, successor: Err(None) }, "xml: someone/roc-xml 0.4.0 is in a repository that moved. Fix: tln update xml."),
+		(moved_util, "util via json: someone/roc-util 0.3.0 is in a repository that moved to acme/roc-util. Fix: tln update json (tln why someone/roc-util), or use [overrides]."),
 	]
 	bad = rows.keep_if(|(f, want)| AuditCheck.resolve_line(f) != want).map(|(f, want)| (f.entry.edge, want, AuditCheck.resolve_line(f)))
 	dbg bad

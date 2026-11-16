@@ -1,0 +1,3 @@
+tln: error[rejected]: token claim event_name is "push", expected "workflow_dispatch" (/errors/forbidden). Fix the release or the workflow, then run the command again.
+tln: error[rejected]: the release is yanked by the operator: only the operator can remove this yank (/errors/forbidden). Fix the release or the workflow, then run the command again.
+tln: error[rejected]: no release has the log index 41 (/errors/not-found). Fix the release or the workflow, then run the command again.

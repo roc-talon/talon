@@ -1,0 +1,3 @@
+== yank 2.1.0 --registry http://127.0.0.1:9
+yanked acme/json 2.1.0 (tag 2.1.0)
+exit 0

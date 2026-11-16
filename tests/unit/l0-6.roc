@@ -20,6 +20,7 @@ import PublishTest
 import ResolvebaseTest
 import TalonRemoveTest
 import VerifyTest
+import YankcheckTest
 import ZigTest
 
 main! = |_args| Ok({})

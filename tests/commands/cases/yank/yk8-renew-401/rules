@@ -1,0 +1,1 @@
+R-AP34 R-TP2 R-E6 (slice 249): a 401 gets one new OIDC token (the token request again; the fake gives jwt2 to the second) and the same request once more, with no wait. Run 1: the second request gets 200. Run 2: the new token (the fake gives jwt1 for the third and fourth request) is refused too: exit 20 with the words "the registry refused the new token too".

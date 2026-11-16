@@ -295,14 +295,14 @@ def p1_findings(member, ignored=()):
     return [
         finding("json", "json", [], "yanked", True, "acme/json@2.1.0:yanked" in ignored, None, {"reason": "parse bug, use 2.1.1"}, None, "tln update json", members=m),
         finding("csv", "csv", [], "repo-missing", True, "someone/roc-csv@1.1.0:repo-missing" in ignored, SINCE, None, None, FIX_CSV, members=m),
-        finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", None, members=m),
+        finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", "tln update xml", members=m),
         finding("old", "old", [], "yanked", True, "someone/roc-old@1.0.0:yanked" in ignored, None, {"reason": None}, None, "tln update old", members=m),
         finding("parser", None, ["json"], "asset-replaced", True, "acme/parser@1.0.2:asset-replaced" in ignored, None, None, None, FIX_PARSER, members=m),
         finding("util", None, ["json"], "release-missing", False, False, None, None, None, "tln update json (tln why someone/roc-util), or use [overrides]", members=m),
     ]
 
 
-NOTE_REG = "note: the registry has no yank and advisory data yet\n"
+NOTE_REG = ""  # slice 249 (Q629-11 a): a registry has yank data, so no note
 
 
 def au1():
@@ -322,9 +322,9 @@ def au1():
         "warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml\n"
         "warning: release missing  util 0.3.0  someone/roc-util  via json\n"
         "4 findings, 2 warnings, 0 ignored.\n"
-        f"fix: json: tln update json. csv: {FIX_CSV}. old: tln update old. parser: {FIX_PARSER}.\n" + NOTE_REG
+        f"fix: json: tln update json. csv: {FIX_CSV}. xml: tln update xml. old: tln update old. parser: {FIX_PARSER}.\n" + NOTE_REG
     )
-    data = {"index": "registry", "checked": 7, "notes": [{"kind": "no-yank-data"}], "findings": p1_findings("$PROJECT/p1/main.roc")}
+    data = {"index": "registry", "checked": 7, "notes": [], "findings": p1_findings("$PROJECT/p1/main.roc")}
     stdout = "== audit --file p1/main.roc\n" + text + "exit 21\n" + "== audit --json --file p1/main.roc\n" + env_fail(msg, data) + "exit 21\n"
     stderr = f"tln: error[findings]: {msg}\n" * 2
     calls = calls_run("p1", P1_GUARD, P1_HASHES, True, True) + calls_run("p1", P1_GUARD, P1_HASHES, False, False)
@@ -340,10 +340,10 @@ def au3_clean():
     hashes = [h("pf"), h("json200")]
     cmds = "# R-AU3 R-AU4 R-C6 (slice 244, Q-244-1, Q-244-2): no finding: exit 0. With a registry before P3 the last line is the note of no yank data (its own text, not the text of direct).\n"
     cmds += "audit --file p2/main.roc\n"
-    cmds += "# R-OUT2 R-J4: --json: data with checked 2, the note no-yank-data, no finding. Nothing on stderr.\n"
+    cmds += "# R-OUT2 R-J4: --json: data with checked 2, no note (a registry has yank data, slice 249), no finding. Nothing on stderr.\n"
     cmds += "audit --json --file p2/main.roc\n"
     text = "audit: 2 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n" + NOTE_REG
-    data = {"index": "registry", "checked": 2, "notes": [{"kind": "no-yank-data"}], "findings": []}
+    data = {"index": "registry", "checked": 2, "notes": [], "findings": []}
     stdout = "== audit --file p2/main.roc\n" + text + "exit 0\n== audit --json --file p2/main.roc\n" + env_ok(data) + "exit 0\n"
     calls = calls_run("p2", guard, hashes, True, True) + calls_run("p2", guard, hashes, False, False)
     make("au3-clean", "R-CM14 R-AU3 R-AU4 R-C6 R-OUT2 (slice 244): no finding, exit 0, the note of no yank data. See fx/commands.", "p2",
@@ -357,7 +357,7 @@ def au3_warnings():
     repos = [repo_item("acme/pfx"), repo_item("someone/roc-xml", "moved", "acme/roc-xml"), repo_item("someone/roc-util"), repo_item("acme/pre")]
     guard = ["acme/pfx", "someone/roc-xml", "someone/roc-util", "acme/pre"]
     hashes = [h("pf"), h("xml"), h("util"), h("pre")]
-    cmds = "# R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only findings that do not fail: xml moved (successor acme/roc-xml), util unpublished (release-missing), pre edited (prerelease). Exit 0, 3 warning lines, no fix line (Q-244c-4: moved has no fix before P3, the others do not fail).\n"
+    cmds = "# R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only findings that do not fail: xml moved (successor acme/roc-xml), util unpublished (release-missing), pre edited (prerelease). Exit 0, 3 warning lines, the fix line names xml only (slice 249, Q629-12: moved has the fix `tln update xml`, the others do not fail and have no successor).\n"
     cmds += "audit --file p3/main.roc\n"
     cmds += "# R-OUT2: --json: each finding has fails false; exit 0.\n"
     cmds += "audit --json --file p3/main.roc\n"
@@ -367,15 +367,16 @@ def au3_warnings():
         "warning: release missing  util 0.3.0  someone/roc-util  header: util\n"
         "warning: prerelease  pre 1.0.0  acme/pre  header: pre\n"
         "0 findings, 3 warnings, 0 ignored.\n"
+        "fix: xml: tln update xml.\n"
         + NOTE_REG
     )
     m = ["$PROJECT/p3/main.roc"]
     data = {
         "index": "registry",
         "checked": 4,
-        "notes": [{"kind": "no-yank-data"}],
+        "notes": [],
         "findings": [
-            finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", None, members=m),
+            finding("xml", "xml", [], "moved", False, False, SINCE, None, "acme/roc-xml", "tln update xml", members=m),
             finding("util", "util", [], "release-missing", False, False, None, None, None, "tln update util", members=m),
             finding("pre", "pre", [], "prerelease", False, False, None, None, None, "tln update pre", members=m),
         ],
@@ -384,6 +385,30 @@ def au3_warnings():
     calls = calls_run("p3", guard, hashes, True, True) + calls_run("p3", guard, hashes, False, False)
     make("au3-warnings", "R-CM14 R-AU2 R-AU3 R-AU8 R-OUT2 (slice 244): only warnings, exit 0. See fx/commands.", "p3",
          {"p3/main.roc": header(entries)}, keys, states, repos, guard, cmds, stdout, "", None, calls)
+
+
+def au13_successor_fix():
+    # Slice 249 mutation gap W2 (Q629-12): a `repo-missing` finding WITH a successor has the fix `tln update <alias>` (from_p3 is on), not the replace-the-package text.
+    entries = [("pf", "pf", True), ("csv", "csv", False)]
+    keys = ["pf", "csv"]
+    states = {"csv": {"withdrawn": "repo-missing"}}
+    repos = [repo_item("acme/pfx"), repo_item("someone/roc-csv", "missing", "acme/roc-csv")]
+    guard = ["acme/pfx", "someone/roc-csv"]
+    hashes = [h("pf"), h("csv")]
+    cmds = "# R-AU8 R-AU14 R-PU28 (slice 249, Q629-12): csv is repo-missing and its repository has the successor acme/roc-csv. The fix is `tln update csv` (it follows the successor), not the text for a package with no successor (compare au1-findings). Exit 21.\n"
+    cmds += "audit --file p9/main.roc\n"
+    msg = FAIL_MSG.format(items="someone/roc-csv@1.1.0:repo-missing")
+    stdout = (
+        "== audit --file p9/main.roc\n"
+        "audit: 2 packages checked (registry)\n"
+        "repo missing  csv 1.1.0  someone/roc-csv  the repository is deleted or private  header: csv\n"
+        "1 finding, 0 warnings, 0 ignored.\n"
+        "fix: csv: tln update csv.\n"
+        "exit 21\n"
+    )
+    stderr = f"tln: error[findings]: {msg}\n"
+    make("au13-successor-fix", "R-AU8 R-AU14 R-PU28 R-AU3 (slice 249, Q629-12; mutation gap W2): a failing finding with a successor has the fix tln update <alias>. See fx/commands.", "p9",
+         {"p9/main.roc": header(entries)}, keys, states, repos, guard, cmds, stdout, stderr, None, calls_run("p9", guard, hashes, True, True))
 
 
 def au9_ignore():
@@ -402,11 +427,11 @@ def au9_ignore():
     ign = "ignored: acme/json@2.1.0:yanked\nignored: someone/roc-csv@1.1.0:repo-missing\nignored: someone/roc-old@1.0.0:yanked\n"
     warn = "warning: moved  xml 0.4.0  someone/roc-xml  successor: acme/roc-xml  header: xml\nwarning: release missing  util 0.3.0  someone/roc-util  via json\n"
     parser_row = "asset replaced  parser 1.0.2  acme/parser  the asset of the header is gone  via json\n"
-    run1 = head + warn + ign + "ignored: acme/parser@1.0.2:asset-replaced\nunused ignore: someone/roc-gone@1.0.0:yanked\n0 findings, 2 warnings, 4 ignored.\n" + NOTE_REG
-    run3 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: parser: {FIX_PARSER}.\n" + NOTE_REG
-    run4 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\nunused ignore: ACME/Parser@1.0.2:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: parser: {FIX_PARSER}.\n" + NOTE_REG
+    run1 = head + warn + ign + "ignored: acme/parser@1.0.2:asset-replaced\nunused ignore: someone/roc-gone@1.0.0:yanked\n0 findings, 2 warnings, 4 ignored.\nfix: xml: tln update xml.\n" + NOTE_REG
+    run3 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: xml: tln update xml. parser: {FIX_PARSER}.\n" + NOTE_REG
+    run4 = head + parser_row + warn + ign + "unused ignore: someone/roc-gone@1.0.0:yanked\nunused ignore: ACME/Parser@1.0.2:yanked\n1 finding, 2 warnings, 3 ignored.\n" + f"fix: xml: tln update xml. parser: {FIX_PARSER}.\n" + NOTE_REG
     all4 = ("acme/json@2.1.0:yanked", "someone/roc-csv@1.1.0:repo-missing", "someone/roc-old@1.0.0:yanked", "acme/parser@1.0.2:asset-replaced")
-    data = {"index": "registry", "checked": 7, "notes": [{"kind": "no-yank-data"}, {"kind": "unused-ignore", "item": "someone/roc-gone@1.0.0:yanked"}], "findings": p1_findings("$PROJECT/p4/main.roc", all4)}
+    data = {"index": "registry", "checked": 7, "notes": [{"kind": "unused-ignore", "item": "someone/roc-gone@1.0.0:yanked"}], "findings": p1_findings("$PROJECT/p4/main.roc", all4)}
     msg = FAIL_MSG.format(items="acme/parser@1.0.2:asset-replaced")
     stdout = (
         "== audit --file p4/main.roc --ignore acme/parser@1.0.2:asset-replaced\n" + run1 + "exit 0\n"
@@ -538,7 +563,7 @@ def ad1_direct():
         + "warning: prerelease  pre 1.0.0  acme/pre  header: pre\n"
         + "warning: release missing  util 0.3.0  someone/roc-util  via json\n"
         + "2 findings, 3 warnings, 0 ignored.\n"
-        + f"fix: json: {fix_json}. csv: {FIX_CSV}.\n" + NOTE_DIRECT
+        + f"fix: json: {fix_json}. csv: {FIX_CSV}. xml: tln update xml.\n" + NOTE_DIRECT
     )
     m = ["$PROJECT/q1/main.roc"]
     data = {
@@ -548,7 +573,7 @@ def ad1_direct():
         "findings": [
             finding("json", "json", [], "asset-replaced", True, False, None, None, None, fix_json, members=m, new_hash=h("json2")),
             finding("csv", "csv", [], "repo-missing", True, False, None, None, None, FIX_CSV, members=m),
-            finding("xml", "xml", [], "moved", False, False, None, None, "acme/roc-xml", None, members=m),
+            finding("xml", "xml", [], "moved", False, False, None, None, "acme/roc-xml", "tln update xml", members=m),
             finding("pre", "pre", [], "prerelease", False, False, None, None, None, "tln update pre", members=m),
             finding("util", None, ["json"], "release-missing", False, False, None, None, None, "tln update json (tln why someone/roc-util), or use [overrides]", members=m),
         ],
@@ -743,11 +768,11 @@ def au7_install():
         repo_state(ans, "acme/parser", "moved", "acme/roc-parser")
     fix_json = "tln remove json, then tln add another package, or add the item to [audit] ignore"
     line_json = f"json: acme/json 2.0.0 is in a deleted or private repository. Fix: {fix_json}."
-    line_parser = "parser: moved to acme/roc-parser"
+    line_parser = "parser: moved to acme/roc-parser. Run: tln update parser"
     warn = f"warning: {line_json}\nwarning: {line_parser}\n"
     cmds = "# R-AU7 R-AU14 R-FL4 R-J2 R-OUT4 (slice 244c, Q-244c-1 to Q-244c-4): tln install with a registry, all entries held (the world of registry/di1-install-no-free, project u1).\n"
     cmds += "# The closure answer says: acme/json is missing (repo-missing, json 2.0.0 is a header entry), acme/parser moved to acme/roc-parser (a rename). pf is fine.\n"
-    cmds += "# One warning line on stderr for each closure hash with a reason, in the order of the walk; for moved the line of R-PU28 (P2 text, Q-244c-4). No extra request, exit 0.\n"
+    cmds += "# One warning line on stderr for each closure hash with a reason, in the order of the walk; for moved the line of R-PU28 (P3 text with `. Run: tln update parser`, slice 249). No extra request, exit 0.\n"
     cmds += "install --no-check --dry-run --file u1/main.roc\n"
     cmds += "# --json: data.audit_warnings (new member after written, TW24); the human lines stay on stderr (R-J2).\n"
     cmds += "install --no-check --dry-run --json --file u1/main.roc\n"
@@ -810,7 +835,7 @@ def au7_ignore():
     toml = '[audit]\nignore = ["acme/json@2.0.0:repo-missing", "bad"]\n'
     copy_base("au7-ignore", "R-AU7 R-AU9 (slice 244c, Q-244c-3): [audit] ignore in a resolve, with a bad item. See fx/commands.", cmds, change,
               "== install --no-check --dry-run --file u1/main.roc\nnothing to change\ndry run: nothing was written\nexit 0\n",
-              "warning: parser: moved to acme/roc-parser\n", run_calls(True, True), files={"u1/talon.toml": toml})
+              "warning: parser: moved to acme/roc-parser. Run: tln update parser\n", run_calls(True, True), files={"u1/talon.toml": toml})
 
 
 def au7_held_move():
@@ -1193,13 +1218,13 @@ def au4_not_indexed():
     cmds = "# Q-244-4 (Design Q620) R-AU1 R-OUT2 (slice 244 review): the header entry web (acme/web 1.0.0) is in `unknown` of the closure answer: the registry has no release of it. It is not checked (checked 2), gives no finding,\n"
     cmds += "# and gives one note: `note: not checked: acme/web 1.0.0: the registry has no release of it` in the report on stdout, before the R-AU4 note. No ingest (audit writes nothing to the registry). Exit 0. The walk reads the header of web from the cache.\n"
     cmds += "audit --file p7/main.roc\n"
-    cmds += "# The same with --json: the note {\"kind\":\"not-indexed\",\"name\",\"version\",\"hash\"} in data.notes, after no-yank-data. Nothing on stderr.\n"
+    cmds += "# The same with --json: the note {\"kind\":\"not-indexed\",\"name\",\"version\",\"hash\"} in data.notes (no no-yank-data note with a registry). Nothing on stderr.\n"
     cmds += "audit --json --file p7/main.roc\n"
     cmds += "# Q-244-8 (Design Q620): --offline is exit 2 (usage), before any read: tln audit reads the index of now.\n"
     cmds += "audit --offline --file p7/main.roc\n"
     note = "note: not checked: acme/web 1.0.0: the registry has no release of it\n"
     text = "audit: 2 packages checked (registry)\n0 findings, 0 warnings, 0 ignored.\n" + note + NOTE_REG
-    data = {"index": "registry", "checked": 2, "notes": [{"kind": "no-yank-data"}, {"kind": "not-indexed", "name": "acme/web", "version": "1.0.0", "hash": h("web")}], "findings": []}
+    data = {"index": "registry", "checked": 2, "notes": [{"kind": "not-indexed", "name": "acme/web", "version": "1.0.0", "hash": h("web")}], "findings": []}
     stdout = "== audit --file p7/main.roc\n" + text + "exit 0\n== audit --json --file p7/main.roc\n" + env_ok(data) + "exit 0\n== audit --offline --file p7/main.roc\nexit 2\n"
     stderr = "tln: error[usage]: tln audit reads the index of now, so it does not take --offline\n"
     calls = calls_run("p7", guard, hashes, True, True) + calls_run("p7", guard, hashes, False, False) + "args\nenv_all\ntty\n"
@@ -1213,6 +1238,7 @@ if __name__ == "__main__":
     au1()
     au3_clean()
     au3_warnings()
+    au13_successor_fix()
     au9_ignore()
     au12_bad_items()
     au1_tool()

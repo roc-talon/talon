@@ -1,0 +1,7 @@
+== yank 2.2.0
+exit 2
+== yank 2.1.0
+exit 2
+== yank 2.2.0 --json
+{"schema":1,"command":"yank","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"acme/json has no indexed release for the tag 2.2.0. Run tln publish for the tag first, or wait until the registry indexes it."}}
+exit 2

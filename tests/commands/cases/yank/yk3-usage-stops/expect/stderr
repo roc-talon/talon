@@ -1,0 +1,12 @@
+tln: error[usage]: tln yank needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln yank needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[network]: tln yank needs the network: --offline sends no request
+tln: error[network]: tln yank needs the network: --offline sends no request
+tln: error[usage]: tln yank needs a tag: tln yank <tag> [--reason <text>] [--undo]
+tln: error[usage]: tln yank takes one tag: unexpected '2.2.0'
+tln: error[usage]: tln yank needs a tag: tln yank <tag> [--reason <text>] [--undo]
+tln: error[usage]: GITHUB_REPOSITORY is not set or is empty. tln yank runs in a GitHub Actions job.
+tln: error[usage]: GITHUB_REPOSITORY is acme/json/x, not of the form owner/repo.
+tln: error[usage]: GITHUB_REPOSITORY is not set or is empty. tln yank runs in a GitHub Actions job.
+tln: error[usage]: tln yank needs an OIDC token, and ACTIONS_ID_TOKEN_REQUEST_URL is not set. In a GitHub Actions job, set permissions: id-token: write.
+tln: error[usage]: tln yank needs an OIDC token, and ACTIONS_ID_TOKEN_REQUEST_TOKEN is not set. In a GitHub Actions job, set permissions: id-token: write.

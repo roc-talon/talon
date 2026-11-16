@@ -1,0 +1,6 @@
+== audit --file p9/main.roc
+audit: 2 packages checked (registry)
+repo missing  csv 1.1.0  someone/roc-csv  the repository is deleted or private  header: csv
+1 finding, 0 warnings, 0 ignored.
+fix: csv: tln update csv.
+exit 21

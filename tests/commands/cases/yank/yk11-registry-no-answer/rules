@@ -1,0 +1,1 @@
+R-RG9 R-E6 R-AP1 R-AP22 (slice 249): the read of the release (R-AP1) gets no answer, then a 500, from a registry that a person set (TALON_REGISTRY): exit 15, the message names the URL and the source only (R-RG9: not the advice for direct, which a yank cannot use). No token request, no write.
