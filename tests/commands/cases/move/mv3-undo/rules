@@ -1,0 +1,2 @@
+R-CM22 R-MV1 R-MV2 R-MV3 R-MV4 R-AP31 R-OUT2 R-OUT4 R-J1 (slice 251): `tln move <old> --undo` is a DELETE with no body and no Content-Type. No privacy guard at all: there is no successor in the request (R-MV3, Q251-5). The R-AP1 read comes first (Q251-4).
+Run 1 (job of the old name): the read shows a successor, 200: `removed`. Run 2: the read shows none, 200: `unchanged`. Run 3 (job of the SUCCESSOR, with --json): the job is the successor in the read, so the check of Q251-6 passes: `removed`. No stderr line in an exit-0 run.

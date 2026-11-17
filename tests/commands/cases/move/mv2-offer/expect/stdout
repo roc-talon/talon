@@ -1,0 +1,6 @@
+== move olddev/json --to acme/roc-json
+offered: olddev/json to acme/roc-json. To accept, run tln move olddev/json in a workflow_dispatch job of acme/roc-json.
+exit 0
+== move olddev/json --to acme/roc-json --json
+{"schema":1,"command":"move","ok":true,"data":{"name":"olddev/json","result":"offered","successor":null,"offer":"acme/roc-json","state":"active"},"error":null}
+exit 0

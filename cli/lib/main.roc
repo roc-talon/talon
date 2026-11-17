@@ -98,6 +98,8 @@ package
 		Matrix,
 		Members,
 		Mode,
+		MoveCheck,
+		MoveFlow,
 		Net,
 		Nightlies,
 		NightlyFlow,

@@ -1,0 +1,5 @@
+tln: error[rejected]: token claim repository_owner_id is "40": it is not the owner of olddev/json, and olddev/json has no offer for acme/roc-json (/errors/forbidden). Fix the names or the workflow, then run the command again.
+tln: error[rejected]: the successor acme/roc-json fails the exposes check: the newest candidate of the successor does not expose the modules Encode, Decode (/errors/successor-mismatch). Fix the names or the workflow, then run the command again.
+tln: error[rejected]: no package named olddev/json has a repos row (/errors/not-found). Fix the names or the workflow, then run the command again.
+tln: error[rejected]: the name olddev/json is bound to another GitHub account (repository id 100). Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues
+tln: error[rejected]: token claim repository is "olddev/json": the old repository olddev/json is in the state moved, an offer needs the state active (/errors/forbidden). Fix the names or the workflow, then run the command again.

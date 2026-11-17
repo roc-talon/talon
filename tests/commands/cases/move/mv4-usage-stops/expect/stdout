@@ -1,0 +1,57 @@
+== move olddev/json --registry direct
+exit 2
+== move olddev/json --registry direct --offline
+exit 2
+== move olddev/json --offline
+exit 15
+== move --offline
+exit 15
+== move
+exit 2
+== move olddev/json acme/x
+exit 2
+== move json
+exit 2
+== move gitlab.com/acme/json
+exit 2
+== move json --undo --to acme/x
+exit 2
+== move olddev/json --undo --to x
+exit 2
+== move olddev/json --to x
+exit 2
+== move olddev/json env:GITHUB_REPOSITORY=
+exit 2
+== move olddev/json --to x env:GITHUB_REPOSITORY=
+exit 2
+== move olddev/json --undo --to acme/x env:GITHUB_REPOSITORY=
+exit 2
+== move olddev/json env:GITHUB_REPOSITORY=olddev/json
+exit 2
+== move olddev/json --to olddev/json env:GITHUB_REPOSITORY=olddev/json
+exit 2
+== move olddev/json --to acme/roc-json env:GITHUB_REPOSITORY=third/lib
+exit 2
+== move olddev/json --to acme/roc-json env:GITHUB_REPOSITORY=third/lib env:GITHUB_EVENT_NAME=push
+exit 2
+== move olddev/json env:GITHUB_EVENT_NAME=push
+exit 2
+== move olddev/json env:GITHUB_EVENT_NAME=
+exit 2
+== move olddev/json env:GITHUB_EVENT_NAME=push env:GITHUB_SERVER_URL=https://x.example
+exit 2
+== move olddev/json env:GITHUB_SERVER_URL=https://github.example.com
+exit 2
+== move olddev/json env:GITHUB_SERVER_URL=
+exit 2
+== move olddev/json env:GITHUB_SERVER_URL=https://github.example.com env:ACTIONS_ID_TOKEN_REQUEST_URL=
+exit 2
+== move olddev/json env:ACTIONS_ID_TOKEN_REQUEST_URL=
+exit 2
+== move olddev/json env:ACTIONS_ID_TOKEN_REQUEST_TOKEN=
+exit 2
+== move olddev/json --undo env:ACTIONS_ID_TOKEN_REQUEST_URL=
+exit 2
+== move json --json
+{"schema":1,"command":"move","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"the old name 'json' is not a full github.com name (owner/repo)"}}
+exit 2

@@ -1,0 +1,12 @@
+== move olddev/json
+moved: olddev/json to acme/roc-json. Users see it in tln outdated, and follow it with tln update <alias>.
+exit 0
+== move olddev/json
+unchanged: olddev/json has the successor acme/roc-json already
+exit 0
+== move olddev/json --to acme/roc-json --json
+{"schema":1,"command":"move","ok":true,"data":{"name":"olddev/json","result":"moved","successor":"acme/roc-json","offer":null,"state":"moved"},"error":null}
+exit 0
+== move OldDev/Json env:GITHUB_REPOSITORY=Acme/Roc-JSON
+moved: olddev/json to acme/roc-json. Users see it in tln outdated, and follow it with tln update <alias>.
+exit 0

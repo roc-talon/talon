@@ -1,0 +1,19 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.cache/roc/talon/index/github/acme/roc-json/repo.json
+http_get http://127.0.0.1:7/repos/acme/roc-json
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/acme/roc-json/repo.json
+http_get http://127.0.0.1:9/v1/packages/olddev/json/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.cache/roc/talon/index/github/acme/roc-json/repo.json
+http_get http://127.0.0.1:9/v1/packages/olddev/json/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache

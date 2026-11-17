@@ -1,0 +1,3 @@
+== move olddev/json --registry http://127.0.0.1:9
+moved: olddev/json to acme/roc-json. Users see it in tln outdated, and follow it with tln update <alias>.
+exit 0

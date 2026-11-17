@@ -1,0 +1,1 @@
+R-RG9 R-AP34 R-E6 R-AP1 (slice 251, Q251-9): the R-AP1 read of the old name is not sent again: one 503 is exit 15 (the message names the URL and the source, no advice for direct), with no second read, no token request and no write. The read has a second answer (200) that a retry would get: the calls.log shows no second read. Run 1 is a move, run 2 is --undo.

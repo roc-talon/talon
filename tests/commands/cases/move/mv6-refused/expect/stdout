@@ -1,0 +1,12 @@
+== move olddev/json
+exit 20
+== move olddev/json
+exit 20
+== move olddev/json --json
+{"schema":1,"command":"move","ok":false,"data":null,"error":{"kind":"rejected","code":20,"message":"no package named olddev/json has a repos row (/errors/not-found). Fix the names or the workflow, then run the command again.","details":{"status":404,"type":"/errors/not-found"}}}
+exit 20
+== move olddev/json --undo --json env:GITHUB_REPOSITORY=olddev/json
+{"schema":1,"command":"move","ok":false,"data":null,"error":{"kind":"rejected","code":20,"message":"the name olddev/json is bound to another GitHub account (repository id 100). Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues","details":{"status":403,"type":"/errors/repository-changed"}}}
+exit 20
+== move olddev/json --to acme/roc-json env:GITHUB_REPOSITORY=olddev/json
+exit 20

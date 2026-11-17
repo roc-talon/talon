@@ -1,0 +1,9 @@
+== move olddev/json --undo
+removed: the successor of olddev/json
+exit 0
+== move olddev/json --undo
+unchanged: olddev/json has no successor
+exit 0
+== move olddev/json --undo --json env:GITHUB_REPOSITORY=acme/roc-json
+{"schema":1,"command":"move","ok":true,"data":{"name":"olddev/json","result":"removed","successor":null,"offer":null,"state":"active"},"error":null}
+exit 0

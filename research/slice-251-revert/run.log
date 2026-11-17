@@ -1,0 +1,30 @@
+base: L0 l0-4: exit=0 All (157) tests passed.
+base L2: commands: 60 passed, 0 failed 
+v1: L0 l0-4: exit=0 All (157) tests passed.
+v1: L2 FAIL move/mv4-usage-stops commands: 59 passed, 1 failed 
+v2: L0 l0-4: exit=0 All (157) tests passed.
+v2: L2 FAIL move/mv4-usage-stops commands: 59 passed, 1 failed 
+v3: L0 l0-4: exit=1     0 compiler errors.
+v3: L2 FAIL move/mv11-retries-exhausted FAIL move/mv2-offer FAIL move/mv6-refused commands: 57 passed, 3 failed 
+v4: L0 l0-4: exit=1     0 compiler errors.
+v4: L2 FAIL move/mv4-usage-stops commands: 59 passed, 1 failed 
+v5: L0 l0-4: exit=1     0 compiler errors.
+v5: L2 FAIL move/mv7-undo-holder commands: 59 passed, 1 failed 
+v6: L0 l0-4: exit=0 All (157) tests passed.
+v6: L2 FAIL move/mv11-retries-exhausted FAIL move/mv2-offer FAIL move/mv6-refused commands: 57 passed, 3 failed 
+v7: L0 l0-4: exit=1     0 compiler errors.
+v7: L2 FAIL move/mv10-retries FAIL move/mv11-retries-exhausted FAIL move/mv3-undo FAIL move/mv6-refused FAIL move/mv7-undo-holder FAIL move/mv8-token-refused FAIL move/mv9-renew-401 commands: 53 passed, 7 failed 
+v8: L0 l0-4: exit=0 All (157) tests passed.
+v8: L2 commands: 60 passed, 0 failed 
+v8b: L0 l0-4: exit=0 All (157) tests passed.
+v8b: L2 commands: 60 passed, 0 failed 
+v9: L0 l0-4: exit=1     0 compiler errors.
+v9: L2 FAIL move/mv7-undo-holder commands: 59 passed, 1 failed 
+v10: L0 l0-4: exit=0 All (157) tests passed.
+v10: L2 FAIL move/mv2-offer commands: 59 passed, 1 failed 
+v11: L0 l0-4: exit=1     0 compiler errors.
+v11: L2 commands: 60 passed, 0 failed 
+v12: L0 l0-4: exit=1     0 compiler errors.
+v12: L2 FAIL move/mv6-refused commands: 59 passed, 1 failed 
+v13: L0 l0-4: exit=1     0 compiler errors.
+v13: L2 FAIL move/mv11-retries-exhausted commands: 59 passed, 1 failed 

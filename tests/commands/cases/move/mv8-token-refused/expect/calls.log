@@ -1,0 +1,18 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get http://127.0.0.1:9/v1/packages/olddev/json/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+http_get http://127.0.0.1:9/v1/packages/olddev/json/releases
+  User-Agent: tln/0.0.1
+  Cache-Control: no-cache
+http_send GET http://127.0.0.1:8/token?api-version=2.0&audience=http%3A%2F%2F127.0.0.1%3A9 timeout=20
+  Authorization: bearer req1

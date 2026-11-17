@@ -1,0 +1,3 @@
+move olddev/json env:GITHUB_REPOSITORY=acme/priv
+move olddev/json env:GITHUB_REPOSITORY=acme/gone
+move olddev/json --to acme/priv env:GITHUB_REPOSITORY=olddev/json

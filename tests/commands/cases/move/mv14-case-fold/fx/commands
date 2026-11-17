@@ -1,0 +1,2 @@
+move Acme/Old --to Acme/New
+move Acme/Old env:GITHUB_REPOSITORY=Acme/NEW

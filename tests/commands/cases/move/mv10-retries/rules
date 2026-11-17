@@ -1,0 +1,1 @@
+R-AP34 R-AP82 R-DA9 R-MV4 (slice 251): a write is sent again after a 429, a 5xx or no answer, with the waits of R-AP34. Run 1 (a move): 429 with Retry-After 7 (wait 7 s), 503 busy (8 s), no answer (30 s), then 201: `moved`. Run 2 (--undo): 502 (wait 2 s), then 200: `removed`. The R-AP1 read and the token request are not sent again.

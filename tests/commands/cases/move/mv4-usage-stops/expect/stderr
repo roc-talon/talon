@@ -1,0 +1,28 @@
+tln: error[usage]: tln move needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[usage]: tln move needs a registry, and the registry is direct. Set --registry, TALON_REGISTRY or registry in config.toml.
+tln: error[network]: tln move needs the network: --offline sends no request
+tln: error[network]: tln move needs the network: --offline sends no request
+tln: error[usage]: tln move needs an old name: tln move <old-name> [--to <new-name>] [--undo]
+tln: error[usage]: tln move takes one old name: unexpected 'acme/x'
+tln: error[usage]: the old name 'json' is not a full github.com name (owner/repo)
+tln: error[usage]: the old name 'gitlab.com/acme/json' is not a full github.com name (owner/repo)
+tln: error[usage]: the old name 'json' is not a full github.com name (owner/repo)
+tln: error[usage]: tln move --undo takes no --to
+tln: error[usage]: the value of --to 'x' is not a full github.com name (owner/repo)
+tln: error[usage]: GITHUB_REPOSITORY is not set or is empty. tln move runs in a GitHub Actions job.
+tln: error[usage]: the value of --to 'x' is not a full github.com name (owner/repo)
+tln: error[usage]: tln move --undo takes no --to
+tln: error[usage]: the job repository olddev/json is the old name, so --to <new-name> is needed: tln move olddev/json --to <new-name> offers the new name
+tln: error[usage]: the old name and the new name are the same: olddev/json
+tln: error[usage]: the job repository third/lib is neither the old name olddev/json nor the new name acme/roc-json. Run tln move in a job of olddev/json to offer the new name, or in a job of acme/roc-json to accept it.
+tln: error[usage]: the job repository third/lib is neither the old name olddev/json nor the new name acme/roc-json. Run tln move in a job of olddev/json to offer the new name, or in a job of acme/roc-json to accept it.
+tln: error[usage]: tln move runs in a workflow_dispatch job: GITHUB_EVENT_NAME is push
+tln: error[usage]: tln move runs in a workflow_dispatch job: GITHUB_EVENT_NAME is not set
+tln: error[usage]: tln move runs in a workflow_dispatch job: GITHUB_EVENT_NAME is push
+tln: error[usage]: tln move runs on github.com only: GITHUB_SERVER_URL is https://github.example.com, not https://github.com
+tln: error[usage]: tln move runs on github.com only: GITHUB_SERVER_URL is not set
+tln: error[usage]: tln move runs on github.com only: GITHUB_SERVER_URL is https://github.example.com, not https://github.com
+tln: error[usage]: tln move needs an OIDC token, and ACTIONS_ID_TOKEN_REQUEST_URL is not set. In a GitHub Actions job, set permissions: id-token: write.
+tln: error[usage]: tln move needs an OIDC token, and ACTIONS_ID_TOKEN_REQUEST_TOKEN is not set. In a GitHub Actions job, set permissions: id-token: write.
+tln: error[usage]: tln move needs an OIDC token, and ACTIONS_ID_TOKEN_REQUEST_URL is not set. In a GitHub Actions job, set permissions: id-token: write.
+tln: error[usage]: the old name 'json' is not a full github.com name (owner/repo)

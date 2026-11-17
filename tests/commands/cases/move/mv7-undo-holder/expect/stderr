@@ -1,0 +1,3 @@
+tln: error[usage]: the job repository third/lib is neither the old name olddev/json nor its successor acme/roc-json. Run tln move --undo in a job of one of them.
+tln: error[usage]: the job repository third/lib is not the old name olddev/json, and olddev/json has no successor. Run tln move --undo in a job of olddev/json.
+tln: error[rejected]: token claim repository is "third/lib": it is not olddev/json and it is not the successor of olddev/json (/errors/forbidden). Fix the names or the workflow, then run the command again.

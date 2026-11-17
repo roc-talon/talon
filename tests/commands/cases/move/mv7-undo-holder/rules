@@ -1,0 +1,2 @@
+R-MV1 R-MV2 R-MV4 R-AP31 R-TP15 R-EC2 (slice 251, Q251-6): `--undo` in a job that is neither the old name nor its successor. The check needs the R-AP1 read (the successor of the old name), so it comes after the read and before the token: exit 2, no token request, no write.
+Run 1: the read shows the successor acme/roc-json: the job third/lib is neither. Run 2: the read shows no successor. Run 3: the read answers 404 (the successor is unknown): the check passes, the registry decides (R-AP31): a DELETE answered 403, exit 20.

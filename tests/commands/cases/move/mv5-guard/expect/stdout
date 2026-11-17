@@ -1,0 +1,6 @@
+== move olddev/json env:GITHUB_REPOSITORY=acme/priv
+exit 2
+== move olddev/json env:GITHUB_REPOSITORY=acme/gone
+exit 2
+== move olddev/json --to acme/priv env:GITHUB_REPOSITORY=olddev/json
+exit 2

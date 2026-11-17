@@ -8,6 +8,7 @@ import EvidenceTest
 import GuardTest
 import KindTest
 import LadderTest
+import MovecheckTest
 import OracledomainTest
 import PinTest
 import ProbeTest

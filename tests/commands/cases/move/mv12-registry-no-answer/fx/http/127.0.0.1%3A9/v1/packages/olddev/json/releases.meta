@@ -1,0 +1,4 @@
+error timeout
+require user-agent: tln/0.0.1
+require cache-control: no-cache
+require-none authorization

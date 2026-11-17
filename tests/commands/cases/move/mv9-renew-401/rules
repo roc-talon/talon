@@ -1,0 +1,1 @@
+R-AP34 R-TP2 R-MV4 (slice 251): a 401 gets one new OIDC token and one more request, with no wait. Run 1 (a move): 401, a new token (jwt2), 201: `moved`. Run 2 (--undo): 401, a new token, 401 again: exit 20 `the registry refused the new token too`. The guard file of run 1 is the only file written.

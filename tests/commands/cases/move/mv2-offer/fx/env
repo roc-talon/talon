@@ -1,0 +1,9 @@
+HOME={w}/home
+CI=true
+GITHUB_REPOSITORY=olddev/json
+GITHUB_EVENT_NAME=workflow_dispatch
+GITHUB_SERVER_URL=https://github.com
+ACTIONS_ID_TOKEN_REQUEST_URL=http://127.0.0.1:8/token?api-version=2.0
+ACTIONS_ID_TOKEN_REQUEST_TOKEN=req1
+TALON_REGISTRY=http://127.0.0.1:9
+TALON_GITHUB_API=http://127.0.0.1:7

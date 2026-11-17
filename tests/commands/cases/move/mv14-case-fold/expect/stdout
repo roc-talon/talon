@@ -1,0 +1,6 @@
+== move Acme/Old --to Acme/New
+offered: acme/old to acme/new. To accept, run tln move acme/old in a workflow_dispatch job of acme/new.
+exit 0
+== move Acme/Old env:GITHUB_REPOSITORY=Acme/NEW
+moved: acme/old to acme/new. Users see it in tln outdated, and follow it with tln update <alias>.
+exit 0

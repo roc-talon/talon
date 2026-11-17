@@ -1,0 +1,28 @@
+move olddev/json --registry direct
+move olddev/json --registry direct --offline
+move olddev/json --offline
+move --offline
+move
+move olddev/json acme/x
+move json
+move gitlab.com/acme/json
+move json --undo --to acme/x
+move olddev/json --undo --to x
+move olddev/json --to x
+move olddev/json env:GITHUB_REPOSITORY=
+move olddev/json --to x env:GITHUB_REPOSITORY=
+move olddev/json --undo --to acme/x env:GITHUB_REPOSITORY=
+move olddev/json env:GITHUB_REPOSITORY=olddev/json
+move olddev/json --to olddev/json env:GITHUB_REPOSITORY=olddev/json
+move olddev/json --to acme/roc-json env:GITHUB_REPOSITORY=third/lib
+move olddev/json --to acme/roc-json env:GITHUB_REPOSITORY=third/lib env:GITHUB_EVENT_NAME=push
+move olddev/json env:GITHUB_EVENT_NAME=push
+move olddev/json env:GITHUB_EVENT_NAME=
+move olddev/json env:GITHUB_EVENT_NAME=push env:GITHUB_SERVER_URL=https://x.example
+move olddev/json env:GITHUB_SERVER_URL=https://github.example.com
+move olddev/json env:GITHUB_SERVER_URL=
+move olddev/json env:GITHUB_SERVER_URL=https://github.example.com env:ACTIONS_ID_TOKEN_REQUEST_URL=
+move olddev/json env:ACTIONS_ID_TOKEN_REQUEST_URL=
+move olddev/json env:ACTIONS_ID_TOKEN_REQUEST_TOKEN=
+move olddev/json --undo env:ACTIONS_ID_TOKEN_REQUEST_URL=
+move json --json

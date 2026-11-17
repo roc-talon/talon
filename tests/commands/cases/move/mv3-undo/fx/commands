@@ -1,0 +1,3 @@
+move olddev/json --undo
+move olddev/json --undo
+move olddev/json --undo --json env:GITHUB_REPOSITORY=acme/roc-json

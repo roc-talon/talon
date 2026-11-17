@@ -24,6 +24,7 @@ import ProbeFlow
 import ProbeSmokeFlow
 import Proxy
 import PublishFlow
+import MoveFlow
 import YankFlow
 import Ref
 import Remove
@@ -135,6 +136,8 @@ dispatch! = |fx, args| if args.options.any(|(name, _)| name == "--tool") {
 	ProbeFlow.run!(fx, args)
 } else if args.command == ["publish"] {
 	PublishFlow.run!(fx, args)
+} else if args.command == ["move"] {
+	MoveFlow.run!(fx, args)
 } else if args.command == ["yank"] {
 	YankFlow.run!(fx, args)
 } else if args.command == ["roc", "install"] {

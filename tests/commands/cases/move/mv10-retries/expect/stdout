@@ -1,0 +1,6 @@
+== move olddev/json
+moved: olddev/json to acme/roc-json. Users see it in tln outdated, and follow it with tln update <alias>.
+exit 0
+== move olddev/json --undo env:GITHUB_REPOSITORY=olddev/json
+removed: the successor of olddev/json
+exit 0
