@@ -1,3 +1,4 @@
+import records.Closure as Wire
 import Args
 import Db
 import Epochs
@@ -91,6 +92,27 @@ Outdated :: [].{
 	behind : Outdated.Row -> Bool
 	behind = |row| row.current != row.wanted or row.current != row.latest
 
+	## Slice 252 (Registry R-PU28, R-AP32, R-MV5; Q252-9; section 7a of docs/slices/252-successor-follow.md, a proposal, TW24): a repository whose `repos` item has a successor. `name` is the name of the row (`owner/repo`), `successor` the `successor` member of the item (the first link, not the end of a chain).
+	## It is a separate list, so `Row` keeps its members.
+	Moved : { name : Str, successor : Str }
+
+	## Slice 252: the `Moved` items of the names of the rows, from the `repos` items of the answer (or of the kept copies with `--offline`). Names are compared in lower case. A name with no item or no successor has none. Each name once, in the order of `names`.
+	moved_names : { names : List(Str), repos : List(Wire.Repo) } -> List(Outdated.Moved)
+	moved_names = |facts| facts.names.keep_oks(
+		|name| match facts.repos.find_first(|p| p.name.with_ascii_lowercased() == name.with_ascii_lowercased()) {
+			Ok(item) => item.successor.map_ok(|successor| { name, successor }).map_err(|_| None)
+			Err(_) => Err(None)
+		},
+	)
+
+	## Slice 252: the successor of the name of a row, if any.
+	successor_of : Outdated.Row, List(Outdated.Moved) -> Try(Str, [None])
+	successor_of = |row, moved| moved.find_first(|m| m.name.with_ascii_lowercased() == row.name.with_ascii_lowercased()).map_ok(|m| m.successor).map_err(|_| None)
+
+	## Slice 252 (R-PU28: `tln outdated` shows `moved to <successor>` in the row of each header entry whose name has a successor): a row is shown when it is behind, or when its name has a successor.
+	is_shown : Outdated.Row, List(Outdated.Moved) -> Bool
+	is_shown = |row, moved| Outdated.behind(row) or Outdated.successor_of(row, moved).is_ok()
+
 	## The text of one member (a proposal, TW24). The first line is the project file. Then the table: the header row and one row for each row, the columns padded to the longest cell and 2 spaces (the last column is not padded), 2 spaces at the start of each line.
 	## No row: `  all packages are up to date`. Then one line `  <Index.fixed_line(host)>` for each host. Each line ends with a line end.
 	##
@@ -101,8 +123,12 @@ Outdated :: [].{
 	##   fixed: example.org has no index without a registry
 	## ```
 	text : Outdated.Member -> Str
-	text = |member| {
-		shown = if member.rows.is_empty() ["  all packages are up to date\n"] else table_lines(member.rows)
+	text = |member| Outdated.text_moved(member, [])
+
+	## Slice 252 (section 7a, a proposal): `text` with the `Moved` items. The `latest` cell of a row whose name has a successor ends with ` (moved to <successor>)`, after ` (new series)`.
+	text_moved : Outdated.Member, List(Outdated.Moved) -> Str
+	text_moved = |member, moved| {
+		shown = if member.rows.is_empty() ["  all packages are up to date\n"] else table_lines(member.rows, moved)
 		fixed = member.fixed.map(|host| "  ${Index.fixed_line(host)}\n")
 		"${member.file}\n${Str.join_with(shown.concat(fixed), "")}"
 	}
@@ -116,7 +142,11 @@ Outdated :: [].{
 	## | `fixed` | The hosts with no index (R-DI11), as the text of the member has them |
 	## | `nightly_range` | An object with `state`: `range` (and `from`, `to`: `{ "id", "real" }` as `tln probe --range`), `no-pass`, or `unread` |
 	data : List(Outdated.Member) -> JsonDoc
-	data = |members| JsonDoc.Obj([("members", Arr(members.map(member_doc)))])
+	data = |members| Outdated.data_moved(members, [])
+
+	## Slice 252 (section 7a, a proposal): `data` with the `Moved` items. The object of a package whose name has a successor has the member `successor` (a full name) after `new_series`. The other objects keep their members.
+	data_moved : List(Outdated.Member), List(Outdated.Moved) -> JsonDoc
+	data_moved = |members, moved| JsonDoc.Obj([("members", Arr(members.map(|m| member_doc(m, moved))))])
 }
 
 # R-PB4: an end that is no real fact has a `?`.
@@ -124,10 +154,17 @@ end_text : ProbeRange.End -> Str
 end_text = |end| if end.real end.id else "${end.id}?"
 
 # The header row and one row for each row, the first 4 columns padded to the longest cell and 2 spaces.
-table_lines : List(Outdated.Row) -> List(Str)
-table_lines = |rows| {
+table_lines : List(Outdated.Row), List(Outdated.Moved) -> List(Str)
+table_lines = |rows, moved| {
 	head = { alias: "package", current: "current", wanted: "wanted", latest: "latest", range: "nightly range" }
-	cells = [head].concat(rows.map(|r| { alias: r.alias, current: r.current, wanted: r.wanted, latest: if r.new_series "${r.latest} (new series)" else r.latest, range: Outdated.range_text(r.range) }))
+	latest_cell = |r| {
+		series = if r.new_series "${r.latest} (new series)" else r.latest
+		match Outdated.successor_of(r, moved) {
+			Ok(successor) => "${series} (moved to ${successor})"
+			Err(None) => series
+		}
+	}
+	cells = [head].concat(rows.map(|r| { alias: r.alias, current: r.current, wanted: r.wanted, latest: latest_cell(r), range: Outdated.range_text(r.range) }))
 	widths = {
 		alias: widest(cells.map(|c| c.alias)),
 		current: widest(cells.map(|c| c.current)),
@@ -143,23 +180,32 @@ widest = |cells| cells.map(|c| c.count_utf8_bytes()).max() ?? 0
 pad : Str, U64 -> Str
 pad = |cell, width| cell.concat(" ".repeat(width + 2 - cell.count_utf8_bytes()))
 
-member_doc : Outdated.Member -> JsonDoc
-member_doc = |member| JsonDoc.Obj([
+member_doc : Outdated.Member, List(Outdated.Moved) -> JsonDoc
+member_doc = |member, moved| JsonDoc.Obj([
 	("file", Text(member.file)),
-	("packages", Arr(member.rows.map(row_doc))),
+	("packages", Arr(member.rows.map(|r| row_doc(r, moved)))),
 	("fixed", Arr(member.fixed.map(|host| JsonDoc.Text(host)))),
 ])
 
-row_doc : Outdated.Row -> JsonDoc
-row_doc = |row| JsonDoc.Obj([
-	("alias", Text(row.alias)),
-	("name", Text(row.name)),
-	("current", Text(row.current)),
-	("wanted", Text(row.wanted)),
-	("latest", Text(row.latest)),
-	("new_series", Flag(row.new_series)),
-	("nightly_range", range_doc(row.range)),
-])
+row_doc : Outdated.Row, List(Outdated.Moved) -> JsonDoc
+row_doc = |row, moved| {
+	successor = match Outdated.successor_of(row, moved) {
+		Ok(name) => [("successor", JsonDoc.Text(name))]
+		Err(None) => []
+	}
+	JsonDoc.Obj(
+		[
+			("alias", JsonDoc.Text(row.alias)),
+			("name", Text(row.name)),
+			("current", Text(row.current)),
+			("wanted", Text(row.wanted)),
+			("latest", Text(row.latest)),
+			("new_series", Flag(row.new_series)),
+		]
+			.concat(successor)
+			.concat([("nightly_range", range_doc(row.range))]),
+	)
+}
 
 range_doc : Outdated.Range -> JsonDoc
 range_doc = |range| match range {

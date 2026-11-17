@@ -1,0 +1,2 @@
+s11: L0 l0-4: exit=0 All (133) tests passed.
+s11: L2 FAIL registry/su2-upgrade-follow FAIL registry/su3-series-limit commands: 180 passed, 2 failed 

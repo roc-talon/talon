@@ -1,0 +1,2 @@
+R-PU28 R-UP3 R-UP13 R-C7 R-AU14 (slice 252, Design Q632): `tln upgrade json` follows the successor as `tln update json` does (R-PU28: "`tln update <alias>` and `tln upgrade <alias>` follow it"). The home, the fakes and the answers are those of su1-update-follow. The successor release is 2.0.1 (2.0.2 is too new, R-C7). Only `json` is named, so the nightly is held (R-UP13) and `pf` is not free.
+The report line and the calls.log lines of the successor read are guesses (slice 252 section 7, Q252-1). Red before the slice: `nothing to change`.

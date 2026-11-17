@@ -1,0 +1,8 @@
+== update pf --no-check --dry-run --file u1/main.roc
+note: platform changes: someone/pfx 0.1.0 -> acme/pfx 0.1.1
+check: skipped
+$PROJECT/u1/main.roc
+  ~ pf: someone/pfx 0.1.0 -> acme/pfx 0.1.1
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0

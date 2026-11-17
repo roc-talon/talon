@@ -1,0 +1,3 @@
+update json --no-check --dry-run --file u1/main.roc
+update json@3 --no-check --dry-run --file u1/main.roc
+upgrade json --no-check --dry-run --file u1/main.roc

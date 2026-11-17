@@ -1,0 +1,3 @@
+update --no-check --dry-run --file u1/main.roc
+update json --no-check --dry-run --file u1/main.roc
+update pf --no-check --dry-run --file u1/main.roc

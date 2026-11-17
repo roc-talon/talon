@@ -1,0 +1,15 @@
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/cc762e9fbcbcd62eadd831e2b492676c.json
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/cc762e9fbcbcd62eadd831e2b492676c.json
+@@ -0,0 +1 @@
++{"releases":[{"log_index":40,"hash":"3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA","group":"github.com/acme/roc-json/releases/download/{v}/","series":"2","version":"2.0.2","url":"https://github.com/acme/roc-json/releases/download/2.0.2/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA.tar.zst","tag":"2.0.2","roc_version":null,"repo":"acme/roc-json","published_at":1792062000000,"yanked":false,"yank_reason":null,"withdrawn":null,"provenance":["webhook"]}],"checked":null,"repos":[{"name":"acme/roc-json","state":"active","successor":null,"state_at":1700000000000,"owner_changed":null}]}
+\ No newline at end of file
+--- home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/cc762e9fbcbcd62eadd831e2b492676c.meta
++++ home/.cache/roc/talon/index/registry/http_127.0.0.1_9/get/cc762e9fbcbcd62eadd831e2b492676c.meta
+@@ -0,0 +1,3 @@
++url /v1/packages/acme/roc-json/releases
++etag "r1"
++max-age 60
+--- home/.cache/roc/talon/projects.json
++++ home/.cache/roc/talon/projects.json
+@@ -0,0 +1 @@
++{"format":1,"projects":[{"path":"$PROJECT/u1/main.roc","last_use":1792065600}]}

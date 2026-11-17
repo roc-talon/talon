@@ -26,6 +26,7 @@ import Prompt
 import Ref
 import ResolveBase
 import Scope
+import SuccessorFlow
 import UnknownValues
 import Vars
 
@@ -62,6 +63,7 @@ PickFlow :: [].{
 		setup : PickLoop.Setup,
 		second : Try(PickFlow.Second, [None]),
 		yanked : List({ name : Str, count : U64 }),
+		follows : List(SuccessorFlow.Follow),
 	}
 
 	## Slice 206d2 (Registry R-AP16 second query, R-AP19, Design Q403, Q404, Q460): what the second closure query of a held move needs, from the first query of a run with a registry. `Err(None)` with no registry answer.
@@ -114,19 +116,28 @@ PickFlow :: [].{
 		# R-RG9: after a fall back the run is `direct`.
 		routed = ResolveBase.routed(request, fresh.fell)
 		queried = query!(fx, routed, loaded, IndexQuery.groups(scoped).concat(fresh.items), !asked.answered and !fresh.answered)?
-		indexed = queried.request
 		# Slice 206d2 (R-SP23, R-DI11): a fixed anchor of the closure answer is never movable.
-		held_scope = IndexQuery.held_anchors({ scoped, anchors: queried.anchors })
+		held_anchors = IndexQuery.held_anchors({ scoped, anchors: queried.anchors })
 		free_names = scoped.keep_if(|s| s.free).keep_oks(|s| s.variable.name.map_err(|_| None))
 		want_names = stale.live.keep_oks(|w| w.name.map_err(|_| None))
 		repos = free_names.concat(want_names).concat(asked.fresh.map(|f| f.name)).fold(ResolveBase.no_names, |found, name| if found.contains(name) found else found.append(name))
-		counted = PickIndex.counted!(fx, indexed, repos, known)?
-		found = anchored(counted.found, queried.anchors)
+		counted = PickIndex.counted!(fx, queried.request, repos, known)?
+		# Slice 252 (R-PU28, Design Q632): a named entry whose repository has a successor follows it (`SuccessorFlow.follow!`): the variable gets the name and the URL form of the successor, and the index of the run gets its releases.
+		(keep, user) = match queried.second {
+			Ok(q) => (q.keep, q.user)
+			Err(None) => ([], Err(None))
+		}
+		followed = SuccessorFlow.follow!(fx, queried.request, { scoped: held_anchors, asked, found: counted.found, known, entries: loaded.members.join_map(|m| m.locked.rows.map(|r| r.value)), kept: counted.repos, keep, user })?
+		# R-DI12: the line of the kept copies, after the follow (a failure of the follow is the only text, Q252-8).
+		PickIndex.cached_line!(fx, counted.oldest)
+		indexed = followed.request
+		held_scope = followed.scoped
+		found = anchored(followed.found, queried.anchors)
 		offline_notes!(fx, indexed, held_scope, found)
 		prepared = PickIndex.prepare!(fx, indexed, loaded, asked.fresh, found)?
 		input = PickIndex.slots_of(held_scope, stale.live, found, asked, prepared.rows, settings, snapshot, PickAsk.unmanaged_of(loaded, asked, request.project.file ?? ""), request.project.file ?? "")
 		setup = { held, free, newest, movable: Err(None), optional, probes: if request.probe.no_probe Off else Allowed, settings: ResolveBase.probe_settings(request, loaded), members: loaded.members.map(|m| { file: m.file, kind: m.locked.kind, text: ResolveBase.loaded_text(loaded, m.file), target: ResolveBase.member_target(m) }) }
-		Ok({ request: indexed, loaded, settings, snapshot, scoped: held_scope, asked, stale, found, known, prepared, input, setup, second: queried.second, yanked: counted.yanked })
+		Ok({ request: indexed, loaded, settings, snapshot, scoped: held_scope, asked, stale, found, known, prepared, input, setup, second: queried.second, yanked: counted.yanked, follows: followed.follows })
 	}
 
 	## Slice 206e2 (R-AP16, R-AP74, R-RG4, R-DI1, R-CM6): the first closure query of a command that only reports (`tln outdated`), with its `groups` (`IndexQuery.report_groups`) and the window of `request` (`Report`).
@@ -156,6 +167,8 @@ PickFlow :: [].{
 			}
 		}
 		looped = searched.looped
+		# Slice 252 (Q252-3): a followed entry that kept its old value stops the command (exit 2).
+		SuccessorFlow.check(ready.follows, looped.chosen.map(|c| { id: c.id, url: c.url }))?
 		# R-UP2: only `upgrade` reports the variables that did not get their newest release.
 		lags = match request.command {
 			Upgrade => Lags.of({

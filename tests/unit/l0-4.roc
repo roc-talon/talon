@@ -12,6 +12,7 @@ import OracledomainTest
 import PinTest
 import ProbeTest
 import SetupTest
+import SuccessorTest
 import ToolSourceTest
 import ToolbinTest
 import ToolbincheckTest

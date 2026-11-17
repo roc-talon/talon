@@ -1,0 +1,15 @@
+== update json@2 --no-check --dry-run --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: someone/roc-json 2.0.0 -> acme/roc-json 2.0.1
+$PROJECT/u1/talon.toml: json = "^2"
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0
+== update someone/roc-json --no-check --dry-run --file u1/main.roc
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: someone/roc-json 2.0.0 -> acme/roc-json 2.0.1
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0

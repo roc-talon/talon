@@ -1,0 +1,28 @@
+base: L0 l0-4: exit=0 All (133) tests passed.
+base L2: commands: 182 passed, 0 failed 
+s1: L0 l0-4: exit=1     0 compiler errors.
+s1: L2 commands: 182 passed, 0 failed 
+s2: L0 l0-4: exit=1     0 compiler errors.
+s2: L2 FAIL registry/yf10-update-held-count FAIL registry/yf4-update-named-yanked commands: 180 passed, 2 failed 
+s3: L0 l0-4: exit=1     0 compiler errors.
+s3: L2 commands: 182 passed, 0 failed 
+s4: L0 l0-4: exit=0 All (133) tests passed.
+s4: L2 commands: 182 passed, 0 failed 
+s5: L0 l0-4: exit=1     0 compiler errors.
+s5: L2 FAIL registry/su6-follow-cycle commands: 181 passed, 1 failed 
+s6: L0 l0-4: exit=0 All (133) tests passed.
+s6: L2 FAIL registry/su5-follow-no-release commands: 181 passed, 1 failed 
+s7: L0 l0-4: exit=0 All (133) tests passed.
+s7: L2 FAIL registry/su10-follow-offline-missing commands: 181 passed, 1 failed 
+s8: L0 l0-4: exit=0 All (133) tests passed.
+s8: L2 FAIL registry/su11-outdated-successor commands: 181 passed, 1 failed 
+s9: L0 l0-4: exit=0 All (133) tests passed.
+s9: L2 FAIL outdated/od1-table FAIL outdated/od2-edges FAIL outdated/od3-exclude FAIL registry/ap30-outdated-notes FAIL registry/cv1-outdated-query FAIL registry/pb3-outdated-runs FAIL registry/rg9-outdated-note commands: 175 passed, 7 failed 
+s10: L0 l0-4: exit=0 All (133) tests passed.
+s10: L2 FAIL registry/su12-follow-second-alias FAIL registry/su1-update-follow FAIL registry/su2-upgrade-follow FAIL registry/su3-series-limit FAIL registry/su4-named-forms FAIL registry/su6-follow-cycle FAIL registry/su7-follow-chain FAIL registry/su8-platform-follow FAIL registry/su9-follow-offline commands: 173 passed, 9 failed 
+s11: L0 l0-4: exit=1 Compilation failed with 1 error..
+s11: L2 FAIL registry/al2-upgrade-query FAIL registry/al4-shared-order FAIL registry/ap30-upgrade-notes FAIL registry/cv1-upgrade-free FAIL registry/cv1-upgrade-unread FAIL registry/ef1-rank2-free FAIL registry/ef3-bot-author FAIL registry/ep15-epoch-no-probe FAIL registry/in1-init-version FAIL registry/in3-init-package FAIL registry/ix6-offline-list-only FAIL registry/ix6-offline-upgrade FAIL registry/rg9-upgrade-list-then-closure FAIL registry/sm6-interval FAIL registry/su2-upgrade-follow FAIL registry/su3-series-limit FAIL upgrade/ug1-flow FAIL upgrade/ug2-lag FAIL upgrade/ug3-move FAIL upgrade/ug4-hint-order FAIL upgrade/ug5-exclude FAIL upgrade/ug6-list-once FAIL upgrade/ur1-roc FAIL upgrade/ur2-consent FAIL upgrade/ur3-list FAIL upgrade/ur4-candidate FAIL upgrade/ur5-optional FAIL upgrade/ur6-moves FAIL upgrade/ur7-nocompiler FAIL upgrade/ur8-exclude-nightly FAIL upgrade/ur9-no-tuple-run commands: 151 passed, 31 failed 
+s12: L0 l0-4: exit=0 All (133) tests passed.
+s12: L2 FAIL registry/su12-follow-second-alias FAIL registry/su1-update-follow FAIL registry/su2-upgrade-follow FAIL registry/su3-series-limit FAIL registry/su4-named-forms FAIL registry/su5-follow-no-release FAIL registry/su6-follow-cycle FAIL registry/su7-follow-chain FAIL registry/su8-platform-follow FAIL registry/su9-follow-offline commands: 172 passed, 10 failed 
+s13: L0 l0-4: exit=0 All (133) tests passed.
+s13: L2 commands: 182 passed, 0 failed 

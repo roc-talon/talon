@@ -1,3 +1,4 @@
+import records.Closure as Wire
 import Add
 import Closure
 import ClosureIndex
@@ -21,19 +22,37 @@ PickIndex :: [].{
 	# Slice 206d (Design Q461): with `Answer`, the registry's release of a `Label` value (a `known` URL with the same group form and version and another hash) is no candidate (`ClosureIndex.drop_labels`).
 	# `Offline(origin)`: the kept copies of the registry reads (`ClosureIndex.offline!`) for the group forms of the `known` URLs of the name. In both offline forms one line `index: cached at <oldest>` (R-DI12).
 	index! : Fx, ResolveBase.Request, List(Str), List(Str) => Try(List(ResolveBase.Candidates), Fail)
-	index! = |fx, request, names, known| Ok(counted!(fx, request, names, known)?.found)
+	index! = |fx, request, names, known| {
+		got = counted!(fx, request, names, known)?
+		PickIndex.cached_line!(fx, got.oldest)
+		Ok(got.found)
+	}
+
+	# R-DI12: the line `index: cached at <oldest>` of the copies that an index read (`counted!` gives the time and prints nothing, so a caller can print it after more reads, slice 252).
+	cached_line! : Fx, Try(U64, [None]) => {}
+	cached_line! = |fx, oldest| match oldest {
+		Ok(t) => fx.err!("${Github.offline_line(t)}\n")
+		Err(None) => {}
+	}
 
 	# Slice 250 (R-PA13, R-C6): the lookup of one exact release by its hash (the base of a patch) is no pick: the rows are not filtered by `yanked`.
 	lookup! : Fx, ResolveBase.Request, List(Str) => Try(List(ResolveBase.Candidates), Fail)
-	lookup! = |fx, request, names| Ok(gather!(fx, request, names, [], Bool.False)?.found)
+	lookup! = |fx, request, names| {
+		got = gather!(fx, request, names, [], Bool.False)?
+		PickIndex.cached_line!(fx, got.oldest)
+		Ok(got.found)
+	}
 
 	# Slice 250 (Design Q630-4): `index!` and the count of the yanked rows that were dropped for each name of a kept copy (`Offline`). The other indexes give no count here (the flow counts an answer itself).
-	counted! : Fx, ResolveBase.Request, List(Str), List(Str) => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }) }, Fail)
+	# Slice 252 (R-PU28, Q252-8): `repos` are the `repos` items of the kept copies that it read (`Offline`). The other indexes give none here (an answer has its own `repos`).
+	# `oldest` is the time of the oldest copy or cached page that it read (R-DI12). It prints no line: the caller prints it (`cached_line!`).
+	counted! : Fx, ResolveBase.Request, List(Str), List(Str) => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }), repos : List(Wire.Repo), oldest : Try(U64, [None]) }, Fail)
 	counted! = |fx, request, names, known| gather!(fx, request, names, known, Bool.True)
 
-	gather! : Fx, ResolveBase.Request, List(Str), List(Str), Bool => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }) }, Fail)
+	gather! : Fx, ResolveBase.Request, List(Str), List(Str), Bool => Try({ found : List(ResolveBase.Candidates), yanked : List({ name : Str, count : U64 }), repos : List(Wire.Repo), oldest : Try(U64, [None]) }, Fail)
 	gather! = |fx, request, names, known, filter| {
 		var $yanked = []
+		var $repos = []
 		var $found = no_candidates
 		var $oldest = Err(None)
 		for name in names {
@@ -48,6 +67,7 @@ PickIndex :: [].{
 						Err(None) => $oldest
 					}
 					$yanked = $yanked.append({ name, count: got.yanked })
+					$repos = $repos.concat(got.repos)
 					$found = $found.append({ name, list: got.list, missing: got.missing, missing_forms: got.missing_forms, pages: [] })
 				}
 				Direct => {
@@ -74,11 +94,7 @@ PickIndex :: [].{
 				}
 			}
 		}
-		match $oldest {
-			Ok(t) => fx.err!("${Github.offline_line(t)}\n")
-			Err(None) => {}
-		}
-		Ok({ found: $found, yanked: $yanked })
+		Ok({ found: $found, yanked: $yanked, repos: $repos, oldest: $oldest })
 	}
 
 	# The slots of `Pick.step`: the variables in order, then the wants (R-VA6), then the new names of `add`.

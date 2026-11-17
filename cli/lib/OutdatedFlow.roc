@@ -61,10 +61,10 @@ OutdatedFlow :: [].{
 					Err(None) => []
 				}
 				if args.json {
-					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(Out.with_fell_member(Outdated.data(done.members), done.fell), done.ran) }))
+					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(Out.with_fell_member(Outdated.data_moved(done.members, done.moved), done.fell), done.ran) }))
 				} else {
 					for member in done.members {
-						fx.out!(Outdated.text(member))
+						fx.out!(Outdated.text_moved(member, done.moved))
 					}
 				}
 				if !args.quiet and !args.json {
@@ -83,7 +83,7 @@ OutdatedFlow :: [].{
 Pending : { file : Str, rows : List({ row : Outdated.Row, hash : Str }), fixed : List(Str) }
 
 # Steps 2 to 8 of the table above.
-flow! : Fx, Args => Try({ members : List(Outdated.Member), ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
+flow! : Fx, Args => Try({ members : List(Outdated.Member), moved : List(Outdated.Moved), ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 flow! = |fx, args| {
 	start = Install.begin!(fx, args)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
@@ -111,12 +111,13 @@ flow! = |fx, args| {
 	}
 	# Slice 206e4 (R-SH4, Design Q533): a failure after the closure answer carries the run.
 	ran = ShareHook.ran_of(request, { notes: Bool.True, second: Err(NotRead) })
-	members = report!(fx, request, { names, built, shown, vars, settings, listed }).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
-	Ok({ members, ran, fell: ResolveBase.fell_of(request) })
+	reported = report!(fx, request, { names, built, shown, vars, settings, listed }).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
+	Ok({ members: reported.members, moved: reported.moved, ran, fell: ResolveBase.fell_of(request) })
 }
 
 # Steps 9 to the end of the table above: the candidates, the compiler list and the facts of the rows that are behind.
-report! : Fx, ResolveBase.Request, { names : List(Str), built : { vars : List(Vars.Var), wants : List(Vars.Want) }, shown : List(Str), vars : List(Vars.Var), settings : ResolveBase.Settings, listed : Try(List(Nightlies.Release), [NotRead]) } => Try(List(Outdated.Member), Fail)
+# Slice 252 (R-PU28, Q252-9, section 7a): `moved` are the names with a successor, from the `repos` items of the answer (or of the kept copies with `--offline`). Their rows are shown also when they are not behind.
+report! : Fx, ResolveBase.Request, { names : List(Str), built : { vars : List(Vars.Var), wants : List(Vars.Want) }, shown : List(Str), vars : List(Vars.Var), settings : ResolveBase.Settings, listed : Try(List(Nightlies.Release), [NotRead]) } => Try({ members : List(Outdated.Member), moved : List(Outdated.Moved) }, Fail)
 report! = |fx, request, ctx| {
 	names = ctx.names
 	built = ctx.built
@@ -124,8 +125,15 @@ report! = |fx, request, ctx| {
 	vars = ctx.vars
 	settings = ctx.settings
 	listed = ctx.listed
-	found = PickIndex.index!(fx, request, names, built.vars.join_map(|v| v.uses.map(|u| u.url)))?
-	pending = shown.map(|file| pending_of(file, vars, found, { now: request.now, min_age: settings.min_age, exclude: settings.exclude }))
+	counted = PickIndex.counted!(fx, request, names, built.vars.join_map(|v| v.uses.map(|u| u.url)))?
+	PickIndex.cached_line!(fx, counted.oldest)
+	found = counted.found
+	repos = match request.index {
+		Answer(a) => a.answer.repos
+		_ => counted.repos
+	}
+	moved = Outdated.moved_names({ names, repos })
+	pending = shown.map(|file| pending_of(file, vars, found, { now: request.now, min_age: settings.min_age, exclude: settings.exclude, moved }))
 	behind = pending.join_map(|p| p.rows)
 	# R-DI1, D8: the compiler list and the facts are read only when a row is behind.
 	releases = match listed {
@@ -137,7 +145,8 @@ report! = |fx, request, ctx| {
 	hashes = behind.map(|r| r.hash).fold([], |found_hashes, hash| if found_hashes.contains(hash) found_hashes else found_hashes.append(hash))
 	local = Facts.load!(fx, { roots: request.roots, keys: hashes.join_map(|hash| domain.map(|id| { hash, nightly: id, target: "any" })) })?
 	ranged = evidence_of(request.index, listed_d, local)
-	Ok(pending.map(|p| { file: p.file, rows: p.rows.map(|r| { ..r.row, range: Outdated.range_of({ hash: r.hash, domain, facts: ranged.facts, epochs: ranged.epochs }) }), fixed: p.fixed }))
+	members = pending.map(|p| { file: p.file, rows: p.rows.map(|r| { ..r.row, range: Outdated.range_of({ hash: r.hash, domain, facts: ranged.facts, epochs: ranged.epochs }) }), fixed: p.fixed })
+	Ok({ members, moved })
 }
 
 # Slice 206e3 (R-EP12, R-EP15, R-EF3, R-PB3): the facts and the epochs of the `nightly range` column. With an `Answer` index: the local rows first, then the rank 2 rows of the `runs` and `nearest` of the answer on D (`Matrix.real`: rank 1 wins, a `bot` row wins),
@@ -159,7 +168,7 @@ indexed_name = |v| match (v.host, v.name) {
 }
 
 # One member: a row for each group that it uses and that is behind, and the `Fixed` hosts (R-DI11), each once.
-pending_of : Str, List(Vars.Var), List(ResolveBase.Candidates), { now : U64, min_age : U64, exclude : List(Str) } -> Pending
+pending_of : Str, List(Vars.Var), List(ResolveBase.Candidates), { now : U64, min_age : U64, exclude : List(Str), moved : List(Outdated.Moved) } -> Pending
 pending_of = |file, vars, found, ctx| {
 	mine = vars.keep_if(|v| v.uses.any(|u| u.file == file))
 	hosts = mine.keep_oks(
@@ -175,14 +184,14 @@ pending_of = |file, vars, found, ctx| {
 	}
 }
 
-# R-WS1: the alias and `current` are of the first use in the member. A group that is not behind has no row.
-row_of : Str, Vars.Var, List(ResolveBase.Candidates), { now : U64, min_age : U64, exclude : List(Str) } -> Try({ row : Outdated.Row, hash : Str }, [NoRow])
+# R-WS1: the alias and `current` are of the first use in the member. A group that is not behind has no row, unless its name has a successor (slice 252, `Outdated.is_shown`).
+row_of : Str, Vars.Var, List(ResolveBase.Candidates), { now : U64, min_age : U64, exclude : List(Str), moved : List(Outdated.Moved) } -> Try({ row : Outdated.Row, hash : Str }, [NoRow])
 row_of = |file, v, found, ctx| match (indexed_name(v), v.uses.find_first(|u| u.file == file)) {
 	(Ok(name), Ok(first)) => {
 		list = found.find_first(|c| c.name == name).map_ok(|c| c.list) ?? []
 		got = Outdated.versions({ current: first.url, ranges: v.ranges.map(|r| r.range), list, now: ctx.now, min_age: ctx.min_age, exclude: ctx.exclude, snapshot: Err(None) })
 		row = { alias: first.alias, name, current: first.version, wanted: got.wanted, latest: got.latest, new_series: got.new_series, range: Unread }
-		if Outdated.behind(row) Ok({ row, hash: Ident.of_url(first.url).map_ok(|ident| ident.hash) ?? "" }) else Err(NoRow)
+		if Outdated.is_shown(row, ctx.moved) Ok({ row, hash: Ident.of_url(first.url).map_ok(|ident| ident.hash) ?? "" }) else Err(NoRow)
 	}
 	_ => Err(NoRow)
 }

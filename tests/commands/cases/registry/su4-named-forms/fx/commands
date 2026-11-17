@@ -1,0 +1,2 @@
+update json@2 --no-check --dry-run --file u1/main.roc
+update someone/roc-json --no-check --dry-run --file u1/main.roc

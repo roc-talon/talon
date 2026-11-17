@@ -205,6 +205,8 @@ package
 		ShareRound,
 		ShortNames,
 		Smoke,
+		Successor,
+		SuccessorFlow,
 		TalonFile,
 		TalonRemove,
 		TalonRemoveFlow,

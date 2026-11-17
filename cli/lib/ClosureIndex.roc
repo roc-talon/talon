@@ -228,13 +228,14 @@ ClosureIndex :: [].{
 	## | --- | --- |
 	## | 1 | For each form F: one `RegistryCache.get!` with `offline` of the path `/v1/releases?group=<F>` (`Registry.releases_url` with no `series`). A copy: the candidates (`candidates`) of the rows whose `group` is F. `NoCopy`: F has no copy yet. |
 	## | 2 | When `forms` is empty, or a form has no copy: one `RegistryCache.get!` with `offline` of `/v1/packages/<owner>/<repo>/releases` (`Registry.releases_of_repo_url`). A copy: the candidates of the rows of each form with no copy (all rows when `forms` is empty). `NoCopy`: no candidate for them. |
-	## | 3 | The result: the candidates (step 1 in the order of `forms`, then step 2). `missing_forms`: the forms with no copy in step 1 and step 2 (per group, Design Q391: each acts as in R-DI11, the other groups use their copies). `missing`: no copy for the name at all (each form is in `missing_forms`, or no form and no copy in step 2). `oldest`: the smallest copy time that it used (`Err(None)` for none). |
+	## | 3 | The result: the candidates (step 1 in the order of `forms`, then step 2). `missing_forms`: the forms with no copy in step 1 and step 2 (per group, Design Q391: each acts as in R-DI11, the other groups use their copies). `missing`: no copy for the name at all (each form is in `missing_forms`, or no form and no copy in step 2). `oldest`: the smallest copy time that it used (`Err(None)` for none). Slice 252 (R-PU28, Q252-8): `repos` are the `repos` items of each copy that it read. |
 	##
 	## A copy body is decoded with `records.Index.decode_releases`. A copy that does not decode is as no copy (Design Q392, R-TF6): one `delete!` of its body and meta files (in this order), and the warning
 	## `warning: the kept answer <body path> of the registry <origin> does not decode (<reason>); removed` on stderr (a proposal, R-OUT2). Talon reads no GitHub page of `talon/index/github/` (R-IX5).
-	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64 }, Fail)
+	offline! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool } => Try({ list : List(Index.Candidate), missing : Bool, missing_forms : List(Str), oldest : Try(U64, [None]), yanked : U64, repos : List(Wire.Repo) }, Fail)
 	offline! = |fx, facts| {
 		var $yanked = 0
+		var $repos = []
 		var $list = no_candidates
 		var $oldest = Err(None)
 		var $no_copy = no_names
@@ -243,6 +244,7 @@ ClosureIndex :: [].{
 			match kept!(fx, facts, path)? {
 				Ok(copy) => {
 					form_rows = copy.rows.keep_if(|row| row.group == form)
+					$repos = $repos.concat(copy.repos)
 					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: form_rows, artifacts: [], name: facts.name, held: facts.held }) else 0
 					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: form_rows, held: facts.held }) else form_rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
@@ -261,6 +263,7 @@ ClosureIndex :: [].{
 			match kept!(fx, facts, path)? {
 				Ok(copy) => {
 					rows = if facts.forms.is_empty() copy.rows else copy.rows.keep_if(|row| $no_copy.contains(row.group))
+					$repos = $repos.concat(copy.repos)
 					$yanked = $yanked + if facts.filter ClosureIndex.dropped({ releases: rows, artifacts: [], name: facts.name, held: facts.held }) else 0
 					$list = $list.concat(ClosureIndex.candidates({ releases: if facts.filter ClosureIndex.live({ releases: rows, held: facts.held }) else rows, artifacts: [], name: facts.name }))
 					$oldest = older($oldest, copy.time)
@@ -268,13 +271,13 @@ ClosureIndex :: [].{
 				}
 				Err(NoCopy) => {
 					if facts.forms.is_empty() {
-						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked })
+						return Ok({ list: $list, missing: Bool.True, missing_forms: [], oldest: $oldest, yanked: $yanked, repos: $repos })
 					}
 				}
 			}
 		}
 		missing_forms = $no_copy
-		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked })
+		Ok({ list: $list, missing: !facts.forms.is_empty() and missing_forms.len() == facts.forms.len(), missing_forms, oldest: $oldest, yanked: $yanked, repos: $repos })
 	}
 }
 
@@ -301,7 +304,7 @@ older = |oldest, t| match oldest {
 }
 
 # One kept copy of a read route (R-IX6), with no request: its rows and its time. A copy that does not decode is as no copy (Design Q392, R-TF6): Talon deletes it and prints a warning that names the file.
-kept! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool }, Str => Try(Try({ rows : List(WireRelease.Row), time : U64 }, [NoCopy]), Fail)
+kept! : Fx, { roots : Roots, origin : Str, version : Str, now : U64, name : Str, forms : List(Str), held : List(Str), filter : Bool }, Str => Try(Try({ rows : List(WireRelease.Row), time : U64, repos : List(Wire.Repo) }, [NoCopy]), Fail)
 kept! = |fx, facts, path| {
 	got = RegistryCache.get!(fx, { roots: facts.roots, origin: facts.origin, version: facts.version, path, now: facts.now, offline: Bool.True, newest: Bool.False, bookmark: Err(None) })?
 	match got {
@@ -312,7 +315,7 @@ kept! = |fx, facts, path| {
 				Live => facts.now
 			}
 			match WireIndex.decode_releases(answer.body) {
-				Ok(decoded) => Ok(Ok({ rows: decoded.releases, time }))
+				Ok(decoded) => Ok(Ok({ rows: decoded.releases, time, repos: decoded.repos }))
 				Err(BadJson(reason)) => {
 					files = RegistryCache.files({ roots: facts.roots, origin: facts.origin, url: "${facts.origin}${path}" })
 					_ = fx.delete!([files.body, files.meta])

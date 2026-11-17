@@ -388,17 +388,32 @@ ResolveBase :: [].{
 	}
 
 	# R-H1: a header entry moves to the URL that was chosen, for each use of the variable.
+	# Slice 252 (R-PU28, R-UP3, section 7): an entry that follows a successor changes its repository. The line names both: `~ <alias>: <old name> <old version> -> <new name> <new version>`.
 	set_edits : Vars.Scoped, Pick.Chosen -> List(Edit)
 	set_edits = |s, c| {
 		name = s.variable.name ?? s.variable.group.form
+		name_of = |url| Ident.of_url(url).map_ok(|ident| ident.name ?? name) ?? name
+		to = name_of(c.url)
 		s.variable.uses
 			.keep_if(|u| u.url != c.url)
 			.map(
 				|u| {
-					file: u.file,
-					op: Set({ alias: u.alias, url: c.url }),
-					line: "~ ${u.alias}: ${name} ${u.version} -> ${c.version}",
-					did: Moved({ alias: u.alias, from: { name, version: u.version }, to: { name, version: c.version } }),
+					from = name_of(u.url)
+					if from.with_ascii_lowercased() == to.with_ascii_lowercased() {
+						{
+							file: u.file,
+							op: Set({ alias: u.alias, url: c.url }),
+							line: "~ ${u.alias}: ${name} ${u.version} -> ${c.version}",
+							did: Moved({ alias: u.alias, from: { name, version: u.version }, to: { name, version: c.version } }),
+						}
+					} else {
+						{
+							file: u.file,
+							op: Set({ alias: u.alias, url: c.url }),
+							line: "~ ${u.alias}: ${from} ${u.version} -> ${to} ${c.version}",
+							did: Moved({ alias: u.alias, from: { name: from, version: u.version }, to: { name: to, version: c.version } }),
+						}
+					}
 				},
 			)
 	}

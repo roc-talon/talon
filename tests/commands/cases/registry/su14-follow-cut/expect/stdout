@@ -1,0 +1,8 @@
+== update json --no-check --dry-run --file u1/main.roc
+note: json: the successors of someone/roc-json have more than 4 links. Talon stops at acme/e.
+check: skipped
+$PROJECT/u1/main.roc
+  ~ json: someone/roc-json 2.0.0 -> acme/e 2.0.1
+resolved at log:50, 0 probes
+dry run: nothing was written
+exit 0
