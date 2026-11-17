@@ -1,0 +1,7 @@
+== publish
+exit 20
+== publish --json
+{"schema":1,"command":"publish","ok":false,"data":null,"error":{"kind":"rejected","code":20,"message":"acme/json is bound to another GitHub account (repository id 812345). Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues","details":{"status":403,"type":"/errors/repository-changed"}}}
+exit 20
+== publish
+exit 20

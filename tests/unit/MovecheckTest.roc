@@ -343,3 +343,11 @@ expect {
 		and gone_204 == Ok({ name: "olddev/json", result: Removed, successor: Err(None), offer: Err(None), state: Active })
 			and gone_202 == Ok({ name: "olddev/json", result: Removed, successor: Err(None), offer: Err(None), state: Active })
 }
+
+# R-TP12, R-MV4 (slice 253, mutation gap G1): a 403 `forbidden` that has an `issues_url` member keeps the generic refusal text, not the operator text.
+expect {
+	body = js("{'type':'/errors/forbidden','title':'T','status':403,'detail':'D','issues_url':'https://github.com/roc-talon/talon/issues'}")
+	got = MoveCheck.failure({ origin, version: "0.0.1", tries: 1, renewed: Bool.False, plan: Set("acme/roc-json"), reply: Ok({ status: 403, headers: [], body }) })
+	got.message == "D (/errors/forbidden). Fix the names or the workflow, then run the command again."
+		and got.kind.code() == 20
+}

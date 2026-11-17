@@ -278,6 +278,7 @@ Publish :: [].{
 	## | --- | --- |
 	## | 409 or 403 or any status, type `/errors/label-conflict` | `<detail> (/errors/label-conflict). The tag was released again. Release a new version.` |
 	## | type `/errors/forbidden` | `<detail> (/errors/forbidden). Run tln publish in a job for the tag.` |
+	## | type `/errors/repository-changed` with `issues_url` (R-TP12, Q253-1, proposal) | `<detail>. Only the registry operator can change this. Open an issue: <issues_url>`. `issues_url` is not in `details` (Q253-2). With no `issues_url`: the message of `Registry.refuse` (Q253-3) |
 	## | `tries` above 1 and the answer was a 5xx other than a busy 503, with problem details | `the registry answered <status> (<type>) <tries> times. Try again later.` |
 	## | `tries` above 1 and the answer was 429 (Q516, proposal) | the message of `Registry.refuse` with ` after <tries> requests` after `(<type>)`: `the registry answered 429 (<type>) after 4 requests. Try again in 7 s.` |
 	## | `tries` above 1 and the answer was 503 `/errors/busy` (Q516, proposal) | `the registry is busy (503) after <tries> requests. Try again in <n> s.` (`Try again later.` with no `Retry-After`) |
@@ -301,7 +302,10 @@ Publish :: [].{
 					} else if type == "/errors/forbidden" {
 						Ok("${what} (${type}). Run tln publish in a job for the tag.")
 					} else {
-						Publish.retry_text(input, { status: answer.status, retry_after, body })
+						match Registry.operator_text(body) {
+							Ok(message) => Ok(message)
+							Err(None) => Publish.retry_text(input, { status: answer.status, retry_after, body })
+						}
 					}
 					match text {
 						Ok(message) => { ..refused, message }

@@ -278,3 +278,15 @@ expect Registry.refuse({ origin, version, method: Get, reply: reply(500, prob("/
 
 # A 503 that is not problem details keeps the general text of R-E6 (no busy text).
 expect Registry.refuse({ origin, version, method: Get, reply: reply(503, "<html>busy</html>"), retry_after: "30" }).message == "${origin} answered 503 and the answer is not problem details. Check the registry setting."
+
+# R-TP12 (slice 253, mutation gap G1): `operator_text` checks the type. A `forbidden` or a `label-conflict` problem that has `issues_url` is not a `repository-changed`: `Err(None)`. Only `repository-changed` with `issues_url` gives the text.
+expect {
+	url = ",\"issues_url\":\"https://github.com/roc-talon/talon/issues\""
+	text_of = |type| match Registry.problem(reply(403, prob(type, "403", url))) {
+		Ok(body) => Registry.operator_text(body)
+		Err(_) => Err(None)
+	}
+	text_of("/errors/forbidden") == Err(None)
+		and text_of("/errors/label-conflict") == Err(None)
+			and text_of("/errors/repository-changed") == Ok("D. Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues")
+}

@@ -208,6 +208,16 @@ Registry :: [].{
 		}
 	}
 
+	## R-TP12: the text of a `repository-changed` problem that has `issues_url`: `<detail>. Only the registry operator can change this. Open an issue: <issues_url>`. Any other problem: `Err(None)`.
+	operator_text : Problem.Body -> Try(Str, [None])
+	operator_text = |body| match body.extra {
+		IssuesUrl(url) if body.type_text == Problem.type_uri(RepositoryChanged) => {
+			what = if body.detail.is_empty() body.title else body.detail
+			Ok("${what}. Only the registry operator can change this. Open an issue: ${url}")
+		}
+		_ => Err(None)
+	}
+
 	## R-AP25, Design Q424: the end of a 429 message. A whole number of seconds (white space cut) gives `Try again in <n> s.`, anything else `Try again later.`
 	wait_text : Str -> Str
 	wait_text = |text| {

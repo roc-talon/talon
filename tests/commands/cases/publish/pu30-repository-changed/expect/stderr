@@ -1,0 +1,6 @@
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[rejected]: acme/json is bound to another GitHub account (repository id 812345). Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[rejected]: acme/json is bound to another GitHub account (repository id 812345). Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues
+note: no earlier release of github.com/acme/json/releases/download/{v}/ before 2.1.0: roc bump did not run
+tln: error[rejected]: acme/json is bound to another GitHub account (repository id 812345) (/errors/repository-changed). Fix the release or the workflow, then run the command again.

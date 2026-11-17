@@ -1,0 +1,12 @@
+base: L0 l0-6: exit=0 All (168) tests passed. l0-4: exit=0 All (158) tests passed.
+base L2: commands: 49 passed, 0 failed 
+w1: L0 l0-6: exit=0 All (168) tests passed. l0-4: exit=0 All (158) tests passed.
+w1: L2 commands: 49 passed, 0 failed 
+w2: L0 l0-6: exit=1     0 compiler errors. l0-4: exit=0 All (158) tests passed.
+w2: L2 FAIL publish/pu30-repository-changed commands: 48 passed, 1 failed 
+w3: L0 l0-6: exit=0 All (168) tests passed. l0-4: exit=0 All (158) tests passed.
+w3: L2 commands: 49 passed, 0 failed 
+w3b: L0 l0-6: exit=1     0 compiler errors. l0-4: exit=0 All (158) tests passed.
+w3b: L2 commands: 49 passed, 0 failed 
+w4: L0 l0-6: exit=1     0 compiler errors. l0-4: exit=1     0 compiler errors.
+w4: L2 FAIL move/mv6-refused FAIL publish/pu30-repository-changed commands: 47 passed, 2 failed 

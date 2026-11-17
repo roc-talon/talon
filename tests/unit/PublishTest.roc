@@ -374,3 +374,29 @@ expect {
 								and of(401, "unauthenticated", [], 1, Bool.False).message == "D (/errors/unauthenticated). Fix the release or the workflow, then run the command again."
 									and of(429, "rate-limited", [("Retry-After", "7")], 1, Bool.False).message == "the registry answered 429 (/errors/rate-limited). Try again in 7 s."
 }
+
+# R-TP12, R-E6, R-J7 (slice 253, Q253-1, Q253-2; follows the recommendation): a 403 `repository-changed` with `issues_url` is the detail, then the advice of R-TP12, then the URL (the text of `MoveCheck.failure`, Q251-8). Exit 20. `details` has `status` and `type` only.
+expect {
+	body = js("{'type':'/errors/repository-changed','title':'Repository changed','status':403,'detail':'acme/json is bound to another GitHub account (repository id 812345)','issues_url':'https://github.com/roc-talon/talon/issues'}")
+	got = Publish.failure({ origin: "https://registry.example.org", version: "0.0.1", tries: 1, renewed: Bool.False, reply: Ok({ status: 403, headers: [], body }) })
+	got.message == "acme/json is bound to another GitHub account (repository id 812345). Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues"
+		and got.kind.code() == 20
+			and got.details == Ok(JsonDoc.Obj([("status", Num(403)), ("type", Text("/errors/repository-changed"))]))
+}
+
+# R-TP12, R-AP34 (slice 253, Q253-3): a 403 `repository-changed` is a refusal, not a retry: after 4 requests (`tries` 4) with a 403 the text is the same. The `issues_url` text applies only to the type `repository-changed`: another 403 with an `issues_url` member keeps its text.
+expect {
+	url = "'issues_url':'https://github.com/roc-talon/talon/issues'"
+	changed = js("{'type':'/errors/repository-changed','title':'T','status':403,'detail':'D',${url}}")
+	other = js("{'type':'/errors/forbidden','title':'T','status':403,'detail':'D',${url}}")
+	of = |body, tries| Publish.failure({ origin: "https://registry.example.org", version: "0.0.1", tries, renewed: Bool.False, reply: Ok({ status: 403, headers: [], body }) })
+	of(changed, 4).message == "D. Only the registry operator can change this. Open an issue: https://github.com/roc-talon/talon/issues"
+		and of(other, 1).message == "D (/errors/forbidden). Run tln publish in a job for the tag."
+}
+
+# R-TP12 (slice 253, Q253-3, follows the recommendation): a 403 `repository-changed` with no `issues_url` (a registry that has no setting) keeps the text of `Registry.refuse`, exit 20.
+expect {
+	got = fail_of(403, "repository-changed", "D", 1)
+	got.message == "D (/errors/repository-changed). Fix the release or the workflow, then run the command again."
+		and got.kind.code() == 20
+}

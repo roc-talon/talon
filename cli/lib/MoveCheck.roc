@@ -259,9 +259,9 @@ MoveCheck :: [].{
 							if refused.kind.code() != 20 {
 								refused
 							} else {
-								match body.extra {
-									IssuesUrl(url) if body.type_text == Problem.type_uri(RepositoryChanged) => { ..refused, message: "${what}. Only the registry operator can change this. Open an issue: ${url}" }
-									_ => { ..refused, message: "${what} (${body.type_text}). Fix the names or the workflow, then run the command again." }
+								match Registry.operator_text(body) {
+									Ok(message) => { ..refused, message }
+									Err(None) => { ..refused, message: "${what} (${body.type_text}). Fix the names or the workflow, then run the command again." }
 								}
 							}
 						}
