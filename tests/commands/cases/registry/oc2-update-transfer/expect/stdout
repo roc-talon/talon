@@ -1,0 +1,7 @@
+== update --no-check --dry-run --file u1/main.roc
+nothing to change
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --json --file u1/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"log:50","log_size":50,"probes":0,"downloads":0,"dry_run":true,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"audit_warnings":[{"name":"someone/roc-json","group":"github.com/someone/roc-json/releases/download/{v}/","version":"2.0.0","hash":"7vqcxRy8v7AeYcCSstUq6Pjx8PuvoVvxdmhXvUYjTa21","alias":"json","via":[],"reason":"moved","successor":"acme/roc-json","text":"json: moved to acme/roc-json. Run: tln update json"}],"owner_changes":[{"alias":"json","name":"someone/roc-json","action":"transfer","at":1789000000000,"owner":"acme","text":"json: transferred to acme on 2026-09-10"}]},"error":null}
+exit 0

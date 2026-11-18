@@ -1,0 +1,2 @@
+R-PU30 Q254-7 (a) (slice 254, Design Q634): `tln update json` takes 2.0.1 (published 1791000000000, after the recreate at 1790000000000). The value BEFORE the command (2.0.0, published before the event) decides: the line is printed.
+Red before the slice: no warning.

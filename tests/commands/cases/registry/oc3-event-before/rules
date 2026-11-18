@@ -1,0 +1,1 @@
+R-PU30 Q254-1 (slice 254, Design Q634, a guard): the recreate event (1780000000000, 2026-05-28) is before the release of the header value (2026-07-01): no line, no change. Passes before the slice.

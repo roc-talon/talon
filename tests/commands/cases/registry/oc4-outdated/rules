@@ -1,0 +1,2 @@
+R-PU30 R-CM6 R-J2 (slice 254, Design Q634, Q254-4 (a), Q254-5 (a), T7): `tln outdated` with the recreate of oc1. Run 1: the table is not changed (json is up to date) and stderr has the warning (also for an entry that is not behind). Run 2 `--json`: `data.owner_changes` after `members`, and the warning on stderr. Run 3: the project u2 has only pf (acme/pfx, no event): no line, no member (a guard: only header entries, F7).
+Red before the slice: runs 1 and 2 have no warning and no member.

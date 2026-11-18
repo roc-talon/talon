@@ -44,7 +44,7 @@ The order of the P2 slices of the `tln` CLI: the registry index, sharing, `tln p
 
 | Phase | Ids | Reason |
 | --- | --- | --- |
-| P3 | The advisories and the scanner hook of R-AU (`tln audit` is built in P2, Design Q620, Q629), R-PU29 and R-PU30 (client parts; R-PU28 is built in P2, slice 252, Design Q632), R-T22 for other tools, R-SE2 (inclusion proofs), R-SE6 (mirror), R-SE10 (attestation), the log tile reads (R-AP11) | Design 7 P3, registry plan C.3 |
+| P3 | The advisories and the scanner hook of R-AU (`tln audit` is built in P2, Design Q620, Q629), R-T22 for other tools, R-SE2 (inclusion proofs), R-SE6 (mirror), R-SE10 (attestation), the log tile reads (R-AP11) | Design 7 P3, registry plan C.3 |
 | No test | R-SE14, R-SE16 (accepted risks), R-RL4 (it is `direct` mode, P0) | Security rows that name no mechanism of the client |
 | Registry only | The `provenance` member of registry slice 122 (R-AP49, Design Q158) | No client rule reads it. The reader ignores an unknown member (R-AP51), so 122 changes no CLI test. |
 
@@ -129,6 +129,7 @@ Rules for all slices: one rule group or one command path, about 400 lines of cod
 | 251 | `tln move` | (status: done, file 251-move.md) Tests for R-CM22, R-MV1 to R-MV5, R-EC2 (move cases), R-RG9 (move), R-AP34 (move). The pure module `MoveCheck`, the flow `MoveFlow`, the branch in `Run.dispatch!`, `move` in `Opts.reads_registry`. | R-CM22, R-MV1 to R-MV5, R-EC2, R-RG9, R-AP34, R-TP12 | G-C261 (Design Q631) | none / none | 80 | Sonnet |
 | 252 | Follow a successor with `tln update <alias>` | (status: done, file 252-successor-follow.md) Tests for R-PU28, R-UP3, R-TP14, R-SN8, R-C7. The pure module `Successor` (`walk`, `decide`, `chain_note`), the read of the successor release (Q252-1), the replace of the entry under the same alias, the report line with both names, and the stop of Q252-3. | R-PU28, R-UP3, R-TP14, R-SN8, R-AU8, R-AU14, R-C7 | G-C262 (Design Q632) | none / none | 60 | Sonnet |
 | 253 | `tln publish`: `repository-changed` text | (status: done, file 253-publish-repository-changed.md) Tests for R-TP12, R-E6, R-J7 (publish). One case in `Publish.failure`. | R-TP12, R-E6, R-J7, R-AP34 | G-C263 (Design Q633) | none / none | 10 | Sonnet |
+| 254 | `tln add` of a moved name, and the owner change note | (status: done, file 254-add-moved-owner-note.md) Tests for R-PU29, R-PU30. The pure module `OwnerNote` (`date_text`, `find`, `text`, `doc`), the R-PU29 stop text with the successor, the R-PU30 line in `update`, `upgrade`, `outdated` (printed only after a successful command, Q254-9) | R-PU29, R-PU30, R-SE14, R-AP32 | G-C264 (Design Q634) | 252 / 247b | 150 | Sonnet |
 
 ## 3. Test strategy
 

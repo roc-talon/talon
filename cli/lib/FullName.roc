@@ -1,3 +1,4 @@
+import records.Closure as Wire
 import records.Index as WireIndex
 import Fail
 import Fx
@@ -79,6 +80,24 @@ FullName :: [].{
 	## Slice 250 (Design Q630, Q630-3): STUB. R-AD35 step 2 when the R-AP1 answer has releases and each one is yanked (or withdrawn) and there is no selector: kind `Usage` (exit 2), no closure query. Text (proposal, TW24): `<name> has no release that Talon can use: each release is yanked.`
 	each_yanked : { name : Str } -> Fail
 	each_yanked = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use: each release is yanked.")
+
+	## Slice 254 (R-PU29, Q254-11, T1): `each_yanked` for a name whose `repos` item has a successor: the same stop, and the text names the successor.
+	each_yanked_moved : { name : Str, successor : Str } -> Fail
+	each_yanked_moved = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use: each release is yanked or withdrawn.${successor_hint(facts.successor)}")
+
+	## Slice 254 (R-PU29, Q254-12, T2): ` Its successor is <s>. Run: tln add <s>` for the end of the text of `Add.no_release`.
+	successor_hint : Str -> Str
+	successor_hint = |successor| " Its successor is ${successor}. Run: tln add ${successor}"
+
+	## Slice 254 (R-PU29, Q254-11): the successor (first link) of the `repos` item of a name, when it has one. Names are compared in lower case.
+	successor_of : List(Wire.Repo), Str -> Try(Str, [None])
+	successor_of = |repos, name| {
+		lower = name.with_ascii_lowercased()
+		match repos.find_first(|r| r.name.with_ascii_lowercased() == lower) {
+			Ok(r) => r.successor
+			Err(_) => Err(None)
+		}
+	}
 
 	## Slice 206f (R-AD35 step 5, Design Q545): the one item of the closure query for a full name, from the R-AP1 answer. `group` is the `group` of the releases that the selector keeps (the release with the largest `published_at`, then the larger `log_index`, of the kept ones that are not yanked and not withdrawn, else of the kept ones; the first wins a tie).
 	## `text` is what the user typed after `@`, `range` is the range of the new entry (`Fresh.range`: `=1.2.3` for a version, `^1` for a range). The members of the item:

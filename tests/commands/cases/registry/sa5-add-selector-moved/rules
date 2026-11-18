@@ -1,0 +1,2 @@
+R-PU29 Q254-12 (a) (slice 254, Design Q634, T2): `tln add acme/known@1.0.0`, each release yanked or withdrawn, the item `moved` to neworg/known. Exit 2: the text of `Add.no_release` and then ` Its successor is neworg/known. Run: tln add neworg/known`.
+Red before the slice: no successor in the text.

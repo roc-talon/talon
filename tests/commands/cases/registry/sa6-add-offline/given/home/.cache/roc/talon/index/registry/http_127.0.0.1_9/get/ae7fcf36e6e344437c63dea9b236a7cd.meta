@@ -1,0 +1,3 @@
+url /v1/packages/acme/known/releases
+etag "r1"
+max-age 60

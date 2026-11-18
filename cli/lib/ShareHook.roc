@@ -53,6 +53,7 @@ ShareHook :: [].{
 			headers: [],
 			built: [],
 			audit: [],
+			owners: [],
 		})
 		_ => Err(None)
 	}

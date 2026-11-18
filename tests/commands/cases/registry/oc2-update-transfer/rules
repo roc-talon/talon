@@ -1,0 +1,2 @@
+R-PU30 R-PU28 R-AU14 R-SE14 (slice 254, Design Q634, Q254-3 (a), T5, T8): `tln update` (no names). The item of someone/roc-json is `moved` with the successor acme/roc-json and `owner_changed` transfer at 1789000000000 (2026-09-10), after the release of json 2.0.0. Stderr: the R-AU14 line first, then `warning: json: transferred to acme on 2026-09-10` (the owner is the owner part of the successor). Run 2 `--json`: `owner_changes` after `audit_warnings`, `owner` is `acme`.
+Red before the slice: only the R-AU14 line.

@@ -433,6 +433,8 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
 	audit = AuditResolve.warn!(fx, request, loaded, closures, { second: probed.second, found: after.found })
+	# Slice 254 (R-PU30, Q254-5, Q254-7): the owner docs of `update` and `upgrade` (printed after `settle!`, Q254-9), for the header values before the command.
+	owners = if request.command == Install [] else AuditResolve.owner_docs(request, loaded.members, probed.second)
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))
 	# The pins of a move are edits of the candidate, so the ladder checks them (R-BL1). `decision.writes` is the other kind of pin (R-RP3).
 	checked = if moved.is_ok() edits else changes
@@ -465,6 +467,8 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 	done = settled?
 	ran_done = { ..done.ran, downloads: done.ran.downloads + after.downloads + probed.optional.downloads }
 	touched = done.touched
+	# Q254-9: the owner lines only after the ladder and the writes succeeded.
+	AuditResolve.print_owners!(fx, owners)
 	if touched.is_empty() and kept.is_empty() {
 		fx.out!("nothing to change\n")
 	}
@@ -490,7 +494,7 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 		},
 	)
 	# Slice 218 (R-SM1): the builds of ladder step 3 go to the run for the smoke build before the send.
-	sent = ran.map_ok(|found| { ..found, built: done.built, audit })
+	sent = ran.map_ok(|found| { ..found, built: done.built, audit, owners })
 	# The failure of a later step still has the run (`attempts!`): the notes are printed already.
 	match log_of(request) {
 		Ok(n) => Ok({ outcome: { ..outcome, at: if facts.snapshot.is_ok() outcome.at else LogSnapshot.at_text(n), log: Ok(n) }, ran: sent })

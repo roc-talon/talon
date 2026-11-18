@@ -1,0 +1,8 @@
+== update --no-check --dry-run --offline --file u1/main.roc
+nothing to change
+dry run: nothing was written
+exit 0
+== outdated --offline --file u1/main.roc
+$PROJECT/u1/main.roc
+  all packages are up to date
+exit 0

@@ -1,0 +1,9 @@
+== update --no-check --dry-run --file u1/main.roc
+nothing to change
+dry run: nothing was written
+exit 0
+== update --no-check --dry-run --json --file u1/main.roc
+{"schema":1,"command":"update","ok":true,"data":{"snapshot":"log:50","log_size":50,"probes":0,"downloads":0,"dry_run":true,"check":null,"build":null,"added":[],"moved":[],"kept":[],"pinned":null,"toml":[],"renamed":[],"notes":[],"written":[],"owner_changes":[{"alias":"json","name":"someone/roc-json","action":"recreate","at":1790000000000,"owner":null,"text":"json: the repository was made again by the same owner on 2026-09-21"}]},"error":null}
+exit 0
+== update --no-check --dry-run --quiet --file u1/main.roc
+exit 0

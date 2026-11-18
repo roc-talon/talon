@@ -125,7 +125,7 @@ Update :: [].{
 			shown.out!("dry run: nothing was written\n")
 		}
 		if args.json {
-			fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(ShareHook.with_index_notes(AuditResolve.with_warnings(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.ran), done.ran), done.fell) }))
+			fx.out!(Out.json_ok({ command: args.typed, data: Out.with_fell_note(ShareHook.with_index_notes(AuditResolve.with_owners(AuditResolve.with_warnings(ToolsStep.with_tools({ base: Report.data(outcome), rows: done.tools }), done.ran), AuditResolve.owners_of(done.ran)), done.ran), done.fell) }))
 		}
 	}
 }

@@ -1,0 +1,30 @@
+base l0-5: exit=0 All (135) tests passed in 2342.7 ms. 
+base L2: F:oc11-failed-no-note commands: 45 passed, 1 failed 
+m1: L0 exit=1     134 passed     1 failed     0 compiler errors 
+m1: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 
+m2: L0 exit=1     123 passed     12 failed     0 compiler errors 
+m2: L2 F:oc11-failed-no-note F:oc1-update-recreate F:oc2-update-transfer F:oc4-outdated F:oc5-upgrade F:oc6-update-named F:oc8-two-aliases F:oc9-platform commands: 33 passed, 8 failed 
+m3: L0 exit=1     134 passed     1 failed     0 compiler errors 
+m3: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 
+m4: L0 exit=1     134 passed     1 failed     0 compiler errors 
+m4: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 
+m5: L0 exit=1     134 passed     1 failed     0 compiler errors 
+m5: L2 F:oc11-failed-no-note F:oc8-two-aliases commands: 39 passed, 2 failed 
+m6: L0 exit=1     134 passed     1 failed     0 compiler errors 
+m6: L2 F:oc11-failed-no-note F:oc2-update-transfer commands: 39 passed, 2 failed 
+m7: L0 exit=2 All (135) tests passed in 2440.2 ms. 
+m7: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 
+m8: L0 exit=0 All (135) tests passed in 2518.6 ms. 
+m8: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 
+m9: L0 exit=2 All (135) tests passed in 2551.6 ms. 
+m9: L2 F:oc10-install-no-note F:oc11-failed-no-note commands: 181 passed, 2 failed 
+m10: L0 exit=0 All (135) tests passed in 2535.2 ms. 
+m10: L2 F:oc11-failed-no-note F:sa4-add-yanked-no-successor F:yf5-add-each-yanked F:yf5b-add-each-yanked-version F:yf5c-add-each-withdrawn commands: 36 passed, 5 failed 
+m11: L0 exit=0 All (135) tests passed in 2649.9 ms. 
+m11: L2 F:oc11-failed-no-note F:sa5-add-selector-moved commands: 39 passed, 2 failed 
+m12: L0 exit=0 All (135) tests passed in 2001.6 ms. 
+m12: L2 F:al2-update-query F:al2-update-window F:ap30-held-move-notes F:ap30-outdated-notes F:ap30-update-notes F:cv1-outdated-query F:ef3-note-tuple F:oc11-failed-no-note F:pb3-outdated-runs F:rg2-default-registry F:rg9-default-down F:rg9-outdated-note F:su11-outdated-successor commands: 171 passed, 13 failed 
+m13: L0 exit=1     134 passed     1 failed     0 compiler errors 
+m13: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 
+m14: L0 exit=1     132 passed     3 failed     0 compiler errors 
+m14: L2 F:oc11-failed-no-note commands: 40 passed, 1 failed 

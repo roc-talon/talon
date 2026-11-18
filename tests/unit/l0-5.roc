@@ -10,6 +10,7 @@ import IndexTest
 import LinkTest
 import MatrixTest
 import NoRankTest
+import OwnerNoteTest
 import PickclosureTest
 import ProbecmdTest
 import PromptTest

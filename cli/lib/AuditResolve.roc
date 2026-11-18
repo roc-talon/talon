@@ -5,10 +5,12 @@ import Closure
 import Fail
 import Fx
 import Ident
+import OwnerNote
 import Project
 import JsonDoc
 import ResolveBase
 import Text
+import Vars
 import toml.Toml
 import toml.Value
 
@@ -60,6 +62,62 @@ AuditResolve :: [].{
 			show!(fx, AuditCheck.resolve_direct({ lists, entries, items }))
 		}
 		_ => []
+	}
+
+	## Slice 254 (R-PU30, R-SE14, Design Q634): the owner change notes of the header entries of `members` (the values before the command), as `--json` docs (`data.owner_changes`). Q254-9: it prints nothing. The command prints them with `print_owners!` after it has succeeded.
+	## It sends no request. No note with `--offline` (Q254-6), or with no closure answer (`direct`). `second` is the second answer of a held move.
+	owner_docs : ResolveBase.Request, List(Vars.Member), Try(Wire.Answer, [NotRead]) => List(JsonDoc)
+	owner_docs = |request, members, second| match request.index {
+		Answer(a) if !request.offline => {
+			answers = match second {
+				Ok(other) => [other, a.answer]
+				Err(NotRead) => [a.answer]
+			}
+			entries = members.join_map(|m| m.locked.rows).keep_oks(
+				|r| match Ident.of_url(r.value) {
+					Ok(ident) => match ident.name {
+						Ok(name) => Ok({ alias: r.alias, name, hash: ident.hash })
+						Err(NoName) => Err(NoName)
+					}
+					Err(_) => Err(NoName)
+				},
+			)
+			notes = OwnerNote.find({
+				entries,
+				repos: answers.join_map(|x| x.repos),
+				releases: answers.join_map(|x| x.releases).map(|r| { hash: r.hash, published_at: r.published_at }),
+			})
+			notes.map(OwnerNote.doc)
+		}
+		_ => []
+	}
+
+	## Slice 254 (T7): `data` with the member `owner_changes` at the end, when there is a note. `owner_docs` are the docs of `owner_docs`.
+	with_owners : JsonDoc, List(JsonDoc) -> JsonDoc
+	with_owners = |data, owners| match data {
+		Obj(members) if !owners.is_empty() => Obj(members.append(("owner_changes", Arr(owners))))
+		_ => data
+	}
+
+	## Q254-4: one `warning: <text>` on stderr for each doc of `owner_docs` (the `text` member).
+	print_owners! : Fx, List(JsonDoc) => {}
+	print_owners! = |fx, docs| {
+		for doc in docs {
+			match doc {
+				Obj(members) => match members.find_first(|(k, _)| k == "text") {
+					Ok((_, Text(t))) => fx.err!("warning: ${t}\n")
+					_ => {}
+				}
+				_ => {}
+			}
+		}
+	}
+
+	## The docs of `owner_docs` that a run kept.
+	owners_of : Try(Fail.Ran, [None]) -> List(JsonDoc)
+	owners_of = |ran| match ran {
+		Ok(found) => found.owners
+		Err(None) => []
 	}
 
 	show! : Fx, List(AuditTypes.Finding) => List(JsonDoc)

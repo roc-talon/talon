@@ -118,6 +118,7 @@ package
 		Out,
 		Outdated,
 		OutdatedFlow,
+		OwnerNote,
 		PairOrder,
 		PatchApply,
 		PatchCmd,

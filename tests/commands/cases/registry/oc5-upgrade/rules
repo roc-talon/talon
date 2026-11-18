@@ -1,0 +1,2 @@
+R-PU30 Q254-5 (a) (slice 254, Design Q634): `tln upgrade json` also prints the owner line (the recreate of oc1). The header does not change (2.0.0 is the newest release).
+Red before the slice: no warning.

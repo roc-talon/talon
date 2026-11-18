@@ -1,5 +1,5 @@
 import records.Closure as Wire
-import records.Release as WireRelease
+import records.Index as WireIndex
 import Add
 import ClosureIndex
 import ClosureRequest
@@ -232,16 +232,16 @@ fresh_items! = |fx, request, fresh, known, first| {
 					}
 				}
 				match read {
-					Found(releases) => match each_yanked_check(f, releases.releases) {
+					Found(releases) => match each_yanked_check(f, releases) {
 						Err(fail) => return Err(fail)
 						Ok(_) => match FullName.closure_item({ releases, selector: f.selector, text: f.text, range: f.range }) {
 							Ok(item) => {
 								$items = $items.append(item)
 							}
-							Err(NoMatch) => return Err(no_match(f, releases.releases.keep_if(|r| !r.yanked).map(|r| r.version)))
+							Err(NoMatch) => return Err(no_match(f, FullName.successor_of(releases.repos, f.name), releases.releases.keep_if(|r| !r.yanked).map(|r| r.version)))
 						}
 					}
-					NoMatch => return Err(no_match(f, []))
+					NoMatch => return Err(no_match(f, Err(None), []))
 					SourceBuild => return Err(Fail.new(Internal, "${f.name}: a source build is not read from the registry"))
 				}
 			}
@@ -254,19 +254,34 @@ no_items : List(ClosureRequest.Group)
 no_items = []
 
 # Slice 250 (Design Q630-3, R-AD35 step 2): a name with releases, no selector, and each release yanked or withdrawn: exit 2, before the closure query.
-each_yanked_check : ResolveBase.Fresh, List(WireRelease.Row) -> Try({}, Fail)
-each_yanked_check = |f, rows| {
+# Slice 254 (R-PU29, T1): with a successor in the `repos` item of the answer, the text names it.
+each_yanked_check : ResolveBase.Fresh, WireIndex.Releases -> Try({}, Fail)
+each_yanked_check = |f, found| {
+	rows = found.releases
 	no_selector = match f.selector {
 		Err(None) | Ok(Latest) => Bool.True
 		_ => Bool.False
 	}
-	if no_selector and !rows.is_empty() and rows.all(|r| r.yanked or r.withdrawn != Err(None)) Err(FullName.each_yanked({ name: f.name })) else Ok({})
+	if no_selector and !rows.is_empty() and rows.all(|r| r.yanked or r.withdrawn != Err(None)) Err(each_yanked_fail(f, found)) else Ok({})
 }
 
 # Design Q430: the text of `add`. A name with no selector and no release at all is the text of R-AD35 step 2.
-no_match : ResolveBase.Fresh, List(Str) -> Fail
-no_match = |f, versions| match f.selector {
-	Ok(_) => Add.no_release({ name: f.name, selector: f.selector, text: f.text, versions })
+each_yanked_fail : ResolveBase.Fresh, WireIndex.Releases -> Fail
+each_yanked_fail = |f, found| match FullName.successor_of(found.repos, f.name) {
+	Ok(successor) => FullName.each_yanked_moved({ name: f.name, successor })
+	Err(None) => FullName.each_yanked({ name: f.name })
+}
+
+# Slice 254 (R-PU29, T2): a selector with no match gets the successor hint.
+no_match : ResolveBase.Fresh, Try(Str, [None]), List(Str) -> Fail
+no_match = |f, successor, versions| match f.selector {
+	Ok(_) => {
+		base = Add.no_release({ name: f.name, selector: f.selector, text: f.text, versions })
+		match successor {
+			Ok(s) => { ..base, message: "${base.message}${FullName.successor_hint(s)}" }
+			Err(None) => base
+		}
+	}
 	Err(None) => FullName.no_candidate({ name: f.name })
 }
 

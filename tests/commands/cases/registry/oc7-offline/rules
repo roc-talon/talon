@@ -1,0 +1,1 @@
+R-PU30 R-IX6 Q254-6 (a) (slice 254, Design Q634, a guard): `update --offline` and `outdated --offline` read the kept R-AP1 copies. The copy of someone/roc-json has `owner_changed` recreate after the release. With `--offline` no owner line is printed (as the R-AU7 and R-AU14 lines). Passes before the slice.

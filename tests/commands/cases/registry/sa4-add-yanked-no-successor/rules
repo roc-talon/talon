@@ -1,0 +1,1 @@
+R-AD35 Q630-3 (slice 254, Design Q634, B3, a guard): each release is yanked and the item of acme/known is `active` with no successor: the text of slice 250 does not change. Passes before the slice.

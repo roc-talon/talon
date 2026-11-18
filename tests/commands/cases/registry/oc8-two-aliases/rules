@@ -1,0 +1,2 @@
+R-PU30 Q254-8 (a) (slice 254, Design Q634): the header has json2 and json on the same release of someone/roc-json (recreated). One line for each alias, sorted by alias (bytes): json, then json2.
+Red before the slice: no warning.

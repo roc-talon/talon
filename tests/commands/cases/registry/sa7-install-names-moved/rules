@@ -1,0 +1,2 @@
+R-PU29 Q254-14 (a) (slice 254, Design Q634, T1): `tln install acme/known` (the same path as `add`, PickFlow.fresh_items!) with the fixtures of sa2: exit 2 with the text of sa2.
+Red before the slice: the text of slice 250 with no successor.

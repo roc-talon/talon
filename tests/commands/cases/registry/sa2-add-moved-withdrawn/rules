@@ -1,0 +1,2 @@
+R-PU29 R-AD35 (slice 254, Design Q634, B2, T1, Q254-11 (a)): `tln add acme/known`, acme/known is `moved` to neworg/known, 1.0.0 is withdrawn and 1.1.0 is yanked. Exit 2 at R-AD35 step 2 (no closure query, no write), and the message names the successor (the first link): `acme/known has no release that Talon can use: each release is yanked or withdrawn. Its successor is neworg/known. Run: tln add neworg/known`.
+Red before the slice: the text of slice 250 with no successor.

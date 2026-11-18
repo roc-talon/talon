@@ -1,0 +1,11 @@
+== outdated --file u1/main.roc
+$PROJECT/u1/main.roc
+  all packages are up to date
+exit 0
+== outdated --json --file u1/main.roc
+{"schema":1,"command":"outdated","ok":true,"data":{"members":[{"file":"$PROJECT/u1/main.roc","packages":[],"fixed":[]}],"owner_changes":[{"alias":"json","name":"someone/roc-json","action":"recreate","at":1790000000000,"owner":null,"text":"json: the repository was made again by the same owner on 2026-09-21"}]},"error":null}
+exit 0
+== outdated --file u2/main.roc
+$PROJECT/u2/main.roc
+  all packages are up to date
+exit 0

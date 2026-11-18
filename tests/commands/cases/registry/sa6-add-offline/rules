@@ -1,0 +1,2 @@
+R-PU29 R-IX6 Q254-13 (a) (slice 254, Design Q634, T1): `tln add acme/known --offline` reads the kept R-AP1 copy (no request). The copy has the item `moved` to neworg/known, and each release is yanked or withdrawn: exit 2 with the text of sa2.
+Red before the slice: the text of slice 250 with no successor.
