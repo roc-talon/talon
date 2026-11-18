@@ -1,0 +1,10 @@
+== update yaml@1.1.0 --no-check --file u1/main.roc
+note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
+note: index: acme/json checked 2d ago
+note: index: acme/pfx not checked since its first ingest
+note: index: acme/yaml checked 12m ago
+check: skipped
+exit 13
+== update yaml@1.1.0 --no-check --json --file u1/main.roc
+{"schema":1,"command":"update","ok":false,"data":null,"error":{"kind":"consent","code":13,"message":"moving the held variable pf needs consent. Pass --allow-moves or --yes.","details":{"moves":[{"alias":"pf","name":"acme/pfx","from":"0.1.0","to":"0.1.1","why":"yaml 1.1.0 needs pf >= 0.1.1","members":["$PROJECT/u1/main.roc"]}]}}}
+exit 13

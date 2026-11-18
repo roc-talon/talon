@@ -1,1 +1,2 @@
 R-AD35 Q630-3 (slice 254, Design Q634, B3, a guard): each release is yanked and the item of acme/known is `active` with no successor: the text of slice 250 does not change. Passes before the slice.
+Slice 255 (Design Q635, the order of the user 2026-11-18): the text of the stop is `<name> has no release that Talon can use: each release is yanked or withdrawn.` (one wording with the R-PU29 text of slice 254; the successor sentence only when there is a successor). Red before slice 255: the old text `each release is yanked.`

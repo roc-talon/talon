@@ -1,4 +1,5 @@
 import AuditResolve
+import AuditTypes
 import Compiler
 import Closure
 import Consent
@@ -432,7 +433,9 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 		{ members: loaded.members.map(|m| { file: m.file, entries: ResolveBase.entries_after(m, changes) }), known: ResolveBase.walk_known({ known: facts.known, paths: facts.paths }) },
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
-	audit = AuditResolve.warn!(fx, request, loaded, closures, { second: probed.second, found: after.found })
+	# Slice 255 (Design Q635, D1): the audit lines are printed by `settle!` when every step has succeeded (strict D1), before the owner lines.
+	found_audit = AuditResolve.warn(request, loaded, closures, { second: probed.second, found: after.found })
+	audit = AuditResolve.warn_docs(found_audit)
 	# Slice 254 (R-PU30, Q254-5, Q254-7): the owner docs of `update` and `upgrade` (printed after `settle!`, Q254-9), for the header values before the command.
 	owners = if request.command == Install [] else AuditResolve.owner_docs(request, loaded.members, probed.second)
 	news = wants.map(|w| { name: w.name ?? w.key, is_platform: Bool.False }).concat(facts.prepared.rows.map(|r| { name: r.fresh.name, is_platform: r.fresh.is_platform }))
@@ -456,6 +459,7 @@ finish! = |fx, request, loaded, facts, chosen, moves, probed, after| {
 			pairs,
 			renames: facts.renames,
 			closures,
+			found_audit,
 			decision: ladder_decision,
 			candidate: moved.map_err(|_| None),
 			patch,
@@ -524,11 +528,15 @@ log_of = |request| match (request.index, request.registry) {
 }
 
 # The ladder, the report of the moves, the write of the files and the rebase of the patches (slice 043: split from `finish!` so that the temp dirs of `PatchApply` are deleted also after a failure, R-CC2).
-settle! : Fx, ResolveBase.Request, Loaded, { scoped : List(Vars.Scoped), news : List({ name : Str, is_platform : Bool }), chosen : List(Pick.Chosen), moves : List(Consent.Move), probed : ResolveBase.Probed, checked : List(ResolveBase.Edit), edits : List(ResolveBase.Edit), pairs : List(ResolveBase.Pair), renames : List(ResolveBase.Rename), closures : List({ file : Str, walked : Closure.Walked }), decision : Pin.Decision, candidate : Try(Str, [None]), patch : PatchApply.Done, no_ladder : Bool, headers : List({ hash : Str, kind : [Package, Platform, App], names : List(Str) }) } => Try({ ran : ResolveBase.Ran, built : List(Fail.Built), touched : List(Str) }, Fail)
+settle! : Fx, ResolveBase.Request, Loaded, { scoped : List(Vars.Scoped), news : List({ name : Str, is_platform : Bool }), chosen : List(Pick.Chosen), moves : List(Consent.Move), probed : ResolveBase.Probed, checked : List(ResolveBase.Edit), edits : List(ResolveBase.Edit), pairs : List(ResolveBase.Pair), renames : List(ResolveBase.Rename), closures : List({ file : Str, walked : Closure.Walked }), found_audit : List(AuditTypes.Finding), decision : Pin.Decision, candidate : Try(Str, [None]), patch : PatchApply.Done, no_ladder : Bool, headers : List({ hash : Str, kind : [Package, Platform, App], names : List(Str) }) } => Try({ ran : ResolveBase.Ran, built : List(Fail.Built), touched : List(Str) }, Fail)
 settle! = |fx, request, loaded, x| {
 	ran = if x.no_ladder { ran: InstallPlan.no_ran, built: [] } else InstallWrite.ladder!(fx, request, loaded, { scoped: x.scoped, news: x.news, chosen: x.chosen, changes: x.checked, decision: x.decision, closures: x.closures, probed: x.probed, candidate: x.candidate, patch: x.patch, headers: x.headers })?
 	InstallWrite.confirm_moves!(fx, request, x.moves)?
 	written = InstallWrite.write!(fx, request, loaded, x.edits, x.pairs, x.renames, x.patch)?
 	rebased = PatchApply.finish!(fx, request, x.patch)?
+	# Slice 255 (Design Q635, D1 strict): the audit lines after every step that can fail, before the lines of the files.
+	AuditResolve.show!(fx, x.found_audit)
+	InstallWrite.report!(fx, loaded, x.edits, x.pairs, x.renames, written)
+	PatchApply.report!(fx, x.patch)
 	Ok({ ran: ran.ran, built: ran.built, touched: written.concat(rebased.keep_if(|path| !written.contains(path))) })
 }

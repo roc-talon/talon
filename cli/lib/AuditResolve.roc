@@ -29,9 +29,9 @@ AuditResolve :: [].{
 		read.loaded.tomls.find_first(|t| t.path == path).map_ok(|t| { path, text: t.text }).map_err(|_| None)
 	}
 
-	## R-AU7: print the warnings and give their `--json` docs (`data.audit_warnings`). `second` is the second answer of a held move; it is searched first (Q-244c-2).
-	warn! : Fx, ResolveBase.Request, ResolveBase.Loaded, List({ file : Str, walked : Closure.Walked }), { second : Try(Wire.Answer, [NotRead]), found : List(ResolveBase.Candidates) } => List(JsonDoc)
-	warn! = |fx, request, loaded, closures, how| match request.index {
+	## R-AU7: the findings of a resolve. Pure: it prints nothing and sends no request. Slice 255 (Design Q635, D1): the command prints them with `show!` only after it has succeeded. `second` is the second answer of a held move; it is searched first (Q-244c-2).
+	warn : ResolveBase.Request, ResolveBase.Loaded, List({ file : Str, walked : Closure.Walked }), { second : Try(Wire.Answer, [NotRead]), found : List(ResolveBase.Candidates) } -> List(AuditTypes.Finding)
+	warn = |request, loaded, closures, how| match request.index {
 		Answer(a) => {
 			answers = match how.second {
 				Ok(other) => [other, a.answer]
@@ -42,7 +42,7 @@ AuditResolve :: [].{
 				Ok(t) => lenient_items(t.text)
 				Err(None) => []
 			}
-			show!(fx, AuditCheck.resolve_findings({ answers, entries, items }))
+			AuditCheck.resolve_findings({ answers, entries, items })
 		}
 		Direct => if request.offline {
 			[]
@@ -59,10 +59,14 @@ AuditResolve :: [].{
 				Ok(t) => lenient_items(t.text)
 				Err(None) => []
 			}
-			show!(fx, AuditCheck.resolve_direct({ lists, entries, items }))
+			AuditCheck.resolve_direct({ lists, entries, items })
 		}
 		_ => []
 	}
+
+	## The `--json` docs of the findings (`data.audit_warnings`).
+	warn_docs : List(AuditTypes.Finding) -> List(JsonDoc)
+	warn_docs = |found| found.map(AuditCheck.resolve_doc)
 
 	## Slice 254 (R-PU30, R-SE14, Design Q634): the owner change notes of the header entries of `members` (the values before the command), as `--json` docs (`data.owner_changes`). Q254-9: it prints nothing. The command prints them with `print_owners!` after it has succeeded.
 	## It sends no request. No note with `--offline` (Q254-6), or with no closure answer (`direct`). `second` is the second answer of a held move.
@@ -120,12 +124,12 @@ AuditResolve :: [].{
 		Err(None) => []
 	}
 
-	show! : Fx, List(AuditTypes.Finding) => List(JsonDoc)
+	## One `warning: <line>` on stderr for each finding.
+	show! : Fx, List(AuditTypes.Finding) => {}
 	show! = |fx, found| {
 		for f in found {
 			fx.err!("warning: ${AuditCheck.resolve_line(f)}\n")
 		}
-		found.map(AuditCheck.resolve_doc)
 	}
 
 	## The data of `--json` with the member `audit_warnings` after the other members, when there is a warning (R-J6: no output of today changes).

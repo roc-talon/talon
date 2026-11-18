@@ -1,0 +1,2 @@
+update json --dry-run --file u1/main.roc
+update json --dry-run --json --file u1/main.roc

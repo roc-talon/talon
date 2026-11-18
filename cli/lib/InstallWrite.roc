@@ -39,7 +39,13 @@ InstallWrite :: [].{
 		toml_files = pairs.map(|p| p.path).concat(renames.map(|r| r.path)).concat(patch.rebased.map(|r| r.toml)).fold([], |found, path| if found.contains(path) found else found.append(path))
 		paths = header_files.concat(toml_files)
 		if paths.is_empty() return Ok([])
-		touched = if request.dry_run paths else changed_files!(fx, loaded, { header_files, paths, edits, pairs, renames, rebased: patch.rebased })?
+		if request.dry_run Ok(paths) else changed_files!(fx, loaded, { header_files, paths, edits, pairs, renames, rebased: patch.rebased })
+	}
+
+	## Slice 255 (Design Q635, D1 strict): the lines of the files (R-LF4), printed by the command after `write!` and after the audit lines.
+	report! : Fx, Loaded, List(Edit), List(Pair), List(Rename), List(Str) => {}
+	report! = |fx, loaded, edits, pairs, renames, touched| {
+		header_files = loaded.members.keep_if(|m| edits.any(|e| e.file == m.file)).map(|m| m.file)
 		for path in header_files {
 			if touched.contains(path) {
 				fx.out!("${path}\n")
@@ -58,7 +64,6 @@ InstallWrite :: [].{
 				fx.out!("${r.path}: key ${r.from} -> ${r.to}\n")
 			}
 		}
-		Ok(touched)
 	}
 
 	# R-SP16, R-SP17, R-SP26, R-NI3: the report of the moves on stderr, then the prompt. It is the last step before the write. `--dry-run` asks nothing. No: exit 13.

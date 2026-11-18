@@ -114,13 +114,20 @@ PatchApply :: [].{
 					Err(_) => return Err(Fail.new(Environment, "cannot copy ${r.temp} to ${r.entry.dir}"))
 				}
 			}
-			fx.out!("rebased: ${r.entry.dir}/ (the patch of ${r.entry.alias}, now on ${r.name} ${r.version})\n")
-			fx.out!("${r.toml}: ~ [patch] ${r.entry.alias} (base ${r.hash})\n")
 			if !$touched.contains(r.toml) {
 				$touched = $touched.append(r.toml)
 			}
 		}
 		Ok($touched)
+	}
+
+	## Slice 255 (Design Q635, D1 strict): the lines of the rebased entries, printed after `finish!` and after the audit lines.
+	report! : Fx, PatchApply.Done => {}
+	report! = |fx, done| {
+		for r in done.rebased {
+			fx.out!("rebased: ${r.entry.dir}/ (the patch of ${r.entry.alias}, now on ${r.name} ${r.version})\n")
+			fx.out!("${r.toml}: ~ [patch] ${r.entry.alias} (base ${r.hash})\n")
+		}
 	}
 
 	## Step 6.

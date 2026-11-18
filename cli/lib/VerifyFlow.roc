@@ -108,7 +108,8 @@ verified! = |fx, request, loaded, picked, decision, listed| {
 		},
 	)?
 	ResolveBase.closure_notes!(fx, request, closures)
-	audit = AuditResolve.warn!(fx, request, loaded, closures, { second: picked.probed.second, found: listed })
+	found_audit = AuditResolve.warn(request, loaded, closures, { second: picked.probed.second, found: listed })
+	audit = AuditResolve.warn_docs(found_audit)
 	ran = if request.no_check {
 		fx.out!("check: skipped\n")
 		{ probes: 0, downloads: 0, check: Skipped, build: Skipped, notes: [], built: [] }
@@ -179,6 +180,8 @@ verified! = |fx, request, loaded, picked, decision, listed| {
 		notes: pick_notes.concat(platform_notes).concat(differ_notes).concat(ran.notes),
 		written: [],
 	}
+	# Slice 255 (Design Q635, D1 strict): the audit lines only after the whole command succeeded.
+	AuditResolve.show!(fx, found_audit)
 	Ok({ outcome, built: ran.built, audit })
 }
 

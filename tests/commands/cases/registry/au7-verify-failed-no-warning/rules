@@ -1,0 +1,2 @@
+R-AU7 R-AU14 (slice 255, Design Q635): as au7-failed-no-warning, for `tln verify` (`VerifyFlow`: `AuditResolve.warn!` runs before `Ladder.verify!`). The planned closure has pf moved to acme/pfx2 (the R-AU14 line), and the check of the candidate finds a new error in main.roc: exit 11. Expected: no R-AU14 line on stderr. Run 2 `--json`: the same.
+Red before the slice: the line is printed before the error.

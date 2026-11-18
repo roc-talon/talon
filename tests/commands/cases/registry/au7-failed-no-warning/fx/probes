@@ -1,0 +1,6 @@
+# run 1: the baseline passes, the candidate has a new error in main.roc (R-EC11): exit 11 after the owner note step
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr
+# run 2: the same, with --json
+0	../fixtures/check/out/pass.stdout	../fixtures/check/out/pass.stderr
+1	../fixtures/check/out/dup.stdout	../fixtures/check/out/dup.stderr

@@ -1,1 +1,1 @@
-tln: error[usage]: acme/known has no release that Talon can use: each release is yanked.
+tln: error[usage]: acme/known has no release that Talon can use: each release is yanked or withdrawn.

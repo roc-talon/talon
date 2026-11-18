@@ -1,6 +1,6 @@
 warning: known: moved to neworg/known. Run: tln update known
-warning: known: moved to neworg/known. Run: tln update known
 check: skipped
+warning: known: moved to neworg/known. Run: tln update known
 $PROJECT/p1/main.roc
   + known: acme/known 1.1.0
 resolved at log:50, 0 probes

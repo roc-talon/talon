@@ -1,3 +1,4 @@
 R-C6 R-AD35 R-SL5 R-SL12 R-YK7 (slice 250, mutation gap G2, Design Q630-2, Q630-3): as yf5-add-each-yanked (each release of acme/known is yanked), with a selector.
 Run 1, `add acme/known@1.0.0`: a version that the user names: the text of Q630-2 (`Add.no_release`), exit 2, with no close versions (no release is left that is not yanked). It is NOT the text `each release is yanked`: that text is for a name with no selector (B10).
 Run 2, `add acme/known@latest`: `latest` is the same as no selector in `add` (R-SL5): the text of Q630-3, exit 2. The second run reads the kept copy of the guard and of R-AP1 (the calls of run 2 are fewer).
+Slice 255 (Design Q635, the order of the user 2026-11-18): the text of the stop is `<name> has no release that Talon can use: each release is yanked or withdrawn.` (one wording with the R-PU29 text of slice 254; the successor sentence only when there is a successor). Red before slice 255: the old text `each release is yanked.`

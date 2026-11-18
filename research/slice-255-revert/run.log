@@ -1,0 +1,7 @@
+base L2: registry/au7-write-conflict-no-warning commands: 33 passed, 1 failed 
+n1: L2 registry/au7-consent-refused-no-warning registry/au7-failed-no-warning registry/au7-held-move registry/au7-write-conflict-no-warning registry/sa1-add-moved update/au7-direct-held-move commands: 28 passed, 6 failed 
+n2: L2 registry/au7-consent-refused-no-warning registry/au7-held-move registry/au7-write-conflict-no-warning update/au7-direct-held-move commands: 30 passed, 4 failed 
+n3: L2 registry/au7-write-conflict-no-warning commands: 33 passed, 1 failed 
+n4: L2 registry/au7-verify-failed-no-warning registry/au7-write-conflict-no-warning commands: 32 passed, 2 failed 
+n5: L2 moves/hm1-noninteractive moves/hm2-interactive patch/pa2-resolve registry/au7-held-move registry/au7-write-conflict-no-warning registry/sa1-add-moved update/au7-direct-held-move update/au7-direct-offline update/au7-direct-series commands: 25 passed, 9 failed 
+n6: L2 patch/pa2-resolve registry/au7-write-conflict-no-warning commands: 32 passed, 2 failed 

@@ -77,9 +77,9 @@ FullName :: [].{
 	no_candidate : { name : Str } -> Fail
 	no_candidate = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use. A release needs one <hash>.tar.zst asset and must not be a draft or a prerelease.")
 
-	## Slice 250 (Design Q630, Q630-3): STUB. R-AD35 step 2 when the R-AP1 answer has releases and each one is yanked (or withdrawn) and there is no selector: kind `Usage` (exit 2), no closure query. Text (proposal, TW24): `<name> has no release that Talon can use: each release is yanked.`
+	## Slice 250 (Design Q630, Q630-3): R-AD35 step 2 when the R-AP1 answer has releases and each one is yanked (or withdrawn) and there is no selector: kind `Usage` (exit 2), no closure query. Text (proposal, TW24): `<name> has no release that Talon can use: each release is yanked or withdrawn.` (Slice 255, Design Q635: one text)
 	each_yanked : { name : Str } -> Fail
-	each_yanked = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use: each release is yanked.")
+	each_yanked = |facts| Fail.new(Usage, "${facts.name} has no release that Talon can use: each release is yanked or withdrawn.")
 
 	## Slice 254 (R-PU29, Q254-11, T1): `each_yanked` for a name whose `repos` item has a successor: the same stop, and the text names the successor.
 	each_yanked_moved : { name : Str, successor : Str } -> Fail

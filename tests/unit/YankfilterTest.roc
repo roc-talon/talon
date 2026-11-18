@@ -106,7 +106,11 @@ expect item("1.1.0", "=1.1.0", Bool.False) == Ok({ group: g_json, series: Err(No
 # Design Q630-3 (R-AD35 step 2, R-C6): each release is yanked and no selector: exit code 2 and the text. No closure query.
 expect FullName.each_yanked({ name: "acme/known" }).kind.code() == 2
 
-expect FullName.each_yanked({ name: "acme/known" }).message == "acme/known has no release that Talon can use: each release is yanked."
+# Slice 255 (Design Q635): one wording with the R-PU29 text (slice 254): `yanked or withdrawn`, and no successor sentence with no successor.
+expect FullName.each_yanked({ name: "acme/known" }).message == "acme/known has no release that Talon can use: each release is yanked or withdrawn."
+
+# Slice 255 (Design Q635): the successor form is the same sentence, then the successor sentence (T1 of slice 254).
+expect FullName.each_yanked_moved({ name: "acme/known", successor: "neworg/known" }).message == "acme/known has no release that Talon can use: each release is yanked or withdrawn. Its successor is neworg/known. Run: tln add neworg/known"
 
 # Design Q630-4 (R-C6, R-PH13): the failure of an empty domain counts the yanked rows that the filter dropped. With 0 the text is the old text.
 no_range = "no tuple works: json has no release that satisfies ^2 (2 releases, 0 outside the ranges, 0 too new)"

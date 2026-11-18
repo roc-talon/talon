@@ -1,0 +1,5 @@
+== update json --dry-run --file u1/main.roc
+exit 11
+== update json --dry-run --json --file u1/main.roc
+{"schema":1,"command":"update","ok":false,"data":null,"error":{"kind":"app_error","code":11,"message":"a new error in an app file: main.roc (type redeclared). The app is not a free variable: fix it, or pass --no-check."}}
+exit 11
