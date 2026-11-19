@@ -1,0 +1,4 @@
+{"method":"GET","path":"/log/checkpoint","headers":{"range":"bytes=0-9"}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"range":"bytes=0-9"}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"range":"bytes=-16"}}
+{"method":"GET","path":"/log/tile/0/x001/234"}

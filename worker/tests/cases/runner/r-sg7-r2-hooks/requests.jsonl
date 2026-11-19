@@ -1,0 +1,3 @@
+{"method":"POST","path":"/__test/r2write","json":[{"key":"b","text":"bee"}]}
+{"method":"POST","path":"/__test/r2write","json":[{"key":"b","text":"bee"},{"key":"checkpoint","text":"mine","cond":"absent"}]}
+{"method":"POST","path":"/__test/r2write","json":[{"key":"checkpoint","text":"mine2","cond":"etag"}]}

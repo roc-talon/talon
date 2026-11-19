@@ -1,5 +1,5 @@
 package
-	[ArchiveRead, Client, ClosureQuery, Compat, CompatReads, Daily, GithubApp, Hints, Identity, Ingest, IngestLimits, Login, Move, Oidc, Problem, Publish, Reads, Reconcile, Route, Shorts, Toolchains, Version, Webhook, Yank]
+	[ArchiveRead, Client, ClosureQuery, Compat, CompatReads, Daily, GithubApp, Hints, Identity, Ingest, IngestLimits, LogPath, LogStep, LogTrigger, Login, Move, Oidc, Problem, Publish, Reads, Reconcile, Route, Shorts, Toolchains, Version, Webhook, Yank]
 	{
 		base58: "https://github.com/Karakatiza666/roc-base58/releases/download/0.1.0/BgUuQGqWY94NikfEx4rBkWkgxYhngMim3ZEnD8wpM4NS.tar.zst",
 		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",

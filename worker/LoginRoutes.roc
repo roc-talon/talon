@@ -190,12 +190,25 @@ LoginRoutes :: [].{
 	proof! = |token| {
 		secret = secret_text!("TOKEN_KEY")?
 		key = Login.signing_key(secret).map_err(|_| Fault("TOKEN_KEY is not an Ed25519 key with a kid"))?
-		decoded = Login.decode(token, key.kid).map_err(|problem| Refuse(problem))?
-		WebCrypto.verify!({ alg: Ed25519, key: Jwk(key.public_json), signature: decoded.signature, data: decoded.signing_input }).map_err(|_| Refuse(Login.bad_signature))?
+		kid = Login.token_kid(token).map_err(|problem| Refuse(problem))?
+		used = if (kid == key.kid) key else old_key!(key, kid)?
+		decoded = Login.decode(token, used.kid).map_err(|problem| Refuse(problem))?
+		WebCrypto.verify!({ alg: Ed25519, key: Jwk(used.public_json), signature: decoded.signature, data: decoded.signing_input }).map_err(|_| Refuse(Login.bad_signature))?
 		audience = setting!("AUDIENCE")?
 		now = Time.now_ms!()
 		who = Login.check(decoded, { audience, now_ms: now }).map_err(|problem| Refuse(problem))?
 		Ok({ who, now })
+	}
+
+	## R-CT9 (Q637): the key of a token whose `kid` is not the `kid` of `TOKEN_KEY`, from `TOKEN_OLD_KEYS`. A secret that is not set is an empty set. A bad set is a `Fault` (500); a `kid` in no set is a 401.
+	old_key! : Login.SigningKey, Str => Try(Login.SigningKey, ReadRoutes.Error)
+	old_key! = |key, kid| {
+		text = match Env.secret!("TOKEN_OLD_KEYS") {
+			Ok(secret) => secret.reveal()
+			Err(_) => ""
+		}
+		old = Login.old_keys(text, key.kid).map_err(|BadOldKeys(why)| Fault("TOKEN_OLD_KEYS is not a JWK Set of at most 4 Ed25519 keys with different kids: ${why}"))?
+		Login.verify_key(key, old, kid).map_err(|NoKey| Refuse(Login.no_key(kid)))
 	}
 
 	## The rate limit (R-CT11, Q308): `Limited` when the key is over the budget. A fault of the binding is a `Fault`.

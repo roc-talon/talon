@@ -41,6 +41,9 @@ import WebhookRoutes
 import IndexQueue
 import DailyCrons
 import ReconcileCron
+import LogWriter
+import LogRoutes
+import lib.LogStep
 
 db = D1.binding("DB")
 
@@ -70,7 +73,7 @@ fetch! = |req| {
 ## only then; a setting that is not set is an empty text (not checked). `Refused(res)` is the 400 `unsupported-client`.
 client_refusal! : Route.Input, Request => [Refused(Response), Pass]
 client_refusal! = |base, req| match Route.decide(base) {
-	Handle(id) => {
+	Handle(id) if Client.is_checked(id) => {
 		min = Env.var!("MIN_TLN") ?? ""
 		min_write = Env.var!("MIN_TLN_WRITE") ?? ""
 		match Client.check({ user_agent: req.header("user-agent"), write: Client.is_write(id), min, min_write }) {
@@ -137,10 +140,12 @@ run! = |id, req| match id {
 	GetCompatHints => CompatReadRoutes.audit!(req)
 	GetArtifactCompat(hash) => CompatReadRoutes.artifact_compat!(req, hash)
 	GetToolchains => ToolchainRoutes.list!(req)
-	PostRelease => match req.header("authorization") {
-		Ok(_) => PublishRoutes.post!(req)
-		Err(NotFound) => IngestRoutes.post!(req)
-	}
+	PostRelease => LogWriter.with_step(
+		match req.header("authorization") {
+			Ok(_) => PublishRoutes.post!(req)
+			Err(NotFound) => IngestRoutes.post!(req)
+		},
+	)
 	PostTokens => LoginRoutes.post_tokens!(req)
 	DeleteTokens => LoginRoutes.delete_tokens!(req)
 	GetMe => LoginRoutes.get_me!(req)
@@ -148,11 +153,13 @@ run! = |id, req| match id {
 	PostWebhook => WebhookRoutes.post!(req)
 	PutSuccessor(owner, repo) => MoveRoutes.put!(req, owner, repo)
 	DeleteSuccessor(owner, repo) => MoveRoutes.delete!(req, owner, repo)
+	GetLogCheckpoint => LogRoutes.get!(req, "checkpoint")
+	GetLogTile(key) => LogRoutes.get!(req, key)
 	PutYank(index) => YankRoutes.put!(req, index)
 	DeleteYank(index) => YankRoutes.delete!(req, index)
 	PutToolchain(tag) => match Auth.bot!(req) {
 		Err(problem) => Err(Refuse(problem))
-		Ok(_) => ToolchainRoutes.put!(req, tag)
+		Ok(_) => LogWriter.with_step(ToolchainRoutes.put!(req, tag))
 	}
 }
 
@@ -180,7 +187,7 @@ trap_fixed = |cause| {
 	}
 }
 
-## Slice 120: the daily job. Slice 119b: the reconcile cron (every 5 min).
-worker = Worker.new({ fetch!: fetch!, scheduled!: scheduled!, crons: [Worker.cron(Daily.cron, DailyCrons.run!), Worker.cron(Reconcile.cron, ReconcileCron.run!)], queue!: queue!, on_trap: { default: trap_fixed(Failed), crashed: trap_fixed(Crashed), alarm: trap_fixed(Alarm), cpu: trap_fixed(Cpu), oom: trap_fixed(Oom), shed: trap_fixed(Shed), deadline: trap_fixed(Deadline), cancelled: trap_fixed(Cancelled), event: trap_fixed(Event), failed: trap_fixed(Failed) }, bindings: [db.declare(), HintRoutes.limiter.declare(), IngestRoutes.limiter.declare(), LoginRoutes.limiter.declare(), IndexQueue.index.declare()] })
+## Slice 120: the daily job. Slice 119b: the reconcile cron (every 5 min). Slice 257b: the job "Tile catch-up" (R-PU35, R-SG7) and the R2 binding LOG (R-WH14).
+worker = Worker.new({ fetch!: fetch!, scheduled!: scheduled!, crons: [Worker.cron(Daily.cron, DailyCrons.run!), Worker.cron(Reconcile.cron, ReconcileCron.run!), Worker.cron(LogStep.cron, LogWriter.run!)], queue!: queue!, on_trap: { default: trap_fixed(Failed), crashed: trap_fixed(Crashed), alarm: trap_fixed(Alarm), cpu: trap_fixed(Cpu), oom: trap_fixed(Oom), shed: trap_fixed(Shed), deadline: trap_fixed(Deadline), cancelled: trap_fixed(Cancelled), event: trap_fixed(Event), failed: trap_fixed(Failed) }, bindings: [db.declare(), HintRoutes.limiter.declare(), IngestRoutes.limiter.declare(), LoginRoutes.limiter.declare(), IndexQueue.index.declare(), LogWriter.log.declare()] })
 
 event! = |e| worker.event!(e)

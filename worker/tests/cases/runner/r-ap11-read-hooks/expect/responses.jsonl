@@ -1,0 +1,5 @@
+{"status":500,"r2_reads":["t"]}
+{"status":200,"body_size":4,"r2_reads":["t"]}
+{"status":200,"body_size":2,"body_sha256":"c42522128b49193de8cd45d8f7589cd7e085e65f138640d57d4482e5f7189623","r2_reads":["t"]}
+{"status":404,"r2_reads":["none"]}
+{"status":200,"r2_reads":[]}

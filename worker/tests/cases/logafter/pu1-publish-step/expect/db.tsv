@@ -1,0 +1,16 @@
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/roc-json	1.2.0	\N
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	github.com/acme/roc-json/releases/download/{v}/	1.2.0	GDEmHbkSpoRbt2HmNveu99RfF3CwmLgnGYn9vHFPsnk1	1767225630000
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+1	0	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"push","run_id":"77","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	1767225630000
+@ SELECT CAST(artifact AS TEXT), nightly, target, source, result, error_digest, time, log_index FROM compat ORDER BY nightly, target, source
+-4615891099891934445	5566048545575	0	1	3	x	1767225635000	1
+-4615891099891934445	5567410745385	0	1	1	boom: E0001	1767225630000	1
+-4615891099891934445	5572174540651	0	1	0	\N	1767225630000	1
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/roc-json	812345	612345	0	\N	1767225630000	1767225630000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/roc-json	1	0	\N	812345	\N	612345	\N	{"workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","workflow_sha":"89abcdef0123456789abcdef0123456789abcdef","job_workflow_ref":"acme/roc-json/.github/workflows/release.yml@refs/tags/1.2.0","event_name":"push","run_id":"77","run_attempt":"1","actor_id":"512345","runner_environment":"github-hosted"}	1767225630000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/roc-json	\N	\N	1767229230000	0	0

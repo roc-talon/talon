@@ -1,0 +1,6 @@
+{"method":"GET","path":"/log/checkpoint","headers":{"user-agent":"tln/0.0.1"}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"user-agent":"tln/0.0.1"}}
+{"method":"HEAD","path":"/log/checkpoint","headers":{"user-agent":"tln/0.0.1"}}
+{"method":"POST","path":"/log/checkpoint","headers":{"user-agent":"tln/0.0.1"}}
+{"method":"GET","path":"/log/tile/0/000.p/0","headers":{"user-agent":"tln/0.0.1"}}
+{"method":"GET","path":"/v1/toolchains","headers":{"user-agent":"tln/0.0.1"}}

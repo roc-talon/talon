@@ -8,7 +8,11 @@ import HintsTest
 import IdentityTest
 import IngestTest
 import IngestLimitsTest
+import LoginKeysTest
 import LoginTest
+import LogPathTest
+import LogStepTest
+import LogTriggerTest
 import MoveTest
 import CompatTest
 import CompatReadsTest

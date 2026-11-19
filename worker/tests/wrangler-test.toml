@@ -11,3 +11,8 @@ consumers = []
 [[queues.producers]]
 binding = "INDEX"
 queue = "talon-index"
+
+# Slice 257b: the R2 bucket of the log (R-WH14 `LOG`). startApp makes it from the manifest; the entry is here so that the config names each binding of the Worker.
+[[r2_buckets]]
+binding = "LOG"
+bucket_name = "talon-log"

@@ -1,0 +1,3 @@
+{"status":200,"json":{"results":[{"key":"b","error":"test: the put of b is refused (TEST_LOG_FAIL_PUTS)"}]},"r2":{"b":null,"a":{"text":"one"}},"r2_puts":[["b"]]}
+{"status":200,"json":{"results":[{"key":"b","written":true},{"key":"checkpoint","written":false}]},"r2":{"checkpoint":{"text":"raced"}},"r2_puts":[["b"],["checkpoint?absent"]]}
+{"status":200,"json":{"results":[{"key":"checkpoint","written":true}]},"r2_puts":[["checkpoint?etag"]]}

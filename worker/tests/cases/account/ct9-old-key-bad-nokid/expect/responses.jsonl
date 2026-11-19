@@ -1,0 +1,4 @@
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":0,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":500,"problem":{"type":"/errors/internal","status":500,"detail":"the Worker failed to handle the request"}}
+{"status":500,"problem":{"type":"/errors/internal","status":500,"detail":"the Worker failed to handle the request"}}

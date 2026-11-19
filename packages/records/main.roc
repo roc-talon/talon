@@ -16,6 +16,7 @@ package
 		Release,
 		Short,
 		Sorted,
+		Tlog,
 		Toolchain,
 		Work,
 		Yank,

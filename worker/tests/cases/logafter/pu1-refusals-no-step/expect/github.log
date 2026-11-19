@@ -1,0 +1,6 @@
+GET https://token.actions.githubusercontent.com/.well-known/jwks
+GET https://api.github.com/repos/acme/lib/releases/tags/2.0.0
+GET https://api.github.com/repos/acme/lib/releases/tags/2.1.0
+GET https://api.github.com/repos/acme/lib/releases/tags/3.0.0
+GET https://github.com/acme/lib/releases/download/3.0.0/AYismxVnFai31SdDJ8p57st6He4cs8GDBkVy2c7kQmER.tar.zst
+GET https://raw.githubusercontent.com/acme/lib/3.0.0/.roc-version

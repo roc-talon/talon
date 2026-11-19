@@ -1,0 +1,277 @@
+All formatting valid.
+Took 29.9 ms.
+All (571) tests passed in 4437.6 ms.
+All formatting valid.
+Took 10.4 ms.
+All (148) tests passed in 1086.4 ms.
+All formatting valid.
+Took 15.8 ms.
+All (148) tests passed in 1123.3 ms.
+PASS account/ap45-write-routes (60 ms)
+PASS account/ct10-tracker (323 ms)
+PASS account/ct11-login-limit (445 ms)
+PASS account/ct7-delete (796 ms)
+PASS account/ct8-login (345 ms)
+PASS account/ct8-login-refusals (148 ms)
+PASS account/ct9-token-check (379 ms)
+PASS account/ct9-tokens-after (350 ms)
+PASS archive/pu38-hash-and-end (94 ms)
+PASS archive/pu38-made-kinds (17 ms)
+PASS archive/pu38-paths-and-header (167 ms)
+PASS archive/pu38-real-bundles (34 ms)
+PASS archive/pu38-size (1043 ms)
+PASS archive/pu38-window (64 ms)
+PASS archive/pu38-zero-run (7374 ms)
+PASS closure/ap17-answer (418 ms)
+PASS closure/ap41-sixty-groups (23 ms)
+PASS closure/ap46-limits (110 ms)
+PASS closure/ap51-bad-requests (34 ms)
+PASS compat/ap10-404-and-targets (705 ms)
+PASS compat/ap10-auth (390 ms)
+PASS compat/ap10-bad-requests (306 ms)
+PASS compat/ap10-bot-rows-and-sweep (488 ms)
+PASS compat/ap39-sweeps (328 ms)
+PASS compat/ap4-artifact-compat (761 ms)
+PASS compat/ap40-audit (326 ms)
+PASS compat/ap46-500-rows (185 ms)
+PASS compat/mx9-missing-100 (3036 ms)
+PASS compat/mx9-sweep-errors (337 ms)
+PASS cron/ct15-trim (266 ms)
+PASS cron/ct15-trim-failure (312 ms)
+    worker log: {"level":"warn","msg":"trim failed","error":"Constraint({ kind: Trigger, message: \"boom\" })","nightly":"9100"}
+    worker log: {"level":"warn","msg":"trim failed","error":"Constraint({ kind: Trigger, message: \"boom\" })","nightly":"9100"}
+PASS cron/pu35-cleanup-failure (131 ms)
+    worker log: {"level":"warn","msg":"hint cleanup failed","error":"Constraint({ kind: Trigger, message: \"boom\" })"}
+PASS cron/pu35-hint-cleanup (272 ms)
+PASS githubtoken/pu25-missing-key (397 ms)
+PASS githubtoken/pu25-three-routes (547 ms)
+PASS githubtoken/pu25-token-faults (377 ms)
+PASS githubtoken/pu25-token-kept (261 ms)
+PASS hints/ap45-client-version (326 ms)
+PASS hints/ct11-rate-limit (918 ms)
+PASS hints/ct12-tags-fail (559 ms)
+PASS hints/ct12-talon-version (562 ms)
+PASS hints/ct13-hint-quota (336 ms)
+PASS hints/ct14-old-nightly-edge (305 ms)
+PASS hints/ct2-bad-requests (752 ms)
+PASS hints/ct4-hint-batch (392 ms)
+PASS identity/q262-row-race (492 ms)
+PASS identity/tp10-301-followed (152 ms)
+PASS identity/tp10-rename (280 ms)
+PASS identity/tp18-301-no-row (180 ms)
+PASS identity/tp18-rename-back (237 ms)
+PASS identity/tp9-four-rows (478 ms)
+PASS identity/tp9-private-first (234 ms)
+PASS ingest/ap26-body-and-route (33 ms)
+PASS ingest/ik3-id-collision (258 ms)
+PASS ingest/pu14-pu19-labels (433 ms)
+PASS ingest/pu38-platform-mark (218 ms)
+PASS ingest/pu4-index-kinds (322 ms)
+PASS ingest/pu6-not-candidates (732 ms)
+PASS ingest-limits/ap69-cache-drop (1011 ms)
+PASS ingest-limits/pu34-ip (3262 ms)
+PASS ingest-limits/pu34-owner (360 ms)
+PASS move/ap31-cache-drop (628 ms)
+PASS move/ap31-case-fold (257 ms)
+PASS move/ap31-checks (646 ms)
+PASS move/ap31-errors (257 ms)
+PASS move/ap31-put-delete (424 ms)
+PASS move/ap45-min-write (273 ms)
+PASS move/pu30-move-answer (305 ms)
+PASS move/pu30-reads (427 ms)
+PASS move/pu30-real-events (600 ms)
+PASS move/tp15-offer (330 ms)
+PASS move/tp15-old-ids (352 ms)
+PASS move/tp15-operator (516 ms)
+PASS move/tp15-refusals (377 ms)
+PASS oidc/tp3-jwks-max-age (105 ms)
+PASS oidc/tp3-jwks-upstream (70 ms)
+PASS oidc/tp3-jwt-strict (57 ms)
+PASS oidc/tp3-key-rotation (66 ms)
+PASS oidc/tp3-signature-and-kid (155 ms)
+PASS oidc/tp3-token-form (25 ms)
+PASS oidc/tp3-tp7-claims (92 ms)
+PASS oidc/tp7-bot-token-pass (134 ms)
+PASS publish/pu1-publish-package (698 ms)
+PASS publish/pu15-ingest-then-publish (324 ms)
+PASS publish/pu16-after-ingest (403 ms)
+PASS publish/tp3-claims-vs-url (219 ms)
+PASS publish/tp9-claim-ids (274 ms)
+PASS reads/ap1-body-etag-cache (274 ms)
+PASS reads/ap13-bad-requests (197 ms)
+PASS reads/ap13-group-series-after (319 ms)
+PASS reads/ap14-pages (232 ms)
+PASS reads/ap2-artifact (330 ms)
+PASS reads/ap24-conditional-first (181 ms)
+PASS reads/ap29-checked-stale (238 ms)
+PASS reads/ap43-cache-refresh (216 ms)
+PASS reads/ap43-not-found-uncached (198 ms)
+PASS reads/ap48-method-not-allowed (9 ms)
+PASS reads/ap56-case-fold (193 ms)
+PASS reads/bookmark-session (256 ms)
+PASS reconcile/pu21-poll-job (291 ms)
+PASS reconcile/pu23-list (549 ms)
+PASS reconcile/pu23-pages (230 ms)
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list has more than 10 pages","fail_count":1,"job":"reconcile","repository_id":610}
+PASS reconcile/pu24-missing-again (298 ms)
+PASS reconcile/pu25-reserve (113 ms)
+    worker log: {"level":"warn","msg":"reconcile rate reserve","moved":2,"reset_ms":1767229800000}
+PASS reconcile/pu31-repo-etag (155 ms)
+PASS reconcile/pu36-overlap (173 ms)
+PASS reconcile/pu36-state-guard (167 ms)
+PASS reconcile/pu37-backoff (281 ms)
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":1,"job":"reconcile","repository_id":501}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":5,"job":"reconcile","repository_id":504}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"GitHub answered the repository read with status 502","fail_count":1,"job":"reconcile","repository_id":505}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the release list read answered status 500","fail_count":2,"job":"reconcile","repository_id":501}
+PASS reconcile/pu37-etag-effects (484 ms)
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"Constraint({ kind: Trigger, message: \"test: the etag write is refused\" })","fail_count":1,"job":"reconcile","repository_id":600}
+    worker log: {"level":"warn","msg":"reconcile row failed","error":"the send of the candidates failed: Infra(QueueErr({ message: \"test: the queue send is refused (TEST_INDEX_FAIL_SENDS)\", name: \"Error\" }))","fail_count":1,"job":"reconcile","repository_id":500}
+PASS reconcile/tp18-other-id (186 ms)
+PASS reconcile/tp18-rename (248 ms)
+PASS reconcile/tp18-rename-transfer (154 ms)
+PASS reconcile/tp9-transfer (197 ms)
+PASS router/r-ap21-handler-err-internal (102 ms)
+PASS router/r-ap21-unknown-method (8 ms)
+PASS router/r-ap21-unknown-path (25 ms)
+PASS router/r-ap23-charset (54 ms)
+PASS router/r-ap23-no-body (52 ms)
+PASS router/r-ap23-parameters (85 ms)
+PASS router/r-ap23-unsupported-media-type (45 ms)
+PASS router/r-ap44-unknown-ignored (65 ms)
+PASS router/r-ap48-method-not-allowed (12 ms)
+PASS router/r-ap48-order (59 ms)
+PASS runner/r-pu25-auth-log (5 ms)
+PASS runner/r-wh4-d1-count-and-rows (101 ms)
+PASS runner/r-wh4-github-and-clock (62 ms)
+PASS runner/r-wh4-json-lists (2 ms)
+PASS runner/r-wh4-queue-and-logs (67 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the body is not an index message"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"the body is not an index message"}
+    worker log: {"level":"warn","msg":"test line","n":1}
+PASS runner/r-wh4-sql-session-cache (127 ms)
+PASS runner/r-wh4-status-json-headers (3 ms)
+PASS shorts/ap33-moved (685 ms)
+PASS shorts/ap46-limits (75 ms)
+PASS shorts/ap7-query-forms (94 ms)
+PASS shorts/sn1-table (231 ms)
+PASS shorts/sn2-members (216 ms)
+PASS shorts/sn5-search (516 ms)
+PASS toolchains/get-bad-query (24 ms)
+PASS toolchains/get-etag-304 (138 ms)
+PASS toolchains/get-pages (402 ms)
+PASS toolchains/get-query (258 ms)
+PASS toolchains/pu-asset-rules (79 ms)
+PASS toolchains/pu-digest-kept (48 ms)
+PASS toolchains/pu-digest-rules (38 ms)
+PASS toolchains/pu-github-answers (212 ms)
+PASS toolchains/pu-id-collision (87 ms)
+PASS toolchains/pu-new-tag (139 ms)
+PASS toolchains/pu-not-candidates (108 ms)
+PASS toolchains/pu-odd-sha-names (59 ms)
+PASS toolchains/pu-size-rules (66 ms)
+PASS webhook/ap12-empty-secret (35 ms)
+PASS webhook/ap12-no-secret (14 ms)
+PASS webhook/ap12-signature (142 ms)
+PASS webhook/pu11-events (197 ms)
+PASS webhook/pu13-identity-changed (274 ms)
+    worker log: {"level":"warn","msg":"index job repository changed","release_id":9801,"repository_id":901}
+PASS webhook/pu13-index-new (301 ms)
+PASS webhook/pu13-no-asset-end (152 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":4,"error":"the release has no package asset yet"}
+    worker log: {"level":"info","msg":"index job no asset","release_id":9001,"repository_id":500}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"GitHub answered the release read with status 500"}
+PASS webhook/pu13-not-candidate (130 ms)
+PASS webhook/pu13-refused (172 ms)
+    worker log: {"level":"warn","msg":"index job refused","release_id":9001,"repository_id":500,"type":"/errors/not-a-candidate"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the asset read failed with status 500"}
+PASS webhook/pu13-retry-no-asset (187 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the release has no package asset yet"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the release has no package asset yet"}
+PASS webhook/pu14-labels (394 ms)
+    worker log: {"level":"warn","msg":"index label conflict","group":"github.com/acme/lib/releases/download/{v}/","release_id":9102,"repository_id":500,"version":"2.0.0"}
+PASS webhook/pu17-withdraw-clear (537 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the release has no package asset yet"}
+PASS webhook/pu26-app-installed (365 ms)
+PASS webhook/pu26-release-installed (290 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the release has no package asset yet"}
+PASS webhook/pu33-privatized (540 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"GitHub answered the repository read with status 500"}
+PASS webhook/pu33-publicized (189 ms)
+PASS webhook/pu33-release-private (247 ms)
+PASS webhook/pu35-dead-letter (296 ms)
+    worker log: {"level":"error","msg":"index job dead","action":"published","event":"release","release_id":9001,"repository_id":100}
+    worker log: {"level":"error","msg":"index job dead","readable":false}
+PASS webhook/pu35-dead-letter-prod-shape (46 ms)
+    worker log: {"level":"error","msg":"index job dead","action":"added","event":"installation_repositories","release_id":0,"repository_id":0}
+    worker log: {"level":"error","msg":"index job dead","action":"published","event":"release","release_id":262144001,"repository_id":1434744226}
+    worker log: {"level":"error","msg":"index job dead","action":"published","event":"release","release_id":9007199254740991,"repository_id":1434744226}
+    worker log: {"level":"error","msg":"index job dead","readable":false}
+    worker log: {"level":"error","msg":"index job dead","readable":false}
+PASS webhook/pu35-retry-schedule (205 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":4,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":6,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":2,"error":"the body is not an index message"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"the message is not a job of this Worker"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":3,"error":"GitHub answered the repository read with status 500"}
+    worker log: {"level":"warn","msg":"index job failed","attempts":5,"error":"GitHub answered the repository read with status 500"}
+PASS yank/tp8-token (887 ms)
+PASS yank/yk1-route-checks (346 ms)
+PASS yank/yk1-yank-unyank (1258 ms)
+PASS yank/yk2-operator (319 ms)
+PASS yank/yk3-roles (371 ms)
+PASS yank/yk6-body (273 ms)
+PASS yank/yk7-reads (616 ms)
+PASS yank/yk8-answers (368 ms)
+PASS yank/yk9-no-yank-row (352 ms)
+PASS selftest/case-timeout (1001 ms)
+PASS selftest/missing-fake-route (2 ms)
+PASS selftest/session-absent (2 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (35 ms)
+PASS selftest/unexpected-github-call (5 ms)
+PASS selftest/wrong-auth-log (4 ms)
+PASS selftest/wrong-body (3 ms)
+PASS selftest/wrong-body-pad (41 ms)
+PASS selftest/wrong-clock (37 ms)
+PASS selftest/wrong-d1-count (61 ms)
+PASS selftest/wrong-d1-row (25 ms)
+PASS selftest/wrong-force-cache (2 ms)
+PASS selftest/wrong-github-log (38 ms)
+PASS selftest/wrong-header (37 ms)
+PASS selftest/wrong-header-set (2 ms)
+PASS selftest/wrong-json-array (25 ms)
+PASS selftest/wrong-json-at (1 ms)
+PASS selftest/wrong-json-field (38 ms)
+PASS selftest/wrong-json-len (2 ms)
+PASS selftest/wrong-json-range (4 ms)
+PASS selftest/wrong-json-range-order (6 ms)
+PASS selftest/wrong-log (3094 ms)
+    worker log: {"level":"warn","msg":"test line","n":1}
+PASS selftest/wrong-problem-content-type (2 ms)
+PASS selftest/wrong-problem-member (2 ms)
+PASS selftest/wrong-queue-acked (16 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the body is not an index message"}
+PASS selftest/wrong-queue-retry (12 ms)
+    worker log: {"level":"warn","msg":"index job failed","attempts":1,"error":"the body is not an index message"}
+PASS selftest/wrong-queue-sent (3 ms)
+PASS selftest/wrong-queue-sent-none (2 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (12 ms)
+PASS selftest/wrong-status (2 ms)
+PASS selftest/wrong-timing-safe (2 ms)
+PASS selftest/wrong-tokens-log (2 ms)
+w2 pool: 27 apps started, 185 resets, 212 cases; time of the jobs added: start 11 s, reset 16 s, cases 67 s
+w2: 212 passed, 0 failed
+wtrap: 9 causes, 0 failures
+
+step       result seconds  budget
+w0         pass   7.0      10
+wbuild     pass   0.3      90
+w2         pass   18.5     45
+wtrap      pass   0.1      5

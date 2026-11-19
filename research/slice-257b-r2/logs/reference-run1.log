@@ -1,0 +1,79 @@
+== w0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w0.log)
+The following file(s) failed `roc fmt --check`:    worker/lib/main.roc
+    worker/LogWriter.roc
+    worker/tests/unit/LogStepTest.roc
+You can fix this with `roc fmt FILENAME.roc`.Took 47.1 ms.
+All (616) tests passed in 4634.0 ms.
+All formatting valid.
+Took 24.8 ms.
+All (181) tests passed in 1352.8 ms.
+All formatting valid.
+Took 17.1 ms.
+All (181) tests passed in 1553.7 ms.
+== w2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w2.log)
+PASS webhook/pu13-index-new (187 ms)
+PASS webhook/pu13-no-asset-end (63 ms)
+PASS webhook/pu13-not-candidate (101 ms)
+PASS webhook/pu13-refused (78 ms)
+PASS webhook/pu13-retry-no-asset (125 ms)
+PASS webhook/pu14-labels (185 ms)
+PASS webhook/pu17-withdraw-clear (404 ms)
+PASS webhook/pu26-app-installed (232 ms)
+PASS webhook/pu26-release-installed (272 ms)
+PASS webhook/pu33-privatized (418 ms)
+PASS webhook/pu33-publicized (152 ms)
+PASS webhook/pu33-release-private (170 ms)
+PASS webhook/pu35-dead-letter (12 ms)
+PASS webhook/pu35-dead-letter-prod-shape (10 ms)
+PASS webhook/pu35-retry-schedule (74 ms)
+PASS yank/tp8-token (876 ms)
+PASS yank/yk1-route-checks (468 ms)
+PASS yank/yk1-yank-unyank (1025 ms)
+PASS yank/yk2-operator (202 ms)
+PASS yank/yk3-roles (214 ms)
+PASS yank/yk6-body (238 ms)
+PASS yank/yk7-reads (225 ms)
+PASS yank/yk8-answers (214 ms)
+PASS yank/yk9-no-yank-row (234 ms)
+PASS selftest/case-timeout (1001 ms)
+PASS selftest/missing-fake-route (3 ms)
+PASS selftest/session-absent (1 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (41 ms)
+PASS selftest/unexpected-github-call (3 ms)
+PASS selftest/wrong-auth-log (3 ms)
+PASS selftest/wrong-body (1 ms)
+PASS selftest/wrong-body-pad (5 ms)
+PASS selftest/wrong-clock (5 ms)
+PASS selftest/wrong-d1-count (73 ms)
+PASS selftest/wrong-d1-row (60 ms)
+PASS selftest/wrong-force-cache (1 ms)
+PASS selftest/wrong-github-log (2 ms)
+PASS selftest/wrong-header (40 ms)
+PASS selftest/wrong-header-set (16 ms)
+PASS selftest/wrong-json-array (2 ms)
+PASS selftest/wrong-json-at (5 ms)
+PASS selftest/wrong-json-field (4 ms)
+PASS selftest/wrong-json-len (2 ms)
+PASS selftest/wrong-json-range (2 ms)
+PASS selftest/wrong-json-range-order (2 ms)
+PASS selftest/wrong-log (3056 ms)
+PASS selftest/wrong-problem-content-type (2 ms)
+PASS selftest/wrong-problem-member (1 ms)
+PASS selftest/wrong-queue-acked (34 ms)
+PASS selftest/wrong-queue-retry (34 ms)
+PASS selftest/wrong-queue-sent (42 ms)
+PASS selftest/wrong-queue-sent-none (2 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (28 ms)
+PASS selftest/wrong-status (2 ms)
+PASS selftest/wrong-timing-safe (3 ms)
+PASS selftest/wrong-tokens-log (2 ms)
+w2 pool: 47 apps started, 199 resets, 246 cases; time of the jobs added: start 19 s, reset 17 s, cases 88 s
+w2: 245 passed, 1 failed
+
+step       result seconds  budget
+w0         FAIL   8.6      10
+wbuild     pass   71.8     90
+w2         FAIL   23.6     45
+wtrap      pass   0.1      5

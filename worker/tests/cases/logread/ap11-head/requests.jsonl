@@ -1,0 +1,7 @@
+{"method":"HEAD","path":"/log/checkpoint"}
+{"method":"HEAD","path":"/log/tile/0/x001/234"}
+{"method":"GET","path":"/log/tile/0/x001/234"}
+{"method":"HEAD","path":"/log/tile/0/x001/234"}
+{"method":"HEAD","path":"/log/checkpoint","headers":{"if-none-match":"\"079f1a831597c4d52786d53f4a181deb\""}}
+{"method":"HEAD","path":"/log/tile/0/000"}
+{"method":"HEAD","path":"/log/tile/0/000.p/0"}

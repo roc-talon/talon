@@ -1,0 +1,5 @@
+sha256 before: LogStep c466a81bb49f7bc0f58584af18f870b2976dece8c94c5130e10a7c30dc054d1d LogWriter b9dabab6ed8bcb6c5b567991730e4f9d2fbd55147433ff731a57197cf6cbe67c
+base-w0: not caught (LogStepTest failed 0; all failed 235; )
+M5 the cap is off by one (65,537 rows are one step) | w0: CAUGHT (LogStepTest failed 1; all failed 236; )
+M6 the cron stops after a step of exactly the cap | w0: CAUGHT (LogStepTest failed 2; all failed 237; )
+sha256 after:  LogStep c466a81bb49f7bc0f58584af18f870b2976dece8c94c5130e10a7c30dc054d1d LogWriter b9dabab6ed8bcb6c5b567991730e4f9d2fbd55147433ff731a57197cf6cbe67c (same)

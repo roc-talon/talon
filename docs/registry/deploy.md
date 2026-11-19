@@ -56,3 +56,63 @@ The build of step 2 gives the same `app.wasm` bytes as the build of the tests (c
 | Measured `tln run deploy-dry` (tests 255 s, build, dry run), 2026-11-11 | about 413 s |
 | `<T>` for `timeout` | 900 s (about twice, rounded up). `deploy` adds migrations, upload and smoke checks. |
 | Command | `systemd-run --user --scope --quiet -p MemoryMax=16G -p MemorySwapMax=0 timeout 900 tln run deploy` |
+
+## First deploy with the log (slice 257, Design Q636)
+
+The registry Worker writes the log tiles to the R2 bucket `talon-log` and signs the checkpoint with the secret `LOG_KEY`. Do these steps once, before `tln run deploy`. Load the token first (Rules for the operator). Without the bucket, `wrangler versions upload` fails. Without the secret, each cron run of the log fails with one log line (`log step failed`) and the log routes answer 404.
+
+| # | Step | Command (in `worker/`) | Note |
+| --- | --- | --- | --- |
+| 1 | Make the bucket | `wrangler r2 bucket create talon-log` | One time. The binding is `LOG` in `wrangler.toml`. |
+| 2 | Make the key | `node ../research/log-key/log-key.mjs make --signer-out ~/.config/talon-log/signer.key --verifier-out ~/.config/talon-log/verifier.key` | Make the directory first (`mkdir -m 700 ~/.config/talon-log`). The tool refuses to overwrite and never prints the signer key text. Keep both files. Back up the signer file: a lost key cannot be made again. |
+| 3 | Set the secret | `wrangler secret put LOG_KEY < ~/.config/talon-log/signer.key` | The signer file has no newline (the tool writes none). Do not use `echo` or a here-string: they add a newline. Do this before the deploy of step 4: the old code ignores the secret. |
+| 4 | Deploy | `tln run deploy` | See Steps of `deploy`. The cron trigger is in `wrangler.toml`. |
+| 5 | Check the cron | see below | The range with a step is not confirmed (below). |
+| 6 | Check the log | see below | |
+
+### The cron `2-59/5 * * * *` (open check)
+
+| Item | State |
+| --- | --- |
+| Why this text | The reconcile has `*/5 * * * *`. `Worker.cron` takes one handler for each text. The log job gets its own text, and it starts 2 min after the reconcile (Design Q636 (9)). |
+| Docs | The Cloudflare cron docs list `*`, `,`, `-` and `/`. They give no example of a range with a step. Wrangler on this machine has no check of the text (no cron parser found in `wrangler-dist`). Miniflare passes any text to the handler. So this is NOT confirmed. |
+| Check | `tln run deploy` runs `wrangler versions deploy`. If the edge refuses the text, the deploy fails there (exit 1, old version live). After a good deploy, look at the dashboard (Worker, Settings, Trigger Events) for 3 cron texts, and wait for a run at minute 2, 7, 12 ... of an hour. Look in the log tail for `log wrote` (first run) or `log step failed`. |
+| Fallback (Design Q636 (9)) | If the edge refuses `2-59/5`, or never runs it: remove the text from `LogStep.cron`, `main.roc` and `wrangler.toml`, and run the step in the 5-minute handler before the reconcile. This is a code change (a new slice step with tests), not an operator step. |
+
+### The first catch-up run (backfill)
+
+| Item | Value |
+| --- | --- |
+| What it does | The first run finds no checkpoint and builds the log from size 0: all leaves of P2 (releases and compiler assets, R-SG2, R-SG3). The first checkpoint is the size of D1 at that time (Design Q636 (11)). |
+| Steps | At most 65,536 leaves for each step. The cron loops step by step in one run until the checkpoint size is the largest `idx`. So `ceil(leaves / 65536)` steps in 1 run; no second run is needed for less than about 1M leaves (about 15 min of the cron limit). |
+| Estimate of the leaves | Not measured. `research/deploy-121/awesome/RESULT.md`: 17 new releases in the last ingest run (231 answers 200 or 201 for 347 attempts, most of them repeats). Compiler leaves: about 1 for each target for each nightly tag. A guess is below 5,000 leaves in total, so 1 step in 1 cron run. Measure it first (read only): `wrangler d1 execute DB --remote --command "SELECT MAX(idx) FROM log"`. |
+| Time | The first checkpoint is there at the first run after the deploy: minute 2, 7, 12 ... |
+
+### How to check the log
+
+| # | Check | Command | Expect |
+| --- | --- | --- | --- |
+| 1 | The checkpoint | `curl -s https://registry.roc-talon.org/log/checkpoint -o checkpoint.txt` (outside the repository) | 200, `text/plain; charset=utf-8`, `cache-control: max-age=5`. Before the first run: 404 `not-found`. |
+| 2 | Its signature | `node research/log-key/log-key.mjs verify --verifier-file ~/.config/talon-log/verifier.key --checkpoint-file checkpoint.txt` | `ok: registry.roc-talon.org/log size <N> root <hash>` |
+| 3 | The size | Compare `<N>` with `SELECT MAX(idx) FROM log` | Equal, or smaller by the leaves of the last minutes |
+| 4 | A tile | `curl -sI https://registry.roc-talon.org/log/tile/0/000` (full tile for N of 256 or more) or `.../log/tile/0/000.p/<N>` for a smaller N | 200, `application/octet-stream`, `cache-control: max-age=31536000, immutable` |
+| 5 | The entries | `curl -s https://registry.roc-talon.org/log/tile/entries/000.p/<N>` for N below 256 | Lines `<group> <version> <hash> <time>` with 2-byte length prefixes |
+| 6 | The log tail | `wrangler tail` | `log wrote` after a write. No `log step failed`. |
+| 7 | The edge cache of a tile | Ask the same tile twice; look at `cf-cache-status` | The second answer is `HIT` (open check: Miniflare is not the edge, slice 257d) |
+
+### Smoke checks for `/log` (proposal, not in `roc-cfw.toml` yet)
+
+See the slice file, section 257e. They are status only: the checkpoint changes at each write.
+
+### Rollback
+
+| Item | State after a rollback |
+| --- | --- |
+| The old version | Live. It has no `LOG` binding and no log routes: `/log/...` is 404 and the log cron does not run (the cron text can stay in the account until the next deploy). |
+| The bucket `talon-log` and its objects | Stay. They are write-once tiles and a checkpoint. They are not read. Harmless. |
+| The secret `LOG_KEY` | Stays. Harmless. |
+| The next deploy of the log code | The first step reads the checkpoint, finds the tiles of the old size and goes on. The tiles are a function of the leaves, so a step also repairs a stop in the middle. Do not delete the bucket: the key and the checkpoint would not match a new bucket that has other tiles. If you must start again, make a new bucket and a new key (a new log). |
+
+### The bench
+
+See the slice file, section 257e. The bench has its own bucket `talon-log-bench`, its own key and origin, and no cron. The platform session deploys it.

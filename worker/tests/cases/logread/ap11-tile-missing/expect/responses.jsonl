@@ -1,0 +1,4 @@
+{"status":404,"problem":{"type":"/errors/not-found","status":404},"r2_reads":["tile/0/000"]}
+{"status":404,"problem":{"type":"/errors/not-found","status":404},"r2_reads":["tile/0/000.p/8"]}
+{"status":404,"problem":{"type":"/errors/not-found","status":404},"r2_reads":["tile/0/000"]}
+{"status":200,"headers":{"content-type":"application/octet-stream","cache-control":"max-age=31536000, immutable","etag":"\"5af00e932ec36a85d52efcbee7714383\""},"body_size":8192,"body_sha256":"c5d110805f3119da677b162a7d2ba3ffcd827ee453a7c26f4e4ef7a9cbfaad44","r2_reads":["tile/0/000"]}

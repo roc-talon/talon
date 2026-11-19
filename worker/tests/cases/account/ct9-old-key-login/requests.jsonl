@@ -1,0 +1,3 @@
+{"method":"POST","path":"/v1/tokens","headers":{"content-type":"application/json"},"body":"{\"github_token\":\"ghu_one\"}","now":1767225610000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"A","now":1767225611000}
+{"method":"GET","path":"/v1/contributors/me","headers":{},"token":"old0","now":1767225611000}

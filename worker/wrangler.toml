@@ -35,7 +35,7 @@ simple = { limit = 10, period = 60 }
 
 # The client version (R-AP45, slice 116b): the oldest `tln` that the registry accepts. An empty text means no check.
 # MIN_TLN covers all routes, MIN_TLN_WRITE the write routes (R-AP41).
-# The other settings (R-WH14, slice 121). The secrets CONTRIBUTOR_KEY, TOKEN_KEY, GITHUB_WEBHOOK_SECRET, GITHUB_APP_KEY and OPERATOR_KEY (the operator key of the yank and move routes, R-YK2) are set with `wrangler secret put`.
+# The other settings (R-WH14, slice 121). The secrets CONTRIBUTOR_KEY, TOKEN_KEY, TOKEN_OLD_KEYS (optional: the public keys of the old TOKEN_KEY keys as a JWK Set, slice 258), GITHUB_WEBHOOK_SECRET, GITHUB_APP_KEY and OPERATOR_KEY (the operator key of the yank and move routes, R-YK2) are set with `wrangler secret put`.
 [vars]
 MIN_TLN = ""
 MIN_TLN_WRITE = ""
@@ -68,7 +68,13 @@ dead_letter_queue = "talon-index-dlq"
 [[queues.consumers]]
 queue = "talon-index-dlq"
 
+# The log tiles and the checkpoint (slice 257b, Registry R-SG4, R-SG7, R-WH14 `LOG`, Design Q636). The bucket must exist before a deploy (slice 257e). The secret LOG_KEY: R-WH14.
+[[r2_buckets]]
+binding = "LOG"
+bucket_name = "talon-log"
+
 # The daily job (slice 120, R-CT5, R-CT15, R-PU35): 03:00 UTC. The text is `Daily.cron`; `roc-cfw sync --check` compares it with the manifest.
 # The reconcile (slice 119b, R-PU23): every 5 min. The text is `Reconcile.cron`.
+# The tile catch-up (slice 257b, R-PU35, Design Q636): every 5 min at minute 2. The text is `LogStep.cron`.
 [triggers]
-crons = ["0 3 * * *", "*/5 * * * *"]
+crons = ["0 3 * * *", "*/5 * * * *", "2-59/5 * * * *"]

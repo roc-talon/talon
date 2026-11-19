@@ -1,0 +1,1 @@
+Slice 257d: the runner checks r2_reads, body_size, body_sha256, the line r2_seed and TEST_LOG_FAIL_GETS (the first read of t fails). No Roc code: /__test/r2read of hooks.js reads LOG through the wrapper.

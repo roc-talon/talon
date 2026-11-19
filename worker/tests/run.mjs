@@ -3,6 +3,10 @@
 // Slice 123e: the runner uses the platform test helper (`startApp` of .roc-cfw/test.mjs, platform 0.0.6). It keeps a pool of started apps, one for each set of settings
 // (bindings, ratelimits.json, app = archive or not) and each job; `app.reset()` between two cases of one set. The part in the isolate that the helper does not give is
 // worker/tests/hooks.js (the timingSafeEqual count, the /__test/ paths, TEST_INDEX_FAIL_SENDS); the config is worker/tests/wrangler-test.toml (no queue consumer).
+// Slice 256 (G19, W2 speed): the main thread of this process was the limit (CPU profile: 22 of 34 s were blocking calls of Miniflare, `SynchronousFetcher`, one for each `db.prepare()` of the migrations, the seed and the
+// `sql` lines, and each `h.d1()`). Now the migrations, the seed and the `sql` lines go in one request each to `/__test/sql` of hooks.js (`runSql`), and a D1 handle is made only for expect/db.tsv and github/*.sql.
+// W2 went from 31 to 35 s to 18 to 21 s (212 cases, same results). What is left of the blocking time is `reset()` of the platform (clearD1). The floor of a run is a case with `window_s` (up to 35 s of wait for the window of the rate limit).
+// Research: research/slice-256-w2-speed/RESULT.md.
 //   node worker/tests/run.mjs [filter ...]     run the cases whose name has a filter text (the self-test cases too)
 // Env: W2_DIR (the dir with app.wasm and .roc-cfw/ with test.mjs, default: worker/), MINIFLARE (the dir of the miniflare package, default: the one of the
 //      global wrangler of this node), JOBS (cases at the same time, default: min(CPU count, 6)), W2_TMP (the dir for temp files, default: the temp dir),
@@ -74,11 +78,28 @@
 //   github/<file>.meta.json  Slice 119b: a status 304 (or 204) answer has no body. In "require", the value null means that the request must NOT have the header (for example `if-none-match`).
 //   settings.json         Slice 119b: TEST_INDEX_FAIL_SENDS ("N") makes the first N sends to the INDEX queue of the case fail (hooks.js rejects them, so startApp records no send).
 //   timeout               optional. The seconds for this case, in place of CASE_TIMEOUT (default 30). For a case with a large seed that is slow when many builds run at the same time. A window_s line still adds its P s.
+//   Slice 257b (R2, the binding LOG: the log tiles and the checkpoint; hooks.js part 4):
+//   r2.jsonl              optional. The R2 objects of the case before the first request, one in each line: {"key":"tile/0/000.p/3","base64":".."} or {"key":"checkpoint","text":".."},
+//                         optional "bucket" (default "LOG") and "content_type" (the HTTP metadata). All lines go in one request (`/__test/r2seed`); no wrapper, so no hook sees them.
+//   expect/r2.jsonl       optional. The objects of the bucket LOG after the last request, one in each line, in any order: {"key":..,"sha256":"<hex>","size":N,"text":"..","content_type":".."|null}.
+//                         The keys must be exactly these (no other object). Each other member that the line has is compared; a missing member is not checked.
+//   expect/responses.jsonl "r2":{"<key>": null | {"sha256"|"size"|"text"|"content_type": ..}}: after this line (and its work after the answer), each named key of LOG is absent (null)
+//                         or has these members. Other keys are not checked.
+//   expect/responses.jsonl "r2_puts":[["k1","k2"],["checkpoint?etag"]]: the puts of the Worker on LOG during this line (also the failed ones), in groups: the groups in this order, the keys of a group
+//                         in any order. "key?etag" must also have onlyIf.etagMatches, "key?absent" must have R2.absent (onlyIf.etagDoesNotMatch "*"); a key with no "?" matches any condition.
+//                         `[]` checks that the line makes no put.
+//   Slice 257d: expect/responses.jsonl "body_size":N and "body_sha256":"<hex>" (the body as bytes: a tile), "r2_reads":["k1","k2"] (the get and head calls of the Worker on LOG in the line, in order; `[]`: none),
+//                         and a request-file line {"r2_seed":[{"key":..,"text"|"base64":..,"content_type":..}]} (not a request: objects written to LOG between two requests; it has no expect line).
+//   Slice 257d: settings.json TEST_LOG_FAIL_GETS (a JSON array of keys as text): the first get or head of each key by the Worker fails (a rejected promise, as an R2 error); the call is in the list of r2_reads. /__test/arm arms it again.
+//   settings.json         TEST_LOG_FAIL_PUTS (a JSON array of keys as text): the first put of each key fails. TEST_LOG_RACE (a key of r2.jsonl): that object is copied to `checkpoint` just
+//                         before the first put of `checkpoint` (hooks.js part 4). A JSON array of keys: one copy before each of the first puts of `checkpoint`, in order.
+//   Slice 257c: expect/logs-not   optional. One text in each line: no Worker log line (its message text) may have it. Checked after the wait of expect/logs.jsonl.
 //   expect-fail           self-test cases only (worker/tests/selftest/<name>/). One text in each line. The case must fail, and the failure must have each text.
 // The output is one line for each case: `PASS <case>` or `FAIL <case>` and the reasons. Exit 1 on a failure.
 import { createRequire } from 'node:module';
 import { readFileSync, readdirSync, existsSync, mkdirSync, rmSync } from 'node:fs';
 import { cpus, tmpdir } from 'node:os';
+import { createHash } from 'node:crypto';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { splitSql, migrationFiles, parseExpected, tsvOf } from '../../sql/tests/split.mjs';
@@ -135,7 +156,55 @@ const chosen = cases.filter((c) => filters.length === 0 || filters.some((f) => c
 const archiveWasm = process.env.W2_ARCHIVE_WASM || join(w2Dir, 'archive-test.wasm');
 // The migrations are one `db.batch` of the runner after the start and after each reset(), not the `d1` seeds of startApp (they run one statement at a time: a reset took 120 ms in place of 50 ms, research/slice-123e/reset-probe.mjs).
 const migrations = migrationFiles(join(root, 'sql')).flatMap((f) => splitSql(readFileSync(f, 'utf8')).map((s) => s.sql));
-const migrate = async (h) => { const db = await h.d1('DB'); await db.batch(migrations.map((s) => db.prepare(s))); };
+// Slice 256: the statements go in one request to the `/__test/sql` path of hooks.js (a `db.prepare()` of the Node side is one blocking call of Miniflare for each statement).
+const runSql = async (h, stmts, mode) => {
+  if (stmts.length === 0) return;
+  // `mf.dispatchFetch` has no request id of startApp, so the calls are not recorded in a response header (a header of more than 16 KB fails the answer).
+  const res = await h.mf.dispatchFetch('http://localhost/__test/sql?mode=' + mode, { method: 'POST', body: Buffer.from(JSON.stringify(stmts)) });
+  const text = await res.text();
+  if (res.status !== 200) throw new Error(`sql (${mode}) failed: ${text.slice(0, 600)}`);
+};
+const migrate = (h) => runSql(h, migrations, 'batch');
+// Slice 257b: the R2 paths of hooks.js (one request each, as runSql: `h.mf.dispatchFetch` has no request id, so nothing is recorded as a call of a request).
+const testCall = async (h, path, body) => {
+  const res = await h.mf.dispatchFetch('http://localhost' + path, body === undefined ? {} : { method: 'POST', body: Buffer.from(JSON.stringify(body)) });
+  const text = await res.text();
+  if (res.status !== 200) throw new Error(`${path} failed: ${text.slice(0, 600)}`);
+  return JSON.parse(text);
+};
+const r2Seed = async (h, items) => {
+  const by = new Map();
+  for (const o of items) { const b = o.bucket ?? 'LOG'; if (!by.has(b)) by.set(b, []); by.get(b).push(o); }
+  for (const [b, list] of by) await testCall(h, `/__test/r2seed?bucket=${b}`, list);
+};
+const r2Dump = async (h) => (await testCall(h, '/__test/r2dump?bucket=LOG')).objects;
+const r2Ops = async (h) => (await testCall(h, '/__test/r2ops')).ops;
+const R2_FIELDS = ['sha256', 'size', 'text', 'content_type'];
+// One object against its expected members (the members that the expected line has).
+const r2Compare = (at, want, got, errs) => {
+  for (const f of R2_FIELDS) {
+    if (want[f] === undefined) continue;
+    if (JSON.stringify(want[f]) !== JSON.stringify(got[f] ?? null)) errs.push(`${at}: ${f}: expected ${jstr(want[f])}, got ${jstr(got[f] ?? null)}`);
+  }
+};
+// "r2_puts": the groups of keys (any order in a group), against the put calls of the line.
+const r2PutsCheck = (n, want, ops, errs) => {
+  const puts = ops.filter((o) => o.op === 'put');
+  const shown = puts.map((o) => o.key + o.cond).join(', ') || 'none';
+  let k = 0;
+  for (const [gi, group] of want.entries()) {
+    const part = puts.slice(k, k + group.length);
+    k += group.length;
+    const left = [...part];
+    for (const w of group) {
+      const [key, cond] = w.includes('?') ? [w.slice(0, w.indexOf('?')), w.slice(w.indexOf('?'))] : [w, undefined];
+      const i = left.findIndex((o) => o.key === key && (cond === undefined || o.cond === cond));
+      if (i === -1) { errs.push(`request ${n}: r2_puts: group ${gi + 1} has no put ${w}; the puts were: ${shown}`); return; }
+      left.splice(i, 1);
+    }
+  }
+  if (k !== puts.length) errs.push(`request ${n}: r2_puts: expected ${k} puts, got ${puts.length}: ${shown}`);
+};
 const baseSettings = JSON.parse(read(join(here, 'settings.json')) || '{}');
 // The rate limit bindings of a case (slice 116b): ratelimits.json, else RL_HINTS with a limit that a case does not reach.
 const ratelimitsOf = (c) => JSON.parse(read(join(c.dir, 'ratelimits.json')) || '{"RL_HINTS":{"limit":1000,"period":60}}');
@@ -222,6 +291,9 @@ function checkResponse(n, exp, res, errs) {
   }
   if (exp.d1_session !== undefined && exp.d1_session !== res.session) put(`d1_session: expected ${jstr(exp.d1_session)}, got ${jstr(res.session)}`);
   if (exp.timing_safe !== undefined && Number(res.headers['x-timing-safe-calls']) !== exp.timing_safe) put(`timing_safe: expected ${exp.timing_safe} calls of timingSafeEqual, got ${res.headers['x-timing-safe-calls'] ?? 'none'}`);
+  // Slice 257d: the body as bytes (a tile is not text): its length and its SHA-256 (hex).
+  if (exp.body_size !== undefined && res.bytes?.length !== exp.body_size) put(`body_size: expected ${exp.body_size}, got ${res.bytes?.length}`);
+  if (exp.body_sha256 !== undefined && (res.bytes === undefined || createHash('sha256').update(res.bytes).digest('hex') !== exp.body_sha256)) put(`body_sha256: expected ${exp.body_sha256}, got ${res.bytes === undefined ? 'no bytes' : createHash('sha256').update(res.bytes).digest('hex')}`);
   if (exp.body !== undefined && exp.body !== res.body) put(`body: expected ${jstr(exp.body)}, got ${jstr(res.body.slice(0, 200))}`);
 }
 
@@ -327,7 +399,8 @@ async function request(h, spec, c, st) {
   const res = await h.fetch(spec.path, { method: spec.method ?? 'GET', headers, body });
   const out = {};
   res.headers.forEach((v, k) => { out[k] = v; });
-  return { status: res.status, headers: out, body: await res.text(), ...d1Of(res.calls), sent: sentOf(res.calls.INDEX), session: res.sessions?.DB?.at(-1) ?? null };
+  const bytes = Buffer.from(await res.arrayBuffer());
+  return { status: res.status, headers: out, body: bytes.toString('utf8'), bytes, ...d1Of(res.calls), sent: sentOf(res.calls.INDEX), session: res.sessions?.DB?.at(-1) ?? null };
 }
 
 // Start the app of a pool key. The ratelimits that the app does not declare are dropped (the archive test app has none).
@@ -371,27 +444,56 @@ async function runCase(c, entry) {
   const specs = lines(join(c.dir, 'requests.jsonl')).map((l) => JSON.parse(l));
   const expected = lines(join(c.dir, 'expect', 'responses.jsonl')).map((l) => JSON.parse(l));
   if (specs.length === 0) return { errs: ['requests.jsonl has no request'], logs: [] };
-  const nreq0 = specs.filter((s) => s.sql === undefined && s.wait_ms === undefined && s.window_s === undefined).length;
+  const nreq0 = specs.filter((s) => s.sql === undefined && s.wait_ms === undefined && s.window_s === undefined && s.r2_seed === undefined).length;
   if (expected.length !== nreq0) return { errs: [`expect/responses.jsonl has ${expected.length} lines for ${nreq0} requests`], logs: [] };
   const logLines = () => h.logs.map((l) => l.message ?? JSON.stringify(l));
   const records = () => h.logs.map((l) => ({ message: l.message ?? '', level: l.level }));
-  const dbRef = { db: await h.d1('DB').catch(() => undefined) };
+  // Slice 256: no D1 handle at the start (each `h.d1()` is a blocking call of Miniflare); the seed goes by `runSql`; the handle is made for expect/db.tsv and for github/*.sql (a request to the Worker there would count as D1 calls of the request in flight).
+  const dbRef = { get: () => h.d1('DB') };
   // The state of the case: the settings, the clock of the current request, the token and auth logs and the count of default tokens.
   const st = { settings: c.cfg.settings, nowMs: DEFAULT_NOW, tokenLog: [], authLog: [], issued: 0 };
   entry.ref.fn = fakeGithub(c.dir, github, errs, dbRef, st);
   try {
-    const db = dbRef.db;
-    for (const s of splitSql(read(join(c.dir, 'seed.sql')))) await db.prepare(s.sql).run();
+    await runSql(h, splitSql(read(join(c.dir, 'seed.sql'))).map((s) => s.sql), 'seq');
+    // Slice 257b: the R2 seed (one request), and an empty call list of LOG when a line checks its puts (a list of an earlier case in this app is dropped).
+    const r2Items = lines(join(c.dir, 'r2.jsonl')).map((l) => JSON.parse(l));
+    if (r2Items.length) await r2Seed(h, r2Items);
+    // When a line checks its puts, the calls are taken after EVERY line, so the list of a line has only its own calls.
+    const usesPuts = expected.some((e) => e.r2_puts !== undefined || e.r2_reads !== undefined);
+    if (usesPuts) await r2Ops(h);
+    const r2Line = async (n, exp) => {
+      if (exp.r2 === undefined && !usesPuts) return;
+      await h.idle();
+      const ops = usesPuts ? await r2Ops(h) : [];
+      if (exp.r2_puts !== undefined) r2PutsCheck(n, exp.r2_puts, ops, errs);
+      // Slice 257d: "r2_reads": the keys of the get and head calls of the Worker on LOG in this line, in order (exactly this list; `[]`: no read).
+      if (exp.r2_reads !== undefined) {
+        const reads = ops.filter((o) => o.op === 'get' || o.op === 'head').map((o) => o.key);
+        if (JSON.stringify(reads) !== JSON.stringify(exp.r2_reads)) errs.push(`request ${n}: r2_reads: expected ${jstr(exp.r2_reads)}, got ${jstr(reads)}`);
+      }
+      if (exp.r2 !== undefined) {
+        const objs = await r2Dump(h);
+        for (const [key, want] of Object.entries(exp.r2)) {
+          const got = objs.find((o) => o.key === key);
+          if (want === null) { if (got) errs.push(`request ${n}: r2 ${key}: expected no object, got one of ${got.size} bytes`); continue; }
+          if (!got) { errs.push(`request ${n}: r2 ${key}: expected an object, got none`); continue; }
+          r2Compare(`request ${n}: r2 ${key}`, want, got, errs);
+        }
+      }
+    };
     const counts = [];
     let i = 0;
     const nreq = nreq0;
     for (const spec of specs) {
-      if (spec.sql !== undefined) { for (const stmt of spec.sql) await db.prepare(stmt).run(); continue; }
+      if (spec.sql !== undefined) { await runSql(h, spec.sql, 'seq'); continue; }
+      // Slice 257d: a line {"r2_seed":[{"key","text"|"base64","content_type"?}]} is not a request: the objects are written to LOG between the requests (as r2.jsonl, no wrapper, no call in the list).
+      if (spec.r2_seed !== undefined) { await r2Seed(h, spec.r2_seed); continue; }
       if (spec.wait_ms !== undefined) { await new Promise((r) => setTimeout(r, spec.wait_ms)); continue; }
       if (spec.window_s !== undefined) { const w = spec.window_s * 1000, left = w - (Date.now() % w); if (left < spec.need_ms) await new Promise((r) => setTimeout(r, left + 50)); continue; }
       if (spec.queue !== undefined) {
         counts.push({ calls: NaN, ops: '' });
         checkQueue(i + 1, expected[i], await queueCall(h, spec, st), errs);
+        await r2Line(i + 1, expected[i]);
         i++;
         continue;
       }
@@ -406,11 +508,13 @@ async function runCase(c, entry) {
           const sorted = (a) => a.map(canon).sort();
           if (JSON.stringify(sorted(first.sent)) !== JSON.stringify(sorted(expected[i].queue_sent))) errs.push(`request ${i + 1}: queue_sent (any order): expected ${canon(expected[i].queue_sent)}, got ${canon(first.sent)}`);
         }
+        await r2Line(i + 1, expected[i]);
         i++;
         continue;
       }
       counts.push({ calls: res.calls, ops: res.ops });
       checkResponse(i + 1, expected[i], res, errs);
+      await r2Line(i + 1, expected[i]);
       i++;
     }
     const want = lines(join(c.dir, 'expect', 'd1-calls'));
@@ -421,8 +525,22 @@ async function runCase(c, entry) {
       });
     }
     for (const blk of parseExpected(read(join(c.dir, 'expect', 'db.tsv')))) {
+      const db = await h.d1('DB');
       const got = tsvOf(await db.prepare(blk.sql).raw());
       if (got.join('\n') !== blk.rows.join('\n')) errs.push(`db: @ ${blk.sql}: rows differ:\n      expected: ${JSON.stringify(blk.rows)}\n      got:      ${JSON.stringify(got)}`);
+    }
+    // Slice 257b: the objects of LOG after the last request: exactly the keys of expect/r2.jsonl.
+    if (existsSync(join(c.dir, 'expect', 'r2.jsonl'))) {
+      await h.idle();
+      const want = lines(join(c.dir, 'expect', 'r2.jsonl')).map((l) => JSON.parse(l));
+      const objs = await r2Dump(h);
+      const wantKeys = want.map((w) => w.key).sort();
+      const gotKeys = objs.map((o) => o.key);
+      const extra = gotKeys.filter((k) => !wantKeys.includes(k));
+      const missing = wantKeys.filter((k) => !gotKeys.includes(k));
+      if (extra.length) errs.push(`r2: objects that expect/r2.jsonl does not list: ${extra.join(', ')}`);
+      if (missing.length) errs.push(`r2: no object for: ${missing.join(', ')}`);
+      for (const w of want) { const got = objs.find((o) => o.key === w.key); if (got) r2Compare(`r2 ${w.key}`, w, got, errs); }
     }
     for (const [name, got] of [['tokens.log', st.tokenLog], ['auth.log', st.authLog]]) {
       if (!existsSync(join(c.dir, 'expect', name))) continue;
@@ -430,10 +548,18 @@ async function runCase(c, entry) {
       if (JSON.stringify(wantLog) !== JSON.stringify(got)) errs.push(`${name} differs:\n      expected: ${JSON.stringify(wantLog)}\n      got:      ${JSON.stringify(got)}`);
     }
     if (existsSync(join(c.dir, 'expect', 'logs.jsonl'))) await checkLogs(lines(join(c.dir, 'expect', 'logs.jsonl')).map((l) => JSON.parse(l)), records, errs);
+    // Slice 257c: expect/logs-not: one text in each line; no Worker log line may have it (for example the platform line `after respond: failed`). Checked after the wait of logs.jsonl.
+    if (existsSync(join(c.dir, 'expect', 'logs-not'))) {
+      await h.idle();
+      for (const t of lines(join(c.dir, 'expect', 'logs-not'))) {
+        const hit = records().find((r) => r.message.includes(t));
+        if (hit) errs.push(`logs-not: a Worker log line has ${JSON.stringify(t)}: ${hit.message.slice(0, 300)}`);
+      }
+    }
     const wantGh = lines(join(c.dir, 'expect', 'github.log'));
     if (JSON.stringify(wantGh) !== JSON.stringify(github)) errs.push(`github.log differs:\n      expected: ${JSON.stringify(wantGh)}\n      got:      ${JSON.stringify(github)}`);
   } catch (e) {
-    errs.push(`runner fault: ${String(e.stack ?? e).split('\n').slice(0, 4).join(' | ')}`);
+    errs.push(`runner fault: ${e.cause ? String(e.cause.stack ?? e.cause) + " <- " : ""}${String(e.stack ?? e).split('\n').slice(0, 4).join(' | ')}`);
     entry.broken = true;
   }
   return { errs, logs: logLines() };
@@ -445,7 +571,8 @@ async function prepare(entry, c) {
   if (entry.used) {
     await h.reset();
     if (entry.hasDb) await migrate(h);
-    if ('TEST_INDEX_FAIL_SENDS' in c.cfg.settings) await (await h.fetch('/__test/arm')).text(); // a module global of hooks.js: reset() does not clear it
+    // A module global of hooks.js: reset() does not clear it. Slice 257b: also the R2 hooks (TEST_LOG_FAIL_PUTS, TEST_LOG_RACE).
+    if (['TEST_INDEX_FAIL_SENDS', 'TEST_LOG_FAIL_PUTS', 'TEST_LOG_FAIL_GETS', 'TEST_LOG_RACE'].some((k) => k in c.cfg.settings)) await (await h.fetch('/__test/arm')).text();
   }
   entry.used = true;
   clocks.set(h, DEFAULT_NOW); // start and reset() give the clock of the option `now`

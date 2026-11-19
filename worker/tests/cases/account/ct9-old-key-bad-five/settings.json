@@ -1,0 +1,1 @@
+{"AUDIENCE":"https://registry.example","TOKEN_KEY":{"$edkey":"t1","kid":"key-1"},"CONTRIBUTOR_KEY":"test-contributor-key","TOKEN_OLD_KEYS":{"$edset":[{"edkey":"t2","kid":"key-0"},{"edkey":"t3","kid":"key-00"},{"edkey":"t4","kid":"key-2"},{"edkey":"t5","kid":"key-3"},{"edkey":"t6","kid":"key-4"}]}}

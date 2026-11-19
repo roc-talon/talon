@@ -1,0 +1,129 @@
+== w0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w0.log)
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogStepTest.roc:149:1
+
+expect LogStep.check_key({ name: "other.example/log", key_id: hex(vec_key.key_id), seed: [] }, hex(vec_key.public)) == Err(WrongKeyId)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogStepTest.roc:152:1
+
+expect LogStep.content_type("checkpoint") == "text/plain; charset=utf-8"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogStepTest.roc:154:1
+
+expect LogStep.content_type("tile/0/000.p/3") == "application/octet-stream"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogStepTest.roc:156:1
+
+expect LogStep.content_type("tile/entries/x001/234") == "application/octet-stream"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogStepTest.roc:158:1
+
+expect LogStep.content_type("tile/1/000") == "application/octet-stream"
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 616 tests in 5024.7 ms.:
+    581 passed
+    35 failed
+    0 compiler errors
+All formatting valid.
+Took 12.7 ms.
+All (181) tests passed in 1329.9 ms.
+All formatting valid.
+Took 15.4 ms.
+All (181) tests passed in 1536.5 ms.
+== w2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w2.log)
+PASS webhook/pu17-withdraw-clear (457 ms)
+PASS webhook/pu26-app-installed (315 ms)
+PASS webhook/pu26-release-installed (285 ms)
+PASS webhook/pu33-privatized (429 ms)
+PASS webhook/pu33-publicized (301 ms)
+PASS webhook/pu33-release-private (210 ms)
+PASS webhook/pu35-dead-letter (19 ms)
+PASS webhook/pu35-dead-letter-prod-shape (13 ms)
+PASS webhook/pu35-retry-schedule (188 ms)
+PASS yank/tp8-token (1009 ms)
+PASS yank/yk1-route-checks (417 ms)
+PASS yank/yk1-yank-unyank (1025 ms)
+PASS yank/yk2-operator (296 ms)
+PASS yank/yk3-roles (319 ms)
+PASS yank/yk6-body (315 ms)
+PASS yank/yk7-reads (277 ms)
+PASS yank/yk8-answers (347 ms)
+PASS yank/yk9-no-yank-row (234 ms)
+PASS selftest/case-timeout (1000 ms)
+PASS selftest/missing-fake-route (1 ms)
+PASS selftest/session-absent (1 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (18 ms)
+PASS selftest/unexpected-github-call (2 ms)
+PASS selftest/wrong-auth-log (2 ms)
+PASS selftest/wrong-body (1 ms)
+PASS selftest/wrong-body-pad (2 ms)
+PASS selftest/wrong-clock (2 ms)
+PASS selftest/wrong-d1-count (7 ms)
+PASS selftest/wrong-d1-row (19 ms)
+PASS selftest/wrong-force-cache (2 ms)
+PASS selftest/wrong-github-log (3 ms)
+PASS selftest/wrong-header (1 ms)
+PASS selftest/wrong-header-set (1 ms)
+PASS selftest/wrong-json-array (1 ms)
+PASS selftest/wrong-json-at (1 ms)
+PASS selftest/wrong-json-field (1 ms)
+PASS selftest/wrong-json-len (1 ms)
+PASS selftest/wrong-json-range (1 ms)
+PASS selftest/wrong-json-range-order (1 ms)
+PASS selftest/wrong-log (3663 ms)
+PASS selftest/wrong-problem-content-type (2 ms)
+PASS selftest/wrong-problem-member (1 ms)
+PASS selftest/wrong-queue-acked (24 ms)
+PASS selftest/wrong-queue-retry (4 ms)
+PASS selftest/wrong-queue-sent (4 ms)
+PASS selftest/wrong-queue-sent-none (1 ms)
+PASS selftest/wrong-r2-extra (12 ms)
+PASS selftest/wrong-r2-line (7 ms)
+PASS selftest/wrong-r2-object (6 ms)
+PASS selftest/wrong-r2-puts-cond (7 ms)
+PASS selftest/wrong-r2-puts-count (7 ms)
+PASS selftest/wrong-r2-puts-order (7 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (7 ms)
+PASS selftest/wrong-status (1 ms)
+PASS selftest/wrong-timing-safe (1 ms)
+PASS selftest/wrong-tokens-log (1 ms)
+w2 pool: 57 apps started, 196 resets, 253 cases; time of the jobs added: start 22 s, reset 13 s, cases 119 s
+w2: 235 passed, 18 failed
+
+step       result seconds  budget
+fmt        pass   0.3      5
+w0         FAIL   8.3      10
+wbuild     pass   70.8     90
+w2         FAIL   27.1     45
+wtrap      pass   0.1      5

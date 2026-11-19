@@ -1,0 +1,2 @@
+{"absentNew":true,"absentThere":false,"matchRight":true,"matchOld":false,"final":"three"}
+ok: Miniflare R2 obeys etagMatches and etagDoesNotMatch "*"

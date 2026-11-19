@@ -1,0 +1,6 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/plat/releases/download/v0.3.0/LGNEVuRQZ539pc52dydViRcsnjP2rUxEFyXNfRRESHk.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/app/releases/download/2.0.0/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6.tar.zst"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/acme/roc-thing/releases/download/1.2.0/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J.tar.zst"},"now":1767225635000}
+{"method":"GET","path":"/v1/artifacts/9D1XgRuKsxZJn4Meja8MNDGQ9NxT9HhF2aS54an8Vhb6","now":1767225630000}
+{"method":"GET","path":"/v1/artifacts/7XLjywmoYDZJNNrjftyqesb2Vy3sAmsUCi2K4fYH7C2J","now":1767225630000}

@@ -1,0 +1,3 @@
+base the reference with no change (every new test must pass) | w0: not caught [] | w2: not caught []
+M1 the checkpoint goes in the Cache API (an old checkpoint is served from the colo) | w0: CAUGHT ['1'] | w2: CAUGHT ['logread/ap11-etag-checkpoint', 'logread/ap11-head', 'logread/ap43-checkpoint-fresh']
+M13 an R2 read error is answered as 404 (not 500) | w2: CAUGHT ['logread/ap11-read-fault']

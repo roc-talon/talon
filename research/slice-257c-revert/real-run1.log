@@ -1,0 +1,15 @@
+base the real code with no change | w0: not caught (LogTriggerTest lines in the output: 0) | w2: not caught []
+M1 the step runs BEFORE the answer (ingest and publish) | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair']
+batch [base M1] exit 0
+M2 a step after each 2xx | w0: CAUGHT (LogTriggerTest lines in the output: 3) | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/pu1-refusals-no-step', 'logafter/pu1-toolchains-step', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair']
+M3 a step after a 4xx too | w0: CAUGHT (LogTriggerTest lines in the output: 1) | w2: CAUGHT ['logafter/pu1-refusals-no-step']
+batch [M2 M3] exit 0
+M4 the work after the answer gives Err (platform line after respond: failed) | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/pu1-toolchains-step', 'logafter/sg7-after-fault-key', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair']
+M5 the index queue job path is forgotten | w2: CAUGHT ['logafter/pu13-queue-step', 'logafter/pu21-poll-step', 'logafter/sg7-queue-fault']
+batch [M4 M5] exit 0
+M6 the PUT /v1/toolchains path is forgotten | w2: CAUGHT ['logafter/pu1-toolchains-step']
+M8 the queue job runs the step for a provenance write (no leaf) | w2: CAUGHT ['logafter/pu14-queue-no-leaf', 'logafter/pu21-poll-step']
+batch [M6 M8] exit 0
+M9 the reconcile run makes a step at its end | w2: CAUGHT ['logafter/pu23-reconcile-no-step']
+M10 the answer waits for the step; a failed step is a 500 | w2: CAUGHT ['logafter/pu1-toolchains-step', 'toolchains/pu-asset-rules', 'toolchains/pu-digest-kept', 'toolchains/pu-digest-rules', 'toolchains/pu-id-collision', 'toolchains/pu-new-tag', 'toolchains/pu-odd-sha-names', 'toolchains/pu-size-rules']
+batch [M9 M10] exit 0

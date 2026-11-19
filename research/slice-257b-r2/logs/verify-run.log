@@ -1,0 +1,129 @@
+== w0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w0.log)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:330:1
+
+expect Route.decide({ method: "POST", segments: ["log", "tile", "01", "000"], content_type: Ok("text/plain"), has_body: Bool.True }) == no_route("POST", "/log/tile/01/000")
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:333:1
+
+expect Route.decide(input("GET", ["log", "tile/0/000"])) == no_route("GET", "/log/tile/0/000")
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:334:1
+
+expect Route.decide(input("GET", ["log", "tile", "0/000"])) == no_route("GET", "/log/tile/0/000")
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:338:1
+
+expect Client.is_checked(GetLogCheckpoint) == Bool.False
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:339:1
+
+expect Client.is_checked(GetLogTile("tile/0/000")) == Bool.False
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:340:1
+
+expect Client.is_checked(GetLogTile("tile/entries/x001/234.p/7")) == Bool.False
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 858 tests in 4434.6 ms.:
+    623 passed
+    235 failed
+    0 compiler errors
+All formatting valid.
+Took 11.1 ms.
+All (181) tests passed in 1224.4 ms.
+All formatting valid.
+Took 22.0 ms.
+All (181) tests passed in 1247.7 ms.
+== w2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w2.log)
+PASS webhook/pu26-release-installed (389 ms)
+PASS webhook/pu33-privatized (559 ms)
+PASS webhook/pu33-publicized (313 ms)
+PASS webhook/pu33-release-private (228 ms)
+PASS webhook/pu35-dead-letter (27 ms)
+PASS webhook/pu35-dead-letter-prod-shape (22 ms)
+PASS webhook/pu35-retry-schedule (275 ms)
+PASS yank/tp8-token (898 ms)
+PASS yank/yk1-route-checks (877 ms)
+PASS yank/yk1-yank-unyank (1665 ms)
+PASS yank/yk2-operator (260 ms)
+PASS yank/yk3-roles (404 ms)
+PASS yank/yk6-body (500 ms)
+PASS yank/yk7-reads (370 ms)
+PASS yank/yk8-answers (266 ms)
+PASS yank/yk9-no-yank-row (386 ms)
+PASS selftest/case-timeout (1008 ms)
+PASS selftest/missing-fake-route (2 ms)
+PASS selftest/session-absent (2 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (43 ms)
+PASS selftest/unexpected-github-call (24 ms)
+PASS selftest/wrong-auth-log (4 ms)
+PASS selftest/wrong-body (7 ms)
+PASS selftest/wrong-body-bytes (14 ms)
+PASS selftest/wrong-body-pad (49 ms)
+PASS selftest/wrong-clock (50 ms)
+PASS selftest/wrong-d1-count (18 ms)
+PASS selftest/wrong-d1-row (25 ms)
+PASS selftest/wrong-force-cache (2 ms)
+PASS selftest/wrong-github-log (55 ms)
+PASS selftest/wrong-header (2 ms)
+PASS selftest/wrong-header-set (2 ms)
+PASS selftest/wrong-json-array (1 ms)
+PASS selftest/wrong-json-at (2 ms)
+PASS selftest/wrong-json-field (2 ms)
+PASS selftest/wrong-json-len (41 ms)
+PASS selftest/wrong-json-range (41 ms)
+PASS selftest/wrong-json-range-order (3 ms)
+PASS selftest/wrong-log (3165 ms)
+PASS selftest/wrong-problem-content-type (2 ms)
+PASS selftest/wrong-problem-member (1 ms)
+PASS selftest/wrong-queue-acked (54 ms)
+PASS selftest/wrong-queue-retry (13 ms)
+PASS selftest/wrong-queue-sent (13 ms)
+PASS selftest/wrong-queue-sent-none (2 ms)
+PASS selftest/wrong-r2-extra (89 ms)
+PASS selftest/wrong-r2-line (23 ms)
+PASS selftest/wrong-r2-object (24 ms)
+PASS selftest/wrong-r2-puts-cond (87 ms)
+PASS selftest/wrong-r2-puts-count (31 ms)
+PASS selftest/wrong-r2-puts-order (33 ms)
+PASS selftest/wrong-r2-reads (58 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (5 ms)
+PASS selftest/wrong-status (1 ms)
+PASS selftest/wrong-timing-safe (2 ms)
+PASS selftest/wrong-tokens-log (2 ms)
+w2 pool: 69 apps started, 207 resets, 276 cases; time of the jobs added: start 33 s, reset 25 s, cases 85 s
+w2: 258 passed, 18 failed
+
+step       result seconds  budget
+fmt        pass   0.4      5
+w0         FAIL   7.3      10
+wbuild     pass   0.4      90
+w2         FAIL   26.6     45
+wtrap      pass   0.1      5

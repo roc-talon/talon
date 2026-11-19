@@ -8,6 +8,14 @@ import Route
 
 Client :: [].{
 
+	## R-AP45, Design Q636, slice 257d: does the check of the client version apply to the route? No for the log routes (`GetLogCheckpoint`, `GetLogTile(_)`): a witness, a monitor or `curl`
+	## is not `tln`, and the settings `MIN_TLN` and `MIN_TLN_WRITE` are not read for them. Yes for every other route. `main.roc` `client_refusal!` asks it before `Client.check`.
+	is_checked : Route.Id -> Bool
+	is_checked = |id| match id {
+		GetLogCheckpoint | GetLogTile(_) => Bool.False
+		_ => Bool.True
+	}
+
 	## R-AP45: the requests that `MIN_TLN_WRITE` covers: the write routes of R-AP41. `PostCompat`, `PostRelease`, `PostTokens`, `DeleteTokens`, `DeleteMe` and `PutToolchain` (the bot calls the last one, and the bot has no `tln` agent, so it is never refused).
 	## Every other route is a read.
 	is_write : Route.Id -> Bool

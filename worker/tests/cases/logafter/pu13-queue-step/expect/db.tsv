@@ -1,0 +1,14 @@
+@ SELECT r.log_index, n.value, r.tag, r.withdrawn, r.withdrawn_at FROM releases r JOIN names n ON n.id = r.repo ORDER BY r.log_index
+1	acme/lib	1.0.0	\N	\N
+@ SELECT idx, grp, version, hash, time FROM log ORDER BY idx
+1	github.com/Acme/Lib/releases/download/{v}/	1.0.0	3wSiK7wXpyfyGaYsSrd3Wp5aP2Wq6dUdBnmX9xUJBmq4	1767225600000
+@ SELECT release, via, claims, time FROM provenance ORDER BY release, via
+1	1	\N	1767225600000
+@ SELECT n.value, r.repository_id, r.repository_owner_id, r.state, (SELECT s.value FROM names s WHERE s.id = r.successor), r.state_at, r.time FROM repos r JOIN names n ON n.id = r.repo ORDER BY n.value
+acme/lib	500	10	0	\N	1767225600000	1767225600000
+@ SELECT n.value, e.seq, e.action, e.repository_id_before, e.repository_id_after, e.owner_id_before, e.owner_id_after, (SELECT s.value FROM names s WHERE s.id = e.successor), e.claims, e.time FROM repo_events e JOIN names n ON n.id = e.repo ORDER BY n.value, e.seq
+acme/lib	1	0	\N	500	\N	10	\N	\N	1767225600000
+@ SELECT n.value, c.etag, c.checked_at, c.next_check_at, c.fail_count, c.app_installed FROM repo_checks c JOIN names n ON n.id = c.repo ORDER BY n.value
+acme/lib	\N	\N	1767312000000	0	1
+@ SELECT (SELECT COUNT(*) FROM names WHERE kind = 3), (SELECT COUNT(*) FROM repos), (SELECT COUNT(*) FROM repo_checks), (SELECT COUNT(*) FROM repo_events), (SELECT COUNT(*) FROM releases), (SELECT COUNT(*) FROM log), (SELECT COUNT(*) FROM provenance)
+1	1	1	1	1	1	1

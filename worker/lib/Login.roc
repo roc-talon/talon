@@ -153,6 +153,82 @@ Login :: [].{
 		}
 	}
 
+	## R-CT9, R-WH14 (row `TOKEN_OLD_KEYS`, Design Q637, slice 258): the secret `TOKEN_OLD_KEYS` is the text of a JWK Set (RFC 7517 5) of the PUBLIC keys of the old `TOKEN_KEY` keys: `{"keys":[<jwk>, ...]}`.
+	## Each key: `kty` `OKP`, `crv` `Ed25519`, `x`, `kid` (not empty). A member `d` and any other member are ignored (not refused). `public_json` has no `d`, as `signing_key`. The list has the order of the text.
+	## `current_kid` is the `kid` of `TOKEN_KEY`. Not set (the text is empty, or `{"keys":[]}`) is `Ok([])`: the leak path (no old key). At most 4 keys.
+	## `Err(BadOldKeys(why))` (the route answers 500 `internal`, the `why` goes only in the log): the text is not JSON or has no list `keys`; more than 4 keys; an entry that is not an OKP Ed25519 key with an `x`;
+	## an entry with no `kid` or an empty `kid`; two entries with the same `kid`; an entry with the `kid` `current_kid`. A bad entry is never left out: `Jwk.parse_set` leaves it out with no error, so the body must count the entries.
+	## A `kid` is compared as text (case counts).
+	old_keys : Str, Str -> Try(List(Login.SigningKey), [BadOldKeys(Str)])
+	old_keys = |text, current_kid| {
+		if text.trim().is_empty() {
+			return Ok([])
+		}
+		count : Try({ keys : List({ kty : Try(Str, [Missing]) }) }, _)
+		count = Json.parse(text)
+		entries = match count {
+			Ok({ keys }) => keys.len()
+			Err(_) => return Err(BadOldKeys("the text is not a JSON object with a list keys"))
+		}
+		if entries > old_keys_max {
+			return Err(BadOldKeys("it has ${entries.to_str()} keys, the most is ${old_keys_max.to_str()}"))
+		}
+		parsed = Jwk.parse_set(text).map_err(|_| BadOldKeys("a key has a member of the wrong type"))?
+		if parsed.len() != entries {
+			return Err(BadOldKeys("a key is not an Ed25519 key"))
+		}
+		var $found = []
+		for key in parsed {
+			kid = match key.kid {
+				Ok(found) if !found.is_empty() => found
+				_ => return Err(BadOldKeys("a key has no kid"))
+			}
+			public_json = match key.material {
+				Okp({ crv: Ed25519, x: _ }) => Jwk.to_public_json(key)
+				_ => return Err(BadOldKeys("a key is not an Ed25519 key"))
+			}
+			if kid == current_kid {
+				return Err(BadOldKeys("the kid \"${kid}\" is the kid of TOKEN_KEY"))
+			}
+			if $found.any(|seen| seen.kid == kid) {
+				return Err(BadOldKeys("the kid \"${kid}\" is in the set twice"))
+			}
+			$found = $found.append({ kid, public_json })
+		}
+		Ok($found)
+	}
+
+	## R-CT9 (Q258-3): the most old keys.
+	old_keys_max : U64
+	old_keys_max = 4
+
+	## R-CT9 (Q258-5): the key for the signature of a token with this `kid`: the current key when its `kid` is the one, else the first key of the old list with that `kid`, else `Err(NoKey)` (401, `no_key`).
+	## The current key wins. The `kid` is compared as text, whole (case counts, no prefix).
+	verify_key : Login.SigningKey, List(Login.SigningKey), Str -> Try(Login.SigningKey, [NoKey])
+	verify_key = |current, old, kid| {
+		if current.kid == kid {
+			Ok(current)
+		} else {
+			old.find_first(|key| key.kid == kid).map_err(|_| NoKey)
+		}
+	}
+
+	## R-CT9, R-CT16 row 3: the `kid` of the header of a token text, before any key is chosen (the proof reads `TOKEN_OLD_KEYS` only when it is not the `kid` of `TOKEN_KEY`).
+	## The faults are the 401 of `decode` that come before the compare of the `kid`: an error of `Jwt.decode` (`jwt_problem(err, "")`: the `alg`, a malformed token) and no `kid` (`the token kid is missing`).
+	## No D1 call and no crypto. `decode` does not change: the proof calls `decode(text, selected.kid)` with the `kid` of the key that `verify_key` gave.
+	token_kid : Str -> Try(Str, Problem)
+	token_kid = |text| {
+		token = Jwt.decode(text, Jwt.Options.{ algs }).map_err(|err| jwt_problem(err, ""))?
+		match token.header.kid {
+			Err(Missing) => Err(Problem.new(Unauthenticated, "the token kid is missing"))
+			Ok(found) => Ok(found)
+		}
+	}
+
+	## R-CT9, R-CT16 row 3: the 401 of a token whose `kid` is in no set. `detail`: `the token kid "<kid>" is not the key of this registry` (the text that `decode` gives for another `kid`; `decode` is not changed).
+	no_key : Str -> Problem
+	no_key = |kid| Problem.new(Unauthenticated, "the token kid \"${kid}\" is not the key of this registry")
+
 	## R-CT9, Q301: the text of a number of ms as seconds with 3 decimals: `1767225601234` is `1767225601.234`, `1767225600000` is `1767225600.000`, `5` is `0.005`.
 	## An `iat` with a fraction of a second keeps the order of a login and a `DELETE /v1/tokens` inside one second (R-CT9: `iat` not before `tokens_after`, in ms).
 	seconds_text : U64 -> Str

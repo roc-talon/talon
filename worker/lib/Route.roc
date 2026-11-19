@@ -2,6 +2,7 @@
 ## The handler code reads the request, builds a `Route.Input`, and acts on the `Route.Decision`.
 ## The tests are in `worker/tests/unit/RouteTest.roc`.
 import Problem
+import LogPath
 
 Route :: [].{
 
@@ -10,7 +11,9 @@ Route :: [].{
 	## Slice 117 (login): `POST /v1/tokens` (R-AP37, `PostTokens`) and `DELETE /v1/tokens` (R-AP38, `DeleteTokens`), `GET /v1/contributors/me` (R-AP35, `GetMe`) and `DELETE /v1/contributors/me` (R-AP36, `DeleteMe`). Their lines in `decide` are for the code agent (docs/slices/117-login.md section 3.5): `/v1/tokens` serves `POST` (the media check of `decide_post`) and `DELETE` (no body check), another method is 405 with `Allow: DELETE, POST`; `/v1/contributors/me` serves `GET` and `DELETE` (no body check), another method is 405 with `Allow: DELETE, GET`.
 	## Slice 118: `POST /v1/webhooks/github` (R-AP12), `PostWebhook`. Its line in `decide` is for the code agent (docs/slices/118-webhook.md section 3.2): `/v1/webhooks/github` serves `POST` (the media check of `decide_post`), another method is 405 with `Allow: POST`.
 	## Slice 247 (move): `PUT` (R-AP31, `PutSuccessor(owner, repo)`) and `DELETE` (`DeleteSuccessor(owner, repo)`) of `/v1/packages/{owner}/{repo}/successor`. The line in `decide` is for the code agent (docs/slices/247-move.md section 3.2): `PUT` is a route with a JSON body (the media check of `decide_post`), `DELETE` has no body check, another method is 405 with `Allow: DELETE, PUT`.
-	Id : [PostClosure, PutToolchain(Str), GetToolchains, GetRepoReleases(Str, Str), GetArtifact(Str), GetReleases, GetPackages, PostCompat, GetSweep(Str), GetCompatHints, GetArtifactCompat(Str), PostRelease, PostTokens, DeleteTokens, GetMe, DeleteMe, PostWebhook, PutYank(Str), DeleteYank(Str), PutSuccessor(Str, Str), DeleteSuccessor(Str, Str)]
+	## Slice 257d (R-AP11): `GET` and `HEAD` of `/log/checkpoint` (`GetLogCheckpoint`) and of the tile paths (`GetLogTile(key)`, `key` is the R2 key: the path after `/log/`, `LogPath.key`). Their line in `decide`
+	## is for the code agent (docs/slices/257-log-tiles.md section 3.5): `decide_log`.
+	Id : [PostClosure, PutToolchain(Str), GetToolchains, GetRepoReleases(Str, Str), GetArtifact(Str), GetReleases, GetPackages, PostCompat, GetSweep(Str), GetCompatHints, GetArtifactCompat(Str), PostRelease, PostTokens, DeleteTokens, GetMe, DeleteMe, PostWebhook, PutYank(Str), DeleteYank(Str), PutSuccessor(Str, Str), DeleteSuccessor(Str, Str), GetLogCheckpoint, GetLogTile(Str)]
 
 	## What the decision needs from the request.
 	## `method`: the text of the method (`GET`, `POST`, ..., or any other text). `segments`: the path split at `/`, with no empty item
@@ -50,7 +53,26 @@ Route :: [].{
 			["v1", "sweeps", tag] => decide_get(input, path, GetSweep(tag))
 			["v1", "compat_hints"] => decide_get(input, path, GetCompatHints)
 			["v1", "artifacts", hash, "compat"] => decide_get(input, path, GetArtifactCompat(hash))
+			["log", .. as rest] => decide_log(input, path, rest)
 			_ => Refuse(Problem.new(NotFound, "no route for ${input.method} ${path}"))
+		}
+	}
+
+	## `/log/...` (slice 257d, R-AP11, R-AP48 rows 1 and 2): `rest` is the segments after `log`. `LogPath.parse` fails: `Refuse(NotFound)` with the detail `no route for <method> <path>`, for each method and
+	## with any body. Else `GET` and `HEAD` give `Handle(GetLogCheckpoint)` or `Handle(GetLogTile(LogPath.key(target)))`; another method gives `NotAllowed(MethodNotAllowed, ["GET", "HEAD"])`
+	## with the detail `<method> is not allowed on <path>`. No body check, no client check (R-AP45 does not cover the log, Design Q636).
+	decide_log : Route.Input, Str, List(Str) -> Route.Decision
+	decide_log = |input, path, rest| match LogPath.parse(rest) {
+		Err(BadPath) => Refuse(Problem.new(NotFound, "no route for ${input.method} ${path}"))
+		Ok(target) => if input.method == "GET" or input.method == "HEAD" {
+			Handle(
+				match target {
+					Checkpoint => GetLogCheckpoint
+					Tile(_) => GetLogTile(LogPath.key(target))
+				},
+			)
+		} else {
+			NotAllowed(Problem.new(MethodNotAllowed, "${input.method} is not allowed on ${path}"), ["GET", "HEAD"])
 		}
 	}
 

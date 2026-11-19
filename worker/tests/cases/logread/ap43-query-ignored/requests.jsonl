@@ -1,0 +1,4 @@
+{"method":"GET","path":"/log/tile/0/x001/234?a=1"}
+{"method":"GET","path":"/log/tile/0/x001/234?a=2"}
+{"method":"GET","path":"/log/tile/0/x001/234"}
+{"method":"GET","path":"/log/checkpoint?x=1"}

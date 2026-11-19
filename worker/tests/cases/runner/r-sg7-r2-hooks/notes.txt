@@ -1,0 +1,1 @@
+Slice 257b: the R2 part of the runner (hooks.js part 4, run.mjs): the seed (r2.jsonl), TEST_LOG_FAIL_PUTS (the first put of b fails), TEST_LOG_RACE (race/x is copied to checkpoint before the first put of checkpoint), "r2", "r2_puts" and expect/r2.jsonl. No Roc code: the paths /__test/r2write of hooks.js.

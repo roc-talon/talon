@@ -1,0 +1,6 @@
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"if-none-match":"\"65b7afc390cdea9d136b21b8eb1982f3\""}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"if-none-match":"\"nope\""}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"if-none-match":"\"65b7afc390cdea9d136b21b8eb1982f3\""}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"if-none-match":"W/\"65b7afc390cdea9d136b21b8eb1982f3\""}}
+{"method":"GET","path":"/log/tile/0/x001/234","headers":{"if-none-match":"\"nope\""}}
+{"method":"GET","path":"/log/tile/0/x001/234"}

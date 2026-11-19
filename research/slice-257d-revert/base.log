@@ -1,0 +1,15 @@
+
+── ✗ fail ────────────────────────────── worker/tests/unit/LogPathTest.roc:175:1
+
+expect parse("tile/0/x001/x234/x067/890") == bad
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Mentioned values:
+bad = Err(BadPath)
+
+Ran 858 tests in 4485.8 ms.:
+    857 passed
+    1 failed
+    0 compiler errors
+
+base the reference with no change (every new test must pass) | w0: CAUGHT ['1'] | w2: not caught []

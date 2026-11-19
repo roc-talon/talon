@@ -1,0 +1,13 @@
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":0,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":0,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":0,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token signature is not valid"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token kid \"key-9\" is not the key of this registry"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"token claim exp is 1767226540: the token expired (now is 1767226600, leeway 60 s)"}}
+{"status":200,"headers":{"content-type":"application/json","cache-control":"no-store","etag":null},"json":{"account":{"id":4242,"login":"someone"},"machines":0,"counted":0,"first":0,"agreed":0,"disagreed":0,"unconfirmed":0,"first_time":null,"last_time":null}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token was issued before the last revoke of the tokens of its account: log in again"}}
+{"status":204,"headers":{"cache-control":"no-store"},"body":""}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token was issued before the last revoke of the tokens of its account: log in again"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token was issued before the last revoke of the tokens of its account: log in again"}}
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"the token was issued before the last revoke of the tokens of its account: log in again"}}

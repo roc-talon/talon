@@ -1,0 +1,6 @@
+
+step       result seconds  budget
+w0         pass   7.6      10
+wbuild     pass   72.4     90
+w2         pass   22.6     45
+wtrap      pass   0.1      5

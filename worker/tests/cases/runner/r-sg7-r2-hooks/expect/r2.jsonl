@@ -1,0 +1,4 @@
+{"key":"a","sha256":"7692c3ad3540bb803c020b3aee66cd8887123234ea0c6e7143c0add73ff431ed","size":3,"text":"one","content_type":"text/plain"}
+{"key":"b","text":"bee","content_type":null}
+{"key":"checkpoint","text":"mine2"}
+{"key":"race/x","text":"raced"}

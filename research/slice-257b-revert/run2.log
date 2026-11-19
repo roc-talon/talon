@@ -1,0 +1,5 @@
+M2 the checkpoint is written before the tiles (see m2 below) | w2: CAUGHT ['log/sg7-big-jump', 'log/sg7-edge-from-r2', 'log/sg7-first-step', 'log/sg7-growth-256', 'log/sg7-growth-in-tile', 'log/sg7-idempotent', 'log/sg7-put-fault-checkpoint', 'log/sg7-put-fault-tile', 'log/sg7-race-absent', 'log/sg7-race-etag']
+M3 the old hashes come from D1 (leaves from idx 1), not from the partial tiles of S in R2 | w2: CAUGHT ['log/sg7-edge-from-r2', 'log/sg7-root-mismatch']
+M7 the key id of LOG_KEY is not checked against the key | w0: CAUGHT ['3'] | w2: CAUGHT ['log/wh14-log-key-wrong-id']
+M8 a failed tile put is ignored (the checkpoint is written) | w2: CAUGHT ['log/sg7-put-fault-tile']
+M9 the root of the tiles of S is not checked against the checkpoint of S | w2: CAUGHT ['log/sg7-root-mismatch']

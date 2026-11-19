@@ -15,5 +15,6 @@ import SortedTest
 import MoveTest
 import OwnerChangedTest
 import YankTest
+import TlogTest
 
 main! = |_args| Ok({})

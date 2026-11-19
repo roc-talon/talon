@@ -1,0 +1,13 @@
+sha256 before: LogStep c466a81bb49f7bc0f58584af18f870b2976dece8c94c5130e10a7c30dc054d1d LogWriter b9dabab6ed8bcb6c5b567991730e4f9d2fbd55147433ff731a57197cf6cbe67c
+M2 the checkpoint is written before the tiles | w2: CAUGHT ['log/sg7-big-jump', 'log/sg7-edge-from-r2', 'log/sg7-first-step', 'log/sg7-growth-256', 'log/sg7-growth-in-tile', 'log/sg7-idempotent', 'log/sg7-put-fault-checkpoint', 'log/sg7-put-fault-tile', 'log/sg7-race-absent', 'log/sg7-race-etag', 'log/sg7-race-smaller-retry', 'log/sg7-race-smaller-stop'] ['w2: 8 passed, 12 failed']
+M3 the old hashes come from D1 (leaves from idx 1), not from the partial tiles of S | w2: CAUGHT ['log/sg7-edge-from-r2', 'log/sg7-root-mismatch'] ['w2: 18 passed, 2 failed']
+M4 the D1 read takes the leaves from S (idx >= S) | w2: CAUGHT ['log/pu36-two-runs', 'log/sg7-big-jump', 'log/sg7-edge-from-r2', 'log/sg7-growth-256', 'log/sg7-growth-in-tile', 'log/sg7-idempotent', 'log/sg7-race-etag', 'log/sg7-race-smaller-retry', 'log/sg7-race-smaller-stop'] ['w2: 11 passed, 9 failed']
+M5 the cap is off by one (65,537 rows are one step) | w0: CAUGHT (failed 236; )
+M6 the cron stops after a step of exactly the cap | w0: CAUGHT (failed 237; )
+M7 the key id of LOG_KEY is not checked against the key | w0: CAUGHT (failed 238; ) | w2: CAUGHT ['log/wh14-log-key-wrong-id'] ['w2: 19 passed, 1 failed']
+M8 a failed tile put is ignored (the checkpoint is written) | w2: CAUGHT ['log/sg7-put-fault-tile'] ['w2: 19 passed, 1 failed']
+M9 the root of the tiles of S is not checked against the checkpoint of S | w2: CAUGHT ['log/sg7-root-mismatch'] ['w2: 19 passed, 1 failed']
+M10 after a lost compare and swap, the step writes its checkpoint with no condition | w2: CAUGHT ['log/sg7-race-absent', 'log/sg7-race-etag', 'log/sg7-race-smaller-stop'] ['w2: 17 passed, 3 failed']
+M11 Q257-18: a smaller checkpoint after a lost race stops at once (no one more step) | w2: CAUGHT ['log/sg7-race-smaller-retry', 'log/sg7-race-smaller-stop'] ['w2: 18 passed, 2 failed']
+M12 Q257-18: the step goes on after the one more step (no stop) | w2: CAUGHT ['log/sg7-race-smaller-stop'] ['w2: 19 passed, 1 failed']
+sha256 after:  LogStep c466a81bb49f7bc0f58584af18f870b2976dece8c94c5130e10a7c30dc054d1d LogWriter b9dabab6ed8bcb6c5b567991730e4f9d2fbd55147433ff731a57197cf6cbe67c (same)

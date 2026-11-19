@@ -1,0 +1,3 @@
+{"outcome":"ok","acked":["m1"],"retried":[],"r2_reads":[],"r2_puts":[]}
+{"outcome":"ok","acked":["m2"],"retried":[],"r2_reads":[],"r2_puts":[]}
+{"outcome":"ok","acked":["m3"],"retried":[],"r2_reads":[],"r2_puts":[]}

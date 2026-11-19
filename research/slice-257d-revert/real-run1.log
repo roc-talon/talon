@@ -1,0 +1,13 @@
+base the real code with no change | w0: not caught [] | w2: not caught []
+M1 the checkpoint goes in the Cache API | w0: CAUGHT ['1'] | w2: CAUGHT ['logread/ap11-etag-checkpoint', 'logread/ap11-head', 'logread/ap43-checkpoint-fresh']
+M2 MIN_TLN is applied to the log routes | w0: CAUGHT ['3'] | w2: CAUGHT ['logread/ap45-no-client-check']
+M3 HEAD is not served (405) | w0: CAUGHT ['9'] | w2: CAUGHT ['logread/ap11-head', 'logread/ap43-tile-cache', 'logread/ap45-no-client-check']
+M4 a partial width of 256 is accepted | w0: CAUGHT ['10'] | w2: CAUGHT ['logread/ap11-bad-path']
+M5 the x prefix is optional on each group (also accepted on the last group) | w0: CAUGHT ['18'] | w2: CAUGHT ['logread/ap11-bad-path']
+M6 304 for any If-None-Match (no ETag compare) | w2: CAUGHT ['logread/ap11-etag-checkpoint', 'logread/ap11-etag-tile', 'logread/ap43-checkpoint-fresh']
+M8 a tile is not kept in the Cache API | w0: CAUGHT ['10'] | w2: CAUGHT ['logread/ap11-read-fault', 'logread/ap43-query-ignored', 'logread/ap43-tile-cache', 'logread/ap43-tile-no-cache-ignored']
+M9 a first group x000 (a leading zero group) is accepted | w0: CAUGHT ['10'] | w2: CAUGHT ['logread/ap11-bad-path']
+M10 the method is checked before the path (a bad path with POST is 405) | w0: CAUGHT ['10'] | w2: CAUGHT ['logread/ap11-bad-path']
+M12 the 304 has no cache-control | w2: CAUGHT ['logread/ap11-etag-checkpoint', 'logread/ap11-etag-tile', 'logread/ap11-head', 'logread/ap43-checkpoint-fresh']
+M13 an R2 read error is answered as 404 (not 500) | w2: CAUGHT ['logread/ap11-read-fault']
+finished

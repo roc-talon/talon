@@ -1,0 +1,12 @@
+{"method":"POST","path":"/log/checkpoint"}
+{"method":"PUT","path":"/log/checkpoint"}
+{"method":"DELETE","path":"/log/checkpoint"}
+{"method":"PATCH","path":"/log/checkpoint"}
+{"method":"OPTIONS","path":"/log/checkpoint"}
+{"method":"POST","path":"/log/checkpoint","headers":{"content-type":"text/plain"},"body":"hello"}
+{"method":"POST","path":"/log/tile/0/x001/234"}
+{"method":"PUT","path":"/log/tile/0/x001/234"}
+{"method":"DELETE","path":"/log/tile/0/x001/234"}
+{"method":"PATCH","path":"/log/tile/0/x001/234"}
+{"method":"OPTIONS","path":"/log/tile/0/x001/234"}
+{"method":"POST","path":"/log/tile/0/x001/234","headers":{"content-type":"text/plain"},"body":"hello"}

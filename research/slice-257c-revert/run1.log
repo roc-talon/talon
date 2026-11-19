@@ -1,0 +1,17 @@
+base the reference with no change (every new test must pass) | w0: not caught (LogTriggerTest lines in the output: 0) | w2: not caught []
+M1 the step runs BEFORE the answer (in the request, not in Response.after): ingest and publish | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair']
+batch [base M1] exit 0
+M2 a step also after a 200 (each 2xx answer: an idempotent repeat, a provenance write) | w0: CAUGHT (LogTriggerTest lines in the output: 3) | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/pu1-refusals-no-step', 'logafter/pu1-toolchains-step', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair']
+M3 a step also after a refusal (4xx) | w0: CAUGHT (LogTriggerTest lines in the output: 1) | w2: CAUGHT ['logafter/pu1-refusals-no-step']
+batch [M2 M3] exit 0
+M4 the work after the answer gives Err (the platform writes `after respond: failed`) | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/pu1-toolchains-step', 'logafter/sg7-after-fault-key', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair']
+M5 the index queue job path is forgotten (no step after a job that adds a leaf) | w2: CAUGHT ['logafter/pu13-queue-step', 'logafter/pu21-poll-step', 'logafter/sg7-queue-fault']
+batch [M4 M5] exit 0
+M6 the PUT /v1/toolchains path is forgotten | w2: CAUGHT ['logafter/pu1-toolchains-step']
+M7 the step after an answer loops (as the cron) while a step took exactly the cap | w2: CAUGHT ['logafter/pu1-ingest-steps', 'logafter/pu1-ingest-then-publish', 'logafter/pu1-publish-step', 'logafter/pu1-toolchains-step', 'logafter/pu13-queue-step', 'logafter/pu21-poll-step', 'logafter/sg7-after-fault-read', 'logafter/sg7-after-fault-repair', 'logafter/sg7-queue-fault']
+batch [M6 M7] exit 0
+M8 the queue job runs the step for a provenance write with no leaf (AddProvenance) | w2: CAUGHT ['logafter/pu14-queue-no-leaf', 'logafter/pu21-poll-step']
+M9 the reconcile run makes a step at its end (Q257-24 option b) | w2: CAUGHT ['logafter/pu23-reconcile-no-step']
+batch [M8 M9] exit 0
+M10 a failed step after an answer is a 500 (the answer waits for the step) | w2: CAUGHT ['logafter/pu1-toolchains-step']
+batch [M10] exit 0

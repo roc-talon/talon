@@ -1,0 +1,2 @@
+{"status":500,"r2_puts":[["tile/entries/000.p/3","tile/0/000.p/3"],["checkpoint?absent"]],"r2":{"checkpoint":null,"tile/entries/000.p/3":{"sha256":"fb4b58817f9a41bc27d8f0587af4f3ee8799db54e0cfb4d564715e0fcd3bbb8e"},"tile/0/000.p/3":{"sha256":"55fccb6709af302544028ae67fe4cc41152ef113de429095643dfa0851a51c21"}}}
+{"status":200,"json":{"outcome":"ok"},"r2_puts":[["tile/entries/000.p/3","tile/0/000.p/3"],["checkpoint?absent"]]}

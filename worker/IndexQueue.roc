@@ -13,6 +13,8 @@ import lib.Ingest
 import lib.Identity
 import lib.Problem
 import lib.Reads
+import lib.LogTrigger
+import LogWriter
 import GithubRead
 import IngestRoutes
 
@@ -259,9 +261,15 @@ IndexQueue :: [].{
 				}
 				flow = { repo: found.repo, identity, now, via, claims: Err(None), extra: [], candidate: Ingest.candidate, no_release: Ingest.no_release }
 				match IngestRoutes.index!(session, target, flow) {
-					Ok(_) => match old {
-						Err(None) => Ok(Added({ repo: repo_id, now }))
-						Ok(_) => Ok(Nothing)
+					Ok(res) => {
+						# R-SG7: a 201 added a leaf: ONE tile step at the end of the job. A failed step is only a log line (the ack does not change).
+						if LogTrigger.wrote_leaf(res.status()) {
+							LogWriter.once!()
+						}
+						match old {
+							Err(None) => Ok(Added({ repo: repo_id, now }))
+							Ok(_) => Ok(Nothing)
+						}
 					}
 					Err(Refuse(problem)) => if (problem.http_status() < 500) refused!(job, problem) else Err(problem.detail_of())
 					Err(Fault(text)) => Err(text)

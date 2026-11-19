@@ -1,0 +1,7 @@
+{"status":200,"headers":{"content-type":"text/plain; charset=utf-8","cache-control":"max-age=5","etag":"\"079f1a831597c4d52786d53f4a181deb\""},"r2_reads":["checkpoint"],"body":""}
+{"status":200,"headers":{"content-type":"application/octet-stream","cache-control":"max-age=31536000, immutable","etag":"\"65b7afc390cdea9d136b21b8eb1982f3\""},"r2_reads":["tile/0/x001/234"],"body":""}
+{"status":200,"headers":{"content-type":"application/octet-stream","cache-control":"max-age=31536000, immutable","etag":"\"65b7afc390cdea9d136b21b8eb1982f3\""},"body_size":8192,"body_sha256":"b8b63f0eaf5f08e30895772dde866981bfdaf2cfaf1128b749953816ca659de5"}
+{"status":200,"headers":{"content-type":"application/octet-stream","cache-control":"max-age=31536000, immutable","etag":"\"65b7afc390cdea9d136b21b8eb1982f3\""},"body":""}
+{"status":304,"headers":{"etag":"\"079f1a831597c4d52786d53f4a181deb\"","cache-control":"max-age=5"},"body":"","r2_reads":["checkpoint"]}
+{"status":404,"body":"","r2_reads":["tile/0/000"]}
+{"status":404,"body":"","r2_reads":[]}

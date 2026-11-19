@@ -1,7 +1,7 @@
 // The fake GitHub of W2 (slice 224: moved here from run.mjs, so that run.mjs and serve.mjs share it; no change of behavior).
 // fakeGithub(dir, log, errs, dbRef, app) gives the `outbound` function of startApp. It serves the files of `<dir>/github/` (the form is in the doc comment of run.mjs),
 // adds `METHOD url` to `log` for each request that is not a token request, and adds a text to `errs` for each fault (no file, a wrong header, a bad token request).
-// `dbRef.db` is the D1 handle for `<file>.sql`. `app` is the state of the case: { settings, nowMs, tokenLog, authLog, issued }.
+// `await dbRef.get()` is the D1 handle for `<file>.sql` (slice 256: made when needed, as each handle is a blocking call of Miniflare). `app` is the state of the case: { settings, nowMs, tokenLog, authLog, issued }.
 import { readFileSync, existsSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { splitSql } from '../../sql/tests/split.mjs';
@@ -51,7 +51,7 @@ export function fakeGithub(dir, log, errs, dbRef, app) { // `app` is the state o
       errs.push(`github: no fake route for ${req.method} ${req.url} (expected the file ${file.slice(dir.length + 1)})`);
       return new Response(`no fake route for ${req.url}`, { status: 599 });
     }
-    if (existsSync(`${file}.sql`)) for (const s of splitSql(read(`${file}.sql`))) await dbRef.db.prepare(s.sql).run();
+    if (existsSync(`${file}.sql`)) { const db = await dbRef.get(); for (const s of splitSql(read(`${file}.sql`))) await db.prepare(s.sql).run(); } // direct on the D1 handle: a request to the Worker here would count as D1 calls of the request in flight
     const meta = JSON.parse(read(`${file}.meta.json`) || '{}');
     for (const [h, want] of Object.entries(meta.require ?? {})) {
       if (req.headers.get(h) !== want && !(want === null && !req.headers.has(h))) { errs.push(`github: ${req.method} ${req.url}: the header ${h} is ${jstr(req.headers.get(h) ?? undefined)}, expected ${jstr(want)}`); return new Response('wrong header', { status: 599 }); }

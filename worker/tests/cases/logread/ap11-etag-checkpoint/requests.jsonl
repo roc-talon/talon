@@ -1,0 +1,5 @@
+{"method":"GET","path":"/log/checkpoint","headers":{"if-none-match":"\"079f1a831597c4d52786d53f4a181deb\""}}
+{"method":"GET","path":"/log/checkpoint","headers":{"if-none-match":"\"nope\""}}
+{"method":"GET","path":"/log/checkpoint","headers":{"if-none-match":"W/\"079f1a831597c4d52786d53f4a181deb\""}}
+{"method":"GET","path":"/log/checkpoint","headers":{"if-none-match":"\"cc6d46c05bf878ce0c65dbe411aceed2\""}}
+{"method":"GET","path":"/log/checkpoint"}

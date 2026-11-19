@@ -1,0 +1,5 @@
+GET https://api.github.com/repos/acme/roc-json
+GET https://api.github.com/repos/acme/roc-json/releases/tags/1.2.0
+GET https://github.com/acme/roc-json/releases/download/1.2.0/GDEmHbkSpoRbt2HmNveu99RfF3CwmLgnGYn9vHFPsnk1.tar.zst
+GET https://raw.githubusercontent.com/acme/roc-json/1.2.0/.roc-version
+GET https://token.actions.githubusercontent.com/.well-known/jwks

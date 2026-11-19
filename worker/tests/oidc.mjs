@@ -19,6 +19,7 @@
 //    }
 // 3. Ed25519 keys (slice 117, docs/slices/117-login.md section 5.2): `edkey(name)` makes a throwaway key once for each run. A value {"$edkey": "t1", "kid": "key-1"} in settings.json of a case
 //    becomes the text of the private JWK ({kty, crv, kid, x, d}): the secret TOKEN_KEY of the Worker (Q117-1). `verifyJwt` checks a token that the Worker made.
+//    Slice 258: a value {"$edset": [{"edkey": "t2", "kid": "key-0"}, ...]} becomes the text of a JWK Set of the public keys, {"keys": [...]}: the secret TOKEN_OLD_KEYS (`setEntry` has the members that make a bad entry).
 import { webcrypto, generateKeyPairSync, sign as edSign, verify as edVerify } from 'node:crypto';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
@@ -54,9 +55,27 @@ export function fillSettings(settings) {
     if (v !== null && typeof v === 'object' && typeof v.$edkey === 'string') {
       const { x, d } = edkey(v.$edkey).jwk;
       out[k] = JSON.stringify({ kty: 'OKP', crv: 'Ed25519', kid: v.kid, x, d });
+    } else if (v !== null && typeof v === 'object' && Array.isArray(v.$edset)) {
+      out[k] = JSON.stringify({ keys: v.$edset.map(setEntry) });
     } else out[k] = v;
   }
   return out;
+}
+
+// Slice 258: one entry of a JWK Set (the secret TOKEN_OLD_KEYS, Registry R-WH14): the PUBLIC JWK of the throwaway key `edkey`, as {kty, crv, kid, x} (no `d`).
+// An entry {"edkey": "t2", "kid": "key-0"} is the normal one. Members that make a bad entry: "kid": null leaves out `kid`, "kid": "" is an empty kid, "d": true adds the private member `d`,
+// "set": {"kty": "EC"} replaces members (a value null removes the member).
+function setEntry(e) {
+  const { x, d } = edkey(e.edkey).jwk;
+  const jwk = { kty: 'OKP', crv: 'Ed25519' };
+  if (e.kid !== null) jwk.kid = e.kid;
+  jwk.x = x;
+  if (e.d === true) jwk.d = d;
+  for (const [m, val] of Object.entries(e.set ?? {})) {
+    if (val === null) delete jwk[m];
+    else jwk[m] = val;
+  }
+  return jwk;
 }
 
 // Check a token text of the Worker with the public key `keyName`: { ok, header, claims, canonical }. `canonical` is false when a part is not the canonical base64url of its bytes.

@@ -1,0 +1,20 @@
+ 131547  109 node-MainThread node worker/tests/run.mjs
+ 131950 33.5 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 131655 30.3 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 132090 30.2 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+--
+ 131547 99.6 node-MainThread node worker/tests/run.mjs
+ 133629 40.5 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 132902 30.9 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 131655 26.0 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+--
+ 131547  101 node-MainThread node worker/tests/run.mjs
+ 133629 73.8 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 134249 43.8 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 133910 38.0 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+--
+ 135561  133 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 131547  106 node-MainThread node worker/tests/run.mjs
+ 135557 62.5 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+ 135417 58.6 workerd         /home/george/.nvm/versions/node/v26.7.0/lib/node_modules/wran
+--

@@ -1,0 +1,131 @@
+== w0: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w0.log)
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────── worker/tests/unit/LogTriggerTest.roc:12:1
+
+expect !LogTrigger.wrote_leaf(200)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────── worker/tests/unit/LogTriggerTest.roc:15:1
+
+expect [202, 204, 304].all(|s| !LogTrigger.wrote_leaf(s))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────── worker/tests/unit/LogTriggerTest.roc:18:1
+
+expect [400, 401, 403, 404, 405, 409, 413, 415, 422, 429].all(|s| !LogTrigger.wrote_leaf(s))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────── worker/tests/unit/LogTriggerTest.roc:21:1
+
+expect [500, 502, 503].all(|s| !LogTrigger.wrote_leaf(s))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Roc application crashed with this message:
+
+	todo
+
+
+── ✗ fail ──────────────────────────── worker/tests/unit/LogTriggerTest.roc:24:1
+
+expect [199, 206, 226, 0, 65535].all(|s| !LogTrigger.wrote_leaf(s))
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Ran 864 tests in 7409.1 ms.:
+    858 passed
+    6 failed
+    0 compiler errors
+All formatting valid.
+Took 82.5 ms.
+All (181) tests passed in 1980.3 ms.
+All formatting valid.
+Took 19.7 ms.
+All (181) tests passed in 1990.6 ms.
+== w2: FAIL (log: /home/george/dev/Karakatiza666/talon/.work/logs/w2.log)
+PASS webhook/pu33-privatized (467 ms)
+PASS webhook/pu33-publicized (284 ms)
+PASS webhook/pu33-release-private (211 ms)
+PASS webhook/pu35-dead-letter (84 ms)
+PASS webhook/pu35-dead-letter-prod-shape (76 ms)
+PASS webhook/pu35-retry-schedule (277 ms)
+PASS yank/tp8-token (1080 ms)
+PASS yank/yk1-route-checks (656 ms)
+PASS yank/yk1-yank-unyank (1896 ms)
+PASS yank/yk2-operator (526 ms)
+PASS yank/yk3-roles (400 ms)
+PASS yank/yk6-body (507 ms)
+PASS yank/yk7-reads (360 ms)
+PASS yank/yk8-answers (298 ms)
+PASS yank/yk9-no-yank-row (210 ms)
+PASS selftest/case-timeout (1001 ms)
+PASS selftest/missing-fake-route (4 ms)
+PASS selftest/session-absent (2 ms)
+PASS selftest/sql-line-response-count (0 ms)
+PASS selftest/sql-line-wrong-count (246 ms)
+PASS selftest/unexpected-github-call (4 ms)
+PASS selftest/wrong-auth-log (79 ms)
+PASS selftest/wrong-body (3 ms)
+PASS selftest/wrong-body-bytes (45 ms)
+PASS selftest/wrong-body-pad (39 ms)
+PASS selftest/wrong-clock (7 ms)
+PASS selftest/wrong-d1-count (18 ms)
+PASS selftest/wrong-d1-row (61 ms)
+PASS selftest/wrong-force-cache (27 ms)
+PASS selftest/wrong-github-log (148 ms)
+PASS selftest/wrong-header (3 ms)
+PASS selftest/wrong-header-set (4 ms)
+PASS selftest/wrong-json-array (3 ms)
+PASS selftest/wrong-json-at (87 ms)
+PASS selftest/wrong-json-field (70 ms)
+PASS selftest/wrong-json-len (6 ms)
+PASS selftest/wrong-json-range (9 ms)
+PASS selftest/wrong-json-range-order (7 ms)
+PASS selftest/wrong-log (3309 ms)
+PASS selftest/wrong-logs-not (10 ms)
+PASS selftest/wrong-problem-content-type (3 ms)
+PASS selftest/wrong-problem-member (6 ms)
+PASS selftest/wrong-queue-acked (103 ms)
+PASS selftest/wrong-queue-retry (49 ms)
+PASS selftest/wrong-queue-sent (28 ms)
+PASS selftest/wrong-queue-sent-none (25 ms)
+PASS selftest/wrong-r2-extra (158 ms)
+PASS selftest/wrong-r2-line (91 ms)
+PASS selftest/wrong-r2-object (152 ms)
+PASS selftest/wrong-r2-puts-cond (123 ms)
+PASS selftest/wrong-r2-puts-count (124 ms)
+PASS selftest/wrong-r2-puts-order (69 ms)
+PASS selftest/wrong-r2-reads (133 ms)
+PASS selftest/wrong-response-count (0 ms)
+PASS selftest/wrong-session (77 ms)
+PASS selftest/wrong-status (5 ms)
+PASS selftest/wrong-timing-safe (5 ms)
+PASS selftest/wrong-tokens-log (3 ms)
+w2 pool: 65 apps started, 228 resets, 293 cases; time of the jobs added: start 35 s, reset 31 s, cases 142 s
+w2: 283 passed, 10 failed
+
+step       result seconds  budget
+fmt        pass   0.5      5
+w0         FAIL   11.9     10
+wbuild     pass   132.9    90
+w2         FAIL   38.1     45
+wtrap      pass   0.1      5
+WARN w0: 11.9 s is over the budget of 10 s (TW20)
+WARN wbuild: 132.9 s is over the budget of 90 s (TW20)

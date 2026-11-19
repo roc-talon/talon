@@ -1,0 +1,12 @@
+{"status":401,"problem":{"type":"/errors/unauthenticated","detail":"a body with compat needs a GitHub OIDC token (tln publish)"},"r2_reads":[],"r2_puts":[]}
+{"status":401,"problem":{"type":"/errors/unauthenticated"},"r2_reads":[],"r2_puts":[]}
+{"status":422,"problem":{"type":"/errors/not-a-candidate"},"r2_reads":[],"r2_puts":[]}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is empty"},"r2_reads":[],"r2_puts":[]}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"},"r2_reads":[],"r2_puts":[]}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"},"r2_reads":[],"r2_puts":[]}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"},"r2_reads":[],"r2_puts":[]}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"},"r2_reads":[],"r2_puts":[]}
+{"status":400,"problem":{"type":"/errors/bad-request","detail":"the body must be a JSON object with the member url (text): the body is not a JSON object with a text member url"},"r2_reads":[],"r2_puts":[]}
+{"status":415,"problem":{"type":"/errors/unsupported-media-type"},"r2_reads":[],"r2_puts":[]}
+{"status":405,"headers":{"allow":"GET, POST"},"problem":{"type":"/errors/method-not-allowed"},"r2_reads":[],"r2_puts":[]}
+{"status":422,"problem":{"type":"/errors/not-a-candidate"},"r2_reads":[],"r2_puts":[]}

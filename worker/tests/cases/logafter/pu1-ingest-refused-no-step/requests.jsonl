@@ -1,0 +1,12 @@
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/t/r/releases/download/1.0.0/C6Jtcve7FRNtkwgmuyRBJnZfJyTrfJWhDcLp6gk4w4Gz.tar.zst","compat":[{"nightly":"nightly-2026-10-31-f7bef6b","target":"x64musl","result":"pass"}]},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/t/r/releases/download/1.0.0/C6Jtcve7FRNtkwgmuyRBJnZfJyTrfJWhDcLp6gk4w4Gz.tar.zst","compat":[]},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/t/r/releases/download/latest/x.tar.zst","compat":null},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":null},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":5},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":["https://github.com/t/r/releases/download/1.0.0/C6Jtcve7FRNtkwgmuyRBJnZfJyTrfJWhDcLp6gk4w4Gz.tar.zst"],"now":1767225630000}
+{"method":"POST","path":"/v1/releases","body":"url=x","headers":{"content-type":"application/json"},"now":1767225630000}
+{"method":"POST","path":"/v1/releases","body":"{\"url\":\"https://github.com/t/r/releases/download/1.0.0/C6Jtcve7FRNtkwgmuyRBJnZfJyTrfJWhDcLp6gk4w4Gz.tar.zst\"}","headers":{"content-type":"text/plain"},"now":1767225630000}
+{"method":"PATCH","path":"/v1/releases","now":1767225630000}
+{"method":"POST","path":"/v1/releases","json":{"url":"https://github.com/t/r/releases/download/latest/x.tar.zst","extra":{"a":1}},"now":1767225630000}

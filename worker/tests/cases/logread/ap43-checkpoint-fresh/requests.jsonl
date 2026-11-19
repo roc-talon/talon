@@ -1,0 +1,6 @@
+{"method":"GET","path":"/log/checkpoint"}
+{"method":"GET","path":"/log/checkpoint"}
+{"r2_seed":[{"key":"checkpoint","base64":"cmVnaXN0cnkucm9jLXRhbG9uLm9yZy9sb2cKNwpHZmhPNlR3blY0V05keTEvNktsVkZZQnV1OXpJays4MlNZR0tiZnQ3U2NvPQoK4oCUIHJlZ2lzdHJ5LnJvYy10YWxvbi5vcmcvbG9nIDc0VkdQNzdlalhZUmlZWHV5YVlhOE9RenJDRkpoZlNXRkE2UkM2U255VTEybXhwVG1YMWdybTFleDFmNkUxdXZ6b3Q5QmducGt2aHVCRnorZ1JhdXQrOE04UVU9Cg==","content_type":"text/plain; charset=utf-8"}]}
+{"method":"GET","path":"/log/checkpoint"}
+{"method":"GET","path":"/log/checkpoint","headers":{"if-none-match":"\"079f1a831597c4d52786d53f4a181deb\""}}
+{"method":"GET","path":"/log/checkpoint","headers":{"if-none-match":"\"cc6d46c05bf878ce0c65dbe411aceed2\""}}

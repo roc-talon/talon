@@ -1,0 +1,1 @@
+{"method":"POST","path":"/__test/r2write","json":[{"key":"a","text":"1"},{"key":"b","text":"2"}]}

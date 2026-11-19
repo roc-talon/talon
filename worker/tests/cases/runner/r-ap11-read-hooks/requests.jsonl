@@ -1,0 +1,6 @@
+{"method":"GET","path":"/__test/r2read?key=t"}
+{"method":"GET","path":"/__test/r2read?key=t"}
+{"r2_seed":[{"key":"t","base64":"BQY="}]}
+{"method":"GET","path":"/__test/r2read?key=t"}
+{"method":"GET","path":"/__test/r2read?key=none"}
+{"method":"GET","path":"/__test/json"}

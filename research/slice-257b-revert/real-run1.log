@@ -1,0 +1,10 @@
+sha256 before: LogStep c466a81bb49f7bc0f58584af18f870b2976dece8c94c5130e10a7c30dc054d1d LogWriter b9dabab6ed8bcb6c5b567991730e4f9d2fbd55147433ff731a57197cf6cbe67c
+M1 the checkpoint put has no condition (a plain put) | w2: CAUGHT ['log/sg7-big-jump', 'log/sg7-edge-from-r2', 'log/sg7-first-step', 'log/sg7-growth-256', 'log/sg7-growth-in-tile', 'log/sg7-idempotent', 'log/sg7-put-fault-checkpoint', 'log/sg7-put-fault-tile', 'log/sg7-race-absent', 'log/sg7-race-etag', 'log/sg7-race-smaller-retry', 'log/sg7-race-smaller-stop'] ['w2: 8 passed, 12 failed']
+sha256 after:  LogStep c466a81bb49f7bc0f58584af18f870b2976dece8c94c5130e10a7c30dc054d1d LogWriter b9dabab6ed8bcb6c5b567991730e4f9d2fbd55147433ff731a57197cf6cbe67c (same)
+Traceback (most recent call last):
+  File "/home/george/dev/Karakatiza666/talon/research/slice-257b-revert/mutate-real.py", line 96, in <module>
+    open(p, "w").write(m2(open(p).read()))
+                       ~~^^^^^^^^^^^^^^^^
+  File "/home/george/dev/Karakatiza666/talon/research/slice-257b-revert/mutate-real.py", line 71, in m2
+    a = text.index("\t\tputs = Io.all!(")
+ValueError: substring not found
