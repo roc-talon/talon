@@ -1393,3 +1393,12 @@ run,time,nightly,hash,repo,target,result,wall_ms,cpu_ms,rss_kb
 44313296548,2026-11-18T13:32:56Z,nightly-2026-11-18-a520eed,HoULZB8QzktiNPYSe9myzy9JQzm1nMbjDPVWoA63QpVf,kili-ilo/roc-random,any,pass,40,10,51928
 44313296548,2026-11-18T13:32:56Z,nightly-2026-11-18-a520eed,HxzXVwyUykMzb7sC7p51qwopSMrcGjwrKUcL8Ees1uaf,lukewilliamboswell/roc-pandoc,any,pass,80,20,52312
 44313296548,2026-11-18T13:32:56Z,nightly-2026-11-18-a520eed,J75zfZxPJQwSG7sQJFnZHVAbJj55L3myvst2WcDWcEaZ,lukewilliamboswell/roc-ansi,any,fail,90,50,80284
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-14-a87808d,2aWww1JQLjrJdf18oHrZsxsRS9xkDU8RPsNAWwXHdxDc,lukewilliamboswell/roc-ansi,any,pass,350,400,119468
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-14-a87808d,4birRt4WMdgUvECy9sThGynNBvXbPFxRuEh3toQebwyP,lukewilliamboswell/roc-pdf,any,pass,19120,33910,2116248
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-14-a87808d,HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br,lukewilliamboswell/roc-fuzz,any,pass,520,520,100820
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-15-f25da45,2aWww1JQLjrJdf18oHrZsxsRS9xkDU8RPsNAWwXHdxDc,lukewilliamboswell/roc-ansi,any,pass,510,420,114936
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-15-f25da45,4birRt4WMdgUvECy9sThGynNBvXbPFxRuEh3toQebwyP,lukewilliamboswell/roc-pdf,any,pass,17100,34450,2254004
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-15-f25da45,HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br,lukewilliamboswell/roc-fuzz,any,pass,180,160,101008
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-18-a520eed,2aWww1JQLjrJdf18oHrZsxsRS9xkDU8RPsNAWwXHdxDc,lukewilliamboswell/roc-ansi,any,pass,400,360,106404
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-18-a520eed,4birRt4WMdgUvECy9sThGynNBvXbPFxRuEh3toQebwyP,lukewilliamboswell/roc-pdf,any,pass,3650,11040,695800
+44537589566,2026-11-19T14:05:37Z,nightly-2026-11-18-a520eed,HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br,lukewilliamboswell/roc-fuzz,any,pass,200,170,98304
