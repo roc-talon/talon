@@ -67,6 +67,9 @@ ResolveBase :: [].{
 		roots : Roots,
 		net : Net.Settings,
 		now : U64,
+
+		## Slice 260 (Design Q639): the real clock, for the age of a cached release list page (R-DI2). A flow that does not set it uses `now`.
+		real ?: U64,
 		offline : Bool,
 		strategy : Try([Highest, Lowest], [Unset]),
 		nightly : Try(Bool, [Unset]),

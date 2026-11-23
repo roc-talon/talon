@@ -107,7 +107,7 @@ Ls :: [].{
 	}
 
 	## Slice 040: the `ResolveBase.Request` of a command that only reads (`tln list`, `why`, `outdated`): no flag of a resolve, no compiler, no probe. `start` is the result of `Install.begin!`.
-	request_of : Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project } -> ResolveBase.Request
+	request_of : Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, project : Project } -> ResolveBase.Request
 	request_of = |args, start| {
 		command: Install,
 		names: [],
@@ -118,6 +118,7 @@ Ls :: [].{
 		roots: start.roots,
 		net: start.net,
 		now: start.now,
+		real: start.real,
 		offline: args.offline,
 		strategy: Err(Unset),
 		nightly: Common.nightly_of(start.env),

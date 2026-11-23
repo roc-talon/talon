@@ -45,11 +45,12 @@ expect {
 		(cmd(["x", "acme/foo", "--as", "q"]), "parse: tln: error[usage]: flag '--as' is not for 'x'"),
 		(cmd(["x"]), line("tln x needs one app: owner/app")),
 		(cmd(["x", "a/b", "c/d"]), line("tln x takes one app, got 2")),
-		(cmd(["x", "acme/foo", "--git"]), line("tln x --git is not built yet")),
-		(cmd(["x", "acme/foo@main", "--git"]), line("tln x --git is not built yet")),
-		(cmd(["x", "acme/foo", "--path", "apps/cli"]), line("tln x --path is not built yet")),
-		(cmd(["x", "acme/foo", "--resolve"]), line("tln x --resolve is not built yet")),
-		(cmd(["x", "acme/foo@dd03c09e"]), line("'dd03c09e' in 'acme/foo@dd03c09e' is a git ref: a git ref needs --git (not built yet)")),
+		# Slice 262b (UX16, R-X1, R-T1, Design Q642): a form that is not built names the working alternative.
+		(cmd(["x", "acme/foo", "--git"]), line("tln x --git is not built yet. To build an app from a git ref, run: tln tool install --git <owner/app@ref> (with --path <dir> for an app in a subdirectory)")),
+		(cmd(["x", "acme/foo@main", "--git"]), line("tln x --git is not built yet. To build an app from a git ref, run: tln tool install --git <owner/app@ref> (with --path <dir> for an app in a subdirectory)")),
+		(cmd(["x", "acme/foo", "--path", "apps/cli"]), line("tln x --path is not built yet. To build an app from a git ref, run: tln tool install --git <owner/app@ref> (with --path <dir> for an app in a subdirectory)")),
+		(cmd(["x", "acme/foo", "--resolve"]), line("tln x --resolve is not built yet. tln x builds the app with the packages that its header names.")),
+		(cmd(["x", "acme/foo@dd03c09e"]), line("'dd03c09e' in 'acme/foo@dd03c09e' is a git ref, and tln x does not build git refs yet. Run: tln tool install acme/foo@dd03c09e")),
 		(cmd(["x", "acme/foo", "--roc", "newest"]), line("--roc must be pinned or installed, not 'newest'")),
 		(cmd(["x", "acme/foo@nightly-2026-10-09-258ab27"]), line("selector 'nightly-2026-10-09-258ab27' in 'acme/foo@nightly-2026-10-09-258ab27' is for a compiler: use it with 'tln roc'")),
 	]

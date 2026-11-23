@@ -1,7 +1,8 @@
-tln: error[usage]: tln roc channel needs a word: add, rm or list
-tln: error[usage]: tln roc channel frob is not a command: use add, rm or list
+tln: error[usage]: tln roc channel needs a word: add, remove or list
+tln: error[usage]: tln roc channel frob is not a command: use add, remove or list
 tln: error[usage]: tln roc channel add needs a channel name: tln roc channel add <name> [<URL>]
 tln: error[usage]: tln roc channel add takes a name and a URL, got 3 operands
-tln: error[usage]: tln roc channel rm needs one channel name
-tln: error[usage]: tln roc channel rm takes one channel name, got 2
+tln: error[usage]: tln roc channel remove needs one channel name
+tln: error[usage]: tln roc channel remove takes one channel name, got 2
 tln: error[usage]: tln roc channel list takes no operand, got 1
+tln: error[usage]: tln roc channel remov is not a command: use add, remove or list (did you mean 'tln roc channel remove'?)

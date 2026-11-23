@@ -163,3 +163,21 @@ expect {
 	dbg got
 	got == "{\"snapshot\":\"2026-10-01T00:00:00Z\",\"log_size\":50,\"probes\":0,\"downloads\":0,\"dry_run\":true,\"check\":\"skipped\",\"build\":\"skipped\",\"added\":[],\"moved\":[],\"kept\":[],\"pinned\":null,\"toml\":[],\"renamed\":[],\"notes\":[],\"written\":[]}"
 }
+
+# Slice 262b (R-AD28, R-AD25, R-UP11, B9, Design Q642): the note of each key that an `install`, `add` or `update` run writes or plans as an exact pin.
+# One text for each `=<v>` value (also the `owner/repo@=<v>` form), in the order of the toml lines. A range is no pin. No pin: no note.
+expect {
+	t = |key, value| { path: "/p/talon.toml", key, value }
+	note = |key, v| "${key} is pinned to =${v}: tln update keeps it there, and tln upgrade ${key} moves it. To start at ${v} with no pin, add --no-pin."
+	rows = [
+		(Report.anchor_notes([t("json", "=1.2.3")]), [note("json", "1.2.3")]),
+		(Report.anchor_notes([t("xml", "^1"), t("lex", "=1.1.0")]), [note("lex", "1.1.0")]),
+		(Report.anchor_notes([t("a", "=1.0.0"), t("b", "=2.0.0")]), [note("a", "1.0.0"), note("b", "2.0.0")]),
+		(Report.anchor_notes([t("core", "acme/core@=1.0.0")]), [note("core", "1.0.0")]),
+		(Report.anchor_notes([t("json", "^3.0"), t("pf", "0.2.*")]), []),
+		(Report.anchor_notes([]), []),
+	]
+	bad = rows.keep_if(|(got, want)| got != want)
+	dbg bad
+	bad == []
+}

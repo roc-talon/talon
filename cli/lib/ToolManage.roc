@@ -229,7 +229,7 @@ operand_ref = |name, operand| {
 		Err(None) => {}
 	}
 	if name == "rebuild" and is_talon(Ok(ref)) {
-		Err(usage("tln tool ${name} talon is not built yet"))
+		Err(usage("tln tool ${name} talon is not supported. To build tln from its source, run: tln tool update talon --from-source"))
 	} else {
 		Ok(ref)
 	}

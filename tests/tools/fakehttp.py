@@ -10,6 +10,7 @@ The highest number of requests in flight at one time is in `<state dir>/http.max
 Routes. A request `GET /<path>?<query>` is the file `<routes dir>/<path>?<query>`, else `<routes dir>/<path>`.
 File names: the runner decodes the names of `given/` before the server starts (tests/lib.sh decode_names), so the file of `GET /x?page=2` is named `x%3Fpage=2` in the repo
 (`%3F` is `?`, `%3A` is `:`, `%5C` is `\\`, `%25` is `%`: Windows refuses the characters `? : * < > | "` in a name) and `x?page=2` in the work dir. This file only sees the decoded names.
+Slice 260 (G3): the case-safe name of a route is tried first: an upper-case ASCII letter `X` is `^x` and `^` is `^^` (`x?short=^parser` for `GET /x?short=Parser`), for a case-blind file system.
 No file: 404 with the body `{"message":"Not Found"}`. In a body and in a header value, `$PORT` is the port of the server.
 
 | File | Gives |
@@ -104,14 +105,23 @@ def read_meta(path):
     return meta
 
 
+def case_safe(text):
+    """Slice 260 (G3): an upper-case ASCII letter `X` is `^x`, and `^` is `^^`. On a case-blind file system (macOS APFS) `short=Parser` and `short=parser` are one file;
+    the case-safe file `short=^parser` is another. The same rule as `case_safe` of tests/commands/FakeJobs.roc (L2)."""
+    return "".join("^^" if c == "^" else ("^" + c.lower() if "A" <= c <= "Z" else c) for c in text)
+
+
 def find_route(split, method, n):
     rel = split.path.lstrip("/")
     if ".." in rel.split("/"):
         return None
     suffix = "" if method == "GET" else "." + method
+    # Slice 260 (G3): the case-safe name of a route comes first, then the plain name (case_safe).
     candidates = []
     if split.query:
+        candidates.append(os.path.join(ROUTES, case_safe(rel) + "?" + case_safe(split.query) + suffix))
         candidates.append(os.path.join(ROUTES, rel + "?" + split.query + suffix))
+    candidates.append(os.path.join(ROUTES, case_safe(rel) + suffix))
     candidates.append(os.path.join(ROUTES, rel + suffix))
     for c in candidates:
         if os.path.isfile(c) or os.path.isfile(c + ".meta"):

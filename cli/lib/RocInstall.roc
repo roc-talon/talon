@@ -201,7 +201,7 @@ RocInstall :: [].{
 	## | `range_pick` gives `Err(NoneKnown)` | `Toolchain.range_failed` (kind `NoTuple`, exit 10) |
 	## R-C16 (slice 084): `note` is the note of `Toolchain.kept_note` for the pick (rank 4 selects by itself).
 	## Slice 206d2 (R-CV1, R-AP19, R-DT3): `registry` `Ok({ origin, version, log })` (a run with a registry): the list is `Nightlies.list_registry!` (the registry list, the rows above `log:N` hidden) in place of `Nightlies.list!`. `Err(None)`: as before.
-	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]), source : Str }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]), channels ?: List({ name : Str, source : Str, tag_prefix : Str }) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
+	range_id! : Fx, { roots : Roots, net : Net.Settings, now : U64, real ?: U64, offline : Bool, req : Pin.Req, req_text : Str, min_age : U64, exclude : List(Str), snapshot : Try(U64, [None]), switch : { nightly : Bool, source : Pin.Source }, registry : Try({ origin : Str, version : Str, log : Try(U64, [None]), source : Str }, [None]), config ?: Try({ text : Str, at : Str }, [Unset]), channels ?: List({ name : Str, source : Str, tag_prefix : Str }) } => Try({ id : Str, note : Try(Str, [None]) }, Fail)
 	range_id! = |fx, run| {
 		system = Toolchain.host(fx.platform!())?
 		# Slice 241 (R-CH7, R-CH16, Design Q615 item 3): a pin `=<user id>` or `>=<user id>` lists its own channel (direct, the `source` of the table). It never reads `roc-lang/nightlies` or a registry.
@@ -212,7 +212,7 @@ RocInstall :: [].{
 		}
 		if user_table.is_ok() {
 			table = user_table ?? { name: "", source: "", tag_prefix: "" }
-			listed = Nightlies.list_channel!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host: system, channel: table })?
+			listed = Nightlies.list_channel!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host: system, channel: table })?
 			if listed.source == Missing return Err(Toolchain.offline_no_list({}))
 			return match Toolchain.range_pick({ releases: listed.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {
 				Ok(id) => Ok({ id, note: Err(None) })
@@ -236,7 +236,7 @@ RocInstall :: [].{
 				if listed.releases.is_empty() return Err(ClosureRequest.no_compiler({ rows: [], nightly: run.switch.nightly, nightly_from: run.switch.source, req: Ok(run.req_text), now: run.now, min_age: run.min_age, exclude: run.exclude, snapshot: None }))
 				listed
 			}
-			Err(None) => Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host: system })?
+			Err(None) => Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host: system })?
 		}
 		if found.source == Missing return Err(Toolchain.offline_no_list({}))
 		match Toolchain.range_pick({ releases: found.releases, req: run.req, now: run.now, min_age: run.min_age, snapshot: run.snapshot, nightly: run.switch.nightly, exclude: run.exclude }) {

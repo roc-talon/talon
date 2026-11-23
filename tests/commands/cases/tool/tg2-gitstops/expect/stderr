@@ -6,4 +6,4 @@ tln: error[usage]: 'acme/gapp' has no ref: use owner/repo@ref
 tln: error[usage]: --path '../x' must be a directory inside the repository: a relative path with no '..'
 tln: error[usage]: gapp is the binary name of acme/gapp already. Use --as <name> to install other/gapp under another binary name.
 tln: error[usage]: $HOME/.local/bin/fe is not a file that tln wrote, so tln does not replace it. Use --as <name> to install under another binary name.
-tln: error[usage]: tln tool install --resolve is not built yet
+tln: error[usage]: tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names.

@@ -48,10 +48,11 @@ jobs:
         run: echo "ROC_WORKER=$(scripts/get-roc.sh worker)" >> "$GITHUB_ENV"
 
       # The steps w1 and w2 need Node 26 or later (JSPI, node:sqlite) and a global wrangler 4 with Miniflare (TW34).
+      # Slice 260 (G7): an exact Node version, the one that runs w1 locally (TW34).
       - name: Node
         uses: actions/setup-node@v4
         with:
-          node-version: '26'
+          node-version: '26.7.0'
 
       - name: Wrangler
         run: npm install --global wrangler@4.151.0
@@ -66,8 +67,11 @@ jobs:
           cache=$(scripts/real-cache.sh)
           echo "REAL_CACHE=$cache" >> "$GITHUB_ENV"
 
+      # Slice 260 (G5, G8): TEST_TIMEOUT 300. The LLVM builds (OPT=speed) run at the same time as l0 on a runner with 4 vCPUs, and SLOW=1 runs 400 D1 cases in w1 (about 50 s):
+      # the default limit of one test process (3 times the step budget: l0 30 s, w1 45 s) is too short.
       - name: Test
         env:
+          TEST_TIMEOUT: 300
           OPT: speed
           SLOW: 1
           NET: 1

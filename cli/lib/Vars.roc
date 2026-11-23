@@ -116,14 +116,26 @@ Vars :: [].{
 		selectors : List({ alias : Str, range : Str }),
 		vars : List(Var),
 	} -> Try(List(Scoped), Fail)
-	scope = |facts| {
+	scope = |facts| Vars.scope_with({ command: facts.command, names: facts.names, fixed: facts.fixed, selectors: facts.selectors, vars: facts.vars, overridden: [] })
+
+	## Slice 262b (Design Q642, D1): `scope` with `overridden`, the (file, alias) pairs whose key is in `[overrides]` and not in `[dependencies]`. An anchor that comes from an override has no held line (`tln upgrade` does not move an override).
+	scope_with : {
+		command : [Install, Update, Upgrade, NightlyOnly],
+		names : List(Str),
+		fixed : List(Str),
+		selectors : List({ alias : Str, range : Str }),
+		vars : List(Var),
+		overridden : List({ file : Str, alias : Str }),
+	} -> Try(List(Scoped), Fail)
+	scope_with = |facts| {
 		named = named_indexes(facts.vars, facts.names)?
 		selected = facts.selectors.map_try(|sel| named_indexes(facts.vars, [sel.alias]).map_ok(|idx| (idx, sel.range)))?
 		Ok(
 			facts.vars.map_with_index(
 				|variable, i| {
 					fixed = variable.uses.any(|u| facts.fixed.contains(u.alias))
-					scoped_one({ command: facts.command, all: facts.names.is_empty(), is_named: named.contains(i), fixed }, selected.find_first(|(idx, _)| idx.contains(i)), variable)
+					overridden = variable.uses.any(|u| facts.overridden.contains({ file: u.file, alias: u.alias }))
+					scoped_one({ command: facts.command, all: facts.names.is_empty(), is_named: named.contains(i), fixed, overridden }, selected.find_first(|(idx, _)| idx.contains(i)), variable)
 				},
 			),
 		)
@@ -283,7 +295,7 @@ named_indexes = |vars, names| names.fold_try(
 )
 
 # R-SP1 to R-SP5, R-SP20, R-DI11: the state of one variable for the command.
-scoped_one : { command : [Install, Update, Upgrade, NightlyOnly], all : Bool, is_named : Bool, fixed : Bool }, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped
+scoped_one : { command : [Install, Update, Upgrade, NightlyOnly], all : Bool, is_named : Bool, fixed : Bool, overridden : Bool }, Try((List(U64), Str), [NotFound]), Vars.Var -> Vars.Scoped
 scoped_one = |run, selector, variable| {
 	all = run.all
 	is_named = run.is_named
@@ -304,7 +316,7 @@ scoped_one = |run, selector, variable| {
 			movable = movable_of(variable, free)
 			held_anchor = all and anchor and indexed
 			first_alias = variable.uses.first().map_ok(|u| u.alias) ?? ""
-			note = if held_anchor Ok("${first_alias}: ${if variable.patched "patched" else "anchor"}, held") else if all or is_named fixed_note else Err(None)
+			note = if held_anchor and !variable.patched and (run.overridden or outside_range(variable)) fixed_note else if held_anchor Ok(if variable.patched "${first_alias}: patched, held" else held_line(first_alias, variable)) else if all or is_named fixed_note else Err(None)
 			{ variable: if free or movable { ..variable, ranges: [] } else variable, free, movable, any_series: free, note }
 		}
 		NightlyOnly => {
@@ -314,7 +326,10 @@ scoped_one = |run, selector, variable| {
 		Update => {
 			free = indexed and (is_named or (all and !variable.patched))
 			held_patch = all and variable.patched and indexed
-			note = if held_patch Ok("${variable.uses.first().map_ok(|u| u.alias) ?? ""}: patched, held") else if all or is_named fixed_note else Err(None)
+			# Slice 262b (Q262-3, Q262-4): the held line of an anchor that holds the entry at its header value, named or not, with no selector.
+			held_pin = (all or is_named) and indexed and !variable.patched and selector.is_err() and variable.ranges.any(|r| r.range.starts_with("=")) and !run.overridden and !outside_range(variable)
+			first_alias = variable.uses.first().map_ok(|u| u.alias) ?? ""
+			note = if held_patch Ok("${first_alias}: patched, held") else if held_pin Ok(held_line(first_alias, variable)) else if all or is_named fixed_note else Err(None)
 			match selector {
 				Ok((_, range)) if free => { variable: { ..variable, ranges: [{ range, from: "selector" }] }, free, movable: Bool.False, any_series: Bool.True, note }
 				_ => { variable, free, movable: movable_of(variable, free), any_series: Bool.False, note }
@@ -330,3 +345,10 @@ can_move = |variable, free| !free and variable.host == Indexed and !variable.pat
 # R-SP20, R-WS3: a use that is outside the intersection of the ranges of its variable.
 outside_range : Vars.Var -> Bool
 outside_range = |variable| variable.uses.any(|u| !Ranges.admits({ ranges: variable.ranges.map(|r| r.range), version: u.version }))
+
+# Slice 262b (R-UP1, R-UP10, Q262-3, Design Q642): the held line of an anchor.
+held_line : Str, Vars.Var -> Str
+held_line = |alias, variable| {
+	pin = variable.ranges.find_first(|r| r.range.starts_with("=")).map_ok(|r| r.range) ?? ""
+	"${alias}: pinned to ${pin}, held (tln upgrade ${alias} moves it)"
+}

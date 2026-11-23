@@ -91,7 +91,8 @@ ToolManageFlow :: [].{
 		env = fx.env_all!()
 		roots = Roots.of_run!(fx, env)?
 		net = Net.from_env(env)
-		now = Clock.now!(fx, env)?
+		times = Clock.times!(fx, env)?
+		now = times.now
 		machine = fx.platform!()
 		bin = Setup.bin_dir({ os: machine.os, env })?
 		target = match BuildSkip.target(machine) {
@@ -112,6 +113,7 @@ ToolManageFlow :: [].{
 			roots,
 			net,
 			now,
+			real: times.real,
 			os: machine.os,
 			bin,
 			target,

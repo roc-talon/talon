@@ -78,7 +78,8 @@ expect {
 		(read(["tool", "install", "--git", "acme/foo"]), line("'acme/foo' has no ref: use owner/repo@ref")),
 		(read(["tool", "install", "--git", "foo@main"]), line("--git takes a GitHub repository as owner/repo, not 'foo'")),
 		(read(["tool", "install", "--git", "git.example.com/a/b@main"]), line("--git takes a GitHub repository as owner/repo, not 'git.example.com/a/b'")),
-		(read(["tool", "install", "--git", "acme/foo@main", "--resolve"]), line("tln tool install --resolve is not built yet")),
+		# Slice 262b (UX16, R-T1, Design Q642): --resolve names what tln tool install builds.
+		(read(["tool", "install", "--git", "acme/foo@main", "--resolve"]), line("tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names.")),
 		(read(["tool", "install", "acme/foo", "--path", "sub"]), line("tln tool install --path needs a git ref: --git owner/app@ref")),
 		(read(["tool", "install", "--git", "acme/foo@main", "--path", "../x"]), bad_path("../x")),
 		(read(["tool", "install", "--git", "acme/foo@main", "--path", "/abs"]), bad_path("/abs")),

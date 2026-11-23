@@ -1,0 +1,493 @@
+﻿2026-11-21T10:55:53.8549713Z Current runner version: '2.338.2'
+2026-11-21T10:55:53.8567332Z ##[group]Runner Image Provisioner
+2026-11-21T10:55:53.8567971Z Hosted Compute Agent
+2026-11-21T10:55:53.8568387Z Version: 20261111.635
+2026-11-21T10:55:53.8568792Z Commit: b8a594ea514ff44cadb5342986c68b1eac6e22ed
+2026-11-21T10:55:53.8569252Z Build Date: 2026-11-11T01:49:01Z
+2026-11-21T10:55:53.8569736Z Worker ID: {ba12aa37-5f93-41ed-87ef-89fdf482cb37}
+2026-11-21T10:55:53.8570206Z Region: southcentralus
+2026-11-21T10:55:53.8570588Z Cloud: Azure
+2026-11-21T10:55:53.8570940Z ##[endgroup]
+2026-11-21T10:55:53.8571756Z ##[group]Operating System
+2026-11-21T10:55:53.8572171Z Ubuntu
+2026-11-21T10:55:53.8572529Z 26.04.1
+2026-11-21T10:55:53.8572868Z LTS
+2026-11-21T10:55:53.8573233Z ##[endgroup]
+2026-11-21T10:55:53.8573576Z ##[group]Runner Image
+2026-11-21T10:55:53.8574007Z Image: ubuntu-26.04
+2026-11-21T10:55:53.8574396Z Version: 20261116.202.1
+2026-11-21T10:55:53.8575192Z Included Software: https://github.com/actions/runner-images/blob/ubuntu26/20261116.202/images/ubuntu/Ubuntu2604-Readme.md
+2026-11-21T10:55:53.8576096Z Image Release: https://github.com/actions/runner-images/releases/tag/ubuntu26%2F20261116.202
+2026-11-21T10:55:53.8577040Z ##[endgroup]
+2026-11-21T10:55:53.8577732Z ##[group]GITHUB_TOKEN Permissions
+2026-11-21T10:55:53.8579157Z Contents: read
+2026-11-21T10:55:53.8579515Z Metadata: read
+2026-11-21T10:55:53.8579850Z ##[endgroup]
+2026-11-21T10:55:53.8581265Z Secret source: Actions
+2026-11-21T10:55:53.8581829Z Cache mode: write
+2026-11-21T10:55:53.8582308Z Prepare workflow directory
+2026-11-21T10:55:53.8812881Z Prepare all required actions
+2026-11-21T10:55:53.8857046Z Getting action download info
+2026-11-21T10:55:54.1529718Z Download action repository 'actions/checkout@v4' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-11-21T10:55:54.2205700Z Download action repository 'actions/cache@v4' (SHA:0057852bfaa89a56745cba8c7296529d2fc39830)
+2026-11-21T10:55:54.3225899Z Download action repository 'actions/setup-node@v4' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-11-21T10:55:54.4025219Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-11-21T10:55:54.5837849Z Complete job name: nightly
+2026-11-21T10:55:54.6380587Z ##[group]Run actions/checkout@v4
+2026-11-21T10:55:54.6381007Z with:
+2026-11-21T10:55:54.6381253Z   repository: roc-talon/talon
+2026-11-21T10:55:54.6383345Z   token: ***
+2026-11-21T10:55:54.6383585Z   ssh-strict: true
+2026-11-21T10:55:54.6383832Z   ssh-user: git
+2026-11-21T10:55:54.6384085Z   persist-credentials: true
+2026-11-21T10:55:54.6384420Z   clean: true
+2026-11-21T10:55:54.6384883Z   sparse-checkout-cone-mode: true
+2026-11-21T10:55:54.6385177Z   fetch-depth: 1
+2026-11-21T10:55:54.6385505Z   fetch-tags: false
+2026-11-21T10:55:54.6385833Z   show-progress: true
+2026-11-21T10:55:54.6386088Z   lfs: false
+2026-11-21T10:55:54.6386445Z   submodules: false
+2026-11-21T10:55:54.6386696Z   set-safe-directory: true
+2026-11-21T10:55:54.6386985Z   allow-unsafe-pr-checkout: false
+2026-11-21T10:55:54.6387382Z ##[endgroup]
+2026-11-21T10:55:54.8161755Z Syncing repository: roc-talon/talon
+2026-11-21T10:55:54.8163346Z ##[group]Getting Git version info
+2026-11-21T10:55:54.8164013Z Working directory is '/home/runner/work/talon/talon'
+2026-11-21T10:55:54.8164832Z [command]/usr/bin/git version
+2026-11-21T10:55:54.8165319Z git version 2.56.1
+2026-11-21T10:55:54.8179180Z ##[endgroup]
+2026-11-21T10:55:54.8187042Z Temporarily overriding HOME='/home/runner/work/_temp/6547e631-3422-4cb7-b88c-43f5c32a2cc5' before making global git config changes
+2026-11-21T10:55:54.8188429Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T10:55:54.8190257Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/talon/talon
+2026-11-21T10:55:54.8244388Z Deleting the contents of '/home/runner/work/talon/talon'
+2026-11-21T10:55:54.8248164Z ##[group]Initializing the repository
+2026-11-21T10:55:54.8250762Z [command]/usr/bin/git init /home/runner/work/talon/talon
+2026-11-21T10:55:54.8324653Z hint: Using 'master' as the name for the initial branch. This default branch name
+2026-11-21T10:55:54.8325661Z hint: will change to "main" in Git 3.0. To configure the initial branch name
+2026-11-21T10:55:54.8327293Z hint: to use in all of your new repositories, which will suppress this warning,
+2026-11-21T10:55:54.8328092Z hint: call:
+2026-11-21T10:55:54.8328738Z hint:
+2026-11-21T10:55:54.8329327Z hint: 	git config --global init.defaultBranch <name>
+2026-11-21T10:55:54.8330002Z hint:
+2026-11-21T10:55:54.8330741Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2026-11-21T10:55:54.8331706Z hint: 'development'. The just-created branch can be renamed via this command:
+2026-11-21T10:55:54.8332494Z hint:
+2026-11-21T10:55:54.8332983Z hint: 	git branch -m <name>
+2026-11-21T10:55:54.8333524Z hint:
+2026-11-21T10:55:54.8357172Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2026-11-21T10:55:54.8367736Z Initialized empty Git repository in /home/runner/work/talon/talon/.git/
+2026-11-21T10:55:54.8376464Z [command]/usr/bin/git remote add origin https://github.com/roc-talon/talon
+2026-11-21T10:55:54.8386932Z ##[endgroup]
+2026-11-21T10:55:54.8387597Z ##[group]Disabling automatic garbage collection
+2026-11-21T10:55:54.8387995Z [command]/usr/bin/git config --local gc.auto 0
+2026-11-21T10:55:54.8417148Z ##[endgroup]
+2026-11-21T10:55:54.8417912Z ##[group]Setting up auth
+2026-11-21T10:55:54.8422300Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T10:55:54.8450429Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T10:55:54.8807189Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T10:55:54.8841686Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T10:55:54.9110691Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T10:55:54.9140417Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T10:55:54.9372170Z [command]/usr/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2026-11-21T10:55:54.9406102Z ##[endgroup]
+2026-11-21T10:55:54.9407001Z ##[group]Fetching the repository
+2026-11-21T10:55:54.9413466Z [command]/usr/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d6599df728449c976475f2e22308144b80cc6f9c:refs/remotes/origin/main
+2026-11-21T10:55:56.4755692Z From https://github.com/roc-talon/talon
+2026-11-21T10:55:56.4757008Z  * [new ref]           d6599df728449c976475f2e22308144b80cc6f9c -> origin/main
+2026-11-21T10:55:56.4787461Z ##[endgroup]
+2026-11-21T10:55:56.4788679Z ##[group]Determining the checkout info
+2026-11-21T10:55:56.4789692Z ##[endgroup]
+2026-11-21T10:55:56.4790356Z [command]/usr/bin/git sparse-checkout disable
+2026-11-21T10:55:56.4810893Z [command]/usr/bin/git config --local --unset-all extensions.worktreeConfig
+2026-11-21T10:55:56.4839572Z ##[group]Checking out the ref
+2026-11-21T10:55:56.4842533Z [command]/usr/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2026-11-21T10:55:57.5497987Z Updating files:  31% (17669/55941)
+2026-11-21T10:55:57.5752953Z Updating files:  32% (17902/55941)
+2026-11-21T10:55:57.6115030Z Updating files:  33% (18461/55941)
+2026-11-21T10:55:57.6355811Z Updating files:  34% (19020/55941)
+2026-11-21T10:55:57.6572478Z Updating files:  35% (19580/55941)
+2026-11-21T10:55:57.6766842Z Updating files:  36% (20139/55941)
+2026-11-21T10:55:57.6950330Z Updating files:  37% (20699/55941)
+2026-11-21T10:55:57.7171394Z Updating files:  38% (21258/55941)
+2026-11-21T10:55:58.1817075Z Updating files:  39% (21817/55941)
+2026-11-21T10:55:58.2080600Z Updating files:  40% (22377/55941)
+2026-11-21T10:55:58.2316979Z Updating files:  41% (22936/55941)
+2026-11-21T10:55:58.2607498Z Updating files:  42% (23496/55941)
+2026-11-21T10:55:58.2822661Z Updating files:  43% (24055/55941)
+2026-11-21T10:55:58.3054461Z Updating files:  44% (24615/55941)
+2026-11-21T10:55:58.3370407Z Updating files:  45% (25174/55941)
+2026-11-21T10:55:58.3638532Z Updating files:  46% (25733/55941)
+2026-11-21T10:55:58.3964998Z Updating files:  47% (26293/55941)
+2026-11-21T10:55:58.4279658Z Updating files:  48% (26852/55941)
+2026-11-21T10:55:58.4531424Z Updating files:  49% (27412/55941)
+2026-11-21T10:55:58.8505505Z Updating files:  50% (27971/55941)
+2026-11-21T10:55:58.8616510Z Updating files:  50% (28169/55941)
+2026-11-21T10:55:58.8759546Z Updating files:  51% (28530/55941)
+2026-11-21T10:55:58.8920292Z Updating files:  52% (29090/55941)
+2026-11-21T10:55:58.9133861Z Updating files:  53% (29649/55941)
+2026-11-21T10:55:58.9372223Z Updating files:  54% (30209/55941)
+2026-11-21T10:55:58.9576527Z Updating files:  55% (30768/55941)
+2026-11-21T10:55:58.9814438Z Updating files:  56% (31327/55941)
+2026-11-21T10:55:59.0079392Z Updating files:  57% (31887/55941)
+2026-11-21T10:55:59.0322663Z Updating files:  58% (32446/55941)
+2026-11-21T10:55:59.0612816Z Updating files:  59% (33006/55941)
+2026-11-21T10:55:59.0866849Z Updating files:  60% (33565/55941)
+2026-11-21T10:55:59.1104877Z Updating files:  61% (34125/55941)
+2026-11-21T10:55:59.5041415Z Updating files:  62% (34684/55941)
+2026-11-21T10:55:59.5287169Z Updating files:  63% (35243/55941)
+2026-11-21T10:55:59.5385984Z Updating files:  64% (35803/55941)
+2026-11-21T10:55:59.5520306Z Updating files:  64% (36037/55941)
+2026-11-21T10:55:59.5762767Z Updating files:  65% (36362/55941)
+2026-11-21T10:55:59.5997820Z Updating files:  66% (36922/55941)
+2026-11-21T10:55:59.6269206Z Updating files:  67% (37481/55941)
+2026-11-21T10:55:59.6514831Z Updating files:  68% (38040/55941)
+2026-11-21T10:55:59.6738436Z Updating files:  69% (38600/55941)
+2026-11-21T10:55:59.6996953Z Updating files:  70% (39159/55941)
+2026-11-21T10:55:59.7258679Z Updating files:  71% (39719/55941)
+2026-11-21T10:56:00.1331800Z Updating files:  72% (40278/55941)
+2026-11-21T10:56:00.1584940Z Updating files:  73% (40837/55941)
+2026-11-21T10:56:00.1849880Z Updating files:  74% (41397/55941)
+2026-11-21T10:56:00.2097669Z Updating files:  75% (41956/55941)
+2026-11-21T10:56:00.2364280Z Updating files:  76% (42516/55941)
+2026-11-21T10:56:00.2630405Z Updating files:  77% (43075/55941)
+2026-11-21T10:56:00.2896992Z Updating files:  78% (43634/55941)
+2026-11-21T10:56:00.3155178Z Updating files:  79% (44194/55941)
+2026-11-21T10:56:00.3406571Z Updating files:  80% (44753/55941)
+2026-11-21T10:56:00.7914293Z Updating files:  81% (45313/55941)
+2026-11-21T10:56:00.8149531Z Updating files:  81% (45361/55941)
+2026-11-21T10:56:00.8417029Z Updating files:  82% (45872/55941)
+2026-11-21T10:56:00.8659193Z Updating files:  83% (46432/55941)
+2026-11-21T10:56:00.8894641Z Updating files:  84% (46991/55941)
+2026-11-21T10:56:00.9130903Z Updating files:  85% (47550/55941)
+2026-11-21T10:56:00.9366420Z Updating files:  86% (48110/55941)
+2026-11-21T10:56:00.9639878Z Updating files:  87% (48669/55941)
+2026-11-21T10:56:00.9932422Z Updating files:  88% (49229/55941)
+2026-11-21T10:56:01.4319677Z Updating files:  89% (49788/55941)
+2026-11-21T10:56:01.4534128Z Updating files:  90% (50347/55941)
+2026-11-21T10:56:01.4792009Z Updating files:  91% (50907/55941)
+2026-11-21T10:56:01.5019936Z Updating files:  92% (51466/55941)
+2026-11-21T10:56:01.5272369Z Updating files:  93% (52026/55941)
+2026-11-21T10:56:01.5384474Z Updating files:  94% (52585/55941)
+2026-11-21T10:56:01.5510064Z Updating files:  94% (52811/55941)
+2026-11-21T10:56:01.5784867Z Updating files:  95% (53144/55941)
+2026-11-21T10:56:01.6028272Z Updating files:  96% (53704/55941)
+2026-11-21T10:56:01.6274675Z Updating files:  97% (54263/55941)
+2026-11-21T10:56:01.6478127Z Updating files:  98% (54823/55941)
+2026-11-21T10:56:01.6682830Z Updating files:  99% (55382/55941)
+2026-11-21T10:56:01.6683617Z Updating files: 100% (55941/55941)
+2026-11-21T10:56:01.6683846Z Updating files: 100% (55941/55941), done.
+2026-11-21T10:56:01.7338025Z Switched to a new branch 'main'
+2026-11-21T10:56:01.7347033Z branch 'main' set up to track 'origin/main'.
+2026-11-21T10:56:01.7385835Z ##[endgroup]
+2026-11-21T10:56:01.7428257Z [command]/usr/bin/git log -1 --format=%H
+2026-11-21T10:56:01.7449357Z d6599df728449c976475f2e22308144b80cc6f9c
+2026-11-21T10:56:01.7631188Z ##[group]Run sudo apt-get install -y bubblewrap
+2026-11-21T10:56:01.7631448Z [36;1msudo apt-get install -y bubblewrap[0m
+2026-11-21T10:56:01.7631693Z [36;1msudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0[0m
+2026-11-21T10:56:01.7661895Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:01.7662053Z ##[endgroup]
+2026-11-21T10:56:02.5402264Z Reading package lists...
+2026-11-21T10:56:02.6688980Z Building dependency tree...
+2026-11-21T10:56:02.6698105Z Reading state information...
+2026-11-21T10:56:02.6942219Z bubblewrap is already the newest version (0.11.1-1ubuntu0.3).
+2026-11-21T10:56:02.6942584Z bubblewrap set to manually installed.
+2026-11-21T10:56:02.7345806Z Solving dependencies...
+2026-11-21T10:56:02.8314286Z 0 upgraded, 0 newly installed, 0 to remove and 1 not upgraded.
+2026-11-21T10:56:02.8400231Z kernel.apparmor_restrict_unprivileged_userns = 0
+2026-11-21T10:56:02.8440567Z ##[group]Run . scripts/env.sh
+2026-11-21T10:56:02.8440757Z [36;1m. scripts/env.sh[0m
+2026-11-21T10:56:02.8440909Z [36;1mecho "ROC_TAG=$ROC_TAG" >> "$GITHUB_ENV"[0m
+2026-11-21T10:56:02.8441120Z [36;1mecho "ROC_TAG_WORKER=$ROC_TAG_WORKER" >> "$GITHUB_ENV"[0m
+2026-11-21T10:56:02.8470721Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:02.8470866Z ##[endgroup]
+2026-11-21T10:56:02.8645271Z ##[group]Run actions/cache@v4
+2026-11-21T10:56:02.8645421Z with:
+2026-11-21T10:56:02.8645539Z   path: .work/nightlies
+2026-11-21T10:56:02.8645773Z   key: roc-Linux-X64-nightly-2026-10-14-38a3029-nightly-2026-11-06-34f137a
+2026-11-21T10:56:02.8646027Z   enableCrossOsArchive: false
+2026-11-21T10:56:02.8646176Z   fail-on-cache-miss: false
+2026-11-21T10:56:02.8646507Z   lookup-only: false
+2026-11-21T10:56:02.8646637Z   save-always: false
+2026-11-21T10:56:02.8646766Z env:
+2026-11-21T10:56:02.8646893Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:02.8647062Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:02.8647217Z ##[endgroup]
+2026-11-21T10:56:02.9368715Z (node:2205) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T10:56:02.9369285Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T10:56:03.0857790Z Cache not found for input keys: roc-Linux-X64-nightly-2026-10-14-38a3029-nightly-2026-11-06-34f137a
+2026-11-21T10:56:03.0974595Z ##[group]Run echo "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"
+2026-11-21T10:56:03.0974851Z [36;1mecho "ROC=$(scripts/get-roc.sh)" >> "$GITHUB_ENV"[0m
+2026-11-21T10:56:03.1002631Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:03.1002786Z env:
+2026-11-21T10:56:03.1002913Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:03.1003079Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:03.1004603Z   GH_TOKEN: ***
+2026-11-21T10:56:03.1004726Z ##[endgroup]
+2026-11-21T10:56:03.6102970Z get-roc: download roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz
+2026-11-21T10:56:06.2876612Z get-roc: installed /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:06.3404483Z ##[group]Run echo "ROC_WORKER=$(scripts/get-roc.sh worker)" >> "$GITHUB_ENV"
+2026-11-21T10:56:06.3404793Z [36;1mecho "ROC_WORKER=$(scripts/get-roc.sh worker)" >> "$GITHUB_ENV"[0m
+2026-11-21T10:56:06.3432562Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:06.3432712Z env:
+2026-11-21T10:56:06.3432839Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:06.3433014Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:06.3433249Z   ROC: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:06.3434984Z   GH_TOKEN: ***
+2026-11-21T10:56:06.3435110Z ##[endgroup]
+2026-11-21T10:56:06.7157553Z get-roc: download roc_nightly-linux_x86_64-2026-11-06-34f137a.tar.gz
+2026-11-21T10:56:08.7361986Z get-roc: installed /home/runner/work/talon/talon/.work/nightlies/nightly-2026-11-06-34f137a/roc
+2026-11-21T10:56:08.7944453Z ##[group]Run actions/setup-node@v4
+2026-11-21T10:56:08.7944618Z with:
+2026-11-21T10:56:08.7944739Z   node-version: 26
+2026-11-21T10:56:08.7944864Z   always-auth: false
+2026-11-21T10:56:08.7944994Z   check-latest: false
+2026-11-21T10:56:08.7946655Z   token: ***
+2026-11-21T10:56:08.7962583Z env:
+2026-11-21T10:56:08.7962762Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:08.7962952Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:08.7963199Z   ROC: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:08.7963520Z   ROC_WORKER: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-11-06-34f137a/roc
+2026-11-21T10:56:08.7963769Z ##[endgroup]
+2026-11-21T10:56:08.9229945Z Attempting to download 26...
+2026-11-21T10:56:08.9302222Z (node:2298) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T10:56:08.9302923Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T10:56:09.7382761Z Acquiring 26.13.1 - x64 from https://github.com/actions/node-versions/releases/download/26.13.1-43134154182/node-26.13.1-linux-x64.tar.gz
+2026-11-21T10:56:10.1693543Z Extracting ...
+2026-11-21T10:56:10.1790187Z [command]/usr/bin/tar xz --strip 1 --warning=no-unknown-keyword --overwrite -C /home/runner/work/_temp/724824e8-5599-4ca9-994e-9f8d0c5020f9 -f /home/runner/work/_temp/d435b169-476a-4584-be1e-906063ba624b
+2026-11-21T10:56:10.8239970Z Adding to the cache ...
+2026-11-21T10:56:14.5917181Z ##[group]Environment details
+2026-11-21T10:56:14.7479093Z node: v26.13.1
+2026-11-21T10:56:14.7479351Z npm: 11.20.0
+2026-11-21T10:56:14.7479569Z yarn: 1.22.22
+2026-11-21T10:56:14.7480267Z ##[endgroup]
+2026-11-21T10:56:14.7635298Z ##[group]Run npm install --global wrangler@4.151.0
+2026-11-21T10:56:14.7635536Z [36;1mnpm install --global wrangler@4.151.0[0m
+2026-11-21T10:56:14.7667358Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:14.7667517Z env:
+2026-11-21T10:56:14.7667645Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:14.7667821Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:14.7668058Z   ROC: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:14.7668380Z   ROC_WORKER: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-11-06-34f137a/roc
+2026-11-21T10:56:14.7668622Z ##[endgroup]
+2026-11-21T10:56:18.5844457Z 
+2026-11-21T10:56:18.5850819Z added 35 packages in 4s
+2026-11-21T10:56:18.5852134Z npm warn install-scripts 2 packages have install scripts not yet covered by allowScripts:
+2026-11-21T10:56:18.5852525Z npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+2026-11-21T10:56:18.5852960Z npm warn install-scripts   workerd@1.20261012.1 (postinstall: node install.js)
+2026-11-21T10:56:18.5853207Z npm warn install-scripts
+2026-11-21T10:56:18.5853777Z npm warn install-scripts Run `npm install -g --allow-scripts=esbuild,workerd` to allow these scripts once, or `npm config set allow-scripts=esbuild,workerd --location=user` to allow them for all global installs.
+2026-11-21T10:56:18.6336611Z ##[group]Run cache=$(scripts/real-cache.sh)
+2026-11-21T10:56:18.6336845Z [36;1mcache=$(scripts/real-cache.sh)[0m
+2026-11-21T10:56:18.6337027Z [36;1mecho "REAL_CACHE=$cache" >> "$GITHUB_ENV"[0m
+2026-11-21T10:56:18.6364929Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:18.6365076Z env:
+2026-11-21T10:56:18.6365209Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:18.6365385Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:18.6365635Z   ROC: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:18.6365962Z   ROC_WORKER: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-11-06-34f137a/roc
+2026-11-21T10:56:18.6369966Z   GH_TOKEN: ***
+2026-11-21T10:56:18.6370096Z ##[endgroup]
+2026-11-21T10:56:18.6594744Z real-cache: list of the nightlies in roc-lang/nightlies
+2026-11-21T10:56:22.9146728Z get-roc: download roc_nightly-linux_x86_64-2026-10-01-a932c65.tar.gz
+2026-11-21T10:56:25.4358432Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-01-a932c65/roc
+2026-11-21T10:56:25.4822123Z real-cache: roc check with nightly-2026-10-01-a932c65
+2026-11-21T10:56:28.2567051Z real-cache:   exit 0
+2026-11-21T10:56:28.6368877Z get-roc: download roc_nightly-linux_x86_64-2026-10-02-bba1acc.tar.gz
+2026-11-21T10:56:31.4159099Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-02-bba1acc/roc
+2026-11-21T10:56:31.4624804Z real-cache: roc check with nightly-2026-10-02-bba1acc
+2026-11-21T10:56:31.6867560Z real-cache:   exit 0
+2026-11-21T10:56:32.1031339Z get-roc: download roc_nightly-linux_x86_64-2026-10-03-c507926.tar.gz
+2026-11-21T10:56:34.7109047Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-03-c507926/roc
+2026-11-21T10:56:34.7575752Z real-cache: roc check with nightly-2026-10-03-c507926
+2026-11-21T10:56:34.9465616Z real-cache:   exit 0
+2026-11-21T10:56:35.3564609Z get-roc: download roc_nightly-linux_x86_64-2026-10-04-130536d.tar.gz
+2026-11-21T10:56:37.7174064Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-04-130536d/roc
+2026-11-21T10:56:37.7648544Z real-cache: roc check with nightly-2026-10-04-130536d
+2026-11-21T10:56:37.9489732Z real-cache:   exit 0
+2026-11-21T10:56:38.3329744Z get-roc: download roc_nightly-linux_x86_64-2026-10-11-7d256b9.tar.gz
+2026-11-21T10:56:41.0375411Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-11-7d256b9/roc
+2026-11-21T10:56:41.0890449Z real-cache: roc check with nightly-2026-10-11-7d256b9
+2026-11-21T10:56:41.2673204Z real-cache:   exit 1
+2026-11-21T10:56:41.6463631Z get-roc: download roc_nightly-linux_x86_64-2026-10-12-2664a27.tar.gz
+2026-11-21T10:56:44.0417128Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-12-2664a27/roc
+2026-11-21T10:56:44.0913441Z real-cache: roc check with nightly-2026-10-12-2664a27
+2026-11-21T10:56:44.2746643Z real-cache:   exit 1
+2026-11-21T10:56:44.7335660Z get-roc: download roc_nightly-linux_x86_64-2026-10-13-b17d287.tar.gz
+2026-11-21T10:56:46.8305025Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-13-b17d287/roc
+2026-11-21T10:56:46.8806116Z real-cache: roc check with nightly-2026-10-13-b17d287
+2026-11-21T10:56:47.0674938Z real-cache:   exit 1
+2026-11-21T10:56:47.5125096Z get-roc: download roc_nightly-linux_x86_64-2026-10-14-38a3029.tar.gz
+2026-11-21T10:56:49.2266464Z get-roc: installed /tmp/tmp.gmqFz1SYL0/w/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:49.2756566Z real-cache: roc check with nightly-2026-10-14-38a3029
+2026-11-21T10:56:49.4609778Z real-cache:   exit 1
+2026-11-21T10:56:49.4879896Z real-cache: cache /home/runner/work/talon/talon/.work/real-cache/roc: legacy dirs 4, compat dirs 4, packages 4
+2026-11-21T10:56:49.4930010Z ##[group]Run scripts/test.sh
+2026-11-21T10:56:49.4930189Z [36;1mscripts/test.sh[0m
+2026-11-21T10:56:49.4958148Z shell: /usr/bin/bash -e {0}
+2026-11-21T10:56:49.4958298Z env:
+2026-11-21T10:56:49.4958422Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T10:56:49.4958591Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T10:56:49.4958832Z   ROC: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T10:56:49.4959159Z   ROC_WORKER: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-11-06-34f137a/roc
+2026-11-21T10:56:49.4959441Z   REAL_CACHE: /home/runner/work/talon/talon/.work/real-cache/roc
+2026-11-21T10:56:49.4959631Z   OPT: speed
+2026-11-21T10:56:49.4959740Z   SLOW: 1
+2026-11-21T10:56:49.4959846Z   NET: 1
+2026-11-21T10:56:49.4959948Z   REAL_ROC: 1
+2026-11-21T10:56:49.4961405Z   GITHUB_TOKEN: ***
+2026-11-21T10:56:49.4961532Z ##[endgroup]
+2026-11-21T10:59:32.8468395Z == l0: FAIL (log: /home/runner/work/talon/talon/.work/logs/l0.log)
+2026-11-21T10:59:32.8488943Z packages/resolve/tests/conflicts.roc: All (6) tests passed in 1341.8 ms.
+2026-11-21T10:59:32.8507422Z packages/resolve/tests/domain.roc: All (2) tests passed in 201.2 ms.
+2026-11-21T10:59:32.8527776Z packages/resolve/tests/moves.roc: All (5) tests passed in 1156.4 ms.
+2026-11-21T10:59:32.8528511Z packages/resolve/tests/solver.roc: All (5) tests passed in 1239.4 ms.
+2026-11-21T10:59:32.8529307Z tests/unit/l0-1.roc: All (229) tests passed in 9695.6 ms.
+2026-11-21T10:59:32.8529892Z tests/unit/l0-2.roc: All (106) tests passed in 7795.5 ms.
+2026-11-21T10:59:32.8530421Z tests/unit/l0-3.roc: All (133) tests passed in 13230.9 ms.
+2026-11-21T10:59:32.8530965Z tests/unit/l0-4.roc: All (159) tests passed in 27686.9 ms.
+2026-11-21T10:59:32.8531514Z tests/unit/l0-5.roc: All (136) tests passed in 24910.3 ms.
+2026-11-21T10:59:32.8532176Z l0: tests/unit/l0-6.roc: timed out after 30 s
+2026-11-21T10:59:32.8532692Z tests/unit/l0-7.roc: All (137) tests passed in 18529.9 ms.
+2026-11-21T10:59:32.8533276Z tests/unit/l0-8.roc: All (192) tests passed in 7418.7 ms.
+2026-11-21T10:59:32.8533817Z tests/unit/l0-9.roc: All (189) tests passed in 5304.8 ms.
+2026-11-21T11:08:25.7344045Z == l2: FAIL (log: /home/runner/work/talon/talon/.work/logs/l2.log)
+2026-11-21T11:08:25.7356686Z build of l2 failed:
+2026-11-21T11:08:25.7365676Z error: failed to write static data object file /home/runner/work/talon/talon/.work/cache/roc/compat-95146fbee859ac5af619126b859e5c90e03e75cb13c4c7eb79c6687d47c3acc1/tmp/LbmhVY0BxQaVVsWKfxeH0MnxdyM7ZflU/roc_static_data_x64musl.o: error.FileNotFound
+2026-11-21T11:08:25.7402954Z ── ✗ unreported error ──────────────────────────────────────────────────────────
+2026-11-21T11:08:25.7403477Z 
+2026-11-21T11:08:25.7403952Z The compiler stopped with the error ObjectGenerationFailed but did not say why.
+2026-11-21T11:08:25.7406457Z 
+2026-11-21T11:08:25.7410912Z This is a bug in the compiler: whatever failed should have explained itself. Please report it at https://github.com/roc-lang/roc/issues, including the command you ran.
+2026-11-21T11:08:25.7418268Z 
+2026-11-21T11:09:35.1501242Z == l3: FAIL (log: /home/runner/work/talon/talon/.work/logs/l3.log)
+2026-11-21T11:09:35.1550152Z FAIL exit/ex1-parser-basic-cli
+2026-11-21T11:09:35.1569603Z     file tree differs (- expected, + actual):
+2026-11-21T11:09:35.1570336Z       --- expected
+2026-11-21T11:09:35.1570641Z       +++ actual
+2026-11-21T11:09:35.1570915Z       @@ -1,3 +1,7 @@
+2026-11-21T11:09:35.1588798Z       +--- home/.config/talon/config.toml
+2026-11-21T11:09:35.2584525Z       ++++ home/.config/talon/config.toml
+2026-11-21T11:09:35.2588136Z       +@@ -0,0 +1 @@
+2026-11-21T11:09:35.2589972Z       ++default-roc = "nightly-2026-10-12-2664a27"
+2026-11-21T11:09:35.2591271Z        --- project/main.roc
+2026-11-21T11:09:35.2593507Z        +++ project/main.roc
+2026-11-21T11:09:35.2593910Z        @@ -1,4 +1,4 @@
+2026-11-21T11:09:35.2596634Z SKIP registry/cw1-add-releases: 
+2026-11-21T11:09:35.2603471Z SKIP registry/cw2-add-closure: 
+2026-11-21T11:09:35.2610457Z SKIP registry/cw3-install-short: 
+2026-11-21T11:09:35.2614502Z SKIP registry/cw4-update-toolchains: 
+2026-11-21T11:09:35.2617649Z SKIP registry/cw5-ingest-ok: 
+2026-11-21T11:09:35.2620672Z SKIP registry/cw6-probe-share: 
+2026-11-21T11:09:35.2624711Z SKIP registry/cw7-artifact: 
+2026-11-21T11:09:35.2627775Z SKIP registry/cw8-sweep: 
+2026-11-21T11:09:35.2631907Z SKIP registry/cw9-audit: 
+2026-11-21T11:09:35.2635541Z SKIP registry/rn5-login-jwt: blocked: needs a real GitHub token (R-CT8 OAuth App or an Actions OIDC token); no test gives one
+2026-11-21T11:09:35.2641144Z SKIP registry/rn6-publish-oidc: blocked: needs a real GitHub token (R-CT8 OAuth App or an Actions OIDC token); no test gives one
+2026-11-21T11:09:35.2644203Z SKIP registry/rn7-toolchains: blocked: no toolchain row until the compat bot runs
+2026-11-21T11:09:35.2649702Z FAIL tools/tx1-x-run
+2026-11-21T11:09:35.2651783Z     http requests differs (- expected, + actual):
+2026-11-21T11:09:35.2653695Z       --- expected
+2026-11-21T11:09:35.2655931Z       +++ actual
+2026-11-21T11:09:35.2657666Z       @@ -1,4 +1,3 @@
+2026-11-21T11:09:35.2660433Z        GET /api/repos/acme/app/releases?per_page=100 200
+2026-11-21T11:09:35.2662728Z        GET /dl/acme/app/releases/download/1.1.0/ELWydCQGytcn6s9pepLTma3HYgj17rjf3mcFFatXkNxw.tar.zst 200
+2026-11-21T11:09:35.2665320Z        GET /dl/acme/app/releases/download/1.0.0/DsoVdWC1V9eLCNnD6Fuf4Yq5F4JBUjLFL1ZT9vhDNLKr.tar.zst 200
+2026-11-21T11:09:35.2667792Z       -GET /api/repos/acme/app/releases?per_page=100 200
+2026-11-21T11:09:35.2677683Z scenarios: 105 passed, 2 failed, 12 skipped
+2026-11-21T11:10:37.8963341Z == w1: FAIL (log: /home/runner/work/talon/talon/.work/logs/w1.log)
+2026-11-21T11:10:37.8986189Z FAIL sqlite closure/c1-random-reference (12 ms)
+2026-11-21T11:10:37.8988942Z     setup failed: Value is too large to be represented as a JavaScript number: 4611686516829749252
+2026-11-21T11:10:37.8991284Z PASS d1 closure/c1-random-reference (42935 ms)
+2026-11-21T11:10:37.8994194Z FAIL sqlite closure/c2-closure-cte (2 ms)
+2026-11-21T11:10:37.8997977Z     setup failed: Value is too large to be represented as a JavaScript number: 9007199254740993
+2026-11-21T11:10:37.9000062Z PASS d1 closure/c2-closure-cte (526 ms)
+2026-11-21T11:10:37.9002239Z PASS sqlite closure/c3-order-window (18 ms)
+2026-11-21T11:10:37.9004056Z PASS d1 closure/c3-order-window (293 ms)
+2026-11-21T11:10:37.9005965Z PASS sqlite compat/a1-audit (7 ms)
+2026-11-21T11:10:37.9007931Z PASS d1 compat/a1-audit (220 ms)
+2026-11-21T11:10:37.9011557Z PASS sqlite compat/m1-bot-set-missing (893 ms)
+2026-11-21T11:10:37.9013304Z node:internal/modules/run_main:111
+2026-11-21T11:10:37.9015244Z     triggerUncaughtException(
+2026-11-21T11:10:37.9017317Z     ^
+2026-11-21T11:10:37.9018707Z 
+2026-11-21T11:10:37.9018809Z TypeError: fetch failed
+2026-11-21T11:10:37.9020711Z     at Object.processResponse (/opt/hostedtoolcache/node/26.13.1/x64/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/index.js:237:16)
+2026-11-21T11:10:37.9021597Z     at /opt/hostedtoolcache/node/26.13.1/x64/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/index.js:1081:19
+2026-11-21T11:10:37.9024041Z     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+2026-11-21T11:10:37.9025843Z     at /opt/hostedtoolcache/node/26.13.1/x64/lib/node_modules/wrangler/node_modules/undici/index.js:157:7
+2026-11-21T11:10:37.9026502Z     at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+2026-11-21T11:10:37.9026972Z     at async MessagePort.<anonymous> ([worker eval]:35:22) {
+2026-11-21T11:10:37.9029164Z   [cause]: Error: connect ECONNREFUSED 127.0.0.1:37231
+2026-11-21T11:10:37.9031117Z       at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2083:16)
+2026-11-21T11:10:37.9034382Z }
+2026-11-21T11:10:37.9034531Z 
+2026-11-21T11:10:37.9036466Z Node.js v26.13.1
+2026-11-21T11:11:29.4315839Z == selftest: FAIL (log: /home/runner/work/talon/talon/.work/logs/selftest.log)
+2026-11-21T11:11:29.4335306Z build of l2 failed:
+2026-11-21T11:11:29.4336574Z error: failed to write static data object file /home/runner/work/talon/talon/.work/cache/roc/compat-95146fbee859ac5af619126b859e5c90e03e75cb13c4c7eb79c6687d47c3acc1/tmp/LbmhVY0BxQaVVsWKfxeH0MnxdyM7ZflU/roc_static_data_x64musl.o: error.FileNotFound
+2026-11-21T11:11:29.4340146Z ── ✗ unreported error ──────────────────────────────────────────────────────────
+2026-11-21T11:11:29.4342012Z 
+2026-11-21T11:11:29.4342243Z The compiler stopped with the error ObjectGenerationFailed but did not say why.
+2026-11-21T11:11:29.4342448Z 
+2026-11-21T11:11:29.4344350Z This is a bug in the compiler: whatever failed should have explained itself. Please report it at https://github.com/roc-lang/roc/issues, including the command you ran.
+2026-11-21T11:11:29.4344720Z 
+2026-11-21T11:11:50.5028765Z 
+2026-11-21T11:11:50.5033241Z step       result seconds  budget
+2026-11-21T11:11:50.5033648Z check      pass   11.0     10
+2026-11-21T11:11:50.5035650Z fmt        pass   1.3      5
+2026-11-21T11:11:50.5037555Z l0         FAIL   150.9    10
+2026-11-21T11:11:50.5039810Z l2         FAIL   532.9    30
+2026-11-21T11:11:50.5041545Z l3         FAIL   69.4     60
+2026-11-21T11:11:50.5043155Z w0         pass   16.7     10
+2026-11-21T11:11:50.5043637Z w1         FAIL   46.0     15
+2026-11-21T11:11:50.5045677Z wbuild     pass   146.5    90
+2026-11-21T11:11:50.5047285Z w2         pass   37.1     45
+2026-11-21T11:11:50.5049190Z wtrap      pass   0.1      5
+2026-11-21T11:11:50.5049402Z selftest   FAIL   0.0      20
+2026-11-21T11:11:50.5051095Z l1         pass   21.1     60
+2026-11-21T11:11:50.5418414Z ##[error]Process completed with exit code 1.
+2026-11-21T11:11:50.6314700Z ##[group]Run actions/upload-artifact@v4
+2026-11-21T11:11:50.6315215Z with:
+2026-11-21T11:11:50.6316888Z   name: logs
+2026-11-21T11:11:50.6318732Z   path: .work/logs
+2026-11-21T11:11:50.6321493Z   if-no-files-found: ignore
+2026-11-21T11:11:50.6321722Z   compression-level: 6
+2026-11-21T11:11:50.6323304Z   overwrite: false
+2026-11-21T11:11:50.6325292Z   include-hidden-files: false
+2026-11-21T11:11:50.6326738Z env:
+2026-11-21T11:11:50.6327433Z   ROC_TAG: nightly-2026-10-14-38a3029
+2026-11-21T11:11:50.6329177Z   ROC_TAG_WORKER: nightly-2026-11-06-34f137a
+2026-11-21T11:11:50.6331364Z   ROC: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-10-14-38a3029/roc
+2026-11-21T11:11:50.6333260Z   ROC_WORKER: /home/runner/work/talon/talon/.work/nightlies/nightly-2026-11-06-34f137a/roc
+2026-11-21T11:11:50.6347717Z   REAL_CACHE: /home/runner/work/talon/talon/.work/real-cache/roc
+2026-11-21T11:11:50.6347975Z ##[endgroup]
+2026-11-21T11:11:50.8594241Z (node:88897) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-11-21T11:11:50.8597168Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-11-21T11:11:50.8802433Z With the provided path, there will be 86 files uploaded
+2026-11-21T11:11:50.8802998Z Artifact name is valid!
+2026-11-21T11:11:50.8803284Z Root directory input is valid!
+2026-11-21T11:11:51.1624154Z Beginning upload of artifact content to blob storage
+2026-11-21T11:11:51.2383952Z (node:88897) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-11-21T11:11:51.3968338Z Uploaded bytes 36973
+2026-11-21T11:11:51.4359945Z Finished uploading artifact content to blob storage!
+2026-11-21T11:11:51.4360671Z SHA256 digest of uploaded artifact zip is adccc427f04ee7358dd51f442ffa0dc628e0ed87b0f71c6692ab853c32470acf
+2026-11-21T11:11:51.4361385Z Finalizing artifact upload
+2026-11-21T11:11:51.8269939Z Artifact logs.zip successfully finalized. Artifact ID 14703684661
+2026-11-21T11:11:51.8270565Z Artifact logs has been successfully uploaded! Final size is 36973 bytes. Artifact ID is 14703684661
+2026-11-21T11:11:51.8275236Z Artifact download URL: https://github.com/roc-talon/talon/actions/runs/44896643927/artifacts/14703684661
+2026-11-21T11:11:51.8605252Z Post job cleanup.
+2026-11-21T11:11:51.9268250Z [command]/usr/bin/git version
+2026-11-21T11:11:51.9312989Z git version 2.56.1
+2026-11-21T11:11:51.9336633Z Temporarily overriding HOME='/home/runner/work/_temp/57518bb0-33c4-4ef1-9da3-9654a9b2671c' before making global git config changes
+2026-11-21T11:11:51.9339730Z Adding repository directory to the temporary git global config as a safe directory
+2026-11-21T11:11:51.9342372Z [command]/usr/bin/git config --global --add safe.directory /home/runner/work/talon/talon
+2026-11-21T11:11:51.9383074Z [command]/usr/bin/git config --local --name-only --get-regexp core\.sshCommand
+2026-11-21T11:11:51.9416870Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2026-11-21T11:11:51.9914713Z [command]/usr/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-11-21T11:11:51.9944036Z http.https://github.com/.extraheader
+2026-11-21T11:11:51.9951295Z [command]/usr/bin/git config --local --unset-all http.https://github.com/.extraheader
+2026-11-21T11:11:51.9985267Z [command]/usr/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2026-11-21T11:11:52.0338733Z [command]/usr/bin/git config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-11-21T11:11:52.0372559Z [command]/usr/bin/git submodule foreach --recursive git config --local --show-origin --name-only --get-regexp remote.origin.url
+2026-11-21T11:11:52.0925648Z Cleaning up orphan processes
+2026-11-21T11:11:52.1636938Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/cache@v4, actions/checkout@v4, actions/setup-node@v4, actions/upload-artifact@v4. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

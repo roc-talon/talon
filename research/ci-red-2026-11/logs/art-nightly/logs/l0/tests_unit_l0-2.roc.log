@@ -1,0 +1,124 @@
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ("https://api.github.com/repos/acme/json/releases?per_page=100", "http://127.0.0.1:41234/api/repos/o/r/releases?per_page=100", "https://raw.githubusercontent.com/acme/json/2.1.0/.roc-version", "http://127.0.0.1:41234/raw/o/r/v1.0.0-rc1/.roc-version")
+[dbg] ({ body: "/c/roc/talon/index/github/acme/json/1.json", meta: "/c/roc/talon/index/github/acme/json/1.meta" }, { body: "/c/roc/talon/index/github/acme/json/12.json", meta: "/c/roc/talon/index/github/acme/json/12.meta" })
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ((15, "GitHub API rate limit reached. It resets at 2026-10-16T12:00:00Z. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login)."), (15, "GitHub API rate limit reached. Set GITHUB_TOKEN or GH_TOKEN, or log in with gh (gh auth login)."), (15, "cannot reach https://api.github.com/repos/a/b/releases?per_page=100: no answer in 20 s. Use --offline to work with the cached index."), (15, "cannot reach http://127.0.0.1:1/api/repos/a/b/releases?per_page=100: network error. Use --offline to work with the cached index."), (15, "GitHub answered 500 for https://api.github.com/repos/a/b/releases?per_page=100"), (2, "no GitHub repository acme/nope (a private repository needs a token)"))
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] Ok((App, [("pf", "https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst", True, "release roc-lang/basic-cli 0.25.0 0.25"), ("json", "https://github.com/someone/roc-json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst", False, "release someone/roc-json 2.1.0 2"), ("util", "../util/main.roc", False, "path"), ("odd", "https://example.com/pkg/latest.tar.gz", False, "foreign")], Ok("nightly-2026-10-09-258ab27"), ["../util/main.roc"]))
+[dbg] Ok((Package, [("unicode", "https://github.com/roc-lang/unicode/releases/download/1.0.0/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst", False, "release roc-lang/unicode 1.0.0 1")], Err(NoPin)))
+[dbg] Ok((Platform, [("json", "https://github.com/someone/roc-json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst", False, "release someone/roc-json 2.1.0 2")]))
+[dbg] ["tln: error[usage]: /p/x.roc has no app, package or platform header", "tln: error[input]: /p/y.roc:3: the header is not valid"]
+[dbg] [Ok("# my app
+app [main!] {
+	# the platform
+	pf: platform \"https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst\", # trailing comment
+	json:   \"https://github.com/someone/roc-json/releases/download/2.3.0/J3fdXfd44AGuuqZMdge6UxcjrCJBwHzF2uiQxbu2ZCnr.tar.zst\",
+	util: \"../util/main.roc\",
+	odd: \"https://example.com/pkg/latest.tar.gz\",
+	roc: \"nightly-2026-10-09-258ab27\",
+}
+
+import pf.Stdout
+
+main! = |_| Ok({})
+"), Ok("# my app
+app [main!] {
+	# the platform
+	pf: platform \"https://github.com/roc-lang/basic-cli/releases/download/0.25.0/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA.tar.zst\", # trailing comment
+	json:   \"https://github.com/someone/roc-json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst\",
+	util: \"../util/main.roc\",
+	odd: \"https://example.com/pkg/latest.tar.gz\",
+	roc: \"nightly-2026-10-09-258ab27\",
+	http: \"https://github.com/roc-lang/http/releases/download/1.9.0/4W8SHzvwet9hH9qZewJ1J1CVQoH7YKA6zyijWFTB3y1w.tar.zst\",
+}
+
+import pf.Stdout
+
+main! = |_| Ok({})
+")]
+[dbg] []
+[dbg] []
+[dbg] ["https://github.com/someone/roc-json/releases/download/2.1.0/9LY5pVf1tPH1sGnyVhEC45z3R7SZc3MApWRN8QvUat17.tar.zst", "", "nightly-2026-10-09-258ab27", "../util/main.roc", ""]
+[dbg] []
+[dbg] []
+[dbg] ["../util/main.roc", "../platform/main.roc", "https://example.com/pkg/latest.tar.gz", ""]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ([], ["hash /a/roc", "hash /t/tln", "version /b/roc"], [], ["version /d/roc"], [])
+[dbg] []
+[dbg] ("{\"format\":1,\"files\":[{\"path\":\"/a/roc\",\"size\":100,\"mtime\":5,\"sha256\":\"aaaa\"},{\"path\":\"/b/roc\",\"size\":7,\"mtime\":6,\"id\":\"nightly-2026-10-14-38a3029\"},{\"path\":\"/c/roc\",\"size\":100,\"mtime\":7,\"sha256\":\"bbbb\",\"id\":\"0.1.0\"},{\"path\":\"/d/roc\",\"size\":9,\"mtime\":8,\"id\":null}]}
+", "{\"format\":1,\"files\":[{\"path\":\"/a/roc\",\"size\":100,\"mtime\":5,\"sha256\":\"aaaa\",\"id\":\"nightly-2026-10-14-38a3029\",\"x\":[1],\"y\":null},{\"path\":\"/b/roc\",\"size\":7,\"mtime\":6,\"id\":null}],\"note\":\"keep\"}
+")
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] "update can move these packages:
+  1) json    acme/json 2.0.0
+  2) parser  acme/parser 1.0.0
+  3) pf      acme/pf 0.1.0
+"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] Ok(([(Ok("someone/roc-json"), "2", False, Indexed, [("/p/main.roc", "json", "2.1.0")], [(">=2.1.0, <3.0.0", "implied by /p/main.roc")]), (Ok("lukewilliamboswell/roc-parser"), "2", False, Indexed, [("/p/main.roc", "parser", "2.0.0")], [("=2.0.0", "/p/talon.toml:3")]), (Err(NoName), "1", False, Fixed("example.com"), [("/p/main.roc", "fixed", "1.0.0")], [(">=1.0.0, <2.0.0", "implied by /p/main.roc")]), (Ok("roc-lang/basic-cli"), "0.25", True, Indexed, [("/p/main.roc", "pf", "0.25.0")], [("0.25.*", "/p/talon.toml:2")])], [("http", Dependencies, Ok("roc-lang/http"), "^1", "/p/talon.toml:4", ["/p/main.roc"], Err(None)), ("js", Dependencies, Ok("someone/roc-json"), "^2", "/p/talon.toml:5", ["/p/main.roc"], Ok("json")), ("yaml", Dependencies, Err(Short("yaml")), "2", "/p/talon.toml:6", ["/p/main.roc"], Err(None)), ("none", Dependencies, Err(Short("none")), "^1", "/p/talon.toml:7", ["/p/main.roc"], Err(None)), ("unicode", Overrides, Ok("roc-lang/unicode"), "^4.2", "/p/talon.toml:10", ["/p/main.roc"], Err(None))]))
+[dbg] [[["parser"], ["pf"], ["json"], ["fixed"]], [["Ok(([([\"json\"], [\">=2.1.0, <3.0.0\"]), ([\"parser\"], [\">=2.0.0, <3.0.0\"]), ([\"fixed\"], [\">=1.0.0, <2.0.0\"]), ([\"pf\"], [\">=0.25.0, <0.26.0\"])], []))"]], [["Ok(([([\"parser\"], [(\"=2.0.0\", \"/p/talon.toml:2\")]), ([\"pf\"], [(\">=0.25.0, <0.26.0\", \"implied by /p/main.roc\")])], []))"]]]
+[dbg] Ok(([(Ok("someone/roc-json"), "2", False, Indexed, [("/w/apps/a/main.roc", "json", "2.1.0"), ("/w/apps/b/main.roc", "js", "2.3.0"), ("/w/libs/c/main.roc", "json", "2.0.0")], [("^2.2", "/w/talon.toml:5"), ("^2.3", "/w/apps/b/talon.toml:2"), ("^2.0", "/w/libs/c/talon.toml:3")]), (Ok("roc-lang/http"), "1", False, Indexed, [("/w/apps/a/main.roc", "http", "1.9.0")], [(">=1.9.0, <2.0.0", "implied by /w/apps/a/main.roc")]), (Ok("roc-lang/http"), "2", False, Indexed, [("/w/apps/b/main.roc", "http2", "2.0.0")], [(">=2.0.0, <3.0.0", "implied by /w/apps/b/main.roc")]), (Ok("roc-lang/basic-cli"), "0.25", True, Indexed, [("/w/apps/a/main.roc", "pf", "0.25.0")], [(">=0.25.0, <0.26.0", "implied by /w/apps/a/main.roc")]), (Ok("roc-lang/basic-webserver"), "0.12", True, Indexed, [("/w/apps/b/main.roc", "pf", "0.12.0")], [(">=0.12.0, <0.13.0", "implied by /w/apps/b/main.roc")])], [("newdep", Dependencies, Ok("acme/newdep"), "^1", "/w/talon.toml:6", ["/w/apps/a/main.roc"], Err(None))]))
+[dbg] "tln: error[usage]: /w/talon.toml:6: the key 'newdep' is in no header, and 2 members are under /w: /w/apps/a/main.roc, /w/apps/d/main.roc. Run tln add --file <member file> acme/newdep for one of them."
+[dbg] []
+[dbg] [True, True]
+[dbg] Ok(([(["json"], [("^2.1", "/p/talon.toml:4")]), (["pf"], [(">=0.25.0, <0.26.0", "implied by /p/main.roc")])], []))
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+All (106) tests passed in 10403.0 ms.

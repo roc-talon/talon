@@ -43,8 +43,8 @@ InstallWrite :: [].{
 	}
 
 	## Slice 255 (Design Q635, D1 strict): the lines of the files (R-LF4), printed by the command after `write!` and after the audit lines.
-	report! : Fx, Loaded, List(Edit), List(Pair), List(Rename), List(Str) => {}
-	report! = |fx, loaded, edits, pairs, renames, touched| {
+	report! : Fx, Loaded, List(Edit), List(Pair), List(Rename), List(Str), List(Str) => {}
+	report! = |fx, loaded, edits, pairs, renames, touched, anchors| {
 		header_files = loaded.members.keep_if(|m| edits.any(|e| e.file == m.file)).map(|m| m.file)
 		for path in header_files {
 			if touched.contains(path) {
@@ -58,6 +58,10 @@ InstallWrite :: [].{
 			if touched.contains(p.path) {
 				fx.out!("${p.path}: ${p.key} = \"${p.value}\"${was_text(loaded, p)}\n")
 			}
+		}
+		# Slice 262b (B9, R2): the anchor notes follow the `talon.toml` lines.
+		for text in anchors {
+			fx.out!("note: ${text}\n")
 		}
 		for r in renames {
 			if touched.contains(r.path) {

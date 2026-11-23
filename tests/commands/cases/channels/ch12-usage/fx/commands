@@ -6,3 +6,5 @@ roc channel add a b c
 roc channel rm
 roc channel rm a b
 roc channel list extra
+# Slice 262a R-CM27 R-CM19 Q262-1 Q262-8: a word close to a channel word gets the hint in the long form
+roc channel remov reify

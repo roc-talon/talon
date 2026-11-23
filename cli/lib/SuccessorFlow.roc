@@ -165,7 +165,7 @@ SuccessorFlow :: [].{
 # The R-AP1 read of one name of the walk (`FullName.read_via!`). `--offline`: the kept copy (no copy: exit 15, `Github.no_page_failure`).
 read! : Fx, ResolveBase.Request, { origin : Str, source : Str, snapshot : Try(U64, [None]), online : a }, Str, List(Str) => Try({ releases : List(WireRelease.Row), repos : List(Wire.Repo) }, Fail)
 read! = |fx, request, reg, name, known| {
-	got = FullName.read_via!(fx, { net: request.net, roots: request.roots, origin: reg.origin, version: Help.version, now: request.now, offline: request.offline, name, selector: Err(None), snapshot: reg.snapshot, known, source: reg.source })?
+	got = FullName.read_real!(fx, { net: request.net, roots: request.roots, origin: reg.origin, version: Help.version, now: request.now, real: request.?real ?? request.now, offline: request.offline, name, selector: Err(None), snapshot: reg.snapshot, known, source: reg.source })?
 	match got {
 		Found(r) => Ok({ releases: r.releases, repos: r.repos })
 		NoMatch | SourceBuild => Ok({ releases: no_rows, repos: [] })

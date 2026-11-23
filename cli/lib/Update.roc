@@ -130,7 +130,7 @@ Update :: [].{
 	}
 }
 
-Start : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }
+Start : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, project : Project }
 
 # Steps 2 to 9: the environment, the project, the record, the picker, the compiler, and `Resolve.install!`.
 flow! : Fx, Args, Opts, Bool => Try([Moved(InstallFlow.Done), NothingPicked], Fail)
@@ -166,6 +166,7 @@ request_of = |args, opts, start, selected| {
 	roots: start.roots,
 	net: start.net,
 	now: start.now,
+	real: start.real,
 	offline: args.offline,
 	strategy: opts.strategy,
 	nightly: Common.nightly_of(start.env),

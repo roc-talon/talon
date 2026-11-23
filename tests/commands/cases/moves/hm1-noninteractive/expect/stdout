@@ -19,6 +19,7 @@ $PROJECT/ws/apps/a/main.roc
 $PROJECT/ws/apps/b/main.roc
   + json: acme/json 2.2.0
 $PROJECT/ws/talon.toml: json = "=2.2.0"
+note: json is pinned to =2.2.0: tln update keeps it there, and tln upgrade json moves it. To start at 2.2.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 4 probes
 dry run: nothing was written
 exit 0
@@ -35,6 +36,7 @@ $PROJECT/ws/apps/a/main.roc
 $PROJECT/ws/apps/b/main.roc
   + json: acme/json 2.2.0
 $PROJECT/ws/talon.toml: json = "=2.2.0"
+note: json is pinned to =2.2.0: tln update keeps it there, and tln upgrade json moves it. To start at 2.2.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 4 probes
 exit 0
 == update yaml@1.1.0 --yes --file ws/apps/a/main.roc
@@ -49,5 +51,6 @@ $PROJECT/ws/apps/a/main.roc
 $PROJECT/ws/apps/b/main.roc
   ~ base: acme/pfx 0.1.0 -> 0.1.1
 $PROJECT/ws/talon.toml: yaml = "=1.1.0"
+note: yaml is pinned to =1.1.0: tln update keeps it there, and tln upgrade yaml moves it. To start at 1.1.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 7 probes
 exit 0

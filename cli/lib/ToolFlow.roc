@@ -61,7 +61,7 @@ import XTake
 ToolFlow :: [].{
 
 	## What steps 2 and 3 found (slice 049, `tln x`): the machine, `tools.json` with all fields of each tool, `config.toml`. `ToolBuild.Facts` is this and the name of the app.
-	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]) }
+	Machine : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, os : Setup.Os, bin : Str, target : Str, tools : List(ToolsJson.Tool), items : List(ToolsJson.Item), min_age : U64, exclude : List(Str), probe_timeout : U64, default_roc : Str, registry : Try({ text : Str, at : Str }, [Unset]) }
 
 	## Steps 1 to 13.
 	run! : Fx, Args => I32
@@ -204,7 +204,7 @@ gather_with! = |fx, plan| {
 		Elsewhere(other) => return Err(ToolInstall.elsewhere_failure({ key: other.key, name }))
 		_ => {}
 	}
-	Ok({ facts: { env: m.env, roots: m.roots, net: m.net, now: m.now, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) }, registry: m.registry })
+	Ok({ facts: { env: m.env, roots: m.roots, net: m.net, now: m.now, real: m.real, os: m.os, bin: m.bin, target: m.target, entries, min_age: m.min_age, exclude: m.exclude, probe_timeout: m.probe_timeout, name, key, file: ToolInstall.file_name({ os: m.os, key }), selected: Fetch.selected({ held: "", default: m.default_roc }) }, registry: m.registry })
 }
 
 # Slice 049 (R-B7): a release list that fails with the kind `Network` (no network, and no `--offline`) is the offline case: a matching `x` entry is offered. No match, or another kind: the failure of the list.
@@ -223,7 +223,8 @@ machine! = |fx| {
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
-	now = Clock.now!(fx, env)?
+	times = Clock.times!(fx, env)?
+	now = times.now
 	host = fx.platform!()
 	bin = Setup.bin_dir({ os: host.os, env })?
 	target = match BuildSkip.target(host) {
@@ -235,7 +236,7 @@ machine! = |fx| {
 	tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
 	items = ToolsJson.items({ path: tools_file, text: tools_text })?
 	config = RocInstall.read_config!(fx, roots)?
-	Ok({ env, roots, net, now, os: host.os, bin, target, tools, items, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry })
+	Ok({ env, roots, net, now, real: times.real, os: host.os, bin, target, tools, items, min_age: config.min_release_age ?? 172800, exclude: config.min_release_age_exclude, probe_timeout: ToolBuild.probe_timeout(config), default_roc: config.default_roc ?? "", registry: config.registry })
 }
 
 # Step 4 (R-SC3, R-AD7): an installed tool by its name or short name, else the name as typed. A failure prints its block first.
@@ -256,7 +257,7 @@ release_list! = |fx, args, facts| {
 		[o, r] => (o, r)
 		_ => return Err(Fail.new(Usage, "'${facts.name}' is not an owner/repo name. tln tool install reads the releases of GitHub repos only."))
 	}
-	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.now, offline: args.offline })?
+	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.?real ?? facts.now, offline: args.offline })?
 	match fetched.source {
 		Missing => return Err(Github.no_page_failure(facts.name))
 		Cached(time) => fx.err!("${Github.offline_line(time)}\n")
@@ -302,7 +303,7 @@ release_list_with! = |fx, args, facts, via| match IndexQuery.setting({ flag: arg
 			Ok(selector) => Ok({ selector, text: selector_text(selector) })
 			Err(None) => Err(None)
 		}
-		read = FullName.read_via!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: args.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: IndexQuery.source({ flag: args.registry, env: facts.net.registry, config: via.registry }) })?
+		read = FullName.read_real!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, real: facts.?real ?? facts.now, offline: args.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: IndexQuery.source({ flag: args.registry, env: facts.net.registry, config: via.registry }) })?
 		match read {
 			NoMatch => Ok({ list: [], pages: [] })
 			SourceBuild => Err(Fail.new(Internal, "${facts.name}: a source build is not read from the registry"))

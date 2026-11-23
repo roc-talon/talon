@@ -1,0 +1,981 @@
+diff --git a/bot/main.roc b/bot/main.roc
+index be1e4d71..1c3c4c5c 100644
+--- a/bot/main.roc
++++ b/bot/main.roc
+@@ -1,6 +1,6 @@
+ app [main!] {
+ 	bot: "lib/main.roc",
+-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
+ 	real: "../cli/real.roc",
+ }
+ 
+diff --git a/cli/flowprobe.roc b/cli/flowprobe.roc
+index 88ec66ae..c36285ed 100644
+--- a/cli/flowprobe.roc
++++ b/cli/flowprobe.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	http: "https://github.com/roc-lang/http/releases/download/1.0.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst",
+ 	lib: "lib/main.roc",
+-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
+ }
+ 
+ import lib.Clock
+diff --git a/cli/fxprobe.roc b/cli/fxprobe.roc
+index 853a7e24..83bfc6ed 100644
+--- a/cli/fxprobe.roc
++++ b/cli/fxprobe.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	http: "https://github.com/roc-lang/http/releases/download/1.0.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst",
+ 	lib: "lib/main.roc",
+-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
+ }
+ 
+ import lib.Db
+diff --git a/cli/lib/AuditCheck.roc b/cli/lib/AuditCheck.roc
+index 04b6881c..ff8aab80 100644
+--- a/cli/lib/AuditCheck.roc
++++ b/cli/lib/AuditCheck.roc
+@@ -324,7 +324,7 @@ closure_entry = |hash, rows| {
+ 	edge = if row.direct {
+ 		row.alias
+ 	} else {
+-		match rows.first() {
++		match first {
+ 			Ok(f) => f.walked.links.find_first(|l| l.to == row.id).map_ok(|l| l.alias) ?? row.alias
+ 			Err(_) => row.alias
+ 		}
+diff --git a/cli/lib/AuditReport.roc b/cli/lib/AuditReport.roc
+index 34131d74..f42b87b4 100644
+--- a/cli/lib/AuditReport.roc
++++ b/cli/lib/AuditReport.roc
+@@ -16,7 +16,7 @@ AuditReport :: [].{
+ 		ReleaseMissing => "release-missing"
+ 		Prerelease => "prerelease"
+ 		Moved => "moved"
+-		Other(text) => text
++		Other(other) => other
+ 	}
+ 
+ 	## The column "Fails" of R-AU2. An unknown value fails (Q-244-3).
+diff --git a/cli/lib/BuildSkip.roc b/cli/lib/BuildSkip.roc
+index a92d2e13..b421942a 100644
+--- a/cli/lib/BuildSkip.roc
++++ b/cli/lib/BuildSkip.roc
+@@ -79,9 +79,9 @@ BuildSkip :: [].{
+ 	## A row of another digest never decides: a pass with another digest does not skip, and a fail with another digest does not block. A `Pass` row with no digest never skips. Condition 3 (step 2 passed with no new error) is not here: the command asks only after it.
+ 	decide : { facts : List(Db.Fact), key : Db.Key, digest : Str } -> [Skip, Build]
+ 	decide = |facts| {
+-		mine = facts.facts.keep_if(|row| row.hash == facts.key.hash and row.nightly == facts.key.nightly and row.target == facts.key.target and row.closure == facts.digest)
+-		blocked = mine.any(|row| row.outcome != Pass)
+-		passed = mine.any(|row| row.outcome == Pass)
++		mine = facts.facts.keep_if(|fact| fact.hash == facts.key.hash and fact.nightly == facts.key.nightly and fact.target == facts.key.target and fact.closure == facts.digest)
++		blocked = mine.any(|fact| fact.outcome != Pass)
++		passed = mine.any(|fact| fact.outcome == Pass)
+ 		if passed and !blocked and !facts.digest.is_empty() Skip else Build
+ 	}
+ 
+diff --git a/cli/lib/ClosureRequest.roc b/cli/lib/ClosureRequest.roc
+index 6f18ee5b..5683f7f8 100644
+--- a/cli/lib/ClosureRequest.roc
++++ b/cli/lib/ClosureRequest.roc
+@@ -56,12 +56,12 @@ ClosureRequest :: [].{
+ 		None => Ok(Err(None))
+ 		Held(id) => Ok(Ok({ from: Ok(id), to: Ok(id) }))
+ 		Report(domain) => match ClosureRequest.ends(ClosureRequest.staying(domain), domain.rows) {
+-			Ok(ends) => Ok(Ok({ from: Ok(ends.oldest), to: Ok(ends.newest) }))
++			Ok(span) => Ok(Ok({ from: Ok(span.oldest), to: Ok(span.newest) }))
+ 			Err(NoCompiler) => Ok(Err(None))
+ 		}
+ 		Free(domain) => {
+-			ends = ClosureRequest.ends(ClosureRequest.staying(domain), domain.rows)?
+-			Ok(Ok({ from: Ok(ends.oldest), to: Ok(ends.newest) }))
++			span = ClosureRequest.ends(ClosureRequest.staying(domain), domain.rows)?
++			Ok(Ok({ from: Ok(span.oldest), to: Ok(span.newest) }))
+ 		}
+ 	}
+ 
+diff --git a/cli/lib/Gc.roc b/cli/lib/Gc.roc
+index 4cc88e31..95466c11 100644
+--- a/cli/lib/Gc.roc
++++ b/cli/lib/Gc.roc
+@@ -108,8 +108,8 @@ Gc :: [].{
+ 	## A file, a dev version (`zig-0.18.0-dev.31+abc1234`), a version with 2 numbers, a temp (`zig-0.17.0.<16hex>.tmp`), a lock dir, a trash dir, and a compiler are not in it. The time of an entry is not read.
+ 	## The name decides (Q4 of the slice file): a dir `zig-<X.Y.Z>` that a person made by hand is a Zig install too.
+ 	zig_dirs : List({ name : Str, is_dir : Bool, mtime : U64 }) -> List(Str)
+-	zig_dirs = |entries| Text.sorted_unique(
+-		entries
++	zig_dirs = |listing| Text.sorted_unique(
++		listing
+ 			.keep_if(|e| e.is_dir and e.name.starts_with("zig-") and Zig.is_release_version(e.name.drop_prefix("zig-")))
+ 			.map(|e| e.name),
+ 	)
+diff --git a/cli/lib/Link.roc b/cli/lib/Link.roc
+index cc3e50e4..3c9f3ebb 100644
+--- a/cli/lib/Link.roc
++++ b/cli/lib/Link.roc
+@@ -122,7 +122,7 @@ Link :: [].{
+ 			no_path = Fail.new(Input, "${facts.path}: the link ${facts.id} has no absolute target path")
+ 			match TalonFile.open({ path: facts.path, text, newest: TalonFile.record_format, can_recreate: Bool.False })? {
+ 				Use(file) => match file.fields.find_first(|(key, _)| key == "path") {
+-					Ok((_, JsonDoc.Text(target))) if target.starts_with("/") => Ok(target)
++					Ok((_, JsonDoc.Text(link_target))) if link_target.starts_with("/") => Ok(link_target)
+ 					_ => Err(no_path)
+ 				}
+ 				_ => Err(no_path)
+diff --git a/cli/lib/Manage.roc b/cli/lib/Manage.roc
+index 3cfabd23..f283e0d7 100644
+--- a/cli/lib/Manage.roc
++++ b/cli/lib/Manage.roc
+@@ -193,7 +193,7 @@ Manage :: [].{
+ 			Ok(Value.String(old)) if old == facts.id => Ok({ previous: Ok(old), edit: Same })
+ 			Ok(Value.String(old)) => match Toml.replace(doc, ["default-roc"], Value.String(facts.id)) {
+ 				Ok(done) => Ok({ previous: Ok(old), edit: Set(done.to_str()) })
+-				Err(NoEntry) => Err(cannot_write(facts.path))
++				Err(_) => Err(cannot_write(facts.path))
+ 			}
+ 			Ok(_) => Err(Fail.new(Input, "${facts.path}: default-roc is not a text"))
+ 			Err(NotFound) => match Toml.insert(doc, ["default-roc"], Value.String(facts.id)) {
+diff --git a/cli/lib/Matrix.roc b/cli/lib/Matrix.roc
+index 87e0ea7f..d7b9ba22 100644
+--- a/cli/lib/Matrix.roc
++++ b/cli/lib/Matrix.roc
+@@ -56,7 +56,7 @@ Matrix :: [].{
+ 	real = |x| {
+ 		same = |a, b| a.hash == b.hash and a.target == b.target and PinOrder.same_id(a.nightly, b.nightly)
+ 		fresh = x.rows.keep_if(|r| !x.local.any(|f| same(f, r)))
+-		keys = fresh.fold([], |found, r| if found.any(|k| same(k, r)) found else found.append(r))
++		keys = fresh.fold([], |acc, r| if acc.any(|k| same(k, r)) acc else acc.append(r))
+ 		reg = keys.map(
+ 			|k| {
+ 				pick = winner(fresh.keep_if(|r| same(r, k))) ?? k
+@@ -87,7 +87,7 @@ Matrix :: [].{
+ 			Err(_) => Own(p)
+ 		}
+ 		units = x.facts.keep_if(|f| f.target == "any")
+-		hashes = units.fold([], |found, f| if found.contains(f.hash) found else found.append(f.hash))
++		hashes = units.fold([], |acc, f| if acc.contains(f.hash) acc else acc.append(f.hash))
+ 		code = |hash, id| match units.find_first(|f| f.hash == hash and f.nightly == id) {
+ 			Ok(f) if f.outcome == Pass or f.outcome == Fail => Ok(f.outcome)
+ 			_ => Err(NoCode)
+diff --git a/cli/lib/MoveCheck.roc b/cli/lib/MoveCheck.roc
+index 548ae361..0200e091 100644
+--- a/cli/lib/MoveCheck.roc
++++ b/cli/lib/MoveCheck.roc
+@@ -67,12 +67,12 @@ MoveCheck :: [].{
+ 	## R-MV1, R-MV2: the job repository from `GITHUB_REPOSITORY` (R-YK3 form, in lower case). Kind `Usage`: `GITHUB_REPOSITORY is not set or is empty. tln move runs in a GitHub Actions job.` and `GITHUB_REPOSITORY is <value>, not of the form owner/repo.`
+ 	job : List((Str, Str)) -> Try(MoveCheck.Name, Fail)
+ 	job = |env| {
+-		text = match Publish.env_var(env, "GITHUB_REPOSITORY") {
++		repo_text = match Publish.env_var(env, "GITHUB_REPOSITORY") {
+ 			Ok(value) => value
+ 			Err(Unset) => return Err(Fail.new(Usage, "GITHUB_REPOSITORY is not set or is empty. tln move runs in a GitHub Actions job."))
+ 		}
+-		bad = Fail.new(Usage, "GITHUB_REPOSITORY is ${text}, not of the form owner/repo.")
+-		match text.split_on("/") {
++		bad = Fail.new(Usage, "GITHUB_REPOSITORY is ${repo_text}, not of the form owner/repo.")
++		match repo_text.split_on("/") {
+ 			[owner, repo] => if Publish.safe_name(owner, "._-") and Publish.safe_name(repo, "._-") {
+ 				Ok({ owner: owner.with_ascii_lowercased(), repo: repo.with_ascii_lowercased() })
+ 			} else {
+@@ -140,11 +140,11 @@ MoveCheck :: [].{
+ 	oidc : List((Str, Str)) -> Try(Publish.Oidc, Fail)
+ 	oidc = |env| {
+ 		url = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_URL") {
+-			Ok(text) => text
++			Ok(value) => value
+ 			Err(Unset) => return Err(MoveCheck.no_oidc("ACTIONS_ID_TOKEN_REQUEST_URL"))
+ 		}
+ 		token = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_TOKEN") {
+-			Ok(text) => text
++			Ok(value) => value
+ 			Err(Unset) => return Err(MoveCheck.no_oidc("ACTIONS_ID_TOKEN_REQUEST_TOKEN"))
+ 		}
+ 		Ok({ url, token })
+@@ -247,12 +247,12 @@ MoveCheck :: [].{
+ 		match input.reply {
+ 			Err(Timeout) => Publish.no_reply(common, "no answer in 20 s", done)
+ 			Err(Failed(why)) => Publish.no_reply(common, why, done)
+-			Ok(answer) => {
+-				retry_after = Registry.retry_after_of(answer.headers)
+-				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: answer.status, body: answer.body }, retry_after, source, needs: Bool.True })
+-				match Registry.problem({ status: answer.status, body: answer.body }) {
++			Ok(got) => {
++				retry_after = Registry.retry_after_of(got.headers)
++				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: got.status, body: got.body }, retry_after, source, needs: Bool.True })
++				match Registry.problem({ status: got.status, body: got.body }) {
+ 					Err(NotProblem) => refused
+-					Ok(body) => match Publish.retry_text(common, { status: answer.status, retry_after, body }) {
++					Ok(body) => match Publish.retry_text(common, { status: got.status, retry_after, body }) {
+ 						Ok(message) => { ..refused, message }
+ 						Err(None) => {
+ 							what = if body.detail.is_empty() body.title else body.detail
+diff --git a/cli/lib/Nightlies.roc b/cli/lib/Nightlies.roc
+index 1332d704..d87c9a04 100644
+--- a/cli/lib/Nightlies.roc
++++ b/cli/lib/Nightlies.roc
+@@ -351,7 +351,7 @@ Nightlies :: [].{
+ 	## Slice 206e2: the list of `source`: `list!` for `Direct`, `list_registry!` for `Registry` (offline when `kept`). The result and the failures are those of the function.
+ 	## Slice 225 (R-RG9): `via` is the source that gave the list, for the `digest` of its rows (`digest_source`): `Direct` after a fall back.
+ 	via : { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release) }, Nightlies.Source, Try(Fallback.Fell, [None]) -> { releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }
+-	via = |got, via, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via, fell }
++	via = |got, source, fell| { releases: got.releases, source: got.source, changed: got.changed, dropped: got.dropped, via: source, fell }
+ 
+ 	## Slice 240 (R-CH16): with `channel` the list is that of the user channel (`list_channel!` when `source_for` gives `Direct`, which it always does for a user channel).
+ 	list_of! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, host : Host, source : Nightlies.Source, channel ?: { name : Str, source : Str, tag_prefix : Str } } => Try({ releases : List(Release), source : [Live, Cached(U64), Missing], changed : List(Facts.Change), dropped : List(Release), via : Nightlies.Source, fell : Try(Fallback.Fell, [None]) }, Fail)
+diff --git a/cli/lib/Outdated.roc b/cli/lib/Outdated.roc
+index 8d708103..3c09ae10 100644
+--- a/cli/lib/Outdated.roc
++++ b/cli/lib/Outdated.roc
+@@ -31,10 +31,10 @@ import ProbeRange
+ Outdated :: [].{
+ 
+ 	## The nightly range of a row: `Known` is the result of `ProbeRange.found` over the facts. `Unread` is no list of compilers (D is empty).
+-	Range : [Known(ProbeRange.Found), Unread]
++	NightlyRange : [Known(ProbeRange.Found), Unread]
+ 
+ 	## One row of the table. The versions are `X.Y.Z`. `name` is `owner/repo`.
+-	Row : { alias : Str, name : Str, current : Str, wanted : Str, latest : Str, new_series : Bool, range : Outdated.Range }
++	Row : { alias : Str, name : Str, current : Str, wanted : Str, latest : Str, new_series : Bool, range : Outdated.NightlyRange }
+ 
+ 	## One member: its project file, the rows that are behind, and the hosts with no index (R-DI11), in the order of the groups, with no repeat.
+ 	Member : { file : Str, rows : List(Outdated.Row), fixed : List(Str) }
+@@ -77,11 +77,11 @@ Outdated :: [].{
+ 
+ 	## The nightly range of the hash on the compiler list `domain` (R-PB3): `ProbeRange.found` with no askable release, so it reads facts only. An empty `domain` is `Unread`.
+ 	## Slice 206e3 (R-EP15): `epochs` go to `ProbeRange.Input.epochs` (`[]` with no registry answer).
+-	range_of : { hash : Str, domain : List(Str), facts : List(Db.Fact), epochs : List(Epochs.Interval) } -> Outdated.Range
++	range_of : { hash : Str, domain : List(Str), facts : List(Db.Fact), epochs : List(Epochs.Interval) } -> Outdated.NightlyRange
+ 	range_of = |x| if x.domain.is_empty() Unread else Known(ProbeRange.found({ hash: x.hash, domain: x.domain, askable: [], facts: x.facts, epochs: x.epochs }))
+ 
+ 	## The cell of the range. `<from> .. <to>`, with a `?` after an end that is not a real fact (R-PB4). No real pass: `none known`. No list: `-`.
+-	range_text : Outdated.Range -> Str
++	range_text : Outdated.NightlyRange -> Str
+ 	range_text = |range| match range {
+ 		Unread => "-"
+ 		Known(NoPass) => "none known"
+@@ -207,7 +207,7 @@ row_doc = |row, moved| {
+ 	)
+ }
+ 
+-range_doc : Outdated.Range -> JsonDoc
++range_doc : Outdated.NightlyRange -> JsonDoc
+ range_doc = |range| match range {
+ 	Unread => JsonDoc.Obj([("state", Text("unread"))])
+ 	Known(NoPass) => JsonDoc.Obj([("state", Text("no-pass"))])
+diff --git a/cli/lib/ProbeSmoke.roc b/cli/lib/ProbeSmoke.roc
+index 410495e9..5040163e 100644
+--- a/cli/lib/ProbeSmoke.roc
++++ b/cli/lib/ProbeSmoke.roc
+@@ -40,25 +40,25 @@ ProbeSmoke :: [].{
+ 		if !given("--smoke") return Err(Fail.new(Usage, "flag '--target' works only with --smoke"))
+ 		if given("--range") return Err(Fail.new(Usage, "tln probe --smoke cannot run with --range"))
+ 		if given("--share") return Err(Fail.new(Usage, "tln probe --smoke cannot run with --share"))
+-		text = match args.operands {
++		operand = match args.operands {
+ 			[one] => one
+ 			[] => return Err(Fail.new(Usage, "tln probe --smoke needs a header alias or a release URL"))
+ 			_ => return Err(Fail.new(Usage, "tln probe --smoke takes one platform: a header alias or a release URL"))
+ 		}
+-		is_url = text.starts_with("https://") or text.starts_with("http://")
+-		if !is_url and text.ends_with(".tar.zst") {
++		is_url = operand.starts_with("https://") or operand.starts_with("http://")
++		if !is_url and operand.ends_with(".tar.zst") {
+ 			return Err(Fail.new(Usage, "tln probe --smoke needs a header alias or a release URL, not a bundle file: the smoke app names the URL of the platform"))
+ 		}
+ 		if is_url {
+-			if Ident.of_url(text).is_err() {
+-				return Err(Fail.new(Usage, "'${text}' is not a release URL: it needs one version X.Y.Z (R-DI5)"))
++			if Ident.of_url(operand).is_err() {
++				return Err(Fail.new(Usage, "'${operand}' is not a release URL: it needs one version X.Y.Z (R-DI5)"))
+ 			}
+ 			if args.file.is_ok() {
+ 				return Err(Fail.new(Usage, "flag '--file' does not work with a release URL: it uses no project"))
+ 			}
+-			Ok({ operand: Url(text), wanted, opts })
++			Ok({ operand: Url(operand), wanted, opts })
+ 		} else {
+-			Ok({ operand: Alias(text), wanted, opts })
++			Ok({ operand: Alias(operand), wanted, opts })
+ 		}
+ 	}
+ 
+diff --git a/cli/lib/Publish.roc b/cli/lib/Publish.roc
+index 40cad838..b53a2841 100644
+--- a/cli/lib/Publish.roc
++++ b/cli/lib/Publish.roc
+@@ -85,11 +85,11 @@ Publish :: [].{
+ 			Ok(text) => text
+ 			Err(Unset) => return Err(Publish.no_oidc("ACTIONS_ID_TOKEN_REQUEST_URL"))
+ 		}
+-		token = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_TOKEN") {
++		token_text = match Publish.env_var(env, "ACTIONS_ID_TOKEN_REQUEST_TOKEN") {
+ 			Ok(text) => text
+ 			Err(Unset) => return Err(Publish.no_oidc("ACTIONS_ID_TOKEN_REQUEST_TOKEN"))
+ 		}
+-		Ok({ url, token })
++		Ok({ url, token: token_text })
+ 	}
+ 
+ 	## R-DI2 (R-PUB2): `<api>/repos/<owner>/<repo>/releases/tags/<tag>`, the parts as they are (the tag is one safe part: `job`, Q514).
+@@ -174,18 +174,18 @@ Publish :: [].{
+ 	token : Publish.Reply -> Try(Str, Fail)
+ 	token = |reply| {
+ 		failed = |why| Fail.new(Network, "the GitHub OIDC token request failed: ${why}")
+-		answer = match reply {
++		got = match reply {
+ 			Ok(found) => found
+ 			Err(Timeout) => return Err(failed("no answer in 20 s"))
+ 			Err(Failed(why)) => return Err(failed(why))
+ 		}
+-		if answer.status == 401 or answer.status == 403 {
+-			return Err(Fail.new(Usage, "the GitHub OIDC token request was refused (${answer.status.to_str()}). The job needs permissions: id-token: write."))
++		if got.status == 401 or got.status == 403 {
++			return Err(Fail.new(Usage, "the GitHub OIDC token request was refused (${got.status.to_str()}). The job needs permissions: id-token: write."))
+ 		}
+-		if answer.status != 200 {
+-			return Err(failed("answered ${answer.status.to_str()}"))
++		if got.status != 200 {
++			return Err(failed("answered ${got.status.to_str()}"))
+ 		}
+-		match JsonDoc.parse(answer.body) {
++		match JsonDoc.parse(got.body) {
+ 			Ok(Obj(pairs)) => match pairs.find_first(|(key, _)| key == "value") {
+ 				Ok((_, Text(jwt))) if !jwt.is_empty() => Ok(jwt)
+ 				_ => Err(failed("the answer has no token"))
+@@ -259,12 +259,12 @@ Publish :: [].{
+ 	## | any other answer (a 4xx, a second 401, 3xx, 202, ...) | `Stop` |
+ 	next : { retries : U64, renewed : Bool, reply : Publish.Reply } -> [Done, Renew, Wait(U64), Stop]
+ 	next = |input| match input.reply {
+-		Ok(answer) => if answer.status == 200 or answer.status == 201 {
++		Ok(got) => if got.status == 200 or got.status == 201 {
+ 			Done
+-		} else if answer.status == 401 and !input.renewed {
++		} else if got.status == 401 and !input.renewed {
+ 			Renew
+-		} else if answer.status == 429 or (answer.status >= 500 and answer.status <= 599) {
+-			Publish.wait(input.retries, Registry.retry_after_of(answer.headers))
++		} else if got.status == 429 or (got.status >= 500 and got.status <= 599) {
++			Publish.wait(input.retries, Registry.retry_after_of(got.headers))
+ 		} else {
+ 			Stop
+ 		}
+@@ -289,10 +289,10 @@ Publish :: [].{
+ 	failure = |input| match input.reply {
+ 		Err(Timeout) => Publish.no_reply(input, "no answer in 20 s", "publish")
+ 		Err(Failed(why)) => Publish.no_reply(input, why, "publish")
+-		Ok(answer) => {
+-			retry_after = Registry.retry_after_of(answer.headers)
+-			refused = Registry.refuse({ origin: input.origin, version: input.version, method: Post, reply: { status: answer.status, body: answer.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
+-			match Registry.problem({ status: answer.status, body: answer.body }) {
++		Ok(got) => {
++			retry_after = Registry.retry_after_of(got.headers)
++			refused = Registry.refuse({ origin: input.origin, version: input.version, method: Post, reply: { status: got.status, body: got.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
++			match Registry.problem({ status: got.status, body: got.body }) {
+ 				Err(NotProblem) => refused
+ 				Ok(body) => {
+ 					type = body.type_text
+@@ -304,7 +304,7 @@ Publish :: [].{
+ 					} else {
+ 						match Registry.operator_text(body) {
+ 							Ok(message) => Ok(message)
+-							Err(None) => Publish.retry_text(input, { status: answer.status, retry_after, body })
++							Err(None) => Publish.retry_text(input, { status: got.status, retry_after, body })
+ 						}
+ 					}
+ 					match text {
+diff --git a/cli/lib/Roots.roc b/cli/lib/Roots.roc
+index 878c1947..21b4a840 100644
+--- a/cli/lib/Roots.roc
++++ b/cli/lib/Roots.roc
+@@ -75,7 +75,7 @@ Roots := {
+ 
+ 	## The path of an item (the tables of `Item`). There is no `/` at the end of a path.
+ 	item : Roots, Item -> Str
+-	item = |roots, item| match item {
++	item = |roots, it| match it {
+ 		Package(hash) => Text.join(roots.pkgs, hash)
+ 		PackageDeps(hash) => Text.join(roots.pkgs, "${hash}.deps.json")
+ 		Compat(id) => Text.join(roots.build, "compat-${id}")
+diff --git a/cli/lib/ShareLogin.roc b/cli/lib/ShareLogin.roc
+index 9a9b5174..335d616e 100644
+--- a/cli/lib/ShareLogin.roc
++++ b/cli/lib/ShareLogin.roc
+@@ -354,5 +354,4 @@ poll_loop! = |fx, run| {
+ 			}
+ 		}
+ 	}
+-	Err(Fail.new(Internal, "the poll loop ended"))
+ }
+diff --git a/cli/lib/TalonRemove.roc b/cli/lib/TalonRemove.roc
+index f8dc6375..2ffa0299 100644
+--- a/cli/lib/TalonRemove.roc
++++ b/cli/lib/TalonRemove.roc
+@@ -239,7 +239,7 @@ TalonRemove :: [].{
+ 			}
+ 			path = done.path.map(
+ 				|place| match place {
+-					Profile(file) => "removed the PATH line from ${file}\n"
++					Profile(profile) => "removed the PATH line from ${profile}\n"
+ 					UserPath(dir) => "removed ${dir} from the user Path\n"
+ 				},
+ 			)
+@@ -294,7 +294,7 @@ TalonRemove :: [].{
+ 				JsonDoc.Arr(
+ 					done.path.map(
+ 						|place| match place {
+-							Profile(file) => JsonDoc.Text(file)
++							Profile(profile) => JsonDoc.Text(profile)
+ 							UserPath(_) => JsonDoc.Text("the user Path")
+ 						},
+ 					),
+@@ -330,7 +330,7 @@ TalonRemove :: [].{
+ 		script = "for /l %i in (1,1,30) do (ping -n 2 127.0.0.1 >nul & del /f /q ${quoted} >nul 2>&1 & ${gone} exit /b 0)"
+ 		{
+ 			argv: ["cmd.exe", "/d", "/c", script],
+-			env: files.map_with_index(|file, i| ("TALON_DEL_${(i + 1).to_str()}", file)),
++			env: files.map_with_index(|one, i| ("TALON_DEL_${(i + 1).to_str()}", one)),
+ 		}
+ 	}
+ 
+diff --git a/cli/lib/ToolManageFlow.roc b/cli/lib/ToolManageFlow.roc
+index 52430d9f..67a7b45f 100644
+--- a/cli/lib/ToolManageFlow.roc
++++ b/cli/lib/ToolManageFlow.roc
+@@ -98,11 +98,11 @@ ToolManageFlow :: [].{
+ 			Ok(known) => known
+ 			Err(Unknown) => return Err(Fail.new(Environment, "tln has no build target for this machine"))
+ 		}
+-		tools_file = Roots.item(roots, Item.ToolsJson)
+-		tools_text = SetupIo.read_text!(fx, tools_file)?
+-		tools = ToolsJson.manifest({ path: tools_file, text: tools_text })?
+-		items = ToolsJson.items({ path: tools_file, text: tools_text })?
+-		talon = ToolsJson.talon({ path: tools_file, text: tools_text })?
++		tools_path = Roots.item(roots, Item.ToolsJson)
++		tools_text = SetupIo.read_text!(fx, tools_path)?
++		tools = ToolsJson.manifest({ path: tools_path, text: tools_text })?
++		items = ToolsJson.items({ path: tools_path, text: tools_text })?
++		talon = ToolsJson.talon({ path: tools_path, text: tools_text })?
+ 		config = match reading {
+ 			Strict => RocInstall.read_config!(fx, roots)?
+ 			Lenient => RocInstall.read_config_lenient!(fx, roots)?
+diff --git a/cli/lib/YankCheck.roc b/cli/lib/YankCheck.roc
+index 2e709700..28ec0d5f 100644
+--- a/cli/lib/YankCheck.roc
++++ b/cli/lib/YankCheck.roc
+@@ -137,12 +137,12 @@ YankCheck :: [].{
+ 		match input.reply {
+ 			Err(Timeout) => Publish.no_reply(common, "no answer in 20 s", done)
+ 			Err(Failed(why)) => Publish.no_reply(common, why, done)
+-			Ok(answer) => {
+-				retry_after = Registry.retry_after_of(answer.headers)
+-				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: answer.status, body: answer.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
+-				match Registry.problem({ status: answer.status, body: answer.body }) {
++			Ok(got) => {
++				retry_after = Registry.retry_after_of(got.headers)
++				refused = Registry.refuse({ origin: input.origin, version: input.version, method, reply: { status: got.status, body: got.body }, retry_after, source: input.?source ?? "", needs: Bool.True })
++				match Registry.problem({ status: got.status, body: got.body }) {
+ 					Err(NotProblem) => refused
+-					Ok(body) => match Publish.retry_text(common, { status: answer.status, retry_after, body }) {
++					Ok(body) => match Publish.retry_text(common, { status: got.status, retry_after, body }) {
+ 						Ok(message) => { ..refused, message }
+ 						Err(None) => refused
+ 					}
+diff --git a/cli/lib/main.roc b/cli/lib/main.roc
+index e1f3c68e..89c7c827 100644
+--- a/cli/lib/main.roc
++++ b/cli/lib/main.roc
+@@ -270,9 +270,9 @@ package
+ 	]
+ 	{
+ 		base58: "https://github.com/Karakatiza666/roc-base58/releases/download/0.1.0/BgUuQGqWY94NikfEx4rBkWkgxYhngMim3ZEnD8wpM4NS.tar.zst",
+-		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.0/HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU.tar.zst",
++		header: "https://github.com/Karakatiza666/roc-app-header/releases/download/0.1.1/Ev4sYWkY8XDbQsPxtaaXZaARYjH9KS2x2dbmVch2d4qS.tar.zst",
+ 		records: "../../packages/records/main.roc",
+ 		resolve: "../../packages/resolve/main.roc",
+-		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
+-		toml: "https://github.com/Karakatiza666/roc-toml/releases/download/0.1.0/3icmtKz6XQUyHqu5JftcoJJT6a9YTND1B8z1UAmtqJpN.tar.zst",
++		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.1/6BPnjRNpioc4pS8vxuiYDV3kNi13wMC6emA4qiPHK75L.tar.zst",
++		toml: "https://github.com/Karakatiza666/roc-toml/releases/download/0.2.0/2jDX3pSSC7cpPb3iuoemnX1BkYJfsxQTHB2p2vBsUzz7.tar.zst",
+ 	}
+diff --git a/cli/main.roc b/cli/main.roc
+index faab3f4a..abd0b570 100644
+--- a/cli/main.roc
++++ b/cli/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	http: "https://github.com/roc-lang/http/releases/download/1.0.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst",
+ 	lib: "lib/main.roc",
+-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
+ }
+ 
+ import lib.Run
+diff --git a/cli/real.roc b/cli/real.roc
+index 94597bd1..12593c9c 100644
+--- a/cli/real.roc
++++ b/cli/real.roc
+@@ -5,5 +5,5 @@ package
+ 	{
+ 		http: "https://github.com/roc-lang/http/releases/download/1.0.0/6ZUwqYhCS8PU9Mo6MF7oV82ET2o7KYb57CLKDq4cq4sS.tar.zst",
+ 		lib: "lib/main.roc",
+-		pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
++		pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
+ 	}
+diff --git a/packages/resolve/main.roc b/packages/resolve/main.roc
+index 4990ad3f..d80611c9 100644
+--- a/packages/resolve/main.roc
++++ b/packages/resolve/main.roc
+@@ -10,5 +10,5 @@ package
+ 		SolverWhy,
+ 	]
+ 	{
+-		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.0/BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i.tar.zst",
++		semver: "https://github.com/Karakatiza666/roc-semver/releases/download/0.2.1/6BPnjRNpioc4pS8vxuiYDV3kNi13wMC6emA4qiPHK75L.tar.zst",
+ 	}
+diff --git a/scripts/env.sh b/scripts/env.sh
+index 5b2e2500..83b16aea 100644
+--- a/scripts/env.sh
++++ b/scripts/env.sh
+@@ -3,7 +3,7 @@
+ # The cache paths are absolute with no `..` (TESTING.md 3.2).
+ ROOT=$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)
+ # The pinned compilers (docs/slices/PLAN.md, TW28): ROC_TAG (the CLI, the packages) and ROC_TAG_WORKER are the one place of each tag. A caller can set ROC_TAG or ROC.
+-ROC_TAG=${ROC_TAG:-nightly-2026-10-14-38a3029}
++ROC_TAG=${ROC_TAG:-nightly-2026-11-13-03dce41}
+ # The compiler of the registry Worker (worker/, its roc: pin): the nightly of the platform release cloudflare-workers 0.0.10 (TESTING.md TW28, Design Q59).
+ ROC_TAG_WORKER=${ROC_TAG_WORKER:-nightly-2026-11-06-34f137a}
+ ROC=${ROC:-$ROOT/cloudflare-workers/.cache/nightlies/$ROC_TAG/roc}
+diff --git a/scripts/test.sh b/scripts/test.sh
+index d7a1df45..43032ab3 100755
+--- a/scripts/test.sh
++++ b/scripts/test.sh
+@@ -8,6 +8,7 @@
+ #        SLOW=1                        also run the L3 cases with the tag slow (TW27; tests/run.sh reads it)
+ #        JOBS=<n>                      L0 files, L1 targets and L2/L3 cases at the same time (default: the CPU count)
+ #        L1_RUNS=<n>                   inputs for each roc-fuzz target (default: the line `# l1-runs: <n>` of the target file, else 20000: a fixed count, TW6). L1_SEED=<n>: the seed (default 1).
++#        L1_TIME=<s>                   the time limit of one roc-fuzz run (default 120, `--time`): a run that reaches it ends and passes, with fewer inputs than its count (roc-fuzz 0.7.0).
+ #        L1_DIR=<dir>                  the dir of the targets (default tests/fuzz)
+ #        L1_HOST=<system>-<arch>       the system for the l1 support check (default: uname -s and uname -m). roc-fuzz has a platform for Linux-x86_64 and Darwin-arm64 only: another system skips l1.
+ #        ROC_WORKER=<path>             the compiler of the registry Worker (default: ROC_TAG_WORKER of scripts/env.sh, TW31). w0 and wbuild use it.
+@@ -134,10 +135,11 @@ step_l0() {
+ # L1 (TESTING.md 4): the roc-fuzz targets `tests/fuzz/*.roc`, one process for each target, at most JOBS at the same time. A target is built with `roc build --fuzz`, which needs LLVM
+ # (`--opt=dev` gives an error), so the build is always `--opt=speed` and does not follow OPT. It runs the count of the target (l1_runs_of) with the seed L1_SEED (TW6: a fixed count, no `--time`), in its own dir
+ # `$WORK/l1/<name>/` that is new for each run (the corpus `.roc-fuzz/` is made there, never in the repo, and a run never starts from an old corpus). A failure saves the input under
+-# `$WORK/l1/<name>/art/`: the report names the file and the command that replays it. TW5: the minimized input becomes an `expect` of L0 before the fix.
++# `$WORK/l1/<name>/rep/failures/`: the report names the file and the command that replays it. TW5: the minimized input becomes an `expect` of L0 before the fix.
+ # The run count of one target: L1_RUNS when it is set (the nightly run sets a long one for all targets), else the line `# l1-runs: <n>` of the target file, else 20000.
+ # A target with a costly property keeps its own small count in the fast set (TESTING.md 1: the long runs are for the nightly run).
+ L1_SEED=${L1_SEED:-1}
++L1_TIME=${L1_TIME:-120}
+ L1_DIR=${L1_DIR:-tests/fuzz}
+ l1_runs_of() {
+     local n
+@@ -170,7 +172,7 @@ l1_run() { # l1_run <target.roc> <dir>: wait for the build, run the target with
+     done
+     [ "$(cat "$d/build.rc")" = 0 ] || return 0
+     runs=$(l1_runs_of "$1")
+-    ( cd "$d" && run_limited "$L1_LIMIT" ./target run --runs="$runs" --seed="$L1_SEED" --artifact-dir="$d/art" > "$d/run.log" 2>&1; echo $? > "$d/run.rc" )
++    ( cd "$d" && run_limited "$L1_LIMIT" ./target run --runs="$runs" --seed="$L1_SEED" --time="$L1_TIME" --report-dir="$d/rep" > "$d/run.log" 2>&1; echo $? > "$d/run.rc" )
+ }
+ step_l1() {
+     local rc=0 f name d dir=$WORK/l1 targets
+@@ -184,7 +186,7 @@ step_l1() {
+     fi
+     export -f l1_run l1_runs_of run_limited
+     L1_LIMIT=$(limit_of l1)
+-    export ROC L1_RUNS L1_SEED BUILD_PID L1_LIMIT
++    export ROC L1_RUNS L1_SEED L1_TIME BUILD_PID L1_LIMIT
+     printf '%s\0' "${targets[@]}" | xargs -0 -P "${#targets[@]}" -I{} bash -c 'l1_run "$1" "$2"' _ {} "$dir"
+     for f in "${targets[@]}"; do
+         name=$(basename "$f" .roc)
+@@ -196,11 +198,11 @@ step_l1() {
+         elif [ "$(cat "$d/run.rc" 2> /dev/null)" = 124 ]; then
+             echo "l1: $f: timed out after $L1_LIMIT s (seed $L1_SEED, $(l1_runs_of "$f") runs)"; tail -n 20 "$d/run.log"; rc=1
+         elif [ "$(cat "$d/run.rc" 2> /dev/null)" = 0 ]; then
+-            echo "$f: $(grep -h '^Done' "$d/run.log" | head -n 1)"
++            echo "$f: $(grep -h 'exploration' "$d/run.log" | head -n 1)"
+         else
+             echo "$f: FAILED (exit $(cat "$d/run.rc" 2> /dev/null), seed $L1_SEED, $(l1_runs_of "$f") runs)"
+             grep -v -e '^INFO' -e '^#' -e '^"' -e '^######' "$d/run.log" | head -n 40
+-            for a in "$d"/art/*; do
++            for a in "$d"/rep/failures/*; do
+                 [ -f "$a" ] && echo "replay: $d/target replay $a"
+             done
+             rc=1
+diff --git a/tests/commands/main.roc b/tests/commands/main.roc
+index a2667456..186c7b7d 100644
+--- a/tests/commands/main.roc
++++ b/tests/commands/main.roc
+@@ -1,7 +1,7 @@
+ app [main!] {
+ 	bot: "../../bot/lib/main.roc",
+ 	lib: "../../cli/lib/main.roc",
+-	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.26.0/GddgvsGjiNXrHFW6au5i5dUDbTs8FinQdrgE2Gqmw53t.tar.zst",
++	pf: platform "https://github.com/roc-lang/basic-cli/releases/download/0.28.1/7brgwR8YUqfeGrkdfF1V4GPPN7DnP7ftqub9KcrTEZtr.tar.zst",
+ }
+ 
+ import pf.Path
+diff --git a/tests/fuzz/diff.roc b/tests/fuzz/diff.roc
+index 5c560e36..f075a50a 100644
+--- a/tests/fuzz/diff.roc
++++ b/tests/fuzz/diff.roc
+@@ -1,5 +1,5 @@
+ app [target] {
+-	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.4.3/41NK5FShyGC9Z8HNpUdUeXMWwLmLNfFxsfmLvdPL4Fxb.tar.zst",
++	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.7.0/HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br.tar.zst",
+ 	lib: "../../cli/lib/main.roc",
+ }
+ 
+@@ -217,6 +217,7 @@ test = |raw| {
+ }
+ 
+ target = Fuzz.target_with({
++	examples: [],
+ 	name: "diff",
+ 	generator,
+ 	test,
+diff --git a/tests/fuzz/epochs.roc b/tests/fuzz/epochs.roc
+index a9c84ab1..ed25cc73 100644
+--- a/tests/fuzz/epochs.roc
++++ b/tests/fuzz/epochs.roc
+@@ -1,5 +1,5 @@
+ app [target] {
+-	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.4.3/41NK5FShyGC9Z8HNpUdUeXMWwLmLNfFxsfmLvdPL4Fxb.tar.zst",
++	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.7.0/HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br.tar.zst",
+ 	lib: "../../cli/lib/main.roc",
+ }
+ 
+@@ -193,6 +193,7 @@ test = |raw| {
+ }
+ 
+ target = Fuzz.target_with({
++	examples: [],
+ 	name: "epochs",
+ 	generator,
+ 	test,
+diff --git a/tests/fuzz/pubgrub.roc b/tests/fuzz/pubgrub.roc
+index 2d6a90c8..9789adb4 100644
+--- a/tests/fuzz/pubgrub.roc
++++ b/tests/fuzz/pubgrub.roc
+@@ -1,5 +1,5 @@
+ app [target] {
+-	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.4.3/41NK5FShyGC9Z8HNpUdUeXMWwLmLNfFxsfmLvdPL4Fxb.tar.zst",
++	fuzz: platform "https://github.com/lukewilliamboswell/roc-fuzz/releases/download/0.7.0/HBigHQhVZWEF2EkLxpYK35u8P6UNsAmPYxpNFTxXK1Br.tar.zst",
+ 	resolve: "../../packages/resolve/main.roc",
+ }
+ 
+@@ -814,6 +814,7 @@ render = |r| match r {
+ }
+ 
+ target = Fuzz.target_with({
++	examples: [],
+ 	name: "pubgrub",
+ 	generator,
+ 	test,
+diff --git a/tests/selftest.sh b/tests/selftest.sh
+index 702f035a..fc2912c6 100755
+--- a/tests/selftest.sh
++++ b/tests/selftest.sh
+@@ -254,7 +254,7 @@ build)
+         [ -n "${FAKE_FUZZ_HANG:-}" ] && case "$*" in *"$FAKE_FUZZ_HANG"*) hang=1 ;; esac
+         if [ -n "$fuzz" ]; then
+             # Slice 033: a fake roc-fuzz target. It logs its dir and its arguments, a file that an earlier run left in its dir, and answers like the real one:
+-            # FAKE_FUZZ_EXIT (default 0) is its exit code. A failing run writes an input file in --artifact-dir and prints libFuzzer noise and one crash line.
++            # FAKE_FUZZ_EXIT (default 0) is its exit code. A failing run writes an input file in <--report-dir>/failures and prints libFuzzer noise and one crash line.
+             cat > "$out" << FUZZ
+ #!/bin/sh
+ echo "RUN \$PWD \$*" >> "$FAKE_ROC_LOG"
+@@ -263,14 +263,14 @@ echo "INFO: noise"
+ [ $hang = 1 ] && exec sleep 10
+ if [ "${FAKE_FUZZ_EXIT:-0}" != 0 ]; then
+     d=
+-    for a in "\$@"; do case \$a in --artifact-dir=*) d=\${a#--artifact-dir=} ;; esac; done
++    for a in "\$@"; do case \$a in --report-dir=*) d=\${a#--report-dir=}/failures ;; esac; done
+     mkdir -p "\$d"
+     echo input > "\$d/crash-abc"
+     echo "#9 NEW noise"
+     echo "[roc crashed] R-EP6: boom"
+     exit ${FAKE_FUZZ_EXIT:-0}
+ fi
+-echo "Done 20000 runs in 0 second(s)"
++echo "fake: passed; baseline unbaselined; examples 0; exploration passed (attempted 20000, accepted 20000, rejected 0)"
+ FUZZ
+         elif [ "${FAKE_ROC_APP:-}" = cases ]; then
+             printf '#!/bin/sh\ncase $1 in *hang*) exec sleep 10 ;; esac\nmkdir -p "$1/out"\necho 0 > "$1/out/exit"\n' > "$out"
+@@ -635,7 +635,7 @@ printf 'app [target] {}\n' > "$T/fuzz-lim/quick.roc"
+ printf 'app [target] {}\n' > "$T/fuzz-lim/hangs.roc"
+ fx lim-l1 env L1_HOST=Linux-x86_64 L1_DIR="$T/fuzz-lim" TEST_TIMEOUT=1 FAKE_FUZZ_HANG=hangs.roc "$ROOT/scripts/test.sh" l1
+ if [ $rc = 1 ] && grep -Eq '^l1 +FAIL ' $T/lim-l1.out && grep -qx "l1: $T/fuzz-lim/hangs.roc: timed out after 1 s (seed 1, 20000 runs)" $T/lim-l1.out &&
+-    [ "$(grep -c 'timed out' $T/lim-l1.out)" = 1 ] && grep -q "quick.roc: Done" $T/lim-l1.out; then ok
++    [ "$(grep -c 'timed out' $T/lim-l1.out)" = 1 ] && grep -q "quick.roc: fake: passed" $T/lim-l1.out; then ok
+ else bad "limit l1: a fuzz run that hangs gives 'l1: <file>: timed out after 1 s (seed 1, 20000 runs)' (once) and 'l1 FAIL' (exit 1). The other target passes."; cat $T/lim-l1.out; fi
+ }
+ sec limit_l1 s_limit_l1
+@@ -722,12 +722,12 @@ fx l1-pass env L1_HOST=Linux-x86_64 "$ROOT/scripts/test.sh" l1
+ rc1=$rc
+ if [ $rc1 = 0 ] && [ "$n_targets" -ge 1 ] && [ "$(grep -c '^build ' $T/l1-pass.log)" = "$n_targets" ] &&
+     [ "$(grep -Ec "^build --fuzz --opt=speed tests/fuzz/[a-z0-9_-]+\.roc --output=$W/l1/[a-z0-9_-]+/target$" $T/l1-pass.log)" = "$n_targets" ] &&
+-    [ "$(grep -Ec "^RUN $W/l1/[a-z0-9_-]+ run --runs=[0-9]+ --seed=1 --artifact-dir=$W/l1/[a-z0-9_-]+/art$" $T/l1-pass.log)" = "$n_targets" ] &&
+-    ! grep -q -e '--time' $T/l1-pass.log && grep -Eq '^l1 +pass +[0-9.]+ +60$' $T/l1-pass.out; then ok
+-else bad "l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in \$WORK/l1/<name> with a --runs count, --seed=1 and no --time, table row 'l1 pass .. 60'"; cat $T/l1-pass.log $T/l1-pass.out; fi
++    [ "$(grep -Ec "^RUN $W/l1/[a-z0-9_-]+ run --runs=[0-9]+ --seed=1 --time=120 --report-dir=$W/l1/[a-z0-9_-]+/rep$" $T/l1-pass.log)" = "$n_targets" ] &&
++    [ "$(grep -c -e ' --time=120 ' $T/l1-pass.log)" = "$n_targets" ] && grep -Eq '^l1 +pass +[0-9.]+ +60$' $T/l1-pass.out; then ok
++else bad "l1: one build --fuzz --opt=speed for each target (also with OPT unset, which is dev), one run in \$WORK/l1/<name> with a --runs count, --seed=1 and --time=120, table row 'l1 pass .. 60'"; cat $T/l1-pass.log $T/l1-pass.out; fi
+ # L1_RUNS and L1_SEED change the run. OPT=dev is given on purpose: the fuzz build stays --opt=speed.
+ fx l1-cfg env OPT=dev L1_HOST=Linux-x86_64 L1_RUNS=7 L1_SEED=3 "$ROOT/scripts/test.sh" l1
+-if [ $rc = 0 ] && [ "$(grep -c ' run --runs=7 --seed=3 --artifact-dir=' $T/l1-cfg.log)" = "$n_targets" ] && ! grep '^build ' $T/l1-cfg.log | grep -q -e '--opt=dev'; then ok
++if [ $rc = 0 ] && [ "$(grep -c ' run --runs=7 --seed=3 --time=120 --report-dir=' $T/l1-cfg.log)" = "$n_targets" ] && ! grep '^build ' $T/l1-cfg.log | grep -q -e '--opt=dev'; then ok
+ else bad "l1: L1_RUNS=7 L1_SEED=3 give --runs=7 --seed=3, and OPT=dev does not change the fuzz build"; cat $T/l1-cfg.log; fi
+ # The count of a target (TESTING.md 1: the long runs are for the nightly run): the line `# l1-runs: <n>` of the target file, else 20000. L1_RUNS is for all targets and wins. L1_DIR is a dir of fake targets.
+ mkdir -p "$T/fuzz-cnt"
+@@ -744,7 +744,7 @@ W=$T/work-l1-fail
+ fx l1-fail env L1_HOST=Linux-x86_64 FAKE_FUZZ_EXIT=77 "$ROOT/scripts/test.sh" l1
+ if [ $rc = 1 ] && grep -Eq '^l1 +FAIL ' $T/l1-fail.out && grep -Eq '^tests/fuzz/[a-z0-9_-]+\.roc: FAILED \(exit 77, seed 1, [0-9]+ runs\)$' $T/l1-fail.out &&
+     grep -q '^\[roc crashed\] R-EP6: boom$' $T/l1-fail.out && ! grep -q -e 'INFO: noise' -e '#9 NEW' $T/l1-fail.out &&
+-    grep -Eq "^replay: $W/l1/[a-z0-9_-]+/target replay $W/l1/[a-z0-9_-]+/art/crash-abc$" $T/l1-fail.out; then ok
++    grep -Eq "^replay: $W/l1/[a-z0-9_-]+/target replay $W/l1/[a-z0-9_-]+/rep/failures/crash-abc$" $T/l1-fail.out; then ok
+ else bad "l1: a target that exits 77 fails the step: exit 1, 'l1 FAIL', 'FAILED (exit 77, seed 1, <count> runs)', the crash line, no libFuzzer noise, the replay line"; cat $T/l1-fail.out; fi
+ # A failing build: exit 1, the build log, no run.
+ fx l1-build env L1_HOST=Linux-x86_64 FAKE_ROC_BUILD=fail "$ROOT/scripts/test.sh" l1
+diff --git a/tests/tools/ciscan.py b/tests/tools/ciscan.py
+index 54fa5bf5..fac91984 100644
+--- a/tests/tools/ciscan.py
++++ b/tests/tools/ciscan.py
+@@ -403,8 +403,8 @@ def check_pin(root, fails):
+     m = re.search(r"^ROC_TAG=\$\{ROC_TAG:-(nightly-\d{4}-\d{2}-\d{2}-[0-9a-f]+)\}$", env_sh, re.M)
+     if not m:
+         fails.append("scripts/env.sh: no line `ROC_TAG=${ROC_TAG:-nightly-<date>-<sha>}`")
+-    elif m.group(1) != "nightly-2026-10-14-38a3029":
+-        fails.append("scripts/env.sh: ROC_TAG is %s, the pin is nightly-2026-10-14-38a3029 (docs/slices/PLAN.md)" % m.group(1))
++    elif m.group(1) != "nightly-2026-11-13-03dce41":
++        fails.append("scripts/env.sh: ROC_TAG is %s, the pin is nightly-2026-11-13-03dce41 (docs/slices/PLAN.md)" % m.group(1))
+     # Slice 101 (TW28, R-WH13): a second tag, ROC_TAG_WORKER, for worker/ (the nightly of the platform release).
+     mw = re.search(r"^ROC_TAG_WORKER=\$\{ROC_TAG_WORKER:-(nightly-\d{4}-\d{2}-\d{2}-[0-9a-f]+)\}$", env_sh, re.M)
+     if not mw:
+diff --git a/tests/unit/AddTest.roc b/tests/unit/AddTest.roc
+index 9eb5420a..34771bdd 100644
+--- a/tests/unit/AddTest.roc
++++ b/tests/unit/AddTest.roc
+@@ -5,6 +5,7 @@ import lib.Selector
+ AddTest :: [].{}
+ 
+ # A release URL of a GitHub repo at a version. The hash text is not checked here.
++url : Str, Str -> Str
+ url = |repo, ver| "https://github.com/${repo}/releases/download/${ver}/Hhash.tar.zst"
+ 
+ pf_old = { alias: "pf", url: url("roc-lang/basic-cli", "0.25.0"), is_platform: Bool.True }
+@@ -15,7 +16,6 @@ util_path = { alias: "util", url: "../util/main.roc", is_platform: Bool.False }
+ 
+ header = [pf_old, json_old, util_path]
+ 
+-none = Err(None)
+ 
+ no_as = Err(Unset)
+ 
+@@ -57,22 +57,22 @@ expect {
+ 	uni = url("roc-lang/unicode", "4.2.0")
+ 	set = |key, value| Ok({ key, value })
+ 	rows = [
+-		(new("roc-lang/unicode", "4.2.0", none, Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, none))),
+-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Latest), Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, none))),
+-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "=4.2.0"), none))),
+-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.True, no_as), Ok(("unicode", Insert, uni, nothing, none))),
+-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^1.2")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^1.2"), none))),
+-		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^4")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^4"), none))),
++		(new("roc-lang/unicode", "4.2.0", Err(None), Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, Err(None)))),
++		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Latest), Bool.False, no_as), Ok(("unicode", Insert, uni, nothing, Err(None)))),
++		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "=4.2.0"), Err(None)))),
++		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Exact("4.2.0")), Bool.True, no_as), Ok(("unicode", Insert, uni, nothing, Err(None)))),
++		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^1.2")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^1.2"), Err(None)))),
++		(new("roc-lang/unicode", "4.2.0", Ok(Selector.Range("^4")), Bool.False, no_as), Ok(("unicode", Insert, uni, set("unicode", "^4"), Err(None)))),
+ 		(
+ 			new("lukewilliamboswell/roc-parser", "2.0.0", Ok(Selector.Exact("2.0.0")), Bool.False, no_as),
+-			Ok(("parser", Insert, url("lukewilliamboswell/roc-parser", "2.0.0"), set("parser", "=2.0.0"), none)),
++			Ok(("parser", Insert, url("lukewilliamboswell/roc-parser", "2.0.0"), set("parser", "=2.0.0"), Err(None))),
+ 		),
+ 		(
+ 			new("someone/roc-yaml", "1.0.0", Ok(Selector.Exact("1.0.0")), Bool.False, Ok("yml")),
+-			Ok(("yml", Insert, url("someone/roc-yaml", "1.0.0"), set("yml", "=1.0.0"), none)),
++			Ok(("yml", Insert, url("someone/roc-yaml", "1.0.0"), set("yml", "=1.0.0"), Err(None))),
+ 		),
+ 		(
+-			new("owner/9lives", "1.0.0", none, Bool.False, no_as),
++			new("owner/9lives", "1.0.0", Err(None), Bool.False, no_as),
+ 			Err("tln: error[usage]: the default alias '9lives' for 'owner/9lives' is not a valid name. Use --as <alias>."),
+ 		),
+ 	]
+@@ -112,20 +112,20 @@ expect {
+ 		}),
+ 	)
+ 	rows = [
+-		(alias(none, Bool.False), Ok(("json", Keep, json_url, nothing, keep_note))),
+-		(alias(Ok(Selector.Range("^3")), Bool.False), Ok(("json", Update, json_url, set("^3"), none))),
+-		(alias(Ok(Selector.Exact("2.2.0")), Bool.False), Ok(("json", Update, json_url, set("=2.2.0"), none))),
+-		(alias(Ok(Selector.Exact("2.2.0")), Bool.True), Ok(("json", Update, json_url, nothing, none))),
+-		(by_name("2.2.0", none, header), Ok(("json", Keep, json_url, nothing, keep_note))),
+-		(by_name("2.2.0", Ok(Selector.Range("^2")), header), Ok(("json", Update, json_url, set("^2"), none))),
++		(alias(Err(None), Bool.False), Ok(("json", Keep, json_url, nothing, keep_note))),
++		(alias(Ok(Selector.Range("^3")), Bool.False), Ok(("json", Update, json_url, set("^3"), Err(None)))),
++		(alias(Ok(Selector.Exact("2.2.0")), Bool.False), Ok(("json", Update, json_url, set("=2.2.0"), Err(None)))),
++		(alias(Ok(Selector.Exact("2.2.0")), Bool.True), Ok(("json", Update, json_url, nothing, Err(None)))),
++		(by_name("2.2.0", Err(None), header), Ok(("json", Keep, json_url, nothing, keep_note))),
++		(by_name("2.2.0", Ok(Selector.Range("^2")), header), Ok(("json", Update, json_url, set("^2"), Err(None)))),
+ 		(
+-			by_name("2.2.0", none, [pf_old, js_old]),
++			by_name("2.2.0", Err(None), [pf_old, js_old]),
+ 			Ok(("js", Keep, json_url, nothing, Ok("js: someone/roc-json 2.1.0 is in the header\nRun tln update js to move it."))),
+ 		),
+ 		# Q11 R-AD22: the header has the repo once (series 1). `add roc-lang/http@2` moves that entry to series 2.
+-		(http_2(no_as), Ok(("http", Update, url("roc-lang/http", "1.9.0"), Ok({ key: "http", value: "^2" }), none))),
++		(http_2(no_as), Ok(("http", Update, url("roc-lang/http", "1.9.0"), Ok({ key: "http", value: "^2" }), Err(None)))),
+ 		# Q11: `--as` keeps both series, so the new series is a new entry.
+-		(http_2(Ok("http2")), Ok(("http2", Insert, url("roc-lang/http", "2.0.0"), Ok({ key: "http2", value: "^2" }), none))),
++		(http_2(Ok("http2")), Ok(("http2", Insert, url("roc-lang/http", "2.0.0"), Ok({ key: "http2", value: "^2" }), Err(None)))),
+ 	]
+ 	bad = rows.keep_if(|(got, want)| got != want)
+ 	dbg bad
+@@ -133,7 +133,7 @@ expect {
+ }
+ 
+ # R-AD29 R-AD30 R-AD31 R-AD32 R-AD33 R-AD25 R-AD26 R-SE7: `tln add --platform`. A header has one platform.
+-# With none: a new entry `pf` (or `--as`). With one: it is replaced under the same alias, also for another repo, and the
++# With Err(None): a new entry `pf` (or `--as`). With one: it is replaced under the same alias, also for another repo, and the
+ # `talon.toml` key of the old platform gets the value of the table. A release that is no platform is a usage failure.
+ # `tln add X` where X is a platform is a usage failure that names `--platform`. A replaced platform gets a notice.
+ expect {
+@@ -151,12 +151,12 @@ expect {
+ 			Ok(("pf", Replace, cli_new, set("^0.26"), Ok("platform changes: roc-lang/basic-cli 0.25.0 -> roc-lang/basic-cli 0.26.1"))),
+ 		),
+ 		(
+-			plat("roc-lang/basic-cli", "0.26.1", Platform, none, no_as, no_plat),
+-			Ok(("pf", Insert, cli_new, nothing, none)),
++			plat("roc-lang/basic-cli", "0.26.1", Platform, Err(None), no_as, no_plat),
++			Ok(("pf", Insert, cli_new, nothing, Err(None))),
+ 		),
+ 		(
+ 			plat("roc-lang/basic-cli", "0.26.1", Platform, Ok(Selector.Exact("0.26.1")), Ok("cli"), no_plat),
+-			Ok(("cli", Insert, cli_new, Ok({ key: "cli", value: "=0.26.1" }), none)),
++			Ok(("cli", Insert, cli_new, Ok({ key: "cli", value: "=0.26.1" }), Err(None))),
+ 		),
+ 		(
+ 			# R-AD31: the platform is the entry with `is_platform`, not the entry that has the alias `pf` (a package can have it).
+@@ -164,7 +164,7 @@ expect {
+ 				"roc-lang/basic-webserver",
+ 				"0.13.0",
+ 				Platform,
+-				none,
++				Err(None),
+ 				no_as,
+ 				[
+ 					{ alias: "pf", url: url("someone/pf-tools", "1.0.0"), is_platform: Bool.False },
+@@ -175,13 +175,13 @@ expect {
+ 			Ok(("shell", Replace, web, nothing, Ok("platform changes: roc-lang/basic-cli 0.25.0 -> roc-lang/basic-webserver 0.13.0"))),
+ 		),
+ 		(
+-			plat("roc-lang/unicode", "4.2.0", Package, none, no_as, header),
++			plat("roc-lang/unicode", "4.2.0", Package, Err(None), no_as, header),
+ 			Err("tln: error[usage]: 'roc-lang/unicode' is not a platform"),
+ 		),
+ 		(
+ 			view(
+ 				Add.decide({
+-					selector: none,
++					selector: Err(None),
+ 					chosen: { name: "roc-lang/basic-cli", url: cli_new, kind: Platform },
+ 					platform_flag: Bool.False,
+ 					no_pin: Bool.False,
+@@ -289,24 +289,24 @@ expect {
+ 	note_util = Ok("entry changes: ../util/main.roc -> acme/util 1.1.0")
+ 	set = |key, value| Ok({ key, value })
+ 	rows = [
+-		("a path entry, no selector", as_("acme/util", "1.1.0", none, Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
++		("a path entry, no selector", as_("acme/util", "1.1.0", Err(None), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+ 		("a path entry, latest is no selector", as_("acme/util", "1.1.0", Ok(Selector.Latest), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+ 		("a path entry, an exact version", as_("acme/util", "1.1.0", Ok(Selector.Exact("1.1.0")), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, set("util", "=1.1.0"), note_util))),
+ 		("a path entry, an exact version, --no-pin", as_("acme/util", "1.1.0", Ok(Selector.Exact("1.1.0")), Bool.True, "util", Package, with_pf), Ok(("util", Replace, util_url, nothing, note_util))),
+ 		("a path entry, a range", as_("acme/util", "1.1.0", Ok(Selector.Range("^1")), Bool.False, "util", Package, with_pf), Ok(("util", Replace, util_url, set("util", "^1"), note_util))),
+ 		(
+ 			"a foreign URL",
+-			as_("acme/odd", "1.0.0", none, Bool.False, "odd", Package, with_pf),
++			as_("acme/odd", "1.0.0", Err(None), Bool.False, "odd", Package, with_pf),
+ 			Ok(("odd", Replace, url("acme/odd", "1.0.0"), nothing, Ok("entry changes: ${odd_url} -> acme/odd 1.0.0"))),
+ 		),
+-		("the platform entry is a path entry: a package is no platform (R-AD32)", as_("acme/util", "1.1.0", none, Bool.False, "pf", Package, with_path_pf), Err("tln: error[usage]: 'acme/util' is not a platform")),
+-		("a package entry: a platform release needs --platform (R-AD33)", as_("acme/pf", "0.1.0", none, Bool.False, "util", Platform, with_pf), Err("tln: error[usage]: 'acme/pf' is a platform. Use tln add --platform acme/pf.")),
++		("the platform entry is a path entry: a package is no platform (R-AD32)", as_("acme/util", "1.1.0", Err(None), Bool.False, "pf", Package, with_path_pf), Err("tln: error[usage]: 'acme/util' is not a platform")),
++		("a package entry: a platform release needs --platform (R-AD33)", as_("acme/pf", "0.1.0", Err(None), Bool.False, "util", Platform, with_pf), Err("tln: error[usage]: 'acme/pf' is a platform. Use tln add --platform acme/pf.")),
+ 		(
+ 			"the default alias is the path entry: it stops and names --as",
+-			new("owner/util", "1.0.0", none, Bool.False, no_as),
++			new("owner/util", "1.0.0", Err(None), Bool.False, no_as),
+ 			Err("tln: error[usage]: the default alias 'util' for 'owner/util' is used by a path entry in the header. Use --as <alias>, or --as util to replace that entry."),
+ 		),
+-		("--platform replaces a path platform under its alias", plat("acme/pf", "0.1.0", Platform, none, no_as, with_path_pf), Ok(("pf", Replace, url("acme/pf", "0.1.0"), nothing, Ok("platform changes: ../platform/main.roc -> acme/pf 0.1.0")))),
++		("--platform replaces a path platform under its alias", plat("acme/pf", "0.1.0", Platform, Err(None), no_as, with_path_pf), Ok(("pf", Replace, url("acme/pf", "0.1.0"), nothing, Ok("platform changes: ../platform/main.roc -> acme/pf 0.1.0")))),
+ 		(
+ 			"--platform replaces a path platform, an exact version",
+ 			plat("acme/pf", "0.1.0", Platform, Ok(Selector.Exact("0.1.0")), no_as, with_path_pf),
+@@ -328,13 +328,13 @@ expect {
+ 	path_text = "tln: error[usage]: util is a path entry: Talon never changes it. To replace it, run tln add <name> --as util."
+ 	odd_text = "tln: error[usage]: odd is a foreign URL: Talon never changes it. To replace it, run tln add <name> --as odd."
+ 	rows = [
+-		("a path entry, no selector", alias("util", none), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
+-		("a foreign URL, no selector", alias("odd", none), Ok(("odd", Keep, odd_url, nothing, Ok("odd: ${odd_url} is in the header")))),
++		("a path entry, no selector", alias("util", Err(None)), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
++		("a foreign URL, no selector", alias("odd", Err(None)), Ok(("odd", Keep, odd_url, nothing, Ok("odd: ${odd_url} is in the header")))),
+ 		("a path entry, latest", alias("util", Ok(Selector.Latest)), Ok(("util", Keep, "../util/main.roc", nothing, Ok("util: ../util/main.roc is in the header")))),
+ 		("a path entry, a range", alias("util", Ok(Selector.Range("^3"))), Err(path_text)),
+ 		("a path entry, an exact version", alias("util", Ok(Selector.Exact("1.0.0"))), Err(path_text)),
+ 		("a foreign URL, a range", alias("odd", Ok(Selector.Range("^1"))), Err(odd_text)),
+-		("a release stays as before", alias("json", Ok(Selector.Range("^3"))), Ok(("json", Update, url("someone/roc-json", "2.1.0"), Ok({ key: "json", value: "^3" }), none))),
++		("a release stays as before", alias("json", Ok(Selector.Range("^3"))), Ok(("json", Update, url("someone/roc-json", "2.1.0"), Ok({ key: "json", value: "^3" }), Err(None)))),
+ 	]
+ 	failures = [
+ 		("never_changes, a path entry", Fail.line(Add.never_changes({ alias: "util", value: "../util/main.roc" })), path_text),
+diff --git a/tests/unit/ProberangeTest.roc b/tests/unit/ProberangeTest.roc
+index 1e37fe18..1414775c 100644
+--- a/tests/unit/ProberangeTest.roc
++++ b/tests/unit/ProberangeTest.roc
+@@ -158,10 +158,14 @@ by_definition : List(Str), List(Db.Fact) -> Try({ from : ProbeRange.End, to : Pr
+ by_definition = |ids, facts| {
+ 	releases = ids.map(|id| { id, published_at: 0, asset: Err(NoAsset) })
+ 	inferred = Epochs.epochs(releases, facts).inferred
++	cell : Str -> Str
+ 	cell = |id| match facts.find_first(|f| f.nightly == id) {
+ 		Ok(f) => if f.outcome == Pass "pass" else if f.outcome == Fail "fail" else "fault"
+ 		Err(_) => match inferred.find_first(|i| i.nightly == id) {
+-			Ok(i) => if i.outcome == Pass "pass" else "ifail"
++			Ok(i) => match i.outcome {
++				Pass => "pass"
++				Fail => "ifail"
++			}
+ 			Err(_) => "unknown"
+ 		}
+ 	}
+diff --git a/tests/unit/ShareTest.roc b/tests/unit/ShareTest.roc
+index 6aa2b889..0f54f304 100644
+--- a/tests/unit/ShareTest.roc
++++ b/tests/unit/ShareTest.roc
+@@ -108,7 +108,7 @@ expect {
+ 		(read("registry = \"direct\"\n"), Ok({ share: Err(Unset), registry: Ok("direct") })),
+ 		(read("share = \"yes\"\n"), Err(Fail.new(Input, "${path}:1: share: must be true or false"))),
+ 		(read("nightly = true\nshare = 1\n"), Err(Fail.new(Input, "${path}:2: share: must be true or false"))),
+-		(read("share = [\n"), Err(Fail.new(Input, "${path}:1: not valid TOML"))),
++		(read("share = [\n"), Err(Fail.new(Input, "${path}:2: not valid TOML"))),
+ 	]
+ 	reasons = [Share, Registry, Offline, DoNotTrack, Ci]
+ 	rows.all(|(got, want)| got == want)
+@@ -133,7 +133,7 @@ expect {
+ 		(edit("share = true\n", Bool.True), Ok({ previous: Ok(Bool.True), edit: Same })),
+ 		(edit("share = false\n", Bool.False), Ok({ previous: Ok(Bool.False), edit: Same })),
+ 		(edit("share = \"yes\"\n", Bool.True), Err(Fail.new(Input, "${path}:1: share: must be true or false"))),
+-		(edit("share = [\n", Bool.True), Err(Fail.new(Input, "${path}:1: not valid TOML"))),
++		(edit("share = [\n", Bool.True), Err(Fail.new(Input, "${path}:2: not valid TOML"))),
+ 	]
+ 	moved and rows.all(|(got, want)| got == want)
+ }

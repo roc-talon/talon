@@ -203,7 +203,7 @@ expect {
 	bad == []
 }
 
-# Design Q617 item 1: the two texts. The hint of the exit 2 failure is the order to remove the table first (a proposal for the words, TW24).
+# Design Q617 item 1: the two texts. The hint of the exit 2 failure is the order to remove the table first (a proposal for the words, TW24). Slice 262a (R-CM19, Q262-8, Design Q642): the hint names the long form remove.
 expect {
 	a = Channel.already_text({ name: "reify", source: "Karakatiza666/roc-reify-nightlies" })
 	b = Channel.exists_text({ name: "reify", source: "someone-else/roc-reify-nightlies", existing: "Karakatiza666/roc-reify-nightlies" })
@@ -213,7 +213,7 @@ expect {
 		and b
 			== {
 				message: "channel reify is added with the source Karakatiza666/roc-reify-nightlies, not someone-else/roc-reify-nightlies",
-				hint: "To replace it, run: tln roc channel rm reify",
+				hint: "To replace it, run: tln roc channel remove reify",
 			}
 }
 

@@ -981,7 +981,13 @@ if command -v pwsh > /dev/null 2>&1; then
     PWSH=$(command -v pwsh) "$ROOT/install/test.sh" bash > "$I/$n.out" 2>&1 &
 fi
 wait
-if ! grep -q ' 0 failed$' $I/*.out || grep -q '^FAIL' $I/*.out; then bad "install: install/test.sh fails (shells: ${shells[*]})"; grep -h '^FAIL' $I/*.out; else ok; fi
+# Slice 260 (G11): on a failure, the full output of each failing run (not only its FAIL lines), so a failure on a CI runner can be read in the log.
+if ! grep -q ' 0 failed$' $I/*.out || grep -q '^FAIL' $I/*.out; then
+    bad "install: install/test.sh fails (shells: ${shells[*]})"
+    for f in $I/*.out; do
+        if ! grep -q ' 0 failed$' "$f" || grep -q '^FAIL' "$f"; then echo "--- $f"; cat "$f"; fi
+    done
+else ok; fi
 }
 sec install s_install
 

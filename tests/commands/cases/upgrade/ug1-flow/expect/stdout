@@ -9,7 +9,7 @@ $PROJECT/p1/main.roc
 resolved at 2026-10-15T12:00:00Z, 7 probes
 exit 0
 == upgrade --file p2/main.roc
-parser: anchor, held
+parser: pinned to =1.0.0, held (tln upgrade parser moves it)
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1
 check: passed
 build: skipped (recorded pass)
@@ -54,6 +54,7 @@ $PROJECT/ws/talon.toml: json = "^3.0" (was "^2.1")
 resolved at 2026-10-15T12:00:00Z, 4 probes
 exit 0
 == update --file p7/main.roc
+parser: pinned to =1.0.0, held (tln upgrade parser moves it)
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 check: passed
 build: passed

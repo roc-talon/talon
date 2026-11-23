@@ -32,7 +32,7 @@ import Text
 RunEachFlow :: [].{
 
 	## What the caller has: the environment, the roots, the clock, and the walk.
-	Start : { env : List((Str, Str)), roots : Roots, now : U64, scan : RunSteps.Scan }
+	Start : { env : List((Str, Str)), roots : Roots, now : U64, real ?: U64, scan : RunSteps.Scan }
 
 	## Steps 1 to 8. The exit code of the run.
 	run! : Fx, Args, RunCmd.Cmd, RunEachFlow.Start, (Fx => I32) => Try(I32, Fail)
@@ -74,7 +74,7 @@ from_root! = |fx, args, cmd, start, tln, root| {
 	headers = read_headers!(fx, found)?
 	links = RunEach.edges({ nodes: found, headers })?
 	order = RunEach.order({ nodes: found.map(|n| n.dir), edges: links, root })?
-	ready = { env: start.env, roots: start.roots, now: start.now, table, tools_file: { path: tools_path, text: tools_text } }
+	ready = { env: start.env, roots: start.roots, now: start.now, real: start.?real ?? start.now, table, tools_file: { path: tools_path, text: tools_text } }
 	space = { root, nodes: found, links, order, ready }
 	match cmd.name {
 		Err(None) => list!(fx, args, space)

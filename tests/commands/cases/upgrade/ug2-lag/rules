@@ -7,4 +7,4 @@ Run 1 (q1, `upgrade`, `talon.toml` with `core = "=1.0.0"`): core is an anchor an
 The three notes are in the stdout of the command (`note: ...`).
 Run 2 (q1j, `upgrade --dry-run --json`): the same three lines are in `notes` of the envelope (R-J3: no new field).
 Run 3 (q1u, `update`, no `talon.toml`): the old command has no lag notes (R-UP2 is for `upgrade`, R-UP10). The domain of `update` is the implied range, so json stays in the series 2 and the parser failure does not show.
-This case is a revert check target for the order and the text of the reasons.
+This case is a revert check target for the order and the text of the reasons. Slice 262b (R-UP1, Design Q642): the held line of the anchor core is `core: pinned to =1.0.0, held (tln upgrade core moves it)`.

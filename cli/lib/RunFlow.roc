@@ -55,7 +55,8 @@ flow! : Fx, Args, RunCmd.Cmd, (Fx => I32) => Try(I32, Fail)
 flow! = |fx, args, cmd, tln| {
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
-	now = Clock.now!(fx, env)?
+	times = Clock.times!(fx, env)?
+	now = times.now
 	home = match env.find_first(|(name, _)| name == "HOME") {
 		Ok((_, dir)) => dir
 		Err(_) => ""
@@ -63,7 +64,7 @@ flow! = |fx, args, cmd, tln| {
 	cwd = fx.cwd!()
 	scan = Project.scan!(fx, { start: cwd, home })?
 	if cmd.each {
-		return RunEachFlow.run!(fx, args, cmd, { env, roots, now, scan }, tln)
+		return RunEachFlow.run!(fx, args, cmd, { env, roots, now, real: times.real, scan }, tln)
 	}
 	found = RunSteps.locate!(fx, { name: cmd.name, dirs: find_dirs(scan) }, scan, [])?
 	Known.record!(fx, { roots, files: RunSteps.record_files!(fx, scan, found), now })?
@@ -81,7 +82,7 @@ flow! = |fx, args, cmd, tln| {
 		Err(None) => list!(fx, args, ready)
 		Ok(name) => {
 			flats = RunSteps.plan!(fx, { name, args: cmd.args, dir: found.dir, stop: found.stop }, RunSteps.known_files(scan))?
-			steps = { env, roots, now, table, tools_file: ready.tools_file }
+			steps = { env, roots, now, real: times.real, table, tools_file: ready.tools_file }
 			RunSteps.steps!(fx, args, { name, ready: steps }, flats, tln)
 		}
 	}

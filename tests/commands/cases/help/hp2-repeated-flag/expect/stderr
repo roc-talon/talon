@@ -1,0 +1,6 @@
+tln: error[usage]: flag '--as' is given more than once
+tln: error[usage]: flag '--json' is given more than once
+tln: error[usage]: flag '--registry' is given more than once
+tln: error[usage]: flag '--file' is given more than once
+tln: error[usage]: flag '--dry-run' is given more than once
+tln: error[usage]: flag '--as' is not for 'list'

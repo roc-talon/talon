@@ -2,7 +2,7 @@
 exit 1
 == 2: the command with no help: no hint, no pin, no talon.toml edit
 == tln upgrade --snapshot 2026-10-13T00:00:00Z
-parser: anchor, held
+parser: pinned to =2.0.0, held (tln upgrade parser moves it)
 note: platform changes: roc-lang/basic-cli 0.24.0 -> roc-lang/basic-cli 0.25.0
 check: passed
 note: removed error: AEjfyaMFFbh8FJrkkHJy68riVNPr3Qp6c6PawWQjBwMH Locale.roc: type mismatch
@@ -25,6 +25,6 @@ roc: "nightly-2026-10-14-38a3029"
 parser = "=2.0.0"
 == 4: nothing more to move: the same command again (the compiler and the packages are in the cache)
 == tln upgrade --snapshot 2026-10-13T00:00:00Z
-parser: anchor, held
+parser: pinned to =2.0.0, held (tln upgrade parser moves it)
 nothing to change
 exit 0

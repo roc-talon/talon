@@ -6,6 +6,7 @@ import ArgsTest
 import CompilerTest
 import DelTest
 import FactsTest
+import HelpTest
 import IndexTest
 import LinkTest
 import MatrixTest

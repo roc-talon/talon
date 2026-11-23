@@ -6,7 +6,7 @@ exit 0
 reify-2026-11-03-1708298 is the newest
 exit 0
 == roc update reify --json
-{"schema":1,"command":"roc update","ok":true,"data":{"id":"reify-2026-11-03-1708298","path":"$HOME/.cache/roc/toolchains/reify-2026-11-03-1708298","installed":false,"previous":"reify-2026-11-03-1708298","changed":false},"error":null}
+{"schema":1,"command":"roc update","ok":true,"data":{"id":"reify-2026-11-03-1708298","path":"$HOME/.cache/roc/toolchains/reify-2026-11-03-1708298","installed":false,"previous":"reify-2026-11-03-1708298","changed":false,"project":null},"error":null}
 exit 0
 == env:HOME={w}/home2 roc update nightly
 nightly-2026-10-14-38a3029 is the newest

@@ -82,12 +82,18 @@ PickFlow :: [].{
 			Install => if asked.names.is_empty() Install else Update
 			Update => Update
 		}
-		everyone = Vars.scope({
+		everyone = Vars.scope_with({
 			command,
 			names: asked.names,
 			fixed: request.fixed,
 			selectors: asked.picks.keep_oks(|p| PickAsk.range_of_selector(p.selector).map_ok(|range| { alias: p.alias, range })),
 			vars: built.vars,
+			overridden: loaded.members.join_map(
+				|m| match m.toml {
+					Ok(t) => t.intent.overrides.keep_if(|o| !t.intent.deps.any(|d| d.key == o.key)).map(|o| { file: m.file, alias: o.key })
+					Err(NoToml) => []
+				},
+			),
 		})?
 		# `--platform` replaces the platform entry, so the old platform is no variable of the pick (R-AD31).
 		scoped = if request.add.as_platform and !asked.fresh.is_empty() everyone.keep_if(|s| !s.variable.is_platform) else everyone
@@ -222,7 +228,7 @@ fresh_items! = |fx, request, fresh, known, first| {
 					Ok(selector) => Ok({ selector, text: f.text })
 					Err(None) => Err(None)
 				}
-				read = match FullName.read_via!(fx, { net: request.net, roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, offline: request.offline, name: f.name, selector: typed, snapshot: registry.snapshot, known, source: registry.source }) {
+				read = match FullName.read_real!(fx, { net: request.net, roots: request.roots, origin: registry.origin, version: Help.version, now: request.now, real: request.?real ?? request.now, offline: request.offline, name: f.name, selector: typed, snapshot: registry.snapshot, known, source: registry.source }) {
 					Ok(got) => got
 					# R-RG9 (Design Q601): the full-name read is the first registry request of the run: no answer from the built-in default, the run goes on in `direct`.
 					Err(fail) => {

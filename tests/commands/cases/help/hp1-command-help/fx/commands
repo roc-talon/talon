@@ -1,0 +1,36 @@
+# R-CM26 UX2 UX7: the general text names path, run, the sub words, the update of tln itself, -h and --file
+--help
+# R-CM26: -h is --help
+-h
+# R-CM26: the word help
+help
+# R-CM26: the text of one command
+install --help
+# R-CM26 R-CM19: an alias gives the text of its long form
+add -h
+# R-CM26 R-CM19: help <alias>
+help i
+# R-CM26 R-FL1: --json does not change the help; an operand and a flag value are skipped
+--json install json --as j --help
+# R-CM26: a flag that install does not take does not stop the help (as before for --help)
+install --bogus --help
+# R-CM26 R-CM19: a sub command with no flag block
+roc up -h
+# R-CM26: help <command> <sub word>
+help roc update
+# R-CM26: a group lists its commands
+roc --help
+# R-CM26 UX16 R-FL1: x shows no --git, --path, --resolve (not built) and no --json
+x --help
+# R-CM26 UX16: tool install shows no --resolve (not built)
+tool install -h
+# R-CM26 UX16 R-S6: tool rebuild does not name talon
+tool rebuild --help
+# R-CM26 Q262-7: help of a word that is no command is the unknown-command failure, exit 2
+help frob
+# R-CM26 Q262-7: the same with --help after the word
+frob --help
+# R-CM26 R-CM27 Q262-1: with the hint of a close command
+help instal
+# R-CM26 Q262-7: an unknown sub word
+roc frob -h

@@ -1,0 +1,363 @@
+== --help
+Usage: tln [flags] <command> [words]
+       tln help <command>    Show the usage of one command (also: tln <command> --help)
+
+Commands:
+  init      Make a new app or package
+  install   Add packages, or fetch the closure of the header (also: add, i)
+  remove    Remove a package (also: rm)
+  update    Move the packages of this project within the ranges (also: up)
+  upgrade   Move the packages and the compiler of this project to the newest releases
+  outdated  Show the current, wanted and latest versions
+  why       Show why a package is in the closure
+  probe     Probe an entry on the selected compiler
+  list      Show the closure (also: ls)
+  patch     Edit a copy of a dependency
+  verify    Resolve and probe, and write nothing
+  path      Print the directory of a header entry
+  run       Run a script of talon.toml
+  x         Build a Roc app and run it once
+  publish   Register a release
+  audit     Report yanked and changed releases
+  roc       Manage compilers: install, link, use, list, remove, default, update, channel
+  tool      Manage global tools: install, list, update, rebuild, remove
+  cache     Manage the cache: gc, clean, list, dir
+  setup     Install the roc proxy and the PATH line
+  yank      Yank a release
+  move      Set the successor of a package name
+  share     Show or change the sharing of probe results: on, off, login, logout, forget
+  help      Show this text, or the usage of one command
+
+To update tln itself, run: tln tool update talon
+(tln upgrade changes the project, not tln.)
+
+Flags for every command:
+  --json  --yes  --offline  --quiet  --registry <url|direct>  --help (-h)  --version
+  --file <path>  The project file, for a command that uses a project
+exit 0
+== -h
+Usage: tln [flags] <command> [words]
+       tln help <command>    Show the usage of one command (also: tln <command> --help)
+
+Commands:
+  init      Make a new app or package
+  install   Add packages, or fetch the closure of the header (also: add, i)
+  remove    Remove a package (also: rm)
+  update    Move the packages of this project within the ranges (also: up)
+  upgrade   Move the packages and the compiler of this project to the newest releases
+  outdated  Show the current, wanted and latest versions
+  why       Show why a package is in the closure
+  probe     Probe an entry on the selected compiler
+  list      Show the closure (also: ls)
+  patch     Edit a copy of a dependency
+  verify    Resolve and probe, and write nothing
+  path      Print the directory of a header entry
+  run       Run a script of talon.toml
+  x         Build a Roc app and run it once
+  publish   Register a release
+  audit     Report yanked and changed releases
+  roc       Manage compilers: install, link, use, list, remove, default, update, channel
+  tool      Manage global tools: install, list, update, rebuild, remove
+  cache     Manage the cache: gc, clean, list, dir
+  setup     Install the roc proxy and the PATH line
+  yank      Yank a release
+  move      Set the successor of a package name
+  share     Show or change the sharing of probe results: on, off, login, logout, forget
+  help      Show this text, or the usage of one command
+
+To update tln itself, run: tln tool update talon
+(tln upgrade changes the project, not tln.)
+
+Flags for every command:
+  --json  --yes  --offline  --quiet  --registry <url|direct>  --help (-h)  --version
+  --file <path>  The project file, for a command that uses a project
+exit 0
+== help
+Usage: tln [flags] <command> [words]
+       tln help <command>    Show the usage of one command (also: tln <command> --help)
+
+Commands:
+  init      Make a new app or package
+  install   Add packages, or fetch the closure of the header (also: add, i)
+  remove    Remove a package (also: rm)
+  update    Move the packages of this project within the ranges (also: up)
+  upgrade   Move the packages and the compiler of this project to the newest releases
+  outdated  Show the current, wanted and latest versions
+  why       Show why a package is in the closure
+  probe     Probe an entry on the selected compiler
+  list      Show the closure (also: ls)
+  patch     Edit a copy of a dependency
+  verify    Resolve and probe, and write nothing
+  path      Print the directory of a header entry
+  run       Run a script of talon.toml
+  x         Build a Roc app and run it once
+  publish   Register a release
+  audit     Report yanked and changed releases
+  roc       Manage compilers: install, link, use, list, remove, default, update, channel
+  tool      Manage global tools: install, list, update, rebuild, remove
+  cache     Manage the cache: gc, clean, list, dir
+  setup     Install the roc proxy and the PATH line
+  yank      Yank a release
+  move      Set the successor of a package name
+  share     Show or change the sharing of probe results: on, off, login, logout, forget
+  help      Show this text, or the usage of one command
+
+To update tln itself, run: tln tool update talon
+(tln upgrade changes the project, not tln.)
+
+Flags for every command:
+  --json  --yes  --offline  --quiet  --registry <url|direct>  --help (-h)  --version
+  --file <path>  The project file, for a command that uses a project
+exit 0
+== install --help
+Usage: tln install [<name>[@<sel>]...] [flags]
+       tln install --platform <name>[@<sel>] [flags]
+       tln install --tool <owner/app>[@<sel>] [flags]
+Also: tln add, tln i
+
+Add packages, or fetch the closure of the header.
+
+Arguments:
+  <name>[@<sel>]       A package: an alias, owner/repo, host/path or a short name, with an optional selector (@1.2.3, @^1.2, @latest)
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+
+Flags:
+  --file <path>              The project file
+  --frozen                   Fetch the closure of the header, and change nothing (no names only)
+  --no-probe                 Run no probe: use only known facts
+  --no-check                 Do not check the result
+  --snapshot <log:N|time>    Hide the releases after a registry log size or a time
+  --strategy highest|lowest  Choose the highest or the lowest versions
+  --dry-run                  Show the changes, and write nothing
+  --slots <n>                Run at most <n> probes at the same time
+  --as <alias>               The alias of the new entry (one name only)
+  --no-pin                   With an exact version: start there, with no pin
+  --platform                 The name is the platform of the app
+  --rename-keys              Rename the stale keys of talon.toml with no prompt
+  --allow-moves              Move held entries with no prompt
+  --allow-downloads          Download the compilers that the command needs with no prompt
+  --tool                     Add a project tool to [tools] of talon.toml
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== add -h
+Usage: tln install [<name>[@<sel>]...] [flags]
+       tln install --platform <name>[@<sel>] [flags]
+       tln install --tool <owner/app>[@<sel>] [flags]
+Also: tln add, tln i
+
+Add packages, or fetch the closure of the header.
+
+Arguments:
+  <name>[@<sel>]       A package: an alias, owner/repo, host/path or a short name, with an optional selector (@1.2.3, @^1.2, @latest)
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+
+Flags:
+  --file <path>              The project file
+  --frozen                   Fetch the closure of the header, and change nothing (no names only)
+  --no-probe                 Run no probe: use only known facts
+  --no-check                 Do not check the result
+  --snapshot <log:N|time>    Hide the releases after a registry log size or a time
+  --strategy highest|lowest  Choose the highest or the lowest versions
+  --dry-run                  Show the changes, and write nothing
+  --slots <n>                Run at most <n> probes at the same time
+  --as <alias>               The alias of the new entry (one name only)
+  --no-pin                   With an exact version: start there, with no pin
+  --platform                 The name is the platform of the app
+  --rename-keys              Rename the stale keys of talon.toml with no prompt
+  --allow-moves              Move held entries with no prompt
+  --allow-downloads          Download the compilers that the command needs with no prompt
+  --tool                     Add a project tool to [tools] of talon.toml
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== help i
+Usage: tln install [<name>[@<sel>]...] [flags]
+       tln install --platform <name>[@<sel>] [flags]
+       tln install --tool <owner/app>[@<sel>] [flags]
+Also: tln add, tln i
+
+Add packages, or fetch the closure of the header.
+
+Arguments:
+  <name>[@<sel>]       A package: an alias, owner/repo, host/path or a short name, with an optional selector (@1.2.3, @^1.2, @latest)
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+
+Flags:
+  --file <path>              The project file
+  --frozen                   Fetch the closure of the header, and change nothing (no names only)
+  --no-probe                 Run no probe: use only known facts
+  --no-check                 Do not check the result
+  --snapshot <log:N|time>    Hide the releases after a registry log size or a time
+  --strategy highest|lowest  Choose the highest or the lowest versions
+  --dry-run                  Show the changes, and write nothing
+  --slots <n>                Run at most <n> probes at the same time
+  --as <alias>               The alias of the new entry (one name only)
+  --no-pin                   With an exact version: start there, with no pin
+  --platform                 The name is the platform of the app
+  --rename-keys              Rename the stale keys of talon.toml with no prompt
+  --allow-moves              Move held entries with no prompt
+  --allow-downloads          Download the compilers that the command needs with no prompt
+  --tool                     Add a project tool to [tools] of talon.toml
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== --json install json --as j --help
+Usage: tln install [<name>[@<sel>]...] [flags]
+       tln install --platform <name>[@<sel>] [flags]
+       tln install --tool <owner/app>[@<sel>] [flags]
+Also: tln add, tln i
+
+Add packages, or fetch the closure of the header.
+
+Arguments:
+  <name>[@<sel>]       A package: an alias, owner/repo, host/path or a short name, with an optional selector (@1.2.3, @^1.2, @latest)
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+
+Flags:
+  --file <path>              The project file
+  --frozen                   Fetch the closure of the header, and change nothing (no names only)
+  --no-probe                 Run no probe: use only known facts
+  --no-check                 Do not check the result
+  --snapshot <log:N|time>    Hide the releases after a registry log size or a time
+  --strategy highest|lowest  Choose the highest or the lowest versions
+  --dry-run                  Show the changes, and write nothing
+  --slots <n>                Run at most <n> probes at the same time
+  --as <alias>               The alias of the new entry (one name only)
+  --no-pin                   With an exact version: start there, with no pin
+  --platform                 The name is the platform of the app
+  --rename-keys              Rename the stale keys of talon.toml with no prompt
+  --allow-moves              Move held entries with no prompt
+  --allow-downloads          Download the compilers that the command needs with no prompt
+  --tool                     Add a project tool to [tools] of talon.toml
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== install --bogus --help
+Usage: tln install [<name>[@<sel>]...] [flags]
+       tln install --platform <name>[@<sel>] [flags]
+       tln install --tool <owner/app>[@<sel>] [flags]
+Also: tln add, tln i
+
+Add packages, or fetch the closure of the header.
+
+Arguments:
+  <name>[@<sel>]       A package: an alias, owner/repo, host/path or a short name, with an optional selector (@1.2.3, @^1.2, @latest)
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+
+Flags:
+  --file <path>              The project file
+  --frozen                   Fetch the closure of the header, and change nothing (no names only)
+  --no-probe                 Run no probe: use only known facts
+  --no-check                 Do not check the result
+  --snapshot <log:N|time>    Hide the releases after a registry log size or a time
+  --strategy highest|lowest  Choose the highest or the lowest versions
+  --dry-run                  Show the changes, and write nothing
+  --slots <n>                Run at most <n> probes at the same time
+  --as <alias>               The alias of the new entry (one name only)
+  --no-pin                   With an exact version: start there, with no pin
+  --platform                 The name is the platform of the app
+  --rename-keys              Rename the stale keys of talon.toml with no prompt
+  --allow-moves              Move held entries with no prompt
+  --allow-downloads          Download the compilers that the command needs with no prompt
+  --tool                     Add a project tool to [tools] of talon.toml
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== roc up -h
+Usage: tln roc update [<channel>]
+Also: tln roc up
+
+Install the newest compiler release, and move the global default to it.
+
+Arguments:
+  <channel>  The name of a user channel (tln roc channel list). With none: the nightlies
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== help roc update
+Usage: tln roc update [<channel>]
+Also: tln roc up
+
+Install the newest compiler release, and move the global default to it.
+
+Arguments:
+  <channel>  The name of a user channel (tln roc channel list). With none: the nightlies
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== roc --help
+Usage: tln roc <command> [words]
+
+Manage compilers.
+
+Commands:
+  install  Install a compiler: a nightly, a release or a git ref (also: add, i)
+  link     Use a local roc build under a name
+  use      Check the project on a compiler and write the roc: pin of the header
+  list     Show the installed compilers (also: ls)
+  remove   Remove one compiler (also: rm)
+  default  Set the global default compiler
+  update   Install the newest compiler and move the global default (also: up)
+  channel  Add, remove or list compiler channels
+
+Run tln roc <command> --help for the usage of one command.
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== x --help
+Usage: tln x <owner/app>[@<sel>] [flags] [-- <args>]
+       tln x <key> [flags] [-- <args>]
+
+Build a Roc app and run it once.
+
+Arguments:
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+  <args>               Words that tln passes on as they are
+  <key>                A key of [tools] in talon.toml
+
+Flags:
+  --slots <n>             Run at most <n> probes at the same time
+  --roc pinned|installed  Which compiler builds the app
+  --allow-unchecked       Use a cached build that was not checked online
+
+Flags for every command: --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== tool install -h
+Usage: tln tool install <owner/app>[@<sel>] [flags]
+       tln tool install --git <owner/app@ref> [flags]
+Also: tln tool add, tln tool i
+
+Build a Roc app and put it on PATH.
+
+Arguments:
+  <owner/app>[@<sel>]  A Roc app on GitHub, with an optional selector
+  <owner/app@ref>      A Roc app on GitHub at a git ref (a branch, a tag or a commit)
+
+Flags:
+  --slots <n>             Run at most <n> probes at the same time
+  --as <name>             The binary name
+  --git                   The operand is a git ref
+  --path <dir>            The directory of the app in the repository
+  --roc pinned|installed  Which compiler builds the app
+  --allow-unchecked       Use a cached build that was not checked online
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== tool rebuild --help
+Usage: tln tool rebuild [<tool>]
+
+Build tools again on the default compiler.
+
+Arguments:
+  <tool>  A tool name
+
+Flags for every command: --json --yes --offline --quiet --registry <url|direct> --help
+exit 0
+== help frob
+exit 2
+== frob --help
+exit 2
+== help instal
+exit 2
+== roc frob -h
+exit 2

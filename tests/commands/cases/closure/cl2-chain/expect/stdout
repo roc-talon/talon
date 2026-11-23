@@ -5,6 +5,7 @@ $PROJECT/p1/main.roc
 resolved at 2026-10-15T12:00:00Z, 0 probes
 exit 0
 == update --no-check --file p2/main.roc
+core: pinned to =1.0.0, held (tln upgrade core moves it)
 exit 10
 == why core --file p1/main.roc
 $PROJECT/p1/main.roc
@@ -24,6 +25,7 @@ $PROJECT/p4/main.roc
 resolved at 2026-10-15T12:00:00Z, 0 probes
 exit 0
 == update --no-check --file p5/main.roc
+core: pinned to =1.0.0, held (tln upgrade core moves it)
 exit 10
 == verify --no-check --file p4/main.roc
 check: skipped

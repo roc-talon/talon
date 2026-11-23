@@ -1,0 +1,101 @@
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] ([], [], [])
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] Need(["https://github.com/acme/x/releases/download/1.1.0/xx1x1x0.tar.zst"])
+[dbg] Fail(VersionConflict([{ by: "https://github.com/acme/mid/releases/download/1.0.0/midx1x0x0.tar.zst", needed: "https://github.com/acme/json/releases/download/1.1.0/jsonx1x1x0.tar.zst", pinned: "https://github.com/acme/json/releases/download/1.0.0/jsonx1x0x0.tar.zst" }]))
+[dbg] Done({ links: [{ alias: "base", from: Err(Header), to: "https://github.com/acme/pfx/releases/download/0.1.1/pfxx0x1x1.tar.zst" }, { alias: "web", from: Err(Header), to: "https://github.com/acme/web/releases/download/1.0.0/webx1x0x0.tar.zst" }, { alias: "pf", from: Ok("https://github.com/acme/web/releases/download/1.0.0/webx1x0x0.tar.zst"), to: "https://github.com/acme/pfx/releases/download/0.1.1/pfxx0x1x1.tar.zst" }], rows: [{ alias: "base", direct: True, form: "github.com/acme/pfx/releases/download/{v}/", id: "https://github.com/acme/pfx/releases/download/0.1.1/pfxx0x1x1.tar.zst", is_platform: True, kind: Release, name: "acme/pfx", raised: Err(None), series: "0.1", version: "0.1.1", via: Err(None) }, { alias: "web", direct: True, form: "github.com/acme/web/releases/download/{v}/", id: "https://github.com/acme/web/releases/download/1.0.0/webx1x0x0.tar.zst", is_platform: False, kind: Release, name: "acme/web", raised: Err(None), series: "1", version: "1.0.0", via: Err(None) }] })
+[dbg] []
+[dbg] []
+[dbg] ([], [], [])
+[dbg] (True, True, True, True, True, [])
+[dbg] []
+[dbg] (True, True)
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] { auto: ["nightly-2026-10-09-258ab27", "nightly-2026-10-12-2664a27"], named: ["nightly-2026-10-09-258ab27", "nightly-2026-10-12-2664a27", "nightly-2026-10-13-91fa0c2", "nightly-2026-10-14-38a3029"] }
+[dbg] { auto: ["nightly-2026-10-09-258ab27", "nightly-2026-10-12-2664a27", "nightly-2026-10-13-91fa0c2", "nightly-2026-10-14-38a3029"], named: ["nightly-2026-10-09-258ab27", "nightly-2026-10-12-2664a27", "nightly-2026-10-13-91fa0c2", "nightly-2026-10-14-38a3029"] }
+[dbg] Ok("nightly-2026-10-12-2664a27")
+[dbg] Ok("nightly-2026-10-13-91fa0c2")
+[dbg] { again: Err(None), details: Err(NoDetails), fallback: Err(None), fell: Err(None), kind: Usage, message: "nightly-2026-10-08-0badc0d has no asset for linux_x86_64", no_project: False, ran: Err(None), refused_range: Err(None), smoke: Err(None) }
+[dbg] { again: Err(None), details: Err(NoDetails), fallback: Err(None), fell: Err(None), kind: Usage, message: "no compiler matches nightly-2026-10-08", no_project: False, ran: Err(None), refused_range: Err(None), smoke: Err(None) }
+[dbg] { archive: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc_nightly-linux_x86_64-2026-10-09-258ab27.tar.gz", id: "nightly-2026-10-09-258ab27", item: "/c/roc/toolchains/nightly-2026-10-09-258ab27", meta: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/.talon.json", probe_dir: "/c/roc/talon/tmp/0123456789abcdef", probe_file: "/c/roc/talon/tmp/0123456789abcdef/empty.roc", roc: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp/roc", temp: "/c/roc/toolchains/nightly-2026-10-09-258ab27.0123456789abcdef.tmp" }
+[dbg] { archive: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/roc_nightly-windows_arm64-2026-10-09-258ab27.zip", id: "nightly-2026-10-09-258ab27", item: "/c/roc/toolchains/nightly-2026-10-09-258ab27", meta: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/.talon.json", probe_dir: "/c/roc/talon/tmp/00000000000000ff", probe_file: "/c/roc/talon/tmp/00000000000000ff/empty.roc", roc: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp/roc.exe", temp: "/c/roc/toolchains/nightly-2026-10-09-258ab27.00000000000000ff.tmp" }
+[dbg] [Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Ok(["chmod", "0755", "/t/roc"]), Err(NotNeeded), Err(NotNeeded)]
+[dbg] []
+[dbg] [16, 16, 15, 18, 16, 15]
+[dbg] []
+[dbg] "{\"format\":1,\"id\":\"nightly-2026-10-09-258ab27\",\"url\":\"http://127.0.0.1:1/dl/a.tar.gz\",\"sha256\":\"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\",\"sha256_source\":\"github-digest\",\"typed\":\"@latest\",\"compat\":\"c0ffee\",\"installed_at\":\"2026-10-22T12:00:00Z\",\"published_at\":\"2026-10-09T15:01:06Z\"}
+"
+[dbg] "{\"format\":1,\"id\":\"nightly-2026-10-09-258ab27\",\"url\":\"http://127.0.0.1:1/dl/a.tar.gz\",\"sha256\":\"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\",\"sha256_source\":\"github-digest\",\"typed\":\"@latest\",\"compat\":null,\"installed_at\":\"2026-10-22T12:00:00Z\",\"published_at\":\"2026-10-09T15:01:06Z\"}
+"
+[dbg] []
+[dbg] []
+[dbg] "Download 1 compiler, 73.9 MB: nightly-2026-10-09-258ab27?"
+[dbg] { stderr: ["warning: the compat id of nightly-2026-10-09-258ab27 is not known: roc check touched 2 compat dirs (a, b)
+"], stdout: ["installed nightly-2026-10-09-258ab27
+", "nightly-2026-10-09-258ab27 is now the default compiler
+"] }
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+All (192) tests passed in 13056.4 ms.

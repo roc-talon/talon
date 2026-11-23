@@ -1,0 +1,33 @@
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 1125.0 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 208.3 ms.
+packages/resolve/tests/moves.roc: All (5) tests passed in 1449.8 ms.
+packages/resolve/tests/solver.roc: All (5) tests passed in 977.8 ms.
+tests/unit/l0-1.roc: All (229) tests passed in 24273.8 ms.
+tests/unit/l0-2.roc: All (106) tests passed in 24130.8 ms.
+tests/unit/l0-3.roc: All (133) tests passed in 21346.6 ms.
+tests/unit/l0-4.roc: All (159) tests passed in 25047.9 ms.
+tests/unit/l0-5.roc: All (136) tests passed in 24584.5 ms.
+l0: tests/unit/l0-6.roc: timed out after 30 s
+[dbg] []
+[dbg] []
+[dbg] "http://127.0.0.1:8080/zig/index.json"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [{ path: "/c/roc/toolchains/zig-0.16.2/zig", source: Installed, version: Ok("0.16.2") }, { path: "/c/roc/toolchains/zig-0.17.0/zig", source: Installed, version: Ok("0.17.0") }]
+[dbg] []
+[dbg] Err({ again: Err(None), details: Err(NoDetails), fallback: Err(None), fell: Err(None), kind: Network, message: "the Zig index is not a JSON object", no_project: False, ran: Err(None), refused_range: Err(None), smoke: Err(None) })
+[dbg] { archive: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig-x86_64-linux-0.17.0.tar.xz", item: "/c/roc/toolchains/zig-0.17.0", meta: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/.talon.json", temp: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp", version: "0.17.0", zig: "/c/roc/toolchains/zig-0.17.0.0123456789abcdef.tmp/zig" }
+[dbg] "{\"format\":1,\"id\":\"zig-0.17.0\",\"url\":\"https://ziglang.org/download/0.17.0/zig-x86_64-linux-0.17.0.tar.xz\",\"sha256\":\"1111111111111111111111111111111111111111111111111111111111111111\",\"sha256_source\":\"zig-index\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] "Dependencies:
+  [ ] zig 0.17.x            found zig 0.16.0 on PATH
+  [ ] LLVM bundle           x86_64-linux-musl, 45.0 MB, zig gets it during the build
+"
+[dbg] "Install zig 0.17.0 (54.2 MB) for Talon builds?"
+[dbg] []
+[dbg] []
+[dbg] []
+tests/unit/l0-7.roc: All (137) tests passed in 26069.1 ms.
+l0: tests/unit/l0-8.roc: timed out after 30 s
+tests/unit/l0-9.roc: All (189) tests passed in 17399.2 ms.

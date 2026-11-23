@@ -6,6 +6,13 @@ export TALON_NOW=2026-10-15T12:00:00Z
 st() { echo "== $*"; if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }
 D=$TALON_TEST_DIR
 X=$XDG_CACHE_HOME/roc/talon/x
+# Slice 260 (G10, Design Q639): the age of a cached release list page (R-DI2) is the real clock minus the file time of the page. TALON_NOW does not change it (R-EV22).
+# So the case sets the file time of the page on purpose, relative to the real time: `fresh` (now: younger than 60 s, no request) before a step that reads the list,
+# so a slow runner gives the same requests, and `aged` (one hour ago: older than 60 s, a new request) before step 7.
+# The time of a page is the file time of its `.meta` file (Github.cached_page!: Talon writes the body first, then the meta). The case sets both files (dispute D-G10).
+PAGE=$XDG_CACHE_HOME/roc/talon/index/github/acme/app/1
+fresh() { touch "$PAGE.json" "$PAGE.meta"; }
+aged() { touch -d "@$(($(date +%s) - 3600))" "$PAGE.json" "$PAGE.meta"; }
 downloads() { if [ -f $D/http.log ]; then grep -c '/dl/' $D/http.log || true; else echo 0; fi; }
 chmod +x $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/roc
 
@@ -19,6 +26,7 @@ cat $D/build.log
 echo "downloads: $(downloads)"
 
 echo "-- 2: the same line again matches the entry (R-B1): no download, no build. The app runs again."
+fresh
 st tln x acme/app
 echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
 
@@ -27,6 +35,7 @@ st tln x acme/app --json
 echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
 
 echo "-- 4: tln tool install takes the entry (R-B4): no download, no build. The binary moves to the data bin dir (the entry dir is deleted), the bin dir entry is a hard link, tools.json has the tool."
+fresh
 st tln tool install acme/app
 echo "x: $(ls -A $X | wc -l) entries"
 ls -A $HOME/.local/bin $XDG_DATA_HOME/talon/bin
@@ -35,6 +44,7 @@ cat $XDG_DATA_HOME/talon/tools.json
 echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"
 
 echo "-- 5: an exact version that the installed tool does not have is a build in the x cache (R-B2, R-B5): the installed tool is not changed."
+fresh
 st tln x acme/app@1.0.0 -- d
 ls -A $X
 cat $XDG_DATA_HOME/talon/tools.json
@@ -46,8 +56,9 @@ export TALON_NOW=2026-11-20T12:00:00Z
 st tln cache gc
 echo "x: $(ls -A $X | wc -l) entries"
 
-echo "-- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download."
+echo "-- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download. The page of the release list is one hour old (real clock), so the list is read again (R-DI2)."
 rm -rf $HOME/.cache/roc/toolchains && cp -a $D/toolchains-saved $HOME/.cache/roc/toolchains
+aged
 st tln x acme/app@1.0.0 -- e
 ls -A $X
 echo "downloads: $(downloads), builds: $(wc -l < $D/build.log)"

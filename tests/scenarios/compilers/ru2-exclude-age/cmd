@@ -1,6 +1,7 @@
 # R-C15 R-C16 R-C14 R-C12 R-RU1 R-NS3 R-C7 R-DL4 R-FL4 (slice 084): `tln roc update` with the list `min-release-age-exclude` in `config.toml`, end to end with the real Fx, the real curl and tar, and the fake release server
 # (tests/tools/mk-nightly.sh with ARCHIVE=real made given/http: `ARCHIVE=real mk-nightly.sh given/http nightly-2026-10-21-5349569@2026-10-21T00:00:00Z nightly-2026-10-14-38a3029 nightly-2026-10-09-258ab27`).
 # The time is fixed to 2026-10-22T12:00:00Z (TALON_NOW): the nightly of 2026-10-21 is 36 hours old (1d), so min-release-age (2 days) hides it. The newest nightly that the age allows is nightly-2026-10-14-38a3029.
+# Slice 262b (R-RU5, R-RU3, Q262-5, Q262-6, Design Q642): the current directory is a project pinned to nightly-2026-10-09-258ab27, so each run prints line A of the project hint after its lines (stderr with --json, none with --quiet), and --json has the member project.
 # The runner has CI=true, so no run has a person: a download that the command names starts with no prompt (R-DL4). Each run has its own store and config dir.
 export TALON_NOW=2026-10-22T12:00:00Z
 st() { if "$@"; then echo "exit 0"; else echo "exit $?"; fi; }

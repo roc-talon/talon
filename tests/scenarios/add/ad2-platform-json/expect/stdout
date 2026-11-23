@@ -16,6 +16,7 @@ $PROJECT/main.roc
   ~ shell: acme/pf 0.1.0 -> 0.2.0
   + roc: nightly-2026-10-14-38a3029
 $PROJECT/talon.toml: shell = "=0.2.0"
+note: shell is pinned to =0.2.0: tln update keeps it there, and tln upgrade shell moves it. To start at 0.2.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 2 probes
 exit 0
 == tln add --platform acme/pf@0.2.0

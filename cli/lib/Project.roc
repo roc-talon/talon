@@ -173,6 +173,16 @@ Project := {
 		}
 	}
 
+	## Slice 262b (R-RU5, Q262-5): `find_text!` with the text of the project file (`source`, from the read of step 5, no new call), for the hint of `tln roc update`.
+	find_source! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, text : Try(Str, [NoToml]), source : Try(Str, [None]) }, Fail)
+	find_source! = |fx, facts| {
+		found = search!(fx, facts)?
+		match found.header {
+			Ok({}) => Ok({ project: found.project, text: found.text, source: found.source })
+			Err(fail) => Err(fail)
+		}
+	}
+
 	## Slice 023, R-TF5 (review of Q6): `find!` with the same arguments and the same calls (steps 1 to 5), but a header that `Project.check_header` refuses is not a failure of the search. The result has the
 	## project and `header`, the result of the check (`Ok({})`, or the failure that `find!` gives). Any other failure stops the search as in `find!`. The `roc` proxy uses it: a bad header drops only the `roc:` pin.
 	find_loose! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, header : Try({}, Fail) }, Fail)
@@ -280,7 +290,7 @@ climb_version = |walk| match walk {
 }
 
 # Slice 086: the steps of `find_loose!`, and `text`: the text of the `talon.toml` of the project (`toml`), from the read of step 3. No new call.
-search! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, header : Try({}, Fail), text : Try(Str, [NoToml]) }, Fail)
+search! : Fx, { start : Str, file : Try(Str, [Unset]), home : Str } => Try({ project : Project, header : Try({}, Fail), text : Try(Str, [NoToml]), source : Try(Str, [None]) }, Fail)
 search! = |fx, facts| {
 	start_and_file = match facts.file {
 		Ok(typed) => match fx.canonical!([Project.absolute({ base: facts.start, path: typed })]) {
@@ -301,9 +311,9 @@ search! = |fx, facts| {
 	match project.file {
 		Ok(path) => {
 			text = read_text!(fx, path)?
-			Ok({ project, header: Project.check_header({ path, text }).map_ok(|_| {}), text: toml })
+			Ok({ project, header: Project.check_header({ path, text }).map_ok(|_| {}), text: toml, source: Ok(text) })
 		}
-		Err(NoCurrent) => Ok({ project, header: Ok({}), text: toml })
+		Err(NoCurrent) => Ok({ project, header: Ok({}), text: toml, source: Err(None) })
 	}
 }
 

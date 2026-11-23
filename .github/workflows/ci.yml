@@ -21,8 +21,10 @@ jobs:
         include:
           - os: ubuntu-latest
             steps: ''
+          # Slice 260 (G5): the macOS runner is slower (3 vCPUs). The limit of one test process (scripts/test.sh limit_of: 3 times the step budget, l0 30 s) is too short there.
           - os: macos-latest
             steps: check fmt l0 l2 l3 w0 selftest l1
+            test_timeout: '120'
           - os: windows-latest
             steps: check fmt l0 w0
     defaults:
@@ -86,11 +88,12 @@ jobs:
         run: echo "ROC_WORKER=$(scripts/get-roc.sh worker)" >> "$GITHUB_ENV"
 
       # The steps w1 and w2 need Node 26 or later (JSPI, node:sqlite) and a global wrangler 4 with Miniflare (TW34). Only Linux runs them (TW35); macOS and Windows run w0, which needs the Worker compiler only.
+      # Slice 260 (G7): an exact Node version, the one that runs w1 locally (TW34). Node 26.13 made `run()` of node:sqlite throw for a rowid outside the safe JS integer range.
       - name: Node
         if: runner.os == 'Linux'
         uses: actions/setup-node@v4
         with:
-          node-version: '26'
+          node-version: '26.7.0'
 
       - name: Wrangler
         if: runner.os == 'Linux'
@@ -110,8 +113,11 @@ jobs:
           path: .work/cache/roc
           key: roc-pkgs-${{ runner.os }}-${{ steps.pkgs.outputs.hash }}
 
+      # TEST_TIMEOUT: empty (the default limits of scripts/test.sh) when the matrix entry has no test_timeout.
       - name: Test
         shell: bash
+        env:
+          TEST_TIMEOUT: ${{ matrix.test_timeout }}
         run: scripts/test.sh ${{ matrix.steps }}
 
       - name: Logs

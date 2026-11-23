@@ -83,7 +83,7 @@ RocUse :: [].{
 	## | 3 | `platform!`, `Nightlies.list_channel!` (direct, the `source` of the table: R-CH16). `Toolchain.range_pick` over `>=<held>` with the switch and `min-release-age`. No build, or the build is not later than `held` (`Channel.pin_move`): `Newest(held)`, nothing else is done |
 	## | 4 | The offer of the new build, the installed list, `install_all!` (the consent, the download), then `Ladder.use!` for every member: the baseline check on `held`, the candidate check and the build on the new build (R-U3, R-H6: a new error is exit 11 and nothing is written) |
 	## | 5 | Under no lock (R-CC7): `write!` of the root `talon.toml` with `Channel.use_edit`. A dry run writes nothing |
-	upgrade_user! : Fx, Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, { held : Str, dry_run : Bool } => Try([Newest(Str), Kept({ note : Try(Str, [None]) }), Moved({ id : Str, old : Str, file : Str, written : Bool, probes : U64, downloads : U64, built : Bool, notes : List(Str), skipped : Try(Str, [None]) })], Fail)
+	upgrade_user! : Fx, Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, project : Project }, { held : Str, dry_run : Bool } => Try([Newest(Str), Kept({ note : Try(Str, [None]) }), Moved({ id : Str, old : Str, file : Str, written : Bool, probes : U64, downloads : U64, built : Bool, notes : List(Str), skipped : Try(Str, [None]) })], Fail)
 	upgrade_user! = |fx, args, start, run| {
 		toolchain = Compiler.toolchain_of(start.env)?
 		compiler = Install.compiler!(fx, start.roots, Bool.False)
@@ -98,7 +98,7 @@ RocUse :: [].{
 		}
 		settings = ResolveBase.settings_of(request, loaded)
 		system = Toolchain.host(fx.platform!())?
-		listed = Nightlies.list_channel!(fx, { net: start.net, roots: start.roots, now: start.now, offline: args.offline, host: system, channel: table })?
+		listed = Nightlies.list_channel!(fx, { net: start.net, roots: start.roots, now: start.real, offline: args.offline, host: system, channel: table })?
 		if listed.source == Missing return Err(Toolchain.offline_no_list({}))
 		times = listed.releases.map(|r| { id: r.id, published_at: r.published_at })
 		picked = Toolchain.range_pick({ releases: listed.releases, req: AtLeast(run.held), now: start.now, min_age: settings.min_age, snapshot: Err(None), nightly: settings.nightly, exclude: settings.exclude })
@@ -330,7 +330,7 @@ toml_plan = |loaded, run| {
 }
 
 # The `ResolveBase.Request` that `load!`, `select!` and `ladder_downloads` read.
-request_of : Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }, { compiler : Try({ id : Str, path : Str }, [NoCompiler]), toolchain : Try(Str, [Unset]), flag : Try(Answer, [NoFlag]), mode : Mode, auto : [Ask, Yes, No] } -> ResolveBase.Request
+request_of : Args, { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, project : Project }, { compiler : Try({ id : Str, path : Str }, [NoCompiler]), toolchain : Try(Str, [Unset]), flag : Try(Answer, [NoFlag]), mode : Mode, auto : [Ask, Yes, No] } -> ResolveBase.Request
 request_of = |args, start, facts| {
 	command: Update,
 	names: [],
@@ -341,6 +341,7 @@ request_of = |args, start, facts| {
 	roots: start.roots,
 	net: start.net,
 	now: start.now,
+	real: start.real,
 	offline: args.offline,
 	strategy: Err(Unset),
 	nightly: Common.nightly_of(start.env),

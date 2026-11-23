@@ -61,16 +61,56 @@ ManageUpdate :: [].{
 		{ stdout: [first].concat(after), stderr: warnings }
 	}
 
+	## Slice 262b (R-RU5, Q262-6, stub of the test agent): the project hint of `roc update`. `file` is the project file, `pin` its header `roc:` pin, `other` is true when a source of
+	## priority 2, 4 or 5 (ROC_TOOLCHAIN, `[toolchain] roc`, `.roc-version`) selects for the project, `default` is what the command did to the global default, `id` the new compiler.
+	## `uses`: `Pin` (a header pin), `New` (no pin, no other source, the default is now `id`), `Other`. `line` is line A or line B with its `note: ` prefix and a line end, or `Err(None)`.
+	project_hint : { file : Str, pin : Try(Str, [NoPin]), other : Bool, default : [Set, Moved(Str), Stay(Str), Same, NoDefault], id : Str } -> { uses : [Pin, New, Other], line : Try(Str, [None]) }
+	project_hint = |facts| match facts.pin {
+		Ok(pin) => {
+			line = if pin == facts.id {
+				Err(None)
+			} else {
+				Ok("note: the project ${facts.file} pins ${pin}, so it stays on that compiler. To move it with a check, run: tln upgrade roc\n")
+			}
+			{ uses: Pin, line }
+		}
+		Err(NoPin) => if facts.other {
+			{ uses: Other, line: Err(None) }
+		} else {
+			match facts.default {
+				Set | Moved(_) | Same => { uses: New, line: Ok("note: the project ${facts.file} has no roc: pin, so it uses ${facts.id} now, with no check. To check it and pin it, run: tln roc use ${facts.id}\n") }
+				Stay(_) | NoDefault => { uses: Other, line: Err(None) }
+			}
+		}
+	}
+
 	## R-J3, R-J4, R-OUT4 (slice 026, a proposal): the `data` of `roc update --json`, the keys in this order: `id` (the newest compiler), `path` (its install dir), `installed` (true when this run downloaded it),
 	## `previous` (the default before the command as text, or `null`), `changed` (true when `default-roc` was written, also the first default of R-SO15).
 	update_data : { id : Str, item : Str, installed : Bool, previous : Try(Str, [Unset]), changed : Bool } -> JsonDoc
-	update_data = |facts| JsonDoc.Obj([
-		("id", JsonDoc.Text(facts.id)),
-		("path", JsonDoc.Text(facts.item)),
-		("installed", JsonDoc.Flag(facts.installed)),
-		("previous", text_of(facts.previous.map_err(|Unset| None))),
-		("changed", JsonDoc.Flag(facts.changed)),
-	])
+	update_data = |facts| JsonDoc.Obj(base_fields(facts))
+
+	## Slice 262b (R-RU5, R-J3, Q262-6, R6): `update_data` and the member `project` after `changed`: `{"file", "pin", "uses"}` (`uses` is `pin`, `new` or `other`), or `null` when there is no project.
+	update_data_project : { id : Str, item : Str, installed : Bool, previous : Try(Str, [Unset]), changed : Bool }, Try({ file : Str, pin : Try(Str, [NoPin]), uses : [Pin, New, Other] }, [None]) -> JsonDoc
+	update_data_project = |facts, project| {
+		doc = match project {
+			Ok(p) => JsonDoc.Obj([
+				("file", JsonDoc.Text(p.file)),
+				("pin", text_of(p.pin.map_err(|NoPin| None))),
+				(
+					"uses",
+					JsonDoc.Text(
+						match p.uses {
+							Pin => "pin"
+							New => "new"
+							Other => "other"
+						},
+					),
+				),
+			])
+			Err(None) => JsonDoc.Null
+		}
+		JsonDoc.Obj(base_fields(facts).append(("project", doc)))
+	}
 }
 
 text_of : Try(Str, [None]) -> JsonDoc
@@ -98,3 +138,12 @@ stay_note = |id, kept| if Channel.user_parts(kept).is_ok() {
 
 not_a_name : Str -> Str
 not_a_name = |text| "${text} is not a channel name. A name is a-z, 0-9 and -, starts with a letter, has 2 to 24 characters and does not end with -."
+
+base_fields : { id : Str, item : Str, installed : Bool, previous : Try(Str, [Unset]), changed : Bool } -> List((Str, JsonDoc))
+base_fields = |facts| [
+	("id", JsonDoc.Text(facts.id)),
+	("path", JsonDoc.Text(facts.item)),
+	("installed", JsonDoc.Flag(facts.installed)),
+	("previous", text_of(facts.previous.map_err(|Unset| None))),
+	("changed", JsonDoc.Flag(facts.changed)),
+]

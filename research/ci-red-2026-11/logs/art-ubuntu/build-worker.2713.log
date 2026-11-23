@@ -1,0 +1,31 @@
+0 errors and 0 warnings found in 4m 17s while successfully building:
+
+    ../.work/worker/.tmp.2713/app.wasm
+worker.js: up to date (0 object classes, 0 entry points)
+on_trap (the fetch response of a trap or a failure):
+  default   500 application/problem+json, 98 bytes
+  crash     500 application/problem+json, 98 bytes
+  alarm     503 application/problem+json, 93 bytes
+  cpu       503 application/problem+json, 94 bytes
+  oom       503 application/problem+json, 104 bytes
+  shed      503 application/problem+json, 105 bytes
+  deadline  503 application/problem+json, 95 bytes
+  cancelled 503 application/problem+json, 93 bytes
+  event     500 application/problem+json, 98 bytes
+  failed    500 application/problem+json, 98 bytes
+Roc nightly (app.wasm):
+  ok      the wasm has the stack exports of nightly 2026-10-28 and later, so its nightly is nightly-2026-10-19-601b54c or later
+wrangler.toml:
+  ok      main = "worker.js"
+  ok      compatibility_date = "2026-10-01"
+  ok      compatibility_flags has enable_request_signal
+  ok      compatibility_flags has global_fetch_strictly_public
+  ok      [[d1_databases]] DB (d1)
+  ok      [[ratelimits]] RL_HINTS (ratelimit)
+  ok      [[ratelimits]] RL_INGEST (ratelimit)
+  ok      [[ratelimits]] RL_LOGIN (ratelimit)
+  ok      [[queues.producers]] INDEX (queue)
+  ok      [[r2_buckets]] LOG (r2)
+  ok      triggers.crons has "0 3 * * *"
+  ok      triggers.crons has "*/5 * * * *"
+  ok      triggers.crons has "2-59/5 * * * *"

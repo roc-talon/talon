@@ -237,3 +237,102 @@ expect {
 		"flag '--probe-downloads' is not for 'path'",
 	]
 }
+
+# Slice 262a (Design Q642). The text of a failure, or "" when the line parses.
+msg_of = |words| match Args.parse(words) {
+	Ok(_) => ""
+	Err(e) => e.fail.message
+}
+
+# R-CM27 Q262-1 (approved 2026-11-23): an unknown command word gets the closest command. The rule: first the table of words from other tools
+# (`uninstall`, `delete` -> `remove`; `tool upgrade`, `roc upgrade` -> `update`; `cache clear`, `cache purge` -> `cache clean`; `cache prune` -> `cache gc`;
+# `self` -> `tool update talon`), else the edit distance (a swap of 2 letters counts 1) to each long form and each other form of that level:
+# at most 1 for a word of 4 letters or less, at most 2 for a longer word. A tie: the first in the order of the general text. The hint names the long form.
+# No close word: the text of today (`frobnicate`, `tool frob`, `zz`).
+expect {
+	hint = |typed, cmd| "unknown command '${typed}' (did you mean 'tln ${cmd}'?)"
+	rows = [
+		(["isntall"], hint("isntall", "install")),
+		(["instal"], hint("instal", "install")),
+		(["--json", "isntall"], hint("isntall", "install")),
+		(["upgade"], hint("upgade", "upgrade")),
+		(["outdate"], hint("outdate", "outdated")),
+		(["lst"], hint("lst", "list")),
+		(["pach"], hint("pach", "patch")),
+		# R-CM27 Q262-1 (slice 262 mutation gap, m2): the length bound of the limit. A word of 5 letters 2 edits away gets a hint (verfi: a swap and an insert);
+		# a word of 4 letters 2 edits away gets none (lxsx: 2 edits from list and from ls).
+		(["verfi"], hint("verfi", "verify")),
+		(["lxsx"], "unknown command 'lxsx'"),
+		(["uninstall"], hint("uninstall", "remove")),
+		(["delete"], hint("delete", "remove")),
+		(["self", "update"], hint("self", "tool update talon")),
+		(["roc", "instal"], hint("roc instal", "roc install")),
+		(["roc", "upgrade"], hint("roc upgrade", "roc update")),
+		(["tool", "upgrade"], hint("tool upgrade", "tool update")),
+		(["tool", "uninstall", "app"], hint("tool uninstall", "tool remove")),
+		(["cache", "clear"], hint("cache clear", "cache clean")),
+		(["cache", "purge"], hint("cache purge", "cache clean")),
+		(["cache", "prune"], hint("cache prune", "cache gc")),
+		(["frobnicate"], "unknown command 'frobnicate'"),
+		(["zz"], "unknown command 'zz'"),
+		(["tool", "frob"], "unknown command 'tool frob'"),
+	]
+	bad = rows.keep_if(|(words, want)| msg_of(words) != want).map(|(words, want)| (words, want, msg_of(words)))
+	dbg bad
+	bad == []
+}
+
+# R-FL15 Q262-2 Q262-9 (approved 2026-11-23): a flag given more than once before a bare `--` is a usage failure (exit 2), for each flag:
+# a flag with no value, a flag with a value, a global flag (before and after the command), `--registry` and `--file` (last-wins before), the `=` form.
+# The failure names the flag whose second use comes first in the line.
+expect {
+	twice = |flag| "flag '${flag}' is given more than once"
+	rows = [
+		(["install", "json", "--as", "a", "--as", "b"], twice("--as")),
+		(["list", "--json", "--json"], twice("--json")),
+		(["--json", "list", "--json"], twice("--json")),
+		(["--yes", "list", "--yes"], twice("--yes")),
+		(["list", "--registry", "direct", "--registry", "https://r.example"], twice("--registry")),
+		(["install", "--file=a/main.roc", "--file", "b/main.roc"], twice("--file")),
+		(["update", "-i", "-i"], twice("-i")),
+		(["verify", "--strategy", "lowest", "--strategy", "highest"], twice("--strategy")),
+		(["add", "json", "--no-check", "--dry-run", "--dry-run", "--no-check"], twice("--dry-run")),
+		(["add", "json", "--no-check", "--dry-run", "--no-check", "--dry-run"], twice("--no-check")),
+		(["yank", "1.0.0", "--reason", "a", "--reason", "b"], twice("--reason")),
+	]
+	bad = rows.keep_if(|(words, want)| msg_of(words) != want).map(|(words, want)| (words, want, msg_of(words)))
+	dbg bad
+	bad == []
+}
+
+# R-FL15 Q262-9: the order of the failures. A value failure stops the walk first; then a missing subcommand; then a flag that is not for the command;
+# then the repeat. A repeated `--json` still gives the envelope (json is true).
+expect {
+	rows = [
+		(["install", "--as", "a", "--as"], "flag '--as' needs a value"),
+		(["roc", "--json", "--json"], "command 'roc' needs a subcommand"),
+		(["list", "--as", "a", "--as", "b"], "flag '--as' is not for 'list'"),
+		(["list", "--tree", "--tree", "--frobnicate"], "flag '--frobnicate' is not for 'list'"),
+	]
+	bad = rows.keep_if(|(words, want)| msg_of(words) != want).map(|(words, want)| (words, want, msg_of(words)))
+	json = match Args.parse(["list", "--json", "--json"]) {
+		Ok(_) => "parsed"
+		Err(e) => bad_text(e)
+	}
+	dbg (bad, json)
+	bad == [] and json == "Usage json=${Str.inspect(Bool.True)} typed=list"
+}
+
+# R-FL15 Q262-2, R-AU9, R-PB10 (Design Q588): `--ignore` and `--target` stay repeatable. Words after a bare `--` are not counted (R-CM12).
+expect {
+	accepted = [
+		["audit", "--ignore", "a/b@1.0.0:yanked", "--ignore", "c/d@2.0.0:yanked"],
+		["probe", "--smoke", "pf", "--target", "x64musl", "--target", "arm64musl"],
+		["probe", "--smoke", "pf", "--target", "x64musl", "--target", "x64musl"],
+		["x", "owner/app", "--slots", "2", "--", "--slots", "3", "--slots", "4"],
+		["run", "test", "--", "--json", "--json"],
+	]
+	bad = accepted.keep_if(|words| Args.parse(words).is_err()).map(|words| (words, msg_of(words)))
+	dbg bad
+	bad == []
+}

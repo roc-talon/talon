@@ -4,6 +4,8 @@ import Common
 import Compiler
 import Fail
 import Fx
+import Intent
+import Locked
 import Known
 import Launch
 import Manage
@@ -11,8 +13,10 @@ import ManageUpdate
 import Nightlies
 import Out
 import Pin
+import Project
 import RocInstall
 import Roots
+import Text
 import Toolchain
 import Trash
 
@@ -237,7 +241,7 @@ write_config! = |fx, path, decide| {
 }
 
 # What `update!` prints: the compiler, what the default did, and the facts of `ManageUpdate.update_data`.
-Updated : { id : Str, item : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]), default : [Set, Moved(Str), Stay(Str), Same, NoDefault], previous : Try(Str, [Unset]), changed : Bool }
+Updated : { id : Str, item : Str, installed : Bool, compat : Try(Str, [Unknown, Several(List(Str))]), default : [Set, Moved(Str), Stay(Str), Same, NoDefault], previous : Try(Str, [Unset]), changed : Bool, project : Try({ file : Str, pin : Try(Str, [NoPin]), uses : [Pin, New, Other], line : Try(Str, [None]) }, [None]) }
 
 # Steps 2 to 5 of `roc update`.
 update_flow! : Fx, Args, Try(Str, [NoName]) => Try(Updated, Fail)
@@ -252,7 +256,48 @@ update_flow! = |fx, args, name| {
 	} else {
 		moved_default!(fx, roots, { id: got.id, before })?
 	}
-	Ok({ id: got.id, item: Roots.item(roots, Toolchain(got.id)), installed: got.installed, compat: got.compat, default: moved.default, previous: moved.previous, changed: moved.changed })
+	project = project_of!(fx, env, { id: got.id, default: moved.default })
+	Ok({ id: got.id, item: Roots.item(roots, Toolchain(got.id)), installed: got.installed, compat: got.compat, default: moved.default, previous: moved.previous, changed: moved.changed, project })
+}
+
+# Slice 262b (R-RU5, R-PD16, Q262-5, Q262-6): the project of the current directory for the hint of `roc update`. No `--file`, no record in `projects.json`. A failure of the walk (no project file, a `talon.toml` or a header that does not read) is no project: no hint, no warning.
+project_of! : Fx, List((Str, Str)), { id : Str, default : [Set, Moved(Str), Stay(Str), Same, NoDefault] } => Try({ file : Str, pin : Try(Str, [NoPin]), uses : [Pin, New, Other], line : Try(Str, [None]) }, [None])
+project_of! = |fx, env, facts| {
+	home = match env.find_first(|(name, _)| name == "HOME") {
+		Ok((_, dir)) => dir
+		Err(_) => ""
+	}
+	cwd = fx.cwd!()
+	found = Project.find_source!(fx, { start: cwd, file: Err(Unset), home })
+	match found {
+		Err(_) => Err(None)
+		Ok(got) => match got.project.file {
+			Err(NoCurrent) => Err(None)
+			Ok(file) => {
+				pin = match got.source {
+					Ok(text) => match Locked.read({ path: file, text }) {
+						Ok(locked) => locked.roc
+						Err(_) => Err(NoPin)
+					}
+					Err(None) => Err(NoPin)
+				}
+				env_set = match Compiler.toolchain_of(env) {
+					Ok(Ok(_)) => Bool.True
+					_ => Bool.False
+				}
+				range_set = match got.text {
+					Ok(text) => match Intent.read({ path: Text.join(Text.dir_of(file), "talon.toml"), text, role: Root }) {
+						Ok(scanned) => scanned.intent.toolchain.roc.is_ok()
+						Err(_) => Bool.False
+					}
+					Err(NoToml) => Bool.False
+				}
+				other = env_set or range_set or got.project.roc_version.is_ok()
+				hint = ManageUpdate.project_hint({ file, pin, other, default: facts.default, id: facts.id })
+				Ok({ file, pin, uses: hint.uses, line: hint.line })
+			}
+		}
+	}
 }
 
 # Step 5, R-RU2: the default is the id already (no lock), a local build (stays), or moves under the lock of `config.toml`.
@@ -283,11 +328,19 @@ print_update! = |fx, args, done| {
 	for line in lines.stdout {
 		shown.out!(line)
 	}
+	match done.project {
+		Ok(p) => match p.line {
+			Ok(line) => shown.out!(line)
+			Err(None) => {}
+		}
+		Err(None) => {}
+	}
 	for line in lines.stderr {
 		fx.err!(line)
 	}
 	if args.json {
-		fx.out!(Out.json_ok({ command: args.typed, data: ManageUpdate.update_data({ id: done.id, item: done.item, installed: done.installed, previous: done.previous, changed: done.changed }) }))
+		project = done.project.map_ok(|p| { file: p.file, pin: p.pin, uses: p.uses })
+		fx.out!(Out.json_ok({ command: args.typed, data: ManageUpdate.update_data_project({ id: done.id, item: done.item, installed: done.installed, previous: done.previous, changed: done.changed }, project) }))
 	}
 }
 

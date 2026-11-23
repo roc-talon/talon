@@ -47,7 +47,7 @@ ToolsStep :: [].{
 
 	## What a run needs. `home` is the `talon.toml` that holds `[tools]` (`ToolsPlan.home`), `home_text` its text as the command read it (`""` for no file), `tools` the entries of that text.
 	## Slice 092: `machine_bins` is `tool-binaries` of `config.toml` (R-PT25), `bins` the `bin` keys of the entries (R-PT18).
-	Ctx : { args : Args, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, min_age : U64, exclude : List(Str), probe_timeout : U64, snapshot : Try(U64, [None]), dry_run : Bool, allow : Bool, home : Str, home_text : Str, tools : List(ToolsToml.Entry), selected : Str, machine_bins : Try(Bool, [Unset]), bins : List({ key : Str, bin : ToolBin.Lock }) }
+	Ctx : { args : Args, env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real ?: U64, min_age : U64, exclude : List(Str), probe_timeout : U64, snapshot : Try(U64, [None]), dry_run : Bool, allow : Bool, home : Str, home_text : Str, tools : List(ToolsToml.Entry), selected : Str, machine_bins : Try(Bool, [Unset]), bins : List({ key : Str, bin : ToolBin.Lock }) }
 
 	## One result. `action` is `Added`, `Locked`, `Moved`, `Built`, `Kept` or `Removed`. A `Kept` row has no line. `would_build` is set by `--dry-run` for a release that has no `x` entry: the real run would build it (D8 of the review).
 	## Slice 092 (R-PT23): `bin` is `bin` after the command (`Off` for `bin = false`), `binary` what the command got (`NoBinary`: no binary was made), `bin_skip` the name of the skip of step 2 of R-PT20, `would_check` the targets of `--dry-run` (Q233).
@@ -88,6 +88,7 @@ ToolsStep :: [].{
 			roots: request.roots,
 			net: request.net,
 			now: request.now,
+			real: request.?real ?? request.now,
 			min_age: settings.min_age,
 			exclude: settings.exclude,
 			probe_timeout: ToolBuild.probe_timeout(loaded.config),
@@ -282,6 +283,7 @@ ToolsStep :: [].{
 			roots: ctx.roots,
 			net: ctx.net,
 			now: ctx.now,
+			real: ctx.?real ?? ctx.now,
 			os: machine.os,
 			bin: "",
 			target: machine.target,

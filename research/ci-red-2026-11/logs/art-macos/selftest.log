@@ -1,0 +1,65 @@
+SELFTEST FAIL: install: install/test.sh fails (shells: bash dash)
+FAIL bash: the question (rc 1 0 0)
+SELFTEST SKIP: l3w rows: no Worker build in this run (scripts/test.sh wbuild selftest gives one)
+SELFTEST FAIL: unit guard: the l0 step passes a clean unit file (exit 1), fails on an unused variable (exit 1) and on a type error (exit 1)
+==> /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/talon-selftest/ug-clean.out <==
+== l0: FAIL (log: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/talon-selftest/unit-guard/work-clean/logs/l0.log)
+l0: packages/resolve/tests/conflicts.roc: timed out after 30 s
+packages/resolve/tests/domain.roc: All (2) tests passed in 9230.8 ms.
+l0: packages/resolve/tests/moves.roc: timed out after 30 s
+packages/resolve/tests/solver.roc: All (5) tests passed in 23247.4 ms.
+tests/unit/g.roc: All (1) tests passed in 3103.0 ms.
+
+step       result seconds  budget
+l0         FAIL   38.3     10
+WARN l0: 38.3 s is over the budget of 10 s (TW20)
+
+==> /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/talon-selftest/ug-warn.out <==
+== l0: FAIL (log: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/talon-selftest/unit-guard/work-warn/logs/l0.log)
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 4101.5 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 755.2 ms.
+packages/resolve/tests/moves.roc: All (5) tests passed in 4530.1 ms.
+packages/resolve/tests/solver.roc: All (5) tests passed in 3451.7 ms.
+tests/unit/g.roc: FAILED
+── ● unused variable ───────────────────────────────────── tests/unit/g.roc:10:5
+
+Variable unused is defined here and then never used.
+
+unused = 1
+^^^^^^
+
+If you don't need this variable, prefix it with an underscore like _unused to
+suppress this warning.
+
+All (1) tests passed in 258.9 ms.
+
+step       result seconds  budget
+l0         FAIL   5.2      10
+
+==> /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/talon-selftest/ug-type.out <==
+== l0: FAIL (log: /private/var/folders/q2/p1t6rgxj5fj32g1dc7dmd49r0000gn/T/talon-selftest/unit-guard/work-type/logs/l0.log)
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 3950.6 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 577.2 ms.
+packages/resolve/tests/moves.roc: All (5) tests passed in 4756.2 ms.
+packages/resolve/tests/solver.roc: All (5) tests passed in 3364.4 ms.
+tests/unit/g.roc: FAILED
+── ✗ type mismatch ────────────────────────────────────── tests/unit/g.roc:10:13
+
+This string literal is being used where a non-string type is needed.
+
+type_demo = "text"
+            ^^^^^^
+
+The type was determined to be:
+
+    U64
+
+Ran 1 tests in 433.8 ms.:
+    1 passed
+    0 failed
+    0 compiler errors
+Compilation failed with 1 error.
+
+step       result seconds  budget
+l0         FAIL   5.4      10
+selftest: 80 passed, 2 failed, 1 skipped

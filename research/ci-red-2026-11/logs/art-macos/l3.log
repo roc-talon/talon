@@ -1,0 +1,50 @@
+SKIP exit/ex1-parser-basic-cli: 
+SKIP exit/ex2-gc-real-cache: 
+SKIP fx/pr2-real-roc-probes: 
+FAIL fx/sq3-real-fx-smoke
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -8,8 +8,8 @@
+       user_version 1
+       tables ['facts', 'pinned', 'smoke']
+       == 3. R-SM3 row 3: a query gives the rows of the keys that exist (the 4 outcome words), with the key of the row: another target, nightly or hash gives no row
+      -HP	nightly-2026-10-14-38a3029	arm64mac	fail
+       HP	nightly-2026-10-14-38a3029	x64musl	pass
+      +HP	nightly-2026-10-14-38a3029	arm64mac	fail
+       HQ	nightly-2026-10-14-38a3029	x64musl	hang
+       HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
+       none
+    compat.db rows differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -1,6 +1,6 @@
+       format	1
+      -smoke	HP	nightly-2026-10-14-38a3029	arm64mac	fail
+       smoke	HP	nightly-2026-10-14-38a3029	x64musl	pass
+      +smoke	HP	nightly-2026-10-14-38a3029	arm64mac	fail
+       smoke	HQ	nightly-2026-10-14-38a3029	x64musl	hang
+       smoke	HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash
+       smoke	HR	nightly-2026-10-14-38a3029	x64musl	pass
+SKIP ptools/pt1-flow: the tag linux-x64: the output has a hash or a size of the host
+SKIP ptools/pt2-x: the tag linux-x64: the output has a hash or a size of the host
+SKIP registry/cw1-add-releases: 
+SKIP registry/cw2-add-closure: 
+SKIP registry/cw3-install-short: 
+SKIP registry/cw4-update-toolchains: 
+SKIP registry/cw5-ingest-ok: 
+SKIP registry/cw6-probe-share: 
+SKIP registry/cw7-artifact: 
+SKIP registry/cw8-sweep: 
+SKIP registry/cw9-audit: 
+SKIP registry/rn1-add-short: 
+SKIP registry/rn2-add-closure: 
+SKIP registry/rn3-routes: 
+SKIP registry/rn4-default-host: 
+SKIP registry/rn5-login-jwt: blocked: needs a real GitHub token (R-CT8 OAuth App or an Actions OIDC token); no test gives one
+SKIP registry/rn6-publish-oidc: blocked: needs a real GitHub token (R-CT8 OAuth App or an Actions OIDC token); no test gives one
+SKIP registry/rn7-toolchains: blocked: no toolchain row until the compat bot runs
+SKIP run/rn1-flow: the tag linux-x64: the output has a hash or a size of the host
+SKIP tools/ti3-tool-git: the tag linux-x64: the output has a hash or a size of the host
+SKIP tools/tx1-x-run: the tag linux-x64: the output has a hash or a size of the host
+scenarios: 94 passed, 1 failed, 24 skipped

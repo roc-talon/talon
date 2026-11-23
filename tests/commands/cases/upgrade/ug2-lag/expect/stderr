@@ -1,4 +1,4 @@
-core: anchor, held
+core: pinned to =1.0.0, held (tln upgrade core moves it)
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.1.1
 note: json 3.0.0 is not used, 2.2.0 is chosen: needs core >= 1.2.0
 note: parser 1.1.0 is not used, 1.0.0 is chosen: fails the unit check on nightly-2026-10-14-38a3029

@@ -1,0 +1,16 @@
+# Run 1 (p1: the header pin is the newest nightly): the default moves; the pin is the new id, so no hint line (Q262-6).
+env:CI=true cwd:p1 roc update
+# Run 2 (p2: no roc: pin, no [toolchain] roc, no .roc-version, no ROC_TOOLCHAIN; the default is the new id): line B (Q262-6).
+env:CI=true cwd:p2 roc update
+# Run 3 (p2 with ROC_TOOLCHAIN, priority 2): another source selects, so no line (Q262-6).
+env:CI=true env:ROC_TOOLCHAIN=nightly-2026-10-09-258ab27 cwd:p2 roc update
+# Run 4 (p3: [toolchain] roc = "*", priority 4): no line (Q262-6).
+env:CI=true cwd:p3 roc update
+# Run 5 (p4: a talon.toml that does not parse): no hint, no warning, exit 0 (Q262-5).
+env:CI=true cwd:p4 roc update
+# Run 6 (p5: the header pin is an older nightly), --json: line A on stderr, data.project with uses "pin".
+env:CI=true cwd:p5 roc update --json
+# Run 7 (p2), --json: line B on stderr, data.project with pin null and uses "new".
+env:CI=true cwd:p2 roc update --json
+# Run 8 (p6: no project file on the walk), --json: no line, data.project is null.
+env:CI=true cwd:p6 roc update --json

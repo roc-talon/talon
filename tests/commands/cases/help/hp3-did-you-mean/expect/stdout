@@ -1,0 +1,15 @@
+== isntall json
+exit 2
+== roc instal nightly
+exit 2
+== uninstall json
+exit 2
+== self update
+exit 2
+== cache prune
+exit 2
+== frobnicate
+exit 2
+== --json isntall
+{"schema":1,"command":"isntall","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"unknown command 'isntall' (did you mean 'tln install'?)"}}
+exit 2

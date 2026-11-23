@@ -3,5 +3,6 @@ check: skipped
 $PROJECT/p1/main.roc
   + known: acme/known 1.1.0
 $PROJECT/p1/talon.toml: known = "=1.1.0"
+note: known is pinned to =1.1.0: tln update keeps it there, and tln upgrade known moves it. To start at 1.1.0 with no pin, add --no-pin.
 resolved at log:50, 0 probes
 dry run: nothing was written

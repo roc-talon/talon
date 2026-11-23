@@ -1,0 +1,6 @@
+base: L2 outdated/od1-table commands: 26 passed, 1 failed 
+base: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m3: L2 outdated/od1-table registry/ad35-add-real-clock commands: 25 passed, 2 failed 
+m3: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m4: L2 outdated/od1-table upgrade/ur11-real-clock-nightlies commands: 25 passed, 2 failed 
+m4: L3 scenarios: 1 passed, 0 failed, 0 skipped 

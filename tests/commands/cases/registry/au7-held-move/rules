@@ -1,1 +1,1 @@
-R-AU7 R-AP16 R-SP24 (slice 244c, Q-244c-2): the state of a hash comes from the second answer of a held move first. See fx/commands.
+R-AU7 R-AP16 R-SP24 (slice 244c, Q-244c-2): the state of a hash comes from the second answer of a held move first. See fx/commands. Slice 262b (R-AD28, R-UP11, B9, Design Q642): after the talon.toml lines, the note `<key> is pinned to =<v>: ...` for each key written or planned as an exact pin (also in data.notes with --json).

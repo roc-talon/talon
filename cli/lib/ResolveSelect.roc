@@ -158,7 +158,7 @@ ranged! = |fx, request, loaded, settings| {
 		Err(Unset) => Any
 	}
 	switch = { nightly: settings.nightly, source: settings.nightly_from }
-	picked = RocInstall.range_id!(fx, { roots: request.roots, net: request.net, now: request.now, offline: request.offline, req, req_text: text, min_age: settings.min_age, exclude: settings.exclude, snapshot, switch, registry, channels: loaded.config.channels })?
+	picked = RocInstall.range_id!(fx, { roots: request.roots, net: request.net, now: request.now, real: request.?real ?? request.now, offline: request.offline, req, req_text: text, min_age: settings.min_age, exclude: settings.exclude, snapshot, switch, registry, channels: loaded.config.channels })?
 	Ok({ loaded: { ..loaded, selected: { id: Ok(picked.id), from: Range } }, note: picked.note, listed: registry.is_ok() })
 }
 

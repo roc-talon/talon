@@ -144,7 +144,8 @@ make! = |fx, args, plan| {
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
 	net = Net.from_env(env)
-	now = Clock.now!(fx, env)?
+	times = Clock.times!(fx, env)?
+	now = times.now
 	cwd = fx.cwd!()
 	main_path = Text.join(cwd, "main.roc")
 	match fx.read_files!([main_path]) {
@@ -156,7 +157,7 @@ make! = |fx, args, plan| {
 		Package => { text: InitText.package_file, start_note: Err(None) }
 		App => {
 			name = plan.named ?? InitText.default_platform
-			started = start_url!(fx, { net, roots, now, offline: args.offline, name, version: plan.version, flag: args.registry })?
+			started = start_url!(fx, { net, roots, now, real: times.real, offline: args.offline, name, version: plan.version, flag: args.registry })?
 			url = started.url
 			text =
 				if name == InitText.default_platform {
@@ -184,7 +185,7 @@ make! = |fx, args, plan| {
 }
 
 # Steps 4 (app): the release that the template starts at, as a URL. `note` is the R-C16 note of a start release that only a pattern kept (no version). The R-T9 age note of a named version goes to stderr here.
-start_url! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) } => Try({ url : Str, default_roc : Str, note : Try(Str, [None]) }, Fail)
+start_url! : Fx, { net : Net.Settings, roots : Roots, now : U64, real ?: U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) } => Try({ url : Str, default_roc : Str, note : Try(Str, [None]) }, Fail)
 start_url! = |fx, facts| {
 	(owner, repo) = match facts.name.split_on("/") {
 		[o, r] => (o, r)
@@ -221,9 +222,9 @@ start_url! = |fx, facts| {
 }
 
 # The GitHub release list of the platform (`direct`). The line `index: cached at <time>` (R-DI12) is not printed here: the flow of step 6 reads the same list and prints it once.
-github_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
+github_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, real ?: U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
 github_list! = |fx, facts, owner, repo| {
-	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.now, offline: facts.offline })?
+	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.?real ?? facts.now, offline: facts.offline })?
 	match Index.candidates({ owner, repo, pages: fetched.pages, known: [] }) {
 		Ok(got) => Ok({ list: got.list, warnings: got.warnings })
 		Err(BadPage(n)) => Err(Fail.new(Network, "the release list of ${facts.name} (page ${n.to_str()}) is not a list of releases"))
@@ -231,13 +232,13 @@ github_list! = |fx, facts, owner, repo| {
 }
 
 # Slice 206i (R-IN1, R-IN9, Q560, Q565): with a registry the list is the R-AP1 read of `add` (`FullName.read!`: the guard, the ingest of a 404). A name with no release is the failure of R-IN9 (2) for a version, else R-AD35 step 2.
-registry_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
+registry_list! : Fx, { net : Net.Settings, roots : Roots, now : U64, real ?: U64, offline : Bool, name : Str, version : Try(Str, [Unset]), flag : Try(Str, [Unset]) }, Str, Str => Try({ list : List(Index.Candidate), warnings : List(Str) }, Fail)
 registry_list! = |fx, facts, origin, setting| {
 	typed = match facts.version {
 		Ok(version) => Ok({ selector: Exact(version), text: version })
 		Err(Unset) => Err(None)
 	}
-	read = FullName.read_via!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, offline: facts.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: setting })?
+	read = FullName.read_real!(fx, { net: facts.net, roots: facts.roots, origin, version: Help.version, now: facts.now, real: facts.?real ?? facts.now, offline: facts.offline, name: facts.name, selector: typed, snapshot: Err(None), known: [], source: setting })?
 	match read {
 		Found(releases) => Ok({ list: ClosureIndex.candidates({ releases: releases.releases.keep_if(|r| !r.yanked), artifacts: [], name: facts.name }), warnings: [] })
 		NoMatch => Ok({ list: [], warnings: [] })

@@ -1,0 +1,6 @@
+# Slice 262a R-CM19 R-CH13 Q262-8: remove is the long form of rm at the roc channel level. The table goes (the tree.diff of ch13-rm). The envelope names the command as typed.
+roc channel remove reify --json
+# R-CM19: ls is the other form of list. reify is gone, mine stays.
+roc channel ls
+# R-CM19 Q262-8: the envelope names the command as typed (roc channel ls)
+roc channel ls --json

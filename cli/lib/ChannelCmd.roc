@@ -31,12 +31,25 @@ ChannelCmd :: [].{
 
 	## `tln roc channel <word> ...`.
 	run! : Fx, Args => I32
-	run! = |fx, args| match args.operands {
-		[] => stopped!(fx, args, "roc channel", Fail.new(Usage, "tln roc channel needs a word: add, rm or list"))
-		["add", .. as rest] => finished!(fx, args, "roc channel add", add_flow!(fx, args, rest))
-		["rm", .. as rest] => finished!(fx, args, "roc channel rm", rm_flow!(fx, args, rest))
-		["list", .. as rest] => finished!(fx, args, "roc channel list", list_flow!(fx, args, rest))
-		[word, ..] => stopped!(fx, args, "roc channel", Fail.new(Usage, "tln roc channel ${word} is not a command: use add, rm or list"))
+	run! = |fx, args| {
+		# Q262-8: `remove` and `ls` are the long forms of `rm` and `list` (R-CM19). The texts name the long form, the envelope names the words as typed.
+		as_typed = |word| "${args.typed} ${word}"
+		match args.operands {
+			[] => stopped!(fx, args, "roc channel", Fail.new(Usage, "tln roc channel needs a word: add, remove or list"))
+			["add", .. as rest] => finished!(fx, args, as_typed("add"), add_flow!(fx, args, rest))
+			["rm", .. as rest] => finished!(fx, args, as_typed("rm"), rm_flow!(fx, args, rest))
+			["remove", .. as rest] => finished!(fx, args, as_typed("remove"), rm_flow!(fx, args, rest))
+			["list", .. as rest] => finished!(fx, args, as_typed("list"), list_flow!(fx, args, rest))
+			["ls", .. as rest] => finished!(fx, args, as_typed("ls"), list_flow!(fx, args, rest))
+			[word, ..] => {
+				said = "tln roc channel ${word} is not a command: use add, remove or list"
+				message = match Args.hint_for(["roc", "channel", word]) {
+					Ok(near) => "${said} (did you mean 'tln ${near}'?)"
+					Err(NoHint) => said
+				}
+				stopped!(fx, args, "roc channel", Fail.new(Usage, message))
+			}
+		}
 	}
 }
 
@@ -341,11 +354,11 @@ no_prefix_flag = |args, word| if args.options.any(|(flag, _)| flag == "--tag-pre
 # R-CH13: `rm <name>`. It changes `config.toml` only.
 rm_flow! : Fx, Args, List(Str) => Try({}, Fail)
 rm_flow! = |fx, args, rest| {
-	no_prefix_flag(args, "rm")?
+	no_prefix_flag(args, "remove")?
 	name = match rest {
 		[one] => one
-		[] => return Err(Fail.new(Usage, "tln roc channel rm needs one channel name"))
-		many => return Err(Fail.new(Usage, "tln roc channel rm takes one channel name, got ${many.len().to_str()}"))
+		[] => return Err(Fail.new(Usage, "tln roc channel remove needs one channel name"))
+		many => return Err(Fail.new(Usage, "tln roc channel remove takes one channel name, got ${many.len().to_str()}"))
 	}
 	env = fx.env_all!()
 	roots = Roots.of_run!(fx, env)?
@@ -357,7 +370,7 @@ rm_flow! = |fx, args, rest| {
 	}
 	changed = write_locked!(fx, cfg.path, |text| Channel.remove_edit({ path: cfg.path, text, name }))?
 	data = JsonDoc.Obj([("name", JsonDoc.Text(name)), ("path", JsonDoc.Text(cfg.path)), ("changed", JsonDoc.Flag(changed))])
-	print!(fx, args, { command: "roc channel rm", text: Channel.removed_text({ path: cfg.path, name }), data })
+	print!(fx, args, { command: "${args.typed} ${args.operands.first() ?? "remove"}", text: Channel.removed_text({ path: cfg.path, name }), data })
 	Ok({})
 }
 
@@ -379,7 +392,7 @@ list_flow! = |fx, args, rest| {
 	}
 	facts = { config: cfg.config.channels, project: tables }
 	if args.json {
-		fx.out!(Out.json_ok({ command: "roc channel list", data: Channel.list_data(facts) }))
+		fx.out!(Out.json_ok({ command: "${args.typed} ${args.operands.first() ?? "list"}", data: Channel.list_data(facts) }))
 	} else {
 		fx.out!("${Channel.list_text(facts)}\n")
 	}

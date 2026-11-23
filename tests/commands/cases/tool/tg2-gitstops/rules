@@ -10,4 +10,4 @@ Slice 048, the stops of `tln tool install --git` (entry `commands`). Same home a
 | 6 | `tool install --git acme/gapp@main --path ../x` | the path leaves the repository: exit 2, no call | R-SE12 |
 | 7 | `tool install --git other/gapp@main` | `gapp` is the binary name of acme/gapp: exit 2 that names `--as`, before any request | R-T28, R-NM11 |
 | 8 | `tool install --git acme/fe@main` | `<bin>/fe` is a file that tln did not write: after the commit request, exit 2 before the download and the build | R-ST6, R-ST11 |
-| 9 | `tool install --git acme/gapp@main --resolve` | `--resolve` is a later slice: exit 2 `is not built yet`, no call | R-T1 |
+| 9 | `tool install --git acme/gapp@main --resolve` | `--resolve` is a later slice: exit 2 `is not built yet` and the text names what tln tool install builds (slice 262b, UX16, Design Q642), no call | R-T1 |

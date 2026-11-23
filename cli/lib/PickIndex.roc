@@ -75,7 +75,7 @@ PickIndex :: [].{
 						[o, r] => (o, r)
 						_ => return Err(Fail.new(Usage, "'${name}' is not on github.com: an index of other hosts needs a registry (--registry)"))
 					}
-					fetched = Github.releases!(fx, { net: request.net, roots: request.roots, owner, repo, now: request.now, offline: request.offline })?
+					fetched = Github.releases!(fx, { net: request.net, roots: request.roots, owner, repo, now: request.?real ?? request.now, offline: request.offline })?
 					match fetched.source {
 						Cached(t) => {
 							$oldest = older($oldest, t)

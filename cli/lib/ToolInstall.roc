@@ -75,6 +75,7 @@ ToolInstall :: [].{
 	## A selector of the kinds `Nightly` and `Step` is refused by `Ref.parse` (it is for `tln roc`, R-SL6, R-SL7).
 	read : Args -> Try(Plan, Fail)
 	read = |args| {
+		if later_flag(args) == "--resolve" return Err(usage("tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names."))
 		if later_flag(args) != "" return Err(usage("tln tool install ${later_flag(args)} is not built yet"))
 		operand = match args.operands {
 			[] => return Err(usage("tln tool install needs one app: owner/app"))

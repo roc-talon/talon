@@ -46,6 +46,11 @@ read_files $HOME/.config/talon/config.toml
 read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 tty
@@ -59,6 +64,11 @@ list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 tty
@@ -72,6 +82,11 @@ list_dirs $HOME/.cache/roc/toolchains
 list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
 read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
 db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -112,6 +127,11 @@ read_files $HOME2/.config/talon/config.toml
 unlock $HOME2/.config/talon/config.toml
 rename $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569
 unlock $HOME2/.cache/roc/toolchains/nightly-2026-10-18-5349569
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -154,6 +174,11 @@ write_atomic $HOME3/.config/talon/config.toml
 unlock $HOME3/.config/talon/config.toml
 rename $HOME3/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp $HOME3/.cache/roc/toolchains/nightly-2026-10-18-5349569
 unlock $HOME3/.cache/roc/toolchains/nightly-2026-10-18-5349569
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -199,6 +224,11 @@ read_files $HOME4/.config/talon/config.toml
 read_files $HOME4/.config/talon/config.toml
 write_atomic $HOME4/.config/talon/config.toml
 unlock $HOME4/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -265,6 +295,11 @@ read_files $HOME8/.config/talon/config.toml
 read_files $HOME8/.config/talon/config.toml
 write_atomic $HOME8/.config/talon/config.toml
 unlock $HOME8/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -285,6 +320,11 @@ read_files $HOME9/.config/talon/config.toml
 read_files $HOME9/.config/talon/config.toml
 write_atomic $HOME9/.config/talon/config.toml
 unlock $HOME9/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -300,6 +340,11 @@ http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
 write_atomic $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME10/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
 db_query $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
 db_write $HOME10/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -345,3 +390,8 @@ read_files $HOME11/.config/talon/config.toml
 read_files $HOME11/.config/talon/config.toml
 write_atomic $HOME11/.config/talon/config.toml
 unlock $HOME11/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc

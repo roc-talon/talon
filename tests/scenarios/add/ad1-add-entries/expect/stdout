@@ -47,6 +47,7 @@ $PROJECT/main.roc
   + lex: acme/lex 1.1.0
 $PROJECT/talon.toml: xml = "^1"
 $PROJECT/talon.toml: lex = "=1.1.0"
+note: lex is pinned to =1.1.0: tln update keeps it there, and tln upgrade lex moves it. To start at 1.1.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 4 probes
 exit 0
 == tln i acme/pre@1.0.0 --no-pin

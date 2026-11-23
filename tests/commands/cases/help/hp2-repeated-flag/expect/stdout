@@ -1,0 +1,13 @@
+== add json --as a --as b
+exit 2
+== list --json --json
+{"schema":1,"command":"list","ok":false,"data":null,"error":{"kind":"usage","code":2,"message":"flag '--json' is given more than once"}}
+exit 2
+== --registry direct list --registry direct
+exit 2
+== install --file=a/main.roc --file b/main.roc
+exit 2
+== add json --no-check --dry-run --dry-run --no-check
+exit 2
+== list --as a --as b
+exit 2

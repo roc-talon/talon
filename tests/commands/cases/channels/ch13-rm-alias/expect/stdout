@@ -1,0 +1,11 @@
+== roc channel remove reify --json
+{"schema":1,"command":"roc channel remove","ok":true,"data":{"name":"reify","path":"$HOME/.config/talon/config.toml","changed":true},"error":null}
+exit 0
+== roc channel ls
+NAME     SHAPE           SOURCE                  FROM
+nightly  github-release  roc-lang/nightlies      built-in
+mine     github-release  Karakatiza666/roc-mine  config.toml
+exit 0
+== roc channel ls --json
+{"schema":1,"command":"roc channel ls","ok":true,"data":{"channels":[{"name":"nightly","shape":"github-release","source":"roc-lang/nightlies","tag_prefix":"nightly-","origin":"built-in","added":true},{"name":"mine","shape":"github-release","source":"Karakatiza666/roc-mine","tag_prefix":"fork-","origin":"config","added":true}]},"error":null}
+exit 0

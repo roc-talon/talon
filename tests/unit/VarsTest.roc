@@ -344,7 +344,7 @@ expect {
 }
 
 # R-SP6 R-SP7 R-UP1 R-VA5 R-DI11 R-SP23 R-UP12 R-UP13 (slice 038): the scope of `tln upgrade` (`Vars.scope` with the command `Upgrade`). With no names, each indexed variable is free (R-SP6), except an anchor (a range with `=`),
-# which is held and gets the note `<alias>: anchor, held` (R-UP1, R-VA5), and a fixed host, which is held with its note (R-DI11). With names, only the named are free (R-SP7): a named anchor is free, and a named
+# which is held and gets the note `<alias>: pinned to <range>, held (tln upgrade <alias> moves it)` (R-UP1, R-VA5; the text of slice 262b, Design Q642), and a fixed host, which is held with its note (R-DI11). With names, only the named are free (R-SP7): a named anchor is free, and a named
 # fixed host is held. A free variable has no range (R-UP1) and opens every series (`any_series`). A movable variable (held only because the user did not name it, R-SP23) has no range either, so a move is not
 # bounded by the key of `talon.toml` (R-SP23: "none in upgrade"). A held anchor keeps its range. The nightly is not a variable here (slice 039 frees it: R-UP12, R-UP13).
 expect {
@@ -378,7 +378,7 @@ expect {
 			scope([], vars_of(anchored)),
 			Ok([
 				(["json"], Bool.True, Bool.False, Bool.True, Err(None), []),
-				(["parser"], Bool.False, Bool.False, Bool.False, Ok("parser: anchor, held"), ["=2.0.0"]),
+				(["parser"], Bool.False, Bool.False, Bool.False, Ok("parser: pinned to =2.0.0, held (tln upgrade parser moves it)"), ["=2.0.0"]),
 				(["fixed"], Bool.False, Bool.False, Bool.False, fixed_note, [">=1.0.0, <2.0.0"]),
 				(["pf"], Bool.True, Bool.False, Bool.True, Err(None), []),
 			]),
@@ -633,6 +633,41 @@ expect {
 			view([member("/w/a/main.roc", header_a, Err(NoToml)), b]),
 			[([("/w/a/main.roc", "json"), ("/w/b/main.roc", "j2")], Bool.False, Bool.True, Err(None)), ([("/w/a/main.roc", "pf"), ("/w/b/main.roc", "pf")], Bool.False, Bool.True, Err(None))],
 		),
+	]
+	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
+	dbg bad
+	bad == []
+}
+
+# Slice 262b (R-UP1, R-UP10, R-UP11, R-VA5, Q262-3, Q262-4, Design Q642): the held line of an anchor in `tln update` and `tln upgrade`:
+# `<alias>: pinned to <range>, held (tln upgrade <alias> moves it)`. `update` with no names, and `update <alias>` that names the anchor with no selector,
+# print it for an anchor that holds the entry at its header value (the range `=<v>` and the header version `<v>`). A selector frees the entry (no line).
+# An anchor that the header does not satisfy moves the entry to the pin (no line). An unnamed anchor in a run with names: no line.
+# The `owner/repo@=<v>` form of a key is an anchor too. `upgrade` with no names prints the same line (it printed `anchor, held` before).
+expect {
+	toml = |text| Ok({ path: "/p/talon.toml", text, role: Standalone })
+	header = app_header(["pf: platform \"${cli}\"", "json: \"${json1}\"", "parser: \"${parser}\"", "fixed: \"${odd}\""])
+	at_pin = member("/p/main.roc", header, toml("[dependencies]\nparser = \"=2.0.0\"\njson = \"^2.1\"\n"))
+	off_pin = member("/p/main.roc", header, toml("[dependencies]\nparser = \"=2.1.0\"\n"))
+	full_form = member("/p/main.roc", header, toml("[dependencies]\nparser = \"lukewilliamboswell/roc-parser@=2.0.0\"\n"))
+	vars_of = |m| match Vars.build({ members: [m], priority: Err(Unset) }) {
+		Ok(built) => built.vars
+		Err(e) => crash e.line()
+	}
+	notes = |command, names, selectors, m| match Vars.scope({ command, names, selectors, fixed: [], vars: vars_of(m) }) {
+		Ok(scoped) => Ok(scoped.map(|s| (s.variable.uses.map(|u| u.alias), s.note)))
+		Err(e) => Err(e.line())
+	}
+	held = Ok("parser: pinned to =2.0.0, held (tln upgrade parser moves it)")
+	fixed_note = Ok("fixed: example.com has no index without a registry")
+	rows = [
+		("update, no names: the anchor at its header value has the held line", notes(Update, [], [], at_pin), Ok([(["json"], Err(None)), (["parser"], held), (["fixed"], fixed_note), (["pf"], Err(None))])),
+		("update parser: a named anchor with no selector has the held line (Q262-4)", notes(Update, ["parser"], [], at_pin), Ok([(["json"], Err(None)), (["parser"], held), (["fixed"], Err(None)), (["pf"], Err(None))])),
+		("update parser@=2.1.0: a selector frees the entry, no line (R-UP11)", notes(Update, ["parser"], [{ alias: "parser", range: "=2.1.0" }], at_pin), Ok([(["json"], Err(None)), (["parser"], Err(None)), (["fixed"], Err(None)), (["pf"], Err(None))])),
+		("update json: an unnamed anchor in a run with names has no line", notes(Update, ["json"], [], at_pin), Ok([(["json"], Err(None)), (["parser"], Err(None)), (["fixed"], Err(None)), (["pf"], Err(None))])),
+		("update, no names: the anchor =2.1.0 moves the entry from 2.0.0 to the pin, so it holds nothing: no line", notes(Update, [], [], off_pin), Ok([(["json"], Err(None)), (["parser"], Err(None)), (["fixed"], fixed_note), (["pf"], Err(None))])),
+		("update, no names: the owner/repo@=<v> form is an anchor", notes(Update, [], [], full_form), Ok([(["json"], Err(None)), (["parser"], held), (["fixed"], fixed_note), (["pf"], Err(None))])),
+		("upgrade, no names: the owner/repo@=<v> form has the same held line", notes(Upgrade, [], [], full_form), Ok([(["json"], Err(None)), (["parser"], held), (["fixed"], fixed_note), (["pf"], Err(None))])),
 	]
 	bad = rows.keep_if(|(_, got, want)| got != want).map(|(label, got, want)| (label, want, got))
 	dbg bad

@@ -1,0 +1,7 @@
+tln: error[usage]: unknown command 'isntall' (did you mean 'tln install'?)
+tln: error[usage]: unknown command 'roc instal' (did you mean 'tln roc install'?)
+tln: error[usage]: unknown command 'uninstall' (did you mean 'tln remove'?)
+tln: error[usage]: unknown command 'self' (did you mean 'tln tool update talon'?)
+tln: error[usage]: unknown command 'cache prune' (did you mean 'tln cache gc'?)
+tln: error[usage]: unknown command 'frobnicate'
+tln: error[usage]: unknown command 'isntall' (did you mean 'tln install'?)

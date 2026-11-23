@@ -1,0 +1,1032 @@
+FAIL channels/ch06-pin-trust
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,6 +3,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+      @@ -12,6 +15,9 @@
+       list_dirs $PROJECT/p2
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p2/talon.toml
+       read_files $PROJECT/p2/main.roc
+       read_files $PROJECT/p2/main.roc $PROJECT/p2/talon.toml $HOME/.config/talon/config.toml
+      @@ -21,6 +27,9 @@
+       list_dirs $PROJECT/p3
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p3/talon.toml
+       read_files $PROJECT/p3/main.roc
+       read_files $PROJECT/p3/main.roc $PROJECT/p3/talon.toml $HOME/.config/talon/config.toml
+      @@ -30,6 +39,9 @@
+       list_dirs $PROJECT/p4
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p4/talon.toml
+       read_files $PROJECT/p4/main.roc
+       read_files $PROJECT/p4/main.roc $PROJECT/p4/talon.toml $HOME/.config/talon/config.toml
+      @@ -39,6 +51,9 @@
+       list_dirs $PROJECT/p5
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p5/talon.toml
+       read_files $PROJECT/p5/main.roc
+       read_files $PROJECT/p5/main.roc $PROJECT/p5/talon.toml $HOME/.config/talon/config.toml
+      @@ -48,6 +63,9 @@
+       list_dirs $PROJECT/p6
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p6/talon.toml
+       read_files $PROJECT/p6/main.roc
+       read_files $PROJECT/p6/main.roc $PROJECT/p6/talon.toml $HOME/.config/talon/config.toml
+FAIL channels/ch07-pin-download
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,6 +3,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+FAIL channels/ch07-pin-download-atleast
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -3,6 +3,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       read_files $PROJECT/p1/main.roc $PROJECT/p1/talon.toml $HOME/.config/talon/config.toml
+FAIL channels/ch08-named-latest
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -89,6 +89,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       args
+       env_all
+       tty
+FAIL channels/ch08-step-trust
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,10 +11,16 @@
+       canonical $PROJECT/main.roc
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       read_files $PROJECT/main.roc
+       read_files $PROJECT/main.roc $PROJECT/talon.toml
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+FAIL channels/ch08-step-unknown
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,8 +11,14 @@
+       canonical $PROJECT/main.roc
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/main.roc
+       read_files $PROJECT/main.roc
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+FAIL channels/ch11-project-only
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -10,6 +10,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -23,6 +26,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -36,6 +42,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -49,6 +58,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -63,4 +75,7 @@
+       list_dirs $PROJECT/sub
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+FAIL channels/ch11-unknown
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -10,6 +10,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       args
+       env_all
+       tty
+      @@ -22,6 +25,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       args
+       env_all
+       tty
+      @@ -34,3 +40,6 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+FAIL channels/ch12-add
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -25,3 +25,6 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+FAIL channels/ch13-add-copy
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,6 +7,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       lock $HOME/.config/talon/config.toml nowait: held
+       read_files $HOME/.config/talon/config.toml
+      @@ -21,4 +24,7 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+FAIL channels/ch13-add-copy-errors
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -8,6 +8,9 @@
+       list_dirs $PROJECT/p-none
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       args
+       env_all
+       tty
+      @@ -18,6 +21,9 @@
+       list_dirs $PROJECT/p-notable
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p-notable/talon.toml
+       args
+       env_all
+      @@ -29,6 +35,9 @@
+       list_dirs $PROJECT/p-equal
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p-equal/talon.toml
+       args
+       env_all
+      @@ -40,4 +49,7 @@
+       list_dirs $PROJECT/p-differ
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p-differ/talon.toml
+FAIL channels/ch13-list
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,6 +7,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       args
+       env_all
+       tty
+      @@ -16,3 +19,6 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+FAIL channels/ch13-list-project
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -7,6 +7,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -15,6 +18,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -26,4 +32,7 @@
+       list_dirs $PROJECT/p-differ
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p-differ/talon.toml $PROJECT/talon.toml
+FAIL channels/ch13-rm
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -25,6 +25,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       args
+       env_all
+       tty
+FAIL channels/ch14-use
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+      @@ -55,6 +58,9 @@
+       list_dirs $PROJECT/p2
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p2/talon.toml
+       read_files $PROJECT/p2/main.roc
+       canonical $PROJECT/p2/main.roc
+      @@ -103,6 +109,9 @@
+       list_dirs $PROJECT/p5
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p5/talon.toml
+       read_files $PROJECT/p5/main.roc
+       canonical $PROJECT/p5/main.roc
+      @@ -151,6 +160,9 @@
+       list_dirs $PROJECT/p3
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p3/talon.toml
+       read_files $PROJECT/p3/main.roc
+       canonical $PROJECT/p3/main.roc
+      @@ -202,6 +214,9 @@
+       list_dirs $PROJECT/p4
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p4/talon.toml
+       read_files $PROJECT/p4/main.roc
+       canonical $PROJECT/p4/main.roc
+      @@ -253,6 +268,9 @@
+       list_dirs $PROJECT/p6
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p6/main.roc
+       canonical $PROJECT/p6/main.roc
+       lock $HOME/.cache/roc/talon/projects.json nowait: held
+FAIL channels/ch14-use-fail
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p4
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p4/talon.toml
+       read_files $PROJECT/p4/main.roc
+       canonical $PROJECT/p4/main.roc
+FAIL channels/ch14-use-ref
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+      @@ -68,6 +71,9 @@
+       list_dirs $PROJECT/p2
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p2/talon.toml
+       read_files $PROJECT/p2/main.roc
+       canonical $PROJECT/p2/main.roc
+FAIL channels/ch14-use-stop
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+FAIL channels/ch14-use-unknown
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+       lock $HOME/.cache/roc/talon/projects.json nowait: held
+FAIL channels/ch15-update-errors
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,6 +11,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -25,6 +28,9 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+       args
+       env_all
+      @@ -39,4 +45,7 @@
+       cwd
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/talon.toml
+FAIL channels/ch15-upgrade
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+      @@ -69,6 +72,9 @@
+       list_dirs $PROJECT/p2
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p2/talon.toml
+       read_files $PROJECT/p2/main.roc
+       canonical $PROJECT/p2/main.roc
+      @@ -92,6 +98,9 @@
+       list_dirs $PROJECT/p3
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p3/talon.toml
+       read_files $PROJECT/p3/main.roc
+       canonical $PROJECT/p3/main.roc
+      @@ -146,6 +155,9 @@
+       list_dirs $PROJECT/p2
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p2/talon.toml
+       read_files $PROJECT/p2/main.roc
+       canonical $PROJECT/p2/main.roc
+FAIL channels/ch15-upgrade-errors
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+FAIL channels/ch15-upgrade-fallback
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+      @@ -92,6 +95,9 @@
+       list_dirs $PROJECT/p2
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p2/talon.toml
+       read_files $PROJECT/p2/main.roc
+       canonical $PROJECT/p2/main.roc
+FAIL channels/ch15-upgrade-switch
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+FAIL channels/ch15-upgrade-young
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -9,6 +9,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $PROJECT/p1/main.roc
+       canonical $PROJECT/p1/main.roc
+FAIL channels/ch17-gc-pin
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -12,6 +12,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.last-use
+       tree_info $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee
+      @@ -30,6 +33,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.last-use
+       tree_info $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee
+FAIL channels/ch17-gc-ws
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -13,6 +13,9 @@
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.last-use
+       tree_info $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee
+      @@ -32,6 +35,9 @@
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/reify-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-12-ccccccc/.last-use $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.talon.json $HOME/.cache/roc/toolchains/reify-2026-10-21-ddddddd/.last-use
+       tree_info $HOME/.cache/roc/toolchains/mine-2026-08-02-bbbbbbb $HOME/.cache/roc/toolchains/nightly-2026-08-01-eeeeeee
+FAIL gc/gc1-select
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -12,9 +12,15 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       list_dirs $PROJECT/pb
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-aaaaaaa $HOME/.cache/roc/compat-5555555 $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+      @@ -31,9 +37,15 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       list_dirs $PROJECT/pb
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-aaaaaaa $HOME/.cache/roc/compat-5555555 $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+      @@ -52,9 +64,15 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       list_dirs $PROJECT/pb
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/git-dd03c09e/.talon.json $HOME/.cache/roc/toolchains/git-dd03c09e/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/git-dd03c09e $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc/toolchains/nightly-2026-08-12-5555555 $HOME/.cache/roc/toolchains/nightly-2026-09-01-9999999 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-aaaaaaa $HOME/.cache/roc/compat-5555555 $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc/talon/projects.json.fedcba9876543210.tmp $HOME/.cache/roc/talon/tmp/0123456789abcdef $HOME/.cache/roc/talon/tmp/2123456789abcdef.locks $HOME/.cache/roc/toolchains/nightly-2026-09-05-4444444.0123456789abcdef.trash $HOME/.cache/roc/toolchains/nightly-2026-10-11-1a2b3c4.fedcba9876543210.tmp $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+      @@ -100,9 +118,15 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       list_dirs $PROJECT/pb
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/copy-fix-1/.talon.json $HOME/.cache/roc/toolchains/copy-fix-1/.last-use $HOME/.cache/roc/toolchains/link-dev/.talon.json $HOME/.cache/roc/toolchains/link-dev/.last-use $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666/.last-use $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-06-01-7777777/.last-use $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-20-fffffff/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-10-ddddddd/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-02-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-03-ccccccc/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-21-8888888/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/pb/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/nightly-2026-05-01-6666666 $HOME/.cache/roc/compat-6666666 $HOME/.cache/roc/compat-bbbbbbb $HOME/.cache/roc/compat-ccccccc $HOME/.cache/roc/compat-other $HOME/.cache/roc/packages/CZsY7tYZwR3rj9kYbpaCfxki2yVAaRL8bBwMLvB2xkbA
+FAIL gc/gc3-caches
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -13,6 +13,9 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/compat-exact $HOME/.cache/roc-builds/compat-future $HOME/.cache/roc-builds/compat-mixed $HOME/.cache/roc-builds/compat-over $HOME/.cache/roc-builds/compat-young $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 $HOME/.cache/roc-builds/nightly-2026-10-01-def5678 $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc
+      @@ -30,6 +33,9 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/compat-exact $HOME/.cache/roc-builds/compat-future $HOME/.cache/roc-builds/compat-mixed $HOME/.cache/roc-builds/compat-over $HOME/.cache/roc-builds/compat-young $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 $HOME/.cache/roc-builds/nightly-2026-10-01-def5678 $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc
+      @@ -49,6 +55,9 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa/.last-use $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc/toolchains/nightly-2026-08-01-aaaaaaa $HOME/.cache/roc-builds/compat-aaaaaaa $HOME/.cache/roc/packages/h1.0123456789abcdef.tmp $HOME/.cache/roc-builds/compat-bbbbbbb $HOME/.cache/roc-builds/compat-exact $HOME/.cache/roc-builds/compat-future $HOME/.cache/roc-builds/compat-mixed $HOME/.cache/roc-builds/compat-over $HOME/.cache/roc-builds/compat-young $HOME/.cache/roc-builds/debug-9999999 $HOME/.cache/roc-builds/nightly-2025-01-01-abc1234 $HOME/.cache/roc-builds/nightly-2026-10-01-def5678 $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq $HOME/.cache/roc/packages/6ELEWECd4np7xs4pF1M2Acyy9ZXcKsJN36LKrNFDuoBL $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f $HOME/.cache/roc/packages/9LFkxQ6m3iAu5J8inRcoFjJRHZVevMogAyiPEhPZERUK $HOME/.cache/roc/packages/EUQ59oYxaBxvFpFSYhbkNUcMgDyiuG8TvXSTXttvA9jc
+      @@ -79,6 +88,9 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-09-30-bbbbbbb/.last-use $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       read_files /talon.toml $PROJECT/pa/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+       tree_info $HOME/.cache/roc-builds/compat-exact $HOME/.cache/roc-builds/compat-future $HOME/.cache/roc-builds/compat-mixed $HOME/.cache/roc-builds/compat-young $HOME/.cache/roc-builds/nightly-2026-10-01-def5678 $HOME/.cache/roc/packages/3CjxCHLyKRMyh9nKodyVQYJcsttYAyPLjYTpoH2fnZtA $HOME/.cache/roc/packages/4gAvkRHDdEndqaanHcjMKebZJxta5pqHAohzhnFJiNUq $HOME/.cache/roc/packages/8FNd42oEnQP2CUSB4YWEqcsHBwCq8z26bL1Xk3PwDQ8f
+      @@ -97,6 +109,9 @@
+       list_dirs $PROJECT/pa
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.talon.json $HOME/h2/.cache/roc/toolchains/nightly-2026-10-14-38a3029/.last-use
+       tree_info $HOME/h2/.cache/roc/compat-five $HOME/h2/.cache/roc/compat-ten
+       delete $HOME/h2/.cache/roc/compat-ten
+FAIL gc/gc5-project-tools
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -12,15 +12,24 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       list_dirs $PROJECT/t
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/t/talon.toml
+       list_dirs $PROJECT/w/m1
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/talon/x/11157e8771944d2223d77ab34bde50af3823554bbe6f5f8c7039e66486e57a35/manifest.json $HOME/.cache/roc/talon/x/918919aa342538b2360a59f30036db1090695f47706b245fce5fc5212507a1f9/manifest.json $HOME/.cache/roc/talon/x/b138beccc693a1910d971a46df4d339db497a78174144e5f6f08891b24860a8e/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json $HOME/.cache/roc/talon/x/bced7eed945ee28035f50cd345393d5858a371318f10a29895399d1104ac7011/manifest.json $HOME/.cache/roc/talon/x/ca2dcc309c23e8f0772d06582bc8a6893ca13737aebd5fdde19ede3f310eb3bc/manifest.json $HOME/.cache/roc/talon/x/e6fd522537ccef3ff704ad15011d5abd1e62c85f899873f8a721431e38c4725e/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/t/talon.toml $PROJECT/talon.toml $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+      @@ -39,15 +48,24 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       list_dirs $PROJECT/t
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/t/talon.toml
+       list_dirs $PROJECT/w/m1
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/talon/x/11157e8771944d2223d77ab34bde50af3823554bbe6f5f8c7039e66486e57a35/manifest.json $HOME/.cache/roc/talon/x/918919aa342538b2360a59f30036db1090695f47706b245fce5fc5212507a1f9/manifest.json $HOME/.cache/roc/talon/x/b138beccc693a1910d971a46df4d339db497a78174144e5f6f08891b24860a8e/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json $HOME/.cache/roc/talon/x/bced7eed945ee28035f50cd345393d5858a371318f10a29895399d1104ac7011/manifest.json $HOME/.cache/roc/talon/x/ca2dcc309c23e8f0772d06582bc8a6893ca13737aebd5fdde19ede3f310eb3bc/manifest.json $HOME/.cache/roc/talon/x/e6fd522537ccef3ff704ad15011d5abd1e62c85f899873f8a721431e38c4725e/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/t/talon.toml $PROJECT/talon.toml $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+      @@ -73,15 +91,24 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       list_dirs $PROJECT/t
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/t/talon.toml
+       list_dirs $PROJECT/w/m1
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/talon/x/b138beccc693a1910d971a46df4d339db497a78174144e5f6f08891b24860a8e/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json $HOME/.cache/roc/talon/x/ca2dcc309c23e8f0772d06582bc8a6893ca13737aebd5fdde19ede3f310eb3bc/manifest.json $HOME/.cache/roc/talon/x/e6fd522537ccef3ff704ad15011d5abd1e62c85f899873f8a721431e38c4725e/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/t/talon.toml $PROJECT/talon.toml $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+FAIL gc/gc6-held-no-package
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -11,6 +11,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e5352cc1844c1b9723d0514/manifest.json $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+      @@ -29,6 +32,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e5352cc1844c1b9723d0514/manifest.json $HOME/.cache/roc/talon/x/a59362ce03a0a1a835dfe8b184fe17fe4285609205cbbf207e2a12e69c46092d/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+      @@ -49,6 +55,9 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       read_files $HOME/.cache/roc/talon/x/6908f8c8d3c409859707e458b67843b13f9176ac1e5352cc1844c1b9723d0514/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+FAIL gc/gc6-prebuilt-entries
+    Fx calls differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -12,15 +12,24 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       list_dirs $PROJECT/t
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/t/talon.toml
+       list_dirs $PROJECT/w/m1
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/talon/x/11157e8771944d2223d77ab34bde50af3823554bbe6f5f8c7039e66486e57a35/manifest.json $HOME/.cache/roc/talon/x/918919aa342538b2360a59f30036db1090695f47706b245fce5fc5212507a1f9/manifest.json $HOME/.cache/roc/talon/x/b138beccc693a1910d971a46df4d339db497a78174144e5f6f08891b24860a8e/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json $HOME/.cache/roc/talon/x/bced7eed945ee28035f50cd345393d5858a371318f10a29895399d1104ac7011/manifest.json $HOME/.cache/roc/talon/x/ca2dcc309c23e8f0772d06582bc8a6893ca13737aebd5fdde19ede3f310eb3bc/manifest.json $HOME/.cache/roc/talon/x/e6fd522537ccef3ff704ad15011d5abd1e62c85f899873f8a721431e38c4725e/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/t/talon.toml $PROJECT/talon.toml $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+      @@ -39,15 +48,24 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       list_dirs $PROJECT/t
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/t/talon.toml
+       list_dirs $PROJECT/w/m1
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/talon/x/11157e8771944d2223d77ab34bde50af3823554bbe6f5f8c7039e66486e57a35/manifest.json $HOME/.cache/roc/talon/x/918919aa342538b2360a59f30036db1090695f47706b245fce5fc5212507a1f9/manifest.json $HOME/.cache/roc/talon/x/b138beccc693a1910d971a46df4d339db497a78174144e5f6f08891b24860a8e/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json $HOME/.cache/roc/talon/x/bced7eed945ee28035f50cd345393d5858a371318f10a29895399d1104ac7011/manifest.json $HOME/.cache/roc/talon/x/ca2dcc309c23e8f0772d06582bc8a6893ca13737aebd5fdde19ede3f310eb3bc/manifest.json $HOME/.cache/roc/talon/x/e6fd522537ccef3ff704ad15011d5abd1e62c85f899873f8a721431e38c4725e/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/t/talon.toml $PROJECT/talon.toml $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+      @@ -73,15 +91,24 @@
+       list_dirs $PROJECT/p1
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/p1/talon.toml
+       list_dirs $PROJECT/t
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/t/talon.toml
+       list_dirs $PROJECT/w/m1
+       list_dirs $PROJECT/w
+       list_dirs $PROJECT
+       list_dirs $WORK
+      +list_dirs /tmp/talon-l2
+      +list_dirs /tmp
+      +list_dirs /
+       read_files $PROJECT/w/talon.toml
+       read_files $HOME/.cache/roc/talon/x/b138beccc693a1910d971a46df4d339db497a78174144e5f6f08891b24860a8e/manifest.json $HOME/.cache/roc/talon/x/b79b221cf7f99b8a10c4769e14c2e4aee8811152490d9f159311579f9cdc7e18/manifest.json $HOME/.cache/roc/talon/x/ca2dcc309c23e8f0772d06582bc8a6893ca13737aebd5fdde19ede3f310eb3bc/manifest.json $HOME/.cache/roc/talon/x/e6fd522537ccef3ff704ad15011d5abd1e62c85f899873f8a721431e38c4725e/manifest.json
+       read_files /talon.toml $PROJECT/p1/talon.toml $PROJECT/t/talon.toml $PROJECT/talon.toml $PROJECT/w/m1/talon.toml $PROJECT/w/talon.toml $WORK/talon.toml /tmp/talon-l2/talon.toml /tmp/talon.toml
+FAIL tool/rm2-options
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -4,7 +4,7 @@
+       == env:HOME={w}/home/h2 tool rm talon --keep-all
+       Talon        tln, roc, the talon entry of tools.json           10 B   removed
+       tools        3 (foo, bar, baz)                                 33 B   kept
+      -compilers    2 nightlies, 1 git build, 2 links, zig 0.17.0   1.2 KB   kept
+      +compilers    2 nightlies, 1 git build, 2 links, zig 0.17.0   1.1 KB   kept
+       Talon data   index, x cache, compat.db, config                164 B   kept
+       kept git-ab12cd34: $HOME/h2/.cache/roc/toolchains/git-ab12cd34/roc
+       kept link-mine: /opt/user/src/roc/zig-out/bin/roc
+FAIL tool/rm7-stale-recorded
+    stdout differs (- expected, + actual):
+      --- expected
+      +++ actual
+      @@ -4,7 +4,7 @@
+       == env:HOME={w}/home/h2 tool rm talon --keep-all
+       Talon        tln, roc, the talon entry of tools.json           10 B   removed
+       tools        3 (foo, bar, baz)                                 33 B   kept
+      -compilers    2 nightlies, 1 git build, 2 links, zig 0.17.0   1.2 KB   kept
+      +compilers    2 nightlies, 1 git build, 2 links, zig 0.17.0   1.1 KB   kept
+       Talon data   index, x cache, compat.db, config                164 B   kept
+       kept git-ab12cd34: $HOME/h2/.cache/roc/toolchains/git-ab12cd34/roc
+       kept link-mine: /opt/user/src/roc/zig-out/bin/roc
+commands: 719 passed, 34 failed

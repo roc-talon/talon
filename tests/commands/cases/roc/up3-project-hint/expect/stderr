@@ -1,0 +1,5 @@
+nightly-2026-10-18-5349569 is the newest
+note: the project $PROJECT/p5/main.roc pins nightly-2026-10-09-258ab27, so it stays on that compiler. To move it with a check, run: tln upgrade roc
+nightly-2026-10-18-5349569 is the newest
+note: the project $PROJECT/p2/main.roc has no roc: pin, so it uses nightly-2026-10-18-5349569 now, with no check. To check it and pin it, run: tln roc use nightly-2026-10-18-5349569
+nightly-2026-10-18-5349569 is the newest

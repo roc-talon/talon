@@ -122,7 +122,7 @@ kept_note! = |fx, args, facts, release| match TalonUpdate.kept_note({ release, n
 # Step 2 (R-DI2, R-DI12): the cache page, the line of an offline run, `TalonUpdate.releases`.
 release_list! : Fx, Args, ToolBuild.Facts, Str => Try(List(TalonUpdate.Release), Fail)
 release_list! = |fx, args, facts, asset| {
-	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner: "roc-talon", repo: "talon", now: facts.now, offline: args.offline })?
+	fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner: "roc-talon", repo: "talon", now: facts.?real ?? facts.now, offline: args.offline })?
 	match fetched.source {
 		Missing => return Err(Github.no_page_failure(TalonUpdate.name))
 		Cached(time) => fx.err!("${Github.offline_line(time)}\n")

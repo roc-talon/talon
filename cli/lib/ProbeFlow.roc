@@ -118,6 +118,7 @@ ProbeFlow :: [].{
 		roots: start.roots,
 		net: start.net,
 		now: start.now,
+		real: start.real,
 		offline: args.offline,
 		strategy: Err(Unset),
 		nightly: Common.nightly_of(start.env),
@@ -143,7 +144,7 @@ Finished : { shown : ProbeCmd.Shown, stop : Try(Fail, [None]), share : Try({ roo
 share_origin! : Fx, Args, ProbeCmd.Plan => Try(Try({ origin : Str, setting : Str }, [None]), Fail)
 share_origin! = |fx, args, plan| if plan.share Ok(Ok(ProbeShareFlow.check!(fx, args)?)) else Ok(Err(None))
 
-Begun : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, project : Project }
+Begun : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real : U64, project : Project }
 
 # The answer, then the exit code. With `--json` the answer text is on stderr. A stop (exit 12) prints the failure with the `data` in `error.details` (R-J5).
 finish! : Fx, Args, Finished, Try({ origin : Str, setting : Str }, [None]) => I32
@@ -237,7 +238,7 @@ bundle_flow! = |fx, args, plan, path| {
 	got = Install.begin_loose!(fx, args)?
 	match got.found {
 		Ok(found) => {
-			request = ProbeFlow.begun!(fx, args, plan.opts, Bool.False, { env: got.env, roots: got.roots, net: got.net, now: got.now, project: found.project })?
+			request = ProbeFlow.begun!(fx, args, plan.opts, Bool.False, { env: got.env, roots: got.roots, net: got.net, now: got.now, real: got.real, project: found.project })?
 			if plan.range ranged!(fx, request, plan.target) else single!(fx, request, plan.target)
 		}
 		Err(fail) => if plan.range or !fail.no_project Err(fail) else bare_bundle!(fx, args, plan, { path, env: got.env, roots: got.roots, net: got.net, now: got.now })
@@ -317,6 +318,7 @@ ranged! = |fx, request, target| {
 			roots: request.roots,
 			net: request.net,
 			now: request.now,
+			real: request.?real ?? request.now,
 			offline: request.offline,
 			node,
 			installed,

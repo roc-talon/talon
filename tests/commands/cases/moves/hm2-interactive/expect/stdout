@@ -16,6 +16,7 @@ $PROJECT/ws/apps/a/main.roc
 $PROJECT/ws/apps/b/main.roc
   + json: acme/json 2.2.0
 $PROJECT/ws/talon.toml: json = "=2.2.0"
+note: json is pinned to =2.2.0: tln update keeps it there, and tln upgrade json moves it. To start at 2.2.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 4 probes
 exit 0
 == install --file ws2/apps/a/main.roc

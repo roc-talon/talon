@@ -45,3 +45,8 @@ read_files $HOME/.config/talon/config.toml
 read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc

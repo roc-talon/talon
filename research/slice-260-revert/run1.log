@@ -1,0 +1,14 @@
+base: L2 outdated/od1-table commands: 17 passed, 1 failed 
+base: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m1: L2 outdated/od1-table commands: 17 passed, 1 failed 
+m1: L3 tools/tx1-x-run scenarios: 0 passed, 1 failed, 0 skipped 
+m2: L2 outdated/od1-table upgrade/ur10-real-clock-age commands: 16 passed, 2 failed 
+m2: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m3: L2 outdated/od1-table commands: 17 passed, 1 failed 
+m3: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m4: L2 outdated/od1-table commands: 17 passed, 1 failed 
+m4: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m5: L2 audit/ad17-real-clock-age outdated/od1-table upgrade/ur10-real-clock-age commands: 15 passed, 3 failed 
+m5: L3 scenarios: 1 passed, 0 failed, 0 skipped 
+m6: L2 audit/ad17-real-clock-age outdated/od1-table commands: 16 passed, 2 failed 
+m6: L3 scenarios: 1 passed, 0 failed, 0 skipped 

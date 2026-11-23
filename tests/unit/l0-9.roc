@@ -18,6 +18,7 @@ import ChannelreadTest
 import ChannelrefTest
 import GcindexTest
 import NewerhintTest
+import RocUpdateHintTest
 import TlngateTest
 import TlngatepureTest
 

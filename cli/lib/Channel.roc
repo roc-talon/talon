@@ -405,7 +405,7 @@ Channel :: [].{
 	exists_text : { name : Str, source : Str, existing : Str } -> { message : Str, hint : Str }
 	exists_text = |facts| {
 		message: "channel ${facts.name} is added with the source ${facts.existing}, not ${facts.source}",
-		hint: "To replace it, run: tln roc channel rm ${facts.name}",
+		hint: "To replace it, run: tln roc channel remove ${facts.name}",
 	}
 
 	## Slice 242 (R-CH12, R-CH5): exit 19 when an installed id of the name records another source. The ids are read from the right (`user_parts`); an id with no recorded source records no other source. The first one in the order of the list is the answer.

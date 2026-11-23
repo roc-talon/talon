@@ -1,0 +1,3 @@
+tests/fuzz/diff.roc: Done 20000 runs in 1 second(s)
+tests/fuzz/epochs.roc: Done 20000 runs in 4 second(s)
+tests/fuzz/pubgrub.roc: Done 8000 runs in 16 second(s)

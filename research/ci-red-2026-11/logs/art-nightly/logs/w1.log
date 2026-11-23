@@ -1,0 +1,22 @@
+FAIL sqlite closure/c1-random-reference (16 ms)
+    setup failed: Value is too large to be represented as a JavaScript number: 4611686516829749252
+FAIL d1 closure/c1-random-reference (43710 ms)
+    case 275: fetch failed
+FAIL sqlite closure/c2-closure-cte (4 ms)
+    setup failed: Value is too large to be represented as a JavaScript number: 9007199254740993
+node:internal/modules/run_main:111
+    triggerUncaughtException(
+    ^
+
+TypeError: fetch failed
+    at Object.processResponse (/opt/hostedtoolcache/node/26.13.1/x64/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/index.js:237:16)
+    at /opt/hostedtoolcache/node/26.13.1/x64/lib/node_modules/wrangler/node_modules/undici/lib/web/fetch/index.js:1081:19
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at /opt/hostedtoolcache/node/26.13.1/x64/lib/node_modules/wrangler/node_modules/undici/index.js:157:7
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async MessagePort.<anonymous> ([worker eval]:35:22) {
+  [cause]: Error: connect ECONNREFUSED 127.0.0.1:45761
+      at TCPConnectWrap.afterConnect [as oncomplete] (node:net:2083:16)
+}
+
+Node.js v26.13.1

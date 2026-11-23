@@ -74,10 +74,23 @@ Run :: [].{
 	tln! : Fx => I32
 	tln! = |fx| {
 		words = fx.args!()
-		match Help.route(words) {
-			Help => {
-				fx.out!(Help.usage)
-				0
+		# Slice 262a (R-CM26, R-CM27, Q262-7): `--help`, `-h` and `help <command>` print the text of the command; an unknown word is exit 2 with the hint.
+		asked = Help.topic(words)
+		route = if asked == NoHelp Help.route(words) else Help
+		match route {
+			Help => match asked {
+				Unknown(typed) => {
+					stop = Args.unknown_stop(typed.split_on(" "), words)
+					fail!(fx, { command: stop.typed, json: stop.json, fail: stop.fail })
+				}
+				Key(key) => {
+					fx.out!(Help.command(key) ?? Help.usage)
+					0
+				}
+				_ => {
+					fx.out!(Help.usage)
+					0
+				}
 			}
 			Version => {
 				fx.out!("tln ${Help.version}\n")

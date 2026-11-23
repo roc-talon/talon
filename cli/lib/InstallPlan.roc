@@ -135,6 +135,7 @@ InstallPlan :: [].{
 				_ => Err(NotPinned)
 			},
 		)
+		toml_lines = done.pairs.keep_if(|p| done.touched.contains(p.path))
 		{
 			at: Clock.format_utc(done.at),
 			log: Err(None),
@@ -150,9 +151,10 @@ InstallPlan :: [].{
 				[id, ..] => Ok(id)
 				[] => Err(None)
 			},
-			toml: done.pairs.keep_if(|p| done.touched.contains(p.path)),
+			toml: toml_lines,
 			renamed: done.renames.keep_if(|r| done.touched.contains(r.path)),
-			notes: done.notes,
+			# Slice 262b (B9, R2): the anchor notes are the last items.
+			notes: if request.command == Upgrade done.notes else done.notes.concat(Report.anchor_notes(toml_lines)),
 			written: if request.dry_run [] else done.touched,
 		}
 	}

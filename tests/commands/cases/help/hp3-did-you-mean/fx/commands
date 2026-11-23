@@ -1,0 +1,14 @@
+# R-CM27: 2 letters swapped
+isntall json
+# R-CM27: a sub word
+roc instal nightly
+# R-CM27 Q262-1: the table: uninstall is remove (not install, which is 2 edits away)
+uninstall json
+# R-CM27 Q262-1 UX2: the table: self is the update of tln itself
+self update
+# R-CM27 Q262-1: the table: prune is cache gc
+cache prune
+# R-CM27: no close word: no hint
+frobnicate
+# R-CM27 R-J1: --json: the envelope has the hint in the message, the command as typed
+--json isntall

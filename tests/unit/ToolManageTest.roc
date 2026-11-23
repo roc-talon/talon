@@ -86,7 +86,8 @@ expect {
 		(cmd(["tool", "update", "--from-source"]), line("tln tool update --from-source works only for tln tool update talon")),
 		(cmd(["tool", "rebuild", "talon", "--from-source"]), "parse: tln: error[usage]: flag '--from-source' is not for 'tool rebuild'"),
 		(cmd(["tool", "rm", "talon", "--from-source"]), "parse: tln: error[usage]: flag '--from-source' is not for 'tool remove'"),
-		(cmd(["tool", "rebuild", "roc-talon/talon"]), line("tln tool rebuild talon is not built yet")),
+		# Slice 262b (R-S6, UX16, Design Q642): not supported; the text names tln tool update talon --from-source.
+		(cmd(["tool", "rebuild", "roc-talon/talon"]), line("tln tool rebuild talon is not supported. To build tln from its source, run: tln tool update talon --from-source")),
 		(cmd(["tool", "rm", "foo", "--dry-run"]), line("tln tool remove --dry-run works only for tln tool remove talon")),
 		(cmd(["tool", "rm", "foo", "--keep-all"]), line("tln tool remove --keep-all works only for tln tool remove talon")),
 		(cmd(["tool", "rm", "foo", "--remove-tools"]), line("tln tool remove --remove-tools works only for tln tool remove talon")),

@@ -29,7 +29,7 @@ XCmd :: [].{
 	read = |args| {
 		later = args.options.find_first(|(name, _)| ["--git", "--path", "--resolve"].contains(name))
 		match later {
-			Ok((name, _)) => return Err(usage("tln x ${name} is not built yet"))
+			Ok((name, _)) => return Err(usage(not_built(name)))
 			Err(_) => {}
 		}
 		operand = match args.operands {
@@ -39,7 +39,7 @@ XCmd :: [].{
 		}
 		ref = Ref.parse(operand, Scope.X, Bool.False)?
 		match ref.selector {
-			Ok(GitSha(sel)) => return Err(usage("'${sel}' in '${operand}' is a git ref: a git ref needs --git (not built yet)"))
+			Ok(GitSha(sel)) => return Err(usage("'${sel}' in '${operand}' is a git ref, and tln x does not build git refs yet. Run: tln tool install ${operand}"))
 			_ => {}
 		}
 		flags = ToolInstall.read_flags(args)?
@@ -125,3 +125,11 @@ XCmd :: [].{
 
 usage : Str -> Fail
 usage = |text| Fail.new(Usage, text)
+
+# Slice 262b (UX16, R-X1, R-T1): the text of a form that is not built names the working alternative.
+not_built : Str -> Str
+not_built = |flag| if flag == "--resolve" {
+	"tln x --resolve is not built yet. tln x builds the app with the packages that its header names."
+} else {
+	"tln x ${flag} is not built yet. To build an app from a git ref, run: tln tool install --git <owner/app@ref> (with --path <dir> for an app in a subdirectory)"
+}

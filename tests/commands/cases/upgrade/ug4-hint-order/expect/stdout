@@ -1,6 +1,6 @@
 == upgrade --file q1h/main.roc
-core: anchor, held
+core: pinned to =1.0.0, held (tln upgrade core moves it)
 exit 12
 == upgrade --offline --file q1o/main.roc
-core: anchor, held
+core: pinned to =1.0.0, held (tln upgrade core moves it)
 exit 12

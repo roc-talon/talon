@@ -1,0 +1,142 @@
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+programs gh
+http_get https://api.github.com/repos/roc-lang/nightlies/releases?per_page=100
+  User-Agent: tln/0.0.1
+write_atomic $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+db_write $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+lock $HOME/.config/talon/config.toml nowait: held
+read_files $HOME/.config/talon/config.toml
+read_files $HOME/.config/talon/config.toml
+write_atomic $HOME/.config/talon/config.toml
+unlock $HOME/.config/talon/config.toml
+cwd
+list_dirs $PROJECT/p1
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p1/talon.toml
+read_files $PROJECT/p1/main.roc
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p3
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p3/talon.toml
+read_files $PROJECT/p3/main.roc
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p4
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p4/talon.toml
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p5
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p5/talon.toml
+read_files $PROJECT/p5/main.roc
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p2
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/p2/talon.toml
+read_files $PROJECT/p2/main.roc
+args
+env_all
+env_all
+read_files $HOME/.config/talon/config.toml
+clock
+platform
+read_files $HOME/.config/talon/config.toml
+list_dirs $HOME/.cache/roc/toolchains
+list_dirs $HOME/.cache/roc/talon/index/github/roc-lang/nightlies
+read_files $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.meta $HOME/.cache/roc/talon/index/github/roc-lang/nightlies/1.json
+db_query $HOME/.cache/roc/talon/compat.db busy_ms=5000 format=1 pinned=12
+cwd
+list_dirs $PROJECT/p6
+list_dirs $PROJECT
+list_dirs $WORK

@@ -1,11 +1,13 @@
 == 1: nothing is installed, no default. The newest allowed compiler is installed, and it is the default (R-SO15). The nightly of 2026-10-21 is too young (R-C7).
 installed nightly-2026-10-14-38a3029
 nightly-2026-10-14-38a3029 is now the default compiler
+note: the project $PROJECT/main.roc pins nightly-2026-10-09-258ab27, so it stays on that compiler. To move it with a check, run: tln upgrade roc
 exit 0
 nightly-2026-10-14-38a3029
 default-roc = "nightly-2026-10-14-38a3029"
 == 2: the newest is installed: the text names it, and nothing else happens (R-RU1). The alias up (R-CM19).
 nightly-2026-10-14-38a3029 is the newest
+note: the project $PROJECT/main.roc pins nightly-2026-10-09-258ab27, so it stays on that compiler. To move it with a check, run: tln upgrade roc
 exit 0
 nightly-2026-10-14-38a3029
 == 3: an older compiler becomes the default. The newest is installed, so nothing is downloaded, but the default moves to it (R-CS3, R-RU2, answer Q1 of the review): the line is-the-newest, then the move line.
@@ -15,12 +17,13 @@ nightly-2026-10-09-258ab27 is now the default compiler
 exit 0
 nightly-2026-10-14-38a3029 is the newest
 the default compiler moved from nightly-2026-10-09-258ab27 to nightly-2026-10-14-38a3029
+note: the project $PROJECT/main.roc pins nightly-2026-10-09-258ab27, so it stays on that compiler. To move it with a check, run: tln upgrade roc
 exit 0
 default-roc = "nightly-2026-10-14-38a3029"
 nightly-2026-10-09-258ab27
 nightly-2026-10-14-38a3029
 == 4: --json: stdout is only the envelope. Nothing is new and the default is the newest already (step 3), so installed and changed are false, and previous is the newest.
-{"schema":1,"command":"roc update","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","path":"$HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029","installed":false,"previous":"nightly-2026-10-14-38a3029","changed":false},"error":null}
+{"schema":1,"command":"roc update","ok":true,"data":{"id":"nightly-2026-10-14-38a3029","path":"$HOME/.cache/roc/toolchains/nightly-2026-10-14-38a3029","installed":false,"previous":"nightly-2026-10-14-38a3029","changed":false,"project":{"file":"$PROJECT/main.roc","pin":"nightly-2026-10-09-258ab27","uses":"pin"}},"error":null}
 exit 0
 == 5: a project with a roc: pin is not touched (R-RU3), and the old compilers stay (R-RU4). The header is as it was (the default is the newest, step 3).
 app [main!] {
@@ -36,6 +39,7 @@ link-dev is now the default compiler
 exit 0
 installed nightly-2026-10-14-38a3029
 note: the default compiler link-dev is a git, link or copy build, so it stays. To change it, run: tln roc default nightly-2026-10-14-38a3029
+note: the project $PROJECT/main.roc pins nightly-2026-10-09-258ab27, so it stays on that compiler. To move it with a check, run: tln upgrade roc
 exit 0
 link-dev
 nightly-2026-10-14-38a3029

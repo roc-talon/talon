@@ -19,6 +19,7 @@ build: skipped (recorded pass)
 $PROJECT/main.roc
   ~ json: acme/json 2.1.0 -> 2.2.0
 $PROJECT/talon.toml: json = "=2.2.0"
+note: json is pinned to =2.2.0: tln update keeps it there, and tln upgrade json moves it. To start at 2.2.0 with no pin, add --no-pin.
 exit 0
 == update parser@^1.1 lowest compiler=nightly-2026-10-14-38a3029
 check: passed

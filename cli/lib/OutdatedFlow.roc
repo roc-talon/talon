@@ -64,10 +64,10 @@ OutdatedFlow :: [].{
 					Err(None) => []
 				}
 				if args.json {
-					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(AuditResolve.with_owners(Out.with_fell_member(Outdated.data_moved(done.members, done.moved), done.fell), done.owners), done.ran) }))
+					fx.out!(Out.json_ok({ command: args.typed, data: ShareHook.with_index_notes(AuditResolve.with_owners(Out.with_fell_member(Outdated.data_moved(done.members, done.moved, done.pins), done.fell), done.owners), done.ran) }))
 				} else {
 					for member in done.members {
-						fx.out!(Outdated.text_moved(member, done.moved))
+						fx.out!(Outdated.text_moved(member, done.moved, done.pins))
 					}
 				}
 				if !args.quiet and !args.json {
@@ -86,7 +86,7 @@ OutdatedFlow :: [].{
 Pending : { file : Str, rows : List({ row : Outdated.Row, hash : Str }), fixed : List(Str) }
 
 # Steps 2 to 8 of the table above.
-flow! : Fx, Args => Try({ members : List(Outdated.Member), moved : List(Outdated.Moved), owners : List(JsonDoc), ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
+flow! : Fx, Args => Try({ members : List(Outdated.Member), moved : List(Outdated.Moved), pins : List(Outdated.Pin), owners : List(JsonDoc), ran : Try(Fail.Ran, [None]), fell : Try({ registry : Str, cause : Str }, [None]) }, Fail)
 flow! = |fx, args| {
 	start = Install.begin!(fx, args)?
 	Known.record!(fx, { roots: start.roots, files: Install.canonical_files!(fx, start.project), now: start.now })?
@@ -117,7 +117,7 @@ flow! = |fx, args| {
 	reported = report!(fx, request, { names, built, shown, vars, settings, listed }).map_err(|fail| ShareHook.attach(fail, ran, Bool.False))?
 	# Slice 254 (R-PU30, Q254-5): the owner notes, after the table text is built and before the index notes; printed in `run!` as a warning (Q254-4).
 	owners = AuditResolve.owner_docs(request, loaded.members.keep_if(|m| shown.contains(m.file)), Err(NotRead))
-	Ok({ members: reported.members, moved: reported.moved, owners, ran, fell: ResolveBase.fell_of(request) })
+	Ok({ members: reported.members, moved: reported.moved, pins: Outdated.pins_of(vars), owners, ran, fell: ResolveBase.fell_of(request) })
 }
 
 # Steps 9 to the end of the table above: the candidates, the compiler list and the facts of the rows that are behind.

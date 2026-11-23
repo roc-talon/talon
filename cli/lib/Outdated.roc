@@ -8,6 +8,7 @@ import Index
 import JsonDoc
 import Opts
 import Pick
+import Vars
 import ProbeRange
 
 ## The output and the decisions of `tln outdated` (slice 040, R-CM6, R-DI1, R-DI11, R-DI12, R-PD5, R-PD9, R-PD14). It shows, for each header entry that is behind, the version that the header has (`current`), the newest release inside its range (`wanted`),
@@ -105,6 +106,22 @@ Outdated :: [].{
 		},
 	)
 
+	## Slice 262b (R-CM6, B11, Design Q642): an anchor of a use: the file, the alias and the range text `=<v>`. A row of that file and alias has the cell ` (pinned)` and the member `pinned`. It is a separate list, so `Row` keeps its members.
+	Pin : { file : Str, alias : Str, range : Str }
+
+	## Slice 262b: the anchors of the variables (a range that starts with `=`), one for each use.
+	pins_of : List(Vars.Var) -> List(Outdated.Pin)
+	pins_of = |vars| vars.join_map(
+		|v| match v.ranges.find_first(|r| r.range.starts_with("=")) {
+			Ok(r) => v.uses.map(|u| { file: u.file, alias: u.alias, range: r.range })
+			Err(_) => []
+		},
+	)
+
+	## Slice 262b: the anchor of a row of a member file, if any.
+	pin_of : Str, Outdated.Row, List(Outdated.Pin) -> Try(Str, [None])
+	pin_of = |file, row, pins| pins.find_first(|p| p.file == file and p.alias == row.alias).map_ok(|p| p.range).map_err(|_| None)
+
 	## Slice 252: the successor of the name of a row, if any.
 	successor_of : Outdated.Row, List(Outdated.Moved) -> Try(Str, [None])
 	successor_of = |row, moved| moved.find_first(|m| m.name.with_ascii_lowercased() == row.name.with_ascii_lowercased()).map_ok(|m| m.successor).map_err(|_| None)
@@ -123,12 +140,12 @@ Outdated :: [].{
 	##   fixed: example.org has no index without a registry
 	## ```
 	text : Outdated.Member -> Str
-	text = |member| Outdated.text_moved(member, [])
+	text = |member| Outdated.text_moved(member, [], [])
 
 	## Slice 252 (section 7a, a proposal): `text` with the `Moved` items. The `latest` cell of a row whose name has a successor ends with ` (moved to <successor>)`, after ` (new series)`.
-	text_moved : Outdated.Member, List(Outdated.Moved) -> Str
-	text_moved = |member, moved| {
-		shown = if member.rows.is_empty() ["  all packages are up to date\n"] else table_lines(member.rows, moved)
+	text_moved : Outdated.Member, List(Outdated.Moved), List(Outdated.Pin) -> Str
+	text_moved = |member, moved, pins| {
+		shown = if member.rows.is_empty() ["  all packages are up to date\n"] else table_lines(member.file, member.rows, moved, pins)
 		fixed = member.fixed.map(|host| "  ${Index.fixed_line(host)}\n")
 		"${member.file}\n${Str.join_with(shown.concat(fixed), "")}"
 	}
@@ -142,11 +159,11 @@ Outdated :: [].{
 	## | `fixed` | The hosts with no index (R-DI11), as the text of the member has them |
 	## | `nightly_range` | An object with `state`: `range` (and `from`, `to`: `{ "id", "real" }` as `tln probe --range`), `no-pass`, or `unread` |
 	data : List(Outdated.Member) -> JsonDoc
-	data = |members| Outdated.data_moved(members, [])
+	data = |members| Outdated.data_moved(members, [], [])
 
 	## Slice 252 (section 7a, a proposal): `data` with the `Moved` items. The object of a package whose name has a successor has the member `successor` (a full name) after `new_series`. The other objects keep their members.
-	data_moved : List(Outdated.Member), List(Outdated.Moved) -> JsonDoc
-	data_moved = |members, moved| JsonDoc.Obj([("members", Arr(members.map(|m| member_doc(m, moved))))])
+	data_moved : List(Outdated.Member), List(Outdated.Moved), List(Outdated.Pin) -> JsonDoc
+	data_moved = |members, moved, pins| JsonDoc.Obj([("members", Arr(members.map(|m| member_doc(m, moved, pins))))])
 }
 
 # R-PB4: an end that is no real fact has a `?`.
@@ -154,8 +171,8 @@ end_text : ProbeRange.End -> Str
 end_text = |end| if end.real end.id else "${end.id}?"
 
 # The header row and one row for each row, the first 4 columns padded to the longest cell and 2 spaces.
-table_lines : List(Outdated.Row), List(Outdated.Moved) -> List(Str)
-table_lines = |rows, moved| {
+table_lines : Str, List(Outdated.Row), List(Outdated.Moved), List(Outdated.Pin) -> List(Str)
+table_lines = |file, rows, moved, pins| {
 	head = { alias: "package", current: "current", wanted: "wanted", latest: "latest", range: "nightly range" }
 	latest_cell = |r| {
 		series = if r.new_series "${r.latest} (new series)" else r.latest
@@ -164,7 +181,7 @@ table_lines = |rows, moved| {
 			Err(None) => series
 		}
 	}
-	cells = [head].concat(rows.map(|r| { alias: r.alias, current: r.current, wanted: r.wanted, latest: latest_cell(r), range: Outdated.range_text(r.range) }))
+	cells = [head].concat(rows.map(|r| { alias: r.alias, current: r.current, wanted: if Outdated.pin_of(file, r, pins).is_ok() "${r.wanted} (pinned)" else r.wanted, latest: latest_cell(r), range: Outdated.range_text(r.range) }))
 	widths = {
 		alias: widest(cells.map(|c| c.alias)),
 		current: widest(cells.map(|c| c.current)),
@@ -180,15 +197,19 @@ widest = |cells| cells.map(|c| c.count_utf8_bytes()).max() ?? 0
 pad : Str, U64 -> Str
 pad = |cell, width| cell.concat(" ".repeat(width + 2 - cell.count_utf8_bytes()))
 
-member_doc : Outdated.Member, List(Outdated.Moved) -> JsonDoc
-member_doc = |member, moved| JsonDoc.Obj([
+member_doc : Outdated.Member, List(Outdated.Moved), List(Outdated.Pin) -> JsonDoc
+member_doc = |member, moved, pins| JsonDoc.Obj([
 	("file", Text(member.file)),
-	("packages", Arr(member.rows.map(|r| row_doc(r, moved)))),
+	("packages", Arr(member.rows.map(|r| row_doc(r, Outdated.pin_of(member.file, r, pins), moved)))),
 	("fixed", Arr(member.fixed.map(|host| JsonDoc.Text(host)))),
 ])
 
-row_doc : Outdated.Row, List(Outdated.Moved) -> JsonDoc
-row_doc = |row, moved| {
+row_doc : Outdated.Row, Try(Str, [None]), List(Outdated.Moved) -> JsonDoc
+row_doc = |row, pin, moved| {
+	pinned = match pin {
+		Ok(range) => [("pinned", JsonDoc.Text(range))]
+		Err(None) => []
+	}
 	successor = match Outdated.successor_of(row, moved) {
 		Ok(name) => [("successor", JsonDoc.Text(name))]
 		Err(None) => []
@@ -203,6 +224,7 @@ row_doc = |row, moved| {
 			("new_series", Flag(row.new_series)),
 		]
 			.concat(successor)
+			.concat(pinned)
 			.concat([("nightly_range", range_doc(row.range))]),
 	)
 }

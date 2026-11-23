@@ -1,3 +1,6 @@
-# Q7 R-FL12 R-CM19: `tln --help` prints the usage on stdout, exit 0. `tln help` prints the same text.
+# Q7 R-FL12 R-CM19 R-CM26 (slice 262a, Design Q642): `tln --help` prints the general text on stdout, exit 0. `tln help` and `tln -h` print the same text.
 tln --help
 [ "$(tln help)" = "$(tln --help)" ] && echo "same text"
+[ "$(tln -h)" = "$(tln --help)" ] && echo "same text for -h"
+# R-CM26 R-CM19: the text of one command, by an alias
+tln help roc up

@@ -1,0 +1,20 @@
+SKIP exit/ex1-parser-basic-cli: 
+SKIP exit/ex2-gc-real-cache: 
+SKIP fx/pr2-real-roc-probes: 
+SKIP registry/cw1-add-releases: 
+SKIP registry/cw2-add-closure: 
+SKIP registry/cw3-install-short: 
+SKIP registry/cw4-update-toolchains: 
+SKIP registry/cw5-ingest-ok: 
+SKIP registry/cw6-probe-share: 
+SKIP registry/cw7-artifact: 
+SKIP registry/cw8-sweep: 
+SKIP registry/cw9-audit: 
+SKIP registry/rn1-add-short: 
+SKIP registry/rn2-add-closure: 
+SKIP registry/rn3-routes: 
+SKIP registry/rn4-default-host: 
+SKIP registry/rn5-login-jwt: blocked: needs a real GitHub token (R-CT8 OAuth App or an Actions OIDC token); no test gives one
+SKIP registry/rn6-publish-oidc: blocked: needs a real GitHub token (R-CT8 OAuth App or an Actions OIDC token); no test gives one
+SKIP registry/rn7-toolchains: blocked: no toolchain row until the compat bot runs
+scenarios: 100 passed, 0 failed, 19 skipped

@@ -1,6 +1,6 @@
 warning: acme/json has 2 series in the closure: 3 via json, 2 via parser. The types of the 2 series are different types.
 tln: error[usage]: --strategy lowest does not work with tln upgrade: upgrade only moves up
-parser: anchor, held
+parser: pinned to =1.0.0, held (tln upgrade parser moves it)
 note: platform changes: acme/pfx 0.1.0 -> acme/pfx 0.2.1
 check: passed
 build: skipped (recorded pass)

@@ -7,6 +7,7 @@ $PROJECT/u1/main.roc
   ~ yaml: acme/yaml 1.0.0 -> 1.1.0
   ~ pf: acme/pfx 0.1.0 -> 0.1.1
 $PROJECT/u1/talon.toml: yaml = "=1.1.0"
+note: yaml is pinned to =1.1.0: tln update keeps it there, and tln upgrade yaml moves it. To start at 1.1.0 with no pin, add --no-pin.
 resolved at 2026-10-15T12:00:00Z, 0 probes
 dry run: nothing was written
 exit 0

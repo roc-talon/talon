@@ -1,0 +1,51 @@
+── ● duplicate definition @ 3icmtKz6XQUyHqu5JftcoJJT6a9YTND1B8z1UAmtqJpN/Toml.roc:24:9
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:100:3
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:110:3
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:111:3
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:112:3
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:24:16
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:24:23
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:24:9
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:65:5
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:67:5
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:69:5
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:70:5
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:71:5
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:79:3
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:98:3
+── ● duplicate definition @ BzgH68Q1yBkg7F1ZpFsiEg73ZwkaBrFdcLpX2pUkay9i/Semver.roc:99:3
+── ● duplicate definition @ cli/lib/AuditReport.roc:19:9
+── ● duplicate definition @ cli/lib/BuildSkip.roc:82:31
+── ● duplicate definition @ cli/lib/BuildSkip.roc:83:23
+── ● duplicate definition @ cli/lib/BuildSkip.roc:84:22
+── ● duplicate definition @ cli/lib/ClosureRequest.roc:59:7
+── ● duplicate definition @ cli/lib/ClosureRequest.roc:63:4
+── ● duplicate definition @ cli/lib/Gc.roc:111:14
+── ● duplicate definition @ cli/lib/Link.roc:125:26
+── ● duplicate definition @ cli/lib/Matrix.roc:59:26
+── ● duplicate definition @ cli/lib/Matrix.roc:90:28
+── ● duplicate definition @ cli/lib/MoveCheck.roc:143:7
+── ● duplicate definition @ cli/lib/MoveCheck.roc:147:7
+── ● duplicate definition @ cli/lib/MoveCheck.roc:250:7
+── ● duplicate definition @ cli/lib/MoveCheck.roc:70:3
+── ● duplicate definition @ cli/lib/Nightlies.roc:354:14
+── ● duplicate definition @ cli/lib/ProbeSmoke.roc:43:3
+── ● duplicate definition @ cli/lib/Publish.roc:177:3
+── ● duplicate definition @ cli/lib/Publish.roc:262:6
+── ● duplicate definition @ cli/lib/Publish.roc:292:6
+── ● duplicate definition @ cli/lib/Publish.roc:88:3
+── ● duplicate definition @ cli/lib/Roots.roc:78:17
+── ● duplicate definition @ cli/lib/TalonRemove.roc:242:14
+── ● duplicate definition @ cli/lib/TalonRemove.roc:297:16
+── ● duplicate definition @ cli/lib/TalonRemove.roc:333:31
+── ● duplicate definition @ cli/lib/ToolManageFlow.roc:101:3
+── ● duplicate definition @ cli/lib/YankCheck.roc:140:7
+── ● duplicate definition @ HDQnwrX2Bcm8Jsf8RMC9ZdbVGwPiqD2nCLP7Zf1osfgU/PackageUrl.roc:38:5
+── 0 errors and 15 warnings @ packages/resolve/main.roc
+── 0 errors and 1 warning @ cli/fxprobe.roc
+── 0 errors and 27 warnings @ cli/flowprobe.roc
+── 0 errors and 30 warnings @ bot/lib/main.roc
+── 0 errors and 30 warnings @ bot/main.roc
+── 0 errors and 43 warnings @ cli/lib/main.roc
+── 0 errors and 43 warnings @ cli/main.roc
+── 0 errors and 43 warnings @ tests/commands/main.roc

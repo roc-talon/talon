@@ -27,7 +27,7 @@ RunSteps :: [].{
 	Scan : { walk : List({ dir : Str, names : List(Str), toml : Try(Str, [None]) }), root : Try(Str, [NoWorkspace]), members : List(Str) }
 
 	## What the steps need: the environment, the roots, the clock, the table of `[tools]` and the file that it is from.
-	Ready : { env : List((Str, Str)), roots : Roots, now : U64, table : RunTools.Table, tools_file : { path : Str, text : Str } }
+	Ready : { env : List((Str, Str)), roots : Roots, now : U64, real ?: U64, table : RunTools.Table, tools_file : { path : Str, text : Str } }
 
 	## R-RUN4, R-RUN8: the files that the run knows: each directory of the walk. A file with a form that is not valid is left out (reading it again gives its failure).
 	known_files : Scan -> List(RunPlan.File)
@@ -161,6 +161,7 @@ tool_run = |ready| {
 	roots: ready.roots,
 	net: Net.from_env(ready.env),
 	now: ready.now,
+	real: ready.?real ?? ready.now,
 	path: ready.tools_file.path,
 	text: ready.tools_file.text,
 	tools: ready.table.tools,

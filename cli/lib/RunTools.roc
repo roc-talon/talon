@@ -72,7 +72,7 @@ RunTools :: [].{
 	Know : { os : Setup.Os, target : Str, found : List(XCache.Found) }
 
 	## What a run has: the environment, the roots, the network settings, the clock, the file of `[tools]` (its path and text) and its entries.
-	Run : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, path : Str, text : Str, tools : List(ToolsToml.Entry), bins : List({ key : Str, bin : ToolBin.Lock }) }
+	Run : { env : List((Str, Str)), roots : Roots, net : Net.Settings, now : U64, real ?: U64, path : Str, text : Str, tools : List(ToolsToml.Entry), bins : List({ key : Str, bin : ToolBin.Lock }) }
 
 	## `load!` (see the table above).
 	load! : Fx, Roots => Try(RunTools.Know, Fail)
@@ -124,6 +124,7 @@ build! = |fx, args, run, know, what| {
 		roots: run.roots,
 		net: run.net,
 		now: run.now,
+		real: run.?real ?? run.now,
 		min_age: config.min_release_age ?? 172800,
 		exclude: config.min_release_age_exclude,
 		probe_timeout: ToolBuild.probe_timeout(config),

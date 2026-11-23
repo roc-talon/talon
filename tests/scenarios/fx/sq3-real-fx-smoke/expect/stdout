@@ -8,7 +8,7 @@ ok
 user_version 1
 tables ['facts', 'pinned', 'smoke']
 == 3. R-SM3 row 3: a query gives the rows of the keys that exist (the 4 outcome words), with the key of the row: another target, nightly or hash gives no row
-HP	nightly-2026-10-14-38a3029	arm64mac	fail
+HP	nightly-2026-10-14-38a3029	arm64glibc	fail
 HP	nightly-2026-10-14-38a3029	x64musl	pass
 HQ	nightly-2026-10-14-38a3029	x64musl	hang
 HQ	nightly-2026-10-16-5e6f7a8	x64musl	crash

@@ -84,7 +84,7 @@ is_free = |request| request.command == Upgrade and NightlyPlan.scope(request.nam
 listed! : Fx, ResolveBase.Request => Try({ releases : List(Nightlies.Release), fell : Try(Fallback.Fell, [None]) }, Fail)
 listed! = |fx, request| {
 	host = Toolchain.host(fx.platform!())?
-	found = Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host, source: ResolveBase.list_first(request) })?
+	found = Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.?real ?? request.now, offline: request.offline, host, source: ResolveBase.list_first(request) })?
 	if found.source == Missing return Err(Toolchain.offline_no_list({}))
 	Ok({ releases: found.releases, fell: found.fell })
 }

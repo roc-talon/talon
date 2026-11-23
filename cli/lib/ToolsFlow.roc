@@ -101,6 +101,7 @@ context! = |fx, args, cmd| {
 		roots: start.roots,
 		net: start.net,
 		now: start.now,
+		real: start.real,
 		min_age: Setting.pick({ flag: Err(Unset), env: Err(Unset), project: read.intent.resolution.min_release_age, user: config.min_release_age }) ?? 172800,
 		exclude: Age.join({ project: read.intent.resolution.min_release_age_exclude, user: config.min_release_age_exclude }),
 		probe_timeout: ToolBuild.probe_timeout(config),

@@ -1,0 +1,10 @@
+tln: error[usage]: no GitHub repository roc-lang/nightlies (a private repository needs a token)
+tln: error[usage]: no GitHub repository roc-lang/nightlies (a private repository needs a token)
+note: the compiler list could not be read; roc stays nightly-2026-10-09-9d9d9d9
+check: passed
+build: skipped (recorded pass)
+$PROJECT/p5/main.roc
+  ~ json: acme/json 1.0.0 -> 1.2.0
+resolved at 2026-10-15T12:00:00Z, 2 probes
+dry run: nothing was written
+tln: error[usage]: --no-check does not work when tln upgrade moves the nightly: the roc pin moves only after the check. Name the packages to hold the nightly: tln upgrade <name> --no-check

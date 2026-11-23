@@ -1,0 +1,1 @@
+R-CM27 R-CM19 R-E2 R-J1 (slice 262a, Design Q642, UX15, Q262-1): an unknown command word gets the closest command in the long form: the table of words from other tools first, else the edit distance (at most 1 for 4 letters or less, at most 2 for more). No close word: the text of before. Exit 2; the only Fx call is args.

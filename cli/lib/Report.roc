@@ -41,6 +41,16 @@ Report :: [].{
 		written : List(Str),
 	}
 
+	## Slice 262b (R-AD28, R-UP11, B9, stub of the test agent): the note texts (no `note: ` prefix) of an `install`, `add` or `update` run, one for each `talon.toml` value that is an exact pin
+	## (`=<v>`, also the `owner/repo@=<v>` form), in the order of `toml`: `<key> is pinned to =<v>: tln update keeps it there, and tln upgrade <key> moves it. To start at <v> with no pin, add --no-pin.`
+	anchor_notes : List({ path : Str, key : Str, value : Str }) -> List(Str)
+	anchor_notes = |toml| toml.keep_oks(
+		|t| match pin_of(t.value) {
+			Ok(v) => Ok("${t.key} is pinned to =${v}: tln update keeps it there, and tln upgrade ${t.key} moves it. To start at ${v} with no pin, add --no-pin.")
+			Err(NoPin) => Err(NoPin)
+		},
+	)
+
 	## R-DT5 (proposal, TW24, question Q4): `resolved at 2026-10-15T12:00:00Z, 3 probes`. One probe is `1 probe`, none is `0 probes`.
 	## Slice 206d2 (R-DT5, Design Q438): with `log` `Ok(n)` and an `at` that is not `log:<n>` (a time), the line names both: `resolved at 2026-10-12T00:00:00Z (log:184467), 4 probes`. With `at` = `log:<n>`, the log is not named twice.
 	resolved_line : { at : Str, log : Try(U64, [None]), probes : U64 } -> Str
@@ -204,4 +214,14 @@ removed_doc = |r| {
 		Err(None) => Null
 	}
 	Obj([("alias", Text(r.alias)), ("kind", Text(kind)), ("name", Text(r.name)), ("version", version)])
+}
+
+# The version of an exact pin: `=<v>` or `<owner/repo>@=<v>` (R-VA5).
+pin_of : Str -> Try(Str, [NoPin])
+pin_of = |value| {
+	tail = match value.split_on("@=") {
+		[_, v] => Ok(v)
+		_ => Err(NoPin)
+	}
+	if value.starts_with("=") Ok(value.drop_prefix("=")) else tail
 }

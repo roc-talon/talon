@@ -100,7 +100,7 @@ direct! = |fx, ctx| {
 	all = AuditCheck.entries({ members: walk.closures, tools: ctx.tools })
 	var $lists = []
 	for r in AuditCheck.repos_of(all) {
-		list = Github.audit_list!(fx, { net: request.net, roots: request.roots, owner: r.owner, repo: r.repo, now: request.now })?
+		list = Github.audit_list!(fx, { net: request.net, roots: request.roots, owner: r.owner, repo: r.repo, now: request.?real ?? request.now })?
 		$lists = $lists.append({ owner: r.owner, repo: r.repo, list })
 	}
 	Ok({ index: Direct, tally: AuditCheck.of_lists({ entries: all, lists: $lists })?, gone: gone_of(all, walk.gone) })

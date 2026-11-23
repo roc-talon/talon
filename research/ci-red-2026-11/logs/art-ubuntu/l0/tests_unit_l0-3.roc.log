@@ -1,0 +1,149 @@
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [("User-Agent", "tln/0.0.1"), ("Accept", "application/vnd.github.sha")]
+[dbg] [("User-Agent", "tln/0.0.1"), ("Authorization", "Bearer ghp_fake"), ("Accept", "application/vnd.github.sha")]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] { archive: "/c/roc/talon/tmp/0123456789abcdef/source.tar.gz", built: "/c/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc", id: "git-dd03c09e", item: "/c/roc/toolchains/git-dd03c09e", meta: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/.talon.json", probe_file: "/c/roc/talon/tmp/0123456789abcdef/empty.roc", roc: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc", scratch: "/c/roc/talon/tmp/0123456789abcdef", src: "/c/roc/talon/tmp/0123456789abcdef/src", temp: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp", zon: "/c/roc/talon/tmp/0123456789abcdef/src/build.zig.zon" }
+[dbg] { archive: "/c/roc/talon/tmp/0123456789abcdef/source.tar.gz", built: "/c/roc/talon/tmp/0123456789abcdef/src/zig-out/bin/roc.exe", id: "git-dd03c09e", item: "/c/roc/toolchains/git-dd03c09e", meta: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/.talon.json", probe_file: "/c/roc/talon/tmp/0123456789abcdef/empty.roc", roc: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp/roc.exe", scratch: "/c/roc/talon/tmp/0123456789abcdef", src: "/c/roc/talon/tmp/0123456789abcdef/src", temp: "/c/roc/toolchains/git-dd03c09e.0123456789abcdef.tmp", zon: "/c/roc/talon/tmp/0123456789abcdef/src/build.zig.zon" }
+[dbg] "{\"format\":1,\"id\":\"git-dd03c09e\",\"repo\":\"https://github.com/Karakatiza666/roc\",\"sha\":\"dd03c09e5f0a3b6c7d8e9f001122334455667788\",\"ref\":\"my-branch\",\"sha256\":\"9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f9f\",\"sha256_source\":\"computed\",\"compat\":\"c0ffee\",\"installed_at\":\"2026-10-22T12:00:00Z\"}
+"
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] (Ok("index: someone/roc-json checked 3d ago"), Ok("index: someone/roc-json checked 5h ago"), Ok("index: acme/roc-x checked 12m ago"), Ok("index: acme/roc-x checked 1h ago"))
+[dbg] (Err(Fresh), Err(Fresh), Ok("index: a/b checked 0m ago"))
+[dbg] (Ok("{\"kind\":\"index-stale\",\"name\":\"someone/roc-json\",\"checked_at\":1799740700000,\"text\":\"index: someone/roc-json checked 3d ago\"}"), Ok("{\"kind\":\"index-stale\",\"name\":\"someone/roc-json\",\"checked_at\":null,\"text\":\"index: someone/roc-json not checked since its first ingest\"}"), Err(Fresh))
+[dbg] ["{\"kind\":\"index-stale\",\"name\":\"acme/roc-a\",\"checked_at\":1799827200000,\"text\":\"index: acme/roc-a checked 2d ago\"}", "{\"kind\":\"index-stale\",\"name\":\"acme/roc-c\",\"checked_at\":null,\"text\":\"index: acme/roc-c not checked since its first ingest\"}"]
+[dbg] (Ok("[{\"kind\":\"index-stale\",\"name\":\"acme/roc-a\",\"checked_at\":null,\"text\":\"index: acme/roc-a not checked since its first ingest\"}]"), Err(None), Err(None))
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] Ok(((Ok(AtLeast("nightly-2026-10-09-258ab27")), Ok(">=nightly-2026-10-09-258ab27"), Ok(True)), [("pf", Err(None), "0.25.*", 9), ("parser", Err(None), "=2.0.0", 10), ("json", Err(None), "^2.1", 11), ("http", Ok("roc-lang/http"), "^1", 12), ("yaml", Ok("yaml"), "2", 13)], [("unicode", Ok("roc-lang/unicode"), "^4.2", 16)], (Ok(["parser", "pf", "roc"]), Ok(Lowest), Ok(259200), Ok(Time(1791763200))), []))
+[dbg] Ok(({ nightly: Err(Unset), roc: Err(Unset), roc_text: Err(Unset) }, [], [], { min_release_age: Err(Unset), min_release_age_exclude: [], priority: Err(Unset), probe: { max: Err(Unset), max_toolchains: Err(Unset), slots: Err(Unset), timeout: Err(Unset) }, snapshot: Err(Unset), strategy: Err(Unset) }, []))
+[dbg] [True, True]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [Ok("# our intent
+[dependencies]
+pf = \"0.25.*\"  # the platform
+json = \"^3\"   # keep me
+
+# other tables
+[resolution]
+strategy = \"lowest\"
+"), Ok("# our intent
+[dependencies]
+pf = \"0.25.*\"  # the platform
+json = \"^2.1\"   # keep me
+http = \"^1\"
+
+# other tables
+[resolution]
+strategy = \"lowest\"
+")]
+[dbg] []
+[dbg] ["\"^2.1\"", "\"0.25.*\"", ""]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ["\"^2.1\"", "\"someone/roc-json@^2.1.3\"", "{ path = \"./.talon/patches/json/main.roc\", base = \"abc\" }", "", ""]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] Ok([("nightly-2025-November-03-4215483", 1762161987, False), ("nightly-2026-July-31-f5556d8", 1785499014, True), ("nightly-2026-August-05-24f0b47", 1785927600, True), ("nightly-2026-10-14-38a3029", 1791990180, True)])
+[dbg] []
+[dbg] [("nightly-2026-January-01-2c1b41a", Err(Several(2))), ("nightly-2026-February-10-c95f04d", Ok(("roc_nightly-linux_x86_64-2026-02-10-ea7058b.tar.gz", 22, "http://127.0.0.1:1/dl/x/roc_nightly-linux_x86_64-2026-02-10-ea7058b.tar.gz"))), ("nightly-2026-10-21-5349569", Ok(("roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz", 22, "http://127.0.0.1:1/dl/x/roc_nightly-linux_x86_64-2026-10-21-5349569.tar.gz")))]
+[dbg] []
+[dbg] []
+[dbg] ["nightly-2025-October-25-c3487d2", "nightly-2025-November-03-4215483", "nightly-2026-July-23-fdd77c3", "nightly-2026-July-23-306abd6", "nightly-2026-July-31-f5556d8", "nightly-2026-08-06-61bbb59", "nightly-2026-09-01-24e3995", "nightly-2026-09-01-db83307", "nightly-2026-10-01-aaaaaaa", "nightly-2026-10-01-bbbbbbb", "nightly-2026-10-03-ccccccc"]
+[dbg] ["nightly-2026-10-19-601b54c", "nightly-2026-10-20-7a8a800", "nightly-2026-07-31-f5556d8"]
+[dbg] ["nightly-2026-10-19-601b54c", "nightly-2026-07-31-f5556d8"]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] [("roc_nightly-linux_x86_64-../../x.tar.gz", [("nightly-2026-10-21-5349569", Err(NoAsset))]), ("roc_nightly-linux_x86_64-a/b.tar.gz", [("nightly-2026-10-21-5349569", Err(NoAsset))]), ("roc_nightly-linux_x86_64-a\\\\b.tar.gz", [("nightly-2026-10-21-5349569", Err(NoAsset))]), ("roc_nightly-linux_x86_64-a\\u0000b.tar.gz", [("nightly-2026-10-21-5349569", Err(NoAsset))])]
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] ([], [])
+[dbg] []
+[dbg] ("{\"format\":1,\"projects\":[{\"path\":\"/a\",\"last_use\":1}],\"extra\":null}
+", "{\"format\":3}
+")
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+[dbg] []
+All (133) tests passed in 11043.2 ms.

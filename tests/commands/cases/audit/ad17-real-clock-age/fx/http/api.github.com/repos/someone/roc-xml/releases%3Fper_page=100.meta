@@ -1,0 +1,2 @@
+status 301
+header Location: https://api.github.com/repositories/42/releases?per_page=100

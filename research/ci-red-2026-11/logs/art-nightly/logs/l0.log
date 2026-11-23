@@ -1,0 +1,13 @@
+packages/resolve/tests/conflicts.roc: All (6) tests passed in 2144.1 ms.
+packages/resolve/tests/domain.roc: All (2) tests passed in 338.4 ms.
+packages/resolve/tests/moves.roc: All (5) tests passed in 1942.0 ms.
+packages/resolve/tests/solver.roc: All (5) tests passed in 1949.0 ms.
+tests/unit/l0-1.roc: All (229) tests passed in 14925.8 ms.
+tests/unit/l0-2.roc: All (106) tests passed in 10403.0 ms.
+tests/unit/l0-3.roc: All (133) tests passed in 16285.4 ms.
+l0: tests/unit/l0-4.roc: timed out after 30 s
+l0: tests/unit/l0-5.roc: timed out after 30 s
+l0: tests/unit/l0-6.roc: timed out after 30 s
+l0: tests/unit/l0-7.roc: timed out after 30 s
+l0: tests/unit/l0-8.roc: timed out after 30 s
+tests/unit/l0-9.roc: All (189) tests passed in 8162.7 ms.

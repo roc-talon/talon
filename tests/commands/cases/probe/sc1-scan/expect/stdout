@@ -29,6 +29,7 @@ $PROJECT/p4/main.roc
   ~ json: acme/json 2.0.0 -> 2.2.0
   ~ parser: acme/parser 1.0.0 -> 1.1.0
 $PROJECT/p4/talon.toml: json = "=2.2.0"
+note: json is pinned to =2.2.0: tln update keeps it there, and tln upgrade json moves it. To start at 2.2.0 with no pin, add --no-pin.
 exit 0
 == update json parser file=p5/main.roc compiler=nightly-2026-10-23-5e5e5e5
 check: passed

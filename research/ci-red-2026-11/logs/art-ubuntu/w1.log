@@ -1,0 +1,77 @@
+FAIL sqlite closure/c1-random-reference (8 ms)
+    setup failed: Value is too large to be represented as a JavaScript number: 4611686516829749252
+PASS d1 closure/c1-random-reference (1736 ms)
+FAIL sqlite closure/c2-closure-cte (3 ms)
+    setup failed: Value is too large to be represented as a JavaScript number: 9007199254740993
+PASS d1 closure/c2-closure-cte (899 ms)
+PASS sqlite closure/c3-order-window (28 ms)
+PASS d1 closure/c3-order-window (536 ms)
+PASS sqlite compat/a1-audit (9 ms)
+PASS d1 compat/a1-audit (357 ms)
+PASS sqlite compat/m1-bot-set-missing (335 ms)
+PASS d1 compat/m1-bot-set-missing (1888 ms)
+PASS sqlite compat/m2-members-count (174 ms)
+PASS d1 compat/m2-members-count (1678 ms)
+PASS sqlite example/e1-trigger-and-query (5 ms)
+PASS d1 example/e1-trigger-and-query (301 ms)
+PASS sqlite example/e2-batch-rollback (4 ms)
+PASS d1 example/e2-batch-rollback (268 ms)
+PASS sqlite example/e3-migrations-prefix (2 ms)
+PASS d1 example/e3-migrations-prefix (210 ms)
+PASS sqlite schema/s1-tables (5 ms)
+PASS d1 schema/s1-tables (257 ms)
+PASS sqlite schema/s2-targets (4 ms)
+PASS d1 schema/s2-targets (306 ms)
+FAIL sqlite schema/s3-names (8 ms)
+    step "INSERT INTO names (id, kind, value) VALUES (?, 1, x'07070707": failed: Value is too large to be represented as a JavaScript number: -5806314255104343322
+    step "INSERT INTO names (id, kind, value) VALUES (?, 2, ?)": failed: Value is too large to be represented as a JavaScript number: -2687166099708853831
+    step "INSERT INTO names (id, kind, value) VALUES (?, 3, ?)": failed: Value is too large to be represented as a JavaScript number: 4611686018427387905
+    step "INSERT INTO names (id, kind, value) VALUES (?, 2, ?) ON CONF": failed: Value is too large to be represented as a JavaScript number: 4611686018427387905
+    step "INSERT INTO names (id, kind, value) VALUES (?, 2, ?) ON CONF": failed: Value is too large to be represented as a JavaScript number: 4611686018427387905
+    step "INSERT INTO names (id, kind, value) VALUES (?, 3, ?)": failed: Value is too large to be represented as a JavaScript number: 6148914691236517205
+PASS d1 schema/s3-names (349 ms)
+FAIL sqlite schema/s4-int64-ids (3 ms)
+    step "INSERT INTO names (id, kind, value) VALUES (?, 2, 'k3-odd'),": failed: Value is too large to be represented as a JavaScript number: 9007199254740992
+    step "INSERT INTO names (id, kind, value) VALUES (?, 2, 'k8-form')": failed: Value is too large to be represented as a JavaScript number: -9223372036854775808
+    step "INSERT INTO artifacts (artifact, kind, exposes, platform, ro": failed: Value is too large to be represented as a JavaScript number: 9223372036854775807
+    step "INSERT INTO repos (repo, repository_id, repository_owner_id,": failed: Value is too large to be represented as a JavaScript number: 4611686018427387905
+    step "INSERT INTO links (machine, contributor, time) VALUES (?, 58": failed: Value is too large to be represented as a JavaScript number: -9223372036854775808
+    step "INSERT INTO contributions (contributor, artifact, nightly, t": failed: Value is too large to be represented as a JavaScript number: -9223372036854775808
+    step "INSERT INTO deps (artifact, alias, dep, form, version, versi": failed: Value is too large to be represented as a JavaScript number: -9223372036854775808
+    step "INSERT INTO artifact_targets (artifact, target) VALUES (?, 9": failed: Value is too large to be represented as a JavaScript number: -9223372036854775808
+    step "INSERT INTO compat_hints (artifact, nightly, target, talon_v": failed: Value is too large to be represented as a JavaScript number: -9223372036854775808
+PASS d1 schema/s4-int64-ids (405 ms)
+PASS sqlite schema/s5-keys-and-checks (4 ms)
+PASS d1 schema/s5-keys-and-checks (635 ms)
+PASS sqlite schema/s6-yanks (3 ms)
+PASS d1 schema/s6-yanks (378 ms)
+PASS sqlite schema/s7-repo-offer (3 ms)
+PASS d1 schema/s7-repo-offer (244 ms)
+PASS sqlite triggers/t1-publish (7 ms)
+PASS d1 triggers/t1-publish (458 ms)
+PASS sqlite triggers/t2-sweep-guard (28 ms)
+PASS d1 triggers/t2-sweep-guard (626 ms)
+PASS sqlite triggers/t3-transitions (15 ms)
+PASS d1 triggers/t3-transitions (428 ms)
+PASS sqlite triggers/t4-hint-quota (5 ms)
+PASS d1 triggers/t4-hint-quota (376 ms)
+PASS sqlite triggers/t4-move-guard (7 ms)
+PASS d1 triggers/t4-move-guard (376 ms)
+PASS d1 triggers/t5-d1-error-text (480 ms)
+PASS sqlite triggers/t6-batch-rollback (11 ms)
+PASS d1 triggers/t6-batch-rollback (412 ms)
+PASS sqlite versions/v1-order-bounds-filter (2 ms)
+PASS d1 versions/v1-order-bounds-filter (203 ms)
+PASS sqlite selftest/batch-no-error (4 ms)
+PASS d1 selftest/batch-no-error (282 ms)
+PASS sqlite selftest/batch-wrong-row (6 ms)
+PASS d1 selftest/batch-wrong-row (326 ms)
+PASS sqlite selftest/migrations-excluded (0 ms)
+PASS d1 selftest/migrations-excluded (7 ms)
+PASS sqlite selftest/migrations-prefix (2 ms)
+PASS d1 selftest/migrations-prefix (281 ms)
+PASS sqlite selftest/no-error (4 ms)
+PASS d1 selftest/no-error (252 ms)
+PASS sqlite selftest/wrong-row (4 ms)
+PASS d1 selftest/wrong-row (281 ms)
+w1: 55 passed, 4 failed

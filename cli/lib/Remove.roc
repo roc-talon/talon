@@ -71,6 +71,7 @@ flow! = |fx, args, opts| {
 			roots: start.roots,
 			net: start.net,
 			now: start.now,
+			real: start.real,
 			offline: args.offline,
 			strategy: Err(Unset),
 			nightly: Common.nightly_of(start.env),

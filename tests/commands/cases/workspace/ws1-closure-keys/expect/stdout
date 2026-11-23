@@ -16,6 +16,7 @@ $PROJECT/w3/apps/a/main.roc
 verified: the tuple passes. No project file was written.
 exit 0
 == update --no-check --file w4/apps/a/main.roc
+core: pinned to =1.0.0, held (tln upgrade core moves it)
 exit 10
 == add acme/util --as local --no-check --file w5/apps/a/main.roc
 note: entry changes: ../../lib/main.roc -> acme/util 1.1.0

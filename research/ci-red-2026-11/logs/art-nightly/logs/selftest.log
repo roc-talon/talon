@@ -1,0 +1,8 @@
+build of l2 failed:
+error: failed to write static data object file /home/runner/work/talon/talon/.work/cache/roc/compat-95146fbee859ac5af619126b859e5c90e03e75cb13c4c7eb79c6687d47c3acc1/tmp/f4Sua7XTGyDjXsGSEuKz9bZG3kg16ArC/roc_static_data_x64musl.o: error.FileNotFound
+── ✗ unreported error ──────────────────────────────────────────────────────────
+
+The compiler stopped with the error ObjectGenerationFailed but did not say why.
+
+This is a bug in the compiler: whatever failed should have explained itself. Please report it at https://github.com/roc-lang/roc/issues, including the command you ran.
+

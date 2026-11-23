@@ -53,7 +53,7 @@ removed $HOME/.cache/roc/talon/x/50d140472a08f2fe66fc9895cf0392d7cc8870fa799c586
 freed 2.2 KB
 exit 0
 x: 0 entries
--- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download.
+-- 7: the next run builds it again (R-X5: the cache is not a store). It is a new build (a new entry in the same dir as before). The package of the app is still in the package cache, so there is no new download. The page of the release list is one hour old (real clock), so the list is read again (R-DI2).
 == tln x acme/app@1.0.0 -- e
 ran: acme/app 1.0.0 args: e
 exit 3

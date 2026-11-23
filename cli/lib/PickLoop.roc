@@ -477,7 +477,7 @@ listed! = |fx, request, source| Ok(listed_via!(fx, request, source)?.releases)
 listed_via! : Fx, ResolveBase.Request, Nightlies.Source => Try({ releases : List(Nightlies.Release), fell : Try(Fallback.Fell, [None]) }, [Unread])
 listed_via! = |fx, request, source| match Toolchain.host(fx.platform!()) {
 	Err(_) => Err(Unread)
-	Ok(host) => match Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.now, offline: request.offline, host, source }) {
+	Ok(host) => match Nightlies.list_of!(fx, { net: request.net, roots: request.roots, now: request.?real ?? request.now, offline: request.offline, host, source }) {
 		Ok(found) => Ok({ releases: found.releases, fell: found.fell })
 		Err(_) => Err(Unread)
 	}

@@ -1,0 +1,12 @@
+# R-FL15: a flag with a value, 2 times
+add json --as a --as b
+# R-FL15 R-J1: a global flag 2 times: the envelope, json is still read
+list --json --json
+# R-FL15: --registry before and after the command (it kept the last value before)
+--registry direct list --registry direct
+# R-FL15: --file in the = form and the word form
+install --file=a/main.roc --file b/main.roc
+# R-FL15 Q262-9: the flag whose second use comes first
+add json --no-check --dry-run --dry-run --no-check
+# R-FL15 Q262-9 R-FL12: a flag that is not for the command wins over the repeat
+list --as a --as b

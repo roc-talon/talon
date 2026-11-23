@@ -216,7 +216,11 @@ FullName :: [].{
 	read! = |fx, facts| read_via!(fx, { net: facts.net, roots: facts.roots, origin: facts.origin, version: facts.version, now: facts.now, offline: facts.offline, name: facts.name, selector: facts.selector, snapshot: facts.snapshot, known: facts.known, source: "" })
 
 	read_via! : Fx, { net : Net.Settings, roots : Roots, origin : Str, version : Str, now : U64, offline : Bool, name : Str, selector : FullName.Typed, snapshot : Try(U64, [None]), known : List(Str), source : Str } => Try([Found(WireIndex.Releases), NoMatch, SourceBuild], Fail)
-	read_via! = |fx, facts| {
+	read_via! = |fx, facts| FullName.read_real!(fx, { net: facts.net, roots: facts.roots, origin: facts.origin, version: facts.version, now: facts.now, real: facts.now, offline: facts.offline, name: facts.name, selector: facts.selector, snapshot: facts.snapshot, known: facts.known, source: facts.source })
+
+	## Slice 260 (Design Q639): `read_via!` with `real`, the real clock, for the age of a cached GitHub release list page (R-DI2). `now` is for the registry cache.
+	read_real! : Fx, { net : Net.Settings, roots : Roots, origin : Str, version : Str, now : U64, real : U64, offline : Bool, name : Str, selector : FullName.Typed, snapshot : Try(U64, [None]), known : List(Str), source : Str } => Try([Found(WireIndex.Releases), NoMatch, SourceBuild], Fail)
+	read_real! = |fx, facts| {
 		chosen = facts.selector.map_ok(|t| t.selector)
 		match FullName.way(chosen) {
 			Compiler => return Err(FullName.compiler_only({ name: facts.name, text: facts.selector.map_ok(|t| t.text) ?? "" }))
@@ -245,7 +249,7 @@ FullName :: [].{
 			Ok(size) => return Err(FullName.snapshot_stop({ name: facts.name, size }))
 			Err(None) => {}
 		}
-		fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.now, offline: facts.offline })?
+		fetched = Github.releases!(fx, { net: facts.net, roots: facts.roots, owner, repo, now: facts.real, offline: facts.offline })?
 		found = match Index.candidates({ owner, repo, pages: fetched.pages, known: facts.known }) {
 			Ok(f) => f
 			Err(BadPage(n)) => return Err(Fail.new(Network, "the release list of ${facts.name} (page ${n.to_str()}) is not a list of releases"))

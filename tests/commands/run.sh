@@ -60,20 +60,21 @@ run_case() {
     : > "$report"
     compare_file "exit code" "$W/out/exit.expected" "$W/out/exit" >> "$report" || fail=1
     compare_file "stdout" "$ex/stdout" "$W/out/stdout.n" >> "$report" || fail=1
+    # Slice 260 (G1): the Fx calls are always compared through anc_filter (tests/lib.sh). The calls on the ancestors of the work dir (`list_dirs /tmp/talon-l2`,
+    # `/tmp`, `/` and the words `<dir>/talon.toml`) are left out of both files on each machine, so an expected file made under `<repo>/.tmp/tmp` (the walk up stops at the repo root)
+    # passes on CI (`/tmp/talon-l2`) too. The walk past the work dir is not checked by L2.
+    if [ -f "$ex/calls.log" ]; then anc_filter "$W" < "$ex/calls.log" | sed -e '\#^list_dirs /$#d' > "$W/out/calls.expected"; else : > "$W/out/calls.expected"; fi
+    anc_filter "$W" < "$W/out/calls.log.n" | sed -e '\#^list_dirs /$#d' > "$W/out/calls.actual"
     if [ "$CASEROOT" = /tmp/talon-l2 ]; then
         compare_file "stderr" "$ex/stderr" "$W/out/stderr.n" >> "$report" || fail=1
-        compare_file "Fx calls" "$ex/calls.log" "$W/out/calls.log.n" >> "$report" || fail=1
     else
-        # The ancestors of the work dir are not /tmp/talon-l2, /tmp and /: the calls on them are left out of both files (tests/lib.sh anc_filter).
-        # anc_filter keeps `list_dirs /`, but the walk up stops at the repository root of a work dir under the repo (.tmp/), so the root is left out too.
-        # The list of dirs after $WORK in the text "Checked: ..." (the walk up from the work dir) is left out of the stderr files for the same reason.
-        if [ -f "$ex/calls.log" ]; then anc_filter "$W" < "$ex/calls.log" | sed -e '\#^list_dirs /$#d' > "$W/out/calls.expected"; else : > "$W/out/calls.expected"; fi
-        anc_filter "$W" < "$W/out/calls.log.n" | sed -e '\#^list_dirs /$#d' > "$W/out/calls.actual"
+        # The list of dirs after $WORK in the text "Checked: ..." (the walk up from the work dir) is left out of the stderr files: the walk up stops at the repository root
+        # of a work dir under the repo (.tmp/).
         sed -E 's#(Checked: .*\$WORK)(, [^, ]+)*\. Pass#\1. Pass#' "$ex/stderr" > "$W/out/stderr.expected" 2> /dev/null || : > "$W/out/stderr.expected"
         sed -E 's#(Checked: .*\$WORK)(, [^, ]+)*\. Pass#\1. Pass#' "$W/out/stderr.n" > "$W/out/stderr.actual"
         compare_file "stderr" "$W/out/stderr.expected" "$W/out/stderr.actual" >> "$report" || fail=1
-        compare_file "Fx calls" "$W/out/calls.expected" "$W/out/calls.actual" >> "$report" || fail=1
     fi
+    compare_file "Fx calls" "$W/out/calls.expected" "$W/out/calls.actual" >> "$report" || fail=1
     compare_file "file tree" "$ex/tree.diff" "$W/out/tree.diff" >> "$report" || fail=1
     if [ $fail = 1 ]; then cat "$report"; return 1; fi
     return 0
@@ -103,6 +104,11 @@ done
 if [ ${#SEL[@]} -eq 0 ]; then echo "commands: no case matches"; exit 1; fi
 
 mkdir -p "$CASEROOT"
+# Slice 260 (G1): an expected file made with UPDATE=1 under another work root can differ from the CI form in the stderr text "Checked: ..." (the walk up) and in a size
+# that holds the work dir path. So UPDATE=1 under another root prints a warning: read each changed line (TW21).
+if [ "${UPDATE:-0}" = 1 ] && [ "$CASEROOT" != /tmp/talon-l2 ]; then
+    echo "WARN: UPDATE=1 with the work root $CASEROOT, not /tmp/talon-l2 (CI): the stderr walk text (\"Checked: ...\") and the sizes that hold the work dir path can differ from CI. Read each changed line (TW21)." >&2
+fi
 RESULTS=$(mktemp -d)
 printf '%s\0' "${SEL[@]}" |
     xargs -0 -P "$(parallel_jobs)" -I{} bash -c '

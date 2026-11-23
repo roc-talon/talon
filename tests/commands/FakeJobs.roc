@@ -351,6 +351,23 @@ method_text = |method| match method {
 escape_body : Str -> Str
 escape_body = |text| text.replace_each("\\", "\\\\").replace_each("\n", "\\n").replace_each("\r", "\\r")
 
+## Slice 260 (G3): the case-safe form of a route name. An upper-case ASCII letter `X` is `^x`, and `^` is `^^`. On a case-blind file system (macOS APFS) the routes
+## `short=Parser` and `short=parser` are one file. The case-safe file `short=^parser` is another file there. `route_answer!` tries the case-safe name first, then the plain name, so a
+## case needs the case-safe name only for a route that would collide. A name with no upper-case letter and no `^` is the same in both forms.
+case_safe : Str -> Str
+case_safe = |text| {
+	bytes = text.to_utf8().join_map(
+		|b| if b >= 65 and b <= 90 {
+			[94, b + 32]
+		} else if b == 94 {
+			[94, 94]
+		} else {
+			[b]
+		},
+	)
+	Str.from_utf8(bytes) ?? text
+}
+
 ## The answer of a route (slice 200 gives it the method and the n-th answer). The files of a route `<r>` (the file of the URL, with the query file first) are:
 ## `<r>` for `GET` and `<r>.<METHOD>` for another method; then `<file>.<n>` for the n-th request of the same method and URL (n from 2; no such file: `<file>`), each with its `.meta`.
 route_answer! : Str, Str, Str, List((Str, Str)) => Try({ status : U16, headers : List((Str, Str)), body : Str }, [Timeout, Failed(Str)])
@@ -362,9 +379,22 @@ route_answer! = |w, method, url, request_headers| {
 		[] => (rest, "")
 	}
 	suffix = if method == "GET" "" else ".${method}"
+	# Slice 260 (G3): the case-safe name of a route comes first, then the plain name (see `case_safe`).
+	has! = |f| FakeBase.exists!(f) or FakeBase.exists!("${f}.meta")
 	with_query = "${w}/fx/http/${path_part}?${query}${suffix}"
 	plain = "${w}/fx/http/${path_part}${suffix}"
-	route = if !query.is_empty() and (FakeBase.exists!(with_query) or FakeBase.exists!("${with_query}.meta")) with_query else plain
+	safe_query = "${w}/fx/http/${case_safe(path_part)}?${case_safe(query)}${suffix}"
+	safe_plain = "${w}/fx/http/${case_safe(path_part)}${suffix}"
+	route =
+		if !query.is_empty() and has!(safe_query) {
+			safe_query
+		} else if !query.is_empty() and has!(with_query) {
+			with_query
+		} else if has!(safe_plain) {
+			safe_plain
+		} else {
+			plain
+		}
 	# The n-th request of this method and URL: the lines of `calls.log` that start like the line of this request (this request is already in the log).
 	n = FakeBase.lines(FakeBase.read_or_empty!("${w}/out/calls.log")).keep_if(
 		|l| (l == "http_get ${url}" and method == "GET") or l.starts_with("http_send ${method} ${url} timeout="),

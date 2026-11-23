@@ -90,7 +90,8 @@ expect {
 		(read(["tool", "install", "acme/foo", "--roc", "pinned", "--as", "7z"]), Ok(("acme/foo", "", Ok("7z"), Pinned))),
 		(read(["tool", "install", "--git", "acme/foo@main"]), line("tln tool install --git is not built yet")),
 		(read(["tool", "install", "--path", "../foo"]), line("tln tool install --path is not built yet")),
-		(read(["tool", "install", "acme/foo", "--resolve"]), line("tln tool install --resolve is not built yet")),
+		# Slice 262b (UX16, R-T1, Design Q642): --resolve names what tln tool install builds.
+		(read(["tool", "install", "acme/foo", "--resolve"]), line("tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names.")),
 		(read(["tool", "install"]), line("tln tool install needs one app: owner/app")),
 		(read(["tool", "install", "acme/foo", "acme/bar"]), line("tln tool install takes one app, got 2")),
 		(read(["tool", "install", "acme/foo@dd03c09e"]), line("'dd03c09e' in 'acme/foo@dd03c09e' is a git ref: a git ref needs --git (not built yet)")),

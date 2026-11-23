@@ -180,7 +180,7 @@ option = |args, flag| match args.options.find_first(|(name, _)| name == flag) {
 
 # Row 1: `--resolve` is for a later slice.
 resolve_check : Args -> Try({}, Fail)
-resolve_check = |args| if has_flag(args, "--resolve") Err(usage("tln tool install --resolve is not built yet")) else Ok({})
+resolve_check = |args| if has_flag(args, "--resolve") Err(usage("tln tool install --resolve is not built yet. tln tool install builds the app with the packages that its header names.")) else Ok({})
 
 # Rows 5 and 6: the repo of the operand (`owner/repo` only) and the typed ref.
 git_source : Str, Ref -> Try(GitRef.Source, Fail)

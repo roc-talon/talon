@@ -67,6 +67,7 @@ flow! = |fx, args, plan| {
 		roots: machine.roots,
 		net: machine.net,
 		now: machine.now,
+		real: machine.real,
 		os: machine.os,
 		bin: machine.bin,
 		target: machine.target,

@@ -1,0 +1,4 @@
+tln: error[usage]: unknown command 'frob'
+tln: error[usage]: unknown command 'frob'
+tln: error[usage]: unknown command 'instal' (did you mean 'tln install'?)
+tln: error[usage]: unknown command 'roc frob'

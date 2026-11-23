@@ -536,7 +536,7 @@ settle! = |fx, request, loaded, x| {
 	rebased = PatchApply.finish!(fx, request, x.patch)?
 	# Slice 255 (Design Q635, D1 strict): the audit lines after every step that can fail, before the lines of the files.
 	AuditResolve.show!(fx, x.found_audit)
-	InstallWrite.report!(fx, loaded, x.edits, x.pairs, x.renames, written)
+	InstallWrite.report!(fx, loaded, x.edits, x.pairs, x.renames, written, if request.command == Upgrade [] else Report.anchor_notes(x.pairs.keep_if(|p| written.contains(p.path))))
 	PatchApply.report!(fx, x.patch)
 	Ok({ ran: ran.ran, built: ran.built, touched: written.concat(rebased.keep_if(|path| !written.contains(path))) })
 }

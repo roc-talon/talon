@@ -43,6 +43,11 @@ read_files $HOME/.config/talon/config.toml
 read_files $HOME/.config/talon/config.toml
 write_atomic $HOME/.config/talon/config.toml
 unlock $HOME/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 tty
@@ -91,6 +96,11 @@ read_files $HOME2/.config/talon/config.toml
 read_files $HOME2/.config/talon/config.toml
 write_atomic $HOME2/.config/talon/config.toml
 unlock $HOME2/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -136,6 +146,11 @@ read_files $HOME3/.config/talon/config.toml
 read_files $HOME3/.config/talon/config.toml
 write_atomic $HOME3/.config/talon/config.toml
 unlock $HOME3/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -156,6 +171,11 @@ read_files $HOME4/.config/talon/config.toml
 read_files $HOME4/.config/talon/config.toml
 write_atomic $HOME4/.config/talon/config.toml
 unlock $HOME4/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -201,6 +221,11 @@ read_files $HOME5/.config/talon/config.toml
 read_files $HOME5/.config/talon/config.toml
 write_atomic $HOME5/.config/talon/config.toml
 unlock $HOME5/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc
 args
 env_all
 env_all
@@ -246,3 +271,8 @@ read_files $HOME6/.config/talon/config.toml
 read_files $HOME6/.config/talon/config.toml
 write_atomic $HOME6/.config/talon/config.toml
 unlock $HOME6/.config/talon/config.toml
+cwd
+list_dirs $PROJECT
+list_dirs $WORK
+read_files $PROJECT/talon.toml
+read_files $PROJECT/main.roc

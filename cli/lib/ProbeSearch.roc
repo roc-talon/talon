@@ -44,6 +44,7 @@ ProbeSearch :: [].{
 		roots : Roots,
 		net : Net.Settings,
 		now : U64,
+		real ?: U64,
 		offline : Bool,
 		node : Units.Node,
 		installed : List(Str),
@@ -64,7 +65,7 @@ ProbeSearch :: [].{
 	run! : Fx, ProbeSearch.Run => Try(ProbeSearch.Found, Fail)
 	run! = |fx, run| {
 		host = Toolchain.host(fx.platform!())?
-		listed = Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.now, offline: run.offline, host })?
+		listed = Nightlies.list!(fx, { net: run.net, roots: run.roots, now: run.?real ?? run.now, offline: run.offline, host })?
 		domain = Nightlies.candidates(listed.releases).map(|r| r.id)
 		allowed = Toolchain.domain({ releases: listed.releases, now: run.now, min_age: run.min_age, nightly: run.nightly, exclude: run.exclude }).auto
 		askable = allowed.keep_if(|id| run.installed.contains(id))

@@ -63,7 +63,7 @@ set_caseroot() {
 
 # anc_filter <W>: read stdin (a calls.log), write stdout. Takes out the calls that name an ancestor dir of the work dir, which is a different path on each machine:
 # the lines `list_dirs <dir>` (not the root `/`) and the words `<dir>/talon.toml` of a `read_files` line. The dirs are the real ancestors of <W> and the ancestors of the Linux
-# work dir (`/tmp/talon-l2`, `/tmp`), so it works for the expected file and for the actual file. Used when the work dir is not `/tmp/talon-l2/<case>`.
+# work dir (`/tmp/talon-l2`, `/tmp`), so it works for the expected file and for the actual file. The L2 runner uses it for each case (slice 260, G1).
 anc_filter() {
     local d=${1%/*} dirs=() x e script=()
     dirs=(/tmp/talon-l2 /tmp)

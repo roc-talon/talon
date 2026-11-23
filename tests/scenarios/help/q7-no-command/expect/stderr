@@ -1,29 +1,36 @@
 Usage: tln [flags] <command> [words]
+       tln help <command>    Show the usage of one command (also: tln <command> --help)
 
 Commands:
   init      Make a new app or package
   install   Add packages, or fetch the closure of the header (also: add, i)
   remove    Remove a package (also: rm)
-  update    Move within the ranges (also: up)
-  upgrade   Move to the newest releases
+  update    Move the packages of this project within the ranges (also: up)
+  upgrade   Move the packages and the compiler of this project to the newest releases
   outdated  Show the current, wanted and latest versions
   why       Show why a package is in the closure
   probe     Probe an entry on the selected compiler
   list      Show the closure (also: ls)
   patch     Edit a copy of a dependency
   verify    Resolve and probe, and write nothing
+  path      Print the directory of a header entry
+  run       Run a script of talon.toml
   x         Build a Roc app and run it once
   publish   Register a release
   audit     Report yanked and changed releases
-  roc       Manage compilers
-  tool      Manage global tools
-  cache     Manage the cache
+  roc       Manage compilers: install, link, use, list, remove, default, update, channel
+  tool      Manage global tools: install, list, update, rebuild, remove
+  cache     Manage the cache: gc, clean, list, dir
   setup     Install the roc proxy and the PATH line
   yank      Yank a release
   move      Set the successor of a package name
-  share     Show or change the sharing of probe results
-  help      Show this text
+  share     Show or change the sharing of probe results: on, off, login, logout, forget
+  help      Show this text, or the usage of one command
+
+To update tln itself, run: tln tool update talon
+(tln upgrade changes the project, not tln.)
 
 Flags for every command:
-  --json  --yes  --offline  --quiet  --registry <url|direct>  --help  --version
+  --json  --yes  --offline  --quiet  --registry <url|direct>  --help (-h)  --version
+  --file <path>  The project file, for a command that uses a project
 tln: error[usage]: no command

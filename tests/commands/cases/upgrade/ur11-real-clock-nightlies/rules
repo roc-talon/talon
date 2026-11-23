@@ -1,0 +1,5 @@
+R-DI2 R-EV22 (slice 260, Design Q639, mutation gap): the world of upgrade/ur4-candidate (2 runs), with fx/clock (the real clock) 1792069200, one hour after TALON_NOW (1792065600). fx/mtimes gives the pages (acme/json, acme/lib, roc-lang/nightlies) the time 1792065590. With TALON_NOW they are 10 s old; with the real clock 3610 s old: run 2 reads the compiler list (roc-lang/nightlies, Nightlies.list_of!) and acme/lib again. The other output is the one of ur4-candidate.
+
+R-RP1 R-RP3 R-H6 R-SP12 R-LD4 (slice 039, gap A7): the header of the candidate copy when the pin moves. `fx/probe-text` puts the header lines of the copy in `calls.log` (`  | <line>`). lib 1.1.0 fails on n12, so bare `upgrade` moves lib and the nightly to n11.
+Run 1 (project `pu`, no `roc:` entry, with package changes): `Pin.decide` would write H (the member has changes and no pin). The move writes the new pin instead. The header of the candidate copy has one `roc:` line, with n11 (never H, never 2 lines). The project file gets `+ roc: <n11>`.
+Run 2 (project `pp`, the pin H): the candidate header has the pin n11 (one line). The project file gets `~ roc: <H> -> <n11>`.

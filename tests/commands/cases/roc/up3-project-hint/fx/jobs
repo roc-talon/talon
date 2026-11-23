@@ -1,0 +1,8 @@
+# R-DA3 the download, R-HF5 the extract, R-HF2 the chmod, R-GC10 the compat check. The first rule whose needle is in the arguments answers.
+curl --fail	0	-	-	file:{out}
+tar -xf	0	-	-	file:{dir}/roc;file:{dir}/LICENSE;file:{dir}/legal_details
+chmod 0755	0	-	-	-
+/home/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home/.cache/roc/compat-5349569a
+/home2/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home2/.cache/roc/compat-5349569a
+/home3/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home3/.cache/roc/compat-5349569a
+/home11/.cache/roc/toolchains/nightly-2026-10-18-5349569.0123456789abcdef.tmp/roc check	1	-	1 error and 0 warnings	dir:{w}/home11/.cache/roc/compat-5349569a

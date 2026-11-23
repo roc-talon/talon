@@ -54,13 +54,18 @@ Clock :: [].{
 
 	## R-EV22: the time of a run for a command. One `Fx.clock!` call, also when `TALON_NOW` is set. `env` is the environment (`Fx.env_all!`). A bad `TALON_NOW` is a failure of kind `Usage` (exit 2, Q5): `TALON_NOW is not a UTC time: <text>`.
 	now! : Fx, List((Str, Str)) => Try(U64, Fail)
-	now! = |fx, env| {
+	now! = |fx, env| Clock.times!(fx, env).map_ok(|t| t.now)
+
+	## Slice 260 (Design Q639): `now!` with the real time too (the same one `clock!` call). The real time is for the age of a cached release list page (R-DI2).
+	times! : Fx, List((Str, Str)) => Try({ now : U64, real : U64 }, Fail)
+	times! = |fx, env| {
+		real = fx.clock!()
 		talon_now = match env.find_first(|(name, _)| name == "TALON_NOW") {
 			Ok((_, text)) => Ok(text)
 			Err(_) => Err(NotSet)
 		}
-		match Clock.now({ talon_now, real: fx.clock!() }) {
-			Ok(time) => Ok(time)
+		match Clock.now({ talon_now, real }) {
+			Ok(time) => Ok({ now: time, real })
 			Err(BadTime(text)) => Err(Fail.new(Usage, "TALON_NOW is not a UTC time: ${text}"))
 		}
 	}
